@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-10-16 11:07+0200\n"
+"POT-Creation-Date: 2022-09-10 00:33+0200\n"
 "PO-Revision-Date: 2021-09-29 15:35+0000\n"
 "Last-Translator: Kurt Gerber <kurt.gerber@unibe.ch>\n"
 "Language-Team: Russian <http://translate.landmatrix.org/projects/landmatrix/landmatrix/ru/>\n"
@@ -18,579 +18,47 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);\n"
 "X-Generator: Weblate 4.8\n"
 
-msgid "English"
-msgstr "English"
-
-msgid "Español"
-msgstr "Español"
-
-msgid "Français"
-msgstr "Français"
-
-#, fuzzy, python-format
-msgid "Attribute group \"%s\" is invalid counter (groups should start with 1) for historical activity %i (Activity identifier: #%i)"
-msgstr "Аттрибутивная группа \"%s\" является недействительным счетчиком (группы должны начинаться с 1) для хронологии активности (идентификатор действия: #%i)"
-
-msgid "Yes"
-msgstr "Да"
-
-msgid "No"
-msgstr "Нет"
-
-msgid "is"
+msgid "Blog index"
 msgstr ""
 
-msgid "is one of"
-msgstr "относится к"
-
-msgid "isn't any of"
-msgstr "не относится к"
-
-msgid "is >="
-msgstr ">="
-
-msgid "is >"
-msgstr ">"
-
-msgid "is <="
-msgstr "<="
-
-msgid "is <"
-msgstr "<"
-
-msgid "contains"
-msgstr "содержит"
-
-msgid "not contains"
-msgstr "не сожержит"
-
-msgid "is empty"
-msgstr "пустое поле"
-
-msgid "excludes"
-msgstr "за исключением"
-
-msgid "Agriculture"
-msgstr "Сельское хозяйство"
-
-msgid "Forestry"
-msgstr "Лесное хозяйство"
-
-msgid "Other"
-msgstr "Иное"
-
-msgid "Multiple intentions"
-msgstr "Многоцелевое назначение"
-
-msgid "This field is required."
-msgstr "Это поле обязательно для заполнения."
-
-msgid "Chart"
-msgstr "Диаграмма"
-
-msgid "Charts"
-msgstr "Диаграммы"
-
-msgid "Map"
-msgstr "Карта"
-
-msgid "Data"
-msgstr "Данные"
-
-msgid "Food-Crop - Crops that be consumed by humans, even if also used as livestock feed"
-msgstr "Пищевая культура (культуры, употребляемые в пищу людьми, даже если могут использоваться в качестве корма для скота)"
-
-msgid "Non-Food - Biofuels, exclusive livestock feed, industrial, cosmetic and medicinal uses"
-msgstr "Непищевая культура (биотопливо, фуражные культуры, промышленное, косметическое или медицинское применение)"
-
-msgid "Flex-Crop - Potential both biofuel and food uses"
-msgstr "Адаптивная культура (можно употреблять в пищу либо использовать как биотопливо)"
-
-msgid "Multiple Use - Several crops in different categories"
-msgstr "Многоцелевое использование (несколько культур, относящихся к различным категориям)"
-
-msgid "Global map of investments"
-msgstr "Инвестиционная карта мира"
-
-msgid "Choose between investor or target countries using the menu below. Click on the bubbles to visualise the selected country's involvement in the global land acquisition phenomenon."
-msgstr "Выберите страну-инвестора или страну назначения инвестиций из списка ниже. Нажмите на выноску с выбранной страной, чтобы посмотреть визуализацию ее участия в глобальном процессе приобретения земель."
-
-msgid "Country"
-msgstr "Страна"
-
-msgid "0 acquisitions/targets"
-msgstr "0 приобретений/целей"
-
-msgid "to/from Country"
-msgstr "в страну / из страны"
-
-msgid "whereof 0 with itself"
-msgstr "из которых 0 внутри страны"
-
-msgid "Go to Table"
-msgstr "Перейти к таблице"
-
-msgid "Reset"
-msgstr "Сброс параметров"
-
-#, fuzzy
-msgid "Investor&nbsp;Countries"
-msgstr "Страны&nbsp;инвесторы"
-
-#, fuzzy
-msgid "Target&nbsp;Countries"
-msgstr "Страны&nbsp;назначения"
-
-msgid "Investor Countries"
-msgstr "Страны-инвесторы"
-
-msgid "Target Countries"
-msgstr "Страны назначения"
-
-msgid "Dynamics Overview"
-msgstr "Обзор динамики развития"
-
-msgid "Show size or number of deals"
-msgstr "Показать размер или количество сделок"
-
-msgid "Deals divided by implementation status. Since this chart shows all deals in the database, there is no option to select concluded, intended or failed deals separately."
-msgstr "Сделки разделены по статусу выполнения. Поскольку эта диаграмма показывает все сделки, занесенные в базу данных, возможность отдельно выделить заключенные, предварительные и не состоявшиеся сделки отсутствует."
-
-msgid "There are two key variables to describe the status of a land deal: negotiation and implementation. Although these two variables are linked, they are independent in our database, and various combinations are possible for different projects. Click here for more info."
-msgstr "В описании статуса земельной сделки есть две ключевые переменные: переговоры и реализация. Хотя эти две переменные и взаимосвязаны, в нашей базе данных они разделены, и в разных проектах они могут встречаться в различных комбинациях. Для получения дополнительной информации нажмите сюда."
-
-#, fuzzy
-msgid "Deals having “agriculture” as main intention of investment disaggregated into sub-sections."
-msgstr "Сделки, в которых \"Сельское хозяйство\" является основным целевым назначением инвестиций, с разбивкой на подкатегории."
-
-#, fuzzy
-msgid "Deals divided by intention of investment."
-msgstr "Сделки, разбитые по целевому назначению инвестиций."
-
-msgid "Deals divided by negotiation status. Since this chart shows all deals in the database, there is no option to select concluded, intended or failed deals separately."
-msgstr "Сделки разделены по статусу переговоров. Поскольку эта диаграмма показывает все сделки, занесенные в базу данных, возможность отдельно выделить заключенные, предварительные и не состоявшиеся сделки отсутствует."
-
-#, fuzzy
-msgid "It's a big deal"
-msgstr "Это крупная сделка"
-
-#, fuzzy
-msgid "Enter a location to set the centre of a circle that displays an area equal to the size of the intended, concluded, or failed land acquisitions."
-msgstr "Укажите название местности, чтобы обозначить центр круга, отображаюшего соотношение предварительных, заключенных или несостоявшихся земельных сделок."
-
-msgid "Enter location..."
-msgstr "Введите местоположение…"
-
-msgid "Go"
-msgstr "Перейти"
-
-#, fuzzy
-msgid "Area equal to the size of the intended, concluded or failed land acquisitions: <span class=\"hectares\">0</span> ha"
-msgstr "Площадь, соразмерная предполагаемого, завершенного или неудачного приобретения земли: <span class=\"hectares\">0</span> га."
-
-msgid "This infographic shows how agricultural land acquisitions that include information on crops are subdivided according to destination of use."
-msgstr "На этой инфографике видно, как сделки по приобретению земель, которые содержат информацию о выращиваемых культурах, делятся в зависимости от целевого назначения."
-
-msgid "Food-Crops"
-msgstr "Пищевые культуры"
-
-msgid "Non-Food Crops"
-msgstr "Непищевые культуры"
-
-msgid "Flex-Crops"
-msgstr "Адаптивные культуры"
-
-msgid "All Continents"
-msgstr "Все континенты"
-
-msgid "Africa"
-msgstr "Африка"
-
-msgid "Eastern Europe"
-msgstr "Восточная Европа"
-
-msgid "Latin America"
-msgstr "Латинская Америка"
-
-msgid "Oceania"
-msgstr "Океания"
-
-msgid "Asia"
-msgstr "Азия"
-
-msgid "Special interest"
-msgstr "Особо ценные земли"
-
-msgid "Size in operation"
-msgstr "Площать обрабатываемых земель"
-
-msgid "Size under contract"
-msgstr "Площадь законтрактованных земель"
-
-#, fuzzy
-msgid "Intended Size"
-msgstr "Предполагаемый размер"
-
-msgid "Deals with contract farming schemes."
-msgstr "Сделки с привлечением контрактного фермерства."
-
-#, fuzzy
-msgid "Wood chopping."
-msgstr "Дровокольная деятельность."
-
-msgid "Concluded"
-msgstr "Заключенные сделки"
-
-msgid "Intended"
-msgstr "Предварительные сделки"
-
-msgid "Failed"
-msgstr "Не состоявшиеся сделки"
-
-msgid "Size"
-msgstr "Размер"
-
-msgid "Number of deals"
-msgstr "Количество сделок"
-
-msgid "The LM has two key variables to describe the status of a land deal: the negotiation status and the implementation status. For further information press the question mark."
-msgstr "Для описания статуса земельной сделки LM использует две переменные: статус переговоров и статус реализации. Для получения дополнительной информации нажмите на знак вопроса."
-
-#, fuzzy
-msgid "Filter and search through deals that are divided by intention of investment: Crops, mineral resources, or livestock."
-msgstr "Используйте фильтры для поиска сделок, разделенных по целевому назначению инвестиций: сельхозкультуры, полезные ископаемые, скот"
-
-msgid "Crops"
-msgstr "Сельхозкультуры"
-
-msgid "Mineral resources"
-msgstr "Полезные ископаемые"
-
-msgid "Livestock"
-msgstr "Скот"
-
-msgid "Toggle navigation"
-msgstr "Переключить навигацию"
-
-msgid "Web of transnational deals"
-msgstr "Сеть транснациональных сделок"
-
-msgid "Intention of investment"
-msgstr "Целевое назначение инвестиции"
-
-msgid "Negotiation status"
-msgstr "Статус переговоров"
-
-msgid "Implementation status"
-msgstr "Статус реализации"
-
-msgid "Investment in agriculture"
-msgstr "Инвестиции в сельское хозяйство"
-
-msgid "Special Interest"
-msgstr "Особо ценные земли"
-
-msgid "Agricultural Drivers"
-msgstr "Определяющие факторы сельского хозяйства"
-
-msgid "Produce Info"
-msgstr "Информация о продукции"
-
-msgid "Mining"
-msgstr "Горнодобыча"
-
-msgid "Forest concessions"
-msgstr "Концессии лесных хозяйств"
-
-msgid "Contract Farming"
-msgstr "Контрактное фермерство"
-
-msgid "This interactive graph shows the global flow of transnational land acquisitions. Clicking on a single country shows its threads in the global pattern: blue lines for inbound investments, orange for outbound. Country names marked with * have been shortened to improve legibility"
-msgstr "Эта интерактивная диаграмма показывает глобальный поток транснациональных приобретений земли. Нажатие на одну страну показывает ее потоки в рамках общей картины: синие линии для входящих инвестиций, оранжевые для исходящих. Названия стран, отмеченные знаком *, были сокращены для облегчения чтения."
-
-msgid "<strong>Visualisation not available in your browser:</strong> Unfortunately this data visualisation uses modern technologies and is therefor not available for old browsers (lower than Internet Explorer 8). Please update your browser. "
+msgid "Category Name"
 msgstr ""
-"\"<strong>Просмотр визуализации не поддерживается Вашим браузером:</strong>\n"
-"К сожалению, эта визуализация данных использует современные программы и поэтому недоступна к просмотру в старых версиях браузеров (ниже Internet Explorer 8). Пожалуйста, обновите свой браузер. \" "
 
-msgid "Top Countries"
-msgstr "Основные страны"
+msgid "Categories, unlike tags, can have a hierarchy. You might have a Jazz category, and under that have children categories for Bebop and Big Band. Totally optional."
+msgstr ""
 
-msgid "Investor countries"
-msgstr "Страны-инвесторы"
+msgid "Blog Category"
+msgstr ""
 
-msgid "Target countries"
-msgstr "Страны назначения"
+msgid "Blog Categories"
+msgstr ""
 
-msgid "Regions investing in "
-msgstr "Регионы, инвестирующие в "
+msgid "Category"
+msgstr ""
 
-msgid "Show all inbound deals"
-msgstr "Показать все входящие сделки слияния и поглощения"
+msgid "body"
+msgstr ""
 
-msgid "Regions"
-msgstr "Регионы"
+msgid "Post date"
+msgstr ""
 
-msgid "invests in"
-msgstr "инвестирует в"
+msgid "This date may be displayed on the blog post. It is not used to schedule posts to go live at a later date."
+msgstr ""
 
-msgid "Show all outbound deals"
-msgstr "Показать все исходящие сделки слияния и поглощения"
+msgid "Header image"
+msgstr ""
 
-msgid "to/from"
-msgstr "в/из"
+msgid "Author"
+msgstr ""
 
-msgid "Region A: 0 hectares"
-msgstr "Регион А: 0 гектаров"
+msgid "Blog page"
+msgstr ""
 
-msgid "Region B: 0 hectares"
-msgstr "Регион Б: 0 гектаров"
+msgid "Blog pages"
+msgstr ""
 
-msgid "Dashboard"
-msgstr "Панель индикаторов"
-
-msgid "Overall deals"
-msgstr "Общее количество сделок"
-
-msgid "Public deals"
-msgstr "Публичные сделки"
-
-msgid "Non public deals"
-msgstr "Непубличные сделки"
-
-msgid "Clear"
-msgstr "Очистить форму"
-
-msgid "Impersonate"
-msgstr "Олицетворить"
-
-msgid "Investors"
-msgstr "Инвесторы"
-
-msgid "Deals"
-msgstr "Сделки"
-
-msgid "Countries"
-msgstr "Страны"
-
-msgid "Users"
-msgstr "Пользователи"
-
-msgid "Latest added"
-msgstr "Последние добавления"
-
-msgid "Show all"
-msgstr "Показать все"
-
-msgid "ID"
-msgstr "ID"
-
-msgid "Added by"
-msgstr "Добавлено пользователем"
-
-msgid "Comment"
-msgstr "Комментарий"
-
-msgid "Added"
-msgstr "Добавлено"
-
-msgid "No deals have been added lately."
-msgstr "Новые добавления информации о сделках отсутствуют."
-
-msgid "Latest modified"
-msgstr "Последние изменения внесены"
-
-msgid "Modified by"
-msgstr "Изменено пользователем"
-
-msgid "Modified"
-msgstr "Изменено"
-
-#, fuzzy
-msgid "No deals have been modified lately."
-msgstr "Новые исправления информации о сделках отсутствуют."
-
-msgid "Latest deleted"
-msgstr "Последние удаленные"
-
-msgid "Deleted by"
-msgstr "Удалено пользователем"
-
-msgid "Deleted"
-msgstr "Удалено"
-
-#, fuzzy
-msgid "No deals have been deleted lately."
-msgstr "Новые удаления информации о сделках отсутствуют."
-
-msgid "Needs your attention"
-msgstr "Требует вашего внимания"
-
-msgid "Last revision"
-msgstr "Последняя редакция"
-
-msgid "State"
-msgstr "Состояние"
-
-msgid "Timestamp"
-msgstr "Метка времени"
-
-msgid "Actions"
-msgstr "Действия"
-
-msgid "Add"
-msgstr "Добавить"
-
-msgid "Update"
-msgstr "Обновить"
-
-msgid "Delete"
-msgstr "Удалить"
-
-msgid "Approve"
-msgstr "Одобрить"
-
-msgid "Reject"
-msgstr "Отклонить"
-
-msgid "No pending activities require your attention."
-msgstr "Незавершенные действия, требующие Вашего внимание, отсутствуют."
-
-msgid "Feedback requests"
-msgstr "Запросы на обратную связь"
-
-msgid "Request from"
-msgstr "Запросы от"
-
-msgid "Requested"
-msgstr "Запрошено"
-
-msgid "No feedback requests lately."
-msgstr "Новые запросы на обратную связь отсутствуют."
-
-msgid "Change log "
-msgstr "Журнал изменений "
-
-msgid "Change log"
-msgstr "Журнал изменений"
-
-msgid "User"
-msgstr "Пользователь"
-
-msgid "Time"
-msgstr "Время"
-
-msgid "Previous"
-msgstr "Предыдущая страница"
-
-msgid "Next"
-msgstr "Следующая страница"
-
-msgid "Manage deals/investors"
-msgstr "Управление данными о сделках/инвесторах"
-
-msgid "My deals/investors"
-msgstr "Мои сделки/инвесторы"
-
-msgid "Feedback"
-msgstr "Отзывы"
-
-#, fuzzy
-msgid "Pending updates"
-msgstr "Ожидающие обновления"
-
-msgid "Pending deletions"
-msgstr "Очередь на удаление"
-
-msgid "New deals for approval"
-msgstr "Новые сделки, ожидающие рассмотрения"
-
-msgid "Rejected by me"
-msgstr "Отклонено мной"
-
-msgid "Currently there are no feedback requests."
-msgstr "В настоящий момент запросы на обратную связь отсутствуют."
-
-msgid "Status"
-msgstr "Статус"
-
-#, fuzzy
-msgid "Currently there are no pending updates."
-msgstr "В настоящий момент очередь правок на рассмотрение пуста."
-
-msgid "Updated"
-msgstr "Обновлено"
-
-msgid "Currently there are no pending deletions."
-msgstr "В настоящий момент очередь на удаление пуста."
-
-msgid "Currently there are no new deals for approval."
-msgstr "В настоящий момент новые сделки в очереди на рассмотрение отсутствуют."
-
-msgid "Currently there are no rejected changes."
-msgstr "В настоящее время отклоненные изменения отсутствуют."
-
-msgid "Action comment"
-msgstr "Комментарий к действию"
-
-msgid "Page"
-msgstr "Страница"
-
-msgid "of"
-msgstr "из"
-
-msgid "Deleted user"
-msgstr "Пользователь удален"
-
-msgid "Deal has been successfully approved."
-msgstr "Добавление сделки успешно одобрено."
-
-msgid "Deal has been successfully rejected."
-msgstr "Добавление сделки успешно отклонено."
-
-msgid "Deal deletion has been successfully approved."
-msgstr "Удаление сделки успешно одобрено."
-
-msgid "Deal deletion has been successfully rejected."
-msgstr "Удаление сделки успешно отклонено."
-
-msgid "Investor has been successfully approved."
-msgstr "Добавление инвестора успешно одобрено."
-
-msgid "Investor has been successfully rejected."
-msgstr "Добавление инвестора успешно отклонено."
-
-msgid "Investor deletion has been successfully approved."
-msgstr "Удаление инвестора успешно одобрено."
-
-msgid "Investor deletion has been successfully rejected."
-msgstr "Удаление инвестора успешно отклонено."
-
-msgid "added"
-msgstr "добавлено"
-
-msgid "removed"
-msgstr "удалено"
-
-msgid "changed from"
-msgstr "изменено с"
-
-msgid "to"
-msgstr "на"
-
-msgid "No changes."
-msgstr "Без изменений."
-
-msgid "Change to Deal"
-msgstr "Измнения информации о сделке"
-
-#, python-format
-msgid "Deal %(deal_id)s History"
-msgstr "История сделки %(deal_id)s"
-
-#, fuzzy, python-format
-msgid "A list of changes made to deal %(deal_id)s"
-msgstr "Список изменений, внесенных в информацию о сделке %(deal_id)s"
+msgid "Account activation on"
+msgstr "Активация учетной записи на"
 
 msgid "New comment"
 msgstr "Новый комментарий"
@@ -607,164 +75,106 @@ msgstr "{full_name} обновил {obj_desc}:"
 msgid "Please review at {url}"
 msgstr "Пожалуйста, просмотрите на {url}"
 
+msgid "Size under contract (leased or purchased area, in ha)"
+msgstr "Площадь законтрактованных (приобретенных в аренду или собственность) земель в га"
+
+msgid "Size in operation (production, in ha)"
+msgstr "Площадь земель в обработке / в производстве (в га.)"
+
+msgid "Intention of investment"
+msgstr "Целевое назначение инвестиции"
+
+msgid "Negotiation status"
+msgstr "Статус переговоров"
+
+msgid "Implementation status"
+msgstr "Статус реализации"
+
+msgid "On leased area/farmers/households"
+msgstr "На земельных участках, приобретенных в аренду /фермеры/домохозяйства"
+
+#, fuzzy
+msgid "Not on leased area/farmers/households (out-grower)"
+msgstr "Не на арендованной территории / фермерам / домохозяйствам (сторонний производитель)"
+
+msgid "Current total number of jobs/employees/ daily/seasonal workers"
+msgstr "Текущее общее количество рабочих мест/наемных сотрудников/поденных/сезонных работников"
+
+msgid "Current foreign number of jobs/employees/ daily/seasonal workers"
+msgstr "Текущее количество поденных/сезонных рабочих (иностранцы)"
+
+msgid "Current domestic number of jobs/employees/ daily/seasonal workers"
+msgstr "Текущее количество созданных рабочих мест для местного населения"
+
+msgid "Actors involved in the negotiation / admission process"
+msgstr "Заинтересованные стороны, участвующие в процессе переговоров/допуска"
+
+msgid "Crops area/yield/export"
+msgstr "Посевная площадь/урожайность/экспорт"
+
+msgid "Livestock area/yield/export"
+msgstr "Площадь земель для скотоводства/продуктивность/экспорт"
+
+msgid "Mineral resources area/yield/export"
+msgstr "Площадь добычи полезных ископаемых/объем/экспорт"
+
+msgid "Contract farming crops"
+msgstr "Сельхозкультуры, выращенные в рамках контрактного фермерства"
+
 msgid "ha"
 msgstr "га"
 
-msgid "Uploaded files must be less than 10MB."
-msgstr "Размер загружаемых файлов не должен превышать 10МВ."
+msgid "Contract farming livestock"
+msgstr "Скотоводство в рамках контрактного фермерства"
 
-#, python-format
-msgid " (%s %s)"
-msgstr " (%s %s)"
+msgid "Comments / History"
+msgstr "Комментарии/ История"
 
-msgid "Biofuels"
-msgstr "Биотопливо"
+msgid "jobs"
+msgstr "рабочие места"
 
-msgid "Food crops"
-msgstr "Продовольственные культуры"
+msgid "employees"
+msgstr "наемные сотрудники"
 
-msgid "Fodder"
-msgstr "Фуражные культуры"
+msgid "workers"
+msgstr "работники"
 
-msgid "Non-food agricultural commodities"
-msgstr "Непродовольственная сельхозпродукция"
+msgid "m3/year"
+msgstr "м3/год"
 
-msgid "Agriculture unspecified"
-msgstr "Тип сельского хозяйств не установлен"
+msgid "Location"
+msgstr "Расположение"
 
-msgid "Timber plantation (for wood and fibre)"
-msgstr "Промышленная высадка деревьев (для получения древесины и волокна)"
+msgid "Description"
+msgstr "Описание"
 
-msgid "Forest logging / management (for wood and fibre)"
-msgstr "Лесозаготовки / управление лесным хозяйством (для получения древесины и волокна)"
-
-msgid "For carbon sequestration/REDD"
-msgstr "Для связывания атмосферного СО2 / СВОД"
-
-msgid "Forestry unspecified"
-msgstr "Вид деятельности лесохозяйства не указан"
-
-msgid "Oil / Gas extraction"
-msgstr "Добыча нефти / газа"
-
-msgid "Tourism"
-msgstr "Туризм"
-
-msgid "Industry"
-msgstr "Промышленность"
+msgid "Point"
+msgstr ""
 
 #, fuzzy
-msgid "Conservation"
-msgstr "Сохранение"
+msgid "Facility name"
+msgstr "Название объекта"
 
-msgid "Land speculation"
-msgstr "Спекуляция землей"
+msgid "Spatial accuracy level"
+msgstr "Уровень пространственной точности"
 
-msgid "Renewable Energy"
-msgstr "Возобновляемая энергия"
+msgid "Comment"
+msgstr "Комментарий"
 
-msgid "Other (please specify)"
-msgstr "Иное (пожалуйста, конкретизируйте)"
+msgid "Areas"
+msgstr "Области"
 
-msgid "Outright purchase"
-msgstr "Покупка с безотлагательной оплатой"
-
-msgid "Lease"
-msgstr "Аренда"
-
-msgid "Concession"
-msgstr "Концессия"
-
-msgid "Exploitation permit / license / concession (for mineral resources)"
-msgstr "Разрешение / лицензия / концессия на разработку (полезных ископаемых)"
-
-msgid "Pure contract farming"
-msgstr "Только фермерство на контрактной основе"
-
-msgid "---------"
-msgstr "---------"
-
-msgid "per ha"
-msgstr "на 1 га."
-
-msgid "for specified area"
-msgstr "для указанной области"
-
-msgid "Government / State institutions (government, ministries, departments, agencies etc.)"
-msgstr "Правительство / Государственные институции (правительство, министерства, департаменты, ведомства, проч.)"
-
-msgid "Traditional land-owners / communities"
-msgstr "Традиционные землевладельцы/общины"
-
-msgid "Traditional local authority (e.g. Chiefdom council / Chiefs)"
-msgstr "Традиционные местные органы власти (вожди, совет старейшин)"
-
-msgid "Broker"
-msgstr "Брокер"
-
-msgid "Intermediary"
-msgstr "Посредник"
-
-msgid "Temporary removal from PI after criticism"
-msgstr "Временное удаление с повестки предварительных слушаний после критики"
-
-msgid "Research in progress"
-msgstr "Сбор информации продолжается"
-
-msgid "Land Observatory Import"
-msgstr "Импорт данных проекта Land Observatory"
-
-msgid "Meta info"
-msgstr "Метаданные"
-
-msgid "Fully updated"
-msgstr "Полностью обновленная"
-
-msgid "Public deal"
-msgstr "Публичная сделка"
-
-msgid "Not public"
-msgstr "Непубличная"
-
-msgid "Please specify in additional comment field"
-msgstr "Пожалуйста, уточните в дополнительном поле для комментирования"
-
-msgid "Reason"
-msgstr "Причина"
-
-msgid "Comment on not public"
-msgstr "Комментарии к непубличным"
-
-msgid "Import history"
-msgstr "История импорта данных"
-
-msgid "Previous identifier"
-msgstr "Предыдущий идентификатор"
-
-msgid "Assign to"
-msgstr "Закрепить за пользователем"
-
-msgid "Unassigned"
-msgstr "Не закреплено"
-
-msgid "Feedback comment"
-msgstr "Комментарий обратной связи"
-
-#, fuzzy
-msgid "Contracts"
-msgstr "Контракты"
-
-msgid "Contract"
-msgstr "Контракт"
+msgid "Deal"
+msgstr "Сделка"
 
 msgid "Contract number"
 msgstr "Номер контракта"
 
-msgid "Contract date"
-msgstr "Дата заключения контракта"
+msgid "Date"
+msgstr "Дата"
 
-msgid "Contract expiration date"
-msgstr "Дата окончания действия контракта"
+msgid "Expiration date"
+msgstr "Конечная дата"
 
 msgid "Duration of the agreement"
 msgstr "Длительность соглашения"
@@ -775,53 +185,20 @@ msgstr "годы"
 msgid "Comment on contract"
 msgstr "Оставить комментарий к соглашению"
 
-msgid "Data source"
-msgstr "Источник информации"
+msgid "Type"
+msgstr ""
 
-msgid "Data source type"
-msgstr "Тип источника информации"
-
-msgid "Media report"
-msgstr "Сообщения СМИ"
-
-msgid "Research Paper / Policy Report"
-msgstr "Научная статья / Аналитический отчет об обязательных процедурах"
-
-msgid "Government sources"
-msgstr "Правительственные источники"
-
-msgid "Company sources"
-msgstr "Источники компании"
-
-msgid "Contract (contract farming agreement)"
-msgstr "Контракт (соглашение о контрактном фермерстве)"
-
-msgid "Personal information"
-msgstr "Личные сведения"
-
-msgid "Crowdsourcing"
-msgstr "Краудсорсинг"
-
-msgid "Other (Please specify in comment field)"
-msgstr "Иное (пожалуйста, уточните в поле для комментирования)"
-
-msgid "URL"
-msgstr "URL"
+msgid "Url"
+msgstr ""
 
 msgid "File"
 msgstr "Файл"
-
-msgid "Maximum file size: 10MB"
-msgstr "Максимальный размер файла: 10МВ"
 
 msgid "Keep PDF not public"
 msgstr "Не открывать свободный доступ к PDF"
 
 msgid "Publication title"
 msgstr "Название публикации"
-
-msgid "Date"
-msgstr "Дата"
 
 msgid "Name"
 msgstr "Имя"
@@ -844,101 +221,207 @@ msgstr "ID данных открытого контрактирования"
 msgid "Comment on data source"
 msgstr "Примечание об источнике информации"
 
-msgid "Data sources"
-msgstr "Источники информации"
+msgid "Deals"
+msgstr "Сделки"
 
-msgid "Employment"
-msgstr "Трудоустройство"
+msgid "Created at"
+msgstr ""
 
-msgid "Number of total jobs created"
-msgstr "Общее количество созданных рабочих мест"
+msgid "Involvement type"
+msgstr "Тип участия"
 
-msgid "Jobs created (total)"
-msgstr "Создано рабочих мест (всего)"
+msgid "Draft"
+msgstr "Активная"
 
-msgid "Planned number of jobs (total)"
-msgstr "Запланировано создание рабочих мест (всего)"
+msgid "Live"
+msgstr "Перезаписанная"
 
-msgid "jobs"
-msgstr "рабочие места"
+msgid "Updated"
+msgstr "Обновлено"
 
-msgid "Planned employees (total)"
-msgstr "Планируемое количество наемных сотрудников (всего)"
+msgid "Deleted"
+msgstr "Удалено"
 
-msgid "employees"
-msgstr "наемные сотрудники"
+msgid "Review"
+msgstr "Рассмотрение"
 
-msgid "Planned daily/seasonal workers (total)"
-msgstr "Планируемое количество поденных/сезонных работников"
+msgid "Activation"
+msgstr "Активация"
 
-msgid "workers"
-msgstr "работники"
+msgid "Rejected"
+msgstr "Отклоненная"
 
-msgid "Current number of jobs (total)"
-msgstr "Текущее количество рабочих мест (всего)"
+msgid "To Delete"
+msgstr "На удаление"
 
-msgid "Current number of employees (total)"
-msgstr "Текущее количество наемных рабочих (всего)"
+msgid "Biofuels"
+msgstr "Биотопливо"
 
-msgid "Current number of daily/seasonal workers (total)"
-msgstr "Текущее количество поденных/сезонных работников"
+msgid "Food crops"
+msgstr "Продовольственные культуры"
 
-msgid "Comment on jobs created (total)"
-msgstr "Примечания к созданным рабочим местам (всего)"
+msgid "Fodder"
+msgstr "Фуражные культуры"
 
-msgid "Number of jobs for foreigners created"
-msgstr "Количество рабочих мест, созданных для иностранцев"
+msgid "Livestock"
+msgstr "Скот"
 
-msgid "Jobs created (foreign)"
-msgstr "Созданные рабочие места (иностранцы)"
+msgid "Non-food agricultural commodities"
+msgstr "Непродовольственная сельхозпродукция"
 
-msgid "Planned number of jobs (foreign)"
-msgstr "Планируемое количество рабочих мест (иностранцы)"
+msgid "Agriculture unspecified"
+msgstr "Тип сельского хозяйств не установлен"
 
-msgid "Planned employees (foreign)"
-msgstr "Планируемое количество наемных сотрудников (иностранцы)"
+msgid "Timber plantation"
+msgstr "Промышленная высадка деревьев"
 
-msgid "Planned daily/seasonal workers (foreign)"
-msgstr "Планируемое количество поденных/сезонных работников (иностранцы)"
+msgid "Forest logging / management"
+msgstr "Лесозаготовки / управление лесным хозяйством"
 
-msgid "Current number of jobs (foreign)"
-msgstr "Текущее количество рабочих мест (иностранцы)"
+msgid "For carbon sequestration/REDD"
+msgstr "Для связывания атмосферного СО2 / СВОД"
 
-msgid "Current number of employees (foreign)"
-msgstr "Текущее количество наемных сотрудников (иностранцы)"
+msgid "Forestry unspecified"
+msgstr "Вид деятельности лесохозяйства не указан"
 
-msgid "Current number of daily/seasonal workers (foreign)"
-msgstr "Текущее количество поденных/сезонных рабочих (иностранцы)"
+msgid "Mining"
+msgstr "Горнодобыча"
 
-msgid "Comment on jobs created (foreign)"
-msgstr "Примечания к созданным рабочим местам (иностранцы)"
+msgid "Oil / Gas extraction"
+msgstr "Добыча нефти / газа"
 
-msgid "Number of domestic jobs created"
-msgstr "Количество созданных рабочих мест для местного населения"
+msgid "Tourism"
+msgstr "Туризм"
 
-msgid "Jobs created (domestic)"
-msgstr "Созданные рабочие места (местное население)"
+msgid "Industry"
+msgstr "Промышленность"
 
-msgid "Planned number of jobs (domestic)"
-msgstr "Планируемое количество рабочих мест (местное население)"
+#, fuzzy
+msgid "Conservation"
+msgstr "Сохранение"
 
-msgid "Planned employees (domestic)"
-msgstr "Планируемое количетво наемных сотрудников (местное население)"
+msgid "Land speculation"
+msgstr "Спекуляция землей"
 
-msgid "Planned daily/seasonal workers (domestic)"
-msgstr "Планируемое количество поденных/сезонных рабочих (местное население)"
+msgid "Renewable energy"
+msgstr "Возобновляемая энергия"
 
-msgid "Current number of jobs (domestic)"
-msgstr "Текущее количество рабочих мест (местное население)"
+msgid "Other"
+msgstr "Иное"
 
-msgid "Current number of employees (domestic)"
-msgstr "Текущее количество наемных сотрудников (местное население)"
+msgid "Outright purchase"
+msgstr "Покупка с безотлагательной оплатой"
 
-msgid "Current number of daily/seasonal workers (domestic)"
-msgstr "Текущее количество поденных/сезонных работников (местное население)"
+msgid "Lease"
+msgstr "Аренда"
 
-msgid "Comment on jobs created (domestic)"
-msgstr "Примечание к созданным рабочим местам"
+msgid "Concession"
+msgstr "Концессия"
+
+msgid "Exploitation permit / license / concession (for mineral resources)"
+msgstr "Разрешение / лицензия / концессия на разработку (полезных ископаемых)"
+
+msgid "Pure contract farming"
+msgstr "Только фермерство на контрактной основе"
+
+msgid "Intended (Expression of interest)"
+msgstr "Предварительная (выражение интереса)"
+
+msgid "Intended (Under negotiation)"
+msgstr "Предварительная (на стадии переговоров)"
+
+msgid "Intended (Memorandum of understanding)"
+msgstr "Предварительная (Меморандум о взаимопонимании)"
+
+msgid "Concluded (Oral Agreement)"
+msgstr "Заключенная (устное соглашение)"
+
+msgid "Concluded (Contract signed)"
+msgstr "Заключенная (подписан договор)"
+
+msgid "Concluded (Change of ownership)"
+msgstr ""
+
+msgid "Failed (Negotiations failed)"
+msgstr "Не состоявшаяся (переговоры сорвались)"
+
+msgid "Failed (Contract cancelled)"
+msgstr "Не состоявшаяся (договор прекращен)"
+
+msgid "Contract expired"
+msgstr "Истечение срока договора"
+
+msgid "Government / state institutions (government, ministries, departments, agencies etc.)"
+msgstr "Правительство / Государственные институции (правительство, министерства, департаменты, ведомства, проч.)"
+
+msgid "Traditional land-owners / communities"
+msgstr "Традиционные землевладельцы/общины"
+
+msgid "Traditional local authority (e.g. Chiefdom council / Chiefs)"
+msgstr "Традиционные местные органы власти (вожди, совет старейшин)"
+
+msgid "Broker"
+msgstr "Брокер"
+
+msgid "Intermediary"
+msgstr "Посредник"
+
+msgid "Other (please specify)"
+msgstr "Иное (пожалуйста, конкретизируйте)"
+
+msgid "Indigenous Peoples traditional or customary rights recognized by government"
+msgstr "Признанные правительством права коренных народов, закрепленные обычаем или традицией"
+
+msgid "Indigenous Peoples traditional or customary rights not recognized by government"
+msgstr "Не признанные правительством права коренных народов, закрепленные обычаем или традицией"
+
+msgid "Community traditional or customary rights recognized by government"
+msgstr "Признанные правительством права общин, закрепленные обычаем или традицией"
+
+msgid "Community traditional or customary rights not recognized by government"
+msgstr "Не признанные правительством права общин, закрепленные обычаем или традицией"
+
+msgid "Environmental degradation"
+msgstr "Деградация окружающей среды"
+
+msgid "Socio-economic"
+msgstr "Социально-экономические последствия"
+
+msgid "Cultural loss"
+msgstr "Культурные потери"
+
+msgid "Eviction"
+msgstr "Принудительное выселение"
+
+msgid "Displacement"
+msgstr "Вынужденная миграция"
+
+msgid "Violence"
+msgstr "Насилие"
+
+msgid "Health"
+msgstr "Здравоохранение"
+
+msgid "Education"
+msgstr "Образование"
+
+msgid "Productive infrastructure (e.g. irrigation, tractors, machinery...)"
+msgstr "производственная инфраструктура (напр., орошение, тракторы, механическое оборудование, …)"
+
+msgid "Roads"
+msgstr "Дороги"
+
+msgid "Capacity building"
+msgstr "Институционное развитие"
+
+msgid "Financial support"
+msgstr "Финансовая поддержка"
+
+msgid "Community shares in the investment project"
+msgstr "Доли общин в инвестиционном проекте"
+
+msgid "State"
+msgstr "Состояние"
 
 msgid "Private (smallholders)"
 msgstr "Частная собственность (мелкие землевладельцы)"
@@ -967,6 +450,33 @@ msgstr "Пастбищное животноводство"
 msgid "Hunting/Gathering"
 msgstr "Охота/собирательство"
 
+msgid "Forestry"
+msgstr "Лесное хозяйство"
+
+msgid "per ha"
+msgstr "на 1 га."
+
+msgid "for specified area"
+msgstr "для указанной области"
+
+msgid "Not consulted"
+msgstr "Консультации не проводились"
+
+msgid "Limited consultation"
+msgstr "Урезанные консультации"
+
+msgid "Free, Prior and Informed Consent (FPIC)"
+msgstr "Свободное, предварительное, и информированное согласие (СПИС)"
+
+msgid "Consent"
+msgstr "Согласие"
+
+msgid "Mixed reaction"
+msgstr "Неоднозначная реакция"
+
+msgid "Rejection"
+msgstr "Несогласие"
+
 msgid "Cropland"
 msgstr "Пахотные земли"
 
@@ -988,53 +498,552 @@ msgstr "Заболоченные земли"
 msgid "Other land (e.g. developed land – specify in comment field)"
 msgstr "Иное (например, \"район застройки\" – укажите в поле для комментариев)"
 
-msgid "Former use"
-msgstr "Предыдущее целевое использование"
+msgid "Accacia"
+msgstr ""
 
-msgid "Former land owner (not by constitution)"
-msgstr "Предыдущий собственник земли (без правоустанавливающих документов)"
+msgid "Alfalfa"
+msgstr ""
 
-msgid "Former land owner"
-msgstr "Предыдущий собственник земли"
+msgid "Seaweed / Macroalgae(unspecified)"
+msgstr ""
 
-msgid "Comment on former land owner"
-msgstr "Примечания к предыдущему собственнику земли"
+msgid "Almond"
+msgstr ""
 
-msgid "Former land use"
-msgstr "Предыдущее целевое использование земли"
+msgid "Aloe Vera"
+msgstr ""
 
-msgid "Comment on former land use"
-msgstr "Примечания к предыдущему целевому использованию земли"
+msgid "Apple"
+msgstr ""
 
-msgid "Former land cover"
-msgstr "Предыдущий почвенно-растительный покров"
+msgid "Aquaculture (unspecified crops)"
+msgstr ""
 
-msgid "Comment on former land cover"
-msgstr "Примечания к предыдыдущему почвенно-растительному покрову"
+msgid "Bamboo"
+msgstr ""
 
-msgid "Gender-related info"
-msgstr "Информация о гендерных факторах"
+msgid "Banana"
+msgstr ""
 
-msgid "Any gender-specific information about the investment and its impacts"
-msgstr "Любая гендерно-обусловленная информация об инвестициях и их влиянии"
+msgid "Bean"
+msgstr ""
 
-msgid "Comment on gender-related info"
-msgstr "Причмечания к информации о гендерных факторах"
+msgid "Bottle Gourd"
+msgstr ""
 
-msgid "General info"
-msgstr "Общие сведения"
+msgid "Barley"
+msgstr ""
 
-msgid "Land area"
-msgstr "Площадь земель"
+msgid "Buckwheat"
+msgstr ""
+
+msgid "Cacao"
+msgstr ""
+
+msgid "Cassava (Maniok)"
+msgstr ""
+
+msgid "Cashew"
+msgstr ""
+
+msgid "Chat"
+msgstr ""
+
+msgid "Cherries"
+msgstr ""
+
+msgid "Canola"
+msgstr ""
+
+msgid "Coconut"
+msgstr ""
+
+msgid "Coffee Plant"
+msgstr ""
+
+msgid "Cotton"
+msgstr ""
+
+msgid "Cereals (unspecified)"
+msgstr ""
+
+msgid "Corn (Maize)"
+msgstr ""
+
+msgid "Croton"
+msgstr ""
+
+msgid "Castor Oil Plant"
+msgstr ""
+
+msgid "Citrus Fruits (unspecified)"
+msgstr ""
+
+msgid "Dill"
+msgstr ""
+
+msgid "Eucalyptus"
+msgstr ""
+
+msgid "Flowers (unspecified)"
+msgstr ""
+
+msgid "Fig-Nut"
+msgstr ""
+
+msgid "Fodder Plants (unspecified)"
+msgstr ""
+
+msgid "Food crops (unspecified)"
+msgstr ""
+
+msgid "Fruit (unspecified)"
+msgstr ""
+
+msgid "Grapes"
+msgstr ""
+
+msgid "Grains (unspecified)"
+msgstr ""
+
+msgid "Herbs (unspecified)"
+msgstr ""
+
+msgid "Jatropha"
+msgstr ""
+
+msgid "Lentils"
+msgstr ""
+
+msgid "Mango"
+msgstr ""
+
+msgid "Mustard"
+msgstr ""
+
+msgid "Oats"
+msgstr ""
+
+msgid "Oil Seeds (unspecified)"
+msgstr ""
+
+msgid "Oleagionous plant"
+msgstr ""
+
+msgid "Olives"
+msgstr ""
+
+msgid "Onion"
+msgstr ""
+
+msgid "Oil Palm"
+msgstr ""
+
+msgid "Other crops (please specify)"
+msgstr ""
+
+msgid "Palms"
+msgstr ""
+
+msgid "Papaya"
+msgstr ""
+
+msgid "Passion fruit"
+msgstr ""
+
+msgid "Peanut (groundnut)"
+msgstr ""
+
+msgid "Pepper"
+msgstr ""
+
+msgid "Peas"
+msgstr ""
+
+msgid "Pine"
+msgstr ""
+
+msgid "Pineapple"
+msgstr ""
+
+msgid "Pulses (unspecified)"
+msgstr ""
+
+msgid "Pomegranate"
+msgstr ""
+
+msgid "Pongamia Pinnata"
+msgstr ""
+
+msgid "Potatoes"
+msgstr ""
+
+msgid "Rapeseed"
+msgstr ""
+
+msgid "Rice (hybrid)"
+msgstr ""
+
+msgid "Rice"
+msgstr ""
+
+msgid "Roses"
+msgstr ""
+
+msgid "Rubber tree"
+msgstr ""
+
+msgid "Rye"
+msgstr ""
+
+msgid "Seeds Production (unspecified)"
+msgstr ""
+
+msgid "Sesame"
+msgstr ""
+
+msgid "Sorghum"
+msgstr ""
+
+msgid "Soya Beans"
+msgstr ""
+
+msgid "Spices (unspecified)"
+msgstr ""
+
+msgid "Sisal"
+msgstr ""
+
+msgid "Sugar beet"
+msgstr ""
+
+msgid "Sugar Cane"
+msgstr ""
+
+msgid "Sugar (unspecified)"
+msgstr ""
+
+msgid "Sun Flower"
+msgstr ""
+
+msgid "Sweet Potatoes"
+msgstr ""
+
+msgid "Tobacco"
+msgstr ""
+
+msgid "Tea"
+msgstr ""
+
+msgid "Teff"
+msgstr ""
+
+msgid "Teak"
+msgstr ""
+
+msgid "Tomatoes"
+msgstr ""
+
+msgid "Trees (unspecified)"
+msgstr ""
+
+msgid "Vegetables (unspecified)"
+msgstr ""
+
+msgid "Vineyard"
+msgstr ""
+
+msgid "Wheat"
+msgstr ""
+
+msgid "Yam"
+msgstr ""
+
+msgid "Aquaculture (animals)"
+msgstr ""
+
+msgid "Beef Cattle"
+msgstr ""
+
+msgid "Cattle"
+msgstr ""
+
+msgid "Dairy Cattle"
+msgstr ""
+
+msgid "Fish"
+msgstr ""
+
+msgid "Goats"
+msgstr ""
+
+msgid "Other livestock (please specify)"
+msgstr ""
+
+msgid "Pork"
+msgstr ""
+
+msgid "Poultry"
+msgstr ""
+
+msgid "Sheep"
+msgstr ""
+
+msgid "Shrimp"
+msgstr ""
+
+msgid "Aluminum"
+msgstr ""
+
+msgid "Asphaltite"
+msgstr ""
+
+msgid "Anthracite"
+msgstr ""
+
+msgid "Barite"
+msgstr ""
+
+msgid "Basalt"
+msgstr ""
+
+msgid "Bauxite"
+msgstr ""
+
+msgid "Bentonite"
+msgstr ""
+
+msgid "Building materials"
+msgstr ""
+
+msgid "Carbon"
+msgstr ""
+
+msgid "Chromite"
+msgstr ""
+
+msgid "Clay"
+msgstr ""
+
+msgid "Coal"
+msgstr ""
+
+msgid "Cobalt"
+msgstr ""
+
+msgid "Copper"
+msgstr ""
+
+msgid "Diamonds"
+msgstr ""
+
+msgid "Emerald"
+msgstr ""
+
+msgid "Feldspar"
+msgstr ""
+
+msgid "Fluoride"
+msgstr ""
+
+msgid "Gas"
+msgstr ""
+
+msgid "Gold"
+msgstr ""
+
+msgid "Granite"
+msgstr ""
+
+msgid "Gravel"
+msgstr ""
+
+msgid "Heavy Mineral Sands"
+msgstr ""
+
+msgid "Ilmenite"
+msgstr ""
+
+msgid "Iron"
+msgstr ""
+
+msgid "Jade"
+msgstr ""
+
+msgid "Lead"
+msgstr ""
+
+msgid "Limestone"
+msgstr ""
+
+msgid "Lithium"
+msgstr ""
+
+msgid "Magnetite"
+msgstr ""
+
+msgid "Molybdenum"
+msgstr ""
+
+msgid "Manganese"
+msgstr ""
+
+msgid "Marble"
+msgstr ""
+
+msgid "Nickel"
+msgstr ""
+
+msgid "Other minerals (please specify)"
+msgstr ""
+
+msgid "Petroleum"
+msgstr ""
+
+msgid "Phosphorous"
+msgstr ""
+
+msgid "Platinum"
+msgstr ""
+
+msgid "Hydrocarbons (e.g. crude oil)"
+msgstr ""
+
+msgid " Pyrolisis Plant"
+msgstr ""
+
+msgid "Rutile"
+msgstr ""
+
+msgid "Sand"
+msgstr ""
+
+msgid "Silica"
+msgstr ""
+
+msgid "Silver"
+msgstr ""
+
+msgid "Salt"
+msgstr ""
+
+msgid "Stone"
+msgstr ""
+
+msgid "Tin"
+msgstr ""
+
+msgid "Titanium"
+msgstr ""
+
+msgid "Uranium"
+msgstr ""
+
+msgid "Zinc"
+msgstr ""
+
+msgid "Confidential flag"
+msgstr ""
+
+msgid "No country"
+msgstr ""
+
+msgid "High-income country"
+msgstr ""
+
+msgid "No datasources"
+msgstr ""
+
+msgid "No operating company"
+msgstr ""
+
+msgid "No known investor"
+msgstr ""
+
+msgid "Media report"
+msgstr "Сообщения СМИ"
+
+msgid "Research Paper / Policy Report"
+msgstr "Научная статья / Аналитический отчет об обязательных процедурах"
+
+msgid "Government sources"
+msgstr "Правительственные источники"
+
+msgid "Company sources"
+msgstr "Источники компании"
+
+msgid "Contract (contract farming agreement)"
+msgstr "Контракт (соглашение о контрактном фермерстве)"
+
+msgid "Personal information"
+msgstr "Личные сведения"
+
+msgid "Crowdsourcing"
+msgstr "Краудсорсинг"
+
+msgid "Other (Please specify in comment field)"
+msgstr "Иное (пожалуйста, уточните в поле для комментирования)"
+
+msgid "Country"
+msgstr "Страна"
+
+#, fuzzy
+msgid "Administrative region"
+msgstr "Административный район"
+
+msgid "Approximate location"
+msgstr "Примерное расположение"
+
+msgid "Exact location"
+msgstr "Точное расположение"
+
+msgid "Coordinates"
+msgstr "Координаты"
+
+msgid "Region"
+msgstr "Регион"
+
+msgid "Code ISO 3166-1 alpha2"
+msgstr "Код ISO 3166-1 alpha2"
+
+msgid "Code ISO 3166-1 alpha3"
+msgstr "Код ISO 3166-1 alpha3"
+
+msgid "Latitude of central point"
+msgstr "Широта центральной точки"
+
+msgid "Longitude of central point"
+msgstr "Широта центральной точки"
+
+msgid "Latitude of southernmost point"
+msgstr "Широта крайней южной точки"
+
+msgid "Longitude of westernmost point"
+msgstr "Долгота крайней западной точки"
+
+msgid "Latitude of northernmost point"
+msgstr "Широта крайней северной точки"
+
+msgid "Longitude of easternmost point"
+msgstr "Долгота крайней восточной точки"
+
+msgid "Democracy index"
+msgstr "Индекс демократии"
+
+msgid "Corruption perception index"
+msgstr "Индекс восприятия коррупции"
+
+msgid "High income"
+msgstr "Высокий уровень дохода"
+
+msgid "Locations"
+msgstr "Является страной назначения"
+
+msgid "Target country"
+msgstr "Целевая страна"
 
 msgid "Intended size (in ha)"
 msgstr "Запланированная площадь (в га.)"
-
-msgid "Size under contract (leased or purchased area, in ha)"
-msgstr "Площадь законтрактованных (приобретенных в аренду или собственность) земель в га"
-
-msgid "Size in operation (production, in ha)"
-msgstr "Площадь земель в обработке / в производстве (в га.)"
 
 msgid "Comment on land area"
 msgstr "Примечания к площади земель"
@@ -1069,137 +1078,88 @@ msgstr "Площадь участка за эту цену"
 msgid "Comment on purchase price"
 msgstr "Примечания к цене покупки"
 
-msgid "Leasing fees"
-msgstr "Арендная плата"
-
 msgid "Annual leasing fee"
 msgstr "Годовая арендная плата"
 
 msgid "Annual leasing fee currency"
 msgstr "Годовая арендная плата, валюта"
 
-msgid "Annual leasing fee type"
-msgstr "Способ рассчета годовой арендной платы"
+msgid "Annual leasing fee area type"
+msgstr "Годовая стоимость аренды, тип участка"
 
 msgid "Annual leasing fee area"
 msgstr "Площадь участка за эту цену аренды"
 
-msgid "Comment on leasing fees"
-msgstr "Примечания к арендной плате"
+msgid "Comment on leasing fee"
+msgstr "Примечания к стоимости аренды"
 
-msgid "Contract farming"
-msgstr "Контрактное фермерство"
-
-msgid "On leased / purchased area"
+msgid "On leased / purchased"
 msgstr "На земельном участке, приобретенном в аренду / собственность"
 
-msgid "On leased / purchased area (in ha)"
-msgstr "На земельном участке, приобретенном в аренду / собственность (га.)"
-
-msgid "On leased / purchased farmers"
-msgstr "Фермеры на земельных участках, приобретенных в аренду / собственность"
-
-msgid "farmers"
-msgstr "фермеры"
-
-msgid "On leased / purchased households"
-msgstr "Домохозяйсва на земельных участках, приобретенных в аренду / собственность"
-
-msgid "households"
-msgstr "домохозяйства"
-
-msgid "Not on leased / purchased area (out-grower)"
-msgstr "На земельном участке, не приобретенном в аренду / собственность (договор подряда)"
-
-msgid "Not on leased / purchased area (out-grower, in ha)"
-msgstr "На земельном участке, не приобретенном в аренду / собственность (договор подряда, в га.)"
-
-msgid "Not on leased / purchased farmers (out-grower)"
-msgstr "Фермеры на земельных участках, не приобретенных в аренду / собственность"
-
-msgid "Not on leased / purchased households (out-grower)"
-msgstr "Домохозяйства на земельных участках, не приобретенных в аренду / собственность (договор подряда)"
+#, fuzzy
+msgid "Not on leased / purchased (out-grower)"
+msgstr "Не на сданной в аренду/собственности (сторонний производитель)"
 
 msgid "Comment on contract farming"
 msgstr "Примечания к контрактному фермерству"
 
-msgid "Indigenous Peoples traditional or customary rights recognized by government"
-msgstr "Признанные правительством права коренных народов, закрепленные обычаем или традицией"
+#, fuzzy
+msgid "Contracts"
+msgstr "Контракты"
 
-msgid "Indigenous Peoples traditional or customary rights not recognized by government"
-msgstr "Не признанные правительством права коренных народов, закрепленные обычаем или традицией"
+msgid "Jobs created (total)"
+msgstr "Создано рабочих мест (всего)"
 
-msgid "Community traditional or customary rights recognized by government"
-msgstr "Признанные правительством права общин, закрепленные обычаем или традицией"
+msgid "Planned number of jobs (total)"
+msgstr "Запланировано создание рабочих мест (всего)"
 
-msgid "Community traditional or customary rights not recognized by government"
-msgstr "Не признанные правительством права общин, закрепленные обычаем или традицией"
+msgid "Planned employees (total)"
+msgstr "Планируемое количество наемных сотрудников (всего)"
 
-msgid "Not consulted"
-msgstr "Консультации не проводились"
+msgid "Planned daily/seasonal workers (total)"
+msgstr "Планируемое количество поденных/сезонных работников"
 
-msgid "Limited consultation"
-msgstr "Урезанные консультации"
+msgid "Comment on jobs created (total)"
+msgstr "Примечания к созданным рабочим местам (всего)"
 
-msgid "Free, Prior and Informed Consent (FPIC)"
-msgstr "Свободное, предварительное, и информированное согласие (СПИС)"
+msgid "Jobs created (foreign)"
+msgstr "Созданные рабочие места (иностранцы)"
 
-msgid "Certified Free, Prior and Informed Consent (FPIC)"
-msgstr "Заверенное свободное, предварительное, и информированное согласие (СПИС)"
+msgid "Planned number of jobs (foreign)"
+msgstr "Планируемое количество рабочих мест (иностранцы)"
 
-msgid "Consent"
-msgstr "Согласие"
+msgid "Planned employees (foreign)"
+msgstr "Планируемое количество наемных сотрудников (иностранцы)"
 
-msgid "Mixed reaction"
-msgstr "Неоднозначная реакция"
+msgid "Planned daily/seasonal workers (foreign)"
+msgstr "Планируемое количество поденных/сезонных работников (иностранцы)"
 
-msgid "Rejection"
-msgstr "Несогласие"
+msgid "Comment on jobs created (foreign)"
+msgstr "Примечания к созданным рабочим местам (иностранцы)"
 
-msgid "Environmental degradation"
-msgstr "Деградация окружающей среды"
+msgid "Jobs created (domestic)"
+msgstr "Созданные рабочие места (местное население)"
 
-msgid "Socio-economic"
-msgstr "Социально-экономические последствия"
+msgid "Planned number of jobs (domestic)"
+msgstr "Планируемое количество рабочих мест (местное население)"
 
-msgid "Cultural loss"
-msgstr "Культурные потери"
+msgid "Planned employees (domestic)"
+msgstr "Планируемое количетво наемных сотрудников (местное население)"
 
-msgid "Eviction"
-msgstr "Принудительное выселение"
+msgid "Planned daily/seasonal workers (domestic)"
+msgstr "Планируемое количество поденных/сезонных рабочих (местное население)"
 
-msgid "Displacement"
-msgstr "Вынужденная миграция"
+msgid "Comment on jobs created (domestic)"
+msgstr "Примечание к созданным рабочим местам"
 
-msgid "Violence"
-msgstr "Насилие"
+msgid "Name of investment project"
+msgstr "Название инвестиционного проекта"
 
-msgid "Health"
-msgstr "Здравоохранение"
+msgid "Comment on investment chain"
+msgstr "Примечания к инвестиционной цепочке"
 
-msgid "Education"
-msgstr "Образование"
-
-msgid "Productive infrastructure (e.g. irrigation, tractors, machinery...)"
-msgstr "производственная инфраструктура (напр., орошение, тракторы, механическое оборудование, …)"
-
-msgid "Roads"
-msgstr "Дороги"
-
-msgid "Capacity Building"
-msgstr "Институционное развитие"
-
-msgid "Financial Support"
-msgstr "Финансовая поддержка"
-
-msgid "Community shares in the investment project"
-msgstr "Доли общин в инвестиционном проекте"
-
-msgid "Local communities / indigenous peoples"
-msgstr "Местные общины / коренные народы"
-
-msgid "Names of communities / indigenous peoples affected"
-msgstr "Названия общин / коренных народов, чьи интересы задевает сделка"
+msgid "Data sources"
+msgstr "Источники информации"
 
 msgid "Name of community"
 msgstr "Название общины"
@@ -1210,26 +1170,17 @@ msgstr "Название коренного народа"
 msgid "Comment on communities / indigenous peoples affected"
 msgstr "Примечания к общинам / коренным народам, чьи интересы задевает сделка"
 
-msgid "Recognitions status of community land tenure"
-msgstr "Статус признания общинного землевладения"
-
 msgid "Recognition status of community land tenure"
 msgstr "Статус признания общинного землевладения"
 
-msgid "Comment on recognitions status of community land tenure"
+msgid "Comment on recognition status of community land tenure"
 msgstr "Примечания к статусу признания общинного землевладения"
-
-msgid "Consultation of local community"
-msgstr "Консультации с местной общиной"
 
 msgid "Community consultation"
 msgstr "Общественные слушания"
 
 msgid "Comment on consultation of local community"
 msgstr "Примечания к консультациям с местной общиной"
-
-msgid "How did the community react?"
-msgstr "Как отреагировала община?"
 
 msgid "Community reaction"
 msgstr "Реакция общины"
@@ -1273,9 +1224,6 @@ msgstr "Неблагоприятное воздействие на местны�
 msgid "Comment on negative impacts for local communities"
 msgstr "Примечание к неблагоприятному воздействию на местные общины"
 
-msgid "Promised or received compensation"
-msgstr "Обещанная или полученная компенсация"
-
 msgid "Promised compensation (e.g. for damages or resettlements)"
 msgstr "Обещанная компенсация (напр., понесенных убытков и расходов на переезд)"
 
@@ -1297,77 +1245,38 @@ msgstr "Примечания к воплощенным преимущества�
 msgid "Presence of organizations and actions taken (e.g. farmer organizations, NGOs, etc.)"
 msgstr "Участие организаций и предпринятые действия (напр, фермерских организаций, НПО, др.)"
 
-msgid "Overall Comment"
-msgstr "Общие примечания"
+msgid "Former land owner"
+msgstr "Предыдущий собственник земли"
 
-msgid "Overall comment"
-msgstr "Общие примечания"
+msgid "Comment on former land owner"
+msgstr "Примечания к предыдущему собственнику земли"
 
-msgid "Produce info"
-msgstr "Информация о продукции"
+msgid "Former land use"
+msgstr "Предыдущее целевое использование земли"
 
-msgid "Detailed crop, animal and mineral information"
-msgstr "Подробная информация о сельхозкультурах, животных и полезных ископаемых"
+msgid "Comment on former land use"
+msgstr "Примечания к предыдущему целевому использованию земли"
 
-msgid "Crops area"
-msgstr "Посевная площадь"
+msgid "Former land cover"
+msgstr "Предыдущий почвенно-растительный покров"
 
-msgid "Crops yield"
-msgstr "Урожайность"
-
-msgid "tons"
-msgstr "тонны"
-
-msgid "Crops export"
-msgstr "Экспорт урожая"
-
-msgid "%"
-msgstr "%"
+msgid "Comment on former land cover"
+msgstr "Примечания к предыдыдущему почвенно-растительному покрову"
 
 msgid "Comment on crops"
 msgstr "Примечания к сельхозкультурам"
 
-msgid "Livestock area"
-msgstr "Площадь земель для скотоводства"
-
-msgid "Livestock yield"
-msgstr "Продуктивность скота"
-
-msgid "Livestock export"
-msgstr "Экспорт скота"
-
 msgid "Comment on livestock"
 msgstr "Примечания к скотоводству"
 
-msgid "Resources area"
-msgstr "Площадь добычи полезных ископаемых"
-
-msgid "Resources yield"
-msgstr "Объемы добычи полезных ископаемых"
-
-msgid "Resources export"
-msgstr "Экспорт полезных ископаемых"
-
-msgid "Comment on resources"
-msgstr "Примечания к полезным ископаемым"
-
-msgid "Detailed contract farming crop and animal information"
-msgstr "Подробная информация о сельхозкультурах и животных, выращиваемых в рамках контрактного фермерства"
-
-msgid "Contract farming crops"
-msgstr "Сельхозкультуры, выращенные в рамках контрактного фермерства"
+msgid "Comment on mineral resources"
+msgstr "Комментарий по добычи полезных ископаемых"
 
 msgid "Comment on contract farming crops"
 msgstr "Примечания к сельхозкультурам, выращенным в рамках контрактного фермерства"
 
-msgid "Contract farming livestock"
-msgstr "Скотоводство в рамках контрактного фермерства"
-
 msgid "Comment on contract farming livestock"
 msgstr "Примечания к скотоводству в рамках контрактного фермерства"
-
-msgid "Use of produce"
-msgstr "Использование продукции"
 
 msgid "Has domestic use"
 msgstr "Использование внутри страны"
@@ -1415,96 +1324,6 @@ msgstr "Производственные сооружения / инфрастр
 msgid "In-country end products of the project"
 msgstr "Конечные продукты проекта внутри страны"
 
-#, fuzzy
-msgid "Administrative region"
-msgstr "Административный район"
-
-msgid "Approximate location"
-msgstr "Примерное расположение"
-
-msgid "Exact location"
-msgstr "Точное расположение"
-
-msgid "Coordinates"
-msgstr "Координаты"
-
-msgid "Location"
-msgstr "Расположение"
-
-msgid "Spatial accuracy level"
-msgstr "Уровень пространственной точности"
-
-msgid "Latitude"
-msgstr "Широта"
-
-msgid "Longitude"
-msgstr "Долгота"
-
-#, fuzzy
-msgid "Facility name"
-msgstr "Название объекта"
-
-msgid "Target country"
-msgstr "Целевая страна"
-
-msgid "Location description"
-msgstr "Описание местоположения"
-
-msgid "Contract area"
-msgstr "Контрактная площадь"
-
-msgid "Intended area"
-msgstr "Планируемая площадь"
-
-msgid "Area in operation"
-msgstr "Обрабатываемая площадь"
-
-msgid "Comment on location"
-msgstr "Примечания к местоположению"
-
-#, fuzzy, python-format
-msgid "Error parsing shapefile: %s"
-msgstr "Ошибка синтаксического анализа шейп-файла: %s"
-
-msgid "Guidelines & Principles"
-msgstr "Рекомендации и принципы"
-
-msgid "Partially"
-msgstr "Частично"
-
-msgid "Voluntary Guidelines on the Responsible Governance of Tenure (VGGT)"
-msgstr "Добровольные руководящие принципы ответственного регулирования вопросов владения и пользования земельными, рыбными и лесными ресурсами (ДРП РВ)"
-
-msgid "Application of Voluntary Guidelines on the Responsible Governance of Tenure (VGGT)"
-msgstr "Исполнение Добровольных руководящих принципов ответственного регулирования вопросов владения и пользования земельными, рыбными и лесными ресурсами (ДРП РВ)"
-
-msgid "Comment on VGGT"
-msgstr "Примечания по ДРП РВ"
-
-msgid "Principles for Responsible Agricultural Investments (PRAI)"
-msgstr "Принципы ответственного инвестирования в агропродовольственные системы (ОИАС)"
-
-msgid "Application of Principles for Responsible Agricultural Investments (PRAI)"
-msgstr "Исполнение Принципов ответственного инвестирования в агропродовольственные системы (ОИАС)"
-
-msgid "Comment on PRAI"
-msgstr "Примечания по ОИАС"
-
-msgid "Groundwater"
-msgstr "Грунтовые воды"
-
-msgid "Surface water"
-msgstr "Поверхностные воды"
-
-msgid "River"
-msgstr "Река"
-
-msgid "Lake"
-msgstr "Озеро"
-
-msgid "Water"
-msgstr "Вода"
-
 msgid "Water extraction envisaged"
 msgstr "Планируемый забор воды"
 
@@ -1517,20 +1336,11 @@ msgstr "Источник забора воды"
 msgid "Comment on source of water extraction"
 msgstr "Примечания к источнику забора воды"
 
-msgid "How much do investors pay for water and the use of water infrastructure?"
-msgstr "Сколько платят инвесторы за пользование водой и водной инфраструктурой?"
-
 msgid "Comment on how much do investors pay for water"
 msgstr "Примечания к размеру оплаты за использование воды"
 
-msgid "How much water is extracted?"
-msgstr "Сколько воды забрано?"
-
 msgid "Water extraction amount"
 msgstr "Объемы забора воды"
-
-msgid "m3/year"
-msgstr "м3/год"
 
 msgid "Comment on how much water is extracted"
 msgstr "Примечания к объему забора воды"
@@ -1544,879 +1354,23 @@ msgstr "Примечания к использованию ирригацион�
 msgid "Water footprint of the investment project"
 msgstr "Нагрузка инвестиционного проекта на водные ресурсы"
 
-msgid "Investor"
-msgstr "Инвестор"
+msgid "Comment on gender-related info"
+msgstr "Причмечания к информации о гендерных факторах"
 
-msgid "Classification"
-msgstr "Классификация"
+msgid "Overall comment"
+msgstr "Общие примечания"
 
-msgid "Country of registration/origin"
-msgstr "Страна регистрации/происхождения"
-
-msgid "Tertiary investor/lender"
-msgstr "Третичный инвестор/заимодатель"
-
-msgid "Parent company"
-msgstr "Материнская компания"
-
-msgid "Operational company"
-msgstr "Операционная компания"
-
-msgid "Investor info"
-msgstr "Информация об инвесторе"
-
-msgid "Operating company"
-msgstr "Компания-оператор"
-
-msgid "Actors involved in the negotiation / admission process"
-msgstr "Заинтересованные стороны, участвующие в процессе переговоров/допуска"
-
-msgid "Name of investment project"
-msgstr "Название инвестиционного проекта"
-
-msgid "Comment on investment chain"
-msgstr "Примечания к инвестиционной цепочке"
+msgid "Comment why this deal is private"
+msgstr "Объясните, почему эта сделка является частной"
 
 msgid "Parent companies"
 msgstr "Материнские компании"
 
-msgid "Existing parent company"
-msgstr "Текущая материнская компания"
-
-msgid "Ownership share"
-msgstr "Доля в капитале"
-
-msgid "Existing investor"
-msgstr "Текущий инвестор"
-
-msgid "Tertiary investors/lenders"
-msgstr "Третичные инвесторы/заимодатели"
-
-msgid "User information"
-msgstr "Информация пользователя"
-
-msgid "Your contact information will help our researchers get in touch with you for additional information. We respect and protect your privacy and anonymity, and will never share or publish your personal information. You can also write us directly at data@landmatrix.org."
-msgstr "Ваша контактная информация даст нашим исследователям возможность связаться с вами для получения дополнительных сведений. Мы уважаем и защищаем Вашу конфиденциальность и анонимность, и никогда не станем делиться вашими личными данными и публиковать их в открытом доступе. Вы также можете связаться с нами напрямую, отправив письмо на электронный адрес data@landmatrix.org."
-
-msgid "Write something about yourself and your company. This won't be published."
-msgstr "Напишите о себе и своей компании. Эти сведения не будут опубликованы в свободном доступе."
-
-msgid "Deal history comparison"
-msgstr "Сравнительная история сделки"
-
-msgid "Deal"
-msgstr "Сделка"
-
-msgid "Previous version"
-msgstr "Предыдущая версия"
-
-msgid "Selected version"
-msgstr "Выбранная версия"
-
-msgid "changed"
-msgstr "изменено"
-
-msgid "no changes"
-msgstr "изменения отсутствуют"
-
-msgid "Edit"
-msgstr "Редактировать"
-
-msgid "Edit old version"
-msgstr "Редактировать старую версию"
-
-msgid "History"
-msgstr "История"
-
-msgid "Comments"
-msgstr "Примечания"
-
-msgid "RSS Feed"
-msgstr "RSS канал"
-
-msgid "This deal version is pending."
-msgstr "Эта версия информации о сделке находится на рассмотрении."
-
-msgid "This deal has been deleted. It is not visible for public users."
-msgstr "Эта сделка была удалена. Она недоступна к просмотру обычными пользователями."
-
-msgid "This deal version has been rejected. It is not visible for public users."
-msgstr "Эта версия информации о сделке была отклонена. Она недоступна к просмотру обычными пользователями."
-
-msgid "There's a newer version of this deal."
-msgstr "Существует более поздняя версия этой сделки."
-
-msgid "Click here to show the latest version."
-msgstr "Нажмите для просмотра новейшей версии."
-
-msgid "comments"
-msgstr "примечания"
-
-msgid "There are no comments to this deal yet."
-msgstr "Примечания к этой сделке еще отсутствуют."
-
-msgid "Add a comment"
-msgstr "Добавить примечание"
-
-msgid "I've read and agree to the <a href=\"/about/data-policy\" target=\"_blank\">Data Policy</a>."
-msgstr "Я ознакомлен/-а и согласен/-сна с <a href=\"/about/data-policy\" target=\"_blank\">Политикой обработки данных</a>."
-
-msgid "Add comment"
-msgstr "Добавить примечание"
-
-msgid "Cancel reply"
-msgstr "Отменить ответ"
-
-msgid "There are currently no deals matching your search criteria."
-msgstr "Сделки, соответствующие вашему поисковому запросу, не найдены."
-
-msgid "Add a deal"
-msgstr "Добавить сделку"
-
-msgid "Editor"
-msgstr "Редактор"
-
-msgid "mandatory"
-msgstr "обязательное поле"
-
-msgid "Submit"
-msgstr "Подтвердить"
-
-msgid "Change Deal"
-msgstr "Изменить сделку"
-
-msgid "Manage"
-msgstr "Управление"
-
-msgid "Recover this deal"
-msgstr "Восстановить эту сделку"
-
-msgid "Cancel"
-msgstr "Отмена"
-
-msgid "Delete this deal"
-msgstr "Удалить эту сделку"
-
-msgid "All deals"
-msgstr "Все сделки"
-
-msgid "By"
-msgstr "По"
-
-msgid "Start"
-msgstr "Начать"
-
-msgid "Unknown"
-msgstr "Неизвестно"
-
-msgid "More..."
-msgstr "Еще…"
-
-msgid "There are currently no deals matching your search criteria"
-msgstr "Сделки, соответствующие вашему поисковому запросу, не найдены"
-
-msgid "deals"
-msgstr "сделки"
-
-msgid "Add another"
-msgstr "Добавить новую"
-
-msgid "Remove"
-msgstr "Удалить"
-
-msgid "Home"
-msgstr "Домашняя страница"
-
-msgid "Unknown user"
-msgstr "Неизвестный пользователь"
-
-msgid "This version"
-msgstr "Текущая версия"
-
-msgid "Show this version"
-msgstr "Показать текущую версию"
-
-msgid "Compare with previous version"
-msgstr "Сравнить с предыдущей версией"
-
-msgid "First version"
-msgstr "Изначальная версия"
-
-msgid "Network of parent companies and tertiary investors/lenders"
-msgstr "Сеть материнских компаний и третичных инвесторов/заимодателей"
-
-msgid "Please right-click the nodes to get more details."
-msgstr "Для просмотра подробностей щелкните правой кнопкой мыши по узловой точке."
-
-msgid "Legend"
-msgstr "Условные обозначения"
-
-msgid "Is parent company of"
-msgstr "Материнская компания по отношению к"
-
-msgid "Is tertiary investor/lender of"
-msgstr "Третичный инвестор/заимодатель по отношению к"
-
-msgid "Left-click to reveal related parent companies and tertiary investors/lenders."
-msgstr "Щелкните левой кнопкой мыши, чтобы открыть информацию о связанных материнских компаниях, а также третичных инвесторах/заимодателях."
-
-msgid "Right-click on investors to get more information."
-msgstr "Щелкните правой кнопкой мыши на названии инвестора, чтобы открыть дополнительную информацию."
-
-msgid "Left-click to hide related parent companies and tertiary investors/lenders."
-msgstr "Щелкните левой кнопкой мыши, чтобы скрыть информаии о связанных материнских компаниях, а также третичных инвесторах/заимодателях."
-
-msgid "This operating company is pending."
-msgstr "Информация об этой компании-операторе находится на рассмотрении."
-
-msgid "This operating company has been deleted. It is not visible for public users."
-msgstr "Эта компания-оператор была удалена. Она недоступна к просмотру обычными пользователями."
-
-msgid "This operating company has been rejected. It is not visible for public users."
-msgstr "Информация об этой компании-операторе была отклонена. Она недоступна к просмотру обычными пользователями."
-
-msgid "No active filters"
-msgstr "Без фильтров"
-
-msgid "Cancel add filter"
-msgstr "Отменить добавление фильтра"
-
-msgid "Add a filter"
-msgstr "Добавить фильтр"
-
-msgid "List settings"
-msgstr "Настройки списка"
-
-msgid "Create a custom filter"
-msgstr "Создать индивидуальный фильтр"
-
-msgid "is =<"
-msgstr "=<"
-
-msgid "Add Filter"
-msgstr "Добавить фильтр"
-
-msgid "Select columns for the result table"
-msgstr "Выберите колонки для таблицы результатов"
-
-msgid "default columns"
-msgstr "колонки по умолчанию"
-
-msgid "all columns"
-msgstr "все колонки"
-
-msgid "Select status of deals"
-msgstr "Выберите статус сделок"
-
-msgid "Added (not changed)"
-msgstr "Добавленные (не измененные)"
-
-msgid "Changed"
-msgstr "Измененные"
-
-msgid "Pending"
-msgstr "На рассмотрении"
-
-msgid "Unknown country"
-msgstr "Неизвестная страна"
-
-msgid "Unknown region"
-msgstr "Неизвестный регион"
-
-msgid "Level of parent investors"
-msgstr "Уровень материнских компаний-инвесторов"
-
-msgid "Show deals"
-msgstr "Показать сделки"
-
-msgid "Is operating company of"
-msgstr "Компания-оператор относится к"
-
-msgid "Double-click to zoom in."
-msgstr "Приблизить двойным щелчком."
-
-msgid "Search for investor name"
-msgstr "Поиск по имени/названию инвестора"
-
-msgid "All Deals"
-msgstr "Все сделки"
-
-msgid "By Target"
-msgstr "По прогнозному показателю"
-
-msgid "By Target Region"
-msgstr "По целевому региону"
-
-msgid "By Target Country"
-msgstr "По целевой стране"
-
-msgid "By Investor"
-msgstr "По инвесторам"
-
-msgid "By Investor Region"
-msgstr "По региону-инвестору"
-
-msgid "By Investor Country"
-msgstr "По стране-инвестору"
-
-msgid "By data source"
-msgstr "По источнику информации"
-
-msgid "By Intention"
-msgstr "По целевому назначению"
-
-msgid "By Crop"
-msgstr "По виду сельхозкультур"
-
-msgid "All Investors"
-msgstr "Все инвесторы"
-
-msgid "By Role"
-msgstr "По роли"
-
-msgid "By Classification"
-msgstr "По классификации"
-
-msgid "By Country of registration/origin"
-msgstr "По стране регистрации/происхождения"
-
-msgid "Investor history comparison"
-msgstr "Сравнительная история инвестора"
-
-msgid "This investor version is pending."
-msgstr "Эта версия информации об инвесторе находится на рассмотрении."
-
-msgid "This investor has been deleted. It is not visible for public users."
-msgstr "Этот инвестор был удален. Он недоступен к просмотру обычными пользователями."
-
-msgid "This investor version has been rejected. It is not visible for public users."
-msgstr "Эта версия информации об инвесторе была отклонена. Она недоступна к просмотру обычными пользователями."
-
-msgid "Involvements as Parent Company"
-msgstr "Участие в качестве материнской компании"
-
-msgid "Involvement"
-msgstr "Участие"
-
-msgid "Involvements as Tertiary investor/lender"
-msgstr "Участие в качестве третичного инвестора/заимодателя"
-
-msgid "Deals (Involvements as Operating company)"
-msgstr "Сделки (участие в качестве компании-оператора)"
-
-msgid "Add investor"
-msgstr "Добавить инвестора"
-
-msgid "Add another parent company"
-msgstr "Добавить еще одну материнскую компанию"
-
-msgid "Add another lender"
-msgstr "Добавить еще одного заимодателя"
-
-msgid "Recover this investor"
-msgstr "Восстановить этого инвестора"
-
-msgid "Delete this investor"
-msgstr "Удалить этого инвестора"
-
-msgid "All investors"
-msgstr "Все инвесторы"
-
-msgid "Show more"
-msgstr "Показать больше"
-
-msgid "investors"
-msgstr "инвесторы"
-
-msgid "There are currently no investors matching your search criteria."
-msgstr "На текущий момент в базе отсутствуют инвесторы, соответствующие заданныи критериям поиска."
-
-msgid "Add an investor"
-msgstr "Добавить инвестора"
-
-msgid "Back"
-msgstr "Назад"
-
-msgid "More details about this deal"
-msgstr "Подробнее об этой сделке"
-
-msgid "Delete deal"
-msgstr "Удалить сделку"
-
-msgid "Are you sure you want to delete this deal?"
-msgstr "Вы действительно хотите удалить эту сделку?"
-
-msgid "No, cancel"
-msgstr "Нет, отменить действие"
-
-msgid "Yes, delete"
-msgstr "Да, удалить"
-
-msgid "Delete investor"
-msgstr "Удалить инвестора"
-
-msgid "Are you sure you want to delete this investor?"
-msgstr "Вы действительно хотите удалить этого инвестора?"
-
-msgid "More details about this investor"
-msgstr "Подробнее об этом инвесторе"
-
-msgid "Recover deal"
-msgstr "Восстановить сделку"
-
-msgid "Are you sure you want to recover this deal?"
-msgstr "Вы действительно хотите восстановить эту сделку?"
-
-msgid "Yes, recover"
-msgstr "Да, восстановить"
-
-msgid "Recover investor"
-msgstr "Восстановить инвестора"
-
-msgid "Are you sure you want to recover this investor?"
-msgstr "Вы действительно хотите восстановить этого инвестора?"
-
-msgid "Administrator"
-msgstr "Администратор"
-
-msgid "Reporter"
-msgstr "Составитель"
-
-msgid "No role"
-msgstr "Без прав редактирования"
-
-msgid "for"
-msgstr "для"
-
-msgid "Investor name"
-msgstr "Имя/название инвестора"
-
-msgid "Availability"
-msgstr "Доступность"
-
-msgid "Deal size"
-msgstr "Размер сделки"
-
-msgid "Top investors"
-msgstr "Крупнейшие инвесторы"
-
-msgid "Target region"
-msgstr "Регион назначения"
-
-msgid "Investor country"
-msgstr "Страна-инвестор"
-
-msgid "Investor region"
-msgstr "Регион-инвестор"
-
-msgid "Investor ID"
-msgstr "ID инвестора"
-
-msgid "Operating company name"
-msgstr "Название компании-оператора"
-
-msgid "Parent investors"
-msgstr "Материнские компании-инвесторы"
-
-msgid "Parent investor country"
-msgstr "Страна регистрации материнской компании-инвестора"
-
-msgid "Parent investor region"
-msgstr "Регион материнской компании-инвестора"
-
-msgid "Parent investor percentages"
-msgstr "Доли материнской компании-инвестора"
-
-msgid "Parent investor classifications"
-msgstr "Классификация материнских компаний-инвесторов"
-
-msgid "Parent investor homepages"
-msgstr "Домашние страницы материнских компаний-инвесторов"
-
-msgid "Parent stakeholder Opencorporates links"
-msgstr "Ссылки на материнскую компанию на Opencorporates"
-
-msgid "Comment on parent investor"
-msgstr "Примечания к материнской компании-инвестору"
-
-msgid "Operating company country of registration/origin"
-msgstr "Страна регистрации/происхождения компании-оператора"
-
-msgid "Operating company region of registration/origin"
-msgstr "Регион регистрации/происхождения компании-оператора"
-
-msgid "Operating company classification"
-msgstr "Классификация компании-оператора"
-
-msgid "Operating company homepage"
-msgstr "Домашняя страница компании-оператора"
-
-msgid "Operating company Opencorporates link"
-msgstr "Ссылка на компанию-оператора на Opencorporates"
-
-msgid "Additional comment on Operating company"
-msgstr "Дополнительный комментарий к Операционной компании"
-
-#, fuzzy, python-format
-msgid "Unknown group '%(group)s'."
-msgstr "Неизвестная группа ''%(group)s'."
-
-msgid "Deal ID"
-msgstr "ID сделки"
-
-msgid "Your changes to the deal have been submitted successfully. The changes will be reviewed and published soon."
-msgstr "Ваши изменения к сделке успешно отправлены. Они будут рассмотрены и опубликованы в ближайшее время."
-
-msgid "Your changes to the deal have been saved successfully."
-msgstr "Ваши изменения к сделке успешно сохранены."
-
-msgid "Please correct the error below."
-msgstr "Пожалуйста, исправьте ошибку (ниже)."
-
-msgid "The deal has been submitted successfully (#{}). It will be reviewed and published soon."
-msgstr "Сделка принята на рассмотрение (#{}). Она будет просмотрена и добавлена в ближайшее время."
-
-msgid "The deal has been added successfully (#{})."
-msgstr "Сделка успешно добавлена (#{})."
-
-msgid "The deal #{} has been marked for deletion. It will be reviewed and deleted soon."
-msgstr "Сделка #{} добавлена в очередь на удаление. Она будет просмотрена и удалена в ближайшее время."
-
-msgid "The deal #{} has been deleted successfully."
-msgstr "Сделка #{} успешно удалена."
-
-msgid "The deal #{} has been recovered successfully."
-msgstr "Сделка #{} успешно восстановлена."
-
-msgid "Is public"
-msgstr "Является публичной"
-
-#, fuzzy
-msgid "Deal scope"
-msgstr "Предмет сделки"
-
-msgid "Current size under contract"
-msgstr "Текущий размер по контракту"
-
-msgid "Current size in operation (production)"
-msgstr "Текущий размер в обработке (производстве)"
-
-msgid "Current negotiation status"
-msgstr "Текущий статус переговоров"
-
-msgid "Current implementation status"
-msgstr "Текущий статус исполнения"
-
 msgid "Top parent companies"
 msgstr "Основные материнские компании"
 
-msgid "Region of registration/origin"
-msgstr "Регион регистрации/происхождения"
-
-msgid "Role"
-msgstr "Роль"
-
-msgid "The investor has been submitted successfully (#{}). It will be reviewed and published soon."
-msgstr "Этот инвестор принят на рассмотрение(#{}). Он будет просмотрен и опубликован в ближайшее время."
-
-msgid "The investor has been added successfully (#{})."
-msgstr "Инвестор успешно добавлен(#{})."
-
-msgid "Your changes to the investor have been submitted successfully. The changes will be reviewed and published soon."
-msgstr "Ваши изменения к информации об инвесторе приняты на рассмотрение. Изменения будут просмотрены и опубликованы в ближайшее время."
-
-msgid "Your changes to the investor have been saved successfully."
-msgstr "Ваши изменения к информации об инвесторе успешно сохранены."
-
-msgid "The investor #{} has been marked for deletion. It will be reviewed and deleted soon."
-msgstr "Инвестор #{} добавлен в очередь на удаление. Он будет просмотрен и удален в ближайшее время."
-
-msgid "The investor #{} has been deleted successfully."
-msgstr "Инвестор #{} успешно удален."
-
-msgid "The investor #{} has been recovered successfully."
-msgstr "Инвестор #{} успешно восстановлен."
-
-msgid "Current file"
-msgstr "Текущий файл"
-
-msgid "Show area"
-msgstr "Показать местность"
-
-msgid "Hide area"
-msgstr "Скрыть местность"
-
-msgid "Shapefile upload (select all files, required: .shp, .shx, .dbf, and .prj)"
-msgstr "Загрузка шейп-файла (выберите все файлы; допустимые форматы: .shp, .shx, .dbf, и .prj)"
-
-msgid "Comments / History"
-msgstr "Комментарии/ История"
-
-msgid "Involvement type"
-msgstr "Тип участия"
-
-msgid "First name"
-msgstr "Имя"
-
-msgid "Last name"
-msgstr "Фамилия"
-
-msgid "Initiation year or date"
-msgstr "Год или дата учреждения компании"
-
-msgid "Forest concession"
-msgstr "Концессия в области лесного хозяйства"
-
-msgid "Investor homepage"
-msgstr "Домашняя страница компании-инвестора"
-
-msgid "Opencorporates link"
-msgstr "Ссылка на компанию-инвестора на Opencorporates"
-
-msgid "Agricultural produce"
-msgstr "Сельскохозяйственная продукция"
-
-msgid "English name"
-msgstr "Английское название"
-
-msgid "Local name"
-msgstr "Местное название"
-
-msgid "Locale"
-msgstr "Локаль"
-
-msgid "Description"
-msgstr "Описание"
-
-msgid "Draft"
-msgstr "Активная"
-
-msgid "Live"
-msgstr "Перезаписанная"
-
-msgid "Review"
-msgstr "Рассмотрение"
-
-msgid "Activation"
-msgstr "Активация"
-
-msgid "Rejected"
-msgstr "Отклоненная"
-
-msgid "To Delete"
-msgstr "На удаление"
-
-msgid "Active"
-msgstr "Активная"
-
-msgid "Overwritten"
-msgstr "Перезаписанная"
-
-msgid "To delete"
-msgstr "На удаление"
-
-msgid "Domestic"
-msgstr "Внутри страны"
-
-msgid "Transnational"
-msgstr "Транснациональная"
-
-msgid "Intended (Expression of interest)"
-msgstr "Предварительная (выражение интереса)"
-
-msgid "Intended (Under negotiation)"
-msgstr "Предварительная (на стадии переговоров)"
-
-msgid "Intended (Memorandum of understanding)"
-msgstr "Предварительная (Меморандум о взаимопонимании)"
-
-msgid "Concluded (Oral Agreement)"
-msgstr "Заключенная (устное соглашение)"
-
-msgid "Concluded (Contract signed)"
-msgstr "Заключенная (подписан договор)"
-
-msgid "Failed (Negotiations failed)"
-msgstr "Не состоявшаяся (переговоры сорвались)"
-
-msgid "Failed (Contract cancelled)"
-msgstr "Не состоявшаяся (договор прекращен)"
-
-msgid "Contract expired"
-msgstr "Истечение срока договора"
-
-msgid "Change of ownership"
-msgstr "Смена собственника"
-
-msgid "Project not started"
-msgstr "Проект не начат"
-
-msgid "Startup phase (no production)"
-msgstr "Начальная стадия (производство отсутствует)"
-
-msgid "In operation (production)"
-msgstr "Действующий проект (идет производство)"
-
-msgid "Project abandoned"
-msgstr "Брошенный проект"
-
-msgid "Activity identifier"
-msgstr "Идентификатор деятельности"
-
-msgid "availability"
-msgstr "доступность"
-
-msgid "Historical activity"
-msgstr "История активности"
-
-msgid "Historical activities"
-msgstr "История активностей"
-
-msgid "Activity attribute group"
-msgstr "Активность группы атрибутов"
-
-msgid "Activity attribute groups"
-msgstr "Активность групп атрибутов"
-
-msgid "Activity Attribute Group"
-msgstr "Активность Группы Атрибутов"
-
-msgid "Language"
-msgstr "Язык"
-
-msgid "Year or Date"
-msgstr "Год или дата"
-
-msgid "Is current"
-msgstr "Текущий"
-
-msgid "Activity"
-msgstr "Активность"
-
-msgid "Historical activity attribute"
-msgstr "История активности атрибутов"
-
-msgid "Historical activity attributes"
-msgstr "История активностей атрибутов"
-
-msgid "Review decision"
-msgstr "Пересмотр решения"
-
-msgid "User assigned"
-msgstr "Закреплено за пользователем"
-
-msgid "User created"
-msgstr "Создано пользователем"
-
-msgid "Activity feedback"
-msgstr "Обратная связь по активности"
-
-msgid "Activity feedbacks"
-msgstr "Обратная связь по активности"
-
-msgid "Region"
-msgstr "Регион"
-
-msgid "Code ISO 3166-1 alpha2"
-msgstr "Код ISO 3166-1 alpha2"
-
-msgid "Code ISO 3166-1 alpha3"
-msgstr "Код ISO 3166-1 alpha3"
-
-msgid "Latitude of central point"
-msgstr "Широта центральной точки"
-
-msgid "Longitude of central point"
-msgstr "Широта центральной точки"
-
-msgid "Latitude of southernmost point"
-msgstr "Широта крайней южной точки"
-
-msgid "Longitude of westernmost point"
-msgstr "Долгота крайней западной точки"
-
-msgid "Latitude of northernmost point"
-msgstr "Широта крайней северной точки"
-
-msgid "Longitude of easternmost point"
-msgstr "Долгота крайней восточной точки"
-
-msgid "Democracy index"
-msgstr "Индекс демократии"
-
-msgid "Corruption perception index"
-msgstr "Индекс восприятия коррупции"
-
-msgid "High income"
-msgstr "Высокий уровень дохода"
-
-msgid "Locations"
-msgstr "Является страной назначения"
-
-msgid "Timber plantation"
-msgstr "Промышленная высадка деревьев"
-
-msgid "Forest logging / management"
-msgstr "Лесозаготовки / управление лесным хозяйством"
-
-msgid "Renewable energy"
-msgstr "Возобновляемая энергия"
-
-msgid "Annual leasing fee area type"
-msgstr "Годовая стоимость аренды, тип участка"
-
-msgid "Comment on leasing fee"
-msgstr "Примечания к стоимости аренды"
-
-msgid "On leased / purchased"
-msgstr "На земельном участке, приобретенном в аренду / собственность"
-
-msgid "On leased area/farmers/households"
-msgstr "На земельных участках, приобретенных в аренду /фермеры/домохозяйства"
-
-#, fuzzy
-msgid "Not on leased / purchased (out-grower)"
-msgstr "Не на сданной в аренду/собственности (сторонний производитель)"
-
-#, fuzzy
-msgid "Not on leased area/farmers/households (out-grower)"
-msgstr "Не на арендованной территории / фермерам / домохозяйствам (сторонний производитель)"
-
-msgid "Current total number of jobs/employees/ daily/seasonal workers"
-msgstr "Текущее общее количество рабочих мест/наемных сотрудников/поденных/сезонных работников"
-
-msgid "Current foreign number of jobs/employees/ daily/seasonal workers"
-msgstr "Текущее количество поденных/сезонных рабочих (иностранцы)"
-
-msgid "Current domestic number of jobs/employees/ daily/seasonal workers"
-msgstr "Текущее количество созданных рабочих мест для местного населения"
-
-msgid "Government / state institutions (government, ministries, departments, agencies etc.)"
-msgstr "Правительство / Государственные институции (правительство, министерства, департаменты, ведомства, проч.)"
-
-msgid "Comment on recognition status of community land tenure"
-msgstr "Примечания к статусу признания общинного землевладения"
-
-msgid "Capacity building"
-msgstr "Институционное развитие"
-
-msgid "Financial support"
-msgstr "Финансовая поддержка"
-
-msgid "Crops area/yield/export"
-msgstr "Посевная площадь/урожайность/экспорт"
-
-msgid "Livestock area/yield/export"
-msgstr "Площадь земель для скотоводства/продуктивность/экспорт"
-
-msgid "Mineral resources area/yield/export"
-msgstr "Площадь добычи полезных ископаемых/объем/экспорт"
-
-msgid "Comment on mineral resources"
-msgstr "Комментарий по добычи полезных ископаемых"
-
-msgid "Comment why this deal is private"
-msgstr "Объясните, почему эта сделка является частной"
+msgid "Current contract size"
+msgstr ""
 
 msgid "Created"
 msgstr "Создано"
@@ -2427,47 +1381,8 @@ msgstr "Последнее обновление"
 msgid "Last full update"
 msgstr "Последнее полное обновление"
 
-msgid "Value"
-msgstr "Значение"
-
-msgid "Value 2"
-msgstr "Значение 2"
-
-msgid "Polygon"
-msgstr "Полигон"
-
-msgid "Variable"
-msgstr "Переменная"
-
-msgid "Key"
-msgstr "Ключ"
-
-msgid "Operator"
-msgstr "Оператор"
-
-msgid "Filter preset group"
-msgstr "Группа предустановленных фильтров"
-
-msgid "Filter preset groups"
-msgstr "Группы предустановленных фильтров"
-
-msgid "And"
-msgstr "И"
-
-msgid "Or"
-msgstr "Или"
-
-msgid "Global/Region"
-msgstr "Глобальный/По региону"
-
-msgid "Is hidden"
-msgstr "Скрытый"
-
-msgid "Filter preset"
-msgstr "Предустановленный фильтр"
-
-msgid "Filter presets"
-msgstr "Предустановленные фильтры"
+msgid "Country of registration/origin"
+msgstr "Страна регистрации/происхождения"
 
 msgid "Government"
 msgstr "Правительство"
@@ -2520,8 +1435,26 @@ msgstr "Неприбыльная организация (например, це�
 msgid "Other (please specify in comment field)"
 msgstr "Иное (пожалуйста, уточните в поле для комментариев)"
 
+msgid "Classification"
+msgstr "Классификация"
+
+msgid "Investor homepage"
+msgstr "Домашняя страница компании-инвестора"
+
+msgid "Opencorporates link"
+msgstr "Ссылка на компанию-инвестора на Opencorporates"
+
+msgid "Investor"
+msgstr "Инвестор"
+
 msgid "Venture Company"
 msgstr "Венчурная компания"
+
+msgid "Parent company"
+msgstr "Материнская компания"
+
+msgid "Tertiary investor/lender"
+msgstr "Третичный инвестор/заимодатель"
 
 msgid "Relation type"
 msgstr "Тип отношения"
@@ -2534,6 +1467,9 @@ msgstr "Привлечение заемного капитала"
 
 msgid "Investment type"
 msgstr "Тип инвестирования"
+
+msgid "Ownership share"
+msgstr "Доля в капитале"
 
 msgid "Loan amount"
 msgstr "Размер займа"
@@ -2570,142 +1506,9 @@ msgstr "<является МАТЕРИНСКОЙ КОМПАНИЕЙ для>"
 msgid "<is INVESTOR of>"
 msgstr "<является ИНВЕСТОРОМ для>"
 
-msgid "Investment Fund (all types incl. pension, hedge, mutual, private equity funds etc.)"
-msgstr "Инвестиционный фонд (все типы, включая пенсионные, хеджевые, паевые, частные, др.)"
-
-#, python-format
-msgid "Unknown operating company (#%s)"
-msgstr "Компания-оператор неизвестна (#%s)"
-
-#, python-format
-msgid "Unknown parent company (#%s)"
-msgstr "Материнская компания неизвестна(#%s)"
-
-#, python-format
-msgid "Unknown tertiary investor/lender (#%s)"
-msgstr "Неизвестный третичный инвестор/заимодатель (#%s)"
-
-#, python-format
-msgid "Unknown (#%s)"
-msgstr "Неизвестно (#%s)"
-
-msgid "Historical investor"
-msgstr "Исторический инвестор"
-
-msgid "Historical investors"
-msgstr "Исторические инвесторы"
-
-msgid "Investor ID Downstream"
-msgstr "ID компании-инвестора нижнего звена производственно-сбытовой цепочки"
-
-msgid "Investor ID Upstream"
-msgstr "ID компании-инвестора верхнего звена производственно-сбытовой цепочки"
-
-msgid "Historical Investor Venture Involvement"
-msgstr "Вовлеченность исторического инвестора в проект"
-
-msgid "Historical Investor Venture Involvements"
-msgstr "Вовлеченность исторического инвестора в проекты"
-
-msgid "Historical Investor Activity Involvement"
-msgstr "Вовлеченность исторического инвестора в деятельность"
-
-msgid "Historical Investor Activity Involvements"
-msgstr "Вовлеченность исторического инвестора в деятельность"
-
-msgid "Observatories"
-msgstr "Обсерватории"
-
 #, fuzzy, python-format
 msgid "The language \"%s\" is not supported"
 msgstr "Язык \"%s\" не поддерживается"
-
-msgid "Map with all deals"
-msgstr "Карта всех сделок"
-
-msgid "Finished"
-msgstr "Заключенные сделки"
-
-msgid "Display"
-msgstr "Отобразить"
-
-msgid "Group by country"
-msgstr "Сгруппировать по стране"
-
-msgid "Individual deals"
-msgstr "Отдельные сделки"
-
-msgid "Show info about"
-msgstr "Показать сведения о"
-
-msgid "Areas"
-msgstr "Области"
-
-msgid "Search"
-msgstr "Поиск"
-
-msgid "Type in the field below to search for a location."
-msgstr "Для поиска локации наберите текст в поле внизу."
-
-msgid "Search location"
-msgstr "Поиск локации"
-
-msgid "Context layers"
-msgstr "Контекстуальные слои"
-
-msgid "Land Cover"
-msgstr "Почвенно-растительный покров"
-
-msgid "Global Cropland"
-msgstr "Пахотные земли по всему миру"
-
-msgid "Oil palm concessions Indonesia"
-msgstr "Концессии масличных пальм, Индонезия"
-
-msgid "Key biodiversity areas, Philippines"
-msgstr "Ключевые зоны биоразнообразия, Филиппины"
-
-msgid "Protected areas, Philippines"
-msgstr "Защищенные области, Филиппины"
-
-msgid "Base layers"
-msgstr "Слои базы"
-
-msgid "OSM"
-msgstr "Карты OSM"
-
-msgid "ESRI Satellite"
-msgstr "Спутниковые карты ESRI"
-
-msgid "MapQuest Satellite"
-msgstr "Спетниковые карты MapQuest"
-
-msgid "Please click on a deal or country on the map to select details."
-msgstr "Для выбора подробностей нажмите на сделку или страну на карте."
-
-msgid "Deals/Info"
-msgstr "Сделки/Инфо"
-
-msgid "Context"
-msgstr "Контекст"
-
-msgid "Base"
-msgstr "База"
-
-msgid "Details"
-msgstr "Подробности"
-
-msgid "Global"
-msgstr "Глобальный масштаб"
-
-msgid "Return"
-msgstr "Назад"
-
-msgid "Spatial accuracy"
-msgstr "Пространственная точность"
-
-msgid "Area in production"
-msgstr "Область обработки"
 
 msgid "Debug"
 msgstr "Отладить"
@@ -2737,9 +1540,6 @@ msgstr "Позволить пользователям скрывать сооб�
 msgid "Store check off in cookie (expires in 365 days) so that users can choose to not display the messagea again."
 msgstr "Cохранить отметку в файле cookie (срок хранения — 365 дней), чтобы пользователи могли выбрать опцию \"больше не показывать это сообщение\"."
 
-msgid "Expiration date"
-msgstr "Конечная дата"
-
 msgid "After this date the message will not be displayed anymore"
 msgstr "По прошествию этой даты сообщение перестанет отображаться"
 
@@ -2752,526 +1552,2777 @@ msgstr "Сообщение"
 msgid "Messages"
 msgstr "Сообщения"
 
-msgid "Retry failed notifications"
-msgstr "Повторить неудачные уведомления"
+msgid "Project not started"
+msgstr "Проект не начат"
 
-msgid "Land Matrix: New comment"
-msgstr "Land Matrix: новый комментарий"
+msgid "Startup phase (no production)"
+msgstr "Начальная стадия (производство отсутствует)"
 
-msgid "New"
-msgstr "Новые"
+msgid "In operation (production)"
+msgstr "Действующий проект (идет производство)"
 
-msgid "Sent"
-msgstr "Отправленные"
+msgid "Project abandoned"
+msgstr "Брошенный проект"
 
-msgid "Created On"
-msgstr "Дата создания"
+msgid "Unknown"
+msgstr "Неизвестно"
 
-msgid "Sent on"
-msgstr "Дата отправки"
+msgid "Agriculture"
+msgstr "Сельское хозяйство"
 
-msgid "To"
-msgstr "Кому"
+msgid "Renewable Energy"
+msgstr "Возобновляемая энергия"
 
-msgid "CC"
-msgstr "Копия"
+msgid "Spatial accuracy"
+msgstr "Пространственная точность"
 
-msgid "BCC"
-msgstr "Скрытая копия"
+msgid "About"
+msgstr "О"
 
-msgid "Reply To"
-msgstr "Ответить пользователю"
+msgid "Access more information about this contract on OpenLandContracts.org"
+msgstr ""
 
-msgid "Subject"
-msgstr "Тема"
+msgid "Account confirmed"
+msgstr ""
 
-msgid "From"
-msgstr "От"
+msgid "Actions"
+msgstr "Действия"
 
-msgid "Body Plain Text"
-msgstr "Тело простого текста"
+msgid "Activate"
+msgstr "Активировать"
 
-msgid "Body HTML"
-msgstr "Тело HTML"
+msgid "Activated"
+msgstr ""
 
-msgid "has posted a new comment on"
-msgstr "оставил/-а новое примечание к"
+msgid "Activated by me"
+msgstr ""
 
-msgid "Yours"
-msgstr "Искренне"
+msgid "Activates submitted version replacing currently active version"
+msgstr ""
 
-msgid "Delete all Features"
-msgstr "Удалить все пространственне объекты"
+msgid "Add"
+msgstr "Добавить"
 
-msgid "Debugging window (serialized value)"
-msgstr "Окно отладки (сериализованное значение)"
+msgid "Add a deal"
+msgstr "Добавить сделку"
 
-msgid "Edit comment"
-msgstr "Редактировать комментарий"
+msgid "Add GeoJSON"
+msgstr ""
 
-msgid "Save comment"
-msgstr "Сохранить комментарий"
+msgid "Adding new deal"
+msgstr ""
 
-msgid "Post"
-msgstr "Опубликовать"
+msgid "Adding new investor"
+msgstr ""
 
-msgid "Preview"
-msgstr "Предпросмотр"
+msgid "Additional comment"
+msgstr ""
+
+msgid "All attributes"
+msgstr ""
+
+msgid "All deleted"
+msgstr ""
+
+msgid "All non active"
+msgstr ""
+
+msgid "All objects"
+msgstr ""
+
+msgid "All rights reserved"
+msgstr "Все права принадлежат их законным владельцам"
+
+msgid "Animals"
+msgstr ""
+
+msgid "Any gender-specific information about the investment and its impacts"
+msgstr "Любая гендерно-обусловленная информация об инвестициях и их влиянии"
+
+msgid "Area (ha)"
+msgstr ""
+
+msgid "Areas (as geojson)"
+msgstr "Участки (в формате GeoJSON)"
+
+msgid "Assign to user"
+msgstr ""
+
+msgid "At least one data source"
+msgstr "Как минимум один источник данных"
+
+msgid "At least one investor"
+msgstr "Как минимум один инвестор"
+
+msgid "Base layer"
+msgstr ""
+
+msgid "Beneficiary company"
+msgstr ""
 
 #, fuzzy
 msgid "by"
 msgstr "по"
 
-msgid "Reply"
-msgstr "Ответить"
-
-msgid "Choose a country"
-msgstr "Выберите страну"
-
-msgid "Deal #"
-msgstr "Сделка №"
-
-msgid "News and Publications"
-msgstr "Новости и публикации"
-
-msgid "Read more"
-msgstr "Читать далее"
-
-#, fuzzy, python-format
-msgid "No news or publications available for %(t)s."
-msgstr "Новости или публикации для %(t)s отсутствуют."
-
-msgid "All News and Publications"
-msgstr "Все новости и публикации"
-
-msgid "Go to"
-msgstr "Перейти к"
-
-msgid "We currently have information about:"
-msgstr "В данные момент мы располагаем информацией о:"
-
-#, fuzzy
-msgid "Tweets by"
-msgstr "Твиты пользователя"
-
-msgid "About"
-msgstr "О"
-
-msgid "All rights reserved"
-msgstr "Все права принадлежат их законным владельцам"
-
-msgid "Areas (as geojson)"
-msgstr "Участки (в формате GeoJSON)"
-
-#, fuzzy
-msgid "Changes within timespan"
-msgstr "Изменения в рамках временного диапазона"
-
-msgid "Compare versions"
-msgstr "Сравнить версии"
-
-msgid "Compare"
-msgstr "Сравнить"
-
-msgid "Contribute"
-msgstr "Оказать содействие"
-
-msgid "Country of registration"
-msgstr "Страна регистрации"
-
-msgid "Current statistics"
-msgstr "Текущая статистика"
-
-msgid "Deal history"
-msgstr "История сделки"
-
-msgid "Default filter"
-msgstr "Фильтр по умолчанию"
-
-msgid "Download country profiles for"
-msgstr "Загрузить профили стран по"
-
-msgid "Excluded"
-msgstr "Исключая"
-
-msgid "Filter"
-msgstr "Фильтр"
-
-#, fuzzy
-msgid "Produce"
-msgstr "Производство"
-
-#, fuzzy
-msgid "Not publicly visible"
-msgstr "Не видимая публично"
-
-msgid "Not confidential"
-msgstr "Не конфиденциальная"
-
-msgid "Confidential"
-msgstr "Конфиденциальная"
-
-msgid "Target country is set"
-msgstr "Страна назначения установлена"
-
-msgid "Target country is NOT set"
-msgstr "Целевая страна НЕ установлена"
-
-msgid "At least one data source"
-msgstr "Как минимум один источник данных"
-
-msgid "No data source"
-msgstr "Нет источника данных"
-
-msgid "At least one investor"
-msgstr "Как минимум один инвестор"
-
-msgid "No investor"
-msgstr "Нет инвестора"
-
-#, fuzzy
-msgid "Included"
-msgstr "Включая"
-
-msgid "Investor history"
-msgstr "История инвестора"
-
-msgid "I've read and agree to the"
-msgstr "Я ознакомлен/-а и согласен/-сна с"
-
-msgid "Data policy"
-msgstr "Политикой обработки данных"
-
-msgid "Latest tweets"
-msgstr "Последние твиты"
-
-msgid "Locations (as geojson)"
-msgstr "Локации (в формате GeoJSON)"
-
-msgid "Map settings"
-msgstr "Настройки карты"
-
-msgid "More details"
-msgstr "Подробнее"
-
-msgid "Number of deal locations"
-msgstr "Количество локаций для сделок"
-
-msgid "Please click the nodes to get more details."
-msgstr "Для просмотра подробностей кликните на узловую точку."
-
-msgid "Put each value on a new line, i.e. press enter between each name"
-msgstr "Указывайте только одно значение в каждой строке, напр., нажимайте клавишу ввода после каждого названия"
-
-msgid "Resources"
-msgstr "Ресурсы"
-
-#, fuzzy
-msgid "Land Matrix region"
-msgstr "Land Matrix регион"
-
-#, fuzzy
-msgid "Land Matrix regions"
-msgstr "Land Matrix регионы"
-
-#, fuzzy
-msgid "Country profiles present national-level data of large-scale land acquisitions and transactions including who the investors are, what the aim of the investment is, who the former owner was and what the land was previously used for, and what the potential benefits and impacts of the land deals are."
-msgstr "Профили стран представляют данные на национальном уровне о крупномасштабных приобретениях и сделках, в том числе о том, кто являются инвесторами, какова цель инвестиций, кем был бывший владелец, для чего ранее использовалась земля, и каковы потенциальные выгоды и последствия сделок."
-
 #, fuzzy
 msgid "By making this information available, the Land Matrix hopes to enhance broad engagement and data exchange, facilitating the continuous improvement of the data. Find out how to get involved"
 msgstr "Делая эту информацию доступной, Land Matrix надеется усилить широкое участие и обмен данными, способствуя постоянному совершенствованию данных. Узнайте, как принять участие"
 
+msgid "Cancel"
+msgstr "Отмена"
+
 #, fuzzy
-msgid "Dynamics overview charts"
-msgstr "Обзор динамики развития"
+msgid "Case statistics"
+msgstr "Статистика случаев"
 
-msgid "Country profiles"
-msgstr "Профили стран"
+msgid "Change"
+msgstr ""
 
-msgid "News & publications"
-msgstr "Новости и публикации"
+msgid "Change of ownership"
+msgstr "Смена собственника"
+
+msgid "Change password"
+msgstr "Изменить пароль"
+
+msgid "Charts"
+msgstr "Диаграммы"
+
+msgid "Choice"
+msgstr ""
+
+msgid "Choices"
+msgstr ""
+
+msgid "Close"
+msgstr ""
+
+msgid "Compare"
+msgstr "Сравнить"
+
+msgid "Compare versions"
+msgstr "Сравнить версии"
+
+#, python-brace-format
+msgid "Comparing deal #{dealID}"
+msgstr ""
+
+#, python-brace-format
+msgid "Comparing investor #{investorID}"
+msgstr ""
+
+msgid "Concluded"
+msgstr "Заключенные сделки"
+
+msgid "Confidential"
+msgstr "Конфиденциальная"
+
+msgid "Consultation of local community"
+msgstr "Консультации с местной общиной"
+
+msgid "Context layers"
+msgstr "Контекстуальные слои"
+
+msgid "Contract"
+msgstr "Контракт"
+
+msgid "Contract area"
+msgstr "Контрактная площадь"
+
+msgid "Contract areas"
+msgstr ""
+
+msgid "Contract cancelled"
+msgstr ""
+
+msgid "Contract farming"
+msgstr "Контрактное фермерство"
+
+msgid "Contract signed"
+msgstr ""
+
+msgid "Contribute"
+msgstr "Оказать содействие"
+
+msgid "Copy deal"
+msgstr ""
+
+msgid "Copy this deal"
+msgstr ""
+
+msgid "Copy this investor"
+msgstr ""
 
 #, python-brace-format
 msgid "Countries investing in {country}"
 msgstr "Страны, инвестирующие в {country}"
 
+#, python-brace-format
+msgid "Countries {country} invests in"
+msgstr ""
+
+msgid "Country of registration"
+msgstr "Страна регистрации"
+
+msgid "Country profile graphs"
+msgstr ""
+
+msgid "Country profiles"
+msgstr "Профили стран"
+
 #, fuzzy
-msgid "The investor network diagram is only visible for live versions of an investor. I.e. https://landmatrix.org/investor/:id/"
-msgstr "Схема сети инвестора видна только для живых версий инвестора. Т.е. https://landmatrix.org/investor/:id/"
+msgid "Country profiles present national-level data of large-scale land acquisitions and transactions including who the investors are, what the aim of the investment is, who the former owner was and what the land was previously used for, and what the potential benefits and impacts of the land deals are."
+msgstr "Профили стран представляют данные на национальном уровне о крупномасштабных приобретениях и сделках, в том числе о том, кто являются инвесторами, какова цель инвестиций, кем был бывший владелец, для чего ранее использовалась земля, и каковы потенциальные выгоды и последствия сделок."
+
+msgid "Create a new draft"
+msgstr ""
+
+msgid "Created by me"
+msgstr ""
+
+msgid "Creates a new draft version of this deal"
+msgstr ""
+
+msgid "Creates a new draft version of this investor"
+msgstr ""
+
+msgid "Creation"
+msgstr ""
+
+msgid "Crops"
+msgstr "Сельхозкультуры"
+
+msgid "CSV file"
+msgstr ""
+
+msgid "Currency"
+msgstr ""
+
+msgid "Current"
+msgstr ""
+
+msgid "Current implementation status"
+msgstr "Текущий статус исполнения"
+
+msgid "Current negotiation status"
+msgstr "Текущий статус переговоров"
+
+msgid "Data"
+msgstr "Данные"
+
+msgid "Data overview"
+msgstr ""
+
+msgid "Data policy"
+msgstr "Политикой обработки данных"
+
+msgid "Data source"
+msgstr "Источник информации"
+
+msgid "Deal history"
+msgstr "История сделки"
+
+msgid "Deal ID"
+msgstr "ID сделки"
+
+msgid "Deal size"
+msgstr "Размер сделки"
+
+msgid "Deals (Involvements as Operating company)"
+msgstr "Сделки (участие в качестве компании-оператора)"
+
+msgid "Default filter"
+msgstr "Фильтр по умолчанию"
+
+msgid "Delete"
+msgstr "Удалить"
+
+msgid "Delete deal"
+msgstr "Удалить сделку"
+
+msgid "Delete feature?"
+msgstr ""
+
+msgid "Delete investor"
+msgstr "Удалить инвестора"
+
+msgid "Deletes this deal"
+msgstr ""
+
+msgid "Deletes this draft version of the deal"
+msgstr ""
+
+msgid "Deletes this draft version of the investor"
+msgstr ""
+
+msgid "Deletes this investor"
+msgstr ""
+
+msgid "Detailed contract farming crop and animal information"
+msgstr "Подробная информация о сельхозкультурах и животных, выращиваемых в рамках контрактного фермерства"
+
+msgid "Detailed crop, animal and mineral information"
+msgstr "Подробная информация о сельхозкультурах, животных и полезных ископаемых"
 
 msgid "Displayed data"
 msgstr "Отображаемые данные"
 
-msgid "Go to map"
-msgstr "Перейти к карте"
+msgid "Do you really want to close the editor?"
+msgstr ""
+
+msgid "Do you really want to copy this deal?"
+msgstr ""
+
+msgid "Do you really want to remove this file?"
+msgstr ""
+
+msgid "Domestic"
+msgstr "Внутри страны"
+
+msgid "Don't show this message again"
+msgstr ""
+
+msgid "Download"
+msgstr "Загрузить"
+
+msgid "Download country profiles for"
+msgstr "Загрузить профили стран по"
+
+msgid "Dynamics of deal by investor type"
+msgstr ""
+
+msgid "Dynamics overview"
+msgstr ""
+
+#, fuzzy
+msgid "Dynamics overview charts"
+msgstr "Обзор динамики развития"
+
+msgid "Edit"
+msgstr "Редактировать"
+
+msgid "Editing deal #"
+msgstr ""
+
+msgid "Editing Investor #"
+msgstr ""
+
+msgid "Edits this draft version"
+msgstr ""
+
+msgid "Edits this investor version"
+msgstr ""
+
+msgid "Employees"
+msgstr ""
+
+msgid "Employment"
+msgstr "Трудоустройство"
+
+msgid "Excel document"
+msgstr ""
+
+msgid "Excluded"
+msgstr "Исключая"
 
 #, fuzzy
 msgid "Explore the map for information about land deals from global down to regional and country level."
 msgstr "Изучите карту, чтобы получить информацию о сделках от глобального до регионального и национального уровня."
 
-#, fuzzy
-msgid "Search and filter the dataset through pre-configured entry points or drill down to single deals."
-msgstr "Используйте посик и фильтруйте набор данных с помощью предварительно настроенных точек входа или переходите к отдельным сделкам."
+msgid "Export (%)"
+msgstr ""
+
+msgid "Expression of interest"
+msgstr ""
+
+msgid "Failed"
+msgstr "Не состоявшиеся сделки"
+
+msgid "FAQ"
+msgstr "Часто задаваемые вопросы (ЧАВО)"
+
+msgid "Farmers"
+msgstr ""
+
+msgid "Feedback by me"
+msgstr ""
+
+msgid "Feedback for me"
+msgstr ""
+
+msgid "Filter"
+msgstr "Фильтр"
+
+msgid "Filters"
+msgstr ""
+
+msgid "First name"
+msgstr "Имя"
+
+msgid "Forest concession"
+msgstr "Концессия в области лесного хозяйства"
+
+msgid "Forgot password?"
+msgstr "Забыли пароль?"
+
+msgid "Former land owner (not by constitution)"
+msgstr "Предыдущий собственник земли (без правоустанавливающих документов)"
+
+msgid "Former use"
+msgstr "Предыдущее целевое использование"
+
+msgid "from"
+msgstr ""
+
+msgid "From"
+msgstr "От"
+
+msgid "Full update"
+msgstr ""
+
+msgid "Fully updated"
+msgstr "Полностью обновленная"
+
+msgid "Gender-related info"
+msgstr "Информация о гендерных факторах"
+
+msgid "General info"
+msgstr "Общие сведения"
+
+msgid "General Info"
+msgstr ""
 
 #, fuzzy
 msgid "Generate your own infographics using a wide selection of charts to illustrate information about deals."
 msgstr "Создавайте собственную инфографику, используя широкий выбор диаграмм для иллюстрации информации о сделках."
 
-msgid "Analytical reports"
-msgstr "Аналитические отчеты"
+msgid "Global"
+msgstr "Глобальный масштаб"
 
-msgid "Events"
-msgstr "События"
+msgid "Global Cropland"
+msgstr "Пахотные земли по всему миру"
+
+msgid "Go to active version"
+msgstr ""
+
+msgid "Go to current draft"
+msgstr ""
+
+msgid "Go to map"
+msgstr "Перейти к карте"
+
+msgid "here"
+msgstr ""
+
+msgid "Households"
+msgstr ""
+
+msgid "How did the community react?"
+msgstr "Как отреагировала община?"
+
+msgid "How much do investors pay for water and the use of water infrastructure?"
+msgstr "Сколько платят инвесторы за пользование водой и водной инфраструктурой?"
+
+msgid "How much water is extracted?"
+msgstr "Сколько воды забрано?"
+
+msgid "I fully updated this deal."
+msgstr ""
+
+msgid "I've read and agree to the"
+msgstr "Я ознакомлен/-а и согласен/-сна с"
+
+msgid "ID or Name"
+msgstr ""
+
+msgid "If you set the confidential flag, this deal will not be publicly visible anymore. If you want to keep it public, click on 'Cancel'."
+msgstr ""
+
+msgid "If you unset the confidential flag, this deal will be publicly visible once it is set active. If you want to keep it confidential, click on 'Cancel'."
+msgstr ""
+
+msgid "If your email-address is registered with Land Matrix you should receive an email shortly."
+msgstr ""
+
+msgid "Improvement requests for me"
+msgstr ""
+
+msgid "Improvements requested by me"
+msgstr ""
+
+msgid "Include unknown years"
+msgstr ""
 
 #, fuzzy
-msgid "Learning opportunities"
-msgstr "Возможности обучения"
+msgid "Included"
+msgstr "Включая"
 
-msgid "News"
-msgstr "Новости"
+msgid "Indigenous and community conserved area, Philippines"
+msgstr ""
 
-msgid "Publications"
-msgstr "Публикации"
+msgid "Intended"
+msgstr "Предварительные сделки"
 
-#, python-brace-format
-msgid "{x} deals have multiple intentions, resulting in a total of {y} intentions for {z} deals."
+msgid "Intended area"
+msgstr "Планируемая площадь"
+
+msgid "Intended areas"
+msgstr ""
+
+msgid "Intention unknown"
+msgstr ""
+
+msgid "Invalid format. Use YYYY, YYYY-MM or YYYY-MM-DD"
+msgstr ""
+
+msgid "Investment in agriculture"
+msgstr "Инвестиции в сельское хозяйство"
+
+msgid "Investor ID"
+msgstr "ID инвестора"
+
+msgid "Investor info"
+msgstr "Информация об инвесторе"
+
+msgid "Investor name"
+msgstr "Имя/название инвестора"
+
+msgid "Investors"
+msgstr "Инвесторы"
+
+msgid "Involvement"
+msgstr "Участие"
+
+msgid "Involvements"
+msgstr ""
+
+msgid "Is operating company of"
+msgstr "Компания-оператор относится к"
+
+msgid "Is parent company of"
+msgstr "Материнская компания по отношению к"
+
+msgid "Is tertiary investor/lender of"
+msgstr "Третичный инвестор/заимодатель по отношению к"
+
+msgid "Jobs"
+msgstr ""
+
+msgid "Key biodiversity areas, Philippines"
+msgstr "Ключевые зоны биоразнообразия, Филиппины"
+
+msgid "Land area"
+msgstr "Площадь земель"
+
+msgid "Land Cover"
+msgstr "Почвенно-растительный покров"
+
+msgid "Land Matrix"
+msgstr ""
+
+#, fuzzy
+msgid "Land Matrix region"
+msgstr "Land Matrix регион"
+
+msgid "Last changes"
+msgstr ""
+
+msgid "Last name"
+msgstr "Фамилия"
+
+msgid "Latest tweets"
+msgstr "Последние твиты"
+
+msgid "Latitude"
+msgstr "Широта"
+
+msgid "Leasing fees"
+msgstr "Арендная плата"
+
+msgid "Legend"
+msgstr "Условные обозначения"
+
+msgid "Level of parent investors"
+msgstr "Уровень материнских компаний-инвесторов"
+
+msgid "Local communities / indigenous peoples"
+msgstr "Местные общины / коренные народы"
+
+msgid "Locations (as geojson)"
+msgstr "Локации (в формате GeoJSON)"
+
+msgid "Logbook"
+msgstr ""
+
+msgid "Login"
+msgstr "Войти"
+
+msgid "Login successful."
+msgstr ""
+
+msgid "Logout"
+msgstr "Выйти"
+
+msgid "Longitude"
+msgstr "Долгота"
+
+msgid "LSLA by negotiation status"
+msgstr ""
+
+msgid "Manage"
+msgstr "Управление"
+
+msgid "Management"
+msgstr ""
+
+msgid "Map"
+msgstr "Карта"
+
+msgid "Map settings"
+msgstr "Настройки карты"
+
+msgid "Maximum file size: 10MB"
+msgstr "Максимальный размер файла: 10МВ"
+
+msgid "Memorandum of understanding"
+msgstr ""
+
+msgid "Meta"
+msgstr ""
+
+msgid "Mineral Resources"
+msgstr ""
+
+msgid "Mineral resources"
+msgstr "Полезные ископаемые"
+
+msgid "Modified at"
+msgstr ""
+
+msgid "Modified by"
+msgstr "Изменено пользователем"
+
+msgid "More details"
+msgstr "Подробнее"
+
+msgid "More details about this deal"
+msgstr "Подробнее об этой сделке"
+
+msgid "More details about this investor"
+msgstr "Подробнее об этом инвесторе"
+
+msgid "moving of markers"
+msgstr ""
+
+msgid "My data"
+msgstr ""
+
+msgid "My drafts"
+msgstr ""
+
+msgid "My requests"
+msgstr ""
+
+msgid "Names of communities / indigenous peoples affected"
+msgstr "Названия общин / коренных народов, чьи интересы задевает сделка"
+
+msgid "Negotiations failed"
+msgstr ""
+
+msgid "Network graph"
+msgstr ""
+
+msgid "New around here? Sign up"
+msgstr ""
+
+msgid "News & publications"
+msgstr "Новости и публикации"
+
+msgid "No"
+msgstr "Нет"
+
+msgid "No data source"
+msgstr "Нет источника данных"
+
+msgid "No information"
+msgstr ""
+
+msgid "No. of deals"
+msgstr ""
+
+msgid "Not confidential"
+msgstr "Не конфиденциальная"
+
+msgid "Not fully updated"
+msgstr ""
+
+#, fuzzy
+msgid "Not publicly visible"
+msgstr "Не видимая публично"
+
+msgid "Number of deal locations"
+msgstr "Количество локаций для сделок"
+
+msgid "Number of deals"
+msgstr "Количество сделок"
+
+msgid "Number of domestic jobs created"
+msgstr "Количество созданных рабочих мест для местного населения"
+
+msgid "Number of intentions per category of production according to implementation status"
+msgstr ""
+
+msgid "Number of jobs for foreigners created"
+msgstr "Количество рабочих мест, созданных для иностранцев"
+
+msgid "Number of total jobs created"
+msgstr "Общее количество созданных рабочих мест"
+
+msgid "Observatories"
+msgstr "Обсерватории"
+
+msgid "Oil palm concessions Indonesia"
+msgstr "Концессии масличных пальм, Индонезия"
+
+msgid "OK"
+msgstr ""
+
+msgid "Only"
+msgstr ""
+
+msgid "Open request"
+msgstr ""
+
+msgid "Operating company"
+msgstr "Компания-оператор"
+
+msgid "Oral agreement"
+msgstr ""
+
+msgid "Password"
+msgstr ""
+
+msgid "Password confirmation"
+msgstr ""
+
+msgid "Password successfully updated."
+msgstr ""
+
+msgid "Please click the nodes to get more details."
+msgstr "Для просмотра подробностей кликните на узловую точку."
+
+msgid "Please note: a deal may have more than one intention."
 msgstr ""
 
 #, python-brace-format
 msgid "Please note: {number} deals have multiple investor types. The full size of the deal is assigned to each investor type."
 msgstr ""
 
-msgid "Русский"
-msgstr "Русский"
+msgid "Please provide a comment explaining your request"
+msgstr ""
 
-msgid "Page not found"
-msgstr "Страница не найдена"
+#, fuzzy
+msgid "Produce"
+msgstr "Производство"
 
-msgid "The page you are looking for appears to have been moved, deleted or does not exist."
-msgstr "Вероятно, страница, которую вы ищете, была перемещена или удалена, либо же ее не существует."
+msgid "Produce info"
+msgstr "Информация о продукции"
 
-msgid "Server Error"
-msgstr "Ошибка сервера"
+msgid "Produce info map"
+msgstr ""
 
-msgid "Looks like something went wrong"
-msgstr "Кажется, что-то пошло не так"
+msgid "Produce Info Map"
+msgstr ""
 
-msgid "Clear filters"
-msgstr "Сбросить фильтры"
+msgid "Production area"
+msgstr ""
 
-msgid "We track these errors automatically, but if the problem persists feel free to contact us. In the meantime, try refreshing."
-msgstr "Подобные ошибки отслеживаются автоматически, но если проблема продолжит возникать, можно сообщить о ней лично. Тем временем попробуйте обновить страницу."
+msgid "Production areas"
+msgstr ""
+
+msgid "Promised or received compensation"
+msgstr "Обещанная или полученная компенсация"
+
+msgid "Protected areas, Philippines"
+msgstr "Защищенные области, Филиппины"
+
+msgid "Public deals only"
+msgstr ""
+
+msgid "Publicly visible"
+msgstr ""
+
+msgid "Put each value on a new line, i.e. press enter between each name"
+msgstr "Указывайте только одно значение в каждой строке, напр., нажимайте клавишу ввода после каждого названия"
+
+msgid "Quit without saving?"
+msgstr ""
+
+msgid "Reactivate this deal"
+msgstr ""
+
+msgid "Reactivate this investor"
+msgstr ""
+
+msgid "Read more"
+msgstr "Читать далее"
+
+msgid "Register"
+msgstr "Зарегистрироваться"
+
+msgid "Registration successful. You can now close this window and check your emails."
+msgstr ""
+
+msgid "Relationship"
+msgstr ""
+
+msgid "Remove"
+msgstr "Удалить"
+
+msgid "Remove this file"
+msgstr ""
+
+msgid "Request improvement"
+msgstr ""
+
+msgid "Reset password"
+msgstr "Сбосить пароль"
+
+msgid "Resources"
+msgstr "Ресурсы"
+
+msgid "Reviewed by me"
+msgstr ""
+
+msgid "Role"
+msgstr "Роль"
+
+msgid "Satellite"
+msgstr ""
+
+msgid "Save"
+msgstr ""
+
+msgid "Saving..."
+msgstr ""
+
+msgid "Scope"
+msgstr ""
+
+#, fuzzy
+msgid "Search and filter the dataset through pre-configured entry points or drill down to single deals."
+msgstr "Используйте посик и фильтруйте набор данных с помощью предварительно настроенных точек входа или переходите к отдельным сделкам."
+
+msgid "Search deals and investors"
+msgstr ""
+
+msgid "Send"
+msgstr ""
+
+msgid "Send a request of improvent and create a new draft version of the deal"
+msgstr ""
+
+msgid "Send a request of improvent and create a new draft version of the investor"
+msgstr ""
+
+msgid "Send to"
+msgstr ""
+
+msgid "Set confidential"
+msgstr ""
+
+msgid "Set password"
+msgstr ""
+
+msgid "Sets the deal active"
+msgstr ""
+
+msgid "Sets the investor active"
+msgstr ""
+
+msgid "Show"
+msgstr ""
+
+msgid "Show all"
+msgstr "Показать все"
+
+msgid "Show deals"
+msgstr "Показать сделки"
+
+msgid "Show details for investor"
+msgstr ""
+
+msgid "Show latest changes"
+msgstr ""
+
+msgid "Size"
+msgstr "Размер"
+
+msgid "Starts editing this deal"
+msgstr ""
+
+msgid "Starts editing this investor"
+msgstr ""
+
+msgid "Status"
+msgstr "Статус"
+
+msgid "Status unknown"
+msgstr ""
 
 #, fuzzy
 msgid "Stop impersonation"
 msgstr "Прекратить олицетворение"
 
-#, fuzzy
-msgid "Case statistics"
-msgstr "Статистика случаев"
+msgid "Submit"
+msgstr "Подтвердить"
 
-msgid "Logout"
-msgstr "Выйти"
-
-msgid "Login/Register"
-msgstr "Войти/Зарегистрироваться"
-
-msgid "Stay informed"
-msgstr "Следить за обновлениями"
-
-msgid "Get involved"
-msgstr "Приобщиться"
-
-msgid "FAQ"
-msgstr "Часто задаваемые вопросы (ЧАВО)"
-
-#, fuzzy
-msgid "You are using an <strong>outdated</strong> browser. Please <a href=\"http://browsehappy.com/\">upgrade your browser</a> or <a href=\"http://www.google.com/chromeframe/?redirect=true\">activate Google Chrome Frame</a> to improve your experience.</p>"
-msgstr "Ваш браузер <strong>устарел</strong>. Пожалуйста, <a href=\"http://browsehappy.com/\">обновите свой браузер</a> или <a href=\"http://www.google.com/chromeframe/?redirect=true\">активируйте Google Chrome Frame</a>, чтобы улучшить свое взаимодействие с базой данных.</p>"
-
-msgid "There is currently no content for this category."
-msgstr "В настоящее время наполнение этой категории отсутствует."
-
-msgid "All categories"
-msgstr "Все категории"
-
-msgid "Responses for page"
-msgstr "Реакции на страницу"
-
-msgid "Submit Comment"
-msgstr "Оставить комментарий/примечание"
-
-msgid "Thanks for commenting"
-msgstr "Спасибо за комментарий/примечание"
-
-msgid "Thanks for posting your comment"
-msgstr "Спасибо за публикацию комментария/примечания"
-
-#, fuzzy
-msgid ""
-"\n"
-"      We have received your comment, and posted it on the web site.<br/>\n"
-"      You will be sent back to the article...\n"
-"      "
+msgid "Submit for activation"
 msgstr ""
-"\n"
-"      \"\n"
-"      Ваш комментарий получен и опубликован на вебсайте.<br/>\n"
-"      Вы будете перенаправлены обратно к статье...\n"
-"      \"\n"
-"      "
 
-msgid "Back to the article"
-msgstr "Вернуться к статье"
+msgid "Submit for review"
+msgstr ""
 
-msgid "Activate"
-msgstr "Активировать"
+msgid "Submits the deal for activation"
+msgstr ""
 
-msgid "Account activation failed"
-msgstr "Сбой активации учетной записи"
+msgid "Submits the deal for review"
+msgstr ""
 
-msgid "Activation complete"
-msgstr "Активация завершена"
+msgid "Submits the investor for activation"
+msgstr ""
 
-msgid "Your account is now activated."
-msgstr "Ваша учетная запись успешно активирована."
+msgid "Submits the investor for review"
+msgstr ""
 
-msgid "Activate account at"
-msgstr "Активировать учетную запись на"
+msgid "Submitted for activation"
+msgstr ""
 
-#, python-format
-msgid "Link is valid for %(expiration_days)s days."
-msgstr "Ссылка действительна в течение %(expiration_days)s дней."
+msgid "Submitted for review"
+msgstr ""
 
-msgid "Account activation on"
-msgstr "Активация учетной записи на"
+msgid "Subsidiary company"
+msgstr ""
 
-msgid "Activation failed"
-msgstr "Сбой активации"
+msgid "Table"
+msgstr ""
 
-msgid "Your account could not be activated. Please try again."
-msgstr "Не удалось активировать Вашу учетную запись. Пожалуйста, попробуйте еще раз."
+msgid "Table columns"
+msgstr ""
 
-msgid "Registration closed"
-msgstr "Регистрация закрыта"
+msgid "Target country is NOT set"
+msgstr "Целевая страна НЕ установлена"
 
-msgid "Registration is currently closed."
-msgstr "На данный момент регистрация закрыта."
+msgid "Target country is set"
+msgstr "Страна назначения установлена"
 
-msgid "Registration complete"
-msgstr "Регистрация завершена"
+msgid "Tertiary investors/lenders"
+msgstr "Третичные инвесторы/заимодатели"
 
-msgid "You are now registered. Activation email sent."
-msgstr "Вы зарегистрированы. Письмо активации отправлено на вашу почту."
+#, python-brace-format
+msgid "The investor network diagram is not visible in draft mode. Go to {liveLink} to see it."
+msgstr ""
 
-msgid "Register"
-msgstr "Зарегистрироваться"
+msgid "This account has already been activated. You can probably log in now."
+msgstr ""
 
-msgid "Your contact information will help our researchers get in touch with you for additional information. We respect and protect your privacy and anonymity, and will never share or publish your personal information. You can also write us directly at <a href=\"mailto:data@landmatrix.org\">data@landmatrix.org</a>."
-msgstr "Ваша контактная информация даст нашим исследователям возможность связаться с вами для получения дополнительных сведений. Мы уважаем и защищаем Вашу конфиденциальность и анонимность, и никогда не станем делиться вашими личными данными и публиковать их в открытом доступе. Вы также можете связаться с нами напрямую, отправив письмо на электронный адрес <a href=\"mailto:data@landmatrix.org\">data@landmatrix.org</a>."
+msgid "This creates a completely identical copy of the deal. The copy must then be edited and adjusted to prevent identical duplicates."
+msgstr ""
 
-msgid "Download"
-msgstr "Загрузить"
+msgid "This figure lists the intention of investments per negotiation status."
+msgstr ""
 
-msgid "Default filters are enabled"
-msgstr "Задействованы фильтры по умолчанию"
+msgid "to"
+msgstr "на"
 
-msgid "The data is filtered by global or national filter presets. Please uncheck the checkbox to show all data."
-msgstr "Отображенные данные были отобраны с помощью предустановленных фильтров (глобальных или по странам). Для просмотра всей информации снимите галочки."
+msgid "Todo"
+msgstr ""
 
-msgid "Default filters are disabled"
-msgstr "Фильтры по умолчанию отключены"
+msgid "tons"
+msgstr "тонны"
 
-msgid "You can see all data unfiltered. Please check the checkbox to use our global or national filter presets."
-msgstr "Вы видите полный список информации без фильтров. Для активации предустановленных фильтров (глобальный или по странам) поставьте галочку в соответствующем окошке."
+msgid "Transnational"
+msgstr "Транснациональная"
 
-msgid "Select a filter preset"
-msgstr "Выберите предустановленный фильтр"
+msgid "Undelete"
+msgstr ""
 
-msgid "Thanks for spending some quality time with the Web site today."
-msgstr "Спасибо за ваше время и внимание, уделенные этому Сайту."
+msgid "Under negotiation"
+msgstr ""
 
-msgid "Log in again"
-msgstr "Войти еще раз"
+msgid "Unset confidential"
+msgstr ""
 
-msgid "Login"
-msgstr "Войти"
+msgid "Use of produce"
+msgstr "Использование продукции"
 
-msgid "Your username and password didn't match. Please try again."
-msgstr "Указанные Вами имя пользователя и пароль не совпадают. Пожалуйста, попробуйте еще раз."
+msgid "User"
+msgstr "Пользователь"
 
-msgid "Your account doesn't have access to this page. To proceed, please login with an account that has access."
-msgstr "Ваша учетная запись не имеет доступа к этой странице. Пожалуйста, войдите в учетную запись, имеющую доступ."
+msgid "User information"
+msgstr "Информация пользователя"
 
-msgid "Please login to see this page."
-msgstr "Для просмотра этой страницы войдите в учетную запись."
+msgid "Username"
+msgstr ""
 
-msgid "Forgot password?"
-msgstr "Забыли пароль?"
+msgid "Version"
+msgstr ""
 
-msgid "Reset it"
-msgstr "Восстановить"
+msgid "Version history"
+msgstr ""
 
-msgid "No registered user yet?"
-msgstr "Нет учетной записи?"
+msgid "Water"
+msgstr "Вода"
 
-msgid "Password changed"
-msgstr "Пароль изменен"
+msgid "We currently have information about:"
+msgstr "В данные момент мы располагаем информацией о:"
 
-msgid "Your password was changed successfully."
-msgstr "Ваш пароль был успешно изменен."
+msgid "Web of transnational deals"
+msgstr "Сеть транснациональных сделок"
 
-msgid "Change password"
-msgstr "Изменить пароль"
+msgid "Workers"
+msgstr ""
 
-msgid "Password reset complete"
-msgstr "Сброс пароля завершен"
+msgid "Write something about yourself and your company. This won't be published."
+msgstr "Напишите о себе и своей компании. Эти сведения не будут опубликованы в свободном доступе."
 
-msgid "Your password has been reset successfully."
-msgstr "Ваш пароль был успешно сброшен."
+msgid "Year of initiation"
+msgstr ""
 
-msgid "Log in"
-msgstr "Войти"
+msgid "Yes"
+msgstr "Да"
 
-msgid "Confirm password reset"
-msgstr "Подтвердить сброс пароля"
+msgid "Yield (tons)"
+msgstr ""
 
-msgid "Password reset failed"
-msgstr "Не удалось сбросить пароль"
+msgid "You are not the author of this version. Therefore, a new version will be created if you proceed."
+msgstr ""
 
-msgid "Password reset"
-msgstr "Пароль сброшен"
+msgid "You can only change the country when no locations are defined."
+msgstr ""
 
-msgid "If there's an account with the given email address, an email with password reset instructions has been sent."
-msgstr "Если в учетной записи указан электронный адрес, на него было отправлено письмо с инструкциями по восстановлению пароля."
+msgid "Your contact information will help our researchers get in touch with you for additional information. We respect and protect your privacy and anonymity, and will never share or publish your personal information. You can also write us directly at data@landmatrix.org."
+msgstr "Ваша контактная информация даст нашим исследователям возможность связаться с вами для получения дополнительных сведений. Мы уважаем и защищаем Вашу конфиденциальность и анонимность, и никогда не станем делиться вашими личными данными и публиковать их в открытом доступе. Вы также можете связаться с нами напрямую, отправив письмо на электронный адрес data@landmatrix.org."
+
+msgid "Your email address is confirmed. You can log in now."
+msgstr ""
+
+msgid "YYYY-MM-DD"
+msgstr ""
+
+#, python-brace-format
+msgid "{x} deals have multiple intentions, resulting in a total of {y} intentions for {z} deals."
+msgstr ""
+
+msgid "English"
+msgstr "English"
+
+msgid "Español"
+msgstr "Español"
+
+msgid "Français"
+msgstr "Français"
+
+msgid "Русский"
+msgstr "Русский"
 
 #, fuzzy, python-format
-msgid ""
-"\n"
-"Someone requested that the password be reset for the following account:\n"
-"\n"
-"%(site_name)s\n"
-"Username: %(user)s\n"
-"\n"
-"If this was a mistake, just ignore this email and nothing will happen.\n"
-"\n"
-"To reset your password, visit the following address:\n"
-msgstr ""
-"\n"
-"\"\n"
-"Кто-то подал запрос на восстановление пароля для следующей учетной записи:\n"
-"\n"
-"%(site_name)s\n"
-"Имя пользователя: %(user)s\n"
-"\n"
-"Если запрос отправлен по ошибке, просто проигнорируйте это письмо.\n"
-"\n"
-"Для сброса пароля пройдите по ссылке:\n"
-"\"\n"
+#~ msgid "Attribute group \"%s\" is invalid counter (groups should start with 1) for historical activity %i (Activity identifier: #%i)"
+#~ msgstr "Аттрибутивная группа \"%s\" является недействительным счетчиком (группы должны начинаться с 1) для хронологии активности (идентификатор действия: #%i)"
 
-msgid "Reset password"
-msgstr "Сбосить пароль"
+#~ msgid "is one of"
+#~ msgstr "относится к"
 
-msgid "Share"
-msgstr "Поделиться"
+#~ msgid "isn't any of"
+#~ msgstr "не относится к"
+
+#~ msgid "is >="
+#~ msgstr ">="
+
+#~ msgid "is >"
+#~ msgstr ">"
+
+#~ msgid "is <="
+#~ msgstr "<="
+
+#~ msgid "is <"
+#~ msgstr "<"
+
+#~ msgid "contains"
+#~ msgstr "содержит"
+
+#~ msgid "not contains"
+#~ msgstr "не сожержит"
+
+#~ msgid "is empty"
+#~ msgstr "пустое поле"
+
+#~ msgid "excludes"
+#~ msgstr "за исключением"
+
+#~ msgid "Multiple intentions"
+#~ msgstr "Многоцелевое назначение"
+
+#~ msgid "This field is required."
+#~ msgstr "Это поле обязательно для заполнения."
+
+#~ msgid "Chart"
+#~ msgstr "Диаграмма"
+
+#~ msgid "Food-Crop - Crops that be consumed by humans, even if also used as livestock feed"
+#~ msgstr "Пищевая культура (культуры, употребляемые в пищу людьми, даже если могут использоваться в качестве корма для скота)"
+
+#~ msgid "Non-Food - Biofuels, exclusive livestock feed, industrial, cosmetic and medicinal uses"
+#~ msgstr "Непищевая культура (биотопливо, фуражные культуры, промышленное, косметическое или медицинское применение)"
+
+#~ msgid "Flex-Crop - Potential both biofuel and food uses"
+#~ msgstr "Адаптивная культура (можно употреблять в пищу либо использовать как биотопливо)"
+
+#~ msgid "Multiple Use - Several crops in different categories"
+#~ msgstr "Многоцелевое использование (несколько культур, относящихся к различным категориям)"
+
+#~ msgid "Global map of investments"
+#~ msgstr "Инвестиционная карта мира"
+
+#~ msgid "Choose between investor or target countries using the menu below. Click on the bubbles to visualise the selected country's involvement in the global land acquisition phenomenon."
+#~ msgstr "Выберите страну-инвестора или страну назначения инвестиций из списка ниже. Нажмите на выноску с выбранной страной, чтобы посмотреть визуализацию ее участия в глобальном процессе приобретения земель."
+
+#~ msgid "0 acquisitions/targets"
+#~ msgstr "0 приобретений/целей"
+
+#~ msgid "to/from Country"
+#~ msgstr "в страну / из страны"
+
+#~ msgid "whereof 0 with itself"
+#~ msgstr "из которых 0 внутри страны"
+
+#~ msgid "Go to Table"
+#~ msgstr "Перейти к таблице"
+
+#~ msgid "Reset"
+#~ msgstr "Сброс параметров"
+
+#, fuzzy
+#~ msgid "Investor&nbsp;Countries"
+#~ msgstr "Страны&nbsp;инвесторы"
+
+#, fuzzy
+#~ msgid "Target&nbsp;Countries"
+#~ msgstr "Страны&nbsp;назначения"
+
+#~ msgid "Investor Countries"
+#~ msgstr "Страны-инвесторы"
+
+#~ msgid "Target Countries"
+#~ msgstr "Страны назначения"
+
+#~ msgid "Dynamics Overview"
+#~ msgstr "Обзор динамики развития"
+
+#~ msgid "Show size or number of deals"
+#~ msgstr "Показать размер или количество сделок"
+
+#~ msgid "Deals divided by implementation status. Since this chart shows all deals in the database, there is no option to select concluded, intended or failed deals separately."
+#~ msgstr "Сделки разделены по статусу выполнения. Поскольку эта диаграмма показывает все сделки, занесенные в базу данных, возможность отдельно выделить заключенные, предварительные и не состоявшиеся сделки отсутствует."
+
+#~ msgid "There are two key variables to describe the status of a land deal: negotiation and implementation. Although these two variables are linked, they are independent in our database, and various combinations are possible for different projects. Click here for more info."
+#~ msgstr "В описании статуса земельной сделки есть две ключевые переменные: переговоры и реализация. Хотя эти две переменные и взаимосвязаны, в нашей базе данных они разделены, и в разных проектах они могут встречаться в различных комбинациях. Для получения дополнительной информации нажмите сюда."
+
+#, fuzzy
+#~ msgid "Deals having “agriculture” as main intention of investment disaggregated into sub-sections."
+#~ msgstr "Сделки, в которых \"Сельское хозяйство\" является основным целевым назначением инвестиций, с разбивкой на подкатегории."
+
+#, fuzzy
+#~ msgid "Deals divided by intention of investment."
+#~ msgstr "Сделки, разбитые по целевому назначению инвестиций."
+
+#~ msgid "Deals divided by negotiation status. Since this chart shows all deals in the database, there is no option to select concluded, intended or failed deals separately."
+#~ msgstr "Сделки разделены по статусу переговоров. Поскольку эта диаграмма показывает все сделки, занесенные в базу данных, возможность отдельно выделить заключенные, предварительные и не состоявшиеся сделки отсутствует."
+
+#, fuzzy
+#~ msgid "It's a big deal"
+#~ msgstr "Это крупная сделка"
+
+#, fuzzy
+#~ msgid "Enter a location to set the centre of a circle that displays an area equal to the size of the intended, concluded, or failed land acquisitions."
+#~ msgstr "Укажите название местности, чтобы обозначить центр круга, отображаюшего соотношение предварительных, заключенных или несостоявшихся земельных сделок."
+
+#~ msgid "Enter location..."
+#~ msgstr "Введите местоположение…"
+
+#~ msgid "Go"
+#~ msgstr "Перейти"
+
+#, fuzzy
+#~ msgid "Area equal to the size of the intended, concluded or failed land acquisitions: <span class=\"hectares\">0</span> ha"
+#~ msgstr "Площадь, соразмерная предполагаемого, завершенного или неудачного приобретения земли: <span class=\"hectares\">0</span> га."
+
+#~ msgid "This infographic shows how agricultural land acquisitions that include information on crops are subdivided according to destination of use."
+#~ msgstr "На этой инфографике видно, как сделки по приобретению земель, которые содержат информацию о выращиваемых культурах, делятся в зависимости от целевого назначения."
+
+#~ msgid "Food-Crops"
+#~ msgstr "Пищевые культуры"
+
+#~ msgid "Non-Food Crops"
+#~ msgstr "Непищевые культуры"
+
+#~ msgid "Flex-Crops"
+#~ msgstr "Адаптивные культуры"
+
+#~ msgid "All Continents"
+#~ msgstr "Все континенты"
+
+#~ msgid "Africa"
+#~ msgstr "Африка"
+
+#~ msgid "Eastern Europe"
+#~ msgstr "Восточная Европа"
+
+#~ msgid "Latin America"
+#~ msgstr "Латинская Америка"
+
+#~ msgid "Oceania"
+#~ msgstr "Океания"
+
+#~ msgid "Asia"
+#~ msgstr "Азия"
+
+#~ msgid "Special interest"
+#~ msgstr "Особо ценные земли"
+
+#~ msgid "Size in operation"
+#~ msgstr "Площать обрабатываемых земель"
+
+#~ msgid "Size under contract"
+#~ msgstr "Площадь законтрактованных земель"
+
+#, fuzzy
+#~ msgid "Intended Size"
+#~ msgstr "Предполагаемый размер"
+
+#~ msgid "Deals with contract farming schemes."
+#~ msgstr "Сделки с привлечением контрактного фермерства."
+
+#, fuzzy
+#~ msgid "Wood chopping."
+#~ msgstr "Дровокольная деятельность."
+
+#~ msgid "The LM has two key variables to describe the status of a land deal: the negotiation status and the implementation status. For further information press the question mark."
+#~ msgstr "Для описания статуса земельной сделки LM использует две переменные: статус переговоров и статус реализации. Для получения дополнительной информации нажмите на знак вопроса."
+
+#, fuzzy
+#~ msgid "Filter and search through deals that are divided by intention of investment: Crops, mineral resources, or livestock."
+#~ msgstr "Используйте фильтры для поиска сделок, разделенных по целевому назначению инвестиций: сельхозкультуры, полезные ископаемые, скот"
+
+#~ msgid "Toggle navigation"
+#~ msgstr "Переключить навигацию"
+
+#~ msgid "Special Interest"
+#~ msgstr "Особо ценные земли"
+
+#~ msgid "Agricultural Drivers"
+#~ msgstr "Определяющие факторы сельского хозяйства"
+
+#~ msgid "Produce Info"
+#~ msgstr "Информация о продукции"
+
+#~ msgid "Forest concessions"
+#~ msgstr "Концессии лесных хозяйств"
+
+#~ msgid "Contract Farming"
+#~ msgstr "Контрактное фермерство"
+
+#~ msgid "This interactive graph shows the global flow of transnational land acquisitions. Clicking on a single country shows its threads in the global pattern: blue lines for inbound investments, orange for outbound. Country names marked with * have been shortened to improve legibility"
+#~ msgstr "Эта интерактивная диаграмма показывает глобальный поток транснациональных приобретений земли. Нажатие на одну страну показывает ее потоки в рамках общей картины: синие линии для входящих инвестиций, оранжевые для исходящих. Названия стран, отмеченные знаком *, были сокращены для облегчения чтения."
+
+#~ msgid "<strong>Visualisation not available in your browser:</strong> Unfortunately this data visualisation uses modern technologies and is therefor not available for old browsers (lower than Internet Explorer 8). Please update your browser. "
+#~ msgstr ""
+#~ "\"<strong>Просмотр визуализации не поддерживается Вашим браузером:</strong>\n"
+#~ "К сожалению, эта визуализация данных использует современные программы и поэтому недоступна к просмотру в старых версиях браузеров (ниже Internet Explorer 8). Пожалуйста, обновите свой браузер. \" "
+
+#~ msgid "Top Countries"
+#~ msgstr "Основные страны"
+
+#~ msgid "Investor countries"
+#~ msgstr "Страны-инвесторы"
+
+#~ msgid "Target countries"
+#~ msgstr "Страны назначения"
+
+#~ msgid "Regions investing in "
+#~ msgstr "Регионы, инвестирующие в "
+
+#~ msgid "Show all inbound deals"
+#~ msgstr "Показать все входящие сделки слияния и поглощения"
+
+#~ msgid "Regions"
+#~ msgstr "Регионы"
+
+#~ msgid "invests in"
+#~ msgstr "инвестирует в"
+
+#~ msgid "Show all outbound deals"
+#~ msgstr "Показать все исходящие сделки слияния и поглощения"
+
+#~ msgid "to/from"
+#~ msgstr "в/из"
+
+#~ msgid "Region A: 0 hectares"
+#~ msgstr "Регион А: 0 гектаров"
+
+#~ msgid "Region B: 0 hectares"
+#~ msgstr "Регион Б: 0 гектаров"
+
+#~ msgid "Dashboard"
+#~ msgstr "Панель индикаторов"
+
+#~ msgid "Overall deals"
+#~ msgstr "Общее количество сделок"
+
+#~ msgid "Public deals"
+#~ msgstr "Публичные сделки"
+
+#~ msgid "Non public deals"
+#~ msgstr "Непубличные сделки"
+
+#~ msgid "Clear"
+#~ msgstr "Очистить форму"
+
+#~ msgid "Impersonate"
+#~ msgstr "Олицетворить"
+
+#~ msgid "Countries"
+#~ msgstr "Страны"
+
+#~ msgid "Users"
+#~ msgstr "Пользователи"
+
+#~ msgid "Latest added"
+#~ msgstr "Последние добавления"
+
+#~ msgid "ID"
+#~ msgstr "ID"
+
+#~ msgid "Added by"
+#~ msgstr "Добавлено пользователем"
+
+#~ msgid "Added"
+#~ msgstr "Добавлено"
+
+#~ msgid "No deals have been added lately."
+#~ msgstr "Новые добавления информации о сделках отсутствуют."
+
+#~ msgid "Latest modified"
+#~ msgstr "Последние изменения внесены"
+
+#~ msgid "Modified"
+#~ msgstr "Изменено"
+
+#, fuzzy
+#~ msgid "No deals have been modified lately."
+#~ msgstr "Новые исправления информации о сделках отсутствуют."
+
+#~ msgid "Latest deleted"
+#~ msgstr "Последние удаленные"
+
+#~ msgid "Deleted by"
+#~ msgstr "Удалено пользователем"
+
+#, fuzzy
+#~ msgid "No deals have been deleted lately."
+#~ msgstr "Новые удаления информации о сделках отсутствуют."
+
+#~ msgid "Needs your attention"
+#~ msgstr "Требует вашего внимания"
+
+#~ msgid "Last revision"
+#~ msgstr "Последняя редакция"
+
+#~ msgid "Timestamp"
+#~ msgstr "Метка времени"
+
+#~ msgid "Update"
+#~ msgstr "Обновить"
+
+#~ msgid "Approve"
+#~ msgstr "Одобрить"
+
+#~ msgid "Reject"
+#~ msgstr "Отклонить"
+
+#~ msgid "No pending activities require your attention."
+#~ msgstr "Незавершенные действия, требующие Вашего внимание, отсутствуют."
+
+#~ msgid "Feedback requests"
+#~ msgstr "Запросы на обратную связь"
+
+#~ msgid "Request from"
+#~ msgstr "Запросы от"
+
+#~ msgid "Requested"
+#~ msgstr "Запрошено"
+
+#~ msgid "No feedback requests lately."
+#~ msgstr "Новые запросы на обратную связь отсутствуют."
+
+#~ msgid "Change log "
+#~ msgstr "Журнал изменений "
+
+#~ msgid "Change log"
+#~ msgstr "Журнал изменений"
+
+#~ msgid "Time"
+#~ msgstr "Время"
+
+#~ msgid "Previous"
+#~ msgstr "Предыдущая страница"
+
+#~ msgid "Next"
+#~ msgstr "Следующая страница"
+
+#~ msgid "Manage deals/investors"
+#~ msgstr "Управление данными о сделках/инвесторах"
+
+#~ msgid "My deals/investors"
+#~ msgstr "Мои сделки/инвесторы"
+
+#~ msgid "Feedback"
+#~ msgstr "Отзывы"
+
+#, fuzzy
+#~ msgid "Pending updates"
+#~ msgstr "Ожидающие обновления"
+
+#~ msgid "Pending deletions"
+#~ msgstr "Очередь на удаление"
+
+#~ msgid "New deals for approval"
+#~ msgstr "Новые сделки, ожидающие рассмотрения"
+
+#~ msgid "Rejected by me"
+#~ msgstr "Отклонено мной"
+
+#~ msgid "Currently there are no feedback requests."
+#~ msgstr "В настоящий момент запросы на обратную связь отсутствуют."
+
+#, fuzzy
+#~ msgid "Currently there are no pending updates."
+#~ msgstr "В настоящий момент очередь правок на рассмотрение пуста."
+
+#~ msgid "Currently there are no pending deletions."
+#~ msgstr "В настоящий момент очередь на удаление пуста."
+
+#~ msgid "Currently there are no new deals for approval."
+#~ msgstr "В настоящий момент новые сделки в очереди на рассмотрение отсутствуют."
+
+#~ msgid "Currently there are no rejected changes."
+#~ msgstr "В настоящее время отклоненные изменения отсутствуют."
+
+#~ msgid "Action comment"
+#~ msgstr "Комментарий к действию"
+
+#~ msgid "Page"
+#~ msgstr "Страница"
+
+#~ msgid "of"
+#~ msgstr "из"
+
+#~ msgid "Deleted user"
+#~ msgstr "Пользователь удален"
+
+#~ msgid "Deal has been successfully approved."
+#~ msgstr "Добавление сделки успешно одобрено."
+
+#~ msgid "Deal has been successfully rejected."
+#~ msgstr "Добавление сделки успешно отклонено."
+
+#~ msgid "Deal deletion has been successfully approved."
+#~ msgstr "Удаление сделки успешно одобрено."
+
+#~ msgid "Deal deletion has been successfully rejected."
+#~ msgstr "Удаление сделки успешно отклонено."
+
+#~ msgid "Investor has been successfully approved."
+#~ msgstr "Добавление инвестора успешно одобрено."
+
+#~ msgid "Investor has been successfully rejected."
+#~ msgstr "Добавление инвестора успешно отклонено."
+
+#~ msgid "Investor deletion has been successfully approved."
+#~ msgstr "Удаление инвестора успешно одобрено."
+
+#~ msgid "Investor deletion has been successfully rejected."
+#~ msgstr "Удаление инвестора успешно отклонено."
+
+#~ msgid "added"
+#~ msgstr "добавлено"
+
+#~ msgid "removed"
+#~ msgstr "удалено"
+
+#~ msgid "changed from"
+#~ msgstr "изменено с"
+
+#~ msgid "No changes."
+#~ msgstr "Без изменений."
+
+#~ msgid "Change to Deal"
+#~ msgstr "Измнения информации о сделке"
+
+#, python-format
+#~ msgid "Deal %(deal_id)s History"
+#~ msgstr "История сделки %(deal_id)s"
+
+#, fuzzy, python-format
+#~ msgid "A list of changes made to deal %(deal_id)s"
+#~ msgstr "Список изменений, внесенных в информацию о сделке %(deal_id)s"
+
+#~ msgid "Uploaded files must be less than 10MB."
+#~ msgstr "Размер загружаемых файлов не должен превышать 10МВ."
+
+#, python-format
+#~ msgid " (%s %s)"
+#~ msgstr " (%s %s)"
+
+#~ msgid "Timber plantation (for wood and fibre)"
+#~ msgstr "Промышленная высадка деревьев (для получения древесины и волокна)"
+
+#~ msgid "Forest logging / management (for wood and fibre)"
+#~ msgstr "Лесозаготовки / управление лесным хозяйством (для получения древесины и волокна)"
+
+#~ msgid "---------"
+#~ msgstr "---------"
+
+#~ msgid "Government / State institutions (government, ministries, departments, agencies etc.)"
+#~ msgstr "Правительство / Государственные институции (правительство, министерства, департаменты, ведомства, проч.)"
+
+#~ msgid "Temporary removal from PI after criticism"
+#~ msgstr "Временное удаление с повестки предварительных слушаний после критики"
+
+#~ msgid "Research in progress"
+#~ msgstr "Сбор информации продолжается"
+
+#~ msgid "Land Observatory Import"
+#~ msgstr "Импорт данных проекта Land Observatory"
+
+#~ msgid "Meta info"
+#~ msgstr "Метаданные"
+
+#~ msgid "Public deal"
+#~ msgstr "Публичная сделка"
+
+#~ msgid "Not public"
+#~ msgstr "Непубличная"
+
+#~ msgid "Please specify in additional comment field"
+#~ msgstr "Пожалуйста, уточните в дополнительном поле для комментирования"
+
+#~ msgid "Reason"
+#~ msgstr "Причина"
+
+#~ msgid "Comment on not public"
+#~ msgstr "Комментарии к непубличным"
+
+#~ msgid "Import history"
+#~ msgstr "История импорта данных"
+
+#~ msgid "Previous identifier"
+#~ msgstr "Предыдущий идентификатор"
+
+#~ msgid "Assign to"
+#~ msgstr "Закрепить за пользователем"
+
+#~ msgid "Unassigned"
+#~ msgstr "Не закреплено"
+
+#~ msgid "Feedback comment"
+#~ msgstr "Комментарий обратной связи"
+
+#~ msgid "Contract date"
+#~ msgstr "Дата заключения контракта"
+
+#~ msgid "Contract expiration date"
+#~ msgstr "Дата окончания действия контракта"
+
+#~ msgid "Data source type"
+#~ msgstr "Тип источника информации"
+
+#~ msgid "URL"
+#~ msgstr "URL"
+
+#~ msgid "Current number of jobs (total)"
+#~ msgstr "Текущее количество рабочих мест (всего)"
+
+#~ msgid "Current number of employees (total)"
+#~ msgstr "Текущее количество наемных рабочих (всего)"
+
+#~ msgid "Current number of daily/seasonal workers (total)"
+#~ msgstr "Текущее количество поденных/сезонных работников"
+
+#~ msgid "Current number of jobs (foreign)"
+#~ msgstr "Текущее количество рабочих мест (иностранцы)"
+
+#~ msgid "Current number of employees (foreign)"
+#~ msgstr "Текущее количество наемных сотрудников (иностранцы)"
+
+#~ msgid "Current number of daily/seasonal workers (foreign)"
+#~ msgstr "Текущее количество поденных/сезонных рабочих (иностранцы)"
+
+#~ msgid "Current number of jobs (domestic)"
+#~ msgstr "Текущее количество рабочих мест (местное население)"
+
+#~ msgid "Current number of employees (domestic)"
+#~ msgstr "Текущее количество наемных сотрудников (местное население)"
+
+#~ msgid "Current number of daily/seasonal workers (domestic)"
+#~ msgstr "Текущее количество поденных/сезонных работников (местное население)"
+
+#~ msgid "Annual leasing fee type"
+#~ msgstr "Способ рассчета годовой арендной платы"
+
+#~ msgid "Comment on leasing fees"
+#~ msgstr "Примечания к арендной плате"
+
+#~ msgid "On leased / purchased area"
+#~ msgstr "На земельном участке, приобретенном в аренду / собственность"
+
+#~ msgid "On leased / purchased area (in ha)"
+#~ msgstr "На земельном участке, приобретенном в аренду / собственность (га.)"
+
+#~ msgid "On leased / purchased farmers"
+#~ msgstr "Фермеры на земельных участках, приобретенных в аренду / собственность"
+
+#~ msgid "farmers"
+#~ msgstr "фермеры"
+
+#~ msgid "On leased / purchased households"
+#~ msgstr "Домохозяйсва на земельных участках, приобретенных в аренду / собственность"
+
+#~ msgid "households"
+#~ msgstr "домохозяйства"
+
+#~ msgid "Not on leased / purchased area (out-grower)"
+#~ msgstr "На земельном участке, не приобретенном в аренду / собственность (договор подряда)"
+
+#~ msgid "Not on leased / purchased area (out-grower, in ha)"
+#~ msgstr "На земельном участке, не приобретенном в аренду / собственность (договор подряда, в га.)"
+
+#~ msgid "Not on leased / purchased farmers (out-grower)"
+#~ msgstr "Фермеры на земельных участках, не приобретенных в аренду / собственность"
+
+#~ msgid "Not on leased / purchased households (out-grower)"
+#~ msgstr "Домохозяйства на земельных участках, не приобретенных в аренду / собственность (договор подряда)"
+
+#~ msgid "Certified Free, Prior and Informed Consent (FPIC)"
+#~ msgstr "Заверенное свободное, предварительное, и информированное согласие (СПИС)"
+
+#~ msgid "Capacity Building"
+#~ msgstr "Институционное развитие"
+
+#~ msgid "Financial Support"
+#~ msgstr "Финансовая поддержка"
+
+#~ msgid "Recognitions status of community land tenure"
+#~ msgstr "Статус признания общинного землевладения"
+
+#~ msgid "Comment on recognitions status of community land tenure"
+#~ msgstr "Примечания к статусу признания общинного землевладения"
+
+#~ msgid "Overall Comment"
+#~ msgstr "Общие примечания"
+
+#~ msgid "Crops area"
+#~ msgstr "Посевная площадь"
+
+#~ msgid "Crops yield"
+#~ msgstr "Урожайность"
+
+#~ msgid "Crops export"
+#~ msgstr "Экспорт урожая"
+
+#~ msgid "%"
+#~ msgstr "%"
+
+#~ msgid "Livestock area"
+#~ msgstr "Площадь земель для скотоводства"
+
+#~ msgid "Livestock yield"
+#~ msgstr "Продуктивность скота"
+
+#~ msgid "Livestock export"
+#~ msgstr "Экспорт скота"
+
+#~ msgid "Resources area"
+#~ msgstr "Площадь добычи полезных ископаемых"
+
+#~ msgid "Resources yield"
+#~ msgstr "Объемы добычи полезных ископаемых"
+
+#~ msgid "Resources export"
+#~ msgstr "Экспорт полезных ископаемых"
+
+#~ msgid "Comment on resources"
+#~ msgstr "Примечания к полезным ископаемым"
+
+#~ msgid "Location description"
+#~ msgstr "Описание местоположения"
+
+#~ msgid "Area in operation"
+#~ msgstr "Обрабатываемая площадь"
+
+#~ msgid "Comment on location"
+#~ msgstr "Примечания к местоположению"
+
+#, fuzzy, python-format
+#~ msgid "Error parsing shapefile: %s"
+#~ msgstr "Ошибка синтаксического анализа шейп-файла: %s"
+
+#~ msgid "Guidelines & Principles"
+#~ msgstr "Рекомендации и принципы"
+
+#~ msgid "Partially"
+#~ msgstr "Частично"
+
+#~ msgid "Voluntary Guidelines on the Responsible Governance of Tenure (VGGT)"
+#~ msgstr "Добровольные руководящие принципы ответственного регулирования вопросов владения и пользования земельными, рыбными и лесными ресурсами (ДРП РВ)"
+
+#~ msgid "Application of Voluntary Guidelines on the Responsible Governance of Tenure (VGGT)"
+#~ msgstr "Исполнение Добровольных руководящих принципов ответственного регулирования вопросов владения и пользования земельными, рыбными и лесными ресурсами (ДРП РВ)"
+
+#~ msgid "Comment on VGGT"
+#~ msgstr "Примечания по ДРП РВ"
+
+#~ msgid "Principles for Responsible Agricultural Investments (PRAI)"
+#~ msgstr "Принципы ответственного инвестирования в агропродовольственные системы (ОИАС)"
+
+#~ msgid "Application of Principles for Responsible Agricultural Investments (PRAI)"
+#~ msgstr "Исполнение Принципов ответственного инвестирования в агропродовольственные системы (ОИАС)"
+
+#~ msgid "Comment on PRAI"
+#~ msgstr "Примечания по ОИАС"
+
+#~ msgid "Groundwater"
+#~ msgstr "Грунтовые воды"
+
+#~ msgid "Surface water"
+#~ msgstr "Поверхностные воды"
+
+#~ msgid "River"
+#~ msgstr "Река"
+
+#~ msgid "Lake"
+#~ msgstr "Озеро"
+
+#~ msgid "Operational company"
+#~ msgstr "Операционная компания"
+
+#~ msgid "Existing parent company"
+#~ msgstr "Текущая материнская компания"
+
+#~ msgid "Existing investor"
+#~ msgstr "Текущий инвестор"
+
+#~ msgid "Deal history comparison"
+#~ msgstr "Сравнительная история сделки"
+
+#~ msgid "Previous version"
+#~ msgstr "Предыдущая версия"
+
+#~ msgid "Selected version"
+#~ msgstr "Выбранная версия"
+
+#~ msgid "changed"
+#~ msgstr "изменено"
+
+#~ msgid "no changes"
+#~ msgstr "изменения отсутствуют"
+
+#~ msgid "Edit old version"
+#~ msgstr "Редактировать старую версию"
+
+#~ msgid "History"
+#~ msgstr "История"
+
+#~ msgid "Comments"
+#~ msgstr "Примечания"
+
+#~ msgid "RSS Feed"
+#~ msgstr "RSS канал"
+
+#~ msgid "This deal version is pending."
+#~ msgstr "Эта версия информации о сделке находится на рассмотрении."
+
+#~ msgid "This deal has been deleted. It is not visible for public users."
+#~ msgstr "Эта сделка была удалена. Она недоступна к просмотру обычными пользователями."
+
+#~ msgid "This deal version has been rejected. It is not visible for public users."
+#~ msgstr "Эта версия информации о сделке была отклонена. Она недоступна к просмотру обычными пользователями."
+
+#~ msgid "There's a newer version of this deal."
+#~ msgstr "Существует более поздняя версия этой сделки."
+
+#~ msgid "Click here to show the latest version."
+#~ msgstr "Нажмите для просмотра новейшей версии."
+
+#~ msgid "comments"
+#~ msgstr "примечания"
+
+#~ msgid "There are no comments to this deal yet."
+#~ msgstr "Примечания к этой сделке еще отсутствуют."
+
+#~ msgid "Add a comment"
+#~ msgstr "Добавить примечание"
+
+#~ msgid "I've read and agree to the <a href=\"/about/data-policy\" target=\"_blank\">Data Policy</a>."
+#~ msgstr "Я ознакомлен/-а и согласен/-сна с <a href=\"/about/data-policy\" target=\"_blank\">Политикой обработки данных</a>."
+
+#~ msgid "Add comment"
+#~ msgstr "Добавить примечание"
+
+#~ msgid "Cancel reply"
+#~ msgstr "Отменить ответ"
+
+#~ msgid "There are currently no deals matching your search criteria."
+#~ msgstr "Сделки, соответствующие вашему поисковому запросу, не найдены."
+
+#~ msgid "Editor"
+#~ msgstr "Редактор"
+
+#~ msgid "mandatory"
+#~ msgstr "обязательное поле"
+
+#~ msgid "Change Deal"
+#~ msgstr "Изменить сделку"
+
+#~ msgid "Recover this deal"
+#~ msgstr "Восстановить эту сделку"
+
+#~ msgid "Delete this deal"
+#~ msgstr "Удалить эту сделку"
+
+#~ msgid "All deals"
+#~ msgstr "Все сделки"
+
+#~ msgid "By"
+#~ msgstr "По"
+
+#~ msgid "Start"
+#~ msgstr "Начать"
+
+#~ msgid "More..."
+#~ msgstr "Еще…"
+
+#~ msgid "There are currently no deals matching your search criteria"
+#~ msgstr "Сделки, соответствующие вашему поисковому запросу, не найдены"
+
+#~ msgid "deals"
+#~ msgstr "сделки"
+
+#~ msgid "Add another"
+#~ msgstr "Добавить новую"
+
+#~ msgid "Home"
+#~ msgstr "Домашняя страница"
+
+#~ msgid "Unknown user"
+#~ msgstr "Неизвестный пользователь"
+
+#~ msgid "This version"
+#~ msgstr "Текущая версия"
+
+#~ msgid "Show this version"
+#~ msgstr "Показать текущую версию"
+
+#~ msgid "Compare with previous version"
+#~ msgstr "Сравнить с предыдущей версией"
+
+#~ msgid "First version"
+#~ msgstr "Изначальная версия"
+
+#~ msgid "Network of parent companies and tertiary investors/lenders"
+#~ msgstr "Сеть материнских компаний и третичных инвесторов/заимодателей"
+
+#~ msgid "Please right-click the nodes to get more details."
+#~ msgstr "Для просмотра подробностей щелкните правой кнопкой мыши по узловой точке."
+
+#~ msgid "Left-click to reveal related parent companies and tertiary investors/lenders."
+#~ msgstr "Щелкните левой кнопкой мыши, чтобы открыть информацию о связанных материнских компаниях, а также третичных инвесторах/заимодателях."
+
+#~ msgid "Right-click on investors to get more information."
+#~ msgstr "Щелкните правой кнопкой мыши на названии инвестора, чтобы открыть дополнительную информацию."
+
+#~ msgid "Left-click to hide related parent companies and tertiary investors/lenders."
+#~ msgstr "Щелкните левой кнопкой мыши, чтобы скрыть информаии о связанных материнских компаниях, а также третичных инвесторах/заимодателях."
+
+#~ msgid "This operating company is pending."
+#~ msgstr "Информация об этой компании-операторе находится на рассмотрении."
+
+#~ msgid "This operating company has been deleted. It is not visible for public users."
+#~ msgstr "Эта компания-оператор была удалена. Она недоступна к просмотру обычными пользователями."
+
+#~ msgid "This operating company has been rejected. It is not visible for public users."
+#~ msgstr "Информация об этой компании-операторе была отклонена. Она недоступна к просмотру обычными пользователями."
+
+#~ msgid "No active filters"
+#~ msgstr "Без фильтров"
+
+#~ msgid "Cancel add filter"
+#~ msgstr "Отменить добавление фильтра"
+
+#~ msgid "Add a filter"
+#~ msgstr "Добавить фильтр"
+
+#~ msgid "List settings"
+#~ msgstr "Настройки списка"
+
+#~ msgid "Create a custom filter"
+#~ msgstr "Создать индивидуальный фильтр"
+
+#~ msgid "is =<"
+#~ msgstr "=<"
+
+#~ msgid "Add Filter"
+#~ msgstr "Добавить фильтр"
+
+#~ msgid "Select columns for the result table"
+#~ msgstr "Выберите колонки для таблицы результатов"
+
+#~ msgid "default columns"
+#~ msgstr "колонки по умолчанию"
+
+#~ msgid "all columns"
+#~ msgstr "все колонки"
+
+#~ msgid "Select status of deals"
+#~ msgstr "Выберите статус сделок"
+
+#~ msgid "Added (not changed)"
+#~ msgstr "Добавленные (не измененные)"
+
+#~ msgid "Changed"
+#~ msgstr "Измененные"
+
+#~ msgid "Pending"
+#~ msgstr "На рассмотрении"
+
+#~ msgid "Unknown country"
+#~ msgstr "Неизвестная страна"
+
+#~ msgid "Unknown region"
+#~ msgstr "Неизвестный регион"
+
+#~ msgid "Double-click to zoom in."
+#~ msgstr "Приблизить двойным щелчком."
+
+#~ msgid "Search for investor name"
+#~ msgstr "Поиск по имени/названию инвестора"
+
+#~ msgid "All Deals"
+#~ msgstr "Все сделки"
+
+#~ msgid "By Target"
+#~ msgstr "По прогнозному показателю"
+
+#~ msgid "By Target Region"
+#~ msgstr "По целевому региону"
+
+#~ msgid "By Target Country"
+#~ msgstr "По целевой стране"
+
+#~ msgid "By Investor"
+#~ msgstr "По инвесторам"
+
+#~ msgid "By Investor Region"
+#~ msgstr "По региону-инвестору"
+
+#~ msgid "By Investor Country"
+#~ msgstr "По стране-инвестору"
+
+#~ msgid "By data source"
+#~ msgstr "По источнику информации"
+
+#~ msgid "By Intention"
+#~ msgstr "По целевому назначению"
+
+#~ msgid "By Crop"
+#~ msgstr "По виду сельхозкультур"
+
+#~ msgid "All Investors"
+#~ msgstr "Все инвесторы"
+
+#~ msgid "By Role"
+#~ msgstr "По роли"
+
+#~ msgid "By Classification"
+#~ msgstr "По классификации"
+
+#~ msgid "By Country of registration/origin"
+#~ msgstr "По стране регистрации/происхождения"
+
+#~ msgid "Investor history comparison"
+#~ msgstr "Сравнительная история инвестора"
+
+#~ msgid "This investor version is pending."
+#~ msgstr "Эта версия информации об инвесторе находится на рассмотрении."
+
+#~ msgid "This investor has been deleted. It is not visible for public users."
+#~ msgstr "Этот инвестор был удален. Он недоступен к просмотру обычными пользователями."
+
+#~ msgid "This investor version has been rejected. It is not visible for public users."
+#~ msgstr "Эта версия информации об инвесторе была отклонена. Она недоступна к просмотру обычными пользователями."
+
+#~ msgid "Involvements as Parent Company"
+#~ msgstr "Участие в качестве материнской компании"
+
+#~ msgid "Involvements as Tertiary investor/lender"
+#~ msgstr "Участие в качестве третичного инвестора/заимодателя"
+
+#~ msgid "Add investor"
+#~ msgstr "Добавить инвестора"
+
+#~ msgid "Add another parent company"
+#~ msgstr "Добавить еще одну материнскую компанию"
+
+#~ msgid "Add another lender"
+#~ msgstr "Добавить еще одного заимодателя"
+
+#~ msgid "Recover this investor"
+#~ msgstr "Восстановить этого инвестора"
+
+#~ msgid "Delete this investor"
+#~ msgstr "Удалить этого инвестора"
+
+#~ msgid "All investors"
+#~ msgstr "Все инвесторы"
+
+#~ msgid "Show more"
+#~ msgstr "Показать больше"
+
+#~ msgid "investors"
+#~ msgstr "инвесторы"
+
+#~ msgid "There are currently no investors matching your search criteria."
+#~ msgstr "На текущий момент в базе отсутствуют инвесторы, соответствующие заданныи критериям поиска."
+
+#~ msgid "Add an investor"
+#~ msgstr "Добавить инвестора"
+
+#~ msgid "Back"
+#~ msgstr "Назад"
+
+#~ msgid "Are you sure you want to delete this deal?"
+#~ msgstr "Вы действительно хотите удалить эту сделку?"
+
+#~ msgid "No, cancel"
+#~ msgstr "Нет, отменить действие"
+
+#~ msgid "Yes, delete"
+#~ msgstr "Да, удалить"
+
+#~ msgid "Are you sure you want to delete this investor?"
+#~ msgstr "Вы действительно хотите удалить этого инвестора?"
+
+#~ msgid "Recover deal"
+#~ msgstr "Восстановить сделку"
+
+#~ msgid "Are you sure you want to recover this deal?"
+#~ msgstr "Вы действительно хотите восстановить эту сделку?"
+
+#~ msgid "Yes, recover"
+#~ msgstr "Да, восстановить"
+
+#~ msgid "Recover investor"
+#~ msgstr "Восстановить инвестора"
+
+#~ msgid "Are you sure you want to recover this investor?"
+#~ msgstr "Вы действительно хотите восстановить этого инвестора?"
+
+#~ msgid "Administrator"
+#~ msgstr "Администратор"
+
+#~ msgid "Reporter"
+#~ msgstr "Составитель"
+
+#~ msgid "No role"
+#~ msgstr "Без прав редактирования"
+
+#~ msgid "for"
+#~ msgstr "для"
+
+#~ msgid "Availability"
+#~ msgstr "Доступность"
+
+#~ msgid "Top investors"
+#~ msgstr "Крупнейшие инвесторы"
+
+#~ msgid "Target region"
+#~ msgstr "Регион назначения"
+
+#~ msgid "Investor country"
+#~ msgstr "Страна-инвестор"
+
+#~ msgid "Investor region"
+#~ msgstr "Регион-инвестор"
+
+#~ msgid "Operating company name"
+#~ msgstr "Название компании-оператора"
+
+#~ msgid "Parent investors"
+#~ msgstr "Материнские компании-инвесторы"
+
+#~ msgid "Parent investor country"
+#~ msgstr "Страна регистрации материнской компании-инвестора"
+
+#~ msgid "Parent investor region"
+#~ msgstr "Регион материнской компании-инвестора"
+
+#~ msgid "Parent investor percentages"
+#~ msgstr "Доли материнской компании-инвестора"
+
+#~ msgid "Parent investor classifications"
+#~ msgstr "Классификация материнских компаний-инвесторов"
+
+#~ msgid "Parent investor homepages"
+#~ msgstr "Домашние страницы материнских компаний-инвесторов"
+
+#~ msgid "Parent stakeholder Opencorporates links"
+#~ msgstr "Ссылки на материнскую компанию на Opencorporates"
+
+#~ msgid "Comment on parent investor"
+#~ msgstr "Примечания к материнской компании-инвестору"
+
+#~ msgid "Operating company country of registration/origin"
+#~ msgstr "Страна регистрации/происхождения компании-оператора"
+
+#~ msgid "Operating company region of registration/origin"
+#~ msgstr "Регион регистрации/происхождения компании-оператора"
+
+#~ msgid "Operating company classification"
+#~ msgstr "Классификация компании-оператора"
+
+#~ msgid "Operating company homepage"
+#~ msgstr "Домашняя страница компании-оператора"
+
+#~ msgid "Operating company Opencorporates link"
+#~ msgstr "Ссылка на компанию-оператора на Opencorporates"
+
+#~ msgid "Additional comment on Operating company"
+#~ msgstr "Дополнительный комментарий к Операционной компании"
+
+#, fuzzy, python-format
+#~ msgid "Unknown group '%(group)s'."
+#~ msgstr "Неизвестная группа ''%(group)s'."
+
+#~ msgid "Your changes to the deal have been submitted successfully. The changes will be reviewed and published soon."
+#~ msgstr "Ваши изменения к сделке успешно отправлены. Они будут рассмотрены и опубликованы в ближайшее время."
+
+#~ msgid "Your changes to the deal have been saved successfully."
+#~ msgstr "Ваши изменения к сделке успешно сохранены."
+
+#~ msgid "Please correct the error below."
+#~ msgstr "Пожалуйста, исправьте ошибку (ниже)."
+
+#~ msgid "The deal has been submitted successfully (#{}). It will be reviewed and published soon."
+#~ msgstr "Сделка принята на рассмотрение (#{}). Она будет просмотрена и добавлена в ближайшее время."
+
+#~ msgid "The deal has been added successfully (#{})."
+#~ msgstr "Сделка успешно добавлена (#{})."
+
+#~ msgid "The deal #{} has been marked for deletion. It will be reviewed and deleted soon."
+#~ msgstr "Сделка #{} добавлена в очередь на удаление. Она будет просмотрена и удалена в ближайшее время."
+
+#~ msgid "The deal #{} has been deleted successfully."
+#~ msgstr "Сделка #{} успешно удалена."
+
+#~ msgid "The deal #{} has been recovered successfully."
+#~ msgstr "Сделка #{} успешно восстановлена."
+
+#~ msgid "Is public"
+#~ msgstr "Является публичной"
+
+#, fuzzy
+#~ msgid "Deal scope"
+#~ msgstr "Предмет сделки"
+
+#~ msgid "Current size under contract"
+#~ msgstr "Текущий размер по контракту"
+
+#~ msgid "Current size in operation (production)"
+#~ msgstr "Текущий размер в обработке (производстве)"
+
+#~ msgid "Region of registration/origin"
+#~ msgstr "Регион регистрации/происхождения"
+
+#~ msgid "The investor has been submitted successfully (#{}). It will be reviewed and published soon."
+#~ msgstr "Этот инвестор принят на рассмотрение(#{}). Он будет просмотрен и опубликован в ближайшее время."
+
+#~ msgid "The investor has been added successfully (#{})."
+#~ msgstr "Инвестор успешно добавлен(#{})."
+
+#~ msgid "Your changes to the investor have been submitted successfully. The changes will be reviewed and published soon."
+#~ msgstr "Ваши изменения к информации об инвесторе приняты на рассмотрение. Изменения будут просмотрены и опубликованы в ближайшее время."
+
+#~ msgid "Your changes to the investor have been saved successfully."
+#~ msgstr "Ваши изменения к информации об инвесторе успешно сохранены."
+
+#~ msgid "The investor #{} has been marked for deletion. It will be reviewed and deleted soon."
+#~ msgstr "Инвестор #{} добавлен в очередь на удаление. Он будет просмотрен и удален в ближайшее время."
+
+#~ msgid "The investor #{} has been deleted successfully."
+#~ msgstr "Инвестор #{} успешно удален."
+
+#~ msgid "The investor #{} has been recovered successfully."
+#~ msgstr "Инвестор #{} успешно восстановлен."
+
+#~ msgid "Current file"
+#~ msgstr "Текущий файл"
+
+#~ msgid "Show area"
+#~ msgstr "Показать местность"
+
+#~ msgid "Hide area"
+#~ msgstr "Скрыть местность"
+
+#~ msgid "Shapefile upload (select all files, required: .shp, .shx, .dbf, and .prj)"
+#~ msgstr "Загрузка шейп-файла (выберите все файлы; допустимые форматы: .shp, .shx, .dbf, и .prj)"
+
+#~ msgid "Initiation year or date"
+#~ msgstr "Год или дата учреждения компании"
+
+#~ msgid "Agricultural produce"
+#~ msgstr "Сельскохозяйственная продукция"
+
+#~ msgid "English name"
+#~ msgstr "Английское название"
+
+#~ msgid "Local name"
+#~ msgstr "Местное название"
+
+#~ msgid "Locale"
+#~ msgstr "Локаль"
+
+#~ msgid "Active"
+#~ msgstr "Активная"
+
+#~ msgid "Overwritten"
+#~ msgstr "Перезаписанная"
+
+#~ msgid "To delete"
+#~ msgstr "На удаление"
+
+#~ msgid "Activity identifier"
+#~ msgstr "Идентификатор деятельности"
+
+#~ msgid "availability"
+#~ msgstr "доступность"
+
+#~ msgid "Historical activity"
+#~ msgstr "История активности"
+
+#~ msgid "Historical activities"
+#~ msgstr "История активностей"
+
+#~ msgid "Activity attribute group"
+#~ msgstr "Активность группы атрибутов"
+
+#~ msgid "Activity attribute groups"
+#~ msgstr "Активность групп атрибутов"
+
+#~ msgid "Activity Attribute Group"
+#~ msgstr "Активность Группы Атрибутов"
+
+#~ msgid "Language"
+#~ msgstr "Язык"
+
+#~ msgid "Year or Date"
+#~ msgstr "Год или дата"
+
+#~ msgid "Is current"
+#~ msgstr "Текущий"
+
+#~ msgid "Activity"
+#~ msgstr "Активность"
+
+#~ msgid "Historical activity attribute"
+#~ msgstr "История активности атрибутов"
+
+#~ msgid "Historical activity attributes"
+#~ msgstr "История активностей атрибутов"
+
+#~ msgid "Review decision"
+#~ msgstr "Пересмотр решения"
+
+#~ msgid "User assigned"
+#~ msgstr "Закреплено за пользователем"
+
+#~ msgid "User created"
+#~ msgstr "Создано пользователем"
+
+#~ msgid "Activity feedback"
+#~ msgstr "Обратная связь по активности"
+
+#~ msgid "Activity feedbacks"
+#~ msgstr "Обратная связь по активности"
+
+#~ msgid "Value"
+#~ msgstr "Значение"
+
+#~ msgid "Value 2"
+#~ msgstr "Значение 2"
+
+#~ msgid "Polygon"
+#~ msgstr "Полигон"
+
+#~ msgid "Variable"
+#~ msgstr "Переменная"
+
+#~ msgid "Key"
+#~ msgstr "Ключ"
+
+#~ msgid "Operator"
+#~ msgstr "Оператор"
+
+#~ msgid "Filter preset group"
+#~ msgstr "Группа предустановленных фильтров"
+
+#~ msgid "Filter preset groups"
+#~ msgstr "Группы предустановленных фильтров"
+
+#~ msgid "And"
+#~ msgstr "И"
+
+#~ msgid "Or"
+#~ msgstr "Или"
+
+#~ msgid "Global/Region"
+#~ msgstr "Глобальный/По региону"
+
+#~ msgid "Is hidden"
+#~ msgstr "Скрытый"
+
+#~ msgid "Filter preset"
+#~ msgstr "Предустановленный фильтр"
+
+#~ msgid "Filter presets"
+#~ msgstr "Предустановленные фильтры"
+
+#~ msgid "Investment Fund (all types incl. pension, hedge, mutual, private equity funds etc.)"
+#~ msgstr "Инвестиционный фонд (все типы, включая пенсионные, хеджевые, паевые, частные, др.)"
+
+#, python-format
+#~ msgid "Unknown operating company (#%s)"
+#~ msgstr "Компания-оператор неизвестна (#%s)"
+
+#, python-format
+#~ msgid "Unknown parent company (#%s)"
+#~ msgstr "Материнская компания неизвестна(#%s)"
+
+#, python-format
+#~ msgid "Unknown tertiary investor/lender (#%s)"
+#~ msgstr "Неизвестный третичный инвестор/заимодатель (#%s)"
+
+#, python-format
+#~ msgid "Unknown (#%s)"
+#~ msgstr "Неизвестно (#%s)"
+
+#~ msgid "Historical investor"
+#~ msgstr "Исторический инвестор"
+
+#~ msgid "Historical investors"
+#~ msgstr "Исторические инвесторы"
+
+#~ msgid "Investor ID Downstream"
+#~ msgstr "ID компании-инвестора нижнего звена производственно-сбытовой цепочки"
+
+#~ msgid "Investor ID Upstream"
+#~ msgstr "ID компании-инвестора верхнего звена производственно-сбытовой цепочки"
+
+#~ msgid "Historical Investor Venture Involvement"
+#~ msgstr "Вовлеченность исторического инвестора в проект"
+
+#~ msgid "Historical Investor Venture Involvements"
+#~ msgstr "Вовлеченность исторического инвестора в проекты"
+
+#~ msgid "Historical Investor Activity Involvement"
+#~ msgstr "Вовлеченность исторического инвестора в деятельность"
+
+#~ msgid "Historical Investor Activity Involvements"
+#~ msgstr "Вовлеченность исторического инвестора в деятельность"
+
+#~ msgid "Map with all deals"
+#~ msgstr "Карта всех сделок"
+
+#~ msgid "Finished"
+#~ msgstr "Заключенные сделки"
+
+#~ msgid "Display"
+#~ msgstr "Отобразить"
+
+#~ msgid "Group by country"
+#~ msgstr "Сгруппировать по стране"
+
+#~ msgid "Individual deals"
+#~ msgstr "Отдельные сделки"
+
+#~ msgid "Show info about"
+#~ msgstr "Показать сведения о"
+
+#~ msgid "Search"
+#~ msgstr "Поиск"
+
+#~ msgid "Type in the field below to search for a location."
+#~ msgstr "Для поиска локации наберите текст в поле внизу."
+
+#~ msgid "Search location"
+#~ msgstr "Поиск локации"
+
+#~ msgid "Base layers"
+#~ msgstr "Слои базы"
+
+#~ msgid "OSM"
+#~ msgstr "Карты OSM"
+
+#~ msgid "ESRI Satellite"
+#~ msgstr "Спутниковые карты ESRI"
+
+#~ msgid "MapQuest Satellite"
+#~ msgstr "Спетниковые карты MapQuest"
+
+#~ msgid "Please click on a deal or country on the map to select details."
+#~ msgstr "Для выбора подробностей нажмите на сделку или страну на карте."
+
+#~ msgid "Deals/Info"
+#~ msgstr "Сделки/Инфо"
+
+#~ msgid "Context"
+#~ msgstr "Контекст"
+
+#~ msgid "Base"
+#~ msgstr "База"
+
+#~ msgid "Details"
+#~ msgstr "Подробности"
+
+#~ msgid "Return"
+#~ msgstr "Назад"
+
+#~ msgid "Area in production"
+#~ msgstr "Область обработки"
+
+#~ msgid "Retry failed notifications"
+#~ msgstr "Повторить неудачные уведомления"
+
+#~ msgid "Land Matrix: New comment"
+#~ msgstr "Land Matrix: новый комментарий"
+
+#~ msgid "New"
+#~ msgstr "Новые"
+
+#~ msgid "Sent"
+#~ msgstr "Отправленные"
+
+#~ msgid "Created On"
+#~ msgstr "Дата создания"
+
+#~ msgid "Sent on"
+#~ msgstr "Дата отправки"
+
+#~ msgid "To"
+#~ msgstr "Кому"
+
+#~ msgid "CC"
+#~ msgstr "Копия"
+
+#~ msgid "BCC"
+#~ msgstr "Скрытая копия"
+
+#~ msgid "Reply To"
+#~ msgstr "Ответить пользователю"
+
+#~ msgid "Subject"
+#~ msgstr "Тема"
+
+#~ msgid "Body Plain Text"
+#~ msgstr "Тело простого текста"
+
+#~ msgid "Body HTML"
+#~ msgstr "Тело HTML"
+
+#~ msgid "has posted a new comment on"
+#~ msgstr "оставил/-а новое примечание к"
+
+#~ msgid "Yours"
+#~ msgstr "Искренне"
+
+#~ msgid "Delete all Features"
+#~ msgstr "Удалить все пространственне объекты"
+
+#~ msgid "Debugging window (serialized value)"
+#~ msgstr "Окно отладки (сериализованное значение)"
+
+#~ msgid "Edit comment"
+#~ msgstr "Редактировать комментарий"
+
+#~ msgid "Save comment"
+#~ msgstr "Сохранить комментарий"
+
+#~ msgid "Post"
+#~ msgstr "Опубликовать"
+
+#~ msgid "Preview"
+#~ msgstr "Предпросмотр"
+
+#~ msgid "Reply"
+#~ msgstr "Ответить"
+
+#~ msgid "Choose a country"
+#~ msgstr "Выберите страну"
+
+#~ msgid "Deal #"
+#~ msgstr "Сделка №"
+
+#~ msgid "News and Publications"
+#~ msgstr "Новости и публикации"
+
+#, fuzzy, python-format
+#~ msgid "No news or publications available for %(t)s."
+#~ msgstr "Новости или публикации для %(t)s отсутствуют."
+
+#~ msgid "All News and Publications"
+#~ msgstr "Все новости и публикации"
+
+#~ msgid "Go to"
+#~ msgstr "Перейти к"
+
+#, fuzzy
+#~ msgid "Tweets by"
+#~ msgstr "Твиты пользователя"
+
+#, fuzzy
+#~ msgid "Changes within timespan"
+#~ msgstr "Изменения в рамках временного диапазона"
+
+#~ msgid "Current statistics"
+#~ msgstr "Текущая статистика"
+
+#~ msgid "No investor"
+#~ msgstr "Нет инвестора"
+
+#~ msgid "Investor history"
+#~ msgstr "История инвестора"
+
+#, fuzzy
+#~ msgid "Land Matrix regions"
+#~ msgstr "Land Matrix регионы"
+
+#, fuzzy
+#~ msgid "The investor network diagram is only visible for live versions of an investor. I.e. https://landmatrix.org/investor/:id/"
+#~ msgstr "Схема сети инвестора видна только для живых версий инвестора. Т.е. https://landmatrix.org/investor/:id/"
+
+#~ msgid "Analytical reports"
+#~ msgstr "Аналитические отчеты"
+
+#~ msgid "Events"
+#~ msgstr "События"
+
+#, fuzzy
+#~ msgid "Learning opportunities"
+#~ msgstr "Возможности обучения"
+
+#~ msgid "News"
+#~ msgstr "Новости"
+
+#~ msgid "Publications"
+#~ msgstr "Публикации"
+
+#~ msgid "Page not found"
+#~ msgstr "Страница не найдена"
+
+#~ msgid "The page you are looking for appears to have been moved, deleted or does not exist."
+#~ msgstr "Вероятно, страница, которую вы ищете, была перемещена или удалена, либо же ее не существует."
+
+#~ msgid "Server Error"
+#~ msgstr "Ошибка сервера"
+
+#~ msgid "Looks like something went wrong"
+#~ msgstr "Кажется, что-то пошло не так"
+
+#~ msgid "Clear filters"
+#~ msgstr "Сбросить фильтры"
+
+#~ msgid "We track these errors automatically, but if the problem persists feel free to contact us. In the meantime, try refreshing."
+#~ msgstr "Подобные ошибки отслеживаются автоматически, но если проблема продолжит возникать, можно сообщить о ней лично. Тем временем попробуйте обновить страницу."
+
+#~ msgid "Login/Register"
+#~ msgstr "Войти/Зарегистрироваться"
+
+#~ msgid "Stay informed"
+#~ msgstr "Следить за обновлениями"
+
+#~ msgid "Get involved"
+#~ msgstr "Приобщиться"
+
+#, fuzzy
+#~ msgid "You are using an <strong>outdated</strong> browser. Please <a href=\"http://browsehappy.com/\">upgrade your browser</a> or <a href=\"http://www.google.com/chromeframe/?redirect=true\">activate Google Chrome Frame</a> to improve your experience.</p>"
+#~ msgstr "Ваш браузер <strong>устарел</strong>. Пожалуйста, <a href=\"http://browsehappy.com/\">обновите свой браузер</a> или <a href=\"http://www.google.com/chromeframe/?redirect=true\">активируйте Google Chrome Frame</a>, чтобы улучшить свое взаимодействие с базой данных.</p>"
+
+#~ msgid "There is currently no content for this category."
+#~ msgstr "В настоящее время наполнение этой категории отсутствует."
+
+#~ msgid "All categories"
+#~ msgstr "Все категории"
+
+#~ msgid "Responses for page"
+#~ msgstr "Реакции на страницу"
+
+#~ msgid "Submit Comment"
+#~ msgstr "Оставить комментарий/примечание"
+
+#~ msgid "Thanks for commenting"
+#~ msgstr "Спасибо за комментарий/примечание"
+
+#~ msgid "Thanks for posting your comment"
+#~ msgstr "Спасибо за публикацию комментария/примечания"
+
+#, fuzzy
+#~ msgid ""
+#~ "\n"
+#~ "      We have received your comment, and posted it on the web site.<br/>\n"
+#~ "      You will be sent back to the article...\n"
+#~ "      "
+#~ msgstr ""
+#~ "\n"
+#~ "      \"\n"
+#~ "      Ваш комментарий получен и опубликован на вебсайте.<br/>\n"
+#~ "      Вы будете перенаправлены обратно к статье...\n"
+#~ "      \"\n"
+#~ "      "
+
+#~ msgid "Back to the article"
+#~ msgstr "Вернуться к статье"
+
+#~ msgid "Account activation failed"
+#~ msgstr "Сбой активации учетной записи"
+
+#~ msgid "Activation complete"
+#~ msgstr "Активация завершена"
+
+#~ msgid "Your account is now activated."
+#~ msgstr "Ваша учетная запись успешно активирована."
+
+#~ msgid "Activate account at"
+#~ msgstr "Активировать учетную запись на"
+
+#, python-format
+#~ msgid "Link is valid for %(expiration_days)s days."
+#~ msgstr "Ссылка действительна в течение %(expiration_days)s дней."
+
+#~ msgid "Activation failed"
+#~ msgstr "Сбой активации"
+
+#~ msgid "Your account could not be activated. Please try again."
+#~ msgstr "Не удалось активировать Вашу учетную запись. Пожалуйста, попробуйте еще раз."
+
+#~ msgid "Registration closed"
+#~ msgstr "Регистрация закрыта"
+
+#~ msgid "Registration is currently closed."
+#~ msgstr "На данный момент регистрация закрыта."
+
+#~ msgid "Registration complete"
+#~ msgstr "Регистрация завершена"
+
+#~ msgid "You are now registered. Activation email sent."
+#~ msgstr "Вы зарегистрированы. Письмо активации отправлено на вашу почту."
+
+#~ msgid "Your contact information will help our researchers get in touch with you for additional information. We respect and protect your privacy and anonymity, and will never share or publish your personal information. You can also write us directly at <a href=\"mailto:data@landmatrix.org\">data@landmatrix.org</a>."
+#~ msgstr "Ваша контактная информация даст нашим исследователям возможность связаться с вами для получения дополнительных сведений. Мы уважаем и защищаем Вашу конфиденциальность и анонимность, и никогда не станем делиться вашими личными данными и публиковать их в открытом доступе. Вы также можете связаться с нами напрямую, отправив письмо на электронный адрес <a href=\"mailto:data@landmatrix.org\">data@landmatrix.org</a>."
+
+#~ msgid "Default filters are enabled"
+#~ msgstr "Задействованы фильтры по умолчанию"
+
+#~ msgid "The data is filtered by global or national filter presets. Please uncheck the checkbox to show all data."
+#~ msgstr "Отображенные данные были отобраны с помощью предустановленных фильтров (глобальных или по странам). Для просмотра всей информации снимите галочки."
+
+#~ msgid "Default filters are disabled"
+#~ msgstr "Фильтры по умолчанию отключены"
+
+#~ msgid "You can see all data unfiltered. Please check the checkbox to use our global or national filter presets."
+#~ msgstr "Вы видите полный список информации без фильтров. Для активации предустановленных фильтров (глобальный или по странам) поставьте галочку в соответствующем окошке."
+
+#~ msgid "Select a filter preset"
+#~ msgstr "Выберите предустановленный фильтр"
+
+#~ msgid "Thanks for spending some quality time with the Web site today."
+#~ msgstr "Спасибо за ваше время и внимание, уделенные этому Сайту."
+
+#~ msgid "Log in again"
+#~ msgstr "Войти еще раз"
+
+#~ msgid "Your username and password didn't match. Please try again."
+#~ msgstr "Указанные Вами имя пользователя и пароль не совпадают. Пожалуйста, попробуйте еще раз."
+
+#~ msgid "Your account doesn't have access to this page. To proceed, please login with an account that has access."
+#~ msgstr "Ваша учетная запись не имеет доступа к этой странице. Пожалуйста, войдите в учетную запись, имеющую доступ."
+
+#~ msgid "Please login to see this page."
+#~ msgstr "Для просмотра этой страницы войдите в учетную запись."
+
+#~ msgid "Reset it"
+#~ msgstr "Восстановить"
+
+#~ msgid "No registered user yet?"
+#~ msgstr "Нет учетной записи?"
+
+#~ msgid "Password changed"
+#~ msgstr "Пароль изменен"
+
+#~ msgid "Your password was changed successfully."
+#~ msgstr "Ваш пароль был успешно изменен."
+
+#~ msgid "Password reset complete"
+#~ msgstr "Сброс пароля завершен"
+
+#~ msgid "Your password has been reset successfully."
+#~ msgstr "Ваш пароль был успешно сброшен."
+
+#~ msgid "Log in"
+#~ msgstr "Войти"
+
+#~ msgid "Confirm password reset"
+#~ msgstr "Подтвердить сброс пароля"
+
+#~ msgid "Password reset failed"
+#~ msgstr "Не удалось сбросить пароль"
+
+#~ msgid "Password reset"
+#~ msgstr "Пароль сброшен"
+
+#~ msgid "If there's an account with the given email address, an email with password reset instructions has been sent."
+#~ msgstr "Если в учетной записи указан электронный адрес, на него было отправлено письмо с инструкциями по восстановлению пароля."
+
+#, fuzzy, python-format
+#~ msgid ""
+#~ "\n"
+#~ "Someone requested that the password be reset for the following account:\n"
+#~ "\n"
+#~ "%(site_name)s\n"
+#~ "Username: %(user)s\n"
+#~ "\n"
+#~ "If this was a mistake, just ignore this email and nothing will happen.\n"
+#~ "\n"
+#~ "To reset your password, visit the following address:\n"
+#~ msgstr ""
+#~ "\n"
+#~ "\"\n"
+#~ "Кто-то подал запрос на восстановление пароля для следующей учетной записи:\n"
+#~ "\n"
+#~ "%(site_name)s\n"
+#~ "Имя пользователя: %(user)s\n"
+#~ "\n"
+#~ "Если запрос отправлен по ошибке, просто проигнорируйте это письмо.\n"
+#~ "\n"
+#~ "Для сброса пароля пройдите по ссылке:\n"
+#~ "\"\n"
+
+#~ msgid "Share"
+#~ msgstr "Поделиться"
