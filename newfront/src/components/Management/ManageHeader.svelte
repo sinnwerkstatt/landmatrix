@@ -30,6 +30,9 @@
   let lastVersion: ObjVersion
   $: lastVersion = object.versions[0]
 
+  let extraUserIDs: number[]
+  $: extraUserIDs = [...new Set(object.versions.map(v => v.created_by.id))]
+
   let hasActive: boolean
   $: hasActive = !!object.status
 
@@ -387,6 +390,7 @@
   assignToUserInput
   commentRequired
   toUser={lastVersion?.created_by?.id}
+  {extraUserIDs}
   on:submit={sendToDraft}
 />
 

@@ -178,7 +178,10 @@ export async function fetchBasis(
 /// client stores - MAKE SURE THESE DON'T GET CALLED FROM SSR-FUNCTIONS!
 export const users = writable<User[]>([])
 
-export async function getUsers(urqlClient: Client): Promise<Writable<User[]>> {
+export async function getUsers(
+  urqlClient: Client,
+  extraUserIDs: number[],
+): Promise<Writable<User[]>> {
   if (get(users).length > 0) return users
   const ret = await urqlClient
     .query<{ users: User[] }>(
@@ -188,14 +191,26 @@ export async function getUsers(urqlClient: Client): Promise<Writable<User[]>> {
             id
             full_name
             username
+            groups {
+              id
+              name
+            }
           }
         }
       `,
       {},
     )
     .toPromise()
-  if (!ret.data?.users) throw error(500, "could not fetch users")
-  await users.set(ret.data.users.sort((a, b) => a.full_name.localeCompare(b.full_name)))
+  if (!ret.data?.users) throw error(500, "could not fetch users from database")
+
+  const usrs = ret.data.users
+    .filter(
+      u =>
+        extraUserIDs.includes(u.id) ||
+        u.groups?.some(g => ["Administrators", "Editors"].includes(g.name)),
+    )
+    .sort((a, b) => a.full_name.localeCompare(b.full_name))
+  await users.set(usrs)
   return users
 }
 

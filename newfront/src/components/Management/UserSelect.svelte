@@ -11,17 +11,17 @@
   import type { User } from "$lib/types/user"
 
   export let value: User | number
+  export let extraUserIDs: number[] = []
 
   let users: Writable<User[]>
 
   onMount(async () => {
-    users = await getUsers($page.data.urqlClient)
+    users = await getUsers($page.data.urqlClient, extraUserIDs)
     if (typeof value === "number") value = $users.find(u => u.id === value)
   })
 </script>
 
 <Select
-  {...$$props}
   {VirtualList}
   bind:value
   getOptionLabel={o => `${o.full_name} (<b>${o.username}</b>)`}

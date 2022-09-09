@@ -13,8 +13,11 @@
   export let object: Obj
 
   let comment = ""
-  let sendToUser: User
+  let sendToUser: User | null = null
   let logbookForm
+
+  let extraUserIDs: number[]
+  $: extraUserIDs = [...new Set(object.versions.map(v => v.created_by.id))]
 
   function addComment() {
     if (!logbookForm.checkValidity()) {
@@ -35,7 +38,7 @@
     <div class="my-2 ml-1 items-center lg:flex">
       <span class="lg:w-1/5">{$_("Send to")}:</span>
       <div class="flex-grow">
-        <UserSelect bind:value={sendToUser} />
+        <UserSelect bind:value={sendToUser} {extraUserIDs} />
       </div>
       <button
         type="button"

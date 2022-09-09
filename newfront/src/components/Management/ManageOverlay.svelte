@@ -20,6 +20,7 @@
 
   export let assignToUserInput = false
   export let toUser: User | null = null
+  export let extraUserIDs: number[] = []
   export let showSubmit = true
 
   const onSubmit = async () => {
@@ -49,7 +50,7 @@
   {#if assignToUserInput}
     <div class="mb-4">
       <div class="mb-1 block underline">{$_("Assign to user")}</div>
-      <UserSelect bind:value={toUser} />
+      <UserSelect bind:value={toUser} {extraUserIDs} />
     </div>
   {/if}
 </Overlay>
