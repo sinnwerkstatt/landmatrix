@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-10 00:33+0200\n"
-"PO-Revision-Date: 2021-09-29 15:35+0000\n"
-"Last-Translator: Kurt Gerber <kurt.gerber@unibe.ch>\n"
+"POT-Creation-Date: 2022-09-10 00:45+0200\n"
+"PO-Revision-Date: 2022-05-30 13:48+0000\n"
+"Last-Translator: Angela Harding <coordination@landmatrix.org>\n"
 "Language-Team: Russian <http://translate.landmatrix.org/projects/landmatrix/landmatrix/ru/>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
@@ -63,11 +63,11 @@ msgstr "Активация учетной записи на"
 msgid "New comment"
 msgstr "Новый комментарий"
 
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid "{full_name} has addressed you in a comment on {obj_desc}:"
 msgstr "{full_name} обратился к вам в комментарии к {obj_desc}:"
 
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid "{full_name} has updated {obj_desc}:"
 msgstr "{full_name} обновил {obj_desc}:"
 
@@ -93,7 +93,6 @@ msgstr "Статус реализации"
 msgid "On leased area/farmers/households"
 msgstr "На земельных участках, приобретенных в аренду /фермеры/домохозяйства"
 
-#, fuzzy
 msgid "Not on leased area/farmers/households (out-grower)"
 msgstr "Не на арендованной территории / фермерам / домохозяйствам (сторонний производитель)"
 
@@ -151,7 +150,6 @@ msgstr "Описание"
 msgid "Point"
 msgstr ""
 
-#, fuzzy
 msgid "Facility name"
 msgstr "Название объекта"
 
@@ -296,7 +294,6 @@ msgstr "Туризм"
 msgid "Industry"
 msgstr "Промышленность"
 
-#, fuzzy
 msgid "Conservation"
 msgstr "Сохранение"
 
@@ -454,7 +451,7 @@ msgid "Forestry"
 msgstr "Лесное хозяйство"
 
 msgid "per ha"
-msgstr "на 1 га."
+msgstr "на 1 га"
 
 msgid "for specified area"
 msgstr "для указанной области"
@@ -987,7 +984,6 @@ msgstr "Иное (пожалуйста, уточните в поле для ко
 msgid "Country"
 msgstr "Страна"
 
-#, fuzzy
 msgid "Administrative region"
 msgstr "Административный район"
 
@@ -1096,14 +1092,12 @@ msgstr "Примечания к стоимости аренды"
 msgid "On leased / purchased"
 msgstr "На земельном участке, приобретенном в аренду / собственность"
 
-#, fuzzy
 msgid "Not on leased / purchased (out-grower)"
 msgstr "Не на сданной в аренду/собственности (сторонний производитель)"
 
 msgid "Comment on contract farming"
 msgstr "Примечания к контрактному фермерству"
 
-#, fuzzy
 msgid "Contracts"
 msgstr "Контракты"
 
@@ -1320,7 +1314,6 @@ msgstr "Примечания по переработке продукции вн
 msgid "Processing facilities / production infrastructure of the project (e.g. oil mill, ethanol distillery, biomass power plant etc.)"
 msgstr "Производственные сооружения / инфраструктура проекта (напр., мельница, спиртозавод, биотопливная электростанция, др.)"
 
-#, fuzzy
 msgid "In-country end products of the project"
 msgstr "Конечные продукты проекта внутри страны"
 
@@ -1498,15 +1491,13 @@ msgstr "Вовлеченность инвестора в проект"
 msgid "Investor Venture Involvements"
 msgstr "Вовлеченность инвестора в проекты"
 
-#, fuzzy
 msgid "<is PARENT of>"
 msgstr "<является МАТЕРИНСКОЙ КОМПАНИЕЙ для>"
 
-#, fuzzy
 msgid "<is INVESTOR of>"
 msgstr "<является ИНВЕСТОРОМ для>"
 
-#, fuzzy, python-format
+#, python-format
 msgid "The language \"%s\" is not supported"
 msgstr "Язык \"%s\" не поддерживается"
 
@@ -1660,18 +1651,15 @@ msgstr ""
 msgid "Beneficiary company"
 msgstr ""
 
-#, fuzzy
 msgid "by"
 msgstr "по"
 
-#, fuzzy
 msgid "By making this information available, the Land Matrix hopes to enhance broad engagement and data exchange, facilitating the continuous improvement of the data. Find out how to get involved"
 msgstr "Делая эту информацию доступной, Land Matrix надеется усилить широкое участие и обмен данными, способствуя постоянному совершенствованию данных. Узнайте, как принять участие"
 
 msgid "Cancel"
 msgstr "Отмена"
 
-#, fuzzy
 msgid "Case statistics"
 msgstr "Статистика случаев"
 
@@ -1769,7 +1757,6 @@ msgstr ""
 msgid "Country profiles"
 msgstr "Профили стран"
 
-#, fuzzy
 msgid "Country profiles present national-level data of large-scale land acquisitions and transactions including who the investors are, what the aim of the investment is, who the former owner was and what the land was previously used for, and what the potential benefits and impacts of the land deals are."
 msgstr "Профили стран представляют данные на национальном уровне о крупномасштабных приобретениях и сделках, в том числе о том, кто являются инвесторами, какова цель инвестиций, кем был бывший владелец, для чего ранее использовалась земля, и каковы потенциальные выгоды и последствия сделок."
 
@@ -1893,7 +1880,6 @@ msgstr ""
 msgid "Dynamics overview"
 msgstr ""
 
-#, fuzzy
 msgid "Dynamics overview charts"
 msgstr "Обзор динамики развития"
 
@@ -1924,7 +1910,6 @@ msgstr ""
 msgid "Excluded"
 msgstr "Исключая"
 
-#, fuzzy
 msgid "Explore the map for information about land deals from global down to regional and country level."
 msgstr "Изучите карту, чтобы получить информацию о сделках от глобального до регионального и национального уровня."
 
@@ -1991,7 +1976,6 @@ msgstr "Общие сведения"
 msgid "General Info"
 msgstr ""
 
-#, fuzzy
 msgid "Generate your own infographics using a wide selection of charts to illustrate information about deals."
 msgstr "Создавайте собственную инфографику, используя широкий выбор диаграмм для иллюстрации информации о сделках."
 
@@ -2052,7 +2036,6 @@ msgstr ""
 msgid "Include unknown years"
 msgstr ""
 
-#, fuzzy
 msgid "Included"
 msgstr "Включая"
 
@@ -2119,7 +2102,6 @@ msgstr "Почвенно-растительный покров"
 msgid "Land Matrix"
 msgstr ""
 
-#, fuzzy
 msgid "Land Matrix region"
 msgstr "Land Matrix регион"
 
@@ -2255,7 +2237,6 @@ msgstr "Не конфиденциальная"
 msgid "Not fully updated"
 msgstr ""
 
-#, fuzzy
 msgid "Not publicly visible"
 msgstr "Не видимая публично"
 
@@ -2320,7 +2301,6 @@ msgstr ""
 msgid "Please provide a comment explaining your request"
 msgstr ""
 
-#, fuzzy
 msgid "Produce"
 msgstr "Производство"
 
@@ -2408,7 +2388,6 @@ msgstr ""
 msgid "Scope"
 msgstr ""
 
-#, fuzzy
 msgid "Search and filter the dataset through pre-configured entry points or drill down to single deals."
 msgstr "Используйте посик и фильтруйте набор данных с помощью предварительно настроенных точек входа или переходите к отдельным сделкам."
 
@@ -2469,7 +2448,6 @@ msgstr "Статус"
 msgid "Status unknown"
 msgstr ""
 
-#, fuzzy
 msgid "Stop impersonation"
 msgstr "Прекратить олицетворение"
 
@@ -2611,7 +2589,7 @@ msgstr ""
 
 #, python-brace-format
 msgid "{x} deals have multiple intentions, resulting in a total of {y} intentions for {z} deals."
-msgstr ""
+msgstr "{x} сделки имеющее несколько целей инвестирования, в результате {y} целей инвестирования соответствует {z} сделок."
 
 msgid "English"
 msgstr "English"
@@ -2625,9 +2603,12 @@ msgstr "Français"
 msgid "Русский"
 msgstr "Русский"
 
-#, fuzzy, python-format
+#, python-format
 #~ msgid "Attribute group \"%s\" is invalid counter (groups should start with 1) for historical activity %i (Activity identifier: #%i)"
-#~ msgstr "Аттрибутивная группа \"%s\" является недействительным счетчиком (группы должны начинаться с 1) для хронологии активности (идентификатор действия: #%i)"
+#~ msgstr "Аттрибутивная группа \"%s\" является недействительным счетчиком (группы должны начинаться с 1) для хронологии активности %i (идентификатор действия: #%i)"
+
+#~ msgid "is"
+#~ msgstr "есть"
 
 #~ msgid "is one of"
 #~ msgstr "относится к"
@@ -2701,11 +2682,9 @@ msgstr "Русский"
 #~ msgid "Reset"
 #~ msgstr "Сброс параметров"
 
-#, fuzzy
 #~ msgid "Investor&nbsp;Countries"
 #~ msgstr "Страны&nbsp;инвесторы"
 
-#, fuzzy
 #~ msgid "Target&nbsp;Countries"
 #~ msgstr "Страны&nbsp;назначения"
 
@@ -2727,22 +2706,18 @@ msgstr "Русский"
 #~ msgid "There are two key variables to describe the status of a land deal: negotiation and implementation. Although these two variables are linked, they are independent in our database, and various combinations are possible for different projects. Click here for more info."
 #~ msgstr "В описании статуса земельной сделки есть две ключевые переменные: переговоры и реализация. Хотя эти две переменные и взаимосвязаны, в нашей базе данных они разделены, и в разных проектах они могут встречаться в различных комбинациях. Для получения дополнительной информации нажмите сюда."
 
-#, fuzzy
 #~ msgid "Deals having “agriculture” as main intention of investment disaggregated into sub-sections."
 #~ msgstr "Сделки, в которых \"Сельское хозяйство\" является основным целевым назначением инвестиций, с разбивкой на подкатегории."
 
-#, fuzzy
 #~ msgid "Deals divided by intention of investment."
 #~ msgstr "Сделки, разбитые по целевому назначению инвестиций."
 
 #~ msgid "Deals divided by negotiation status. Since this chart shows all deals in the database, there is no option to select concluded, intended or failed deals separately."
 #~ msgstr "Сделки разделены по статусу переговоров. Поскольку эта диаграмма показывает все сделки, занесенные в базу данных, возможность отдельно выделить заключенные, предварительные и не состоявшиеся сделки отсутствует."
 
-#, fuzzy
 #~ msgid "It's a big deal"
 #~ msgstr "Это крупная сделка"
 
-#, fuzzy
 #~ msgid "Enter a location to set the centre of a circle that displays an area equal to the size of the intended, concluded, or failed land acquisitions."
 #~ msgstr "Укажите название местности, чтобы обозначить центр круга, отображаюшего соотношение предварительных, заключенных или несостоявшихся земельных сделок."
 
@@ -2752,9 +2727,8 @@ msgstr "Русский"
 #~ msgid "Go"
 #~ msgstr "Перейти"
 
-#, fuzzy
 #~ msgid "Area equal to the size of the intended, concluded or failed land acquisitions: <span class=\"hectares\">0</span> ha"
-#~ msgstr "Площадь, соразмерная предполагаемого, завершенного или неудачного приобретения земли: <span class=\"hectares\">0</span> га."
+#~ msgstr "Площадь, соразмерная предполагаемого, завершенного или неудачного приобретения земли: <span class=\"hectares\">0</span> га"
 
 #~ msgid "This infographic shows how agricultural land acquisitions that include information on crops are subdivided according to destination of use."
 #~ msgstr "На этой инфографике видно, как сделки по приобретению земель, которые содержат информацию о выращиваемых культурах, делятся в зависимости от целевого назначения."
@@ -2795,23 +2769,20 @@ msgstr "Русский"
 #~ msgid "Size under contract"
 #~ msgstr "Площадь законтрактованных земель"
 
-#, fuzzy
 #~ msgid "Intended Size"
 #~ msgstr "Предполагаемый размер"
 
 #~ msgid "Deals with contract farming schemes."
 #~ msgstr "Сделки с привлечением контрактного фермерства."
 
-#, fuzzy
 #~ msgid "Wood chopping."
 #~ msgstr "Дровокольная деятельность."
 
 #~ msgid "The LM has two key variables to describe the status of a land deal: the negotiation status and the implementation status. For further information press the question mark."
 #~ msgstr "Для описания статуса земельной сделки LM использует две переменные: статус переговоров и статус реализации. Для получения дополнительной информации нажмите на знак вопроса."
 
-#, fuzzy
 #~ msgid "Filter and search through deals that are divided by intention of investment: Crops, mineral resources, or livestock."
-#~ msgstr "Используйте фильтры для поиска сделок, разделенных по целевому назначению инвестиций: сельхозкультуры, полезные ископаемые, скот"
+#~ msgstr "Используйте фильтры для поиска сделок, разделенных по целевому назначению инвестиций: сельхозкультуры, полезные ископаемые, скот."
 
 #~ msgid "Toggle navigation"
 #~ msgstr "Переключить навигацию"
@@ -2917,7 +2888,6 @@ msgstr "Русский"
 #~ msgid "Modified"
 #~ msgstr "Изменено"
 
-#, fuzzy
 #~ msgid "No deals have been modified lately."
 #~ msgstr "Новые исправления информации о сделках отсутствуют."
 
@@ -2927,7 +2897,6 @@ msgstr "Русский"
 #~ msgid "Deleted by"
 #~ msgstr "Удалено пользователем"
 
-#, fuzzy
 #~ msgid "No deals have been deleted lately."
 #~ msgstr "Новые удаления информации о сделках отсутствуют."
 
@@ -2988,7 +2957,6 @@ msgstr "Русский"
 #~ msgid "Feedback"
 #~ msgstr "Отзывы"
 
-#, fuzzy
 #~ msgid "Pending updates"
 #~ msgstr "Ожидающие обновления"
 
@@ -3004,7 +2972,6 @@ msgstr "Русский"
 #~ msgid "Currently there are no feedback requests."
 #~ msgstr "В настоящий момент запросы на обратную связь отсутствуют."
 
-#, fuzzy
 #~ msgid "Currently there are no pending updates."
 #~ msgstr "В настоящий момент очередь правок на рассмотрение пуста."
 
@@ -3072,7 +3039,7 @@ msgstr "Русский"
 #~ msgid "Deal %(deal_id)s History"
 #~ msgstr "История сделки %(deal_id)s"
 
-#, fuzzy, python-format
+#, python-format
 #~ msgid "A list of changes made to deal %(deal_id)s"
 #~ msgstr "Список изменений, внесенных в информацию о сделке %(deal_id)s"
 
@@ -3272,7 +3239,7 @@ msgstr "Русский"
 #~ msgid "Comment on location"
 #~ msgstr "Примечания к местоположению"
 
-#, fuzzy, python-format
+#, python-format
 #~ msgid "Error parsing shapefile: %s"
 #~ msgstr "Ошибка синтаксического анализа шейп-файла: %s"
 
@@ -3708,7 +3675,7 @@ msgstr "Русский"
 #~ msgid "Additional comment on Operating company"
 #~ msgstr "Дополнительный комментарий к Операционной компании"
 
-#, fuzzy, python-format
+#, python-format
 #~ msgid "Unknown group '%(group)s'."
 #~ msgstr "Неизвестная группа ''%(group)s'."
 
@@ -3739,7 +3706,6 @@ msgstr "Русский"
 #~ msgid "Is public"
 #~ msgstr "Является публичной"
 
-#, fuzzy
 #~ msgid "Deal scope"
 #~ msgstr "Предмет сделки"
 
@@ -4083,7 +4049,7 @@ msgstr "Русский"
 #~ msgid "News and Publications"
 #~ msgstr "Новости и публикации"
 
-#, fuzzy, python-format
+#, python-format
 #~ msgid "No news or publications available for %(t)s."
 #~ msgstr "Новости или публикации для %(t)s отсутствуют."
 
@@ -4093,11 +4059,9 @@ msgstr "Русский"
 #~ msgid "Go to"
 #~ msgstr "Перейти к"
 
-#, fuzzy
 #~ msgid "Tweets by"
 #~ msgstr "Твиты пользователя"
 
-#, fuzzy
 #~ msgid "Changes within timespan"
 #~ msgstr "Изменения в рамках временного диапазона"
 
@@ -4110,11 +4074,9 @@ msgstr "Русский"
 #~ msgid "Investor history"
 #~ msgstr "История инвестора"
 
-#, fuzzy
 #~ msgid "Land Matrix regions"
 #~ msgstr "Land Matrix регионы"
 
-#, fuzzy
 #~ msgid "The investor network diagram is only visible for live versions of an investor. I.e. https://landmatrix.org/investor/:id/"
 #~ msgstr "Схема сети инвестора видна только для живых версий инвестора. Т.е. https://landmatrix.org/investor/:id/"
 
@@ -4124,7 +4086,6 @@ msgstr "Русский"
 #~ msgid "Events"
 #~ msgstr "События"
 
-#, fuzzy
 #~ msgid "Learning opportunities"
 #~ msgstr "Возможности обучения"
 
@@ -4161,7 +4122,6 @@ msgstr "Русский"
 #~ msgid "Get involved"
 #~ msgstr "Приобщиться"
 
-#, fuzzy
 #~ msgid "You are using an <strong>outdated</strong> browser. Please <a href=\"http://browsehappy.com/\">upgrade your browser</a> or <a href=\"http://www.google.com/chromeframe/?redirect=true\">activate Google Chrome Frame</a> to improve your experience.</p>"
 #~ msgstr "Ваш браузер <strong>устарел</strong>. Пожалуйста, <a href=\"http://browsehappy.com/\">обновите свой браузер</a> или <a href=\"http://www.google.com/chromeframe/?redirect=true\">активируйте Google Chrome Frame</a>, чтобы улучшить свое взаимодействие с базой данных.</p>"
 
@@ -4183,7 +4143,6 @@ msgstr "Русский"
 #~ msgid "Thanks for posting your comment"
 #~ msgstr "Спасибо за публикацию комментария/примечания"
 
-#, fuzzy
 #~ msgid ""
 #~ "\n"
 #~ "      We have received your comment, and posted it on the web site.<br/>\n"
@@ -4300,7 +4259,7 @@ msgstr "Русский"
 #~ msgid "If there's an account with the given email address, an email with password reset instructions has been sent."
 #~ msgstr "Если в учетной записи указан электронный адрес, на него было отправлено письмо с инструкциями по восстановлению пароля."
 
-#, fuzzy, python-format
+#, python-format
 #~ msgid ""
 #~ "\n"
 #~ "Someone requested that the password be reset for the following account:\n"
@@ -4313,7 +4272,6 @@ msgstr "Русский"
 #~ "To reset your password, visit the following address:\n"
 #~ msgstr ""
 #~ "\n"
-#~ "\"\n"
 #~ "Кто-то подал запрос на восстановление пароля для следующей учетной записи:\n"
 #~ "\n"
 #~ "%(site_name)s\n"
@@ -4322,7 +4280,6 @@ msgstr "Русский"
 #~ "Если запрос отправлен по ошибке, просто проигнорируйте это письмо.\n"
 #~ "\n"
 #~ "Для сброса пароля пройдите по ссылке:\n"
-#~ "\"\n"
 
 #~ msgid "Share"
 #~ msgstr "Поделиться"

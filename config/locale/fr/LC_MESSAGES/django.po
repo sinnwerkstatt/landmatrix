@@ -2,11 +2,15 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-10 00:33+0200\n"
-"PO-Revision-Date: 2020-07-03 15:24+0200\n"
+"POT-Creation-Date: 2022-09-10 00:44+0200\n"
+"PO-Revision-Date: 2022-05-30 13:48+0000\n"
+"Last-Translator: Kurt Gerber <kurt.gerber@unibe.ch>\n"
+"Language-Team: French <http://translate.landmatrix.org/projects/landmatrix/landmatrix/fr/>\n"
 "Language: fr\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 4.8\n"
 "Generated-By: xls-to-po 1.0\n"
 
 msgid "Blog index"
@@ -52,19 +56,19 @@ msgid "Account activation on"
 msgstr "Activation du compte le"
 
 msgid "New comment"
-msgstr ""
+msgstr "Nouveau commentaire"
 
 #, python-brace-format
 msgid "{full_name} has addressed you in a comment on {obj_desc}:"
-msgstr ""
+msgstr "{full_name} s'est adressé à vous dans un commentaire sur {obj_desc} :"
 
 #, python-brace-format
 msgid "{full_name} has updated {obj_desc}:"
-msgstr ""
+msgstr "{full_name} a actualisé {obj_desc} :"
 
 #, python-brace-format
 msgid "Please review at {url}"
-msgstr ""
+msgstr "A examiner sur {url}"
 
 msgid "Size under contract (leased or purchased area, in ha)"
 msgstr "Superficie sous contrat (superficie louée ou achetée, en ha)"
@@ -79,22 +83,22 @@ msgid "Negotiation status"
 msgstr "Statut de la négociation"
 
 msgid "Implementation status"
-msgstr "Statut de la mise en œuvre "
+msgstr "Statut de la mise en œuvre"
 
 msgid "On leased area/farmers/households"
-msgstr ""
+msgstr "Agriculteurs/ménages travaillant sur une superficie louée"
 
 msgid "Not on leased area/farmers/households (out-grower)"
-msgstr ""
+msgstr "Agriculteurs / ménages travaillant sur une superficie non louée (cultivateur sous-traitant)"
 
 msgid "Current total number of jobs/employees/ daily/seasonal workers"
-msgstr ""
+msgstr "Nombre total actuel d’emplois/employés/travailleurs journaliers/saisonniers"
 
 msgid "Current foreign number of jobs/employees/ daily/seasonal workers"
-msgstr ""
+msgstr "Nombre actuel d’emplois/employés/travailleurs journaliers/saisonniers (étrangers)"
 
 msgid "Current domestic number of jobs/employees/ daily/seasonal workers"
-msgstr ""
+msgstr "Nombre actuel d’emplois/employés/travailleurs journaliers/saisonniers (nationaux)"
 
 msgid "Actors involved in the negotiation / admission process"
 msgstr "Acteurs impliqués dans le processus de négociation/admission"
@@ -118,7 +122,7 @@ msgid "Contract farming livestock"
 msgstr "Animaux d‘élevage sous agriculture sous contrat"
 
 msgid "Comments / History"
-msgstr ""
+msgstr "Commentaires / Historique"
 
 msgid "jobs"
 msgstr "emplois"
@@ -1024,7 +1028,7 @@ msgid "High income"
 msgstr "Revenu élevé"
 
 msgid "Locations"
-msgstr ""
+msgstr "Localisation"
 
 msgid "Target country"
 msgstr "Pays cible"
@@ -1048,7 +1052,7 @@ msgid "Comment on negotiation status"
 msgstr "Commentaire sur le statut de la négociation"
 
 msgid "Comment on implementation status"
-msgstr "Commentaire sur le statut de la mise en œuvre "
+msgstr "Commentaire sur le statut de la mise en œuvre"
 
 msgid "Purchase price"
 msgstr "Prix d’achat"
@@ -1069,10 +1073,10 @@ msgid "Annual leasing fee"
 msgstr "Frais de location annuel"
 
 msgid "Annual leasing fee currency"
-msgstr "Devise  de frais de location annuels"
+msgstr "Devise de frais de location annuels"
 
 msgid "Annual leasing fee area type"
-msgstr "Type de superficie frais de location annuels "
+msgstr "Type de superficie frais de location annuels"
 
 msgid "Annual leasing fee area"
 msgstr "Superficie de frais de location annuels"
@@ -1081,10 +1085,10 @@ msgid "Comment on leasing fee"
 msgstr "Commentaire sur les frais de location"
 
 msgid "On leased / purchased"
-msgstr ""
+msgstr "Superficie louée/achetée"
 
 msgid "Not on leased / purchased (out-grower)"
-msgstr ""
+msgstr "Superficie non louée/achetée (cultivateur sous-traitant)"
 
 msgid "Comment on contract farming"
 msgstr "Commentaire sur l’agriculture sous contrat"
@@ -1255,7 +1259,7 @@ msgid "Comment on livestock"
 msgstr "Commentaire sur l’élevage"
 
 msgid "Comment on mineral resources"
-msgstr ""
+msgstr "Commentaire sur les ressources minérales"
 
 msgid "Comment on contract farming crops"
 msgstr "Commentaire sur les cultures sous agriculture sous contrat"
@@ -1631,10 +1635,10 @@ msgid "Assign to user"
 msgstr ""
 
 msgid "At least one data source"
-msgstr ""
+msgstr "Au moins une source de données"
 
 msgid "At least one investor"
-msgstr ""
+msgstr "Au moins un investisseur"
 
 msgid "Base layer"
 msgstr ""
@@ -1646,7 +1650,7 @@ msgid "by"
 msgstr "par"
 
 msgid "By making this information available, the Land Matrix hopes to enhance broad engagement and data exchange, facilitating the continuous improvement of the data. Find out how to get involved"
-msgstr ""
+msgstr "En rendant ces informations disponibles, la Land Matrix espère favoriser un large engagement et l'échange de données, facilitant ainsi l'amélioration continue des données. Découvrez comment vous impliquer"
 
 msgid "Cancel"
 msgstr "Annuler"
@@ -1693,7 +1697,7 @@ msgid "Concluded"
 msgstr "Conclus"
 
 msgid "Confidential"
-msgstr ""
+msgstr "Confidentiel"
 
 msgid "Consultation of local community"
 msgstr "Consultation de la communauté locale"
@@ -1749,7 +1753,7 @@ msgid "Country profiles"
 msgstr "Profils pays"
 
 msgid "Country profiles present national-level data of large-scale land acquisitions and transactions including who the investors are, what the aim of the investment is, who the former owner was and what the land was previously used for, and what the potential benefits and impacts of the land deals are."
-msgstr ""
+msgstr "Les profils pays présentent des données de niveau national relatives aux transactions et acquisitions de terres à grande échelle, y compris l'identité des investisseurs, l’objectif de l’investissement, l’identité du propriétaire précédent et l'usage précédent de la terre, et les bénéfices et impacts potentiels des transactions foncières."
 
 msgid "Create a new draft"
 msgstr ""
@@ -1791,7 +1795,7 @@ msgid "Data overview"
 msgstr ""
 
 msgid "Data policy"
-msgstr ""
+msgstr "Politique relative aux données"
 
 msgid "Data source"
 msgstr "Source des données"
@@ -1842,7 +1846,7 @@ msgid "Detailed crop, animal and mineral information"
 msgstr "Informations détaillées sur les cultures, les animaux et les ressources minérales"
 
 msgid "Displayed data"
-msgstr ""
+msgstr "Données affichées"
 
 msgid "Do you really want to close the editor?"
 msgstr ""
@@ -1872,7 +1876,7 @@ msgid "Dynamics overview"
 msgstr ""
 
 msgid "Dynamics overview charts"
-msgstr ""
+msgstr "Diagrammes de panorama des dynamiques"
 
 msgid "Edit"
 msgstr "Modifier"
@@ -1902,7 +1906,7 @@ msgid "Excluded"
 msgstr "Exclues"
 
 msgid "Explore the map for information about land deals from global down to regional and country level."
-msgstr ""
+msgstr "Explorer la carte pour plus d’informations sur les transactions foncières du niveau mondial aux niveaux régional et national."
 
 msgid "Export (%)"
 msgstr ""
@@ -1938,7 +1942,7 @@ msgid "Forest concession"
 msgstr "Concession forestière"
 
 msgid "Forgot password?"
-msgstr "Vous avez oublié votre mot de passe?"
+msgstr "Vous avez oublié votre mot de passe ?"
 
 msgid "Former land owner (not by constitution)"
 msgstr "Propriétaire antérieur des terres (autre que par acte constitutif)"
@@ -1968,7 +1972,7 @@ msgid "General Info"
 msgstr ""
 
 msgid "Generate your own infographics using a wide selection of charts to illustrate information about deals."
-msgstr ""
+msgstr "Générez votre propre infographie en utilisant une large gamme de diagrammes pour illustrer les informations relatives aux transactions."
 
 msgid "Global"
 msgstr "Monde"
@@ -1983,7 +1987,7 @@ msgid "Go to current draft"
 msgstr ""
 
 msgid "Go to map"
-msgstr ""
+msgstr "Aller à la carte"
 
 msgid "here"
 msgstr ""
@@ -2004,7 +2008,7 @@ msgid "I fully updated this deal."
 msgstr ""
 
 msgid "I've read and agree to the"
-msgstr ""
+msgstr "Je déclare avoir lu et approuvé"
 
 msgid "ID or Name"
 msgstr ""
@@ -2094,7 +2098,7 @@ msgid "Land Matrix"
 msgstr ""
 
 msgid "Land Matrix region"
-msgstr ""
+msgstr "région Land Matrix"
 
 msgid "Last changes"
 msgstr ""
@@ -2214,7 +2218,7 @@ msgid "No"
 msgstr "Non"
 
 msgid "No data source"
-msgstr ""
+msgstr "Par source des données"
 
 msgid "No information"
 msgstr ""
@@ -2223,13 +2227,13 @@ msgid "No. of deals"
 msgstr ""
 
 msgid "Not confidential"
-msgstr ""
+msgstr "Non confidentiel"
 
 msgid "Not fully updated"
 msgstr ""
 
 msgid "Not publicly visible"
-msgstr ""
+msgstr "Non visible du public"
 
 msgid "Number of deal locations"
 msgstr "Nombre de localisations de transactions"
@@ -2293,7 +2297,7 @@ msgid "Please provide a comment explaining your request"
 msgstr ""
 
 msgid "Produce"
-msgstr ""
+msgstr "Produit"
 
 msgid "Produce info"
 msgstr "Info produit"
@@ -2380,7 +2384,7 @@ msgid "Scope"
 msgstr ""
 
 msgid "Search and filter the dataset through pre-configured entry points or drill down to single deals."
-msgstr ""
+msgstr "Consultez et filtrez l’ensemble de données par le biais de points d'entrée préconfigurés ou explorez en détail les transactions individuelles."
 
 msgid "Search deals and investors"
 msgstr ""
@@ -2479,10 +2483,10 @@ msgid "Table columns"
 msgstr ""
 
 msgid "Target country is NOT set"
-msgstr ""
+msgstr "Pays cible NON défini"
 
 msgid "Target country is set"
-msgstr ""
+msgstr "Pays cible défini"
 
 msgid "Tertiary investors/lenders"
 msgstr "Prêteurs/investisseurs tertiaires"
@@ -2570,7 +2574,7 @@ msgid "You can only change the country when no locations are defined."
 msgstr ""
 
 msgid "Your contact information will help our researchers get in touch with you for additional information. We respect and protect your privacy and anonymity, and will never share or publish your personal information. You can also write us directly at data@landmatrix.org."
-msgstr "Vos coordonnées permettront à nos chercheurs de vous contacter pour toute information supplémentaire. Nous respectons et protégeons votre vie privée et votre anonymat, et nous engageons à ne jamais communiquer ou publier vos informations personnelles. Vous pouvez également nous écrire directement à l’adresse data@landmatrix.org"
+msgstr "Vos coordonnées permettront à nos chercheurs de vous contacter pour toute information supplémentaire. Nous respectons et protégeons votre vie privée et votre anonymat, et nous engageons à ne jamais communiquer ou publier vos informations personnelles. Vous pouvez également nous écrire directement à l’adresse data@landmatrix.org."
 
 msgid "Your email address is confirmed. You can log in now."
 msgstr ""
@@ -2580,7 +2584,7 @@ msgstr ""
 
 #, python-brace-format
 msgid "{x} deals have multiple intentions, resulting in a total of {y} intentions for {z} deals."
-msgstr ""
+msgstr "{x} transactions ont des intentions multiples, ce qui donne un total de {y} intentions pour {z} transactions."
 
 msgid "English"
 msgstr "English"
@@ -2656,13 +2660,16 @@ msgstr "Русский"
 #~ msgstr "Carte mondiale des investissements"
 
 #~ msgid "Choose between investor or target countries using the menu below. Click on the bubbles to visualise the selected country's involvement in the global land acquisition phenomenon."
-#~ msgstr "Dans le menu ci-dessous, veuillez sélectionner pays investisseur ou pays cible Cliquez sur les bulles pour visualiser l’implication du pays sélectionné dans le phénomène mondial d’acquisition de terres"
+#~ msgstr "Dans le menu ci-dessous, veuillez sélectionner pays investisseur ou pays cible Cliquez sur les bulles pour visualiser l’implication du pays sélectionné dans le phénomène mondial d’acquisition de terres."
 
 #~ msgid "0 acquisitions/targets"
 #~ msgstr "0 acquisition/cible"
 
 #~ msgid "to/from Country"
 #~ msgstr "Vers/de Pays"
+
+#~ msgid "whereof 0 with itself"
+#~ msgstr "Où 0 avec lui-même"
 
 #~ msgid "Go to Table"
 #~ msgstr "Aller au Tableau"
@@ -2689,7 +2696,7 @@ msgstr "Русский"
 #~ msgstr "Afficher la superficie ou le nombre de transactions"
 
 #~ msgid "Deals divided by implementation status. Since this chart shows all deals in the database, there is no option to select concluded, intended or failed deals separately."
-#~ msgstr "Répartition des transactions en fonction du statut de la mise en œuvre.  Ce diagramme montrant toutes les transactions figurant dans la base de données, il n’est pas possible de sélectionner séparément les transactions conclues, prévues ou échouées."
+#~ msgstr "Répartition des transactions en fonction du statut de la mise en œuvre. Ce diagramme montrant toutes les transactions figurant dans la base de données, il n’est pas possible de sélectionner séparément les transactions conclues, prévues ou échouées."
 
 #~ msgid "There are two key variables to describe the status of a land deal: negotiation and implementation. Although these two variables are linked, they are independent in our database, and various combinations are possible for different projects. Click here for more info."
 #~ msgstr "Il existe deux variables clés pour décrire le statut d'une transaction foncière : la négociation et la mise en œuvre Bien que ces deux variables soient liées, elles sont indépendantes dans notre base de données, de sorte que diverses combinaisons sont possibles pour différents projets. Veuillez cliquer ici pour plus d'informations."
@@ -2770,7 +2777,7 @@ msgstr "Русский"
 #~ msgstr "La LM dispose de deux variables clés pour décrire le statut d’une transaction foncière : le statut de la négociation et le statut de la mise en œuvre. Pour davantage d’informations, veuillez cliquer sur le point d'interrogation."
 
 #~ msgid "Filter and search through deals that are divided by intention of investment: Crops, mineral resources, or livestock."
-#~ msgstr "Filtrez et recherchez parmi les transactions classées par intention de l'investissement : Cultures, ressources minérales ou animaux d’élevage"
+#~ msgstr "Filtrez et recherchez parmi les transactions classées par intention de l'investissement : Cultures, ressources minérales ou animaux d’élevage."
 
 #~ msgid "Toggle navigation"
 #~ msgstr "Basculer la navigation"
@@ -3030,7 +3037,7 @@ msgstr "Русский"
 #~ msgstr "Liste de modifications apportées à la transaction %(deal_id)s"
 
 #~ msgid "Uploaded files must be less than 10MB."
-#~ msgstr "La taille des fichiers téléchargés doit être inférieure à 10 Mo. "
+#~ msgstr "La taille des fichiers téléchargés doit être inférieure à 10 Mo."
 
 #, python-format
 #~ msgid " (%s %s)"
@@ -3398,13 +3405,13 @@ msgstr "Русский"
 #~ msgstr "Veuillez faire un clic droit sur les nœuds pour obtenir plus de détails."
 
 #~ msgid "Left-click to reveal related parent companies and tertiary investors/lenders."
-#~ msgstr "Faites un clic gauche pour afficher les sociétés mères et les prêteurs/investisseurs tertiaires liés"
+#~ msgstr "Faites un clic gauche pour afficher les sociétés mères et les prêteurs/investisseurs tertiaires liés."
 
 #~ msgid "Right-click on investors to get more information."
 #~ msgstr "Faites un clic droit sur les investisseurs pour obtenir plus d'informations."
 
 #~ msgid "Left-click to hide related parent companies and tertiary investors/lenders."
-#~ msgstr "Faites un clic gauche pour masquer les sociétés mères et les prêteurs/investisseurs tertiaires liés"
+#~ msgstr "Faites un clic gauche pour masquer les sociétés mères et les prêteurs/investisseurs tertiaires liés."
 
 #~ msgid "This operating company is pending."
 #~ msgstr "Cette société exploitante est en attente."
@@ -3464,7 +3471,7 @@ msgstr "Русский"
 #~ msgstr "Région inconnue"
 
 #~ msgid "Double-click to zoom in."
-#~ msgstr "Veuillez faire un double clic pour zoomer"
+#~ msgstr "Veuillez faire un double clic pour zoomer."
 
 #~ msgid "Search for investor name"
 #~ msgstr "Rechercher le nom de l’investisseur"
@@ -3922,7 +3929,7 @@ msgstr "Русский"
 #~ msgstr "Rechercher"
 
 #~ msgid "Type in the field below to search for a location."
-#~ msgstr "Veuillez saisir l'objet de votre recherche dans le champ suivant"
+#~ msgstr "Veuillez saisir l'objet de votre recherche dans le champ suivant."
 
 #~ msgid "Search location"
 #~ msgstr "Rechercher un lieu"
@@ -4054,8 +4061,26 @@ msgstr "Русский"
 #~ msgid "Current statistics"
 #~ msgstr "Statistiques actuelles"
 
+#~ msgid "No investor"
+#~ msgstr "Aucun investisseur"
+
 #~ msgid "Investor history"
 #~ msgstr "Historique de l’investisseur"
+
+#~ msgid "Land Matrix regions"
+#~ msgstr "régions Land Matrix"
+
+#~ msgid "The investor network diagram is only visible for live versions of an investor. I.e. https://landmatrix.org/investor/:id/"
+#~ msgstr "Le diagramme du réseau d’investisseurs n’est visible que pour les versions en direct d’un investisseur. C.a.d. : https://landmatrix.org/investor/:id/"
+
+#~ msgid "Analytical reports"
+#~ msgstr "Rapports analytiques"
+
+#~ msgid "Events"
+#~ msgstr "Événements"
+
+#~ msgid "Learning opportunities"
+#~ msgstr "Opportunités d’apprentissage"
 
 #~ msgid "News"
 #~ msgstr "Nouveautés"
@@ -4163,7 +4188,7 @@ msgstr "Русский"
 #~ msgstr "Vos coordonnées permettront à nos chercheurs de vous contacter pour toute information supplémentaire. Nous respectons et protégeons votre vie privée et votre anonymat, et nous engageons à ne jamais communiquer ou publier vos informations personnelles. Vous pouvez également nous écrire directement à l’adresse <a href=\"mailto:data@landmatrix.org\">data@landmatrix.org</a>."
 
 #~ msgid "Default filters are enabled"
-#~ msgstr "Les filtres par défaut sont activés."
+#~ msgstr "Les filtres par défaut sont activés"
 
 #~ msgid "The data is filtered by global or national filter presets. Please uncheck the checkbox to show all data."
 #~ msgstr "Les données sont filtrées à l’aide de filtres mondiaux ou nationaux pré-établis. Veuillez décocher la case pour afficher toutes les données."
