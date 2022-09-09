@@ -58,8 +58,13 @@ def resolve_investor(
         except InvestorVersion.DoesNotExist:
             return
 
-        if not (
-            investor_version.created_by == user or role in ["ADMINISTRATOR", "EDITOR"]
+        if not any(
+            [
+                role in ["ADMINISTRATOR", "EDITOR"],
+                investor_version.created_by == user,
+                investor_version.serialized_data["draft_status"] is None
+                and investor_version.serialized_data["status"] in [2, 3],
+            ]
         ):
             raise GraphQLError("not authorized")
         if any([f.startswith("ventures_") for f in fields]):

@@ -79,7 +79,10 @@ class Version(models.Model):
         for x in self.object._meta.fields:
             if x.__class__.__name__ == "ForeignKey":
                 if edict.get(x.name):
-                    edict[x.name] = x.related_model.objects.get(pk=edict[x.name])
+                    try:
+                        edict[x.name] = x.related_model.objects.get(pk=edict[x.name])
+                    except x.related_model.DoesNotExist:
+                        edict[x.name] = "~Unknown Entry~"
         edict["created_at"] = self.created_at
         edict["created_by"] = self.created_by
         return edict

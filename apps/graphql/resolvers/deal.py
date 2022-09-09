@@ -45,7 +45,15 @@ def resolve_deal(_obj, info, id, version=None, subset="PUBLIC"):
         except DealVersion.DoesNotExist:
             return
 
-        if not (deal_version.created_by == user or role in ["ADMINISTRATOR", "EDITOR"]):
+        if not any(
+            [
+                role in ["ADMINISTRATOR", "EDITOR"],
+                deal_version.created_by == user,
+                deal_version.serialized_data["is_public"]
+                and deal_version.serialized_data["draft_status"] is None
+                and deal_version.serialized_data["status"] in [2, 3],
+            ]
+        ):
             raise GraphQLError("not authorized")
     else:
         visible_deals = Deal.objects.visible(user, subset).filter(id=id)
