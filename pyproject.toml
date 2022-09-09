@@ -20,6 +20,7 @@ django-modeltranslation = "*"
 wagtail-font-awesome-svg = "*"
 wagtail-modeltranslation = "*"
 wagtail-orderable = "*"
+wagtail-headless-preview = "*"
 
 ariadne = "*"
 ariadne_django = "*"
