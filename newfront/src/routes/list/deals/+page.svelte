@@ -27,14 +27,14 @@
 
   const allColumnsWithSpan = {
     fully_updated_at: 2,
-    deal_size: 2,
     id: 1,
     country: 3,
     current_intention_of_investment: 5,
     current_negotiation_status: 4,
-    current_contract_size: 3,
     current_implementation_status: 4,
+    current_contract_size: 3,
     intended_size: 3,
+    deal_size: 2,
     operating_company: 4,
   }
 
