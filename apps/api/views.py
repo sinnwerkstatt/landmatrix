@@ -159,9 +159,11 @@ class Management(View):
             "requested_improvement": {
                 "staff": True,
                 "q": ~Q(current_draft=None)
-                & Q(workflowinfos__deal_version_id=F("current_draft_id"))
-                if is_deal
-                else Q(workflowinfos__investor_version_id=F("current_draft_id"))
+                & (
+                    Q(workflowinfos__deal_version_id=F("current_draft_id"))
+                    if is_deal
+                    else Q(workflowinfos__investor_version_id=F("current_draft_id"))
+                )
                 & Q(workflowinfos__draft_status_before__in=[2, 3])
                 & Q(workflowinfos__draft_status_after=1)
                 & Q(workflowinfos__from_user_id=request.user.id),
