@@ -209,7 +209,7 @@ class Investor(models.Model):
             classification=version.serialized_data["classification"],
             homepage=version.serialized_data["homepage"],
             opencorporates=version.serialized_data["opencorporates"],
-            datasources=version.serialized_data["datasources"],
+            datasources=version.serialized_data.get("datasources", []),
             comment=version.serialized_data["comment"],
             status=version.serialized_data["status"],
             draft_status=version.serialized_data["draft_status"],
