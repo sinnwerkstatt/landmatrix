@@ -50,7 +50,7 @@ def add_object_comment(
 ) -> None:
     role = get_user_role(user)
     if not role:
-        raise GraphQLError("not allowed")
+        raise GraphQLError("MISSING_AUTHORIZATION")
 
     obj = (Deal if otype == "deal" else Investor).objects.get(id=obj_id)
     obj_version = None
@@ -89,7 +89,7 @@ def change_object_status(
 ) -> list[int]:
     role = get_user_role(user)
     if role not in ["ADMINISTRATOR", "EDITOR", "REPORTER"]:
-        raise GraphQLError("not allowed")
+        raise GraphQLError("MISSING_AUTHORIZATION")
     Object = Deal if otype == "deal" else Investor
     ObjectVersion = DealVersion if otype == "deal" else InvestorVersion
     obj = Object.objects.get(id=obj_id)
@@ -97,9 +97,12 @@ def change_object_status(
 
     old_draft_status = obj_version.serialized_data["draft_status"]
 
+    if obj.versions.first() != obj_version:
+        raise GraphQLError("EDITING_OLD_VERSION")
+
     if transition == "TO_REVIEW":
         if not (obj_version.created_by == user or role in ["ADMINISTRATOR", "EDITOR"]):
-            raise GraphQLError("not authorized")
+            raise GraphQLError("MISSING_AUTHORIZATION")
 
         draft_status = DRAFT_STATUS["REVIEW"]
         obj_version.serialized_data["draft_status"] = draft_status
@@ -126,14 +129,14 @@ def change_object_status(
 
     elif transition == "TO_ACTIVATION":
         if role not in ["ADMINISTRATOR", "EDITOR"]:
-            raise GraphQLError("not authorized")
+            raise GraphQLError("MISSING_AUTHORIZATION")
         draft_status = DRAFT_STATUS["ACTIVATION"]
         obj_version.serialized_data["draft_status"] = draft_status
         obj_version.save()
         Object.objects.filter(id=obj_id).update(draft_status=draft_status)
     elif transition == "ACTIVATE":
         if role != "ADMINISTRATOR":
-            raise GraphQLError("not allowed")
+            raise GraphQLError("MISSING_AUTHORIZATION")
         draft_status = None
         obj_version.serialized_data["status"] = (
             STATUS["LIVE"] if obj.status == STATUS["DRAFT"] else STATUS["UPDATED"]
@@ -159,7 +162,7 @@ def change_object_status(
         ).update(processed_by_receiver=True)
     elif transition == "TO_DRAFT":
         if role not in ["ADMINISTRATOR", "EDITOR"]:
-            raise GraphQLError("not authorized")
+            raise GraphQLError("MISSING_AUTHORIZATION")
         draft_status = DRAFT_STATUS["DRAFT"]
 
         obj_version.serialized_data["draft_status"] = draft_status
@@ -206,7 +209,7 @@ def object_edit(
 ) -> list[int]:
     role = get_user_role(user)
     if not role:
-        raise GraphQLError("not authorized")
+        raise GraphQLError("MISSING_AUTHORIZATION")
 
     # verify that the form is correct
     ObjectForm = DealForm if otype == "deal" else InvestorForm
@@ -276,7 +279,10 @@ def object_edit(
             id=obj_version_id
         )
         if not (obj_version.created_by == user or role in ["ADMINISTRATOR", "EDITOR"]):
-            raise GraphQLError("not authorized")
+            raise GraphQLError("MISSING_AUTHORIZATION")
+
+        if obj.versions.first() != obj_version:
+            raise GraphQLError("EDITING_OLD_VERSION")
 
         obj_version.serialized_data = obj.serialize_for_version()
 
@@ -338,7 +344,7 @@ def object_delete(
 ) -> bool:
     role = get_user_role(user)
     if not role:
-        raise GraphQLError("not authorized")
+        raise GraphQLError("MISSING_AUTHORIZATION")
 
     Object = Deal if otype == "deal" else Investor
     obj = Object.objects.get(id=obj_id)
@@ -348,7 +354,7 @@ def object_delete(
         ObjectVersion = DealVersion if otype == "deal" else InvestorVersion
         obj_version = ObjectVersion.objects.get(id=obj_version_id)
         if not (obj_version.created_by == user or role in ["ADMINISTRATOR", "EDITOR"]):
-            raise GraphQLError("not authorized")
+            raise GraphQLError("MISSING_AUTHORIZATION")
         old_draft_status = obj_version.serialized_data["draft_status"]
         obj_version.delete()
         add_workflow_info(
@@ -372,7 +378,7 @@ def object_delete(
 
     else:
         if role != "ADMINISTRATOR":
-            raise GraphQLError("not authorized")
+            raise GraphQLError("MISSING_AUTHORIZATION")
         obj.status = (
             STATUS["UPDATED"] if obj.status == STATUS["DELETED"] else STATUS["DELETED"]
         )

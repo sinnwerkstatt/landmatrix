@@ -66,7 +66,7 @@ def resolve_investor(
                 and investor_version.serialized_data["status"] in [2, 3],
             ]
         ):
-            raise GraphQLError("not authorized")
+            raise GraphQLError("MISSING_AUTHORIZATION")
         if any([f.startswith("ventures_") for f in fields]):
             investor["ventures"] = InvestorVentureInvolvement.objects.filter(
                 investor_id=id

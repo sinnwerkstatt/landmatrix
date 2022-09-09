@@ -1,5 +1,7 @@
 <script lang="ts">
+  import type { Client } from "@urql/svelte"
   import { gql } from "@urql/svelte"
+  import { toast } from "@zerodevx/svelte-toast"
   import { createEventDispatcher } from "svelte"
   import { _ } from "svelte-i18n"
 
@@ -41,9 +43,9 @@
     showSendToReviewOverlay = false
   }
 
-  function changeStatus({ detail: { transition, comment = "", toUser = null } }) {
-    $page.data.urqlClient
-      .mutation(
+  async function changeStatus({ detail: { transition, comment = "", toUser = null } }) {
+    const { data, error } = await ($page.data.urqlClient as Client)
+      .mutation<{ change_deal_status: { dealId: number; dealVersion: number } }>(
         gql`
           mutation (
             $id: Int!
@@ -76,16 +78,26 @@
         },
       )
       .toPromise()
-      .then(async ({ data: { change_deal_status } }) => {
-        if (transition === "ACTIVATE") {
-          await goto(`/deal/${change_deal_status.dealId}/`)
-        } else if (dealVersion !== change_deal_status?.dealVersion)
-          await goto(
-            `/deal/${change_deal_status.dealId}/${change_deal_status.dealVersion}/`,
-          )
-        else dispatch("reload")
-      })
-      .catch(error => console.error(error))
+    if (error) {
+      if (error.graphQLErrors[0].message === "EDITING_OLD_VERSION")
+        toast.push("You are trying to edit an old version!", { classes: ["error"] })
+      else toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
+      return
+    }
+    if (!data) {
+      toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
+      return
+    }
+
+    if (transition === "ACTIVATE") {
+      await goto(`/deal/${data.change_deal_status.dealId}/`)
+    } else if (dealVersion !== data.change_deal_status.dealVersion) {
+      await goto(
+        `/deal/${data.change_deal_status.dealId}/${data.change_deal_status.dealVersion}/`,
+      )
+    } else {
+      dispatch("reload")
+    }
   }
 
   function addComment({ detail: { comment, sendToUser } }) {
@@ -220,7 +232,7 @@
       </span>
     {/if}
   </div>
-  <div slot="visibility" class="flex-auto">
+  <div class="flex-auto" slot="visibility">
     <div class="mb-2 flex items-center gap-1 text-lg">
       {#if deal.is_public}
         <EyeIcon class="h-6 w-6 text-orange" /> {$_("Publicly visible")}
@@ -290,9 +302,9 @@
 
 <ManageOverlay
   bind:visible={showSendToReviewOverlay}
-  title={$_("Submit for review")}
   commentInput
   on:submit={sendToReview}
+  title={$_("Submit for review")}
 >
   <div class="mb-6">
     <div class="underline">{$_("Full update")}</div>
@@ -307,9 +319,9 @@
     </label>
   </div>
   <div class="mb-6">
-    <label for="data-policy-checkbox" class="underline">{$_("Data policy")}</label>
+    <label class="underline" for="data-policy-checkbox">{$_("Data policy")}</label>
     <label class="mt-1 block font-bold">
-      <input required type="checkbox" id="data-policy-checkbox" />
+      <input id="data-policy-checkbox" required type="checkbox" />
       {$_("I've read and agree to the")}
       <a href="/about/data-policy/" target="_blank">{$_("Data policy")}</a>
       .
@@ -319,8 +331,8 @@
 
 <ManageOverlay
   bind:visible={showCopyOverlay}
-  title={$_("Copy deal")}
   on:submit={copyDeal}
+  title={$_("Copy deal")}
 >
   <p>
     {$_(
@@ -332,10 +344,10 @@
 
 <ManageOverlay
   bind:visible={showConfidentialOverlay}
-  on:submit={({ detail }) => toggleConfidential({ ...detail, force: true })}
-  on:close={() => (deal.confidential = deal.confidential)}
-  title={deal.confidential ? $_("Unset confidential") : $_("Set confidential")}
   commentRequired={!deal.confidential}
+  on:close={() => (deal.confidential = deal.confidential)}
+  on:submit={({ detail }) => toggleConfidential({ ...detail, force: true })}
+  title={deal.confidential ? $_("Unset confidential") : $_("Set confidential")}
 >
   <p>
     {#if deal.confidential}

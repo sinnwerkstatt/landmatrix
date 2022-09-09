@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { error } from "@sveltejs/kit"
   import { Client, gql } from "@urql/svelte"
+  import { toast } from "@zerodevx/svelte-toast"
   import { _ } from "svelte-i18n"
 
   import { beforeNavigate, goto, invalidateAll } from "$app/navigation"
@@ -55,18 +55,21 @@
   async function saveDeal(hash: string) {
     const currentForm: HTMLFormElement | null =
       document.querySelector<HTMLFormElement>(activeTab)
-    if (!currentForm) throw error(500, "can not grab the form")
-
-    if (!currentForm.checkValidity()) {
-      currentForm.reportValidity()
+    if (!currentForm) {
+      toast.push("Internal error. Can not grab the form. Try reloading the page.", {
+        classes: ["error"],
+      })
       return
     }
+
+    if (!currentForm.checkValidity()) return currentForm.reportValidity()
+
     savingInProgress = true
     deal.locations = removeEmptyEntries<LamaLoc>(deal.locations)
     deal.contracts = removeEmptyEntries<Contract>(deal.contracts)
     deal.datasources = removeEmptyEntries<DataSource>(deal.datasources)
 
-    const ret = await ($page.data.urqlClient as Client)
+    const { data, error } = await ($page.data.urqlClient as Client)
       .mutation<{ deal_edit: { dealId: number; dealVersion?: number } }>(
         gql`
           mutation ($id: Int!, $version: Int, $payload: Payload) {
@@ -83,11 +86,25 @@
         },
       )
       .toPromise()
-    const deal_edit = ret.data?.deal_edit
-    if (!deal_edit) throw error(500, `Problem with edit: ${ret.error}`)
+    if (error) {
+      if (error.graphQLErrors[0].message === "EDITING_OLD_VERSION")
+        toast.push("You are trying to edit an old version!", { classes: ["error"] })
+      else toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
+      savingInProgress = false
+      return
+    }
+    if (!data) {
+      toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
+      savingInProgress = false
+      return
+    }
 
-    if (location.hash !== hash || +dealVersion !== +deal_edit.dealVersion) {
-      await goto(`/deal/edit/${deal_edit.dealId}/${deal_edit.dealVersion}${hash ?? ""}`)
+    if (location.hash !== hash || +dealVersion !== +data.deal_edit.dealVersion) {
+      await goto(
+        `/deal/edit/${data.deal_edit.dealId}/${data.deal_edit.dealVersion}${
+          hash ?? ""
+        }`,
+      )
     }
 
     // update original deal only after route change

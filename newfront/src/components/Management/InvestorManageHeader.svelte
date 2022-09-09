@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { gql } from "@urql/svelte"
+  import { Client, gql } from "@urql/svelte"
+  import { toast } from "@zerodevx/svelte-toast"
   import { createEventDispatcher } from "svelte"
   import { _ } from "svelte-i18n"
 
@@ -23,9 +24,11 @@
     showSendToReviewOverlay = false
   }
 
-  function changeStatus({ detail: { transition, comment = "", toUser = null } }) {
-    $page.data.urqlClient
-      .mutation(
+  async function changeStatus({ detail: { transition, comment = "", toUser = null } }) {
+    const { data, error } = await ($page.data.urqlClient as Client)
+      .mutation<{
+        change_investor_status: { investorId: number; investorVersion: number }
+      }>(
         gql`
           mutation (
             $id: Int!
@@ -55,16 +58,26 @@
         },
       )
       .toPromise()
-      .then(async ({ data: { change_investor_status } }) => {
-        if (transition === "ACTIVATE") {
-          await goto(`/investor/${change_investor_status.investorId}/`)
-        } else if (investorVersion !== change_investor_status.investorVersion)
-          await goto(
-            `/investor/${change_investor_status.investorId}/${change_investor_status.investorVersion}/`,
-          )
-        else dispatch("reload")
-      })
-      .catch(error => console.error(error))
+    if (error) {
+      if (error.graphQLErrors[0].message === "EDITING_OLD_VERSION")
+        toast.push("You are trying to edit an old version!", { classes: ["error"] })
+      else toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
+      return
+    }
+    if (!data) {
+      toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
+      return
+    }
+
+    if (transition === "ACTIVATE") {
+      await goto(`/investor/${data.change_investor_status.investorId}/`)
+    } else if (investorVersion !== data.change_investor_status.investorVersion) {
+      await goto(
+        `/investor/${data.change_investor_status.investorId}/${data.change_investor_status.investorVersion}/`,
+      )
+    } else {
+      dispatch("reload")
+    }
   }
 
   function addComment({ detail: { comment, sendToUser } }) {

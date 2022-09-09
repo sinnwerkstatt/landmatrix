@@ -183,3 +183,35 @@
 th {
   text-align: left;
 }
+
+
+/* toasts */
+/* colors taken from https://getbootstrap.com/docs/5.1/components/alerts/ */
+.toast {
+  --toastBorderRadius: 0;
+  --toastContainerTop: 5.5rem;
+  --toastContainerRight: 1rem;
+  --toastPadding: 0 0 0 0.5em;
+  --toastWidth: 20rem;
+}
+.toast.info {
+  --toastColor: #084298;
+  --toastBackground: #cfe2ff;
+  --toastBarBackground: #b6d4fe;
+}
+.toast.success {
+  --toastColor: #0f5132;
+  --toastBackground: #d1e7dd;
+  --toastBarBackground: #badbcc;
+}
+.toast.warning {
+  --toastColor: #664d03;
+  --toastBackground: #fff3cd;
+  --toastBarBackground: #ffecb5;
+}
+.toast.error {
+  --toastColor: #842029;
+  --toastBackground: #f8d7da;
+  --toastBarBackground: #f5c2c7;
+}
+/* toasts end */
