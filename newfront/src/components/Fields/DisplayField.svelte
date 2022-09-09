@@ -64,9 +64,6 @@
   $: field = {
     BooleanField: BooleanField,
     DateField: DateField,
-    DecimalField: DecimalField,
-    FloatField: DecimalField,
-    IntegerField: DecimalField,
     JSONActorsField: JSONActorsField,
     JSONDateAreaChoicesField: JSONDateAreaChoicesField,
     JSONDateAreaField: JSONDateAreaField,
