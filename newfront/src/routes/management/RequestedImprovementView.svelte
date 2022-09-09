@@ -39,8 +39,10 @@
     })
 </script>
 
-<table>
-  <thead>
+<table class="w-full overflow-x-auto border border-gray-700">
+  <thead
+    class="cursor-pointer items-center whitespace-nowrap bg-gray-700 p-1 pr-4 font-medium text-white"
+  >
     <tr>
       <th class="px-3 py-1" />
       <th class="px-3 py-1">Date of request</th>
@@ -62,7 +64,10 @@
   </thead>
   <tbody>
     {#each objectsWInfo as obj}
-      <tr class:font-bold={obj.openReq}>
+      <tr
+        class:font-bold={obj.openReq}
+        class="odd:bg-white even:bg-gray-100 hover:bg-gray-200"
+      >
         <td>
           {#if obj.openReq}
             <div title={$_("Open request")}>

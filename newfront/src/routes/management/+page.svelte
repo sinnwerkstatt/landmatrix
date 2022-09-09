@@ -23,6 +23,7 @@
   import RequestedImprovementView from "./RequestedImprovementView.svelte"
   import { managementFilters } from "./state"
   import TodoFeedbackView from "./TodoFeedbackView.svelte"
+  import TodoImprovementView from "./TodoImprovementView.svelte"
 
   interface Tab {
     id: string
@@ -77,11 +78,6 @@
       ],
     },
   ]
-
-  const selectTab = (tab: Tab) => {
-    goto("#" + tab.id)
-    activeTab = tab
-  }
 
   const dealColumns = {
     id: 1,
@@ -151,19 +147,21 @@
     loading.set(false)
   }
 
-  $: getCounts(model)
-  $: fetchObjects(activeTab, model)
-
   onMount(() => {
+    if (!$page.url.hash) goto("#todo_feedback")
+  })
+
+  async function activateTab(hash) {
+    let tab
     navTabs.some(navTab => {
-      const hash = $page.url.hash || "#todo_feedback"
       const item = navTab.items.find(i => "#" + i.id === hash)
       if (item) {
-        selectTab(item)
+        tab = item
         return true
       }
     })
-  })
+    if (tab) activeTab = tab
+  }
 
   function trackDownload(format) {
     // TODO implement this? ${format}
@@ -171,6 +169,9 @@
 
   let showFilterOverlay = false
 
+  $: activateTab($page.url.hash)
+  $: getCounts(model)
+  $: fetchObjects(activeTab, model)
   $: filteredObjects = objects.filter(d => {
     if ($managementFilters.country?.id)
       return d.country?.id === $managementFilters.country.id
@@ -221,20 +222,20 @@
                     activeTab === item ? "border-r-4" : "border-r",
                   )}
                 >
-                  <button
+                  <a
                     class={cn(
-                      "w-full text-left",
+                      "block text-left",
                       activeTab === item
                         ? model === "deal"
                           ? "font-bold text-orange"
                           : "font-bold text-pelorous"
                         : "text-gray-600",
                     )}
-                    on:click={() => selectTab(item)}
+                    href="#{item.id}"
                   >
                     {item.name}
                     {#if item.count} ({item.count}){/if}
-                  </button>
+                  </a>
                 </li>
               {/each}
             </ul>
@@ -287,6 +288,8 @@
   <div class="mt-[60px] w-1 grow px-6 pb-6">
     {#if activeTab?.id === "todo_feedback"}
       <TodoFeedbackView objects={filteredObjects} {model} />
+    {:else if activeTab?.id === "todo_improvement"}
+      <TodoImprovementView objects={filteredObjects} {model} />
     {:else if activeTab?.id === "requested_feedback"}
       <RequestedFeedbackView objects={filteredObjects} {model} />
     {:else if activeTab?.id === "requested_improvement"}
