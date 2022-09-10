@@ -36,11 +36,11 @@
 </template>
 
 <script lang="ts">
+  import type { WorkflowInfo } from "$types/generics";
   import { draft_status_map, status_map } from "$utils/choices";
+  import gql from "graphql-tag";
   import Vue from "vue";
   import type { PropType } from "vue";
-  import type { WorkflowInfo } from "$types/generics";
-  import gql from "graphql-tag";
 
   export default Vue.extend({
     name: "WorkflowInfo",
@@ -69,7 +69,7 @@
       unread(): boolean {
         return (
           this.info.to_user?.username === this.$store.state.user.username &&
-          !this.info.processed_by_receiver &&
+          !this.info.resolved &&
           this.comment_wo_head.length > 0
         );
       },
@@ -86,7 +86,7 @@
         });
         if (res.data.toggle_workflow_info_unread)
           // eslint-disable-next-line vue/no-mutating-props
-          this.info.processed_by_receiver = true;
+          this.info.resolved = true;
       },
     },
   });

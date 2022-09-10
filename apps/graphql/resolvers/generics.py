@@ -159,7 +159,7 @@ def change_object_status(
             & Q(draft_status_after=1)
             # TODO: https://git.sinntern.de/landmatrix/landmatrix/-/issues/404
             & (Q(from_user=user) | Q(to_user=user))
-        ).update(processed_by_receiver=True)
+        ).update(resolved=True)
     elif transition == "TO_DRAFT":
         if role not in ["ADMINISTRATOR", "EDITOR"]:
             raise GraphQLError("MISSING_AUTHORIZATION")
@@ -179,7 +179,7 @@ def change_object_status(
             & Q(draft_status_after=1)
             # TODO: https://git.sinntern.de/landmatrix/landmatrix/-/issues/404
             & (Q(from_user=user) | Q(to_user=user))
-        ).update(processed_by_receiver=True)
+        ).update(resolved=True)
 
     else:
         raise GraphQLError(f"unknown transition {transition}")
@@ -404,12 +404,12 @@ def object_delete(
 def resolve_toggle_workflow_info_unread(_obj, _info, id: int, type: str) -> bool:
     if type == "DealWorkflowInfo":
         wi = DealWorkflowInfo.objects.get(id=id)
-        wi.processed_by_receiver = not wi.processed_by_receiver
+        wi.resolved = not wi.resolved
         wi.save()
         return True
     elif type == "InvestorWorkflowInfo":
         wi = InvestorWorkflowInfo.objects.get(id=id)
-        wi.processed_by_receiver = not wi.processed_by_receiver
+        wi.resolved = not wi.resolved
         wi.save()
         return True
     return False

@@ -107,7 +107,8 @@ class WorkflowInfo(models.Model):
     )
     timestamp = models.DateTimeField(default=timezone.now)
     comment = models.TextField(blank=True, null=True)
-    processed_by_receiver = models.BooleanField(default=False)
+    replies = models.JSONField(null=True, blank=True)
+    resolved = models.BooleanField(default=False)
 
     # watch out: ignore the draft_status within this DealVersion object, it will change
     # when the workflow moves along. the payload will remain consistent though.
@@ -121,7 +122,7 @@ class WorkflowInfo(models.Model):
             "draft_status_after": self.draft_status_after,
             "timestamp": self.timestamp,
             "comment": self.comment,
-            "processed_by_receiver": self.processed_by_receiver,
+            "resolved": self.resolved,
         }
 
     class Meta:

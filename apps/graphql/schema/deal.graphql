@@ -274,7 +274,7 @@ type DealWorkflowInfo {
   draft_status_after: Int
   timestamp: DateTime!
   comment: String
-  processed_by_receiver: Boolean!
+  resolved: Boolean!
   deal: Deal!
   #  deal_version: Deal
 }

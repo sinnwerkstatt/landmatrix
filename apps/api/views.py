@@ -131,7 +131,7 @@ class Management(View):
                 "q": Q(workflowinfos__draft_status_before__in=[2, 3])
                 & Q(workflowinfos__draft_status_after=1)
                 & Q(workflowinfos__to_user_id=request.user.id)
-                & Q(workflowinfos__processed_by_receiver=False),
+                & Q(workflowinfos__resolved=False),
             },
             "todo_review": {
                 "staff": True,
@@ -254,7 +254,7 @@ class Management(View):
                     else w.investor_version_id,
                     "timestamp": w.timestamp,
                     "comment": w.comment,
-                    "processed_by_receiver": w.processed_by_receiver,
+                    "resolved": w.resolved,
                 }
                 for w in obj.workflowinfos.order_by("-id")
             ],
