@@ -18,7 +18,7 @@ django-impersonate = "*"
 django-modeltranslation = "*"
 
 wagtail-font-awesome-svg = "*"
-wagtail-modeltranslation = "*"
+wagtail-modeltranslation = ">=0.12rc2"
 wagtail-orderable = "*"
 wagtail-headless-preview = "*"
 
