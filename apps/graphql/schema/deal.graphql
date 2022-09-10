@@ -266,6 +266,12 @@ type DealVersion {
   object_id: Int
 }
 
+type WFReply {
+  timestamp: DateTime
+  user_id: Int
+  comment: String
+}
+
 type DealWorkflowInfo {
   id: Int!
   from_user: User!
@@ -275,6 +281,7 @@ type DealWorkflowInfo {
   timestamp: DateTime!
   comment: String
   resolved: Boolean!
+  replies: [WFReply]!
   deal: Deal!
   #  deal_version: Deal
 }

@@ -9,7 +9,7 @@ type Mutation {
     password: String!
     token: String!
   ): RegisterPayload
-  register_confirm(activation_key:String!): RegisterPayload
+  register_confirm(activation_key: String!): RegisterPayload
   login(username: String!, password: String!): LoginPayload
   logout: Boolean!
   password_reset(email: String!, token: String!): Boolean!
@@ -70,7 +70,13 @@ type Mutation {
   investor_edit(id: Int!, version: Int, payload: Payload): InvestorEditReturn
   investor_delete(id: Int!, version: Int, comment: String): Boolean
 
-  toggle_workflow_info_unread(id: Int!, type: String!): Boolean
+  resolve_workflow_info(id: Int!, type: String!): Boolean
+  add_workflow_info_reply(
+    id: Int!
+    type: String!
+    from_user_id: Int!
+    comment: String!
+  ): Boolean
   object_copy(otype: String!, obj_id: Int!): ObjectReturn
 }
 

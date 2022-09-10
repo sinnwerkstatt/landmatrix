@@ -6,7 +6,7 @@
 
   import { page } from "$app/stores"
 
-  import { getUsers } from "$lib/stores"
+  import { allUsers } from "$lib/stores"
   import type { User } from "$lib/types/user"
   import { UserLevel } from "$lib/types/user"
 
@@ -14,27 +14,28 @@
   export let required = false
   export let extraUserIDs: number[] = []
 
-  let users: User[] = []
-
   onMount(async () => {
-    users = await getUsers($page.data.urqlClient, extraUserIDs)
-    if (typeof value === "number") value = users.find(u => u.id === value)
+    if (typeof value === "number") value = $allUsers.find(u => u.id === value) ?? -1
   })
 
-  async function fetchEverybody() {
-    users = await getUsers($page.data.urqlClient, extraUserIDs, true)
-    console.log(users.length)
-    console.log("grabbing everybody")
-  }
+  let showEverybody = false
+  $: users = $allUsers.filter(
+    u =>
+      showEverybody ||
+      extraUserIDs.includes(u.id) ||
+      u.groups?.some(g => ["Administrators", "Editors"].includes(g.name)),
+  )
 </script>
 
 <Select
   {VirtualList}
   bind:value
   getOptionLabel={(o, ftxt) =>
-    $page.data.user.level === UserLevel.ADMINISTRATOR && o.isCreator
+    $page.data.user.level === !showEverybody && UserLevel.ADMINISTRATOR && o.isCreator
       ? `Fetch all users, to find <b>"${ftxt}"</b>..`
-      : `${o.full_name} (<b>${o.username}</b>)`}
+      : o.username
+      ? `${o.full_name} (<b>${o.username}</b>)`
+      : `Can't find <b>"${ftxt}"</b>..`}
   getSelectionLabel={o => `${o.full_name} (<b>${o.username}</b>)`}
   items={users}
   optionIdentifier="id"
@@ -42,5 +43,5 @@
   showChevron
   inputAttributes={{ required: required && !value }}
   isCreatable
-  on:itemCreated={fetchEverybody}
+  on:itemCreated={() => (showEverybody = true)}
 />

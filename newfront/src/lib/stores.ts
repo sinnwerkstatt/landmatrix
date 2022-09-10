@@ -3,7 +3,6 @@ import { error } from "@sveltejs/kit"
 import type { Client } from "@urql/core"
 import { gql } from "@urql/svelte"
 import { get, writable } from "svelte/store"
-import type { Writable } from "svelte/store"
 
 import type { User } from "$lib/types/user"
 import type {
@@ -175,11 +174,11 @@ export async function fetchBasis(
   }
 }
 
-export async function getUsers(
-  urqlClient: Client,
-  extraUserIDs: number[] = [],
-  everybody = false,
-): Promise<User[]> {
+export const allUsers = writable<User[]>([])
+let fetchingAllUsers = false
+export async function getAllUsers(urqlClient: Client) {
+  if (get(allUsers).length > 0 || fetchingAllUsers) return
+  fetchingAllUsers = true
   const ret = await urqlClient
     .query<{ users: User[] }>(
       gql`
@@ -200,15 +199,9 @@ export async function getUsers(
     .toPromise()
   if (!ret.data?.users) throw error(500, "could not fetch users from database")
 
-  const usrs = ret.data.users
-    .filter(
-      u =>
-        everybody ||
-        extraUserIDs.includes(u.id) ||
-        u.groups?.some(g => ["Administrators", "Editors"].includes(g.name)),
-    )
-    .sort((a, b) => a.full_name.localeCompare(b.full_name))
-  return usrs
+  const usrs = ret.data.users.sort((a, b) => a.full_name.localeCompare(b.full_name))
+  allUsers.set(usrs)
+  fetchingAllUsers = false
 }
 
 export const loading = writable(false)

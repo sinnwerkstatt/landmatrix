@@ -79,12 +79,12 @@
         let res = await this.$apollo.mutate({
           mutation: gql`
             mutation ($id: Int!, $type: String!) {
-              toggle_workflow_info_unread(id: $id, type: $type)
+              resolve_workflow_info(id: $id, type: $type)
             }
           `,
           variables: { id: this.info.id, type: this.info.__typename },
         });
-        if (res.data.toggle_workflow_info_unread)
+        if (res.data.resolve_workflow_info)
           // eslint-disable-next-line vue/no-mutating-props
           this.info.resolved = true;
       },

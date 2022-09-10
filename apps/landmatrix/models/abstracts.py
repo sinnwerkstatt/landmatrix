@@ -123,6 +123,7 @@ class WorkflowInfo(models.Model):
             "timestamp": self.timestamp,
             "comment": self.comment,
             "resolved": self.resolved,
+            "replies": self.replies or [],
         }
 
     class Meta:

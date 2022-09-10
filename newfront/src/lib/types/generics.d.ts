@@ -31,6 +31,11 @@ interface ObjVersion {
   object_id: Int
 }
 
+type WFReply = {
+  timestamp: string
+  user_id: int
+  comment: string
+}
 interface WorkflowInfo {
   id: number
   from_user: User
@@ -40,5 +45,6 @@ interface WorkflowInfo {
   timestamp: string
   comment: string
   resolved: boolean
+  replies: WFReply[]
   __typename?: string
 }

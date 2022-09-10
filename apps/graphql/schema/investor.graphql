@@ -61,6 +61,7 @@ type InvestorWorkflowInfo {
   timestamp: DateTime!
   comment: String
   resolved: Boolean!
+  replies: [WFReply]!
   investor: Investor!
   #  deal_version: Deal
 }

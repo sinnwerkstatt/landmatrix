@@ -401,18 +401,47 @@ def object_delete(
 
 
 # noinspection PyShadowingBuiltins
-def resolve_toggle_workflow_info_unread(_obj, _info, id: int, type: str) -> bool:
+def resolve_resolve_workflow_info(_obj, info, id: int, type: str) -> bool:
+    role = get_user_role(info.context["request"].user)
+    if not role:
+        raise GraphQLError("MISSING_AUTHORIZATION")
+
     if type == "DealWorkflowInfo":
         wi = DealWorkflowInfo.objects.get(id=id)
-        wi.resolved = not wi.resolved
-        wi.save()
-        return True
     elif type == "InvestorWorkflowInfo":
         wi = InvestorWorkflowInfo.objects.get(id=id)
-        wi.resolved = not wi.resolved
-        wi.save()
-        return True
-    return False
+    else:
+        return False
+    wi.resolved = True
+    wi.save()
+    return True
+
+
+# noinspection PyShadowingBuiltins
+def resolve_add_workflow_info_reply(
+    _obj, info, id: int, type: str, from_user_id: int, comment: str
+) -> bool:
+    role = get_user_role(info.context["request"].user)
+    if not role:
+        raise GraphQLError("MISSING_AUTHORIZATION")
+
+    if type == "DealWorkflowInfo":
+        wi = DealWorkflowInfo.objects.get(id=id)
+    elif type == "InvestorWorkflowInfo":
+        wi = InvestorWorkflowInfo.objects.get(id=id)
+    else:
+        return False
+    if not wi.replies:
+        wi.replies = []
+    wi.replies += [
+        {
+            "timestamp": timezone.now().isoformat(),
+            "user_id": from_user_id,
+            "comment": comment,
+        }
+    ]
+    wi.save()
+    return True
 
 
 def resolve_object_copy(_obj, info, otype: OType, obj_id: int) -> dict:

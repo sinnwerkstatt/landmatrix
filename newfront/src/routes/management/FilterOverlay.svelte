@@ -1,15 +1,11 @@
 <script lang="ts">
-  import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
   import Select from "svelte-select"
   import VirtualList from "svelte-tiny-virtual-list"
 
-  import { page } from "$app/stores"
-
-  import { countries, getUsers } from "$lib/stores"
+  import { allUsers, countries } from "$lib/stores"
   import type { Deal } from "$lib/types/deal"
   import type { Investor } from "$lib/types/investor"
-  import type { User } from "$lib/types/user"
 
   import Overlay from "$components/Overlay.svelte"
 
@@ -19,14 +15,8 @@
   export let objects: Array<Deal | Investor> = []
   export let model: "deal" | "investor" = "deal"
 
-  let users: User[] = []
-
   $: objectsCountryIDs = objects?.map(d => d.country?.id)
   $: relCountries = $countries.filter(c => objectsCountryIDs.includes(c.id))
-
-  onMount(async () => {
-    users = await getUsers($page.data.urqlClient, [], true)
-  })
 </script>
 
 <Overlay bind:visible closeButtonText={$_("Close")} title={$_("Filters")}>
@@ -90,7 +80,7 @@
             bind:value={$managementFilters.createdBy}
             getOptionLabel={o => `${o.full_name} (<b>${o.username}</b>)`}
             getSelectionLabel={o => `${o.full_name} (<b>${o.username}</b>)`}
-            items={users}
+            items={$allUsers}
             optionIdentifier="id"
             placeholder={$_("User")}
             showChevron
@@ -124,7 +114,7 @@
           bind:value={$managementFilters.modifiedBy}
           getOptionLabel={o => `${o.full_name} (<b>${o.username}</b>)`}
           getSelectionLabel={o => `${o.full_name} (<b>${o.username}</b>)`}
-          items={users}
+          items={$allUsers}
           optionIdentifier="id"
           placeholder={$_("User")}
           showChevron
