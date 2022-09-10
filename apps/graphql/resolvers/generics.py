@@ -153,13 +153,8 @@ def change_object_status(
 
         obj = Object.deserialize_from_version(obj_version)
         obj_version.save()
-        # close remaining open feedback requests
-        obj.workflowinfos.filter(
-            Q(draft_status_before__in=[2, 3])
-            & Q(draft_status_after=1)
-            # TODO: https://git.sinntern.de/landmatrix/landmatrix/-/issues/404
-            & (Q(from_user=user) | Q(to_user=user))
-        ).update(resolved=True)
+        # close unresolved workflowinfos
+        obj.workflowinfos.all().update(resolved=True)
     elif transition == "TO_DRAFT":
         if role not in ["ADMINISTRATOR", "EDITOR"]:
             raise GraphQLError("MISSING_AUTHORIZATION")

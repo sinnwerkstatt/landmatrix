@@ -129,7 +129,8 @@ class Management(View):
             },
             "todo_improvement": {
                 "staff": False,
-                "q": Q(workflowinfos__draft_status_before__in=[2, 3])
+                "q": Q(draft_status=1)
+                & Q(workflowinfos__draft_status_before__in=[2, 3])
                 & Q(workflowinfos__draft_status_after=1)
                 & Q(workflowinfos__to_user_id=request.user.id)
                 & Q(workflowinfos__resolved=False),
@@ -155,7 +156,8 @@ class Management(View):
                         & Q(workflowinfos__draft_status_after=None)
                     )
                 )
-                & Q(workflowinfos__from_user_id=request.user.id),
+                & Q(workflowinfos__from_user_id=request.user.id)
+                & Q(workflowinfos__to_user_id__isnull=False),
             },
             "requested_improvement": {
                 "staff": True,

@@ -25,7 +25,7 @@
           wfi.from_user?.id === $page.data.user.id,
       )
 
-      const lastReply = relevantWFI.replies.at(-1)
+      const lastReply = relevantWFI?.replies.at(-1)
       const openReq = lastReply && lastReply.user_id !== $page.data.user.id
 
       return { ...obj, relevantWFI, openReq }

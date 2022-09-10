@@ -19,12 +19,6 @@
   })
 
   let showEverybody = false
-  $: users = $allUsers.filter(
-    u =>
-      showEverybody ||
-      extraUserIDs.includes(u.id) ||
-      u.groups?.some(g => ["Administrators", "Editors"].includes(g.name)),
-  )
 </script>
 
 <Select
@@ -37,7 +31,12 @@
       ? `${o.full_name} (<b>${o.username}</b>)`
       : `Can't find <b>"${ftxt}"</b>..`}
   getSelectionLabel={o => `${o.full_name} (<b>${o.username}</b>)`}
-  items={users}
+  items={$allUsers.filter(
+    u =>
+      showEverybody ||
+      extraUserIDs.includes(u.id) ||
+      u.groups?.some(g => ["Administrators", "Editors"].includes(g.name)),
+  )}
   optionIdentifier="id"
   placeholder={$_("User")}
   showChevron

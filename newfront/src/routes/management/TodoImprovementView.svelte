@@ -22,7 +22,8 @@
       const wfis = obj.workflowinfos as WorkflowInfo[]
       let relevantWFI = wfis.find(
         wfi =>
-          wfi.draft_status_before === wfi.draft_status_after &&
+          [2, 3].includes(wfi.draft_status_before) &&
+          wfi.draft_status_after === 1 &&
           wfi.to_user?.id === $page.data.user.id,
       )
 

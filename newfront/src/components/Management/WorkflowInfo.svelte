@@ -41,6 +41,7 @@
     .replace("[UNSET_CONFIDENTIAL] ", "")
 
   $: openThread =
+    info.draft_status_after === info.draft_status_before &&
     info.to_user &&
     [info.to_user.id, info.from_user.id].includes($page.data.user.id) &&
     !info.resolved
