@@ -35,7 +35,7 @@
   const user = $page.data.user
 
   let model: "deal" | "investor" = "deal"
-  let activeTab: Tab
+  let activeTabId: string
   let objects: Array<Deal | Investor> = []
 
   let navTabs: { name: string; expanded?: boolean; items: Tab[] }[]
@@ -124,23 +124,29 @@
     }
   }
 
-  async function fetchObjects(acTab: Tab, model: "deal" | "investor") {
+  async function fetchObjects(acTab: string, model: "deal" | "investor") {
     if (!acTab) return
     if (controller) controller.abort()
 
     loading.set(true)
     controller = new AbortController()
     const x = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/api/management/?model=${model}&action=${
-        acTab.id
-      }`,
+      `${import.meta.env.VITE_BASE_URL}/api/management/?model=${model}&action=${acTab}`,
       {
         signal: controller.signal,
       },
     )
     if (x.ok) {
       objects = (await x.json()).objects
-      acTab.count = objects.length
+      navTabs = navTabs.map(navTab => ({
+        ...navTab,
+        items: navTab.items.map(item => {
+          if (item.id === acTab) return { ...item, count: objects.length }
+          return item
+        }),
+      }))
+      // TODO fix htis
+      // acTab.count = objects.length
       navTabs = [...navTabs]
     }
 
@@ -152,15 +158,13 @@
   })
 
   async function activateTab(hash) {
-    let tab
     navTabs.some(navTab => {
       const item = navTab.items.find(i => "#" + i.id === hash)
       if (item) {
-        tab = item
+        activeTabId = item.id
         return true
       }
     })
-    if (tab) activeTab = tab
   }
 
   function trackDownload(format) {
@@ -171,7 +175,7 @@
 
   $: activateTab($page.url.hash)
   $: getCounts(model)
-  $: fetchObjects(activeTab, model)
+  $: fetchObjects(activeTabId, model)
   $: filteredObjects = objects.filter(d => {
     if ($managementFilters.country?.id)
       return d.country?.id === $managementFilters.country.id
@@ -219,13 +223,13 @@
                   class={cn(
                     "py-2 pr-4",
                     model === "deal" ? "border-orange" : "border-pelorous",
-                    activeTab === item ? "border-r-4" : "border-r",
+                    activeTabId === item.id ? "border-r-4" : "border-r",
                   )}
                 >
                   <a
                     class={cn(
                       "block text-left",
-                      activeTab === item
+                      activeTabId === item.id
                         ? model === "deal"
                           ? "font-bold text-orange"
                           : "font-bold text-pelorous"
@@ -244,12 +248,12 @@
       {/each}
     </div>
     <div class="mt-auto w-full self-end pt-10">
-      {#if activeTab}
+      {#if activeTabId}
         <FilterCollapse title={$_("Download")}>
           <ul>
             <li>
               <a
-                href="/api/management?format=xlsx&action={activeTab.id}"
+                href="/api/management?format=xlsx&action={activeTabId}"
                 on:click={() => trackDownload("xlsx")}
                 rel="external"
               >
@@ -260,7 +264,7 @@
             <li>
               <!-- todo: probably remove rel="external" in favor of data-sveltekit-reload -->
               <a
-                href="/api/management?format=csv&action={activeTab.id}"
+                href="/api/management?format=csv&action={activeTabId}"
                 on:click={() => trackDownload("csv")}
                 rel="external"
               >
@@ -286,13 +290,13 @@
   </button>
 
   <div class="mt-[60px] w-1 grow px-6 pb-6">
-    {#if activeTab?.id === "todo_feedback"}
+    {#if activeTabId === "todo_feedback"}
       <TodoFeedbackView objects={filteredObjects} {model} />
-    {:else if activeTab?.id === "todo_improvement"}
+    {:else if activeTabId === "todo_improvement"}
       <TodoImprovementView objects={filteredObjects} {model} />
-    {:else if activeTab?.id === "requested_feedback"}
+    {:else if activeTabId === "requested_feedback"}
       <RequestedFeedbackView objects={filteredObjects} {model} />
-    {:else if activeTab?.id === "requested_improvement"}
+    {:else if activeTabId === "requested_improvement"}
       <RequestedImprovementView objects={filteredObjects} {model} />
     {:else}
       <Table items={filteredObjects} {columns} {spans} {labels}>

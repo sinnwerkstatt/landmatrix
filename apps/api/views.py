@@ -124,7 +124,8 @@ class Management(View):
                         & Q(workflowinfos__draft_status_after=None)
                     )
                 )
-                & Q(workflowinfos__to_user_id=request.user.id),
+                & Q(workflowinfos__to_user_id=request.user.id)
+                & Q(workflowinfos__resolved=False),
             },
             "todo_improvement": {
                 "staff": False,
@@ -202,7 +203,7 @@ class Management(View):
         if action == "counts":
             return JsonResponse(
                 {
-                    metric: Obj.objects.filter(filters[metric]["q"]).count()
+                    metric: Obj.objects.filter(filters[metric]["q"]).distinct().count()
                     for metric in filters.keys()
                     if request.user.is_staff or not filters[metric]["staff"]
                 }
@@ -210,7 +211,6 @@ class Management(View):
         elif action in filters.keys():
             ret = [
                 self._obj_dict(obj)
-                # TODO distinct clever here?
                 for obj in Obj.objects.filter(filters[action]["q"]).distinct()
             ]
         else:
@@ -255,6 +255,7 @@ class Management(View):
                     "timestamp": w.timestamp,
                     "comment": w.comment,
                     "resolved": w.resolved,
+                    "replies": w.replies or [],
                 }
                 for w in obj.workflowinfos.order_by("-id")
             ],

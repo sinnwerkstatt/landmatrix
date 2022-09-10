@@ -25,14 +25,14 @@
           wfi.from_user?.id === $page.data.user.id,
       )
 
-      // const openReq =
-      //   d.current_draft_id === relevantWFI?.deal_version_id && d.draft_status === 1;
+      const lastReply = relevantWFI.replies.at(-1)
+      const openReq = lastReply && lastReply.user_id !== $page.data.user.id
 
-      return { ...obj, relevantWFI }
+      return { ...obj, relevantWFI, openReq }
     })
     .sort((a, b) => {
-      //   if (a.openReq && !b.openReq) return -1;
-      //   else if (b.openReq && !a.openReq) return 1;
+      if (a.openReq && !b.openReq) return -1
+      else if (b.openReq && !a.openReq) return 1
       if (!b.relevantWFI?.timestamp || !a.relevantWFI?.timestamp) return 0
       return new Date(b.relevantWFI.timestamp) - new Date(a.relevantWFI.timestamp)
     })
