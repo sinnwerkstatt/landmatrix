@@ -108,6 +108,11 @@
     @apply hover:bg-pelorous hover:text-white;
     @apply active:bg-pelorous active:text-white;
   }
+    .btn-pelorous-secondary {
+    @apply border-pelorous bg-white text-pelorous;
+    @apply hover:bg-pelorous-200 hover:text-white;
+    @apply active:bg-pelorous active:text-white;
+  }
   .btn-danger {
     @apply border-dotted border-red-600 bg-transparent text-red-600;
     @apply hover:bg-red-400 hover:text-white;

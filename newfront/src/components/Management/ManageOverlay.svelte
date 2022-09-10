@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte"
+  import { createEventDispatcher, onDestroy } from "svelte"
   import { _ } from "svelte-i18n"
 
   import type { User } from "$lib/types/user"
@@ -16,17 +16,21 @@
   export let commentInput = false
   export let commentRequired = false
 
-  let comment = ""
+  export let comment = ""
 
   export let assignToUserInput = false
   export let toUser: User | null = null
-  export let extraUserIDs: number[] = []
+  export let toUserRequired = false
+  export let extraUserIDs: number[]
   export let showSubmit = true
 
-  const onSubmit = async () => {
+  const onSubmit = async e => {
+    const form = e.target as HTMLFormElement
+    if (!form.checkValidity()) form.reportValidity()
+
     dispatch("submit", { comment, toUser })
-    comment = ""
   }
+  onDestroy(() => (comment = ""))
 </script>
 
 <Overlay
@@ -50,7 +54,7 @@
   {#if assignToUserInput}
     <div class="mb-4">
       <div class="mb-1 block underline">{$_("Assign to user")}</div>
-      <UserSelect bind:value={toUser} {extraUserIDs} />
+      <UserSelect bind:value={toUser} {extraUserIDs} required={toUserRequired} />
     </div>
   {/if}
 </Overlay>

@@ -3,7 +3,6 @@
   import { _ } from "svelte-i18n"
   import Select from "svelte-select"
   import VirtualList from "svelte-tiny-virtual-list"
-  import type { Writable } from "svelte/store"
 
   import { page } from "$app/stores"
 
@@ -20,13 +19,13 @@
   export let objects: Array<Deal | Investor> = []
   export let model: "deal" | "investor" = "deal"
 
-  let users: Writable<User[]>
+  let users: User[] = []
 
   $: objectsCountryIDs = objects?.map(d => d.country?.id)
   $: relCountries = $countries.filter(c => objectsCountryIDs.includes(c.id))
 
   onMount(async () => {
-    users = await getUsers($page.data.urqlClient)
+    users = await getUsers($page.data.urqlClient, [], true)
   })
 </script>
 
@@ -91,7 +90,7 @@
             bind:value={$managementFilters.createdBy}
             getOptionLabel={o => `${o.full_name} (<b>${o.username}</b>)`}
             getSelectionLabel={o => `${o.full_name} (<b>${o.username}</b>)`}
-            items={$users}
+            items={users}
             optionIdentifier="id"
             placeholder={$_("User")}
             showChevron
@@ -125,7 +124,7 @@
           bind:value={$managementFilters.modifiedBy}
           getOptionLabel={o => `${o.full_name} (<b>${o.username}</b>)`}
           getSelectionLabel={o => `${o.full_name} (<b>${o.username}</b>)`}
-          items={$users}
+          items={users}
           optionIdentifier="id"
           placeholder={$_("User")}
           showChevron

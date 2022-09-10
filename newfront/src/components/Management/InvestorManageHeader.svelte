@@ -80,7 +80,7 @@
     }
   }
 
-  function addComment({ detail: { comment, sendToUser } }) {
+  function addComment({ detail: { comment, toUser } }) {
     $page.data.urqlClient
       .mutation(
         gql`
@@ -100,7 +100,7 @@
           id: investor.id,
           version: investorVersion ?? null,
           comment: comment,
-          to_user_id: sendToUser?.id,
+          to_user_id: toUser?.id,
         },
       )
       .toPromise()
