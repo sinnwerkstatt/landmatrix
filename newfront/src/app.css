@@ -119,7 +119,6 @@
   }
 
   .inpt {
-    height: calc(1.5em + 0.75rem + 2px);
     @apply w-full border border-gray-300 bg-white py-1.5 px-3 text-black;
     @apply dark:border-gray-500 dark:bg-gray-600 dark:text-white;
   }

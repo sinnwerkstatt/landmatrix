@@ -74,7 +74,6 @@
     ManyToManyField: ManyToManyField,
     NullBooleanField: BooleanField,
     OCIDField: OCIDField,
-    PointField: PointField,
     WorkflowInfosField: WorkflowInfosField,
   }[formfield.class]
 </script>
@@ -92,6 +91,8 @@
       <ArrayField {value} {formfield} />
     {:else if formfield.class === "TypedChoiceField"}
       <TypedChoiceField {value} {formfield} />
+    {:else if formfield.class === "PointField"}
+      <PointField {value} {formfield} />
     {:else if ["CharField", "EmailField", "TextField", "URLField"].includes(formfield.class)}
       <TextField {value} {formfield} />
     {:else if ["DecimalField", "FloatField", "IntegerField"].includes(formfield.class)}

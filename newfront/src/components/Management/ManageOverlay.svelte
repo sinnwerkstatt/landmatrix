@@ -21,7 +21,7 @@
   export let assignToUserInput = false
   export let toUser: User | null = null
   export let toUserRequired = false
-  export let extraUserIDs: number[]
+  export let extraUserIDs: number[] = []
   export let showSubmit = true
 
   const onSubmit = async e => {
