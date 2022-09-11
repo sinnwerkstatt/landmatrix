@@ -282,6 +282,7 @@ export const getDealSections = ($_: (t: string) => string) => ({
 
 export const subsections = {
   location: [
+    "id",
     "level_of_accuracy",
     "name",
     "description",
@@ -289,8 +290,16 @@ export const subsections = {
     "facility_name",
     "comment",
   ],
-  contract: ["number", "date", "expiration_date", "agreement_duration", "comment"],
+  contract: [
+    "id",
+    "number",
+    "date",
+    "expiration_date",
+    "agreement_duration",
+    "comment",
+  ],
   datasource: [
+    "id",
     "type",
     "url",
     "file",
