@@ -40,6 +40,7 @@ def get_user_roc_and_role(user: User) -> dict:
     return output
 
 
+# TODO unused, but maybe helpful
 def has_authorization_for_country(user: User, country: Country | int) -> bool:
     if isinstance(country, int):
         country = Country.objects.get(id=country)
