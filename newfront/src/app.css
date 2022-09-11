@@ -108,7 +108,7 @@
     @apply hover:bg-pelorous hover:text-white;
     @apply active:bg-pelorous active:text-white;
   }
-    .btn-pelorous-secondary {
+  .btn-pelorous-secondary {
     @apply border-pelorous bg-white text-pelorous;
     @apply hover:bg-pelorous-200 hover:text-white;
     @apply active:bg-pelorous active:text-white;
@@ -187,7 +187,6 @@
 th {
   text-align: left;
 }
-
 
 /* toasts */
 /* colors taken from https://getbootstrap.com/docs/5.1/components/alerts/ */
