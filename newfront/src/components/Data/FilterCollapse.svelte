@@ -1,13 +1,18 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n"
+  import { createEventDispatcher } from "svelte"
   import { slide } from "svelte/transition"
 
   import ChevronDownIcon from "$components/icons/ChevronDownIcon.svelte"
   import ClearFilter from "$components/icons/ClearFilter.svelte"
 
+  const dispatch = createEventDispatcher()
+
   export let title: string
   export let clearable = false
   export let expanded = false
+
+  let expandedContent: HTMLDivElement | undefined
+  $: if (expandedContent) dispatch("expanded")
 </script>
 
 <div
@@ -15,8 +20,8 @@
 >
   <div
     class="relative flex justify-between py-1.5 pr-2"
-    class:text-orange={clearable}
     class:collapsed={!expanded}
+    class:text-orange={clearable}
     on:click={() => (expanded = !expanded)}
   >
     <span class="pr-0">
@@ -35,6 +40,7 @@
     <div
       transition:slide={{ duration: 200 }}
       class="-ml-[0.5em] bg-lm-light p-2 shadow-inner"
+      bind:this={expandedContent}
     >
       <slot />
     </div>
