@@ -93,7 +93,7 @@ class Investor(models.Model):
         verbose_name=_("Country of registration/origin"),
         blank=True,
         null=True,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
     )
 
     CLASSIFICATION_CHOICES = (
@@ -157,7 +157,7 @@ class Investor(models.Model):
         settings.AUTH_USER_MODEL,
         blank=True,
         null=True,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         related_name="+",
     )
     modified_at = models.DateTimeField(_("Last update"), blank=True, null=True)
@@ -165,7 +165,7 @@ class Investor(models.Model):
         settings.AUTH_USER_MODEL,
         blank=True,
         null=True,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         related_name="+",
     )
 
@@ -451,7 +451,7 @@ class InvestorVentureInvolvement(models.Model):
         verbose_name=_("Loan currency"),
         blank=True,
         null=True,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
     )
     loans_date = models.CharField(_("Loan date"), max_length=20, blank=True, default="")
 

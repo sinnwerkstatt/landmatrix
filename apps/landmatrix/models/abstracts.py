@@ -33,7 +33,7 @@ class Version(models.Model):
         settings.AUTH_USER_MODEL,
         blank=True,
         null=True,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         related_name="+",
     )
     modified_at = models.DateTimeField(null=True, blank=True)
@@ -41,7 +41,7 @@ class Version(models.Model):
         settings.AUTH_USER_MODEL,
         blank=True,
         null=True,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         related_name="+",
     )
     serialized_data = models.JSONField()

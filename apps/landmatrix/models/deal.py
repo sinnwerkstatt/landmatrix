@@ -139,7 +139,7 @@ class AbstractDealBase(models.Model):
     country = models.ForeignKey(
         Country,
         verbose_name=_("Target country"),
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         blank=True,
         null=True,
         related_name="deals",
@@ -572,7 +572,7 @@ class AbstractDealBase(models.Model):
     export_country1 = models.ForeignKey(
         Country,
         verbose_name=_("Country 1"),
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         blank=True,
         null=True,
         related_name="+",
@@ -586,7 +586,7 @@ class AbstractDealBase(models.Model):
     export_country2 = models.ForeignKey(
         Country,
         verbose_name=_("Country 2"),
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         blank=True,
         null=True,
         related_name="+",
@@ -600,7 +600,7 @@ class AbstractDealBase(models.Model):
     export_country3 = models.ForeignKey(
         Country,
         verbose_name=_("Country 3"),
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         blank=True,
         null=True,
         related_name="+",
@@ -770,7 +770,7 @@ class Deal(AbstractDealBase):
         settings.AUTH_USER_MODEL,
         blank=True,
         null=True,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         related_name="+",
     )
     modified_at = models.DateTimeField(_("Last update"), blank=True, null=True)
@@ -778,7 +778,7 @@ class Deal(AbstractDealBase):
         settings.AUTH_USER_MODEL,
         blank=True,
         null=True,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         related_name="+",
     )
     fully_updated_at = models.DateTimeField(
