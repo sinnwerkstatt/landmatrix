@@ -1,5 +1,8 @@
 <script lang="ts">
   import cn from "classnames"
+  import dayjs from "dayjs"
+  import isSameOrAfter from "dayjs/plugin/isSameOrAfter"
+  import isSameOrBefore from "dayjs/plugin/isSameOrBefore"
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
@@ -10,6 +13,7 @@
   import { formfields, loading } from "$lib/stores"
   import type { Deal } from "$lib/types/deal"
   import type { Investor } from "$lib/types/investor"
+  import type { User } from "$lib/types/user"
   import { UserLevel } from "$lib/types/user"
 
   import FilterCollapse from "$components/Data/FilterCollapse.svelte"
@@ -18,12 +22,15 @@
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
   import Table from "$components/Table/Table.svelte"
 
-  import FilterOverlay from "./FilterOverlay.svelte"
   import RequestedFeedbackView from "./RequestedFeedbackView.svelte"
   import RequestedImprovementView from "./RequestedImprovementView.svelte"
+  import RightFilterBar from "./RightFilterBar.svelte"
   import { managementFilters } from "./state"
   import TodoFeedbackView from "./TodoFeedbackView.svelte"
   import TodoImprovementView from "./TodoImprovementView.svelte"
+
+  dayjs.extend(isSameOrBefore)
+  dayjs.extend(isSameOrAfter)
 
   interface Tab {
     id: string
@@ -108,8 +115,6 @@
   $: labels = columns.map(col => $formfields?.[model]?.[col]?.label)
   $: spans = Object.entries(columnsWithSpan).map(([_, colSpan]) => colSpan)
 
-  let controller: AbortController
-
   async function getCounts(model) {
     if (!browser) return
     const x = await fetch(
@@ -123,6 +128,9 @@
       }))
     }
   }
+
+  let controller: AbortController
+  let possibleUsers: User[] = []
 
   async function fetchObjects(acTab: string, model: "deal" | "investor") {
     if (!acTab) return
@@ -138,6 +146,14 @@
     )
     if (x.ok) {
       objects = (await x.json()).objects
+      // let possibleUsersSet = new Set()
+      // objects.forEach(o => {
+      //   console.log(o.created_by)
+      //   if (o.created_by) possibleUsersSet.add(o.created_by)
+      //   if (o.modified_by) possibleUsersSet.add(o.modified_by)
+      // })
+      // possibleUsers = [...possibleUsersSet]
+
       navTabs = navTabs.map(navTab => ({
         ...navTab,
         items: navTab.items.map(item => {
@@ -145,8 +161,6 @@
           return item
         }),
       }))
-      // TODO fix htis
-      // acTab.count = objects.length
       navTabs = [...navTabs]
     }
 
@@ -178,7 +192,47 @@
   $: fetchObjects(activeTabId, model)
   $: filteredObjects = objects.filter(d => {
     if ($managementFilters.country?.id)
-      return d.country?.id === $managementFilters.country.id
+      if (d.country?.id !== $managementFilters.country.id) return false
+
+    if ($managementFilters.createdAtFrom)
+      if (dayjs(d.created_at).isBefore($managementFilters.createdAtFrom, "day"))
+        return false
+    if ($managementFilters.createdAtTo)
+      if (dayjs(d.created_at).isAfter($managementFilters.createdAtTo, "day"))
+        return false
+    if ($managementFilters.createdBy)
+      if (d.created_by.id !== $managementFilters.createdBy.id) return false
+
+    if ($managementFilters.modifiedAtFrom)
+      if (dayjs(d.modified_at).isBefore($managementFilters.modifiedAtFrom, "day"))
+        return false
+    if ($managementFilters.modifiedAtTo)
+      if (dayjs(d.modified_at).isAfter($managementFilters.modifiedAtTo, "day"))
+        return false
+    if ($managementFilters.modifiedBy)
+      if (d.modified_by.id !== $managementFilters.modifiedBy.id) return false
+
+    if (model === "deal") {
+      if ($managementFilters.dealSizeFrom)
+        if (d.deal_size < $managementFilters.dealSizeFrom) return false
+      if ($managementFilters.dealSizeTo)
+        if (d.deal_size > $managementFilters.dealSizeTo) return false
+
+      if ($managementFilters.fullyUpdatedAtFrom)
+        if (
+          dayjs(d.fully_updated_at).isBefore(
+            $managementFilters.fullyUpdatedAtFrom,
+            "day",
+          )
+        )
+          return false
+      if ($managementFilters.fullyUpdatedAtTo)
+        if (
+          dayjs(d.fully_updated_at).isAfter($managementFilters.fullyUpdatedAtTo, "day")
+        )
+          return false
+    }
+
     return true
   })
 </script>
@@ -279,16 +333,6 @@
     </div>
   </nav>
 
-  <button
-    class="group absolute right-4 top-2 rounded-full bg-gray-700 p-1 drop-shadow-[3px_3px_1px_rgba(125,125,125,.7)] transition-colors hover:bg-gray-100 hover:drop-shadow-lg"
-    on:click={() => (showFilterOverlay = true)}
-    type="button"
-  >
-    <AdjustmentsIcon
-      class="h-8 w-8 text-white transition-colors group-hover:text-orange"
-    />
-  </button>
-
   <div class="mt-[60px] w-1 grow px-6 pb-6">
     {#if activeTabId === "todo_feedback"}
       <TodoFeedbackView objects={filteredObjects} {model} />
@@ -314,6 +358,18 @@
       </Table>
     {/if}
   </div>
+
+  <RightFilterBar {model} {objects} {possibleUsers} showFilters={showFilterOverlay} />
+
+  <button
+    class="group absolute right-4 top-2 rounded-full bg-gray-700 p-1 drop-shadow-[3px_3px_1px_rgba(125,125,125,.7)] transition-colors hover:bg-gray-100 hover:drop-shadow-lg"
+    on:click={() => (showFilterOverlay = !showFilterOverlay)}
+    type="button"
+  >
+    <AdjustmentsIcon
+      class="h-8 w-8 text-white transition-colors group-hover:text-orange"
+    />
+  </button>
 </div>
 
-<FilterOverlay bind:visible={showFilterOverlay} {objects} {model} />
+<!--<FilterOverlay bind:visible={showFilterOverlay} {model} {objects} {possibleUsers} />-->

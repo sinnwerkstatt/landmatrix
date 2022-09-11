@@ -13,6 +13,8 @@ interface ManagementFilters {
   modifiedAtFrom?: Date
   modifiedAtTo?: Date
   modifiedBy?: User
+  fullyUpdatedAtFrom?: Date
+  fullyUpdatedAtTo?: Date
 }
 
 export const managementFilters = writable<ManagementFilters>({})
