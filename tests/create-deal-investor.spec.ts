@@ -16,7 +16,6 @@ test.describe.serial("deal creation tests", () => {
   let investorParentName = random(10);
 
   test("create new deal", async ({ context, page }) => {
-    await page.pause();
     await page.goto("/deal/add/");
     saveButton = page.locator("text=Save").nth(0);
 
@@ -255,8 +254,8 @@ test.describe.serial("deal creation tests", () => {
     await investorInput.click();
     await investorInput.fill(`${investorParentName}`);
     await investorInput.press("Enter");
-    //ToDo: select country
-    //...
+    await page.locator('[placeholder="Country"]').fill("Albania");
+
     await page.locator('select[name="classification"]').selectOption("GOVERNMENT");
     await page.locator('[placeholder="Investor homepage"]').click();
     await page
@@ -271,8 +270,7 @@ test.describe.serial("deal creation tests", () => {
     await investorInput.click();
     await investorInput.fill(`${investorChildName}`);
     await investorInput.press("Enter");
-    //ToDo: select country
-    //...
+    await page.locator('[placeholder="Country"]').fill("Albania");
 
     await page.locator('select[name="classification"]').selectOption("GOVERNMENT");
     await page.locator('[placeholder="Investor homepage"]').click();
@@ -293,7 +291,7 @@ test.describe.serial("deal creation tests", () => {
     await expect(
       page.locator('a:has-text("www.testing-child-investor.de")')
     ).toBeVisible();
-
+    await page.pause();
     //add Parent Investor to Child Investor
     await page.locator('button:has-text("Edit")').click();
     await page.locator('button:has-text("Create a new draft")').click();
@@ -331,34 +329,21 @@ test.describe.serial("deal creation tests", () => {
 
   //delete investors
   test("delete all deals and investors wip", async ({ context, page }) => {
-    //test("delete all", async ({ context, page }) => {
     await page.goto(`/investor/${investorID}`);
     await page.locator('button:has-text("Delete")').click();
-
-    await page
-      .locator("text=Please provide a comment explaining your request >> textarea")
-      .click();
     await page
       .locator("text=Please provide a comment explaining your request >> textarea")
       .fill("Delete Child investor");
-    await Promise.all([
-      page.waitForNavigation(),
-      page.locator('button:has-text("Delete investor version")').click(),
-    ]);
-    //delete Parent Investor
-    await page.goto(`/investor/${ParentID}`);
+    await page.click('button:has-text("Delete investor version")'),
+      //delete Parent Investor
+      await page.goto(`/investor/${ParentID}`);
     await page.locator('button:has-text("Delete")').click();
-
-    await page
-      .locator("text=Please provide a comment explaining your request >> textarea")
-      .click();
     await page
       .locator("text=Please provide a comment explaining your request >> textarea")
       .fill("delete Parent investor");
-    await Promise.all([
-      page.waitForNavigation(),
-      page.locator('button:has-text("Delete investor version")').click(),
-    ]);
+
+    await page.click('button:has-text("Delete investor version")');
+
     //test redirekt after investor has been deleted
 
     //ToDo: Fix Delete Deal
