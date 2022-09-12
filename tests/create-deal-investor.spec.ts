@@ -9,7 +9,14 @@ test.describe.serial("deal creation tests", () => {
   let saveButton;
   let investorID;
   let ParentID;
+  const random = (length = 8) => {
+    return Math.random().toString(16).substr(2, length);
+  };
+  let investorChildName = random(10);
+  let investorParentName = random(10);
+
   test("create new deal", async ({ context, page }) => {
+    await page.pause();
     await page.goto("/deal/add/");
     saveButton = page.locator("text=Save").nth(0);
 
@@ -246,7 +253,7 @@ test.describe.serial("deal creation tests", () => {
     await page.locator("text=Investor info").click();
     const investorInput = page.locator('input[name="operating_company"]').first();
     await investorInput.click();
-    await investorInput.fill("Parent Investor Test");
+    await investorInput.fill(`${investorParentName}`);
     await investorInput.press("Enter");
     //ToDo: select country
     //...
@@ -258,11 +265,11 @@ test.describe.serial("deal creation tests", () => {
     await page.locator("#investor_info >> text=Save").click();
     ParentID = await page.locator("a[class=investor-link]").innerText();
     ParentID = ParentID.replace("Show details for investor #", "");
-    ParentID = ParentID.replace(" Parent Investor Test", "");
+    ParentID = ParentID.replace(` ${investorParentName}`, "");
 
     //create Child investor
     await investorInput.click();
-    await investorInput.fill("Child Investor Test");
+    await investorInput.fill(`${investorChildName}`);
     await investorInput.press("Enter");
     //ToDo: select country
     //...
@@ -276,12 +283,12 @@ test.describe.serial("deal creation tests", () => {
     await page.locator("text=Save").first().click();
     investorID = await page.locator("a[class=investor-link]").innerText();
     investorID = investorID.replace("Show details for investor #", "");
-    investorID = investorID.replace(" Child Investor Test", "");
+    investorID = investorID.replace(` ${investorChildName}`, "");
 
     //checkout new Investor detail page
     // await page.locator("a[class=investor-link]").click();
     await page.goto(`/investor/${investorID}`);
-    await expect(page.locator("h1")).toHaveText(`Child Investor Test #${investorID}`);
+    await expect(page.locator("h1")).toHaveText(`${investorChildName} #${investorID}`);
     await expect(page.locator("text=Government")).toBeVisible();
     await expect(
       page.locator('a:has-text("www.testing-child-investor.de")')
@@ -294,7 +301,7 @@ test.describe.serial("deal creation tests", () => {
     await page.reload();
     await page.locator("text=Add Parent company").click();
     await page.locator('[placeholder="Investor"]').click();
-    //await page.locator(`text=Parent Investor Test #${ParentID}`).click();
+    //await page.locator(`text=${investorParentName} #${ParentID}`).click();
     await page.keyboard.press("ArrowDown");
     await page.keyboard.press("Enter");
 
@@ -319,7 +326,7 @@ test.describe.serial("deal creation tests", () => {
     // );
     await page.click('a:has-text("Involvements")');
     //await page.locator(`text=${ParentID}`).click();
-    // await expect(page.locator("h1")).toHaveText(`Parent Investor Test #${ParentID}`);
+    // await expect(page.locator("h1")).toHaveText(`${investorParentName} #${ParentID}`);
   });
 
   //delete investors
@@ -333,7 +340,7 @@ test.describe.serial("deal creation tests", () => {
       .click();
     await page
       .locator("text=Please provide a comment explaining your request >> textarea")
-      .fill("delete Child Investor Test");
+      .fill("Delete Child investor");
     await Promise.all([
       page.waitForNavigation(),
       page.locator('button:has-text("Delete investor version")').click(),
@@ -347,7 +354,7 @@ test.describe.serial("deal creation tests", () => {
       .click();
     await page
       .locator("text=Please provide a comment explaining your request >> textarea")
-      .fill("delete Parent Investor Test");
+      .fill("delete Parent investor");
     await Promise.all([
       page.waitForNavigation(),
       page.locator('button:has-text("Delete investor version")').click(),
