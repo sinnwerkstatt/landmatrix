@@ -32,6 +32,8 @@ DEFAULT_FROM_EMAIL = SERVER_EMAIL
 DATABASES = {"default": env.db("DATABASE_URL")}
 
 INSTALLED_APPS = [
+    #
+    "apps.accounts",
     # django
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -66,7 +68,6 @@ INSTALLED_APPS = [
     "taggit",
     "wagtail_headless_preview",
     #   apps of the actual landmatrix project
-    "apps.accounts",
     "apps.blog",
     "apps.message",
     "apps.landmatrix",
@@ -115,6 +116,10 @@ TEMPLATES = [
 ]
 
 AUTH_USER_MODEL = "accounts.User"
+WAGTAIL_USER_EDIT_FORM = "apps.accounts.forms.CustomUserEditForm"
+WAGTAIL_USER_CREATION_FORM = "apps.accounts.forms.CustomUserCreationForm"
+WAGTAIL_USER_CUSTOM_FIELDS = ["level", "country", "region"]
+
 LOGIN_REDIRECT_URL = "/"
 # Limit all uploads to 20MB, and data sources to 1MB
 MAX_UPLOAD_SIZE = 20971520

@@ -1,40 +1,24 @@
 from django.contrib import admin
-from django.contrib.admin import ModelAdmin
 from django.contrib.auth import get_user_model
-
-from apps.editor.models import UserRegionalInfo
+from django.contrib.auth.admin import UserAdmin
+from django.utils.translation import gettext_lazy as _
 
 User = get_user_model()
 
 
-class UserRegionalInfoInline(admin.StackedInline):
-    model = UserRegionalInfo
-    can_delete = False
-    verbose_name_plural = "regional info"
-    fk_name = "user"
-
-
-# from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-class UserAdmin(ModelAdmin):
-    def set_inactive(self, _request, queryset):
-        queryset.update(is_active=False)
+class MyUserAdmin(UserAdmin):
+    def set_inactive(self, request, queryset):
+        # let's exclude the requester, otherwise they will snooker themselves
+        queryset.exclude(id=request.user.id).update(is_active=False)
 
     set_inactive.short_description = "Set selected users INACTIVE"
 
-    list_display = (
-        "username",
-        "email",
-        "first_name",
-        "last_name",
-        "is_staff",
-        "is_active",
-        "last_login",
-        "date_joined",
+    list_display = UserAdmin.list_display + ("is_active", "level")
+    list_filter = UserAdmin.list_filter + ("level",)
+    fieldsets = UserAdmin.fieldsets + (
+        (_("Data"), {"fields": ("level", "country", "region")}),
     )
-    inlines = (UserRegionalInfoInline,)
     actions = [set_inactive]
 
 
-# Re-register UserAdmin
-# admin.site.unregister(User)
-admin.site.register(User, UserAdmin)
+admin.site.register(User, MyUserAdmin)
