@@ -12,26 +12,29 @@
   import DataContainer from "$components/Data/DataContainer.svelte"
   import FilterCollapse from "$components/Data/FilterCollapse.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"
-  import Table from "$components/table/Table.svelte"
+  import Table from "$components/Table/Table.svelte"
 
   let activeColumns: Array<keyof typeof allColumnsWithSpan> = [
     "fully_updated_at",
     "id",
     "country",
     "current_intention_of_investment",
+    "current_negotiation_status",
+    "current_implementation_status",
+    "deal_size",
     "operating_company",
   ]
 
   const allColumnsWithSpan = {
     fully_updated_at: 2,
-    deal_size: 2,
     id: 1,
     country: 3,
     current_intention_of_investment: 5,
     current_negotiation_status: 4,
-    current_contract_size: 3,
     current_implementation_status: 4,
-    intended_size: 2,
+    current_contract_size: 3,
+    intended_size: 3,
+    deal_size: 2,
     operating_company: 4,
   }
 
@@ -56,41 +59,33 @@
 <DataContainer>
   <div class="flex h-full">
     <div
-      class="min-h-[3px] flex-none {$showFilterBar
+      class="h-full min-h-[3px] flex-none {$showFilterBar
         ? 'w-[clamp(220px,20%,300px)]'
         : 'w-0'}"
     />
 
-    <div
-      class={$showFilterBar && $showContextBar
-        ? "w-3/5 flex-1"
-        : $showFilterBar || $showContextBar
-        ? "w-4/5 flex-1"
-        : "w-full flex-1"}
-    >
-      <div class="flex h-full flex-col bg-stone-100 px-6 pb-6">
-        <div class="flex h-[4rem] items-center pl-2 text-lg">
-          {$deals?.data?.deals?.length ?? "—"}
-          {$deals?.data?.deals?.length === 1 ? $_("Deal") : $_("Deals")}
-        </div>
-
-        <Table
-          sortBy="-fully_updated_at"
-          items={$deals?.data?.deals ?? []}
-          columns={activeColumns}
-          {spans}
-          {labels}
-        >
-          <DisplayField
-            slot="field"
-            let:fieldName
-            let:obj
-            wrapperClasses="p-1"
-            fieldname={fieldName}
-            value={obj[fieldName]}
-          />
-        </Table>
+    <div class="flex h-full w-1 grow flex-col bg-stone-100 px-6 pb-6">
+      <div class="flex h-20 items-center text-lg">
+        {$deals?.data?.deals?.length ?? "—"}
+        {$deals?.data?.deals?.length === 1 ? $_("Deal") : $_("Deals")}
       </div>
+
+      <Table
+        sortBy="-fully_updated_at"
+        items={$deals?.data?.deals ?? []}
+        columns={activeColumns}
+        {spans}
+        {labels}
+      >
+        <DisplayField
+          slot="field"
+          let:fieldName
+          let:obj
+          wrapperClasses="p-1"
+          fieldname={fieldName}
+          value={obj[fieldName]}
+        />
+      </Table>
     </div>
     <div
       class="h-full min-h-[3px] flex-none {$showContextBar

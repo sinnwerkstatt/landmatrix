@@ -50,7 +50,7 @@ def add_object_comment(
 ) -> None:
     role = get_user_role(user)
     if not role:
-        raise GraphQLError("not allowed")
+        raise GraphQLError("MISSING_AUTHORIZATION")
 
     obj = (Deal if otype == "deal" else Investor).objects.get(id=obj_id)
     obj_version = None
@@ -89,7 +89,7 @@ def change_object_status(
 ) -> list[int]:
     role = get_user_role(user)
     if role not in ["ADMINISTRATOR", "EDITOR", "REPORTER"]:
-        raise GraphQLError("not allowed")
+        raise GraphQLError("MISSING_AUTHORIZATION")
     Object = Deal if otype == "deal" else Investor
     ObjectVersion = DealVersion if otype == "deal" else InvestorVersion
     obj = Object.objects.get(id=obj_id)
@@ -97,9 +97,12 @@ def change_object_status(
 
     old_draft_status = obj_version.serialized_data["draft_status"]
 
+    if obj.versions.first() != obj_version:
+        raise GraphQLError("EDITING_OLD_VERSION")
+
     if transition == "TO_REVIEW":
         if not (obj_version.created_by == user or role in ["ADMINISTRATOR", "EDITOR"]):
-            raise GraphQLError("not authorized")
+            raise GraphQLError("MISSING_AUTHORIZATION")
 
         draft_status = DRAFT_STATUS["REVIEW"]
         obj_version.serialized_data["draft_status"] = draft_status
@@ -126,14 +129,14 @@ def change_object_status(
 
     elif transition == "TO_ACTIVATION":
         if role not in ["ADMINISTRATOR", "EDITOR"]:
-            raise GraphQLError("not authorized")
+            raise GraphQLError("MISSING_AUTHORIZATION")
         draft_status = DRAFT_STATUS["ACTIVATION"]
         obj_version.serialized_data["draft_status"] = draft_status
         obj_version.save()
         Object.objects.filter(id=obj_id).update(draft_status=draft_status)
     elif transition == "ACTIVATE":
         if role != "ADMINISTRATOR":
-            raise GraphQLError("not allowed")
+            raise GraphQLError("MISSING_AUTHORIZATION")
         draft_status = None
         obj_version.serialized_data["status"] = (
             STATUS["LIVE"] if obj.status == STATUS["DRAFT"] else STATUS["UPDATED"]
@@ -150,16 +153,11 @@ def change_object_status(
 
         obj = Object.deserialize_from_version(obj_version)
         obj_version.save()
-        # close remaining open feedback requests
-        obj.workflowinfos.filter(
-            Q(draft_status_before__in=[2, 3])
-            & Q(draft_status_after=1)
-            # TODO: https://git.sinntern.de/landmatrix/landmatrix/-/issues/404
-            & (Q(from_user=user) | Q(to_user=user))
-        ).update(processed_by_receiver=True)
+        # close unresolved workflowinfos
+        obj.workflowinfos.all().update(resolved=True)
     elif transition == "TO_DRAFT":
         if role not in ["ADMINISTRATOR", "EDITOR"]:
-            raise GraphQLError("not authorized")
+            raise GraphQLError("MISSING_AUTHORIZATION")
         draft_status = DRAFT_STATUS["DRAFT"]
 
         obj_version.serialized_data["draft_status"] = draft_status
@@ -176,7 +174,7 @@ def change_object_status(
             & Q(draft_status_after=1)
             # TODO: https://git.sinntern.de/landmatrix/landmatrix/-/issues/404
             & (Q(from_user=user) | Q(to_user=user))
-        ).update(processed_by_receiver=True)
+        ).update(resolved=True)
 
     else:
         raise GraphQLError(f"unknown transition {transition}")
@@ -206,7 +204,7 @@ def object_edit(
 ) -> list[int]:
     role = get_user_role(user)
     if not role:
-        raise GraphQLError("not authorized")
+        raise GraphQLError("MISSING_AUTHORIZATION")
 
     # verify that the form is correct
     ObjectForm = DealForm if otype == "deal" else InvestorForm
@@ -276,7 +274,10 @@ def object_edit(
             id=obj_version_id
         )
         if not (obj_version.created_by == user or role in ["ADMINISTRATOR", "EDITOR"]):
-            raise GraphQLError("not authorized")
+            raise GraphQLError("MISSING_AUTHORIZATION")
+
+        if obj.versions.first() != obj_version:
+            raise GraphQLError("EDITING_OLD_VERSION")
 
         obj_version.serialized_data = obj.serialize_for_version()
 
@@ -338,7 +339,7 @@ def object_delete(
 ) -> bool:
     role = get_user_role(user)
     if not role:
-        raise GraphQLError("not authorized")
+        raise GraphQLError("MISSING_AUTHORIZATION")
 
     Object = Deal if otype == "deal" else Investor
     obj = Object.objects.get(id=obj_id)
@@ -348,7 +349,7 @@ def object_delete(
         ObjectVersion = DealVersion if otype == "deal" else InvestorVersion
         obj_version = ObjectVersion.objects.get(id=obj_version_id)
         if not (obj_version.created_by == user or role in ["ADMINISTRATOR", "EDITOR"]):
-            raise GraphQLError("not authorized")
+            raise GraphQLError("MISSING_AUTHORIZATION")
         old_draft_status = obj_version.serialized_data["draft_status"]
         obj_version.delete()
         add_workflow_info(
@@ -372,7 +373,7 @@ def object_delete(
 
     else:
         if role != "ADMINISTRATOR":
-            raise GraphQLError("not authorized")
+            raise GraphQLError("MISSING_AUTHORIZATION")
         obj.status = (
             STATUS["UPDATED"] if obj.status == STATUS["DELETED"] else STATUS["DELETED"]
         )
@@ -395,18 +396,47 @@ def object_delete(
 
 
 # noinspection PyShadowingBuiltins
-def resolve_toggle_workflow_info_unread(_obj, _info, id: int, type: str) -> bool:
+def resolve_resolve_workflow_info(_obj, info, id: int, type: str) -> bool:
+    role = get_user_role(info.context["request"].user)
+    if not role:
+        raise GraphQLError("MISSING_AUTHORIZATION")
+
     if type == "DealWorkflowInfo":
         wi = DealWorkflowInfo.objects.get(id=id)
-        wi.processed_by_receiver = not wi.processed_by_receiver
-        wi.save()
-        return True
     elif type == "InvestorWorkflowInfo":
         wi = InvestorWorkflowInfo.objects.get(id=id)
-        wi.processed_by_receiver = not wi.processed_by_receiver
-        wi.save()
-        return True
-    return False
+    else:
+        return False
+    wi.resolved = True
+    wi.save()
+    return True
+
+
+# noinspection PyShadowingBuiltins
+def resolve_add_workflow_info_reply(
+    _obj, info, id: int, type: str, from_user_id: int, comment: str
+) -> bool:
+    role = get_user_role(info.context["request"].user)
+    if not role:
+        raise GraphQLError("MISSING_AUTHORIZATION")
+
+    if type == "DealWorkflowInfo":
+        wi = DealWorkflowInfo.objects.get(id=id)
+    elif type == "InvestorWorkflowInfo":
+        wi = InvestorWorkflowInfo.objects.get(id=id)
+    else:
+        return False
+    if not wi.replies:
+        wi.replies = []
+    wi.replies += [
+        {
+            "timestamp": timezone.now().isoformat(),
+            "user_id": from_user_id,
+            "comment": comment,
+        }
+    ]
+    wi.save()
+    return True
 
 
 def resolve_object_copy(_obj, info, otype: OType, obj_id: int) -> dict:

@@ -318,7 +318,11 @@ def flatten_array_choices(data, field, choics) -> None:
         data[field] = ""
         return
 
-    data[field] = "|".join([choics[x] for x in data[field]])
+    matches = []
+    for x in data[field]:
+        if choice := choics.get(x):
+            matches += [choice]
+    data[field] = "|".join(matches)
 
 
 def single_choice(data, field, choics) -> None:

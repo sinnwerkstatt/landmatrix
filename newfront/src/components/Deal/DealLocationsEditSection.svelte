@@ -261,7 +261,7 @@
   />
 
   {#if country}
-    <section class="flex flex-wrap">
+    <section class="isolate flex flex-wrap">
       <div class="pr-3 lg:w-1/3">
         {#each locations as loc, index}
           <div
@@ -346,9 +346,9 @@
                 ? 'bg-orange text-white'
                 : 'bg-white text-orange'}"
               on:click={onToggleMarkerMovable}
-              title={(cursorsMovable ? "Disable" : "Enable") +
-                " " +
-                $_("moving of markers")}
+              title={cursorsMovable
+                ? $_("Disable moving of markers")
+                : $_("Enable moving of markers")}
             >
               <CursorMoveIcon />
             </button>

@@ -14,7 +14,6 @@ CACHE_TIMEOUT = 24 * 3600
 urlpatterns = [
     # Django basics
     path("admin/", admin.site.urls),
-    path("account/", include("django.contrib.auth.urls")),
     path("impersonate/", include("impersonate.urls")),
     path("language/<language>/", SwitchLanguageView.as_view(), name="switch_language"),
     # Wagtail

@@ -124,14 +124,16 @@ class Management(View):
                         & Q(workflowinfos__draft_status_after=None)
                     )
                 )
-                & Q(workflowinfos__to_user_id=request.user.id),
+                & Q(workflowinfos__to_user_id=request.user.id)
+                & Q(workflowinfos__resolved=False),
             },
             "todo_improvement": {
                 "staff": False,
-                "q": Q(workflowinfos__draft_status_before__in=[2, 3])
+                "q": Q(draft_status=1)
+                & Q(workflowinfos__draft_status_before__in=[2, 3])
                 & Q(workflowinfos__draft_status_after=1)
                 & Q(workflowinfos__to_user_id=request.user.id)
-                & Q(workflowinfos__processed_by_receiver=False),
+                & Q(workflowinfos__resolved=False),
             },
             "todo_review": {
                 "staff": True,
@@ -154,14 +156,17 @@ class Management(View):
                         & Q(workflowinfos__draft_status_after=None)
                     )
                 )
-                & Q(workflowinfos__from_user_id=request.user.id),
+                & Q(workflowinfos__from_user_id=request.user.id)
+                & Q(workflowinfos__to_user_id__isnull=False),
             },
             "requested_improvement": {
                 "staff": True,
                 "q": ~Q(current_draft=None)
-                & Q(workflowinfos__deal_version_id=F("current_draft_id"))
-                if is_deal
-                else Q(workflowinfos__investor_version_id=F("current_draft_id"))
+                & (
+                    Q(workflowinfos__deal_version_id=F("current_draft_id"))
+                    if is_deal
+                    else Q(workflowinfos__investor_version_id=F("current_draft_id"))
+                )
                 & Q(workflowinfos__draft_status_before__in=[2, 3])
                 & Q(workflowinfos__draft_status_after=1)
                 & Q(workflowinfos__from_user_id=request.user.id),
@@ -200,7 +205,7 @@ class Management(View):
         if action == "counts":
             return JsonResponse(
                 {
-                    metric: Obj.objects.filter(filters[metric]["q"]).count()
+                    metric: Obj.objects.filter(filters[metric]["q"]).distinct().count()
                     for metric in filters.keys()
                     if request.user.is_staff or not filters[metric]["staff"]
                 }
@@ -208,7 +213,6 @@ class Management(View):
         elif action in filters.keys():
             ret = [
                 self._obj_dict(obj)
-                # TODO distinct clever here?
                 for obj in Obj.objects.filter(filters[action]["q"]).distinct()
             ]
         else:
@@ -252,7 +256,8 @@ class Management(View):
                     else w.investor_version_id,
                     "timestamp": w.timestamp,
                     "comment": w.comment,
-                    "processed_by_receiver": w.processed_by_receiver,
+                    "resolved": w.resolved,
+                    "replies": w.replies or [],
                 }
                 for w in obj.workflowinfos.order_by("-id")
             ],

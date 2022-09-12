@@ -32,12 +32,13 @@ from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.images.models import SourceImageIOError
 from wagtail.search import index
 from wagtail.snippets.models import register_snippet
+from wagtail_headless_preview.models import HeadlessPreviewMixin
 
 from apps.wagtailcms.blocks import SIMPLE_CONTENT_BLOCKS
 from .utils import unique_slugify
 
 
-class BlogIndexPage(Page):
+class BlogIndexPage(HeadlessPreviewMixin, Page):
     max_count = 1
 
     class Meta:
@@ -221,7 +222,7 @@ def limit_author_choices():
     return limit
 
 
-class BlogPage(Page):
+class BlogPage(HeadlessPreviewMixin, Page):
     body = StreamField(SIMPLE_CONTENT_BLOCKS, verbose_name=_("body"), blank=True)
     tags = ClusterTaggableManager(through="BlogPageTag", blank=True)
     date = models.DateField(

@@ -10,9 +10,9 @@
     value?: NegotiationStatus
     name?: string
   }
+
   interface GroupChoice extends Choice {
     group: string
-    state: boolean
     options: { value: NegotiationStatus; name: string }[]
   }
 
@@ -20,6 +20,7 @@
     for (let elem of subset) if (!set.has(elem)) return false
     return true
   }
+
   function hasIntersection(setA: Set<string>, setB: Set<string>): boolean {
     for (let elem of setB) if (setA.has(elem)) return true
     return false
@@ -29,7 +30,6 @@
   $: choices = [
     {
       group: $_("Intended"),
-      state: undefined,
       options: [
         {
           value: NegotiationStatus.EXPRESSION_OF_INTEREST,
@@ -44,7 +44,6 @@
     },
     {
       group: $_("Concluded"),
-      state: undefined,
       options: [
         { value: NegotiationStatus.ORAL_AGREEMENT, name: $_("Oral agreement") },
         { value: NegotiationStatus.CONTRACT_SIGNED, name: $_("Contract signed") },
@@ -56,7 +55,6 @@
     },
     {
       group: $_("Failed"),
-      state: undefined,
       options: [
         {
           value: NegotiationStatus.NEGOTIATIONS_FAILED,
@@ -68,67 +66,57 @@
     { value: NegotiationStatus.CONTRACT_EXPIRED, name: $_("Contract expired") },
   ]
 
-  //   watch: {
-  //     "$store.state.signalNegstat"() {
-  //       this.choices.forEach((choice) => {
-  //         if (choice.group) this.toggleSingle(choice as GroupChoice);
-  //       });
-  //     },
-  //   },
+  const isGroupChoice = (c): c is GroupChoice => !!c?.group
+  const checkGroups = () => {
+    choices.forEach(choice => {
+      if (isGroupChoice(choice)) {
+        toggleSingle(choice)
+        return true
+      }
+      return false
+    })
+  }
 
-  // const isGroupChoice = (c): c is GroupChoice => !!c?.group;
-  // onMount(() => {
-  //   choices.forEach((choice) => {
-  //     if (isGroupChoice(choice)) toggleSingle(choice);
-  //   });
-  // });
-
-  async function toggleGroup(choice: GroupChoice) {
-    // const fieldmap: { [key: string]: string[] } = {
-    //   Concluded: ["ORAL_AGREEMENT", "CONTRACT_SIGNED"],
-    // };
+  function toggleGroup(choice: GroupChoice, e: Event) {
+    const checked = (e.target as HTMLInputElement).checked
     const fields = choice.options.map(o => o.value)
 
-    if (choice.state) {
-      $filters.negotiation_status = [...$filters.negotiation_status, ...fields]
-    } else {
-      $filters.negotiation_status = $filters.negotiation_status.filter(
-        (s: NegotiationStatus) => !fields.includes(s),
-      )
-    }
+    $filters.negotiation_status = checked
+      ? [...$filters.negotiation_status, ...fields]
+      : $filters.negotiation_status.filter(s => !fields.includes(s))
   }
-  async function toggleSingle(choice: GroupChoice) {
+
+  function toggleSingle(choice: GroupChoice) {
     const cur_set: Set<string> = new Set($filters.negotiation_status)
     const exp_set: Set<string> = new Set(choice.options.map(o => o.value))
     const checkbox = document.getElementById(choice.group) as HTMLInputElement
 
+    if (!checkbox) return
     if (isSuperset(cur_set, exp_set)) {
       checkbox.indeterminate = false
-      // choice.state = true;
       checkbox.checked = true
     } else if (hasIntersection(cur_set, exp_set)) {
       checkbox.indeterminate = true
     } else {
       checkbox.indeterminate = false
-      // choice.state = false;
       checkbox.checked = false
     }
   }
 </script>
 
 <FilterCollapse
-  title={$_("Negotiation status")}
   clearable={$filters.negotiation_status.length > 0}
   on:click={() => ($filters.negotiation_status = [])}
+  on:expanded={checkGroups}
+  title={$_("Negotiation status")}
 >
   {#each choices as nstat}
     {#if nstat.group}
       <label class="block font-bold">
         <input
           id={nstat.group}
-          bind:checked={nstat.state}
           type="checkbox"
-          on:change={() => toggleGroup(nstat)}
+          on:change={e => toggleGroup(nstat, e)}
         />
         {nstat.group}
       </label>

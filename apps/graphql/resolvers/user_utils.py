@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Type
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext as _
@@ -62,7 +64,7 @@ def send_comment_to_user(
     obj: Deal | Investor,
     comment: str,
     from_user: User,
-    to_user_id: int,
+    to_user_id: int | Type[int],
     version_id: int = None,
 ) -> None:
 

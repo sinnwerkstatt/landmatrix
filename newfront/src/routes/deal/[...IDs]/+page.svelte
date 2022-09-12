@@ -29,7 +29,7 @@
   let deal: Deal = data.deal
   $: deal = data.deal
 
-  $: activeTab = $page.url.hash || "#locations"
+  $: activeTab = $page.url.hash.split("/")[0] || "#locations"
 
   $: tabs = [
     { target: "#locations", name: $_("Locations") },

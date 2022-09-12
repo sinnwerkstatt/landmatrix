@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { error } from "@sveltejs/kit"
   import { Client, gql } from "@urql/svelte"
+  import { toast } from "@zerodevx/svelte-toast"
   import { _ } from "svelte-i18n"
 
-  import { goto } from "$app/navigation"
+  import { beforeNavigate, goto, invalidateAll } from "$app/navigation"
   import { page } from "$app/stores"
 
   import { getInvestorSections } from "$lib/sections"
@@ -32,21 +32,33 @@
     { target: "#data_sources", name: $_("Data sources") },
   ]
 
+  beforeNavigate(({ type, cancel }) => {
+    // browser navigation buttons
+    if (type === "popstate")
+      if (formChanged && !showReallyQuitOverlay) {
+        showReallyQuitOverlay = true
+        cancel()
+      }
+  })
+
   async function saveInvestor(hash: string) {
     const currentForm: HTMLFormElement | null =
       document.querySelector<HTMLFormElement>(activeTab)
-    if (!currentForm) throw error(500, "can not grab the form")
-
-    if (!currentForm.checkValidity()) {
-      currentForm.reportValidity()
+    if (!currentForm) {
+      toast.push("Internal error. Can not grab the form. Try reloading the page.", {
+        classes: ["error"],
+      })
       return
     }
+
+    if (!currentForm.checkValidity()) return currentForm.reportValidity()
+
     savingInProgress = true
     // investor.locations = removeEmptyEntries<Location>(investor.locations);
     // investor.contracts = removeEmptyEntries<Contract>(investor.contracts);
     investor.datasources = removeEmptyEntries<DataSource>(investor.datasources)
 
-    const ret = await ($page.data.urqlClient as Client)
+    const { data, error } = await ($page.data.urqlClient as Client)
       .mutation<{ investor_edit: { investorId: number; investorVersion?: number } }>(
         gql`
           mutation ($id: Int!, $version: Int, $payload: Payload) {
@@ -70,25 +82,41 @@
         },
       )
       .toPromise()
-    const investor_edit = ret.data?.investor_edit
-    if (!investor_edit) throw error(500, `Problem with edit: ${ret.error}`)
+    if (error) {
+      if (error.graphQLErrors[0].message === "EDITING_OLD_VERSION")
+        toast.push("You are trying to edit an old version!", { classes: ["error"] })
+      else toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
+      savingInProgress = false
+      return
+    }
+    if (!data) {
+      toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
+      savingInProgress = false
+      return
+    }
+
+    if (
+      location.hash !== hash ||
+      +investorVersion !== +data.investor_edit.investorVersion
+    ) {
+      await goto(
+        `/investor/edit/${data.investor_edit.investorId}/${
+          data.investor_edit.investorVersion
+        }${hash ?? ""}`,
+      )
+    }
 
     originalInvestor = JSON.stringify(investor)
     savingInProgress = false
-
-    if (location.hash !== hash || +investorVersion !== +investor_edit.investorVersion) {
-      await goto(
-        `/investor/edit/${investor_edit.investorId}/${investor_edit.investorVersion}${
-          hash ?? ""
-        }`,
-      )
-    }
   }
 
   const onClickClose = async (force: boolean) => {
     if (formChanged && !force) showReallyQuitOverlay = true
-    else if (!investorID) await goto("/")
-    else await goto(`/investor/${investorID}/${investorVersion ?? ""}`)
+    else {
+      await invalidateAll()
+      if (!investorID) await goto("/")
+      else await goto(`/investor/${investorID}/${investorVersion ?? ""}`)
+    }
   }
 </script>
 

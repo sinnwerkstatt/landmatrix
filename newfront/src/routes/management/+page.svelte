@@ -1,5 +1,8 @@
 <script lang="ts">
   import cn from "classnames"
+  import dayjs from "dayjs"
+  import isSameOrAfter from "dayjs/plugin/isSameOrAfter"
+  import isSameOrBefore from "dayjs/plugin/isSameOrBefore"
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
@@ -10,19 +13,24 @@
   import { formfields, loading } from "$lib/stores"
   import type { Deal } from "$lib/types/deal"
   import type { Investor } from "$lib/types/investor"
+  import type { User } from "$lib/types/user"
   import { UserLevel } from "$lib/types/user"
 
   import FilterCollapse from "$components/Data/FilterCollapse.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import AdjustmentsIcon from "$components/icons/AdjustmentsIcon.svelte"
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
-  import Table from "$components/table/Table.svelte"
+  import Table from "$components/Table/Table.svelte"
 
-  import FilterOverlay from "./FilterOverlay.svelte"
   import RequestedFeedbackView from "./RequestedFeedbackView.svelte"
   import RequestedImprovementView from "./RequestedImprovementView.svelte"
+  import RightFilterBar from "./RightFilterBar.svelte"
   import { managementFilters } from "./state"
   import TodoFeedbackView from "./TodoFeedbackView.svelte"
+  import TodoImprovementView from "./TodoImprovementView.svelte"
+
+  dayjs.extend(isSameOrBefore)
+  dayjs.extend(isSameOrAfter)
 
   interface Tab {
     id: string
@@ -34,7 +42,7 @@
   const user = $page.data.user
 
   let model: "deal" | "investor" = "deal"
-  let activeTab: Tab
+  let activeTabId: string
   let objects: Array<Deal | Investor> = []
 
   let navTabs: { name: string; expanded?: boolean; items: Tab[] }[]
@@ -78,15 +86,10 @@
     },
   ]
 
-  const selectTab = (tab: Tab) => {
-    goto("#" + tab.id)
-    activeTab = tab
-  }
-
   const dealColumns = {
     id: 1,
     country: 2,
-    deal_size: 1,
+    deal_size: 2,
     created_at: 2,
     created_by: 2,
     modified_at: 2,
@@ -98,11 +101,11 @@
 
   const investorColumns = {
     id: 1,
-    name: 2,
-    country: 3,
+    name: 3,
+    country: 4,
     deals: 1,
     created_at: 2,
-    created_by: 2,
+    created_by: 3,
     workflowinfos: 5,
     // combined_status: 1,
   }
@@ -111,8 +114,6 @@
   $: columns = Object.keys(columnsWithSpan)
   $: labels = columns.map(col => $formfields?.[model]?.[col]?.label)
   $: spans = Object.entries(columnsWithSpan).map(([_, colSpan]) => colSpan)
-
-  let controller: AbortController
 
   async function getCounts(model) {
     if (!browser) return
@@ -128,42 +129,57 @@
     }
   }
 
-  async function fetchObjects(acTab: Tab, model: "deal" | "investor") {
+  let controller: AbortController
+  let possibleUsers: User[] = []
+
+  async function fetchObjects(acTab: string, model: "deal" | "investor") {
     if (!acTab) return
     if (controller) controller.abort()
 
     loading.set(true)
     controller = new AbortController()
     const x = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/api/management/?model=${model}&action=${
-        acTab.id
-      }`,
+      `${import.meta.env.VITE_BASE_URL}/api/management/?model=${model}&action=${acTab}`,
       {
         signal: controller.signal,
       },
     )
     if (x.ok) {
       objects = (await x.json()).objects
-      acTab.count = objects.length
+      // let possibleUsersSet = new Set()
+      // objects.forEach(o => {
+      //   console.log(o.created_by)
+      //   if (o.created_by) possibleUsersSet.add(o.created_by)
+      //   if (o.modified_by) possibleUsersSet.add(o.modified_by)
+      // })
+      // possibleUsers = [...possibleUsersSet]
+
+      navTabs = navTabs.map(navTab => ({
+        ...navTab,
+        items: navTab.items.map(item => {
+          if (item.id === acTab) return { ...item, count: objects.length }
+          return item
+        }),
+      }))
       navTabs = [...navTabs]
     }
 
     loading.set(false)
   }
 
-  $: getCounts(model)
-  $: fetchObjects(activeTab, model)
-
   onMount(() => {
+    if (!$page.url.hash) goto("#todo_feedback")
+  })
+
+  async function activateTab(hash) {
     navTabs.some(navTab => {
-      const hash = $page.url.hash || "#todo_feedback"
       const item = navTab.items.find(i => "#" + i.id === hash)
       if (item) {
-        selectTab(item)
+        activeTabId = item.id
         return true
       }
     })
-  })
+  }
 
   function trackDownload(format) {
     // TODO implement this? ${format}
@@ -171,9 +187,52 @@
 
   let showFilterOverlay = false
 
+  $: activateTab($page.url.hash)
+  $: getCounts(model)
+  $: fetchObjects(activeTabId, model)
   $: filteredObjects = objects.filter(d => {
     if ($managementFilters.country?.id)
-      return d.country?.id === $managementFilters.country.id
+      if (d.country?.id !== $managementFilters.country.id) return false
+
+    if ($managementFilters.createdAtFrom)
+      if (dayjs(d.created_at).isBefore($managementFilters.createdAtFrom, "day"))
+        return false
+    if ($managementFilters.createdAtTo)
+      if (dayjs(d.created_at).isAfter($managementFilters.createdAtTo, "day"))
+        return false
+    if ($managementFilters.createdBy)
+      if (d.created_by.id !== $managementFilters.createdBy.id) return false
+
+    if ($managementFilters.modifiedAtFrom)
+      if (dayjs(d.modified_at).isBefore($managementFilters.modifiedAtFrom, "day"))
+        return false
+    if ($managementFilters.modifiedAtTo)
+      if (dayjs(d.modified_at).isAfter($managementFilters.modifiedAtTo, "day"))
+        return false
+    if ($managementFilters.modifiedBy)
+      if (d.modified_by.id !== $managementFilters.modifiedBy.id) return false
+
+    if (model === "deal") {
+      if ($managementFilters.dealSizeFrom)
+        if (d.deal_size < $managementFilters.dealSizeFrom) return false
+      if ($managementFilters.dealSizeTo)
+        if (d.deal_size > $managementFilters.dealSizeTo) return false
+
+      if ($managementFilters.fullyUpdatedAtFrom)
+        if (
+          dayjs(d.fully_updated_at).isBefore(
+            $managementFilters.fullyUpdatedAtFrom,
+            "day",
+          )
+        )
+          return false
+      if ($managementFilters.fullyUpdatedAtTo)
+        if (
+          dayjs(d.fully_updated_at).isAfter($managementFilters.fullyUpdatedAtTo, "day")
+        )
+          return false
+    }
+
     return true
   })
 </script>
@@ -182,9 +241,9 @@
   <title>{$_("Management")} | {$_("Land Matrix")}</title>
 </svelte:head>
 
-<div class="relative flex min-h-full w-full">
+<div class="relative flex h-full w-full bg-stone-100">
   <nav
-    class="flex min-h-full flex-initial flex-shrink-0 flex-col bg-white/80 p-2 drop-shadow-[3px_-3px_3px_rgba(0,0,0,0.3)]"
+    class="h-full shrink-0 basis-1/4 flex-col overflow-y-scroll bg-white/80 p-2 drop-shadow-[3px_-3px_3px_rgba(0,0,0,0.3)] xl:basis-1/6"
   >
     <div
       class="flex justify-center gap-4 border-b border-gray-200 p-1 pb-6 text-lg font-bold"
@@ -218,23 +277,23 @@
                   class={cn(
                     "py-2 pr-4",
                     model === "deal" ? "border-orange" : "border-pelorous",
-                    activeTab === item ? "border-r-4" : "border-r",
+                    activeTabId === item.id ? "border-r-4" : "border-r",
                   )}
                 >
-                  <button
+                  <a
                     class={cn(
-                      "w-full text-left",
-                      activeTab === item
+                      "block text-left",
+                      activeTabId === item.id
                         ? model === "deal"
                           ? "font-bold text-orange"
                           : "font-bold text-pelorous"
                         : "text-gray-600",
                     )}
-                    on:click={() => selectTab(item)}
+                    href="#{item.id}"
                   >
                     {item.name}
                     {#if item.count} ({item.count}){/if}
-                  </button>
+                  </a>
                 </li>
               {/each}
             </ul>
@@ -243,12 +302,12 @@
       {/each}
     </div>
     <div class="mt-auto w-full self-end pt-10">
-      {#if activeTab}
+      {#if activeTabId}
         <FilterCollapse title={$_("Download")}>
           <ul>
             <li>
               <a
-                href="/api/management?format=xlsx&action={activeTab.id}"
+                href="/api/management?format=xlsx&action={activeTabId}"
                 on:click={() => trackDownload("xlsx")}
                 rel="external"
               >
@@ -257,8 +316,9 @@
               </a>
             </li>
             <li>
+              <!-- todo: probably remove rel="external" in favor of data-sveltekit-reload -->
               <a
-                href="/api/management?format=csv&action={activeTab.id}"
+                href="/api/management?format=csv&action={activeTabId}"
                 on:click={() => trackDownload("csv")}
                 rel="external"
               >
@@ -273,25 +333,17 @@
     </div>
   </nav>
 
-  <button
-    class="group absolute right-4 top-2 rounded-full bg-gray-700 p-1 drop-shadow-[3px_3px_1px_rgba(125,125,125,.7)] transition-colors hover:bg-gray-100 hover:drop-shadow-lg"
-    on:click={() => (showFilterOverlay = true)}
-    type="button"
-  >
-    <AdjustmentsIcon
-      class="h-8 w-8 text-white transition-colors group-hover:text-orange"
-    />
-  </button>
-
-  <div class="mt-[50px] w-4/5 flex-1 px-6 py-4">
-    {#if activeTab?.id === "todo_feedback"}
+  <div class="mt-[60px] w-1 grow px-6 pb-6">
+    {#if activeTabId === "todo_feedback"}
       <TodoFeedbackView objects={filteredObjects} {model} />
-    {:else if activeTab?.id === "requested_feedback"}
+    {:else if activeTabId === "todo_improvement"}
+      <TodoImprovementView objects={filteredObjects} {model} />
+    {:else if activeTabId === "requested_feedback"}
       <RequestedFeedbackView objects={filteredObjects} {model} />
-    {:else if activeTab?.id === "requested_improvement"}
+    {:else if activeTabId === "requested_improvement"}
       <RequestedImprovementView objects={filteredObjects} {model} />
     {:else}
-      <Table items={filteredObjects} {columns} {spans} {labels} rowClasses="p-1">
+      <Table items={filteredObjects} {columns} {spans} {labels}>
         <DisplayField
           slot="field"
           let:fieldName
@@ -307,6 +359,18 @@
       </Table>
     {/if}
   </div>
+
+  <RightFilterBar {model} {objects} {possibleUsers} showFilters={showFilterOverlay} />
+
+  <button
+    class="group absolute right-4 top-2 rounded-full bg-gray-700 p-1 drop-shadow-[3px_3px_1px_rgba(125,125,125,.7)] transition-colors hover:bg-gray-100 hover:drop-shadow-lg"
+    on:click={() => (showFilterOverlay = !showFilterOverlay)}
+    type="button"
+  >
+    <AdjustmentsIcon
+      class="h-8 w-8 text-white transition-colors group-hover:text-orange"
+    />
+  </button>
 </div>
 
-<FilterOverlay bind:visible={showFilterOverlay} {objects} {model} />
+<!--<FilterOverlay bind:visible={showFilterOverlay} {model} {objects} {possibleUsers} />-->

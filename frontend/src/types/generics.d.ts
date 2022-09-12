@@ -37,6 +37,6 @@ interface WorkflowInfo {
   draft_status_after: number;
   timestamp: Date;
   comment: string;
-  processed_by_receiver: boolean;
+  resolved: boolean;
   __typename?: string;
 }

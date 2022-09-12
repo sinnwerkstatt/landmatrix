@@ -95,6 +95,7 @@ export const investor_gql_query = gql`
           full_name
         }
         to_user {
+          id
           username
           full_name
         }
@@ -102,7 +103,12 @@ export const investor_gql_query = gql`
         draft_status_after
         timestamp
         comment
-        processed_by_receiver
+        resolved
+        replies {
+          comment
+          user_id
+          timestamp
+        }
       }
       versions {
         id

@@ -93,7 +93,7 @@ class Investor(models.Model):
         verbose_name=_("Country of registration/origin"),
         blank=True,
         null=True,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
     )
 
     CLASSIFICATION_CHOICES = (
@@ -157,7 +157,7 @@ class Investor(models.Model):
         settings.AUTH_USER_MODEL,
         blank=True,
         null=True,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         related_name="+",
     )
     modified_at = models.DateTimeField(_("Last update"), blank=True, null=True)
@@ -165,7 +165,7 @@ class Investor(models.Model):
         settings.AUTH_USER_MODEL,
         blank=True,
         null=True,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         related_name="+",
     )
 
@@ -217,7 +217,7 @@ class Investor(models.Model):
             classification=version.serialized_data["classification"],
             homepage=version.serialized_data["homepage"],
             opencorporates=version.serialized_data["opencorporates"],
-            datasources=version.serialized_data["datasources"],
+            datasources=version.serialized_data.get("datasources", []),
             comment=version.serialized_data["comment"],
             status=version.serialized_data["status"],
             draft_status=version.serialized_data["draft_status"],
@@ -451,7 +451,7 @@ class InvestorVentureInvolvement(models.Model):
         verbose_name=_("Loan currency"),
         blank=True,
         null=True,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
     )
     loans_date = models.CharField(_("Loan date"), max_length=20, blank=True, default="")
 

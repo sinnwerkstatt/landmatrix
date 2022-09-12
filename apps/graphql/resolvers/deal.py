@@ -45,12 +45,20 @@ def resolve_deal(_obj, info, id, version=None, subset="PUBLIC"):
         except DealVersion.DoesNotExist:
             return
 
-        if not (deal_version.created_by == user or role in ["ADMINISTRATOR", "EDITOR"]):
-            raise GraphQLError("not authorized")
+        if not any(
+            [
+                role in ["ADMINISTRATOR", "EDITOR"],
+                deal_version.created_by == user,
+                deal_version.serialized_data["is_public"]
+                and deal_version.serialized_data["draft_status"] is None
+                and deal_version.serialized_data["status"] in [2, 3],
+            ]
+        ):
+            raise GraphQLError("MISSING_AUTHORIZATION")
     else:
         visible_deals = Deal.objects.visible(user, subset).filter(id=id)
         if not visible_deals:
-            raise GraphQLError("deal not found")
+            raise GraphQLError("DEAL_NOT_FOUND")
 
         deal = qs_values_to_dict(
             visible_deals,
@@ -131,7 +139,7 @@ def resolve_dealversions(_obj, _info, filters=None, country_id=None, region_id=N
 def resolve_upload_datasource_file(_obj, info, filename, payload) -> str:
     user = info.context["request"].user
     if not user.is_authenticated:
-        raise GraphQLError("not authorized")
+        raise GraphQLError("MISSING_AUTHORIZATION")
 
     _, data = payload.split(",")
     dec = base64.b64decode(data)
@@ -232,7 +240,7 @@ def resolve_set_confidential(
     user = info.context["request"].user
     role = get_user_role(user)
     if not role:
-        raise GraphQLError("not authorized")
+        raise GraphQLError("MISSING_AUTHORIZATION")
 
     confidential_str = "SET_CONFIDENTIAL" if confidential else "UNSET_CONFIDENTIAL"
     obj_comment = f"[{confidential_str}] {comment}"
@@ -240,7 +248,7 @@ def resolve_set_confidential(
     if version:
         deal_version = DealVersion.objects.get(id=version)
         if not (deal_version.created_by == user or role in ["ADMINISTRATOR", "EDITOR"]):
-            raise GraphQLError("not authorized")
+            raise GraphQLError("MISSING_AUTHORIZATION")
         deal_version.serialized_data["confidential"] = confidential
         deal_version.serialized_data["confidential_comment"] = comment
         deal_version.save()
@@ -249,7 +257,7 @@ def resolve_set_confidential(
 
     else:
         if role != "ADMINISTRATOR":
-            raise GraphQLError("not authorized")
+            raise GraphQLError("MISSING_AUTHORIZATION")
         deal = Deal.objects.get(id=id)
         deal.confidential = confidential
         deal.confidential_comment = comment

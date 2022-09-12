@@ -247,6 +247,7 @@ export const deal_gql_query = gql`
           full_name
         }
         to_user {
+          id
           username
           full_name
         }
@@ -254,7 +255,12 @@ export const deal_gql_query = gql`
         draft_status_after
         timestamp
         comment
-        processed_by_receiver
+        replies {
+          comment
+          user_id
+          timestamp
+        }
+        resolved
       }
       #      comments {
       #        id

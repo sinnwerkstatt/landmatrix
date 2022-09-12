@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     "wagtailorderable",
     "modelcluster",
     "taggit",
+    "wagtail_headless_preview",
     #   apps of the actual landmatrix project
     "apps.blog",
     "apps.message",
@@ -151,6 +152,14 @@ CORS_ALLOW_CREDENTIALS = True
 
 WAGTAIL_SITE_NAME = "Land Matrix"
 WAGTAILADMIN_BASE_URL = "https://landmatrix.org/cms"
+
+WAGTAIL_HEADLESS_PREVIEW = {
+    "CLIENT_URLS": {"default": "{SITE_ROOT_URL}/wagtail-preview"},
+    "LIVE_PREVIEW": False,  # set to True to enable live preview functionality
+    "SERVE_BASE_URL": None,  # can be used for HeadlessServeMixin
+    "REDIRECT_ON_PREVIEW": False,
+    # set to True to redirect to the preview instead of using the Wagtail default mechanism
+}
 
 MODELTRANSLATION_CUSTOM_FIELDS = ("NoWrapsStreamField",)
 

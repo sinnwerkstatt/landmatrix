@@ -42,11 +42,17 @@
               type="text"
               bind:value={val.name}
               class="inpt"
-              name={formfield.name}
+              name={`${formfield.name}_name_${i}`}
+              required={!!val.role}
             />
           </td>
           <td>
-            <select bind:value={val.role} class="inpt" name={formfield.name}>
+            <select
+              bind:value={val.role}
+              class="inpt"
+              name={`${formfield.name}_role_${i}`}
+              required={!!val.name}
+            >
               <option />
               {#each Object.entries(formfield.choices) as [value, label]}
                 <option {value}>{label}</option>

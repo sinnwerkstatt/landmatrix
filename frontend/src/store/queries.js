@@ -149,7 +149,7 @@ export const investor_gql_query = gql`
         draft_status_after
         timestamp
         comment
-        processed_by_receiver
+        resolved
       }
       versions {
         id
@@ -438,7 +438,7 @@ export const deal_gql_query = gql`
         draft_status_after
         timestamp
         comment
-        processed_by_receiver
+        resolved
       }
       current_draft {
         id

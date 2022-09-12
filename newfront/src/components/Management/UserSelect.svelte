@@ -3,31 +3,44 @@
   import { _ } from "svelte-i18n"
   import Select from "svelte-select"
   import VirtualList from "svelte-tiny-virtual-list"
-  import type { Writable } from "svelte/store"
 
   import { page } from "$app/stores"
 
-  import { getUsers } from "$lib/stores"
+  import { allUsers } from "$lib/stores"
   import type { User } from "$lib/types/user"
+  import { UserLevel } from "$lib/types/user"
 
   export let value: User | number
-
-  let users: Writable<User[]>
+  export let required = false
+  export let extraUserIDs: number[] = []
 
   onMount(async () => {
-    users = await getUsers($page.data.urqlClient)
-    if (typeof value === "number") value = $users.find(u => u.id === value)
+    if (typeof value === "number") value = $allUsers.find(u => u.id === value) ?? -1
   })
+
+  let showEverybody = false
 </script>
 
 <Select
-  {...$$props}
   {VirtualList}
   bind:value
-  getOptionLabel={o => `${o.full_name} (<b>${o.username}</b>)`}
+  getOptionLabel={(o, ftxt) =>
+    $page.data.user.level === !showEverybody && UserLevel.ADMINISTRATOR && o.isCreator
+      ? `Fetch all users, to find <b>"${ftxt}"</b>..`
+      : o.username
+      ? `${o.full_name} (<b>${o.username}</b>)`
+      : `Can't find <b>"${ftxt}"</b>..`}
   getSelectionLabel={o => `${o.full_name} (<b>${o.username}</b>)`}
-  items={$users}
+  items={$allUsers.filter(
+    u =>
+      showEverybody ||
+      extraUserIDs.includes(u.id) ||
+      u.groups?.some(g => ["Administrators", "Editors"].includes(g.name)),
+  )}
   optionIdentifier="id"
   placeholder={$_("User")}
   showChevron
+  inputAttributes={{ required: required && !value }}
+  isCreatable
+  on:itemCreated={() => (showEverybody = true)}
 />

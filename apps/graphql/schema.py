@@ -33,8 +33,9 @@ from apps.graphql.resolvers.deal import (
 )
 from apps.graphql.resolvers.formfields import resolve_formfields
 from apps.graphql.resolvers.generics import (
-    resolve_toggle_workflow_info_unread,
+    resolve_resolve_workflow_info,
     resolve_object_copy,
+    resolve_add_workflow_info_reply,
 )
 from apps.graphql.resolvers.investor import (
     resolve_investor,
@@ -122,7 +123,8 @@ mutation.set_field("investor_delete", resolve_investor_delete)
 
 mutation.set_field("object_copy", resolve_object_copy)
 
-mutation.set_field("toggle_workflow_info_unread", resolve_toggle_workflow_info_unread)
+mutation.set_field("resolve_workflow_info", resolve_resolve_workflow_info)
+mutation.set_field("add_workflow_info_reply", resolve_add_workflow_info_reply)
 
 schema = make_executable_schema(
     type_defs,

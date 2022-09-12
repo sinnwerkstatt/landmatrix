@@ -43,6 +43,16 @@ const config = {
       dropShadow: {
         marker: "3.5px 2.5px 0px rgba(0, 0, 0, 0.35)",
       },
+      animation: {
+        fadeToWhite: "fadeToWhite 1s ease-in-out normal forwards",
+      },
+      keyframes: theme => ({
+        fadeToWhite: {
+          "0%": { backgroundColor: theme("colors.white") },
+          "10%": { backgroundColor: theme("colors.orange.200") },
+          "100%": { backgroundColor: theme("colors.orange.50") },
+        },
+      }),
     },
   },
 

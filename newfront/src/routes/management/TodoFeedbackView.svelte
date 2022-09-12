@@ -17,29 +17,32 @@
   export let objects: Array<Deal | Investor>
   export let model: "deal" | "investor" = "deal"
 
-  $: objectsWInfo = objects.map(obj => {
-    const wfis = obj.workflowinfos as WorkflowInfo[]
-    let relevantWFI = wfis.find(
-      wfi =>
-        wfi.draft_status_before === wfi.draft_status_after &&
-        wfi.to_user?.id === $page.data.user.id,
-    )
+  $: objectsWInfo = objects
+    .map(obj => {
+      const wfis = obj.workflowinfos as WorkflowInfo[]
+      let relevantWFI = wfis.find(
+        wfi =>
+          wfi.draft_status_before === wfi.draft_status_after &&
+          wfi.to_user?.id === $page.data.user.id,
+      )
 
-    // const openReq =
-    //   d.current_draft_id === relevantWFI?.deal_version_id && d.draft_status === 1;
+      const lastReply = relevantWFI?.replies.at(-1)
+      const openReq = !lastReply || lastReply.user_id !== $page.data.user.id
 
-    return { ...obj, relevantWFI }
-  })
-  // .sort((a, b) => {
-  //   if (a.openReq && !b.openReq) return -1;
-  //   else if (b.openReq && !a.openReq) return 1;
-  //   if (!b.relevantWFI?.timestamp || !a.relevantWFI?.timestamp) return 0;
-  //   return new Date(b.relevantWFI.timestamp) - new Date(a.relevantWFI.timestamp);
-  // });
+      return { ...obj, relevantWFI, openReq }
+    })
+    .sort((a, b) => {
+      if (a.openReq && !b.openReq) return -1
+      else if (b.openReq && !a.openReq) return 1
+      if (!b.relevantWFI?.timestamp || !a.relevantWFI?.timestamp) return 0
+      return new Date(b.relevantWFI.timestamp) - new Date(a.relevantWFI.timestamp)
+    })
 </script>
 
-<table>
-  <thead>
+<table class="w-full overflow-x-auto border border-gray-700">
+  <thead
+    class="cursor-pointer items-center whitespace-nowrap bg-gray-700 p-1 pr-4 font-medium text-white"
+  >
     <tr>
       <th class="px-3 py-1" />
       <th class="px-3 py-1">Date of request</th>
@@ -61,7 +64,10 @@
   </thead>
   <tbody>
     {#each objectsWInfo as obj}
-      <tr class:font-bold={obj.openReq}>
+      <tr
+        class:font-bold={obj.openReq}
+        class="odd:bg-white even:bg-gray-100 hover:bg-gray-200"
+      >
         <td>
           {#if obj.openReq}
             <div title={$_("Open request")}>

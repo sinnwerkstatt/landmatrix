@@ -20,6 +20,7 @@
   import JSONLeaseField from "$components/Fields/Display/JSONLeaseField.svelte"
   import LengthField from "$components/Fields/Display/LengthField.svelte"
   import ManyToManyField from "$components/Fields/Display/ManyToManyField.svelte"
+  import NanoIDField from "$components/Fields/Display/NanoIDField.svelte"
   import OCIDField from "$components/Fields/Display/OCIDField.svelte"
   import PointField from "$components/Fields/Display/PointField.svelte"
   import TextField from "$components/Fields/Display/TextField.svelte"
@@ -65,9 +66,6 @@
   $: field = {
     BooleanField: BooleanField,
     DateField: DateField,
-    DecimalField: DecimalField,
-    FloatField: DecimalField,
-    IntegerField: DecimalField,
     JSONActorsField: JSONActorsField,
     JSONDateAreaChoicesField: JSONDateAreaChoicesField,
     JSONDateAreaField: JSONDateAreaField,
@@ -78,7 +76,6 @@
     ManyToManyField: ManyToManyField,
     NullBooleanField: BooleanField,
     OCIDField: OCIDField,
-    PointField: PointField,
     WorkflowInfosField: WorkflowInfosField,
   }[formfield.class]
 </script>
@@ -96,6 +93,10 @@
       <ArrayField {value} {formfield} />
     {:else if formfield.class === "TypedChoiceField"}
       <TypedChoiceField {value} {formfield} />
+    {:else if formfield.class === "PointField"}
+      <PointField {value} {formfield} />
+    {:else if formfield.class === "NanoIDField"}
+      <NanoIDField {value} {formfield} />
     {:else if ["CharField", "EmailField", "TextField", "URLField"].includes(formfield.class)}
       <TextField {value} {formfield} />
     {:else if ["DecimalField", "FloatField", "IntegerField"].includes(formfield.class)}

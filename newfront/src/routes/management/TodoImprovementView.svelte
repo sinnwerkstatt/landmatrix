@@ -4,7 +4,8 @@
   import { page } from "$app/stores"
 
   import { formfields } from "$lib/stores"
-  import type { Deal, DealWorkflowInfo } from "$lib/types/deal"
+  import type { Deal } from "$lib/types/deal"
+  import type { WorkflowInfo } from "$lib/types/generics"
   import type { Investor } from "$lib/types/investor"
 
   import DateTimeField from "$components/Fields/Display/DateTimeField.svelte"
@@ -18,21 +19,22 @@
 
   $: objectsWInfo = objects
     .map(obj => {
-      const wfis = obj.workflowinfos as DealWorkflowInfo[]
+      const wfis = obj.workflowinfos as WorkflowInfo[]
       let relevantWFI = wfis.find(
         wfi =>
           [2, 3].includes(wfi.draft_status_before) &&
           wfi.draft_status_after === 1 &&
-          wfi.from_user?.id === $page.data.user.id,
+          wfi.to_user?.id === $page.data.user.id,
       )
 
       // const openReq =
-      //  obj.current_draft_id === relevantWFI?.deal_version_id && d.draft_status === 1;
-      return { ...obj, relevantWFI } //, openReq }
+      //   d.current_draft_id === relevantWFI?.deal_version_id && d.draft_status === 1;
+
+      return { ...obj, relevantWFI }
     })
     .sort((a, b) => {
-      // if (a.openReq && !b.openReq) return -1
-      // else if (b.openReq && !a.openReq) return 1
+      //   if (a.openReq && !b.openReq) return -1;
+      //   else if (b.openReq && !a.openReq) return 1;
       if (!b.relevantWFI?.timestamp || !a.relevantWFI?.timestamp) return 0
       return new Date(b.relevantWFI.timestamp) - new Date(a.relevantWFI.timestamp)
     })

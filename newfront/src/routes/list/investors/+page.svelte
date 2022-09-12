@@ -14,7 +14,7 @@
   import { showContextBar, showFilterBar } from "$components/Data"
   import DataContainer from "$components/Data/DataContainer.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"
-  import Table from "$components/table/Table.svelte"
+  import Table from "$components/Table/Table.svelte"
 
   showContextBar.set(false)
 
@@ -22,7 +22,7 @@
     modified_at: 2,
     id: 1,
     name: 3,
-    country: 3,
+    country: 4,
     classification: 4,
     deals: 1,
   }
@@ -113,8 +113,8 @@
         : 'w-0'}"
     />
 
-    <div class="flex w-full flex-col bg-stone-100 px-4">
-      <div class="flex h-[4rem] items-center pl-2 text-lg">
+    <div class="flex h-full w-1 grow flex-col bg-stone-100 px-6 pb-6">
+      <div class="flex h-20 items-center text-lg">
         {investors?.length ?? "—"}
         {investors?.length === 1 ? $_("Investor") : $_("Investors")}
       </div>
