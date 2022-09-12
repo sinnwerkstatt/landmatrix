@@ -5,7 +5,7 @@ import type { Investor } from "$lib/types/investor"
 
 import type { PageLoad } from "./$types"
 
-export const ssr = false
+// export const ssr = false
 
 export const load: PageLoad = async ({ params, parent }) => {
   const { user, urqlClient } = await parent()

@@ -1,17 +1,63 @@
 <script lang="ts">
+  import { gql } from "@urql/svelte"
+
+  import { page } from "$app/stores"
+
   import type { WorkflowInfo as WFInfo } from "$lib/types/generics"
 
   import type { FormField } from "$components/Fields/fields"
   import ManageHeaderLogbookList from "$components/Management/ManageHeaderLogbookList.svelte"
   import WorkflowInfo from "$components/Management/WorkflowInfo.svelte"
+  import Overlay from "$components/Overlay.svelte"
 
   export let value: object
   export let formfield: FormField
   export let model: "deal" | "investor" = "deal"
+  export let objectId: number | null
 
   let showMoreInfos = false
   let moreInfos: WFInfo[] = []
-  // export default Vue.extend({
+
+  async function showMore() {
+    showMoreInfos = !showMoreInfos
+    const { data } = await $page.data.urqlClient
+      .query<
+        | { deal: { workflowinfos: WFInfo[] } }
+        | { investor: { workflowinfos: WFInfo[] } }
+      >(
+        gql`
+          query DealWFInfo($id: Int!) {
+            ${model} (id: $id, subset: UNFILTERED) {
+              id
+              workflowinfos {
+                id
+                comment
+                timestamp
+                from_user {
+                  id
+                  username
+                }
+                to_user {
+                  id
+                  username
+                }
+                draft_status_after
+                draft_status_before
+              }
+            }
+          }
+        `,
+        { id: objectId },
+      )
+      .toPromise()
+    console.log(objectId)
+    moreInfos = data.deal.workflowinfos
+  }
+
+  //     })
+  //     .then(({ data }) => (this.moreInfos = data[this.model].workflowinfos))
+  // }
+  // // export default Vue.extend({
   //   props: {
   //     formfield: { type: Object, required: true },
   //     value: { type: Array, required: true },
@@ -22,15 +68,7 @@
   //     document.removeEventListener("keydown", this.closeShowMoreEsc);
   //   },
   //   methods: {
-  //     closeShowMoreEsc(e: Event) {
-  //       if (
-  //         e instanceof MouseEvent ||
-  //         (e instanceof KeyboardEvent && e.key === "Escape")
-  //       ) {
-  //         this.showMoreInfos = false;
-  //         document.removeEventListener("keydown", this.closeShowMoreEsc);
-  //       }
-  //     },
+
   //     showMore() {
   //       if (!this.showMoreInfos) {
   //         apolloClient
@@ -71,19 +109,19 @@
   // });
 </script>
 
-<div class="workflowinfo-field" ncaclick="showMore">
+<div class="workflowinfo-field" on:click={() => showMore()}>
   <WorkflowInfo info={value[0]} />
   <div class="more-infos-anchor">
     {#if showMoreInfos}
       <div class="more-infos">
-        <div class="close-x" xxmouseup.prevent="closeShowMoreEsc">
-          <i class="lm lm-close" />
-        </div>
-        <ManageHeaderLogbookList workflowinfos={moreInfos} />
+        <div class="close-x" />
       </div>
     {/if}
   </div>
 </div>
+<Overlay visible={showMoreInfos} on:close title={`Logbook ${model} ${objectId}`}>
+  <ManageHeaderLogbookList workflowinfos={moreInfos} />
+</Overlay>
 
 <!--<style lang="scss" scoped>-->
 <!--  .workflowinfo-field {-->
