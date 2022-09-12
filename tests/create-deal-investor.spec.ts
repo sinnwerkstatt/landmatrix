@@ -254,7 +254,8 @@ test.describe.serial("deal creation tests", () => {
     await investorInput.click();
     await investorInput.fill(`${investorParentName}`);
     await investorInput.press("Enter");
-    await page.locator('[placeholder="Country"]').fill("Albania");
+    await page.click("[placeholder" + '="Country"]');
+    await page.click("text=Albania");
 
     await page.locator('select[name="classification"]').selectOption("GOVERNMENT");
     await page.locator('[placeholder="Investor homepage"]').click();
@@ -270,7 +271,8 @@ test.describe.serial("deal creation tests", () => {
     await investorInput.click();
     await investorInput.fill(`${investorChildName}`);
     await investorInput.press("Enter");
-    await page.locator('[placeholder="Country"]').fill("Albania");
+    await page.click("[placeholder" + '="Country"]');
+    await page.click("text=Albania");
 
     await page.locator('select[name="classification"]').selectOption("GOVERNMENT");
     await page.locator('[placeholder="Investor homepage"]').click();
@@ -291,7 +293,7 @@ test.describe.serial("deal creation tests", () => {
     await expect(
       page.locator('a:has-text("www.testing-child-investor.de")')
     ).toBeVisible();
-    await page.pause();
+    await expect(page.locator("text=Albania")).toBeVisible();
     //add Parent Investor to Child Investor
     await page.locator('button:has-text("Edit")').click();
     await page.locator('button:has-text("Create a new draft")').click();
