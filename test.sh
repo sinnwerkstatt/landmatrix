@@ -1,7 +1,11 @@
 #!/bin/bash
 
-# 1. this assumes a fresh empty database
-# 2. `poetry run doit initial_setup`
+# 1. Install django
+poetry install
+
+# 2. this assumes a fresh empty database
+poetry run doit initial_setup
+
 # 3. create test user:
 poetry run ./manage.py shell << E=O=F
 from django.contrib.auth import get_user_model
@@ -41,13 +45,26 @@ cd newfront
 npm install
 npm run build
 npm run preview &
-RUNSERVER_PID=$!
+APP_PID=$!
 while ! nc -z localhost 3000; do
   sleep 0.3 # wait for 3/10 of the second before check again
 done
+cd ..
 
+# 6. Start caddy
+echo "Waiting for Caddy to launch on 9000..."
+npm run caddy &
+CADDY_PID=$!
+while ! nc -z localhost 9000; do
+  sleep 0.3 # wait for 3/10 of the second before check again
+done
+
+# 7. Run tests
 npx playwright test tests
 
+kill $CADDY_PID
+kill $APP_PID
 kill $RUNSERVER_PID
+
 sleep 1
 

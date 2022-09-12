@@ -1,9 +1,13 @@
 import { expect, test } from "@playwright/test";
 
-test.use({ storageState: "tests/storageState/admin.json" });
+test.use({ storageState: "playwright-storageState.json" });
 
 async function publishNewPage(page) {
+  //ToDo: needs Fixing to delete timeout
   await page.locator("div.dropdown-toggle").first().click();
+  await page.evaluate(() => {
+    return new Promise((resolve) => setTimeout(resolve, 500));
+  });
   await Promise.all([
     page.waitForNavigation(),
     page.locator('button:has-text("Publish")').click(),
@@ -11,7 +15,9 @@ async function publishNewPage(page) {
 }
 
 test("basic cms", async ({ context, page }) => {
-  await page.goto("/map");
+  await page.goto("/");
+  await page.locator("text=Data").click();
+  await Promise.all([page.waitForNavigation(), page.locator("text=Map").click()]);
   await Promise.all([
     page.waitForNavigation(),
     page.locator('a:has-text("Map")').nth(1).click(),
@@ -52,7 +58,9 @@ test("create observatory page", async ({ context, page }) => {
   await page.locator('h3:has-text("observatory")').click();
   await page.locator("text=Add child page").click();
   await page.locator('input[name="title_en"]').fill("global");
-  await page.locator("text=Section divider").first().click();
+  await page.locator("text=Paragraph").first().click();
+  await page.locator('div[role="textbox"] div').nth(2).click();
+  await page.keyboard.type("test global child page");
   await publishNewPage(page);
   await page.locator("text=View live").first().click();
   await expect(page.locator("h3 >> nth=0")).toContainText(
@@ -106,19 +114,22 @@ test("create blog page", async ({ context, page }) => {
   await page.locator("a[title=\"Add a child page to 'Resources'\"]").click();
   await page.locator('input[name="title_en"]').fill("Blog Article");
   await page.locator('text="News"').click();
-  await page.locator("text=Section divider").click();
+  await page.locator("text=Paragraph").click();
+  await page.locator('div[role="textbox"] div').nth(2).click();
+  await page.keyboard.type("Blog Article Test Page");
   await publishNewPage(page);
   //checkout frontend
   await page.goto("/");
   await page.locator("text=Resources").click();
   await Promise.all([
-    page.waitForNavigation(),
+    page.waitForNavigation(/*{ url: 'http://localhost:3000/resources?category=news' }*/),
     page.locator("text=Resources News >> a").click(),
   ]);
   await Promise.all([
     page.waitForNavigation(),
     page.locator('a:has-text("Blog Article")').click(),
   ]);
+  await expect(page.locator("text=Blog Article Test Page")).toBeVisible();
 });
 
 test("delete pages created", async ({ context, page }) => {

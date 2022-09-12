@@ -2,13 +2,11 @@ import { test, expect } from "@playwright/test";
 import { TIMEOUT } from "dns";
 import { log } from "util";
 
-test.use({ storageState: "tests/storageState/admin.json" });
+test.use({ storageState: "playwright-storageState.json" });
 
 test.describe.serial("deal creation tests", () => {
   let dealID;
   let saveButton;
-  let investorID;
-  let ParentID;
   test("create new deal", async ({ context, page }) => {
     await page.goto("/deal/add/");
     saveButton = page.locator("text=Save");
@@ -55,6 +53,7 @@ test.describe.serial("deal creation tests", () => {
     let datefield = await page.locator(`[name=production_size]`).first();
 
     await datefield.fill("01.02.2018");
+    console.log(datefield);
     await expect(
       await datefield.evaluate(
         (x: HTMLInputElement) => !x.validity.valid && x.validity.customError
@@ -80,8 +79,8 @@ test.describe.serial("deal creation tests", () => {
     await page.locator('input[name="production_size_current"]').first().check();
     // ToDo: Testing "+"button
     //Create 2nd DateAreaField
+    await page.locator('button[name="plus_icon"]').first().click();
 
-    await page.locator('button[name="plus_icon"]').nth(1).click();
     await page.locator('input[name="production_size"]').nth(2).fill("2019");
     await page.locator('input[name="production_size"]').nth(3).fill("3000");
     //Purchase price
@@ -173,8 +172,8 @@ test.describe.serial("deal creation tests", () => {
     });
 
     let headline = await page.locator("h1");
-    await expect(headline).toContainText("Editing deal #");
-    dealID = (await headline.innerText()).replace("Editing deal #", "");
+
+    dealID = (await headline.innerText()).replace("Editing Deal #", "");
   });
 
   //CHECKOUT DEAL
@@ -255,125 +254,68 @@ test.describe.serial("deal creation tests", () => {
     await expect(page.locator('div[data-name="number"]').nth(1)).toContainText("5678");
   });
 
-  test("create investor", async ({ context, page }) => {
-    await page.goto(`deal/${dealID}`);
-    await Promise.all([
-      page.waitForNavigation(),
-      await page.locator('a:has-text("Edit")').click(),
-    ]);
-
-    //create Parent investor
-    await page.locator("text=Investor info").click();
-    const investorInput = page.locator('input[name="operating_company"]').first();
-    await investorInput.click();
-    await investorInput.fill("Parent Investor Test");
-    await investorInput.press("Enter");
-    //ToDo: select country
-    //...
-    await page.locator('select[name="classification"]').selectOption("GOVERNMENT");
-    await page.locator('[placeholder="Investor homepage"]').click();
-    await page
-      .locator('[placeholder="Investor homepage"]')
-      .fill("https://www.testing-parent-investor.de");
-    await page.locator("#investor_info >> text=Save").click();
-    ParentID = await page.locator("a[class=investor-link]").innerText();
-    ParentID = ParentID.replace("Show details for investor #", "");
-    ParentID = ParentID.replace(" Parent Investor Test", "");
-
-    //create Child investor
-    await investorInput.click();
-    await investorInput.fill("Child Investor Test");
-    await investorInput.press("Enter");
-    //ToDo: select country
-    //...
-
-    await page.locator('select[name="classification"]').selectOption("GOVERNMENT");
-    await page.locator('[placeholder="Investor homepage"]').click();
-    await page
-      .locator('[placeholder="Investor homepage"]')
-      .fill("https://www.testing-child-investor.de");
-    await page.locator("#investor_info >> text=Save").click();
-    await page.locator("text=Save").first().click();
-    investorID = await page.locator("a[class=investor-link]").innerText();
-    investorID = investorID.replace("Show details for investor #", "");
-    investorID = investorID.replace(" Child Investor Test", "");
-
-    //checkout new Investor detail page
-    // await page.locator("a[class=investor-link]").click();
-    await page.goto(`/investor/${investorID}`);
-    await expect(page.locator("h1")).toHaveText(`Child Investor Test #${investorID}`);
-    await expect(page.locator("text=Government")).toBeVisible();
-    await expect(
-      page.locator('a:has-text("www.testing-child-investor.de")')
-    ).toBeVisible();
-
-    //add Parent Investor to Child Investor
-    await page.locator('button:has-text("Edit")').click();
-    await page.locator('button:has-text("Create a new draft")').click();
-    await page.locator("text=Parent companies").click();
-    await page.reload();
-    await page.locator("text=Add Parent company").click();
-    await page.locator('[placeholder="Investor"]').click();
-    //await page.locator(`text=Parent Investor Test #${ParentID}`).click();
-    await page.keyboard.press("ArrowDown");
-    await page.keyboard.press("Enter");
-
-    //add data source to Child Investor
-    await page.locator("text=Data sources").click();
-    await page.locator("text=Add Data source").click();
-    await page.locator('select[name="type"]').selectOption("MEDIA_REPORT");
-    await page.locator('[placeholder="Publication title"]').click();
-    await page.locator('[placeholder="Publication title"]').fill("Publication Test");
-    await page.locator('[placeholder="YYYY-MM-DD"]').click();
-    await page.locator('[placeholder="YYYY-MM-DD"]').fill("2022-02-02");
-    await page.locator('[placeholder="Name"]').click();
-    await page.locator('[placeholder="Name"]').fill("William Shakespeare");
-    await page.locator("text=Save").click();
-
-    //checkout Investor Changes (WIP)
-    await page.goto(`/investor/${investorID}`);
-    await page.click('a:has-text("Involvements")');
-    // await expect(page.locator("data-name=name").first()).toHaveText(
-    //   "Parent Investor Test"
-    // );
-    await page.locator("text=Data sources").click();
-    // await expect(page.locator("h3")).toContainText("1. Data source");
-    // await expect(page.locator("text=2022-02-02")).toBeVisible();
-  });
-
-  test("delete investors", async ({ context, page }) => {
-    await page.goto(`/investor/${investorID}`);
-    await page.locator('button:has-text("Delete")').click();
-
-    await page
-      .locator("text=Please provide a comment explaining your request >> textarea")
-      .click();
-    await page
-      .locator("text=Please provide a comment explaining your request >> textarea")
-      .fill("delete Child Investor Test");
-    await Promise.all([
-      page.waitForNavigation(),
-      page.locator('button:has-text("Delete investor version")').click(),
-    ]);
-    //delete Parent Investor
-    await page.goto(`/investor/${ParentID}`);
-    await page.locator('button:has-text("Delete")').click();
-
-    await page
-      .locator("text=Please provide a comment explaining your request >> textarea")
-      .click();
-    await page
-      .locator("text=Please provide a comment explaining your request >> textarea")
-      .fill("delete Parent Investor Test");
-    await Promise.all([
-      page.waitForNavigation(),
-      page.locator('button:has-text("Delete investor version")').click(),
-    ]);
-  });
-
-  //ToDo: needs fixing:
-  // test("delete new deal", async ({ context, page }) => {
-  //    await page.goto(`deal/${dealID}`);
+  // test("create investor", async ({ context, page }) => {
+  //   saveButton = page.locator("text=Save");
+  //
+  //   await page.goto(`deal/${dealID}`);
+  //   await Promise.all([
+  //     page.waitForNavigation(),
+  //     await page.locator('a:has-text("Edit")').click(),
+  //   ]);
   //   await page.pause();
+  //   // Click text=Investor info
+  //   await page.locator("text=Investor info").click();
+  //   // assert.equal(page.url(), 'http://localhost:3000/deal/edit/4/4#investor_info');
+  //   // Click [placeholder="Investor"]
+  //   await page.locator('[placeholder="Investor"]').click();
+  //   // Fill [placeholder="Investor"]
+  //   await page.locator('[placeholder="Investor"]').fill("Investor Test");
+  //   // Press Enter
+  //   await page.locator('[placeholder="Investor"]').press("Enter");
+  //   // Click [placeholder="Country"]
+  //   await page.locator('[placeholder="Country"]').click();
+  //   // Click text=No options
+  //   await page.locator("text=No options").click();
+  //   // Click [placeholder="Country"]
+  //   await page.locator('[placeholder="Country"]').click();
+  //   // Select GOVERNMENT
+  //   await page.locator('select[name="classification"]').selectOption("GOVERNMENT");
+  //   // Click [placeholder="Investor homepage"]
+  //   await page.locator('[placeholder="Investor homepage"]').click();
+  //   // Click [placeholder="Investor homepage"]
+  //   await page.locator('[placeholder="Investor homepage"]').click();
+  //   // Fill [placeholder="Investor homepage"]
+  //   await page
+  //     .locator('[placeholder="Investor homepage"]')
+  //     .fill("www.testing-investor.de");
+  //   // Click #investor_info >> text=Save
+  //   await page.locator("#investor_info >> text=Save").click();
+  //   // Click [placeholder="Investor homepage"]
+  //   await page.locator('[placeholder="Investor homepage"]').click();
+  //   // Click [placeholder="Investor homepage"]
+  //   await page.locator('[placeholder="Investor homepage"]').click();
+  //   // Click .flex.justify-center.items-center.border >> nth=0
+  //   await page.locator(".flex.justify-center.items-center.border").first().click();
+  //   // Click text=Name Country of registration/origin Classification None---------GovernmentGovern >> svg >> nth=1
+  //   await page
+  //     .locator(
+  //       "text=Name Country of registration/origin Classification None---------GovernmentGovern >> svg"
+  //     )
+  //     .nth(1)
+  //     .click();
+  //   // Click [placeholder="Investor homepage"]
+  //   await page.locator('[placeholder="Investor homepage"]').click();
+  //   // Click text=Investor homepage
+  //   await page.locator("text=Investor homepage").click();
+  //   // Click [placeholder="Investor homepage"]
+  //   await page.locator('[placeholder="Investor homepage"]').click();
+  //   // Fill [placeholder="Investor homepage"]
+  //   await page
+  //     .locator('[placeholder="Investor homepage"]')
+  //     .fill("https://www.testing-investor.de");
+  //   // Click #investor_info >> text=Save
+  //   await page.locator("#investor_info >> text=Save").click();
+  //   // Click text=Save
+  //   await page.locator("text=Save").click();
   // });
 });

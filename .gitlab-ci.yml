@@ -14,6 +14,7 @@ variables:
 
 stages:
   - test
+  - integration
   - deploy
 
 django formatting and linting:
@@ -53,6 +54,17 @@ newfront test:
     - cd newfront
     - npm ci
     - npm run test
+
+newfront integration test:
+  stage: integration
+  interruptible: true
+  services:
+    - name: postgis/postgis:12-3.2
+      alias: postgres
+  dependencies:
+    - test
+  script:
+    - ./test.sh
 
 newfront formatting and linting:
   stage: test
