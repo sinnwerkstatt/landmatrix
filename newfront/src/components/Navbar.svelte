@@ -178,7 +178,12 @@
         {#if user}
           <NavDropDown placement="right-0">
             <div slot="title" class="flex items-center gap-1 whitespace-nowrap">
-              {user.initials}
+              {user.full_name
+                ? user.full_name
+                    .split(" ")
+                    .map(x => x[0])
+                    .join("")
+                : user.username.substring(0, 2)}
               {#if user.level === UserLevel.ADMINISTRATOR}
                 <UserAstronautSolid class="inline h-4 w-4" />
               {:else if user.level === UserLevel.EDITOR}

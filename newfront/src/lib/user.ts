@@ -19,9 +19,8 @@ export async function dispatchLogin(
             error
             user {
               id
-              full_name
               username
-              initials
+              full_name
               is_authenticated
               is_impersonate
               level

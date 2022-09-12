@@ -13,16 +13,7 @@ def resolve_user(_obj, info, id=None):
         return
     if user.is_staff and not info.field_name == "me":
         user = User.objects.filter(is_staff=False).get(id=id)
-    user.full_name = (
-        f"{user.first_name} {user.last_name}".strip()
-        if (user.first_name or user.last_name)
-        else user.username
-    )
-    user.initials = (
-        f"{user.first_name[0]}{user.last_name[0]}"
-        if user.first_name and user.last_name
-        else user.username[:2]
-    )
+
     return user
 
 
@@ -49,13 +40,3 @@ user_type = ObjectType("User")
 @user_type.field("groups")
 def get_user_groups(obj: User, _info):
     return obj.groups.all()
-
-
-@user_type.field("full_name")
-def get_user_full_name(obj: User, _info):
-    full_name = (
-        f"{obj.first_name} {obj.last_name}".strip()
-        if (obj.first_name or obj.last_name)
-        else obj.username
-    )
-    return full_name

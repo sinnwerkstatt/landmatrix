@@ -14,9 +14,8 @@ async function fetchMe(urqlClient: Client) {
         query {
           me {
             id
-            full_name
             username
-            initials
+            full_name
             is_authenticated
             is_impersonate
             level

@@ -170,7 +170,7 @@
               aria-haspopup="true"
               aria-expanded="false"
             >
-              {{ user.initials }}
+              {{ user.username }}
               <i v-if="user.level === 3" class="fas fa-user-astronaut"></i>
               <i v-else-if="user.level === 2" class="fas fa-user-nurse"></i>
               <i v-else-if="user.is_impersonate" class="fa fa-user-secret"></i>

@@ -40,7 +40,6 @@ def send_comment_to_user(
 
     receiver = User.objects.get(id=to_user_id)
     subject = "[Landmatrix] " + _("New comment")
-    full_name = from_user.get_full_name()
 
     obj_desc = (
         f"deal {obj.id}"
@@ -49,10 +48,12 @@ def send_comment_to_user(
     )
 
     if comment:
-        message = _(f"{full_name} has addressed you in a comment on {obj_desc}:")
+        message = _(
+            f"{from_user.full_name} has addressed you in a comment on {obj_desc}:"
+        )
         message += "\n\n" + comment
     else:
-        message = _(f"{full_name} has updated {obj_desc}:")
+        message = _(f"{from_user.full_name} has updated {obj_desc}:")
 
     site = Site.objects.get(is_default_site=True)
 
