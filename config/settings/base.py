@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     "taggit",
     "wagtail_headless_preview",
     #   apps of the actual landmatrix project
+    "apps.accounts",
     "apps.blog",
     "apps.message",
     "apps.landmatrix",
@@ -113,6 +114,7 @@ TEMPLATES = [
     }
 ]
 
+AUTH_USER_MODEL = "accounts.User"
 LOGIN_REDIRECT_URL = "/"
 # Limit all uploads to 20MB, and data sources to 1MB
 MAX_UPLOAD_SIZE = 20971520
