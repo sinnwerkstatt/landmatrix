@@ -1,9 +1,7 @@
 from ariadne import ObjectType
+from ariadne.graphql import GraphQLError
 from django.contrib import auth
 from django.contrib.auth.models import AbstractUser
-from ariadne.graphql import GraphQLError
-
-from apps.graphql.resolvers.user_utils import get_user_role
 
 User: AbstractUser = auth.get_user_model()
 
@@ -29,9 +27,7 @@ def resolve_user(_obj, info, id=None):
 
 
 def resolve_users(_obj, info, sort):
-    current_user = info.context["request"].user
-    role = get_user_role(current_user)
-    if not role:
+    if not info.context["request"].user.level:
         raise GraphQLError(message="Not allowed")
 
     users = User.objects.filter(is_active=True).filter(
@@ -55,11 +51,6 @@ def get_user_groups(obj: User, _info):
     return obj.groups.all()
 
 
-@user_type.field("role")
-def get_user_r(obj: User, _info):
-    return get_user_role(obj)
-
-
 @user_type.field("full_name")
 def get_user_full_name(obj: User, _info):
     full_name = (
@@ -68,8 +59,3 @@ def get_user_full_name(obj: User, _info):
         else obj.username
     )
     return full_name
-
-
-user_regional_info_type = ObjectType("UserRegionalInfo")
-user_regional_info_type.set_field("country", lambda obj, info: obj.country)
-user_regional_info_type.set_field("region", lambda obj, info: obj.region)

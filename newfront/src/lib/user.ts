@@ -24,16 +24,14 @@ export async function dispatchLogin(
               initials
               is_authenticated
               is_impersonate
-              role
-              userregionalinfo {
-                country {
-                  id
-                  name
-                }
-                region {
-                  id
-                  name
-                }
+              level
+              country {
+                id
+                name
+              }
+              region {
+                id
+                name
               }
               groups {
                 id
@@ -48,27 +46,9 @@ export async function dispatchLogin(
     .toPromise()
   const login = data?.login
   if (!login) throw error(500, "weird login problems")
-  return { ...login, user: userWithLevel(login.user) }
+  return login
 }
 
-export function userWithLevel(user: User): User {
-  if (!user) return user
-  const me = { ...user }
-  const levelmap: { [key: string]: UserLevel } = {
-    Administrators: UserLevel.ADMINISTRATOR,
-    Editors: UserLevel.EDITOR,
-    Reporters: UserLevel.REPORTER,
-  }
-
-  let level = UserLevel.ANYBODY
-  if (me.groups)
-    me.groups?.forEach(g => {
-      level = Math.max(UserLevel.ANYBODY, levelmap[g.name])
-    })
-  me.level = level
-
-  return me
-}
 export async function dispatchLogout(urqlClient: Client) {
   const { data } = await urqlClient
     .mutation(

@@ -57,7 +57,6 @@ from apps.graphql.resolvers.misc import (
 from apps.graphql.resolvers.user import (
     resolve_user,
     resolve_users,
-    user_regional_info_type,
     user_type,
 )
 from apps.graphql.resolvers.user_auth import (
@@ -132,5 +131,4 @@ schema = make_executable_schema(
     query,
     mutation,
     user_type,
-    user_regional_info_type,
 )

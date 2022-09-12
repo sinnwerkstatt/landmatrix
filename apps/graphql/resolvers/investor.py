@@ -16,7 +16,6 @@ from .generics import (
     object_edit,
     object_delete,
 )
-from .user_utils import get_user_role
 
 
 # noinspection PyShadowingBuiltins
@@ -30,7 +29,6 @@ def resolve_investor(
     involvements_include_ventures: bool = True,
 ):
     user = info.context["request"].user
-    role = get_user_role(user)
 
     fields = get_fields(info, recursive=True, exclude=["__typename"])
 
@@ -60,7 +58,7 @@ def resolve_investor(
 
         if not any(
             [
-                role in ["ADMINISTRATOR", "EDITOR"],
+                user.level >= 2,
                 investor_version.created_by == user,
                 investor_version.serialized_data["draft_status"] is None
                 and investor_version.serialized_data["status"] in [2, 3],

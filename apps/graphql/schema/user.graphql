@@ -11,9 +11,12 @@ type User {
   is_staff: Boolean
   is_impersonate: Boolean
   date_joined: DateTime
-  userregionalinfo: UserRegionalInfo
+  phone: String
+  information: String
+  level: Int
+  country: Country
+  region: Region
   groups: [UserGroup]
-  role: UserRole
 }
 
 type UserGroup {
@@ -21,16 +24,3 @@ type UserGroup {
   name: String!
 }
 
-enum UserRole {
-  ADMINISTRATOR
-  EDITOR
-  REPORTER
-}
-
-type UserRegionalInfo {
-  user: User
-  phone: String
-  information: String
-  country: Country
-  region: Region
-}

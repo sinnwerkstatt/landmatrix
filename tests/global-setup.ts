@@ -3,17 +3,17 @@ import { chromium, FullConfig } from "@playwright/test";
 // https://playwright.dev/docs/test-auth#multiple-signed-in-roles
 const USERS = [
   {
-    role: "admin",
+    level: "admin",
     username: "shakespeare",
     password: "hamlet4eva",
   },
   {
-    role: "editor",
+    level: "editor",
     username: "test_editor",
     password: "love2edit",
   },
   {
-    role: "reporter",
+    level: "reporter",
     username: "test_reporter",
     password: "love2report",
   },
@@ -32,7 +32,9 @@ async function globalSetup(config: FullConfig) {
     await page.fill('text=Password >> [placeholder="Password"]', user.password);
     await page.click('button:has-text("Login")');
     await page.locator("text=Login successful.").waitFor();
-    await page.context().storageState({ path: `tests/storageState/${user.role}.json` });
+    await page
+      .context()
+      .storageState({ path: `tests/storageState/${user.level}.json` });
   }
 
   await browser.close();

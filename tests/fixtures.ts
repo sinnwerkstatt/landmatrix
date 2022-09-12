@@ -6,21 +6,21 @@ import {
   TestFixture,
 } from "@playwright/test";
 
-type Role = "reporter" | "admin" | "editor";
+type Level = "reporter" | "admin" | "editor";
 
-type RoleContexts = { [key in Role]: RoleContext };
+type LevelContexts = { [key in Level]: LevelContext };
 
-interface RoleContext {
+interface LevelContext {
   newPage: () => Promise<Page>;
   createDeal: () => Promise<number>;
   deleteDeal: (id: number) => Promise<void>;
 }
 
 const createContext =
-  (role: Role): TestFixture<RoleContext, PlaywrightWorkerArgs> =>
+  (level: Level): TestFixture<LevelContext, PlaywrightWorkerArgs> =>
   async ({ browser }, use) => {
     const context = await browser.newContext({
-      storageState: `tests/storageState/${role}.json`,
+      storageState: `tests/storageState/${level}.json`,
     });
     await use({
       newPage: () => context.newPage(),
@@ -30,7 +30,7 @@ const createContext =
     await context.close();
   };
 
-export const test = base.extend<RoleContexts>({
+export const test = base.extend<LevelContexts>({
   admin: createContext("admin"),
   editor: createContext("editor"),
   reporter: createContext("reporter"),

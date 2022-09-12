@@ -10,21 +10,19 @@ User = get_user_model()
 
 if not User.objects.filter(username='shakespeare').exists():
   will = User.objects.create_superuser('shakespeare', 'william@shakespeare.dev', 'hamlet4eva')
-  admins, _ = Group.objects.get_or_create(name="Administrators")
+  will.level = 3
   cms_editors, _ = Group.objects.get_or_create(name="CMS Global (Editors)")
-  will.groups.set([admins,cms_editors])
+  will.groups.set([cms_editors])
   will.save()
 
 if not User.objects.filter(username='test_editor').exists():
   user = User.objects.create_user('test_editor', 'editor@test.dev', 'love2edit')
-  editors, _ = Group.objects.get_or_create(name='Editors')
-  user.groups.set([editors])
+  user.level = 2
   user.save()
 
 if not User.objects.filter(username='test_reporter').exists():
   user = User.objects.create_user('test_reporter', 'reporter@test.dev', 'love2report')
-  reporters, _ = Group.objects.get_or_create(name='Reporters')
-  user.groups.set([reporters])
+  user.level = 1
   user.save()
 E=O=F
 

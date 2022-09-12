@@ -20,11 +20,16 @@
 
   const languages = { en: "English", es: "Español", fr: "Français", ru: "Русский" }
   const dataLinks = [
-    { name: "Map", href: "/map" },
-    { name: "Deals", href: "/list/deals" },
-    { name: "Investors", href: "/list/investors" },
-    { name: "Charts", href: "/charts" },
+    { name: $_("Map"), href: "/map" },
+    { name: $_("Deals"), href: "/list/deals" },
+    { name: $_("Investors"), href: "/list/investors" },
+    { name: $_("Charts"), href: "/charts" },
   ]
+  const levels = {
+    1: $_("Reporter"),
+    2: $_("Editor"),
+    3: $_("Administrator"),
+  }
 
   let observatoriesGroups = { global: [], regions: [], countries: [] }
   $observatoryPages.forEach((op: ObservatoryPage) => {
@@ -84,7 +89,7 @@
             {#each dataLinks as { name, href }}
               <li class="whitespace-nowrap">
                 <a {href} class="nav-link">
-                  {$_(name)}
+                  {name}
                 </a>
               </li>
             {/each}
@@ -191,7 +196,7 @@
               <p class="mb-2 whitespace-nowrap pt-2 pl-2 leading-5 text-gray-400">
                 {user.full_name}
                 <br />
-                <small>{user?.role ? $_(user?.role) : ""}</small>
+                <small>{user.level ? levels[user.level] : ""}</small>
               </p>
 
               {#if user.is_impersonate}

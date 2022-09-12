@@ -1,7 +1,7 @@
 import { test } from "./fixtures";
 import { expect } from "@playwright/test";
 
-test.describe("Roles", () => {
+test.describe("Levels", () => {
   let adminDealId: number;
   let editorDealId: number;
   let reporterDealId: number;

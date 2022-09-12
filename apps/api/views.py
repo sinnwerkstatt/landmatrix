@@ -8,7 +8,12 @@ import zipfile
 from django.contrib.auth import get_user_model
 from django.db import connection
 from django.db.models import Q, F
-from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
+from django.http import (
+    JsonResponse,
+    HttpResponse,
+    HttpResponseBadRequest,
+    HttpResponseServerError,
+)
 from django.shortcuts import render
 from django.utils import timezone
 from django.views import View
@@ -105,11 +110,10 @@ class Management(View):
         # TODO should admins see all?
         # user_groups = list(request.user.groups.values_list("name", flat=True))
         region_or_country = Q()
-        if hasattr(request.user, "userregionalinfo"):
-            if country := request.user.userregionalinfo.country:
-                region_or_country |= Q(country=country)
-            if region := request.user.userregionalinfo.region:
-                region_or_country |= Q(country__region=region)
+        if country_id := request.user.country_id:
+            region_or_country |= Q(country_id=country_id)
+        if region_id := request.user.region_id:
+            region_or_country |= Q(country__region_id=region_id)
 
         return {
             "todo_feedback": {
@@ -198,6 +202,9 @@ class Management(View):
         }
 
     def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return HttpResponseServerError("unauthorized")
+
         is_deal = not request.GET.get("model") == "investor"
         Obj = Deal if is_deal else Investor
         filters = self.filters(request, is_deal)

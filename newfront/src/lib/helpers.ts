@@ -26,7 +26,7 @@ export function newNanoid(existingIDs: string[] = []): string {
 export function isAuthorized(user: User, obj: Obj): boolean {
   const { id, level } = user
   switch (obj.draft_status) {
-    case null: // anybody who has a relevant role (Reporter, Editor, Admin)
+    case null: // anybody who has a relevant level (Reporter, Editor, Admin)
       return level >= UserLevel.REPORTER
     case 1: // the Reporter of the Object or Editor,Administrator
       return level >= UserLevel.EDITOR || obj.versions[0]?.created_by?.id === id

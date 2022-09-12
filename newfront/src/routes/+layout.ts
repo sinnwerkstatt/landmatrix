@@ -4,7 +4,6 @@ import { createClient, gql } from "@urql/svelte"
 import { i18nload } from "$lib/i18n/i18n"
 import { fetchBasis } from "$lib/stores"
 import type { User } from "$lib/types/user"
-import { userWithLevel } from "$lib/user"
 
 import type { LayoutLoad } from "./$types"
 
@@ -20,16 +19,14 @@ async function fetchMe(urqlClient: Client) {
             initials
             is_authenticated
             is_impersonate
-            role
-            userregionalinfo {
-              country {
-                id
-                name
-              }
-              region {
-                id
-                name
-              }
+            level
+            country {
+              id
+              name
+            }
+            region {
+              id
+              name
             }
             groups {
               id
@@ -41,7 +38,7 @@ async function fetchMe(urqlClient: Client) {
       {},
     )
     .toPromise()
-  if (data) return userWithLevel(data.me)
+  if (data) return data.me
 }
 
 export const load: LayoutLoad = async ({ fetch, data }) => {
