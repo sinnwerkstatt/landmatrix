@@ -323,7 +323,7 @@ test.describe.serial("deal creation tests", () => {
   });
 
   //delete investors
-  test.afterAll(async ({ context, page }) => {
+  test("delete all deals and investors wip", async ({ context, page }) => {
     //test("delete all", async ({ context, page }) => {
     await page.goto(`/investor/${investorID}`);
     await page.locator('button:has-text("Delete")').click();
