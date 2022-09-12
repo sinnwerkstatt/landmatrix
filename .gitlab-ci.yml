@@ -62,7 +62,8 @@ newfront integration test:
     - name: postgis/postgis:12-3.2
       alias: postgres
   dependencies:
-    - test
+    - django tests and coverage
+    - newfront test
   script:
     - ./test.sh
 
