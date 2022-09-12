@@ -10,7 +10,6 @@ LEVELMAP = {
 
 
 def forwards_func(apps, schema_editor):
-    UserRegionalInfo = apps.get_model("editor", "UserRegionalInfo")
     User = apps.get_model("accounts", "User")
     for user in User.objects.all():
         user.full_name = (
