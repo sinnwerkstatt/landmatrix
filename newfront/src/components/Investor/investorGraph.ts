@@ -11,6 +11,7 @@ import { classification_choices } from "$lib/choices"
 import type { Deal } from "$lib/types/deal"
 import type { Investor, Involvement } from "$lib/types/investor"
 import type { Classification } from "$lib/types/investor"
+import { Role } from "$lib/types/investor"
 
 cytoscape.use(cyCoseBilkent)
 cytoscape.use(cyPopper)
@@ -189,7 +190,7 @@ export const createGraphElements = (
       const investor_edge = {
         data: {
           id: `${investor.id}_${involvement.investor.id}`,
-          edge_color: involvement.role === "PARENT" ? "#72B0FD" : "#F78E8F",
+          edge_color: involvement.role === Role.PARENT ? "#72B0FD" : "#F78E8F",
           ...(involvement.involvement_type === "VENTURE"
             ? { source: investor.id, target: involvement.investor.id }
             : { source: involvement.investor.id, target: investor.id }),

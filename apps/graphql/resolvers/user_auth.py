@@ -11,8 +11,6 @@ from django.template import Template, Context
 from django.utils.http import urlsafe_base64_decode
 from django.utils.translation import gettext_lazy as _
 
-from apps.editor.models import UserRegionalInfo
-
 User: AbstractUser = auth.get_user_model()
 
 REGISTRATION_SALT = settings.SECRET_KEY
@@ -71,6 +69,8 @@ def resolve_register(
         first_name=first_name,
         last_name=last_name,
         email=email,
+        phone=phone,
+        information=information,
         is_active=False,
     )
     new_user.set_password(password)
@@ -78,7 +78,6 @@ def resolve_register(
 
     group, created = Group.objects.get_or_create(name="Reporters")
     new_user.groups.add(group)
-    UserRegionalInfo.objects.create(user=new_user, phone=phone, information=information)
 
     _send_activation_email(new_user, info.context["request"])
     return {"ok": True}

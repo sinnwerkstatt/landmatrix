@@ -551,10 +551,10 @@
         return this.$store.getters.userInGroup(["Administrators", "Editors"]);
       },
       user_region(): Region | null {
-        return this.user.userregionalinfo?.region;
+        return this.user.region;
       },
       user_country(): Country | null {
-        return this.user.userregionalinfo?.country;
+        return this.user.country;
       },
       country_options(): Country[] {
         const seen_ids = [] as number[];

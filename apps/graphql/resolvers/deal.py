@@ -15,7 +15,6 @@ from .generics import (
     object_edit,
     object_delete,
 )
-from .user_utils import get_user_role
 
 storage = DefaultStorage()
 
@@ -24,8 +23,6 @@ storage = DefaultStorage()
 def resolve_deal(_obj, info, id, version=None, subset="PUBLIC"):
     user = info.context["request"].user
     fields = get_fields(info, recursive=True, exclude=["__typename"])
-
-    role = get_user_role(user)
 
     add_versions = False
     add_workflowinfos = False
@@ -47,7 +44,7 @@ def resolve_deal(_obj, info, id, version=None, subset="PUBLIC"):
 
         if not any(
             [
-                role in ["ADMINISTRATOR", "EDITOR"],
+                user.level >= 2,
                 deal_version.created_by == user,
                 deal_version.serialized_data["is_public"]
                 and deal_version.serialized_data["draft_status"] is None
@@ -238,8 +235,7 @@ def resolve_set_confidential(
     _obj, info, id, confidential, version=None, comment=""
 ) -> bool:
     user = info.context["request"].user
-    role = get_user_role(user)
-    if not role:
+    if not user.level:
         raise GraphQLError("MISSING_AUTHORIZATION")
 
     confidential_str = "SET_CONFIDENTIAL" if confidential else "UNSET_CONFIDENTIAL"
@@ -247,7 +243,7 @@ def resolve_set_confidential(
 
     if version:
         deal_version = DealVersion.objects.get(id=version)
-        if not (deal_version.created_by == user or role in ["ADMINISTRATOR", "EDITOR"]):
+        if not (deal_version.created_by == user or user.level >= 2):
             raise GraphQLError("MISSING_AUTHORIZATION")
         deal_version.serialized_data["confidential"] = confidential
         deal_version.serialized_data["confidential_comment"] = comment
@@ -256,7 +252,7 @@ def resolve_set_confidential(
         add_object_comment("deal", user, id, version, obj_comment)
 
     else:
-        if role != "ADMINISTRATOR":
+        if user.level < 3:
             raise GraphQLError("MISSING_AUTHORIZATION")
         deal = Deal.objects.get(id=id)
         deal.confidential = confidential

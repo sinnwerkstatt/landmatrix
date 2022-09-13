@@ -69,21 +69,8 @@
       : object.draft_status === null || object.draft_status === 4
       ? $page.data.user.level === UserLevel.ADMINISTRATOR
       : isAuthorized($page.data.user, object)
-  $: isDeleted = !objectVersion && object?.status === 4
 
-  $: deleteTitle = $_(
-    objectVersion
-      ? otype === "deal"
-        ? "Delete deal version"
-        : "Delete investor version"
-      : object.status === 4
-      ? otype === "deal"
-        ? "Reactivate deal"
-        : "Reactivate investor"
-      : otype === "deal"
-      ? "Delete deal"
-      : "Delete investor",
-  )
+  $: isDeleted = !objectVersion && object.status === 4
 
   function doDelete({ detail: { comment } }): void {
     dispatch("delete", { comment })
@@ -278,28 +265,28 @@
               {/if}
             </div>
           {/if}
-          <div class="action-buttons">
+          <div class="space-y-0.5">
             {#if isEditable}
-              <div class="action-button">
-                <div class="inline-block">
+              <div class="flex items-center gap-4">
+                <div>
                   {#if !objectVersion || $page.data.user.id === object.created_by?.id}
                     <a
                       class:disabled={isOldDraft}
                       href="/{otype}/edit/{object.id}/{objectVersion ?? ''}"
-                      class="btn btn-primary"
+                      class="btn btn-primary min-w-[8rem]"
                     >
                       {$_("Edit")}
                     </a>
                   {:else}
                     <button
-                      class="btn btn-primary"
+                      class="btn btn-primary min-w-[8rem]"
                       on:click|preventDefault={() => (showNewDraftOverlay = true)}
                     >
                       {$_("Edit")}
                     </button>
                   {/if}
                 </div>
-                <div class="ml-4 inline-block italic text-black/50">
+                <div class="italic text-black/50">
                   {#if object.draft_status === 1}
                     {#if !hasActive}
                       {otype === "deal"
@@ -318,31 +305,21 @@
                 </div>
               </div>
             {/if}
-            {#if isDeletable}
-              <div class="action-button">
-                <div class="inline-block">
+            {#if !objectVersion && $page.data.user.level >= UserLevel.ADMINISTRATOR}
+              <div class="flex items-center gap-4">
+                <div>
                   <button
-                    class="btn btn-danger"
+                    class="btn btn-danger min-w-[8rem]"
                     on:click|preventDefault={() => (showDeleteOverlay = true)}
                   >
-                    {#if isDeleted}
-                      {$_("Undelete")}
-                    {:else if objectVersion && !object.draft_status}
-                      {otype === "deal" ? $_("Delete deal") : $_("Delete investor")}
-                    {:else}
-                      {$_("Delete")}
-                    {/if}
+                    {isDeleted ? $_("Undelete") : $_("Delete")}
                   </button>
                 </div>
-                <div class="ml-4 inline-block italic text-black/50">
+                <div class="italic text-black/50">
                   {#if isDeleted}
                     {otype === "deal"
                       ? $_("Reactivate this deal")
                       : $_("Reactivate this investor")}
-                  {:else if objectVersion && hasActive}
-                    {otype === "deal"
-                      ? $_("Deletes this draft version of the deal")
-                      : $_("Deletes this draft version of the investor")}
                   {:else}
                     {otype === "deal"
                       ? $_("Deletes this deal")
@@ -351,17 +328,34 @@
                 </div>
               </div>
             {/if}
-            {#if $page.data.user.level === UserLevel.ADMINISTRATOR && otype === "deal" && object.status !== 1}
-              <div class="action-button">
-                <div class="inline-block">
+            {#if objectVersion && isDeletable}
+              <div class="flex items-center gap-4">
+                <div>
                   <button
-                    class="btn btn-gray btn-sm"
+                    class="btn btn-danger min-w-[8rem]"
+                    on:click|preventDefault={() => (showDeleteOverlay = true)}
+                  >
+                    {$_("Remove")}
+                  </button>
+                </div>
+                <div class="italic text-black/50">
+                  {otype === "deal"
+                    ? $_("Completely removes this draft version of the deal")
+                    : $_("Completely removes this draft version of the investor")}
+                </div>
+              </div>
+            {/if}
+            {#if $page.data.user.level === UserLevel.ADMINISTRATOR && otype === "deal" && object.status !== 1}
+              <div class="flex items-center gap-4">
+                <div>
+                  <button
+                    class="btn btn-gray btn-sm min-w-[8rem]"
                     on:click|preventDefault={() => dispatch("copy")}
                   >
                     {$_("Copy deal")}
                   </button>
                 </div>
-                <div class="ml-4 inline-block italic text-black/50">
+                <div class="italic text-black/50">
                   {otype === "deal" ? $_("Copy this deal") : $_("Copy this investor")}
                 </div>
               </div>
@@ -400,7 +394,17 @@
   bind:visible={showDeleteOverlay}
   commentRequired
   on:submit={doDelete}
-  title={deleteTitle}
+  title={objectVersion
+    ? otype === "deal"
+      ? $_("Remove deal version")
+      : $_("Remove investor version")
+    : object.status === 4
+    ? otype === "deal"
+      ? $_("Reactivate deal")
+      : $_("Reactivate investor")
+    : otype === "deal"
+    ? $_("Delete deal")
+    : $_("Delete investor")}
 />
 
 <ManageOverlay

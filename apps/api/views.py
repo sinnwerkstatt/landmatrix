@@ -6,8 +6,14 @@ import json
 import zipfile
 
 from django.contrib.auth import get_user_model
+from django.db import connection
 from django.db.models import Q, F
-from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest
+from django.http import (
+    JsonResponse,
+    HttpResponse,
+    HttpResponseBadRequest,
+    HttpResponseServerError,
+)
 from django.shortcuts import render
 from django.utils import timezone
 from django.views import View
@@ -104,11 +110,10 @@ class Management(View):
         # TODO should admins see all?
         # user_groups = list(request.user.groups.values_list("name", flat=True))
         region_or_country = Q()
-        if hasattr(request.user, "userregionalinfo"):
-            if country := request.user.userregionalinfo.country:
-                region_or_country |= Q(country=country)
-            if region := request.user.userregionalinfo.region:
-                region_or_country |= Q(country__region=region)
+        if country_id := request.user.country_id:
+            region_or_country |= Q(country_id=country_id)
+        if region_id := request.user.region_id:
+            region_or_country |= Q(country__region_id=region_id)
 
         return {
             "todo_feedback": {
@@ -197,6 +202,9 @@ class Management(View):
         }
 
     def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return HttpResponseServerError("unauthorized")
+
         is_deal = not request.GET.get("model") == "investor"
         Obj = Deal if is_deal else Investor
         filters = self.filters(request, is_deal)
@@ -324,3 +332,59 @@ class Management(View):
         ws.append(list(data[0].keys()))
         [ws.append(list(item.values())) for item in data]
         wb.save(response)
+
+
+class CaseStatistics(View):
+    @staticmethod
+    def _counts(request):
+        country_id = request.GET.get("country")
+        region_id = request.GET.get("region")
+
+        from_clause = "FROM landmatrix_deal d"
+        where_clause = "WHERE status IN (2,3) AND is_public=True"
+
+        if country_id:
+            where_clause += f" AND country_id={country_id}"
+        elif region_id:
+            from_clause = "FROM landmatrix_deal d INNER JOIN landmatrix_country c ON (d.country_id = c.id)"
+            where_clause += f" AND c.region_id={region_id}"
+
+        cursor = connection.cursor()
+
+        cursor.execute(f"SELECT count(*) {from_clause} {where_clause}")
+        deals_public_count = cursor.fetchone()[0]
+
+        cursor.execute(
+            f"SELECT count(d.id) {from_clause} {where_clause} AND jsonb_array_length(d.datasources) > 1"
+        )
+        deals_public_multi_ds_count = cursor.fetchone()[0]
+
+        cursor.execute(
+            f"SELECT count(d.id) {from_clause}, jsonb_array_elements(d.locations) l {where_clause}"
+            f" AND l->>'level_of_accuracy' in ('EXACT_LOCATION','COORDINATES') AND l->>'areas' IS NOT NULL"
+        )
+        deals_public_high_geo_accuracy = cursor.fetchone()[0]
+
+        cursor.execute(
+            f"SELECT count(d.id) {from_clause}, jsonb_array_elements(d.locations) l {where_clause}"
+            f" AND l->>'areas' IS NOT NULL"
+        )
+        deals_public_polygons = cursor.fetchone()[0]
+
+        return JsonResponse(
+            {
+                "deals_public_count": deals_public_count,
+                "deals_public_multi_ds_count": deals_public_multi_ds_count,
+                "deals_public_high_geo_accuracy": deals_public_high_geo_accuracy,
+                "deals_public_polygons": deals_public_polygons,
+            }
+        )
+
+    def get(self, request, *args, **kwargs):
+        # is_deal = not request.GET.get("model") == "investor"
+        # Obj = Deal if is_deal else Investor
+        # filters = self.filters(request, is_deal)
+        action = request.GET.get("action")
+
+        if action == "counts":
+            return self._counts(request)

@@ -9,6 +9,7 @@
   import { getInvestorSections } from "$lib/sections"
   import type { DataSource } from "$lib/types/deal"
   import type { Investor } from "$lib/types/investor"
+  import { Role } from "$lib/types/investor"
   import { removeEmptyEntries } from "$lib/utils/data_processing"
 
   import EditField from "$components/Fields/EditField.svelte"
@@ -127,10 +128,10 @@
     </h1>
     <div class="my-5 flex items-center">
       <button
-        type="submit"
         class="btn btn-primary mx-2 flex items-center gap-2"
         class:disabled={!formChanged || savingInProgress}
         on:click={() => saveInvestor(location.hash)}
+        type="submit"
       >
         {#if savingInProgress}
           <LoadingSpinner /> {$_("Saving...")}
@@ -196,8 +197,8 @@
           model="involvement"
           modelName={$_("Parent company")}
           bind:entries={investor.investors}
-          entriesFilter={i => i.role === "PARENT"}
-          newEntryExtras={{ role: "PARENT" }}
+          entriesFilter={i => i.role === Role.PARENT}
+          newEntryExtras={{ role: Role.PARENT }}
         />
       {/if}
       {#if activeTab === "#tertiary_investors"}
@@ -233,8 +234,8 @@
 
 <ManageOverlay
   bind:visible={showReallyQuitOverlay}
-  title={$_("Quit without saving?")}
   on:submit={() => onClickClose(true)}
+  title={$_("Quit without saving?")}
 >
   <div class="font-medium">{$_("Do you really want to close the editor?")}</div>
 </ManageOverlay>

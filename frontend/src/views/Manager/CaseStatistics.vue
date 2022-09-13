@@ -350,14 +350,14 @@
           ];
           if (this.selectedCountry)
             filters.push({
-              field: "created_by.userregionalinfo.country.id",
+              field: "created_by.country.id",
               operation: "EQ",
               value: this.selectedCountry.id,
             });
 
           if (this.selectedRegion && this.selectedRegion.id !== -1)
             filters.push({
-              field: "created_by.userregionalinfo.region.id",
+              field: "created_by.region.id",
               operation: "EQ",
               value: this.selectedRegion.id,
             });
@@ -575,16 +575,13 @@
         this.selectedRegion = null;
       },
       triggerUserRegion(): void {
-        if (this.user.userregionalinfo) {
-          let uri = this.user.userregionalinfo;
-          if (uri.region.length) {
-            this.selectedRegion =
-              this.regions.find((r) => r.id === uri.region.id) || null;
-          }
-          if (uri.country.length) {
-            this.selectedCountry =
-              this.countries.find((c) => c.id === uri.country.id) || null;
-          }
+        if (this.user.region) {
+          this.selectedRegion =
+            this.regions.find((r) => r.id === this.user.region.id) || null;
+        }
+        if (this.user.country) {
+          this.selectedCountry =
+            this.countries.find((c) => c.id === this.user.country.id) || null;
         }
       },
       updateDateRange(): void {

@@ -120,34 +120,6 @@ const store = new Vuex.Store({
     setFields: (state, fields) => (state.formfields = fields),
     setLocale: (state, locale) => (state.locale = locale),
     setUser(state: PageState, user: User) {
-      let role = "No Role";
-      if (user && user.groups && user.groups.length) {
-        const groupi = user.groups
-          .map((g) => g.name)
-          .filter((name) => {
-            return (
-              ["Administrators", "Editors", "Reporters", "Admin"].indexOf(name) > -1
-            );
-          });
-
-        if (groupi.length) {
-          let ret = "";
-          if (groupi.includes("Reporters")) ret = "Reporter";
-          if (groupi.includes("Editors")) ret = "Editor";
-          if (groupi.includes("Administrators")) ret = "Administrator";
-          const uri = user.userregionalinfo;
-          if (uri) {
-            const area = [];
-            if (uri.region) area.push(uri.region.name);
-            if (uri.country) area.push(uri.country.name);
-            if (area.length) {
-              ret = `${ret} of ${area.join(", ")}`;
-            }
-          }
-          role = ret;
-        }
-        user.bigrole = role;
-      }
       state.user = user;
     },
     setCountries(state: PageState, countries: Country[]) {
@@ -261,19 +233,16 @@ const store = new Vuex.Store({
                   id
                   full_name
                   username
-                  initials
                   is_authenticated
                   is_impersonate
-                  role
-                  userregionalinfo {
-                    country {
-                      id
-                      name
-                    }
-                    region {
-                      id
-                      name
-                    }
+                  level
+                  country {
+                    id
+                    name
+                  }
+                  region {
+                    id
+                    name
                   }
                   groups {
                     id
@@ -362,15 +331,14 @@ const store = new Vuex.Store({
                     username
                     is_authenticated
                     is_impersonate
-                    userregionalinfo {
-                      country {
-                        id
-                        name
-                      }
-                      region {
-                        id
-                        name
-                      }
+                    level
+                    country {
+                      id
+                      name
+                    }
+                    region {
+                      id
+                      name
                     }
                     groups {
                       id

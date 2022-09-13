@@ -109,6 +109,7 @@
   }
 
   function deleteInvestor({ detail: { comment } }) {
+    // TODO this would be the place for issue #489
     $page.data.urqlClient
       .mutation(
         gql`

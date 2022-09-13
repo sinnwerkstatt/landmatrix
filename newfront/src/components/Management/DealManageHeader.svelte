@@ -233,7 +233,7 @@
       </span>
     {/if}
   </div>
-  <div class="flex-auto" slot="visibility">
+  <div class="mr-2 flex-shrink" slot="visibility">
     <div class="mb-2 flex items-center gap-1 text-lg">
       {#if deal.is_public}
         <EyeIcon class="h-6 w-6 text-orange" /> {$_("Publicly visible")}
