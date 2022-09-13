@@ -82,7 +82,7 @@ class Version(models.Model):
                     try:
                         edict[x.name] = x.related_model.objects.get(pk=edict[x.name])
                     except x.related_model.DoesNotExist:
-                        edict[x.name] = "~Unknown Entry~"
+                        edict[x.name] = {"id": -1, "name": "~Unknown Entry~"}
         edict["created_at"] = self.created_at
         edict["created_by"] = self.created_by
         return edict
