@@ -15,8 +15,8 @@ class User(AbstractUser):
 
     UserLevelChoices = (
         (0, "---------"),
-        (1, "Editor"),
-        (2, "Reporter"),
+        (1, "Reporter"),
+        (2, "Editor"),
         (3, "Administrator"),
     )
     level = models.IntegerField(default=0, choices=UserLevelChoices)
