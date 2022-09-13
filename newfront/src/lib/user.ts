@@ -3,7 +3,6 @@ import type { Client } from "@urql/svelte"
 import { gql } from "@urql/svelte"
 
 import type { User } from "$lib/types/user"
-import { UserLevel } from "$lib/types/user"
 
 export async function dispatchLogin(
   username: string,

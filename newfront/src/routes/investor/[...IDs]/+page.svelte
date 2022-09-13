@@ -44,7 +44,7 @@
     })),
   ]
 
-  $: activeTab = $page.url.hash || "#general"
+  $: activeTab = $page.url.hash.split("/")[0] || "#general"
 
   $: tabs = [
     { target: "#general", name: $_("General info") },

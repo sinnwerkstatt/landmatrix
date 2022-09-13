@@ -3,7 +3,7 @@
 
   import type { FormField } from "$components/Fields/fields"
 
-  export let value: { lat: number; lng: number }
+  export let value: number
   export let formfield: FormField
 </script>
 
