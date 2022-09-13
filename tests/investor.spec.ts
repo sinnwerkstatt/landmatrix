@@ -8,7 +8,7 @@ test.describe.serial("investor creation tests", () => {
   let tertaryID;
   test("create parent investor", async ({ context, page }) => {
     await page.goto("/investor/add/");
-
+    await page.pause();
     await page.locator('[placeholder="Name"]').fill("MomCorp");
     await page.locator("text=Select option Afghanistan >> div").nth(1).click();
     await page.locator('[placeholder="Select option"]').fill("united states");
