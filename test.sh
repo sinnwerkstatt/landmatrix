@@ -1,9 +1,18 @@
 #!/bin/bash
 
 # 1. Start test environment
-concurrently npm:backend npm:frontend npm:caddy > /dev/null &
+concurrently npm:backend npm:frontend npm:caddy &
 PID=$!
-sleep 2
+
+while ! nc -z localhost 8000; do
+  sleep 0.3 # wait for 3/10 of the second before check again
+done
+while ! nc -z localhost 9000; do
+  sleep 0.3 # wait for 3/10 of the second before check again
+done
+while ! nc -z localhost 3000; do
+  sleep 0.3 # wait for 3/10 of the second before check again
+done
 
 # 2. create test user:
 poetry run ./manage.py shell << E=O=F

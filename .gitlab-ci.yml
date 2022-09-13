@@ -64,6 +64,7 @@ newfront integration test:
     - npm ci
     - npm run backend:init
     - npm run frontend:init
+    - npm run test:init
     - npm run test
 
 newfront formatting and linting:

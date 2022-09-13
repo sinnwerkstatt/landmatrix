@@ -5,6 +5,7 @@
     "backend": "poetry run ./manage.py runserver",
     "frontend:init": "cd newfront && npm install && npm run build",
     "frontend": "cd newfront && npm run preview",
+    "test:init": "playwright install chromium",
     "test": "./test.sh",
     "caddy": "caddy run"
   },
