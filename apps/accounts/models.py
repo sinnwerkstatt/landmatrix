@@ -8,6 +8,9 @@ class User(AbstractUser):
     full_name = models.CharField(max_length=300, blank=True)
     phone = models.CharField(max_length=255, blank=True)
     information = models.TextField(blank=True)
+
+    email_confirmed = models.BooleanField(default=False)
+
     country = models.ForeignKey(
         Country, blank=True, null=True, on_delete=models.PROTECT
     )

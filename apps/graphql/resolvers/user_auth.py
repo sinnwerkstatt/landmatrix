@@ -2,7 +2,7 @@ import requests
 from django.conf import settings
 from django.contrib import auth
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
-from django.contrib.auth.models import AbstractUser, Group
+from django.contrib.auth.models import Group
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
 from django.core import signing
@@ -11,7 +11,9 @@ from django.template import Template, Context
 from django.utils.http import urlsafe_base64_decode
 from django.utils.translation import gettext_lazy as _
 
-User: AbstractUser = auth.get_user_model()
+from apps.accounts.models import User as UserType
+
+User: UserType = auth.get_user_model()
 
 REGISTRATION_SALT = settings.SECRET_KEY
 
@@ -95,9 +97,9 @@ def resolve_register_confirm(_obj, _info, activation_key):
     except signing.BadSignature:
         return {"ok": False, "code": "invalid_key"}
     user = User.objects.get(username=username)
-    if user.is_active:
+    if user.email_confirmed or user.is_active:
         return {"ok": False, "code": "already_activated"}
-    user.is_active = True
+    user.email_confirmed = True
     user.save()
     return {"ok": True, "user": user}
 
