@@ -1,12 +1,11 @@
 #!/bin/bash
 
-# 1. Install django
-poetry install
+# 1. Start test environment
+concurrently npm:backend npm:frontend npm:caddy > /dev/null &
+PID=$!
+sleep 2
 
-# 2. this assumes a fresh empty database
-poetry run doit initial_setup
-
-# 3. create test user:
+# 2. create test user:
 poetry run ./manage.py shell << E=O=F
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
@@ -30,41 +29,12 @@ if not User.objects.filter(username='test_reporter').exists():
   user.save()
 E=O=F
 
-# 4. Start Django
-echo "Waiting for Django to launch on 8000..."
-poetry run ./manage.py runserver &
-RUNSERVER_PID=$!
-while ! nc -z localhost 8000; do
-  sleep 0.3 # wait for 3/10 of the second before check again
-done
-echo "Django launched"
+# 3. Run tests
+npx playwright test tests/login.spec.ts
+#npx playwright test tests/roles.spec.ts
+#npx playwright test tests/workflow.spec.ts
 
-# 5. Start svelte vite
-echo "Waiting for Svelte to launch on 3000..."
-cd newfront
-npm install
-npm run build
-npm run preview &
-APP_PID=$!
-while ! nc -z localhost 3000; do
-  sleep 0.3 # wait for 3/10 of the second before check again
-done
-cd ..
-
-# 6. Start caddy
-echo "Waiting for Caddy to launch on 9000..."
-npm run caddy &
-CADDY_PID=$!
-while ! nc -z localhost 9000; do
-  sleep 0.3 # wait for 3/10 of the second before check again
-done
-
-# 7. Run tests
-npx playwright test tests
-
-kill $CADDY_PID
-kill $APP_PID
-kill $RUNSERVER_PID
-
-sleep 1
+# 4. Cleanup
+kill $PID
+sleep 2
 
