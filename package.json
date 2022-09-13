@@ -1,12 +1,9 @@
 {
   "scripts": {
     "start": "concurrently npm:backend npm:frontend npm:caddy",
-    "backend:init": "poetry install && poetry run doit initial_setup",
     "backend": "poetry run ./manage.py runserver",
-    "frontend:init": "cd newfront && npm install && npm run build",
     "frontend": "cd newfront && npm run preview",
-    "test:init": "playwright install chromium",
-    "test": "./test.sh",
+    "test": "DATABASE_URL=postgis://landmatrix:landmatrix@localhost/playwright_test ./test.sh",
     "caddy": "caddy run"
   },
   "devDependencies": {

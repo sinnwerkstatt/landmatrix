@@ -54,18 +54,15 @@ newfront test:
     - npm ci
     - npm run test
 
-newfront integration test:
-  stage: test
-  interruptible: true
-  services:
-    - name: postgis/postgis:12-3.2
-      alias: postgres
-  script:
-    - npm ci
-    - npm run backend:init
-    - npm run frontend:init
-    - npm run test:init
-    - npm run test
+#newfront integration test:
+#  stage: test
+#  interruptible: true
+#  services:
+#    - name: postgis/postgis:12-3.2
+#      alias: postgres
+#  script:
+#    - npm ci
+#    - npm run test
 
 newfront formatting and linting:
   stage: test

@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test.use({ storageState: "playwright-storageState.json" });
+test.use({ storageState: "tests/storageState/admin.json" });
 
 async function publishNewPage(page) {
   //ToDo: needs Fixing to delete timeout
