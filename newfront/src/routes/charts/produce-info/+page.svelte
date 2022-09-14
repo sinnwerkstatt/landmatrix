@@ -22,15 +22,17 @@
     },
   })
   onMount(() => showContextBar.set(true))
+
+  const title = $_("Produce Info Map")
 </script>
 
 <svelte:head>
-  <title>{$_("Produce Info Map")} | {$_("Land Matrix")}</title>
+  <title>{title} | {$_("Land Matrix")}</title>
 </svelte:head>
 
 <ChartsContainer>
   <div slot="ContextBar">
-    <h2>{$_("Produce Info Map")}</h2>
+    <h2>{title}</h2>
     <div>{@html $chartDescriptions?.produce_info_map}</div>
   </div>
   <div class="mt-20 h-5/6 w-5/6">
@@ -39,7 +41,7 @@
     {:else if $deals.error}
       <p>Error...{$deals.error.message}</p>
     {:else}
-      <ProduceInfoMap deals={$deals.data.deals} />
+      <ProduceInfoMap deals={$deals.data.deals} {title} />
     {/if}
   </div>
 </ChartsContainer>
