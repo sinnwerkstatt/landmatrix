@@ -13,8 +13,10 @@
 
   ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale)
 
+  export let title: string
   export let data: ChartData<"pie", number[], string>
   export let unit = ""
+  export let chart: ChartJS
 
   $: totals = data.datasets.map(dSet => dSet.data.reduce((sum, value) => sum + value))
   let i18nData: ChartData<"pie", number[], string>
@@ -48,4 +50,4 @@
 
 <!--svelte plugin for IntelliJ cannot index props for SvelteComponentTyped-->
 <!--https://github.com/tomblachut/svelte-intellij/issues/206-->
-<Pie data={i18nData} {options} />
+<Pie bind:chart data={i18nData} {options} />

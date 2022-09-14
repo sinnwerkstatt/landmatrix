@@ -7,7 +7,7 @@
   import { createNegotiationStatusChartData } from "$lib/data/charts/negotiationStatusGroup"
   import type { Deal } from "$lib/types/deal"
 
-  import StatusPieChart from "$components/StatusPieChart.svelte"
+  import DownloadablePieChart from "./DownloadablePieChart.svelte"
 
   export let deals: Deal[] = []
   export let displayDealsCount = false
@@ -27,21 +27,24 @@
 
 <div>
   <div class="grid grid-cols-2 grid-rows-2 gap-4">
-    <div>
-      <h2>{$_("Intention of investment")}</h2>
-      <StatusPieChart data={chartIoI} {unit} />
-    </div>
-    <div>
-      <h2>{$_("Investment in agriculture")}</h2>
-      <StatusPieChart data={chartIoIAgriculture} {unit} />
-    </div>
-    <div>
-      <h2>{$_("Implementation status")}</h2>
-      <StatusPieChart data={chartImpStat} {unit} />
-    </div>
-    <div>
-      <h2>{$_("Negotiation status")}</h2>
-      <StatusPieChart data={chartNegStat} {unit} />
-    </div>
+    <DownloadablePieChart
+      title={$_("Intention of investment")}
+      data={chartIoI}
+      {unit}
+    />
+
+    <DownloadablePieChart
+      title={$_("Investment in agriculture")}
+      data={chartIoIAgriculture}
+      {unit}
+    />
+
+    <DownloadablePieChart
+      title={$_("Implementation status")}
+      data={chartImpStat}
+      {unit}
+    />
+
+    <DownloadablePieChart title={$_("Negotiation status")} data={chartNegStat} {unit} />
   </div>
 </div>
