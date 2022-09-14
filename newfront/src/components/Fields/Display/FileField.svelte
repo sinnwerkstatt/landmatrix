@@ -8,7 +8,7 @@
   export let fileNotPublic = false
 </script>
 
-<div class="file_field" data-name={formfield.name}>
+<div class="file_field" data-name={formfield ? formfield.name : ""}>
   {#if value}
     <a href="{import.meta.env.VITE_MEDIA_URL}{value}" target="_blank">
       {#if fileNotPublic}

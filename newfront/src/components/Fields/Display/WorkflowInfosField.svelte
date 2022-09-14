@@ -71,7 +71,11 @@
   // });
 </script>
 
-<div class="workflowinfo-field" ncaclick="showMore">
+<div
+  class="workflowinfo-field"
+  ncaclick="showMore"
+  data-name={formfield ? formfield.name : ""}
+>
   <WorkflowInfo info={value[0]} />
   <div class="more-infos-anchor">
     {#if showMoreInfos}

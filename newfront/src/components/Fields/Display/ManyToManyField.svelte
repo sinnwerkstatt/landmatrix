@@ -11,7 +11,7 @@
   export let value: ForeignKey
 </script>
 
-<div class="manytomany_field">
+<div class="manytomany_field" data-name={formfield ? formfield.name : ""}>
   {#if formfield.related_model === "Investor"}
     {#each value as val}
       <a class="investor" target="_blank" href="/investor/{value.id}">
