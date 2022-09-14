@@ -12,12 +12,17 @@
     NegotiationStatusGroup,
   } from "$lib/types/deal"
 
-  import CountryProfileChartWrapper from "./CountryProfileChartWrapper.svelte"
+  import ChartWrapper from "$components/Data/Charts/ChartWrapper.svelte"
+  import { downloadImage } from "$components/Data/Charts/utils"
+  import type { DownloadEvent } from "$components/Data/Charts/utils"
+
   import { LSLAByNegotiation, LSLAData } from "./lsla_by_negotiation"
 
   export let deals: Deal[] = []
 
+  // Large Scale Land Acquisitions
   let title = $_("LSLA by negotiation status")
+  let svgComp: SVGElement
   let svg = new LSLAByNegotiation()
 
   let pots: { [key: string]: LSLAData } = {}
@@ -88,32 +93,27 @@
         (pots[ngrp] as LSLAData).add(d.current_contract_size, d.intended_size)
     })
 
-    svg.do_the_graph("#lslabyneg", Object.values(pots))
+    svg.do_the_graph(svgComp, Object.values(pots))
   }
 
-  onMount(() => svg.do_the_graph("#lslabyneg", Object.values(pots)))
+  const handleDownload = (event: DownloadEvent) => {
+    const fileType = event.detail
 
-  function downloadJSON() {
-    // let data =
-    //   "data:application/json;charset=utf-8," +
-    //   encodeURIComponent(JSON.stringify(this.payload, null, 2));
-    // a_download(data, fileName(this.title, ".json"));
+    switch (fileType) {
+      case "json":
+        return // TODO
+      case "csv":
+        return // TODO
+      default:
+        return downloadImage(svgComp, fileType, title)
+    }
   }
 
-  function downloadCSV() {
-    // const csv = dynamics_csv(this.payload);
-    // let data = "data:text/csv;charset=utf-8," + encodeURIComponent(csv);
-    // a_download(data, fileName(this.title, ".csv"));
-  }
+  onMount(() => svg.do_the_graph(svgComp, Object.values(pots)))
 </script>
 
-<CountryProfileChartWrapper
-  svgID="lslabyneg"
-  {title}
-  on:downloadJSON={downloadJSON}
-  on:downloadCSV={downloadCSV}
->
-  <svg id="lslabyneg" />
-
-  <!--    <template slot="legend"> Legende </template>-->
-</CountryProfileChartWrapper>
+<ChartWrapper {title} on:download={handleDownload}>
+  <svg id="lsla-by-negotiation-chart" bind:this={svgComp} />
+  <!--  TODO:-->
+  <!--  <div slot="legend" />-->
+</ChartWrapper>

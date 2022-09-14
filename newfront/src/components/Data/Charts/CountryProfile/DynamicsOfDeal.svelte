@@ -7,15 +7,23 @@
   import { classification_choices } from "$lib/choices"
   import type { Deal } from "$lib/types/deal"
 
-  import { a_download, fileName } from "../utils"
-  import CountryProfileChartWrapper from "./CountryProfileChartWrapper.svelte"
-  import { dynamics_csv, DynamicsOfDeal } from "./dynamics_of_deal"
+  import ChartWrapper from "$components/Data/Charts/ChartWrapper.svelte"
+  import {
+    downloadCSV,
+    downloadImage,
+    downloadJSON,
+  } from "$components/Data/Charts/utils"
+  import type { DownloadEvent } from "$components/Data/Charts/utils"
+
+  import { DynamicsOfDeal, toCSV, toJSON } from "./dynamics_of_deal"
   import type { DynamicsDataPoint } from "./dynamics_of_deal"
 
   const title = $_("Dynamics of deal by investor type")
-  const svg = new DynamicsOfDeal()
+  const dynamicOfDeal = new DynamicsOfDeal()
 
   export let deals: Deal[] = []
+
+  let svgComp: SVGElement
 
   let multideals = 0
   let payload: DynamicsDataPoint[] = []
@@ -37,31 +45,27 @@
       value: v,
     }))
 
-    svg.do_the_graph("#dynamicsofdeal", payload)
+    dynamicOfDeal.do_the_graph(svgComp, payload)
   }
 
-  onMount(() => svg.do_the_graph("#dynamicsofdeal", payload))
+  const handleDownload = (event: DownloadEvent) => {
+    const fileType = event.detail
 
-  function downloadJSON() {
-    let data =
-      "data:application/json;charset=utf-8," +
-      encodeURIComponent(JSON.stringify(payload, null, 2))
-    a_download(data, fileName(title, ".json"))
+    switch (fileType) {
+      case "json":
+        return downloadJSON(toJSON(payload), title)
+      case "csv":
+        return downloadCSV(toCSV(payload), title)
+      default:
+        return downloadImage(svgComp, fileType, title)
+    }
   }
-  function downloadCSV() {
-    const csv = dynamics_csv(payload)
-    let data = "data:text/csv;charset=utf-8," + encodeURIComponent(csv)
-    a_download(data, fileName(title, ".csv"))
-  }
+
+  onMount(() => dynamicOfDeal.do_the_graph(svgComp, payload))
 </script>
 
-<CountryProfileChartWrapper
-  svgID="dynamicsofdeal"
-  {title}
-  on:downloadJSON={downloadJSON}
-  on:downloadCSV={downloadCSV}
->
-  <svg id="dynamicsofdeal" />
+<ChartWrapper {title} on:download={handleDownload}>
+  <svg id="dynamics-of-deal-chart" bind:this={svgComp} />
 
   <div slot="legend">
     {$_(
@@ -69,4 +73,4 @@
       { values: { number: multideals } },
     )}
   </div>
-</CountryProfileChartWrapper>
+</ChartWrapper>

@@ -52,11 +52,11 @@ export class LSLAByNegotiation {
   constructor() {
     this.$t = get(t)
   }
-  do_the_graph(selector: string, data: LSLAData[]): void {
-    const elem = document.querySelector(selector)
-    if (elem) elem.innerHTML = ""
+  do_the_graph(svgElement: SVGElement, data: LSLAData[]): void {
+    if (!svgElement) return
+    select(svgElement).selectAll("*").remove() // clear
 
-    const svg = select(selector)
+    const svg = select(svgElement)
       // there is a little extra padding at the bottom (+ 10)
       .attr("viewBox", `0 0 ${this.width + 20} ${this.height + 20 + 10 + 24}`)
       .attr("height", "100%")
