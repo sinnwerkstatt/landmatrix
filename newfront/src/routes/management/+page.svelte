@@ -348,6 +348,7 @@
           slot="field"
           let:fieldName
           let:obj
+          objectId={obj.id}
           wrapperClasses=""
           valueClasses=""
           fieldname={fieldName}

@@ -46,6 +46,7 @@
   export let fileNotPublic = false
   export let targetBlank = false
   export let objectVersion: number | undefined = undefined
+  export let objectId: number | undefined = undefined
 
   //   visible: { type: Boolean, default: true },
 
@@ -109,7 +110,7 @@
     {:else if formfield.class === "FileField"}
       <FileField {value} {formfield} {fileNotPublic} />
     {:else if field}
-      <svelte:component this={field} {value} {model} {formfield} />
+      <svelte:component this={field} {value} {model} {objectId} {formfield} />
       <!--  old Vue -->
       <!--      :object-id="objectId"-->
       <!--      :object-version="objectVersion"-->
