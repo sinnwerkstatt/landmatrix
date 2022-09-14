@@ -5,28 +5,21 @@
 
   import { loading } from "$lib/stores"
 
+  import type { FileType } from "$components/Data/Charts/utils"
   import FileCodeIcon from "$components/icons/FileCodeIcon.svelte"
   import FileImageIcon from "$components/icons/FileImageIcon.svelte"
   import LoadingPulse from "$components/LoadingPulse.svelte"
 
-  import { chart_download, fileName } from "../utils"
-
   export let title: string
-  export let svgID: string
+  export let wrapperClasses = ""
 
-  const dispatch = createEventDispatcher()
+  const dispatch = createEventDispatcher<{ download: FileType }>()
   $: isChrome = browser && /Google Inc/.test(navigator.vendor)
-
-  function downloadImage(filetype: string) {
-    chart_download(
-      document.getElementById(svgID),
-      `image/${filetype}`,
-      fileName(title, `.${filetype}`),
-    )
-  }
 </script>
 
-<div class="mx-4 my-12 flex flex-col flex-nowrap bg-orange-50 p-1 drop-shadow">
+<div
+  class="mx-4 my-12 flex flex-col flex-nowrap bg-orange-50 p-1 drop-shadow {wrapperClasses}"
+>
   <slot name="heading">
     <h2>{title}</h2>
   </slot>
@@ -41,7 +34,7 @@
     <slot />
   </div>
   <div class="bg-[#2d2d2d] text-sm text-lm-light">
-    <button on:click={() => downloadImage("svg")} class="px-3 pb-1">
+    <button on:click={() => dispatch("download", "svg")} class="px-3 pb-1">
       <FileImageIcon />
       SVG
     </button>
@@ -52,7 +45,7 @@
       <button
         class="px-3 pb-1"
         class:use-chrome={!isChrome}
-        on:click={() => downloadImage("png")}
+        on:click={() => dispatch("download", "png")}
       >
         <FileImageIcon />
         PNG
@@ -68,18 +61,18 @@
       <button
         class="px-3 pb-1"
         class:use-chrome={!isChrome}
-        on:click={() => downloadImage("webp")}
+        on:click={() => dispatch("download", "webp")}
       >
         <FileImageIcon /> WebP
       </button>
     </span>
 
     <span style="margin: 2rem 0">|</span>
-    <button class="px-3 pb-1" on:click={() => dispatch("downloadJSON")}>
+    <button class="px-3 pb-1" on:click={() => dispatch("download", "json")}>
       <FileCodeIcon />
       JSON
     </button>
-    <button class="px-3 pb-1" on:click={() => dispatch("downloadCSV")}>
+    <button class="px-3 pb-1" on:click={() => dispatch("download", "csv")}>
       <FileCodeIcon />
       CSV
     </button>
