@@ -1,6 +1,5 @@
+import { createInvestorName } from "./utils";
 import { test, expect } from "@playwright/test";
-import { TIMEOUT } from "dns";
-import { log } from "util";
 
 test.use({ storageState: "tests/storageState/admin.json" });
 
@@ -9,11 +8,9 @@ test.describe.serial("deal creation tests", () => {
   let saveButton;
   let investorID;
   let ParentID;
-  const random = (length = 8) => {
-    return Math.random().toString(16).substr(2, length);
-  };
-  let investorChildName = random(10);
-  let investorParentName = random(10);
+
+  let investorChildName = createInvestorName();
+  let investorParentName = createInvestorName();
 
   test("create new deal", async ({ context, page }) => {
     await page.goto("/deal/add/");
@@ -345,11 +342,5 @@ test.describe.serial("deal creation tests", () => {
       .fill("delete Parent investor");
 
     await page.click('button:has-text("Delete investor version")');
-
-    //test redirekt after investor has been deleted
-
-    //ToDo: Fix Delete Deal
-    //     await page.goto(`/deal/${dealID}`);
-    // await page.pause();
   });
 });
