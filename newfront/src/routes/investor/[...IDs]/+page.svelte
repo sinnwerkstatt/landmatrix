@@ -9,7 +9,7 @@
   import { loading } from "$lib/stores"
   import { Role } from "$lib/types/investor"
   import type { Investor } from "$lib/types/investor"
-  import { UserLevel } from "$lib/types/user"
+  import { UserRole } from "$lib/types/user"
 
   import DealSubmodelSection from "$components/Deal/DealSubmodelSection.svelte"
   import DateTimeField from "$components/Fields/Display/DateTimeField.svelte"
@@ -84,7 +84,7 @@
 </svelte:head>
 
 <div class="container mx-auto min-h-full px-2 pb-12">
-  {#if $page.data.user?.level > UserLevel.ANYBODY}
+  {#if $page.data.user?.role > UserRole.ANYBODY}
     <InvestorManageHeader
       {investor}
       investorVersion={data.investorVersion}

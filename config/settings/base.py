@@ -118,7 +118,7 @@ TEMPLATES = [
 AUTH_USER_MODEL = "accounts.User"
 WAGTAIL_USER_EDIT_FORM = "apps.accounts.forms.CustomUserEditForm"
 WAGTAIL_USER_CREATION_FORM = "apps.accounts.forms.CustomUserCreationForm"
-WAGTAIL_USER_CUSTOM_FIELDS = ["level", "country", "region"]
+WAGTAIL_USER_CUSTOM_FIELDS = ["role", "country", "region"]
 
 LOGIN_REDIRECT_URL = "/"
 # Limit all uploads to 20MB, and data sources to 1MB

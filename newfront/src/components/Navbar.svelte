@@ -5,7 +5,7 @@
   import { page } from "$app/stores"
 
   import { aboutPages, blogCategories, fetchBasis, observatoryPages } from "$lib/stores"
-  import { UserLevel } from "$lib/types/user"
+  import { UserRole } from "$lib/types/user"
   import type { ObservatoryPage } from "$lib/types/wagtail"
   import { dispatchLogout } from "$lib/user"
 
@@ -25,11 +25,7 @@
     { name: $_("Investors"), href: "/list/investors" },
     { name: $_("Charts"), href: "/charts" },
   ]
-  const levels = {
-    1: $_("Reporter"),
-    2: $_("Editor"),
-    3: $_("Administrator"),
-  }
+  const roles = { 1: $_("Reporter"), 2: $_("Editor"), 3: $_("Administrator") }
 
   let observatoriesGroups = { global: [], regions: [], countries: [] }
   $observatoryPages.forEach((op: ObservatoryPage) => {
@@ -184,9 +180,9 @@
                     .map(x => x[0])
                     .join("")
                 : user.username.substring(0, 2)}
-              {#if user.level === UserLevel.ADMINISTRATOR}
+              {#if user.role === UserRole.ADMINISTRATOR}
                 <UserAstronautSolid class="inline h-4 w-4" />
-              {:else if user.level === UserLevel.EDITOR}
+              {:else if user.role === UserRole.EDITOR}
                 <UserNurseSolid class="inline h-4 w-4" />
               {:else if user.is_impersonate}
                 <UserSecretSolid class="inline h-4 w-4" />
@@ -201,7 +197,7 @@
               <p class="mb-2 whitespace-nowrap pt-2 pl-2 leading-5 text-gray-400">
                 {user.full_name}
                 <br />
-                <small>{user.level ? levels[user.level] : ""}</small>
+                <small>{user.role ? roles[user.role] : ""}</small>
               </p>
 
               {#if user.is_impersonate}

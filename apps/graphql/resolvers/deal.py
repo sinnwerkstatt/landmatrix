@@ -5,6 +5,7 @@ from ariadne.graphql import GraphQLError
 from django.contrib.gis.geos import Point
 from django.core.files.storage import DefaultStorage
 
+from apps.accounts.models import UserRole
 from apps.graphql.tools import get_fields, parse_filters
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.deal import Deal, DealVersion, DealWorkflowInfo
@@ -44,7 +45,7 @@ def resolve_deal(_obj, info, id, version=None, subset="PUBLIC"):
 
         if not any(
             [
-                user.level >= 2,
+                user.role >= UserRole.EDITOR,
                 deal_version.created_by == user,
                 deal_version.serialized_data["is_public"]
                 and deal_version.serialized_data["draft_status"] is None
@@ -235,7 +236,7 @@ def resolve_set_confidential(
     _obj, info, id, confidential, version=None, comment=""
 ) -> bool:
     user = info.context["request"].user
-    if not user.level:
+    if not user.role:
         raise GraphQLError("MISSING_AUTHORIZATION")
 
     confidential_str = "SET_CONFIDENTIAL" if confidential else "UNSET_CONFIDENTIAL"
@@ -243,7 +244,7 @@ def resolve_set_confidential(
 
     if version:
         deal_version = DealVersion.objects.get(id=version)
-        if not (deal_version.created_by == user or user.level >= 2):
+        if not (deal_version.created_by == user or user.role >= UserRole.EDITOR):
             raise GraphQLError("MISSING_AUTHORIZATION")
         deal_version.serialized_data["confidential"] = confidential
         deal_version.serialized_data["confidential_comment"] = comment
@@ -252,7 +253,7 @@ def resolve_set_confidential(
         add_object_comment("deal", user, id, version, obj_comment)
 
     else:
-        if user.level < 3:
+        if user.role < UserRole.ADMINISTRATOR:
             raise GraphQLError("MISSING_AUTHORIZATION")
         deal = Deal.objects.get(id=id)
         deal.confidential = confidential

@@ -8,7 +8,7 @@
 
   import { isAuthorized } from "$lib/helpers"
   import type { Obj, ObjVersion } from "$lib/types/generics"
-  import { UserLevel } from "$lib/types/user"
+  import { UserRole } from "$lib/types/user"
 
   import DateTimeField from "$components/Fields/Display/DateTimeField.svelte"
   import ManageOverlay from "$components/Management/ManageOverlay.svelte"
@@ -46,7 +46,7 @@
     (!objectVersion && object.status === 4) || isActiveWithDraft
       ? false
       : object.draft_status === 4
-      ? $page.data.user.level === UserLevel.ADMINISTRATOR
+      ? $page.data.user.role === UserRole.ADMINISTRATOR
       : isAuthorized($page.data.user, object)
 
   let isOldDraft: boolean
@@ -67,7 +67,7 @@
     isActiveWithDraft || isOldDraft
       ? false
       : object.draft_status === null || object.draft_status === 4
-      ? $page.data.user.level === UserLevel.ADMINISTRATOR
+      ? $page.data.user.role === UserRole.ADMINISTRATOR
       : isAuthorized($page.data.user, object)
 
   $: isDeleted = !objectVersion && object.status === 4
@@ -99,7 +99,7 @@
             {$_("Go to active version")}
           </a>
         {/if}
-        {#if hasNewerDraft && (lastVersion.created_by?.id === $page.data.user.id || $page.data.user.level > UserLevel.REPORTER)}
+        {#if hasNewerDraft && (lastVersion.created_by?.id === $page.data.user.id || $page.data.user.role > UserRole.REPORTER)}
           <a href="/{otype}/{object.id}/{lastVersion.id}/" class="btn btn-gray">
             {$_("Go to current draft")}
           </a>
@@ -303,7 +303,7 @@
                 </div>
               </div>
             {/if}
-            {#if !objectVersion && $page.data.user.level >= UserLevel.ADMINISTRATOR}
+            {#if !objectVersion && $page.data.user.role >= UserRole.ADMINISTRATOR}
               <div class="flex items-center gap-4">
                 <div>
                   <button
@@ -343,7 +343,7 @@
                 </div>
               </div>
             {/if}
-            {#if $page.data.user.level === UserLevel.ADMINISTRATOR && otype === "deal" && object.status !== 1}
+            {#if $page.data.user.role === UserRole.ADMINISTRATOR && otype === "deal" && object.status !== 1}
               <div class="flex items-center gap-4">
                 <div>
                   <button

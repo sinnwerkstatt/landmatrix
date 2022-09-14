@@ -12,7 +12,7 @@ type User {
   date_joined: DateTime
   phone: String
   information: String
-  level: Int
+  role: Int
   country: Country
   region: Region
   groups: [UserGroup]

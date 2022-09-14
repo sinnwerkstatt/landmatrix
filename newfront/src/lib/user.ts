@@ -22,7 +22,7 @@ export async function dispatchLogin(
               full_name
               is_authenticated
               is_impersonate
-              level
+              role
               country {
                 id
                 name

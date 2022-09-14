@@ -20,5 +20,5 @@ interface User {
   country: Country;
   region: Region;
   groups?: Group[];
-  level: number;
+  role: number;
 }

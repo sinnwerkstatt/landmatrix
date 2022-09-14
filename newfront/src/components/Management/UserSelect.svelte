@@ -8,7 +8,7 @@
 
   import { allUsers } from "$lib/stores"
   import type { User } from "$lib/types/user"
-  import { UserLevel } from "$lib/types/user"
+  import { UserRole } from "$lib/types/user"
 
   export let value: User | number
   export let required = false
@@ -25,7 +25,7 @@
   {VirtualList}
   bind:value
   getOptionLabel={(o, ftxt) =>
-    $page.data.user.level === !showEverybody && UserLevel.ADMINISTRATOR && o.isCreator
+    $page.data.user.role === !showEverybody && UserRole.ADMINISTRATOR && o.isCreator
       ? `Fetch all users, to find <b>"${ftxt}"</b>..`
       : o.username
       ? `${o.full_name} (<b>${o.username}</b>)`

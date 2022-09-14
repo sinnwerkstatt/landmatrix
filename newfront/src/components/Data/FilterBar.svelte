@@ -16,7 +16,7 @@
   import { countries, formfields, regions } from "$lib/stores"
   import { ProduceGroup } from "$lib/types/deal"
   import type { Investor } from "$lib/types/investor"
-  import { UserLevel } from "$lib/types/user"
+  import { UserRole } from "$lib/types/user"
 
   import { showFilterBar } from "$components/Data"
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
@@ -118,7 +118,7 @@
         {$_("Default filter")}
       </CheckboxSwitch>
 
-      {#if $page.data.user?.level >= UserLevel.EDITOR}
+      {#if $page.data.user?.role >= UserRole.EDITOR}
         <CheckboxSwitch class="text-base" bind:checked={$publicOnly}>
           {$_("Public deals only")}
         </CheckboxSwitch>

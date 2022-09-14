@@ -18,7 +18,7 @@ def resolve_user(_obj, info, id=None):
 
 
 def resolve_users(_obj, info, sort):
-    if not info.context["request"].user.level:
+    if not info.context["request"].user.role:
         raise GraphQLError(message="Not allowed")
 
     users = User.objects.filter(is_active=True).filter(

@@ -13,10 +13,10 @@ class MyUserAdmin(UserAdmin):
 
     set_inactive.short_description = "Set selected users INACTIVE"
 
-    list_display = UserAdmin.list_display + ("is_active", "level")
-    list_filter = UserAdmin.list_filter + ("level",)
+    list_display = UserAdmin.list_display + ("is_active", "role")
+    list_filter = UserAdmin.list_filter + ("role",)
     fieldsets = UserAdmin.fieldsets + (
-        (_("Data"), {"fields": ("level", "country", "region")}),
+        (_("Data"), {"fields": ("role", "country", "region")}),
     )
     actions = [set_inactive]
 

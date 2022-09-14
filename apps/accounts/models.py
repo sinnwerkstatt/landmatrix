@@ -4,6 +4,13 @@ from django.db import models
 from apps.landmatrix.models.country import Country, Region
 
 
+class UserRole:
+    ANYBODY = 0
+    REPORTER = 1
+    EDITOR = 2
+    ADMINISTRATOR = 3
+
+
 class User(AbstractUser):
     full_name = models.CharField(max_length=300, blank=True)
     phone = models.CharField(max_length=255, blank=True)
@@ -16,13 +23,13 @@ class User(AbstractUser):
     )
     region = models.ForeignKey(Region, blank=True, null=True, on_delete=models.PROTECT)
 
-    UserLevelChoices = (
-        (0, "---------"),
-        (1, "Reporter"),
-        (2, "Editor"),
-        (3, "Administrator"),
+    RoleChoices = (
+        (UserRole.ANYBODY, "---------"),
+        (UserRole.REPORTER, "Reporter"),
+        (UserRole.EDITOR, "Editor"),
+        (UserRole.ADMINISTRATOR, "Administrator"),
     )
-    level = models.IntegerField(default=0, choices=UserLevelChoices)
+    role = models.IntegerField(default=UserRole.ANYBODY, choices=RoleChoices)
 
     class Meta:
         db_table = "auth_user"
