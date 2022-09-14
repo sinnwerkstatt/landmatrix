@@ -329,18 +329,19 @@ test.describe.serial("deal creation tests", () => {
   //delete investors
   test("delete all deals and investors wip", async ({ context, page }) => {
     await page.goto(`/investor/${investorID}`);
-    await page.locator('button:has-text("Delete")').click();
+    await page.locator('button:has-text("Remove")').click();
     await page
       .locator("text=Please provide a comment explaining your request >> textarea")
       .fill("Delete Child investor");
-    await page.click('button:has-text("Delete investor version")'),
+    await page.click('button:has-text("Remove investor version")'),
       //delete Parent Investor
       await page.goto(`/investor/${ParentID}`);
-    await page.locator('button:has-text("Delete")').click();
+    await page.locator('button:has-text("Remove")').click();
+    await page.pause();
     await page
       .locator("text=Please provide a comment explaining your request >> textarea")
       .fill("delete Parent investor");
 
-    await page.click('button:has-text("Delete investor version")');
+    await page.click('button:has-text("Remove investor version")');
   });
 });

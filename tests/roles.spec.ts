@@ -49,7 +49,7 @@ test.describe("Roles", () => {
       "Reporter can edit own draft."
     ).toBeVisible();
     await expect(
-      reporterPage.locator('button:has-text("Delete")'),
+      reporterPage.locator('button:has-text("Remove")'),
       "Reporter can delete own draft."
     ).toBeVisible();
     await expect(
@@ -114,7 +114,7 @@ test.describe("Roles", () => {
       "Editor can edit own draft."
     ).toBeVisible();
     await expect(
-      editorPage.locator('button:has-text("Delete")'),
+      editorPage.locator('button:has-text("Remove")'),
       "Editor can delete own draft."
     ).toBeVisible();
     await expect(
@@ -135,7 +135,7 @@ test.describe("Roles", () => {
       "Editor can create new version of draft (submitted for review)."
     ).toBeVisible();
     await expect(
-      editorPage.locator('button:has-text("Delete")'),
+      editorPage.locator('button:has-text("Remove")'),
       "Editor can delete draft (submitted for review)."
     ).toBeVisible();
     await expect(
@@ -200,7 +200,7 @@ test.describe("Roles", () => {
       "Admin can edit own draft."
     ).toBeVisible();
     await expect(
-      adminPage.locator('button:has-text("Delete")'),
+      adminPage.locator('button:has-text("Remove")'),
       "Admin can delete own draft."
     ).toBeVisible();
     await expect(
@@ -221,7 +221,7 @@ test.describe("Roles", () => {
       "Admin can create new version of draft (submitted for review)."
     ).toBeVisible();
     await expect(
-      adminPage.locator('button:has-text("Delete")'),
+      adminPage.locator('button:has-text("Remove")'),
       "Admin can delete draft (submitted for review)."
     ).toBeVisible();
     await expect(
@@ -243,7 +243,7 @@ test.describe("Roles", () => {
       "Admin can create new version of draft (submitted for activation)."
     ).toBeVisible();
     await expect(
-      adminPage.locator('button:has-text("Delete")'),
+      adminPage.locator('button:has-text("Remove")'),
       "Admin can delete draft (submitted for activation)."
     ).toBeVisible();
     await expect(
