@@ -1,3 +1,4 @@
+import { extractDealAndVersionId } from "./utils";
 import { test, expect } from "@playwright/test";
 import { TIMEOUT } from "dns";
 import { log } from "util";
@@ -53,7 +54,6 @@ test.describe.serial("deal creation tests", () => {
     let datefield = await page.locator(`[name=production_size]`).first();
 
     await datefield.fill("01.02.2018");
-    console.log(datefield);
     await expect(
       await datefield.evaluate(
         (x: HTMLInputElement) => !x.validity.valid && x.validity.customError
@@ -79,7 +79,7 @@ test.describe.serial("deal creation tests", () => {
     await page.locator('input[name="production_size_current"]').first().check();
     // ToDo: Testing "+"button
     //Create 2nd DateAreaField
-    await page.locator('button[name="plus_icon"]').first().click();
+    await page.locator('button[name="plus_icon"]').nth(1).click();
 
     await page.locator('input[name="production_size"]').nth(2).fill("2019");
     await page.locator('input[name="production_size"]').nth(3).fill("3000");
@@ -136,7 +136,6 @@ test.describe.serial("deal creation tests", () => {
     await charfield.fill(
       "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata123456789"
     );
-    await charfield.evaluate((x: HTMLInputElement) => console.log(x.validity));
     await expect(charfield).toHaveValue(
       "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata"
     );
@@ -152,28 +151,14 @@ test.describe.serial("deal creation tests", () => {
     await page.locator('input[name="agreement_duration"]').fill("10");
     await page.locator("text=Add Contract").click();
     await expect((await page.locator("text=2. Contract").count()) === 1).toBeTruthy();
-    await Promise.all([page.waitForNavigation(), saveButton.click()]);
+
+    await page.click('button:has-text("Save")');
+    await page.waitForNavigation();
+
     await expect((await page.locator("text=2. Contract").count()) === 0).toBeTruthy();
 
-    //await page.locator("text=/1. Contract/ >> svg").first().click();
-    //ToDo: Expect alert, but not showing in chromium-browser, playwright-docu: https://playwright.dev/docs/dialogs
-
-    //ToDo: ADD FILE
-    // https://playwright.dev/docs/input#upload-files
-    //...
-
-    //await Promise.all([page.waitForNavigation(), saveButton.click()]);
-
-    // await expect(saveButton).toBeDisabled();
-
-    //ToDo: needs fixing: wait for navigation line 156 not working, l175 returns innertext from before and after clicking the save-button
-    await page.evaluate(() => {
-      return new Promise((resolve) => setTimeout(resolve, 500));
-    });
-
-    let headline = await page.locator("h1");
-
-    dealID = (await headline.innerText()).replace("Editing Deal #", "");
+    let version;
+    [dealID, version] = extractDealAndVersionId(page.url());
   });
 
   //CHECKOUT DEAL
@@ -191,7 +176,6 @@ test.describe.serial("deal creation tests", () => {
     const currentIntention = await page.locator("text=2 000").first();
     await expect(currentIntention).toContainText("[2018-02-01, current] 2 000 ha");
     await expect(currentIntention).toHaveClass("font-bold");
-    // console.log(await currentIntention.count());
 
     await expect(page.locator('div[data-name="contract_farming"]')).toContainText("No");
     await page.goto(`deal/${dealID}/#contracts`);

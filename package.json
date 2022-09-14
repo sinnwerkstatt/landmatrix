@@ -1,10 +1,14 @@
 {
   "scripts": {
-    "start": "concurrently npm:backend npm:frontend npm:caddy",
+    "dev": "concurrently npm:backend npm:frontend npm:caddy",
+    "dev:test": "DATABASE_URL=postgis://landmatrix:landmatrix@localhost/playwright_test npm run dev",
     "backend": "poetry run ./manage.py runserver",
-    "frontend": "cd newfront && npm run preview",
-    "test": "DATABASE_URL=postgis://landmatrix:landmatrix@localhost/playwright_test ./test.sh",
-    "caddy": "caddy run"
+    "frontend": "cd newfront && npm run dev",
+    "caddy": "caddy run",
+    "playwright": "npx playwright test tests/ --workers 1",
+    "test:setup": "DATABASE_URL=postgis://landmatrix:landmatrix@localhost/playwright_test ./test-setup.sh",
+    "pretest": "npm run test:setup",
+    "test": "DATABASE_URL=postgis://landmatrix:landmatrix@localhost/playwright_test ./test.sh"
   },
   "devDependencies": {
     "@playwright/test": "^1.22.1",

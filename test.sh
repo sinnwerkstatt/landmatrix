@@ -1,21 +1,13 @@
 #!/bin/bash
 
-# 1. Install django
-poetry install
-
-# 2. Setup django test env
-doit reset_db
-doit initial_setup
-./manage.py create_playwright_test_users
-
-# 3 Build the frontend
-(cd newfront && npm install && npm run build)
-
-# 4. Start app
+# 1. Start app
+# The output is discarded to see the actual test results.
+# If you want to see the output run `npm run dev:test` in one terminal
+# and `npm run playwright` in another terminal.
 concurrently npm:backend npm:frontend npm:caddy > /dev/null &
 PID=$!
 
-# 5. Wait for app to be responsive
+# 2. Wait for app to be responsive
 while ! nc -z localhost 3000; do
   sleep 0.3 # wait for 3/10 of the second before check again
 done
@@ -32,14 +24,10 @@ done
 echo 'Caddy online'
 
 
-# 6. Run tests
-npx playwright test tests/login.spec.ts
-npx playwright test tests/cms.spec.ts
-npx playwright test tests/roles.spec.ts
-npx playwright test tests/create-deal-investor.spec.ts
-npx playwright test tests/workflow.spec.ts
+# 3. Run tests
+npm run playwright
 
-# 7. Cleanup
+# 4. Cleanup
 kill $PID
 sleep 2
 

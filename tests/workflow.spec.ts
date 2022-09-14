@@ -1,4 +1,5 @@
-import { extractDealAndVersionId, test } from "./fixtures";
+import { test } from "./fixtures";
+import { extractDealAndVersionId } from "./utils";
 import { expect } from "@playwright/test";
 
 test.describe.serial("Workflow", async () => {
