@@ -18,7 +18,7 @@
 
 <div
   class="workflowinfo-field"
-  data-name={formfield ? formfield.name : ""}
+  data-name={formfield?.name ?? ""}
   on:click={() => {
     showMoreInfos = !showMoreInfos
   }}

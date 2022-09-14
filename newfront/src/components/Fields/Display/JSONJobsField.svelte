@@ -17,10 +17,7 @@
   export let value: JSONJobsFieldType[] = []
 </script>
 
-<div
-  class="jsonjobs_field whitespace-nowrap"
-  data-name={formfield ? formfield.name : ""}
->
+<div class="jsonjobs_field whitespace-nowrap" data-name={formfield?.name ?? ""}>
   {#each value ?? [] as val}
     <div class:font-bold={val.current}>
       {dateCurrentFormat(val)}

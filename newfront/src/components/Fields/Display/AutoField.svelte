@@ -11,7 +11,7 @@
   export let model: "deal" | "investor" = "deal"
 </script>
 
-<div class="auto_field" data-name={formfield ? formfield.name : ""}>
+<div class="auto_field" data-name={formfield?.name ?? ""}>
   <a
     class={classNames(
       "inline whitespace-nowrap py-1 px-2 text-center align-baseline text-xs font-bold text-white",

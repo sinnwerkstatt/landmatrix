@@ -11,6 +11,6 @@
   // return dayjs(this.value).format("YYYY‑MM‑DD"); 🤩️
 </script>
 
-<div class="date_field whitespace-nowrap" data-name={formfield ? formfield.name : ""}>
+<div class="date_field whitespace-nowrap" data-name={formfield?.name ?? ""}>
   {value ? dayjs(value).format(format) : "—"}
 </div>

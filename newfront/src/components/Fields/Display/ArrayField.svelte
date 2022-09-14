@@ -47,8 +47,8 @@
   }
 </script>
 
-<div class="array_field" data-name={formfield ? formfield.name : ""}>
-  {#if formfield.name === "current_intention_of_investment"}
+<div class="array_field" data-name={formfield?.name ?? ""}>
+  {#if formfield?.name === "current_intention_of_investment"}
     {#each value ?? [] as ioi}
       <span
         class="mx-1 my-0.5 inline-flex items-center gap-1 whitespace-nowrap border border-black/10 bg-black/5 px-1 py-0.5 text-gray-900"

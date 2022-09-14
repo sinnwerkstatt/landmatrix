@@ -18,7 +18,7 @@
   export let value: JSONDateAreaChoicesFieldType[] = []
 </script>
 
-<div class="jsondateareachoices_field" data-name={formfield ? formfield.name : ""}>
+<div class="jsondateareachoices_field" data-name={formfield?.name ?? ""}>
   {#each value ?? [] as val}
     <div class:font-bold={val.current}>
       <span>{dateCurrentFormat(val)}</span>

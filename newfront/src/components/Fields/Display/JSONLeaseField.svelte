@@ -19,10 +19,7 @@
   export let value: JSONLeaseFieldType[] = []
 </script>
 
-<div
-  class="jsonlease_field whitespace-nowrap"
-  data-name={formfield ? formfield.name : ""}
->
+<div class="jsonlease_field whitespace-nowrap" data-name={formfield?.name ?? ""}>
   {#each value ?? [] as val}
     <div class:font-bold={val.current}>
       <span>{dateCurrentFormat(val)}</span>

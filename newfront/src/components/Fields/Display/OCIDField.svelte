@@ -7,7 +7,7 @@
   export let value: string
 </script>
 
-<div class="ocid_field" data-name={formfield ? formfield.name : ""}>
+<div class="ocid_field" data-name={formfield?.name ?? ""}>
   {#if value}
     {value}
     <a

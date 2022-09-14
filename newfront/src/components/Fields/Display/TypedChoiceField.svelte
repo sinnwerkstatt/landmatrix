@@ -7,9 +7,6 @@
   export let formfield: FormField
 </script>
 
-<div
-  class="typed_choice_field whitespace-nowrap"
-  data-name={formfield ? formfield.name : ""}
->
+<div class="typed_choice_field whitespace-nowrap" data-name={formfield?.name ?? ""}>
   {value ? $_(formfield.choices[value]) : "—"}
 </div>
