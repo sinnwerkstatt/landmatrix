@@ -21,9 +21,7 @@ def resolve_users(_obj, info, sort):
     if not info.context["request"].user.level:
         raise GraphQLError(message="Not allowed")
 
-    users = User.objects.filter(is_active=True).filter(
-        level__gt=0
-    )
+    users = User.objects.filter(is_active=True).filter(level__gt=0)
     # TODO - we could skip "reporters" here, and manually add the missing Reporter per deal in the frontend
 
     # this is implemented in Python, not in SQL, to support the "full_name"
