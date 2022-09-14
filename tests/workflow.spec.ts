@@ -1,11 +1,13 @@
 import { test } from "./fixtures";
-import { extractDealAndVersionId } from "./utils";
+import { createInvestorName, extractDealAndVersionId } from "./utils";
 import { expect } from "@playwright/test";
 
 test.describe.serial("Workflow", async () => {
   let dealId: number;
   let copyDealId: number;
   let _: number;
+
+  const investorName = createInvestorName();
 
   test.afterAll(async ({ admin }) => {
     for (const id of [dealId, copyDealId]) {
@@ -73,8 +75,11 @@ test.describe.serial("Workflow", async () => {
     await page.click("text=Investor info");
     await page.waitForLoadState();
 
-    await page.fill('input[placeholder="Investor"]', "#40260");
-    await page.locator("text=Test Company (#40260) >> nth=1").click();
+    const investorInput = page.locator('input[placeholder="Investor"]');
+    await investorInput.fill(investorName);
+    await investorInput.press("Enter");
+
+    await page.locator("#investor_info >> text=Save").click();
 
     // switch to data source tab
     await page.click("text=Data sources");

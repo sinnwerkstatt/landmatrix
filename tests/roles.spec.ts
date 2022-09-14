@@ -29,13 +29,13 @@ test.describe("Roles", () => {
 
     await reporterPage.goto(`/deal/${editorDealId}`);
     await expect(
-      reporterPage.locator("text=404: Deal not found"),
+      reporterPage.locator("text=401: Unauthorized"),
       "Reporter cannot see editor draft."
     ).toBeVisible();
 
     await reporterPage.goto(`/deal/${adminDealId}`);
     await expect(
-      reporterPage.locator("text=404: Deal not found"),
+      reporterPage.locator("text=401: Unauthorized"),
       "Reporter cannot see admin draft."
     ).toBeVisible();
   });
