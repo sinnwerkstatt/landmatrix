@@ -7,7 +7,7 @@
   export let formfield: FormField
 </script>
 
-<div class="nanoID_field" data-name={formfield.name}>
+<div class="nanoID_field" data-name={formfield ? formfield.name : ""}>
   <a class="font-mono" href="{$page.url.hash.split('/')[0] || '#locations'}/{value}">
     {value}
   </a>

@@ -7,7 +7,7 @@
   export let formfield: FormField
 </script>
 
-<div class="boolean_field" data-name={formfield.name}>
+<div class="boolean_field" data-name={formfield ? formfield.name : ""}>
   {#if value}
     {$_("Yes")}
   {:else if value === false}

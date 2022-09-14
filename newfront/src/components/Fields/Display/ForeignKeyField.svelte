@@ -12,7 +12,7 @@
   export let value: ForeignKey
 </script>
 
-<div class="foreignkey_field">
+<div class="foreignkey_field" data-name={formfield ? formfield.name : ""}>
   {#if !value || !value.id}
     <!-- no output -->
   {:else if formfield.related_model === "Investor"}
