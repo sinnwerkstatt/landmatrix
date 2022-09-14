@@ -178,8 +178,8 @@
                   type="button"
                   class:disabled={lastVersion.id !== +objectVersion}
                   title={otype === "deal"
-                    ? $_("Submits the deal for review")
-                    : $_("Submits the investor for review")}
+                    ? $_("Submit the deal for review")
+                    : $_("Submit the investor for review")}
                   class="btn btn-pelorous"
                   on:click={() => dispatch("sendToReview")}
                 >
@@ -210,8 +210,8 @@
                   type="button"
                   class:disabled={lastVersion.id !== +objectVersion}
                   title={otype === "deal"
-                    ? $_("Submits the deal for activation")
-                    : $_("Submits the investor for activation")}
+                    ? $_("Submit the deal for activation")
+                    : $_("Submit the investor for activation")}
                   class="btn btn-pelorous"
                   on:click={() => (showSendToActivationOverlay = true)}
                 >
@@ -226,11 +226,11 @@
                   class:disabled={lastVersion.id !== +objectVersion}
                   title={hasActive
                     ? $_(
-                        "Activates submitted version replacing currently active version",
+                        "Activate submitted version replacing currently active version",
                       )
                     : otype === "deal"
-                    ? $_("Sets the deal active")
-                    : $_("Sets the investor active")}
+                    ? $_("Set the deal active")
+                    : $_("Set the investor active")}
                   class="btn btn-pelorous"
                   on:click={() => (showActivateOverlay = true)}
                 >
@@ -290,17 +290,15 @@
                   {#if object.draft_status === 1}
                     {#if !hasActive}
                       {otype === "deal"
-                        ? $_("Starts editing this deal")
-                        : $_("Starts editing this investor")}
+                        ? $_("Start editing this deal")
+                        : $_("Start editing this investor")}
                     {:else}
-                      {otype === "deal"
-                        ? $_("Edits this draft version")
-                        : $_("Edits this investor version")}
+                      {$_("Edit this version")}
                     {/if}
                   {:else}
                     {otype === "deal"
-                      ? $_("Creates a new draft version of this deal")
-                      : $_("Creates a new draft version of this investor")}
+                      ? $_("Create a new draft version of this deal")
+                      : $_("Create a new draft version of this investor")}
                   {/if}
                 </div>
               </div>
@@ -322,8 +320,8 @@
                       : $_("Reactivate this investor")}
                   {:else}
                     {otype === "deal"
-                      ? $_("Deletes this deal")
-                      : $_("Deletes this investor")}
+                      ? $_("Delete this deal")
+                      : $_("Delete this investor")}
                   {/if}
                 </div>
               </div>
@@ -340,8 +338,8 @@
                 </div>
                 <div class="italic text-black/50">
                   {otype === "deal"
-                    ? $_("Completely removes this draft version of the deal")
-                    : $_("Completely removes this draft version of the investor")}
+                    ? $_("Completely removes this version of the deal")
+                    : $_("Completely removes this version of the investor")}
                 </div>
               </div>
             {/if}

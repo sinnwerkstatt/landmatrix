@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-10 00:43+0200\n"
+"POT-Creation-Date: 2022-09-14 15:24+0200\n"
 "PO-Revision-Date: 2022-05-30 13:48+0000\n"
 "Last-Translator: Kurt Gerber <kurt.gerber@unibe.ch>\n"
 "Language-Team: Spanish <http://translate.landmatrix.org/projects/landmatrix/landmatrix/es/>\n"
@@ -15,6 +15,12 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Weblate 4.8\n"
 "Generated-By: xls-to-po 1.0\n"
+
+msgid "Data"
+msgstr "Datos"
+
+msgid "Level"
+msgstr "Nivel"
 
 msgid "Blog index"
 msgstr ""
@@ -62,12 +68,12 @@ msgid "New comment"
 msgstr "Nuevo comentario"
 
 #, python-brace-format
-msgid "{full_name} has addressed you in a comment on {obj_desc}:"
-msgstr "{full_name} se ha dirigido a usted en un comentario sobre {obj_desc}:"
+msgid "{from_user.full_name} has addressed you in a comment on {obj_desc}:"
+msgstr ""
 
 #, python-brace-format
-msgid "{full_name} has updated {obj_desc}:"
-msgstr "{full_name}ha actualizado {obj_desc}:"
+msgid "{from_user.full_name} has updated {obj_desc}:"
+msgstr ""
 
 #, python-brace-format
 msgid "Please review at {url}"
@@ -1495,6 +1501,15 @@ msgstr "<es MATRIZ de>"
 msgid "<is INVESTOR of>"
 msgstr "<es INVERSOR de>"
 
+msgid "Server Error"
+msgstr "Error del Servidor"
+
+msgid "Looks like something went wrong"
+msgstr "Parece que algo salió mal"
+
+msgid "We track these errors automatically, but if the problem persists feel free to contact us. In the meantime, try refreshing."
+msgstr "Rastreamos estos errores de forma automática pero, si el problema persiste, no dude en contactarnos. Mientras tanto, intente actualizar."
+
 #, python-format
 msgid "The language \"%s\" is not supported"
 msgstr "El idioma \"%s\" no está configurado"
@@ -1519,9 +1534,6 @@ msgstr "Título"
 
 msgid "Text"
 msgstr "Texto"
-
-msgid "Level"
-msgstr "Nivel"
 
 msgid "Allow users to hide message"
 msgstr "Permitir a personas usuarias esconder mensaje"
@@ -1580,13 +1592,19 @@ msgstr "Acciones"
 msgid "Activate"
 msgstr "Activar"
 
+msgid "Activate submitted version replacing currently active version"
+msgstr ""
+
 msgid "Activated"
 msgstr ""
 
 msgid "Activated by me"
 msgstr ""
 
-msgid "Activates submitted version replacing currently active version"
+msgid "Active"
+msgstr "Activa"
+
+msgid "Active deals with public filter ok, not confidential."
 msgstr ""
 
 msgid "Add"
@@ -1606,6 +1624,9 @@ msgstr ""
 
 msgid "Additional comment"
 msgstr ""
+
+msgid "Administrator"
+msgstr "Administrador"
 
 msgid "All attributes"
 msgstr ""
@@ -1696,6 +1717,12 @@ msgstr ""
 msgid "Comparing investor #{investorID}"
 msgstr ""
 
+msgid "Completely removes this version of the deal"
+msgstr ""
+
+msgid "Completely removes this version of the investor"
+msgstr ""
+
 msgid "Concluded"
 msgstr "Concluído"
 
@@ -1761,16 +1788,16 @@ msgstr "Los perfiles país presentan datos a nivel nacional de grandes transacci
 msgid "Create a new draft"
 msgstr ""
 
+msgid "Create a new draft version of this deal"
+msgstr ""
+
+msgid "Create a new draft version of this investor"
+msgstr ""
+
+msgid "Created by"
+msgstr ""
+
 msgid "Created by me"
-msgstr ""
-
-msgid "Creates a new draft version of this deal"
-msgstr ""
-
-msgid "Creates a new draft version of this investor"
-msgstr ""
-
-msgid "Creation"
 msgstr ""
 
 msgid "Crops"
@@ -1790,9 +1817,6 @@ msgstr "Estado actual de la implementación"
 
 msgid "Current negotiation status"
 msgstr "Estado actual de la negociación"
-
-msgid "Data"
-msgstr "Datos"
 
 msgid "Data overview"
 msgstr ""
@@ -1815,6 +1839,18 @@ msgstr "Tamaño de transacción"
 msgid "Deals (Involvements as Operating company)"
 msgstr "Transacciones (Involucramientos como Empresa Operadora)"
 
+msgid "Deals georeferenced with high accuracy"
+msgstr ""
+
+msgid "Deals with at least one location with either accuracy level 'Coordinates' or 'Exact location' or at least one polygon."
+msgstr ""
+
+msgid "Deals with polygon data"
+msgstr ""
+
+msgid "Deals with with multiple data sources"
+msgstr ""
+
 msgid "Default filter"
 msgstr "Filtro por defecto"
 
@@ -1830,23 +1866,20 @@ msgstr ""
 msgid "Delete investor"
 msgstr "Eliminar inversor"
 
-msgid "Deletes this deal"
-msgstr ""
+msgid "Delete this deal"
+msgstr "Eliminar esta transacción"
 
-msgid "Deletes this draft version of the deal"
-msgstr ""
-
-msgid "Deletes this draft version of the investor"
-msgstr ""
-
-msgid "Deletes this investor"
-msgstr ""
+msgid "Delete this investor"
+msgstr "Eliminar este inversor"
 
 msgid "Detailed contract farming crop and animal information"
 msgstr "Información detallada sobre cultivo y animales de la agricultura contractual"
 
 msgid "Detailed crop, animal and mineral information"
 msgstr "Información detallada sobre cultivos, animales y minerales"
+
+msgid "Disable moving of markers"
+msgstr ""
 
 msgid "Displayed data"
 msgstr "Datos visualizados"
@@ -1884,23 +1917,26 @@ msgstr "Gráficos de la dinámica general"
 msgid "Edit"
 msgstr "Editar"
 
+msgid "Edit this version"
+msgstr ""
+
 msgid "Editing deal #"
 msgstr ""
 
 msgid "Editing Investor #"
 msgstr ""
 
-msgid "Edits this draft version"
-msgstr ""
-
-msgid "Edits this investor version"
-msgstr ""
+msgid "Editor"
+msgstr "Editor"
 
 msgid "Employees"
 msgstr ""
 
 msgid "Employment"
 msgstr "Empleo"
+
+msgid "Enable moving of markers"
+msgstr ""
 
 msgid "Excel document"
 msgstr ""
@@ -1925,6 +1961,9 @@ msgstr "Preguntas Frecuentes"
 
 msgid "Farmers"
 msgstr ""
+
+msgid "Feedback"
+msgstr "Retroalimentación"
 
 msgid "Feedback by me"
 msgstr ""
@@ -1956,23 +1995,23 @@ msgstr "Anterior uso"
 msgid "from"
 msgstr ""
 
-msgid "From"
-msgstr "De"
-
 msgid "Full update"
 msgstr ""
 
 msgid "Fully updated"
 msgstr "Completamente actualizado"
 
+msgid "Fully updated at"
+msgstr ""
+
 msgid "Gender-related info"
 msgstr "Información relacionada con género"
 
-msgid "General info"
-msgstr "Información General"
-
 msgid "General Info"
 msgstr ""
+
+msgid "General info"
+msgstr "Información General"
 
 msgid "Generate your own infographics using a wide selection of charts to illustrate information about deals."
 msgstr "Genere su propia infografía utilizando una amplia selección de gráficos para brindar información sobre las transacciones de tierras."
@@ -2036,6 +2075,9 @@ msgstr ""
 
 msgid "Included"
 msgstr "Incluido"
+
+msgid "Indicator listings"
+msgstr ""
 
 msgid "Indigenous and community conserved area, Philippines"
 msgstr ""
@@ -2190,9 +2232,6 @@ msgstr "Más detalles sobre esta transacción"
 msgid "More details about this investor"
 msgstr "Más detalles sobre este inversor"
 
-msgid "moving of markers"
-msgstr ""
-
 msgid "My data"
 msgstr ""
 
@@ -2329,10 +2368,22 @@ msgstr ""
 msgid "Publicly visible"
 msgstr ""
 
+msgid "Publicly visible deals"
+msgstr ""
+
 msgid "Put each value on a new line, i.e. press enter between each name"
 msgstr "Ponga cada valor en una línea nueva, ej. presione intro entre los nombres"
 
+msgid "Quality goals"
+msgstr ""
+
 msgid "Quit without saving?"
+msgstr ""
+
+msgid "Reactivate deal"
+msgstr ""
+
+msgid "Reactivate investor"
 msgstr ""
 
 msgid "Reactivate this deal"
@@ -2356,14 +2407,29 @@ msgstr ""
 msgid "Remove"
 msgstr "Eliminar"
 
+msgid "Remove deal version"
+msgstr ""
+
+msgid "Remove investor version"
+msgstr ""
+
 msgid "Remove this file"
 msgstr ""
+
+msgid "Reply"
+msgstr "Responder"
+
+msgid "Reporter"
+msgstr "Periodista"
 
 msgid "Request improvement"
 msgstr ""
 
 msgid "Reset password"
 msgstr "Restablecer contraseña"
+
+msgid "Resolve thread"
+msgstr ""
 
 msgid "Resources"
 msgstr "Recursos"
@@ -2401,19 +2467,16 @@ msgstr ""
 msgid "Send a request of improvent and create a new draft version of the investor"
 msgstr ""
 
-msgid "Send to"
-msgstr ""
-
 msgid "Set confidential"
 msgstr ""
 
 msgid "Set password"
 msgstr ""
 
-msgid "Sets the deal active"
+msgid "Set the deal active"
 msgstr ""
 
-msgid "Sets the investor active"
+msgid "Set the investor active"
 msgstr ""
 
 msgid "Show"
@@ -2434,10 +2497,10 @@ msgstr ""
 msgid "Size"
 msgstr "Tamaño"
 
-msgid "Starts editing this deal"
+msgid "Start editing this deal"
 msgstr ""
 
-msgid "Starts editing this investor"
+msgid "Start editing this investor"
 msgstr ""
 
 msgid "Status"
@@ -2458,16 +2521,16 @@ msgstr ""
 msgid "Submit for review"
 msgstr ""
 
-msgid "Submits the deal for activation"
+msgid "Submit the deal for activation"
 msgstr ""
 
-msgid "Submits the deal for review"
+msgid "Submit the deal for review"
 msgstr ""
 
-msgid "Submits the investor for activation"
+msgid "Submit the investor for activation"
 msgstr ""
 
-msgid "Submits the investor for review"
+msgid "Submit the investor for review"
 msgstr ""
 
 msgid "Submitted for activation"
@@ -2600,6 +2663,17 @@ msgstr "Français"
 
 msgid "Русский"
 msgstr "Русский"
+
+#, python-brace-format
+#~ msgid "{full_name} has addressed you in a comment on {obj_desc}:"
+#~ msgstr "{full_name} se ha dirigido a usted en un comentario sobre {obj_desc}:"
+
+#, python-brace-format
+#~ msgid "{full_name} has updated {obj_desc}:"
+#~ msgstr "{full_name}ha actualizado {obj_desc}:"
+
+#~ msgid "From"
+#~ msgstr "De"
 
 #, python-format
 #~ msgid "Attribute group \"%s\" is invalid counter (groups should start with 1) for historical activity %i (Activity identifier: #%i)"
@@ -2949,9 +3023,6 @@ msgstr "Русский"
 
 #~ msgid "My deals/investors"
 #~ msgstr "Mis transacciones/inversores"
-
-#~ msgid "Feedback"
-#~ msgstr "Retroalimentación"
 
 #~ msgid "Pending updates"
 #~ msgstr "Actualizaciones pendientes"
@@ -3347,9 +3418,6 @@ msgstr "Русский"
 #~ msgid "There are currently no deals matching your search criteria."
 #~ msgstr "Actualmente no hay transacciones que coincidan con sus criterios de búsqueda."
 
-#~ msgid "Editor"
-#~ msgstr "Editor"
-
 #~ msgid "mandatory"
 #~ msgstr "obligatorio"
 
@@ -3358,9 +3426,6 @@ msgstr "Русский"
 
 #~ msgid "Recover this deal"
 #~ msgstr "Recuperar esta transacción"
-
-#~ msgid "Delete this deal"
-#~ msgstr "Eliminar esta transacción"
 
 #~ msgid "All deals"
 #~ msgstr "Todas las transacciones"
@@ -3551,9 +3616,6 @@ msgstr "Русский"
 #~ msgid "Recover this investor"
 #~ msgstr "Recuperar este inversor"
 
-#~ msgid "Delete this investor"
-#~ msgstr "Eliminar este inversor"
-
 #~ msgid "All investors"
 #~ msgstr "Todos los inversores"
 
@@ -3598,12 +3660,6 @@ msgstr "Русский"
 
 #~ msgid "Are you sure you want to recover this investor?"
 #~ msgstr "¿Quiere definitivamente recuperar este inversor?"
-
-#~ msgid "Administrator"
-#~ msgstr "Administrador"
-
-#~ msgid "Reporter"
-#~ msgstr "Periodista"
 
 #~ msgid "No role"
 #~ msgstr "Sin rol"
@@ -3761,9 +3817,6 @@ msgstr "Русский"
 
 #~ msgid "Locale"
 #~ msgstr "Lugar"
-
-#~ msgid "Active"
-#~ msgstr "Activa"
 
 #~ msgid "Overwritten"
 #~ msgstr "Sobrescrita"
@@ -4033,9 +4086,6 @@ msgstr "Русский"
 #~ msgid "Preview"
 #~ msgstr "Vista previa"
 
-#~ msgid "Reply"
-#~ msgstr "Responder"
-
 #~ msgid "Choose a country"
 #~ msgstr "Elegir un país"
 
@@ -4097,17 +4147,8 @@ msgstr "Русский"
 #~ msgid "The page you are looking for appears to have been moved, deleted or does not exist."
 #~ msgstr "La página que está buscando parece haber sido movida, eliminada o no existe."
 
-#~ msgid "Server Error"
-#~ msgstr "Error del Servidor"
-
-#~ msgid "Looks like something went wrong"
-#~ msgstr "Parece que algo salió mal"
-
 #~ msgid "Clear filters"
 #~ msgstr "Quitar filtros"
-
-#~ msgid "We track these errors automatically, but if the problem persists feel free to contact us. In the meantime, try refreshing."
-#~ msgstr "Rastreamos estos errores de forma automática pero, si el problema persiste, no dude en contactarnos. Mientras tanto, intente actualizar."
 
 #~ msgid "Login/Register"
 #~ msgstr "Iniciar sesión/Regístrese"
