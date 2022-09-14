@@ -26,9 +26,11 @@
   {#if showMoreInfos}
     <div
       transition:slide
-      class="absolute top-full z-10 mx-1 w-9/12 rounded-sm bg-lm-warmgray shadow-md"
+      class="absolute top-full z-10 mx-1 w-[22rem] rounded-sm bg-lm-warmgray shadow-md"
     >
-      <h4 class="px-2">LogbookList {model} #{objectId}</h4>
+      <h4 class="px-2">
+        LogbookList {model.charAt(0).toUpperCase() + model.slice(1)} #{objectId}
+      </h4>
       <ManageHeaderLogbookList workflowinfos={value} />
     </div>
   {/if}
