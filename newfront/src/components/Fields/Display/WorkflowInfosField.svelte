@@ -14,18 +14,39 @@
 
   let showMoreInfos = false
   let moreInfos: WFInfo[] = []
+
+  function clickOutside(element, callbackFunction) {
+    function onClick(event) {
+      if (!element.contains(event.target)) {
+        callbackFunction()
+      }
+    }
+    document.body.addEventListener("click", onClick)
+    return {
+      update(newCallbackFunction) {
+        callbackFunction = newCallbackFunction
+      },
+      destroy() {
+        document.body.removeEventListener("click", onClick)
+      },
+    }
+  }
 </script>
 
 <div
   class="workflowinfo-field"
-  on:click={() => {
+  on:click={event => {
     showMoreInfos = !showMoreInfos
+    event.stopPropagation()
   }}
 >
   <WorkflowInfo info={value[0]} />
   {#if showMoreInfos}
     <div
       transition:slide
+      use:clickOutside={() => {
+        showMoreInfos = !showMoreInfos
+      }}
       class="absolute z-10 mx-1 w-[22rem] rounded-sm bg-lm-warmgray shadow-md"
     >
       <h4 class="px-2">Logbooklist</h4>
