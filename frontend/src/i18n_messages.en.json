@@ -1,6 +1,4 @@
 {
-  "{full_name} has addressed you in a comment on {obj_desc}:": "{full_name} has addressed you in a comment on {obj_desc}:",
-  "{full_name} has updated {obj_desc}:": "{full_name} has updated {obj_desc}:",
   "Please review at {url}": "Please review at {url}",
   "Countries investing in {country}": "Countries investing in {country}",
   "{x} deals have multiple intentions, resulting in a total of {y} intentions for {z} deals.": "{x} deals have multiple intentions, resulting in a total of {y} intentions for {z} deals."

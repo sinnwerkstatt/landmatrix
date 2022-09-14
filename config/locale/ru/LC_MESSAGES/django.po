@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-14 15:24+0200\n"
+"POT-Creation-Date: 2022-09-14 16:15+0200\n"
 "PO-Revision-Date: 2022-05-30 13:48+0000\n"
 "Last-Translator: Angela Harding <coordination@landmatrix.org>\n"
 "Language-Team: Russian <http://translate.landmatrix.org/projects/landmatrix/landmatrix/ru/>\n"
@@ -21,8 +21,8 @@ msgstr ""
 msgid "Data"
 msgstr "Данные"
 
-msgid "Level"
-msgstr "Уровень"
+msgid "Role"
+msgstr "Роль"
 
 msgid "Blog index"
 msgstr ""
@@ -1537,6 +1537,9 @@ msgstr "Заголовок"
 msgid "Text"
 msgstr "Текст"
 
+msgid "Level"
+msgstr "Уровень"
+
 msgid "Allow users to hide message"
 msgstr "Позволить пользователям скрывать сообщение"
 
@@ -2438,9 +2441,6 @@ msgstr "Ресурсы"
 
 msgid "Reviewed by me"
 msgstr ""
-
-msgid "Role"
-msgstr "Роль"
 
 msgid "Satellite"
 msgstr ""

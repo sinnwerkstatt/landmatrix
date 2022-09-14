@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-14 15:24+0200\n"
+"POT-Creation-Date: 2022-09-14 16:15+0200\n"
 "PO-Revision-Date: 2022-05-30 13:48+0000\n"
 "Last-Translator: Kurt Gerber <kurt.gerber@unibe.ch>\n"
 "Language-Team: Spanish <http://translate.landmatrix.org/projects/landmatrix/landmatrix/es/>\n"
@@ -19,8 +19,8 @@ msgstr ""
 msgid "Data"
 msgstr "Datos"
 
-msgid "Level"
-msgstr "Nivel"
+msgid "Role"
+msgstr "Rol"
 
 msgid "Blog index"
 msgstr ""
@@ -1535,6 +1535,9 @@ msgstr "Título"
 msgid "Text"
 msgstr "Texto"
 
+msgid "Level"
+msgstr "Nivel"
+
 msgid "Allow users to hide message"
 msgstr "Permitir a personas usuarias esconder mensaje"
 
@@ -2436,9 +2439,6 @@ msgstr "Recursos"
 
 msgid "Reviewed by me"
 msgstr ""
-
-msgid "Role"
-msgstr "Rol"
 
 msgid "Satellite"
 msgstr ""
