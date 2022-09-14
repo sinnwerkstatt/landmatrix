@@ -155,8 +155,6 @@
           placeholder={$_("Country")}
           optionIdentifier="id"
           labelIdentifier="name"
-          getOptionLabel={o => `${o.name} (#${o.id})`}
-          getSelectionLabel={o => `${o.name} (#${o.id})`}
           showChevron
           {VirtualList}
         />
