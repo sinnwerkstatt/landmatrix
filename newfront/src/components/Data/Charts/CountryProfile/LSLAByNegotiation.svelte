@@ -4,6 +4,7 @@
 
   import { browser } from "$app/environment"
 
+  import { LSLAByNegotiation, LSLAData } from "$lib/data/charts/LSLAByNegotiation"
   import { filters } from "$lib/filters"
   import type { Deal } from "$lib/types/deal"
   import {
@@ -15,8 +16,6 @@
   import ChartWrapper from "$components/Data/Charts/ChartWrapper.svelte"
   import { downloadImage } from "$components/Data/Charts/utils"
   import type { DownloadEvent } from "$components/Data/Charts/utils"
-
-  import { LSLAByNegotiation, LSLAData } from "./lsla_by_negotiation"
 
   export let deals: Deal[] = []
 

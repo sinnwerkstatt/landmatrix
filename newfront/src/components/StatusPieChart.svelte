@@ -13,7 +13,6 @@
 
   ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale)
 
-  export let title: string
   export let data: ChartData<"pie", number[], string>
   export let unit = ""
   export let chart: ChartJS

@@ -5,6 +5,8 @@
   import { browser } from "$app/environment"
 
   import { classification_choices } from "$lib/choices"
+  import { DynamicsOfDeal, toCSV, toJSON } from "$lib/data/charts/dynamicsOfDeal"
+  import type { DynamicsDataPoint } from "$lib/data/charts/dynamicsOfDeal"
   import type { Deal } from "$lib/types/deal"
 
   import ChartWrapper from "$components/Data/Charts/ChartWrapper.svelte"
@@ -14,9 +16,6 @@
     downloadJSON,
   } from "$components/Data/Charts/utils"
   import type { DownloadEvent } from "$components/Data/Charts/utils"
-
-  import { DynamicsOfDeal, toCSV, toJSON } from "./dynamics_of_deal"
-  import type { DynamicsDataPoint } from "./dynamics_of_deal"
 
   const title = $_("Dynamics of deal by investor type")
   const dynamicOfDeal = new DynamicsOfDeal()

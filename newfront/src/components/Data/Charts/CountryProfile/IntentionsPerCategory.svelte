@@ -8,6 +8,14 @@
     flat_intention_of_investment_map,
     getImplementationStatusChoices,
   } from "$lib/choices"
+  import {
+    LamaSankey,
+    sankey_links_to_csv_cross,
+  } from "$lib/data/charts/intentionsPerCategory"
+  import type {
+    MySankeyLink,
+    MySankeyNode,
+  } from "$lib/data/charts/intentionsPerCategory"
   import type { Deal } from "$lib/types/deal"
 
   import ChartWrapper from "$components/Data/Charts/ChartWrapper.svelte"
@@ -17,9 +25,6 @@
     downloadJSON,
   } from "$components/Data/Charts/utils"
   import type { DownloadEvent } from "$components/Data/Charts/utils"
-
-  import { LamaSankey, sankey_links_to_csv_cross } from "./intentions_per_category"
-  import type { MySankeyLink, MySankeyNode } from "./intentions_per_category"
 
   const title = $_(
     "Number of intentions per category of production according to implementation status",
