@@ -3,7 +3,7 @@
   import type { ChartData } from "chart.js"
 
   import ChartWrapper from "$components/Data/Charts/ChartWrapper.svelte"
-  import { downloadJSON, downloadPNG } from "$components/Data/Charts/utils"
+  import { downloadCSV, downloadJSON, downloadPNG } from "$components/Data/Charts/utils"
   import type { DownloadEvent } from "$components/Data/Charts/utils"
   import StatusPieChart from "$components/StatusPieChart.svelte"
 
@@ -13,12 +13,15 @@
 
   let chart: Chart<"pie">
 
+  const toCSV = (data: ChartData<"pie">) =>
+    [data.labels?.join(","), ...data.datasets.map(set => set.data.join(","))].join("\n")
+
   const handleDownload = ({ detail: fileType }: DownloadEvent) => {
     switch (fileType) {
       case "json":
         return downloadJSON(JSON.stringify(data, null, 2), title)
       case "csv":
-        return // TODO
+        return downloadCSV(toCSV(data), title)
       case "png":
         return downloadPNG(chart.toBase64Image(), title)
       default:
