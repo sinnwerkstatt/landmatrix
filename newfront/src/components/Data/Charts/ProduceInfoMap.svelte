@@ -210,9 +210,7 @@
     return csvHeader + csvData
   }
 
-  const handleDownload = (event: DownloadEvent) => {
-    const fileType = event.detail
-
+  const handleDownload = ({ detail: fileType }: DownloadEvent) => {
     switch (fileType) {
       case "json":
         return downloadJSON(JSON.stringify(treeData, null, 2), title)

@@ -95,9 +95,7 @@
     svg.do_the_graph(svgComp, Object.values(pots))
   }
 
-  const handleDownload = (event: DownloadEvent) => {
-    const fileType = event.detail
-
+  const handleDownload = ({ detail: fileType }: DownloadEvent) => {
     switch (fileType) {
       case "json":
         return // TODO

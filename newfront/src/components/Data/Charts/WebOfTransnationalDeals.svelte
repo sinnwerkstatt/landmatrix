@@ -7,6 +7,7 @@
 
   import ChartWrapper from "$components/Data/Charts/ChartWrapper.svelte"
   import type { DownloadEvent } from "$components/Data/Charts/utils"
+  import { downloadImage, downloadJSON } from "$components/Data/Charts/utils"
 
   export let title = ""
   export let deals: EdgeBundlingData
@@ -22,7 +23,14 @@
     )
 
   const handleDownload = ({ detail: fileType }: DownloadEvent) => {
-    console.log(fileType)
+    switch (fileType) {
+      case "json":
+        return downloadJSON(JSON.stringify(deals, null, 2), title)
+      case "csv":
+        return // TODO
+      default:
+        return downloadImage(svgComp, fileType, title)
+    }
   }
 
   $: $filters && redrawSpider(deals, $filters.country_id)
