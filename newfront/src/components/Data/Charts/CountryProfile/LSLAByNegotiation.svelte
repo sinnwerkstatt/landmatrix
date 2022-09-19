@@ -13,8 +13,8 @@
     NegotiationStatusGroup,
   } from "$lib/types/deal"
 
-  import ChartWrapper from "$components/Data/Charts/ChartWrapper.svelte"
-  import { downloadImage } from "$components/Data/Charts/utils"
+  import ChartWrapper from "$components/Data/Charts/DownloadWrapper.svelte"
+  import { downloadSVG } from "$components/Data/Charts/utils"
   import type { DownloadEvent } from "$components/Data/Charts/utils"
 
   export let deals: Deal[] = []
@@ -102,7 +102,7 @@
       case "csv":
         return // TODO
       default:
-        return downloadImage(svgComp, fileType, title)
+        return downloadSVG(svgComp, fileType, title)
     }
   }
 

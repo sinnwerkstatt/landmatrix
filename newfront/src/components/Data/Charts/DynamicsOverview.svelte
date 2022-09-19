@@ -19,10 +19,6 @@
   $: chartNegStat = createNegotiationStatusChartData(deals, sortBy)
   $: chartIoI = createIntentionOfInvestmentGroupChartData(deals, sortBy)
   $: chartIoIAgriculture = createAgricultureIntentionChartData(deals, sortBy)
-
-  // const rootStyles = getComputedStyle(document.body);
-  // const orange = rootStyles.getPropertyValue("--color-lm-orange");
-  // console.log("orange", orange);
 </script>
 
 <div>

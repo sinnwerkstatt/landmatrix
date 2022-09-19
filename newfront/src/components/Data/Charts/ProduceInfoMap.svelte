@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { format, hierarchy, select, selectAll, treemap, treemapSquarify } from "d3"
+  import { format, hierarchy, select, treemap, treemapSquarify } from "d3"
   import type { BaseType, HierarchyNode } from "d3"
   import { afterUpdate, onMount } from "svelte"
   import { _ } from "svelte-i18n"
@@ -10,12 +10,8 @@
   import type { Deal } from "$lib/types/deal"
 
   import { showContextBar, showFilterBar } from "$components/Data"
-  import ChartWrapper from "$components/Data/Charts/ChartWrapper.svelte"
-  import {
-    downloadCSV,
-    downloadImage,
-    downloadJSON,
-  } from "$components/Data/Charts/utils"
+  import ChartWrapper from "$components/Data/Charts/DownloadWrapper.svelte"
+  import { downloadCSV, downloadJSON, downloadSVG } from "$components/Data/Charts/utils"
   import type { DownloadEvent } from "$components/Data/Charts/utils"
 
   export let deals: Deal[] = []
@@ -217,7 +213,7 @@
       case "csv":
         return downloadCSV(asCsv(treeData), title)
       default:
-        return downloadImage(svgComp, fileType, title)
+        return downloadSVG(svgComp, fileType, title)
     }
   }
 </script>

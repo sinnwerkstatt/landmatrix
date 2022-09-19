@@ -9,12 +9,8 @@
   import type { DynamicsDataPoint } from "$lib/data/charts/dynamicsOfDeal"
   import type { Deal } from "$lib/types/deal"
 
-  import ChartWrapper from "$components/Data/Charts/ChartWrapper.svelte"
-  import {
-    downloadCSV,
-    downloadImage,
-    downloadJSON,
-  } from "$components/Data/Charts/utils"
+  import ChartWrapper from "$components/Data/Charts/DownloadWrapper.svelte"
+  import { downloadCSV, downloadJSON, downloadSVG } from "$components/Data/Charts/utils"
   import type { DownloadEvent } from "$components/Data/Charts/utils"
 
   const title = $_("Dynamics of deal by investor type")
@@ -54,7 +50,7 @@
       case "csv":
         return downloadCSV(toCSV(payload), title)
       default:
-        return downloadImage(svgComp, fileType, title)
+        return downloadSVG(svgComp, fileType, title)
     }
   }
 

@@ -37,27 +37,32 @@ export const downloadJSON = (jsonString: string, title: string): void =>
     fileName(title, ".json"),
   )
 
-export const downloadPNG = (dataString: string, title: string): void =>
-  a_download(dataString, fileName(title, ".png"))
+export const downloadCanvas = (
+  canvas: HTMLCanvasElement,
+  fileType: "png" | "webp",
+  title: string,
+): void =>
+  a_download(canvas.toDataURL(`image/${fileType}`), fileName(title, `.${fileType}`))
 
-export const downloadImage = (
+export const downloadSVG = (
   svg: SVGElement | null,
-  filetype: "svg" | "png" | "webp",
+  fileType: "svg" | "png" | "webp",
   title: string,
 ): void => {
   if (!svg) return
-  const name = fileName(title, `.${filetype}`)
+  const name = fileName(title, `.${fileType}`)
 
   const serialized = new XMLSerializer().serializeToString(svg)
   const source = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n' + serialized
   const svgString = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(source)
 
-  if (filetype === "svg") {
+  if (fileType === "svg") {
     a_download(svgString, name)
   } else {
     const canvas = document.createElement("canvas")
     const context = canvas.getContext("2d")
     if (!context) return
+
     canvas.width = 800
     canvas.height = 800
     context.clearRect(0, 0, canvas.width, canvas.height)
@@ -65,8 +70,7 @@ export const downloadImage = (
     const image = new Image()
     image.onload = function () {
       context.drawImage(image, 0, 0, canvas.width, canvas.height)
-      const canvasUrl = canvas.toDataURL(filetype)
-      a_download(canvasUrl, name)
+      downloadCanvas(canvas, fileType, title)
     }
     image.src = svgString
   }

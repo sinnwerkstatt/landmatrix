@@ -2,8 +2,12 @@
   import { Chart } from "chart.js"
   import type { ChartData } from "chart.js"
 
-  import ChartWrapper from "$components/Data/Charts/ChartWrapper.svelte"
-  import { downloadCSV, downloadJSON, downloadPNG } from "$components/Data/Charts/utils"
+  import ChartWrapper from "$components/Data/Charts/DownloadWrapper.svelte"
+  import {
+    downloadCanvas,
+    downloadCSV,
+    downloadJSON,
+  } from "$components/Data/Charts/utils"
   import type { DownloadEvent } from "$components/Data/Charts/utils"
   import StatusPieChart from "$components/StatusPieChart.svelte"
 
@@ -22,14 +26,14 @@
         return downloadJSON(JSON.stringify(data, null, 2), title)
       case "csv":
         return downloadCSV(toCSV(data), title)
-      case "png":
-        return downloadPNG(chart.toBase64Image(), title)
+      case "svg":
+        return // Not supported
       default:
-        return // TODO
+        return downloadCanvas(chart.canvas, fileType, title)
     }
   }
 </script>
 
-<ChartWrapper {title} on:download={handleDownload}>
+<ChartWrapper disableSVG {title} on:download={handleDownload}>
   <StatusPieChart bind:chart {data} {unit} />
 </ChartWrapper>

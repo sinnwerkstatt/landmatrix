@@ -15,7 +15,7 @@
 
   export let data: ChartData<"pie", number[], string>
   export let unit = ""
-  export let chart: ChartJS
+  export let chart: ChartJS | null = null
 
   $: totals = data.datasets.map(dSet => dSet.data.reduce((sum, value) => sum + value))
   let i18nData: ChartData<"pie", number[], string>

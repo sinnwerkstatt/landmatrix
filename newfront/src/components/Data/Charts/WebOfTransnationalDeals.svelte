@@ -5,9 +5,9 @@
   import type { EdgeBundlingData } from "$lib/data/charts/webOfTransnationalDeals"
   import { filters } from "$lib/filters"
 
-  import ChartWrapper from "$components/Data/Charts/ChartWrapper.svelte"
+  import ChartWrapper from "$components/Data/Charts/DownloadWrapper.svelte"
   import type { DownloadEvent } from "$components/Data/Charts/utils"
-  import { downloadImage, downloadJSON } from "$components/Data/Charts/utils"
+  import { downloadJSON, downloadSVG } from "$components/Data/Charts/utils"
 
   export let title = ""
   export let deals: EdgeBundlingData
@@ -27,9 +27,9 @@
       case "json":
         return downloadJSON(JSON.stringify(deals, null, 2), title)
       case "csv":
-        return // TODO
+        return // NOT SUPPORTED
       default:
-        return downloadImage(svgComp, fileType, title)
+        return downloadSVG(svgComp, fileType, title)
     }
   }
 
