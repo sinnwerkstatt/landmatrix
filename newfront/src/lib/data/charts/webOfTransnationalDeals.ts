@@ -25,7 +25,7 @@ export interface EdgeBundlingData {
 const width = 1000
 const radius = width / 2
 const colornone = "#ccc"
-const tree = cluster().size([2 * Math.PI, radius - 100])
+const tree = cluster().size([2 * Math.PI, radius - 150])
 const line = lineRadial()
   .curve(curveBundle.beta(0.85))
   .radius(d => d.y)
@@ -70,7 +70,8 @@ export function LandMatrixRadialSpider(
   selectedCountry: number,
   updateCountryFn: (country: number) => void,
 ) {
-  select(svgElement).selectAll("*").remove()
+  select(svgElement).selectAll("g").remove()
+  select(svgElement).selectAll("defs").remove()
   const svg = select(svgElement)
     .attr("viewBox", [-width / 2, -width / 2, width, width])
     .attr("height", "100%")

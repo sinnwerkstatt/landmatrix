@@ -12,6 +12,7 @@
 
   export let title: string
   export let wrapperClasses = ""
+  export let disableCSV = false
 
   const dispatch = createEventDispatcher<{ download: FileType }>()
   $: isChrome = browser && /Google Inc/.test(navigator.vendor)
@@ -44,7 +45,7 @@
     >
       <button
         class="px-3 pb-1"
-        class:use-chrome={!isChrome}
+        class:grey-out={!isChrome}
         on:click={() => dispatch("download", "png")}
       >
         <FileImageIcon />
@@ -60,7 +61,7 @@
     >
       <button
         class="px-3 pb-1"
-        class:use-chrome={!isChrome}
+        class:grey-out={!isChrome}
         on:click={() => dispatch("download", "webp")}
       >
         <FileImageIcon /> WebP
@@ -72,7 +73,11 @@
       <FileCodeIcon />
       JSON
     </button>
-    <button class="px-3 pb-1" on:click={() => dispatch("download", "csv")}>
+    <button
+      class="px-3 pb-1"
+      class:grey-out={disableCSV}
+      on:click={() => dispatch("download", "csv")}
+    >
       <FileCodeIcon />
       CSV
     </button>
@@ -83,7 +88,7 @@
 </div>
 
 <style>
-  .use-chrome {
+  .grey-out {
     opacity: 0.7;
     pointer-events: none;
   }

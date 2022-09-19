@@ -38,51 +38,55 @@
   onMount(() => redrawSpider(deals, $filters.country_id))
 </script>
 
-<ChartWrapper {title} wrapperClasses="w-3/4" on:download={handleDownload}>
-  <svg id="web-of-transnational-deals" bind:this={svgComp} />
+<ChartWrapper {title} disableCSV wrapperClasses="w-3/4" on:download={handleDownload}>
+  <svg id="web-of-transnational-deals" bind:this={svgComp}>
+    <!-- Include styles with fallback colors in svg for export-->
+    <style>
+      #incoming-marker {
+        fill: var(--color-lm-orange, #fc941dff);
+      }
+
+      #outgoing-marker {
+        fill: var(--color-lm-investor, #43b6b5ff);
+      }
+
+      path.incoming-highlighted {
+        stroke: var(--color-lm-orange, #fc941dff);
+        stroke-width: 2;
+        marker-start: url(#incoming-marker);
+      }
+
+      path.outgoing-highlighted {
+        stroke: var(--color-lm-investor, #43b6b5ff);
+        stroke-width: 2;
+        marker-start: url(#outgoing-marker);
+      }
+
+      path.incoming-permahighlight {
+        stroke: var(--color-lm-orange, #fc941dff);
+        stroke-width: 2.5;
+        marker-start: url(#incoming-marker);
+      }
+
+      path.outgoing-permahighlight {
+        stroke: var(--color-lm-investor, #43b6b5ff);
+        stroke-width: 2.5;
+        marker-start: url(#outgoing-marker);
+      }
+
+      text.incoming-highlighted {
+        font-size: 14px;
+        cursor: pointer;
+        font-weight: bold;
+        fill: var(--color-lm-orange, #fc941dff);
+      }
+
+      text.outgoing-highlighted {
+        font-size: 14px;
+        cursor: pointer;
+        font-weight: bold;
+        fill: var(--color-lm-investor, #43b6b5ff);
+      }
+    </style>
+  </svg>
 </ChartWrapper>
-
-<!--suppress CssUnusedSymbol, CssUnknownTarget -->
-<style>
-  :global(#incoming-marker) {
-    fill: var(--color-lm-orange);
-  }
-  :global(#outgoing-marker) {
-    fill: var(--color-lm-investor);
-  }
-
-  :global(path.incoming-highlighted) {
-    stroke: var(--color-lm-orange);
-    stroke-width: 2;
-    marker-start: url(#incoming-marker);
-  }
-  :global(path.outgoing-highlighted) {
-    stroke: var(--color-lm-investor);
-    stroke-width: 2;
-    marker-start: url(#outgoing-marker);
-  }
-
-  :global(path.incoming-permahighlight) {
-    stroke: var(--color-lm-orange);
-    stroke-width: 2.5;
-    marker-start: url(#incoming-marker);
-  }
-  :global(path.outgoing-permahighlight) {
-    stroke: var(--color-lm-investor);
-    stroke-width: 2.5;
-    marker-start: url(#outgoing-marker);
-  }
-
-  :global(text.incoming-highlighted) {
-    font-size: 14px;
-    cursor: pointer;
-    font-weight: bold;
-    fill: var(--color-lm-orange);
-  }
-  :global(text.outgoing-highlighted) {
-    font-size: 14px;
-    cursor: pointer;
-    font-weight: bold;
-    fill: var(--color-lm-investor);
-  }
-</style>
