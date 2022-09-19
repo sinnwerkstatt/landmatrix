@@ -14,7 +14,7 @@
   } from "$lib/types/deal"
 
   import ChartWrapper from "$components/Data/Charts/DownloadWrapper.svelte"
-  import { downloadSVG } from "$components/Data/Charts/utils"
+  import { downloadCSV, downloadJSON, downloadSVG } from "$components/Data/Charts/utils"
   import type { DownloadEvent } from "$components/Data/Charts/utils"
 
   export let deals: Deal[] = []
@@ -24,7 +24,8 @@
   let svgComp: SVGElement
   let svg = new LSLAByNegotiation()
 
-  let pots: { [key: string]: LSLAData } = {}
+  type Pots = { [key: string]: LSLAData }
+  let pots: Pots = {}
   $: if (browser && deals?.length > 0) {
     const filter_negstat = $filters.negotiation_status
     const selected_neg_stat =
@@ -95,12 +96,22 @@
     svg.do_the_graph(svgComp, Object.values(pots))
   }
 
+  const toCSV = (pots: Pots) => {
+    const header = "Name (Status Group),Number of Deals,Contract Size,Intended Size\n"
+    const records = Object.values(pots)
+      .map(
+        ({ name, amount, contract_size, intended_size }) =>
+          `${name},${amount},${contract_size},${intended_size}`,
+      )
+      .join("\n")
+    return header + records
+  }
   const handleDownload = ({ detail: fileType }: DownloadEvent) => {
     switch (fileType) {
       case "json":
-        return // TODO
+        return downloadJSON(JSON.stringify(pots, null, 2), title)
       case "csv":
-        return // TODO
+        return downloadCSV(toCSV(pots), title)
       default:
         return downloadSVG(svgComp, fileType, title)
     }
