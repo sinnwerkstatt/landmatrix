@@ -50,7 +50,6 @@
       }}
       class="absolute z-10 mx-1 w-[22rem] rounded-sm bg-lm-warmgray shadow-md"
     >
-      <h4 class="px-2">Logbooklist</h4>
       <ManageHeaderLogbookList workflowinfos={value} />
     </div>
   {/if}
