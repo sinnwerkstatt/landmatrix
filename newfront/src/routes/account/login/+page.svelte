@@ -1,9 +1,12 @@
 <script lang="ts">
+  import { gql } from "@urql/svelte"
+  import type { Client } from "@urql/svelte"
+  import { toast } from "@zerodevx/svelte-toast"
   import { _ } from "svelte-i18n"
 
   import { page } from "$app/stores"
 
-  import { dispatchLogin } from "$lib/user"
+  import type { User } from "$lib/types/user"
 
   import PageTitle from "$components/PageTitle.svelte"
 
@@ -15,15 +18,54 @@
   let next = $page.url.searchParams.get("next") || "/"
 
   async function login() {
-    const res = await dispatchLogin(username, password, $page.data.urqlClient)
-    if (res.status) {
+    const ret = await ($page.data.urqlClient as Client)
+      .mutation<{ login: { status: string; error: string; user: User } }>(
+        gql`
+          mutation Login($username: String!, $password: String!) {
+            login(username: $username, password: $password) {
+              status
+              error
+              user {
+                id
+                username
+                full_name
+                is_authenticated
+                is_impersonate
+                role
+                country {
+                  id
+                  name
+                }
+                region {
+                  id
+                  name
+                }
+                groups {
+                  id
+                  name
+                }
+              }
+            }
+          }
+        `,
+        { username, password },
+      )
+      .toPromise()
+    if (ret.error) {
+      return toast.push(`Unknown Problem: ${ret.error}`, { classes: ["error"] })
+    }
+    if (!ret.data) {
+      return toast.push(`Unknown Problem: ${ret.error}`, { classes: ["error"] })
+    }
+
+    if (ret.data.login.status) {
       login_failed_message = ""
       logged_in = true
-      await setTimeout(() => (window.location.href = next), 100)
+      setTimeout(() => (window.location.href = next), 100)
       // can't do this, because it's hard to populate "user" back to layout:
       // setTimeout(() => goto(next), 100);
     } else {
-      login_failed_message = res.error
+      login_failed_message = ret.data.login.error
     }
   }
 </script>

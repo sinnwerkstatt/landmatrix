@@ -46,7 +46,8 @@ test.describe.serial("basic cms tests", () => {
     ]);
 
     await page.locator("text=Observatory index page").first().click();
-    await page.locator('input[name="title_en"]').fill("observatory");
+    await page.click('input[name="title_en"]');
+    await page.keyboard.type("observatory");
     await page.locator('input[name="title_en"]').press("Enter");
 
     //create observatory child page
@@ -54,7 +55,8 @@ test.describe.serial("basic cms tests", () => {
     await page.locator("a:has-text(\"View child pages of 'Land Matrix'\")").click();
     await page.locator('h3:has-text("observatory")').click();
     await page.locator("text=Add child page").click();
-    await page.locator('input[name="title_en"]').fill("global");
+    await page.click('input[name="title_en"]');
+    await page.keyboard.type("global");
     await page.locator("text=Section divider").first().click();
     await publishNewPage(page);
     await page.locator("text=View live").first().click();
@@ -74,7 +76,8 @@ test.describe.serial("basic cms tests", () => {
       .locator("[aria-label=\"Add a child page to \\'Land Matrix\\' \"]")
       .click();
     await page.locator("text=Wagtail page").first().click();
-    await page.locator('input[name="title_en"]').fill("Contribute");
+    await page.click('input[name="title_en"]');
+    await page.keyboard.type("Contribute");
     await page.locator(".c-sf-button").first().click();
     await page.locator('input[name="body_en-0-value"]').click();
     await page.locator('input[name="body_en-0-value"]').fill("Test Title");
@@ -105,11 +108,13 @@ test.describe.serial("basic cms tests", () => {
       await page.locator("text=Add child page").first().click(),
     ]);
     await page.locator("text=Blog index").first().click();
-    await page.locator('input[name="title_en"]').fill("Resources");
+    await page.click('input[name="title_en"]');
+    await page.keyboard.type("Resources");
     await publishNewPage(page);
     //create blog Article page
     await page.locator("a[title=\"Add a child page to 'Resources'\"]").click();
-    await page.locator('input[name="title_en"]').fill("Blog Article");
+    await page.click('input[name="title_en"]');
+    await page.keyboard.type("Blog Article");
     await page.locator('text="News"').click();
     await page.locator("text=Section divider").click();
     await publishNewPage(page);

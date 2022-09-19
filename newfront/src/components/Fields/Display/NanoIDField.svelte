@@ -3,11 +3,11 @@
 
   import type { FormField } from "$components/Fields/fields"
 
-  export let value: { lat: number; lng: number }
+  export let value: number
   export let formfield: FormField
 </script>
 
-<div class="nanoID_field" data-name={formfield.name}>
+<div class="nanoID_field" data-name={formfield?.name ?? ""}>
   <a class="font-mono" href="{$page.url.hash.split('/')[0] || '#locations'}/{value}">
     {value}
   </a>

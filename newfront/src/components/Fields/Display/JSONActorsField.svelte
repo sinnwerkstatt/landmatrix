@@ -20,7 +20,7 @@
   export let value: JSONActorsFieldType[] = []
 </script>
 
-<ul class="jsonactors_field list-disc pl-5">
+<ul class="jsonactors_field list-disc pl-5" data-name={formfield?.name ?? ""}>
   {#each value ?? [] as val}
     <li>
       <span>{val.name}</span>

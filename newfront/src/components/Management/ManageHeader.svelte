@@ -8,7 +8,7 @@
 
   import { isAuthorized } from "$lib/helpers"
   import type { Obj, ObjVersion } from "$lib/types/generics"
-  import { UserLevel } from "$lib/types/user"
+  import { UserRole } from "$lib/types/user"
 
   import DateTimeField from "$components/Fields/Display/DateTimeField.svelte"
   import ManageOverlay from "$components/Management/ManageOverlay.svelte"
@@ -46,7 +46,7 @@
     (!objectVersion && object.status === 4) || isActiveWithDraft
       ? false
       : object.draft_status === 4
-      ? $page.data.user.level === UserLevel.ADMINISTRATOR
+      ? $page.data.user.role === UserRole.ADMINISTRATOR
       : isAuthorized($page.data.user, object)
 
   let isOldDraft: boolean
@@ -67,7 +67,7 @@
     isActiveWithDraft || isOldDraft
       ? false
       : object.draft_status === null || object.draft_status === 4
-      ? $page.data.user.level === UserLevel.ADMINISTRATOR
+      ? $page.data.user.role === UserRole.ADMINISTRATOR
       : isAuthorized($page.data.user, object)
 
   $: isDeleted = !objectVersion && object.status === 4
@@ -99,7 +99,7 @@
             {$_("Go to active version")}
           </a>
         {/if}
-        {#if hasNewerDraft && (lastVersion.created_by?.id === $page.data.user.id || $page.data.user.level > UserLevel.REPORTER)}
+        {#if hasNewerDraft && (lastVersion.created_by?.id === $page.data.user.id || $page.data.user.role > UserRole.REPORTER)}
           <a href="/{otype}/{object.id}/{lastVersion.id}/" class="btn btn-gray">
             {$_("Go to current draft")}
           </a>
@@ -178,8 +178,8 @@
                   type="button"
                   class:disabled={lastVersion.id !== +objectVersion}
                   title={otype === "deal"
-                    ? $_("Submits the deal for review")
-                    : $_("Submits the investor for review")}
+                    ? $_("Submit the deal for review")
+                    : $_("Submit the investor for review")}
                   class="btn btn-pelorous"
                   on:click={() => dispatch("sendToReview")}
                 >
@@ -210,8 +210,8 @@
                   type="button"
                   class:disabled={lastVersion.id !== +objectVersion}
                   title={otype === "deal"
-                    ? $_("Submits the deal for activation")
-                    : $_("Submits the investor for activation")}
+                    ? $_("Submit the deal for activation")
+                    : $_("Submit the investor for activation")}
                   class="btn btn-pelorous"
                   on:click={() => (showSendToActivationOverlay = true)}
                 >
@@ -226,11 +226,11 @@
                   class:disabled={lastVersion.id !== +objectVersion}
                   title={hasActive
                     ? $_(
-                        "Activates submitted version replacing currently active version",
+                        "Activate submitted version replacing currently active version",
                       )
                     : otype === "deal"
-                    ? $_("Sets the deal active")
-                    : $_("Sets the investor active")}
+                    ? $_("Set the deal active")
+                    : $_("Set the investor active")}
                   class="btn btn-pelorous"
                   on:click={() => (showActivateOverlay = true)}
                 >
@@ -290,22 +290,20 @@
                   {#if object.draft_status === 1}
                     {#if !hasActive}
                       {otype === "deal"
-                        ? $_("Starts editing this deal")
-                        : $_("Starts editing this investor")}
+                        ? $_("Start editing this deal")
+                        : $_("Start editing this investor")}
                     {:else}
-                      {otype === "deal"
-                        ? $_("Edits this draft version")
-                        : $_("Edits this investor version")}
+                      {$_("Edit this version")}
                     {/if}
                   {:else}
                     {otype === "deal"
-                      ? $_("Creates a new draft version of this deal")
-                      : $_("Creates a new draft version of this investor")}
+                      ? $_("Create a new draft version of this deal")
+                      : $_("Create a new draft version of this investor")}
                   {/if}
                 </div>
               </div>
             {/if}
-            {#if !objectVersion && $page.data.user.level >= UserLevel.ADMINISTRATOR}
+            {#if !objectVersion && $page.data.user.role >= UserRole.ADMINISTRATOR}
               <div class="flex items-center gap-4">
                 <div>
                   <button
@@ -322,8 +320,8 @@
                       : $_("Reactivate this investor")}
                   {:else}
                     {otype === "deal"
-                      ? $_("Deletes this deal")
-                      : $_("Deletes this investor")}
+                      ? $_("Delete this deal")
+                      : $_("Delete this investor")}
                   {/if}
                 </div>
               </div>
@@ -340,12 +338,12 @@
                 </div>
                 <div class="italic text-black/50">
                   {otype === "deal"
-                    ? $_("Completely removes this draft version of the deal")
-                    : $_("Completely removes this draft version of the investor")}
+                    ? $_("Completely removes this version of the deal")
+                    : $_("Completely removes this version of the investor")}
                 </div>
               </div>
             {/if}
-            {#if $page.data.user.level === UserLevel.ADMINISTRATOR && otype === "deal" && object.status !== 1}
+            {#if $page.data.user.role === UserRole.ADMINISTRATOR && otype === "deal" && object.status !== 1}
               <div class="flex items-center gap-4">
                 <div>
                   <button

@@ -1,6 +1,9 @@
 <script lang="ts">
   import dayjs from "dayjs"
 
+  import type { FormField } from "$components/Fields/fields"
+
+  export let formfield: FormField
   export let value: string
   export let format = "YYYY-MM-DD"
 
@@ -8,6 +11,6 @@
   // return dayjs(this.value).format("YYYY‑MM‑DD"); 🤩️
 </script>
 
-<div class="date_field whitespace-nowrap">
+<div class="date_field whitespace-nowrap" data-name={formfield?.name ?? ""}>
   {value ? dayjs(value).format(format) : "—"}
 </div>

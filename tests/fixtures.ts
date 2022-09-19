@@ -1,26 +1,27 @@
+import { extractDealAndVersionId } from "./utils";
 import {
-  test as base,
-  Page,
   BrowserContext,
+  Page,
   PlaywrightWorkerArgs,
+  test as base,
   TestFixture,
 } from "@playwright/test";
 
-type Level = "reporter" | "admin" | "editor";
+type Role = "reporter" | "admin" | "editor";
 
-type LevelContexts = { [key in Level]: LevelContext };
+type RoleContexts = { [key in Role]: RoleContext };
 
-interface LevelContext {
+interface RoleContext {
   newPage: () => Promise<Page>;
   createDeal: () => Promise<number>;
   deleteDeal: (id: number) => Promise<void>;
 }
 
 const createContext =
-  (level: Level): TestFixture<LevelContext, PlaywrightWorkerArgs> =>
+  (role: Role): TestFixture<RoleContext, PlaywrightWorkerArgs> =>
   async ({ browser }, use) => {
     const context = await browser.newContext({
-      storageState: `tests/storageState/${level}.json`,
+      storageState: `tests/storageState/${role}.json`,
     });
     await use({
       newPage: () => context.newPage(),
@@ -30,20 +31,13 @@ const createContext =
     await context.close();
   };
 
-export const test = base.extend<LevelContexts>({
+export const test = base.extend<RoleContexts>({
   admin: createContext("admin"),
   editor: createContext("editor"),
   reporter: createContext("reporter"),
 });
 
-export const extractDealAndVersionId = (
-  url: string
-): [dealId: number, versionId: number] => {
-  const pathname = new URL(url).pathname;
-  return pathname.split("/").slice(-2).map(parseInt) as [number, number];
-};
-
-const createTestDeal = async (context: BrowserContext): Promise<number> => {
+export const createTestDeal = async (context: BrowserContext): Promise<number> => {
   const page = await context.newPage();
 
   await page.goto("/deal/add", { waitUntil: "networkidle" });
@@ -60,7 +54,7 @@ const createTestDeal = async (context: BrowserContext): Promise<number> => {
   return extractDealAndVersionId(url)[0];
 };
 
-const deleteTestDeal = async (
+export const deleteTestDeal = async (
   context: BrowserContext,
   dealId: number
 ): Promise<void> => {

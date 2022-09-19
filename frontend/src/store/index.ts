@@ -235,7 +235,7 @@ const store = new Vuex.Store({
                   username
                   is_authenticated
                   is_impersonate
-                  level
+                  role
                   country {
                     id
                     name
@@ -331,7 +331,7 @@ const store = new Vuex.Store({
                     username
                     is_authenticated
                     is_impersonate
-                    level
+                    role
                     country {
                       id
                       name

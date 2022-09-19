@@ -12,7 +12,7 @@ def find_files():
     return files
 
 
-re_i18n_strings = re.compile(r"\$_\(\s*?\"(.*?)\"(?:,\s*?\{.*?\})?\s*?\)")
+re_i18n_strings = re.compile(r"\$_\(\s*?\"(.*?)\"(?:,\s*?\{.*?\})?,?\s*?\)")
 
 
 def process():

@@ -13,7 +13,7 @@
   let displayDeals = false
 </script>
 
-<div class="length_field" data-name={formfield.name}>
+<div class="length_field" data-name={formfield?.name ?? ""}>
   {#if value.length > 0}
     <button
       class="text-orange"

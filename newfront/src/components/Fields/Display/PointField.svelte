@@ -5,7 +5,7 @@
   export let formfield: FormField
 </script>
 
-<div class="point_field" data-name={formfield.name}>
+<div class="point_field" data-name={formfield?.name ?? ""}>
   {#if value.lat}
     <div>Lat: {parseFloat(value.lat.toFixed(8))}</div>
   {/if}

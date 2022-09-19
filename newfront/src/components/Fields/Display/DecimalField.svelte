@@ -7,10 +7,7 @@
   export let value: number
 </script>
 
-<div
-  class="decimal_field whitespace-nowrap"
-  data-name={formfield ? formfield.name : ""}
->
+<div class="decimal_field whitespace-nowrap" data-name={formfield?.name ?? ""}>
   {value?.toLocaleString("fr") ?? "—"}
   {#if value && formfield.unit}
     <span>{$_(formfield.unit)}</span>

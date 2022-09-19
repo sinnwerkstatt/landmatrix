@@ -3,7 +3,7 @@
   import { onMount } from "svelte"
 
   import { getAllUsers } from "$lib/stores"
-  import { UserLevel } from "$lib/types/user"
+  import { UserRole } from "$lib/types/user"
 
   import Footer from "$components/Footer.svelte"
   import Messages from "$components/Messages.svelte"
@@ -22,7 +22,7 @@
 
   export let data: LayoutData
   onMount(async () => {
-    if (data.user?.level >= UserLevel.EDITOR) {
+    if (data.user?.role >= UserRole.EDITOR) {
       await getAllUsers(data.urqlClient)
     }
   })

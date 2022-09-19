@@ -18,10 +18,10 @@ User = get_user_model()
 #     if isinstance(country, int):
 #         country = Country.objects.get(id=country)
 #
-#     if user.level == 3:
+#     if user.role == UserRole.ADMINISTRATOR:
 #         return True
 #
-#     if user.level >= 2:
+#     if user.role >= UserRole.EDITOR:
 #         if country == user.country:
 #             return True
 #         if user.region.country == country:

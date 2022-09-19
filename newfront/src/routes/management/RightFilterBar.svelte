@@ -32,8 +32,6 @@
       <Select
         {VirtualList}
         bind:value={$managementFilters.country}
-        getOptionLabel={o => `${o.name} (#${o.id})`}
-        getSelectionLabel={o => `${o.name} (#${o.id})`}
         items={relCountries}
         labelIdentifier="name"
         optionIdentifier="id"

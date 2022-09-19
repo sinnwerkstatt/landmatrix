@@ -35,6 +35,7 @@
 
 <div
   class="workflowinfo-field"
+  data-name={formfield?.name ?? ""}
   on:click={event => {
     showMoreInfos = !showMoreInfos
     event.stopPropagation()

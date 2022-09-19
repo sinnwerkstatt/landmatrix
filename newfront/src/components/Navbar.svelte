@@ -1,13 +1,14 @@
 <script lang="ts">
+  import type { Client } from "@urql/svelte"
+  import { gql } from "@urql/svelte"
   import Cookies from "js-cookie"
   import { _, locale } from "svelte-i18n"
 
   import { page } from "$app/stores"
 
   import { aboutPages, blogCategories, fetchBasis, observatoryPages } from "$lib/stores"
-  import { UserLevel } from "$lib/types/user"
+  import { UserRole } from "$lib/types/user"
   import type { ObservatoryPage } from "$lib/types/wagtail"
-  import { dispatchLogout } from "$lib/user"
 
   import TranslateIcon from "$components/icons/TranslateIcon.svelte"
   import UserAstronautSolid from "$components/icons/UserAstronautSolid.svelte"
@@ -25,11 +26,7 @@
     { name: $_("Investors"), href: "/list/investors" },
     { name: $_("Charts"), href: "/charts" },
   ]
-  const levels = {
-    1: $_("Reporter"),
-    2: $_("Editor"),
-    3: $_("Administrator"),
-  }
+  const roles = { 1: $_("Reporter"), 2: $_("Editor"), 3: $_("Administrator") }
 
   let observatoriesGroups = { global: [], regions: [], countries: [] }
   $observatoryPages.forEach((op: ObservatoryPage) => {
@@ -47,7 +44,18 @@
   $: user = $page.data.user
 
   async function logout() {
-    if (await dispatchLogout($page.data.urqlClient)) location.reload()
+    const { data } = await ($page.data.urqlClient as Client)
+      .mutation<{ logout: boolean }>(
+        gql`
+          mutation {
+            logout
+          }
+        `,
+        {},
+      )
+      .toPromise()
+
+    if (data?.logout) location.reload()
   }
 </script>
 
@@ -154,7 +162,7 @@
         <NavbarSearch />
 
         <NavDropDown placement="right-0">
-          <div slot="title" class="flex items-center gap-1 whitespace-nowrap">
+          <div class="flex items-center gap-1 whitespace-nowrap" slot="title">
             <TranslateIcon class="inline h-4 w-4" />
             {languages[$locale]}
           </div>
@@ -184,9 +192,9 @@
                     .map(x => x[0])
                     .join("")
                 : user.username.substring(0, 2)}
-              {#if user.level === UserLevel.ADMINISTRATOR}
+              {#if user.role === UserRole.ADMINISTRATOR}
                 <UserAstronautSolid class="inline h-4 w-4" />
-              {:else if user.level === UserLevel.EDITOR}
+              {:else if user.role === UserRole.EDITOR}
                 <UserNurseSolid class="inline h-4 w-4" />
               {:else if user.is_impersonate}
                 <UserSecretSolid class="inline h-4 w-4" />
@@ -201,7 +209,7 @@
               <p class="mb-2 whitespace-nowrap pt-2 pl-2 leading-5 text-gray-400">
                 {user.full_name}
                 <br />
-                <small>{user.level ? levels[user.level] : ""}</small>
+                <small>{user.role ? roles[user.role] : ""}</small>
               </p>
 
               {#if user.is_impersonate}

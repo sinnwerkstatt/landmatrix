@@ -7,16 +7,12 @@ from .models import User
 
 
 class CustomUserEditForm(UserEditForm):
-    level = forms.ChoiceField(
-        required=False, label=_("Level"), choices=User.UserLevelChoices
-    )
+    role = forms.ChoiceField(required=False, label=_("Role"), choices=User.RoleChoices)
     country = forms.ModelChoiceField(required=False, queryset=Country.objects)
     region = forms.ModelChoiceField(required=False, queryset=Region.objects)
 
 
 class CustomUserCreationForm(UserCreationForm):
-    level = forms.ChoiceField(
-        required=False, label=_("Level"), choices=User.UserLevelChoices
-    )
+    role = forms.ChoiceField(required=False, label=_("Role"), choices=User.RoleChoices)
     country = forms.ModelChoiceField(required=False, queryset=Country.objects)
     region = forms.ModelChoiceField(required=False, queryset=Region.objects)

@@ -2,6 +2,7 @@
   import { _ } from "svelte-i18n"
 
   import { dateCurrentFormat } from "$components/Fields/Display/jsonHelpers"
+  import type { FormField } from "$components/Fields/fields"
 
   type JSONJobsFieldType = {
     current?: boolean
@@ -12,10 +13,11 @@
     choices?: Array<{ [key: string]: string }>
   }
 
+  export let formfield: FormField
   export let value: JSONJobsFieldType[] = []
 </script>
 
-<div class="jsonjobs_field whitespace-nowrap">
+<div class="jsonjobs_field whitespace-nowrap" data-name={formfield?.name ?? ""}>
   {#each value ?? [] as val}
     <div class:font-bold={val.current}>
       {dateCurrentFormat(val)}

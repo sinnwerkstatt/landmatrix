@@ -5,7 +5,7 @@ interface Group {
   name: string
 }
 
-export enum UserLevel {
+export enum UserRole {
   ANYBODY,
   REPORTER,
   EDITOR,
@@ -27,5 +27,5 @@ export interface User {
   country: Country
   region: Region
   groups?: Group[]
-  level: UserLevel
+  role: UserRole
 }

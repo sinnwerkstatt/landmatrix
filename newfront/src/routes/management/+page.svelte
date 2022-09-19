@@ -14,7 +14,7 @@
   import type { Deal } from "$lib/types/deal"
   import type { Investor } from "$lib/types/investor"
   import type { User } from "$lib/types/user"
-  import { UserLevel } from "$lib/types/user"
+  import { UserRole } from "$lib/types/user"
 
   import FilterCollapse from "$components/Data/FilterCollapse.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"
@@ -269,10 +269,10 @@
     </div>
     <div class="w-full self-start">
       {#each navTabs as { name, items }}
-        {#if user.level > UserLevel.EDITOR || !items.every(i => i.staff)}
+        {#if user.role > UserRole.EDITOR || !items.every(i => i.staff)}
           <FilterCollapse title={name} expanded>
             <ul>
-              {#each items.filter(i => user.level > UserLevel.EDITOR || !i.staff) as item}
+              {#each items.filter(i => user.role > UserRole.EDITOR || !i.staff) as item}
                 <li
                   class={cn(
                     "py-2 pr-4",

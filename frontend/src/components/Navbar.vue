@@ -171,8 +171,8 @@
               aria-expanded="false"
             >
               {{ user.username }}
-              <i v-if="user.level === 3" class="fas fa-user-astronaut"></i>
-              <i v-else-if="user.level === 2" class="fas fa-user-nurse"></i>
+              <i v-if="user.role === 3" class="fas fa-user-astronaut"></i>
+              <i v-else-if="user.role === 2" class="fas fa-user-nurse"></i>
               <i v-else-if="user.is_impersonate" class="fa fa-user-secret"></i>
               <i v-else class="fa fa-user"></i>
             </a>
@@ -184,7 +184,7 @@
               <p class="name-emblem">
                 {{ user.full_name }}
                 <br />
-                <small>{{ user.level }}</small>
+                <small>{{ user.role }}</small>
               </p>
               <div class="dropdown-divider"></div>
               <!--suppress HtmlUnknownTarget -->

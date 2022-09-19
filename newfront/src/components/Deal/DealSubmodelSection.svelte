@@ -40,6 +40,7 @@
           <h3>
             {index + 1}. {$_(modelName)}
           </h3>
+          <DisplayField fieldname="id" value={entry["id"]} {model} showLabel />
           {#each fields as fieldname}
             {#if !isEmpty(entry[fieldname])}
               <DisplayField

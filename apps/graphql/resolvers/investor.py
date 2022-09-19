@@ -1,5 +1,6 @@
 from ariadne.graphql import GraphQLError
 
+from apps.accounts.models import UserRole
 from apps.graphql.tools import get_fields, parse_filters
 from apps.landmatrix.models.deal import Deal
 from apps.landmatrix.models.investor import (
@@ -58,7 +59,7 @@ def resolve_investor(
 
         if not any(
             [
-                user.level >= 2,
+                user.role >= UserRole.EDITOR,
                 investor_version.created_by == user,
                 investor_version.serialized_data["draft_status"] is None
                 and investor_version.serialized_data["status"] in [2, 3],

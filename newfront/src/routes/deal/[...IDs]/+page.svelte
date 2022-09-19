@@ -10,7 +10,7 @@
   import { loading } from "$lib/stores"
   import type { Deal } from "$lib/types/deal"
   import type { Investor } from "$lib/types/investor"
-  import { UserLevel } from "$lib/types/user"
+  import { UserRole } from "$lib/types/user"
 
   import DealHistory from "$components/Deal/DealHistory.svelte"
   import DealLocationsSection from "$components/Deal/DealLocationsSection.svelte"
@@ -115,7 +115,7 @@
 </svelte:head>
 
 <div class="container mx-auto min-h-full">
-  {#if $page.data.user?.level > UserLevel.ANYBODY}
+  {#if $page.data.user?.role > UserRole.ANYBODY}
     <DealManageHeader {deal} dealVersion={data.dealVersion} on:reload={reloadDeal} />
   {:else}
     <div class="md:ju<stify-between md:flex md:flex-row">
