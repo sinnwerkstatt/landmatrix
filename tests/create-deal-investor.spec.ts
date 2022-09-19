@@ -180,6 +180,12 @@ test.describe.serial("deal creation tests", () => {
 
     await page.locator("text=Data sources").click();
     await expect(page.locator("h3:has-text('1. Data source')")).toBeVisible();
+    const [newPage] = await Promise.all([
+      context.waitForEvent("page"),
+      await page.locator("svg").nth(-3).click(),
+    ]);
+    const response = await page.goto(newPage.url());
+    expect(response.ok()).toBeTruthy();
   });
 
   //EDIT DEAL
@@ -223,18 +229,15 @@ test.describe.serial("deal creation tests", () => {
     const currentIntention = await page.locator("text=2 000").first();
     await expect(currentIntention).toHaveText("[2018-02-01] 2 000 ha ");
     await expect(currentIntention).toHaveClass("");
-
     const newCurrentIntention = await page.locator("text=3 000");
     await expect(newCurrentIntention).toHaveText("[2022, current] 3 000 ha ");
     await expect(newCurrentIntention).toHaveClass("font-bold");
-
     await expect(page.locator('div[data-name="contract_farming"]')).toHaveText("Yes");
     await expect(page.locator('div[data-name="contract_farming_comment"]')).toHaveText(
       "Some comment"
     );
     await page.goto(`deal/${dealID}/#contracts`);
     await expect(page.locator('div[data-name="number"]').first()).toContainText("1234");
-
     await expect(page.locator('div[data-name="number"]').nth(1)).toContainText("5678");
   });
 
@@ -270,7 +273,6 @@ test.describe.serial("deal creation tests", () => {
     await investorInput.press("Enter");
     await page.click("[placeholder" + '="Country"]');
     await page.click("text=Albania");
-
     await page.locator('select[name="classification"]').selectOption("GOVERNMENT");
     await page.locator('[placeholder="Investor homepage"]').click();
     await page
@@ -298,7 +300,6 @@ test.describe.serial("deal creation tests", () => {
     await page.reload();
     await page.locator("text=Add Parent company").click();
     await page.locator('[placeholder="Investor"]').click();
-    //await page.locator(`text=${investorParentName} #${ParentID}`).click();
     await page.keyboard.press("ArrowDown");
     await page.keyboard.press("Enter");
 
@@ -312,36 +313,62 @@ test.describe.serial("deal creation tests", () => {
     await page.locator('[placeholder="YYYY-MM-DD"]').fill("2022-02-02");
     await page.locator('[placeholder="Name"]').click();
     await page.locator('[placeholder="Name"]').fill("William Shakespeare");
+    const upload = await page.locator('input[type="file"]');
+    let [fileChooser1] = await Promise.all([
+      page.waitForEvent("filechooser"),
+      upload.click(),
+    ]);
+    await fileChooser1.setFiles("tests/testFile.pdf");
+    await page.locator('input[type="file"]').setInputFiles("tests/testFile.pdf");
     await page.locator("text=Save").click();
-
+    //add tertiary investor
+    await page.click("text=Tertiary investors/lenders");
+    await page.click("text=Tertiary investors/lenders");
+    await page.click("text=Add Tertiary investor/lender");
+    await page.click("text=1. Tertiary investor/lender");
+    await page.click('[placeholder="Investor"]');
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("Enter");
+    await page.locator("text=Save").click();
     //checkout Investor Changes (WIP)
     await page.goto(`/investor/${investorID}`);
     await page.locator("text=Data sources").click();
-    // await expect(page.locator("h3")).toContainText("1. Data source");
-    // await expect(page.locator("data-name='publication_title'")).toContainText(
-    //   "Publication Test"
-    // );
+    await expect(page.locator("text=Media report")).toBeVisible;
+    await expect(page.locator("text=Publication Test")).toBeVisible;
     await page.click('a:has-text("Involvements")');
-    //await page.locator(`text=${ParentID}`).click();
-    // await expect(page.locator("h1")).toHaveText(`${investorParentName} #${ParentID}`);
+    await expect(page.locator('td:has-text("Parent company")')).toBeVisible();
+    await expect(page.locator('td:has-text("Tertiary investor/lender")')).toBeVisible();
+    await page.locator("text=Data sources").click();
+    //await page.locator("text=testFile_[A-Za-z0-9]{7}\\.pdf").first().click();
+    const [newPage] = await Promise.all([
+      context.waitForEvent("page"),
+      await page.locator("svg").nth(-3).click(),
+    ]);
+    const response = await page.goto(newPage.url());
+    expect(response.ok()).toBeTruthy();
   });
 
   //delete investors
-  test("delete all deals and investors wip", async ({ context, page }) => {
+  test("delete all deals and investors", async ({ context, page }) => {
     await page.goto(`/investor/${investorID}`);
     await page.locator('button:has-text("Remove")').click();
     await page
       .locator("text=Please provide a comment explaining your request >> textarea")
       .fill("Delete Child investor");
-    await page.click('button:has-text("Remove investor version")'),
-      //delete Parent Investor
-      await page.goto(`/investor/${ParentID}`);
+    await page.click('button:has-text("Remove investor version")');
+    //delete Parent Investor
+    await page.goto(`/investor/${ParentID}`);
     await page.locator('button:has-text("Remove")').click();
-    await page.pause();
     await page
       .locator("text=Please provide a comment explaining your request >> textarea")
       .fill("delete Parent investor");
-
     await page.click('button:has-text("Remove investor version")');
+    await page.goto(`/deal/${dealID}`);
+    await page.locator('button:has-text("Remove")').click();
+    await page
+      .locator("text=Please provide a comment explaining your request >> textarea")
+      .fill("Remove deal version");
+    await page.click('button:has-text("Remove deal version")');
+    await expect(page.locator("h1")).toContainText("Deal not found");
   });
 });
