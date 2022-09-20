@@ -7,13 +7,10 @@
   import ManageHeaderLogbookList from "$components/Management/ManageHeaderLogbookList.svelte"
   import WorkflowInfo from "$components/Management/WorkflowInfo.svelte"
 
-  export let value: object
+  export let value: WFInfo[]
   export let formfield: FormField
-  export let model: "deal" | "investor" = "deal"
-  export let objectId: number | null
 
   let showMoreInfos = false
-  let moreInfos: WFInfo[] = []
 
   function clickOutside(element, callbackFunction) {
     function onClick(event) {
@@ -21,6 +18,7 @@
         callbackFunction()
       }
     }
+
     document.body.addEventListener("click", onClick)
     return {
       update(newCallbackFunction) {
@@ -48,7 +46,7 @@
       use:clickOutside={() => {
         showMoreInfos = !showMoreInfos
       }}
-      class="absolute z-10 mx-1 w-[22rem] rounded-sm bg-lm-warmgray shadow-md"
+      class="absolute top-0 z-10 mx-1 w-[368px] rounded-sm border border-black bg-lm-warmgray shadow-md"
     >
       <ManageHeaderLogbookList workflowinfos={value} />
     </div>

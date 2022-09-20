@@ -110,9 +110,6 @@
       <FileField {value} {formfield} {fileNotPublic} />
     {:else if field}
       <svelte:component this={field} {value} {model} {formfield} />
-      <!--  old Vue -->
-      <!--      :object-id="objectId"-->
-      <!--      :object-version="objectVersion"-->
     {:else}
       <span class="italic text-red-600">Unknown field: {formfield.class}</span>
     {/if}

@@ -36,12 +36,6 @@
   export let valueClasses = "text-lm-dark mb-5 w-full xl:w-2/3"
   export let disabled = false
 
-  //   fileNotPublic: { type: Boolean, default: false },
-  //   visible: { type: Boolean, default: true },
-  //   targetBlank: { type: Boolean, default: false },
-  //   objectId: { type: Number, default: null, required: false },
-  //   objectVersion: { type: Number, default: null, required: false },
-
   //   computed: {
   //     _visible(): boolean {
   //       if (!this.visible) return false;
@@ -101,10 +95,6 @@
         {formfield}
         on:change
       />
-      <!-- :file-not-public="fileNotPublic"-->
-      <!-- :target-blank="targetBlank"-->
-      <!-- :object-id="objectId"-->
-      <!-- :object-version="objectVersion"-->
     {:else}
       <span class="italic text-red-600">Unknown field: {formfield.class}</span>
     {/if}
