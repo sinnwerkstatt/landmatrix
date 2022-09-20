@@ -22,10 +22,10 @@ export interface EdgeBundlingData {
   }[]
 }
 
-const width = 954
+const width = 1000
 const radius = width / 2
 const colornone = "#ccc"
-const tree = cluster().size([2 * Math.PI, radius - 100])
+const tree = cluster().size([2 * Math.PI, radius - 150])
 const line = lineRadial()
   .curve(curveBundle.beta(0.85))
   .radius(d => d.y)
@@ -65,13 +65,17 @@ function addMarkers(svg: Selection<BaseType, unknown, HTMLElement, unknown>): vo
 }
 
 export function LandMatrixRadialSpider(
+  svgElement: SVGElement,
   data_hierarchical: EdgeBundlingData,
-  container: string,
   selectedCountry: number,
   updateCountryFn: (country: number) => void,
 ) {
-  selectAll("g > *").remove()
-  const svg = select(container).attr("viewBox", [-width / 2, -width / 2, width, width])
+  select(svgElement).selectAll("g").remove()
+  select(svgElement).selectAll("defs").remove()
+  const svg = select(svgElement)
+    .attr("viewBox", [-width / 2, -width / 2, width, width])
+    .attr("height", "100%")
+    .attr("width", "100%")
 
   if (!data_hierarchical || data_hierarchical.length === 0) return
 

@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { format, hierarchy, select, selectAll, treemap, treemapSquarify } from "d3"
+  import { format, hierarchy, select, treemap, treemapSquarify } from "d3"
   import type { BaseType, HierarchyNode } from "d3"
-  import { onMount } from "svelte"
+  import { afterUpdate, onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
   import type { BucketMap } from "$lib/data/buckets"
@@ -10,8 +10,14 @@
   import type { Deal } from "$lib/types/deal"
 
   import { showContextBar, showFilterBar } from "$components/Data"
+  import ChartWrapper from "$components/Data/Charts/DownloadWrapper.svelte"
+  import { downloadCSV, downloadJSON, downloadSVG } from "$components/Data/Charts/utils"
+  import type { DownloadEvent } from "$components/Data/Charts/utils"
 
   export let deals: Deal[] = []
+  export let title: string
+
+  let svgComp: SVGElement
 
   const SIZE_THRESHOLD = 0.005
 
@@ -29,7 +35,11 @@
 
   interface ProduceTreeData {
     name: string
-    children: { name: string; value: number }[]
+    children: {
+      name: string
+      color: string
+      children: { name: string; value: number }[]
+    }[]
   }
 
   // TODO: not correct to add full deal size for each produce
@@ -71,7 +81,9 @@
     return root
   }
 
-  const createChildren = (bucketMap: BucketMap): ProduceTreeData["children"] => {
+  const createChildren = (
+    bucketMap: BucketMap,
+  ): ProduceTreeData["children"]["children"] => {
     const [keys, buckets] = sortBuckets("size", bucketMap)
     const totalSize = buckets.reduce((sum, bucket) => sum + bucket.size, 0)
     const thresholdIndex = buckets.findIndex(
@@ -100,17 +112,16 @@
     const domUid = name => `O-${name}-${++count}`
     const myFormat = format(",d")
 
-    const container = document.getElementById("produce-info")
-    if (!container) return
-
-    const width = container.offsetWidth
-    const height = container.offsetHeight
+    const width = 800
+    const height = 500
 
     // reset first!
-    selectAll("#produce-info > svg > *").remove()
+    select(svgComp).selectAll("*").remove()
 
-    const svg = select<BaseType, ProduceTreeData>("#produce-info > svg")
+    const svg = select<BaseType, ProduceTreeData>(svgComp)
       .attr("viewBox", [0, 0, width, height])
+      .attr("height", "100%")
+      .attr("width", "100%")
       .append("svg:g")
       .attr("transform", "translate(.5,.5)")
 
@@ -181,9 +192,32 @@
     $showContextBar || $showFilterBar
     buildTreeChart(treeData)
   }
+
   onMount(() => buildTreeChart(treeData))
+  afterUpdate(() => buildTreeChart(treeData))
+
+  const asCsv = (treeData: ProduceTreeData): string => {
+    const csvHeader = "Produce Name,Total Deal Size (ha)\n"
+    const csvData = treeData.children
+      .map(group =>
+        group.children.map(({ name, value }) => `"${name}",${value}`).join("\n"),
+      )
+      .join("\n")
+    return csvHeader + csvData
+  }
+
+  const handleDownload = ({ detail: fileType }: DownloadEvent) => {
+    switch (fileType) {
+      case "json":
+        return downloadJSON(JSON.stringify(treeData, null, 2), title)
+      case "csv":
+        return downloadCSV(asCsv(treeData), title)
+      default:
+        return downloadSVG(svgComp, fileType, title)
+    }
+  }
 </script>
 
-<div id="produce-info" class="h-full w-full">
-  <svg />
-</div>
+<ChartWrapper {title} on:download={handleDownload}>
+  <svg id="produce-info-map" bind:this={svgComp} />
+</ChartWrapper>

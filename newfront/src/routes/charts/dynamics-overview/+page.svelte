@@ -11,6 +11,7 @@
   import ChartsContainer from "$components/Data/Charts/ChartsContainer.svelte"
   import DynamicsOverview from "$components/Data/Charts/DynamicsOverview.svelte"
   import DealDisplayToggle from "$components/DealDisplayToggle.svelte"
+  import LoadingPulse from "$components/LoadingPulse.svelte"
   import { displayDealsCount } from "$components/Map/map_helper"
 
   $: deals = queryStore({
@@ -35,7 +36,7 @@
   </div>
   <div class="mt-20">
     {#if $deals.fetching}
-      <p>Loading...</p>
+      <LoadingPulse />
     {:else if $deals.error}
       <p>Error...{$deals.error.message}</p>
     {:else}

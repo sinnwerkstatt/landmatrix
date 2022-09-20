@@ -13,13 +13,12 @@ export class DynamicsOfDeal {
   private readonly height = 680
   private readonly margin = { top: 30, right: 0, bottom: 10, left: 300 }
 
-  do_the_graph(selector: string, data: DynamicsDataPoint[]): void {
-    const elem = document.querySelector(selector)
-    if (elem) elem.innerHTML = ""
+  do_the_graph(svgElement: SVGElement, data: DynamicsDataPoint[]): void {
+    if (!svgElement) return
+    select(svgElement).selectAll("*").remove() // clear
 
     data = data.sort((a, b) => descending(a.value, b.value))
-
-    const svg = select(selector)
+    const svg = select(svgElement)
       // there is a little extra padding at the bottom (+ 10)
       .attr("viewBox", `0 0 ${this.width + 20} ${this.height + 20 + 10}`)
       .attr("height", "100%")
@@ -76,6 +75,8 @@ export class DynamicsOfDeal {
   }
 }
 
-export function dynamics_csv(json: DynamicsDataPoint[]): string {
-  return json.map(entry => [entry.name, entry.value].join(",") + "\n").join("")
-}
+export const toCSV = (data: DynamicsDataPoint[]): string =>
+  data.map(entry => [entry.name, entry.value].join(",") + "\n").join("")
+
+export const toJSON = (data: DynamicsDataPoint[]): string =>
+  JSON.stringify(data, null, 2)

@@ -13,11 +13,12 @@
 
   ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale)
 
-  export let data: ChartData<"pie", number[], string>
+  export let data: ChartData
   export let unit = ""
+  export let chart: ChartJS | null
 
   $: totals = data.datasets.map(dSet => dSet.data.reduce((sum, value) => sum + value))
-  let i18nData: ChartData<"pie", number[], string>
+  let i18nData: ChartData
   // TODO Marcus: refactor $_(label) up to the source
   $: i18nData = { ...data, labels: data.labels?.map(label => $_(label)) }
 
@@ -44,8 +45,15 @@
       },
     },
   }
+
+  $: {
+    if (chart) {
+      chart.data = i18nData
+      chart.update()
+    }
+  }
 </script>
 
 <!--svelte plugin for IntelliJ cannot index props for SvelteComponentTyped-->
 <!--https://github.com/tomblachut/svelte-intellij/issues/206-->
-<Pie data={i18nData} {options} />
+<Pie bind:chart data={i18nData} {options} />
