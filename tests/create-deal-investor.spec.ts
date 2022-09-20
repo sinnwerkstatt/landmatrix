@@ -1,4 +1,4 @@
-import { createInvestorName } from "./utils";
+import { createInvestorName, verifyPDF } from "./utils";
 import { test, expect } from "@playwright/test";
 
 test.use({ storageState: "tests/storageState/admin.json" });
@@ -180,12 +180,7 @@ test.describe.serial("deal creation tests", () => {
 
     await page.locator("text=Data sources").click();
     await expect(page.locator("h3:has-text('1. Data source')")).toBeVisible();
-    const [newPage] = await Promise.all([
-      context.waitForEvent("page"),
-      await page.locator("svg").nth(-3).click(),
-    ]);
-    const response = await page.goto(newPage.url());
-    expect(response.ok()).toBeTruthy();
+    //await verifyPDF(page);
   });
 
   //EDIT DEAL
@@ -324,7 +319,7 @@ test.describe.serial("deal creation tests", () => {
     //add tertiary investor
     await page.click("text=Tertiary investors/lenders");
     await page.click("text=Tertiary investors/lenders");
-    await page.click("text=Add Tertiary investor/lender");
+    await page.locator("button").last().click();
     await page.click("text=1. Tertiary investor/lender");
     await page.click('[placeholder="Investor"]');
     await page.keyboard.press("ArrowDown");
@@ -339,13 +334,7 @@ test.describe.serial("deal creation tests", () => {
     await expect(page.locator('td:has-text("Parent company")')).toBeVisible();
     await expect(page.locator('td:has-text("Tertiary investor/lender")')).toBeVisible();
     await page.locator("text=Data sources").click();
-    //await page.locator("text=testFile_[A-Za-z0-9]{7}\\.pdf").first().click();
-    const [newPage] = await Promise.all([
-      context.waitForEvent("page"),
-      await page.locator("svg").nth(-3).click(),
-    ]);
-    const response = await page.goto(newPage.url());
-    expect(response.ok()).toBeTruthy();
+    await verifyPDF(page);
   });
 
   //delete investors
@@ -358,7 +347,7 @@ test.describe.serial("deal creation tests", () => {
     await page.click('button:has-text("Remove investor version")');
     //delete Parent Investor
     await page.goto(`/investor/${ParentID}`);
-    await page.locator('button:has-text("Remove")').click();
+    await page.click('button:has-text("Remove")');
     await page
       .locator("text=Please provide a comment explaining your request >> textarea")
       .fill("delete Parent investor");
