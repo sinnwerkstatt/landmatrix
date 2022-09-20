@@ -59,7 +59,7 @@ def resolve_investor(
 
         if not any(
             [
-                user.role >= UserRole.EDITOR,
+                user.is_authenticated and user.role >= UserRole.EDITOR,
                 investor_version.created_by == user,
                 investor_version.serialized_data["draft_status"] is None
                 and investor_version.serialized_data["status"] in [2, 3],

@@ -45,7 +45,7 @@ def resolve_deal(_obj, info, id, version=None, subset="PUBLIC"):
 
         if not any(
             [
-                user.role >= UserRole.EDITOR,
+                user.is_authenticated and user.role >= UserRole.EDITOR,
                 deal_version.created_by == user,
                 deal_version.serialized_data["is_public"]
                 and deal_version.serialized_data["draft_status"] is None
@@ -236,7 +236,7 @@ def resolve_set_confidential(
     _obj, info, id, confidential, version=None, comment=""
 ) -> bool:
     user = info.context["request"].user
-    if not user.role:
+    if not (user.is_authenticated and user.role):
         raise GraphQLError("MISSING_AUTHORIZATION")
 
     confidential_str = "SET_CONFIDENTIAL" if confidential else "UNSET_CONFIDENTIAL"

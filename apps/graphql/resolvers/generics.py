@@ -49,7 +49,7 @@ def add_object_comment(
     comment: str,
     to_user_id=None,
 ) -> None:
-    if not user.role:
+    if not (user.is_authenticated and user.role):
         raise GraphQLError("MISSING_AUTHORIZATION")
 
     obj = (Deal if otype == "deal" else Investor).objects.get(id=obj_id)
@@ -87,7 +87,7 @@ def change_object_status(
     to_user_id: int = None,
     fully_updated: bool = False,  # only relevant on "TO_REVIEW"
 ) -> list[int]:
-    if not user.role:
+    if not (user.is_authenticated and user.role):
         raise GraphQLError("MISSING_AUTHORIZATION")
     Object = Deal if otype == "deal" else Investor
     ObjectVersion = DealVersion if otype == "deal" else InvestorVersion
@@ -201,7 +201,7 @@ def object_edit(
     obj_version_id: int = None,
     payload: dict = None,
 ) -> list[int]:
-    if not user.role:
+    if not (user.is_authenticated and user.role):
         raise GraphQLError("MISSING_AUTHORIZATION")
 
     # verify that the form is correct
@@ -335,7 +335,7 @@ def object_delete(
     obj_version_id: int = None,
     comment: str = None,
 ) -> bool:
-    if not user.role:
+    if not (user.is_authenticated and user.role):
         raise GraphQLError("MISSING_AUTHORIZATION")
 
     Object = Deal if otype == "deal" else Investor
@@ -394,7 +394,8 @@ def object_delete(
 
 # noinspection PyShadowingBuiltins
 def resolve_resolve_workflow_info(_obj, info, id: int, type: str) -> bool:
-    if not info.context["request"].user.role:
+    user = info.context["request"].user
+    if not (user.is_authenticated and user.role):
         raise GraphQLError("MISSING_AUTHORIZATION")
 
     if type == "DealWorkflowInfo":
@@ -412,7 +413,8 @@ def resolve_resolve_workflow_info(_obj, info, id: int, type: str) -> bool:
 def resolve_add_workflow_info_reply(
     _obj, info, id: int, type: str, from_user_id: int, comment: str
 ) -> bool:
-    if not info.context["request"].user.role:
+    user = info.context["request"].user
+    if not (user.is_authenticated and user.role):
         raise GraphQLError("MISSING_AUTHORIZATION")
 
     if type == "DealWorkflowInfo":
