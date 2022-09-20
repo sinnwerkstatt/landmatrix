@@ -75,7 +75,6 @@
     ManyToManyField: ManyToManyField,
     NullBooleanField: BooleanField,
     OCIDField: OCIDField,
-    WorkflowInfosField: WorkflowInfosField,
   }[formfield.class]
 </script>
 
@@ -94,6 +93,8 @@
       <TypedChoiceField {value} {formfield} />
     {:else if formfield.class === "PointField"}
       <PointField {value} {formfield} />
+    {:else if formfield.class === "WorkflowInfosField"}
+      <WorkflowInfosField {value} {formfield} />
     {:else if formfield.class === "NanoIDField"}
       <NanoIDField {value} {formfield} />
     {:else if ["CharField", "EmailField", "TextField", "URLField"].includes(formfield.class)}
@@ -101,7 +102,7 @@
     {:else if ["DecimalField", "FloatField", "IntegerField"].includes(formfield.class)}
       <DecimalField {value} {formfield} />
     {:else if formfield.class === "DateTimeField"}
-      <DateTimeField {value} />
+      <DateTimeField {value} {formfield} />
     {:else if formfield.class === "LengthField"}
       <LengthField {value} {formfield} />
     {:else if ["CountryForeignKey", "CurrencyForeignKey", "ForeignKey", "InvestorForeignKey", "ModelChoiceField"].includes(formfield.class)}

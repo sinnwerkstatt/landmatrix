@@ -4,16 +4,19 @@
   import Select from "svelte-select"
   import VirtualList from "svelte-tiny-virtual-list"
 
-  import { allUsers, countries } from "$lib/stores"
+  import { countries } from "$lib/stores"
   import type { Deal } from "$lib/types/deal"
   import type { Investor } from "$lib/types/investor"
+  import type { User } from "$lib/types/user"
 
   import { managementFilters } from "./state"
 
   export let showFilters = false
   export let objects: Array<Deal | Investor> = []
   export let model: "deal" | "investor" = "deal"
-  // export let possibleUsers: User[] = []
+
+  export let createdByUsers: User[] = []
+  export let modifiedByUsers: User[] = []
 
   $: objectsCountryIDs = objects?.map(d => d.country?.id)
   $: relCountries = $countries.filter(c => objectsCountryIDs.includes(c.id))
@@ -85,7 +88,7 @@
           bind:value={$managementFilters.createdBy}
           getOptionLabel={o => `${o.full_name} (<b>${o.username}</b>)`}
           getSelectionLabel={o => `${o.full_name} (<b>${o.username}</b>)`}
-          items={$allUsers}
+          items={createdByUsers}
           optionIdentifier="id"
           placeholder={$_("User")}
           showChevron
@@ -118,7 +121,7 @@
           bind:value={$managementFilters.modifiedBy}
           getOptionLabel={o => `${o.full_name} (<b>${o.username}</b>)`}
           getSelectionLabel={o => `${o.full_name} (<b>${o.username}</b>)`}
-          items={$allUsers}
+          items={modifiedByUsers}
           optionIdentifier="id"
           placeholder={$_("User")}
           showChevron

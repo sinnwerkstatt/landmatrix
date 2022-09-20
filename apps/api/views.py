@@ -94,7 +94,8 @@ class Management(View):
     def __init__(self):
         super().__init__()
         self.users_map = {
-            u.id: {"id": u.id, "username": u.username} for u in User.objects.all()
+            u.id: {"id": u.id, "username": u.username, "full_name": u.full_name}
+            for u in User.objects.all()
         }
         self.countries_map = {
             c.id: {

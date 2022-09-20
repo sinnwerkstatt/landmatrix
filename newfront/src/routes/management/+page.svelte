@@ -117,11 +117,11 @@
 
   async function getCounts(model) {
     if (!browser) return
-    const x = await fetch(
+    const ret = await fetch(
       `${import.meta.env.VITE_BASE_URL}/api/management/?model=${model}&action=counts`,
     )
-    if (x.ok) {
-      const counts = await x.json()
+    if (ret.ok) {
+      const counts = await ret.json()
       navTabs = navTabs.map(navTab => ({
         ...navTab,
         items: navTab.items.map(item => ({ ...item, count: counts?.[item.id] ?? 0 })),
@@ -130,7 +130,8 @@
   }
 
   let controller: AbortController
-  let possibleUsers: User[] = []
+  let createdByUsers: User[] = []
+  let modifiedByUsers: User[] = []
 
   async function fetchObjects(acTab: string, model: "deal" | "investor") {
     if (!acTab) return
@@ -138,21 +139,38 @@
 
     loading.set(true)
     controller = new AbortController()
-    const x = await fetch(
+    const ret = await fetch(
       `${import.meta.env.VITE_BASE_URL}/api/management/?model=${model}&action=${acTab}`,
       {
         signal: controller.signal,
       },
     )
-    if (x.ok) {
-      objects = (await x.json()).objects
-      // let possibleUsersSet = new Set()
-      // objects.forEach(o => {
-      //   console.log(o.created_by)
-      //   if (o.created_by) possibleUsersSet.add(o.created_by)
-      //   if (o.modified_by) possibleUsersSet.add(o.modified_by)
-      // })
-      // possibleUsers = [...possibleUsersSet]
+    if (ret.ok) {
+      objects = (await ret.json()).objects
+      console.log(objects)
+
+      // set User lists for the right filter bar
+      createdByUsers = []
+      modifiedByUsers = []
+      const createdBy = new Set<number>()
+      const modifiedBy = new Set<number>()
+      objects.forEach(o => {
+        if (o.created_by && !createdBy.has(o.created_by.id)) {
+          createdByUsers.push(o.created_by)
+          createdBy.add(o.created_by.id)
+        }
+        if (o.modified_by && !modifiedBy.has(o.modified_by.id)) {
+          modifiedByUsers.push(o.modified_by)
+          modifiedBy.add(o.modified_by.id)
+        }
+      })
+      createdByUsers = createdByUsers.sort((a, b) =>
+        a.full_name.localeCompare(b.full_name),
+      )
+      modifiedByUsers = modifiedByUsers.sort((a, b) =>
+        a.full_name.localeCompare(b.full_name),
+      )
+      console.log(createdByUsers)
 
       navTabs = navTabs.map(navTab => ({
         ...navTab,
@@ -201,7 +219,7 @@
       if (dayjs(d.created_at).isAfter($managementFilters.createdAtTo, "day"))
         return false
     if ($managementFilters.createdBy)
-      if (d.created_by.id !== $managementFilters.createdBy.id) return false
+      if (d.created_by?.id !== $managementFilters.createdBy.id) return false
 
     if ($managementFilters.modifiedAtFrom)
       if (dayjs(d.modified_at).isBefore($managementFilters.modifiedAtFrom, "day"))
@@ -210,7 +228,7 @@
       if (dayjs(d.modified_at).isAfter($managementFilters.modifiedAtTo, "day"))
         return false
     if ($managementFilters.modifiedBy)
-      if (d.modified_by.id !== $managementFilters.modifiedBy.id) return false
+      if (d.modified_by?.id !== $managementFilters.modifiedBy.id) return false
 
     if (model === "deal") {
       if ($managementFilters.dealSizeFrom)
@@ -359,7 +377,13 @@
     {/if}
   </div>
 
-  <RightFilterBar {model} {objects} {possibleUsers} showFilters={showFilterOverlay} />
+  <RightFilterBar
+    {model}
+    {objects}
+    {createdByUsers}
+    {modifiedByUsers}
+    showFilters={showFilterOverlay}
+  />
 
   <button
     class="group absolute right-4 top-2 rounded-full bg-gray-700 p-1 drop-shadow-[3px_3px_1px_rgba(125,125,125,.7)] transition-colors hover:bg-gray-100 hover:drop-shadow-lg"
@@ -371,5 +395,3 @@
     />
   </button>
 </div>
-
-<!--<FilterOverlay bind:visible={showFilterOverlay} {model} {objects} {possibleUsers} />-->
