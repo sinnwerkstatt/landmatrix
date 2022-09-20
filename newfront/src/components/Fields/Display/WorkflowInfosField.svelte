@@ -14,24 +14,42 @@
 
   let showMoreInfos = false
   let moreInfos: WFInfo[] = []
+
+  function clickOutside(element, callbackFunction) {
+    function onClick(event) {
+      if (!element.contains(event.target)) {
+        callbackFunction()
+      }
+    }
+    document.body.addEventListener("click", onClick)
+    return {
+      update(newCallbackFunction) {
+        callbackFunction = newCallbackFunction
+      },
+      destroy() {
+        document.body.removeEventListener("click", onClick)
+      },
+    }
+  }
 </script>
 
 <div
   class="workflowinfo-field"
   data-name={formfield?.name ?? ""}
-  on:click={() => {
+  on:click={event => {
     showMoreInfos = !showMoreInfos
+    event.stopPropagation()
   }}
 >
   <WorkflowInfo info={value[0]} />
   {#if showMoreInfos}
     <div
       transition:slide
-      class="absolute top-full z-10 mx-1 w-[22rem] rounded-sm bg-lm-warmgray shadow-md"
+      use:clickOutside={() => {
+        showMoreInfos = !showMoreInfos
+      }}
+      class="absolute z-10 mx-1 w-[22rem] rounded-sm bg-lm-warmgray shadow-md"
     >
-      <h4 class="px-2">
-        LogbookList {model.charAt(0).toUpperCase() + model.slice(1)} #{objectId}
-      </h4>
       <ManageHeaderLogbookList workflowinfos={value} />
     </div>
   {/if}

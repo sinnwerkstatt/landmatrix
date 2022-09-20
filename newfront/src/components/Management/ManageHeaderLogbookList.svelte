@@ -7,7 +7,7 @@
 </script>
 
 <div
-  class="h-auto max-h-[330px] cursor-default overflow-y-scroll bg-lm-warmgray px-[2px] pt-1 pb-12 shadow-inner"
+  class="h-auto max-h-[330px] cursor-default overflow-y-scroll bg-lm-warmgray px-[2px] pt-1 pb-4 shadow-inner"
 >
   {#each workflowinfos as info}
     <div>
