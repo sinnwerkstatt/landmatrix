@@ -12,6 +12,7 @@
   import { showContextBar } from "$components/Data"
   import ChartsContainer from "$components/Data/Charts/ChartsContainer.svelte"
   import ProduceInfoMap from "$components/Data/Charts/ProduceInfoMap.svelte"
+  import LoadingPulse from "$components/LoadingPulse.svelte"
 
   $: deals = queryStore({
     client: $page.data.urqlClient,
@@ -37,7 +38,7 @@
   </div>
   <div class="mt-20 h-5/6 w-5/6">
     {#if $deals.fetching}
-      <p>Loading...</p>
+      <LoadingPulse />
     {:else if $deals.error}
       <p>Error...{$deals.error.message}</p>
     {:else}

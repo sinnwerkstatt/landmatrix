@@ -14,6 +14,7 @@
   import DynamicsOfDeal from "$components/Data/Charts/CountryProfile/DynamicsOfDeal.svelte"
   import IntentionsPerCategory from "$components/Data/Charts/CountryProfile/IntentionsPerCategory.svelte"
   import LSLAByNegotiation from "$components/Data/Charts/CountryProfile/LSLAByNegotiation.svelte"
+  import LoadingPulse from "$components/LoadingPulse.svelte"
 
   $: deals = queryStore({
     client: $page.data.urqlClient,
@@ -36,8 +37,14 @@
   <div
     class="country-profile mt-20 flex w-[clamp(500px,90%,1000px)] flex-col overflow-visible"
   >
-    <IntentionsPerCategory deals={$deals?.data?.deals} />
-    <LSLAByNegotiation deals={$deals?.data?.deals} />
-    <DynamicsOfDeal deals={$deals?.data?.deals} />
+    {#if $deals.fetching}
+      <LoadingPulse />
+    {:else if $deals.error}
+      <p>Error...{$deals.error.message}</p>
+    {:else}
+      <IntentionsPerCategory deals={$deals.data.deals} />
+      <LSLAByNegotiation deals={$deals.data.deals} />
+      <DynamicsOfDeal deals={$deals.data.deals} />
+    {/if}
   </div>
 </ChartsContainer>
