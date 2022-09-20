@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n"
-
   import { isEmpty } from "$lib/helpers"
   import type { Section } from "$lib/sections"
   import type { Deal } from "$lib/types/deal"
@@ -13,6 +11,7 @@
   function sectionFieldsWithValues(subsection: Section) {
     return subsection.fields.filter(field => !isEmpty(deal[field]))
   }
+
   $: subsectionsWithAtLeastOneField = sections.filter(
     section => sectionFieldsWithValues(section).length > 0,
   )

@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { afterUpdate, beforeUpdate } from "svelte"
   import { _ } from "svelte-i18n"
 
   import type { Deal } from "$lib/types/deal"
@@ -22,7 +21,7 @@
   const createTitle = deal => `${deal.name} (${deal.id})`
 </script>
 
-<Overlay {visible} on:close title={createTitle(deal)}>
+<Overlay on:close title={createTitle(deal)} {visible}>
   <div>
     {#each fields as fieldName}
       <DisplayField
@@ -33,7 +32,7 @@
       />
     {/each}
     <div class="w-100">
-      <a class="deal" target="_blank" href="/deal/{deal.id}">
+      <a class="deal" href="/deal/{deal.id}" target="_blank">
         {$_("More details about this deal")}
       </a>
     </div>

@@ -10,6 +10,7 @@
   export let size: "normal" | "compact" | "invisible" = "normal"
 
   export const reset = () => {
+    // eslint-disable-next-line no-undef
     if (mounted && loaded && widgetID) hcaptcha.reset(widgetID)
   }
 
@@ -34,10 +35,12 @@
     }
     // guard against script loading race conditions
     // i.e. if component is destroyed before hcaptcha reference is loaded
+    // eslint-disable-next-line no-undef
     if (loaded) hcaptcha = null
   })
 
   $: if (mounted && loaded) {
+    // eslint-disable-next-line no-undef
     widgetID = hcaptcha.render(targetDiv, {
       sitekey,
       hl, // force a specific localisation

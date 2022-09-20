@@ -29,7 +29,7 @@
 
   $: columns = Object.keys(allColumnsWithSpan)
   $: labels = columns.map(col => $formfields.investor[col].label)
-  $: spans = Object.entries(allColumnsWithSpan).map(([_, colSpan]) => colSpan)
+  $: spans = Object.entries(allColumnsWithSpan).map(([, colSpan]) => colSpan)
 
   $: deals = queryStore({
     client: $page.data.urqlClient,

@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n"
-
   import type { FormField } from "../fields"
   import LowLevelDateYearField from "./LowLevelDateYearField.svelte"
 

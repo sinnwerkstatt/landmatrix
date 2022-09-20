@@ -88,15 +88,7 @@
             }),
         ]
       : []
-  // watch: {
-  //   search(newS, oldS) {
-  //     if (newS.length !== oldS.length) this.selectedSearchIndex = 0;
-  //   },
-  // },
-  // methods: {
-  function focusSearch() {
-    setTimeout(() => document.getElementById("search").focus(), 100)
-  }
+
   function searchKeyboardEvent(e) {
     if (["ArrowDown", "ArrowUp"].includes(e.code)) {
       e.preventDefault()

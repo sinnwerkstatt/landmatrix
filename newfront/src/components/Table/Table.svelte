@@ -22,7 +22,7 @@
   $: sortedItems = sortBy ? [...items].sort(sortFn(sortBy)) : items
 
   $: labels = labels ?? columns
-  $: spans = spans ?? columns.map(col => 1)
+  $: spans = spans ?? columns.map(() => 1)
   $: nCols = spans.reduce((sum, value) => sum + value)
 
   const onTableHeadClick = col => {

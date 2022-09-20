@@ -7,9 +7,7 @@
 
   import type { DataSource, Deal, DealVersion } from "$lib/types/deal"
 
-  const [dealID, dealVersion] = $page.params.IDs.split("/").map(x =>
-    x ? +x : undefined,
-  )
+  const [dealID] = $page.params.IDs.split("/").map(x => (x ? +x : undefined))
 
   const media_url = import.meta.env.VITE_MEDIA_URL
 

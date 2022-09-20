@@ -373,12 +373,12 @@
   {/if}
 </form>
 
-<style global>
-  path.leaflet-hidden {
+<style>
+  :global(path.leaflet-hidden) {
     display: none;
   }
 
-  img.leaflet-hidden {
+  :global(img.leaflet-hidden) {
     opacity: 0.6;
     filter: saturate(0);
   }

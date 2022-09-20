@@ -113,7 +113,7 @@
   $: columnsWithSpan = model === "deal" ? dealColumns : investorColumns
   $: columns = Object.keys(columnsWithSpan)
   $: labels = columns.map(col => $formfields?.[model]?.[col]?.label)
-  $: spans = Object.entries(columnsWithSpan).map(([_, colSpan]) => colSpan)
+  $: spans = Object.entries(columnsWithSpan).map(([, colSpan]) => colSpan)
 
   async function getCounts(model) {
     if (!browser) return
