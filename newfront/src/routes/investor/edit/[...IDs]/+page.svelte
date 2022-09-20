@@ -1,12 +1,9 @@
 <script lang="ts">
-  import type { Investor } from "$lib/types/investor"
+  import InvestorEditForm from "$components/Investor/InvestorEditForm.svelte"
 
-  import InvestorEditForm from "$views/InvestorEditForm.svelte"
+  import type { PageData } from "./$types"
 
-  // import type { PageData } from "./$types";
-  //
-  // export let data: PageData;
-  export let data: { investor: Investor; investorID: number; investorVersion: number }
+  export let data: PageData
 </script>
 
 <InvestorEditForm

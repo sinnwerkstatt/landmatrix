@@ -7,8 +7,8 @@
   import { loading } from "$lib/stores"
   import type { WagtailPage } from "$lib/types/wagtail"
 
-  import BasePage from "$views/BasePage.svelte"
-  import ObservatoryPage from "$views/ObservatoryPage.svelte"
+  import BasePage from "./BasePage.svelte"
+  import ObservatoryPage from "./ObservatoryPage.svelte"
 
   // import type { PageData } from "./$types";
   // export let data: PageData;

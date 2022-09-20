@@ -15,7 +15,7 @@ export const load: PageLoad = async ({ params, parent }) => {
     x ? +x : undefined,
   )
   const { data } = await urqlClient
-    .query<{ investor: Investor[] }>(investor_gql_query, {
+    .query<{ investor: Investor }>(investor_gql_query, {
       id: investorID,
       version: investorVersion,
       depth: 0,
