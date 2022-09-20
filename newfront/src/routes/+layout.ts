@@ -7,6 +7,8 @@ import type { User } from "$lib/types/user"
 
 import type { LayoutLoad } from "./$types"
 
+export const ssr = false
+
 async function fetchMe(urqlClient: Client) {
   const { data } = await urqlClient
     .query<{ me: User }>(
