@@ -15,7 +15,7 @@
   export let data: ChartData<"pie">
   export let unit = ""
 
-  let chart: Chart<"pie">
+  let chart: Chart<"pie"> | null = null
 
   const toCSV = (data: ChartData<"pie">) =>
     [data.labels?.join(","), ...data.datasets.map(set => set.data.join(","))].join("\n")
@@ -29,7 +29,7 @@
       case "svg":
         return // Not supported
       default:
-        return downloadCanvas(chart.canvas, fileType, title)
+        if (chart) return downloadCanvas(chart.canvas, fileType, title)
     }
   }
 </script>
