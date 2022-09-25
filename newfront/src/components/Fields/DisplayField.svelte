@@ -18,6 +18,7 @@
   import JSONExportsField from "$components/Fields/Display/JSONExportsField.svelte"
   import JSONJobsField from "$components/Fields/Display/JSONJobsField.svelte"
   import JSONLeaseField from "$components/Fields/Display/JSONLeaseField.svelte"
+  import JSONLocationAreasField from "$components/Fields/Display/JSONLocationAreasField.svelte"
   import LengthField from "$components/Fields/Display/LengthField.svelte"
   import ManyToManyField from "$components/Fields/Display/ManyToManyField.svelte"
   import NanoIDField from "$components/Fields/Display/NanoIDField.svelte"
@@ -67,6 +68,7 @@
     DateField: DateField,
     JSONActorsField: JSONActorsField,
     JSONDateAreaChoicesField: JSONDateAreaChoicesField,
+    JSONLocationAreasField: JSONLocationAreasField,
     JSONDateAreaField: JSONDateAreaField,
     JSONDateChoiceField: JSONDateChoiceField,
     JSONExportsField: JSONExportsField,

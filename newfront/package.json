@@ -48,7 +48,7 @@
     "d3-sankey": "^0.12.3",
     "dayjs": "^1.11.5",
     "deep-object-diff": "^1.1.7",
-    "eslint": "^8.23.1",
+    "eslint": "8.22.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-jest-dom": "^4.0.2",
     "eslint-plugin-svelte3": "^4.0.0",
