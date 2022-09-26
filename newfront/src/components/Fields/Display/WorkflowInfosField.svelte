@@ -14,12 +14,13 @@
 
   function clickOutside(element, callbackFunction) {
     function onClick(event) {
-      if (!element.contains(event.target)) {
-        callbackFunction()
-      }
+<      if (!element.contains(event.target)) callbackFunction()
     }
 
     document.body.addEventListener("click", onClick)
+
+    // the destroy function is actually in use, linter is wrong
+    // noinspection JSUnusedGlobalSymbols
     return {
       update(newCallbackFunction) {
         callbackFunction = newCallbackFunction
@@ -43,9 +44,7 @@
   {#if showMoreInfos}
     <div
       transition:slide
-      use:clickOutside={() => {
-        showMoreInfos = !showMoreInfos
-      }}
+      use:clickOutside={() => (showMoreInfos = !showMoreInfos)}
       class="absolute top-0 z-10 mx-1 w-[368px] rounded-sm border border-black bg-lm-warmgray shadow-md"
     >
       <ManageHeaderLogbookList workflowinfos={value} />
