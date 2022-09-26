@@ -9,7 +9,9 @@
   export let sections: Section[] = []
 
   function sectionFieldsWithValues(subsection: Section) {
-    return subsection.fields.filter(field => !isEmpty(deal[field]))
+    return subsection.fields.filter(field =>
+      typeof field === "object" ? !isEmpty(deal[field.name]) : !isEmpty(deal[field]),
+    )
   }
 
   $: subsectionsWithAtLeastOneField = sections.filter(
@@ -22,7 +24,26 @@
     <div class="mt-2 space-y-4">
       <h3 class="my-0">{subsection.name}</h3>
       {#each sectionFieldsWithValues(subsection) as fieldname}
-        <DisplayField {fieldname} value={deal[fieldname]} showLabel />
+        {#if typeof fieldname === "object"}
+          <DisplayField
+            fieldname={fieldname.name}
+            value={deal[fieldname.name]}
+            showLabel
+          />
+          {#if deal[fieldname.name] === true}
+            <div class="pl-4">
+              {#each fieldname.fields as connectedField}
+                <DisplayField
+                  fieldname={connectedField}
+                  value={deal[connectedField]}
+                  showLabel
+                />
+              {/each}
+            </div>
+          {/if}
+        {:else}
+          <DisplayField {fieldname} value={deal[fieldname]} showLabel />
+        {/if}
       {/each}
     </div>
   {/each}

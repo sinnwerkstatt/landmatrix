@@ -105,6 +105,7 @@
     investor = ret.investor
   }
   onMount(fetchInvestor)
+
   $: dealSections = getDealSections($_)
 </script>
 

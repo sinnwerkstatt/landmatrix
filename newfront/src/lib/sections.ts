@@ -1,9 +1,11 @@
 export type Section = {
   name: string
-  fields: string[]
+  fields: Array<string | { name: string; fields: string[] }>
 }
 
-export const getDealSections = ($_: (t: string) => string) => ({
+export const getDealSections = (
+  $_: (t: string) => string,
+): { [key: string]: Section[] } => ({
   general_info: [
     {
       name: $_("Land area"),
@@ -53,11 +55,15 @@ export const getDealSections = ($_: (t: string) => string) => ({
     {
       name: $_("Contract farming"),
       fields: [
-        "contract_farming",
-        "on_the_lease_state",
-        "on_the_lease",
-        "off_the_lease_state",
-        "off_the_lease",
+        {
+          name: "contract_farming",
+          fields: [
+            "on_the_lease_state",
+            "on_the_lease",
+            "off_the_lease_state",
+            "off_the_lease",
+          ],
+        },
         "contract_farming_comment",
       ],
     },
@@ -66,33 +72,45 @@ export const getDealSections = ($_: (t: string) => string) => ({
     {
       name: $_("Number of total jobs created"),
       fields: [
-        "total_jobs_created",
-        "total_jobs_planned",
-        "total_jobs_planned_employees",
-        "total_jobs_planned_daily_workers",
-        "total_jobs_current",
+        {
+          name: "total_jobs_created",
+          fields: [
+            "total_jobs_planned",
+            "total_jobs_planned_employees",
+            "total_jobs_planned_daily_workers",
+            "total_jobs_current",
+          ],
+        },
         "total_jobs_created_comment",
       ],
     },
     {
       name: $_("Number of jobs for foreigners created"),
       fields: [
-        "foreign_jobs_created",
-        "foreign_jobs_planned",
-        "foreign_jobs_planned_employees",
-        "foreign_jobs_planned_daily_workers",
-        "foreign_jobs_current",
+        {
+          name: "foreign_jobs_created",
+          fields: [
+            "foreign_jobs_planned",
+            "foreign_jobs_planned_employees",
+            "foreign_jobs_planned_daily_workers",
+            "foreign_jobs_current",
+          ],
+        },
         "foreign_jobs_created_comment",
       ],
     },
     {
       name: $_("Number of domestic jobs created"),
       fields: [
-        "domestic_jobs_created",
-        "domestic_jobs_planned",
-        "domestic_jobs_planned_employees",
-        "domestic_jobs_planned_daily_workers",
-        "domestic_jobs_current",
+        {
+          name: "domestic_jobs_created",
+          fields: [
+            "domestic_jobs_planned",
+            "domestic_jobs_planned_employees",
+            "domestic_jobs_planned_daily_workers",
+            "domestic_jobs_current",
+          ],
+        },
         "domestic_jobs_created_comment",
       ],
     },
@@ -136,13 +154,17 @@ export const getDealSections = ($_: (t: string) => string) => ({
     {
       name: $_("Displacement of people"),
       fields: [
-        "displacement_of_people",
-        "displaced_people",
-        "displaced_households",
-        "displaced_people_from_community_land",
-        "displaced_people_within_community_land",
-        "displaced_households_from_fields",
-        "displaced_people_on_completion",
+        {
+          name: "displacement_of_people",
+          fields: [
+            "displaced_people",
+            "displaced_households",
+            "displaced_people_from_community_land",
+            "displaced_people_within_community_land",
+            "displaced_households_from_fields",
+            "displaced_people_on_completion",
+          ],
+        },
         "displacement_of_people_comment",
       ],
     },
@@ -207,16 +229,19 @@ export const getDealSections = ($_: (t: string) => string) => ({
     {
       name: $_("Use of produce"),
       fields: [
-        "has_domestic_use",
-        "domestic_use",
-        "has_export",
-        "export",
-        "export_country1",
-        "export_country1_ratio",
-        "export_country2",
-        "export_country2_ratio",
-        "export_country3",
-        "export_country3_ratio",
+        { name: "has_domestic_use", fields: ["domestic_use"] },
+        {
+          name: "has_export",
+          fields: [
+            "export",
+            "export_country1",
+            "export_country1_ratio",
+            "export_country2",
+            "export_country2_ratio",
+            "export_country3",
+            "export_country3_ratio",
+          ],
+        },
         "use_of_produce_comment",
       ],
     },

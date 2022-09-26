@@ -120,6 +120,7 @@
       else await goto(`/deal/${dealID}/${dealVersion ?? ""}`)
     }
   }
+
   $: dealSections = getDealSections($_)
 </script>
 
