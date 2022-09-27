@@ -14,7 +14,7 @@
 
   function clickOutside(element, callbackFunction) {
     function onClick(event) {
-<      if (!element.contains(event.target)) callbackFunction()
+      if (!element.contains(event.target)) callbackFunction()
     }
 
     document.body.addEventListener("click", onClick)
