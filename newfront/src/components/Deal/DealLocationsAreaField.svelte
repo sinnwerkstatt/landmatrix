@@ -104,6 +104,14 @@
 <div class="my-3 grid grid-cols-10 justify-between">
   <div class="col-span-2 pr-2">
     <div class="text-lg font-medium">{title}</div>
+    <button
+      type="button"
+      class="btn btn-slim btn-secondary flex items-center justify-center"
+      on:click={() => (showAddAreaOverlay = true)}
+    >
+      <PlusIcon />
+      {$_("Add")}
+    </button>
   </div>
   {#if hasAreaFeatures}
     <table class="col-span-8 flex-auto">
@@ -177,15 +185,6 @@
         {/each}
       </tbody>
     </table>
-  {:else}
-    <button
-      type="button"
-      class="btn btn-slim btn-secondary flex items-center justify-center"
-      on:click={() => (showAddAreaOverlay = true)}
-    >
-      <PlusIcon />
-      {$_("Add")}
-    </button>
   {/if}
 </div>
 
