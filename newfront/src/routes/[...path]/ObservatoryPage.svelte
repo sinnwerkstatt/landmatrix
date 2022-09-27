@@ -168,9 +168,7 @@
           </button>
         </div>
       {:else}
-        <div class="mx-auto max-w-[65ch]">
-          <Streamfield content={page.body} />
-        </div>
+        <Streamfield content={page.body} class="px-0" />
       {/if}
     </div>
   {/if}
