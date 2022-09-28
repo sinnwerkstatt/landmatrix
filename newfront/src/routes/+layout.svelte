@@ -1,4 +1,6 @@
 <script lang="ts">
+  import * as Sentry from "@sentry/svelte"
+  import { BrowserTracing } from "@sentry/tracing"
   import { SvelteToast } from "@zerodevx/svelte-toast"
   import { onMount } from "svelte"
 
@@ -13,14 +15,19 @@
   import "../app.css"
   import type { LayoutData } from "./$types"
 
-  const toastOptions = {
-    reversed: true,
-    classes: ["toast"],
-    duration: 8000,
-    pausable: true,
-  }
-
   export let data: LayoutData
+
+  Sentry.init({
+    dsn: import.meta.env.VITE_SENTRY_DSN,
+    environment: "svelte frontend",
+    integrations: [new BrowserTracing()],
+    tracesSampleRate: 1.0,
+    // initialScope: { tags: { mode: "svelte frontend" } },
+  })
+
+  if (data.user)
+    Sentry.configureScope(scope => scope.setUser({ id: data.user.username }))
+
   onMount(async () => {
     if (data.user?.role >= UserRole.EDITOR) {
       await getAllUsers(data.urqlClient)
@@ -35,4 +42,7 @@
   <slot />
 </div>
 <Footer />
-<SvelteToast options={toastOptions} />
+
+<SvelteToast
+  options={{ reversed: true, classes: ["toast"], duration: 8000, pausable: true }}
+/>
