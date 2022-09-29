@@ -1,7 +1,9 @@
-<script>
-  import LayerGroup from "$components/icons/LayerGroup.svelte"
+<script lang="ts">
   import { _ } from "svelte-i18n"
-  import { visibleLayer, getBaseLayers } from "./layers"
+
+  import LayerGroup from "$components/icons/LayerGroup.svelte"
+
+  import { getBaseLayers, visibleLayer } from "./layers"
 
   let shown
 </script>
