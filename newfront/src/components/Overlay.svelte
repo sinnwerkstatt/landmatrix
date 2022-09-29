@@ -1,16 +1,18 @@
-<script>
+<script lang="ts">
   import { createEventDispatcher } from "svelte"
   import { _ } from "svelte-i18n"
   import { fade, slide } from "svelte/transition"
+
   import { browser } from "$app/environment"
 
   const dispatch = createEventDispatcher()
 
   export let visible = false
   export let hideable = true
-  export let title = null
+  export let title: string | null = null
 
   export let showSubmit = false
+  export let submitTitle: string | null = null
   export let submitDisabled = false
 
   export let closeButtonText = $_("Cancel")
@@ -59,7 +61,7 @@
           </button>
           {#if showSubmit}
             <button disabled={submitDisabled} type="submit" class="btn btn-primary">
-              {title}
+              {submitTitle ?? title}
             </button>
           {/if}
         </div>

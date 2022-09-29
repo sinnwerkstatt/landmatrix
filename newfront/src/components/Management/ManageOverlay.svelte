@@ -23,6 +23,7 @@
   export let toUserRequired = false
   export let extraUserIDs: number[] = []
   export let showSubmit = true
+  export let submitTitle: string | null = null
 
   const onSubmit = async e => {
     const form = e.target as HTMLFormElement
@@ -37,6 +38,7 @@
   bind:title
   bind:hideable
   bind:visible
+  bind:submitTitle
   on:submit={onSubmit}
   on:close
   {showSubmit}

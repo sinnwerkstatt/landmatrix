@@ -11,8 +11,8 @@
   import type { WorkflowInfo as WFInfo } from "$lib/types/generics"
 
   import ArrowLongRightIcon from "$components/icons/ArrowLongRightIcon.svelte"
+  import ChatBubbleLeftIcon from "$components/icons/ChatBubbleLeftIcon.svelte"
   import CheckCircleIcon from "$components/icons/CheckCircleIcon.svelte"
-  import PaperAirplaneSolidIcon from "$components/icons/PaperAirplaneSolidIcon.svelte"
 
   export let info: WFInfo
   $: status_map = {
@@ -47,6 +47,7 @@
     !info.resolved
 
   let reply = ""
+
   async function sendReply() {
     const { data, error } = await ($page.data.urqlClient as Client)
       .mutation<{ add_workflow_info_reply: boolean }>(
@@ -191,7 +192,7 @@
             class="btn btn-pelorous -ml-0.5 inline-flex h-[34px] items-center gap-2 px-2"
             type="submit"
           >
-            <PaperAirplaneSolidIcon class="h-5 w-5" />
+            <ChatBubbleLeftIcon class="h-5 w-5" />
           </button>
         </form>
       {/if}

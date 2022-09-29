@@ -5,8 +5,8 @@
   import type { Obj } from "$lib/types/generics"
   import type { User } from "$lib/types/user"
 
+  import ChatBubbleLeftIcon from "$components/icons/ChatBubbleLeftIcon.svelte"
   import ChatBubbleLeftRightIcon from "$components/icons/ChatBubbleLeftRightIcon.svelte"
-  import PaperAirplaneSolidIcon from "$components/icons/PaperAirplaneSolidIcon.svelte"
   import ManageOverlay from "$components/Management/ManageOverlay.svelte"
 
   import ManageHeaderLogbookList from "./ManageHeaderLogbookList.svelte"
@@ -14,61 +14,67 @@
   const dispatch = createEventDispatcher()
   export let object: Obj
 
-  let comment = ""
+  let showCommentOverlay = false
+  let commentOverlayComment = ""
 
-  function addComment(e: Event) {
-    const logbookForm = e.target as HTMLFormElement
-    if (!logbookForm.checkValidity()) logbookForm.reportValidity()
-    dispatch("addComment", { comment })
-    comment = ""
+  function addComment(e: CustomEvent<{ comment: string; toUser: User }>) {
+    dispatch("addComment", { comment: e.detail.comment })
+    commentOverlayComment = ""
+    showCommentOverlay = false
   }
 
   let showFeedbackOverlay = false
+  let feedbackOverlayComment = ""
+
   function addFeedback(e: CustomEvent<{ comment: string; toUser: User }>) {
     dispatch("addComment", e.detail)
-    comment = ""
+    feedbackOverlayComment = ""
     showFeedbackOverlay = false
   }
 </script>
 
-<div class="bg-lm-warmgray lg:w-1/3">
-  <h3 class="mx-3 mt-2 mb-3">{$_("Logbook")}</h3>
-  <form class="relative mx-3" on:submit|preventDefault={addComment}>
-    <textarea
-      bind:value={comment}
-      class="inpt max-h-[4.8rem] min-h-[2.4rem]"
-      placeholder={$_("Comment")}
-      required
-      rows="2"
-    />
+<div class="bg-lm-warmgray px-3 lg:w-1/3">
+  <h3 class="my-1 font-medium">{$_("Logbook")}</h3>
 
-    <div class="text-right">
-      <button
-        class="btn btn-pelorous-secondary btn-slim inline-flex items-center gap-2 px-2"
-        on:click={() => (showFeedbackOverlay = true)}
-        type="button"
-      >
-        {$_("Feedback")}
-        <ChatBubbleLeftRightIcon class="h-5 w-5" />
-      </button>
-      <button
-        class="btn btn-pelorous btn-slim inline-flex items-center gap-2 px-2"
-        type="submit"
-      >
-        {$_("Send")}
-        <PaperAirplaneSolidIcon class="h-5 w-5" />
-      </button>
-    </div>
-  </form>
-
-  <ManageHeaderLogbookList workflowinfos={object.workflowinfos} />
+  <div class="border-lm-dark">
+    <ManageHeaderLogbookList workflowinfos={object.workflowinfos} />
+  </div>
+  <div class="my-2 text-right">
+    <button
+      class="btn btn-pelorous-secondary btn-slim inline-flex items-center gap-2 px-2"
+      on:click={() => (showFeedbackOverlay = true)}
+      type="button"
+    >
+      {$_("Send feedback")}
+      <ChatBubbleLeftRightIcon class="h-5 w-5" />
+    </button>
+    <button
+      class="btn btn-pelorous btn-slim inline-flex items-center gap-2 px-2"
+      on:click={() => (showCommentOverlay = true)}
+      type="submit"
+    >
+      {$_("Add comment")}
+      <ChatBubbleLeftIcon class="h-5 w-5" />
+    </button>
+  </div>
 </div>
 
 <ManageOverlay
   assignToUserInput
+  bind:comment={feedbackOverlayComment}
   bind:visible={showFeedbackOverlay}
-  {comment}
   commentRequired
   on:submit={addFeedback}
+  title={$_("Send feedback")}
+  submitTitle={$_("Send")}
   toUserRequired
+/>
+
+<ManageOverlay
+  bind:comment={commentOverlayComment}
+  bind:visible={showCommentOverlay}
+  commentRequired
+  on:submit={addComment}
+  submitTitle={$_("Save")}
+  title={$_("Add comment")}
 />
