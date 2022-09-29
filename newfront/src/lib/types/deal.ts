@@ -1,3 +1,4 @@
+import type { GeoJsonObject } from "geojson"
 import type { Feature, FeatureCollection, Geometry } from "geojson"
 
 import type { Obj, ObjVersion, WorkflowInfo } from "$lib/types/generics"
@@ -219,6 +220,7 @@ export interface Deal extends Obj {
   operating_company?: Investor
   confidential?: boolean
   is_public?: boolean
+  geojson?: GeoJsonObject
   [key: string]: unknown
 }
 

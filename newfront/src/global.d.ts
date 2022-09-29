@@ -2,7 +2,7 @@
 
 // named exports
 declare module "leaflet?client" {
-  import * as L from "leaflet"
+  import L from "leaflet"
   export = L
 }
 
