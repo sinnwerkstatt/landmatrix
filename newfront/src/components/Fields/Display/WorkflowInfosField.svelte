@@ -4,7 +4,6 @@
   import type { WorkflowInfo as WFInfo } from "$lib/types/generics"
 
   import type { FormField } from "$components/Fields/fields"
-  import ManageHeaderLogbookList from "$components/Management/ManageHeaderLogbookList.svelte"
   import WorkflowInfo from "$components/Management/WorkflowInfo.svelte"
 
   export let value: WFInfo[]
@@ -33,7 +32,7 @@
 </script>
 
 <div
-  class="workflowinfo-field"
+  class="workflowinfo-field cursor-pointer"
   data-name={formfield?.name ?? ""}
   on:click={event => {
     showMoreInfos = !showMoreInfos
@@ -47,7 +46,13 @@
       use:clickOutside={() => (showMoreInfos = !showMoreInfos)}
       class="absolute top-0 z-10 mx-1 w-[368px] rounded-sm border border-black bg-lm-warmgray shadow-md"
     >
-      <ManageHeaderLogbookList workflowinfos={value} />
+      <div
+        class="h-auto max-h-[330px] cursor-default overflow-y-scroll bg-lm-warmgray px-[2px] pt-1 pb-4 shadow-inner"
+      >
+        {#each value as info}
+          <WorkflowInfo {info} />
+        {/each}
+      </div>
     </div>
   {/if}
 </div>

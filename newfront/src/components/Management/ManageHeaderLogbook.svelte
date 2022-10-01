@@ -8,8 +8,7 @@
   import ChatBubbleLeftIcon from "$components/icons/ChatBubbleLeftIcon.svelte"
   import ChatBubbleLeftRightIcon from "$components/icons/ChatBubbleLeftRightIcon.svelte"
   import ManageOverlay from "$components/Management/ManageOverlay.svelte"
-
-  import ManageHeaderLogbookList from "./ManageHeaderLogbookList.svelte"
+  import WorkflowInfo from "$components/Management/WorkflowInfo.svelte"
 
   const dispatch = createEventDispatcher()
   export let object: Obj
@@ -33,12 +32,17 @@
   }
 </script>
 
-<div class="bg-lm-warmgray px-3 lg:w-1/3">
+<div class="flex flex-col bg-lm-warmgray px-3 lg:w-1/3">
   <h3 class="my-1 font-medium">{$_("Logbook")}</h3>
 
-  <div class="border-lm-dark">
-    <ManageHeaderLogbookList workflowinfos={object.workflowinfos} />
+  <div
+    class="h-0 flex-grow cursor-default overflow-y-scroll border-lm-dark bg-lm-warmgray px-[2px] pt-1 pb-4 shadow-inner"
+  >
+    {#each object.workflowinfos as info}
+      <WorkflowInfo {info} />
+    {/each}
   </div>
+
   <div class="my-2 text-right">
     <button
       class="btn btn-pelorous-secondary btn-slim inline-flex items-center gap-2 px-2"
