@@ -313,6 +313,7 @@ export const subsections = {
     "point",
     "facility_name",
     "comment",
+    "areas",
   ],
   contract: ["number", "date", "expiration_date", "agreement_duration", "comment"],
   datasource: [
