@@ -10,9 +10,9 @@ from wagtail.core.fields import StreamField
 from wagtail.core.rich_text import expand_db_html
 from wagtail.embeds.blocks import EmbedBlock
 from wagtail.images.blocks import ImageChooserBlock
+from wagtail.snippets.blocks import SnippetChooserBlock
 
-from apps.landmatrix.models import Region as DataRegion
-from apps.landmatrix.models.country import Country as DataCountry
+from apps.landmatrix.models.country import Country as DataCountry, Region as DataRegion
 from apps.wagtailcms.twitter import TwitterTimeline
 
 
@@ -416,6 +416,28 @@ class LatestNewsBlock(StructBlock):
         return context
 
 
+class ResourcesTeasersBlock(StructBlock):
+    # limit = blocks.IntegerBlock(required=False)
+    categories = blocks.ListBlock(SnippetChooserBlock("blog.BlogCategory"))
+
+    class Meta:
+        icon = "list"
+        label = "Resources teasers"
+
+    def get_api_representation(self, value, context=None):
+        from apps.blog.models import BlogPage
+
+        bp = BlogPage.objects.filter(blog_categories__in=value["categories"])
+        print(bp)
+
+        ret = {
+            "articles": [
+                article.get_dict("fill-500x500|jpegquality-60") for article in bp
+            ]
+        }
+        return ret
+
+
 class StatisticsBlock(StructBlock):
     class Meta:
         icon = "list"
@@ -615,6 +637,7 @@ class CountriesBlock(StructBlock):
 
 DATA_BLOCKS = [
     ("latest_news", LatestNewsBlock()),
+    ("resources_teasers", ResourcesTeasersBlock()),
     ("link_map", LinkMapBlock()),
     ("statistics", StatisticsBlock()),
     ("map_data_charts", MapDataChartsBlock()),
