@@ -17,7 +17,7 @@ def get_submodels_fields():
                 "choices": choices.LOCATION_ACCURACY,
             },
             "comment": {"label": _("Comment"), "class": "TextField"},
-            "areas": {"label": _("Areas"), "class": "JSONField"},
+            "areas": {"label": _("Areas"), "class": "JSONLocationAreasField"},
             "deal": {
                 "label": _("Deal"),
                 "class": "ForeignKey",
