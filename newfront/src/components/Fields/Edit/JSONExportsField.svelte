@@ -71,14 +71,14 @@
             />
           </td>
 
-          <td class="w-1/5 p-1">
+          <td class="w-1/6 p-1">
             <LowLevelDateYearField
               bind:value={val.date}
               required={formfield.required}
               name={formfield.name}
             />
           </td>
-          <td class="w-1/5 p-1">
+          <td class="w-1/6 p-1">
             <LowLevelDecimalField
               bind:value={val.area}
               required={formfield.required}
@@ -86,14 +86,14 @@
               unit="ha"
             />
           </td>
-          <td class="w-1/5 p-1">
+          <td class="w-2/6 p-1">
             <TypedChoicesField
               bind:value={val.choices}
               {formfield}
               required={formfield.required}
             />
           </td>
-          <td class="w-1/5 p-1">
+          <td class="w-1/6 p-1">
             <LowLevelDecimalField
               bind:value={val.yield}
               required={formfield.required}
@@ -101,7 +101,7 @@
               name={formfield.name}
             />
           </td>
-          <td class="w-1/5 p-1">
+          <td class="w-1/6 p-1">
             <LowLevelDecimalField
               bind:value={val.export}
               required={formfield.required}

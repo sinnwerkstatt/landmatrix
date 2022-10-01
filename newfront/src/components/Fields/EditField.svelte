@@ -32,8 +32,8 @@
 
   export let showLabel = true
   export let wrapperClasses = "mb-3 leading-5 flex flex-col xl:flex-row"
-  export let labelClasses = "font-medium mb-1 w-full xl:w-1/3"
-  export let valueClasses = "text-lm-dark mb-5 w-full xl:w-2/3"
+  export let labelClasses = "font-medium mb-1 w-full xl:w-1/4"
+  export let valueClasses = "text-lm-dark mb-5 w-full xl:w-3/4"
   export let disabled = false
 
   //   computed: {

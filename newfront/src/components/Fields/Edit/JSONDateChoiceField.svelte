@@ -19,18 +19,25 @@
   export let value: Array<JSONDateChoiceField> | null
 
   let valueCopy = createValueCopy(value)
+  let current = valueCopy.map(val => val.current).indexOf(true) ?? -1
   $: value = syncValue(val => !!(val.date || val.choice), valueCopy)
 
+  function updateCurrent(index) {
+    valueCopy = valueCopy.map(val => ({ ...val, current: undefined }))
+    valueCopy[index].current = true
+    valueCopy = valueCopy
+  }
   function addEntry() {
     valueCopy = [...valueCopy, {}]
   }
-
   function removeEntry(index) {
+    if (current === index) {
+      current = -1
+    } else if (current > index) {
+      current--
+    }
     valueCopy = valueCopy.filter((val, i) => i !== index)
   }
-
-  const anySelectedAsCurrent = values => values.some(val => val.current)
-  const isCurrentRequired = values => values.length > 0 && !anySelectedAsCurrent(values)
 </script>
 
 <div class="json_date_choice_field whitespace-nowrap">
@@ -46,15 +53,15 @@
     <tbody>
       {#each valueCopy as val, i}
         <tr class:is-current={val.current}>
-          <td class="p-1 text-center">
-            <div class="form-check form-check-inline">
-              <input
-                required={isCurrentRequired(valueCopy)}
-                type="checkbox"
-                bind:checked={val.current}
-                disabled={!val.date || !val.choice}
-              />
-            </div>
+          <td class="p-1 text-center" on:click={() => updateCurrent(i)}>
+            <input
+              type="radio"
+              bind:group={current}
+              name="{formfield.name}_current"
+              required={valueCopy.length > 0}
+              disabled={!val.date && !val.choices}
+              value={i}
+            />
           </td>
           <td class="w-36 p-1">
             <LowLevelDateYearField
