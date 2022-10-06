@@ -62,12 +62,12 @@ newfront integration test:
       alias: postgres
   before_script:
     - npm ci && npx playwright install && npx playwright install-deps
-    - cd frontend && npm ci
+    - cd frontend && npm ci && cd ..
     - poetry install
   script:
-    - poetry run doit initial_setup production=True
+    - cd backend && poetry run doit initial_setup production=True
     - poetry run ./manage.py create_playwright_test_users
-    - ./test.sh
+    - cd .. && ./test.sh
   artifacts:
     when: always
     paths:
