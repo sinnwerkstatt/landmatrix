@@ -63,7 +63,7 @@ newfront integration test:
   before_script:
     - npm ci && npx playwright install && npx playwright install-deps
     - cd frontend && npm ci
-    - poetry install -E production
+    - poetry install
   script:
     - poetry run doit initial_setup production=True
     - poetry run ./manage.py create_playwright_test_users
