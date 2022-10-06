@@ -26,8 +26,10 @@ echo 'Caddy online'
 
 # 3. Run tests
 npm run playwright
+success=$?
 
 # 4. Cleanup
 kill $PID
 sleep 2
 
+exit $success

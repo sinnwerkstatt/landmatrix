@@ -19,5 +19,8 @@ const config: PlaywrightTestConfig = {
     // { name: "firefox", use: { ...devices["Desktop Firefox"] } },
     // { name: "webkit", use: { ...devices["Desktop Safari"] } },
   ],
+  reporter: process.env.CI
+    ? [["dot"], ["junit", { outputFile: "results.xml" }]]
+    : "list",
 };
 export default config;
