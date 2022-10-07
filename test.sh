@@ -5,7 +5,7 @@
 # If you want to see the output run `npm run dev:test` in one terminal
 # and `npm run playwright` in another terminal.
 echo 'Starting backend, frontend (dev) and proxy'
-concurrently npm:backend npm:frontend npm:caddy > /dev/null &
+concurrently npm:backend npm:frontend npm:caddy #> /dev/null &
 PID=$!
 
 # 2. Wait for app to be responsive
