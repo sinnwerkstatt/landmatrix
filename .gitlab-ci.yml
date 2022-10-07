@@ -67,7 +67,7 @@ newfront integration test:
   script:
     - poetry run doit initial_setup production=True
     - poetry run ./manage.py create_playwright_test_users
-    - ./test.sh
+    - PATH=$(npm bin):$PATH ./test.sh
   artifacts:
     when: always
     paths:
