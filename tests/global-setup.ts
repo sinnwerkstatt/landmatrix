@@ -24,6 +24,15 @@ async function globalSetup(config: FullConfig) {
 
   for (const user of USERS) {
     const page = await browser.newPage();
+
+    // TODO: RD - remove debug
+    page.on("console", (message) => {
+      console.log(`Log: "${message.text()}"`);
+    });
+    page.on('pageerror', exception => {
+      console.log(`ERR: "${exception}"`);
+    });
+
     await page.goto("localhost:9000/account/login", {
       waitUntil: "networkidle",
     });
