@@ -28,6 +28,9 @@ async function globalSetup(config: FullConfig) {
       waitUntil: "networkidle",
     });
 
+    // TODO: RD - remove debug
+    console.log(await page.content());
+
     await page.fill('text=Username >> [placeholder="Username"]', user.username);
     await page.fill('text=Password >> [placeholder="Password"]', user.password);
     await page.click('button:has-text("Login")');
