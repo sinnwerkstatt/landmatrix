@@ -65,9 +65,9 @@ newfront integration test:
     - cd frontend && npm ci && cd ..
     - poetry install
   script:
-    - cd backend && poetry run doit initial_setup production=True
+    - poetry run doit initial_setup production=True
     - poetry run ./manage.py create_playwright_test_users
-    - cd .. && ./test.sh
+    - ./test.sh
   artifacts:
     when: always
     paths:
