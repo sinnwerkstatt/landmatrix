@@ -38,7 +38,7 @@ async function globalSetup(config: FullConfig) {
     });
 
     // TODO: RD - remove debug
-    console.log(await page.content());
+    // console.log(await page.content());
 
     await page.fill('text=Username >> [placeholder="Username"]', user.username);
     await page.fill('text=Password >> [placeholder="Password"]', user.password);
