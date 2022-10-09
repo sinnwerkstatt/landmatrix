@@ -62,7 +62,7 @@ newfront integration test:
       alias: postgres
   before_script:
     - npm ci && npx playwright install && npx playwright install-deps
-    - cd newfront && npm ci && cd ..
+    - cd newfront && npm ci && npm run build && cd ..
     - poetry install
   script:
     - poetry run doit initial_setup production=True

@@ -3,7 +3,7 @@
     "dev": "concurrently npm:backend npm:frontend npm:caddy",
     "dev:test": "DATABASE_URL=postgis://landmatrix:landmatrix@localhost/playwright_test npm run dev",
     "backend": "poetry run ./manage.py runserver",
-    "frontend": "cd newfront && npm run dev",
+    "frontend": "cd newfront && node build/index.js",
     "caddy": "caddy run",
     "playwright": "npx playwright test tests/ --workers 1",
     "test:setup": "DATABASE_URL=postgis://landmatrix:landmatrix@localhost/playwright_test ./test-setup.sh",
