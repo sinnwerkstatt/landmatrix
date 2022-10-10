@@ -39,6 +39,7 @@ doit = "*"
 sentry_sdk = "*"
 gunicorn = "*"
 tzdata = "*"
+python-memcached = "^1.59"
 
 [tool.poetry.dev-dependencies]
 ipdb = "*"
