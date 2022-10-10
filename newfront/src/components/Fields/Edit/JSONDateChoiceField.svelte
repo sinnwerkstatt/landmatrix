@@ -59,14 +59,14 @@
               bind:group={current}
               name="{formfield.name}_current"
               required={valueCopy.length > 0}
-              disabled={!val.date && !val.choices}
+              disabled={!val.choice}
               value={i}
             />
           </td>
           <td class="w-36 p-1">
             <LowLevelDateYearField
               bind:value={val.date}
-              required={val.choice}
+              emitUndefinedOnEmpty
               name={formfield.name}
             />
           </td>
