@@ -10,3 +10,6 @@ poetry install
 doit reset_db
 doit initial_setup
 ./manage.py create_playwright_test_users
+
+# 4. Update playwright
+npx playwright install
