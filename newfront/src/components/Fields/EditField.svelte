@@ -31,9 +31,9 @@
   export let model = "deal"
 
   export let showLabel = true
-  export let wrapperClasses = "mb-3 leading-5 flex flex-col xl:flex-row"
-  export let labelClasses = "font-medium mb-1 w-full xl:w-1/4"
-  export let valueClasses = "text-lm-dark mb-5 w-full xl:w-3/4"
+  export let wrapperClasses = "mb-3 leading-5 flex flex-col"
+  export let labelClasses = "font-semibold mb-4 w-full"
+  export let valueClasses = "text-lm-dark px-3 mb-10 w-full"
   export let disabled = false
 
   //   computed: {
