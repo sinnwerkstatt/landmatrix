@@ -54,27 +54,27 @@ newfront test:
     - npm ci
     - npm run test
 
-newfront integration test:
-  stage: test
-  interruptible: true
-  services:
-    - name: postgis/postgis:12-3.2
-      alias: postgres
-  before_script:
-    - npm ci && npx playwright install && npx playwright install-deps
-    - cd newfront && npm ci && npm run build && cd ..
-    - poetry install
-  script:
-    - poetry run doit initial_setup production=True
-    - poetry run ./manage.py create_playwright_test_users
-    - PATH=$(npm bin):$PATH ./test.sh
-  artifacts:
-    when: always
-    paths:
-        - test-results/
-        - results.xml
-    reports:
-        junit: results.xml
+#newfront integration test:
+#  stage: test
+#  interruptible: true
+#  services:
+#    - name: postgis/postgis:12-3.2
+#      alias: postgres
+#  before_script:
+#    - npm ci && npx playwright install --with-deps
+#    - cd newfront && npm ci && npm run build && cd ..
+#    - poetry install
+#  script:
+#    - poetry run doit initial_setup production=True
+#    - poetry run ./manage.py create_playwright_test_users
+#    - PATH=$(npm bin):$PATH ./test.sh
+#  artifacts:
+#    when: always
+#    paths:
+#        - test-results/
+#        - results.xml
+#    reports:
+#        junit: results.xml
 
 newfront formatting and linting:
   stage: test
