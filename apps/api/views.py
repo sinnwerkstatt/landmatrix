@@ -362,7 +362,7 @@ class CaseStatistics(View):
 
         cursor.execute(
             f"SELECT count(d.id) {from_clause}, jsonb_array_elements(d.locations) l {where_clause}"
-            f" AND l->>'level_of_accuracy' in ('EXACT_LOCATION','COORDINATES') AND l->>'areas' IS NOT NULL"
+            f" AND l->>'level_of_accuracy' in ('EXACT_LOCATION','COORDINATES') OR l->>'areas' IS NOT NULL"
         )
         deals_public_high_geo_accuracy = cursor.fetchone()[0]
 
