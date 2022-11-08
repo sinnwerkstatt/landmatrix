@@ -36,16 +36,6 @@
   export let valueClasses = "text-lm-dark px-3 mb-10 w-full"
   export let disabled = false
 
-  //   computed: {
-  //     _visible(): boolean {
-  //       if (!this.visible) return false;
-  //       if (this.fieldname === "file_not_public") return false;
-  //       if (this.formfield.class === "FileField") {
-  //         return !this.fileNotPublic || this.$store.getters.userAuthenticated;
-  //       }
-  //       return true;
-  //     },
-
   let formfield: FormField
   $: formfield = { name: fieldname, ...$formfields[model][fieldname] }
 

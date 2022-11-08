@@ -1,6 +1,8 @@
+export type Field = string | { name: string; fields: Field[] }
+
 export type Section = {
   name: string
-  fields: Array<string | { name: string; fields: string[] }>
+  fields: Field[]
 }
 
 export const getDealSections = (
@@ -58,10 +60,8 @@ export const getDealSections = (
         {
           name: "contract_farming",
           fields: [
-            "on_the_lease_state",
-            "on_the_lease",
-            "off_the_lease_state",
-            "off_the_lease",
+            { name: "on_the_lease_state", fields: ["on_the_lease"] },
+            { name: "off_the_lease_state", fields: ["off_the_lease"] },
           ],
         },
         "contract_farming_comment",
