@@ -6,6 +6,7 @@
 
   import { allUsers } from "$lib/stores"
   import type { User } from "$lib/types/user"
+  import { UserRole } from "$lib/types/user"
 
   export let value: User | number
   export let required = false
@@ -24,9 +25,7 @@
   getOptionLabel={createUserLabel}
   getSelectionLabel={createUserLabel}
   items={$allUsers.filter(
-    u =>
-      extraUserIDs.includes(u.id) ||
-      u.groups?.some(g => ["Administrators", "Editors"].includes(g.name)),
+    u => extraUserIDs.includes(u.id) || u.role > UserRole.REPORTER,
   )}
   optionIdentifier="id"
   placeholder={$_("User")}
