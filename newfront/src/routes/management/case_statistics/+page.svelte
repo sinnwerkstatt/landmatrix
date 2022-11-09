@@ -60,6 +60,7 @@
             selCountry = undefined
             getCounts(selRegion, undefined)
           }}
+          on:clear={() => getCounts(undefined, undefined)}
           optionIdentifier="id"
           labelIdentifier="name"
           getOptionLabel={o => `${o.name} (#${o.id})`}
@@ -80,6 +81,7 @@
             selRegion = undefined
             getCounts(undefined, selCountry)
           }}
+          on:clear={() => getCounts(undefined, undefined)}
           optionIdentifier="id"
           labelIdentifier="name"
           showChevron

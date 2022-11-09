@@ -161,44 +161,52 @@ def global_rankings(_obj, _info, count=10, filters=None):
     }
 
 
-def resolve_statistics(_obj, _info, country_id=None, region_id=None):
-    from_clause = "FROM landmatrix_deal d"
-    where_clause = "WHERE status IN (2,3) AND is_public=True "
+def create_statistics(country_id=None, region_id=None):
+    select_clause = "SELECT count(distinct(d.id))"
+    from_clause = "FROM landmatrix_deal AS d"
+    where_clause = "WHERE d.status IN (2,3) AND d.is_public=True"
 
     if country_id:
-        where_clause += f"AND country_id={country_id}"
+        where_clause += f" AND d.country_id={country_id}"
     if region_id:
-        from_clause = "FROM landmatrix_deal d INNER JOIN landmatrix_country c ON (d.country_id = c.id)"
-        where_clause += f"AND c.region_id={region_id}"
+        from_clause += " INNER JOIN landmatrix_country AS c ON (d.country_id = c.id)"
+        where_clause += f" AND c.region_id={region_id}"
 
     cursor = connection.cursor()
 
-    cursor.execute(f"SELECT count(*) {from_clause} {where_clause}")
+    cursor.execute(f"{select_clause} {from_clause} {where_clause}")
     deals_public_count = cursor.fetchone()[0]
 
-    #     "deals_public_multi_ds_count": (
-    #         public_deals.annotate(
-    #             count_ob=JSONObject(
-    #                 count=Func(F("datasources"), function="jsonb_array_length")
-    #             )
-    #         )
-    #         .filter(count_ob__count__gt=1)
-    #         .count()
-    #     ),
     cursor.execute(
-        f"SELECT count(d.id) {from_clause} {where_clause} AND jsonb_array_length(d.datasources) > 1"
+        f"""
+            {select_clause}
+            {from_clause}
+            {where_clause}
+            AND jsonb_array_length(d.datasources) > 1
+        """
     )
     deals_public_multi_ds_count = cursor.fetchone()[0]
 
     cursor.execute(
-        f"SELECT count(d.id) {from_clause}, jsonb_array_elements(d.locations) l {where_clause}"
-        f" AND l->>'level_of_accuracy' in ('EXACT_LOCATION','COORDINATES') AND l->>'areas' IS NOT NULL"
+        f"""
+            {select_clause}
+            {from_clause}, jsonb_array_elements(d.locations) AS l
+            {where_clause}
+            AND (
+              l->>'level_of_accuracy' in ('EXACT_LOCATION','COORDINATES')
+              OR l->>'areas' IS NOT NULL
+            )
+        """
     )
     deals_public_high_geo_accuracy = cursor.fetchone()[0]
 
     cursor.execute(
-        f"SELECT count(d.id) {from_clause}, jsonb_array_elements(d.locations) l {where_clause}"
-        f" AND l->>'areas' IS NOT NULL"
+        f"""
+            {select_clause}
+            {from_clause}, jsonb_array_elements(d.locations) AS l
+            {where_clause}
+            AND l->>'areas' IS NOT NULL
+        """
     )
     deals_public_polygons = cursor.fetchone()[0]
 
@@ -208,6 +216,10 @@ def resolve_statistics(_obj, _info, country_id=None, region_id=None):
         "deals_public_high_geo_accuracy": deals_public_high_geo_accuracy,
         "deals_public_polygons": deals_public_polygons,
     }
+
+
+def resolve_statistics(_obj, _info, country_id=None, region_id=None):
+    return create_statistics(country_id, region_id)
 
 
 def resolve_deal_aggregations(_obj, info, fields, subset="PUBLIC", filters=None):

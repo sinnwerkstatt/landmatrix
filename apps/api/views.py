@@ -19,6 +19,7 @@ from django.utils import timezone
 from django.views import View
 from openpyxl.workbook import Workbook
 
+from apps.graphql.resolvers.charts import create_statistics
 from apps.graphql.tools import parse_filters
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.deal import Deal
@@ -340,46 +341,7 @@ class CaseStatistics(View):
     def _counts(request):
         country_id = request.GET.get("country")
         region_id = request.GET.get("region")
-
-        from_clause = "FROM landmatrix_deal d"
-        where_clause = "WHERE status IN (2,3) AND is_public=True"
-
-        if country_id:
-            where_clause += f" AND country_id={country_id}"
-        elif region_id:
-            from_clause = "FROM landmatrix_deal d INNER JOIN landmatrix_country c ON (d.country_id = c.id)"
-            where_clause += f" AND c.region_id={region_id}"
-
-        cursor = connection.cursor()
-
-        cursor.execute(f"SELECT count(*) {from_clause} {where_clause}")
-        deals_public_count = cursor.fetchone()[0]
-
-        cursor.execute(
-            f"SELECT count(d.id) {from_clause} {where_clause} AND jsonb_array_length(d.datasources) > 1"
-        )
-        deals_public_multi_ds_count = cursor.fetchone()[0]
-
-        cursor.execute(
-            f"SELECT count(d.id) {from_clause}, jsonb_array_elements(d.locations) l {where_clause}"
-            f" AND l->>'level_of_accuracy' in ('EXACT_LOCATION','COORDINATES') OR l->>'areas' IS NOT NULL"
-        )
-        deals_public_high_geo_accuracy = cursor.fetchone()[0]
-
-        cursor.execute(
-            f"SELECT count(d.id) {from_clause}, jsonb_array_elements(d.locations) l {where_clause}"
-            f" AND l->>'areas' IS NOT NULL"
-        )
-        deals_public_polygons = cursor.fetchone()[0]
-
-        return JsonResponse(
-            {
-                "deals_public_count": deals_public_count,
-                "deals_public_multi_ds_count": deals_public_multi_ds_count,
-                "deals_public_high_geo_accuracy": deals_public_high_geo_accuracy,
-                "deals_public_polygons": deals_public_polygons,
-            }
-        )
+        return JsonResponse(create_statistics(country_id, region_id))
 
     def get(self, request, *args, **kwargs):
         # is_deal = not request.GET.get("model") == "investor"
