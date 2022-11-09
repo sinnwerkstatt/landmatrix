@@ -187,10 +187,7 @@ export async function getAllUsers(urqlClient: Client) {
             id
             full_name
             username
-            groups {
-              id
-              name
-            }
+            role
           }
         }
       `,
