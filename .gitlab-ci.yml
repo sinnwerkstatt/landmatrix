@@ -33,7 +33,7 @@ django tests and coverage:
       alias: postgres
   script:
     - poetry install
-    - poetry run doit -n 4 update
+    - poetry run doit migrate
     - poetry run pytest -x
   coverage: /^TOTAL.*\s+(\d+\%)$/
 
