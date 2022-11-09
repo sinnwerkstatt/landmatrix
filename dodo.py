@@ -55,9 +55,10 @@ def task_reset_db():
 
 #############################
 def task_frontend_build():
-    actions = ["cd frontend; npm ci"]
+    actions = ["cd frontend; npm ci", "cd newfront; npm ci"]
     if get_var("production", False):
         actions += ["cd frontend; npm run build"]
+        actions += ["cd newfront; npm run build"]
     return {
         "task_dep": ["compilemessages"],
         "actions": actions,
