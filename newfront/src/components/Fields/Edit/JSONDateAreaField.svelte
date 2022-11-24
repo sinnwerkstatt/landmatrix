@@ -20,7 +20,7 @@
 
   let valueCopy = createValueCopy(value)
   let current = valueCopy.map(val => val.current).indexOf(true) ?? -1
-  $: value = syncValue(val => !!(val.date || val.area), valueCopy)
+  $: value = syncValue(val => !!val.area, valueCopy)
 
   function updateCurrent(index) {
     valueCopy = valueCopy.map(val => ({ ...val, current: undefined }))
@@ -44,7 +44,7 @@
   <table class="w-full">
     <thead>
       <tr>
-        <th class="font-normal">{$_("Current")}</th>
+        <th class="pr-2 text-center font-normal">{$_("Current")}</th>
         <th class="font-normal">{$_("Date")}</th>
         <th class="font-normal">{$_("Area (ha)")}</th>
         <th />
@@ -59,7 +59,7 @@
               bind:group={current}
               name="{formfield.name}_current"
               required={valueCopy.length > 0}
-              disabled={!val.date && !val.area}
+              disabled={!val.area}
               value={i}
             />
           </td>
@@ -67,16 +67,16 @@
           <td class="w-1/3 p-1">
             <LowLevelDateYearField
               bind:value={val.date}
-              required={formfield.required}
-              name={formfield.name}
+              name="{formfield.name}_{i}_date"
+              emitUndefinedOnEmpty
             />
           </td>
 
           <td class="w-1/3 p-1">
             <LowLevelDecimalField
               bind:value={val.area}
-              required={formfield.required}
-              name={formfield.name}
+              required={!!val.date}
+              name="{formfield.name}_{i}_area"
               unit="ha"
             />
           </td>

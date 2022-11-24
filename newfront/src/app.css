@@ -130,6 +130,10 @@
     @apply border-2 border-red-600 text-red-700;
   }
 
+  .inpt:placeholder-shown:required {
+    @apply border-2 border-red-600 text-red-700;
+  }
+
   .inpt[readonly] {
     @apply cursor-not-allowed bg-gray-100 text-gray-500 focus:outline-none;
   }

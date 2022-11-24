@@ -23,7 +23,7 @@
   //   },
   // },
 
-  $: placeholder = min && max ? `${min} – ${max}` : step === 1 ? "" : "123.45"
+  $: placeholder = min && max ? `${min} – ${max}` : step === 1 ? "0" : "123.45"
 
   // },
   // watch: {

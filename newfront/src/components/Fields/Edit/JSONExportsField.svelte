@@ -23,10 +23,7 @@
   export let value: Array<JSONExportsField> | null
 
   let valueCopy = createValueCopy(value)
-  $: value = syncValue(
-    val => !!(val.date || val.area || val.choices || val.yield || val.export),
-    valueCopy,
-  )
+  $: value = syncValue(val => !!val.choices, valueCopy)
 
   function addEntry() {
     valueCopy = [...valueCopy, {}]
@@ -45,12 +42,12 @@
   <table class="w-full">
     <thead>
       <tr>
-        <th class="font-normal">{$_("Current")}</th>
+        <th class="pr-2 text-center font-normal">{$_("Current")}</th>
         <th class="font-normal">{$_("Date")}</th>
-        <th class="font-normal">{$_("Area (ha)")}</th>
+        <th class="font-normal">{$_("Area")}</th>
         <th class="font-normal">{$_("Choices")}</th>
-        <th class="font-normal">{$_("Yield (tons)")}</th>
-        <th class="font-normal">{$_("Export (%)")}</th>
+        <th class="font-normal">{$_("Yield")}</th>
+        <th class="font-normal">{$_("Export")}</th>
         <th />
       </tr>
     </thead>
@@ -63,49 +60,42 @@
               bind:checked={val.current}
               name="{formfield.name}_current"
               required={isCurrentRequired(valueCopy)}
-              disabled={!val.date &&
-                !val.area &&
-                !val.choices &&
-                !val.yield &&
-                !val.export}
+              disabled={!val.choices}
             />
           </td>
 
           <td class="w-1/6 p-1">
             <LowLevelDateYearField
               bind:value={val.date}
-              required={formfield.required}
-              name={formfield.name}
+              name="{formfield.name}_{i}_date"
+              emitUndefinedOnEmpty
             />
           </td>
           <td class="w-1/6 p-1">
             <LowLevelDecimalField
               bind:value={val.area}
-              required={formfield.required}
-              name={formfield.name}
+              name="{formfield.name}_{i}_area"
               unit="ha"
             />
           </td>
           <td class="w-2/6 p-1">
             <TypedChoicesField
               bind:value={val.choices}
-              {formfield}
-              required={formfield.required}
+              formfield={{ ...formfield, name: `${formfield.name}_${i}_choices` }}
+              required={val.date || val.area || val.yield || val.export}
             />
           </td>
           <td class="w-1/6 p-1">
             <LowLevelDecimalField
               bind:value={val.yield}
-              required={formfield.required}
               unit="tons"
-              name={formfield.name}
+              name="{formfield.name}_{i}_yield"
             />
           </td>
           <td class="w-1/6 p-1">
             <LowLevelDecimalField
               bind:value={val.export}
-              required={formfield.required}
-              name={formfield.name}
+              name="{formfield.name}_{i}_export"
               unit="%"
               max="100"
             />

@@ -37,21 +37,21 @@
     <tbody>
       {#each valueCopy as val, i}
         <tr>
-          <td class="w-1/2">
+          <td class="w-1/3">
             <input
               type="text"
               bind:value={val.name}
               class="inpt"
-              name={`${formfield.name}_name_${i}`}
-              required={!!val.role}
+              name="{formfield.name}_{i}_name"
             />
           </td>
           <td>
+            <!-- Required by backend -->
             <select
               bind:value={val.role}
               class="inpt"
-              name={`${formfield.name}_role_${i}`}
-              required={!!val.name}
+              name="{formfield.name}_{i}_role"
+              required={val.name}
             >
               <option />
               {#each Object.entries(formfield.choices) as [value, label]}

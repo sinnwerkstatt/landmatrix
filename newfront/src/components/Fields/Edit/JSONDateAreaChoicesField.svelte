@@ -21,7 +21,7 @@
   export let value: Array<JSONDateAreaChoicesField> | null
 
   let valueCopy = createValueCopy(value)
-  $: value = syncValue(val => !!(val.date || val.area || val.choices), valueCopy)
+  $: value = syncValue(val => !!val.choices, valueCopy)
 
   function addEntry() {
     valueCopy = [...valueCopy, {}]
@@ -39,7 +39,7 @@
   <table class="w-full">
     <thead>
       <tr>
-        <th class="font-normal">{$_("Current")}</th>
+        <th class="pr-2 text-center font-normal">{$_("Current")}</th>
         <th class="font-normal">{$_("Date")}</th>
         <th class="font-normal">{$_("Area (ha)")}</th>
         <th class="font-normal">{$_("Choices")}</th>
@@ -53,32 +53,31 @@
             <input
               type="checkbox"
               bind:checked={val.current}
-              name="{formfield.name}_current"
+              name="{formfield.name}_{i}_current"
               required={isCurrentRequired(valueCopy)}
-              disabled={!val.date && !val.area && !val.choices}
+              disabled={!val.choices}
             />
           </td>
 
           <td class="w-1/4 p-1">
             <LowLevelDateYearField
               bind:value={val.date}
-              required={val.area || val.choices}
-              name={formfield.name}
+              name="{formfield.name}_{i}_date"
+              emitUndefinedOnEmpty
             />
           </td>
 
           <td class="w-1/4 p-1">
             <LowLevelDecimalField
               bind:value={val.area}
-              required={val.date || val.choices}
               unit="ha"
-              name={formfield.name}
+              name="{formfield.name}_{i}_area"
             />
           </td>
           <td class="w-2/4">
             <TypedChoicesField
               bind:value={val.choices}
-              {formfield}
+              formfield={{ ...formfield, name: `${formfield.name}_${i}_choices` }}
               required={val.date || val.area}
             />
           </td>
