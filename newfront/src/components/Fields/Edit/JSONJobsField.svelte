@@ -22,10 +22,7 @@
 
   let valueCopy = createValueCopy(value)
   let current = valueCopy.map(val => val.current).indexOf(true) ?? -1
-  $: value = syncValue(
-    val => !!(val.date || val.jobs || val.employees || val.workers),
-    valueCopy,
-  )
+  $: value = syncValue(val => !!(val.jobs || val.employees || val.workers), valueCopy)
 
   function updateCurrent(index) {
     valueCopy = valueCopy.map(val => ({ ...val, current: undefined }))
@@ -49,7 +46,7 @@
   <table class="w-full">
     <thead>
       <tr>
-        <th class="font-normal">{$_("Current")}</th>
+        <th class="pr-2 text-center font-normal">{$_("Current")}</th>
         <th class="font-normal">{$_("Date")}</th>
         <th class="font-normal">{$_("Jobs")}</th>
         <th class="font-normal">{$_("Employees")}</th>
@@ -66,11 +63,7 @@
               bind:group={current}
               name="{formfield.name}_current"
               required={valueCopy.length > 0}
-              disabled={!val.date &&
-                !val.area &&
-                !val.jobs &&
-                !val.employees &&
-                !val.workers}
+              disabled={!val.jobs && !val.employees && !val.workers}
               value={i}
             />
           </td>
@@ -78,16 +71,16 @@
           <td class="w-1/4 p-1">
             <LowLevelDateYearField
               bind:value={val.date}
-              required={formfield.required}
-              name={formfield.name}
+              name="{formfield.name}_{i}_date"
+              emitUndefinedOnEmpty
             />
           </td>
 
           <td class="w-1/4 p-1">
             <LowLevelDecimalField
               bind:value={val.jobs}
-              required={formfield.required}
-              name={formfield.name}
+              required={val.date && !(val.employees || val.workers)}
+              name="{formfield.name}_{i}_jobs"
               decimals=""
               unit=""
             />
@@ -95,8 +88,8 @@
           <td class="w-1/4 p-1">
             <LowLevelDecimalField
               bind:value={val.employees}
-              required={formfield.required}
-              name={formfield.name}
+              required={val.date && !(val.workers || val.jobs)}
+              name="{formfield.name}_{i}_employees"
               decimals=""
               unit=""
             />
@@ -104,8 +97,8 @@
           <td class="w-1/4 p-1">
             <LowLevelDecimalField
               bind:value={val.workers}
-              required={formfield.required}
-              name={formfield.name}
+              required={val.date && !(val.jobs || val.employees)}
+              name="{formfield.name}_{i}_workers"
               decimals=""
               unit=""
             />

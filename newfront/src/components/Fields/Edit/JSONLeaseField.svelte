@@ -22,10 +22,7 @@
 
   let valueCopy = createValueCopy(value)
   let current = valueCopy.map(val => val.current).indexOf(true) ?? -1
-  $: value = syncValue(
-    val => !!(val.date || val.area || val.farmers || val.households),
-    valueCopy,
-  )
+  $: value = syncValue(val => !!(val.area || val.farmers || val.households), valueCopy)
 
   function updateCurrent(index) {
     valueCopy = valueCopy.map(val => ({ ...val, current: undefined }))
@@ -51,7 +48,7 @@
   <table class="w-full">
     <thead>
       <tr>
-        <th class="font-normal">{$_("Current")}</th>
+        <th class="pr-2 text-center font-normal">{$_("Current")}</th>
         <th class="font-normal">{$_("Date")}</th>
         <th class="font-normal">{$_("Area (ha)")}</th>
         <th class="font-normal">{$_("Farmers")}</th>
@@ -61,13 +58,13 @@
     <tbody>
       {#each valueCopy as val, i}
         <tr class:is-current={val.current}>
-          <td class="p-1 text-center" on:click={() => updateCurrent(i)}>
+          <td class="text-center" on:click={() => updateCurrent(i)}>
             <input
               type="radio"
               bind:group={current}
               name="{formfield.name}_current"
               required={valueCopy.length > 0}
-              disabled={!val.date && !val.area && !val.farmers && !val.households}
+              disabled={!val.area && !val.farmers && !val.households}
               value={i}
             />
           </td>
@@ -75,35 +72,35 @@
           <td class="w-1/3 p-1">
             <LowLevelDateYearField
               bind:value={val.date}
-              required={formfield.required}
-              name={formfield.name}
+              name="{formfield.name}_{i}_date"
+              emitUndefinedOnEmpty
             />
           </td>
 
           <td class="w-1/3 p-1">
             <LowLevelDecimalField
               bind:value={val.area}
-              required={formfield.required}
+              required={val.date && !(val.farmers || val.households)}
               unit="ha"
-              name={formfield.name}
+              name="{formfield.name}_{i}_area"
             />
           </td>
           <td class="w-1/3 p-1">
             <LowLevelDecimalField
               bind:value={val.farmers}
-              required={formfield.required}
+              required={val.date && !(val.households || val.area)}
               decimals=""
               min="0"
-              name={formfield.name}
+              name="{formfield.name}_{i}_farmers"
             />
           </td>
           <td class="w-1/3 p-1">
             <LowLevelDecimalField
               bind:value={val.households}
-              required={formfield.required}
+              required={val.date && !(val.area || val.farmers)}
               decimals=""
               min="0"
-              name={formfield.name}
+              name="{formfield.name}_{i}_households"
             />
           </td>
 

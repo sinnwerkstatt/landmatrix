@@ -20,7 +20,7 @@
 
   let valueCopy = createValueCopy(value)
   let current = valueCopy.map(val => val.current).indexOf(true) ?? -1
-  $: value = syncValue(val => !!(val.date || val.choice), valueCopy)
+  $: value = syncValue(val => !!val.choice, valueCopy)
 
   function updateCurrent(index) {
     valueCopy = valueCopy.map(val => ({ ...val, current: undefined }))
@@ -44,7 +44,7 @@
   <table class="w-full">
     <thead>
       <tr>
-        <th class="font-normal">{$_("Current")}</th>
+        <th class="pr-2 text-center font-normal">{$_("Current")}</th>
         <th class="font-normal">{$_("Date")}</th>
         <th class="font-normal">{$_("Choice")}</th>
         <th />
@@ -63,15 +63,19 @@
               value={i}
             />
           </td>
-          <td class="w-36 p-1">
+          <td class="w-1/4 p-1">
             <LowLevelDateYearField
               bind:value={val.date}
+              name="{formfield.name}_{i}_date"
               emitUndefinedOnEmpty
-              name={formfield.name}
             />
           </td>
-          <td class="w-2/3 p-1">
-            <TypedChoiceField bind:value={val.choice} {formfield} required={val.date} />
+          <td class="w-3/4 p-1">
+            <TypedChoiceField
+              bind:value={val.choice}
+              formfield={{ ...formfield, name: `${formfield.name}_${i}_choice` }}
+              required={val.date}
+            />
           </td>
 
           <td class="p-1">

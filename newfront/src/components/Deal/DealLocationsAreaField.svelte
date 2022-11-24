@@ -118,7 +118,7 @@
       <thead>
         <tr>
           <th class="font-normal" />
-          <th class="font-normal">{$_("Current")}</th>
+          <th class="pr-2 text-center font-normal">{$_("Current")}</th>
           <th class="font-normal">{$_("Date")}</th>
           <th class="font-normal">{$_("Type")}</th>
           <th class="font-normal" />
@@ -151,7 +151,7 @@
                 type="radio"
                 bind:group={current}
                 value={i}
-                name="{areaType}_{i}_current"
+                name="{areaType}_current"
               />
             </td>
             <td class="px-1">
