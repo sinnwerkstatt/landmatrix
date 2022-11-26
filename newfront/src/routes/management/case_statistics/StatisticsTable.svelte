@@ -5,7 +5,7 @@
   import type { Deal } from "$lib/types/deal"
   import type { Investor } from "$lib/types/investor"
 
-  import IndicatorListingsTable from "./IndicatorListingsTable.svelte"
+  import CaseStatisticsTable from "./CaseStatisticsTable.svelte"
 
   export let deals: Deal[] = []
   export let investors: Investor[] = []
@@ -121,7 +121,7 @@
   </nav>
   <div class="mx-auto max-h-[600px]">
     {#if activeTabId}
-      <IndicatorListingsTable
+      <CaseStatisticsTable
         {model}
         objects={model === "deal"
           ? deals_buckets[activeTabId]

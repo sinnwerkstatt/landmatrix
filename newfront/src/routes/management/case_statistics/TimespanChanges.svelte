@@ -10,7 +10,7 @@
   import type { Investor } from "$lib/types/investor"
   import type { Country, Region } from "$lib/types/wagtail"
 
-  import IndicatorListingsTable from "./IndicatorListingsTable.svelte"
+  import CaseStatisticsTable from "./CaseStatisticsTable.svelte"
 
   dayjs.extend(isSameOrBefore)
   dayjs.extend(isSameOrAfter)
@@ -57,9 +57,7 @@
   let deals: Deal[] = []
   let investors: Investor[] = []
 
-  async function fetchObjs(r: Region | undefined, c: Country | undefined, daterange) {
-    loading.set(true)
-
+  async function _fetchDeals(r: Region | undefined, c: Country | undefined, daterange) {
     const params = new URLSearchParams({
       action: "deal_versions",
       start: dayjs(daterange.start).format("YYYY-MM-DD"),
@@ -73,7 +71,30 @@
     // else if (c) url += `&country=${c.id}`
     const ret = await fetch(url)
     if (ret.ok) deals = (await ret.json())?.deals ?? []
+  }
+  async function _fetchInvestors(
+    r: Region | undefined,
+    c: Country | undefined,
+    daterange,
+  ) {
+    const params = new URLSearchParams({
+      action: "investor_versions",
+      start: dayjs(daterange.start).format("YYYY-MM-DD"),
+      end: dayjs(daterange.end).format("YYYY-MM-DD"),
+    })
+    if (r) params.append("region", `${r.id}`)
+    else if (c) params.append("country", `${c.id}`)
+    console.log(params.toString())
+    let url = `${import.meta.env.VITE_BASE_URL}/api/case_statistics/?${params}`
+    // if (r) url += `&region=${r.id}`
+    // else if (c) url += `&country=${c.id}`
+    const ret = await fetch(url)
+    if (ret.ok) investors = (await ret.json())?.investors ?? []
+  }
 
+  async function fetchObjs(r: Region | undefined, c: Country | undefined, daterange) {
+    loading.set(true)
+    await Promise.all([_fetchDeals(r, c, daterange), _fetchInvestors(r, c, daterange)])
     loading.set(false)
   }
 
@@ -89,7 +110,15 @@
       )
     }),
     updated: deals.filter(d => d.status === 3),
-    fully_updated: deals.filter(d => d.draft_status === 5),
+    fully_updated: deals.filter(d => {
+      if (!d.fully_updated_at) return false
+      let dateFU = dayjs(d.fully_updated_at)
+      return (
+        (d.status === 3 || d.status === 2) &&
+        dateFU.isSameOrAfter(daterange.start, "day") &&
+        dateFU.isSameOrBefore(daterange.end, "day")
+      )
+    }),
     activated: deals.filter(
       d => d.draft_status === null && (d.status === 2 || d.status === 3),
     ),
@@ -198,7 +227,7 @@
   </nav>
   <div class="mx-auto max-h-[600px]">
     {#if activeTabId}
-      <IndicatorListingsTable
+      <CaseStatisticsTable
         {model}
         objects={model === "deal"
           ? deals_buckets[activeTabId]

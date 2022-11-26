@@ -33,7 +33,7 @@
   $: spans = Object.entries(columnsWithSpan).map(([, colSpan]) => colSpan)
 </script>
 
-<Table {columns} items={objects} {labels} {spans}>
+<Table {columns} items={objects} {labels} {spans} rowHeightInPx={36}>
   <DisplayField
     fieldname={fieldName}
     let:fieldName

@@ -115,7 +115,7 @@
   </div>
 </div>
 
-<div class="container mx-auto mt-24">
+<div class="container mx-auto mt-28">
   <QualityGoals {counts} />
 
   <div class="mb-10">

@@ -6,7 +6,6 @@ import json
 import zipfile
 
 from django.contrib.auth import get_user_model
-from django.db import connection
 from django.db.models import Q, F
 from django.http import (
     JsonResponse,
@@ -23,7 +22,7 @@ from apps.graphql.resolvers.charts import create_statistics
 from apps.graphql.tools import parse_filters
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.deal import Deal, DealVersion
-from apps.landmatrix.models.investor import Investor
+from apps.landmatrix.models.investor import Investor, InvestorVersion
 from apps.message.models import Message
 from apps.utils import qs_values_to_dict
 
@@ -366,13 +365,12 @@ class CaseStatistics(View):
             "is_public",
         )
         for d in deals:
-            # this is here for IndicatorListingsTable.svelte -> DisplayField
+            # this is here for CaseStatisticsTable.svelte -> DisplayField
             d["country"] = {"id": d["country_id"]}
         return JsonResponse({"deals": list(deals)})
 
     @staticmethod
     def _deal_versions(start: str, end: str, region: int = None, country: int = None):
-        # TODO!!
         versions = DealVersion.objects.filter(
             created_at__gte=start, created_at__lte=end
         )
@@ -380,23 +378,23 @@ class CaseStatistics(View):
             versions = versions.filter(deal__country__region_id=region)
         elif country:
             versions = versions.filter(deal__country_id=country)
-        versions = versions.values(
+        deals = Deal.objects.filter(id__in=versions.values_list("object_id")).values(
             "id",
-            "deal__id",
-            "deal__deal_size",
-            "deal__status",
-            "deal__draft_status",
-            "deal__created_at",
-            "deal__country_id",
-            "deal__modified_at",
-            "deal__fully_updated",
-            "deal__fully_updated_at",
-            "deal__confidential",
+            "deal_size",
+            "status",
+            "draft_status",
+            "country_id",
+            "created_at",
+            "modified_at",
+            "fully_updated",
+            "fully_updated_at",
+            "confidential",
         )
-        # for d in versions:
-        #     # this is here for IndicatorListingsTable.svelte -> DisplayField
-        #     d["country"] = {"id": d["country_id"]}
-        return JsonResponse({"deals": list(versions)})
+
+        for d in deals:
+            # this is here for CaseStatisticsTable.svelte -> DisplayField
+            d["country"] = {"id": d["country_id"]}
+        return JsonResponse({"deals": list(deals)})
 
     @staticmethod
     def _investors():
@@ -411,8 +409,36 @@ class CaseStatistics(View):
             "modified_at",
         )
         for inv in investors:
-            # this is here for IndicatorListingsTable.svelte -> DisplayField
+            # this is here for CaseStatisticsTable.svelte -> DisplayField
             inv["country"] = {"id": inv["country_id"]}
+        return JsonResponse({"investors": list(investors)})
+
+    @staticmethod
+    def _investor_versions(
+        start: str, end: str, region: int = None, country: int = None
+    ):
+        versions = InvestorVersion.objects.filter(
+            created_at__gte=start, created_at__lte=end
+        )
+        if region:
+            versions = versions.filter(deal__country__region_id=region)
+        elif country:
+            versions = versions.filter(deal__country_id=country)
+        investors = Investor.objects.filter(
+            id__in=versions.values_list("object_id")
+        ).values(
+            "id",
+            "name",
+            "status",
+            "draft_status",
+            "country_id",
+            "created_at",
+            "modified_at",
+        )
+
+        for d in investors:
+            # this is here for CaseStatisticsTable.svelte -> DisplayField
+            d["country"] = {"id": d["country_id"]}
         return JsonResponse({"investors": list(investors)})
 
     def get(self, request, *args, **kwargs):
@@ -430,11 +456,13 @@ class CaseStatistics(View):
         if action == "investors":
             return self._investors()
 
-        if action == "deal_versions":
+        if action in ["deal_versions", "investor_versions"]:
             start = request.GET.get("start")
             end = request.GET.get("end")
             region = request.GET.get("region")
             country = request.GET.get("country")
             if not (start and end):
                 return JsonResponse({})
-            return self._deal_versions(start, end, region, country)
+            if action == "deal_versions":
+                return self._deal_versions(start, end, region, country)
+            return self._investor_versions(start, end, region, country)
