@@ -2,8 +2,6 @@
   import cn from "classnames"
   import { _ } from "svelte-i18n"
 
-  import { page } from "$app/stores"
-
   import type { Deal } from "$lib/types/deal"
   import type { Investor } from "$lib/types/investor"
 
@@ -53,11 +51,9 @@
     pending_deletion: investors.filter(i => i.draft_status === 5),
     active: investors.filter(i => [2, 3].includes(i.status as number)),
   }
-
-  $: activeTabId = navTabs.find(i => "#" + i.id === $page.url.hash)?.id
 </script>
 
-<div class="relative mb-12 flex h-full w-full border bg-stone-100">
+<div class="relative flex h-full w-full border bg-stone-100">
   <nav
     class="h-full shrink-0 basis-1/4 flex-col bg-white/80 p-2 drop-shadow-[2px_0px_1px_rgba(0,0,0,0.3)] xl:basis-1/6"
   >
@@ -68,7 +64,10 @@
         class={model === "deal"
           ? "border-b border-solid border-black text-black"
           : "text-gray-500 hover:text-gray-600"}
-        on:click={() => (model = "deal")}
+        on:click={() => {
+          model = "deal"
+          activeTabId = undefined
+        }}
         type="button"
       >
         {$_("Deals")}
@@ -77,7 +76,10 @@
         class={model === "investor"
           ? "border-b border-solid border-black text-black"
           : "text-gray-500 hover:text-gray-600"}
-        on:click={() => (model = "investor")}
+        on:click={() => {
+          model = "investor"
+          activeTabId = undefined
+        }}
         type="button"
       >
         {$_("Investors")}
@@ -93,7 +95,7 @@
               activeTabId === item.id ? "border-r-4" : "border-r",
             )}
           >
-            <a
+            <button
               class={cn(
                 "block text-left",
                 activeTabId === item.id
@@ -102,25 +104,29 @@
                     : "font-bold text-pelorous"
                   : "text-gray-600",
               )}
-              href="#{item.id}"
+              on:click={() => (activeTabId = item.id)}
             >
+              <span class="font-bold">
+                {#if model === "deal"}
+                  {#if deals_buckets[item.id]} {deals_buckets[item.id].length}{/if}
+                {:else if investors_buckets[item.id]}
+                  {investors_buckets[item.id].length}{/if}
+              </span>
               {item.name}
-              {#if model === "deal"}
-                {#if deals_buckets[item.id]} ({deals_buckets[item.id].length}){/if}
-              {:else if investors_buckets[item.id]}
-                ({investors_buckets[item.id].length}){/if}
-            </a>
+            </button>
           </li>
         {/each}
       </ul>
     </div>
   </nav>
   <div class="mx-auto max-h-[600px]">
-    <IndicatorListingsTable
-      {model}
-      objects={model === "deal"
-        ? deals_buckets[activeTabId]
-        : investors_buckets[activeTabId]}
-    />
+    {#if activeTabId}
+      <IndicatorListingsTable
+        {model}
+        objects={model === "deal"
+          ? deals_buckets[activeTabId]
+          : investors_buckets[activeTabId]}
+      />
+    {/if}
   </div>
 </div>

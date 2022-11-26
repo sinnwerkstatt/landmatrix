@@ -22,7 +22,7 @@ from openpyxl.workbook import Workbook
 from apps.graphql.resolvers.charts import create_statistics
 from apps.graphql.tools import parse_filters
 from apps.landmatrix.models.country import Country
-from apps.landmatrix.models.deal import Deal
+from apps.landmatrix.models.deal import Deal, DealVersion
 from apps.landmatrix.models.investor import Investor
 from apps.message.models import Message
 from apps.utils import qs_values_to_dict
@@ -371,6 +371,34 @@ class CaseStatistics(View):
         return JsonResponse({"deals": list(deals)})
 
     @staticmethod
+    def _deal_versions(start: str, end: str, region: int = None, country: int = None):
+        # TODO!!
+        versions = DealVersion.objects.filter(
+            created_at__gte=start, created_at__lte=end
+        )
+        if region:
+            versions = versions.filter(deal__country__region_id=region)
+        elif country:
+            versions = versions.filter(deal__country_id=country)
+        versions = versions.values(
+            "id",
+            "deal__id",
+            "deal__deal_size",
+            "deal__status",
+            "deal__draft_status",
+            "deal__created_at",
+            "deal__country_id",
+            "deal__modified_at",
+            "deal__fully_updated",
+            "deal__fully_updated_at",
+            "deal__confidential",
+        )
+        # for d in versions:
+        #     # this is here for IndicatorListingsTable.svelte -> DisplayField
+        #     d["country"] = {"id": d["country_id"]}
+        return JsonResponse({"deals": list(versions)})
+
+    @staticmethod
     def _investors():
         investors = Investor.objects.values(
             "id",
@@ -401,3 +429,12 @@ class CaseStatistics(View):
 
         if action == "investors":
             return self._investors()
+
+        if action == "deal_versions":
+            start = request.GET.get("start")
+            end = request.GET.get("end")
+            region = request.GET.get("region")
+            country = request.GET.get("country")
+            if not (start and end):
+                return JsonResponse({})
+            return self._deal_versions(start, end, region, country)

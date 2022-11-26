@@ -12,6 +12,7 @@
   import type { Counts } from "./case_statistics"
   import QualityGoals from "./QualityGoals.svelte"
   import StatisticsTable from "./StatisticsTable.svelte"
+  import TimespanChanges from "./TimespanChanges.svelte"
 
   let selCountry: Country | undefined
   let selRegion: Region | undefined
@@ -68,10 +69,9 @@
   <title>{$_("Case statistics")} | {$_("Land Matrix")}</title>
 </svelte:head>
 
-<div class="container mx-auto">
-  <h1>{$_("Case statistics")}</h1>
-
-  <div class="flex w-full gap-5">
+<div class="absolute z-10 w-full border-b border-orange bg-white py-2">
+  <h1 class="container mx-auto mt-0 mb-1 text-xl">{$_("Case statistics")}</h1>
+  <div class="container mx-auto flex w-full gap-5">
     <div class="flex w-full items-center gap-2">
       <div>{$_("Region")}:</div>
       <div class="w-full">
@@ -113,11 +113,17 @@
       </div>
     </div>
   </div>
+</div>
 
+<div class="container mx-auto mt-24">
   <QualityGoals {counts} />
 
-  <div>
+  <div class="mb-10">
     <h2 class="mt-10">{$_("Indicator listings")}</h2>
     <StatisticsTable deals={filteredDeals} investors={filteredInvestors} />
+  </div>
+
+  <div class="mb-10">
+    <TimespanChanges region={selRegion} country={selCountry} />
   </div>
 </div>
