@@ -147,7 +147,6 @@
     )
     if (ret.ok) {
       objects = (await ret.json()).objects
-      console.log(objects)
 
       // set User lists for the right filter bar
       createdByUsers = []
@@ -261,7 +260,7 @@
 
 <div class="relative flex h-full w-full bg-stone-100">
   <nav
-    class="h-full shrink-0 basis-1/4 flex-col overflow-y-scroll bg-white/80 p-2 drop-shadow-[3px_-3px_3px_rgba(0,0,0,0.3)] xl:basis-1/6"
+    class="h-full shrink-0 basis-1/4 flex-col overflow-y-scroll bg-white/80 p-2 drop-shadow-[3px_-3px_1px_rgba(0,0,0,0.3)] xl:basis-1/6"
   >
     <div
       class="flex justify-center gap-4 border-b border-gray-200 p-1 pb-6 text-lg font-bold"

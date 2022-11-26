@@ -64,7 +64,6 @@
   $: formfield = { name: fieldname, ...$formfields[model][fieldname] }
 
   $: field = {
-    BooleanField: BooleanField,
     DateField: DateField,
     JSONActorsField: JSONActorsField,
     JSONDateAreaChoicesField: JSONDateAreaChoicesField,
@@ -75,7 +74,6 @@
     JSONJobsField: JSONJobsField,
     JSONLeaseField: JSONLeaseField,
     ManyToManyField: ManyToManyField,
-    NullBooleanField: BooleanField,
     OCIDField: OCIDField,
   }[formfield.class]
 </script>
@@ -89,6 +87,8 @@
   <div class={valueClasses}>
     {#if formfield.class === "AutoField"}
       <AutoField {value} {model} {formfield} {targetBlank} {objectVersion} />
+    {:else if ["BooleanField", "NullBooleanField"].includes(formfield.class)}
+      <BooleanField {value} {formfield} />
     {:else if ["ArrayField", "SimpleArrayField"].includes(formfield.class)}
       <ArrayField {value} {formfield} />
     {:else if formfield.class === "TypedChoiceField"}

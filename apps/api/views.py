@@ -341,7 +341,51 @@ class CaseStatistics(View):
     def _counts(request):
         country_id = request.GET.get("country")
         region_id = request.GET.get("region")
-        return JsonResponse(create_statistics(country_id, region_id))
+        counts = create_statistics(country_id, region_id)
+        public_investors = Investor.objects.filter(status__in=[2, 3])
+        counts["investors_public_count"] = public_investors.count()
+        counts["investors_public_known"] = public_investors.filter(
+            is_actually_unknown=False
+        ).count()
+        return JsonResponse(counts)
+
+    @staticmethod
+    def _deals():
+        deals = Deal.objects.values(
+            "id",
+            "deal_size",
+            "fully_updated",
+            "fully_updated_at",
+            "status",
+            "draft_status",
+            "confidential",
+            "country_id",
+            "country__region_id",
+            "created_at",
+            "modified_at",
+            "is_public",
+        )
+        for d in deals:
+            # this is here for IndicatorListingsTable.svelte -> DisplayField
+            d["country"] = {"id": d["country_id"]}
+        return JsonResponse({"deals": list(deals)})
+
+    @staticmethod
+    def _investors():
+        investors = Investor.objects.values(
+            "id",
+            "name",
+            "country_id",
+            "country__region_id",
+            "status",
+            "draft_status",
+            "created_at",
+            "modified_at",
+        )
+        for inv in investors:
+            # this is here for IndicatorListingsTable.svelte -> DisplayField
+            inv["country"] = {"id": inv["country_id"]}
+        return JsonResponse({"investors": list(investors)})
 
     def get(self, request, *args, **kwargs):
         # is_deal = not request.GET.get("model") == "investor"
@@ -351,3 +395,9 @@ class CaseStatistics(View):
 
         if action == "counts":
             return self._counts(request)
+
+        if action == "deals":
+            return self._deals()
+
+        if action == "investors":
+            return self._investors()

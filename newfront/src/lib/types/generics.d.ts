@@ -20,6 +20,7 @@ interface Obj {
   modified_by?: User
   country?: Country
   country_id?: number
+  current_draft_id?: number
 }
 
 interface ObjVersion {
