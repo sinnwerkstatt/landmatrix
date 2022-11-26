@@ -24,6 +24,7 @@
     <a
       class="hover:text-orange-light ml-2"
       target="_blank"
+      rel="noreferrer"
       href="https://www.facebook.com/LandMatrix"
     >
       <FacebookIcon />

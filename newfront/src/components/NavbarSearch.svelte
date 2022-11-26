@@ -39,7 +39,7 @@
         },
       )
       .toPromise()
-    deals = data.deals
+    deals = data?.deals ?? []
   }
 
   async function getInvestors() {
@@ -56,7 +56,7 @@
         { subset: user?.is_authenticated ? "UNFILTERED" : "PUBLIC" },
       )
       .toPromise()
-    investors = data.investors
+    investors = data?.investors ?? []
   }
 
   getDeals()
