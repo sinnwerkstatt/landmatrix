@@ -15,19 +15,17 @@ import type {
 
 import type { FormField } from "$components/Fields/fields"
 
-const RESTEndpoint = `${import.meta.env.VITE_BASE_URL}/wagtailapi/v2`
-
 export const aboutPages = writable<WagtailPage[]>([])
 
 async function getAboutPages(fetch: LoadEvent["fetch"]) {
   // console.log("getAboutPages", { language })
-  const url = `${RESTEndpoint}/pages/?order=title&type=wagtailcms.AboutIndexPage`
+  const url = `/api/wagtail/v2/pages/?order=title&type=wagtailcms.AboutIndexPage`
   const res = await (
     await fetch(url, { headers: { Accept: "application/json" } })
   ).json()
   if (res.items && res.items.length) {
     const indexPageId = res.items[0].id
-    const pagesUrl = `${RESTEndpoint}/pages/?child_of=${indexPageId}`
+    const pagesUrl = `/api/wagtail/v2/pages/?child_of=${indexPageId}`
     const res_children = await (
       await fetch(pagesUrl, { headers: { Accept: "application/json" } })
     ).json()
@@ -38,7 +36,7 @@ export const observatoryPages = writable<ObservatoryPage[]>([])
 
 async function getObservatoryPages(fetch: LoadEvent["fetch"]) {
   // console.log("getObservatoryPages", { language })
-  const url = `${RESTEndpoint}/pages/?order=title&type=wagtailcms.ObservatoryPage&fields=region,country,short_description`
+  const url = `/api/wagtail/v2/pages/?order=title&type=wagtailcms.ObservatoryPage&fields=region,country,short_description`
   const res = await (
     await fetch(url, { headers: { Accept: "application/json" } })
   ).json()

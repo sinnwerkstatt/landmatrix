@@ -66,7 +66,7 @@
     if (r) params.append("region", `${r.id}`)
     else if (c) params.append("country", `${c.id}`)
     console.log(params.toString())
-    let url = `${import.meta.env.VITE_BASE_URL}/api/case_statistics/?${params}`
+    let url = `/api/case_statistics/?${params}`
     // if (r) url += `&region=${r.id}`
     // else if (c) url += `&country=${c.id}`
     const ret = await fetch(url)
@@ -85,7 +85,7 @@
     if (r) params.append("region", `${r.id}`)
     else if (c) params.append("country", `${c.id}`)
     console.log(params.toString())
-    let url = `${import.meta.env.VITE_BASE_URL}/api/case_statistics/?${params}`
+    let url = `/api/case_statistics/?${params}`
     // if (r) url += `&region=${r.id}`
     // else if (c) url += `&country=${c.id}`
     const ret = await fetch(url)

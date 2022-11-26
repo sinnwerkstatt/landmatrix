@@ -44,7 +44,7 @@ async function fetchMe(urqlClient: Client) {
 
 export const load: LayoutLoad = async ({ fetch, data }) => {
   const urqlClient = await createClient({
-    url: import.meta.env.VITE_BASE_URL + "/graphql/",
+    url: "/graphql/",
     fetch,
     fetchOptions: () => ({ credentials: "include" }),
   })

@@ -24,19 +24,17 @@
   async function getCounts(region: Region | undefined, country: Country | undefined) {
     loading.set(true)
 
-    let url = `${import.meta.env.VITE_BASE_URL}/api/case_statistics/?action=counts`
+    let url = `/api/case_statistics/?action=counts`
     if (region) url += `&region=${region.id}`
     else if (country) url += `&country=${country.id}`
     const ret = await fetch(url)
     if (ret.ok) counts = await ret.json()
 
-    let dealsUrl = `${import.meta.env.VITE_BASE_URL}/api/case_statistics/?action=deals`
+    let dealsUrl = `/api/case_statistics/?action=deals`
     const dealsRet = await fetch(dealsUrl)
     if (dealsRet.ok) simpleDeals = (await dealsRet.json()).deals
 
-    let investorsUrl = `${
-      import.meta.env.VITE_BASE_URL
-    }/api/case_statistics/?action=investors`
+    let investorsUrl = `/api/case_statistics/?action=investors`
     const investorsRet = await fetch(investorsUrl)
     if (investorsRet.ok) simpleInvestors = (await investorsRet.json()).investors
 

@@ -380,22 +380,22 @@ const store = new Vuex.Store({
     },
     async fetchObservatoryPages(context, language = "en") {
       console.log("fetchObservatoryPages", { language });
-      const url = `/wagtailapi/v2/pages/?order=title&type=wagtailcms.ObservatoryPage&fields=region,country,short_description`;
+      const url = `/api/wagtail/v2/pages/?order=title&type=wagtailcms.ObservatoryPage&fields=region,country,short_description`;
       const res = await (await fetch(url)).json();
       context.commit("setObservatories", res.items);
     },
     async fetchAboutPages(context, language = "en") {
       console.debug("fetchAboutPages", { language });
-      const url = `/wagtailapi/v2/pages/?order=title&type=wagtailcms.AboutIndexPage`;
+      const url = `/api/wagtail/v2/pages/?order=title&type=wagtailcms.AboutIndexPage`;
       const res = await (await fetch(url)).json();
       const indexPageId = res.items[0].id;
 
-      const pagesUrl = `/wagtailapi/v2/pages/?child_of=${indexPageId}`;
+      const pagesUrl = `/api/wagtail/v2/pages/?child_of=${indexPageId}`;
       const res_children = await (await fetch(pagesUrl)).json();
       context.commit("setAboutPages", res_children.items);
     },
     async fetchWagtailPage(context, path) {
-      const url = `/wagtailapi/v2/pages/find/?html_path=${path}`;
+      const url = `/api/wagtail/v2/pages/find/?html_path=${path}`;
       const res = await (await fetch(url)).json();
       let breadcrumbs;
       let title;

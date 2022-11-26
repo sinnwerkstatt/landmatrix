@@ -2,6 +2,7 @@
   import { error } from "@sveltejs/kit"
   import { gql } from "@urql/svelte"
   import { _ } from "svelte-i18n"
+  import { slide } from "svelte/transition"
 
   import { afterNavigate } from "$app/navigation"
   import { page as storePage } from "$app/stores"
@@ -168,7 +169,9 @@
           </button>
         </div>
       {:else}
-        <Streamfield content={page.body} class="px-0" />
+        <div transition:slide>
+          <Streamfield content={page.body} class="px-0" />
+        </div>
       {/if}
     </div>
   {/if}

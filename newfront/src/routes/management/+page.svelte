@@ -117,9 +117,7 @@
 
   async function getCounts(model) {
     if (!browser) return
-    const ret = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/api/management/?model=${model}&action=counts`,
-    )
+    const ret = await fetch(`/api/management/?model=${model}&action=counts`)
     if (ret.ok) {
       const counts = await ret.json()
       navTabs = navTabs.map(navTab => ({
@@ -139,12 +137,9 @@
 
     loading.set(true)
     controller = new AbortController()
-    const ret = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/api/management/?model=${model}&action=${acTab}`,
-      {
-        signal: controller.signal,
-      },
-    )
+    const ret = await fetch(`/api/management/?model=${model}&action=${acTab}`, {
+      signal: controller.signal,
+    })
     if (ret.ok) {
       objects = (await ret.json()).objects
 
