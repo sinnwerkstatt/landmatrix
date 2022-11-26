@@ -13,6 +13,7 @@
     <a
       href="https://www.openlandcontracts.org/contract/{value}/view#/pdf"
       target="_blank"
+      rel="noreferrer"
     >
       {$_("Access more information about this contract on OpenLandContracts.org")}
     </a>

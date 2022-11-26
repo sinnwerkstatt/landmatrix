@@ -9,7 +9,7 @@
   {#if !value}
     —
   {:else if formfield.class === "URLField"}
-    <a href={value} target="_blank">{new URL(value).hostname}</a>
+    <a href={value} target="_blank" rel="noreferrer">{new URL(value).hostname}</a>
   {:else}
     {value}
   {/if}
