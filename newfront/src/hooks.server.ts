@@ -33,6 +33,9 @@ export const handle: Handle = async ({ event, resolve }) => {
   }
   event.locals.locale = lang
 
+  return resolve(event, {
+    filterSerializedResponseHeaders: name => name === "content-type",
+  })
   return resolve(event)
 }
 

@@ -18,7 +18,7 @@ import type { FormField } from "$components/Fields/fields"
 export const aboutPages = writable<WagtailPage[]>([])
 
 async function getAboutPages(fetch: LoadEvent["fetch"]) {
-  // console.log("getAboutPages", { language })
+  // console.log("getAboutPages")
   const url = `/api/wagtail/v2/pages/?order=title&type=wagtailcms.AboutIndexPage`
   const res = await (
     await fetch(url, { headers: { Accept: "application/json" } })
@@ -61,7 +61,7 @@ async function getBlogCategories(language = "en", urqlClient: Client) {
       { language },
     )
     .toPromise()
-  if (data?.blogcategories) blogCategories.set(data.blogcategories)
+  if (data?.blogcategories) await blogCategories.set(data.blogcategories)
 }
 
 type FormFields = {
