@@ -19,7 +19,7 @@
   export let country: Country | undefined = undefined
 
   let model: "deal" | "investor" = "deal"
-  let activeTabId: string
+  let activeTabId: string | undefined = undefined
 
   $: navTabs =
     model === "deal"

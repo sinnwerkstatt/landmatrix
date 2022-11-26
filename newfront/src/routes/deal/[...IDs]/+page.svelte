@@ -220,12 +220,12 @@
         <section>
           <h3>{$_("Download")}</h3>
 
-          <a target="_blank" href={download_link("xlsx")}>
+          <a target="_blank" href={download_link("xlsx")} rel="noreferrer">
             <DownloadIcon />
             {$_("Excel document")}
           </a>
           <br />
-          <a target="_blank" href={download_link("csv")}>
+          <a target="_blank" href={download_link("csv")} rel="noreferrer">
             <DownloadIcon />
             {$_("CSV file")}
           </a>

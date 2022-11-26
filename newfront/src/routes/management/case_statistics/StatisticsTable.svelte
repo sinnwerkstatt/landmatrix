@@ -11,7 +11,7 @@
   export let investors: Investor[] = []
 
   let model: "deal" | "investor" = "deal"
-  let activeTabId: string
+  let activeTabId: string | undefined = undefined
 
   $: navTabs =
     model === "deal"

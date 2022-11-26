@@ -16,6 +16,7 @@
     <a
       class="hover:text-orange-light"
       target="_blank"
+      rel="noreferrer"
       href="https://twitter.com/Land_Matrix"
     >
       <TwitterIcon />
