@@ -60,7 +60,8 @@
     <script
       src="https://js.hcaptcha.com/1/api.js?onload=hcaptchaOnLoad&render=explicit"
       async
-      defer></script>
+      defer
+    ></script>
   {/if}
 </svelte:head>
 

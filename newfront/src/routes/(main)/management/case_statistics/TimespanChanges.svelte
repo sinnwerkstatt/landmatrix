@@ -1,5 +1,6 @@
 <script lang="ts">
   import cn from "classnames"
+  import { DateInput } from "date-picker-svelte"
   import dayjs from "dayjs"
   import isSameOrAfter from "dayjs/plugin/isSameOrAfter"
   import isSameOrBefore from "dayjs/plugin/isSameOrBefore"
@@ -47,11 +48,8 @@
     { name: "Last 365 days", value: 365 },
   ]
 
-  function updateDateRange() {
-    daterange = {
-      start: dayjs().subtract(selectedDateOption, "day").toDate(),
-      end: new Date(),
-    }
+  function updatePrePicker() {
+    selectedDateOption = dayjs(daterange.end).diff(daterange.start, "days")
   }
 
   let deals: Deal[] = []
@@ -139,21 +137,27 @@
   }
 </script>
 
-<div class="mb-4 mt-10 flex items-center gap-4">
-  <h2 class="m-0">{$_("Changes within timespan")}</h2>
-  <div class="">
-    <div>
-      <select
-        bind:value={selectedDateOption}
-        class="inpt w-40"
-        on:change={updateDateRange}
-      >
-        {#each datePreOptions as option}
-          <option value={option.value}>
-            {option.name}
-          </option>
-        {/each}
-      </select>
+<div class="mb-4 mt-10 flex items-center gap-8">
+  <h2 class="m-0 whitespace-nowrap">{$_("Changes within timespan")}</h2>
+  <div class="flex items-center gap-6">
+    <select
+      bind:value={selectedDateOption}
+      class="inpt w-40"
+      on:change={() =>
+        (daterange = {
+          start: dayjs().subtract(selectedDateOption, "day").toDate(),
+          end: new Date(),
+        })}
+    >
+      {#each datePreOptions as option}
+        <option value={option.value}>
+          {option.name}
+        </option>
+      {/each}
+    </select>
+    <div class="flex gap-2">
+      <DateInput on:select={updatePrePicker} bind:value={daterange.start} />
+      <DateInput on:select={updatePrePicker} bind:value={daterange.end} />
     </div>
   </div>
 </div>
