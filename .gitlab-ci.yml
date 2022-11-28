@@ -101,8 +101,7 @@ deploy to staging:
       cd newfront/
       npm ci
       npm run build
-      sudo /bin/systemctl restart webapp-node-dev.landmatrix.org.service
-      sudo /bin/systemctl restart webapp-django-dev.landmatrix.org.service
+      sudo /bin/systemctl restart webapp-dev.landmatrix.org.service
       cd ~
       mv maintenance.html maintenance.html_
       E=O=F
