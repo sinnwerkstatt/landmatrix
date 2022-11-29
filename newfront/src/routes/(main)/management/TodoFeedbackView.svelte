@@ -52,10 +52,9 @@
         <th class="px-3 py-1">{$formfields[model]["deal_size"].label}</th>
       {/if}
       <th class="px-3 py-1">Status</th>
-
       <th class="px-3 py-1">From user</th>
       <th class="px-3 py-1">To user</th>
-      <th class="px-3 py-1">Comment</th>
+      <th class="px-3 py-1">Feedback</th>
       <!--      <th>{$formfields.deal["created_at"].label}</th>-->
       <!--      <th>{$formfields.deal["created_by"].label}</th>-->
       <!--      <th>{$formfields.deal["modified_at"].label}</th>-->
