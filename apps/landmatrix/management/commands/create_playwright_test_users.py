@@ -11,7 +11,10 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if not User.objects.filter(username="shakespeare").exists():
             will = User.objects.create_superuser(
-                "shakespeare", "william@shakespeare.dev", "hamlet4eva"
+                username="shakespeare",
+                email="william@shakespeare.dev",
+                password="hamlet4eva",
+                first_name="William",
             )
             will.role = UserRole.ADMINISTRATOR
             cms_editors, _ = Group.objects.get_or_create(name="CMS Global (Editors)")
@@ -21,7 +24,10 @@ class Command(BaseCommand):
 
         if not User.objects.filter(username="test_editor").exists():
             user = User.objects.create_user(
-                "test_editor", "editor@test.dev", "love2edit"
+                username="test_editor",
+                email="editor@test.dev",
+                password="love2edit",
+                first_name="Edith",
             )
             user.role = UserRole.EDITOR
             user.save()
@@ -29,7 +35,10 @@ class Command(BaseCommand):
 
         if not User.objects.filter(username="test_reporter").exists():
             user = User.objects.create_user(
-                "test_reporter", "reporter@test.dev", "love2report"
+                username="test_reporter",
+                email="reporter@test.dev",
+                password="love2report",
+                first_name="Remi",
             )
             user.role = UserRole.REPORTER
             user.save()
