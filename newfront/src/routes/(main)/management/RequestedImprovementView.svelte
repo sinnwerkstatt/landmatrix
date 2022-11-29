@@ -10,6 +10,7 @@
   import DateTimeField from "$components/Fields/Display/DateTimeField.svelte"
   import ForeignKeyField from "$components/Fields/Display/ForeignKeyField.svelte"
   import StatusField from "$components/Fields/Display/StatusField.svelte"
+  import WorkflowInfosField from "$components/Fields/Display/WorkflowInfosField.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import StarIcon from "$components/icons/StarIcon.svelte"
 
@@ -116,8 +117,10 @@
         <td class="px-3 py-1">
           <ForeignKeyField value={obj.relevantWFI?.to_user} formfield={{}} />
         </td>
-        <td class="px-3 py-1">
-          {obj.relevantWFI?.comment}
+        <td class="w-[368px] px-3 py-1">
+          <WorkflowInfosField value={obj.workflowinfos}>
+            {obj.relevantWFI?.comment}
+          </WorkflowInfosField>
         </td>
       </tr>
     {/each}

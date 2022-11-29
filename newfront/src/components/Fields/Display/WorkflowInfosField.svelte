@@ -39,7 +39,9 @@
     event.stopPropagation()
   }}
 >
-  <WorkflowInfo info={value[0]} />
+  <slot>
+    <WorkflowInfo info={value[0]} />
+  </slot>
   {#if showMoreInfos}
     <div
       transition:slide
