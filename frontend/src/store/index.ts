@@ -420,11 +420,16 @@ const store = new Vuex.Store({
       console.debug("fetchAboutPages", { language });
       const url = `/wagtailapi/v2/pages/?order=title&type=wagtailcms.AboutIndexPage`;
       const res = await (await fetch(url)).json();
-      const indexPageId = res.items[0].id;
 
-      const pagesUrl = `/wagtailapi/v2/pages/?child_of=${indexPageId}`;
-      const res_children = await (await fetch(pagesUrl)).json();
-      context.commit("setAboutPages", res_children.items);
+      if (res.meta.total_count > 0) {
+        const indexPageId = res.items[0].id;
+
+        const pagesUrl = `/wagtailapi/v2/pages/?child_of=${indexPageId}`;
+        const res_children = await (await fetch(pagesUrl)).json();
+        context.commit("setAboutPages", res_children.items);
+      } else {
+        context.commit("setAboutPages", []);
+      }
     },
     async fetchWagtailPage(context, path) {
       const url = `/wagtailapi/v2/pages/find/?html_path=${path}`;
