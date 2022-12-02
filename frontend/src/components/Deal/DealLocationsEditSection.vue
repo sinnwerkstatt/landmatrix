@@ -72,6 +72,7 @@
                   type="file"
                   class="input-file"
                   accept=".geojson,application/geo+json,application/json"
+                  disabled
                   @change="uploadFiles('intended_area', $event)"
                 />
               </div>
@@ -81,6 +82,7 @@
                   type="file"
                   class="input-file"
                   accept=".geojson,application/geo+json,application/json"
+                  disabled
                   @change="uploadFiles('contract_area', $event)"
                 />
               </div>
@@ -92,6 +94,7 @@
                   type="file"
                   class="input-file"
                   accept=".geojson,application/geo+json,application/json"
+                  disabled
                   @change="uploadFiles('production_area', $event)"
                 />
               </div>
