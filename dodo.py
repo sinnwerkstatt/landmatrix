@@ -27,12 +27,12 @@ def task_initial_setup():
         [
             "status",
             "languages",
-            "crops",
-            "animals",
-            "minerals",
+            # "crops",
+            # "animals",
+            # "minerals",
             "countries_and_regions",
             "users_and_groups",
-            "filters",
+            # "filters",
         ]
     )
     return {
