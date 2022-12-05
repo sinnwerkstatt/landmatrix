@@ -68,9 +68,8 @@
     loading.set(false)
   }
 
-  const download_link = function (format: string): string {
-    return `/api/legacy_export/?deal_id=${data.dealID}&subset=UNFILTERED&format=${format}`
-  }
+  const downloadLink = (format: string): string =>
+    `/api/legacy_export/?deal_id=${data.dealID}&subset=UNFILTERED&format=${format}`
 
   let investor: Investor
   async function fetchInvestor() {
@@ -220,12 +219,22 @@
         <section>
           <h3>{$_("Download")}</h3>
 
-          <a target="_blank" href={download_link("xlsx")} rel="noreferrer">
+          <a
+            target="_blank"
+            href={downloadLink("xlsx")}
+            rel="noreferrer"
+            data-sveltekit-reload
+          >
             <DownloadIcon />
             {$_("Excel document")}
           </a>
           <br />
-          <a target="_blank" href={download_link("csv")} rel="noreferrer">
+          <a
+            target="_blank"
+            href={downloadLink("csv")}
+            rel="noreferrer"
+            data-sveltekit-reload
+          >
             <DownloadIcon />
             {$_("CSV file")}
           </a>

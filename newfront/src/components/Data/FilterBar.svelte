@@ -415,13 +415,21 @@
       <FilterCollapse title={$_("Download")}>
         <ul>
           <li>
-            <a href={dataDownloadURL + "xlsx"} on:click={() => trackDownload("xlsx")}>
+            <a
+              href={dataDownloadURL + "xlsx"}
+              on:click={() => trackDownload("xlsx")}
+              data-sveltekit-reload
+            >
               <DownloadIcon />
               {$_("All attributes")} (xlsx)
             </a>
           </li>
           <li>
-            <a href={dataDownloadURL + "csv"} on:click={() => trackDownload("csv")}>
+            <a
+              href={dataDownloadURL + "csv"}
+              on:click={() => trackDownload("csv")}
+              data-sveltekit-reload
+            >
               <i class="fas fa-file-download" />
               <DownloadIcon />
               {$_("All attributes")} (csv)
