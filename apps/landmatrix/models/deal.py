@@ -864,6 +864,8 @@ class Deal(AbstractDealBase):
 
     @staticmethod
     def deserialize_from_version(version: DealVersion) -> "Deal":
+        if version.serialized_data.get("confidential_reason"):
+            del version.serialized_data["confidential_reason"]
         daty = {
             "pk": version.object_id,
             "model": "landmatrix.deal",
