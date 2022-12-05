@@ -11,6 +11,7 @@
     setFeatures,
     setTypeProperty,
   } from "$lib/utils/dealLocationAreaFeatures"
+  import { validate } from "$lib/utils/geojsonValidation"
 
   import LowLevelDateYearField from "$components/Fields/Edit/LowLevelDateYearField.svelte"
   import EyeIcon from "$components/icons/EyeIcon.svelte"
@@ -55,27 +56,17 @@
     reader.addEventListener("load", event => {
       const geoJsonObject: GeoJSON = JSON.parse(event.target?.result as string)
 
-      switch (geoJsonObject.type) {
-        case "Feature":
-          setAreaFeatures(activeLocation, [
-            ...areaFeatures,
-            setTypeProperty(areaType)(geoJsonObject),
-          ])
-          break
-        case "FeatureCollection":
-          if (geoJsonObject.features.length !== 1) {
-            window.alert("Please upload 1 area feature at a time.")
-            return
-          }
-          setAreaFeatures(activeLocation, [
-            ...areaFeatures,
-            ...geoJsonObject.features.map(setTypeProperty(areaType)),
-          ])
-          break
-        default:
-          window.alert("Unsupported GeoJsonType")
-          return
+      try {
+        validate(geoJsonObject)
+      } catch (e) {
+        window.alert((e as Error).message)
+        return
       }
+
+      setAreaFeatures(activeLocation, [
+        ...areaFeatures,
+        setTypeProperty(areaType)(geoJsonObject),
+      ])
 
       showAddAreaOverlay = false
     })
