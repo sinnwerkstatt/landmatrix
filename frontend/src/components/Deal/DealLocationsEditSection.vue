@@ -72,7 +72,6 @@
                   type="file"
                   class="input-file"
                   accept=".geojson,application/geo+json,application/json"
-                  disabled
                   @change="uploadFiles('intended_area', $event)"
                 />
               </div>
@@ -82,7 +81,6 @@
                   type="file"
                   class="input-file"
                   accept=".geojson,application/geo+json,application/json"
-                  disabled
                   @change="uploadFiles('contract_area', $event)"
                 />
               </div>
@@ -94,7 +92,6 @@
                   type="file"
                   class="input-file"
                   accept=".geojson,application/geo+json,application/json"
-                  disabled
                   @change="uploadFiles('production_area', $event)"
                 />
               </div>
@@ -125,18 +122,13 @@
   import type { Country } from "$types/wagtail";
   import { newNanoid } from "$utils";
   import "@geoman-io/leaflet-geoman-free";
-  import type {
-    Feature,
-    GeoJsonObject,
-    FeatureCollection,
-    Geometry,
-    Position,
-  } from "geojson";
+  import type { Feature, FeatureCollection } from "geojson";
 
   import type L from "leaflet";
   import { GeoJSON, LatLngBounds, Marker } from "leaflet";
   import Vue from "vue";
   import type { PropType } from "vue";
+  import { validate } from "$utils/geojsonValidation";
 
   export default Vue.extend({
     components: { PointField, LocationGoogleField, EditField, BigMap },
@@ -324,58 +316,6 @@
         }
         this._features_changed();
       },
-      hasValidLongLatValues(data: FeatureCollection): boolean {
-        const isValidLongitude = (longitude: number) =>
-          -180 <= longitude && longitude <= 180;
-        const isValidLatitude = (latitude: number) => -90 <= latitude && latitude <= 90;
-        const isValidPostion = (position: Position) =>
-          isValidLongitude(position[0]) && isValidLatitude(position[1]);
-
-        type NestedCoordinates<T> = T | NestedCoordinates<T>[];
-        const areValidCoordinates = (
-          coordinates: NestedCoordinates<Position>,
-          level: number
-        ): boolean => {
-          if (level > 0) {
-            return (coordinates as Position[]).every((nested) =>
-              areValidCoordinates(nested, level - 1)
-            );
-          }
-          return isValidPostion(coordinates as Position);
-        };
-
-        const isValidGeometry = (geometry: Geometry): boolean => {
-          if (geometry.type === "GeometryCollection") {
-            return geometry.geometries.every(isValidGeometry);
-          }
-          if (geometry.type === "Polygon") {
-            return areValidCoordinates(geometry.coordinates, 2);
-          }
-          if (geometry.type === "MultiPolygon") {
-            return areValidCoordinates(geometry.coordinates, 3);
-          }
-          if (geometry.type === "Point") {
-            return areValidCoordinates(geometry.coordinates, 0);
-          }
-          if (geometry.type === "MultiPoint") {
-            return areValidCoordinates(geometry.coordinates, 1);
-          }
-          if (geometry.type === "LineString") {
-            return areValidCoordinates(geometry.coordinates, 1);
-          }
-          if (geometry.type === "MultiLineString") {
-            return areValidCoordinates(geometry.coordinates, 2);
-          }
-          return false;
-        };
-
-        return data.features.every((feature) => isValidGeometry(feature.geometry));
-      },
-      isFeatureCollection(data: GeoJsonObject): data is FeatureCollection {
-        // only FeatureCollections are allowed to have a property called features
-        // https://www.rfc-editor.org/rfc/rfc7946#section-7.1
-        return data.type === "FeatureCollection";
-      },
       uploadFiles(area_type: string, event: Event) {
         const target = event.target as HTMLInputElement;
         if (!target || !target.files || target.files.length <= 0) return;
@@ -385,19 +325,17 @@
           if (!this.actFG) return;
           const result = JSON.parse(event.target?.result as string);
 
-          if (!this.isFeatureCollection(result)) {
-            alert("GeoJSON is not a FeatureCollection.");
-            return;
-          }
-          if (!this.hasValidLongLatValues(result)) {
-            alert("Feature geometry has invalid longitude / latitude values.");
+          try {
+            validate(result);
+          } catch (e) {
+            alert((e as Error).message);
             return;
           }
 
           // keep geometry, set landmatrix properties
           const featureCollection: FeatureCollection = {
             type: "FeatureCollection",
-            features: result.features.map((f) => ({
+            features: result.features.map((f: Feature) => ({
               type: "Feature",
               geometry: f.geometry,
               properties: { type: area_type },
