@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import csv
+import datetime
 import io
 import json
+import pytz
 import zipfile
 
 from django.contrib.auth import get_user_model
@@ -234,10 +236,24 @@ class Management(View):
 
         if rformat := request.GET.get("format"):
             for x in ret:
-                x["country"] = x.get("country", {}).get("name")
-                x["created_by"] = x.get("created_by", {}).get("username")
-                x["modified_by"] = x.get("modified_by", {}).get("username")
+                # safe get if field is undefined or None
+                x["country"] = (x.get("country", {}) or {}).get("name")
+                x["created_by"] = (x.get("created_by", {}) or {}).get("username")
+                x["modified_by"] = (x.get("modified_by", {}) or {}).get("username")
+
                 del x["workflowinfos"]
+
+                # remove tzinfo from datetime fields and format as string
+                for datetime_field in ["created_at", "modified_at", "fully_updated_at"]:
+                    if isinstance(x[datetime_field], datetime.datetime):
+                        x[datetime_field] = (
+                            x[datetime_field]
+                            .astimezone(pytz.UTC)
+                            .replace(tzinfo=None)
+                            .isoformat(timespec="seconds")
+                            + "Z"
+                        )
+
             if rformat == "csv":
                 response = HttpResponse(self._csv_writer(ret), content_type="text/csv")
                 response["Content-Disposition"] = f'attachment; filename="{action}.csv"'
