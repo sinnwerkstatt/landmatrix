@@ -313,7 +313,7 @@
       {/each}
     </div>
     <div class="mt-auto w-full self-end pt-10">
-      {#if activeTabId}
+      {#if activeTabId && filteredObjects.length > 0}
         <FilterCollapse title={$_("Download")}>
           <ul>
             <li>
