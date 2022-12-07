@@ -185,7 +185,11 @@ class Management(View):
             },
             "created_by_me": {
                 "staff": False,
-                "q": Q(current_draft__created_by_id=request.user.id),
+                "q": (
+                    Q(current_draft__created_by_id=request.user.id)
+                    & ~Q(draft_status=None)
+                )
+                | (Q(draft_status=None) & Q(created_by__id=request.user.id)),
             },
             "reviewed_by_me": {
                 "staff": True,
