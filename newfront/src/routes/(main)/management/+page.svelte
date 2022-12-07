@@ -164,7 +164,6 @@
       modifiedByUsers = modifiedByUsers.sort((a, b) =>
         a.full_name.localeCompare(b.full_name),
       )
-      console.log(createdByUsers)
 
       navTabs = navTabs.map(navTab => ({
         ...navTab,

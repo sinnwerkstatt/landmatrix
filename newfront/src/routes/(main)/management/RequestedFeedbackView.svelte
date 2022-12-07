@@ -18,6 +18,11 @@
   export let model: "deal" | "investor" = "deal"
 
   $: objectsWInfo = objects
+    .filter(obj =>
+      (obj.workflowinfos as DealWorkflowInfo[]).some(
+        wfi => wfi.draft_status_before === wfi.draft_status_after && !wfi.resolved,
+      ),
+    )
     .map(obj => {
       const wfis = obj.workflowinfos as DealWorkflowInfo[]
       let relevantWFI = wfis.find(
@@ -117,7 +122,7 @@
         <td class="px-3 py-1">
           <ForeignKeyField value={obj.relevantWFI?.to_user} formfield={{}} />
         </td>
-        <td class="w-[368px] px-3 py-1">
+        <td class="relative w-[368px] px-3 py-1">
           <WorkflowInfosField value={obj.workflowinfos}>
             {obj.relevantWFI?.comment}
           </WorkflowInfosField>

@@ -163,7 +163,8 @@ class Management(View):
                     )
                 )
                 & Q(workflowinfos__from_user_id=request.user.id)
-                & Q(workflowinfos__to_user_id__isnull=False),
+                & Q(workflowinfos__to_user_id__isnull=False)
+                & Q(workflowinfos__resolved=False),
             },
             "requested_improvement": {
                 "staff": True,
@@ -267,6 +268,9 @@ class Management(View):
                     "comment": w.comment,
                     "resolved": w.resolved,
                     "replies": w.replies or [],
+                    "__typename": "DealWorkflowInfo"
+                    if is_deal
+                    else "InvestorWorkflowInfo",
                 }
                 for w in obj.workflowinfos.order_by("-id")
             ],

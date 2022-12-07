@@ -35,12 +35,12 @@
   class="workflowinfo-field cursor-pointer"
   data-name={formfield?.name ?? ""}
   on:click={event => {
-    showMoreInfos = !showMoreInfos
+    if (!showMoreInfos) showMoreInfos = true
     event.stopPropagation()
   }}
 >
   <slot>
-    <WorkflowInfo info={value[0]} />
+    <WorkflowInfo bind:info={value[0]} />
   </slot>
   {#if showMoreInfos}
     <div
@@ -52,7 +52,7 @@
         class="h-auto max-h-[330px] cursor-default overflow-y-scroll bg-lm-warmgray px-[2px] pt-1 pb-4 shadow-inner"
       >
         {#each value as info}
-          <WorkflowInfo {info} />
+          <WorkflowInfo bind:info />
         {/each}
       </div>
     </div>
