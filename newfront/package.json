@@ -82,5 +82,8 @@
     "vite-plugin-iso-import": "^0.1.3",
     "vitest": "~0.25.3"
   },
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "geojson-validation": "^1.0.2"
+  }
 }
