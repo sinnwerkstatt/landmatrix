@@ -10,6 +10,7 @@
   import DateTimeField from "$components/Fields/Display/DateTimeField.svelte"
   import ForeignKeyField from "$components/Fields/Display/ForeignKeyField.svelte"
   import StatusField from "$components/Fields/Display/StatusField.svelte"
+  import WorkflowInfosField from "$components/Fields/Display/WorkflowInfosField.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import StarIcon from "$components/icons/StarIcon.svelte"
 
@@ -17,6 +18,11 @@
   export let model: "deal" | "investor" = "deal"
 
   $: objectsWInfo = objects
+    .filter(obj =>
+      (obj.workflowinfos as DealWorkflowInfo[]).some(
+        wfi => wfi.draft_status_before === wfi.draft_status_after && !wfi.resolved,
+      ),
+    )
     .map(obj => {
       const wfis = obj.workflowinfos as DealWorkflowInfo[]
       let relevantWFI = wfis.find(
@@ -54,7 +60,7 @@
 
       <th class="px-3 py-1">From user</th>
       <th class="px-3 py-1">To user</th>
-      <th class="px-3 py-1">Comment</th>
+      <th class="px-3 py-1">Feedback</th>
       <!--      <th>{$formfields.deal["created_at"].label}</th>-->
       <!--      <th>{$formfields.deal["created_by"].label}</th>-->
       <!--      <th>{$formfields.deal["modified_at"].label}</th>-->
@@ -116,8 +122,10 @@
         <td class="px-3 py-1">
           <ForeignKeyField value={obj.relevantWFI?.to_user} formfield={{}} />
         </td>
-        <td class="px-3 py-1">
-          {obj.relevantWFI?.comment}
+        <td class="relative w-[368px] px-3 py-1">
+          <WorkflowInfosField value={obj.workflowinfos}>
+            {obj.relevantWFI?.comment}
+          </WorkflowInfosField>
         </td>
       </tr>
     {/each}

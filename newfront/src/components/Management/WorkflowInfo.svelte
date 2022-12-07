@@ -5,6 +5,7 @@
   import { _ } from "svelte-i18n"
   import { slide } from "svelte/transition"
 
+  import { invalidateAll } from "$app/navigation"
   import { page } from "$app/stores"
 
   import { allUsers } from "$lib/stores"
@@ -88,7 +89,7 @@
       ]
       reply = ""
     }
-    console.log("data", data)
+    await invalidateAll()
   }
 
   async function resolveThread() {
@@ -113,6 +114,7 @@
     if (data.resolve_workflow_info) {
       info = { ...info, resolved: true }
     }
+    await invalidateAll()
   }
 </script>
 
