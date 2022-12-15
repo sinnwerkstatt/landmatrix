@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-14 16:15+0200\n"
+"POT-Creation-Date: 2022-12-15 23:01+0100\n"
 "PO-Revision-Date: 2022-05-30 13:48+0000\n"
 "Last-Translator: Angela Harding <coordination@landmatrix.org>\n"
 "Language-Team: Russian <http://translate.landmatrix.org/projects/landmatrix/landmatrix/ru/>\n"
@@ -23,45 +23,6 @@ msgstr "Данные"
 
 msgid "Role"
 msgstr "Роль"
-
-msgid "Blog index"
-msgstr ""
-
-msgid "Category Name"
-msgstr ""
-
-msgid "Categories, unlike tags, can have a hierarchy. You might have a Jazz category, and under that have children categories for Bebop and Big Band. Totally optional."
-msgstr ""
-
-msgid "Blog Category"
-msgstr ""
-
-msgid "Blog Categories"
-msgstr ""
-
-msgid "Category"
-msgstr ""
-
-msgid "body"
-msgstr ""
-
-msgid "Post date"
-msgstr ""
-
-msgid "This date may be displayed on the blog post. It is not used to schedule posts to go live at a later date."
-msgstr ""
-
-msgid "Header image"
-msgstr ""
-
-msgid "Author"
-msgstr ""
-
-msgid "Blog page"
-msgstr ""
-
-msgid "Blog pages"
-msgstr ""
 
 msgid "Account activation on"
 msgstr "Активация учетной записи на"
@@ -945,6 +906,18 @@ msgstr ""
 msgid "Zinc"
 msgstr ""
 
+msgid "Groundwater"
+msgstr "Грунтовые воды"
+
+msgid "Surface water"
+msgstr "Поверхностные воды"
+
+msgid "River"
+msgstr "Река"
+
+msgid "Lake"
+msgstr "Озеро"
+
 msgid "Confidential flag"
 msgstr ""
 
@@ -1591,6 +1564,9 @@ msgstr ""
 msgid "Account confirmed"
 msgstr ""
 
+msgid "Accountability"
+msgstr ""
+
 msgid "Actions"
 msgstr "Действия"
 
@@ -1617,6 +1593,9 @@ msgstr "Добавить"
 
 msgid "Add a deal"
 msgstr "Добавить сделку"
+
+msgid "Add comment"
+msgstr "Добавить примечание"
 
 msgid "Add GeoJSON"
 msgstr ""
@@ -1653,6 +1632,9 @@ msgstr ""
 
 msgid "Any gender-specific information about the investment and its impacts"
 msgstr "Любая гендерно-обусловленная информация об инвестициях и их влиянии"
+
+msgid "Area"
+msgstr ""
 
 msgid "Area (ha)"
 msgstr ""
@@ -1695,6 +1677,9 @@ msgstr "Смена собственника"
 
 msgid "Change password"
 msgstr "Изменить пароль"
+
+msgid "Changes within timespan"
+msgstr "Изменения в рамках временного диапазона"
 
 msgid "Charts"
 msgstr "Диаграммы"
@@ -1768,6 +1753,9 @@ msgid "Copy this deal"
 msgstr ""
 
 msgid "Copy this investor"
+msgstr ""
+
+msgid "Count"
 msgstr ""
 
 #, python-brace-format
@@ -1844,7 +1832,37 @@ msgstr "Размер сделки"
 msgid "Deals (Involvements as Operating company)"
 msgstr "Сделки (участие в качестве компании-оператора)"
 
+msgid "Deals activated"
+msgstr ""
+
+msgid "Deals active"
+msgstr ""
+
+msgid "Deals active, but confidential"
+msgstr ""
+
+msgid "Deals active, but not public"
+msgstr ""
+
+msgid "Deals added"
+msgstr ""
+
+msgid "Deals fully updated"
+msgstr ""
+
 msgid "Deals georeferenced with high accuracy"
+msgstr ""
+
+msgid "Deals pending"
+msgstr ""
+
+msgid "Deals pending deletion"
+msgstr ""
+
+msgid "Deals rejected"
+msgstr ""
+
+msgid "Deals updated"
 msgstr ""
 
 msgid "Deals with at least one location with either accuracy level 'Coordinates' or 'Exact location' or at least one polygon."
@@ -1952,9 +1970,6 @@ msgstr "Исключая"
 msgid "Explore the map for information about land deals from global down to regional and country level."
 msgstr "Изучите карту, чтобы получить информацию о сделках от глобального до регионального и национального уровня."
 
-msgid "Export (%)"
-msgstr ""
-
 msgid "Expression of interest"
 msgstr ""
 
@@ -1966,9 +1981,6 @@ msgstr "Часто задаваемые вопросы (ЧАВО)"
 
 msgid "Farmers"
 msgstr ""
-
-msgid "Feedback"
-msgstr "Отзывы"
 
 msgid "Feedback by me"
 msgstr ""
@@ -2011,9 +2023,6 @@ msgstr ""
 
 msgid "Gender-related info"
 msgstr "Информация о гендерных факторах"
-
-msgid "General Info"
-msgstr ""
 
 msgid "General info"
 msgstr "Общие сведения"
@@ -2116,6 +2125,30 @@ msgstr "Имя/название инвестора"
 
 msgid "Investors"
 msgstr "Инвесторы"
+
+msgid "Investors activated"
+msgstr ""
+
+msgid "Investors active"
+msgstr ""
+
+msgid "Investors added"
+msgstr ""
+
+msgid "Investors pending"
+msgstr ""
+
+msgid "Investors pending deletion"
+msgstr ""
+
+msgid "Investors rejected"
+msgstr ""
+
+msgid "Investors updated"
+msgstr ""
+
+msgid "Investors with name"
+msgstr ""
 
 msgid "Involvement"
 msgstr "Участие"
@@ -2349,10 +2382,10 @@ msgstr "Производство"
 msgid "Produce info"
 msgstr "Информация о продукции"
 
-msgid "Produce info map"
+msgid "Produce Info Map"
 msgstr ""
 
-msgid "Produce Info Map"
+msgid "Produce info map"
 msgstr ""
 
 msgid "Production area"
@@ -2376,6 +2409,9 @@ msgstr ""
 msgid "Publicly visible deals"
 msgstr ""
 
+msgid "Publicly visible investors"
+msgstr ""
+
 msgid "Put each value on a new line, i.e. press enter between each name"
 msgstr "Указывайте только одно значение в каждой строке, напр., нажимайте клавишу ввода после каждого названия"
 
@@ -2383,6 +2419,9 @@ msgid "Quality goals"
 msgstr ""
 
 msgid "Quit without saving?"
+msgstr ""
+
+msgid "Ratio"
 msgstr ""
 
 msgid "Reactivate deal"
@@ -2467,6 +2506,9 @@ msgid "Send a request of improvent and create a new draft version of the deal"
 msgstr ""
 
 msgid "Send a request of improvent and create a new draft version of the investor"
+msgstr ""
+
+msgid "Send feedback"
 msgstr ""
 
 msgid "Set confidential"
@@ -2632,7 +2674,7 @@ msgstr ""
 msgid "Yes"
 msgstr "Да"
 
-msgid "Yield (tons)"
+msgid "Yield"
 msgstr ""
 
 msgid "You are not the author of this version. Therefore, a new version will be created if you proceed."
@@ -2665,6 +2707,9 @@ msgstr "Français"
 
 msgid "Русский"
 msgstr "Русский"
+
+#~ msgid "Feedback"
+#~ msgstr "Отзывы"
 
 #, python-brace-format
 #~ msgid "{full_name} has addressed you in a comment on {obj_desc}:"
@@ -3338,18 +3383,6 @@ msgstr "Русский"
 #~ msgid "Comment on PRAI"
 #~ msgstr "Примечания по ОИАС"
 
-msgid "Groundwater"
-msgstr "Грунтовые воды"
-
-msgid "Surface water"
-msgstr "Поверхностные воды"
-
-msgid "River"
-msgstr "Река"
-
-msgid "Lake"
-msgstr "Озеро"
-
 #~ msgid "Operational company"
 #~ msgstr "Операционная компания"
 
@@ -3412,9 +3445,6 @@ msgstr "Озеро"
 
 #~ msgid "I've read and agree to the <a href=\"/about/data-policy\" target=\"_blank\">Data Policy</a>."
 #~ msgstr "Я ознакомлен/-а и согласен/-сна с <a href=\"/about/data-policy\" target=\"_blank\">Политикой обработки данных</a>."
-
-#~ msgid "Add comment"
-#~ msgstr "Добавить примечание"
 
 #~ msgid "Cancel reply"
 #~ msgstr "Отменить ответ"
@@ -4111,9 +4141,6 @@ msgstr "Озеро"
 
 #~ msgid "Tweets by"
 #~ msgstr "Твиты пользователя"
-
-#~ msgid "Changes within timespan"
-#~ msgstr "Изменения в рамках временного диапазона"
 
 #~ msgid "Current statistics"
 #~ msgstr "Текущая статистика"

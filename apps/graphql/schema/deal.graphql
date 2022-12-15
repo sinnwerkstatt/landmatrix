@@ -1,7 +1,7 @@
 type Deal {
   id: Int!
   locations: [Location]
-  # General Info
+  # General info
   ## Land area
   country: Country
   intended_size: Float

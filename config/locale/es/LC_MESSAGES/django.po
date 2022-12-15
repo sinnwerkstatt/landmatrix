@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-14 16:15+0200\n"
+"POT-Creation-Date: 2022-12-15 23:01+0100\n"
 "PO-Revision-Date: 2022-05-30 13:48+0000\n"
 "Last-Translator: Kurt Gerber <kurt.gerber@unibe.ch>\n"
 "Language-Team: Spanish <http://translate.landmatrix.org/projects/landmatrix/landmatrix/es/>\n"
@@ -21,45 +21,6 @@ msgstr "Datos"
 
 msgid "Role"
 msgstr "Rol"
-
-msgid "Blog index"
-msgstr ""
-
-msgid "Category Name"
-msgstr ""
-
-msgid "Categories, unlike tags, can have a hierarchy. You might have a Jazz category, and under that have children categories for Bebop and Big Band. Totally optional."
-msgstr ""
-
-msgid "Blog Category"
-msgstr ""
-
-msgid "Blog Categories"
-msgstr ""
-
-msgid "Category"
-msgstr ""
-
-msgid "body"
-msgstr ""
-
-msgid "Post date"
-msgstr ""
-
-msgid "This date may be displayed on the blog post. It is not used to schedule posts to go live at a later date."
-msgstr ""
-
-msgid "Header image"
-msgstr ""
-
-msgid "Author"
-msgstr ""
-
-msgid "Blog page"
-msgstr ""
-
-msgid "Blog pages"
-msgstr ""
 
 msgid "Account activation on"
 msgstr "Activación de la cuenta el"
@@ -943,6 +904,18 @@ msgstr ""
 msgid "Zinc"
 msgstr ""
 
+msgid "Groundwater"
+msgstr "Aguas subterráneas"
+
+msgid "Surface water"
+msgstr "Aguas superficiales"
+
+msgid "River"
+msgstr "Río"
+
+msgid "Lake"
+msgstr "Lago"
+
 msgid "Confidential flag"
 msgstr ""
 
@@ -1589,6 +1562,9 @@ msgstr ""
 msgid "Account confirmed"
 msgstr ""
 
+msgid "Accountability"
+msgstr ""
+
 msgid "Actions"
 msgstr "Acciones"
 
@@ -1615,6 +1591,9 @@ msgstr "Añadir"
 
 msgid "Add a deal"
 msgstr "Añadir una transacción"
+
+msgid "Add comment"
+msgstr "Añadir comentario"
 
 msgid "Add GeoJSON"
 msgstr ""
@@ -1651,6 +1630,9 @@ msgstr ""
 
 msgid "Any gender-specific information about the investment and its impacts"
 msgstr "Cualquier información específica de género sobre la inversión y sus impactos"
+
+msgid "Area"
+msgstr ""
 
 msgid "Area (ha)"
 msgstr ""
@@ -1693,6 +1675,9 @@ msgstr "Cambio de propietario"
 
 msgid "Change password"
 msgstr "Cambiar contraseña"
+
+msgid "Changes within timespan"
+msgstr "Cambios en el tiempo"
 
 msgid "Charts"
 msgstr "Gráficos"
@@ -1766,6 +1751,9 @@ msgid "Copy this deal"
 msgstr ""
 
 msgid "Copy this investor"
+msgstr ""
+
+msgid "Count"
 msgstr ""
 
 #, python-brace-format
@@ -1842,7 +1830,37 @@ msgstr "Tamaño de transacción"
 msgid "Deals (Involvements as Operating company)"
 msgstr "Transacciones (Involucramientos como Empresa Operadora)"
 
+msgid "Deals activated"
+msgstr ""
+
+msgid "Deals active"
+msgstr ""
+
+msgid "Deals active, but confidential"
+msgstr ""
+
+msgid "Deals active, but not public"
+msgstr ""
+
+msgid "Deals added"
+msgstr ""
+
+msgid "Deals fully updated"
+msgstr ""
+
 msgid "Deals georeferenced with high accuracy"
+msgstr ""
+
+msgid "Deals pending"
+msgstr ""
+
+msgid "Deals pending deletion"
+msgstr ""
+
+msgid "Deals rejected"
+msgstr ""
+
+msgid "Deals updated"
 msgstr ""
 
 msgid "Deals with at least one location with either accuracy level 'Coordinates' or 'Exact location' or at least one polygon."
@@ -1950,9 +1968,6 @@ msgstr "Excluido"
 msgid "Explore the map for information about land deals from global down to regional and country level."
 msgstr "Explore el mapa para obtener información sobre transacciones de tierras desde el nivel global hasta el nivel regional y nacional."
 
-msgid "Export (%)"
-msgstr ""
-
 msgid "Expression of interest"
 msgstr ""
 
@@ -1964,9 +1979,6 @@ msgstr "Preguntas Frecuentes"
 
 msgid "Farmers"
 msgstr ""
-
-msgid "Feedback"
-msgstr "Retroalimentación"
 
 msgid "Feedback by me"
 msgstr ""
@@ -2009,9 +2021,6 @@ msgstr ""
 
 msgid "Gender-related info"
 msgstr "Información relacionada con género"
-
-msgid "General Info"
-msgstr ""
 
 msgid "General info"
 msgstr "Información General"
@@ -2114,6 +2123,30 @@ msgstr "Nombre de inversor"
 
 msgid "Investors"
 msgstr "Inversores"
+
+msgid "Investors activated"
+msgstr ""
+
+msgid "Investors active"
+msgstr ""
+
+msgid "Investors added"
+msgstr ""
+
+msgid "Investors pending"
+msgstr ""
+
+msgid "Investors pending deletion"
+msgstr ""
+
+msgid "Investors rejected"
+msgstr ""
+
+msgid "Investors updated"
+msgstr ""
+
+msgid "Investors with name"
+msgstr ""
 
 msgid "Involvement"
 msgstr "Involucramiento"
@@ -2347,10 +2380,10 @@ msgstr "Producto"
 msgid "Produce info"
 msgstr "Información de Producto"
 
-msgid "Produce info map"
+msgid "Produce Info Map"
 msgstr ""
 
-msgid "Produce Info Map"
+msgid "Produce info map"
 msgstr ""
 
 msgid "Production area"
@@ -2374,6 +2407,9 @@ msgstr ""
 msgid "Publicly visible deals"
 msgstr ""
 
+msgid "Publicly visible investors"
+msgstr ""
+
 msgid "Put each value on a new line, i.e. press enter between each name"
 msgstr "Ponga cada valor en una línea nueva, ej. presione intro entre los nombres"
 
@@ -2381,6 +2417,9 @@ msgid "Quality goals"
 msgstr ""
 
 msgid "Quit without saving?"
+msgstr ""
+
+msgid "Ratio"
 msgstr ""
 
 msgid "Reactivate deal"
@@ -2465,6 +2504,9 @@ msgid "Send a request of improvent and create a new draft version of the deal"
 msgstr ""
 
 msgid "Send a request of improvent and create a new draft version of the investor"
+msgstr ""
+
+msgid "Send feedback"
 msgstr ""
 
 msgid "Set confidential"
@@ -2630,7 +2672,7 @@ msgstr ""
 msgid "Yes"
 msgstr "Si"
 
-msgid "Yield (tons)"
+msgid "Yield"
 msgstr ""
 
 msgid "You are not the author of this version. Therefore, a new version will be created if you proceed."
@@ -2663,6 +2705,9 @@ msgstr "Français"
 
 msgid "Русский"
 msgstr "Русский"
+
+#~ msgid "Feedback"
+#~ msgstr "Retroalimentación"
 
 #, python-brace-format
 #~ msgid "{full_name} has addressed you in a comment on {obj_desc}:"
@@ -3334,18 +3379,6 @@ msgstr "Русский"
 #~ msgid "Comment on PRAI"
 #~ msgstr "Comentario sobre IAR"
 
-msgid "Groundwater"
-msgstr "Aguas subterráneas"
-
-msgid "Surface water"
-msgstr "Aguas superficiales"
-
-msgid "River"
-msgstr "Río"
-
-msgid "Lake"
-msgstr "Lago"
-
 #~ msgid "Operational company"
 #~ msgstr "Empresa operativa"
 
@@ -3408,9 +3441,6 @@ msgstr "Lago"
 
 #~ msgid "I've read and agree to the <a href=\"/about/data-policy\" target=\"_blank\">Data Policy</a>."
 #~ msgstr "He leído y estoy de acuerdo con la <a href=\"/about/data-policy\" target=\"_blank\">Política de Datos</a>."
-
-#~ msgid "Add comment"
-#~ msgstr "Añadir comentario"
 
 #~ msgid "Cancel reply"
 #~ msgstr "Cancelar respuesta"
@@ -4107,9 +4137,6 @@ msgstr "Lago"
 
 #~ msgid "Tweets by"
 #~ msgstr "Tweets por"
-
-#~ msgid "Changes within timespan"
-#~ msgstr "Cambios en el tiempo"
 
 #~ msgid "Current statistics"
 #~ msgstr "Estadísticas actuales"

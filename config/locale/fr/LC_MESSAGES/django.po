@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-14 16:14+0200\n"
+"POT-Creation-Date: 2022-12-15 23:01+0100\n"
 "PO-Revision-Date: 2022-05-30 13:48+0000\n"
 "Last-Translator: Kurt Gerber <kurt.gerber@unibe.ch>\n"
 "Language-Team: French <http://translate.landmatrix.org/projects/landmatrix/landmatrix/fr/>\n"
@@ -18,45 +18,6 @@ msgstr "Données"
 
 msgid "Role"
 msgstr "Rôle"
-
-msgid "Blog index"
-msgstr ""
-
-msgid "Category Name"
-msgstr "Nom de la Catégorie"
-
-msgid "Categories, unlike tags, can have a hierarchy. You might have a Jazz category, and under that have children categories for Bebop and Big Band. Totally optional."
-msgstr "Les catégories, contrairement aux libellés, peuvent avoir une hiérarchie. Vous pouvez avoir une catégorie Jazz, qui aura pour sous-catégorie Bebop et Big Band. Optionnel."
-
-msgid "Blog Category"
-msgstr "Catégorie du Blog"
-
-msgid "Blog Categories"
-msgstr "Catégories du Blog"
-
-msgid "Category"
-msgstr "Catégorie"
-
-msgid "body"
-msgstr "corps"
-
-msgid "Post date"
-msgstr "Date de publication"
-
-msgid "This date may be displayed on the blog post. It is not used to schedule posts to go live at a later date."
-msgstr "Cette date peut être affichée dans l'article. Elle n'est pas utilisée pour planifier la publication de l'article."
-
-msgid "Header image"
-msgstr "Image d'en-tête"
-
-msgid "Author"
-msgstr "Auteur"
-
-msgid "Blog page"
-msgstr "page de blog"
-
-msgid "Blog pages"
-msgstr "Pages de blog"
 
 msgid "Account activation on"
 msgstr "Activation du compte le"
@@ -940,6 +901,18 @@ msgstr ""
 msgid "Zinc"
 msgstr ""
 
+msgid "Groundwater"
+msgstr "Eaux souterraines"
+
+msgid "Surface water"
+msgstr "Eaux de surface"
+
+msgid "River"
+msgstr "Rivière"
+
+msgid "Lake"
+msgstr "Lac"
+
 msgid "Confidential flag"
 msgstr ""
 
@@ -1586,6 +1559,9 @@ msgstr ""
 msgid "Account confirmed"
 msgstr ""
 
+msgid "Accountability"
+msgstr ""
+
 msgid "Actions"
 msgstr "Actions"
 
@@ -1612,6 +1588,9 @@ msgstr "Ajouter"
 
 msgid "Add a deal"
 msgstr "Ajouter une transaction"
+
+msgid "Add comment"
+msgstr "Ajouter un commentaire"
 
 msgid "Add GeoJSON"
 msgstr ""
@@ -1648,6 +1627,9 @@ msgstr ""
 
 msgid "Any gender-specific information about the investment and its impacts"
 msgstr "Toute information spécifique au genre concernant l’investissement et ses impacts"
+
+msgid "Area"
+msgstr ""
 
 msgid "Area (ha)"
 msgstr ""
@@ -1690,6 +1672,9 @@ msgstr "Changement de propriétaire"
 
 msgid "Change password"
 msgstr "Modifier le mot de passe"
+
+msgid "Changes within timespan"
+msgstr "Changements dans le temps"
 
 msgid "Charts"
 msgstr "Diagrammes"
@@ -1763,6 +1748,9 @@ msgid "Copy this deal"
 msgstr ""
 
 msgid "Copy this investor"
+msgstr ""
+
+msgid "Count"
 msgstr ""
 
 #, python-brace-format
@@ -1839,7 +1827,37 @@ msgstr "Superficie de la transaction"
 msgid "Deals (Involvements as Operating company)"
 msgstr "Transactions (implications comme société exploitante)"
 
+msgid "Deals activated"
+msgstr ""
+
+msgid "Deals active"
+msgstr ""
+
+msgid "Deals active, but confidential"
+msgstr ""
+
+msgid "Deals active, but not public"
+msgstr ""
+
+msgid "Deals added"
+msgstr ""
+
+msgid "Deals fully updated"
+msgstr ""
+
 msgid "Deals georeferenced with high accuracy"
+msgstr ""
+
+msgid "Deals pending"
+msgstr ""
+
+msgid "Deals pending deletion"
+msgstr ""
+
+msgid "Deals rejected"
+msgstr ""
+
+msgid "Deals updated"
 msgstr ""
 
 msgid "Deals with at least one location with either accuracy level 'Coordinates' or 'Exact location' or at least one polygon."
@@ -1947,9 +1965,6 @@ msgstr "Exclues"
 msgid "Explore the map for information about land deals from global down to regional and country level."
 msgstr "Explorer la carte pour plus d’informations sur les transactions foncières du niveau mondial aux niveaux régional et national."
 
-msgid "Export (%)"
-msgstr ""
-
 msgid "Expression of interest"
 msgstr ""
 
@@ -1961,9 +1976,6 @@ msgstr "FAQ"
 
 msgid "Farmers"
 msgstr ""
-
-msgid "Feedback"
-msgstr "Feedback"
 
 msgid "Feedback by me"
 msgstr ""
@@ -2006,9 +2018,6 @@ msgstr ""
 
 msgid "Gender-related info"
 msgstr "Informations relatives au genre"
-
-msgid "General Info"
-msgstr ""
 
 msgid "General info"
 msgstr "Informations générales"
@@ -2111,6 +2120,30 @@ msgstr "Nom de l'investisseur"
 
 msgid "Investors"
 msgstr "Investisseurs"
+
+msgid "Investors activated"
+msgstr ""
+
+msgid "Investors active"
+msgstr ""
+
+msgid "Investors added"
+msgstr ""
+
+msgid "Investors pending"
+msgstr ""
+
+msgid "Investors pending deletion"
+msgstr ""
+
+msgid "Investors rejected"
+msgstr ""
+
+msgid "Investors updated"
+msgstr ""
+
+msgid "Investors with name"
+msgstr ""
 
 msgid "Involvement"
 msgstr "Implication"
@@ -2344,10 +2377,10 @@ msgstr "Produit"
 msgid "Produce info"
 msgstr "Info produit"
 
-msgid "Produce info map"
+msgid "Produce Info Map"
 msgstr ""
 
-msgid "Produce Info Map"
+msgid "Produce info map"
 msgstr ""
 
 msgid "Production area"
@@ -2371,6 +2404,9 @@ msgstr ""
 msgid "Publicly visible deals"
 msgstr ""
 
+msgid "Publicly visible investors"
+msgstr ""
+
 msgid "Put each value on a new line, i.e. press enter between each name"
 msgstr "Veuillez insérer chaque valeur dans une nouvelle ligne (appuyez sur Entrée entre chaque nom)"
 
@@ -2378,6 +2414,9 @@ msgid "Quality goals"
 msgstr ""
 
 msgid "Quit without saving?"
+msgstr ""
+
+msgid "Ratio"
 msgstr ""
 
 msgid "Reactivate deal"
@@ -2462,6 +2501,9 @@ msgid "Send a request of improvent and create a new draft version of the deal"
 msgstr ""
 
 msgid "Send a request of improvent and create a new draft version of the investor"
+msgstr ""
+
+msgid "Send feedback"
 msgstr ""
 
 msgid "Set confidential"
@@ -2627,7 +2669,7 @@ msgstr ""
 msgid "Yes"
 msgstr "Oui"
 
-msgid "Yield (tons)"
+msgid "Yield"
 msgstr ""
 
 msgid "You are not the author of this version. Therefore, a new version will be created if you proceed."
@@ -2660,6 +2702,45 @@ msgstr "Français"
 
 msgid "Русский"
 msgstr "Русский"
+
+#~ msgid "Category Name"
+#~ msgstr "Nom de la Catégorie"
+
+#~ msgid "Categories, unlike tags, can have a hierarchy. You might have a Jazz category, and under that have children categories for Bebop and Big Band. Totally optional."
+#~ msgstr "Les catégories, contrairement aux libellés, peuvent avoir une hiérarchie. Vous pouvez avoir une catégorie Jazz, qui aura pour sous-catégorie Bebop et Big Band. Optionnel."
+
+#~ msgid "Blog Category"
+#~ msgstr "Catégorie du Blog"
+
+#~ msgid "Blog Categories"
+#~ msgstr "Catégories du Blog"
+
+#~ msgid "Category"
+#~ msgstr "Catégorie"
+
+#~ msgid "body"
+#~ msgstr "corps"
+
+#~ msgid "Post date"
+#~ msgstr "Date de publication"
+
+#~ msgid "This date may be displayed on the blog post. It is not used to schedule posts to go live at a later date."
+#~ msgstr "Cette date peut être affichée dans l'article. Elle n'est pas utilisée pour planifier la publication de l'article."
+
+#~ msgid "Header image"
+#~ msgstr "Image d'en-tête"
+
+#~ msgid "Author"
+#~ msgstr "Auteur"
+
+#~ msgid "Blog page"
+#~ msgstr "page de blog"
+
+#~ msgid "Blog pages"
+#~ msgstr "Pages de blog"
+
+#~ msgid "Feedback"
+#~ msgstr "Feedback"
 
 #, python-brace-format
 #~ msgid "{full_name} has addressed you in a comment on {obj_desc}:"
@@ -3331,18 +3412,6 @@ msgstr "Русский"
 #~ msgid "Comment on PRAI"
 #~ msgstr "Commentaire sur les PRAI"
 
-msgid "Groundwater"
-msgstr "Eaux souterraines"
-
-msgid "Surface water"
-msgstr "Eaux de surface"
-
-msgid "River"
-msgstr "Rivière"
-
-msgid "Lake"
-msgstr "Lac"
-
 #~ msgid "Operational company"
 #~ msgstr "Entreprise exploitante"
 
@@ -3405,9 +3474,6 @@ msgstr "Lac"
 
 #~ msgid "I've read and agree to the <a href=\"/about/data-policy\" target=\"_blank\">Data Policy</a>."
 #~ msgstr "Je déclare voir lu et approuvé la <a href=\"/about/data-policy\" target=\"_blank\">Data Policy</a>."
-
-#~ msgid "Add comment"
-#~ msgstr "Ajouter un commentaire"
 
 #~ msgid "Cancel reply"
 #~ msgstr "Annuler la réponse"
@@ -4104,9 +4170,6 @@ msgstr "Lac"
 
 #~ msgid "Tweets by"
 #~ msgstr "Tweets de"
-
-#~ msgid "Changes within timespan"
-#~ msgstr "Changements dans le temps"
 
 #~ msgid "Current statistics"
 #~ msgstr "Statistiques actuelles"

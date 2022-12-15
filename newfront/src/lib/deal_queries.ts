@@ -42,7 +42,7 @@ export const deal_gql_query = gql`
     deal(id: $id, version: $version, subset: UNFILTERED) {
       id
       locations
-      # General Info
+      # General info
       ## Land area
       country {
         id

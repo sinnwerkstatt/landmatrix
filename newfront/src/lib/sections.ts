@@ -346,7 +346,7 @@ export const subsections = {
 export const getInvestorSections = ($_: (t: string) => string) => ({
   general_info: [
     {
-      name: $_("General Info"),
+      name: $_("General info"),
       fields: [
         "name",
         "country",
