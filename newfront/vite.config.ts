@@ -5,12 +5,6 @@ import { isoImport } from "vite-plugin-iso-import"
 
 export default defineConfig({
   plugins: [sveltekit(), isoImport()],
-  resolve: {
-    alias: {
-      $components: resolve("src/components"),
-      $views: resolve("src/views"),
-    },
-  },
   envDir: "..",
   test: {
     include: ["src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
