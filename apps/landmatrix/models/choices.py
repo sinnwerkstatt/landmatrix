@@ -327,10 +327,10 @@ MINERALS = {
 MINERALS_CHOICES = [(k, v["name"]) for k, v in MINERALS.items()]
 
 WATER_SOURCE_CHOICES = (
-    ("GROUNDWATER", "Groundwater"),
-    ("SURFACE_WATER", "Surface water"),
-    ("RIVER", "River"),
-    ("LAKE", "Lake"),
+    ("GROUNDWATER", _("Groundwater")),
+    ("SURFACE_WATER", _("Surface water")),
+    ("RIVER", _("River")),
+    ("LAKE", _("Lake")),
 )
 
 NOT_PUBLIC_REASON_CHOICES = (

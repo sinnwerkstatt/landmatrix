@@ -3338,17 +3338,17 @@ msgstr "Русский"
 #~ msgid "Comment on PRAI"
 #~ msgstr "Примечания по ОИАС"
 
-#~ msgid "Groundwater"
-#~ msgstr "Грунтовые воды"
+msgid "Groundwater"
+msgstr "Грунтовые воды"
 
-#~ msgid "Surface water"
-#~ msgstr "Поверхностные воды"
+msgid "Surface water"
+msgstr "Поверхностные воды"
 
-#~ msgid "River"
-#~ msgstr "Река"
+msgid "River"
+msgstr "Река"
 
-#~ msgid "Lake"
-#~ msgstr "Озеро"
+msgid "Lake"
+msgstr "Озеро"
 
 #~ msgid "Operational company"
 #~ msgstr "Операционная компания"

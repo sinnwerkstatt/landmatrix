@@ -3334,17 +3334,17 @@ msgstr "Русский"
 #~ msgid "Comment on PRAI"
 #~ msgstr "Comentario sobre IAR"
 
-#~ msgid "Groundwater"
-#~ msgstr "Aguas subterráneas"
+msgid "Groundwater"
+msgstr "Aguas subterráneas"
 
-#~ msgid "Surface water"
-#~ msgstr "Aguas superficiales"
+msgid "Surface water"
+msgstr "Aguas superficiales"
 
-#~ msgid "River"
-#~ msgstr "Río"
+msgid "River"
+msgstr "Río"
 
-#~ msgid "Lake"
-#~ msgstr "Lago"
+msgid "Lake"
+msgstr "Lago"
 
 #~ msgid "Operational company"
 #~ msgstr "Empresa operativa"
