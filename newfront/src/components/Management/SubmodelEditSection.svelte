@@ -14,7 +14,7 @@
 
   export let model: "datasource" | "contract" | "involvement"
   export let modelName: string
-  export let entries: Array<Contract | DataSource | Involvement> = []
+  export let entries: Array<Contract | DataSource | Involvement>
   export let entriesFilter: (i: Involvement) => boolean = () => true
   export let newEntryExtras = {}
   export let id: string
@@ -22,6 +22,9 @@
   export let fields = subsections[model]
 
   let activeEntry = -1
+
+  // ensure entries is not null
+  $: entries = entries ?? []
 
   function addEntry() {
     const currentIDs = entries.map(x => x?.id?.toString())
