@@ -54,7 +54,7 @@
       },
       target_countries() {
         let countries = this.$store.state.countries;
-        if (this.model !== "investor")
+        if (this.model === "deal" && this.formfield.name === "country")
           countries = countries.filter((c) => !c.high_income);
         return countries;
       },
