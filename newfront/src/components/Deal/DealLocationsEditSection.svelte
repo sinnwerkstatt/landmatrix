@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Feature } from "geojson"
-  import type { GeoJSONOptions, Layer, Map as LMap } from "leaflet"
+  import type { GeoJSONOptions, Layer, LeafletMouseEvent, Map as LMap } from "leaflet"
   import { GeoJSON, LatLngBounds, Marker, Path, Polygon } from "leaflet?client"
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
@@ -29,19 +29,9 @@
   let activeLocationID: string | null = null
   let bigmap: LMap
 
-  let cursorsMovable = false
+  let markerMode = false
 
   let locationFGs = new Map<string, GeoJSON>()
-  // const geoman_opts = {
-  //   position: "topleft" as ControlPosition,
-  //   drawCircle: false,
-  //   drawCircleMarker: false,
-  //   drawRectangle: false,
-  //   drawPolyline: false,
-  //   drawPolygon: false,
-  //   cutPolygon: false,
-  //   drawMarker: false,
-  // };
 
   const areaTypes = ["production_area", "contract_area", "intended_area"]
   const colormap = {
@@ -91,7 +81,7 @@
     },
   }
 
-  function _updateGeoJSON() {
+  function _updateGeoJSON(fitBounds = true) {
     locations?.forEach(loc => {
       const fg = locationFGs.get(loc.id) ?? _addNewLayerGroup(loc.id)
       fg.clearLayers()
@@ -102,7 +92,7 @@
         fg.addData(pt)
       }
     })
-    _fitBounds()
+    if (fitBounds) _fitBounds()
     hiddenFeatures = hiddenFeatures // trigger reevaluation of styling
     updateLocationVisibility()
   }
@@ -179,6 +169,7 @@
   const onActivateLocation = (location: Location) => {
     if (activeLocationID === location.id) {
       activeLocationID = null
+      markerMode = false
     } else {
       activeLocationID = location.id
       if (!locationFGs.get(activeLocationID)) {
@@ -206,17 +197,28 @@
       [country.point_lat_max, country.point_lon_max],
     ])
 
-  const onToggleMarkerMovable = () => {
-    cursorsMovable = !cursorsMovable
-    bigmap.eachLayer((layer: Layer) => {
-      if (isMarker(layer) && layer.dragging) {
-        if (cursorsMovable) layer.dragging.enable()
-        else layer.dragging.disable()
-      }
+  const updateActiveLocationMarker = (event: LeafletMouseEvent) => {
+    const activeLocation = locations.find(l => l.id === activeLocationID)
+    activeLocation.point = {
+      lat: parseFloat(event.latlng.lat.toFixed(5)),
+      lng: parseFloat(event.latlng.lng.toFixed(5)),
+    }
+    locations = locations
+    _updateGeoJSON(false)
+  }
 
-      // if (key !== activeLocationID) relevant_element.classList.add("leaflet-hidden");
-      // else relevant_element.classList.remove("leaflet-hidden");
-    })
+  $: if (bigmap && locations) {
+    if (markerMode) {
+      bigmap.addEventListener("click", updateActiveLocationMarker)
+      bigmap.eachLayer((layer: Layer) => {
+        if (isMarker(layer) && layer.dragging) layer.dragging.enable()
+      })
+    } else {
+      bigmap.removeEventListener("click", updateActiveLocationMarker)
+      bigmap.eachLayer((layer: Layer) => {
+        if (isMarker(layer) && layer.dragging) layer.dragging.disable()
+      })
+    }
   }
 
   $: {
@@ -339,20 +341,22 @@
           options={{ center: [0, 0] }}
           on:ready={onMapReady}
         >
-          <div class="absolute bottom-2 left-2">
-            <button
-              type="button"
-              class="absolute bottom-[10px] z-10 rounded border-2 border-black/30 px-2 pt-0.5 pb-1.5 {cursorsMovable
-                ? 'bg-orange text-white'
-                : 'bg-white text-orange'}"
-              on:click={onToggleMarkerMovable}
-              title={cursorsMovable
-                ? $_("Disable moving of markers")
-                : $_("Enable moving of markers")}
-            >
-              <CursorMoveIcon />
-            </button>
-          </div>
+          {#if activeLocationID}
+            <div class="absolute bottom-2 left-2">
+              <button
+                type="button"
+                class="z-10 rounded border-2 border-black/30 px-2 pt-0.5 pb-1.5 {markerMode
+                  ? 'bg-orange text-white'
+                  : 'bg-white text-orange'}"
+                on:click={() => {
+                  markerMode = !markerMode
+                }}
+                title={markerMode ? $_("Cancel marker mode") : $_("Enter marker mode")}
+              >
+                <CursorMoveIcon />
+              </button>
+            </div>
+          {/if}
         </BigMap>
         <div>
           {#if activeLocationID}
