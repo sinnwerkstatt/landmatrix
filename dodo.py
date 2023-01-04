@@ -11,7 +11,7 @@ DOIT_CONFIG = {"default_tasks": ["update"], "verbosity": 2}
 
 
 def pg_run(cmd: str, database="") -> str:
-    return f'sudo -u postgres psql {database} -c "{cmd}"'
+    return f'sudo -Hiu postgres psql {database} -c "{cmd}"'
 
 
 def task_update():
@@ -51,6 +51,23 @@ def task_reset_db():
         actions = [f"rm -f {db['NAME']}"]
 
     return {"actions": actions}
+
+
+def task_reset_db_with_dump():
+    db = env.db()
+    user_pg_run = (
+        f"PGPASSWORD={db['PASSWORD']} psql -h localhost -U {db['USER']} {db['NAME']}"
+    )
+
+    replace_db = f"zcat landmatrix.sql.gz | {user_pg_run}"
+
+    update = "UPDATE wagtailcore_site SET port=9000, hostname='localhost'"
+    reset_site_to_localhost = f'{user_pg_run} -c "{update}"'
+
+    return {
+        "task_dep": ["reset_db"],
+        "actions": [replace_db, reset_site_to_localhost],
+    }
 
 
 #############################

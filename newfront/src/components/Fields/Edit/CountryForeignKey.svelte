@@ -9,7 +9,7 @@
   import type { FormField } from "$components/Fields/fields"
 
   export let value: Country | undefined
-  export let model: string
+  export let model: "deal" | "investor" = "deal"
   export let disabled = false
   export let formfield: FormField
 
@@ -18,7 +18,9 @@
   let showHint = false
 
   $: targetCountries =
-    model === "investor" ? $countries : $countries.filter(c => !c.high_income)
+    model === "deal" && formfield.name === "country"
+      ? $countries.filter(c => !c.high_income)
+      : $countries
 
   const onSelect = e => {
     value = e?.detail
