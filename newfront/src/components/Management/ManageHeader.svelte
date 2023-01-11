@@ -363,7 +363,11 @@
         <slot name="visibility" />
       </div>
     </div>
-    <ManageHeaderLogbook {object} on:addComment />
+    <ManageHeaderLogbook
+      workflowInfos={object.workflowinfos}
+      {extraUserIDs}
+      on:addComment
+    />
   </div>
 </div>
 

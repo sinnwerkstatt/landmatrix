@@ -2,7 +2,7 @@
   import { createEventDispatcher } from "svelte"
   import { _ } from "svelte-i18n"
 
-  import type { Obj } from "$lib/types/generics"
+  import { allUsers } from "$lib/stores"
   import type { User } from "$lib/types/user"
 
   import ChatBubbleLeftIcon from "$components/icons/ChatBubbleLeftIcon.svelte"
@@ -10,8 +10,13 @@
   import ManageOverlay from "$components/Management/ManageOverlay.svelte"
   import WorkflowInfo from "$components/Management/WorkflowInfo.svelte"
 
+  export let workflowInfos: WorkflowInfo[] = []
+  export let extraUserIDs: number[] = []
+
+  // only can see users if role > REPORTER
+  $: canSendFeedback = $allUsers.length > 0
+
   const dispatch = createEventDispatcher()
-  export let object: Obj
 
   let showCommentOverlay = false
   let commentOverlayComment = ""
@@ -38,20 +43,22 @@
   <div
     class="h-0 flex-grow cursor-default overflow-y-scroll border-lm-dark bg-lm-warmgray px-[2px] pt-1 pb-4 shadow-inner"
   >
-    {#each object.workflowinfos as info}
+    {#each workflowInfos as info}
       <WorkflowInfo {info} />
     {/each}
   </div>
 
   <div class="my-2 text-right">
-    <button
-      class="btn btn-pelorous-secondary btn-slim inline-flex items-center gap-2 px-2"
-      on:click={() => (showFeedbackOverlay = true)}
-      type="button"
-    >
-      {$_("Send feedback")}
-      <ChatBubbleLeftRightIcon class="h-5 w-5" />
-    </button>
+    {#if canSendFeedback}
+      <button
+        class="btn btn-pelorous-secondary btn-slim inline-flex items-center gap-2 px-2"
+        on:click={() => (showFeedbackOverlay = true)}
+        type="button"
+      >
+        {$_("Send feedback")}
+        <ChatBubbleLeftRightIcon class="h-5 w-5" />
+      </button>
+    {/if}
     <button
       class="btn btn-pelorous btn-slim inline-flex items-center gap-2 px-2"
       on:click={() => (showCommentOverlay = true)}
@@ -71,6 +78,7 @@
   on:submit={addFeedback}
   title={$_("Send feedback")}
   submitTitle={$_("Send")}
+  {extraUserIDs}
   toUserRequired
 />
 
