@@ -72,6 +72,7 @@
       items: [
         { id: "my_drafts", name: $_("My drafts") },
         { id: "created_by_me", name: $_("Created by me") },
+        { id: "modified_by_me", name: $_("Modified by me") },
         { id: "reviewed_by_me", name: $_("Reviewed by me"), staff: true },
         { id: "activated_by_me", name: $_("Activated by me"), staff: true },
       ],
