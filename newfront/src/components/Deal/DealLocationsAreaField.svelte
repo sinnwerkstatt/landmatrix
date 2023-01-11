@@ -1,15 +1,15 @@
 <script lang="ts">
   import classNames from "classnames"
-  import type { GeoJSON } from "geojson"
+  import type { FeatureCollection, GeoJsonObject } from "geojson"
   import { createEventDispatcher } from "svelte"
   import { _ } from "svelte-i18n"
 
   import type { AreaFeature, AreaType, Location } from "$lib/types/deal"
   import {
     getFeatures,
+    setAreaTypeProperty,
     setCurrentProperty,
     setFeatures,
-    setTypeProperty,
   } from "$lib/utils/dealLocationAreaFeatures"
   import { validate } from "$lib/utils/geojsonValidation"
 
@@ -54,7 +54,7 @@
     const reader = new FileReader()
 
     reader.addEventListener("load", event => {
-      const geoJsonObject: GeoJSON = JSON.parse(event.target?.result as string)
+      const geoJsonObject: GeoJsonObject = JSON.parse(event.target?.result as string)
 
       try {
         validate(geoJsonObject)
@@ -63,9 +63,11 @@
         return
       }
 
+      const feature = (geoJsonObject as FeatureCollection).features[0]
+
       setAreaFeatures(activeLocation, [
         ...areaFeatures,
-        setTypeProperty(areaType)(geoJsonObject),
+        setAreaTypeProperty(areaType, feature),
       ])
 
       showAddAreaOverlay = false

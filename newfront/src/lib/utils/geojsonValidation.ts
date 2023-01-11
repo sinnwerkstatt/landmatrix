@@ -71,7 +71,7 @@ const validators: [ValidatorFn, string][] = [
   ],
 ]
 
-export const validate = (data: GeoJsonObject) => {
+export const validate = (data: GeoJsonObject): void => {
   for (const [validator, message] of validators) {
     if (!validator(data)) {
       throw new Error(message)
