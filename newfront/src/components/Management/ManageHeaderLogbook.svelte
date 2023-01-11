@@ -2,8 +2,10 @@
   import { createEventDispatcher } from "svelte"
   import { _ } from "svelte-i18n"
 
-  import { allUsers } from "$lib/stores"
+  import { page } from "$app/stores"
+
   import type { User } from "$lib/types/user"
+  import { UserRole } from "$lib/types/user"
 
   import ChatBubbleLeftIcon from "$components/icons/ChatBubbleLeftIcon.svelte"
   import ChatBubbleLeftRightIcon from "$components/icons/ChatBubbleLeftRightIcon.svelte"
@@ -12,9 +14,6 @@
 
   export let workflowInfos: WorkflowInfo[] = []
   export let extraUserIDs: number[] = []
-
-  // only can see users if role > REPORTER
-  $: canSendFeedback = $allUsers.length > 0
 
   const dispatch = createEventDispatcher()
 
@@ -49,7 +48,7 @@
   </div>
 
   <div class="my-2 text-right">
-    {#if canSendFeedback}
+    {#if $page.data.user.role > UserRole.REPORTER}
       <button
         class="btn btn-pelorous-secondary btn-slim inline-flex items-center gap-2 px-2"
         on:click={() => (showFeedbackOverlay = true)}

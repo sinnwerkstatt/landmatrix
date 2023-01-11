@@ -6,7 +6,8 @@
   import { onMount } from "svelte"
 
   import { getAllUsers } from "$lib/stores"
-  import { User, UserRole } from "$lib/types/user"
+  import type { User } from "$lib/types/user"
+  import { UserRole } from "$lib/types/user"
 
   import Footer from "$components/Footer.svelte"
   import Messages from "$components/Messages.svelte"
