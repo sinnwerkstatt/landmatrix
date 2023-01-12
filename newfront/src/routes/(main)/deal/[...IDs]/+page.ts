@@ -2,6 +2,7 @@ import { error, redirect } from "@sveltejs/kit"
 
 import { deal_gql_query } from "$lib/deal_queries"
 import type { Deal } from "$lib/types/deal"
+import { Status } from "$lib/types/generics"
 
 import type { PageLoad } from "./$types"
 
@@ -24,7 +25,7 @@ export const load: PageLoad = async ({ params, parent }) => {
   if (!res.data) throw error(500, `Unknown Problem: ${error}`)
 
   if (!res.data.deal) throw error(404, "Deal not found")
-  if (res.data.deal.status === 1 && !dealVersion) {
+  if (res.data.deal.status === Status.DRAFT && !dealVersion) {
     const dealV = res.data.deal.versions?.[0]?.id
     throw redirect(301, `/deal/${dealID}/${dealV}`)
   }

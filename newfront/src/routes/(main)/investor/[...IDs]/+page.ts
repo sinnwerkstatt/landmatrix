@@ -1,6 +1,7 @@
 import { error, redirect } from "@sveltejs/kit"
 
 import { investor_gql_query } from "$lib/investor_queries"
+import { Status } from "$lib/types/generics"
 import type { Investor } from "$lib/types/investor"
 
 import type { PageLoad } from "./$types"
@@ -22,7 +23,7 @@ export const load: PageLoad = async ({ params, parent }) => {
     })
     .toPromise()
   if (!data?.investor) throw error(404, "Investor not found")
-  if (data.investor.status === 1 && !investorVersion) {
+  if (data.investor.status === Status.DRAFT && !investorVersion) {
     const investorVersion = data.investor.versions?.[0]?.id
     throw redirect(301, `/investor/${investorID}/${investorVersion}`)
   }

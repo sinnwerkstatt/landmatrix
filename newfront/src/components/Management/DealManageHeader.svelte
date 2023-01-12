@@ -10,6 +10,7 @@
 
   import { isAuthorized } from "$lib/helpers"
   import type { Deal } from "$lib/types/deal"
+  import { Status } from "$lib/types/generics"
   import type { User } from "$lib/types/user"
 
   import CheckCircleIcon from "$components/icons/CheckCircleIcon.svelte"
@@ -31,7 +32,7 @@
   let fully_updated = false
 
   $: isEditable =
-    !dealVersion && deal.status === 4
+    !dealVersion && deal.status === Status.DELETED
       ? false
       : !dealVersion && !!deal.draft_status
       ? false

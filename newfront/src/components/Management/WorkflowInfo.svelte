@@ -10,6 +10,7 @@
 
   import { allUsers } from "$lib/stores"
   import type { WorkflowInfo as WFInfo } from "$lib/types/generics"
+  import { Status } from "$lib/types/generics"
 
   import ArrowLongRightIcon from "$components/icons/ArrowLongRightIcon.svelte"
   import ChatBubbleLeftIcon from "$components/icons/ChatBubbleLeftIcon.svelte"
@@ -145,7 +146,7 @@
         <ArrowLongRightIcon class="inline-block h-4 w-4" />
       {/if}
       <div class="inline-block bg-pelorous px-1.5 text-[13px] text-white">
-        {draft_status_map[info.draft_status_after] || status_map[2]}
+        {draft_status_map[info.draft_status_after] || status_map[Status.LIVE]}
       </div>
     {/if}
     {#if confidentialStatusChange}

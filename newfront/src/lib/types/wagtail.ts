@@ -1,13 +1,13 @@
 import type { Deal } from "./deal"
 
-type WagtailStreamfieldBlock = {
+export type WagtailStreamfieldBlock = {
   type: string
   value: string
   id: string
 }
-type WagtailStreamfield = WagtailStreamfieldBlock[]
+export type WagtailStreamfield = WagtailStreamfieldBlock[]
 
-type WagtailPageMeta = {
+export type WagtailPageMeta = {
   type: string
   detail_url: string
   html_url: string

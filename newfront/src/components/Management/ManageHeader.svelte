@@ -8,6 +8,7 @@
 
   import { isAuthorized } from "$lib/helpers"
   import type { Obj, ObjVersion } from "$lib/types/generics"
+  import { DraftStatus, Status } from "$lib/types/generics"
   import { UserRole } from "$lib/types/user"
 
   import DateTimeField from "$components/Fields/Display/DateTimeField.svelte"
@@ -36,16 +37,21 @@
   ]
 
   let hasActive: boolean
-  $: hasActive = !!object.status
+  $: {
+    // is it possible for a deal to have no status?
+    // from the naming it should check whether a deal has a live version
+    hasActive = !!object.status
+    // console.log("hasActive", object.status, hasActive)
+  }
 
   let isActiveWithDraft: boolean
   $: isActiveWithDraft = !objectVersion && !!object.draft_status
 
   let isEditable: boolean
   $: isEditable =
-    (!objectVersion && object.status === 4) || isActiveWithDraft
+    (!objectVersion && object.status === Status.DELETED) || isActiveWithDraft
       ? false
-      : object.draft_status === 4
+      : object.draft_status === DraftStatus.REJECTED
       ? $page.data.user.role === UserRole.ADMINISTRATOR
       : isAuthorized($page.data.user, object)
 
@@ -53,11 +59,15 @@
   $: isOldDraft = !!objectVersion && lastVersion.id !== objectVersion
 
   let isDraftWithActive: boolean
-  $: isDraftWithActive =
-    objectVersion && [2, 3].includes(object.status)
-      ? true
-      : isOldDraft && [2, 3].includes(lastVersion?.[otype]?.status)
-
+  $: {
+    const lastVersionStatus = lastVersion?.[otype]?.status
+    isDraftWithActive =
+      objectVersion &&
+      (object.status === Status.LIVE || object.status === Status.UPDATED)
+        ? true
+        : isOldDraft &&
+          (lastVersionStatus === Status.LIVE || lastVersionStatus === Status.UPDATED)
+  }
   let hasNewerDraft: boolean
   $: hasNewerDraft = isActiveWithDraft
     ? true
@@ -66,11 +76,11 @@
   $: isDeletable =
     isActiveWithDraft || isOldDraft
       ? false
-      : object.draft_status === null || object.draft_status === 4
+      : object.draft_status === null || object.draft_status === DraftStatus.REJECTED
       ? $page.data.user.role === UserRole.ADMINISTRATOR
       : isAuthorized($page.data.user, object)
 
-  $: isDeleted = !objectVersion && object.status === 4
+  $: isDeleted = !objectVersion && object.status === Status.DELETED
 
   function doDelete({ detail: { comment } }): void {
     dispatch("delete", { comment })
@@ -135,13 +145,13 @@
         </div>
       </div>
 
-      {#if object.status === 4}
+      {#if object.status === Status.DELETED}
         <div
           class="flex h-16 w-full items-center justify-center border-2 bg-[hsl(0,33%,68%)] text-lg text-white"
         >
           {$_("Deleted")}
         </div>
-      {:else if object.status !== 1 && !objectVersion}
+      {:else if object.status !== Status.DRAFT && !objectVersion}
         <div
           class="flex h-16 w-full items-center justify-center border-2 bg-pelorous-300 text-lg font-medium text-white"
         >
@@ -151,20 +161,27 @@
         <div>
           <div class="flex w-full flex-wrap justify-between text-center">
             <div
-              class:active={[1, 4].includes(object.draft_status)}
+              class:active={object.draft_status === DraftStatus.DRAFT ||
+                object.draft_status === DraftStatus.REJECTED}
               class="status-field z-[3]"
             >
               <span>{$_("Draft")}</span>
-              {#if object.draft_status === 4}
+              {#if object.draft_status === DraftStatus.REJECTED}
                 <span class="pl-2 font-bold text-red-600">
                   ({$_("Rejected")})
                 </span>
               {/if}
             </div>
-            <div class:active={object.draft_status === 2} class="status-field z-[2]">
+            <div
+              class:active={object.draft_status === DraftStatus.REVIEW}
+              class="status-field z-[2]"
+            >
               <span>{$_("Submitted for review")}</span>
             </div>
-            <div class:active={object.draft_status === 3} class="status-field z-[1]">
+            <div
+              class:active={object.draft_status === DraftStatus.ACTIVATION}
+              class="status-field z-[1]"
+            >
               <span>{$_("Submitted for activation")}</span>
             </div>
             <div class:active={object.draft_status === null} class="status-field">
@@ -173,7 +190,7 @@
           </div>
           <div class="workflow-buttons flex">
             <div class="flex-1 text-right">
-              {#if object.draft_status === 1 && isAuthorized($page.data.user, object)}
+              {#if object.draft_status === DraftStatus.DRAFT && isAuthorized($page.data.user, object)}
                 <button
                   type="button"
                   class:disabled={lastVersion.id !== +objectVersion}
@@ -186,7 +203,7 @@
                   {$_("Submit for review")}
                 </button>
               {/if}
-              {#if (object.draft_status === 2 || object.draft_status === 3) && isAuthorized($page.data.user, object)}
+              {#if (object.draft_status === DraftStatus.REVIEW || object.draft_status === DraftStatus.ACTIVATION) && isAuthorized($page.data.user, object)}
                 <button
                   type="button"
                   class:disabled={lastVersion.id !== +objectVersion}
@@ -205,7 +222,7 @@
               {/if}
             </div>
             <div class="flex-1 text-center">
-              {#if object.draft_status === 2 && isAuthorized($page.data.user, object)}
+              {#if object.draft_status === DraftStatus.REVIEW && isAuthorized($page.data.user, object)}
                 <button
                   type="button"
                   class:disabled={lastVersion.id !== +objectVersion}
@@ -220,7 +237,7 @@
               {/if}
             </div>
             <div class="flex-1 text-left">
-              {#if object.draft_status === 3 && isAuthorized($page.data.user, object)}
+              {#if object.draft_status === DraftStatus.ACTIVATION && isAuthorized($page.data.user, object)}
                 <button
                   type="button"
                   class:disabled={lastVersion.id !== +objectVersion}
@@ -287,7 +304,7 @@
                   {/if}
                 </div>
                 <div class="italic text-black/50">
-                  {#if object.draft_status === 1}
+                  {#if object.draft_status === DraftStatus.DRAFT}
                     {#if !hasActive}
                       {otype === "deal"
                         ? $_("Start editing this deal")
@@ -343,7 +360,7 @@
                 </div>
               </div>
             {/if}
-            {#if $page.data.user.role === UserRole.ADMINISTRATOR && otype === "deal" && object.status !== 1}
+            {#if $page.data.user.role === UserRole.ADMINISTRATOR && otype === "deal" && object.status !== Status.DRAFT}
               <div class="flex items-center gap-4">
                 <div>
                   <button
@@ -400,7 +417,7 @@
     ? otype === "deal"
       ? $_("Remove deal version")
       : $_("Remove investor version")
-    : object.status === 4
+    : object.status === Status.DELETED
     ? otype === "deal"
       ? $_("Reactivate deal")
       : $_("Reactivate investor")

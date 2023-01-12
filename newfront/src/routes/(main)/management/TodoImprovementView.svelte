@@ -6,6 +6,7 @@
   import { formfields } from "$lib/stores"
   import type { Deal } from "$lib/types/deal"
   import type { WorkflowInfo } from "$lib/types/generics"
+  import { DraftStatus } from "$lib/types/generics"
   import type { Investor } from "$lib/types/investor"
 
   import DateTimeField from "$components/Fields/Display/DateTimeField.svelte"
@@ -23,19 +24,15 @@
       const wfis = obj.workflowinfos as WorkflowInfo[]
       let relevantWFI = wfis.find(
         wfi =>
-          [2, 3].includes(wfi.draft_status_before) &&
-          wfi.draft_status_after === 1 &&
+          (wfi.draft_status_before === DraftStatus.REVIEW ||
+            wfi.draft_status_before === DraftStatus.ACTIVATION) &&
+          wfi.draft_status_after === DraftStatus.DRAFT &&
           wfi.to_user?.id === $page.data.user.id,
       )
-
-      // const openReq =
-      //   d.current_draft_id === relevantWFI?.deal_version_id && d.draft_status === 1;
 
       return { ...obj, relevantWFI }
     })
     .sort((a, b) => {
-      //   if (a.openReq && !b.openReq) return -1;
-      //   else if (b.openReq && !a.openReq) return 1;
       if (!b.relevantWFI?.timestamp || !a.relevantWFI?.timestamp) return 0
       return new Date(b.relevantWFI.timestamp) - new Date(a.relevantWFI.timestamp)
     })
@@ -58,10 +55,6 @@
       <th class="px-3 py-1">From user</th>
       <th class="px-3 py-1">To user</th>
       <th class="px-3 py-1">Feedback</th>
-      <!--      <th>{$formfields.deal["created_at"].label}</th>-->
-      <!--      <th>{$formfields.deal["created_by"].label}</th>-->
-      <!--      <th>{$formfields.deal["modified_at"].label}</th>-->
-      <!--      <th>{$formfields.deal["modified_by"].label}</th>-->
     </tr>
   </thead>
   <tbody>

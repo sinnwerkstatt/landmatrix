@@ -7,6 +7,8 @@
 
   import type { DataSource, Deal, DealVersion } from "$lib/types/deal"
 
+  import StatusField from "$components/Fields/Display/StatusField.svelte"
+
   const [dealID] = $page.params.IDs.split("/").map(x => (x ? +x : undefined))
 
   const media_url = import.meta.env.VITE_MEDIA_URL
@@ -124,28 +126,6 @@
     let flops = document.querySelectorAll(".flopmenu")
     flops.forEach((e: Element) => ((e as HTMLInputElement).checked = arg))
   }
-
-  const combined_status_fn = (
-    status: number,
-    draft_status: number | null,
-    toString = false,
-  ): string => {
-    if (status === 4) return toString ? "Deleted" : "DELETED"
-    if (draft_status === 1) return toString ? "Draft" : "DRAFT"
-    if (draft_status === 2) return toString ? "Submitted for review" : "REVIEW"
-    if (draft_status === 3) return toString ? "Submitted for activation" : "ACTIVATION"
-    if (draft_status === 4) return toString ? "Rejected" : "REJECTED"
-    if (draft_status === 5) return toString ? "To Delete" : "TO_DELETE"
-    if ([2, 3].includes(status) && draft_status === null)
-      return toString ? "Active" : "ACTIVE"
-    throw Error(`Invalid status ${status} ${draft_status}`)
-  }
-
-  //
-
-  //
-
-  //
 </script>
 
 {#if deal}
@@ -171,7 +151,11 @@
             <br />
             <a class="text-blue-400" href="/deal/{dealID}/v.id/">{v.id}</a>
             <br />
-            {combined_status_fn(v.deal.status, v.deal.draft_status)}
+            <StatusField
+              status={v.deal.status}
+              draft_status={v.deal.draft_status}
+              toString={false}
+            />
           </div>
 
           {#each v.deal.datasources as ds}

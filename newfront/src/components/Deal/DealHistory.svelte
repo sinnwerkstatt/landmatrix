@@ -6,6 +6,7 @@
   import { page } from "$app/stores"
 
   import type { Deal, DealVersion } from "$lib/types/deal"
+  import { DraftStatus, Status } from "$lib/types/generics"
 
   import CheckCircleIcon from "$components/icons/CheckCircleIcon.svelte"
   import CircleIcon from "$components/icons/CircleIcon.svelte"
@@ -53,22 +54,22 @@
 
   $: deduced_position = calcDeducedPosition(deal?.versions)
 
-  const status_map = {
+  const status_map: { [key in Status]: string } = {
     1: "Draft",
-    2: "Active", //"Live",
-    3: "Active", // "Updated",
+    2: "Active", // "Live"
+    3: "Active", // "Updated"
     4: "Deleted",
     5: "Rejected", // legacy
     6: "To Delete", // legacy
   }
-  const draft_status_map = {
+  const draft_status_map: { [key in DraftStatus]: string } = {
     1: "Draft",
     2: "Review",
     3: "Activation",
     4: "Rejected", // legacy
     5: "Deleted",
   }
-  function derive_status(status, draft_status) {
+  function derive_status(status: Status, draft_status: DraftStatus) {
     return draft_status ? draft_status_map[draft_status] : status_map[status]
   }
 </script>

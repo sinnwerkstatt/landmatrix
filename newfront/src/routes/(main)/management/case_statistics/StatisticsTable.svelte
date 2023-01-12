@@ -3,6 +3,7 @@
   import { _ } from "svelte-i18n"
 
   import type { Deal } from "$lib/types/deal"
+  import { DraftStatus, Status } from "$lib/types/generics"
   import type { Investor } from "$lib/types/investor"
 
   import CaseStatisticsTable from "./CaseStatisticsTable.svelte"
@@ -31,25 +32,39 @@
         ]
 
   let _active_deals: Deal[]
-  $: _active_deals = deals.filter(d => [2, 3].includes(d.status as number))
+  $: _active_deals = deals.filter(
+    deal => deal.status === Status.LIVE || deal.status === Status.UPDATED,
+  )
   $: deals_buckets = {
     pending: deals.filter(
-      d => d.draft_status && [1, 2, 3].includes(d.draft_status as number),
+      deal =>
+        deal.draft_status === DraftStatus.DRAFT ||
+        deal.draft_status === DraftStatus.REVIEW ||
+        deal.draft_status === DraftStatus.ACTIVATION,
     ),
-    rejected: deals.filter(d => d.draft_status === 4),
-    pending_deletion: deals.filter(d => d.draft_status === 5),
+    rejected: deals.filter(deal => deal.draft_status === DraftStatus.REJECTED),
+    pending_deletion: deals.filter(deal => deal.draft_status === DraftStatus.TO_DELETE),
     active: _active_deals,
-    active_not_public: _active_deals.filter(d => !d.is_public),
-    active_confidential: _active_deals.filter(d => d.confidential),
+    active_not_public: _active_deals.filter(deal => !deal.is_public),
+    active_confidential: _active_deals.filter(deal => deal.confidential),
   }
 
   $: investors_buckets = {
     pending: investors.filter(
-      i => i.draft_status && [1, 2, 3].includes(i.draft_status as number),
+      investor =>
+        investor.draft_status === DraftStatus.DRAFT ||
+        investor.draft_status === DraftStatus.REVIEW ||
+        investor.draft_status === DraftStatus.ACTIVATION,
     ),
-    rejected: investors.filter(i => i.draft_status === 4),
-    pending_deletion: investors.filter(i => i.draft_status === 5),
-    active: investors.filter(i => [2, 3].includes(i.status as number)),
+    rejected: investors.filter(
+      investor => investor.draft_status === DraftStatus.REJECTED,
+    ),
+    pending_deletion: investors.filter(
+      investor => investor.draft_status === DraftStatus.TO_DELETE,
+    ),
+    active: investors.filter(
+      investor => investor.status === Status.LIVE || investor.status === Status.UPDATED,
+    ),
   }
 </script>
 

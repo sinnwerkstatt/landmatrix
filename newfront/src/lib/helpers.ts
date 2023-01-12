@@ -1,6 +1,7 @@
 import { nanoid } from "nanoid"
 
 import type { Obj } from "$lib/types/generics"
+import { DraftStatus } from "$lib/types/generics"
 import type { User } from "$lib/types/user"
 import { UserRole } from "$lib/types/user"
 
@@ -28,11 +29,11 @@ export function isAuthorized(user: User, obj: Obj): boolean {
   switch (obj.draft_status) {
     case null: // anybody who has a relevant role (Reporter, Editor, Admin)
       return role >= UserRole.REPORTER
-    case 1: // the Reporter of the Object or Editor,Administrator
+    case DraftStatus.DRAFT: // the Reporter of the Object or Editor,Administrator
       return role >= UserRole.EDITOR || obj.versions[0]?.created_by?.id === id
-    case 2: // at least Editor
+    case DraftStatus.REVIEW: // at least Editor
       return role >= UserRole.EDITOR
-    case 3: // only Admins
+    case DraftStatus.ACTIVATION: // only Admins
       return role === UserRole.ADMINISTRATOR
     default:
       return false

@@ -1,5 +1,5 @@
-import { User } from "$lib/types/user"
-import { Country } from "$lib/types/wagtail"
+import type { User } from "$lib/types/user"
+import type { Country } from "$lib/types/wagtail"
 
 export enum Transition {
   TO_REVIEW,
@@ -8,10 +8,27 @@ export enum Transition {
   TO_DRAFT,
 }
 
-interface Obj {
+export enum Status {
+  DRAFT = 1,
+  LIVE,
+  UPDATED,
+  DELETED,
+  REJECTED, // legacy
+  TO_DELETE, // legacy
+}
+
+export enum DraftStatus {
+  DRAFT = 1,
+  REVIEW,
+  ACTIVATION,
+  REJECTED, // legacy
+  TO_DELETE,
+}
+
+export interface Obj {
   id: number
-  status: number
-  draft_status: number | null
+  status: Status
+  draft_status: DraftStatus | null
   versions: ObjVersion[]
   workflowinfos?: WorkflowInfo[]
   created_at?: Date
@@ -23,26 +40,26 @@ interface Obj {
   current_draft_id?: number
 }
 
-interface ObjVersion {
+export interface ObjVersion {
   id: number
   created_at: Date
   created_by: User
   modified_at: Date
   modified_by: User
-  object_id: Int
+  object_id: number
 }
 
 type WFReply = {
   timestamp: string
-  user_id: int
+  user_id: number
   comment: string
 }
-interface WorkflowInfo {
+export interface WorkflowInfo {
   id: number
   from_user: User
   to_user?: User
-  draft_status_before: number
-  draft_status_after: number
+  draft_status_before: DraftStatus | null
+  draft_status_after: DraftStatus | null
   timestamp: string
   comment: string
   resolved: boolean
