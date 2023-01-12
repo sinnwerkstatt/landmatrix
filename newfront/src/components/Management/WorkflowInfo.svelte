@@ -9,6 +9,7 @@
   import { page } from "$app/stores"
 
   import { allUsers } from "$lib/stores"
+  import { draftStatusMap, statusMap } from "$lib/stores.js"
   import type { WorkflowInfo as WFInfo } from "$lib/types/generics"
   import { Status } from "$lib/types/generics"
 
@@ -17,21 +18,7 @@
   import CheckCircleIcon from "$components/icons/CheckCircleIcon.svelte"
 
   export let info: WFInfo
-  $: status_map = {
-    1: $_("Draft"),
-    2: $_("Active"), //"Live",
-    3: $_("Active"), // "Updated",
-    4: $_("Deleted"),
-    5: $_("Rejected"), // legacy
-    6: $_("To Delete"), // legacy
-  }
-  $: draft_status_map = {
-    1: $_("Draft"),
-    2: $_("Review"),
-    3: $_("Activation"),
-    4: $_("Rejected"), // legacy
-    5: $_("Deleted"),
-  }
+
   $: confidentialStatusChange = info.comment?.startsWith("[SET_CONFIDENTIAL]")
     ? "bg-red-400"
     : info.comment?.startsWith("[UNSET_CONFIDENTIAL]")
@@ -141,12 +128,12 @@
     {#if info.draft_status_before !== info.draft_status_after}
       {#if info.draft_status_before}
         <div class="inline-block bg-gray-500 px-1.5 text-[13px] text-white">
-          {draft_status_map[info.draft_status_before]}
+          {$draftStatusMap[info.draft_status_before]}
         </div>
         <ArrowLongRightIcon class="inline-block h-4 w-4" />
       {/if}
       <div class="inline-block bg-pelorous px-1.5 text-[13px] text-white">
-        {draft_status_map[info.draft_status_after] || status_map[Status.LIVE]}
+        {$draftStatusMap[info.draft_status_after] || $statusMap[Status.LIVE]}
       </div>
     {/if}
     {#if confidentialStatusChange}

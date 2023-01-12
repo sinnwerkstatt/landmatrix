@@ -2,8 +2,10 @@ import type { LoadEvent } from "@sveltejs/kit"
 import { error } from "@sveltejs/kit"
 import type { Client } from "@urql/core"
 import { gql } from "@urql/svelte"
-import { get, writable } from "svelte/store"
+import { _ } from "svelte-i18n"
+import { derived, get, writable } from "svelte/store"
 
+import type { DraftStatus, Status } from "$lib/types/generics"
 import type { User } from "$lib/types/user"
 import type {
   BlogCategory,
@@ -200,3 +202,28 @@ export async function getAllUsers(urqlClient: Client) {
 }
 
 export const loading = writable(false)
+
+type StatusMap = { [key in Status]: string }
+export const statusMap = derived(
+  _,
+  ($_): StatusMap => ({
+    1: $_("Draft"),
+    2: $_("Active"), //"Live",
+    3: $_("Active"), // "Updated",
+    4: $_("Deleted"),
+    5: $_("Rejected"), // legacy
+    6: $_("To Delete"), // legacy
+  }),
+)
+
+type DraftStatusMap = { [key in DraftStatus]: string }
+export const draftStatusMap = derived(
+  _,
+  ($_): DraftStatusMap => ({
+    1: $_("Draft"),
+    2: $_("Review"),
+    3: $_("Activation"),
+    4: $_("Rejected"), // legacy
+    5: $_("Deleted"),
+  }),
+)
