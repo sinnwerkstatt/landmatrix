@@ -1,10 +1,12 @@
 <script lang="ts">
   import * as Sentry from "@sentry/svelte"
   import { BrowserTracing } from "@sentry/tracing"
+  import type { Client } from "@urql/core"
   import { SvelteToast } from "@zerodevx/svelte-toast"
   import { onMount } from "svelte"
 
   import { getAllUsers } from "$lib/stores"
+  import type { User } from "$lib/types/user"
   import { UserRole } from "$lib/types/user"
 
   import Footer from "$components/Footer.svelte"
@@ -13,9 +15,13 @@
   import NavigationLoader from "$components/NavigationLoader.svelte"
 
   import "../app.css"
-  import type { LayoutData } from "./$types"
 
-  export let data: LayoutData
+  // import type { LayoutData } from "./$types"
+  // export let data: LayoutData
+  export let data: {
+    user: User | undefined
+    urqlClient: Client
+  } = {}
 
   Sentry.init({
     dsn: import.meta.env.VITE_SENTRY_DSN,
@@ -26,7 +32,7 @@
   })
 
   if (data.user)
-    Sentry.configureScope(scope => scope.setUser({ id: data.user.username }))
+    Sentry.configureScope(scope => scope.setUser({ id: (data.user as User).username }))
 
   onMount(async () => {
     if (data.user?.role >= UserRole.EDITOR) {
