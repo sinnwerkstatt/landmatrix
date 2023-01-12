@@ -14,7 +14,7 @@
   import LocationGoogleField from "$components/Fields/Edit/LocationGoogleField.svelte"
   import PointField from "$components/Fields/Edit/PointField.svelte"
   import EditField from "$components/Fields/EditField.svelte"
-  import CursorMoveIcon from "$components/icons/CursorMoveIcon.svelte"
+  import LocationDot from "$components/icons/LocationDot.svelte"
   import PlusIcon from "$components/icons/PlusIcon.svelte"
   import TrashIcon from "$components/icons/TrashIcon.svelte"
   import BigMap from "$components/Map/BigMap.svelte"
@@ -342,18 +342,20 @@
           on:ready={onMapReady}
         >
           {#if activeLocationID}
-            <div class="absolute bottom-2 left-2">
+            <div
+              class="absolute bottom-2 left-2 {markerMode
+                ? 'bg-orange text-white'
+                : 'bg-white text-orange'}"
+            >
               <button
                 type="button"
-                class="z-10 rounded border-2 border-black/30 px-2 pt-0.5 pb-1.5 {markerMode
-                  ? 'bg-orange text-white'
-                  : 'bg-white text-orange'}"
+                class="z-10 rounded border-2 border-black/30 px-2 pt-0.5 pb-1.5"
                 on:click={() => {
                   markerMode = !markerMode
                 }}
-                title={markerMode ? $_("Cancel marker mode") : $_("Enter marker mode")}
+                title="Create or move point"
               >
-                <CursorMoveIcon />
+                <LocationDot class="inline h-5 w-5" />
               </button>
             </div>
           {/if}
