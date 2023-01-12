@@ -46,13 +46,18 @@
 
   $: activeTab = $page.url.hash.split("/")[0] || "#general"
 
-  $: tabs = [
+  $: allTabs = [
     { target: "#general", name: $_("General info") },
     { target: "#involvements", name: $_("Involvements") },
     { target: "#network_graph", name: $_("Network graph") },
     { target: "#data_sources", name: $_("Data sources") },
     { target: "#history", name: $_("Version history") },
   ]
+
+  $: tabs =
+    investor.datasources && investor.datasources.length > 0
+      ? allTabs
+      : allTabs.filter(tab => tab.target !== "#data_sources")
 
   async function reloadInvestor() {
     console.log("Investor detail: reload")
