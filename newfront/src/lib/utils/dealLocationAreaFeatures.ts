@@ -13,12 +13,13 @@ const createEmptyFeatureCollection = (): AreaFeatureCollection => ({
 })
 
 // property setters
-export const setTypeProperty =
-  (areaType: AreaType) =>
-  (feature: Feature): AreaFeature => ({
-    ...feature,
-    properties: { ...feature.properties, type: areaType },
-  })
+export const setAreaTypeProperty = (
+  areaType: AreaType,
+  feature: Feature,
+): AreaFeature => ({
+  ...feature,
+  properties: { type: areaType },
+})
 
 export const setCurrentProperty =
   (current: number) =>
