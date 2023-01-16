@@ -127,19 +127,3 @@ export const classification_choices: { [key in Classification]: string } = {
     "Non - Profit organization (e.g. Church, University etc.)",
   [Classification.OTHER]: "Other (please specify in comment field)",
 }
-
-export const status_map = {
-  1: "Draft",
-  2: "Active", //"Live",
-  3: "Active", // "Updated",
-  4: "Deleted",
-  5: "Rejected", // legacy
-  6: "To Delete", // legacy
-}
-export const draft_status_map = {
-  1: "Draft",
-  2: "Review",
-  3: "Activation",
-  4: "Rejected", // legacy
-  5: "Deleted",
-}

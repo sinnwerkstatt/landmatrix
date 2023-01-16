@@ -8,6 +8,7 @@
 
   import { loading } from "$lib/stores"
   import type { Deal } from "$lib/types/deal"
+  import { Status } from "$lib/types/generics"
   import type { Investor } from "$lib/types/investor"
   import type { Country, Region } from "$lib/types/wagtail"
 
@@ -99,40 +100,52 @@
   $: fetchObjs(region, country, daterange)
 
   $: deals_buckets = {
-    added: deals.filter(d => {
-      let dateCreated = dayjs(d.created_at)
+    added: deals.filter(deal => {
+      const dateCreated = dayjs(deal.created_at as Date)
       return (
-        [2, 3].includes(d.status as number) &&
+        (deal.status === Status.LIVE || deal.status === Status.UPDATED) &&
         dateCreated.isSameOrAfter(daterange.start, "day") &&
         dateCreated.isSameOrBefore(daterange.end, "day")
       )
     }),
-    updated: deals.filter(d => d.status === 3),
-    fully_updated: deals.filter(d => {
-      if (!d.fully_updated_at) return false
-      let dateFU = dayjs(d.fully_updated_at)
+    updated: deals.filter(deal => deal.status === Status.UPDATED),
+    fully_updated: deals.filter(deal => {
+      if (!deal.fully_updated_at) return false
+      let dateFU = dayjs(deal.fully_updated_at)
       return (
-        (d.status === 3 || d.status === 2) &&
+        (deal.status === Status.LIVE || deal.status === Status.UPDATED) &&
         dateFU.isSameOrAfter(daterange.start, "day") &&
         dateFU.isSameOrBefore(daterange.end, "day")
       )
     }),
     activated: deals.filter(
-      d => d.draft_status === null && (d.status === 2 || d.status === 3),
+      deal =>
+        deal.draft_status === null &&
+        (deal.status === Status.LIVE || deal.status === Status.UPDATED),
     ),
   }
   $: investors_buckets = {
-    added: investors.filter(o => o.status === 1 && o.created_at === o.modified_at),
-    updated: investors.filter(o => {
+    added: investors.filter(
+      investor =>
+        investor.status === Status.DRAFT &&
+        investor.created_at === investor.modified_at,
+    ),
+    updated: investors.filter(investor => {
       // not added investors
-      if (o.status === 1 && o.created_at === o.modified_at) return false
+      if (
+        investor.status === Status.DRAFT &&
+        investor.created_at === investor.modified_at
+      )
+        return false
       // not deleted investors
-      if (o.status === 4) return false
+      if (investor.status === Status.DELETED) return false
       // finally
       return true
     }),
     activated: investors.filter(
-      o => o.draft_status === null && (o.status === 2 || o.status === 3),
+      investor =>
+        investor.draft_status === null &&
+        (investor.status === Status.LIVE || investor.status === Status.UPDATED),
     ),
   }
 </script>

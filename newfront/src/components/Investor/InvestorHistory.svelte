@@ -5,6 +5,8 @@
 
   import { page } from "$app/stores"
 
+  import { draftStatusMap, statusMap } from "$lib/stores"
+  import { DraftStatus, Status } from "$lib/types/generics"
   import type { Investor, InvestorVersion } from "$lib/types/investor"
 
   export let investor: Investor
@@ -37,7 +39,9 @@
       return v
     })
   }
-  $: enriched_versions = calcVersionList(investor.versions ?? [])
+
+  let enrichedVersions
+  $: enrichedVersions = calcVersionList(investor.versions ?? [])
 
   function calcDeducedPosition(versions) {
     if (versions.length === 0) return 0
@@ -50,25 +54,11 @@
     return versions.length - 1
   }
 
-  $: deduced_position = calcDeducedPosition(investor?.versions)
+  let deducedPosition: number
+  $: deducedPosition = calcDeducedPosition(investor?.versions)
 
-  const status_map = {
-    1: "Draft",
-    2: "Active", //"Live",
-    3: "Active", // "Updated",
-    4: "Deleted",
-    5: "Rejected", // legacy
-    6: "To Delete", // legacy
-  }
-  const draft_status_map = {
-    1: "Draft",
-    2: "Review",
-    3: "Activation",
-    4: "Rejected", // legacy
-    5: "Deleted",
-  }
-  function derive_status(status, draft_status) {
-    return draft_status ? draft_status_map[draft_status] : status_map[status]
+  function deriveStatus(status: Status, draft_status: DraftStatus) {
+    return draft_status ? $draftStatusMap[draft_status] : $statusMap[status]
   }
 </script>
 
@@ -92,7 +82,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each enriched_versions as version, i}
+      {#each enrichedVersions as version, i}
         <tr class="odd:bg-gray-100">
           <td>{dayjs(version.created_at).format("YYYY-MM-DD HH:mm")}</td>
           {#if $page.data.user?.is_authenticated}
@@ -103,16 +93,11 @@
 
           {#if $page.data.user?.is_authenticated}
             <td>
-              {$_(
-                derive_status(
-                  version?.investor?.status,
-                  version?.investor?.draft_status,
-                ),
-              )}
+              {deriveStatus(version?.investor?.status, version?.investor?.draft_status)}
             </td>
           {/if}
           <td class="whitespace-nowrap text-right">
-            {#if i === deduced_position}
+            {#if i === deducedPosition}
               {$_("Current")}
             {:else}
               <a href={version?.link}>{$_("Show")}</a>

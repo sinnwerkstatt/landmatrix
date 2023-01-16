@@ -1,4 +1,5 @@
 <script lang="ts">
+  import cn from "classnames"
   import dayjs from "dayjs"
   import { createEventDispatcher } from "svelte"
   import { _ } from "svelte-i18n"
@@ -7,8 +8,9 @@
   import { page } from "$app/stores"
 
   import { isAuthorized } from "$lib/helpers"
+  import { findActiveVersion, isAdmin, isCreator, isEditorPlus } from "$lib/helpers.js"
   import type { Obj, ObjVersion } from "$lib/types/generics"
-  import { UserRole } from "$lib/types/user"
+  import { DraftStatus, Status } from "$lib/types/generics"
 
   import DateTimeField from "$components/Fields/Display/DateTimeField.svelte"
   import ManageOverlay from "$components/Management/ManageOverlay.svelte"
@@ -18,7 +20,7 @@
   const dispatch = createEventDispatcher()
 
   export let object: Obj
-  export let objectVersion: number
+  export let objectVersion: number | undefined
   export let otype: "deal" | "investor" = "deal"
 
   let showToDraftOverlay = false
@@ -35,42 +37,35 @@
     ...new Set(object.versions.filter(v => v.created_by).map(v => v.created_by.id)),
   ]
 
-  let hasActive: boolean
-  $: hasActive = !!object.status
+  let activeVersion: ObjVersion | undefined
+  $: activeVersion = findActiveVersion(object, otype)
 
-  let isActiveWithDraft: boolean
-  $: isActiveWithDraft = !objectVersion && !!object.draft_status
+  // object status
+  let isActive: boolean
+  $: isActive = object.status === Status.LIVE || object.status === Status.UPDATED
+
+  let isDeleted: boolean
+  $: isDeleted = object.status === Status.DELETED
+
+  // object draft status
+  let isCurrentDraft: boolean
+  $: isCurrentDraft = objectVersion ? lastVersion.id === objectVersion : false
+
+  let hasCurrentDraft: boolean
+  $: hasCurrentDraft = (lastVersion[otype] as Obj).draft_status !== null
+
+  let isActiveVersion: boolean
+  $: isActiveVersion = !objectVersion
+
+  let hasActiveVersion: boolean
+  $: hasActiveVersion = !!activeVersion
+
+  let canGoToDraftVersion: boolean
+  $: canGoToDraftVersion =
+    isCreator($page.data.user, lastVersion) || isEditorPlus($page.data.user)
 
   let isEditable: boolean
-  $: isEditable =
-    (!objectVersion && object.status === 4) || isActiveWithDraft
-      ? false
-      : object.draft_status === 4
-      ? $page.data.user.role === UserRole.ADMINISTRATOR
-      : isAuthorized($page.data.user, object)
-
-  let isOldDraft: boolean
-  $: isOldDraft = !!objectVersion && lastVersion.id !== objectVersion
-
-  let isDraftWithActive: boolean
-  $: isDraftWithActive =
-    objectVersion && [2, 3].includes(object.status)
-      ? true
-      : isOldDraft && [2, 3].includes(lastVersion?.[otype]?.status)
-
-  let hasNewerDraft: boolean
-  $: hasNewerDraft = isActiveWithDraft
-    ? true
-    : isOldDraft && !!lastVersion?.[otype]?.draft_status
-
-  $: isDeletable =
-    isActiveWithDraft || isOldDraft
-      ? false
-      : object.draft_status === null || object.draft_status === 4
-      ? $page.data.user.role === UserRole.ADMINISTRATOR
-      : isAuthorized($page.data.user, object)
-
-  $: isDeleted = !objectVersion && object.status === 4
+  $: isEditable = hasCurrentDraft ? isCurrentDraft : isActiveVersion && !isDeleted
 
   function doDelete({ detail: { comment } }): void {
     dispatch("delete", { comment })
@@ -94,12 +89,12 @@
   <div class="flex flex-col p-0 lg:flex-row">
     <div class="grow-[2] bg-neutral-200">
       <div class="-mt-5 flex justify-center gap-4">
-        {#if isDraftWithActive}
+        {#if hasActiveVersion && !isActiveVersion}
           <a href="/{otype}/{object.id}" class="btn btn-gray">
             {$_("Go to active version")}
           </a>
         {/if}
-        {#if hasNewerDraft && (lastVersion.created_by?.id === $page.data.user.id || $page.data.user.role > UserRole.REPORTER)}
+        {#if hasCurrentDraft && !isCurrentDraft && canGoToDraftVersion}
           <a href="/{otype}/{object.id}/{lastVersion.id}/" class="btn btn-gray">
             {$_("Go to current draft")}
           </a>
@@ -135,36 +130,41 @@
         </div>
       </div>
 
-      {#if object.status === 4}
+      {#if isActiveVersion}
         <div
-          class="flex h-16 w-full items-center justify-center border-2 bg-[hsl(0,33%,68%)] text-lg text-white"
+          class={cn(
+            "flex h-16 w-full items-center justify-center border-2",
+            "text-lg font-medium text-white",
+            isActive ? "bg-pelorous-300" : "bg-[hsl(0,33%,68%)]",
+          )}
         >
-          {$_("Deleted")}
-        </div>
-      {:else if object.status !== 1 && !objectVersion}
-        <div
-          class="flex h-16 w-full items-center justify-center border-2 bg-pelorous-300 text-lg font-medium text-white"
-        >
-          {$_("Activated")}
+          {isActive ? $_("Activated") : $_("Deleted")}
         </div>
       {:else}
         <div>
           <div class="flex w-full flex-wrap justify-between text-center">
             <div
-              class:active={[1, 4].includes(object.draft_status)}
+              class:active={object.draft_status === DraftStatus.DRAFT ||
+                object.draft_status === DraftStatus.REJECTED}
               class="status-field z-[3]"
             >
               <span>{$_("Draft")}</span>
-              {#if object.draft_status === 4}
+              {#if object.draft_status === DraftStatus.REJECTED}
                 <span class="pl-2 font-bold text-red-600">
                   ({$_("Rejected")})
                 </span>
               {/if}
             </div>
-            <div class:active={object.draft_status === 2} class="status-field z-[2]">
+            <div
+              class:active={object.draft_status === DraftStatus.REVIEW}
+              class="status-field z-[2]"
+            >
               <span>{$_("Submitted for review")}</span>
             </div>
-            <div class:active={object.draft_status === 3} class="status-field z-[1]">
+            <div
+              class:active={object.draft_status === DraftStatus.ACTIVATION}
+              class="status-field z-[1]"
+            >
               <span>{$_("Submitted for activation")}</span>
             </div>
             <div class:active={object.draft_status === null} class="status-field">
@@ -173,10 +173,10 @@
           </div>
           <div class="workflow-buttons flex">
             <div class="flex-1 text-right">
-              {#if object.draft_status === 1 && isAuthorized($page.data.user, object)}
+              {#if object.draft_status === DraftStatus.DRAFT && isAuthorized($page.data.user, object)}
                 <button
                   type="button"
-                  class:disabled={lastVersion.id !== +objectVersion}
+                  class:disabled={!isCurrentDraft}
                   title={otype === "deal"
                     ? $_("Submit the deal for review")
                     : $_("Submit the investor for review")}
@@ -186,16 +186,16 @@
                   {$_("Submit for review")}
                 </button>
               {/if}
-              {#if (object.draft_status === 2 || object.draft_status === 3) && isAuthorized($page.data.user, object)}
+              {#if (object.draft_status === DraftStatus.REVIEW || object.draft_status === DraftStatus.ACTIVATION) && isAuthorized($page.data.user, object)}
                 <button
                   type="button"
-                  class:disabled={lastVersion.id !== +objectVersion}
+                  class:disabled={!isCurrentDraft}
                   title={otype === "deal"
                     ? $_(
-                        "Send a request of improvent and create a new draft version of the deal",
+                        "Send a request of improvement and create a new draft version of the deal",
                       )
                     : $_(
-                        "Send a request of improvent and create a new draft version of the investor",
+                        "Send a request of improvement and create a new draft version of the investor",
                       )}
                   class="btn btn-primary"
                   on:click={() => (showToDraftOverlay = true)}
@@ -205,10 +205,10 @@
               {/if}
             </div>
             <div class="flex-1 text-center">
-              {#if object.draft_status === 2 && isAuthorized($page.data.user, object)}
+              {#if object.draft_status === DraftStatus.REVIEW && isAuthorized($page.data.user, object)}
                 <button
                   type="button"
-                  class:disabled={lastVersion.id !== +objectVersion}
+                  class:disabled={!isCurrentDraft}
                   title={otype === "deal"
                     ? $_("Submit the deal for activation")
                     : $_("Submit the investor for activation")}
@@ -220,11 +220,11 @@
               {/if}
             </div>
             <div class="flex-1 text-left">
-              {#if object.draft_status === 3 && isAuthorized($page.data.user, object)}
+              {#if object.draft_status === DraftStatus.ACTIVATION && isAuthorized($page.data.user, object)}
                 <button
                   type="button"
-                  class:disabled={lastVersion.id !== +objectVersion}
-                  title={hasActive
+                  class:disabled={!isCurrentDraft}
+                  title={hasActiveVersion
                     ? $_(
                         "Activate submitted version replacing currently active version",
                       )
@@ -268,42 +268,34 @@
           <div class="space-y-0.5">
             {#if isEditable}
               <div class="flex items-center gap-4">
-                <div>
-                  {#if !objectVersion || $page.data.user.id === object.created_by?.id}
+                {#if isCreator($page.data.user, object)}
+                  <div>
                     <a
-                      class:disabled={isOldDraft}
                       href="/{otype}/edit/{object.id}/{objectVersion ?? ''}"
                       class="btn btn-primary min-w-[8rem]"
                     >
                       {$_("Edit")}
                     </a>
-                  {:else}
-                    <button
-                      class="btn btn-primary min-w-[8rem]"
-                      on:click|preventDefault={() => (showNewDraftOverlay = true)}
-                    >
-                      {$_("Edit")}
-                    </button>
-                  {/if}
-                </div>
-                <div class="italic text-black/50">
-                  {#if object.draft_status === 1}
-                    {#if !hasActive}
-                      {otype === "deal"
-                        ? $_("Start editing this deal")
-                        : $_("Start editing this investor")}
-                    {:else}
-                      {$_("Edit this version")}
-                    {/if}
-                  {:else}
+                  </div>
+                  <div class="italic text-black/50">
+                    {$_("Edit this version")}
+                  </div>
+                {:else}
+                  <button
+                    class="btn btn-primary min-w-[8rem]"
+                    on:click|preventDefault={() => (showNewDraftOverlay = true)}
+                  >
+                    {$_("Edit")}
+                  </button>
+                  <div class="italic text-black/50">
                     {otype === "deal"
                       ? $_("Create a new draft version of this deal")
                       : $_("Create a new draft version of this investor")}
-                  {/if}
-                </div>
+                  </div>
+                {/if}
               </div>
             {/if}
-            {#if !objectVersion && $page.data.user.role >= UserRole.ADMINISTRATOR}
+            {#if isActiveVersion && isAdmin($page.data.user)}
               <div class="flex items-center gap-4">
                 <div>
                   <button
@@ -325,8 +317,7 @@
                   {/if}
                 </div>
               </div>
-            {/if}
-            {#if objectVersion && isDeletable}
+            {:else if isCurrentDraft && isAuthorized($page.data.user, object)}
               <div class="flex items-center gap-4">
                 <div>
                   <button
@@ -343,7 +334,7 @@
                 </div>
               </div>
             {/if}
-            {#if $page.data.user.role === UserRole.ADMINISTRATOR && otype === "deal" && object.status !== 1}
+            {#if otype === "deal" && isAdmin($page.data.user)}
               <div class="flex items-center gap-4">
                 <div>
                   <button
@@ -354,7 +345,7 @@
                   </button>
                 </div>
                 <div class="italic text-black/50">
-                  {otype === "deal" ? $_("Copy this deal") : $_("Copy this investor")}
+                  {$_("Copy this deal")}
                 </div>
               </div>
             {/if}
@@ -400,7 +391,7 @@
     ? otype === "deal"
       ? $_("Remove deal version")
       : $_("Remove investor version")
-    : object.status === 4
+    : isDeleted
     ? otype === "deal"
       ? $_("Reactivate deal")
       : $_("Reactivate investor")
@@ -423,7 +414,7 @@
   title={$_("Activate")}
 />
 
-<style lang="postcss">
+<style>
   .status-field {
     @apply relative flex h-16 w-1/4 items-center justify-center border-2 bg-zinc-300 pl-5;
   }

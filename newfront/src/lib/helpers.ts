@@ -1,6 +1,7 @@
 import { nanoid } from "nanoid"
 
-import type { Obj } from "$lib/types/generics"
+import type { Obj, ObjVersion } from "$lib/types/generics"
+import { DraftStatus, Status } from "$lib/types/generics"
 import type { User } from "$lib/types/user"
 import { UserRole } from "$lib/types/user"
 
@@ -23,16 +24,33 @@ export function newNanoid(existingIDs: string[] = []): string {
   return newID
 }
 
+export const findActiveVersion = (
+  object: Obj,
+  otype: "deal" | "investor",
+): ObjVersion | undefined =>
+  object.versions.find(version => {
+    const status = (version[otype] as Obj).status
+    const draftStatus = (version[otype] as Obj).draft_status
+    return (status === Status.LIVE || status === Status.UPDATED) && draftStatus === null
+  })
+
+export const isCreator = (user: User, obj: Obj | ObjVersion): boolean =>
+  user.id === obj.created_by?.id
+export const isEditorPlus = (user: User): boolean => user.role >= UserRole.EDITOR
+export const isAdmin = (user: User): boolean => user.role >= UserRole.ADMINISTRATOR
+
 export function isAuthorized(user: User, obj: Obj): boolean {
-  const { id, role } = user
+  const { role } = user
   switch (obj.draft_status) {
     case null: // anybody who has a relevant role (Reporter, Editor, Admin)
       return role >= UserRole.REPORTER
-    case 1: // the Reporter of the Object or Editor,Administrator
-      return role >= UserRole.EDITOR || obj.versions[0]?.created_by?.id === id
-    case 2: // at least Editor
+    case DraftStatus.DRAFT: // the Reporter of the Object or Editor,Administrator
+      return role >= UserRole.EDITOR || isCreator(user, obj.versions[0])
+    case DraftStatus.REVIEW: // at least Editor
       return role >= UserRole.EDITOR
-    case 3: // only Admins
+    case DraftStatus.REJECTED: // only Admins
+      return role === UserRole.ADMINISTRATOR
+    case DraftStatus.ACTIVATION: // only Admins
       return role === UserRole.ADMINISTRATOR
     default:
       return false
