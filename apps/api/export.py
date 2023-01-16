@@ -580,9 +580,9 @@ class DataDownload:
                 ]["name"]
             if "classification" in data["operating_company"]:
                 data["operating_company__classification"] = str(
-                    dict(Investor.CLASSIFICATION_CHOICES)[
-                        data["operating_company"]["classification"]
-                    ]
+                    dict(Investor.CLASSIFICATION_CHOICES).get(
+                        data["operating_company"]["classification"], ""
+                    )
                 )
             data["operating_company__homepage"] = data["operating_company"]["homepage"]
             data["operating_company__opencorporates"] = data["operating_company"][

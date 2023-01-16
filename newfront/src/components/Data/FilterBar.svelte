@@ -87,8 +87,7 @@
       name = $countries.find(c => c.id === $filters.country_id).name
     if ($filters.region_id) name = $regions.find(r => r.id === $filters.region_id).name
 
-    // noinspection TypeScriptUnresolvedVariable
-    window._paq.push(["trackEvent", "Downloads", format, name])
+    if (window._paq) window._paq.push(["trackEvent", "Downloads", format, name])
   }
 </script>
 
@@ -437,9 +436,10 @@
           </li>
           <li>
             <a
-              href="/api/data.geojson?type=points&filters={jsonFilters}&subset={$publicOnly
-                ? 'PUBLIC'
-                : 'ACTIVE'}"
+              href={`/api/data.geojson?type=points&filters=${jsonFilters}&subset=${
+                $publicOnly ? "PUBLIC" : "ACTIVE"
+              }`}
+              data-sveltekit-reload
             >
               <i class="fas fa-file-download" />
               <DownloadIcon />
@@ -448,9 +448,10 @@
           </li>
           <li>
             <a
-              href="/api/data.geojson?type=areas&filters={jsonFilters}&subset={$publicOnly
-                ? 'PUBLIC'
-                : 'ACTIVE'}"
+              href={`/api/data.geojson?type=areas&filters=${jsonFilters}&subset=${
+                $publicOnly ? "PUBLIC" : "ACTIVE"
+              }`}
+              data-sveltekit-reload
             >
               <i class="fas fa-file-download" />
               <DownloadIcon />
