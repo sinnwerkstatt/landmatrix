@@ -579,11 +579,10 @@ class DataDownload:
                     "country"
                 ]["name"]
             if "classification" in data["operating_company"]:
-                data["operating_company__classification"] = str(
-                    dict(Investor.CLASSIFICATION_CHOICES)[
-                        data["operating_company"]["classification"]
-                    ]
-                )
+                data["operating_company__classification"] = dict(
+                    Investor.CLASSIFICATION_CHOICES
+                ).get(data["operating_company"]["classification"], "")
+
             data["operating_company__homepage"] = data["operating_company"]["homepage"]
             data["operating_company__opencorporates"] = data["operating_company"][
                 "opencorporates"
@@ -942,9 +941,8 @@ class DataDownload:
                 # empty fields
                 data[field] = ""
             elif field == "classification":
-                data[field] = str(
-                    dict(Investor.CLASSIFICATION_CHOICES).get(data[field], "")
-                )
+                data[field] = dict(Investor.CLASSIFICATION_CHOICES).get(data[field], "")
+
             row.append(data[field])
         return row
 
