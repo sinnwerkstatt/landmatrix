@@ -77,8 +77,10 @@ class InvolvementNetwork:
             investor_dict["id"],
             investor_dict["name"],
             inv_country_name,
-            dict(Investor.CLASSIFICATION_CHOICES).get(
-                investor_dict.get("classification", ""), ""
+            str(
+                dict(Investor.CLASSIFICATION_CHOICES).get(
+                    investor_dict.get("classification", ""), ""
+                )
             ),
             investor_dict.get("homepage", ""),
             investor_dict.get("opencorporates", ""),
@@ -110,9 +112,9 @@ class InvolvementNetwork:
                     involvement["investor"]["id"],
                     involvement["investor"]["name"],
                     str(
-                        dict(InvestorVentureInvolvement.ROLE_CHOICES)[
-                            involvement["role"]
-                        ]
+                        dict(InvestorVentureInvolvement.ROLE_CHOICES).get(
+                            involvement["role"], ""
+                        )
                     ),
                     investment_type,
                     involvement["percentage"],
