@@ -1,6 +1,6 @@
 import { nanoid } from "nanoid"
 
-import type { Obj } from "$lib/types/generics"
+import type { Obj, ObjVersion } from "$lib/types/generics"
 import { DraftStatus } from "$lib/types/generics"
 import type { User } from "$lib/types/user"
 import { UserRole } from "$lib/types/user"
@@ -24,15 +24,22 @@ export function newNanoid(existingIDs: string[] = []): string {
   return newID
 }
 
+export const isCreator = (user: User, obj: Obj | ObjVersion): boolean =>
+  user.id === obj.created_by?.id
+export const isEditorPlus = (user: User): boolean => user.role >= UserRole.EDITOR
+export const isAdmin = (user: User): boolean => user.role >= UserRole.ADMINISTRATOR
+
 export function isAuthorized(user: User, obj: Obj): boolean {
-  const { id, role } = user
+  const { role } = user
   switch (obj.draft_status) {
     case null: // anybody who has a relevant role (Reporter, Editor, Admin)
       return role >= UserRole.REPORTER
     case DraftStatus.DRAFT: // the Reporter of the Object or Editor,Administrator
-      return role >= UserRole.EDITOR || obj.versions[0]?.created_by?.id === id
+      return role >= UserRole.EDITOR || isCreator(user, obj.versions[0])
     case DraftStatus.REVIEW: // at least Editor
       return role >= UserRole.EDITOR
+    case DraftStatus.REJECTED: // only Admins
+      return role === UserRole.ADMINISTRATOR
     case DraftStatus.ACTIVATION: // only Admins
       return role === UserRole.ADMINISTRATOR
     default:
