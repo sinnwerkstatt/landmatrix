@@ -29,3 +29,12 @@ declare module "@googlemaps/js-api-loader?client" {
 // fallback
 declare module "*?client"
 declare module "*?server"
+
+declare global {
+  interface Window {
+    // Matomo
+    _paq?: {
+      push: (item: string[]) => void
+    }
+  }
+}
