@@ -1,6 +1,7 @@
 import { error, redirect } from "@sveltejs/kit"
 
 import { deal_gql_query } from "$lib/deal_queries"
+import { findActiveVersion } from "$lib/helpers"
 import type { Deal } from "$lib/types/deal"
 import { Status } from "$lib/types/generics"
 
@@ -28,6 +29,11 @@ export const load: PageLoad = async ({ params, parent }) => {
   if (res.data.deal.status === Status.DRAFT && !dealVersion) {
     const dealV = res.data.deal.versions?.[0]?.id
     throw redirect(301, `/deal/${dealID}/${dealV}`)
+  }
+  // redirect if version is active version
+  const activeVersion = findActiveVersion(res.data.deal, "deal")
+  if (dealVersion && dealVersion === activeVersion?.id) {
+    throw redirect(301, `/deal/${dealID}`)
   }
   return { deal: res.data.deal, dealID, dealVersion }
 }

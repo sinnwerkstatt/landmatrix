@@ -8,7 +8,7 @@
   import { page } from "$app/stores"
 
   import { isAuthorized } from "$lib/helpers"
-  import { isAdmin, isCreator, isEditorPlus } from "$lib/helpers.js"
+  import { findActiveVersion, isAdmin, isCreator, isEditorPlus } from "$lib/helpers.js"
   import type { Obj, ObjVersion } from "$lib/types/generics"
   import { DraftStatus, Status } from "$lib/types/generics"
 
@@ -38,11 +38,7 @@
   ]
 
   let activeVersion: ObjVersion | undefined
-  $: activeVersion = object.versions.find(version => {
-    const status = (version[otype] as Obj).status
-    const draftStatus = (version[otype] as Obj).draft_status
-    return (status === Status.LIVE || status === Status.UPDATED) && draftStatus === null
-  })
+  $: activeVersion = findActiveVersion(object, otype)
 
   // object status
   let isActive: boolean

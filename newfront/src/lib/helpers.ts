@@ -1,7 +1,7 @@
 import { nanoid } from "nanoid"
 
 import type { Obj, ObjVersion } from "$lib/types/generics"
-import { DraftStatus } from "$lib/types/generics"
+import { DraftStatus, Status } from "$lib/types/generics"
 import type { User } from "$lib/types/user"
 import { UserRole } from "$lib/types/user"
 
@@ -23,6 +23,16 @@ export function newNanoid(existingIDs: string[] = []): string {
   } while (matching)
   return newID
 }
+
+export const findActiveVersion = (
+  object: Obj,
+  otype: "deal" | "investor",
+): ObjVersion | undefined =>
+  object.versions.find(version => {
+    const status = (version[otype] as Obj).status
+    const draftStatus = (version[otype] as Obj).draft_status
+    return (status === Status.LIVE || status === Status.UPDATED) && draftStatus === null
+  })
 
 export const isCreator = (user: User, obj: Obj | ObjVersion): boolean =>
   user.id === obj.created_by?.id
