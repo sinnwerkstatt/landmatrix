@@ -300,10 +300,15 @@ class Management(View):
                     "country": self.countries_map[draft["country"]]
                     if draft["country"]
                     else None,
-                    "created_at": draft["created_at"],
-                    "created_by": self.users_map.get(draft["created_by"]),
-                    "modified_at": draft["modified_at"],
-                    "modified_by": self.users_map.get(draft["modified_by"]),
+                    # TODO: @version_overhaul hacky solution to fix modified fields
+                    # creation time
+                    "created_at": obj.created_at,
+                    # creator
+                    "created_by": self.users_map.get(obj.created_by_id),
+                    # last modification time of latest version
+                    "modified_at": obj.current_draft.modified_at,
+                    # creator or latest version
+                    "modified_by": self.users_map.get(obj.current_draft.created_by_id),
                 }
             )
             if is_deal:
@@ -313,15 +318,17 @@ class Management(View):
                 obj_dict["name"] = draft.get("name")
 
         else:
+            newest_version = obj.versions.first()
             obj_dict.update(
                 {
                     "country": self.countries_map[obj.country_id]
                     if obj.country_id
                     else None,
+                    # TODO: @version_overhaul hacky solution to fix modified fields
                     "created_at": obj.created_at,
                     "created_by": self.users_map.get(obj.created_by_id),
-                    "modified_at": obj.modified_at,
-                    "modified_by": self.users_map.get(obj.modified_by_id),
+                    "modified_at": newest_version.modified_at,
+                    "modified_by": self.users_map.get(newest_version.created_by_id),
                 }
             )
             if is_deal:
