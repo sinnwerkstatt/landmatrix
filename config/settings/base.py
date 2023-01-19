@@ -32,8 +32,6 @@ DEFAULT_FROM_EMAIL = SERVER_EMAIL
 DATABASES = {"default": env.db("DATABASE_URL")}
 
 INSTALLED_APPS = [
-    #
-    "apps.accounts",
     # django
     "django.contrib.auth",
     "django.contrib.contenttypes",
