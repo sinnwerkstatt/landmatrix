@@ -26,6 +26,6 @@ sudo apt install gdal-bin postgresql-13-postgis-3
 
 1. Make sure the string is encapsulated by `vue-i18n`-helper: `$t('string')`
 2. Copy string to `/config/frontend_i18n_strings.py`
-3. `poetry run ./manage.py make_messages`
+3. `poetry run ./manage.py make_messages -a`
    **Watch out!**  Don't use Django's `makemessages`.
 4. `poetry run doit compilemessages`

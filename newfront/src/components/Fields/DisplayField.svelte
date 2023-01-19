@@ -1,43 +1,54 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
-  import { formfields } from "$lib/stores";
-  import ArrayField from "$components/Fields/Display/ArrayField.svelte";
-  import BooleanField from "$components/Fields/Display/BooleanField.svelte";
-  import DecimalField from "$components/Fields/Display/DecimalField.svelte";
-  import JSONDateAreaChoicesField from "$components/Fields/Display/JSONDateAreaChoicesField.svelte";
-  import JSONLeaseField from "$components/Fields/Display/JSONLeaseField.svelte";
-  import TextField from "$components/Fields/Display/TextField.svelte";
-  import type { FormField } from "$components/Fields/fields";
-  import AutoField from "./Display/AutoField.svelte";
-  import DateField from "./Display/DateField.svelte";
-  import DateTimeField from "./Display/DateTimeField.svelte";
-  import FileField from "./Display/FileField.svelte";
-  import ForeignKeyField from "./Display/ForeignKeyField.svelte";
-  import JSONActorsField from "./Display/JSONActorsField.svelte";
-  import JSONDateAreaField from "./Display/JSONDateAreaField.svelte";
-  import JSONDateChoiceField from "./Display/JSONDateChoiceField.svelte";
-  import JSONExportsField from "./Display/JSONExportsField.svelte";
-  import JSONJobsField from "./Display/JSONJobsField.svelte";
-  import LengthField from "./Display/LengthField.svelte";
-  import ManyToManyField from "./Display/ManyToManyField.svelte";
-  import OCIDField from "./Display/OCIDField.svelte";
-  import PointField from "./Display/PointField.svelte";
-  import StatusField from "./Display/StatusField.svelte";
+  import { _ } from "svelte-i18n"
 
-  export let fieldname: string;
-  export let value;
-  export let model = "deal";
+  import { formfields } from "$lib/stores"
 
-  export let showLabel = true;
-  export let wrapperClasses = "test mb-3 leading-5 flex flex-wrap";
-  export let labelClasses = "font-medium md:w-5/12 lg:w-4/12";
-  export let valueClasses = "text-lm-dark md:w-7/12 lg:w-8/12";
+  import ArrayField from "$components/Fields/Display/ArrayField.svelte"
+  import AutoField from "$components/Fields/Display/AutoField.svelte"
+  import BooleanField from "$components/Fields/Display/BooleanField.svelte"
+  import DateField from "$components/Fields/Display/DateField.svelte"
+  import DateTimeField from "$components/Fields/Display/DateTimeField.svelte"
+  import DecimalField from "$components/Fields/Display/DecimalField.svelte"
+  import FileField from "$components/Fields/Display/FileField.svelte"
+  import ForeignKeyField from "$components/Fields/Display/ForeignKeyField.svelte"
+  import JSONActorsField from "$components/Fields/Display/JSONActorsField.svelte"
+  import JSONDateAreaChoicesField from "$components/Fields/Display/JSONDateAreaChoicesField.svelte"
+  import JSONDateAreaField from "$components/Fields/Display/JSONDateAreaField.svelte"
+  import JSONDateChoiceField from "$components/Fields/Display/JSONDateChoiceField.svelte"
+  import JSONExportsField from "$components/Fields/Display/JSONExportsField.svelte"
+  import JSONJobsField from "$components/Fields/Display/JSONJobsField.svelte"
+  import JSONLeaseField from "$components/Fields/Display/JSONLeaseField.svelte"
+  import JSONLocationAreasField from "$components/Fields/Display/JSONLocationAreasField.svelte"
+  import LengthField from "$components/Fields/Display/LengthField.svelte"
+  import ManyToManyField from "$components/Fields/Display/ManyToManyField.svelte"
+  import NanoIDField from "$components/Fields/Display/NanoIDField.svelte"
+  import OCIDField from "$components/Fields/Display/OCIDField.svelte"
+  import PointField from "$components/Fields/Display/PointField.svelte"
+  import TextField from "$components/Fields/Display/TextField.svelte"
+  import TypedChoiceField from "$components/Fields/Display/TypedChoiceField.svelte"
+  import WorkflowInfosField from "$components/Fields/Display/WorkflowInfosField.svelte"
+  import type { FormField } from "$components/Fields/fields"
 
-  export let fileNotPublic = false;
+  export let fieldname: string
+  export let value
+  export let model:
+    | "deal"
+    | "location"
+    | "contract"
+    | "datasource"
+    | "investor"
+    | "involvement" = "deal"
+
+  export let showLabel = false
+  export let wrapperClasses = "mb-3 leading-5 flex flex-wrap"
+  export let labelClasses = "font-medium md:w-5/12 lg:w-4/12"
+  export let valueClasses = "text-lm-dark md:w-7/12 lg:w-8/12"
+
+  export let fileNotPublic = false
+  export let targetBlank = false
+  export let objectVersion: number | undefined = undefined
+
   //   visible: { type: Boolean, default: true },
-  //   targetBlank: { type: Boolean, default: false },
-  //   objectId: { type: Number, default: null, required: false },
-  //   objectVersion: { type: Number, default: null, required: false },
 
   //   computed: {
   //     _visible(): boolean {
@@ -49,34 +60,22 @@
   //       return true;
   //     },
 
-  let formfield: FormField;
-  $: formfield = { name: fieldname, ...$formfields[model][fieldname] };
+  let formfield: FormField
+  $: formfield = { name: fieldname, ...$formfields[model][fieldname] }
 
   $: field = {
-    BooleanField: BooleanField,
-    CharField: TextField,
-    TypedChoiceField: TextField,
     DateField: DateField,
-    DecimalField: DecimalField,
-    EmailField: TextField,
-    FloatField: DecimalField,
-    IntegerField: DecimalField,
     JSONActorsField: JSONActorsField,
     JSONDateAreaChoicesField: JSONDateAreaChoicesField,
+    JSONLocationAreasField: JSONLocationAreasField,
     JSONDateAreaField: JSONDateAreaField,
     JSONDateChoiceField: JSONDateChoiceField,
     JSONExportsField: JSONExportsField,
     JSONJobsField: JSONJobsField,
     JSONLeaseField: JSONLeaseField,
-    LengthField: LengthField,
     ManyToManyField: ManyToManyField,
-    NullBooleanField: BooleanField,
     OCIDField: OCIDField,
-    PointField: PointField,
-    StatusField: StatusField,
-    TextField: TextField,
-    URLField: TextField,
-  }[formfield.class];
+  }[formfield.class]
 </script>
 
 <div class={wrapperClasses}>
@@ -86,25 +85,34 @@
     </div>
   {/if}
   <div class={valueClasses}>
-    {#if formfield.class === "FileField"}
-      <FileField {value} {model} {formfield} {fileNotPublic} />
-    {:else if formfield.class === "AutoField"}
-      <AutoField {value} />
-    {:else if formfield.class === "DateTimeField"}
-      <DateTimeField {value} />
-    {:else if ["CountryForeignKey", "CurrencyForeignKey", "ForeignKey", "InvestorForeignKey", "ModelChoiceField"].includes(formfield.class)}
-      <ForeignKeyField {value} {formfield} />
+    {#if formfield.class === "AutoField"}
+      <AutoField {value} {model} {formfield} {targetBlank} {objectVersion} />
+    {:else if ["BooleanField", "NullBooleanField"].includes(formfield.class)}
+      <BooleanField {value} {formfield} />
     {:else if ["ArrayField", "SimpleArrayField"].includes(formfield.class)}
       <ArrayField {value} {formfield} />
+    {:else if formfield.class === "TypedChoiceField"}
+      <TypedChoiceField {value} {formfield} />
+    {:else if formfield.class === "PointField"}
+      <PointField {value} {formfield} />
+    {:else if formfield.class === "WorkflowInfosField"}
+      <WorkflowInfosField {value} {formfield} />
+    {:else if formfield.class === "NanoIDField"}
+      <NanoIDField {value} {formfield} />
+    {:else if ["CharField", "EmailField", "TextField", "URLField"].includes(formfield.class)}
+      <TextField {value} {formfield} />
+    {:else if ["DecimalField", "FloatField", "IntegerField"].includes(formfield.class)}
+      <DecimalField {value} {formfield} />
+    {:else if formfield.class === "DateTimeField"}
+      <DateTimeField {value} {formfield} />
+    {:else if formfield.class === "LengthField"}
+      <LengthField {value} {formfield} />
+    {:else if ["CountryForeignKey", "CurrencyForeignKey", "ForeignKey", "InvestorForeignKey", "ModelChoiceField"].includes(formfield.class)}
+      <ForeignKeyField {value} {formfield} />
+    {:else if formfield.class === "FileField"}
+      <FileField {value} {formfield} {fileNotPublic} />
     {:else if field}
       <svelte:component this={field} {value} {model} {formfield} />
-      <!--  <div>-->
-      <!--    <component-->
-      <!--      :target-blank="targetBlank"-->
-      <!--      :object-id="objectId"-->
-      <!--      :object-version="objectVersion"-->
-      <!--    />-->
-      <!--  </div>-->
     {:else}
       <span class="italic text-red-600">Unknown field: {formfield.class}</span>
     {/if}

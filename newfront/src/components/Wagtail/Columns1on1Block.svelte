@@ -1,14 +1,15 @@
 <script lang="ts">
-  import type { WagtailStreamfieldBlock } from "$lib/types/wagtail";
-  import { blockMap } from "$components/Wagtail/blocks";
+  import type { WagtailStreamfieldBlock } from "$lib/types/wagtail"
+
+  import { blockMap } from "$components/Wagtail/blocks"
 
   export let value: {
-    left_column: WagtailStreamfieldBlock[];
-    right_column: WagtailStreamfieldBlock[];
-  } = { left_column: [], right_column: [] };
+    left_column: WagtailStreamfieldBlock[]
+    right_column: WagtailStreamfieldBlock[]
+  } = { left_column: [], right_column: [] }
 </script>
 
-<div class="grid gap-8 mb-8 lg:grid-cols-2">
+<div data-block="columns_1_1" class="mb-8 grid gap-8 lg:grid-cols-2">
   <div>
     {#each value.left_column as block}
       <svelte:component this={blockMap[block.type]} bind:value={block.value} />

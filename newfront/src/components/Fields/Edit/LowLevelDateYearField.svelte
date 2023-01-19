@@ -1,18 +1,18 @@
 <script lang="ts">
-  import dayjs from "dayjs";
-  import customParseFormat from "dayjs/plugin/customParseFormat";
-  import { onMount } from "svelte";
-  import { _ } from "svelte-i18n";
+  import dayjs from "dayjs"
+  import customParseFormat from "dayjs/plugin/customParseFormat"
+  import { onMount } from "svelte"
+  import { _ } from "svelte-i18n"
 
-  dayjs.extend(customParseFormat);
+  dayjs.extend(customParseFormat)
 
-  export let required = false;
-  export let value: string;
-  export let name: string;
+  export let required = false
+  export let value: string
+  export let name: string
 
-  export let emitUndefinedOnEmpty = false;
+  export let emitUndefinedOnEmpty = false
 
-  let inputfield;
+  let inputfield
 
   function checkValidity() {
     const field_valid =
@@ -20,28 +20,28 @@
       dayjs(
         value,
         ["YYYY", "YYYY-M", "YYYY-M-D", "YYYY-MM", "YYYY-MM-D", "YYYY-MM-DD"],
-        true
-      ).isValid();
+        true,
+      ).isValid()
     if (field_valid) {
-      inputfield.setCustomValidity("");
+      inputfield.setCustomValidity("")
     } else {
       inputfield.setCustomValidity(
-        $_("Invalid format. Use YYYY, YYYY-MM or YYYY-MM-DD")
-      );
+        $_("Invalid format. Use YYYY, YYYY-MM or YYYY-MM-DD"),
+      )
     }
   }
 
-  onMount(checkValidity);
+  onMount(checkValidity)
 
   const onInput = async () => {
     if (!value) {
-      if (emitUndefinedOnEmpty && value === "") value = undefined;
-      inputfield.setCustomValidity("");
-      return;
+      if (emitUndefinedOnEmpty && value === "") value = undefined
+      inputfield.setCustomValidity("")
+      return
     }
-    value = value.replace("/", "-").replace(".", "-").replace(",", "-").trim();
-    checkValidity();
-  };
+    value = value.replace("/", "-").replace(".", "-").replace(",", "-").trim()
+    checkValidity()
+  }
 </script>
 
 <div class="whitespace-nowrap">

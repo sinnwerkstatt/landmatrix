@@ -1,34 +1,53 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
-  import { dealSubsections } from "$lib/deal_sections";
-  import { isEmpty } from "$lib/helpers";
-  import type { Contract, DataSource, Location } from "$lib/types/deal";
-  import DisplayField from "$components/Fields/DisplayField.svelte";
+  import cn from "classnames"
+  import { onMount } from "svelte"
+  import { _ } from "svelte-i18n"
 
-  export let model: string;
-  export let modelName: string;
-  export let entries: Array<Contract | DataSource | Location> = [];
+  import { page } from "$app/stores"
 
-  $: fields = dealSubsections[model];
+  import { isEmpty } from "$lib/helpers"
+  import { subsections } from "$lib/sections"
+  import type { Contract, DataSource, Location } from "$lib/types/deal"
 
-  let wrapperClasses = $$slots.default ? "w-full lg:w-1/2" : "w-full";
+  import DisplayField from "$components/Fields/DisplayField.svelte"
+
+  export let model: string
+  export let modelName: string
+  export let entries: Array<Contract | DataSource | Location> = []
+
+  let fields: string[]
+  $: fields = subsections[model]
+
+  let nanoIDHighlight: string | undefined
+  $: nanoIDHighlight = $page.url.hash.split("/")?.[1]
+
+  onMount(() => {
+    if (nanoIDHighlight) document.getElementById(nanoIDHighlight)?.scrollIntoView()
+  })
 </script>
 
-{#if entries.length > 0}
-  <section class="flex flex-wrap h-full">
-    <div class={wrapperClasses}>
+{#if entries?.length > 0}
+  <section class="flex h-full flex-wrap">
+    <div class={$$slots.default ? "w-full lg:w-1/2" : "w-full"}>
       {#each entries as entry, index}
-        <div class="{model}-entry">
+        <div
+          id={entry.id}
+          class={cn(
+            `${model}-entry`,
+            nanoIDHighlight === entry.id ? "animate-fadeToWhite bg-orange-100" : "",
+          )}
+        >
           <h3>
             {index + 1}. {$_(modelName)}
-            <small class="text-sm text-gray-500">#{entry.id}</small>
           </h3>
+          <DisplayField fieldname="id" value={entry["id"]} {model} showLabel />
           {#each fields as fieldname}
             {#if !isEmpty(entry[fieldname])}
               <DisplayField
                 {fieldname}
                 value={entry[fieldname]}
                 {model}
+                showLabel
                 fileNotPublic={entry.file_not_public}
               />
             {/if}

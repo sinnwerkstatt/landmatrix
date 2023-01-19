@@ -25,6 +25,18 @@ django formatting and linting:
     # - poetry run pylint config  -d unused-wildcard-import,unused-import,wildcard-import
     # - poetry run pylint apps --exit-zero # pylint is quite broken at the moment
 
+django tests and coverage:
+  stage: test
+  interruptible: true
+  services:
+    - name: postgis/postgis:12-3.2
+      alias: postgres
+  script:
+    - poetry install
+    - poetry run doit migrate
+    - poetry run pytest -x
+  coverage: /^TOTAL.*\s+(\d+\%)$/
+
 frontend formatting and linting:
   stage: test
   interruptible: true
@@ -34,17 +46,46 @@ frontend formatting and linting:
     - npm run lint
     - npm run build
 
-tests and coverage:
+newfront test:
   stage: test
   interruptible: true
-  services:
-    - name: postgis/postgis:12-3.2
-      alias: postgres
   script:
-    - poetry install
-    - poetry run doit -n 4 update
-    - poetry run pytest -x
-  coverage: /^TOTAL.*\s+(\d+\%)$/
+    - cd newfront
+    - npm ci
+    - npm run test
+
+#newfront integration test:
+#  stage: test
+#  interruptible: true
+#  services:
+#    - name: postgis/postgis:12-3.2
+#      alias: postgres
+#  before_script:
+#    - npm ci && npx playwright install --with-deps
+#    - cd newfront && npm ci && npm run build && cd ..
+#    - poetry install
+#  script:
+#    - poetry run doit initial_setup production=True
+#    - poetry run ./manage.py create_playwright_test_users
+#    - PATH=$(npm bin):$PATH ./test.sh
+#  artifacts:
+#    when: always
+#    paths:
+#        - test-results/
+#        - results.xml
+#    reports:
+#        junit: results.xml
+
+newfront formatting and linting:
+  stage: test
+  interruptible: true
+  script:
+    - cd newfront
+    - npm ci
+    - npm run format:check
+#   TODO: fix errors
+#    - npm run lint
+    - npm run build
 
 deploy to staging:
   stage: deploy
@@ -57,7 +98,10 @@ deploy to staging:
       mv maintenance.html_ maintenance.html || echo "could not move maintenance"
       cd ~/htdocs
       poetry run doit full_update dev=True production=True
-      sudo /bin/systemctl restart django-dev.landmatrix.org.service
+      cd newfront/
+      npm ci
+      npm run build
+      sudo /bin/systemctl restart webapp-dev.landmatrix.org.service
       cd ~
       mv maintenance.html maintenance.html_
       E=O=F

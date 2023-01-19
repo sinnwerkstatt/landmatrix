@@ -444,14 +444,12 @@
                 $id: Int!
                 $confidential: Boolean!
                 $version: Int
-                $reason: ConfidentialReason
                 $comment: String
               ) {
                 deal_set_confidential(
                   id: $id
                   confidential: $confidential
                   version: $version
-                  reason: $reason
                   comment: $comment
                 )
               }
@@ -460,7 +458,6 @@
               id: +this.dealId,
               version: this.dealVersion ? +this.dealVersion : null,
               confidential: data.confidential,
-              reason: data.reason,
               comment: data.comment,
             },
           })

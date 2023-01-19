@@ -14,8 +14,6 @@ CACHE_TIMEOUT = 24 * 3600
 urlpatterns = [
     # Django basics
     path("admin/", admin.site.urls),
-    path("accounts/", include("django.contrib.auth.urls")),
-    path("accounts/", include("django_registration.backends.activation.urls")),
     path("impersonate/", include("impersonate.urls")),
     path("language/<language>/", SwitchLanguageView.as_view(), name="switch_language"),
     # Wagtail
@@ -23,7 +21,7 @@ urlpatterns = [
     path("documents/", include("wagtail.documents.urls")),
     # APIs
     path("graphql/", include("apps.graphql.urls")),
-    path("wagtailapi/v2/", api_router.urls),
+    path("api/wagtail/v2/", api_router.urls),
     path("api/", include("apps.api.urls")),
 ]
 

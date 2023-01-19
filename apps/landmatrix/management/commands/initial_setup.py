@@ -1,3 +1,5 @@
+import json
+
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 from django.db.transaction import atomic
@@ -37,11 +39,22 @@ class Command(BaseCommand):
         # reload root (as per https://github.com/wagtail/wagtail/issues/3402#issuecomment-297940917)
         root_page = Page.objects.first().get_root()
 
-        wt_root = WagtailRootPage(title="Land Matrix")
+        wt_root = WagtailRootPage(
+            title="Land Matrix",
+            body=json.dumps(
+                [
+                    {
+                        "type": "section_divider",
+                        "value": {},
+                        "id": "6761c639-41b0-4b11-a0c0-31a730d45e71",
+                    }
+                ]
+            ),
+        )
         root_page.add_child(instance=wt_root)
         wt_root.save()
         Site.objects.get_or_create(
-            hostname="localhost", port=8000, root_page=wt_root, is_default_site=True
+            hostname="localhost", port=9000, root_page=wt_root, is_default_site=True
         )
 
         WagtailPage(title="Global Observatory", slug="global")

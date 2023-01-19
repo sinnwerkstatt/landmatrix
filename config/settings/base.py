@@ -1,5 +1,4 @@
-import sys
-
+# noinspection PyPackageRequirements
 import environ
 from django.utils.translation import gettext_lazy as _
 
@@ -33,6 +32,8 @@ DEFAULT_FROM_EMAIL = SERVER_EMAIL
 DATABASES = {"default": env.db("DATABASE_URL")}
 
 INSTALLED_APPS = [
+    #
+    "apps.accounts",
     # django
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -48,7 +49,6 @@ INSTALLED_APPS = [
     "wagtail_modeltranslation.migrate",
     # wagtail
     "wagtail.contrib.modeladmin",
-    "wagtail.contrib.forms",  # TODO delete this after squashing migrations
     "wagtail.contrib.redirects",
     "wagtail.contrib.settings",
     "wagtail.embeds",
@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     "wagtailorderable",
     "modelcluster",
     "taggit",
+    "wagtail_headless_preview",
     #   apps of the actual landmatrix project
     "apps.accounts",
     "apps.blog",
@@ -75,7 +76,6 @@ INSTALLED_APPS = [
     "apps.wagtailcms",
     # plumbing
     "impersonate",
-    "celery",
     "ariadne_django",
     "corsheaders",
 ]
@@ -102,7 +102,6 @@ DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR("templates")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -118,6 +117,10 @@ TEMPLATES = [
 ]
 
 AUTH_USER_MODEL = "accounts.User"
+WAGTAIL_USER_EDIT_FORM = "apps.accounts.forms.CustomUserEditForm"
+WAGTAIL_USER_CREATION_FORM = "apps.accounts.forms.CustomUserCreationForm"
+WAGTAIL_USER_CUSTOM_FIELDS = ["role", "country", "region"]
+
 LOGIN_REDIRECT_URL = "/"
 # Limit all uploads to 20MB, and data sources to 1MB
 MAX_UPLOAD_SIZE = 20971520
@@ -152,12 +155,19 @@ CACHES = {
 CORS_ALLOWED_ORIGINS = [
     "https://dev.accountability.landmatrix.org",
     "https://accountability.landmatrix.org",
-    "http://localhost:3000",
 ]
 CORS_ALLOW_CREDENTIALS = True
 
-
 WAGTAIL_SITE_NAME = "Land Matrix"
+WAGTAILADMIN_BASE_URL = "https://landmatrix.org/"
+
+WAGTAIL_HEADLESS_PREVIEW = {
+    "CLIENT_URLS": {"default": "{SITE_ROOT_URL}/wagtail-preview"},
+    "LIVE_PREVIEW": False,  # set to True to enable live preview functionality
+    "SERVE_BASE_URL": None,  # can be used for HeadlessServeMixin
+    "REDIRECT_ON_PREVIEW": False,
+    # set to True to redirect to the preview instead of using the Wagtail default mechanism
+}
 
 MODELTRANSLATION_CUSTOM_FIELDS = ("NoWrapsStreamField",)
 
@@ -176,15 +186,8 @@ IMPERSONATE = {
     "REDIRECT_FIELD_NAME": "next",
 }
 
-
-# CELERY SETTINGS
-BROKER_URL = "redis://localhost:6379/0"
-CELERY_REDIS_BACKEND = BROKER_URL
-CELERY_NAME = "landmatrix"
-
 BLOG_LIMIT_AUTHOR_CHOICES_GROUP = "CMS Global (Editors)"
 
-# django-registration
 ACCOUNT_ACTIVATION_DAYS = 7
 
 ALLOWED_HOSTS = env.list("DJANGO_ALLOWED_HOSTS", default=["127.0.0.1", "localhost"])

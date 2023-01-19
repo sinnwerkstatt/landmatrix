@@ -1,63 +1,68 @@
 <script lang="ts">
-  import Cookies from "js-cookie";
-  import { _, locale } from "svelte-i18n";
-  import { page } from "$app/stores";
-  import {
-    aboutPages,
-    blogCategories,
-    fetchBasis,
-    observatoryPages,
-  } from "$lib/stores";
-  import type { ObservatoryPage } from "$lib/types/wagtail";
-  import { dispatchLogin, dispatchLogout } from "$lib/user";
-  import TranslateIcon from "$components/icons/TranslateIcon.svelte";
-  import UserAstronautSolid from "$components/icons/UserAstronautSolid.svelte";
-  import UserNurseSolid from "$components/icons/UserNurseSolid.svelte";
-  import UserRegular from "$components/icons/UserRegular.svelte";
-  import UserSecretSolid from "$components/icons/UserSecretSolid.svelte";
-  import NavDropDown from "./LowLevel/NavDropDown.svelte";
-  import NavbarSearch from "./NavbarSearch.svelte";
+  import type { Client } from "@urql/svelte"
+  import { gql } from "@urql/svelte"
+  import Cookies from "js-cookie"
+  import { _, locale } from "svelte-i18n"
 
-  let language = Cookies.get("django_language") ?? "en";
-  const languages = { en: "English", es: "Español", fr: "Français", ru: "Русский" };
+  import { page } from "$app/stores"
+
+  import { aboutPages, blogCategories, fetchBasis, observatoryPages } from "$lib/stores"
+  import { UserRole } from "$lib/types/user"
+  import type { ObservatoryPage } from "$lib/types/wagtail"
+
+  import TranslateIcon from "$components/icons/TranslateIcon.svelte"
+  import UserAstronautSolid from "$components/icons/UserAstronautSolid.svelte"
+  import UserNurseSolid from "$components/icons/UserNurseSolid.svelte"
+  import UserRegular from "$components/icons/UserRegular.svelte"
+  import UserSecretSolid from "$components/icons/UserSecretSolid.svelte"
+
+  import NavDropDown from "./LowLevel/NavDropDown.svelte"
+  import NavbarSearch from "./NavbarSearch.svelte"
+
+  const languages = { en: "English", es: "Español", fr: "Français", ru: "Русский" }
   const dataLinks = [
-    { name: "Map", href: "/map" },
-    { name: "Deals", href: "/list/deals" },
-    { name: "Investors", href: "/list/investors" },
-    { name: "Charts", href: "/charts" },
-  ];
+    { name: $_("Map"), href: "/map" },
+    { name: $_("Deals"), href: "/list/deals" },
+    { name: $_("Investors"), href: "/list/investors" },
+    { name: $_("Charts"), href: "/charts" },
+  ]
+  const roles = { 1: $_("Reporter"), 2: $_("Editor"), 3: $_("Administrator") }
 
-  let observatoriesGroups = { global: [], regions: [], countries: [] };
+  let observatoriesGroups = { global: [], regions: [], countries: [] }
   $observatoryPages.forEach((op: ObservatoryPage) => {
-    if (op.country) observatoriesGroups.countries.push(op);
-    else if (op.region) observatoriesGroups.regions.push(op);
-    else observatoriesGroups.global.push(op);
-  });
+    if (op.country) observatoriesGroups.countries.push(op)
+    else if (op.region) observatoriesGroups.regions.push(op)
+    else observatoriesGroups.global.push(op)
+  })
 
   async function switchLanguage(lang: string) {
-    language = lang;
-    Cookies.set("django_language", lang);
-    await locale.set(lang);
-    await fetchBasis(lang);
+    Cookies.set("django_language", lang)
+    await locale.set(lang)
+    await fetchBasis(lang, fetch, $page.data.urqlClient)
   }
 
-  let username = "";
-  let password = "";
-  let login_failed_message = "";
+  $: user = $page.data.user
 
-  $: user = $page.stuff.user;
-
-  async function login() {
-    const res = await dispatchLogin(username, password);
-    if (res.status === true) await location.reload();
-  }
   async function logout() {
-    if (await dispatchLogout()) location.reload();
+    const { data } = await ($page.data.urqlClient as Client)
+      .mutation<{ logout: boolean }>(
+        gql`
+          mutation {
+            logout
+          }
+        `,
+        {},
+      )
+      .toPromise()
+
+    if (data?.logout) location.reload()
   }
 </script>
 
-<nav class="sticky top-0 z-[1030] bg-white border-b-8 border-orange flex px-2">
-  <div class="mx-6 w-full lg:container lg:mx-auto flex justify-between p-1">
+<nav
+  class="sticky top-0 z-[1030] flex border-b-8 border-orange bg-white px-2 dark:bg-gray-800"
+>
+  <div class="mx-6 flex w-full justify-between p-1 lg:container lg:mx-auto">
     <a class="mt-1 mr-6" href="/">
       <img
         alt="Land Matrix"
@@ -66,13 +71,13 @@
       />
     </a>
     <button
-      class="inline-block py-1 px-3 leading-none bg-transparent border border-transparent rounded text-gray-500 border-gray-600 lg:hidden"
+      class="inline-block rounded border border-transparent border-gray-600 bg-transparent py-1 px-3 leading-none text-gray-500 lg:hidden"
       data-target="#navbarCollapse"
       data-toggle="collapse"
       type="button"
     >
       <svg
-        class="inline-block w-6 h-6 align-middle bg-center bg-no-repeat"
+        class="inline-block h-6 w-6 bg-center bg-no-repeat align-middle"
         viewBox="0 0 30 30"
         xmlns="http://www.w3.org/2000/svg"
       >
@@ -88,11 +93,11 @@
     <div class="hidden w-full flex-grow items-center lg:flex lg:w-auto">
       <ul class="flex w-full items-center">
         <NavDropDown title={$_("Data")}>
-          <ul class="border border-orange bg-white">
+          <ul class="border border-orange bg-white dark:bg-gray-800">
             {#each dataLinks as { name, href }}
               <li class="whitespace-nowrap">
                 <a {href} class="nav-link">
-                  {$_(name)}
+                  {name}
                 </a>
               </li>
             {/each}
@@ -100,7 +105,9 @@
         </NavDropDown>
 
         <NavDropDown title={$_("Observatories")}>
-          <div class="divide-y divide-solid border border-orange bg-white">
+          <div
+            class="divide-y divide-solid border border-orange bg-white dark:bg-gray-800"
+          >
             {#each Object.values(observatoriesGroups) as obs}
               <ul>
                 {#each obs as observatory}
@@ -115,11 +122,18 @@
           </div>
         </NavDropDown>
 
+        <li>
+          <a class="nav-link" href="/accountability/">
+            {$_("Accountability")}
+          </a>
+        </li>
+
         <NavDropDown title={$_("Resources")}>
-          <ul class="border border-orange bg-white">
+          <ul class="border border-orange bg-white dark:bg-gray-800">
             {#each $blogCategories as cat}
               <li class="whitespace-nowrap">
                 <a class="nav-link" href="/resources/?category={cat.slug}">
+                  <!-- TODO: discuss replacing this somehow? comes from DB though -->
                   {$_(cat.name)}
                 </a>
               </li>
@@ -128,75 +142,80 @@
         </NavDropDown>
 
         <NavDropDown title={$_("About")}>
-          <ul class="border border-orange bg-white">
+          <ul class="border border-orange bg-white dark:bg-gray-800">
             {#each $aboutPages as { title, meta }}
               <li class="whitespace-nowrap">
                 <a class="nav-link" href="/about/{meta.slug}/">
-                  {$_(title)}
+                  {title}
                 </a>
               </li>
             {/each}
           </ul>
         </NavDropDown>
 
-        <li class="nav-item">
+        <li>
           <a class="nav-link" href="/faq/">
             {$_("FAQ")}
           </a>
         </li>
-        <li class="nav-item">
+        <li>
           <a class="nav-link" href="/contribute/">
             {$_("Contribute")}
           </a>
         </li>
       </ul>
-      <ul class="flex items-center ml-auto">
+      <ul class="ml-auto flex items-center">
         <NavbarSearch />
 
-        <NavDropDown placement="bottom-end">
-          <div slot="title" class="whitespace-nowrap flex items-center gap-1">
-            <TranslateIcon class="h-4 w-4 inline" />
-            {languages[language]}
+        <NavDropDown placement="right-0">
+          <div class="flex items-center gap-1 whitespace-nowrap" slot="title">
+            <TranslateIcon class="inline h-4 w-4" />
+            {languages[$locale]}
           </div>
 
-          <ul class="border border-orange bg-white">
+          <ul class="border border-orange bg-white dark:bg-gray-800">
             {#each Object.entries(languages) as [lcode, lingo]}
               <li class="whitespace-nowrap">
-                <a
-                  class="nav-link"
-                  class:active={lcode === language}
+                <button
+                  type="button"
+                  class="nav-link w-full"
+                  class:active={lcode === $locale}
                   on:click={() => switchLanguage(lcode)}
                 >
                   {lingo} ({lcode})
-                </a>
+                </button>
               </li>
             {/each}
           </ul>
         </NavDropDown>
 
         {#if user}
-          <NavDropDown placement="bottom-end">
-            <div slot="title" class="whitespace-nowrap flex items-center gap-1">
-              {user.initials}
-              {#if user.role === "ADMINISTRATOR"}
-                <UserAstronautSolid class="h-4 w-4 inline" />
-                <i class="fas fa-user-astronaut" />
-              {:else if user.role === "EDITOR"}
-                <UserNurseSolid class="h-4 w-4 inline" />
-                <i class="fas fa-user-nurse" />
+          <NavDropDown placement="right-0">
+            <div slot="title" class="flex items-center gap-1 whitespace-nowrap">
+              {user.full_name
+                ? user.full_name
+                    .split(" ")
+                    .map(x => x[0])
+                    .join("")
+                : user.username.substring(0, 2)}
+              {#if user.role === UserRole.ADMINISTRATOR}
+                <UserAstronautSolid class="inline h-4 w-4" />
+              {:else if user.role === UserRole.EDITOR}
+                <UserNurseSolid class="inline h-4 w-4" />
               {:else if user.is_impersonate}
-                <UserSecretSolid class="h-4 w-4 inline" />
-                <i class="fa fa-user-secret" />
+                <UserSecretSolid class="inline h-4 w-4" />
               {:else}
-                <i class="fa fa-user" />
+                <UserRegular class="inline h-4 w-4" />
               {/if}
             </div>
 
-            <div class="divide-y divide-solid border border-orange bg-white">
-              <p class="pt-2 pl-4 text-gray-400 leading-5 mb-2">
+            <div
+              class="divide-y divide-solid border border-orange bg-white dark:bg-gray-800"
+            >
+              <p class="mb-2 whitespace-nowrap pt-2 pl-2 leading-5 text-gray-400">
                 {user.full_name}
                 <br />
-                <small>{user?.role ? $_(user?.role) : ""}</small>
+                <small>{user.role ? roles[user.role] : ""}</small>
               </p>
 
               {#if user.is_impersonate}
@@ -211,12 +230,16 @@
 
               <ul>
                 <li>
-                  <a class="nav-link" href="/manager/">
+                  <a class="nav-link" href="/management/">
                     {$_("Manage")}
                   </a>
                 </li>
                 <li class="whitespace-nowrap">
-                  <a class="nav-link" href="/case_statistics/">
+                  <a
+                    class="nav-link"
+                    href="/management/case_statistics/"
+                    data-sveltekit-reload
+                  >
                     {$_("Case statistics")}
                   </a>
                 </li>
@@ -226,67 +249,40 @@
                   <a class="nav-link" href="/deal/add">{$_("Add a deal")}</a>
                 </li>
                 <li>
-                  <a class="nav-link" on:click|preventDefault={logout}>
+                  <button
+                    type="button"
+                    class="nav-link w-full text-left"
+                    on:click|preventDefault={logout}
+                  >
                     {$_("Logout")}
-                  </a>
+                  </button>
                 </li>
               </ul>
             </div>
           </NavDropDown>
         {:else}
-          <NavDropDown placement="bottom-end">
-            <div slot="title" class="whitespace-nowrap" title="Login/Register">
-              <UserRegular class="h-4 w-4 inline mx-1" />
-            </div>
-            <div class="divide-y divide-solid border border-orange bg-white">
-              <form on:submit|preventDefault={login} class="px-4 pt-3 space-y-2">
-                <input
-                  autocomplete="username"
-                  class="inpt"
-                  id="username"
-                  placeholder="Username"
-                  type="text"
-                  bind:value={username}
-                />
-                <input
-                  autocomplete="current-password"
-                  class="inpt"
-                  id="password"
-                  placeholder="Password"
-                  type="password"
-                  bind:value={password}
-                />
-                <button class="btn btn-secondary" type="submit">
-                  {$_("Login")}
-                </button>
-                <p class="mt-3 text-danger small">{login_failed_message}</p>
-              </form>
-              <ul>
-                <li class="whitespace-nowrap">
-                  <a class="nav-link" href="/account/register/">
-                    {$_("New around here? Sign up")}
-                  </a>
-                </li>
-                <li class="whitespace-nowrap">
-                  <a class="nav-link" href="/account/password_reset/">
-                    {$_("Forgot password?")}
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </NavDropDown>
+          <li>
+            <a
+              class="nav-link hover:bg-gray-100 hover:text-orange-500"
+              href="/account/login/?next={$page.url.pathname}"
+              title="Login/Register"
+            >
+              <UserRegular class="h-5 w-5" />
+            </a>
+          </li>
         {/if}
       </ul>
     </div>
   </div>
 </nav>
 
-<style>
+<style lang="postcss">
   :global(.nav-link) {
-    @apply px-4 py-2 block text-black;
-    @apply hover:bg-gray-200;
+    @apply block px-4 py-2 text-black dark:text-white;
+    @apply hover:bg-gray-200 hover:text-orange dark:hover:bg-gray-600;
     @apply active:bg-orange active:text-white;
   }
+
   :global(.nav-link.active) {
     @apply bg-orange text-white;
   }

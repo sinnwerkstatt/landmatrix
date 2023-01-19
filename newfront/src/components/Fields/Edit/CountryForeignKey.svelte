@@ -1,24 +1,28 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
-  import { _ } from "svelte-i18n";
-  import Select from "svelte-select";
-  import { countries } from "$lib/stores";
-  import type { Country } from "$lib/types/wagtail";
-  import type { FormField } from "$components/Fields/fields";
+  import { createEventDispatcher } from "svelte"
+  import { _ } from "svelte-i18n"
+  import Select from "svelte-select"
 
-  export let value: Country | undefined;
-  export let model: string;
-  export let disabled = false;
-  export let formfield: FormField;
+  import { countries } from "$lib/stores"
+  import type { Country } from "$lib/types/wagtail"
 
-  const dispatch = createEventDispatcher();
+  import type { FormField } from "$components/Fields/fields"
 
-  let showHint = false;
+  export let value: Country | undefined
+  export let model: "deal" | "investor" = "deal"
+  export let disabled = false
+  export let formfield: FormField
+
+  const dispatch = createEventDispatcher()
+
+  let showHint = false
 
   $: targetCountries =
-    model === "investor" ? $countries : $countries.filter((c) => !c.high_income);
+    model === "deal" && formfield.name === "country"
+      ? $countries.filter(c => !c.high_income)
+      : $countries
 
-  const onSelect = (e) => {
+  const onSelect = e => {
     value = e?.detail
       ? {
           __typename: "Country",
@@ -30,9 +34,9 @@
           point_lon_min: e.detail.point_lon_min,
           point_lon_max: e.detail.point_lon_max,
         }
-      : undefined;
-    dispatch("change", value);
-  };
+      : undefined
+    dispatch("change", value)
+  }
 </script>
 
 <div
@@ -46,14 +50,13 @@
     items={targetCountries}
     {value}
     on:select={onSelect}
+    on:clear={onSelect}
     placeholder={$_("Country")}
     optionIdentifier="id"
     labelIdentifier="name"
     showChevron
     isDisabled={disabled}
-    inputAttributes={{
-      name: formfield.name,
-    }}
+    inputAttributes={{ name: formfield.name }}
   />
   {#if disabled && showHint}
     <span class="absolute text-sm text-gray-500">

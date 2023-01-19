@@ -1,21 +1,24 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
-  import { dateCurrentFormat } from "$components/Fields/Display/jsonHelpers";
+  import { _ } from "svelte-i18n"
+
+  import { dateCurrentFormat } from "$components/Fields/Display/jsonHelpers"
+  import type { FormField } from "$components/Fields/fields"
 
   type JSONJobsFieldType = {
-    current?: boolean;
-    date: string;
-    jobs?: string;
-    employees?: string;
-    workers?: string;
-    choices?: Array<{ [key: string]: string }>;
-  };
+    current?: boolean
+    date: string
+    jobs?: string
+    employees?: string
+    workers?: string
+    choices?: Array<{ [key: string]: string }>
+  }
 
-  export let value: JSONJobsFieldType[] = [];
+  export let formfield: FormField
+  export let value: JSONJobsFieldType[] = []
 </script>
 
-<div class="jsonjobs_field whitespace-nowrap">
-  {#each value as val}
+<div class="jsonjobs_field whitespace-nowrap" data-name={formfield?.name ?? ""}>
+  {#each value ?? [] as val}
     <div class:font-bold={val.current}>
       {dateCurrentFormat(val)}
       {#if val.jobs}

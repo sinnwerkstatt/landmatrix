@@ -2,6 +2,8 @@ import random
 import string
 
 import sentry_sdk
+
+# noinspection PyPackageRequirements
 from environ.environ import ImproperlyConfigured
 from sentry_sdk.integrations.django import DjangoIntegration
 
@@ -30,8 +32,6 @@ sentry_sdk.init(
     integrations=[DjangoIntegration()],
     send_default_pii=True,
 )
-
-CELERY_TASK_ALWAYS_EAGER = True
 
 HCAPTCHA_SITEKEY = env("DJANGO_HCAPTCHA_SITEKEY")
 HCAPTCHA_SECRETKEY = env("DJANGO_HCAPTCHA_SECRETKEY")

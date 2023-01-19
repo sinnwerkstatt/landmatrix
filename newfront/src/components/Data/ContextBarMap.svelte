@@ -1,52 +1,66 @@
 <script lang="ts">
-  // import { implementation_status_choices } from "$utils/choices";
-  //  import { prepareNegotianStatusData, sum } from "$utils/data_processing";
-  import Pie from "svelte-chartjs/src/Pie.svelte";
-  import { _ } from "svelte-i18n";
-  import { deals } from "$lib/data";
-  import { filters } from "$lib/filters";
-  import { countries, observatoryPages, regions } from "$lib/stores";
-  import type { Deal } from "$lib/types/deal";
-  import type { CountryOrRegion } from "$lib/types/wagtail";
-  import { sum } from "$lib/utils/data_processing";
-  import DealDisplayToggle from "$components/DealDisplayToggle.svelte";
-  import { displayDealsCount } from "$components/Map/map_helper";
-  import ContextBarContainer from "./ContextBarContainer.svelte";
-  import {
-    calcImplementationStatusChart,
-    calcNegotiationStatusChart,
-    calcProduceChart,
-  } from "./contextBarMapCharts";
+  import { queryStore } from "@urql/svelte"
+  import { _ } from "svelte-i18n"
 
-  let currentItem: CountryOrRegion;
+  import { page } from "$app/stores"
+
+  import { createImplementationStatusChartData } from "$lib/data/charts/implementationStatus"
+  import { createNegotiationStatusChartData } from "$lib/data/charts/negotiationStatusGroup"
+  import { createProduceGroupChartData } from "$lib/data/charts/produceGroup"
+  import { data_deal_query_gql } from "$lib/deal_queries"
+  import { filters, publicOnly } from "$lib/filters"
+  import { countries, loading, observatoryPages, regions } from "$lib/stores"
+  import type { CountryOrRegion } from "$lib/types/wagtail"
+  import { sum } from "$lib/utils/data_processing"
+
+  import DealDisplayToggle from "$components/DealDisplayToggle.svelte"
+  import { displayDealsCount } from "$components/Map/map_helper"
+  import StatusPieChart from "$components/StatusPieChart.svelte"
+
+  import ContextBarContainer from "./ContextBarContainer.svelte"
+
+  $: deals = queryStore({
+    client: $page.data.urqlClient,
+    query: data_deal_query_gql,
+    variables: {
+      filters: $filters.toGQLFilterArray(),
+      subset: $publicOnly ? "PUBLIC" : "ACTIVE",
+    },
+  })
+  $: loading.set($deals?.fetching ?? false)
+
+  let currentItem: CountryOrRegion
   $: if (!$filters.region_id && !$filters.country_id) {
     currentItem = {
       name: "Global",
-      observatory_page: $observatoryPages.find((o) => !o.country && !o.region),
-    };
+      observatory_page: $observatoryPages.find(o => !o.country && !o.region),
+    }
   } else {
     currentItem = {
       ...($filters.region_id
-        ? $regions.find((r) => r.id === $filters.region_id)
-        : $countries.find((c) => c.id === $filters.country_id)),
-    };
+        ? $regions.find(r => r.id === $filters.region_id)
+        : $countries.find(c => c.id === $filters.country_id)),
+    } as CountryOrRegion
     currentItem.observatory_page = $observatoryPages.find(
-      (o) => o.id === currentItem.observatory_page_id
-    );
+      o => o.id === currentItem.observatory_page_id,
+    )
   }
+  $: unit = $displayDealsCount ? "deals" : "ha"
+  $: sortBy = $displayDealsCount ? "count" : "size"
+  $: dealsArray = $deals?.data?.deals ?? []
 
-  $: chartNegStat = calcNegotiationStatusChart($deals, $displayDealsCount);
-  $: chartImpStat = calcImplementationStatusChart($deals, $displayDealsCount);
-  $: chartProd = calcProduceChart($deals, $displayDealsCount);
+  $: chartNegStat = createNegotiationStatusChartData(dealsArray, sortBy)
+  $: chartImpStat = createImplementationStatusChartData(dealsArray, sortBy)
+  $: chartProd = createProduceGroupChartData(dealsArray, sortBy)
 
   $: totalCount = $displayDealsCount
-    ? `${Math.round($deals?.length).toLocaleString("fr")}`
-    : `${Math.round(sum($deals, "deal_size")).toLocaleString("fr")} ha`;
+    ? `${Math.round(dealsArray.length).toLocaleString("fr")}`
+    : `${Math.round(sum(dealsArray, "deal_size")).toLocaleString("fr")} ha`
 </script>
 
 <ContextBarContainer>
   {#if currentItem}
-    <h2 class="font-bold text-lg my-3 leading-5">{currentItem.name}</h2>
+    <h2>{currentItem.name}</h2>
     {#if currentItem?.observatory_page}
       <p class="mb-1">
         {currentItem.observatory_page.short_description}
@@ -57,41 +71,23 @@
       </p>
     {/if}
   {/if}
-  {#if $deals?.length}
+  {#if dealsArray.length > 0}
     <div>
       <DealDisplayToggle />
-      <div class="w-full text-center font-bold my-3">
+      <div class="my-3 w-full text-center font-bold">
         {totalCount}
       </div>
-      <div class="w-full mb-3">
-        <h5 class="text-left text-lg mt-4">{$_("Negotiation status")}</h5>
-        <Pie data={chartNegStat} options={{ responsive: true, aspectRatio: 1 }} />
-        <!--        <p class="hint-box">The negotiation status is filtered at the moment.</p>-->
-        <!--        <StatusPieChart-->
-        <!--          :deal-data="dealsFilteredByNegStatus"-->
-        <!--          :value-field="$displayDealsCount ? 'count' : 'size'"-->
-        <!--          :unit="$displayDealsCount ? 'deals' : 'ha'"-->
-        <!--        />-->
+      <div class="mb-3 w-full">
+        <h5 class="mt-4 text-left text-lg">{$_("Negotiation status")}</h5>
+        <StatusPieChart data={chartNegStat} {unit} />
       </div>
-      <div class="w-full mb-3">
-        <h5 class="text-left text-lg mt-4">{$_("Implementation status")}</h5>
-        <Pie data={chartImpStat} options={{ responsive: true, aspectRatio: 1 }} />
-
-        <!--        <StatusPieChart-->
-        <!--          :deal-data="implementationStatusData"-->
-        <!--          value-field="value"-->
-        <!--          :unit="$displayDealsCount ? 'deals' : 'ha'"-->
-        <!--        />-->
+      <div class="mb-3 w-full">
+        <h5 class="mt-4 text-left text-lg">{$_("Implementation status")}</h5>
+        <StatusPieChart data={chartImpStat} {unit} />
       </div>
-      <div class="w-full mb-3">
-        <h5 class="text-left text-lg mt-4">{$_("Produce")}</h5>
-        <Pie data={chartProd} options={{ responsive: true, aspectRatio: 1 }} />
-
-        <!--        <StatusPieChart-->
-        <!--          :deal-data="produceData"-->
-        <!--          :legends="produceDataLegendItems"-->
-        <!--          unit="%"-->
-        <!--        />-->
+      <div class="mb-3 w-full">
+        <h5 class="mt-4 text-left text-lg">{$_("Produce")}</h5>
+        <StatusPieChart data={chartProd} {unit} />
       </div>
     </div>
   {/if}

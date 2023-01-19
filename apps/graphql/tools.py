@@ -1,4 +1,6 @@
 from django.db.models import Q
+
+# noinspection PyPackageRequirements
 from graphql import GraphQLResolveInfo, FieldNode
 
 

@@ -1,33 +1,48 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
-  import { _ } from "svelte-i18n";
-  import type { User } from "$lib/types/user";
-  import UserSelect from "$components/Management/UserSelect.svelte";
-  import Overlay from "$components/Overlay.svelte";
+  import { createEventDispatcher, onDestroy } from "svelte"
+  import { _ } from "svelte-i18n"
 
-  const dispatch = createEventDispatcher();
+  import type { User } from "$lib/types/user"
 
-  export let visible = false;
-  export let hideable = true;
-  export let title = $_("Submit");
+  import UserSelect from "$components/Management/UserSelect.svelte"
+  import Overlay from "$components/Overlay.svelte"
 
-  export let commentInput = false;
-  export let commentRequired = false;
+  const dispatch = createEventDispatcher()
 
-  let comment = "";
+  export let visible = false
+  export let hideable = true
+  export let title = $_("Submit")
 
-  export let assignToUserInput = false;
-  export let toUser: User;
-  export let showSubmit = true;
-  export let cancelButtonTitle = "Cancel";
+  export let commentInput = false
+  export let commentRequired = false
 
-  const onSubmit = async () => {
-    dispatch("submit", { comment, to_user: toUser });
-    comment = "";
-  };
+  export let comment = ""
+
+  export let assignToUserInput = false
+  export let toUser: User | null = null
+  export let toUserRequired = false
+  export let extraUserIDs: number[] = []
+  export let showSubmit = true
+  export let submitTitle: string | null = null
+
+  const onSubmit = async e => {
+    const form = e.target as HTMLFormElement
+    if (!form.checkValidity()) form.reportValidity()
+
+    dispatch("submit", { comment, toUser })
+  }
+  onDestroy(() => (comment = ""))
 </script>
 
-<Overlay bind:title bind:hideable bind:visible on:submit={onSubmit}>
+<Overlay
+  bind:title
+  bind:hideable
+  bind:visible
+  bind:submitTitle
+  on:submit={onSubmit}
+  on:close
+  {showSubmit}
+>
   <slot />
 
   {#if commentInput || commentRequired}
@@ -35,20 +50,13 @@
       {commentRequired
         ? $_("Please provide a comment explaining your request")
         : $_("Additional comment")}
-      <textarea class="mt-1 inpt" bind:value={comment} required={commentRequired} />
+      <textarea class="inpt mt-1" bind:value={comment} required={commentRequired} />
     </label>
   {/if}
   {#if assignToUserInput}
     <div class="mb-4">
       <div class="mb-1 block underline">{$_("Assign to user")}</div>
-      <UserSelect bind:value={toUser} />
+      <UserSelect bind:value={toUser} {extraUserIDs} required={toUserRequired} />
     </div>
   {/if}
-
-  <div slot="footer" class="text-right">
-    <button type="button" class="btn btn-cancel" on:click={() => (visible = false)}>
-      {cancelButtonTitle}
-    </button>
-    {#if showSubmit}<button type="submit" class="btn btn-primary">{title}</button>{/if}
-  </div>
 </Overlay>

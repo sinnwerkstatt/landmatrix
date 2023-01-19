@@ -1,12 +1,12 @@
-<script>
-  import { _ } from "svelte-i18n";
+<script lang="ts">
+  import { _ } from "svelte-i18n"
 </script>
 
 <div class="map-data-charts my-8 flex gap-8" on:click>
   <a href="/map" class="square">
     <div>
       <h3>{$_("Map")}</h3>
-      <div class="mt-4 mx-auto h-24">
+      <div class="mx-auto mt-4 h-24">
         <svg
           class="mx-auto"
           width="72"
@@ -23,7 +23,7 @@
       </div>
       <div class="mt-2 text-lg">
         {$_(
-          "Explore the map for information about land deals from global down to regional and country level."
+          "Explore the map for information about land deals from global down to regional and country level.",
         )}
       </div>
     </div>
@@ -32,7 +32,7 @@
   <a href="/list/deals" class="square">
     <div>
       <h3>{$_("Data")}</h3>
-      <div class="mt-4 mx-auto h-24">
+      <div class="mx-auto mt-4 h-24">
         <svg
           class="mx-auto"
           width="96"
@@ -49,7 +49,7 @@
       </div>
       <div class="mt-2 text-lg">
         {$_(
-          "Search and filter the dataset through pre-configured entry points or drill down to single deals."
+          "Search and filter the dataset through pre-configured entry points or drill down to single deals.",
         )}
       </div>
     </div>
@@ -57,7 +57,7 @@
   <a href="/charts" class="square">
     <div>
       <h3>{$_("Charts")}</h3>
-      <div class="mt-4 mx-auto h-24">
+      <div class="mx-auto mt-4 h-24">
         <svg
           class="mx-auto"
           width="96"
@@ -74,15 +74,15 @@
       </div>
       <div class="mt-2 text-lg">
         {$_(
-          "Generate your own infographics using a wide selection of charts to illustrate information about deals."
+          "Generate your own infographics using a wide selection of charts to illustrate information about deals.",
         )}
       </div>
     </div>
   </a>
 </div>
 
-<style>
+<style lang="postcss">
   .square {
-    @apply block bg-lm-light text-center p-4 text-black hover:drop-shadow-[2px_2px_4px_rgba(0,0,0,0.35)];
+    @apply block bg-lm-light p-4 text-center text-black hover:drop-shadow-[2px_2px_4px_rgba(0,0,0,0.35)];
   }
 </style>

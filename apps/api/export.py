@@ -10,16 +10,13 @@ from openpyxl import Workbook
 from openpyxl.utils.exceptions import IllegalCharacterError
 
 from apps.graphql.tools import parse_filters
-from apps.landmatrix.models import (
-    Deal,
-    Investor,
-    InvestorVentureInvolvement,
-    Currency,
-    Country,
-)
+from apps.landmatrix.models.deal import Deal
+from apps.landmatrix.models.investor import Investor, InvestorVentureInvolvement
+from apps.landmatrix.models.currency import Currency
+from apps.landmatrix.models.country import Country
 
 # noinspection PyProtectedMember
-from apps.landmatrix.models import _choices
+from apps.landmatrix.models import choices
 from apps.landmatrix.utils import InvolvementNetwork
 from apps.utils import qs_values_to_dict, arrayfield_choices_display
 
@@ -163,7 +160,6 @@ deal_fields = {
     "gender_related_information": "Comment on gender-related info",
     "overall_comment": "Overall comment",
     "confidential": "Not public",
-    "confidential_reason": "Reason",
     "confidential_comment": "Comment on not public",
 }
 location_fields = {
@@ -201,18 +197,18 @@ datasource_fields = {
     "comment": "Comment on data source",
 }
 
-negotiation_status_choices = {**dict(_choices.NEGOTIATION_STATUS_CHOICES), None: "None"}
+negotiation_status_choices = {**dict(choices.NEGOTIATION_STATUS_CHOICES), None: "None"}
 implementation_status_choices = {
-    **dict(_choices.IMPLEMENTATION_STATUS_CHOICES),
+    **dict(choices.IMPLEMENTATION_STATUS_CHOICES),
     None: "None",
 }
-intention_of_investment_choices = {**dict(_choices.INTENTION_CHOICES), None: "None"}
+intention_of_investment_choices = {**dict(choices.INTENTION_CHOICES), None: "None"}
 produce_choices = {
-    "crops": {k: v["name"] for k, v in _choices.CROPS.items()},
-    "contract_farming_crops": {k: v["name"] for k, v in _choices.CROPS.items()},
-    "animals": {k: v["name"] for k, v in _choices.ANIMALS.items()},
-    "contract_farming_animals": {k: v["name"] for k, v in _choices.ANIMALS.items()},
-    "mineral_resources": {k: v["name"] for k, v in _choices.MINERALS.items()},
+    "crops": {k: v["name"] for k, v in choices.CROPS.items()},
+    "contract_farming_crops": {k: v["name"] for k, v in choices.CROPS.items()},
+    "animals": {k: v["name"] for k, v in choices.ANIMALS.items()},
+    "contract_farming_animals": {k: v["name"] for k, v in choices.ANIMALS.items()},
+    "mineral_resources": {k: v["name"] for k, v in choices.MINERALS.items()},
 }
 
 
@@ -317,18 +313,22 @@ def flatten_date_current_value(data, field, fieldname) -> None:
     )
 
 
-def flatten_array_choices(data, field, choices) -> None:
+def flatten_array_choices(data, field, choics) -> None:
     if not data.get(field):
         data[field] = ""
         return
 
-    data[field] = "|".join([choices[x] for x in data[field]])
+    matches = []
+    for x in data[field]:
+        if choice := choics.get(x):
+            matches += [choice]
+    data[field] = "|".join(matches)
 
 
-def single_choice(data, field, choices) -> None:
+def single_choice(data, field, choics) -> None:
     if not data.get(field):
         return
-    data[field] = choices[data[field]]
+    data[field] = choics[data[field]]
 
 
 def bool_cast(data, field) -> None:
@@ -634,7 +634,7 @@ class DataDownload:
             data["intention_of_investment"] = ""
 
         flatten_array_choices(
-            data, "nature_of_deal", dict(_choices.NATURE_OF_DEAL_CHOICES)
+            data, "nature_of_deal", dict(choices.NATURE_OF_DEAL_CHOICES)
         )
 
         if data.get("negotiation_status"):
@@ -676,7 +676,7 @@ class DataDownload:
                 data["purchase_price_currency"]
             ]
         if data.get("purchase_price_type"):
-            data["purchase_price_type"] = dict(_choices.HA_AREA_CHOICES)[
+            data["purchase_price_type"] = dict(choices.HA_AREA_CHOICES)[
                 data["purchase_price_type"]
             ]
         # if data.get("purchase_price_area"):
@@ -689,7 +689,7 @@ class DataDownload:
                 data["annual_leasing_fee_currency"]
             ]
         if data.get("annual_leasing_fee_type"):
-            data["annual_leasing_fee_type"] = dict(_choices.HA_AREA_CHOICES)[
+            data["annual_leasing_fee_type"] = dict(choices.HA_AREA_CHOICES)[
                 data["annual_leasing_fee_type"]
             ]
         # if data.get("annual_leasing_fee_area"):
@@ -719,15 +719,15 @@ class DataDownload:
                 )
 
         flatten_array_choices(
-            data, "recognition_status", dict(_choices.RECOGNITION_STATUS_CHOICES)
+            data, "recognition_status", dict(choices.RECOGNITION_STATUS_CHOICES)
         )
         single_choice(
             data,
             "community_consultation",
-            dict(_choices.COMMUNITY_CONSULTATION_CHOICES),
+            dict(choices.COMMUNITY_CONSULTATION_CHOICES),
         )
         single_choice(
-            data, "community_reaction", dict(_choices.COMMUNITY_REACTION_CHOICES)
+            data, "community_reaction", dict(choices.COMMUNITY_REACTION_CHOICES)
         )
 
         if data.get("involved_actors"):
@@ -736,9 +736,7 @@ class DataDownload:
                     "#".join(
                         [
                             x.get("name", "") or "",
-                            dict(_choices.ACTOR_MAP)[x["role"]]
-                            if x.get("role")
-                            else "",
+                            dict(choices.ACTOR_MAP)[x["role"]] if x.get("role") else "",
                         ]
                     )
                     for x in data["involved_actors"]
@@ -783,22 +781,20 @@ class DataDownload:
         bool_cast(data, "displacement_of_people")
 
         flatten_array_choices(
-            data, "negative_impacts", dict(_choices.NEGATIVE_IMPACTS_CHOICES)
+            data, "negative_impacts", dict(choices.NEGATIVE_IMPACTS_CHOICES)
+        )
+        flatten_array_choices(data, "promised_benefits", dict(choices.BENEFITS_CHOICES))
+        flatten_array_choices(
+            data, "materialized_benefits", dict(choices.BENEFITS_CHOICES)
         )
         flatten_array_choices(
-            data, "promised_benefits", dict(_choices.BENEFITS_CHOICES)
+            data, "former_land_owner", dict(choices.FORMER_LAND_OWNER_CHOICES)
         )
         flatten_array_choices(
-            data, "materialized_benefits", dict(_choices.BENEFITS_CHOICES)
+            data, "former_land_use", dict(choices.FORMER_LAND_USE_CHOICES)
         )
         flatten_array_choices(
-            data, "former_land_owner", dict(_choices.FORMER_LAND_OWNER_CHOICES)
-        )
-        flatten_array_choices(
-            data, "former_land_use", dict(_choices.FORMER_LAND_USE_CHOICES)
-        )
-        flatten_array_choices(
-            data, "former_land_cover", dict(_choices.FORMER_LAND_COVER_CHOICES)
+            data, "former_land_cover", dict(choices.FORMER_LAND_COVER_CHOICES)
         )
 
         bool_cast(data, "has_domestic_use")
@@ -864,14 +860,9 @@ class DataDownload:
                 )
 
         flatten_array_choices(
-            data, "source_of_water_extraction", dict(_choices.WATER_SOURCE_CHOICES)
+            data, "source_of_water_extraction", dict(choices.WATER_SOURCE_CHOICES)
         )
         bool_cast(data, "use_of_irrigation_infrastructure")
-
-        if data.get("confidential_reason"):
-            data["confidential_reason"] = dict(_choices.CONFIDENTIAL_REASON_CHOICES)[
-                data["confidential_reason"]
-            ]
 
         return [
             "" if field not in data else data[field] for field in deal_fields.keys()
@@ -882,7 +873,7 @@ class DataDownload:
         if data.get("point"):
             data["point"] = f"{data['point']['lat']},{data['point']['lng']}"
         if data.get("level_of_accuracy"):
-            data["level_of_accuracy"] = _choices.LOCATION_ACCURACY[
+            data["level_of_accuracy"] = choices.LOCATION_ACCURACY[
                 data["level_of_accuracy"]
             ]
         return [
@@ -918,7 +909,7 @@ class DataDownload:
     @staticmethod
     def datasource_download_format(data):
         if data.get("type"):
-            data["type"] = _choices.DATASOURCE_TYPE_MAP[data["type"]]
+            data["type"] = choices.DATASOURCE_TYPE_MAP[data["type"]]
         if data.get("date"):
             try:
                 data["date"] = datetime.strptime(data.get("date"), "%Y-%m-%d").date()

@@ -1,11 +1,12 @@
 <script lang="ts">
-  import type { WagtailStreamfield } from "$lib/types/wagtail";
-  import { blockMap } from "$components/Wagtail/blocks";
+  import type { WagtailStreamfield } from "$lib/types/wagtail"
 
-  export let content: WagtailStreamfield = [];
+  import { blockMap } from "$components/Wagtail/blocks"
+
+  export let content: WagtailStreamfield = []
 </script>
 
-<div class="container mx-auto pt-6 pb-0 streamfield {$$props.class ?? ''}">
+<div class="streamfield container mx-auto px-10 pt-6 pb-0 {$$props.class ?? ''}">
   {#each content as { type, value }}
     {#if blockMap[type]}
       <svelte:component this={blockMap[type]} bind:value />
@@ -20,14 +21,17 @@
   {/each}
 </div>
 
-<style>
+<style lang="postcss">
   :global(.streamfield ol) {
     @apply list-decimal pl-4;
   }
   :global(.streamfield ul) {
-    @apply list-disc pl-4;
+    @apply mb-4 list-disc pl-4;
   }
   :global(.streamfield h2) {
     @apply text-3xl font-bold;
+  }
+  :global(.streamfield p) {
+    @apply mb-4;
   }
 </style>

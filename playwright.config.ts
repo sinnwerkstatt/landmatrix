@@ -7,7 +7,7 @@ const config: PlaywrightTestConfig = {
   use: {
     headless: true,
     // viewport: { width: 1920, height: 1080 },
-    baseURL: "http://localhost:3000/",
+    baseURL: "http://localhost:9000/",
     ignoreHTTPSErrors: true,
     trace: "on-first-retry",
   },
@@ -19,5 +19,8 @@ const config: PlaywrightTestConfig = {
     // { name: "firefox", use: { ...devices["Desktop Firefox"] } },
     // { name: "webkit", use: { ...devices["Desktop Safari"] } },
   ],
+  reporter: process.env.CI
+    ? [["dot"], ["junit", { outputFile: "results.xml" }]]
+    : "list",
 };
 export default config;

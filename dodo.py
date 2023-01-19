@@ -23,18 +23,7 @@ def task_full_update():
 
 
 def task_initial_setup():
-    fixtures = " ".join(
-        [
-            "status",
-            "languages",
-            # "crops",
-            # "animals",
-            # "minerals",
-            "countries_and_regions",
-            "users_and_groups",
-            # "filters",
-        ]
-    )
+    fixtures = " ".join(["countries_and_regions", "users_and_groups"])
     return {
         "task_dep": ["update"],
         "actions": [
@@ -64,11 +53,29 @@ def task_reset_db():
     return {"actions": actions}
 
 
+def task_reset_db_with_dump():
+    db = env.db()
+    user_pg_run = (
+        f"PGPASSWORD={db['PASSWORD']} psql -h localhost -U {db['USER']} {db['NAME']}"
+    )
+
+    replace_db = f"zcat landmatrix.sql.gz | {user_pg_run}"
+
+    update = "UPDATE wagtailcore_site SET port=9000, hostname='localhost'"
+    reset_site_to_localhost = f'{user_pg_run} -c "{update}"'
+
+    return {
+        "task_dep": ["reset_db"],
+        "actions": [replace_db, reset_site_to_localhost],
+    }
+
+
 #############################
 def task_frontend_build():
-    actions = ["cd frontend; npm ci"]
+    actions = ["cd frontend; npm ci", "cd newfront; npm ci"]
     if get_var("production", False):
         actions += ["cd frontend; npm run build"]
+        actions += ["cd newfront; npm run build"]
     return {
         "task_dep": ["compilemessages"],
         "actions": actions,

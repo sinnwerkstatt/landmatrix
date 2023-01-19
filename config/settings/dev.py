@@ -24,10 +24,3 @@ if env.bool("FRONTENDDEV", default=False):
 # hCaptcha spam protection for comments
 HCAPTCHA_SITEKEY = "10000000-ffff-ffff-ffff-000000000001"
 HCAPTCHA_SECRETKEY = "0x0000000000000000000000000000000000000000"
-
-
-# CACHES["default"] = {
-#     "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
-#     "LOCATION": "127.0.0.1:11211",
-# }
-# /etc/memcached.conf -> `-I 128M`

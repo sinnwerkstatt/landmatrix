@@ -1,5 +1,3 @@
-from typing import Iterable
-
 from django import forms
 from django.contrib.postgres.fields import ArrayField as _ArrayField
 from django.core.exceptions import ValidationError
@@ -19,7 +17,7 @@ class ArrayField(_ArrayField):
 
 
 class JSONSchemaField(JSONField):
-    schema_defition = None
+    schema_definition = None
 
     def pre_save(self, model_instance, add):
         value = super().pre_save(model_instance, add)
@@ -30,7 +28,7 @@ class JSONSchemaField(JSONField):
     def validate_schema(cls, value):
         if value:  # do schema validation here
             try:
-                cls.schema_defition(value)
+                cls.schema_definition(value)
             except JsonSchemaException as e:
                 raise ValidationError(e, code="invalid")
 
@@ -53,15 +51,15 @@ class JSONSchemaField(JSONField):
 
 
 class LocationsField(JSONSchemaField):
-    schema_defition = locations_schema
+    schema_definition = locations_schema
 
 
 class ContractsField(JSONSchemaField):
-    schema_defition = contracts_schema
+    schema_definition = contracts_schema
 
 
 class DatasourcesField(JSONSchemaField):
-    schema_defition = datasources_schema
+    schema_definition = datasources_schema
 
 
 # class JSONDateAreaChoicesField(JSONField):

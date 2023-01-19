@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { mapChoices } from "$components/Fields/Display/jsonHelpers";
-  import type { FormField } from "$components/Fields/fields";
+  import { mapChoices } from "$components/Fields/Display/jsonHelpers"
+  import type { FormField } from "$components/Fields/fields"
 
   enum ActorRole {
     TRADITIONAL_LAND_OWNERS_OR_COMMUNITIES = "TRADITIONAL_LAND_OWNERS_OR_COMMUNITIES",
@@ -12,20 +12,20 @@
   }
 
   type JSONActorsFieldType = {
-    name: string;
-    role: ActorRole;
-  };
+    name: string
+    role: ActorRole
+  }
 
-  export let formfield: FormField;
-  export let value: JSONActorsFieldType[] = [];
+  export let formfield: FormField
+  export let value: JSONActorsFieldType[] = []
 </script>
 
-<ul class="jsonactors_field list-disc pl-5">
-  {#each value as val}
+<ul class="jsonactors_field list-disc pl-5" data-name={formfield?.name ?? ""}>
+  {#each value ?? [] as val}
     <li>
       <span>{val.name}</span>
       {#if val.role}
-        <span class="font-light text-sm">
+        <span class="text-sm font-light">
           ({mapChoices(val.role, formfield.choices)})
         </span>
       {/if}

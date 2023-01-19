@@ -1,38 +1,50 @@
-<script>
-  import { createEventDispatcher, onDestroy, onMount } from "svelte";
-  import { fade, slide } from "svelte/transition";
-  import { browser } from "$app/env";
+<script lang="ts">
+  import { createEventDispatcher } from "svelte"
+  import { _ } from "svelte-i18n"
+  import { fade, slide } from "svelte/transition"
 
-  const dispatch = createEventDispatcher();
+  import { browser } from "$app/environment"
 
-  export let visible = false;
-  export let hideable = true;
-  export let title = null;
+  const dispatch = createEventDispatcher()
+
+  export let visible = false
+  export let hideable = true
+  export let title: string | null = null
+
+  export let showSubmit = false
+  export let submitTitle: string | null = null
+  export let submitDisabled = false
+
+  export let closeButtonText = $_("Cancel")
 
   function close() {
     if (hideable) {
-      dispatch("close");
-      visible = false;
+      dispatch("close")
+      visible = false
     }
   }
 
   function escape_key(e) {
-    if (e.key === "Escape" && hideable) visible = false;
+    if (e.key === "Escape") close()
   }
 
-  onMount(() => browser && document.addEventListener("keydown", escape_key));
-  onDestroy(() => browser && document.removeEventListener("keydown", escape_key));
+  $: if (browser) {
+    if (visible) document.addEventListener("keydown", escape_key)
+    else document.removeEventListener("keydown", escape_key)
+  }
 </script>
 
 {#if visible}
   <div
     transition:fade={{ duration: 100 }}
-    class="fixed inset-0 w-screen h-screen max-h-screen z-10 flex justify-center items-center backdrop-blur-sm bg-[rgba(0,0,0,0.3)]"
+    class="fixed inset-0 z-10 flex h-screen max-h-screen w-screen items-center justify-center bg-[rgba(0,0,0,0.3)] backdrop-blur-sm"
     on:click|self={close}
+    on:keyup|self={close}
   >
     <div
       transition:slide={{ duration: 150 }}
-      class="w-[clamp(300px,70vw,800px)] shadow-xl text-black bg-white border max-h-[99vh] overflow-y-auto"
+      class="max-h-[99vh] w-[clamp(300px,70vw,800px)] overflow-y-auto border bg-white text-black shadow-xl {$$props.class ??
+        ''}"
     >
       <form on:submit|preventDefault>
         {#if $$slots.header || title}
@@ -43,11 +55,17 @@
         <div class="p-7">
           <slot />
         </div>
-        {#if $$slots.footer}
-          <div class="border-t px-7 py-5">
-            <slot name="footer" />
-          </div>
-        {/if}
+
+        <div class="border-t px-7 py-5 text-right">
+          <button type="button" class="btn btn-cancel" on:click={close}>
+            {closeButtonText}
+          </button>
+          {#if showSubmit}
+            <button disabled={submitDisabled} type="submit" class="btn btn-primary">
+              {submitTitle ?? title}
+            </button>
+          {/if}
+        </div>
       </form>
     </div>
   </div>

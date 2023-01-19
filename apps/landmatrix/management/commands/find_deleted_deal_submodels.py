@@ -6,7 +6,7 @@ import pytz
 import termtables as tt
 from django.core.management.base import BaseCommand
 
-from apps.landmatrix.models import Deal
+from apps.landmatrix.models.deal import Deal
 
 
 @dataclass
@@ -149,7 +149,7 @@ class Command(BaseCommand):
 
             if has_problems:
                 print(
-                    f'{deal.id};{deal.country.fk_region.name};{deal.country.name};=HYPERLINK("https://dev.landmatrix.org/deal/{deal.id}/datasources_table/")'
+                    f'{deal.id};{deal.country.region.name};{deal.country.name};=HYPERLINK("https://dev.landmatrix.org/deal/{deal.id}/datasources_table/")'
                 )
                 global_count += 1
             if deletion_events > 1:

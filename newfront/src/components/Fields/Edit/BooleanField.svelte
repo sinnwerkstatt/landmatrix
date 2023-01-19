@@ -1,9 +1,10 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
-  import type { FormField } from "../fields";
+  import { _ } from "svelte-i18n"
 
-  export let formfield: FormField;
-  export let value: number;
+  import type { FormField } from "../fields"
+
+  export let formfield: FormField
+  export let value: number
 </script>
 
 <div class="boolean_field space-x-6">

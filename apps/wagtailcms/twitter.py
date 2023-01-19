@@ -120,6 +120,7 @@ class TwitterTimeline:
 
 
 if __name__ == "__main__":
+    # noinspection PyPackageRequirements
     import environ
 
     BASE_DIR = environ.Path(__file__) - 4

@@ -1,4 +1,4 @@
-from apps.landmatrix.models import InvestorVentureInvolvement, Investor
+from apps.landmatrix.models.investor import InvestorVentureInvolvement, Investor
 from apps.utils import arrayfield_choices_display
 
 

@@ -191,8 +191,7 @@ class Command(BaseCommand):
             overall_comment="overall_comment",
             fully_updated=True,
             confidential=True,
-            confidential_reason="RESEARCH_IN_PROGRESS",
-            confidential_comment="confidential_comment",
+            confidential_comment="research in process confidential_comment",
             status=2,
             draft_status=1,
             locations=[

@@ -1,10 +1,5 @@
-from django.conf import settings
-from django.templatetags.static import static
-from django.utils.html import escape, format_html, format_html_join
 from wagtail.contrib.modeladmin.options import ModelAdmin, modeladmin_register
 from wagtail.core import hooks
-from wagtail.core.models import Page
-from wagtail.core.rich_text.pages import PageLinkHandler
 from wagtail.core.whitelist import attribute_rule
 from wagtailorderable.modeladmin.mixins import OrderableMixin
 
@@ -82,23 +77,3 @@ class MessageAdmin(OrderableMixin, ModelAdmin):
 
 
 modeladmin_register(MessageAdmin)
-
-
-# GND replace link-handler with legacy-aware handler for now.
-class MyPageLinkHandler(PageLinkHandler):
-    @classmethod
-    def expand_db_attributes(cls, attrs):
-        try:
-            page = cls.get_instance(attrs)
-
-            page_url = escape(page.specific.url)
-            page_url = page_url.replace("/legacy/", "/")
-
-            return f'<a href="{page_url}">'
-        except Page.DoesNotExist:
-            return "<a>"
-
-
-@hooks.register("register_rich_text_features", order=1)
-def legacy_url_rewrite_for_richtext_to_html_parsing(features):
-    features.register_link_type(MyPageLinkHandler)

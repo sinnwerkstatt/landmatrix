@@ -1,46 +1,34 @@
 <script lang="ts">
-  import { gql } from "graphql-tag";
-  import { _ } from "svelte-i18n";
-  import Select from "svelte-select";
-  import VirtualList from "svelte-tiny-virtual-list";
-  import { writable } from "svelte/store";
-  import { page } from "$app/stores";
-  import type { User } from "$lib/types/user";
+  import { onMount } from "svelte"
+  import { _ } from "svelte-i18n"
+  import Select from "svelte-select"
+  import VirtualList from "svelte-tiny-virtual-list"
 
-  export let value: User | number;
+  import { allUsers } from "$lib/stores"
+  import type { User } from "$lib/types/user"
+  import { UserRole } from "$lib/types/user"
 
-  let users = writable<User[]>(undefined);
+  export let value: User | number
+  export let required = false
+  export let extraUserIDs: number[] = []
 
-  async function fetchUsers() {
-    if ($users !== undefined) return;
-    const { data } = await $page.stuff.secureApolloClient.query<{ users: User[] }>({
-      query: gql`
-        {
-          users {
-            id
-            full_name
-            username
-          }
-        }
-      `,
-    });
-    await users.set(
-      [...data.users].sort((a, b) => a.full_name.localeCompare(b.full_name))
-    );
+  onMount(async () => {
+    if (typeof value === "number") value = $allUsers.find(u => u.id === value) ?? -1
+  })
 
-    if (typeof value === "number") value = data.users.find((u) => u.id === value);
-  }
-  fetchUsers();
+  const createUserLabel = (user: User) => `${user.full_name} (<b>${user.username}</b>)`
 </script>
 
 <Select
-  {...$$props}
-  items={$users}
-  bind:value
-  placeholder={$_("User")}
-  optionIdentifier="id"
-  getOptionLabel={(o) => `${o.full_name} (<b>${o.username}</b>)`}
-  getSelectionLabel={(o) => `${o.full_name} (<b>${o.username}</b>)`}
-  showChevron
   {VirtualList}
+  bind:value
+  getOptionLabel={createUserLabel}
+  getSelectionLabel={createUserLabel}
+  items={$allUsers.filter(
+    u => extraUserIDs.includes(u.id) || u.role > UserRole.REPORTER,
+  )}
+  optionIdentifier="id"
+  placeholder={$_("User")}
+  showChevron
+  inputAttributes={{ required: required && !value }}
 />

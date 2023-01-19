@@ -134,7 +134,7 @@
             </router-link>
           </li>
         </ul>
-        <ul class="navbar-nav ml-auto align-items-center">
+        <ul class="navbar-nav align-items-center ml-auto">
           <NavbarSearch />
           <li class="nav-item dropdown">
             <a
@@ -170,9 +170,9 @@
               aria-haspopup="true"
               aria-expanded="false"
             >
-              {{ user.initials }}
-              <i v-if="user.role === 'ADMINISTRATOR'" class="fas fa-user-astronaut"></i>
-              <i v-else-if="user.role === 'EDITOR'" class="fas fa-user-nurse"></i>
+              {{ user.username }}
+              <i v-if="user.role === 3" class="fas fa-user-astronaut"></i>
+              <i v-else-if="user.role === 2" class="fas fa-user-nurse"></i>
               <i v-else-if="user.is_impersonate" class="fa fa-user-secret"></i>
               <i v-else class="fa fa-user"></i>
             </a>
@@ -184,7 +184,7 @@
               <p class="name-emblem">
                 {{ user.full_name }}
                 <br />
-                <small>{{ $t(user.bigrole) }}</small>
+                <small>{{ user.role }}</small>
               </p>
               <div class="dropdown-divider"></div>
               <!--suppress HtmlUnknownTarget -->
@@ -254,7 +254,7 @@
                 <button type="submit" class="btn btn-secondary">
                   {{ $t("Login") }}
                 </button>
-                <p class="mt-3 text-danger small">{{ login_failed_message }}</p>
+                <p class="text-danger small mt-3">{{ login_failed_message }}</p>
               </form>
               <div class="dropdown-divider"></div>
               <router-link :to="{ name: 'register' }" class="dropdown-item">
@@ -273,9 +273,9 @@
 
 <script lang="ts">
   import NavbarSearch from "$components/NavbarSearch.vue";
+  import lm_logo from "$static/images/lm-logo.png";
   import { blogcategories_query } from "$store/queries";
   import Cookies from "js-cookie";
-  import lm_logo from "$static/images/lm-logo.png";
   import Vue from "vue";
 
   export default Vue.extend({

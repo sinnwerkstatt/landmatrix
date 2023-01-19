@@ -1,180 +1,91 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
-  import { _ } from "svelte-i18n";
-  import type { Obj } from "$lib/types/generics";
-  import UserSelect from "$components/Management/UserSelect.svelte";
-  import ManageHeaderLogbookList from "./ManageHeaderLogbookList.svelte";
+  import { createEventDispatcher } from "svelte"
+  import { _ } from "svelte-i18n"
 
-  const dispatch = createEventDispatcher();
-  export let object: Obj;
-  export let objectVersion: number;
+  import { page } from "$app/stores"
 
-  let comment = "";
-  let send_to_user;
-  let commentArea;
+  import type { User } from "$lib/types/user"
+  import { UserRole } from "$lib/types/user"
 
-  function addComment() {
-    if (!commentArea.checkValidity()) {
-      commentArea.reportValidity();
-      return;
-    }
+  import ChatBubbleLeftIcon from "$components/icons/ChatBubbleLeftIcon.svelte"
+  import ChatBubbleLeftRightIcon from "$components/icons/ChatBubbleLeftRightIcon.svelte"
+  import ManageOverlay from "$components/Management/ManageOverlay.svelte"
+  import WorkflowInfo from "$components/Management/WorkflowInfo.svelte"
 
-    dispatch("addComment", { comment, send_to_user });
-    comment = "";
+  export let workflowInfos: WorkflowInfo[] = []
+  export let extraUserIDs: number[] = []
+
+  const dispatch = createEventDispatcher()
+
+  let showCommentOverlay = false
+  let commentOverlayComment = ""
+
+  function addComment(e: CustomEvent<{ comment: string; toUser: User }>) {
+    dispatch("addComment", { comment: e.detail.comment })
+    commentOverlayComment = ""
+    showCommentOverlay = false
+  }
+
+  let showFeedbackOverlay = false
+  let feedbackOverlayComment = ""
+
+  function addFeedback(e: CustomEvent<{ comment: string; toUser: User }>) {
+    dispatch("addComment", e.detail)
+    feedbackOverlayComment = ""
+    showFeedbackOverlay = false
   }
 </script>
 
-<div class="bg-lm-warmgray lg:w-1/3">
-  <h3 class="mx-3">{$_("Logbook")}</h3>
-  <div class="mx-1">
-    <form action="." method="post">
-      <div class="">
-        <textarea
-          bind:this={commentArea}
-          bind:value={comment}
-          required
-          rows="2"
-          class="w-full"
-        />
-      </div>
-      <div class="my-2 ml-1 lg:flex items-center">
-        <span class="lg:w-1/5">{$_("Send to")}:</span>
-        <div class="flex-grow">
-          <UserSelect bind:value={send_to_user} />
-        </div>
-        <button
-          type="button"
-          class="btn btn-pelorous btn-slim lg:w-1/5"
-          on:click|preventDefault={addComment}
-        >
-          {$_("Send")}
-        </button>
-      </div>
-    </form>
+<div class="flex flex-col bg-lm-warmgray px-3 lg:w-1/3">
+  <h3 class="my-1 font-medium">{$_("Logbook")}</h3>
+
+  <div
+    class="h-0 flex-grow cursor-default overflow-y-scroll border-lm-dark bg-lm-warmgray px-[2px] pt-1 pb-4 shadow-inner"
+  >
+    {#each workflowInfos as info}
+      <WorkflowInfo {info} />
+    {/each}
   </div>
 
-  <ManageHeaderLogbookList workflowinfos={object.workflowinfos} />
+  <div class="my-2 text-right">
+    {#if $page.data.user.role > UserRole.REPORTER}
+      <button
+        class="btn btn-pelorous-secondary btn-slim inline-flex items-center gap-2 px-2"
+        on:click={() => (showFeedbackOverlay = true)}
+        type="button"
+      >
+        {$_("Send feedback")}
+        <ChatBubbleLeftRightIcon class="h-5 w-5" />
+      </button>
+    {/if}
+    <button
+      class="btn btn-pelorous btn-slim inline-flex items-center gap-2 px-2"
+      on:click={() => (showCommentOverlay = true)}
+      type="submit"
+    >
+      {$_("Add comment")}
+      <ChatBubbleLeftIcon class="h-5 w-5" />
+    </button>
+  </div>
 </div>
 
-<!--<style lang="scss" scoped>-->
-<!--  .comments {-->
-<!--    background: #c4c4c4;-->
-<!--    padding: 0.7rem;-->
-<!--    color: rgba(black, 0.6);-->
-<!--    max-height: 100%;-->
-<!--    flex-grow: 1;-->
-<!--    display: flex;-->
-<!--    flex-direction: column;-->
+<ManageOverlay
+  assignToUserInput
+  bind:comment={feedbackOverlayComment}
+  bind:visible={showFeedbackOverlay}
+  commentRequired
+  on:submit={addFeedback}
+  title={$_("Send feedback")}
+  submitTitle={$_("Send")}
+  {extraUserIDs}
+  toUserRequired
+/>
 
-<!--    @media screen and (min-width: 992px) {-->
-<!--      max-width: 40vw;-->
-<!--    }-->
-
-<!--    h3 {-->
-<!--      margin-top: 0;-->
-<!--      font-weight: 600;-->
-<!--      margin-bottom: 0.2em;-->
-<!--      font-size: 1.2em;-->
-<!--    }-->
-
-<!--    .new-comment {-->
-<!--      font-size: 0.9em;-->
-<!--      margin-bottom: 1em;-->
-
-<!--      textarea {-->
-<!--        padding: 0.2em 0.5em;-->
-<!--        width: 100%;-->
-<!--        border: 1px solid lightgrey;-->
-<!--        border-radius: 5px;-->
-<!--        z-index: 1;-->
-<!--        position: relative;-->
-<!--        font-size: 0.9em;-->
-
-<!--        &:focus {-->
-<!--          border-color: transparent;-->
-<!--          outline: none;-->
-<!--        }-->
-<!--      }-->
-
-<!--      .send {-->
-<!--        display: flex;-->
-<!--        align-items: center;-->
-
-<!--        span {-->
-<!--          white-space: nowrap;-->
-<!--          padding-right: 5px;-->
-<!--        }-->
-
-<!--        input {-->
-<!--          flex: 1;-->
-<!--          width: 100px;-->
-<!--          margin: 0 2px 0 0.5em;-->
-<!--          border: 1px solid lightgrey;-->
-<!--          border-radius: 5px;-->
-<!--        }-->
-
-<!--        .btn {-->
-<!--          margin-left: 7px;-->
-<!--          background: var(&#45;&#45;color-lm-investor);-->
-<!--          padding: 0.38em 0.7em;-->
-<!--          font-size: 0.9em;-->
-<!--          border-radius: 5px;-->
-
-<!--          &:hover {-->
-<!--            background-color: var(&#45;&#45;color-lm-investor-light);-->
-<!--          }-->
-
-<!--          &:focus,-->
-<!--          &:active {-->
-<!--            outline: none;-->
-<!--          }-->
-<!--        }-->
-<!--      }-->
-<!--    }-->
-<!--  }-->
-<!--</style>-->
-
-<!--<style lang="scss">-->
-<!--  .comment .message p:last-child {-->
-<!--    margin-bottom: 0;-->
-<!--  }-->
-
-<!--  .send {-->
-<!--    .multiselect,-->
-<!--    .multiselect__tags {-->
-<!--      min-height: 30px;-->
-<!--    }-->
-
-<!--    .multiselect {-->
-<!--      min-width: auto;-->
-<!--    }-->
-
-<!--    .multiselect__tags {-->
-<!--      padding-top: 4px;-->
-<!--      padding-left: 2px;-->
-<!--      padding-right: 25px;-->
-<!--    }-->
-
-<!--    .multiselect__select {-->
-<!--      height: 32px;-->
-<!--      width: 32px;-->
-<!--      padding-left: 0;-->
-<!--      padding-right: 0;-->
-<!--    }-->
-
-<!--    .multiselect__placeholder,-->
-<!--    .multiselect__single {-->
-<!--      margin-bottom: 0 !important;-->
-<!--    }-->
-
-<!--    .multiselect__placeholder {-->
-<!--      padding-top: 0;-->
-<!--      padding-left: 5px;-->
-<!--    }-->
-
-<!--    .multiselect__input {-->
-<!--      font-size: 1em;-->
-<!--      margin-bottom: 2px;-->
-<!--    }-->
-<!--  }-->
-<!--</style>-->
+<ManageOverlay
+  bind:comment={commentOverlayComment}
+  bind:visible={showCommentOverlay}
+  commentRequired
+  on:submit={addComment}
+  submitTitle={$_("Save")}
+  title={$_("Add comment")}
+/>

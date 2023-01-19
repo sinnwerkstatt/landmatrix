@@ -1,21 +1,22 @@
-from typing import List, Dict
-
 import pytest
 from django.contrib.auth import get_user_model
-from graphql import GraphQLError
+from ariadne.graphql import GraphQLError
 
 from apps.graphql.resolvers.generics import (
     object_edit,
     change_object_status,
     object_delete,
 )
+
+# noinspection PyProtectedMember
 from apps.graphql.resolvers.investor import _clean_payload
-from apps.landmatrix.models import Investor, InvestorVersion, Country
+from apps.landmatrix.models.investor import Investor, InvestorVersion
+from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.abstracts import DRAFT_STATUS, STATUS
 
 User = get_user_model()
 
-payload: Dict[str, any] = {
+payload: dict[str, any] = {
     # "investors": [],
     "name": "Sinnwerkstatt GmbH",
     "classification": "NON_PROFIT",
@@ -24,7 +25,7 @@ payload: Dict[str, any] = {
 
 
 @pytest.fixture()
-def investor_draft(db) -> List[int]:
+def investor_draft(db) -> list[int]:
     payload["country"] = Country.objects.get(id=276)
     # new draft
     return object_edit(
@@ -37,26 +38,26 @@ def investor_draft(db) -> List[int]:
 
 
 def test_delete_investor_draft(investor_draft):
-    investorId, investorVersion = investor_draft
+    investor_id, investor_version = investor_draft
 
     with pytest.raises(GraphQLError):
         object_delete(
             otype="investor",
             user=User.objects.get(username="reporter-2"),
-            obj_id=investorId,
-            obj_version_id=investorVersion,
+            obj_id=investor_id,
+            obj_version_id=investor_version,
             comment="weg mit dem schmutz",
         )
-    assert Investor.objects.filter(id=investorId).count() == 1
+    assert Investor.objects.filter(id=investor_id).count() == 1
 
     object_delete(
         otype="investor",
         user=User.objects.get(username="reporter"),
-        obj_id=investorId,
-        obj_version_id=investorVersion,
+        obj_id=investor_id,
+        obj_version_id=investor_version,
         comment="weg mit dem schmutz",
     )
-    assert Investor.objects.filter(id=investorId).count() == 0
+    assert Investor.objects.filter(id=investor_id).count() == 0
 
 
 @pytest.fixture()
@@ -64,14 +65,14 @@ def test_edit_investor_draft(investor_draft):
     """
     :return: active investor
     """
-    investorId, investorVersion = investor_draft
+    investor_id, investor_version = investor_draft
 
     land_reporter = User.objects.get(username="reporter")
     land_editor = User.objects.get(username="editor")
     land_admin = User.objects.get(username="administrator")
 
     # verify new draft
-    i1 = Investor.objects.get(id=investorId)
+    i1 = Investor.objects.get(id=investor_id)
     assert i1.country_id == 276
     assert i1.draft_status == 1
     assert i1.status == 1
@@ -82,15 +83,15 @@ def test_edit_investor_draft(investor_draft):
     # edit draft
     pl2 = dict(payload, homepage="https://sinnwerkstatt.com")
 
-    newInvestorId, newInvestorVersion = object_edit(
+    new_investor_id, new_investor_version = object_edit(
         otype="investor",
         user=User.objects.get(username="reporter"),
         obj_id=i1.id,
         obj_version_id=i1.versions.get().id,
         payload=pl2,
     )
-    assert investorId == newInvestorId
-    assert investorVersion == newInvestorVersion
+    assert investor_id == new_investor_id
+    assert investor_version == new_investor_version
     i1.refresh_from_db()
     assert i1.homepage == "https://sinnwerkstatt.com"
 
@@ -98,11 +99,11 @@ def test_edit_investor_draft(investor_draft):
     assert i1v.serialized_data["homepage"] == "https://sinnwerkstatt.com"
 
     # change draft status TO_REVIEW
-    investorId, investorVersion = change_object_status(
+    investor_id, investor_version = change_object_status(
         otype="investor",
         user=land_reporter,
-        obj_id=investorId,
-        obj_version_id=investorVersion,
+        obj_id=investor_id,
+        obj_version_id=investor_version,
         transition="TO_REVIEW",
     )
     i1.refresh_from_db()
@@ -114,15 +115,15 @@ def test_edit_investor_draft(investor_draft):
         change_object_status(
             otype="investor",
             user=land_reporter,
-            obj_id=investorId,
-            obj_version_id=investorVersion,
+            obj_id=investor_id,
+            obj_version_id=investor_version,
             transition="TO_ACTIVATION",
         )
     change_object_status(
         otype="investor",
         user=land_editor,
-        obj_id=investorId,
-        obj_version_id=investorVersion,
+        obj_id=investor_id,
+        obj_version_id=investor_version,
         transition="TO_ACTIVATION",
     )
     i1.refresh_from_db()
@@ -137,15 +138,15 @@ def test_edit_investor_draft(investor_draft):
         change_object_status(
             otype="investor",
             user=land_editor,
-            obj_id=investorId,
-            obj_version_id=investorVersion,
+            obj_id=investor_id,
+            obj_version_id=investor_version,
             transition="ACTIVATE",
         )
     change_object_status(
         otype="investor",
         user=land_admin,
-        obj_id=investorId,
-        obj_version_id=investorVersion,
+        obj_id=investor_id,
+        obj_version_id=investor_version,
         transition="ACTIVATE",
     )
 
@@ -157,27 +158,27 @@ def test_edit_investor_draft(investor_draft):
 
 
 def test_delete_investor(test_edit_investor_draft):
-    investorId = test_edit_investor_draft
+    investor_id = test_edit_investor_draft
     with pytest.raises(GraphQLError):
         object_delete(
             otype="investor",
             user=User.objects.get(username="reporter"),
-            obj_id=investorId,
+            obj_id=investor_id,
             comment="weg mit dem schmutz",
         )
-    assert Investor.objects.filter(id=investorId).count() == 1
+    assert Investor.objects.filter(id=investor_id).count() == 1
     with pytest.raises(GraphQLError):
         object_delete(
             otype="investor",
             user=User.objects.get(username="editor"),
-            obj_id=investorId,
+            obj_id=investor_id,
             comment="weg mit dem schmutz",
         )
-    assert Investor.objects.filter(id=investorId).count() == 1
+    assert Investor.objects.filter(id=investor_id).count() == 1
     object_delete(
         otype="investor",
         user=User.objects.get(username="administrator"),
-        obj_id=investorId,
+        obj_id=investor_id,
         comment="weg mit dem schmutz",
     )
     i1 = Investor.objects.get()
@@ -185,19 +186,18 @@ def test_delete_investor(test_edit_investor_draft):
     assert i1.draft_status is None
 
 
-# noinspection PyUnusedLocal
 def test_edit_investor(test_edit_investor_draft):
     land_reporter = User.objects.get(username="reporter")
     i1 = Investor.objects.get()
     payload.update({"comment": "cool company"})
-    investorId, investorVersion = object_edit(
+    investor_id, investor_version = object_edit(
         otype="investor",
         user=land_reporter,
         obj_id=i1.id,
         payload=payload,
     )
-    assert investorVersion is not None
-    assert investorId == i1.id
+    assert investor_version is not None
+    assert investor_id == i1.id
     i1.refresh_from_db()
     assert i1.comment == ""
     assert i1.status == STATUS["LIVE"]
@@ -234,7 +234,7 @@ def test_edit_investor(test_edit_investor_draft):
 
 
 def test_add_involvements(test_edit_investor_draft):
-    investorId = test_edit_investor_draft
+    investor_id = test_edit_investor_draft
     i2 = Investor.objects.create(name="Parent investor")
     i3 = Investor.objects.create(name="Parent investor2")
 
@@ -250,24 +250,26 @@ def test_add_involvements(test_edit_investor_draft):
 
     # this "dict" hack is here because of weird race conditions in pytest apparently
     pl1 = dict(payload, country={"id": "304"}, investors=[involvement1])
-    pl = _clean_payload(pl1, investorId)
+    pl = _clean_payload(pl1, investor_id)
 
-    invId, invV = object_edit("investor", land_reporter, obj_id=investorId, payload=pl)
-    assert invId == investorId
+    inv_id, inv_v = object_edit(
+        "investor", land_reporter, obj_id=investor_id, payload=pl
+    )
+    assert inv_id == investor_id
 
-    i1 = Investor.objects.get(id=investorId)
+    i1 = Investor.objects.get(id=investor_id)
     assert i1.versions.count() == 2
     assert i1.investors.all().count() == 0
 
     i1v: InvestorVersion = i1.versions.first()  # newest version
-    assert i1v.id == invV
+    assert i1v.id == inv_v
     invs = i1v.serialized_data["investors"]  # involvements in version
     assert [(i["venture"], i["investor"]) for i in invs] == [(i1.id, i2.id)]
     assert invs[0]["id"] is None  # involvement should not have id yet.
 
-    change_object_status("investor", land_admin, invId, invV, "TO_REVIEW")
-    change_object_status("investor", land_admin, invId, invV, "TO_ACTIVATION")
-    change_object_status("investor", land_admin, invId, invV, "ACTIVATE")
+    change_object_status("investor", land_admin, inv_id, inv_v, "TO_REVIEW")
+    change_object_status("investor", land_admin, inv_id, inv_v, "TO_ACTIVATION")
+    change_object_status("investor", land_admin, inv_id, inv_v, "ACTIVATE")
 
     invo1 = i1.investors.all()[0]
     assert invo1.id
@@ -283,13 +285,15 @@ def test_add_involvements(test_edit_investor_draft):
         "percentage": 23,
     }
     pl1 = dict(payload, country={"id": "304"}, investors=[involvement1, involvement2])
-    pl = _clean_payload(pl1, investorId)
+    pl = _clean_payload(pl1, investor_id)
 
-    invId, invV2 = object_edit("investor", land_reporter, obj_id=investorId, payload=pl)
+    inv_id, inv_v2 = object_edit(
+        "investor", land_reporter, obj_id=investor_id, payload=pl
+    )
 
-    change_object_status("investor", land_admin, invId, invV2, "TO_REVIEW")
-    change_object_status("investor", land_admin, invId, invV2, "TO_ACTIVATION")
-    change_object_status("investor", land_admin, invId, invV2, "ACTIVATE")
+    change_object_status("investor", land_admin, inv_id, inv_v2, "TO_REVIEW")
+    change_object_status("investor", land_admin, inv_id, inv_v2, "TO_ACTIVATION")
+    change_object_status("investor", land_admin, inv_id, inv_v2, "ACTIVATE")
     i1.refresh_from_db()
     invs = i1.versions.all().first().serialized_data["investors"]
 
@@ -309,12 +313,12 @@ def test_add_involvements(test_edit_investor_draft):
 
     # remove an investor
     pl1 = dict(payload, country={"id": "304"}, investors=[involvement2])
-    pl = _clean_payload(pl1, investorId)
-    invId, invV3 = object_edit("investor", land_reporter, obj_id=i1.id, payload=pl)
-    assert invV3 >= invV2
-    change_object_status("investor", land_admin, invId, invV3, "TO_REVIEW")
-    change_object_status("investor", land_admin, invId, invV3, "TO_ACTIVATION")
-    change_object_status("investor", land_admin, invId, invV3, "ACTIVATE")
+    pl = _clean_payload(pl1, investor_id)
+    inv_id, inv_v3 = object_edit("investor", land_reporter, obj_id=i1.id, payload=pl)
+    assert inv_v3 >= inv_v2
+    change_object_status("investor", land_admin, inv_id, inv_v3, "TO_REVIEW")
+    change_object_status("investor", land_admin, inv_id, inv_v3, "TO_ACTIVATION")
+    change_object_status("investor", land_admin, inv_id, inv_v3, "ACTIVATE")
     i1.refresh_from_db()
     invs = i1.versions.all().first().serialized_data["investors"]
     assert [(i["venture"], i["investor"]) for i in invs] == [(i1.id, i3.id)]

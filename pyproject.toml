@@ -4,31 +4,25 @@ version = "0.1.0"
 license = "AGPL-3.0+"
 authors = ["sinnwerkstatt Medienagentur GmbH <support@sinnwerkstatt.com>"]
 readme = 'README.md'
-description = "LandMatrix"
+description = "Land Matrix"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-Django = "<4"
-wagtail = "<2.16"
+Django = "*"
+wagtail = "*"
 psycopg2-binary = "*"
 
 django-cors-headers = "*"
 django-environ = "*"
 django-impersonate = "*"
 django-modeltranslation = "*"
-django-registration = "*"
 
 wagtail-font-awesome-svg = "*"
-wagtail-modeltranslation = ">=0.11rc3"
+wagtail-modeltranslation = ">=0.12rc2"
 wagtail-orderable = "*"
+wagtail-headless-preview = "*"
 
-# TODO celery - still need? - what about caching? redis? memcached?
-celery = "*"
-redis = "*"
-django-redis = "*"
-python-memcached = "*"
-
-ariadne = ">=0.14"
+ariadne = "*"
 ariadne_django = "*"
 fastjsonschema = "*"
 geojson-rewind = "*"
@@ -44,6 +38,8 @@ unicodecsv = "*"
 doit = "*"
 sentry_sdk = "*"
 gunicorn = "*"
+tzdata = "*"
+python-memcached = "^1.59"
 
 [tool.poetry.dev-dependencies]
 ipdb = "*"
@@ -60,11 +56,12 @@ pylint-django = "*"
 pygments = "*"
 mkdocs = "*"
 pydot = "^1.4.1"
+tqdm = "^4.64.0"
 
 
 [tool.black]
 line-length = 88
-target-version = ['py36', 'py37', 'py38']
+target-version = ['py38', 'py39', 'py310']
 include = '\.pyi?$'
 exclude = '''
 /(
@@ -73,6 +70,8 @@ exclude = '''
   | migrations
   | static-collected
   | node_modules
+  | frontend
+  | newfront
 )/
 '''
 force-exclude = '''
@@ -82,18 +81,7 @@ force-exclude = '''
   | migrations
   | static-collected
   | node_modules
+  | frontend
+  | newfront
 )/
 '''
-
-#
-[tool.isort]
-multi_line_output = 3
-include_trailing_comma = true
-force_grid_wrap = 0
-use_parentheses = false
-line_length = 88
-known_first_party = 'apps'
-known_django = 'celery,django,django_registration,wagtail'
-default_section = 'THIRDPARTY'
-sections = 'FUTURE,STDLIB,THIRDPARTY,DJANGO,FIRSTPARTY,LOCALFOLDER'
-no_lines_before = 'LOCALFOLDER,DJANGO'

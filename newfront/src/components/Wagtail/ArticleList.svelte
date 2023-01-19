@@ -1,44 +1,35 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
-  import type { BlogPage } from "$lib/types/wagtail";
+  import { _ } from "svelte-i18n"
 
-  export let articles: BlogPage[] = [];
-  export let articlesLabel: string;
-  let limit = 3;
+  import type { BlogPage } from "$lib/types/wagtail"
 
-  $: limitedArticles = limit ? articles.slice(0, limit) : articles;
+  export let articles: BlogPage[] = []
+  let limit = 3
+
+  $: limitedArticles = limit ? articles.slice(0, limit) : articles
 </script>
 
-{#if articles.length > 0}
-  <div class=" my-8">
-    <h3>{$_(articlesLabel)}</h3>
-    <slot />
-    {#each limitedArticles as article}
-      <div class="h-auto sm:flex sm:flex-row">
-        {#if article.header_image}
-          <img
-            src={article.header_image}
-            alt="Header image for {article.title}"
-            class="mb-4 w-56 h-56 sm:mr-8"
-          />
-        {/if}
-
-        <div class="col-9 mb-10 sm:mb-0">
-          <h5 class="title font-bold text-lg">
-            <a href={article.url} class="text-orange">{article.title}</a>
-          </h5>
-          <div class="excerpt">
-            {@html article.excerpt}
-          </div>
-        </div>
-      </div>
-    {/each}
-    {#if limit && limit < articles.length}
-      <button type="button" class="btn-white" on:click={() => (limit = 0)}>
-        {$_("Show all")}
-        {articles.length}
-        {articlesLabel.toLowerCase()}
-      </button>
+{#each limitedArticles as article}
+  <div class="my-2 flex flex-col gap-4 overflow-hidden border-b py-2 sm:flex-row">
+    {#if article.header_image}
+      <img
+        src={article.header_image}
+        alt="Header for {article.title}"
+        class="h-48 w-48"
+      />
     {/if}
+
+    <div>
+      <h5 class="text-lg font-bold">
+        <a href={article.url} class="text-orange">{article.title}</a>
+      </h5>
+      {@html article.excerpt}
+    </div>
   </div>
+{/each}
+{#if limit && limit < articles.length}
+  <button type="button" class="btn-white" on:click={() => (limit = 0)}>
+    {$_("Show all")}
+    {articles.length}
+  </button>
 {/if}

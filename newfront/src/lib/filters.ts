@@ -1,142 +1,84 @@
-import { writable } from "svelte/store";
-import { browser } from "$app/env";
-import type { GQLFilter } from "./types/filters";
-import type { Investor } from "./types/investor";
+import { writable } from "svelte/store"
 
-export enum ProduceGroup {
-  CROPS,
-  ANIMALS,
-  MINERAL_RESOURCES,
-}
-interface Produce {
-  name: string;
-  id: string;
-  value: string;
-  groupID: ProduceGroup;
-}
+import { browser } from "$app/environment"
 
-export enum NegotiationStatus {
-  EXPRESSION_OF_INTEREST = "EXPRESSION_OF_INTEREST",
-  UNDER_NEGOTIATION = "UNDER_NEGOTIATION",
-  MEMORANDUM_OF_UNDERSTANDING = "MEMORANDUM_OF_UNDERSTANDING",
-  ORAL_AGREEMENT = "ORAL_AGREEMENT",
-  CONTRACT_SIGNED = "CONTRACT_SIGNED",
-  CHANGE_OF_OWNERSHIP = "CHANGE_OF_OWNERSHIP",
-  NEGOTIATIONS_FAILED = "NEGOTIATIONS_FAILED",
-  CONTRACT_CANCELED = "CONTRACT_CANCELED",
-  CONTRACT_EXPIRED = "CONTRACT_EXPIRED",
-}
-export enum NegotiationStatusGroup {
-  INTENDED = "INTENDED",
-  CONCLUDED = "CONCLUDED",
-  FAILED = "FAILED",
-  CONTRACT_EXPIRED = "CONTRACT_EXPIRED",
-}
-export const NegotiationStatusGroupMap = {
-  [NegotiationStatus.EXPRESSION_OF_INTEREST]: NegotiationStatusGroup.INTENDED,
-  [NegotiationStatus.UNDER_NEGOTIATION]: NegotiationStatusGroup.INTENDED,
-  [NegotiationStatus.MEMORANDUM_OF_UNDERSTANDING]: NegotiationStatusGroup.INTENDED,
-  [NegotiationStatus.ORAL_AGREEMENT]: NegotiationStatusGroup.CONCLUDED,
-  [NegotiationStatus.CONTRACT_SIGNED]: NegotiationStatusGroup.CONCLUDED,
-  [NegotiationStatus.CHANGE_OF_OWNERSHIP]: NegotiationStatusGroup.CONCLUDED,
-  [NegotiationStatus.NEGOTIATIONS_FAILED]: NegotiationStatusGroup.FAILED,
-  [NegotiationStatus.CONTRACT_CANCELED]: NegotiationStatusGroup.FAILED,
-  [NegotiationStatus.CONTRACT_EXPIRED]: NegotiationStatusGroup.CONTRACT_EXPIRED,
-};
+import {
+  ImplementationStatus,
+  IntentionOfInvestment,
+  NatureOfDeal,
+  NegotiationStatus,
+  ProduceGroup,
+} from "$lib/types/deal"
 
-export enum NatureOfDeal {
-  OUTRIGHT_PURCHASE = "OUTRIGHT_PURCHASE",
-  LEASE = "LEASE",
-  CONCESSION = "CONCESSION",
-  EXPLOITATION_PERMIT = "EXPLOITATION_PERMIT",
-  PURE_CONTRACT_FARMING = "PURE_CONTRACT_FARMING",
-}
-export enum ImplementationStatus {
-  PROJECT_NOT_STARTED = "PROJECT_NOT_STARTED",
-  STARTUP_PHASE = "STARTUP_PHASE",
-  IN_OPERATION = "IN_OPERATION",
-  PROJECT_ABANDONED = "PROJECT_ABANDONED",
-}
-export enum IntentionOfInvestment {
-  BIOFUELS = "BIOFUELS",
-  FOOD_CROPS = "FOOD_CROPS",
-  FODDER = "FODDER",
-  LIVESTOCK = "LIVESTOCK",
-  NON_FOOD_AGRICULTURE = "NON_FOOD_AGRICULTURE",
-  AGRICULTURE_UNSPECIFIED = "AGRICULTURE_UNSPECIFIED",
-  TIMBER_PLANTATION = "TIMBER_PLANTATION",
-  FOREST_LOGGING = "FOREST_LOGGING",
-  CARBON = "CARBON",
-  FORESTRY_UNSPECIFIED = "FORESTRY_UNSPECIFIED",
-  MINING = "MINING",
-  OIL_GAS_EXTRACTION = "OIL_GAS_EXTRACTION",
-  TOURISM = "TOURISM",
-  INDUSTRY = "INDUSTRY",
-  CONVERSATION = "CONVERSATION",
-  LAND_SPECULATION = "LAND_SPECULATION",
-  RENEWABLE_ENERGY = "RENEWABLE_ENERGY",
-  OTHER = "OTHER",
+import type { GQLFilter } from "./types/filters"
+import type { Investor } from "./types/investor"
+
+export interface Produce {
+  name: string
+  id: string
+  value: string
+  groupID: ProduceGroup
 }
 
 export class FilterValues {
-  region_id?: number;
-  country_id?: number;
-  deal_size_min?: number;
-  deal_size_max?: number;
-  negotiation_status: NegotiationStatus[] = [];
-  nature_of_deal: NatureOfDeal[] = [];
-  investor?: Investor;
-  investor_country_id?: number;
-  initiation_year_min?: number;
-  initiation_year_max?: number;
-  initiation_year_unknown = true;
-  implementation_status: ImplementationStatus[] = [];
-  intention_of_investment: IntentionOfInvestment[] = [];
-  produce: Produce[] = [];
-  transnational: boolean | null = null;
-  forest_concession: boolean | null = null;
+  region_id?: number
+  country_id?: number
+  deal_size_min?: number
+  deal_size_max?: number
+  negotiation_status: NegotiationStatus[] = []
+  nature_of_deal: NatureOfDeal[] = []
+  investor?: Investor
+  investor_country_id?: number
+  initiation_year_min?: number
+  initiation_year_max?: number
+  initiation_year_unknown = true
+  implementation_status: ImplementationStatus[] = []
+  intention_of_investment: IntentionOfInvestment[] = []
+  produce?: Produce[] = []
+  transnational: boolean | null = null
+  forest_concession: boolean | null = null
 
   constructor(data: Partial<FilterValues> = {}) {
-    Object.assign(this, data);
+    Object.assign(this, data)
   }
 
   public empty() {
-    this.deal_size_min = undefined;
-    this.deal_size_max = undefined;
-    this.negotiation_status = [];
-    this.nature_of_deal = [];
-    this.investor = undefined;
-    this.investor_country_id = undefined;
-    this.initiation_year_min = undefined;
-    this.initiation_year_max = undefined;
-    this.initiation_year_unknown = true;
-    this.implementation_status = [];
-    this.intention_of_investment = [];
-    this.produce = [];
-    this.transnational = null;
-    this.forest_concession = null;
-    return this;
+    this.deal_size_min = undefined
+    this.deal_size_max = undefined
+    this.negotiation_status = []
+    this.nature_of_deal = []
+    this.investor = undefined
+    this.investor_country_id = undefined
+    this.initiation_year_min = undefined
+    this.initiation_year_max = undefined
+    this.initiation_year_unknown = true
+    this.implementation_status = []
+    this.intention_of_investment = []
+    this.produce = []
+    this.transnational = null
+    this.forest_concession = null
+    return this
   }
 
   public default() {
     // Deal size greater or equal 200ha
     // OR?! { field: "intended_size", operation: "GE", value: "200" },
     // NOTE: this might not work like before because we leave out the "intended_size"
-    this.deal_size_min = 200;
+    this.deal_size_min = 200
     // Negotiation Status "Concluded"
     this.negotiation_status = [
       NegotiationStatus.ORAL_AGREEMENT,
       NegotiationStatus.CONTRACT_SIGNED,
-    ];
+    ]
     // Exclude Pure Contract Farming
     this.nature_of_deal = [
       NatureOfDeal.OUTRIGHT_PURCHASE,
       NatureOfDeal.LEASE,
       NatureOfDeal.CONCESSION,
       NatureOfDeal.EXPLOITATION_PERMIT,
-    ];
+    ]
     // Initiation Year unknown or >=2000
-    this.initiation_year_min = 2000;
+    this.initiation_year_min = 2000
     // Exclude: Oil / Gas extraction & Mining
     this.intention_of_investment = [
       IntentionOfInvestment.BIOFUELS,
@@ -155,17 +97,17 @@ export class FilterValues {
       IntentionOfInvestment.LAND_SPECULATION,
       IntentionOfInvestment.RENEWABLE_ENERGY,
       IntentionOfInvestment.OTHER,
-    ];
+    ]
     // Transnational True
-    this.transnational = true;
+    this.transnational = true
     // Forest concession False
-    this.forest_concession = false;
-    return this;
+    this.forest_concession = false
+    return this
   }
 
   public isDefault() {
     function _equal<T>(a: Array<T>, b: Array<T>) {
-      return a.length === b.length && [...a].every((value) => b.includes(value));
+      return a.length === b.length && [...a].every(value => b.includes(value))
     }
 
     return [
@@ -205,79 +147,80 @@ export class FilterValues {
         IntentionOfInvestment.RENEWABLE_ENERGY,
         IntentionOfInvestment.OTHER,
       ]),
-      this.produce.length === 0,
+      !this.produce || this.produce.length === 0,
       this.transnational === true,
       this.forest_concession === false,
-    ].every(Boolean);
+    ].every(Boolean)
   }
 
   public toGQLFilterArray(): GQLFilter[] {
-    const filterArray: GQLFilter[] = [];
+    const filterArray: GQLFilter[] = []
 
     if (this.region_id)
-      filterArray.push({ field: "country.fk_region_id", value: this.region_id });
+      filterArray.push({ field: "country.region_id", value: this.region_id })
 
     if (this.country_id)
-      filterArray.push({ field: "country_id", value: this.country_id });
+      filterArray.push({ field: "country_id", value: this.country_id })
 
     if (this.deal_size_min)
       filterArray.push({
         field: "deal_size",
         operation: "GE",
         value: this.deal_size_min,
-      });
+      })
 
     if (this.deal_size_max)
       filterArray.push({
         field: "deal_size",
         operation: "LE",
         value: this.deal_size_max,
-      });
+      })
 
     if (this.negotiation_status.length > 0)
       filterArray.push({
         field: "current_negotiation_status",
         operation: "IN",
         value: this.negotiation_status,
-      });
+      })
 
     if (this.implementation_status.length > 0)
       filterArray.push({
         field: "current_implementation_status",
         operation: "IN",
         value: this.implementation_status,
-        allow_null: this.implementation_status.includes("UNKNOWN"),
-      });
+        allow_null: this.implementation_status.includes(
+          "UNKNOWN" as ImplementationStatus,
+        ),
+      })
 
     if (this.investor)
-      filterArray.push({ field: "parent_companies", value: this.investor.id });
+      filterArray.push({ field: "parent_companies", value: this.investor.id })
 
     if (this.investor_country_id)
       filterArray.push({
         field: "parent_companies.country_id",
         value: this.investor_country_id,
-      });
+      })
 
     if (this.nature_of_deal.length > 0) {
-      //TODO use enum
       const nature_of_deal_choices = [
         NatureOfDeal.OUTRIGHT_PURCHASE,
         NatureOfDeal.LEASE,
         NatureOfDeal.CONCESSION,
         NatureOfDeal.EXPLOITATION_PERMIT,
         NatureOfDeal.PURE_CONTRACT_FARMING,
-      ];
+      ]
 
       const diflist = nature_of_deal_choices.filter(
-        (x) => !this.nature_of_deal.includes(x)
-      );
+        x => !this.nature_of_deal.includes(x),
+      )
       if (diflist.length > 0)
         filterArray.push({
           field: "nature_of_deal",
           operation: "CONTAINED_BY",
           value: diflist,
           exclusion: true,
-        });
+        })
     }
 
     if (this.initiation_year_min && this.initiation_year_min > 1970)
@@ -286,7 +229,7 @@ export class FilterValues {
         operation: "GE",
         value: this.initiation_year_min,
         allow_null: this.initiation_year_unknown,
-      });
+      })
 
     if (this.initiation_year_max)
       filterArray.push({
@@ -294,61 +237,61 @@ export class FilterValues {
         operation: "LE",
         value: this.initiation_year_max,
         allow_null: this.initiation_year_unknown,
-      });
+      })
 
     if (this.intention_of_investment.length > 0) {
       filterArray.push({
         field: "current_intention_of_investment",
         operation: "OVERLAP",
         value: this.intention_of_investment,
-        allow_null: this.intention_of_investment.includes("UNKNOWN"),
-      });
+        allow_null: this.intention_of_investment.includes(
+          "UNKNOWN" as IntentionOfInvestment,
+        ),
+      })
     }
 
     if (this.produce && this.produce.length > 0) {
-      const crops = [];
-      const animals = [];
-      const minerals = [];
+      const crops = []
+      const animals = []
+      const minerals = []
       for (const prod of this.produce) {
-        if (prod.groupID === ProduceGroup.CROPS) crops.push(prod.value);
-        else if (prod.groupID === ProduceGroup.ANIMALS) animals.push(prod.value);
+        if (prod.groupID === ProduceGroup.CROPS) crops.push(prod.value)
+        else if (prod.groupID === ProduceGroup.ANIMALS) animals.push(prod.value)
         else if (prod.groupID === ProduceGroup.MINERAL_RESOURCES)
-          minerals.push(prod.value);
+          minerals.push(prod.value)
       }
       if (crops.length > 0) {
         filterArray.push({
           field: "current_crops",
           operation: "CONTAINS",
           value: crops,
-        });
+        })
       }
       if (animals.length > 0) {
         filterArray.push({
           field: "current_animals",
           operation: "CONTAINS",
           value: animals,
-        });
+        })
       }
       if (minerals.length > 0) {
         filterArray.push({
           field: "current_mineral_resources",
           operation: "CONTAINS",
           value: minerals,
-        });
+        })
       }
     }
 
     if (this.transnational !== null)
-      filterArray.push({ field: "transnational", value: this.transnational });
+      filterArray.push({ field: "transnational", value: this.transnational })
 
     if (this.forest_concession !== null)
-      filterArray.push({ field: "forest_concession", value: this.forest_concession });
+      filterArray.push({ field: "forest_concession", value: this.forest_concession })
 
-    return filterArray;
+    return filterArray
   }
 }
-
-export const defaultFilterValues = () => new FilterValues().default();
 
 // export const DEFAULT_FILTER_IGNORED_KEYS = [
 //   "region_id",
@@ -372,14 +315,14 @@ export const defaultFilterValues = () => new FilterValues().default();
 // };
 //
 
-const lSfilters = browser ? localStorage.getItem("filters") : undefined;
+const lSfilters = browser ? localStorage.getItem("filters") : undefined
 export const filters = writable<FilterValues>(
-  lSfilters ? new FilterValues(JSON.parse(lSfilters)) : new FilterValues().default()
-);
+  lSfilters ? new FilterValues(JSON.parse(lSfilters)) : new FilterValues().default(),
+)
 
-filters.subscribe((x) => browser && localStorage.setItem("filters", JSON.stringify(x)));
+filters.subscribe(x => browser && localStorage.setItem("filters", JSON.stringify(x)))
 
-export const publicOnly = writable(true);
-export const isDefaultFilter = writable(true);
+export const publicOnly = writable(true)
+export const isDefaultFilter = writable(true)
 
-filters.subscribe((fltrs) => isDefaultFilter.set(fltrs.isDefault()));
+filters.subscribe(fltrs => isDefaultFilter.set(fltrs.isDefault()))

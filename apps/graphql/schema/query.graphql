@@ -58,7 +58,7 @@ type Query {
 
   chart_descriptions(language: String = "en"): ChartDescriptions
 
-  markers(subset: Subset = PUBLIC, region_id: Int, country_id: Int): [Marker]
+  markers(region_id: Int, country_id: Int): [Marker]
 }
 
 type FormFieldSet {

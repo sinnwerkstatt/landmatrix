@@ -39,7 +39,6 @@
             <span v-if="deal.confidential">({{ $t("reason") }})</span>
           </a>
           <b-tooltip target="confidential-reason" triggers="click">
-            <!-- <strong>{{ get_confidential_reason }}</strong> <br /> -->
             {{ deal.confidential_comment }}
           </b-tooltip>
         </div>

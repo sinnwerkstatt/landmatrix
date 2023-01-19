@@ -1,6 +1,6 @@
+import store from "./store";
 import Vue from "vue";
 import Router from "vue-router";
-import store from "./store";
 
 Vue.use(Router);
 
@@ -164,7 +164,7 @@ const router = new Router({
     },
     {
       path: "/account/reset/:token/set-password/",
-      name: "password_reset",
+      name: "password_reset_confirm",
       props: true,
       component: () => import("$views/Account/PasswordResetConfirm.vue"),
     },

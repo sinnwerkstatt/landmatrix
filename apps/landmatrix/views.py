@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.contrib import messages
-from django.utils.translation import LANGUAGE_SESSION_KEY, gettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.views.generic.base import RedirectView
 from django.shortcuts import render
 
@@ -10,7 +10,7 @@ class SwitchLanguageView(RedirectView):
 
     def get(self, request, language=None, *args, **kwargs):
         if language and language in dict(settings.LANGUAGES).keys():
-            request.session[LANGUAGE_SESSION_KEY] = language
+            request.session["_language"] = language
             request.session["django_language"] = language
             request.LANGUAGE_CODE = language
         else:

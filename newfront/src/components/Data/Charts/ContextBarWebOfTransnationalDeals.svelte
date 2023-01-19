@@ -1,53 +1,73 @@
 <script lang="ts">
-  import { gql } from "graphql-tag";
-  import { _ } from "svelte-i18n";
-  import { client } from "$lib/apolloClient";
-  import { filters, FilterValues } from "$lib/filters";
-  import { chartDescriptions, countries } from "$lib/stores";
+  import { error } from "@sveltejs/kit"
+  import { Client, gql } from "@urql/svelte"
+  import { _ } from "svelte-i18n"
 
-  $: country =
-    $filters.country_id && $countries.find((c) => c.id === $filters.country_id);
+  import { page } from "$app/stores"
 
-  let global_rankings;
-  let country_investments_and_rankings: {
-    investing: [];
-    invested: [];
-    ranking_deal: null;
-    ranking_investor: null;
-  };
-  let investing_countries = [];
-  let invested_countries = [];
+  import { filters, FilterValues } from "$lib/filters"
+  import { chartDescriptions, countries } from "$lib/stores"
 
-  async function _grabInvestmentsAndRankings(countryID: number, fltrs: FilterValues) {
-    if (!countryID) return;
-    const { data } = await $client.query({
-      query: gql`
-        query InvestmentsAndRankings($id: Int!, $filters: [Filter]) {
-          country_investments_and_rankings(id: $id, filters: $filters)
+  $: country = $filters.country_id && $countries.find(c => c.id === $filters.country_id)
+
+  // let global_rankings;
+  // let country_investments_and_rankings: {
+  //   investing: [];
+  //   invested: [];
+  //   ranking_deal: null;
+  //   ranking_investor: null;
+  // };
+
+  interface CountryStat {
+    country_id: number
+    count: number
+    size: string
+    country_name?: string
+  }
+  let investing_countries: CountryStat[] = []
+  let invested_countries: CountryStat[] = []
+
+  async function _grabInvestmentsAndRankings(
+    countryID: number | undefined,
+    fltrs: FilterValues,
+  ) {
+    if (!countryID) return
+    const ret = await ($page.data.urqlClient as Client)
+      .query<{
+        country_investments_and_rankings: {
+          investing: CountryStat[]
+          invested: CountryStat[]
         }
-      `,
-      variables: {
-        id: countryID,
-        filters: fltrs
-          .toGQLFilterArray()
-          .filter(
-            (f) => f.field !== "country_id" && f.field !== "country.fk_region_id"
-          ),
-      },
-    });
+      }>(
+        gql`
+          query InvestmentsAndRankings($id: Int!, $filters: [Filter]) {
+            country_investments_and_rankings(id: $id, filters: $filters)
+          }
+        `,
+        {
+          id: countryID,
+          filters: fltrs
+            .toGQLFilterArray()
+            .filter(f => f.field !== "country_id" && f.field !== "country.region_id"),
+        },
+      )
+      .toPromise()
+    if (!ret.data?.country_investments_and_rankings)
+      throw error(502, `problems fetching data: ${ret.error}`)
 
-    let countryInvestmentsAndRankings = data.country_investments_and_rankings;
-    investing_countries = countryInvestmentsAndRankings.investing.map((x) => ({
-      country_name: $countries.find((c) => c.id === x.country_id).name,
+    let countryInvestmentsAndRankings = ret.data.country_investments_and_rankings
+    console.log(countryInvestmentsAndRankings)
+    investing_countries = countryInvestmentsAndRankings.investing.map(x => ({
+      country_name: $countries.find(c => c.id === x.country_id)?.name,
       ...x,
-    }));
-    invested_countries = countryInvestmentsAndRankings.invested.map((x) => ({
-      country_name: $countries.find((c) => c.id === x.country_id).name,
+    }))
+    invested_countries = countryInvestmentsAndRankings.invested.map(x => ({
+      country_name: $countries.find(c => c.id === x.country_id)?.name,
       ...x,
-    }));
+    }))
   }
 
-  $: _grabInvestmentsAndRankings($filters.country_id, $filters);
+  $: _grabInvestmentsAndRankings($filters.country_id, $filters)
 
   //     apollo: {
   //     global_rankings: {
@@ -85,10 +105,10 @@
 </script>
 
 <div>
-  <h2 class="text-xl my-4">{$_("Web of transnational deals")}</h2>
+  <h2>{$_("Web of transnational deals")}</h2>
   <div>{@html $chartDescriptions?.web_of_transnational_deals}</div>
   {#if country}
-    <div class="p-4 text-sm mb-5 bg-gray-100 border border-gray-300 shadow-inner ">
+    <div class="mb-5 border border-gray-300 bg-gray-100 p-4 text-sm shadow-inner">
       <h4 class="mt-0">{country.name}</h4>
       <!--      <div class="mx-3">-->
       <!--        <b-->
@@ -116,13 +136,14 @@
               values: { country: country.name },
             })}
           </b>
-          <table class="w-full table-striped">
+          <table class="table-striped w-full">
             <tbody>
               {#each investing_countries as icountry}
                 <tr>
                   <th class="text-left">{icountry.country_name}</th>
-                  <td class="text-right whitespace-nowrap">
-                    {icountry.count} deals<br />
+                  <td class="whitespace-nowrap text-right">
+                    {icountry.count} deals
+                    <br />
                     {icountry.size} ha
                   </td>
                 </tr>
@@ -138,13 +159,14 @@
               values: { country: country.name },
             })}
           </b>
-          <table class="w-full table-striped">
+          <table class="table-striped w-full">
             <tbody>
               {#each invested_countries as icountry}
                 <tr>
                   <th class="text-left">{icountry.country_name}</th>
-                  <td class="text-right whitespace-nowrap">
-                    {icountry.count} deals<br />
+                  <td class="whitespace-nowrap text-right">
+                    {icountry.count} deals
+                    <br />
                     {icountry.size} ha
                   </td>
                 </tr>

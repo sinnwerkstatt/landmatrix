@@ -60,7 +60,8 @@ type InvestorWorkflowInfo {
   draft_status_after: Int
   timestamp: DateTime!
   comment: String
-  processed_by_receiver: Boolean!
+  resolved: Boolean!
+  replies: [WFReply]!
   investor: Investor!
   #  deal_version: Deal
 }

@@ -1,27 +1,39 @@
 #!/bin/bash
 
-poetry run ./manage.py shell << E=O=F
-from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Group
-User = get_user_model()
-if not User.objects.filter(username='shakespeare').exists():
- will = User.objects.create_superuser('shakespeare', 'william@shakespeare.dev', 'hamlet4eva')
- admins = Group.objects.create(name='Administrators')
- will.groups.set([admins])
- will.save()
-E=O=F
+# 1. Start app
+# The output is discarded to see the actual test results.
+# If you want to see the output run `npm run dev:test` in one terminal
+# and `npm run playwright` in another terminal.
+echo 'Starting backend, frontend (dev) and proxy'
+concurrently npm:backend npm:frontend npm:caddy & #> /dev/null &
+PID=$!
 
-echo "Waiting django to launch on 8000..."
-poetry run ./manage.py runserver &
-RUNSERVER_PID=$!
+# 2. Wait for app to be responsive
+echo 'Waiting for backend'
 while ! nc -z localhost 8000; do
   sleep 0.3 # wait for 3/10 of the second before check again
 done
-echo "Django launched"
+echo 'Django online'
+
+echo 'Waiting for frontend'
+while ! nc -z localhost 3000; do
+  sleep 0.3 # wait for 3/10 of the second before check again
+done
+echo 'Frontend online'
+
+echo 'Waiting for proxy'
+while ! nc -z localhost 9000; do
+  sleep 0.3 # wait for 3/10 of the second before check again
+done
+echo 'Caddy online'
 
 
-npx playwright test
+# 3. Run tests
+npm run playwright
+success=$?
 
-kill $RUNSERVER_PID
-sleep 1
+# 4. Cleanup
+kill $PID
+sleep 2
 
+exit $success

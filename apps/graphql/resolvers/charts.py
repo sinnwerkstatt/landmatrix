@@ -1,12 +1,10 @@
 from collections import defaultdict
-from typing import Any
 
 from django.db import connection
 from django.db.models import Sum, Count, F
-from graphql import GraphQLResolveInfo
 
 from apps.graphql.tools import parse_filters
-from apps.landmatrix.models import Country
+from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.deal import DealTopInvestors, Deal
 
 LONG_COUNTRIES = {
@@ -67,14 +65,12 @@ def _deal_investors(filters=None):
     return {"links": retdings, "relevant_countries": relevant_countries}
 
 
-def resolve_global_map_of_investments(obj: Any, info: GraphQLResolveInfo, filters=None):
-    xx = _deal_investors(filters)
-    return dict(xx["links"])
+def resolve_global_map_of_investments(_obj, _info, filters=None):
+    deal_investors = _deal_investors(filters)
+    return dict(deal_investors["links"])
 
 
-def resolve_web_of_transnational_deals(
-    obj: Any, info: GraphQLResolveInfo, filters=None
-):
+def resolve_web_of_transnational_deals(_obj, _info, filters=None):
     deal_investors = _deal_investors(filters)
     _relevant_countries = deal_investors["relevant_countries"]
 
@@ -87,19 +83,19 @@ def resolve_web_of_transnational_deals(
         for k, v in deal_investors["links"][country_id].items():
             imp_c = country_dict[k]
             short_name = LONG_COUNTRIES.get(imp_c.name, imp_c.name)
-            imports += [f"lama.{imp_c.fk_region_id}.{short_name}"]
-            # regiondata_for_x = regiondata.get(imp_c.fk_region_id)
+            imports += [f"lama.{imp_c.region_id}.{short_name}"]
+            # regiondata_for_x = regiondata.get(imp_c.region_id)
             # if regiondata_for_x:
             #     regiondata_for_x["size"] += v["size"]
             #     regiondata_for_x["count"] += v["count"]
             # else:
-            #     regiondata[imp_c.fk_region_id] = {
+            #     regiondata[imp_c.region_id] = {
             #         "size": v["size"],
             #         "count": v["count"],
             #     }
 
         short_name = LONG_COUNTRIES.get(country.name, country.name)
-        regions[country.fk_region_id] += [
+        regions[country.region_id] += [
             {
                 "id": country.id,
                 "name": short_name,
@@ -114,9 +110,8 @@ def resolve_web_of_transnational_deals(
     }
 
 
-def country_investments_and_rankings(
-    obj: Any, info: GraphQLResolveInfo, id, filters=None
-):
+# noinspection PyShadowingBuiltins
+def country_investments_and_rankings(_obj, _info, id, filters=None):
     deals = Deal.objects.active()
     if filters:
         deals = deals.filter(parse_filters(filters))
@@ -154,7 +149,7 @@ def country_investments_and_rankings(
     }
 
 
-def global_rankings(obj, info, count=10, filters=None):
+def global_rankings(_obj, _info, count=10, filters=None):
     qs = Deal.objects.active()
 
     if filters:
@@ -166,44 +161,52 @@ def global_rankings(obj, info, count=10, filters=None):
     }
 
 
-def resolve_statistics(obj, info: GraphQLResolveInfo, country_id=None, region_id=None):
-    from_clause = "FROM landmatrix_deal d"
-    where_clause = "WHERE status IN (2,3) AND is_public=True "
+def create_statistics(country_id=None, region_id=None):
+    select_clause = "SELECT count(distinct(d.id))"
+    from_clause = "FROM landmatrix_deal AS d"
+    where_clause = "WHERE d.status IN (2,3) AND d.is_public=True"
 
     if country_id:
-        where_clause += f"AND country_id={country_id}"
+        where_clause += f" AND d.country_id={country_id}"
     if region_id:
-        from_clause = "FROM landmatrix_deal d INNER JOIN landmatrix_country c ON (d.country_id = c.id)"
-        where_clause += f"AND c.fk_region_id={region_id}"
+        from_clause += " INNER JOIN landmatrix_country AS c ON (d.country_id = c.id)"
+        where_clause += f" AND c.region_id={region_id}"
 
     cursor = connection.cursor()
 
-    cursor.execute(f"SELECT count(*) {from_clause} {where_clause}")
+    cursor.execute(f"{select_clause} {from_clause} {where_clause}")
     deals_public_count = cursor.fetchone()[0]
 
-    #     "deals_public_multi_ds_count": (
-    #         public_deals.annotate(
-    #             count_ob=JSONObject(
-    #                 count=Func(F("datasources"), function="jsonb_array_length")
-    #             )
-    #         )
-    #         .filter(count_ob__count__gt=1)
-    #         .count()
-    #     ),
     cursor.execute(
-        f"SELECT count(d.id) {from_clause} {where_clause} AND jsonb_array_length(d.datasources) > 1"
+        f"""
+            {select_clause}
+            {from_clause}
+            {where_clause}
+            AND jsonb_array_length(d.datasources) > 1
+        """
     )
     deals_public_multi_ds_count = cursor.fetchone()[0]
 
     cursor.execute(
-        f"SELECT count(d.id) {from_clause}, jsonb_array_elements(d.locations) l {where_clause}"
-        f" AND l->>'level_of_accuracy' in ('EXACT_LOCATION','COORDINATES') AND l->>'areas' IS NOT NULL"
+        f"""
+            {select_clause}
+            {from_clause}, jsonb_array_elements(d.locations) AS l
+            {where_clause}
+            AND (
+              l->>'level_of_accuracy' in ('EXACT_LOCATION','COORDINATES')
+              OR l->>'areas' IS NOT NULL
+            )
+        """
     )
     deals_public_high_geo_accuracy = cursor.fetchone()[0]
 
     cursor.execute(
-        f"SELECT count(d.id) {from_clause}, jsonb_array_elements(d.locations) l {where_clause}"
-        f" AND l->>'areas' IS NOT NULL"
+        f"""
+            {select_clause}
+            {from_clause}, jsonb_array_elements(d.locations) AS l
+            {where_clause}
+            AND l->>'areas' IS NOT NULL
+        """
     )
     deals_public_polygons = cursor.fetchone()[0]
 
@@ -215,9 +218,11 @@ def resolve_statistics(obj, info: GraphQLResolveInfo, country_id=None, region_id
     }
 
 
-def resolve_deal_aggregations(
-    obj: Any, info: GraphQLResolveInfo, fields, subset="PUBLIC", filters=None
-):
+def resolve_statistics(_obj, _info, country_id=None, region_id=None):
+    return create_statistics(country_id, region_id)
+
+
+def resolve_deal_aggregations(_obj, info, fields, subset="PUBLIC", filters=None):
     deals = Deal.objects.visible(user=info.context["request"].user, subset=subset)
     if filters:
         deals = deals.filter(parse_filters(filters))

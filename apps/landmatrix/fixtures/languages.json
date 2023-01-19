@@ -1,4 +1,0 @@
-[
-  {"model": "landmatrix.language", "pk": 1, "fields": {"english_name": "English", "local_name": "English", "locale": "en"}},
-  {"model": "landmatrix.language", "pk": 2, "fields": {"english_name": "German", "local_name": "Deutsch", "locale": "de"}}
-]

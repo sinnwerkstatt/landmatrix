@@ -1,130 +1,126 @@
 <script lang="ts">
-  import { gql } from "graphql-tag";
-  import { _ } from "svelte-i18n";
-  import { goto } from "$app/navigation";
-  import { page } from "$app/stores";
-  import { client } from "$lib/apolloClient";
-  import type { Deal } from "$lib/types/deal";
-  import type { Investor } from "$lib/types/investor";
-  import SearchIcon from "./icons/SearchIcon.svelte";
-  import NavDropDown from "./LowLevel/NavDropDown.svelte";
+  import { gql } from "@urql/svelte"
+  import classNames from "classnames"
+  import { _ } from "svelte-i18n"
 
-  $: user = $page.stuff.user;
+  import { goto } from "$app/navigation"
+  import { page } from "$app/stores"
 
-  let search = "";
-  let showSearch = false;
-  let selectedSearchIndex = 0;
-  let deals: Deal[] = [];
-  let investors: Investor[] = [];
+  import type { Deal } from "$lib/types/deal"
+  import type { Investor } from "$lib/types/investor"
+
+  import SearchIcon from "./icons/SearchIcon.svelte"
+  import NavDropDown from "./LowLevel/NavDropDown.svelte"
+
+  $: user = $page.data.user
+
+  let search = ""
+  let selectedSearchIndex = 0
+  let deals: Deal[] = []
+  let investors: Investor[] = []
 
   async function getDeals() {
-    const { data } = await $client.query<{ deals: Deal[] }>({
-      query: gql`
-        query SDeals($subset: Subset) {
-          deals(limit: 0, subset: $subset) {
-            id
-            country {
+    const { data } = await $page.data.urqlClient
+      .query<{ deals: Deal[] }>(
+        gql`
+          query SDeals($subset: Subset) {
+            deals(limit: 0, subset: $subset) {
               id
-              name
+              country {
+                id
+                name
+              }
+              is_public
             }
-            is_public
           }
-        }
-      `,
-      variables: {
-        subset: user?.is_authenticated ? "UNFILTERED" : "PUBLIC",
-      },
-    });
-    deals = data.deals;
+        `,
+        {
+          subset: user?.is_authenticated ? "UNFILTERED" : "PUBLIC",
+        },
+      )
+      .toPromise()
+    deals = data?.deals ?? []
   }
 
   async function getInvestors() {
-    const { data } = await $client.query<{ investors: Investor[] }>({
-      query: gql`
-        query SInvestors($subset: Subset) {
-          investors(limit: 0, subset: $subset) {
-            id
-            name
+    const { data } = await $page.data.urqlClient
+      .query<{ investors: Investor[] }>(
+        gql`
+          query SInvestors($subset: Subset) {
+            investors(limit: 0, subset: $subset) {
+              id
+              name
+            }
           }
-        }
-      `,
-      variables: {
-        subset: user?.is_authenticated ? "UNFILTERED" : "PUBLIC",
-      },
-    });
-    investors = data.investors;
+        `,
+        { subset: user?.is_authenticated ? "UNFILTERED" : "PUBLIC" },
+      )
+      .toPromise()
+    investors = data?.investors ?? []
   }
 
-  getDeals();
-  getInvestors();
+  getDeals()
+  getInvestors()
 
   $: searchResult =
     search.length >= 2
       ? [
           ...deals
-            .filter((d) => d.id.toString().includes(search))
-            .map((d) => {
-              let name = `#${d.id}`;
-              if (d.country) name += ` in ${d.country?.name}`;
-              return { id: d.id, name, is_public: d.is_public, url: `/deal/${d.id}/` };
+            .filter(d => d.id.toString().includes(search))
+            .map(d => {
+              let name = `#${d.id}`
+              if (d.country) name += ` in ${d.country?.name}`
+              return { id: d.id, name, is_public: d.is_public, url: `/deal/${d.id}/` }
             }),
           ...investors
             .filter(
-              (i) =>
+              i =>
                 i.id.toString().includes(search) ||
-                i.name.toLowerCase().includes(search.toLowerCase())
+                i.name.toLowerCase().includes(search.toLowerCase()),
             )
-            .map((i) => {
+            .map(i => {
               return {
                 id: i.id,
                 name: `${i.name} #${i.id}`,
                 url: `/investor/${i.id}/`,
                 investor: true,
-              };
+              }
             }),
         ]
-      : [];
-  // watch: {
-  //   search(newS, oldS) {
-  //     if (newS.length !== oldS.length) this.selectedSearchIndex = 0;
-  //   },
-  // },
-  // methods: {
-  function focusSearch() {
-    setTimeout(() => document.getElementById("search").focus(), 100);
-  }
+      : []
+
   function searchKeyboardEvent(e) {
     if (["ArrowDown", "ArrowUp"].includes(e.code)) {
-      e.preventDefault();
+      e.preventDefault()
 
       if (e.code === "ArrowDown") {
-        selectedSearchIndex = (selectedSearchIndex + 1) % searchResult.length;
+        selectedSearchIndex = (selectedSearchIndex + 1) % searchResult.length
       } else {
-        if (selectedSearchIndex === 0) selectedSearchIndex = searchResult.length - 1;
-        else selectedSearchIndex = (selectedSearchIndex - 1) % searchResult.length;
+        if (selectedSearchIndex === 0) selectedSearchIndex = searchResult.length - 1
+        else selectedSearchIndex = (selectedSearchIndex - 1) % searchResult.length
       }
 
-      let liel = searchResult[selectedSearchIndex];
-      let offset = document.getElementById(`${liel.id}${liel.investor}`).offsetTop;
-      document.getElementById("ulle").scrollTop = offset - 100;
+      let liel = searchResult[selectedSearchIndex]
+      let offset = document.getElementById(`${liel.id}${liel.investor}`).offsetTop
+      document.getElementById("ulle").scrollTop = offset - 100
     }
 
     if (e.code === "Enter") {
-      goto(searchResult[selectedSearchIndex].url);
-      e.preventDefault();
-      document.getElementById("searchDropdown").click();
+      goto(searchResult[selectedSearchIndex].url)
+      e.preventDefault()
+      document.getElementById("searchDropdown").click()
     }
   }
   // },
 </script>
 
-<NavDropDown>
+<NavDropDown placement="right-0">
   <div slot="title">
-    <SearchIcon class="h-5 w-5 mr-2" />
+    <SearchIcon class="mr-2 h-5 w-5" />
   </div>
-  <div class="border border-orange bg-white py-2 px-4">
+  <div class="border border-orange bg-white py-2 px-4 dark:bg-gray-800">
     <form>
-      <label for="search" class="whitespace-nowrap flex flex-col">
+      <label for="search" class="flex flex-col whitespace-nowrap">
         {$_("Search deals and investors")}
         <input
           id="search"
@@ -139,19 +135,18 @@
     {#if searchResult.length > 0}
       <ul
         id="ulle"
-        class="relative max-h-[55vh] overflow-y-auto mt-4 pt-2 border-t-orange"
+        class="relative mt-4 max-h-[55vh] overflow-y-auto border-t-orange pt-2"
       >
         {#each searchResult as d, i}
-          <li>
+          <li
+            class={classNames(
+              "!hover:text-white py-1 px-1.5 transition duration-100",
+              d.investor ? "hover:bg-pelorous" : "hover:bg-orange",
+            )}
+          >
             <a
               href={d.url}
-              class={selectedSearchIndex === i
-                ? d.investor
-                  ? "bg-pelorous"
-                  : "bg-orange"
-                : d.investor
-                ? "text-pelorous"
-                : "text-orange"}
+              class={d.investor ? "text-pelorous" : "text-orange"}
               class:opacity-40={d.is_public === false}
               class:text-white={selectedSearchIndex === i}
             >
@@ -163,3 +158,9 @@
     {/if}
   </div>
 </NavDropDown>
+
+<style>
+  li:hover > a {
+    color: white !important;
+  }
+</style>

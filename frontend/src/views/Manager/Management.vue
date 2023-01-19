@@ -440,7 +440,7 @@
               country {
                 id
                 name
-                fk_region {
+                region {
                   id
                   name
                 }
@@ -502,7 +502,7 @@
               country {
                 id
                 name
-                fk_region {
+                region {
                   id
                   name
                 }
@@ -510,7 +510,7 @@
               deals {
                 id
                 country {
-                  fk_region {
+                  region {
                     id
                   }
                 }
@@ -551,10 +551,10 @@
         return this.$store.getters.userInGroup(["Administrators", "Editors"]);
       },
       user_region(): Region | null {
-        return this.user.userregionalinfo?.region;
+        return this.user.region;
       },
       user_country(): Country | null {
-        return this.user.userregionalinfo?.country;
+        return this.user.country;
       },
       country_options(): Country[] {
         const seen_ids = [] as number[];
@@ -586,11 +586,11 @@
         if (this.user_region)
           if (this.showDeals)
             objects = objects.filter(
-              (o: Deal) => o.country?.fk_region?.id === this.user_region.id
+              (o: Deal) => o.country?.region?.id === this.user_region.id
             );
           else
             objects = objects.filter((o: Investor) => {
-              const deal_regions = o.deals.map((d) => d.country?.fk_region?.id);
+              const deal_regions = o.deals.map((d) => d.country?.region?.id);
               return deal_regions.includes(this.user_region.id);
             });
         if (this.user_country)

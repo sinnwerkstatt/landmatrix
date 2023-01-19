@@ -1,27 +1,30 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
-  import type { DealSection } from "$lib/deal_sections";
-  import { isEmpty } from "$lib/helpers";
-  import type { Deal } from "$lib/types/deal";
-  import DisplayField from "$components/Fields/DisplayField.svelte";
+  import { isEmpty } from "$lib/helpers"
+  import type { Section } from "$lib/sections"
+  import type { Deal } from "$lib/types/deal"
 
-  export let deal: Deal;
-  export let sections: DealSection[] = [];
+  import ExpandableDisplayField from "$components/Fields/ExpandableDisplayField.svelte"
 
-  function sectionFieldsWithValues(subsection: DealSection) {
-    return subsection.fields.filter((field) => !isEmpty(deal[field]));
+  export let deal: Deal
+  export let sections: Section[] = []
+
+  function sectionFieldsWithValues(subsection: Section) {
+    return subsection.fields.filter(field =>
+      typeof field === "object" ? !isEmpty(deal[field.name]) : !isEmpty(deal[field]),
+    )
   }
+
   $: subsectionsWithAtLeastOneField = sections.filter(
-    (section) => sectionFieldsWithValues(section).length > 0
-  );
+    section => sectionFieldsWithValues(section).length > 0,
+  )
 </script>
 
 <section>
   {#each subsectionsWithAtLeastOneField as subsection}
-    <div class="space-y-4 mt-2">
-      <h3 class="my-0">{$_(subsection.name)}</h3>
-      {#each sectionFieldsWithValues(subsection) as fieldname}
-        <DisplayField {fieldname} value={deal[fieldname]} />
+    <div class="mt-2 space-y-4">
+      <h3 class="my-0">{subsection.name}</h3>
+      {#each sectionFieldsWithValues(subsection) as field}
+        <ExpandableDisplayField {field} {deal} />
       {/each}
     </div>
   {/each}

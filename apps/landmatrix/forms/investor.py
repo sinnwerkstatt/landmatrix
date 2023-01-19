@@ -1,8 +1,8 @@
-from django.forms import ModelForm, IntegerField
+from django.forms import ModelForm
 from django.utils.translation import gettext as _
 
 from apps.landmatrix.forms.formfieldhelper import JSONFormOutputMixin
-from apps.landmatrix.models import Investor, InvestorVentureInvolvement
+from apps.landmatrix.models.investor import Investor, InvestorVentureInvolvement
 
 
 class InvestorForm(JSONFormOutputMixin, ModelForm):
@@ -22,6 +22,7 @@ class InvestorForm(JSONFormOutputMixin, ModelForm):
     extra_display_fields = {
         "id": {"label": "ID", "class": "AutoField"},
         "deals": {"class": "LengthField", "label": _("Deals")},
+        "created_at": {"class": "DateTimeField", "label": _("Created at")},
         "workflowinfos": {
             "class": "WorkflowInfosField",
             "label": _("Comments / History"),

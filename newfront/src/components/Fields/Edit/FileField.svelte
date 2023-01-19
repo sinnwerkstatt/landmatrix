@@ -1,33 +1,38 @@
 <script lang="ts">
-  import { gql } from "graphql-tag";
-  import { _ } from "svelte-i18n";
-  import { client } from "$lib/apolloClient";
-  import FilePdfIcon from "$components/icons/FilePdfIcon.svelte";
+  import { gql } from "@urql/svelte"
+  import { _ } from "svelte-i18n"
 
-  export let value;
-  export let accept;
+  import { page } from "$app/stores"
+
+  import FilePdfIcon from "$components/icons/FilePdfIcon.svelte"
+
+  export let value: string
+  export let accept: string
   // "application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint," +
   // " text/plain, application/pdf, image/*";
 
   function removeFile() {
-    if (confirm($_("Do you really want to remove this file?")) === true) value = "";
+    if (confirm($_("Do you really want to remove this file?")) === true) value = ""
   }
 
   function uploadFile({ target: { files = [] } }) {
-    if (!files.length) return;
-    let fr = new FileReader();
+    if (!files.length) return
+    let fr = new FileReader()
     fr.onload = async () => {
-      const { data } = await $client.mutate<{ upload_datasource_file: string }>({
-        mutation: gql`
-          mutation ($filename: String!, $payload: String!) {
-            upload_datasource_file(filename: $filename, payload: $payload)
-          }
-        `,
-        variables: { filename: files[0].name, payload: fr.result },
-      });
-      value = data.upload_datasource_file;
-    };
-    fr.readAsDataURL(files[0]);
+      const res = await $page.data.urqlClient
+        .mutation<{ upload_datasource_file: string }>(
+          gql`
+            mutation ($filename: String!, $payload: String!) {
+              upload_datasource_file(filename: $filename, payload: $payload)
+            }
+          `,
+          { filename: files[0].name, payload: fr.result },
+        )
+        .toPromise()
+      if (res.error) alert(`Error uploading file: ${files[0].name}`)
+      else value = res.data.upload_datasource_file
+    }
+    fr.readAsDataURL(files[0])
   }
 </script>
 
@@ -35,7 +40,7 @@
   {#if value}
     <div class="flex w-full justify-between">
       <div>
-        <a href="{import.meta.env.VITE_MEDIA_URL}{value}`" target="_blank">
+        <a href="{import.meta.env.VITE_MEDIA_URL}{value}" target="_blank">
           <FilePdfIcon />
           {value.replace("uploads/", "")}
         </a>
@@ -51,5 +56,5 @@
   {:else}
     <input type="file" on:change={uploadFile} {accept} />
   {/if}
-  <small class="text-gray-500 block pt-2">{$_("Maximum file size: 10MB")}</small>
+  <small class="block pt-2 text-gray-500">{$_("Maximum file size: 10MB")}</small>
 </div>

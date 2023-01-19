@@ -1,7 +1,7 @@
 type Deal {
   id: Int!
   locations: [Location]
-  # General Info
+  # General info
   ## Land area
   country: Country
   intended_size: Float
@@ -158,8 +158,6 @@ type Deal {
   overall_comment: String
   fully_updated: Boolean!
   confidential: Boolean!
-  confidential_reason: String
-  #confidential_reason_display: String
   confidential_comment: String
 
   #### Calculated fields
@@ -197,7 +195,7 @@ type Deal {
   versions: [DealVersion]
   workflowinfos: [DealWorkflowInfo]
 
-#  comments: [DealComment]
+  #  comments: [DealComment]
 
   # for statistics only
   country_id: Int
@@ -268,6 +266,12 @@ type DealVersion {
   object_id: Int
 }
 
+type WFReply {
+  timestamp: DateTime
+  user_id: Int
+  comment: String
+}
+
 type DealWorkflowInfo {
   id: Int!
   from_user: User!
@@ -276,7 +280,8 @@ type DealWorkflowInfo {
   draft_status_after: Int
   timestamp: DateTime!
   comment: String
-  processed_by_receiver: Boolean!
+  resolved: Boolean!
+  replies: [WFReply]!
   deal: Deal!
   #  deal_version: Deal
 }

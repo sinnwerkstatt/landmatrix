@@ -1,10 +1,12 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
-  import AtIcon from "$components/icons/AtIcon.svelte";
-  import type { FormField } from "../fields";
+  import { _ } from "svelte-i18n"
 
-  export let formfield: FormField;
-  export let value: string;
+  import AtIcon from "$components/icons/AtIcon.svelte"
+
+  import type { FormField } from "../fields"
+
+  export let formfield: FormField
+  export let value: string
 </script>
 
 <div class="email_field flex">
@@ -17,7 +19,7 @@
     name={formfield.name}
   />
   <div
-    class="flex justify-center items-center border border-l-0 border-gray-300 py-1.5 px-3 bg-gray-200 text-gray-600"
+    class="flex items-center justify-center border border-l-0 border-gray-300 bg-gray-200 py-1.5 px-3 text-gray-600"
   >
     <AtIcon class="h-4 w-4" />
   </div>

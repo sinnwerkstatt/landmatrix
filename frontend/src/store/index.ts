@@ -120,34 +120,6 @@ const store = new Vuex.Store({
     setFields: (state, fields) => (state.formfields = fields),
     setLocale: (state, locale) => (state.locale = locale),
     setUser(state: PageState, user: User) {
-      let role = "No Role";
-      if (user && user.groups && user.groups.length) {
-        const groupi = user.groups
-          .map((g) => g.name)
-          .filter((name) => {
-            return (
-              ["Administrators", "Editors", "Reporters", "Admin"].indexOf(name) > -1
-            );
-          });
-
-        if (groupi.length) {
-          let ret = "";
-          if (groupi.includes("Reporters")) ret = "Reporter";
-          if (groupi.includes("Editors")) ret = "Editor";
-          if (groupi.includes("Administrators")) ret = "Administrator";
-          const uri = user.userregionalinfo;
-          if (uri) {
-            const area = [];
-            if (uri.region) area.push(uri.region.name);
-            if (uri.country) area.push(uri.country.name);
-            if (area.length) {
-              ret = `${ret} of ${area.join(", ")}`;
-            }
-          }
-          role = ret;
-        }
-        user.bigrole = role;
-      }
       state.user = user;
     },
     setCountries(state: PageState, countries: Country[]) {
@@ -261,19 +233,16 @@ const store = new Vuex.Store({
                   id
                   full_name
                   username
-                  initials
                   is_authenticated
                   is_impersonate
                   role
-                  userregionalinfo {
-                    country {
-                      id
-                      name
-                    }
-                    region {
-                      id
-                      name
-                    }
+                  country {
+                    id
+                    name
+                  }
+                  region {
+                    id
+                    name
                   }
                   groups {
                     id
@@ -362,15 +331,14 @@ const store = new Vuex.Store({
                     username
                     is_authenticated
                     is_impersonate
-                    userregionalinfo {
-                      country {
-                        id
-                        name
-                      }
-                      region {
-                        id
-                        name
-                      }
+                    role
+                    country {
+                      id
+                      name
+                    }
+                    region {
+                      id
+                      name
                     }
                     groups {
                       id
@@ -412,27 +380,24 @@ const store = new Vuex.Store({
     },
     async fetchObservatoryPages(context, language = "en") {
       console.log("fetchObservatoryPages", { language });
-      const url = `/wagtailapi/v2/pages/?order=title&type=wagtailcms.ObservatoryPage&fields=region,country,short_description`;
+      const url = `/api/wagtail/v2/pages/?order=title&type=wagtailcms.ObservatoryPage&fields=region,country,short_description`;
       const res = await (await fetch(url)).json();
       context.commit("setObservatories", res.items);
     },
     async fetchAboutPages(context, language = "en") {
       console.debug("fetchAboutPages", { language });
-      const url = `/wagtailapi/v2/pages/?order=title&type=wagtailcms.AboutIndexPage`;
+      const url = `/api/wagtail/v2/pages/?order=title&type=wagtailcms.AboutIndexPage`;
       const res = await (await fetch(url)).json();
 
-      if (res.meta.total_count > 0) {
-        const indexPageId = res.items[0].id;
-
-        const pagesUrl = `/wagtailapi/v2/pages/?child_of=${indexPageId}`;
+      const indexPage = res.items[0];
+      if (indexPage) {
+        const pagesUrl = `/api/wagtail/v2/pages/?child_of=${indexPage.id}`;
         const res_children = await (await fetch(pagesUrl)).json();
         context.commit("setAboutPages", res_children.items);
-      } else {
-        context.commit("setAboutPages", []);
       }
     },
     async fetchWagtailPage(context, path) {
-      const url = `/wagtailapi/v2/pages/find/?html_path=${path}`;
+      const url = `/api/wagtail/v2/pages/find/?html_path=${path}`;
       const res = await (await fetch(url)).json();
       let breadcrumbs;
       let title;

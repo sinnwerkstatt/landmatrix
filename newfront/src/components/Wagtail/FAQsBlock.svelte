@@ -1,26 +1,33 @@
 <script lang="ts">
-  import { slide } from "svelte/transition";
-  import { browser } from "$app/env";
+  import { slide } from "svelte/transition"
 
-  export let value;
+  import { browser } from "$app/environment"
 
-  let locationHash = browser ? location.hash : undefined;
+  export let value
+
+  let locationHash = browser ? location.hash : undefined
 
   function updateHash(slug) {
-    if (!browser) return;
-    let newslug;
-    if (location.hash === slug) newslug = "";
-    else newslug = slug;
-    locationHash = newslug;
-    location.hash = newslug;
+    if (!browser) return
+    let newslug
+    if (location.hash === slug) newslug = ""
+    else newslug = slug
+    locationHash = newslug
+    location.hash = newslug
   }
 </script>
 
-<div class="border border-gray-400">
+<div data-block="faqs_block" class="border border-gray-400">
   {#each value.faqs as faq}
-    <div class="bg-gray-50 border-b border-gray-400">
+    <div
+      class="cursor-pointer border-b border-gray-400 bg-gray-50 dark:bg-gray-600"
+      on:click={() => updateHash(`#${faq.slug}`)}
+    >
       <div class="py-4 px-6">
-        <button class="text-orange" on:click={() => updateHash(`#${faq.slug}`)}>
+        <button
+          class="text-orange"
+          on:click|stopPropagation={() => updateHash(`#${faq.slug}`)}
+        >
           {faq.question}
         </button>
       </div>
@@ -28,7 +35,7 @@
         <div
           transition:slide
           id="collapse-{faq.slug}"
-          class="bg-white border-t border-gray-400 p-4"
+          class="border-t border-gray-400 bg-white p-4 dark:bg-gray-600"
         >
           <div class="card-body">{@html faq.answer}</div>
         </div>

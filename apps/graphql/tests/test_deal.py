@@ -1,21 +1,20 @@
-from typing import List, Dict
-
 import pytest
 from django.contrib.auth import get_user_model
 from django.utils import timezone
-from graphql import GraphQLError
+from ariadne.graphql import GraphQLError
 
 from apps.graphql.resolvers.generics import (
     object_edit,
     change_object_status,
     object_delete,
 )
-from apps.landmatrix.models import Deal, DealVersion, Country
+from apps.landmatrix.models.country import Country
+from apps.landmatrix.models.deal import Deal, DealVersion
 from apps.landmatrix.models.abstracts import DRAFT_STATUS, STATUS
 
 User = get_user_model()
 
-payload: Dict[str, any] = {
+payload: dict[str, any] = {
     "locations": [
         {
             "id": 1,
@@ -30,7 +29,7 @@ payload: Dict[str, any] = {
 
 
 @pytest.fixture()
-def deal_draft(db) -> List[int]:
+def deal_draft(db) -> list[int]:
     payload["country"] = Country.objects.get(id=450)
     # new draft
     return object_edit(
@@ -43,34 +42,34 @@ def deal_draft(db) -> List[int]:
 
 
 def test_delete_deal_draft(deal_draft):
-    dealId, dealVersion = deal_draft
+    deal_id, deal_version = deal_draft
 
     with pytest.raises(GraphQLError):
         object_delete(
             otype="deal",
             user=User.objects.get(username="reporter-2"),
-            obj_id=dealId,
-            obj_version_id=dealVersion,
+            obj_id=deal_id,
+            obj_version_id=deal_version,
             comment="weg mit dem schmutz",
         )
-    assert Deal.objects.filter(id=dealId).count() == 1
+    assert Deal.objects.filter(id=deal_id).count() == 1
 
     object_delete(
         otype="deal",
         user=User.objects.get(username="reporter"),
-        obj_id=dealId,
-        obj_version_id=dealVersion,
+        obj_id=deal_id,
+        obj_version_id=deal_version,
         comment="weg mit dem schmutz",
     )
-    assert Deal.objects.filter(id=dealId).count() == 0
+    assert Deal.objects.filter(id=deal_id).count() == 0
 
 
 @pytest.fixture()
 def test_edit_deal_draft(deal_draft):
-    dealId, dealVersion = deal_draft
+    deal_id, deal_version = deal_draft
 
     # verify new draft
-    d1 = Deal.objects.get(id=dealId)
+    d1 = Deal.objects.get(id=deal_id)
     assert d1.country_id == 450
     print(d1)
     print(d1.locations)
@@ -100,15 +99,15 @@ def test_edit_deal_draft(deal_draft):
         },
     )
 
-    newDealId, newDealVersion = object_edit(
+    new_deal_id, new_deal_version = object_edit(
         otype="deal",
         user=User.objects.get(username="reporter"),
         obj_id=d1.id,
         obj_version_id=d1.versions.get().id,
         payload=pl2,
     )
-    assert dealId == newDealId
-    assert dealVersion == newDealVersion
+    assert deal_id == new_deal_id
+    assert deal_version == new_deal_version
     d1.refresh_from_db()
     assert d1.locations[0]["description"] == ""
     assert d1.locations[0]["comment"] == "KOMMA"
@@ -117,11 +116,11 @@ def test_edit_deal_draft(deal_draft):
     assert d1v.serialized_data["locations"][0]["comment"] == "KOMMA"
 
     # change draft status TO_REVIEW
-    dealId, dealVersion = change_object_status(
+    deal_id, deal_version = change_object_status(
         otype="deal",
         user=User.objects.get(username="reporter"),
-        obj_id=dealId,
-        obj_version_id=dealVersion,
+        obj_id=deal_id,
+        obj_version_id=deal_version,
         transition="TO_REVIEW",
         fully_updated=True,
     )
@@ -134,16 +133,16 @@ def test_edit_deal_draft(deal_draft):
         change_object_status(
             otype="deal",
             user=User.objects.get(username="reporter"),
-            obj_id=dealId,
-            obj_version_id=dealVersion,
+            obj_id=deal_id,
+            obj_version_id=deal_version,
             transition="TO_ACTIVATION",
             fully_updated=True,
         )
     change_object_status(
         otype="deal",
         user=User.objects.get(username="editor"),
-        obj_id=dealId,
-        obj_version_id=dealVersion,
+        obj_id=deal_id,
+        obj_version_id=deal_version,
         transition="TO_ACTIVATION",
         fully_updated=True,
     )
@@ -152,16 +151,16 @@ def test_edit_deal_draft(deal_draft):
         change_object_status(
             otype="deal",
             user=User.objects.get(username="editor"),
-            obj_id=dealId,
-            obj_version_id=dealVersion,
+            obj_id=deal_id,
+            obj_version_id=deal_version,
             transition="ACTIVATE",
             fully_updated=True,
         )
     change_object_status(
         otype="deal",
         user=User.objects.get(username="administrator"),
-        obj_id=dealId,
-        obj_version_id=dealVersion,
+        obj_id=deal_id,
+        obj_version_id=deal_version,
         transition="ACTIVATE",
         fully_updated=True,
     )
@@ -175,27 +174,27 @@ def test_edit_deal_draft(deal_draft):
 
 
 def test_delete_deal(test_edit_deal_draft):
-    dealId = test_edit_deal_draft
+    deal_id = test_edit_deal_draft
     with pytest.raises(GraphQLError):
         object_delete(
             otype="deal",
             user=User.objects.get(username="reporter"),
-            obj_id=dealId,
+            obj_id=deal_id,
             comment="weg mit dem schmutz",
         )
-    assert Deal.objects.filter(id=dealId).count() == 1
+    assert Deal.objects.filter(id=deal_id).count() == 1
     with pytest.raises(GraphQLError):
         object_delete(
             otype="deal",
             user=User.objects.get(username="editor"),
-            obj_id=dealId,
+            obj_id=deal_id,
             comment="weg mit dem schmutz",
         )
-    assert Deal.objects.filter(id=dealId).count() == 1
+    assert Deal.objects.filter(id=deal_id).count() == 1
     object_delete(
         otype="deal",
         user=User.objects.get(username="administrator"),
-        obj_id=dealId,
+        obj_id=deal_id,
         comment="weg mit dem schmutz",
     )
     d1 = Deal.objects.get()
@@ -206,14 +205,14 @@ def test_delete_deal(test_edit_deal_draft):
 def test_edit_deal(test_edit_deal_draft):
     d1 = Deal.objects.get()
     payload.update({"intended_size": 1000})
-    dealId, dealVersion = object_edit(
+    deal_id, deal_version = object_edit(
         otype="deal",
         user=User.objects.get(username="reporter"),
         obj_id=d1.id,
         payload=payload,
     )
-    assert dealVersion is not None
-    assert dealId == d1.id
+    assert deal_version is not None
+    assert deal_id == d1.id
     d1.refresh_from_db()
     assert d1.intended_size is None
     assert d1.status == STATUS["LIVE"]

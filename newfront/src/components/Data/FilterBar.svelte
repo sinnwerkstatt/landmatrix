@@ -1,27 +1,32 @@
 <script lang="ts">
-  import { gql } from "graphql-tag";
-  import { onMount } from "svelte";
-  import { _ } from "svelte-i18n";
-  import Select from "svelte-select";
-  import VirtualList from "svelte-tiny-virtual-list";
-  import { page } from "$app/stores";
-  import { client } from "$lib/apolloClient";
-  import { filters, ProduceGroup } from "$lib/filters";
-  import { isDefaultFilter, publicOnly } from "$lib/filters";
-  import { countries, regions } from "$lib/stores";
-  import { formfields } from "$lib/stores";
-  import type { Investor } from "$lib/types/investor";
-  import { showFilterBar } from "$components/Data";
+  import { gql } from "@urql/svelte"
+  import { onMount } from "svelte"
+  import { _ } from "svelte-i18n"
+  import Select from "svelte-select"
+  import VirtualList from "svelte-tiny-virtual-list"
+
+  import { page } from "$app/stores"
+
   import {
-    implementation_status_choices,
+    getImplementationStatusChoices,
+    getNatureOfDealChoices,
     intention_of_investment_choices,
-    nature_of_deal_choices,
-  } from "$components/Fields/Display/choices";
-  import DownloadIcon from "$components/icons/DownloadIcon.svelte";
-  import CheckboxSwitch from "$components/LowLevel/CheckboxSwitch.svelte";
-  import FilterBarNegotiationStatusToggle from "./FilterBarNegotiationStatusToggle.svelte";
-  import FilterCollapse from "./FilterCollapse.svelte";
-  import Wimpel from "./Wimpel.svelte";
+  } from "$lib/choices"
+  import { filters, isDefaultFilter, publicOnly } from "$lib/filters"
+  import { countries, formfields, regions } from "$lib/stores"
+  import { ProduceGroup } from "$lib/types/deal"
+  import type { Investor } from "$lib/types/investor"
+  import { UserRole } from "$lib/types/user"
+
+  import { showFilterBar } from "$components/Data"
+  import DownloadIcon from "$components/icons/DownloadIcon.svelte"
+  import CheckboxSwitch from "$components/LowLevel/CheckboxSwitch.svelte"
+
+  import FilterBarNegotiationStatusToggle from "./FilterBarNegotiationStatusToggle.svelte"
+  import FilterCollapse from "./FilterCollapse.svelte"
+  import Wimpel from "./Wimpel.svelte"
+
+  $: user = $page.data.user
 
   $: produceChoices = $formfields
     ? [
@@ -44,58 +49,50 @@
           group: $_("Mineral resources"),
         })),
       ]
-    : [];
+    : []
 
-  const choices = {
-    implementation_status: {
-      UNKNOWN: $_("No information"),
-      ...implementation_status_choices,
-    },
-    nature_of_deal: nature_of_deal_choices,
-    intention_of_investment: intention_of_investment_choices,
-  };
+  $: regionsWithGlobal = [{ id: undefined, name: $_("Global") }, ...$regions]
 
-  $: regionsWithGlobal = [{ id: undefined, name: "Global" }, ...$regions];
+  let investors: Investor[] = []
 
-  let investors: Investor[] = [];
   async function getInvestors() {
-    const { data } = await $client.query<{ investors: Investor[] }>({
-      query: gql`
-        query Investors($limit: Int!, $subset: Subset) {
-          investors(limit: $limit, subset: $subset) {
-            id
-            name
+    const { data } = await $page.data.urqlClient
+      .query<{ investors: Investor[] }>(
+        gql`
+          query SInvestors($subset: Subset) {
+            investors(limit: 0, subset: $subset) {
+              id
+              name
+            }
           }
-        }
-      `,
-      variables: { limit: 0, subset: "ACTIVE" },
-    });
-    investors = data.investors;
+        `,
+        { subset: user?.is_authenticated ? "UNFILTERED" : "PUBLIC" },
+      )
+      .toPromise()
+    investors = data.investors
   }
 
   onMount(() => {
-    getInvestors();
-  });
+    getInvestors()
+  })
 
-  $: jsonFilters = JSON.stringify($filters.toGQLFilterArray());
+  $: jsonFilters = JSON.stringify($filters.toGQLFilterArray())
   $: dataDownloadURL = `/api/legacy_export/?filters=${jsonFilters}&subset=${
     $publicOnly ? "PUBLIC" : "ACTIVE"
-  }&format=`;
+  }&format=`
 
   function trackDownload(format) {
-    let name = "Global";
+    let name = "Global"
     if ($filters.country_id)
-      name = $countries.find((c) => c.id === $filters.country_id).name;
-    if ($filters.region_id)
-      name = $regions.find((r) => r.id === $filters.region_id).name;
+      name = $countries.find(c => c.id === $filters.country_id).name
+    if ($filters.region_id) name = $regions.find(r => r.id === $filters.region_id).name
 
-    // noinspection TypeScriptUnresolvedVariable
-    window._paq.push(["trackEvent", "Downloads", format, name]);
+    if (window._paq) window._paq.push(["trackEvent", "Downloads", format, name])
   }
 </script>
 
 <div
-  class="absolute bg-white/80 top-0 left-0 bottom-0 z-10 flex text-sm drop-shadow-[3px_-3px_3px_rgba(0,0,0,0.3)] {$showFilterBar
+  class="absolute top-0 left-0 bottom-0 z-10 flex bg-white/80 text-sm drop-shadow-[3px_-3px_1px_rgba(0,0,0,0.3)] {$showFilterBar
     ? 'w-[clamp(220px,20%,300px)]'
     : 'w-0'}"
 >
@@ -104,27 +101,26 @@
     on:click={() => showFilterBar.set(!$showFilterBar)}
   />
   <div
-    class="w-full h-full overflow-y-auto overflow-x-hidden p-2 flex flex-col"
+    class="flex h-full w-full flex-col overflow-y-auto overflow-x-hidden p-2"
     class:hidden={!$showFilterBar}
   >
-    <div class="w-full self-start ">
+    <div class="w-full self-start">
       <h3 class="my-2 text-black">{$_("Filter")}</h3>
       <CheckboxSwitch
-        class="text-sm"
+        class="text-base"
         checked={$isDefaultFilter}
-        on:change={(val) =>
+        on:change={val =>
           val.target.checked
             ? filters.set($filters.empty().default())
             : filters.set($filters.empty())}
-        label={$_("Default filter")}
-      />
+      >
+        {$_("Default filter")}
+      </CheckboxSwitch>
 
-      {#if ["ADMINISTRATOR", "EDITOR"].includes($page.stuff.user?.role)}
-        <CheckboxSwitch
-          class="text-sm"
-          bind:checked={$publicOnly}
-          label={$_("Public deals only")}
-        />
+      {#if $page.data.user?.role >= UserRole.EDITOR}
+        <CheckboxSwitch class="text-base" bind:checked={$publicOnly}>
+          {$_("Public deals only")}
+        </CheckboxSwitch>
       {/if}
 
       <FilterCollapse
@@ -141,7 +137,7 @@
               value={reg.id}
               on:change={() => ($filters.country_id = undefined)}
             />
-            {$_(reg.name)}
+            {reg.name}
           </label>
         {/each}
       </FilterCollapse>
@@ -151,16 +147,16 @@
         clearable={!!$filters.country_id}
         on:click={() => ($filters.country_id = null)}
       >
-        <select
-          bind:value={$filters.country_id}
-          class="inpt"
-          on:change={() => ($filters.region_id = undefined)}
-        >
-          <option value={undefined} />
-          {#each $countries.filter((c) => c.deals.length > 0) as c}
-            <option value={c.id}>{c.name}</option>
-          {/each}
-        </select>
+        <Select
+          items={$countries.filter(c => c.deals && c.deals.length > 0)}
+          value={$countries.find(c => c.id === $filters.country_id)}
+          on:change={e => ($filters.country_id = e.detail?.id)}
+          placeholder={$_("Country")}
+          optionIdentifier="id"
+          labelIdentifier="name"
+          showChevron
+          {VirtualList}
+        />
       </FilterCollapse>
 
       <FilterCollapse
@@ -199,7 +195,7 @@
         clearable={$filters.nature_of_deal.length > 0}
         on:click={() => ($filters.nature_of_deal = [])}
       >
-        {#each Object.entries(choices.nature_of_deal) as [isval, isname]}
+        {#each Object.entries(getNatureOfDealChoices($_)) as [isval, isname]}
           <label class="block">
             <input
               type="checkbox"
@@ -207,7 +203,7 @@
               value={isval}
               class="checkbox-btn"
             />
-            {$_(isname)}
+            {isname}
           </label>
         {/each}
       </FilterCollapse>
@@ -225,16 +221,16 @@
           placeholder={$_("Investor")}
           optionIdentifier="id"
           labelIdentifier="name"
-          getOptionLabel={(o) => `${o.name} (#${o.id})`}
-          getSelectionLabel={(o) => `${o.name} (#${o.id})`}
+          getOptionLabel={o => `${o.name} (#${o.id})`}
+          getSelectionLabel={o => `${o.name} (#${o.id})`}
           showChevron
           {VirtualList}
         />
         {$_("Country of registration")}
         <Select
           items={$countries}
-          value={$countries.find((c) => c.id === $filters.investor_country_id)}
-          on:change={(e) => ($filters.investor_country_id = e.detail?.id)}
+          value={$countries.find(c => c.id === $filters.investor_country_id)}
+          on:change={e => ($filters.investor_country_id = e.detail?.id)}
           placeholder={$_("Country of registration")}
           labelIdentifier="name"
           optionIdentifier="id"
@@ -286,15 +282,24 @@
         clearable={$filters.implementation_status.length > 0}
         on:click={() => ($filters.implementation_status = [])}
       >
-        {#each Object.entries(choices.implementation_status) as [isval, isname]}
+        <label class="block">
+          <input
+            bind:group={$filters.implementation_status}
+            class="checkbox-btn"
+            type="checkbox"
+            value="UNKNOWN"
+          />
+          {$_("No information")}
+        </label>
+        {#each Object.entries(getImplementationStatusChoices($_)) as [isval, isname]}
           <label class="block">
             <input
               bind:group={$filters.implementation_status}
-              class="form-check-input custom-control-input checkbox-btn"
+              class=" checkbox-btn"
               type="checkbox"
               value={isval}
             />
-            {$_(isname)}
+            {isname}
           </label>
         {/each}
       </FilterCollapse>
@@ -313,7 +318,7 @@
           />
           {$_("No information")}
         </label>
-        {#each Object.entries(choices.intention_of_investment) as [name, options]}
+        {#each Object.entries(intention_of_investment_choices) as [name, options]}
           <div class="mb-2">
             <strong>{$_(name)}</strong>
             {#each Object.entries(options) as [isval, isname]}
@@ -341,7 +346,7 @@
           items={produceChoices}
           isMulti
           showChevron
-          groupBy={(i) => i.group}
+          groupBy={i => i.group}
         />
       </FilterCollapse>
 
@@ -404,28 +409,37 @@
         </label>
       </FilterCollapse>
     </div>
-    <div class="self-end mt-auto pt-10 w-full">
+    <div class="mt-auto w-full self-end pt-10">
       <slot />
       <FilterCollapse title={$_("Download")}>
         <ul>
           <li>
-            <a href={dataDownloadURL + "xlsx"} on:click={() => trackDownload("xlsx")}>
+            <a
+              href={dataDownloadURL + "xlsx"}
+              on:click={() => trackDownload("xlsx")}
+              data-sveltekit-reload
+            >
               <DownloadIcon />
-              {$_("All attributes (xlsx)")}
-            </a>
-          </li>
-          <li>
-            <a href={dataDownloadURL + "csv"} on:click={() => trackDownload("csv")}>
-              <i class="fas fa-file-download" />
-              <DownloadIcon />
-              {$_("All attributes (csv)")}
+              {$_("All attributes")} (xlsx)
             </a>
           </li>
           <li>
             <a
-              href="/api/data.geojson?type=points&filters={jsonFilters}&subset={$publicOnly
-                ? 'PUBLIC'
-                : 'ACTIVE'}"
+              href={dataDownloadURL + "csv"}
+              on:click={() => trackDownload("csv")}
+              data-sveltekit-reload
+            >
+              <i class="fas fa-file-download" />
+              <DownloadIcon />
+              {$_("All attributes")} (csv)
+            </a>
+          </li>
+          <li>
+            <a
+              href={`/api/data.geojson?type=points&filters=${jsonFilters}&subset=${
+                $publicOnly ? "PUBLIC" : "ACTIVE"
+              }`}
+              data-sveltekit-reload
             >
               <i class="fas fa-file-download" />
               <DownloadIcon />
@@ -434,9 +448,10 @@
           </li>
           <li>
             <a
-              href="/api/data.geojson?type=areas&filters={jsonFilters}&subset={$publicOnly
-                ? 'PUBLIC'
-                : 'ACTIVE'}"
+              href={`/api/data.geojson?type=areas&filters=${jsonFilters}&subset=${
+                $publicOnly ? "PUBLIC" : "ACTIVE"
+              }`}
+              data-sveltekit-reload
             >
               <i class="fas fa-file-download" />
               <DownloadIcon />
@@ -448,100 +463,3 @@
     </div>
   </div>
 </div>
-<!--<style lang="scss">-->
-
-<!--    .default-filter-switch {-->
-<!--      &.active {-->
-<!--        color: var(&#45;&#45;color-lm-orange);-->
-<!--      }-->
-
-<!--      label.custom-control-label {-->
-<!--        font-size: 0.9rem;-->
-
-<!--        &:hover {-->
-<!--          cursor: pointer;-->
-<!--        }-->
-
-<!--        &:before {-->
-<!--          font-size: 0.8rem;-->
-<!--          background-color: rgba(black, 0.1);-->
-<!--          border-width: 0;-->
-<!--          width: 1.9em;-->
-<!--          height: 0.65em;-->
-<!--          margin-top: 0.2em;-->
-<!--          margin-left: 0.15em;-->
-
-<!--          &:focus {-->
-<!--            outline: none;-->
-<!--          }-->
-<!--        }-->
-
-<!--        &:after {-->
-<!--          margin-top: -0.1em;-->
-<!--          background-color: white;-->
-<!--          box-shadow: 0 1px 2px rgba(black, 0.3);-->
-<!--        }-->
-<!--      }-->
-<!--    }-->
-
-<!--    .custom-switch .custom-control-input:checked ~ .custom-control-label {-->
-<!--      &:before {-->
-<!--        background-color: var(&#45;&#45;color-lm-orange-light-10);-->
-<!--      }-->
-
-<!--      &:after {-->
-<!--        background-color: var(&#45;&#45;color-lm-orange);-->
-<!--        box-shadow: 0 0 0 1px var(&#45;&#45;color-lm-orange-light);-->
-<!--      }-->
-<!--    }-->
-
-<!--    .custom-control-input:focus ~ .custom-control-label {-->
-<!--      &:before {-->
-<!--        box-shadow: none;-->
-<!--      }-->
-<!--    }-->
-
-<!--    .form-check {-->
-<!--      padding: 0;-->
-
-<!--      .custom-control.custom-checkbox {-->
-<!--        min-height: 0;-->
-<!--        padding-left: 1.3rem;-->
-
-<!--        label.custom-control-label {-->
-<!--          &:hover {-->
-<!--            cursor: pointer;-->
-<!--          }-->
-
-<!--          line-height: 1.2;-->
-
-<!--          &:before,-->
-<!--          &:after {-->
-<!--            top: 1px;-->
-<!--            left: -1.3rem;-->
-<!--          }-->
-<!--        }-->
-<!--      }-->
-
-<!--      .custom-control-input:focus ~ .custom-control-label {-->
-<!--        &:before {-->
-<!--          border-color: #adb5bd;-->
-<!--        }-->
-<!--      }-->
-
-<!--      .custom-control-input:checked ~ .custom-control-label {-->
-<!--        &:before {-->
-<!--          background-color: var(&#45;&#45;color-lm-orange-light);-->
-<!--          border-color: transparent;-->
-<!--        }-->
-<!--      }-->
-
-<!--      &:not(:first-child) {-->
-<!--        .custom-control.custom-checkbox {-->
-<!--          margin-top: 2px;-->
-<!--        }-->
-<!--      }-->
-<!--    }-->
-<!--  }-->
-
-<!--</style>-->

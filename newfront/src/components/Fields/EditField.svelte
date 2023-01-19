@@ -1,66 +1,50 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
-  import { formfields } from "$lib/stores";
-  import DecimalField from "$components/Fields/Edit/DecimalField.svelte";
-  import TextField from "$components/Fields/Edit/TextField.svelte";
-  import type { FormField } from "$components/Fields/fields";
-  import BooleanField from "./Edit/BooleanField.svelte";
-  import CharField from "./Edit/CharField.svelte";
-  import CountryForeignKey from "./Edit/CountryForeignKey.svelte";
-  import CurrencyForeignKey from "./Edit/CurrencyForeignKey.svelte";
-  import DateField from "./Edit/DateField.svelte";
-  import EmailField from "./Edit/EmailField.svelte";
-  import FileField from "./Edit/FileField.svelte";
-  import InvestorForeignKey from "./Edit/InvestorForeignKey.svelte";
-  import JSONActorsField from "./Edit/JSONActorsField.svelte";
-  import JSONDateAreaChoicesField from "./Edit/JSONDateAreaChoicesField.svelte";
-  import JSONDateAreaField from "./Edit/JSONDateAreaField.svelte";
-  import JSONDateChoiceField from "./Edit/JSONDateChoiceField.svelte";
-  import JSONExportsField from "./Edit/JSONExportsField.svelte";
-  import JSONJobsField from "./Edit/JSONJobsField.svelte";
-  import JSONLeaseField from "./Edit/JSONLeaseField.svelte";
-  import SimpleArrayField from "./Edit/SimpleArrayField.svelte";
-  import TypedChoiceField from "./Edit/TypedChoiceField.svelte";
-  import URLField from "./Edit/URLField.svelte";
+  import { _ } from "svelte-i18n"
 
-  export let fieldname: string;
-  export let value;
-  export let model = "deal";
+  import { formfields } from "$lib/stores"
 
-  export let showLabel = true;
-  export let wrapperClasses = "mb-3 leading-5 flex flex-wrap";
-  export let labelClasses = "font-medium md:w-5/12 lg:w-4/12";
-  export let valueClasses = "text-lm-dark md:w-7/12 lg:w-8/12";
-  export let disabled = false;
+  import DecimalField from "$components/Fields/Edit/DecimalField.svelte"
+  import TextField from "$components/Fields/Edit/TextField.svelte"
+  import type { FormField } from "$components/Fields/fields"
 
-  //   fileNotPublic: { type: Boolean, default: false },
-  //   visible: { type: Boolean, default: true },
-  //   targetBlank: { type: Boolean, default: false },
-  //   objectId: { type: Number, default: null, required: false },
-  //   objectVersion: { type: Number, default: null, required: false },
+  import BooleanField from "./Edit/BooleanField.svelte"
+  import CharField from "./Edit/CharField.svelte"
+  import CountryForeignKey from "./Edit/CountryForeignKey.svelte"
+  import CurrencyForeignKey from "./Edit/CurrencyForeignKey.svelte"
+  import DateField from "./Edit/DateField.svelte"
+  import EmailField from "./Edit/EmailField.svelte"
+  import FileField from "./Edit/FileField.svelte"
+  import InvestorForeignKey from "./Edit/InvestorForeignKey.svelte"
+  import JSONActorsField from "./Edit/JSONActorsField.svelte"
+  import JSONDateAreaChoicesField from "./Edit/JSONDateAreaChoicesField.svelte"
+  import JSONDateAreaField from "./Edit/JSONDateAreaField.svelte"
+  import JSONDateChoiceField from "./Edit/JSONDateChoiceField.svelte"
+  import JSONExportsField from "./Edit/JSONExportsField.svelte"
+  import JSONJobsField from "./Edit/JSONJobsField.svelte"
+  import JSONLeaseField from "./Edit/JSONLeaseField.svelte"
+  import SimpleArrayField from "./Edit/SimpleArrayField.svelte"
+  import TypedChoiceField from "./Edit/TypedChoiceField.svelte"
+  import URLField from "./Edit/URLField.svelte"
 
-  //   computed: {
-  //     _visible(): boolean {
-  //       if (!this.visible) return false;
-  //       if (this.fieldname === "file_not_public") return false;
-  //       if (this.formfield.class === "FileField") {
-  //         return !this.fileNotPublic || this.$store.getters.userAuthenticated;
-  //       }
-  //       return true;
-  //     },
+  export let fieldname: string
+  export let value
+  export let model = "deal"
 
-  let formfield: FormField;
-  $: formfield = { name: fieldname, ...$formfields[model][fieldname] };
+  export let showLabel = true
+  export let wrapperClasses = "mb-3 leading-5 flex flex-col"
+  export let labelClasses = "font-semibold mb-4 w-full"
+  export let valueClasses = "text-lm-dark px-3 mb-10 w-full"
+  export let disabled = false
+
+  let formfield: FormField
+  $: formfield = { name: fieldname, ...$formfields[model][fieldname] }
 
   $: field = {
-    BooleanField: BooleanField,
-    CharField: CharField,
     CountryForeignKey: CountryForeignKey,
     CurrencyForeignKey: CurrencyForeignKey,
     DateField: DateField,
     DecimalField: DecimalField,
     EmailField: EmailField,
-    FileField: FileField,
     FloatField: DecimalField,
     IntegerField: DecimalField,
     InvestorForeignKey: InvestorForeignKey,
@@ -71,13 +55,10 @@
     JSONExportsField: JSONExportsField,
     JSONJobsField: JSONJobsField,
     JSONLeaseField: JSONLeaseField,
-    NullBooleanField: BooleanField,
-    OCIDField: CharField,
     SimpleArrayField: SimpleArrayField,
-    TextField: TextField,
     TypedChoiceField: TypedChoiceField,
     URLField: URLField,
-  }[formfield.class];
+  }[formfield.class]
 </script>
 
 <div class={wrapperClasses}>
@@ -87,7 +68,15 @@
     </div>
   {/if}
   <div class={valueClasses}>
-    {#if field}
+    {#if formfield.class === "FileField"}
+      <FileField bind:value {model} {formfield} on:change />
+    {:else if formfield.class === "TextField"}
+      <TextField bind:value {formfield} on:change />
+    {:else if ["CharField", "OCIDField"].includes(formfield.class)}
+      <CharField bind:value {formfield} on:change />
+    {:else if ["BooleanField", "NullBooleanField"].includes(formfield.class)}
+      <BooleanField bind:value {formfield} on:change />
+    {:else if field}
       <svelte:component
         this={field}
         bind:value
@@ -96,10 +85,6 @@
         {formfield}
         on:change
       />
-      <!-- :file-not-public="fileNotPublic"-->
-      <!-- :target-blank="targetBlank"-->
-      <!-- :object-id="objectId"-->
-      <!-- :object-version="objectVersion"-->
     {:else}
       <span class="italic text-red-600">Unknown field: {formfield.class}</span>
     {/if}

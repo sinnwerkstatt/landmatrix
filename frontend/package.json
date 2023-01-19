@@ -5,7 +5,7 @@
   "license": "AGPL-3.0-only",
   "scripts": {
     "dev": "vite",
-    "build": "vite build --base=/static/; touch dist/.gitkeep; cp dist/index.html ../templates/vuebase.html",
+    "build": "vite build --base=/static/; touch dist/.gitkeep; cp dist/index.html ../apps/landmatrix/templates/vuebase.html",
     "lint": "prettier --ignore-path .prettierignore --check --plugin-search-dir=. . && eslint --ignore-path .prettierignore src/",
     "format": "prettier --ignore-path .prettierignore --write --plugin-search-dir=. ."
   },

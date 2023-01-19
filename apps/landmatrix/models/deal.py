@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import json
-from typing import Optional
 
 from django.conf import settings
 from django.core import serializers
@@ -10,8 +11,9 @@ from django.db.models import Sum, F, Count
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
-from apps.landmatrix.models import Investor, Currency
-from apps.landmatrix.models import _choices
+from apps.landmatrix.models.investor import Investor
+from apps.landmatrix.models.currency import Currency
+from apps.landmatrix.models import choices
 from apps.landmatrix.models.abstracts import (
     STATUS_CHOICES,
     DRAFT_STATUS_CHOICES,
@@ -137,7 +139,7 @@ class AbstractDealBase(models.Model):
     country = models.ForeignKey(
         Country,
         verbose_name=_("Target country"),
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         blank=True,
         null=True,
         related_name="deals",
@@ -161,7 +163,7 @@ class AbstractDealBase(models.Model):
 
     # Nature of the deal
     nature_of_deal = ArrayField(
-        models.CharField(max_length=100, choices=_choices.NATURE_OF_DEAL_CHOICES),
+        models.CharField(max_length=100, choices=choices.NATURE_OF_DEAL_CHOICES),
         verbose_name=_("Nature of the deal"),
         blank=True,
         null=True,
@@ -192,12 +194,12 @@ class AbstractDealBase(models.Model):
         on_delete=models.PROTECT,
         blank=True,
         null=True,
-        related_name="deal_purchase_price",
+        related_name="+",
     )
     purchase_price_type = models.CharField(
         _("Purchase price area type"),
         max_length=100,
-        choices=_choices.HA_AREA_CHOICES,
+        choices=choices.HA_AREA_CHOICES,
         blank=True,
         null=True,
     )
@@ -222,12 +224,12 @@ class AbstractDealBase(models.Model):
         on_delete=models.PROTECT,
         blank=True,
         null=True,
-        related_name="deal_annual_leasing_fee",
+        related_name="+",
     )
     annual_leasing_fee_type = models.CharField(
         _("Annual leasing fee area type"),
         max_length=100,
-        choices=_choices.HA_AREA_CHOICES,
+        choices=choices.HA_AREA_CHOICES,
         blank=True,
         null=True,
     )
@@ -378,7 +380,7 @@ class AbstractDealBase(models.Model):
     )
 
     recognition_status = ArrayField(
-        models.CharField(max_length=100, choices=_choices.RECOGNITION_STATUS_CHOICES),
+        models.CharField(max_length=100, choices=choices.RECOGNITION_STATUS_CHOICES),
         verbose_name=_("Recognition status of community land tenure"),
         blank=True,
         null=True,
@@ -389,7 +391,7 @@ class AbstractDealBase(models.Model):
     community_consultation = models.CharField(
         _("Community consultation"),
         max_length=100,
-        choices=_choices.COMMUNITY_CONSULTATION_CHOICES,
+        choices=choices.COMMUNITY_CONSULTATION_CHOICES,
         blank=True,
         null=True,
     )
@@ -400,7 +402,7 @@ class AbstractDealBase(models.Model):
     community_reaction = models.CharField(
         _("Community reaction"),
         max_length=100,
-        choices=_choices.COMMUNITY_REACTION_CHOICES,
+        choices=choices.COMMUNITY_REACTION_CHOICES,
         blank=True,
         null=True,
     )
@@ -455,7 +457,7 @@ class AbstractDealBase(models.Model):
     )
 
     negative_impacts = ArrayField(
-        models.CharField(max_length=100, choices=_choices.NEGATIVE_IMPACTS_CHOICES),
+        models.CharField(max_length=100, choices=choices.NEGATIVE_IMPACTS_CHOICES),
         verbose_name=_("Negative impacts for local communities"),
         blank=True,
         null=True,
@@ -472,7 +474,7 @@ class AbstractDealBase(models.Model):
     )
 
     promised_benefits = ArrayField(
-        models.CharField(max_length=100, choices=_choices.BENEFITS_CHOICES),
+        models.CharField(max_length=100, choices=choices.BENEFITS_CHOICES),
         verbose_name=_("Promised benefits for local communities"),
         blank=True,
         null=True,
@@ -482,7 +484,7 @@ class AbstractDealBase(models.Model):
     )
 
     materialized_benefits = ArrayField(
-        models.CharField(max_length=100, choices=_choices.BENEFITS_CHOICES),
+        models.CharField(max_length=100, choices=choices.BENEFITS_CHOICES),
         verbose_name=_("Materialized benefits for local communities"),
         blank=True,
         null=True,
@@ -501,7 +503,7 @@ class AbstractDealBase(models.Model):
     """ Former use """
 
     former_land_owner = ArrayField(
-        models.CharField(max_length=100, choices=_choices.FORMER_LAND_OWNER_CHOICES),
+        models.CharField(max_length=100, choices=choices.FORMER_LAND_OWNER_CHOICES),
         verbose_name=_("Former land owner"),
         blank=True,
         null=True,
@@ -511,7 +513,7 @@ class AbstractDealBase(models.Model):
     )
 
     former_land_use = ArrayField(
-        models.CharField(max_length=100, choices=_choices.FORMER_LAND_USE_CHOICES),
+        models.CharField(max_length=100, choices=choices.FORMER_LAND_USE_CHOICES),
         verbose_name=_("Former land use"),
         blank=True,
         null=True,
@@ -521,7 +523,7 @@ class AbstractDealBase(models.Model):
     )
 
     former_land_cover = ArrayField(
-        models.CharField(max_length=100, choices=_choices.FORMER_LAND_COVER_CHOICES),
+        models.CharField(max_length=100, choices=choices.FORMER_LAND_COVER_CHOICES),
         verbose_name=_("Former land cover"),
         blank=True,
         null=True,
@@ -570,7 +572,7 @@ class AbstractDealBase(models.Model):
     export_country1 = models.ForeignKey(
         Country,
         verbose_name=_("Country 1"),
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         blank=True,
         null=True,
         related_name="+",
@@ -584,7 +586,7 @@ class AbstractDealBase(models.Model):
     export_country2 = models.ForeignKey(
         Country,
         verbose_name=_("Country 2"),
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         blank=True,
         null=True,
         related_name="+",
@@ -598,7 +600,7 @@ class AbstractDealBase(models.Model):
     export_country3 = models.ForeignKey(
         Country,
         verbose_name=_("Country 3"),
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         blank=True,
         null=True,
         related_name="+",
@@ -640,7 +642,7 @@ class AbstractDealBase(models.Model):
     )
 
     source_of_water_extraction = ArrayField(
-        models.CharField(max_length=100, choices=_choices.WATER_SOURCE_CHOICES),
+        models.CharField(max_length=100, choices=choices.WATER_SOURCE_CHOICES),
         verbose_name=_("Source of water extraction"),
         blank=True,
         null=True,
@@ -685,12 +687,6 @@ class Deal(AbstractDealBase):
 
     fully_updated = models.BooleanField(default=False)
     confidential = models.BooleanField(default=False)
-    confidential_reason = models.CharField(
-        max_length=100,
-        choices=_choices.CONFIDENTIAL_REASON_CHOICES,
-        null=True,
-        blank=True,
-    )
     confidential_comment = models.TextField(
         _("Comment why this deal is private"), blank=True, null=True
     )
@@ -699,7 +695,7 @@ class Deal(AbstractDealBase):
     is_public = models.BooleanField(default=False)
     has_known_investor = models.BooleanField(default=False)
     not_public_reason = models.CharField(
-        max_length=100, blank=True, choices=_choices.NOT_PUBLIC_REASON_CHOICES
+        max_length=100, blank=True, choices=choices.NOT_PUBLIC_REASON_CHOICES
     )
     parent_companies = models.ManyToManyField(
         Investor, verbose_name=_("Parent companies"), related_name="child_deals"
@@ -721,18 +717,18 @@ class Deal(AbstractDealBase):
         null=True,
     )
     current_intention_of_investment = ArrayField(
-        models.CharField(max_length=100, choices=_choices.INTENTION_CHOICES),
+        models.CharField(max_length=100, choices=choices.INTENTION_CHOICES),
         blank=True,
         null=True,
     )
     current_negotiation_status = models.CharField(
-        choices=_choices.NEGOTIATION_STATUS_CHOICES,
+        choices=choices.NEGOTIATION_STATUS_CHOICES,
         max_length=100,
         blank=True,
         null=True,
     )
     current_implementation_status = models.CharField(
-        choices=_choices.IMPLEMENTATION_STATUS_CHOICES,
+        choices=choices.IMPLEMENTATION_STATUS_CHOICES,
         max_length=100,
         blank=True,
         null=True,
@@ -756,6 +752,7 @@ class Deal(AbstractDealBase):
     )
     forest_concession = models.BooleanField(default=False)
     transnational = models.BooleanField(null=True)
+    # geojson is a single FeatureCollection object or None (but never a list!)
     geojson = models.JSONField(blank=True, null=True)
 
     """ # Status """
@@ -773,7 +770,7 @@ class Deal(AbstractDealBase):
         settings.AUTH_USER_MODEL,
         blank=True,
         null=True,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         related_name="+",
     )
     modified_at = models.DateTimeField(_("Last update"), blank=True, null=True)
@@ -781,7 +778,7 @@ class Deal(AbstractDealBase):
         settings.AUTH_USER_MODEL,
         blank=True,
         null=True,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         related_name="+",
     )
     fully_updated_at = models.DateTimeField(
@@ -867,6 +864,8 @@ class Deal(AbstractDealBase):
 
     @staticmethod
     def deserialize_from_version(version: DealVersion) -> "Deal":
+        if version.serialized_data.get("confidential_reason"):
+            del version.serialized_data["confidential_reason"]
         daty = {
             "pk": version.object_id,
             "model": "landmatrix.deal",
@@ -977,7 +976,7 @@ class Deal(AbstractDealBase):
             and "FOREST_LOGGING" in self.current_intention_of_investment
         )
 
-    def _calculate_transnational(self) -> Optional[bool]:
+    def _calculate_transnational(self) -> bool | None:
         if not self.country_id:
             # unknown if we have no target country
             return None
@@ -1108,7 +1107,7 @@ class Deal(AbstractDealBase):
                     "count": x["count"],
                     "coordinates": [x["country__point_lat"], x["country__point_lon"]],
                 }
-                for x in deals.filter(country__fk_region_id=region_id)
+                for x in deals.filter(country__region_id=region_id)
                 .values("country_id", "country__point_lat", "country__point_lon")
                 .annotate(count=Count("pk"))
                 # .annotate(size=Sum("deal_size"))
@@ -1134,7 +1133,7 @@ class Deal(AbstractDealBase):
                 "count": x["count"],
                 "coordinates": region_coordinates[x["region_id"]],
             }
-            for x in deals.values(region_id=F("country__fk_region_id")).annotate(
+            for x in deals.values(region_id=F("country__region_id")).annotate(
                 count=Count("pk")
             )
         ]

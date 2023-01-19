@@ -1,6 +1,5 @@
 from django import forms
 from django.db import models
-from django.db.models import F, Count, Sum
 from wagtail.admin.edit_handlers import (
     FieldPanel,
     StreamFieldPanel,
@@ -14,11 +13,11 @@ from wagtail.core.fields import StreamField
 from wagtail.core.models import Page
 from wagtail.core.models import Page
 from wagtail.core.rich_text import expand_db_html
+from wagtail_headless_preview.models import HeadlessPreviewMixin
 
 from apps.blog.models import BlogPage
-from apps.landmatrix.models import Region, Country, Deal
-from apps.landmatrix.models import Region as DataRegion
-from apps.landmatrix.models.country import Country as DataCountry
+from apps.landmatrix.models.country import Region, Country
+from apps.landmatrix.models.deal import Deal
 from apps.wagtailcms.blocks import (
     COLUMN_BLOCKS,
     CONTENT_BLOCKS,
@@ -54,7 +53,7 @@ class ChartDescriptionsSettings(BaseSetting):
     ]
 
 
-class WagtailRootPage(Page):
+class WagtailRootPage(HeadlessPreviewMixin, Page):
     is_creatable = False
     body = NoWrapsStreamField(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
 
@@ -66,23 +65,23 @@ class WagtailRootPage(Page):
     ]
 
 
-class WagtailPage(Page):
+class WagtailPage(HeadlessPreviewMixin, Page):
     body = NoWrapsStreamField(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
     content_panels = Page.content_panels + [StreamFieldPanel("body")]
     api_fields = [APIField("body")]
 
 
-class AboutIndexPage(Page):
+class AboutIndexPage(HeadlessPreviewMixin, Page):
     max_count = 1
     subpage_types = ["wagtailcms.WagtailPage"]
 
 
-class ObservatoryIndexPage(Page):
+class ObservatoryIndexPage(HeadlessPreviewMixin, Page):
     max_count = 1
     subpage_types = ["wagtailcms.ObservatoryPage"]
 
 
-class ObservatoryPage(Page):
+class ObservatoryPage(HeadlessPreviewMixin, Page):
     region = models.OneToOneField(
         Region,
         null=True,

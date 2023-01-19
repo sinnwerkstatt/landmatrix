@@ -1,4 +1,4 @@
-from django.forms import ModelForm, IntegerField
+from django.forms import ModelForm
 from django.utils.translation import gettext as _
 
 from apps.landmatrix.forms.fields import (
@@ -11,8 +11,7 @@ from apps.landmatrix.forms.fields import (
     JSONJobsField,
 )
 from apps.landmatrix.forms.formfieldhelper import JSONFormOutputMixin
-from apps.landmatrix.models import Deal
-from apps.landmatrix.models._choices import (
+from apps.landmatrix.models.choices import (
     INTENTION_CHOICES,
     NEGOTIATION_STATUS_CHOICES,
     IMPLEMENTATION_STATUS_CHOICES,
@@ -20,6 +19,7 @@ from apps.landmatrix.models._choices import (
     ANIMALS_CHOICES,
     MINERALS_CHOICES,
 )
+from apps.landmatrix.models.deal import Deal
 
 
 class DealForm(JSONFormOutputMixin, ModelForm):
@@ -133,6 +133,7 @@ class DealForm(JSONFormOutputMixin, ModelForm):
             "operating_company": {"class": "InvestorForeignKey"},
             "deal_size": {"unit": _("ha")},
             "intended_size": {"unit": _("ha")},
+            "current_contract_size": {"unit": _("ha")},
             "purchase_price_currency": {"class": "CurrencyForeignKey"},
             "annual_leasing_fee_currency": {"class": "CurrencyForeignKey"},
             "total_jobs_planned": {"unit": _("jobs")},

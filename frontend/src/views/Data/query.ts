@@ -1,6 +1,6 @@
-import gql from "graphql-tag";
-import type { OperationVariables } from "apollo-client/core/types";
 import store from "$store";
+import type { OperationVariables } from "apollo-client/core/types";
+import gql from "graphql-tag";
 
 export const data_deal_query_gql = gql`
   query Deals($limit: Int!, $subset: Subset, $filters: [Filter]) {
@@ -10,7 +10,7 @@ export const data_deal_query_gql = gql`
       country {
         id
         name
-        fk_region {
+        region {
           id
         }
       }

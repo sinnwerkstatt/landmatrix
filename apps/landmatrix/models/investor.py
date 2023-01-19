@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import re
-from typing import Set
 
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
@@ -8,15 +9,15 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from apps.landmatrix.models import Country, Currency
 from apps.landmatrix.models.abstracts import (
     STATUS_CHOICES,
     DRAFT_STATUS_CHOICES,
     Version,
     WorkflowInfo,
 )
+from apps.landmatrix.models.country import Country
+from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.fields import DatasourcesField
-
 from apps.utils import ecma262
 
 
@@ -60,11 +61,18 @@ class InvestorVersion(Version):
             }
             for inv in edict["investors"]:
                 iid = inv["investor"]
-                inv["investor"] = {
-                    "id": iid,
-                    "name": imap[iid]["name"],
-                    "country": {"id": imap[iid]["country_id"]},
-                }
+                try:
+                    inv["investor"] = {
+                        "id": iid,
+                        "name": imap[iid]["name"],
+                        "country": {"id": imap[iid]["country_id"]},
+                    }
+                except KeyError:
+                    inv["investor"] = {
+                        "id": iid,
+                        "name": "DELETED INVESTOR",
+                        "country": None,
+                    }
         return edict
 
     def to_dict(self):
@@ -85,7 +93,7 @@ class Investor(models.Model):
         verbose_name=_("Country of registration/origin"),
         blank=True,
         null=True,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
     )
 
     CLASSIFICATION_CHOICES = (
@@ -149,7 +157,7 @@ class Investor(models.Model):
         settings.AUTH_USER_MODEL,
         blank=True,
         null=True,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         related_name="+",
     )
     modified_at = models.DateTimeField(_("Last update"), blank=True, null=True)
@@ -157,7 +165,7 @@ class Investor(models.Model):
         settings.AUTH_USER_MODEL,
         blank=True,
         null=True,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         related_name="+",
     )
 
@@ -253,9 +261,9 @@ class Investor(models.Model):
 
     def get_parent_companies(
         self, top_investors_only=False, _seen_investors=None
-    ) -> Set["Investor"]:
+    ) -> set["Investor"]:
         """
-        Get list of highest parent companies
+        Get list of the highest parent companies
         (all right-hand side parent companies of the network visualisation)
         """
         if _seen_investors is None:
@@ -443,7 +451,7 @@ class InvestorVentureInvolvement(models.Model):
         verbose_name=_("Loan currency"),
         blank=True,
         null=True,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
     )
     loans_date = models.CharField(_("Loan date"), max_length=20, blank=True, default="")
 
@@ -491,6 +499,10 @@ class InvestorVentureInvolvement(models.Model):
         }
 
     def serialize(self) -> dict:
+        if self.loans_currency_id:
+            loans_currency = Currency.objects.get(id=self.loans_currency_id).to_dict()
+        else:
+            loans_currency = None
         return {
             "id": self.id,
             "investor": self.investor_id,
@@ -499,7 +511,7 @@ class InvestorVentureInvolvement(models.Model):
             "investment_type": self.investment_type,
             "percentage": self.percentage,
             "loans_amount": self.loans_amount,
-            "loans_currency": self.loans_currency_id,
+            "loans_currency": loans_currency,
             "loans_date": self.loans_date,
             "parent_relation": self.parent_relation,
             "comment": self.comment,

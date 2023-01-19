@@ -1,8 +1,0 @@
-[
-  {"pk": 1, "model": "landmatrix.status", "fields": {"name": "pending", "description": null}},
-  {"pk": 2, "model": "landmatrix.status", "fields": {"name": "active", "description": null}},
-  {"pk": 3, "model": "landmatrix.status", "fields": {"name": "overwritten", "description": null}},
-  {"pk": 4, "model": "landmatrix.status", "fields": {"name": "deleted", "description": null}},
-  {"pk": 5, "model": "landmatrix.status", "fields": {"name": "rejected", "description": null}},
-  {"pk": 6, "model": "landmatrix.status", "fields": {"name": "to_delete", "description": null}}
-]

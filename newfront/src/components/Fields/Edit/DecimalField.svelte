@@ -1,9 +1,9 @@
 <script lang="ts">
-  import type { FormField } from "../fields";
-  import LowLevelDecimalField from "./LowLevelDecimalField.svelte";
+  import type { FormField } from "../fields"
+  import LowLevelDecimalField from "./LowLevelDecimalField.svelte"
 
-  export let formfield: FormField;
-  export let value: number;
+  export let formfield: FormField
+  export let value: number
 </script>
 
 <div class="decimal_field">

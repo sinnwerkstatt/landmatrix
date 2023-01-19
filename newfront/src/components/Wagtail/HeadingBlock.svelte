@@ -1,5 +1,5 @@
 <script lang="ts">
-  export let value: string;
+  export let value: string
 </script>
 
-<h3>{value}</h3>
+<h3 data-block="heading">{value}</h3>

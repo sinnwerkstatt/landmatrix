@@ -1,24 +1,15 @@
-from typing import Any
-
 from django.utils import translation
-from graphql import GraphQLResolveInfo
 
 from apps.landmatrix.forms.deal import DealForm
-from apps.landmatrix.forms.deal_submodels import (
-    contract_fields,
-    location_fields,
-    datasource_fields,
-)
+from apps.landmatrix.forms.deal_submodels import get_submodels_fields
 from apps.landmatrix.forms.investor import InvestorVentureInvolvementForm, InvestorForm
 
 
-def resolve_formfields(obj: Any, info: GraphQLResolveInfo, language="en"):
+def resolve_formfields(_obj, _info, language="en"):
     with translation.override(language):
         return {
             "deal": DealForm().as_json(),
-            "location": location_fields,
-            "contract": contract_fields,
-            "datasource": datasource_fields,
+            **get_submodels_fields(),
             "investor": InvestorForm().as_json(),
             "involvement": InvestorVentureInvolvementForm().as_json(),
         }

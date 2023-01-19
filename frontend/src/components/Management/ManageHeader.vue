@@ -55,7 +55,7 @@
               <span>{{ $t("Draft") }}</span>
               <span
                 v-if="object.draft_status === 4"
-                class="font-bold text-red-600 pl-2"
+                class="pl-2 font-bold text-red-600"
               >
                 ({{ $t("Rejected") }})
               </span>
@@ -183,7 +183,7 @@
                 </div>
               </div>
               <div
-                v-if="$store.state.user.role === 'ADMINISTRATOR' && otype === 'deal'"
+                v-if="$store.state.user.role === 3 && otype === 'deal'"
                 class="action-button"
               >
                 <div class="d-inline-block">
@@ -329,8 +329,7 @@
         // object ist deleted
         if (!this.objectVersion && this.object.status === 4) return false;
         if (this.is_active_with_draft) return false;
-        if (this.object.draft_status === 4)
-          return this.$store.state.user.role === "ADMINISTRATOR";
+        if (this.object.draft_status === 4) return this.$store.state.user.role === 3;
         return is_authorized(this.object);
       },
       is_deletable(): boolean {
@@ -341,7 +340,7 @@
           this.object.draft_status === null ||
           this.object.draft_status === 4 // 4 = rejected
         )
-          return this.$store.state.user.role === "ADMINISTRATOR";
+          return this.$store.state.user.role === 3;
         return is_authorized(this.object);
       },
       is_deleted(): boolean {

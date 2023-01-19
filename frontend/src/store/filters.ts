@@ -116,7 +116,7 @@ export function prepareFilters(filters: FilterValues): GQLFilter[] {
   const filterArray = [] as GQLFilter[];
 
   if (filters.region_id)
-    filterArray.push({ field: "country.fk_region_id", value: filters.region_id });
+    filterArray.push({ field: "country.region_id", value: filters.region_id });
 
   if (filters.country_id)
     filterArray.push({ field: "country_id", value: filters.country_id });

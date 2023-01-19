@@ -1,125 +1,201 @@
 <script lang="ts">
-  import dayjs from "dayjs";
-  import { _ } from "svelte-i18n";
-  import { page } from "$app/stores";
-  import type { WorkflowInfo as WFInfo } from "$lib/types/generics";
+  import { Client, gql } from "@urql/svelte"
+  import { toast } from "@zerodevx/svelte-toast"
+  import dayjs from "dayjs"
+  import { _ } from "svelte-i18n"
+  import { slide } from "svelte/transition"
 
-  export let info: WFInfo;
-  const status_map = {
-    1: "Draft",
-    2: "Active", //"Live",
-    3: "Active", // "Updated",
-    4: "Deleted",
-    5: "Rejected", // legacy
-    6: "To Delete", // legacy
-  };
-  const draft_status_map = {
-    1: "Draft",
-    2: "Review",
-    3: "Activation",
-    4: "Rejected", // legacy
-    5: "Deleted",
-  };
-  $: confidential_status_change = info.comment?.startsWith("[SET_CONFIDENTIAL]")
-    ? "set_confidential"
+  import { invalidateAll } from "$app/navigation"
+  import { page } from "$app/stores"
+
+  import { allUsers } from "$lib/stores"
+  import { draftStatusMap, statusMap } from "$lib/stores.js"
+  import type { WorkflowInfo as WFInfo } from "$lib/types/generics"
+  import { Status } from "$lib/types/generics"
+
+  import ArrowLongRightIcon from "$components/icons/ArrowLongRightIcon.svelte"
+  import ChatBubbleLeftIcon from "$components/icons/ChatBubbleLeftIcon.svelte"
+  import CheckCircleIcon from "$components/icons/CheckCircleIcon.svelte"
+
+  export let info: WFInfo
+
+  $: confidentialStatusChange = info.comment?.startsWith("[SET_CONFIDENTIAL]")
+    ? "bg-red-400"
     : info.comment?.startsWith("[UNSET_CONFIDENTIAL]")
-    ? "unset_confidential"
-    : false;
+    ? "bg-green-600 line-through"
+    : false
 
-  $: comment_wo_head = info.comment
+  $: cleanedComment = info.comment
     ?.replace("[SET_CONFIDENTIAL]", "")
-    .replace("[UNSET_CONFIDENTIAL] ", "");
+    .replace("[UNSET_CONFIDENTIAL] ", "")
 
-  $: unread =
-    info.to_user?.username === $page.stuff.user.username &&
-    !info.processed_by_receiver &&
-    comment_wo_head.length > 0;
+  $: openThread =
+    info.draft_status_after === info.draft_status_before &&
+    info.to_user &&
+    [info.to_user.id, info.from_user.id].includes($page.data.user.id) &&
+    !info.resolved
 
-  async function processInfo() {
-    // let res = await this.$apollo.mutate({
-    //   mutation: gql`
-    //     mutation ($id: Int!, $type: String!) {
-    //       toggle_workflow_info_unread(id: $id, type: $type)
-    //     }
-    //   `,
-    //   variables: { id: this.info.id, type: this.info.__typename },
-    // });
-    // if (res.data.toggle_workflow_info_unread)
-    //   // eslint-disable-next-line vue/no-mutating-props
-    //   this.info.processed_by_receiver = true;
+  let reply = ""
+
+  async function sendReply() {
+    const { data, error } = await ($page.data.urqlClient as Client)
+      .mutation<{ add_workflow_info_reply: boolean }>(
+        gql`
+          mutation ($id: Int!, $type: String!, $from_user_id: Int!, $comment: String!) {
+            add_workflow_info_reply(
+              id: $id
+              type: $type
+              from_user_id: $from_user_id
+              comment: $comment
+            )
+          }
+        `,
+        {
+          id: info.id,
+          type: info.__typename,
+          from_user_id: $page.data.user.id,
+          comment: reply,
+        },
+      )
+      .toPromise()
+    if (error) {
+      toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
+      return
+    }
+    if (!data) {
+      toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
+      return
+    }
+    if (data.add_workflow_info_reply) {
+      info.replies = [
+        ...info.replies,
+        {
+          timestamp: new Date().toISOString(),
+          user_id: $page.data.user.id,
+          comment: reply,
+        },
+      ]
+      reply = ""
+    }
+    await invalidateAll()
+  }
+
+  async function resolveThread() {
+    const { data, error } = await ($page.data.urqlClient as Client)
+      .mutation<{ resolve_workflow_info: boolean }>(
+        gql`
+          mutation ($id: Int!, $type: String!) {
+            resolve_workflow_info(id: $id, type: $type)
+          }
+        `,
+        { id: info.id, type: info.__typename },
+      )
+      .toPromise()
+    if (error) {
+      toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
+      return
+    }
+    if (!data) {
+      toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
+      return
+    }
+    if (data.resolve_workflow_info) {
+      info = { ...info, resolved: true }
+    }
+    await invalidateAll()
   }
 </script>
 
-<div class="text-sm mb-2 mx-1 bg-neutral-200 shadow-md p-1{unread ? '!font-bold' : ''}">
-  <div class="meta">
-    <span class="font-semibold">{dayjs(info.timestamp).format("YYYY-MM-DD HH:mm")}</span
-    >
-    <span class="from-to">
-      {$_("From")}
+<div
+  class="mx-1 mb-2 bg-neutral-200 p-1 text-sm text-gray-800 shadow-md {openThread
+    ? 'border-2'
+    : ''}  border-yellow-200"
+>
+  <div class="flex justify-between">
+    <span class="font-semibold">
+      {dayjs(info.timestamp).format("YYYY-MM-DD HH:mm")}
+    </span>
+    <span class="inline-flex items-center">
       {info.from_user.username}
       {#if info.to_user}
-        <span> {$_("to")} {info.to_user.username} </span>
+        <ArrowLongRightIcon class="mx-0.5 h-4 w-4" />
+        {info.to_user.username}
       {/if}
     </span>
   </div>
 
-  {#if info.draft_status_before !== info.draft_status_after}
-    <div class="status-change">
+  <div class="flex items-center gap-1" class:my-1={!cleanedComment}>
+    {#if info.draft_status_before !== info.draft_status_after}
       {#if info.draft_status_before}
-        <div
-          class="status inline-block leading-4 bg-pelorous text-white my-1 py-1 px-2"
-        >
-          {draft_status_map[info.draft_status_before]}
+        <div class="inline-block bg-gray-500 px-1.5 text-[13px] text-white">
+          {$draftStatusMap[info.draft_status_before]}
         </div>
-        →
+        <ArrowLongRightIcon class="inline-block h-4 w-4" />
       {/if}
-      <div class="status inline-block leading-4 bg-pelorous text-white my-1 py-1 px-2">
-        {draft_status_map[info.draft_status_after] || status_map[2]}
+      <div class="inline-block bg-pelorous px-1.5 text-[13px] text-white">
+        {$draftStatusMap[info.draft_status_after] || $statusMap[Status.LIVE]}
       </div>
-    </div>
-  {/if}
-  {#if confidential_status_change}
-    <div class="status-change">
+    {/if}
+    {#if confidentialStatusChange}
       <div
-        class="status inline-block leading-4 bg-pelorous text-white my-1 py-1 px-2 {confidential_status_change}"
+        class="inline-block px-1.5 text-[13px] text-white {confidentialStatusChange}"
       >
         {$_("Confidential")}
       </div>
+    {/if}
+  </div>
+  {#if cleanedComment}
+    <div class="relative whitespace-pre-line py-1 pr-5">
+      {cleanedComment}
     </div>
-  {/if}
-  {#if comment_wo_head}
-    <div class="py-1 px-2 whitespace-pre-line bg-neutral-200 relative">
-      {comment_wo_head}
-      {#if unread}
-        <button
-          class="absolute top-1 right-4 border-0 opacity-70 hover:opacity-100 bg-inherit	 transition-opacity"
-          on:click|preventDefault={processInfo}
+    <div class="relative ml-3 border">
+      <ul class="divide-y-2 bg-neutral-100">
+        {#each info.replies as rep}
+          <li class="p-1">
+            <span class="flex justify-between">
+              <span class="font-semibold">
+                {dayjs(rep.timestamp).format("YYYY-MM-DD HH:mm")}
+              </span>
+              <span class="inline-flex items-center">
+                {$allUsers.find(u => u.id === rep.user_id)?.username ?? rep.user_id}
+              </span>
+            </span>
+            {rep.comment}
+          </li>
+        {/each}
+      </ul>
+
+      {#if openThread}
+        <form
+          transition:slide
+          class="flex items-center"
+          on:submit|preventDefault={sendReply}
         >
-          <i class="fas fa-check-circle fa-lg orange" />
+          <input
+            bind:value={reply}
+            type="text"
+            class="inpt"
+            placeholder={$_("Reply")}
+            required
+          />
+          <button
+            class="btn btn-pelorous -ml-0.5 inline-flex h-[34px] items-center gap-2 px-2"
+            type="submit"
+          >
+            <ChatBubbleLeftIcon class="h-5 w-5" />
+          </button>
+        </form>
+      {/if}
+      {#if openThread && info.from_user.id === $page.data.user.id}
+        <button
+          class="btn btn-primary btn-slim ml-auto mt-1 mr-1 flex items-center gap-1"
+          type="button"
+          on:click={resolveThread}
+        >
+          {$_("Resolve thread")}
+          <CheckCircleIcon class="h-4 w-4" />
         </button>
       {/if}
     </div>
   {/if}
 </div>
-
-<!--<style scoped lang="scss">-->
-<!--  .status-change .status {-->
-<!--    padding: 2px 5px 3px;-->
-<!--    background-color: darken(#e4e4e4, 8%);-->
-<!--    color: #5e5e64;-->
-<!--    border-radius: 8px;-->
-<!--    filter: drop-shadow(-1px 1px 1px rgba(0, 0, 0, 0.1));-->
-
-<!--    &:last-child {-->
-<!--      background-color: #93c7c8;-->
-<!--      color: white;-->
-<!--    }-->
-<!--    &.set_confidential {-->
-<!--      background: red;-->
-<!--    }-->
-<!--    &.unset_confidential {-->
-<!--      background: #5dbe00;-->
-<!--      text-decoration: line-through;-->
-<!--    }-->
-<!--  }-->
-<!--</style>-->

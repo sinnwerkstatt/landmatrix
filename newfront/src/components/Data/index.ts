@@ -1,4 +1,4 @@
-import { writable } from "svelte/store";
+import { writable } from "svelte/store"
 
-export const showFilterBar = writable(true);
-export const showContextBar = writable(true);
+export const showFilterBar = writable(true)
+export const showContextBar = writable(true)

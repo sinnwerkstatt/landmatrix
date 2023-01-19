@@ -1,10 +1,10 @@
-from typing import Any
+from ariadne.graphql import GraphQLError
 
-from graphql import GraphQLResolveInfo, GraphQLError
-
+from apps.accounts.models import UserRole
 from apps.graphql.tools import get_fields, parse_filters
-from apps.landmatrix.models import Investor, Deal
+from apps.landmatrix.models.deal import Deal
 from apps.landmatrix.models.investor import (
+    Investor,
     InvestorVersion,
     InvestorWorkflowInfo,
     InvestorVentureInvolvement,
@@ -17,12 +17,12 @@ from .generics import (
     object_edit,
     object_delete,
 )
-from .user_utils import get_user_role
 
 
+# noinspection PyShadowingBuiltins
 def resolve_investor(
-    obj: Any,
-    info: GraphQLResolveInfo,
+    _obj,
+    info,
     id,
     version=None,
     subset="PUBLIC",
@@ -30,7 +30,6 @@ def resolve_investor(
     involvements_include_ventures: bool = True,
 ):
     user = info.context["request"].user
-    role = get_user_role(user)
 
     fields = get_fields(info, recursive=True, exclude=["__typename"])
 
@@ -58,10 +57,15 @@ def resolve_investor(
         except InvestorVersion.DoesNotExist:
             return
 
-        if not (
-            investor_version.created_by == user or role in ["ADMINISTRATOR", "EDITOR"]
+        if not any(
+            [
+                user.is_authenticated and user.role >= UserRole.EDITOR,
+                investor_version.created_by == user,
+                investor_version.serialized_data["draft_status"] is None
+                and investor_version.serialized_data["status"] in [2, 3],
+            ]
         ):
-            raise GraphQLError("not authorized")
+            raise GraphQLError("MISSING_AUTHORIZATION")
         if any([f.startswith("ventures_") for f in fields]):
             investor["ventures"] = InvestorVentureInvolvement.objects.filter(
                 investor_id=id
@@ -109,8 +113,8 @@ def resolve_investor(
 
 
 def resolve_investors(
-    obj: Any,
-    info: GraphQLResolveInfo,
+    _obj,
+    info,
     sort="id",
     limit=20,
     subset="PUBLIC",
@@ -135,15 +139,16 @@ def resolve_investors(
     )
 
 
-def resolve_investorversions(obj, info: GraphQLResolveInfo, filters=None):
+def resolve_investorversions(_obj, _info, filters=None):
     qs = InvestorVersion.objects.all()
     if filters:
         qs = qs.filter(parse_filters(filters))
     return [iv.to_dict() for iv in qs]
 
 
+# noinspection PyShadowingBuiltins
 def resolve_add_investor_comment(
-    _, info, id: int, version: int, comment: str, to_user_id=None
+    _obj, info, id: int, version: int, comment: str, to_user_id=None
 ) -> dict:
     add_object_comment(
         "investor", info.context["request"].user, id, version, comment, to_user_id
@@ -152,8 +157,9 @@ def resolve_add_investor_comment(
     return {"investorId": id, "investorVersion": version}
 
 
+# noinspection PyShadowingBuiltins
 def resolve_change_investor_status(
-    _,
+    _obj,
     info,
     id: int,
     version: int,
@@ -161,7 +167,7 @@ def resolve_change_investor_status(
     comment: str = None,
     to_user_id: int = None,
 ) -> dict:
-    investorId, investorVersion = change_object_status(
+    investor_id, investor_version = change_object_status(
         otype="investor",
         user=info.context["request"].user,
         obj_id=id,
@@ -170,7 +176,7 @@ def resolve_change_investor_status(
         comment=comment,
         to_user_id=to_user_id,
     )
-    return {"investorId": investorId, "investorVersion": investorVersion}
+    return {"investorId": investor_id, "investorVersion": investor_version}
 
 
 def _clean_payload(payload: dict, investor_id: int) -> dict:
@@ -194,7 +200,10 @@ def _clean_payload(payload: dict, investor_id: int) -> dict:
             for entry in value:
                 ivi = InvestorVentureInvolvement()
                 if entry.get("id"):
-                    ivi.id = entry["id"]
+                    try:
+                        ivi = InvestorVentureInvolvement.objects.get(id=entry["id"])
+                    except (ValueError, InvestorVentureInvolvement.DoesNotExist):
+                        pass  # it's okay, we'll use the new instance
                 ivi.venture_id = investor_id
                 ivi.investor_id = entry["investor"]["id"]
                 ivi.role = entry["role"]
@@ -216,21 +225,23 @@ def _clean_payload(payload: dict, investor_id: int) -> dict:
     return ret
 
 
-def resolve_investor_edit(_, info, id, version=None, payload: dict = None) -> dict:
+# noinspection PyShadowingBuiltins
+def resolve_investor_edit(_obj, info, id, version=None, payload: dict = None) -> dict:
     payload = _clean_payload(payload, investor_id=id)
 
-    investorId, investorVersion = object_edit(
+    investor_id, investor_version = object_edit(
         otype="investor",
         user=info.context["request"].user,
         obj_id=id,
         obj_version_id=version,
         payload=payload,
     )
-    return {"investorId": investorId, "investorVersion": investorVersion}
+    return {"investorId": investor_id, "investorVersion": investor_version}
 
 
+# noinspection PyShadowingBuiltins
 def resolve_investor_delete(
-    _, info, id: int, version: int = None, comment: str = None
+    _obj, info, id: int, version: int = None, comment: str = None
 ) -> bool:
     return object_delete(
         otype="investor",

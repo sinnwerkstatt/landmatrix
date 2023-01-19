@@ -149,7 +149,7 @@ export const investor_gql_query = gql`
         draft_status_after
         timestamp
         comment
-        processed_by_receiver
+        resolved
       }
       versions {
         id
@@ -210,16 +210,12 @@ export const investor_edit_query = gql`
 
 export const markers_query = {
   query: gql`
-    query Markers($subset: Subset, $region_id: Int, $country_id: Int) {
-      markers(subset: $subset, region_id: $region_id, country_id: $country_id)
+    query Markers($region_id: Int, $country_id: Int) {
+      markers(region_id: $region_id, country_id: $country_id)
     }
   `,
   variables() {
-    return {
-      region_id: +this.regionId,
-      country_id: +this.countryId,
-      subset: this.$store.getters.userAuthenticated ? "ACTIVE" : "PUBLIC",
-    };
+    return { region_id: +this.regionId, country_id: +this.countryId };
   },
 };
 
@@ -227,7 +223,7 @@ export const deal_gql_query = gql`
   query Deal($id: Int!, $version: Int, $subset: Subset) {
     deal(id: $id, version: $version, subset: $subset) {
       id
-      # General Info
+      # General info
       ## Land area
       country {
         id
@@ -404,7 +400,6 @@ export const deal_gql_query = gql`
       fully_updated
       fully_updated_at
       confidential
-      confidential_reason
       confidential_comment
       is_public
       not_public_reason
@@ -443,7 +438,7 @@ export const deal_gql_query = gql`
         draft_status_after
         timestamp
         comment
-        processed_by_receiver
+        resolved
       }
       current_draft {
         id

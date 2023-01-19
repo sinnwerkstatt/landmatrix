@@ -20,7 +20,6 @@ from apps.graphql.resolvers.charts import (
     resolve_deal_aggregations,
     resolve_global_map_of_investments,
 )
-
 from apps.graphql.resolvers.deal import (
     resolve_deal,
     resolve_deals,
@@ -34,8 +33,9 @@ from apps.graphql.resolvers.deal import (
 )
 from apps.graphql.resolvers.formfields import resolve_formfields
 from apps.graphql.resolvers.generics import (
-    resolve_toggle_workflow_info_unread,
+    resolve_resolve_workflow_info,
     resolve_object_copy,
+    resolve_add_workflow_info_reply,
 )
 from apps.graphql.resolvers.investor import (
     resolve_investor,
@@ -47,23 +47,25 @@ from apps.graphql.resolvers.investor import (
     resolve_change_investor_status,
     resolve_investor_delete,
 )
-from apps.graphql.resolvers.map import resolve_markers
 from apps.graphql.resolvers.misc import (
     resolve_countries,
     resolve_regions,
     resolve_chart_descriptions,
     resolve_currencies,
+    resolve_markers,
 )
 from apps.graphql.resolvers.user import (
     resolve_user,
+    resolve_users,
+    user_type,
+)
+from apps.graphql.resolvers.user_auth import (
     resolve_login,
     resolve_logout,
-    resolve_users,
-    user_regional_info_type,
-    user_type,
     resolve_register,
     resolve_password_reset,
     resolve_password_reset_confirm,
+    resolve_register_confirm,
 )
 from apps.graphql.scalars import geopoint_scalar, datetime_scalar
 
@@ -99,6 +101,7 @@ query.set_field("markers", resolve_markers)
 
 mutation = ObjectType("Mutation")
 mutation.set_field("register", resolve_register)
+mutation.set_field("register_confirm", resolve_register_confirm)
 mutation.set_field("login", resolve_login)
 mutation.set_field("logout", resolve_logout)
 mutation.set_field("password_reset", resolve_password_reset)
@@ -119,7 +122,8 @@ mutation.set_field("investor_delete", resolve_investor_delete)
 
 mutation.set_field("object_copy", resolve_object_copy)
 
-mutation.set_field("toggle_workflow_info_unread", resolve_toggle_workflow_info_unread)
+mutation.set_field("resolve_workflow_info", resolve_resolve_workflow_info)
+mutation.set_field("add_workflow_info_reply", resolve_add_workflow_info_reply)
 
 schema = make_executable_schema(
     type_defs,
@@ -127,5 +131,4 @@ schema = make_executable_schema(
     query,
     mutation,
     user_type,
-    user_regional_info_type,
 )

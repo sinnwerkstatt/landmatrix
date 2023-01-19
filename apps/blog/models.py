@@ -9,7 +9,6 @@ from django.db.models import Count
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils.text import Truncator
-from django.utils.translation import gettext_lazy as _
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey, ParentalManyToManyField
 from rest_framework.fields import ListField
@@ -32,16 +31,17 @@ from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.images.models import SourceImageIOError
 from wagtail.search import index
 from wagtail.snippets.models import register_snippet
+from wagtail_headless_preview.models import HeadlessPreviewMixin
 
 from apps.wagtailcms.blocks import SIMPLE_CONTENT_BLOCKS
 from .utils import unique_slugify
 
 
-class BlogIndexPage(Page):
+class BlogIndexPage(HeadlessPreviewMixin, Page):
     max_count = 1
 
     class Meta:
-        verbose_name = _("Blog index")
+        verbose_name = "Blog index"
 
     @property
     def blogs(self):
@@ -113,26 +113,24 @@ class BlogIndexPage(Page):
 
 @register_snippet
 class BlogCategory(models.Model):
-    name = models.CharField(max_length=80, unique=True, verbose_name=_("Category Name"))
+    name = models.CharField(max_length=80, unique=True, verbose_name="Category Name")
     slug = models.SlugField(unique=True, max_length=80)
     parent = models.ForeignKey(
         "self",
         blank=True,
         null=True,
         related_name="children",
-        help_text=_(
-            "Categories, unlike tags, can have a hierarchy. You might have a "
-            "Jazz category, and under that have children categories for Bebop"
-            " and Big Band. Totally optional."
-        ),
+        help_text="Categories, unlike tags, can have a hierarchy. You might have a "
+        "Jazz category, and under that have children categories for Bebop"
+        " and Big Band. Totally optional.",
         on_delete=models.CASCADE,
     )
     description = models.CharField(max_length=500, blank=True)
 
     class Meta:
         ordering = ["name"]
-        verbose_name = _("Blog Category")
-        verbose_name_plural = _("Blog Categories")
+        verbose_name = "Blog Category"
+        verbose_name_plural = "Blog Categories"
 
     panels = [
         FieldPanel("name"),
@@ -161,7 +159,7 @@ class BlogCategoryBlogPage(models.Model):
     category = models.ForeignKey(
         "BlogCategory",
         related_name="+",
-        verbose_name=_("Category"),
+        verbose_name="Category",
         on_delete=models.CASCADE,
     )
 
@@ -221,16 +219,14 @@ def limit_author_choices():
     return limit
 
 
-class BlogPage(Page):
-    body = StreamField(SIMPLE_CONTENT_BLOCKS, verbose_name=_("body"), blank=True)
+class BlogPage(HeadlessPreviewMixin, Page):
+    body = StreamField(SIMPLE_CONTENT_BLOCKS, verbose_name="body", blank=True)
     tags = ClusterTaggableManager(through="BlogPageTag", blank=True)
     date = models.DateField(
-        _("Post date"),
+        "Post date",
         default=datetime.datetime.today,
-        help_text=_(
-            "This date may be displayed on the blog post. It is not "
-            "used to schedule posts to go live at a later date."
-        ),
+        help_text="This date may be displayed on the blog post. It is not "
+        "used to schedule posts to go live at a later date.",
     )
     header_image = models.ForeignKey(
         get_image_model_string(),
@@ -238,14 +234,14 @@ class BlogPage(Page):
         blank=True,
         on_delete=models.SET_NULL,
         related_name="+",
-        verbose_name=_("Header image"),
+        verbose_name="Header image",
     )
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         blank=True,
         null=True,
         limit_choices_to=limit_author_choices,
-        verbose_name=_("Author"),
+        verbose_name="Author",
         on_delete=models.SET_NULL,
         related_name="author_pages",
     )
@@ -284,8 +280,8 @@ class BlogPage(Page):
         return self.url
 
     class Meta:
-        verbose_name = _("Blog page")
-        verbose_name_plural = _("Blog pages")
+        verbose_name = "Blog page"
+        verbose_name_plural = "Blog pages"
 
     content_panels = [
         FieldPanel("title", classname="full title"),
@@ -301,7 +297,7 @@ class BlogPage(Page):
     ]
 
     def get_blog_index(self):
-        # Find closest ancestor which is a blog index
+        # Find the closest ancestor which is a blog index
         return self.get_ancestors().type(BlogIndexPage).last()
 
     def get_context(self, request, *args, **kwargs):

@@ -1,4 +1,4 @@
-const defaultTheme = require("tailwindcss/defaultTheme");
+const defaultTheme = require("tailwindcss/defaultTheme")
 
 const config = {
   content: ["./src/**/*.{html,js,svelte,ts}"],
@@ -43,6 +43,16 @@ const config = {
       dropShadow: {
         marker: "3.5px 2.5px 0px rgba(0, 0, 0, 0.35)",
       },
+      animation: {
+        fadeToWhite: "fadeToWhite 1s ease-in-out normal forwards",
+      },
+      keyframes: theme => ({
+        fadeToWhite: {
+          "0%": { backgroundColor: theme("colors.white") },
+          "10%": { backgroundColor: theme("colors.orange.200") },
+          "100%": { backgroundColor: theme("colors.orange.50") },
+        },
+      }),
     },
   },
 
@@ -50,22 +60,22 @@ const config = {
     function ({ addBase, theme }) {
       function extractColorVars(colorObj, colorGroup = "") {
         return Object.keys(colorObj).reduce((vars, colorKey) => {
-          const value = colorObj[colorKey];
+          const value = colorObj[colorKey]
 
           const newVars =
             typeof value === "string"
               ? { [`--color${colorGroup}-${colorKey}`]: value }
-              : extractColorVars(value, `-${colorKey}`);
+              : extractColorVars(value, `-${colorKey}`)
 
-          return { ...vars, ...newVars };
-        }, {});
+          return { ...vars, ...newVars }
+        }, {})
       }
 
       addBase({
         ":root": extractColorVars(theme("colors")),
-      });
+      })
     },
   ],
-};
+}
 
-module.exports = config;
+module.exports = config

@@ -33,7 +33,7 @@ class Version(models.Model):
         settings.AUTH_USER_MODEL,
         blank=True,
         null=True,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         related_name="+",
     )
     modified_at = models.DateTimeField(null=True, blank=True)
@@ -41,7 +41,7 @@ class Version(models.Model):
         settings.AUTH_USER_MODEL,
         blank=True,
         null=True,
-        on_delete=models.SET_NULL,
+        on_delete=models.PROTECT,
         related_name="+",
     )
     serialized_data = models.JSONField()
@@ -79,9 +79,12 @@ class Version(models.Model):
         for x in self.object._meta.fields:
             if x.__class__.__name__ == "ForeignKey":
                 if edict.get(x.name):
-                    edict[x.name] = x.related_model.objects.get(pk=edict[x.name])
-        # edict["created_at"] = self.created_at
-        # edict["created_by"] = self.created_by
+                    try:
+                        edict[x.name] = x.related_model.objects.get(pk=edict[x.name])
+                    except x.related_model.DoesNotExist:
+                        edict[x.name] = {"id": -1, "name": "~Unknown Entry~"}
+        edict["created_at"] = self.created_at
+        edict["created_by"] = self.created_by
         return edict
 
 
@@ -104,7 +107,8 @@ class WorkflowInfo(models.Model):
     )
     timestamp = models.DateTimeField(default=timezone.now)
     comment = models.TextField(blank=True, null=True)
-    processed_by_receiver = models.BooleanField(default=False)
+    replies = models.JSONField(null=True, blank=True)
+    resolved = models.BooleanField(default=False)
 
     # watch out: ignore the draft_status within this DealVersion object, it will change
     # when the workflow moves along. the payload will remain consistent though.
@@ -118,7 +122,8 @@ class WorkflowInfo(models.Model):
             "draft_status_after": self.draft_status_after,
             "timestamp": self.timestamp,
             "comment": self.comment,
-            "processed_by_receiver": self.processed_by_receiver,
+            "resolved": self.resolved,
+            "replies": self.replies or [],
         }
 
     class Meta:

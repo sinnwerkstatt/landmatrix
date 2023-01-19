@@ -9,10 +9,16 @@ type Mutation {
     password: String!
     token: String!
   ): RegisterPayload
+  register_confirm(activation_key: String!): RegisterPayload
   login(username: String!, password: String!): LoginPayload
   logout: Boolean!
-  password_reset(email: String!): Boolean!
-  password_reset_confirm(token: String!, new_password1: String, new_password2: String!): Boolean!
+  password_reset(email: String!, token: String!): Boolean!
+  password_reset_confirm(
+    uidb64: String!
+    token: String!
+    new_password1: String
+    new_password2: String!
+  ): Boolean!
 
   add_public_deal_comment(
     id: Int!
@@ -45,7 +51,6 @@ type Mutation {
     id: Int!
     confidential: Boolean!
     version: Int
-    reason: ConfidentialReason
     comment: String
   ): Boolean
 
@@ -65,17 +70,17 @@ type Mutation {
   investor_edit(id: Int!, version: Int, payload: Payload): InvestorEditReturn
   investor_delete(id: Int!, version: Int, comment: String): Boolean
 
-  toggle_workflow_info_unread(id: Int!, type: String!): Boolean
+  resolve_workflow_info(id: Int!, type: String!): Boolean
+  add_workflow_info_reply(
+    id: Int!
+    type: String!
+    from_user_id: Int!
+    comment: String!
+  ): Boolean
   object_copy(otype: String!, obj_id: Int!): ObjectReturn
 }
 
 scalar Payload
-
-enum ConfidentialReason {
-  TEMPORARY_REMOVAL
-  RESEARCH_IN_PROGRESS
-  LAND_OBSERVATORY_IMPORT
-}
 
 enum WorkflowTransition {
   TO_DRAFT
@@ -105,5 +110,5 @@ type LoginPayload {
 
 type RegisterPayload {
   ok: Boolean!
-  message: String
+  code: String
 }

@@ -1,10 +1,31 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n";
-  import { combined_status_fn } from "./choices";
+  import { _ } from "svelte-i18n"
 
-  export let value: number[];
+  import { DraftStatus, Status } from "$lib/types/generics"
 
-  $: display_status = $_(combined_status_fn(value[0], value[1], true));
+  export let status: Status
+  export let draft_status: DraftStatus | null
+  export let toString = true
+
+  const combineStatus = (
+    status: Status,
+    draft_status: DraftStatus | null,
+    toString = false,
+  ): string => {
+    if (status === Status.DELETED) return toString ? $_("Deleted") : "DELETED"
+    if (draft_status === DraftStatus.DRAFT) return toString ? $_("Draft") : "DRAFT"
+    if (draft_status === DraftStatus.REVIEW)
+      return toString ? $_("Submitted for review") : "REVIEW"
+    if (draft_status === DraftStatus.ACTIVATION)
+      return toString ? $_("Submitted for activation") : "ACTIVATION"
+    if (draft_status === DraftStatus.REJECTED)
+      return toString ? $_("Rejected") : "REJECTED"
+    if (draft_status === DraftStatus.TO_DELETE)
+      return toString ? $_("To Delete") : "TO_DELETE"
+    if ((status === Status.LIVE || status === Status.UPDATED) && draft_status === null)
+      return toString ? $_("Active") : "ACTIVE"
+    throw Error(`Invalid status ${status} ${draft_status}`)
+  }
 </script>
 
-<span class="status_field">{display_status}</span>
+<span class="status_field">{combineStatus(status, draft_status, toString)}</span>

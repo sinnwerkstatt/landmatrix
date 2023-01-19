@@ -1,13 +1,14 @@
 <script lang="ts">
-  import { navigating } from "$app/stores";
-  import { loading } from "$lib/data";
+  import { navigating } from "$app/stores"
+
+  import { loading } from "$lib/stores"
 </script>
 
 {#if $navigating || $loading}
-  <div class="h-1 fixed top-0 left-0 right-0 w-full z-[1000000]">
-    <div class="w-full h-1 bg-orange-100 overflow-hidden relative">
-      <div class="bg-orange h-1 absolute inc" />
-      <div class="bg-orange-600 h-1 absolute dec" />
+  <div class="fixed top-0 left-0 right-0 z-[1000000] h-1 w-full">
+    <div class="relative h-1 w-full overflow-hidden bg-orange-100">
+      <div class="inc absolute h-1 bg-orange" />
+      <div class="dec absolute h-1 bg-orange-600" />
     </div>
   </div>
 {/if}

@@ -1,12 +1,9 @@
-from typing import Any
-
 from django.utils import translation
-from graphql import GraphQLResolveInfo
 
 from apps.blog.models import BlogPage, BlogCategory
 
 
-def resolve_blogpages(obj: Any, info: GraphQLResolveInfo, category=None):
+def resolve_blogpages(_obj, _info, category=None):
     qs = BlogPage.objects.live()
 
     if category:
@@ -20,10 +17,11 @@ def resolve_blogpages(obj: Any, info: GraphQLResolveInfo, category=None):
     return bp_list
 
 
-def resolve_blogpage(obj: Any, info: GraphQLResolveInfo, id):
+# noinspection PyShadowingBuiltins
+def resolve_blogpage(_obj, _info, id):
     return BlogPage.objects.get(id=id).get_dict("max-900x900")
 
 
-def resolve_blogcategories(obj: Any, info: GraphQLResolveInfo, language="en"):
+def resolve_blogcategories(_obj, _info, language="en"):
     with translation.override(language):
         return BlogCategory.objects.all()
