@@ -31,11 +31,6 @@ from apps.utils import qs_values_to_dict
 User = get_user_model()
 
 
-def vuebase(request, *args, **kwargs):
-    # this template file comes from `npm run build` in frontend
-    return render(request, template_name="vuebase.html")
-
-
 def gis_export(request):
     point_res = {"type": "FeatureCollection", "features": []}
     area_res = {"type": "FeatureCollection", "features": []}

@@ -12,5 +12,5 @@ max_line_length = 88
 [*.py]
 indent_size = 4
 
-[{*.js,*.html,*.css, *.vue}]
+[{*.js,*.ts,*.html,*.css,*.svelte}]
 tab_width = 2

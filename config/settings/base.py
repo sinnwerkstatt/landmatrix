@@ -134,9 +134,6 @@ STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
     # 'compressor.finders.CompressorFinder',
 ]
-STATICFILES_DIRS = [
-    BASE_DIR("frontend", "dist"),
-]
 STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
 
 FILE_UPLOAD_PERMISSIONS = 0o644
