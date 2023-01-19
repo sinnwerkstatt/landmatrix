@@ -1,18 +1,3 @@
-// const myMixin = {
-//   data() {
-//     return {
-//       current: -1,
-//       vals:
-//         this.value && this.value.length > 0
-//           ? JSON.parse(JSON.stringify(this.value))
-//           : [{}],
-//     };
-//   },
-//   created() {
-//     if (this.value) {
-//       this.current = this.value.map((e) => e.current).indexOf(true);
-//     }
-//   },
 import { _ } from "svelte-i18n"
 import { get } from "svelte/store"
 
