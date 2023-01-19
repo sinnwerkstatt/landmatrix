@@ -12,6 +12,9 @@
       .map(o => o.value)
     value = opts.length === 0 ? null : opts
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  $: choices = Object.entries(formfield.choices).filter(([v, label]) => !!v)
 </script>
 
 <div class="simplearray_field">
@@ -24,7 +27,7 @@
         class="inpt"
         name={formfield.name}
       >
-        {#each Object.entries(formfield.choices).filter(([v, label]) => !!v) as [v, label]}
+        {#each choices as [v, label]}
           <option value={v}>{label}</option>
         {/each}
       </select>

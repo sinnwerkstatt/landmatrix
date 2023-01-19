@@ -27,7 +27,9 @@ test("createChartData", () => {
       return bucketMap
     },
     bucketKeys,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     (key, index) => `Label ${key}`,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     (key, index) => `Color ${key}`,
   )
 

@@ -14,7 +14,7 @@
 <div class="manytomany_field" data-name={formfield?.name ?? ""}>
   {#if formfield.related_model === "Investor"}
     {#each value as val}
-      <a class="investor" target="_blank" href="/investor/{value.id}">
+      <a class="investor" target="_blank" rel="noreferrer" href="/investor/{value.id}">
         {val.name} (#{val.id})
       </a>
       <br />

@@ -32,7 +32,7 @@
       />
     {/each}
     <div class="w-100">
-      <a class="deal" href="/deal/{deal.id}" target="_blank">
+      <a class="deal" href="/deal/{deal.id}" rel="noreferrer" target="_blank">
         {$_("More details about this deal")}
       </a>
     </div>

@@ -40,7 +40,11 @@
   {#if value}
     <div class="flex w-full justify-between">
       <div>
-        <a href="{import.meta.env.VITE_MEDIA_URL}{value}" target="_blank">
+        <a
+          href="{import.meta.env.VITE_MEDIA_URL}{value}"
+          target="_blank"
+          rel="noreferrer"
+        >
           <FilePdfIcon />
           {value.replace("uploads/", "")}
         </a>

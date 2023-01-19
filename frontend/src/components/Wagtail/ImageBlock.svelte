@@ -25,7 +25,13 @@
 
 <div data-block="image" class="mb-5">
   {#if value.lightbox}
-    <a href={src} target="_blank" on:click|preventDefault={toggleLightbox}>
+    <a
+      href={src}
+      target="_blank"
+      rel="noreferrer"
+      on:click|preventDefault={toggleLightbox}
+      on:keydown|preventDefault={e => e.code === "Enter" && toggleLightbox()}
+    >
       <img class="w-full max-w-full cursor-pointer" {src} alt="" />
     </a>
   {:else if link}
@@ -45,9 +51,17 @@
 {#if lightboxVisible}
   <div
     class="fixed inset-0 z-[20000] flex h-screen w-screen items-center justify-center bg-gray-600 bg-opacity-90 p-2"
-    on:click={toggleLightbox}
+    on:click|preventDefault={toggleLightbox}
+    on:keyup|preventDefault={e => e.code === "Enter" && toggleLightbox()}
   >
-    <img on:click|stopPropagation class="max-h-full max-w-full border" {src} alt="" />
+    <img
+      on:click|stopPropagation
+      on:keydown|stopPropagation
+      on:keydown|stopPropagation
+      class="max-h-full max-w-full border"
+      {src}
+      alt=""
+    />
   </div>
 {/if}
 

@@ -3,8 +3,6 @@
   import { DivIcon, FeatureGroup, Marker } from "leaflet?client"
   import { _ } from "svelte-i18n"
 
-  import { goto } from "$app/navigation"
-
   import { filters } from "$lib/filters"
   import { countries, regions } from "$lib/stores"
   import type { Marker as MarkerType } from "$lib/types/wagtail"
@@ -85,23 +83,23 @@
       $filters.region_id = undefined
       $filters.country_id = countryID
     }
-    await goto("/map")
   }
 </script>
 
 <div
   class="relative mt-6 h-[30vh] min-h-[300px] w-full cursor-pointer border border-orange shadow-md hover:border-orange-300"
-  on:click={onClickMap}
 >
-  <div
+  <a
     class="group absolute z-[1000] flex h-full w-full bg-transparent transition duration-300 hover:bg-orange/20"
+    href="/map"
+    on:click={onClickMap}
   >
     <span
-      class="z-1 hover-text invisible w-full self-center text-center text-[4rem] font-bold text-white opacity-0  transition duration-500 group-hover:visible group-hover:opacity-100"
+      class="z-1 hover-text invisible w-full self-center text-center text-[4rem] font-bold text-white opacity-0 transition duration-500 group-hover:visible group-hover:opacity-100"
     >
       {$_("Go to map")}
     </span>
-  </div>
+  </a>
   <BigMap
     options={{
       zoomControl: false,

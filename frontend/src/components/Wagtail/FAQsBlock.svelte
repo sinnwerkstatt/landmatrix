@@ -19,18 +19,13 @@
 
 <div data-block="faqs_block" class="border border-gray-400">
   {#each value.faqs as faq}
-    <div
-      class="cursor-pointer border-b border-gray-400 bg-gray-50 dark:bg-gray-600"
-      on:click={() => updateHash(`#${faq.slug}`)}
-    >
-      <div class="py-4 px-6">
-        <button
-          class="text-orange"
-          on:click|stopPropagation={() => updateHash(`#${faq.slug}`)}
-        >
-          {faq.question}
-        </button>
-      </div>
+    <div>
+      <button
+        class="w-full cursor-pointer border-b border-gray-400 bg-gray-50 py-4 px-6 text-left text-orange dark:bg-gray-600"
+        on:click={() => updateHash(`#${faq.slug}`)}
+      >
+        {faq.question}
+      </button>
       {#if locationHash === `#${faq.slug}`}
         <div
           transition:slide

@@ -10,7 +10,7 @@
 
 <div class="file_field" data-name={formfield?.name ?? ""}>
   {#if value}
-    <a href="{import.meta.env.VITE_MEDIA_URL}{value}" target="_blank">
+    <a href="{import.meta.env.VITE_MEDIA_URL}{value}" rel="noreferrer" target="_blank">
       {#if fileNotPublic}
         <EyeSlashIcon />
       {/if}

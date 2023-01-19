@@ -6,6 +6,8 @@
   stroke="currentColor"
   stroke-width="2"
   on:click|stopPropagation
+  on:keydown|stopPropagation
+  on:keyup|stopPropagation
 >
   <path
     stroke-linecap="round"

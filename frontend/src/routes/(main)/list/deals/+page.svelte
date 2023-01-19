@@ -25,7 +25,7 @@
     "operating_company",
   ]
 
-  const allColumnsWithSpan = {
+  const allColumnsWithSpan: { [key: string]: number } = {
     fully_updated_at: 2,
     id: 1,
     country: 3,
@@ -40,7 +40,9 @@
 
   $: labels = activeColumns.map(col => $formfields.deal[col].label)
   $: spans = Object.entries(allColumnsWithSpan)
-    .filter(([col, _]) => activeColumns.includes(col))
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    .filter(([col, _]: [string, number]) => activeColumns.includes(col))
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     .map(([_, colSpan]) => colSpan)
 
   showContextBar.set(false)

@@ -193,6 +193,7 @@
     })
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   function trackDownload(format) {
     // TODO implement this? ${format}
   }

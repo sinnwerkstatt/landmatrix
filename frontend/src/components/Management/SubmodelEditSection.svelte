@@ -44,6 +44,9 @@
 
     entries = entries.filter(x => x.id !== entry.id)
   }
+  function toggleActiveEntry(index: number): void {
+    activeEntry = activeEntry === index ? -1 : index
+  }
 </script>
 
 <section class="flex flex-wrap">
@@ -52,8 +55,11 @@
       <div class="{model}-entry">
         <div class="my-2 flex flex-row items-center justify-between bg-gray-200">
           <div
+            role="button"
             class="flex-grow p-2"
-            on:click={() => (activeEntry = activeEntry === index ? -1 : index)}
+            on:click={() => toggleActiveEntry(index)}
+            on:keydown={e => e.code === "Enter" && toggleActiveEntry(index)}
+            tabindex="0"
           >
             <h3 class="m-0">
               {index + 1}. {modelName}
@@ -68,9 +74,12 @@
               </small>
             </h3>
           </div>
-          <div class="flex-initial p-2" on:click={() => removeEntry(entry)}>
+          <button
+            class="flex-initial p-2"
+            on:click|stopPropagation={() => removeEntry(entry)}
+          >
             <TrashIcon class="h-8 w-6 cursor-pointer text-red-600" />
-          </div>
+          </button>
         </div>
         {#if activeEntry === index}
           <div transition:slide={{ duration: 200 }}>

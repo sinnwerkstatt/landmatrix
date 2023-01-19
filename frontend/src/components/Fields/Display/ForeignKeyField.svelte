@@ -16,7 +16,7 @@
   {#if !value || !value.id}
     <!-- no output -->
   {:else if formfield.related_model === "Investor"}
-    <a class="investor" target="_blank" href="/investor/{value.id}">
+    <a class="investor" target="_blank" rel="noreferrer" href="/investor/{value.id}">
       {value.name} (#{value.id})
     </a>
   {:else if formfield.related_model === "Country"}

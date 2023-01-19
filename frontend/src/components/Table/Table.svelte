@@ -60,8 +60,8 @@
     >
       {#if index === 0}
         {#each columns as col, colIndex}
-          <div
-            class="cursor-pointer p-1"
+          <button
+            class="m-0 cursor-pointer p-1 text-left"
             style="grid-column: span {spans[colIndex]} / span {spans[colIndex]}"
             on:click={() => onTableHeadClick(col)}
           >
@@ -84,7 +84,7 @@
                 )}
               />
             </span>
-          </div>
+          </button>
         {/each}
       {:else}
         {#each columns as fieldName, colIndex}

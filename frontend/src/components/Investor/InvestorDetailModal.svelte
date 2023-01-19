@@ -44,7 +44,12 @@
     <!--  {/each}-->
     <!--{/if}-->
     <div class="w-100">
-      <a class="investor" target="_blank" href="/investor/{investor.id}">
+      <a
+        class="investor"
+        target="_blank"
+        rel="noreferrer"
+        href="/investor/{investor.id}"
+      >
         {$_("More details about this investor")}
       </a>
     </div>

@@ -1,11 +1,12 @@
 import type { Deal } from "$lib/types/deal"
 import type { Investor } from "$lib/types/investor"
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type TableObj = Deal | Investor | { [key: string]: any }
 
 function dotResolve(path: string, obj: TableObj) {
   if (!path.includes(".")) return obj[path]
-  return path.split(".").reduce(function (prev, curr) {
+  return path.split(".").reduce((prev, curr) => {
     return prev ? prev[curr] : null
   }, obj)
 }
