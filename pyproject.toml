@@ -71,7 +71,6 @@ exclude = '''
   | static-collected
   | node_modules
   | frontend
-  | newfront
 )/
 '''
 force-exclude = '''
@@ -82,6 +81,5 @@ force-exclude = '''
   | static-collected
   | node_modules
   | frontend
-  | newfront
 )/
 '''

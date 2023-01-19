@@ -2,7 +2,7 @@ import re
 import subprocess
 from glob import glob
 
-root_dir = "../newfront/src/"
+root_dir = "../frontend/src/"
 
 
 def find_files():

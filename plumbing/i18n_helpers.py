@@ -16,5 +16,5 @@ def nasty_i18n_frontend_hack_for_english(infile, outfile):
 
 if __name__ == "__main__":
     nasty_i18n_frontend_hack_for_english(
-        "frontend/src/i18n_messages.es.json", "frontend/src/i18n_messages.en.json"
+        "frontend/src/lib/i18n/lang_es.json", "frontend/src/lib/i18n/lang_en.json"
     )
