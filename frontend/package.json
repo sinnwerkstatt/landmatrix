@@ -47,6 +47,7 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-vue": "^8.2.0",
     "eslint-plugin-vue-scoped-css": "^2.1.0",
+    "geojson-validation": "^1.0.2",
     "graphql": "^15.8.0",
     "graphql-tag": "^2.12.6",
     "jquery": "~2.2.4",

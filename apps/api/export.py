@@ -584,6 +584,7 @@ class DataDownload:
                         data["operating_company"]["classification"], ""
                     )
                 )
+
             data["operating_company__homepage"] = data["operating_company"]["homepage"]
             data["operating_company__opencorporates"] = data["operating_company"][
                 "opencorporates"
@@ -936,6 +937,7 @@ class DataDownload:
                 data[field] = str(
                     dict(Investor.CLASSIFICATION_CHOICES).get(data[field], "")
                 )
+
             row.append(data[field])
         return row
 

@@ -119,7 +119,7 @@ deploy to production:
       mv maintenance.html_ maintenance.html || echo "could not move maintenance"
       cd ~/htdocs
       poetry run doit full_update production=True branch=production
-      sudo /bin/systemctl restart django-landmatrix.org.service
+      sudo /bin/systemctl restart webapp-landmatrix.org.service
       cd ~
       mv maintenance.html maintenance.html_
       E=O=F

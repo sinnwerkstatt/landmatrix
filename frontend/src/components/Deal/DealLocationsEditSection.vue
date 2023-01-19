@@ -122,11 +122,13 @@
   import type { Country } from "$types/wagtail";
   import { newNanoid } from "$utils";
   import "@geoman-io/leaflet-geoman-free";
-  import type { Feature, GeoJsonObject } from "geojson";
+  import type { Feature, FeatureCollection } from "geojson";
+
   import type L from "leaflet";
   import { GeoJSON, LatLngBounds, Marker } from "leaflet";
   import Vue from "vue";
   import type { PropType } from "vue";
+  import { validate } from "$utils/geojsonValidation";
 
   export default Vue.extend({
     components: { PointField, LocationGoogleField, EditField, BigMap },
@@ -321,17 +323,30 @@
         const reader = new FileReader();
         reader.addEventListener("load", (event) => {
           if (!this.actFG) return;
-          let result = JSON.parse(event.target?.result as string);
-          const features: Feature[] = result.features.map((f: Feature) => {
-            if (f.properties) f.properties.type = area_type;
-            else f.properties = { type: area_type };
-            return f;
-          });
-          this.actFG.addData({ type: "FeatureCollection", features } as GeoJsonObject);
+          const result = JSON.parse(event.target?.result as string);
+
+          try {
+            validate(result);
+          } catch (e) {
+            alert((e as Error).message);
+            return;
+          }
+
+          // keep geometry, set landmatrix properties
+          const featureCollection: FeatureCollection = {
+            type: "FeatureCollection",
+            features: result.features.map((f: Feature) => ({
+              type: "Feature",
+              geometry: f.geometry,
+              properties: { type: area_type },
+            })),
+          };
+          this.actFG.addData(featureCollection);
           let bounds = this.bigmap.getBounds();
           bounds.extend(this.actFG.getBounds());
           this.bigmap.fitBounds(bounds);
         });
+
         reader.readAsText(target?.files[0]);
 
         target.value = "";

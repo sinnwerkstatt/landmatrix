@@ -122,11 +122,11 @@
           </div>
         </NavDropDown>
 
-        <li>
-          <a class="nav-link" href="/accountability/">
-            {$_("Accountability")}
-          </a>
-        </li>
+        <!--        <li>-->
+        <!--          <a class="nav-link" href="/accountability/">-->
+        <!--            {$_("Accountability")}-->
+        <!--          </a>-->
+        <!--        </li>-->
 
         <NavDropDown title={$_("Resources")}>
           <ul class="border border-orange bg-white dark:bg-gray-800">

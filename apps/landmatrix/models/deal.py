@@ -872,6 +872,11 @@ class Deal(AbstractDealBase):
             "fields": version.serialized_data,
         }
         obj = list(serializers.deserialize("json", json.dumps([daty])))[0].object
+        # weird hack to deal with https://git.sinntern.de/landmatrix/landmatrix/-/issues/446#note_27505
+        ocomp = obj.operating_company_id
+        obj.operating_company_id = None
+        obj.save()
+        obj.operating_company_id = ocomp
         obj.save()
         return obj
 
