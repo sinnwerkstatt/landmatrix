@@ -72,10 +72,9 @@ def task_reset_db_with_dump():
 
 #############################
 def task_frontend_build():
-    actions = ["cd frontend; npm ci", "cd newfront; npm ci"]
+    actions = ["cd frontend; npm ci"]
     if get_var("production", False):
         actions += ["cd frontend; npm run build"]
-        actions += ["cd newfront; npm run build"]
     return {
         "task_dep": ["compilemessages"],
         "actions": actions,
@@ -92,26 +91,18 @@ def task_collectstatic():
 def task_compilemessages():
     for pofile in glob("config/locale/**/LC_MESSAGES/*.po", recursive=True):
         mofile = pofile[:-2] + "mo"
-        json_target = f"frontend/src/i18n_messages.{pofile[14:16]}.json"
-        new_target = f"newfront/src/lib/i18n/lang_{pofile[14:16]}.json"
+        target = f"frontend/src/lib/i18n/lang_{pofile[14:16]}.json"
         englishhack = "python plumbing/i18n_helpers.py" if "es" in pofile else ""
-        englishhack_newfront = (
-            f"cp frontend/src/i18n_messages.en.json newfront/src/lib/i18n/lang_en.json"
-            if "es" in pofile
-            else ""
-        )
 
         yield {
             "name": pofile,
             "file_dep": [pofile],
-            "targets": [mofile, json_target, new_target],
+            "targets": [mofile, target],
             "actions": [
                 f"msgfmt -o {mofile} {pofile}",
-                f"python plumbing/pojson.py {pofile} > {json_target}",
-                f"cp {json_target} {new_target}",
+                f"python plumbing/pojson.py {pofile} > {target}",
                 englishhack,
-                englishhack_newfront,
-                f"""sed -i -e '/.*: "",$/d' {json_target}""",
+                f"""sed -i -e '/.*: "",$/d' {target}""",
             ],
             "clean": True,
         }

@@ -4,7 +4,7 @@
 poetry install
 
 # 2. Install frontend
-(cd newfront && npm install && npm run build)
+(cd frontend && npm install && npm run build)
 
 # 3. Setup django test env
 doit reset_db

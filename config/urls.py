@@ -1,9 +1,8 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import include, path, re_path
+from django.urls import include, path
 
-from apps.api.views import vuebase
 from apps.landmatrix.views import SwitchLanguageView
 from apps.wagtailcms.api import api_router
 
@@ -30,7 +29,5 @@ if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 urlpatterns += [
-    re_path(r"^(?P<path>.*)/$", vuebase),
-    path("", vuebase),
     path("", include("wagtail.core.urls")),
 ]

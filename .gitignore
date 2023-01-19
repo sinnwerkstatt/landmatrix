@@ -21,16 +21,6 @@ __pycache__/
 .coverage
 
 
-# javascript
-
-/frontend/node_modules/
-/frontend/.cache/
-/frontend/.env
-/frontend/dist/*
-!/frontend/dist/.gitkeep
-
-/apps/landmatrix/templates/vuebase.html
-
 # IDEs
 .idea/
 .vscode/

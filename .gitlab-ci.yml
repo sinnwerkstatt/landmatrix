@@ -37,24 +37,15 @@ django tests and coverage:
     - poetry run pytest -x
   coverage: /^TOTAL.*\s+(\d+\%)$/
 
-frontend formatting and linting:
+frontend test:
   stage: test
   interruptible: true
   script:
     - cd frontend
     - npm ci
-    - npm run lint
-    - npm run build
-
-newfront test:
-  stage: test
-  interruptible: true
-  script:
-    - cd newfront
-    - npm ci
     - npm run test
 
-#newfront integration test:
+#frontend integration test:
 #  stage: test
 #  interruptible: true
 #  services:
@@ -62,7 +53,7 @@ newfront test:
 #      alias: postgres
 #  before_script:
 #    - npm ci && npx playwright install --with-deps
-#    - cd newfront && npm ci && npm run build && cd ..
+#    - cd frontend && npm ci && npm run build && cd ..
 #    - poetry install
 #  script:
 #    - poetry run doit initial_setup production=True
@@ -76,11 +67,11 @@ newfront test:
 #    reports:
 #        junit: results.xml
 
-newfront formatting and linting:
+frontend formatting and linting:
   stage: test
   interruptible: true
   script:
-    - cd newfront
+    - cd frontend
     - npm ci
     - npm run format:check
 #   TODO: fix errors
@@ -98,9 +89,6 @@ deploy to staging:
       mv maintenance.html_ maintenance.html || echo "could not move maintenance"
       cd ~/htdocs
       poetry run doit full_update dev=True production=True
-      cd newfront/
-      npm ci
-      npm run build
       sudo /bin/systemctl restart webapp-dev.landmatrix.org.service
       cd ~
       mv maintenance.html maintenance.html_
