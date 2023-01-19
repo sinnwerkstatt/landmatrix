@@ -118,5 +118,5 @@ def task_git_pull():
 
 
 def task_poetry_install():
-    dev = "--no-dev" if not get_var("dev", False) else ""
+    dev = "--only main" if not get_var("dev", False) else ""
     return {"actions": [f"poetry install {dev}"]}
