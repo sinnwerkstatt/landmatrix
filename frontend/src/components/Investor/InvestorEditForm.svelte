@@ -6,7 +6,7 @@
   import { beforeNavigate, goto, invalidateAll } from "$app/navigation"
   import { page } from "$app/stores"
 
-  import { getInvestorSections } from "$lib/sections"
+  import { investorSections } from "$lib/sections"
   import type { DataSource } from "$lib/types/deal"
   import type { Investor } from "$lib/types/investor"
   import { Role } from "$lib/types/investor"
@@ -192,7 +192,7 @@
       {#if activeTab === "#general"}
         <section>
           <form id="general">
-            {#each getInvestorSections($_).general_info as subsection}
+            {#each $investorSections.general_info as subsection}
               <div class="mt-2 space-y-4">
                 <h3 class="my-0">{subsection.name}</h3>
                 {#each subsection.fields as fieldname}
