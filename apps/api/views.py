@@ -445,9 +445,9 @@ class CaseStatistics(View):
             created_at__gte=start, created_at__lte=end
         )
         if region:
-            versions = versions.filter(deal__country__region_id=region)
+            versions = versions.filter(investor__country__region_id=region)
         elif country:
-            versions = versions.filter(deal__country_id=country)
+            versions = versions.filter(investor__country_id=country)
         investors = Investor.objects.filter(
             id__in=versions.values_list("object_id")
         ).values(
