@@ -6,7 +6,7 @@
   import { beforeNavigate, goto, invalidateAll } from "$app/navigation"
   import { page } from "$app/stores"
 
-  import { getDealSections } from "$lib/sections"
+  import { dealSections } from "$lib/sections"
   import type { Contract, DataSource, Deal, Location as LamaLoc } from "$lib/types/deal"
   import { removeEmptyEntries } from "$lib/utils/data_processing"
 
@@ -121,7 +121,16 @@
     }
   }
 
-  $: dealSections = getDealSections($_)
+  const onClickTab = async (e: PointerEvent) => {
+    if (savingInProgress) return
+
+    const hash = (e.target as HTMLAnchorElement).hash
+    if (formChanged) {
+      await saveDeal(hash)
+    } else {
+      await goto(hash)
+    }
+  }
 </script>
 
 <div class="container mx-auto flex h-full min-h-full flex-col">
@@ -171,7 +180,13 @@
               : 'border-r'}"
           >
             {#if name}
-              <a href={target} class:text-black={activeTab === target}>{name}</a>
+              <a
+                href={target}
+                class:text-black={activeTab === target}
+                on:click|preventDefault={onClickTab}
+              >
+                {name}
+              </a>
             {:else}
               <hr />
             {/if}
@@ -187,7 +202,7 @@
         />
       {/if}
       {#if activeTab === "#general"}
-        <DealEditSection bind:deal sections={dealSections.general_info} id="general" />
+        <DealEditSection bind:deal sections={$dealSections.general_info} id="general" />
       {/if}
       {#if activeTab === "#contracts"}
         <SubmodelEditSection
@@ -198,12 +213,16 @@
         />
       {/if}
       {#if activeTab === "#employment"}
-        <DealEditSection bind:deal sections={dealSections.employment} id="employment" />
+        <DealEditSection
+          bind:deal
+          sections={$dealSections.employment}
+          id="employment"
+        />
       {/if}
       {#if activeTab === "#investor_info"}
         <DealEditSection
           bind:deal
-          sections={dealSections.investor_info}
+          sections={$dealSections.investor_info}
           id="investor_info"
         />
       {/if}
@@ -218,34 +237,38 @@
       {#if activeTab === "#local_communities"}
         <DealEditSection
           bind:deal
-          sections={dealSections.local_communities}
+          sections={$dealSections.local_communities}
           id="local_communities"
         />
       {/if}
       {#if activeTab === "#former_use"}
-        <DealEditSection bind:deal sections={dealSections.former_use} id="former_use" />
+        <DealEditSection
+          bind:deal
+          sections={$dealSections.former_use}
+          id="former_use"
+        />
       {/if}
       {#if activeTab === "#produce_info"}
         <DealEditSection
           bind:deal
-          sections={dealSections.produce_info}
+          sections={$dealSections.produce_info}
           id="produce_info"
         />
       {/if}
       {#if activeTab === "#water"}
-        <DealEditSection bind:deal sections={dealSections.water} id="water" />
+        <DealEditSection bind:deal sections={$dealSections.water} id="water" />
       {/if}
       {#if activeTab === "#gender_related_info"}
         <DealEditSection
           bind:deal
-          sections={dealSections.gender_related_info}
+          sections={$dealSections.gender_related_info}
           id="gender_related_info"
         />
       {/if}
       {#if activeTab === "#overall_comment"}
         <DealEditSection
           bind:deal
-          sections={dealSections.overall_comment}
+          sections={$dealSections.overall_comment}
           id="overall_comment"
         />
       {/if}

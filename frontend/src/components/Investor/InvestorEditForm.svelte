@@ -6,7 +6,7 @@
   import { beforeNavigate, goto, invalidateAll } from "$app/navigation"
   import { page } from "$app/stores"
 
-  import { getInvestorSections } from "$lib/sections"
+  import { investorSections } from "$lib/sections"
   import type { DataSource } from "$lib/types/deal"
   import type { Investor } from "$lib/types/investor"
   import { Role } from "$lib/types/investor"
@@ -119,6 +119,17 @@
       else await goto(`/investor/${investorID}/${investorVersion ?? ""}`)
     }
   }
+
+  const onClickTab = async (e: PointerEvent) => {
+    if (savingInProgress) return
+
+    const hash = (e.target as HTMLAnchorElement).hash
+    if (formChanged) {
+      await saveInvestor(hash)
+    } else {
+      await goto(hash)
+    }
+  }
 </script>
 
 <div class="container mx-auto flex h-full min-h-full flex-col">
@@ -163,7 +174,13 @@
               : 'border-r'}"
           >
             {#if name}
-              <a href={target} class:text-black={activeTab === target}>{name}</a>
+              <a
+                href={target}
+                class:text-black={activeTab === target}
+                on:click|preventDefault={onClickTab}
+              >
+                {name}
+              </a>
             {:else}
               <hr />
             {/if}
@@ -175,7 +192,7 @@
       {#if activeTab === "#general"}
         <section>
           <form id="general">
-            {#each getInvestorSections($_).general_info as subsection}
+            {#each $investorSections.general_info as subsection}
               <div class="mt-2 space-y-4">
                 <h3 class="my-0">{subsection.name}</h3>
                 {#each subsection.fields as fieldname}
