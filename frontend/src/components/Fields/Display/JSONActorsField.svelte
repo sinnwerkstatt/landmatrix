@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { mapChoices } from "$components/Fields/Display/jsonHelpers"
   import type { FormField } from "$components/Fields/fields"
 
   enum ActorRole {
@@ -26,7 +25,7 @@
       <span>{val.name}</span>
       {#if val.role}
         <span class="text-sm font-light">
-          ({mapChoices(val.role, formfield.choices)})
+          ({formfield.choices[val.role]})
         </span>
       {/if}
     </li>

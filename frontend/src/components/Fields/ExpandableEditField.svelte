@@ -9,8 +9,11 @@
   export let deal: Deal
   export let field: Field
 
-  $: fieldname = typeof field == "object" ? field.name : field
-  $: isExpanded = typeof field === "object" ? deal[fieldname] === true : false
+  const isObject = (field: object | string): field is object =>
+    typeof field === "object"
+
+  $: fieldname = isObject(field) ? field.name : field
+  $: isExpanded = isObject(field) ? deal[fieldname] === true : false
 </script>
 
 <EditField {fieldname} bind:value={deal[fieldname]} />

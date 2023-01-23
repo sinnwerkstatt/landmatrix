@@ -39,10 +39,9 @@
     OTHER: null,
   }
 
-  export function parseValues(value) {
+  const parseValues = (value: string[], choices?: Record<string, string>) => {
     if (!value) return "—"
-    if (Object.keys(formfield.choices).length > 0)
-      return value.map(v => formfield.choices?.[v]).join(", ")
+    if (choices) return value.map(v => choices[v]).join(", ")
     return value.join(", ")
   }
 </script>
@@ -60,6 +59,6 @@
       </span>
     {/each}
   {:else}
-    {parseValues(value)}
+    {parseValues(value, formfield.choices)}
   {/if}
 </div>

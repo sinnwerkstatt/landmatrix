@@ -3,7 +3,7 @@
 
   import type { IntentionOfInvestment } from "$lib/types/deal"
 
-  import { dateCurrentFormat, mapChoices } from "$components/Fields/Display/jsonHelpers"
+  import { dateCurrentFormat } from "$components/Fields/Display/jsonHelpers"
   import type { FormField } from "$components/Fields/fields"
   import CircleNotchIcon from "$components/icons/CircleNotchIcon.svelte"
 
@@ -23,7 +23,7 @@
     <div class:font-bold={val.current}>
       <span>{dateCurrentFormat(val)}</span>
       {#if val.choices}
-        {mapChoices(val.choices, formfield.choices)}
+        {val.choices.map(v => formfield.choices[v]).join(", ")}
       {/if}
       {#if val.area}
         (<CircleNotchIcon /> {val.area.toLocaleString("fr")} {$_("ha")})

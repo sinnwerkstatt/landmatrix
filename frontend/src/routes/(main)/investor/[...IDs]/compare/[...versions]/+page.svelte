@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import { getInvestorSections, subsections } from "$lib/sections"
+  import { investorSections, subsections } from "$lib/sections"
   import { formfields } from "$lib/stores"
   import type { Investor } from "$lib/types/investor"
 
@@ -69,7 +69,7 @@
   </thead>
 
   <tbody>
-    {#each Object.entries(getInvestorSections($_)) as [label, section]}
+    {#each Object.entries($investorSections) as [label, section]}
       {#if anyFieldFromSection(section)}
         <tr>
           <th colspan="3" class="bg-gray-500 py-4">

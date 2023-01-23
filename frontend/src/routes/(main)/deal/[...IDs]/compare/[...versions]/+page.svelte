@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import { getDealSections, subsections } from "$lib/sections"
+  import { dealSections, subsections } from "$lib/sections"
   import { formfields } from "$lib/stores"
   import type { Deal } from "$lib/types/deal"
 
@@ -48,7 +48,6 @@
     }
     return dFrom[field][jfield] !== dTo[field][jfield]
   }
-  $: dealSections = getDealSections($_)
 </script>
 
 <svelte:head>
@@ -80,7 +79,7 @@
   </thead>
 
   <tbody>
-    {#each Object.entries(dealSections) as [label, section]}
+    {#each Object.entries($dealSections) as [label, section]}
       {#if anyFieldFromSection(section)}
         <tr>
           <th colspan="3" class="bg-gray-500 py-4">

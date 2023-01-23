@@ -6,7 +6,7 @@
   import { page } from "$app/stores"
 
   import { deal_gql_query } from "$lib/deal_queries"
-  import { getDealSections } from "$lib/sections"
+  import { dealSections } from "$lib/sections.js"
   import { loading } from "$lib/stores"
   import type { Deal } from "$lib/types/deal"
   import type { Investor } from "$lib/types/investor"
@@ -104,8 +104,6 @@
     investor = ret.investor
   }
   onMount(fetchInvestor)
-
-  $: dealSections = getDealSections($_)
 </script>
 
 <svelte:head>
@@ -165,7 +163,7 @@
         <DealLocationsSection {deal} />
       {/if}
       {#if activeTab === "#general"}
-        <DealSection {deal} sections={dealSections.general_info} />
+        <DealSection {deal} sections={$dealSections.general_info} />
       {/if}
       {#if activeTab === "#contracts"}
         <DealSubmodelSection
@@ -175,10 +173,10 @@
         />
       {/if}
       {#if activeTab === "#employment"}
-        <DealSection {deal} sections={dealSections.employment} />
+        <DealSection {deal} sections={$dealSections.employment} />
       {/if}
       {#if activeTab === "#investor_info"}
-        <DealSection {deal} sections={dealSections.investor_info}>
+        <DealSection {deal} sections={$dealSections.investor_info}>
           {#if investor}
             <h4 class="mb-2">
               Network of parent companies and tertiary investors/lenders
@@ -195,22 +193,22 @@
         />
       {/if}
       {#if activeTab === "#local_communities"}
-        <DealSection {deal} sections={dealSections.local_communities} />
+        <DealSection {deal} sections={$dealSections.local_communities} />
       {/if}
       {#if activeTab === "#former_use"}
-        <DealSection {deal} sections={dealSections.former_use} />
+        <DealSection {deal} sections={$dealSections.former_use} />
       {/if}
       {#if activeTab === "#produce_info"}
-        <DealSection {deal} sections={dealSections.produce_info} />
+        <DealSection {deal} sections={$dealSections.produce_info} />
       {/if}
       {#if activeTab === "#water"}
-        <DealSection {deal} sections={dealSections.water} />
+        <DealSection {deal} sections={$dealSections.water} />
       {/if}
       {#if activeTab === "#gender_related_info"}
-        <DealSection {deal} sections={dealSections.gender_related_info} />
+        <DealSection {deal} sections={$dealSections.gender_related_info} />
       {/if}
       {#if activeTab === "#overall_comment"}
-        <DealSection {deal} sections={dealSections.overall_comment} />
+        <DealSection {deal} sections={$dealSections.overall_comment} />
       {/if}
       {#if activeTab === "#history"}
         <DealHistory {deal} dealID={data.dealID} dealVersion={data.dealVersion} />

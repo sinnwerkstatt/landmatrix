@@ -1,3 +1,6 @@
+import { _ } from "svelte-i18n"
+import { derived } from "svelte/store"
+
 export type Field = string | { name: string; fields: Field[] }
 
 export type Section = {
@@ -5,9 +8,7 @@ export type Section = {
   fields: Field[]
 }
 
-export const getDealSections = (
-  $_: (t: string) => string,
-): { [key: string]: Section[] } => ({
+export const dealSections = derived(_, $_ => ({
   general_info: [
     {
       name: $_("Land area"),
@@ -303,7 +304,7 @@ export const getDealSections = (
       fields: ["confidential", "confidential_comment"],
     },
   ],
-})
+}))
 
 export const subsections = {
   location: [
@@ -343,7 +344,7 @@ export const subsections = {
   ],
 }
 
-export const getInvestorSections = ($_: (t: string) => string) => ({
+export const investorSections = derived(_, $_ => ({
   general_info: [
     {
       name: $_("General info"),
@@ -357,7 +358,7 @@ export const getInvestorSections = ($_: (t: string) => string) => ({
       ],
     },
   ],
-})
+}))
 
 // export const investorSubsections = {
 //   parent_companies: [
