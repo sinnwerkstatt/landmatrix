@@ -237,7 +237,7 @@
                 <li class="whitespace-nowrap">
                   <a
                     class="nav-link"
-                    href="/management/case_statistics/"
+                    href="/management/case_statistics"
                     data-sveltekit-reload
                   >
                     {$_("Case statistics")}
