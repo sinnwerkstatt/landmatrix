@@ -10,13 +10,3 @@ export function dateCurrentFormat(value: { date: string; current?: boolean }): s
   ret += "]"
   return ret
 }
-
-export function mapChoices(choices, formfieldChoices) {
-  let ret = ""
-  if (choices instanceof Array) {
-    ret += choices.map(v => formfieldChoices[v]).join(", ")
-  } else {
-    ret += formfieldChoices[choices]
-  }
-  return ret
-}
