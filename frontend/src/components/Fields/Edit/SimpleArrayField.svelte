@@ -13,12 +13,15 @@
     value = opts.length === 0 ? null : opts
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  $: choices = Object.entries(formfield.choices).filter(([v, label]) => !!v)
+  let choices: [string, string][] | false
+  $: choices = formfield.choices
+    ? // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      Object.entries(formfield.choices).filter(([v, label]) => !!v)
+    : false
 </script>
 
 <div class="simplearray_field">
-  {#if formfield.choices}
+  {#if choices}
     <div>
       <select
         value={value ?? []}
