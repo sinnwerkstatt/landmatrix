@@ -119,6 +119,17 @@
       else await goto(`/investor/${investorID}/${investorVersion ?? ""}`)
     }
   }
+
+  const onClickTab = async (e: PointerEvent) => {
+    if (savingInProgress) return
+
+    const hash = (e.target as HTMLAnchorElement).hash
+    if (formChanged) {
+      await saveInvestor(hash)
+    } else {
+      await goto(hash)
+    }
+  }
 </script>
 
 <div class="container mx-auto flex h-full min-h-full flex-col">
@@ -163,7 +174,13 @@
               : 'border-r'}"
           >
             {#if name}
-              <a href={target} class:text-black={activeTab === target}>{name}</a>
+              <a
+                href={target}
+                class:text-black={activeTab === target}
+                on:click|preventDefault={onClickTab}
+              >
+                {name}
+              </a>
             {:else}
               <hr />
             {/if}

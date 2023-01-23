@@ -121,6 +121,17 @@
     }
   }
 
+  const onClickTab = async (e: PointerEvent) => {
+    if (savingInProgress) return
+
+    const hash = (e.target as HTMLAnchorElement).hash
+    if (formChanged) {
+      await saveDeal(hash)
+    } else {
+      await goto(hash)
+    }
+  }
+
   $: dealSections = getDealSections($_)
 </script>
 
@@ -171,7 +182,13 @@
               : 'border-r'}"
           >
             {#if name}
-              <a href={target} class:text-black={activeTab === target}>{name}</a>
+              <a
+                href={target}
+                class:text-black={activeTab === target}
+                on:click|preventDefault={onClickTab}
+              >
+                {name}
+              </a>
             {:else}
               <hr />
             {/if}
