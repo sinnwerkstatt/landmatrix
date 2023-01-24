@@ -18,6 +18,7 @@
       min="-90"
       max="90"
       decimals="5"
+      emitUndefinedOnEmpty
     />
   </div>
   <div class="w-full">
@@ -28,6 +29,7 @@
       min="-180"
       max="180"
       decimals="5"
+      emitUndefinedOnEmpty
     />
   </div>
 </div>
