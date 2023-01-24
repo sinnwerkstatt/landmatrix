@@ -1,54 +1,22 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  export let value: number
+  export let value: number | null | undefined
   export let name: string
   export let unit = ""
   export let required = false
   export let max: number
   export let min = 0
   export let decimals = 2
+  export let emitUndefinedOnEmpty = false
 
+  // fixme: JSON_Field
+  // binding to input field of type number sets value to null on empty
+  $: if (value === null && emitUndefinedOnEmpty) {
+    value = undefined
+  }
   $: step = 1 / 10 ** decimals
-
-  // Nice to have: on up/down-arrow: change the number where the cursor is on..
-  // methods: {
-  //   updowndings(e) {
-  //     if (["ArrowUp", "ArrowDown"].includes(e.key)) {
-  //       e.preventDefault();
-  //       console.log(e.key);
-  //       console.log(e.target.selectionStart);
-  //       console.log(e.target);
-  //     }
-  //   },
-  // },
-
   $: placeholder = min && max ? `${min} – ${max}` : step === 1 ? "0" : "123.45"
-
-  // },
-  // watch: {
-  //   value(newValue) {
-  //     this.val = JSON.parse(JSON.stringify(newValue));
-  //   },
-  //   val(v) {
-  //     if (!v && v !== 0) {
-  //       this.$emit("input", null);
-  //       return;
-  //     }
-  //     if (this.maxValue && v > this.maxValue) this.val = this.maxValue;
-  //     if (this.minValue && v < this.minValue) this.val = this.minValue;
-  //
-  //     let v_str = v.toString();
-  //     if (v_str.includes(".")) {
-  //       let number = v_str.split(".");
-  //       let decs = number[1];
-  //       decs = decs.length > this.decimals ? decs.slice(0, this.decimals) : decs;
-  //       v_str = `${number[0]}.${decs}`;
-  //       this.val = v_str;
-  //     }
-  //     this.$emit("input", +v);
-  //   },
-  // },
 </script>
 
 <div class="flex whitespace-nowrap">
@@ -62,7 +30,6 @@
     {max}
     {step}
     {name}
-    on:input
   />
   {#if unit}
     <div

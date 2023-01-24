@@ -7,25 +7,26 @@
   dayjs.extend(customParseFormat)
 
   export let required = false
-  export let value: string
+  export let value: string | undefined
   export let name: string
 
   export let emitUndefinedOnEmpty = false
 
-  let inputfield
+  let inputField: HTMLInputElement
 
-  function checkValidity() {
-    const field_valid =
+  const checkValidity = () => {
+    const isValid =
       !value ||
       dayjs(
         value,
         ["YYYY", "YYYY-M", "YYYY-M-D", "YYYY-MM", "YYYY-MM-D", "YYYY-MM-DD"],
         true,
       ).isValid()
-    if (field_valid) {
-      inputfield.setCustomValidity("")
+
+    if (isValid) {
+      inputField.setCustomValidity("")
     } else {
-      inputfield.setCustomValidity(
+      inputField.setCustomValidity(
         $_("Invalid format. Use YYYY, YYYY-MM or YYYY-MM-DD"),
       )
     }
@@ -33,10 +34,10 @@
 
   onMount(checkValidity)
 
-  const onInput = async () => {
+  const onInput = () => {
     if (!value) {
       if (emitUndefinedOnEmpty && value === "") value = undefined
-      inputfield.setCustomValidity("")
+      inputField.setCustomValidity("")
       return
     }
     value = value.replace("/", "-").replace(".", "-").replace(",", "-").trim()
@@ -46,7 +47,7 @@
 
 <div class="whitespace-nowrap">
   <input
-    bind:this={inputfield}
+    bind:this={inputField}
     bind:value
     type="text"
     class="inpt"
