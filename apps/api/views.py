@@ -20,6 +20,7 @@ from django.utils import timezone
 from django.views import View
 from openpyxl.workbook import Workbook
 
+from apps.accounts.models import UserRole
 from apps.graphql.resolvers.charts import create_statistics
 from apps.graphql.tools import parse_filters
 from apps.landmatrix.models.country import Country
@@ -216,9 +217,15 @@ class Management(View):
                 {
                     metric: Obj.objects.filter(filters[metric]["q"]).distinct().count()
                     for metric in filters.keys()
-                    if request.user.is_staff or not filters[metric]["staff"]
+                    if request.user.role > UserRole.REPORTER
+                    or not filters[metric]["staff"]
                 }
             )
+        elif action == "all_items":
+            # from timeit import default_timer
+            # start = default_timer()
+            ret = [self._obj_dict(obj) for obj in Obj.objects.all().distinct()]
+            # print('duration', default_timer() - start)
         elif action in filters.keys():
             ret = [
                 self._obj_dict(obj)
