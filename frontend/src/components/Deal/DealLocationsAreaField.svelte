@@ -151,7 +151,6 @@
               <LowLevelDateYearField
                 bind:value={feat.properties.date}
                 name="{areaType}_{i}_year"
-                emitUndefinedOnEmpty
               />
             </td>
             <td class="px-1">
