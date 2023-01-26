@@ -76,8 +76,6 @@
         <Select
           {VirtualList}
           bind:value={selRegion}
-          getOptionLabel={o => `${o.name} (#${o.id})`}
-          getSelectionLabel={o => `${o.name} (#${o.id})`}
           items={$regions}
           labelIdentifier="name"
           on:clear={() => getCounts(undefined, undefined)}

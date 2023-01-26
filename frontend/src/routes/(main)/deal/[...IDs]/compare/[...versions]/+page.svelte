@@ -52,7 +52,7 @@
 
 <svelte:head>
   <title>
-    {$_("Comparing deal #{dealID}", { value: { dealID: data.dealID } })}
+    {$_("Comparing deal #{dealID}", { values: { dealID: data.dealID } })}
     @{data.versionFrom} - @{data.versionTo}
   </title>
 </svelte:head>

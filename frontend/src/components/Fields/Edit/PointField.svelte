@@ -3,11 +3,10 @@
 
   import LowLevelDecimalField from "./LowLevelDecimalField.svelte"
 
-  type LatLng = {
-    lat?: number
-    lng?: number
-  }
-  export let value: LatLng = {}
+  export let value: { lat?: number; lng?: number } | null
+
+  // @fixme JSON_Field
+  $: value = value ?? {}
 </script>
 
 <div class="flex gap-1">
@@ -19,6 +18,7 @@
       min="-90"
       max="90"
       decimals="5"
+      emitUndefinedOnEmpty
     />
   </div>
   <div class="w-full">
@@ -29,6 +29,7 @@
       min="-180"
       max="180"
       decimals="5"
+      emitUndefinedOnEmpty
     />
   </div>
 </div>
