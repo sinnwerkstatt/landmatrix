@@ -362,7 +362,7 @@
           let:fieldName
           let:obj
           wrapperClasses=""
-          valueClasses=""
+          valueClasses="text-lm-dark"
           fieldname={fieldName}
           value={obj[fieldName]}
           objectVersion={obj.current_draft_id}
