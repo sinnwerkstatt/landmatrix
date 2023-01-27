@@ -10,6 +10,7 @@
   import { UserRole } from "$lib/types/user"
 
   import Footer from "$components/Footer.svelte"
+  import Matomo from "$components/Matomo.svelte"
   import Messages from "$components/Messages.svelte"
   import Navbar from "$components/Navbar.svelte"
   import NavigationLoader from "$components/NavigationLoader.svelte"
@@ -18,10 +19,7 @@
 
   // import type { LayoutData } from "./$types"
   // export let data: LayoutData
-  export let data: {
-    user: User | undefined
-    urqlClient: Client
-  } = {}
+  export let data: { user: User | undefined; urqlClient: Client } = {}
 
   Sentry.init({
     dsn: import.meta.env.VITE_SENTRY_DSN,
@@ -48,6 +46,8 @@
   <slot />
 </div>
 <Footer />
+
+<Matomo />
 
 <SvelteToast
   options={{ reversed: true, classes: ["toast"], duration: 8000, pausable: true }}
