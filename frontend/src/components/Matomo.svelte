@@ -1,53 +1,63 @@
 <script type="ts">
   import { onMount } from "svelte"
+  import { writable } from "svelte/store"
 
   import { afterNavigate } from "$app/navigation"
-
-  // import { delayedCalls } from "$lib/matomo"
+  import { page } from "$app/stores"
 
   export let url = import.meta.env.VITE_MATOMO_URL
   export let siteId = import.meta.env.VITE_MATOMO_SITE_ID
   export let cookies = true
   export let consentRequired = false
-  // export let consentExpires = 0
+
   export let doNotTrack = false
   export let heartBeat = 2000
-  // export let blockLoading = false
-  // export let addNoProxyWorkaround = true
 
-  let _matomo
-  let scriptUrl
+  const scriptUrl = `${url}/matomo.js`
 
-  $: scriptUrl = `${url}/matomo.js`
-  $: trackUrl = `${url}/matomo.php`
-  $: tracker = _matomo && _matomo.getTracker(trackUrl, siteId)
+  let tracker = writable()
 
-  $: if (tracker && !cookies) tracker.disableCookies()
-  $: if (tracker && consentRequired) tracker.requireConsent()
-  $: if (tracker && doNotTrack) tracker.setDoNotTrack()
-  $: if (tracker && heartBeat) tracker.enableHeartBeatTimer(heartBeat)
+  interface Tracker {
+    disableCookies()
+    requireConsent()
+    setDoNotTrack()
+    enableHeartBeatTimer(heartBeat)
+    setCustomUrl(url): void
+    trackPageView(): void
+  }
+  interface Matomo {
+    getTracker(trackerUrl, siteId): Tracker | undefined
+  }
+  async function initializeMatomo() {
+    const _matomo: Matomo | undefined = window.Matomo
+    if (!_matomo) return
+    const track = _matomo.getTracker(`${url}/matomo.php`, siteId)
+    if (!track) return
 
-  // $: while (tracker && $delayedCalls.length) {
-  //   const [fnName, args] = $delayedCalls.shift()
-  //   if (tracker[fnName] instanceof Function) {
-  //     // if (debug) console.log("Matomo debug: Calling", fnName, args);
-  //     if (!doNotTrack) tracker[fnName](...args)
-  //   } else {
-  //     throw new Error(`Trying to call nonexistent function ${fnName}`)
-  //   }
-  // }
+    if (!cookies) track.disableCookies()
+    if (consentRequired) track.requireConsent()
+    if (doNotTrack) track.setDoNotTrack()
+    if (heartBeat) track.enableHeartBeatTimer(heartBeat)
+    await tracker.set(track)
 
-  afterNavigate(({ from, to }) => {
-    if (to?.url.href && tracker) {
-      // console.log("got tracker", tracker)
-      // console.log("got tracker", tracker.trackPageView)
-      tracker.setCustomUrl(to.url.href)
-      tracker.trackPageView()
-    }
+    track.setCustomUrl($page.url.href)
+    track.trackPageView()
+  }
+
+  onMount(async () => {
+    setTimeout(initializeMatomo, 100)
   })
 
-  onMount(() => {
-    _matomo = window.Matomo
+  afterNavigate(async ({ to }) => {
+    if (!$tracker) {
+      await initializeMatomo()
+      return
+    }
+
+    if (to?.url.href && $tracker) {
+      $tracker.setCustomUrl(to.url.href)
+      $tracker.trackPageView()
+    }
   })
 </script>
 
