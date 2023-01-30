@@ -12,7 +12,7 @@
   export let investors: Investor[] = []
 
   let model: "deal" | "investor" = "deal"
-  let activeTabId: string | undefined = undefined
+  let activeTabId: string | undefined = "pending"
 
   $: navTabs =
     model === "deal"
@@ -68,9 +68,9 @@
   }
 </script>
 
-<div class="relative flex h-full w-full border bg-stone-100">
+<div class="relative flex h-[400px] w-full border bg-stone-100">
   <nav
-    class="h-full shrink-0 basis-1/4 flex-col bg-white/80 p-2 drop-shadow-[2px_0px_1px_rgba(0,0,0,0.3)] xl:basis-1/6"
+    class="h-full shrink-0 basis-1/4 bg-white/80 p-2 drop-shadow-[2px_0px_1px_rgba(0,0,0,0.3)] xl:basis-1/5"
   >
     <div
       class="flex justify-center gap-4 border-b border-gray-200 p-1 pb-6 text-lg font-bold"
@@ -81,7 +81,7 @@
           : "text-gray-500 hover:text-gray-600"}
         on:click={() => {
           model = "deal"
-          activeTabId = undefined
+          activeTabId = "pending"
         }}
         type="button"
       >
@@ -93,7 +93,7 @@
           : "text-gray-500 hover:text-gray-600"}
         on:click={() => {
           model = "investor"
-          activeTabId = undefined
+          activeTabId = "pending"
         }}
         type="button"
       >
@@ -134,7 +134,7 @@
       </ul>
     </div>
   </nav>
-  <div class="mx-auto max-h-[600px]">
+  <div class="basis-3/4 xl:basis-4/5">
     {#if activeTabId}
       <CaseStatisticsTable
         {model}
