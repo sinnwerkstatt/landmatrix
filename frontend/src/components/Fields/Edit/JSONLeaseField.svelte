@@ -73,7 +73,6 @@
             <LowLevelDateYearField
               bind:value={val.date}
               name="{formfield.name}_{i}_date"
-              emitUndefinedOnEmpty
             />
           </td>
 
@@ -89,8 +88,8 @@
             <LowLevelDecimalField
               bind:value={val.farmers}
               required={val.date && !(val.households || val.area)}
-              decimals=""
-              min="0"
+              decimals={0}
+              min={0}
               name="{formfield.name}_{i}_farmers"
             />
           </td>
@@ -98,8 +97,8 @@
             <LowLevelDecimalField
               bind:value={val.households}
               required={val.date && !(val.area || val.farmers)}
-              decimals=""
-              min="0"
+              decimals={0}
+              min={0}
               name="{formfield.name}_{i}_households"
             />
           </td>

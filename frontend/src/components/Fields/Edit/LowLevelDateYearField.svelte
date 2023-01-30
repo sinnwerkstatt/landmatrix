@@ -6,11 +6,9 @@
 
   dayjs.extend(customParseFormat)
 
-  export let required = false
-  export let value: string | undefined
   export let name: string
-
-  export let emitUndefinedOnEmpty = false
+  export let value: string | undefined
+  export let required = false
 
   let inputField: HTMLInputElement
 
@@ -19,7 +17,15 @@
       !value ||
       dayjs(
         value,
-        ["YYYY", "YYYY-M", "YYYY-M-D", "YYYY-MM", "YYYY-MM-D", "YYYY-MM-DD"],
+        [
+          "YYYY",
+          "YYYY-MM",
+          "YYYY-MM-DD",
+          "YYYY-MM-D",
+          "YYYY-M",
+          "YYYY-M-DD",
+          "YYYY-M-D",
+        ],
         true,
       ).isValid()
 
@@ -32,28 +38,33 @@
     }
   }
 
-  onMount(checkValidity)
+  const onInput = (event: InputEvent) => {
+    const targetValue = (event.target as HTMLInputElement).value
 
-  const onInput = () => {
-    if (!value) {
-      if (emitUndefinedOnEmpty && value === "") value = undefined
-      inputField.setCustomValidity("")
-      return
-    }
-    value = value.replace("/", "-").replace(".", "-").replace(",", "-").trim()
+    value =
+      targetValue === ""
+        ? undefined
+        : targetValue
+            .replaceAll("/", "-")
+            .replaceAll(".", "-")
+            .replaceAll(",", "-")
+            .trim()
+
     checkValidity()
   }
+
+  onMount(checkValidity)
 </script>
 
 <div class="whitespace-nowrap">
   <input
     bind:this={inputField}
-    bind:value
+    value={value ?? ""}
     type="text"
     class="inpt"
     placeholder={$_("YYYY-MM-DD")}
     {required}
     {name}
-    on:input={onInput}
+    on:input|preventDefault={onInput}
   />
 </div>
