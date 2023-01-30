@@ -48,18 +48,6 @@
   export let targetBlank = false
   export let objectVersion: number | undefined = undefined
 
-  //   visible: { type: Boolean, default: true },
-
-  //   computed: {
-  //     _visible(): boolean {
-  //       if (!this.visible) return false;
-  //       if (this.fieldname === "file_not_public") return false;
-  //       if (this.formfield.class === "FileField") {
-  //         return !fileNotPublic || this.$store.getters.userAuthenticated;
-  //       }
-  //       return true;
-  //     },
-
   let formfield: FormField
   $: formfield = { name: fieldname, ...$formfields[model][fieldname] }
 

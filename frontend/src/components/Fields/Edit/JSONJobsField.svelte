@@ -72,7 +72,6 @@
             <LowLevelDateYearField
               bind:value={val.date}
               name="{formfield.name}_{i}_date"
-              emitUndefinedOnEmpty
             />
           </td>
 
@@ -81,7 +80,7 @@
               bind:value={val.jobs}
               required={val.date && !(val.employees || val.workers)}
               name="{formfield.name}_{i}_jobs"
-              decimals=""
+              decimals={0}
               unit=""
             />
           </td>
@@ -90,7 +89,7 @@
               bind:value={val.employees}
               required={val.date && !(val.workers || val.jobs)}
               name="{formfield.name}_{i}_employees"
-              decimals=""
+              decimals={0}
               unit=""
             />
           </td>
@@ -99,7 +98,7 @@
               bind:value={val.workers}
               required={val.date && !(val.jobs || val.employees)}
               name="{formfield.name}_{i}_workers"
-              decimals=""
+              decimals={0}
               unit=""
             />
           </td>

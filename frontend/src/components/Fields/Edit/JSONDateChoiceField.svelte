@@ -67,7 +67,6 @@
             <LowLevelDateYearField
               bind:value={val.date}
               name="{formfield.name}_{i}_date"
-              emitUndefinedOnEmpty
             />
           </td>
           <td class="w-3/4 p-1">

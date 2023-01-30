@@ -15,10 +15,11 @@
     <LowLevelDecimalField
       on:input
       bind:value={value.lat}
-      min="-90"
-      max="90"
-      decimals="5"
-      emitUndefinedOnEmpty
+      required={!!value.lng}
+      min={-90}
+      max={90}
+      decimals={5}
+      name="point_lat"
     />
   </div>
   <div class="w-full">
@@ -26,10 +27,11 @@
     <LowLevelDecimalField
       on:input
       bind:value={value.lng}
-      min="-180"
-      max="180"
-      decimals="5"
-      emitUndefinedOnEmpty
+      required={!!value.lat}
+      min={-180}
+      max={180}
+      decimals={5}
+      name="point_lng"
     />
   </div>
 </div>

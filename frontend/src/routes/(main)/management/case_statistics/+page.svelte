@@ -45,22 +45,17 @@
     getCounts(selRegion, selCountry)
   })
 
-  $: filteredDeals =
-    selRegion || selCountry
-      ? simpleDeals.filter(d =>
-          selCountry
-            ? d.country_id === selCountry.id
-            : d.country__region_id === selRegion.id,
-        )
-      : simpleDeals
-  $: filteredInvestors =
-    selRegion || selCountry
-      ? simpleInvestors.filter(inv =>
-          selCountry
-            ? inv.country_id === selCountry.id
-            : inv.country__region_id === selRegion.id,
-        )
-      : simpleInvestors
+  $: filteredDeals = selRegion
+    ? simpleDeals.filter(d => d.country__region_id === selRegion?.id)
+    : selCountry
+    ? simpleDeals.filter(d => d.country.id === selCountry?.id)
+    : simpleDeals
+
+  $: filteredInvestors = selRegion
+    ? simpleInvestors.filter(inv => inv.country__region_id === selRegion?.id)
+    : selCountry
+    ? simpleInvestors.filter(inv => inv.country.id === selCountry?.id)
+    : simpleInvestors
 </script>
 
 <svelte:head>

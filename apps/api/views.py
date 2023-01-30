@@ -15,9 +15,9 @@ from django.http import (
     HttpResponseBadRequest,
     HttpResponseServerError,
 )
-from django.shortcuts import render
 from django.utils import timezone
 from django.views import View
+from django.utils.timezone import make_aware
 from openpyxl.workbook import Workbook
 
 from apps.accounts.models import UserRole
@@ -389,7 +389,7 @@ class CaseStatistics(View):
             "status",
             "draft_status",
             "confidential",
-            "country_id",
+            "country",
             "country__region_id",
             "created_at",
             "modified_at",
@@ -397,42 +397,61 @@ class CaseStatistics(View):
         )
         for d in deals:
             # this is here for CaseStatisticsTable.svelte -> DisplayField
-            d["country"] = {"id": d["country_id"]}
+            d["country"] = {"id": d["country"]}
         return JsonResponse({"deals": list(deals)})
 
     @staticmethod
-    def _deal_versions(start: str, end: str, region: int = None, country: int = None):
-        versions = DealVersion.objects.filter(
-            created_at__gte=start, created_at__lte=end
-        )
-        if region:
-            versions = versions.filter(deal__country__region_id=region)
-        elif country:
-            versions = versions.filter(deal__country_id=country)
-        deals = Deal.objects.filter(id__in=versions.values_list("object_id")).values(
-            "id",
-            "deal_size",
-            "status",
-            "draft_status",
-            "country_id",
-            "created_at",
-            "modified_at",
-            "fully_updated",
-            "fully_updated_at",
-            "confidential",
-        )
+    def _deal_buckets(
+        start: datetime.datetime,
+        end: datetime.datetime,
+        region: int = None,
+        country: int = None,
+    ):
+        queries = {
+            "added": Q(created_at__gte=start) & Q(created_at__lte=end),
+            "updated": Q(modified_at__gte=start) & Q(modified_at__lte=end),
+            "fully_updated": Q(fully_updated_at__gte=start)
+            & Q(fully_updated_at__lte=end),
+            "activated": Q(workflowinfos__draft_status_before=3)
+            & Q(workflowinfos__draft_status_after__isnull=True)
+            & Q(workflowinfos__timestamp__gte=start)
+            & Q(workflowinfos__timestamp__lte=end),
+        }
 
-        for d in deals:
-            # this is here for CaseStatisticsTable.svelte -> DisplayField
-            d["country"] = {"id": d["country_id"]}
-        return JsonResponse({"deals": list(deals)})
+        buckets = {}
+        for name in queries.keys():
+            if region:
+                queries[name] &= Q(country__region_id=region)
+            if country:
+                queries[name] &= Q(country_id=country)
+
+            buckets[name] = list(
+                Deal.objects.filter(queries[name]).values(
+                    "id",
+                    "deal_size",
+                    "status",
+                    "draft_status",
+                    "country",
+                    "created_at",
+                    "modified_at",
+                    "fully_updated",
+                    "fully_updated_at",
+                    "confidential",
+                )
+            )
+
+            for deal in buckets[name]:
+                # this is here for CaseStatisticsTable.svelte -> DisplayField
+                deal["country"] = {"id": deal["country"]}
+
+        return JsonResponse({"buckets": buckets})
 
     @staticmethod
     def _investors():
         investors = Investor.objects.values(
             "id",
             "name",
-            "country_id",
+            "country",
             "country__region_id",
             "status",
             "draft_status",
@@ -441,41 +460,51 @@ class CaseStatistics(View):
         )
         for inv in investors:
             # this is here for CaseStatisticsTable.svelte -> DisplayField
-            inv["country"] = {"id": inv["country_id"]}
+            inv["country"] = {"id": inv["country"]}
         return JsonResponse({"investors": list(investors)})
 
     @staticmethod
-    def _investor_versions(
-        start: str, end: str, region: int = None, country: int = None
+    def _investor_buckets(
+        start: datetime.datetime,
+        end: datetime.datetime,
+        region: int = None,
+        country: int = None,
     ):
-        versions = InvestorVersion.objects.filter(
-            created_at__gte=start, created_at__lte=end
-        )
-        if region:
-            versions = versions.filter(investor__country__region_id=region)
-        elif country:
-            versions = versions.filter(investor__country_id=country)
-        investors = Investor.objects.filter(
-            id__in=versions.values_list("object_id")
-        ).values(
-            "id",
-            "name",
-            "status",
-            "draft_status",
-            "country_id",
-            "created_at",
-            "modified_at",
-        )
+        queries = {
+            "added": Q(created_at__gte=start) & Q(created_at__lte=end),
+            "updated": Q(modified_at__gte=start) & Q(modified_at__lte=end),
+            "activated": Q(workflowinfos__draft_status_before=3)
+            & Q(workflowinfos__draft_status_after__isnull=True)
+            & Q(workflowinfos__timestamp__gte=start)
+            & Q(workflowinfos__timestamp__lte=end),
+        }
 
-        for d in investors:
-            # this is here for CaseStatisticsTable.svelte -> DisplayField
-            d["country"] = {"id": d["country_id"]}
-        return JsonResponse({"investors": list(investors)})
+        buckets = {}
+        for name in queries.keys():
+            if region:
+                queries[name] &= Q(country__region_id=region)
+            if country:
+                queries[name] &= Q(country_id=country)
+
+            buckets[name] = list(
+                Investor.objects.filter(queries[name]).values(
+                    "id",
+                    "name",
+                    "status",
+                    "draft_status",
+                    "country",
+                    "created_at",
+                    "modified_at",
+                )
+            )
+
+            for inv in buckets[name]:
+                # this is here for CaseStatisticsTable.svelte -> DisplayField
+                inv["country"] = {"id": inv["country"]}
+
+        return JsonResponse({"buckets": buckets})
 
     def get(self, request, *args, **kwargs):
-        # is_deal = not request.GET.get("model") == "investor"
-        # Obj = Deal if is_deal else Investor
-        # filters = self.filters(request, is_deal)
         action = request.GET.get("action")
 
         if action == "counts":
@@ -487,13 +516,21 @@ class CaseStatistics(View):
         if action == "investors":
             return self._investors()
 
-        if action in ["deal_versions", "investor_versions"]:
-            start = request.GET.get("start")
-            end = request.GET.get("end")
-            region = request.GET.get("region")
-            country = request.GET.get("country")
+        if action in ["deal_buckets", "investor_buckets"]:
+            start = parse_date(request.GET.get("start"))
+            # add one day to include end day (important when end = current)
+            end = parse_date(request.GET.get("end")) + datetime.timedelta(1)
+
+            region: int = request.GET.get("region")
+            country: int = request.GET.get("country")
+
             if not (start and end):
                 return JsonResponse({})
-            if action == "deal_versions":
-                return self._deal_versions(start, end, region, country)
-            return self._investor_versions(start, end, region, country)
+
+            if action == "deal_buckets":
+                return self._deal_buckets(start, end, region, country)
+            return self._investor_buckets(start, end, region, country)
+
+
+def parse_date(date_str: str):
+    return make_aware(datetime.datetime.strptime(date_str, "%Y-%m-%d"))

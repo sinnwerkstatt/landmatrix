@@ -68,7 +68,6 @@
             <LowLevelDateYearField
               bind:value={val.date}
               name="{formfield.name}_{i}_date"
-              emitUndefinedOnEmpty
             />
           </td>
           <td class="w-1/6 p-1">
@@ -97,7 +96,7 @@
               bind:value={val.export}
               name="{formfield.name}_{i}_export"
               unit="%"
-              max="100"
+              max={100}
             />
           </td>
 

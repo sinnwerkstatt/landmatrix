@@ -3,11 +3,12 @@
 
   export let formfield: FormField
   export let value: string
-  export let required: boolean
+  export let required = false
+  export let disabled = false
 </script>
 
 <div class="typed_choice_field">
-  <select bind:value class="inpt" name={formfield.name} {required}>
+  <select bind:value class="inpt" name={formfield.name} {required} {disabled}>
     <option value="">None</option>
     {#each Object.entries(formfield.choices) as [value, label]}
       <option {value}>{label}</option>
