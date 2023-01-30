@@ -8,7 +8,6 @@
 
   import { loading } from "$lib/stores"
   import type { Deal } from "$lib/types/deal"
-  import { Status } from "$lib/types/generics"
   import type { Investor } from "$lib/types/investor"
   import type { Country, Region } from "$lib/types/wagtail"
 
@@ -37,117 +36,72 @@
           { id: "activated", name: $_("Investors activated") },
         ]
 
+  let selectedDateOption = 30
   let daterange = {
-    start: dayjs().subtract(30, "day").toDate(),
+    start: dayjs().subtract(selectedDateOption, "day").toDate(),
     end: new Date(),
   }
-  let selectedDateOption = 30
-  let datePreOptions = [
+
+  $: selectedDateOption = dayjs(daterange.end).diff(daterange.start, "days")
+
+  const datePreOptions = [
     { name: "Last 30 days", value: 30 },
     { name: "Last 60 days", value: 60 },
     { name: "Last 180 days", value: 180 },
     { name: "Last 365 days", value: 365 },
   ]
 
-  function updatePrePicker() {
-    selectedDateOption = dayjs(daterange.end).diff(daterange.start, "days")
-  }
+  let dealBuckets: { [key: string]: Deal[] } = {}
+  let investorBuckets: { [key: string]: Investor[] } = {}
 
-  let deals: Deal[] = []
-  let investors: Investor[] = []
-
-  async function _fetchDeals(r: Region | undefined, c: Country | undefined, daterange) {
-    const params = new URLSearchParams({
-      action: "deal_versions",
-      start: dayjs(daterange.start).format("YYYY-MM-DD"),
-      end: dayjs(daterange.end).format("YYYY-MM-DD"),
-    })
-    if (r) params.append("region", `${r.id}`)
-    else if (c) params.append("country", `${c.id}`)
-    console.log(params.toString())
-    let url = `/api/case_statistics/?${params}`
-    // if (r) url += `&region=${r.id}`
-    // else if (c) url += `&country=${c.id}`
-    const ret = await fetch(url)
-    if (ret.ok) deals = (await ret.json())?.deals ?? []
-  }
-  async function _fetchInvestors(
-    r: Region | undefined,
-    c: Country | undefined,
+  async function _fetchDeals(
+    region: Region | undefined,
+    country: Country | undefined,
     daterange,
   ) {
     const params = new URLSearchParams({
-      action: "investor_versions",
+      action: "deal_buckets",
       start: dayjs(daterange.start).format("YYYY-MM-DD"),
       end: dayjs(daterange.end).format("YYYY-MM-DD"),
     })
-    if (r) params.append("region", `${r.id}`)
-    else if (c) params.append("country", `${c.id}`)
-    console.log(params.toString())
-    let url = `/api/case_statistics/?${params}`
-    // if (r) url += `&region=${r.id}`
-    // else if (c) url += `&country=${c.id}`
-    const ret = await fetch(url)
-    if (ret.ok) investors = (await ret.json())?.investors ?? []
+    if (region) params.append("region", `${region.id}`)
+    if (country) params.append("country", `${country.id}`)
+
+    const ret = await fetch(`/api/case_statistics/?${params}`)
+    if (ret.ok) dealBuckets = (await ret.json()).buckets
   }
 
-  async function fetchObjs(r: Region | undefined, c: Country | undefined, daterange) {
+  async function _fetchInvestors(
+    region: Region | undefined,
+    country: Country | undefined,
+    daterange,
+  ) {
+    const params = new URLSearchParams({
+      action: "investor_buckets",
+      start: dayjs(daterange.start).format("YYYY-MM-DD"),
+      end: dayjs(daterange.end).format("YYYY-MM-DD"),
+    })
+    if (region) params.append("region", `${region.id}`)
+    if (country) params.append("country", `${country.id}`)
+
+    const ret = await fetch(`/api/case_statistics/?${params}`)
+    if (ret.ok) investorBuckets = (await ret.json()).buckets
+  }
+
+  async function fetchObjs(
+    region: Region | undefined,
+    country: Country | undefined,
+    daterange,
+  ) {
     loading.set(true)
-    await Promise.all([_fetchDeals(r, c, daterange), _fetchInvestors(r, c, daterange)])
+    await Promise.all([
+      _fetchDeals(region, country, daterange),
+      _fetchInvestors(region, country, daterange),
+    ])
     loading.set(false)
   }
 
   $: fetchObjs(region, country, daterange)
-
-  $: deals_buckets = {
-    added: deals.filter(deal => {
-      const dateCreated = dayjs(deal.created_at as Date)
-      return (
-        (deal.status === Status.LIVE || deal.status === Status.UPDATED) &&
-        dateCreated.isSameOrAfter(daterange.start, "day") &&
-        dateCreated.isSameOrBefore(daterange.end, "day")
-      )
-    }),
-    updated: deals.filter(deal => deal.status === Status.UPDATED),
-    fully_updated: deals.filter(deal => {
-      if (!deal.fully_updated_at) return false
-      let dateFU = dayjs(deal.fully_updated_at)
-      return (
-        (deal.status === Status.LIVE || deal.status === Status.UPDATED) &&
-        dateFU.isSameOrAfter(daterange.start, "day") &&
-        dateFU.isSameOrBefore(daterange.end, "day")
-      )
-    }),
-    activated: deals.filter(
-      deal =>
-        deal.draft_status === null &&
-        (deal.status === Status.LIVE || deal.status === Status.UPDATED),
-    ),
-  }
-  $: investors_buckets = {
-    added: investors.filter(
-      investor =>
-        investor.status === Status.DRAFT &&
-        investor.created_at === investor.modified_at,
-    ),
-    updated: investors.filter(investor => {
-      // not added investors
-      if (
-        investor.status === Status.DRAFT &&
-        investor.created_at === investor.modified_at
-      )
-        return false
-      // not deleted investors
-      if (investor.status === Status.DELETED) return false
-      // finally
-      return true
-    }),
-    activated: investors.filter(
-      investor =>
-        investor.draft_status === null &&
-        (investor.status === Status.LIVE || investor.status === Status.UPDATED),
-    ),
-  }
 </script>
 
 <div class="mb-4 mt-10 flex items-center gap-8">
@@ -169,8 +123,8 @@
       {/each}
     </select>
     <div class="flex gap-2">
-      <DateInput on:select={updatePrePicker} bind:value={daterange.start} />
-      <DateInput on:select={updatePrePicker} bind:value={daterange.end} />
+      <DateInput bind:value={daterange.start} format="yyyy-MM-dd" />
+      <DateInput bind:value={daterange.end} format="yyyy-MM-dd" />
     </div>
   </div>
 </div>
@@ -230,9 +184,9 @@
             >
               <span class="font-bold">
                 {#if model === "deal"}
-                  {#if deals_buckets[item.id]} {deals_buckets[item.id].length}{/if}
-                {:else if investors_buckets[item.id]}
-                  {investors_buckets[item.id].length}
+                  {#if dealBuckets[item.id]} {dealBuckets[item.id].length}{/if}
+                {:else if investorBuckets[item.id]}
+                  {investorBuckets[item.id].length}
                 {/if}
               </span>
               {item.name}
@@ -247,8 +201,8 @@
       <CaseStatisticsTable
         {model}
         objects={model === "deal"
-          ? deals_buckets[activeTabId]
-          : investors_buckets[activeTabId]}
+          ? dealBuckets[activeTabId]
+          : investorBuckets[activeTabId]}
       />
     {/if}
   </div>
