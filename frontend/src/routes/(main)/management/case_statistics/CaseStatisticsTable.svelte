@@ -21,8 +21,8 @@
 
   const investorColumns = {
     id: 1,
-    name: 3,
-    country: 4,
+    name: 5,
+    country: 3,
     created_at: 2,
     modified_at: 2,
   }

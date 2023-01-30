@@ -45,7 +45,7 @@
     bind:this={virtualList}
     width="{width > colWidthInPx * nCols ? width : colWidthInPx * nCols}px"
     {height}
-    itemCount={sortedItems.length + 1}
+    itemCount={sortedItems?.length + 1}
     itemSize={index => (index === 0 ? headerHeightInPx : rowHeightInPx)}
     stickyIndices={[0]}
   >

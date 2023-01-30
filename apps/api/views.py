@@ -518,7 +518,8 @@ class CaseStatistics(View):
 
         if action in ["deal_buckets", "investor_buckets"]:
             start = parse_date(request.GET.get("start"))
-            end = parse_date(request.GET.get("end"))
+            # add one day to include end day (important when end = current)
+            end = parse_date(request.GET.get("end")) + datetime.timedelta(1)
 
             region: int = request.GET.get("region")
             country: int = request.GET.get("country")

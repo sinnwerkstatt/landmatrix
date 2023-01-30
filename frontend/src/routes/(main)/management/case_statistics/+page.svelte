@@ -48,13 +48,13 @@
   $: filteredDeals = selRegion
     ? simpleDeals.filter(d => d.country__region_id === selRegion?.id)
     : selCountry
-    ? simpleDeals.filter(d => d.country_id === selCountry?.id)
+    ? simpleDeals.filter(d => d.country.id === selCountry?.id)
     : simpleDeals
 
   $: filteredInvestors = selRegion
     ? simpleInvestors.filter(inv => inv.country__region_id === selRegion?.id)
     : selCountry
-    ? simpleInvestors.filter(inv => inv.country_id === selCountry?.id)
+    ? simpleInvestors.filter(inv => inv.country.id === selCountry?.id)
     : simpleInvestors
 </script>
 

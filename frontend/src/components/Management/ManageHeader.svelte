@@ -253,7 +253,9 @@
                 </span>
               {/if}
               on
-              {dayjs(lastVersion.created_at).format("YYYY-MM-DD HH:mm")}
+              {dayjs(lastVersion.modified_at ?? lastVersion.created_at).format(
+                "YYYY-MM-DD HH:mm",
+              )}
               <br />
               {#if object.versions.length > 1}
                 <a
