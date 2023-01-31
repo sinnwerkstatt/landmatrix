@@ -5,6 +5,7 @@ import { gql } from "@urql/svelte"
 import { _ } from "svelte-i18n"
 import { derived, get, writable } from "svelte/store"
 
+import type { BlockImage } from "$lib/types/custom"
 import type { DraftStatus, Status } from "$lib/types/generics"
 import type { User } from "$lib/types/user"
 import type {
@@ -227,3 +228,5 @@ export const draftStatusMap = derived(
     5: $_("Deleted"),
   }),
 )
+
+export const lightboxImage = writable<BlockImage | null>(null)
