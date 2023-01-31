@@ -14,8 +14,9 @@
   {#if value.lightbox}
     <a
       href={src}
-      on:click|preventDefault={() => lightboxImage.set(value)}
-      on:keydown|preventDefault={e => e.code === "Enter" && lightboxImage.set(value)}
+      on:click|preventDefault|stopPropagation={() => lightboxImage.set(value)}
+      on:keydown|preventDefault|stopPropagation={e =>
+        e.code === "Enter" && lightboxImage.set(value)}
     >
       <img class="w-full max-w-full cursor-pointer" {src} alt="" />
     </a>
