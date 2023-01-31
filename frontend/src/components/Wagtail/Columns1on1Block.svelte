@@ -9,7 +9,7 @@
   } = { left_column: [], right_column: [] }
 </script>
 
-<div data-block="columns_1_1" class="mb-8 grid gap-20 lg:grid-cols-2">
+<div data-block="columns_1_1" class="mb-8 grid grid-cols-1 gap-20 lg:grid-cols-2">
   <div>
     {#each value.left_column as block}
       <svelte:component this={blockMap[block.type]} bind:value={block.value} />

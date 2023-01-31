@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { lightboxImage } from "$lib/stores"
   import type { BlockImage } from "$lib/types/custom"
 
   export let value: BlockImage
@@ -7,35 +8,23 @@
   $: src = value.image ? value.image.url : value.url
   $: caption = value.image ? value.caption : null
   $: externalLink = value.image ? value.external : false
-
-  function escape_key(e) {
-    if (e.key === "Escape") toggleLightbox()
-  }
-  let lightboxVisible = false
-  function toggleLightbox() {
-    if (lightboxVisible) {
-      lightboxVisible = false
-      document.removeEventListener("keydown", escape_key)
-    } else {
-      lightboxVisible = true
-      document.addEventListener("keydown", escape_key)
-    }
-  }
 </script>
 
 <div data-block="image" class="mb-5">
   {#if value.lightbox}
     <a
       href={src}
-      target="_blank"
-      rel="noreferrer"
-      on:click|preventDefault={toggleLightbox}
-      on:keydown|preventDefault={e => e.code === "Enter" && toggleLightbox()}
+      on:click|preventDefault={() => lightboxImage.set(value)}
+      on:keydown|preventDefault={e => e.code === "Enter" && lightboxImage.set(value)}
     >
       <img class="w-full max-w-full cursor-pointer" {src} alt="" />
     </a>
   {:else if link}
-    <a href={link} target={externalLink ? "_blank" : "_self"}>
+    <a
+      href={link}
+      target={externalLink ? "_blank" : "_self"}
+      rel={externalLink ? "noreferrer" : ""}
+    >
       <img class="w-full max-w-full" {src} alt="" />
     </a>
   {:else}
@@ -48,24 +37,7 @@
   {/if}
 </div>
 
-{#if lightboxVisible}
-  <div
-    class="fixed inset-0 z-[20000] flex h-screen w-screen items-center justify-center bg-gray-600 bg-opacity-90 p-2"
-    on:click|preventDefault={toggleLightbox}
-    on:keyup|preventDefault={e => e.code === "Enter" && toggleLightbox()}
-  >
-    <img
-      on:click|stopPropagation
-      on:keydown|stopPropagation
-      on:keydown|stopPropagation
-      class="max-h-full max-w-full border"
-      {src}
-      alt=""
-    />
-  </div>
-{/if}
-
-<style>
+<style lang="css">
   :global(.caption > *) {
     margin: 0 !important;
   }

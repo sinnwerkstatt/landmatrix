@@ -10,6 +10,7 @@
   import { UserRole } from "$lib/types/user"
 
   import Footer from "$components/Footer.svelte"
+  import LightboxImage from "$components/LightboxImage.svelte"
   import Matomo from "$components/Matomo.svelte"
   import Messages from "$components/Messages.svelte"
   import Navbar from "$components/Navbar.svelte"
@@ -52,3 +53,5 @@
 <SvelteToast
   options={{ reversed: true, classes: ["toast"], duration: 8000, pausable: true }}
 />
+
+<LightboxImage />
