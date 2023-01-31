@@ -4,7 +4,7 @@
   export let value
 </script>
 
-<div data-block="slider" class="siema mx-auto max-h-[800px] w-full max-w-[600px]">
+<div data-block="slider" class="mx-auto w-full">
   {#each value.images as image}
     <ImageBlock value={image} />
   {/each}
