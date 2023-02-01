@@ -222,10 +222,7 @@ class Management(View):
                 }
             )
         elif action == "all_items":
-            # from timeit import default_timer
-            # start = default_timer()
             ret = [self._obj_dict(obj) for obj in Obj.objects.all().distinct()]
-            # print('duration', default_timer() - start)
         elif action in filters.keys():
             ret = [
                 self._obj_dict(obj)
