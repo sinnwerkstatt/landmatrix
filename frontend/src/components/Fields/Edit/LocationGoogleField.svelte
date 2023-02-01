@@ -11,12 +11,14 @@
 
   const dispatch = createEventDispatcher()
 
+  let apiKey = import.meta.env.VITE_GAPI_KEY
   let loader: Loader
 
   function locationAutocomplete() {
+    if (!apiKey) return
     if (!loader)
       loader = new Loader({
-        apiKey: import.meta.env.VITE_GAPI_KEY,
+        apiKey,
         libraries: ["places"],
       })
     loader.load().then(google => {

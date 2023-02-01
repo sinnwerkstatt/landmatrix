@@ -23,7 +23,7 @@ def task_full_update():
 
 
 def task_initial_setup():
-    fixtures = " ".join(["countries_and_regions", "users_and_groups"])
+    fixtures = " ".join(["countries_and_regions", "users_and_groups", "currencies"])
     return {
         "task_dep": ["update"],
         "actions": [

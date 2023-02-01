@@ -13,8 +13,6 @@
   export let doNotTrack = false
   export let heartBeat = 2000
 
-  const scriptUrl = `${url}/matomo.js`
-
   let tracker = writable()
 
   interface Tracker {
@@ -62,5 +60,7 @@
 </script>
 
 <svelte:head>
-  <script async defer src={scriptUrl}></script>
+  {#if url}
+    <script async defer src={`${url}/matomo.js`}></script>
+  {/if}
 </svelte:head>
