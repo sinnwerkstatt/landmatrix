@@ -221,8 +221,6 @@ class Management(View):
                     or not filters[metric]["staff"]
                 }
             )
-        elif action == "all_items":
-            ret = [self._obj_dict(obj) for obj in Obj.objects.all().distinct()]
         elif action in filters.keys():
             ret = [
                 self._obj_dict(obj)

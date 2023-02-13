@@ -1151,6 +1151,9 @@ class DealWorkflowInfo(WorkflowInfo):
         blank=True,
     )
 
+    # WARNING
+    # Do not use to map large query sets!
+    # Takes tons of memory storing related deal and deal_version objects.
     def to_dict(self) -> dict:
         d = super().to_dict()
         d.update({"deal": self.deal, "deal_version": self.deal_version})
