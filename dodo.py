@@ -70,6 +70,22 @@ def task_reset_db_with_dump():
     }
 
 
+def task_test_watch():
+    from doit.action import CmdAction
+
+    def test_watch(files):
+        return (
+            f"ptw {' '.join(files) if files else './apps'} --clear "
+            f"-- --no-cov -p no:warnings"
+        )
+
+    return {
+        "actions": [CmdAction(test_watch)],
+        "pos_arg": "files",
+        "verbosity": 2,
+    }
+
+
 #############################
 def task_frontend_build():
     actions = ["cd frontend; npm ci"]
