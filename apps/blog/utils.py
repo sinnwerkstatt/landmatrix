@@ -1,5 +1,6 @@
 # https://djangosnippets.org/snippets/690/
 import re
+
 from django.template.defaultfilters import slugify
 
 

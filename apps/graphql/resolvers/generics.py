@@ -3,26 +3,31 @@ from __future__ import annotations
 from typing import Literal
 
 from ariadne.graphql import GraphQLError
+
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.utils import timezone
 
 from apps.accounts.models import UserRole
-from apps.graphql.resolvers.user_utils import send_comment_to_user
 from apps.landmatrix.forms.deal import DealForm
 from apps.landmatrix.forms.investor import InvestorForm
 from apps.landmatrix.models.abstracts import DRAFT_STATUS, STATUS, WorkflowInfo
 from apps.landmatrix.models.deal import Deal, DealVersion, DealWorkflowInfo
 from apps.landmatrix.models.investor import (
-    InvestorWorkflowInfo,
     Investor,
     InvestorVersion,
+    InvestorWorkflowInfo,
 )
 from apps.utils import ecma262
 
+from .user_utils import send_comment_to_user
+
 OType = Literal["deal", "investor"]
-User = get_user_model()
+
+from apps.accounts.models import UserModel
+
+User: UserModel = get_user_model()
 
 
 def add_workflow_info(

@@ -1,8 +1,9 @@
+from fastjsonschema import JsonSchemaException, compile
+
 from django.core.exceptions import ValidationError
 from django.forms import JSONField
-from fastjsonschema import compile, JsonSchemaException
 
-from apps.landmatrix.models.choices import ACTOR_MAP
+from ..models.choices import ACTOR_MAP
 
 
 class JSONDateAreaChoicesField(JSONField):

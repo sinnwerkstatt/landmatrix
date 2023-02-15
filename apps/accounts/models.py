@@ -1,3 +1,5 @@
+from typing import Type
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
@@ -41,3 +43,6 @@ class User(AbstractUser):
             else ""
         )
         super().save(*args, **kwargs)
+
+
+UserModel = Type[User]

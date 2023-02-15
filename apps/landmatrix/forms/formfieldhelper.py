@@ -1,11 +1,11 @@
 from django.contrib.postgres.forms import SimpleArrayField
-from django.forms import fields, TypedChoiceField, ModelChoiceField
+from django.forms import ModelChoiceField, TypedChoiceField, fields
 from django.utils.translation import gettext
 
-from apps.landmatrix.forms.fields import (
+from .fields import (
+    JSONActorsField,
     JSONDateAreaChoicesField,
     JSONDateChoiceField,
-    JSONActorsField,
     JSONExportsField,
 )
 

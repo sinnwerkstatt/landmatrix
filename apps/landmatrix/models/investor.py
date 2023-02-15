@@ -9,16 +9,12 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from apps.landmatrix.models.abstracts import (
-    STATUS_CHOICES,
-    DRAFT_STATUS_CHOICES,
-    Version,
-    WorkflowInfo,
-)
-from apps.landmatrix.models.country import Country
-from apps.landmatrix.models.currency import Currency
-from apps.landmatrix.models.fields import DatasourcesField
 from apps.utils import ecma262
+
+from .abstracts import DRAFT_STATUS_CHOICES, STATUS_CHOICES, Version, WorkflowInfo
+from .country import Country
+from .currency import Currency
+from .fields import DatasourcesField
 
 
 class InvestorQuerySet(models.QuerySet):

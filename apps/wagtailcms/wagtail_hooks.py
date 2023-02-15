@@ -1,7 +1,8 @@
+from wagtailorderable.modeladmin.mixins import OrderableMixin
+
 from wagtail.contrib.modeladmin.options import ModelAdmin, modeladmin_register
 from wagtail.core import hooks
 from wagtail.core.whitelist import attribute_rule
-from wagtailorderable.modeladmin.mixins import OrderableMixin
 
 from apps.message.models import Message
 

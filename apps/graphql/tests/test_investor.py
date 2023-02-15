@@ -1,20 +1,22 @@
 import pytest
-from django.contrib.auth import get_user_model
 from ariadne.graphql import GraphQLError
 
+from django.contrib.auth import get_user_model
+
+from apps.accounts.models import UserModel
 from apps.graphql.resolvers.generics import (
-    object_edit,
     change_object_status,
     object_delete,
+    object_edit,
 )
+from apps.landmatrix.models.abstracts import DRAFT_STATUS, STATUS
+from apps.landmatrix.models.country import Country
+from apps.landmatrix.models.investor import Investor, InvestorVersion
 
 # noinspection PyProtectedMember
-from apps.graphql.resolvers.investor import _clean_payload
-from apps.landmatrix.models.investor import Investor, InvestorVersion
-from apps.landmatrix.models.country import Country
-from apps.landmatrix.models.abstracts import DRAFT_STATUS, STATUS
+from ..resolvers.investor import _clean_payload
 
-User = get_user_model()
+User: UserModel = get_user_model()
 
 payload: dict[str, any] = {
     # "investors": [],

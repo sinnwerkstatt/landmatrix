@@ -2,19 +2,21 @@ import base64
 import os
 
 from ariadne.graphql import GraphQLError
+
 from django.contrib.gis.geos import Point
 from django.core.files.storage import DefaultStorage
 
 from apps.accounts.models import UserRole
-from apps.graphql.tools import get_fields, parse_filters
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.deal import Deal, DealVersion, DealWorkflowInfo
 from apps.utils import qs_values_to_dict
+
+from ..tools import get_fields, parse_filters
 from .generics import (
     add_object_comment,
     change_object_status,
-    object_edit,
     object_delete,
+    object_edit,
 )
 
 storage = DefaultStorage()

@@ -1,6 +1,6 @@
 from django.utils import translation
 
-from apps.blog.models import BlogPage, BlogCategory
+from apps.blog.models import BlogCategory, BlogPage
 
 
 def resolve_blogpages(_obj, _info, category=None):

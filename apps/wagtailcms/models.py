@@ -2,30 +2,29 @@ from django import forms
 from django.db import models
 from wagtail.admin.edit_handlers import (
     FieldPanel,
-    StreamFieldPanel,
     FieldRowPanel,
+    RichTextFieldPanel,
+    StreamFieldPanel,
 )
-from wagtail.admin.edit_handlers import RichTextFieldPanel
 from wagtail.api import APIField
 from wagtail.contrib.settings.models import BaseSetting, register_setting
-from wagtail.core.fields import RichTextField
-from wagtail.core.fields import StreamField
-from wagtail.core.models import Page
+from wagtail.core.fields import RichTextField, StreamField
 from wagtail.core.models import Page
 from wagtail.core.rich_text import expand_db_html
 from wagtail_headless_preview.models import HeadlessPreviewMixin
 
 from apps.blog.models import BlogPage
-from apps.landmatrix.models.country import Region, Country
+from apps.landmatrix.models.country import Country, Region
 from apps.landmatrix.models.deal import Deal
-from apps.wagtailcms.blocks import (
+
+from .blocks import (
     COLUMN_BLOCKS,
     CONTENT_BLOCKS,
     DATA_BLOCKS,
+    SIMPLE_CONTENT_BLOCKS,
     NoWrapsStreamField,
 )
-from apps.wagtailcms.blocks import SIMPLE_CONTENT_BLOCKS
-from apps.wagtailcms.twitter import TwitterTimeline
+from .twitter import TwitterTimeline
 
 
 @register_setting(icon="radio-empty")
