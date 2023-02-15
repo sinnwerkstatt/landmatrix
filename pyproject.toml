@@ -58,6 +58,7 @@ mkdocs = "*"
 pydot = "^1.4.1"
 tqdm = "^4.64.0"
 isort = "^5.12.0"
+termtables = "^0.2.4"
 
 
 [tool.black]
@@ -90,4 +91,4 @@ profile = "black"
 extend_skip_glob = ["*/migrations/*.py"]
 known_django = ["django", "wagtail", "rest_framework", "wagtail_headless_preview", "modelcluster"]
 known_first_party = ["apps"]
-sections = ["FUTURE", "STDLIB", "DJANGO", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "DJANGO", "FIRSTPARTY", "LOCALFOLDER"]

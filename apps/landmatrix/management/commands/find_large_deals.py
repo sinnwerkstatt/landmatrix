@@ -1,7 +1,7 @@
-from sys import getsizeof, stderr
-from itertools import chain
 from collections import deque
+from itertools import chain
 from reprlib import repr
+from sys import getsizeof, stderr
 
 from django.core.management import BaseCommand
 

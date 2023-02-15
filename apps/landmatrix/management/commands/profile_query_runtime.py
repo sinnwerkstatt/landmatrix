@@ -3,18 +3,17 @@ from typing import Type
 
 from django.core.management import BaseCommand
 from django.core.serializers.json import DjangoJSONEncoder
-from django.db.models import Model, ForeignKey
+from django.db.models import ForeignKey, Model
 from django.forms import model_to_dict
 
-from apps.landmatrix.models.deal import DealWorkflowInfo, Deal, DealVersion
+from apps.landmatrix.models.deal import Deal, DealVersion, DealWorkflowInfo
 from apps.landmatrix.models.investor import (
-    InvestorWorkflowInfo,
     Investor,
     InvestorVersion,
+    InvestorWorkflowInfo,
 )
 
 from ..timer import Timer
-
 
 MODELS: list[Type[Model]] = [
     Deal,

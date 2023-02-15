@@ -1402,6 +1402,14 @@ python-versions = ">=3.5"
 docs = ["mkdocs (>=1.1,<1.2)", "mkdocs-material (>=6.2,<6.3)"]
 
 [[package]]
+name = "termtables"
+version = "0.2.4"
+description = "Pretty tables in the terminal"
+category = "dev"
+optional = false
+python-versions = ">=3.6"
+
+[[package]]
 name = "toml"
 version = "0.10.2"
 description = "Python Library for Tom's Obvious, Minimal Language"
@@ -1695,7 +1703,7 @@ testing = ["func-timeout", "jaraco.itertools", "pytest (>=6)", "pytest-black (>=
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "d96365cc0f9f1ff5e57ba92457e6fe0d2025e14497172eeba6a69fb75f399897"
+content-hash = "3d64bbea0829874fc666d2292829cfd169dd0349e2b1f0119d1153b49727f840"
 
 [metadata.files]
 anyascii = [
@@ -2541,6 +2549,10 @@ tablib = [
 telepath = [
     {file = "telepath-0.2-py35-none-any.whl", hash = "sha256:801615094d3d964e178183099bf04020f4ff9c84ec43945d40b096df0a5767ee"},
     {file = "telepath-0.2.tar.gz", hash = "sha256:ef4cf2a45ed1908c58639c346756955f8a73ae79002a8116d596b3fd702bf84c"},
+]
+termtables = [
+    {file = "termtables-0.2.4-py3-none-any.whl", hash = "sha256:0ca860eed8957db0045020bcdfcf6620e188b0d776e8543a57ff539fcfeec26d"},
+    {file = "termtables-0.2.4.tar.gz", hash = "sha256:797c6afeb78abdab97cd5bfbbd2fc1bfbd9630052699dc881b27b334bcc6a73f"},
 ]
 toml = [
     {file = "toml-0.10.2-py2.py3-none-any.whl", hash = "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b"},

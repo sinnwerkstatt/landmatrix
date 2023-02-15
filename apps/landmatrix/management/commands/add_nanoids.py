@@ -1,8 +1,8 @@
+from nanoid import generate
+
 from django.core.management.base import BaseCommand
 
 from apps.landmatrix.models.deal import Deal
-
-from nanoid import generate
 
 
 class Command(BaseCommand):

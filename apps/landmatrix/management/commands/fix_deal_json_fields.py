@@ -1,8 +1,10 @@
-from django.core.management import BaseCommand
-from apps.landmatrix.models.deal import DealVersion, Deal
+import re
+
 from tqdm import tqdm
 
-import re
+from django.core.management import BaseCommand
+
+from apps.landmatrix.models.deal import Deal, DealVersion
 
 JSON_fields = [
     "contract_size",
