@@ -1,10 +1,11 @@
 from ariadne import ObjectType
 from ariadne.graphql import GraphQLError
 
-from django.contrib import auth
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth import get_user_model
 
-User: AbstractUser = auth.get_user_model()
+from apps.accounts.models import UserModel
+
+User: UserModel = get_user_model()
 
 
 # noinspection PyShadowingBuiltins

@@ -16,7 +16,6 @@ from wagtail_headless_preview.models import HeadlessPreviewMixin
 from apps.blog.models import BlogPage
 from apps.landmatrix.models.country import Country, Region
 from apps.landmatrix.models.deal import Deal
-from apps.wagtailcms.twitter import TwitterTimeline
 
 from .blocks import (
     COLUMN_BLOCKS,
@@ -25,6 +24,7 @@ from .blocks import (
     SIMPLE_CONTENT_BLOCKS,
     NoWrapsStreamField,
 )
+from .twitter import TwitterTimeline
 
 
 @register_setting(icon="radio-empty")

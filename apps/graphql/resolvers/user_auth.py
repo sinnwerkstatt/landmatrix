@@ -12,9 +12,9 @@ from django.template import Context, Template
 from django.utils.http import urlsafe_base64_decode
 from django.utils.translation import gettext_lazy as _
 
-from apps.accounts.models import User as UserType
+from apps.accounts.models import UserModel
 
-User: UserType = auth.get_user_model()
+User: UserModel = auth.get_user_model()
 
 REGISTRATION_SALT = settings.SECRET_KEY
 

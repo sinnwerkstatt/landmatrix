@@ -21,7 +21,7 @@ from django.utils import timezone
 from django.utils.timezone import make_aware
 from django.views import View
 
-from apps.accounts.models import UserRole
+from apps.accounts.models import UserModel, UserRole
 from apps.graphql.resolvers.charts import create_statistics
 from apps.graphql.tools import parse_filters
 from apps.landmatrix.models.deal import Deal, DealVersion, DealWorkflowInfo
@@ -35,7 +35,7 @@ from apps.utils import qs_values_to_dict
 
 from .to_dict import create_lookups, deal_to_dict, investor_to_dict
 
-User = get_user_model()
+User: UserModel = get_user_model()
 
 
 def gis_export(request):

@@ -4,13 +4,14 @@ from ariadne.graphql import GraphQLError
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 
+from apps.accounts.models import UserModel
 from apps.landmatrix.models.abstracts import DRAFT_STATUS, STATUS
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.deal import Deal, DealVersion
 
 from ..resolvers.generics import change_object_status, object_delete, object_edit
 
-User = get_user_model()
+User: UserModel = get_user_model()
 
 payload: dict[str, any] = {
     "locations": [

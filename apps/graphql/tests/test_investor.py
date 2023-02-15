@@ -3,6 +3,7 @@ from ariadne.graphql import GraphQLError
 
 from django.contrib.auth import get_user_model
 
+from apps.accounts.models import UserModel
 from apps.graphql.resolvers.generics import (
     change_object_status,
     object_delete,
@@ -15,7 +16,7 @@ from apps.landmatrix.models.investor import Investor, InvestorVersion
 # noinspection PyProtectedMember
 from ..resolvers.investor import _clean_payload
 
-User = get_user_model()
+User: UserModel = get_user_model()
 
 payload: dict[str, any] = {
     # "investors": [],

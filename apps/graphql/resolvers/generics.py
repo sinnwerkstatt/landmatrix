@@ -24,7 +24,10 @@ from apps.utils import ecma262
 from .user_utils import send_comment_to_user
 
 OType = Literal["deal", "investor"]
-User = get_user_model()
+
+from apps.accounts.models import UserModel
+
+User: UserModel = get_user_model()
 
 
 def add_workflow_info(

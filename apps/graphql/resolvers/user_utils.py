@@ -7,10 +7,11 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import gettext as _
 from wagtail.core.models import Site
 
+from apps.accounts.models import UserModel
 from apps.landmatrix.models.deal import Deal
 from apps.landmatrix.models.investor import Investor
 
-User = get_user_model()
+User: UserModel = get_user_model()
 
 
 # TODO unused, but maybe helpful

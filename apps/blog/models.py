@@ -29,9 +29,12 @@ from wagtail.search import index
 from wagtail.snippets.models import register_snippet
 from wagtail_headless_preview.models import HeadlessPreviewMixin
 
+from apps.accounts.models import UserModel
 from apps.wagtailcms.blocks import SIMPLE_CONTENT_BLOCKS
 
 from .utils import unique_slugify
+
+User: UserModel = get_user_model()
 
 
 class BlogIndexPage(HeadlessPreviewMixin, Page):
@@ -177,8 +180,7 @@ class BlogTag(Tag):
 def get_blog_context(context):
     """Get context data useful on all blog related pages"""
     context["authors"] = (
-        get_user_model()
-        .objects.filter(
+        User.objects.filter(
             owned_pages__live=True, owned_pages__content_type__model="blogpage"
         )
         .annotate(Count("owned_pages"))

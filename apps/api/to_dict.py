@@ -1,14 +1,16 @@
 from collections.abc import Callable, Iterable
 from datetime import datetime
-from typing import Type, TypedDict, TypeVar, cast
+from typing import TypedDict, TypeVar, cast
 
 from django.contrib.auth import get_user_model
 from django.db.models import Model
 
-from apps.accounts.models import User
+from apps.accounts.models import UserModel
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.deal import Deal, DealWorkflowInfo
 from apps.landmatrix.models.investor import Investor, InvestorWorkflowInfo
+
+User: UserModel = get_user_model()
 
 
 class UserDict(TypedDict):
@@ -111,7 +113,7 @@ def country_to_dict(
 def create_lookups() -> Lookups:
     return {
         "user": create_model_lookup(
-            get_user_model().objects.all(),
+            User.objects.all(),
             user_to_dict,
         ),
         "country": create_model_lookup(
