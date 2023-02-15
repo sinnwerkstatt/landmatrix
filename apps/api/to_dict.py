@@ -153,16 +153,8 @@ def base_obj_to_dict(
         "draft_status": obj.draft_status,
         "created_at": obj.created_at,
         "created_by": lookups["user"].get(obj.created_by_id),  # noqa
-        "modified_at": (
-            last_version.modified_at
-            if last_version.modified_at
-            else last_version.created_at
-        ),
-        "modified_by": lookups["user"].get(
-            last_version.modified_by_id
-            if last_version.modified_by_id
-            else last_version.created_by_id
-        ),
+        "modified_at": last_version.created_at,
+        "modified_by": lookups["user"].get(last_version.created_by_id),  # noqa
         "workflowinfos": [
             workflowinfo_to_dict(wfi, lookups) for wfi in obj.workflowinfos.all()
         ],
