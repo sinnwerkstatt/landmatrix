@@ -3,8 +3,6 @@
 
   type ForeignKey = {
     id: number
-    name?: string
-    username?: string
   }
 
   export let value: ForeignKey[] = []
@@ -25,7 +23,7 @@
     {#if displayDeals}
       <ul>
         {#each value as val (val.id)}
-          <li><a href="/deal/{value.id}">#{val.id}</a></li>
+          <li><a href="/deal/{val.id}">#{val.id}</a></li>
         {/each}
       </ul>
     {/if}

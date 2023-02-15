@@ -20,6 +20,17 @@ from .generics import (
 storage = DefaultStorage()
 
 
+def create_storage_layout(s: DefaultStorage):
+    for dir_name in ["uploads"]:
+        dir_path = os.path.join(s.base_location, dir_name)
+        if not os.path.isdir(dir_path):
+            print(f"Creating storage folder '/{dir_name}'.")
+            os.makedirs(dir_path)
+
+
+create_storage_layout(storage)
+
+
 # noinspection PyShadowingBuiltins
 def resolve_deal(_obj, info, id, version=None, subset="PUBLIC"):
     user = info.context["request"].user

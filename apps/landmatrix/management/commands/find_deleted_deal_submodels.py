@@ -1,9 +1,9 @@
-import sys
 from dataclasses import dataclass
 from datetime import datetime
 
 import pytz
 import termtables as tt
+
 from django.core.management.base import BaseCommand
 
 from apps.landmatrix.models.deal import Deal
