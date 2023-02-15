@@ -1,16 +1,14 @@
 import pytest
-from django.contrib.auth import get_user_model
-from django.utils import timezone
 from ariadne.graphql import GraphQLError
 
-from apps.graphql.resolvers.generics import (
-    object_edit,
-    change_object_status,
-    object_delete,
-)
+from django.contrib.auth import get_user_model
+from django.utils import timezone
+
+from apps.landmatrix.models.abstracts import DRAFT_STATUS, STATUS
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.deal import Deal, DealVersion
-from apps.landmatrix.models.abstracts import DRAFT_STATUS, STATUS
+
+from ..resolvers.generics import change_object_status, object_delete, object_edit
 
 User = get_user_model()
 

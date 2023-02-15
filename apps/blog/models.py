@@ -1,30 +1,26 @@
 import datetime
 
+from taggit.models import Tag, TaggedItemBase
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import models
-from django.db.models import Count
-from django.db.models import Q
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404
 from django.utils.text import Truncator
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey, ParentalManyToManyField
 from rest_framework.fields import ListField
-from taggit.models import Tag
-from taggit.models import TaggedItemBase
-from taggit.models import TaggedItemBase
 from wagtail.admin.edit_handlers import (
     FieldPanel,
-    MultiFieldPanel,
     FieldRowPanel,
+    MultiFieldPanel,
     StreamFieldPanel,
 )
 from wagtail.api import APIField
 from wagtail.core.fields import StreamField
-from wagtail.core.models import Page
-from wagtail.core.models import Page
 from wagtail.core.models import Page
 from wagtail.images import get_image_model_string
 from wagtail.images.edit_handlers import ImageChooserPanel
@@ -34,6 +30,7 @@ from wagtail.snippets.models import register_snippet
 from wagtail_headless_preview.models import HeadlessPreviewMixin
 
 from apps.wagtailcms.blocks import SIMPLE_CONTENT_BLOCKS
+
 from .utils import unique_slugify
 
 

@@ -2,13 +2,12 @@ import pytest
 
 from django.contrib.auth import get_user_model
 
-from apps.landmatrix.management.commands.fix_deal_json_fields import (
-    forward_deal,
+from ...management.commands.fix_deal_json_fields import (
     JSON_fields,
+    forward_deal,
     forward_version,
 )
-
-from apps.landmatrix.models.deal import Deal, DealVersion
+from ...models.deal import Deal, DealVersion
 
 
 @pytest.mark.django_db

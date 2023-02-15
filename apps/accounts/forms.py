@@ -1,8 +1,9 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
-from wagtail.users.forms import UserEditForm, UserCreationForm
+from wagtail.users.forms import UserCreationForm, UserEditForm
 
 from apps.landmatrix.models.country import Country, Region
+
 from .models import User
 
 

@@ -1,11 +1,12 @@
 from collections import defaultdict
 
 from django.db import connection
-from django.db.models import Sum, Count, F
+from django.db.models import Count, F, Sum
 
-from apps.graphql.tools import parse_filters
 from apps.landmatrix.models.country import Country
-from apps.landmatrix.models.deal import DealTopInvestors, Deal
+from apps.landmatrix.models.deal import Deal, DealTopInvestors
+
+from ..tools import parse_filters
 
 LONG_COUNTRIES = {
     "United States of America": "USA*",

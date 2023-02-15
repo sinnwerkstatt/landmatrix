@@ -1,8 +1,9 @@
+from wagtailorderable.models import Orderable
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from wagtail.core.fields import RichTextField
 from wagtail.core.rich_text import expand_db_html
-from wagtailorderable.models import Orderable
 
 
 class Message(Orderable, models.Model):

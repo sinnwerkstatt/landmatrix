@@ -1,4 +1,5 @@
 import requests
+
 from django.conf import settings
 from django.contrib import auth
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
@@ -7,7 +8,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
 from django.core import signing
 from django.core.exceptions import ValidationError
-from django.template import Template, Context
+from django.template import Context, Template
 from django.utils.http import urlsafe_base64_decode
 from django.utils.translation import gettext_lazy as _
 

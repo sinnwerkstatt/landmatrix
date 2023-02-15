@@ -1,5 +1,6 @@
 from ariadne import ObjectType
 from ariadne.graphql import GraphQLError
+
 from django.contrib import auth
 from django.contrib.auth.models import AbstractUser
 

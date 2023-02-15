@@ -1,5 +1,6 @@
-from apps.landmatrix.models.investor import InvestorVentureInvolvement, Investor
 from apps.utils import arrayfield_choices_display
+
+from .models.investor import Investor, InvestorVentureInvolvement
 
 
 class InvolvementNetwork:
