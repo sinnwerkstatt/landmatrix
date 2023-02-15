@@ -7,38 +7,26 @@ from django.core.management import BaseCommand
 
 from apps.landmatrix.models.deal import Deal
 
-from ..timer import Timer
-
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
         """Find large deals in db."""
-        with Timer("query deal objects"):
-            list(Deal.objects.all())
 
-        with Timer("query deal objects + prefetch versions"):
-            list(Deal.objects.prefetch_related("versions").all())
+        deals = list(Deal.objects.values())
 
-        with Timer("query deal objects + prefetch workflowinfos"):
-            list(Deal.objects.prefetch_related("workflowinfos").all())
-
-        with Timer("query deal values"):
-            deals = list(Deal.objects.values())
-
-        with Timer("compute sizes"):
-            sizes = sorted(
-                [
-                    {
-                        "id": d["id"],
-                        "total": total_size(d),
-                        "locations": total_size(d["locations"]),
-                        "geojson": total_size(d["geojson"]),
-                    }
-                    for d in deals
-                ],
-                key=lambda d: d["total"],
-                reverse=True,
-            )
+        sizes = sorted(
+            [
+                {
+                    "id": d["id"],
+                    "total": total_size(d),
+                    "locations": total_size(d["locations"]),
+                    "geojson": total_size(d["geojson"]),
+                }
+                for d in deals
+            ],
+            key=lambda d: d["total"],
+            reverse=True,
+        )
 
         print()
         print(f"{'id':<10s}", end="")
@@ -53,18 +41,6 @@ class Command(BaseCommand):
             print(f"{d['locations']/1000/1000:<15.3f}", end="")
             print(f"{d['geojson']/1000/1000:<15.3f}", end="")
             print()
-
-
-# NOTE:
-# python does not type validate list or dict declarations strictly
-# list[int] is valid als long one int value is declared list
-list_of_ints: list[int] = [{}, 23432, "string", Timer("instance")]
-
-# same holds form dict...
-dict_with_int_values: dict[str, int] = {
-    "one": 1,
-    2: "two",
-}
 
 
 # https://stackoverflow.com/questions/71748245

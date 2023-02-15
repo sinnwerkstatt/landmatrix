@@ -47,32 +47,26 @@ def profile_query_runtime(
     with Timer(f"map(model_to_dict, objects.all())"):
         list(map(model_to_dict, model.objects.all()[:limit]))
 
-    # if hasattr(model, "to_dict"):
-    #     with Timer(f"map(lambda x: x.to_dict(), objects.all())"):
-    #         list(map(lambda obj: obj.to_dict(), model.objects.all()[:limit]))
-    # else:
-    #     print("Model does not implement to_dict()")
-
     with Timer(f"objects.values()"):
         list(model.objects.values()[:limit])
 
     # NOTES:
     # i) model.object.values()
     #
-    # Directly maps db fields to values
     # * ForeignKey -> { '<fk_field_name>_id': int }
     # * no ManyToManyField relations
     # * DateTimeField -> { '<dt_field_name>': datetime.datetime }
     dict_db = model.objects.values().first()
 
     # i) map(model_to_dict, model.objects.all())
-    # * ManyToManyField as objs -> { '[m2m_field]': [<related_obj>] }
-    # * DateTimeField -> datetime.datetime
-    # * ForeignKey by id -> { '[fk_field]': id }
+    #
+    # * ForeignKey -> { '<fk_field_name>': id }
+    # * ManyToManyField as objs -> { '<m2m_field_name>': [<related_obj>] }
+    # * DateTimeField -> { '<dt_field_name>': datetime.datetime }
     dict_m2d = model_to_dict(model.objects.first())
 
     # the two dicts are equal except
-    # * dict_db stores fk_fields as '[fk_name]_id' and dict_m2d as '[fk_name]'
+    # * dict_db names fk_fields as '<fk_field_name>_id' and dict_m2d as '<fk_name>'
     # * dict_db does not contain m2m_fields
 
     # compare_dicts(dict_db, dict_m2d)
