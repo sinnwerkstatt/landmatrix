@@ -4,21 +4,22 @@ from datetime import datetime
 from io import BytesIO
 
 import unicodecsv as csv
-from django.http import HttpResponse
-from django.shortcuts import render
 from openpyxl import Workbook
 from openpyxl.utils.exceptions import IllegalCharacterError
 
+from django.http import HttpResponse
+from django.shortcuts import render
+
 from apps.graphql.tools import parse_filters
-from apps.landmatrix.models.deal import Deal
-from apps.landmatrix.models.investor import Investor, InvestorVentureInvolvement
-from apps.landmatrix.models.currency import Currency
-from apps.landmatrix.models.country import Country
 
 # noinspection PyProtectedMember
 from apps.landmatrix.models import choices
+from apps.landmatrix.models.country import Country
+from apps.landmatrix.models.currency import Currency
+from apps.landmatrix.models.deal import Deal
+from apps.landmatrix.models.investor import Investor, InvestorVentureInvolvement
 from apps.landmatrix.utils import InvolvementNetwork
-from apps.utils import qs_values_to_dict, arrayfield_choices_display
+from apps.utils import arrayfield_choices_display, qs_values_to_dict
 
 deal_fields = {
     "id": "Deal ID",

@@ -4,27 +4,26 @@ import csv
 import datetime
 import io
 import json
-import pytz
 import zipfile
 
+import pytz
+from openpyxl.workbook import Workbook
+
 from django.contrib.auth import get_user_model
-from django.db.models import Q, F, Prefetch
+from django.db.models import F, Prefetch, Q
 from django.http import (
-    JsonResponse,
     HttpResponse,
     HttpResponseBadRequest,
     HttpResponseServerError,
+    JsonResponse,
 )
 from django.utils import timezone
-from django.views import View
 from django.utils.timezone import make_aware
-from openpyxl.workbook import Workbook
+from django.views import View
 
 from apps.accounts.models import UserRole
-from apps.api.utils import obj_to_dict, create_user_lookup, create_country_lookup
 from apps.graphql.resolvers.charts import create_statistics
 from apps.graphql.tools import parse_filters
-from apps.landmatrix.management.timer import Timer
 from apps.landmatrix.models.deal import Deal, DealVersion, DealWorkflowInfo
 from apps.landmatrix.models.investor import (
     Investor,
@@ -33,6 +32,8 @@ from apps.landmatrix.models.investor import (
 )
 from apps.message.models import Message
 from apps.utils import qs_values_to_dict
+
+from .to_dict import create_lookups, deal_to_dict, investor_to_dict
 
 User = get_user_model()
 
@@ -174,7 +175,10 @@ class Management(View):
                 "q": Q(current_draft__created_by_id=request.user.id)
                 & ~Q(draft_status=None),
             },
-            "created_by_me": {"staff": False, "q": Q(created_by__id=request.user.id)},
+            "created_by_me": {
+                "staff": False,
+                "q": Q(created_by__id=request.user.id),
+            },
             "modified_by_me": {
                 "staff": False,
                 "q": ~Q(created_by__id=request.user.id)
@@ -191,9 +195,18 @@ class Management(View):
                 "q": Q(workflowinfos__draft_status_before=3)
                 & Q(workflowinfos__from_user_id=request.user.id),
             },
-            "all_items": {"staff": True, "q": Q()},
-            "all_drafts": {"staff": True, "q": ~Q(current_draft=None)},
-            "all_deleted": {"staff": True, "q": Q(status=4)},
+            "all_items": {
+                "staff": True,
+                "q": Q(),
+            },
+            "all_drafts": {
+                "staff": True,
+                "q": ~Q(current_draft=None),
+            },
+            "all_deleted": {
+                "staff": True,
+                "q": Q(status=4),
+            },
         }
 
     def get(self, request, *args, **kwargs):
@@ -217,81 +230,76 @@ class Management(View):
                 }
             )
         elif action in filters.keys():
-            with Timer(f"{action}"):
-                user_map = create_user_lookup()
-                country_map = create_country_lookup()
+            lookups = create_lookups()
+            obj_to_dict = deal_to_dict if is_deal else investor_to_dict
 
-                qs = (Deal if is_deal else Investor).objects.prefetch_related(
-                    Prefetch(
-                        "versions",
-                        queryset=(DealVersion if is_deal else InvestorVersion)
-                        .objects.defer(
-                            "serialized_data",
-                        )
-                        .order_by("created_at"),
-                    ),
-                    Prefetch(
-                        "workflowinfos",
-                        queryset=(
-                            DealWorkflowInfo if is_deal else InvestorWorkflowInfo
-                        ).objects.order_by("-timestamp"),
-                    ),
-                )
+            qs = (Deal if is_deal else Investor).objects.prefetch_related(
+                Prefetch(
+                    "versions",
+                    queryset=(DealVersion if is_deal else InvestorVersion)
+                    .objects.defer("serialized_data")
+                    .order_by("created_at"),
+                ),
+                Prefetch(
+                    "workflowinfos",
+                    queryset=(
+                        DealWorkflowInfo if is_deal else InvestorWorkflowInfo
+                    ).objects.order_by("-timestamp"),
+                ),
+            )
 
-                ret = [
-                    obj_to_dict(obj, user_map, country_map)
-                    for obj in qs.filter(filters[action]["q"])
-                    .order_by("-id")
-                    .distinct()
-                ]
+            ret = [
+                obj_to_dict(obj, lookups)
+                for obj in qs.filter(filters[action]["q"]).order_by("-id").distinct()
+            ]
 
-                if rformat := request.GET.get("format"):
-                    for x in ret:
-                        # safe get if field is undefined or None
-                        x["country"] = (x.get("country", {}) or {}).get("name")
-                        x["created_by"] = (x.get("created_by", {}) or {}).get(
-                            "username"
-                        )
-                        x["modified_by"] = (x.get("modified_by", {}) or {}).get(
-                            "username"
-                        )
+            if rformat := request.GET.get("format"):
+                for x in ret:
+                    self.format_for_export(x)
 
-                        del x["workflowinfos"]
+                if rformat == "csv":
+                    response = HttpResponse(
+                        self._csv_writer(ret), content_type="text/csv"
+                    )
+                    response[
+                        "Content-Disposition"
+                    ] = f'attachment; filename="{action}.csv"'
+                    return response
+                if rformat == "xlsx":
+                    response = HttpResponse(content_type="application/ms-excel")
+                    response[
+                        "Content-Disposition"
+                    ] = f'attachment; filename="{action}.xlsx"'
+                    self._xlsx_writer(ret, response)
+                    return response
 
-                        # remove tzinfo from datetime fields and format as string
-                        for datetime_field in [
-                            "created_at",
-                            "modified_at",
-                            "fully_updated_at",
-                        ]:
-                            if isinstance(x[datetime_field], datetime.datetime):
-                                x[datetime_field] = (
-                                    x[datetime_field]
-                                    .astimezone(pytz.UTC)
-                                    .replace(tzinfo=None)
-                                    .isoformat(timespec="seconds")
-                                    + "Z"
-                                )
-
-                    if rformat == "csv":
-                        response = HttpResponse(
-                            self._csv_writer(ret), content_type="text/csv"
-                        )
-                        response[
-                            "Content-Disposition"
-                        ] = f'attachment; filename="{action}.csv"'
-                        return response
-                    if rformat == "xlsx":
-                        response = HttpResponse(content_type="application/ms-excel")
-                        response[
-                            "Content-Disposition"
-                        ] = f'attachment; filename="{action}.xlsx"'
-                        self._xlsx_writer(ret, response)
-                        return response
-
-                return JsonResponse({"objects": ret})
+            return JsonResponse({"objects": ret})
         else:
             return HttpResponseBadRequest("unknown request")
+
+    @staticmethod
+    def format_for_export(x):
+        # safe get if field is undefined or None
+        x["country"] = (x.get("country", {}) or {}).get("name")
+        x["created_by"] = (x.get("created_by", {}) or {}).get("username")
+        x["modified_by"] = (x.get("modified_by", {}) or {}).get("username")
+
+        del x["workflowinfos"]
+
+        # remove tzinfo from datetime fields and format as string
+        for datetime_field in [
+            "created_at",
+            "modified_at",
+            "fully_updated_at",
+        ]:
+            if isinstance(x[datetime_field], datetime.datetime):
+                x[datetime_field] = (
+                    x[datetime_field]
+                    .astimezone(pytz.UTC)
+                    .replace(tzinfo=None)
+                    .isoformat(timespec="seconds")
+                    + "Z"
+                )
 
     @staticmethod
     def _csv_writer(data):
