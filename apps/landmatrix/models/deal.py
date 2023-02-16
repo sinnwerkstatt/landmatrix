@@ -7,27 +7,22 @@ from django.core import serializers
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
-from django.db.models import Sum, F, Count
+from django.db.models import Count, F, Sum
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
-from apps.landmatrix.models.investor import Investor
-from apps.landmatrix.models.currency import Currency
-from apps.landmatrix.models import choices
-from apps.landmatrix.models.abstracts import (
-    STATUS_CHOICES,
+from . import choices
+from .abstracts import (
     DRAFT_STATUS_CHOICES,
-    WorkflowInfo,
     STATUS,
+    STATUS_CHOICES,
     Version,
+    WorkflowInfo,
 )
-from apps.landmatrix.models.country import Country
-from apps.landmatrix.models.fields import (
-    LocationsField,
-    ArrayField,
-    ContractsField,
-    DatasourcesField,
-)
+from .country import Country
+from .currency import Currency
+from .fields import ArrayField, ContractsField, DatasourcesField, LocationsField
+from .investor import Investor
 
 
 class DealQuerySet(models.QuerySet):
@@ -864,8 +859,6 @@ class Deal(AbstractDealBase):
 
     @staticmethod
     def deserialize_from_version(version: DealVersion) -> "Deal":
-        if version.serialized_data.get("confidential_reason"):
-            del version.serialized_data["confidential_reason"]
         daty = {
             "pk": version.object_id,
             "model": "landmatrix.deal",
@@ -1151,6 +1144,9 @@ class DealWorkflowInfo(WorkflowInfo):
         blank=True,
     )
 
+    # WARNING
+    # Do not use to map large query sets!
+    # Takes tons of memory storing related deal and deal_version objects.
     def to_dict(self) -> dict:
         d = super().to_dict()
         d.update({"deal": self.deal, "deal_version": self.deal_version})

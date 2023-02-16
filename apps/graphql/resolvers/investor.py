@@ -1,21 +1,22 @@
 from ariadne.graphql import GraphQLError
 
 from apps.accounts.models import UserRole
-from apps.graphql.tools import get_fields, parse_filters
 from apps.landmatrix.models.deal import Deal
 from apps.landmatrix.models.investor import (
     Investor,
+    InvestorVentureInvolvement,
     InvestorVersion,
     InvestorWorkflowInfo,
-    InvestorVentureInvolvement,
 )
 from apps.landmatrix.utils import InvolvementNetwork
 from apps.utils import qs_values_to_dict
+
+from ..tools import get_fields, parse_filters
 from .generics import (
     add_object_comment,
     change_object_status,
-    object_edit,
     object_delete,
+    object_edit,
 )
 
 

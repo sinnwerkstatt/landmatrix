@@ -24,8 +24,11 @@ sudo apt install gdal-bin postgresql-13-postgis-3
 
 ### Add i18n strings to Frontend
 
-1. Make sure the string is encapsulated by `vue-i18n`-helper: `$t('string')`
-2. Copy string to `/config/frontend_i18n_strings.py`
+1. Make sure the string is encapsulated by `$_('string')`
+2. ```shell
+   cd plumbing
+   poetry run python ./find_i18n.py
+   ```
 3. `poetry run ./manage.py make_messages -a`
    **Watch out!**  Don't use Django's `makemessages`.
 4. `poetry run doit compilemessages`

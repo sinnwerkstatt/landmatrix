@@ -2,7 +2,7 @@ from django.utils import translation
 
 from apps.landmatrix.forms.deal import DealForm
 from apps.landmatrix.forms.deal_submodels import get_submodels_fields
-from apps.landmatrix.forms.investor import InvestorVentureInvolvementForm, InvestorForm
+from apps.landmatrix.forms.investor import InvestorForm, InvestorVentureInvolvementForm
 
 
 def resolve_formfields(_obj, _info, language="en"):

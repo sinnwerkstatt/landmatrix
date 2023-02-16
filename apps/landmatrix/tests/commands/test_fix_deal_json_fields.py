@@ -2,13 +2,16 @@ import pytest
 
 from django.contrib.auth import get_user_model
 
-from apps.landmatrix.management.commands.fix_deal_json_fields import (
-    forward_deal,
+from apps.accounts.models import UserModel
+
+from ...management.commands.fix_deal_json_fields import (
     JSON_fields,
+    forward_deal,
     forward_version,
 )
+from ...models.deal import Deal, DealVersion
 
-from apps.landmatrix.models.deal import Deal, DealVersion
+User: UserModel = get_user_model()
 
 
 @pytest.mark.django_db
@@ -29,8 +32,6 @@ def test_fix_json_fields_deal():
 
 @pytest.mark.django_db()
 def test_fix_json_fields_version():
-
-    User = get_user_model()
     user = User.objects.create()
     modifier_fields = {"modified_at": "2000-01-01", "modified_by": user.id}
 

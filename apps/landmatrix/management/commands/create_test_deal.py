@@ -1,12 +1,8 @@
-from django.contrib.gis.geos import Point
 from django.core.management.base import BaseCommand
 
-from apps.landmatrix.models import (
-    Deal,
-    Country,
-    Investor,
-    InvestorVentureInvolvement,
-)
+from apps.landmatrix.models.country import Country
+from apps.landmatrix.models.deal import Deal
+from apps.landmatrix.models.investor import Investor, InvestorVentureInvolvement
 
 
 class Command(BaseCommand):

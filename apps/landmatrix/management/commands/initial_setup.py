@@ -5,9 +5,10 @@ from django.core.management.base import BaseCommand
 from django.db.transaction import atomic
 from wagtail.core.models import Page, Site
 
+from apps.accounts.models import UserModel
 from apps.wagtailcms.models import WagtailPage, WagtailRootPage
 
-User = get_user_model()
+User: UserModel = get_user_model()
 
 
 def create_user(name, email, password, firstname, lastname, superuser=False):

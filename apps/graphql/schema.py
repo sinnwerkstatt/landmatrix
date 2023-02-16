@@ -1,73 +1,60 @@
 import pathlib
 
-from ariadne import (
-    ObjectType,
-    load_schema_from_path,
-    make_executable_schema,
-)
+from ariadne import ObjectType, load_schema_from_path, make_executable_schema
 from ariadne_django.scalars import date_scalar
 
-from apps.graphql.resolvers.blog import (
-    resolve_blogpages,
-    resolve_blogpage,
-    resolve_blogcategories,
-)
-from apps.graphql.resolvers.charts import (
-    resolve_web_of_transnational_deals,
+from .resolvers.blog import resolve_blogcategories, resolve_blogpage, resolve_blogpages
+from .resolvers.charts import (
     country_investments_and_rankings,
     global_rankings,
-    resolve_statistics,
     resolve_deal_aggregations,
     resolve_global_map_of_investments,
+    resolve_statistics,
+    resolve_web_of_transnational_deals,
 )
-from apps.graphql.resolvers.deal import (
-    resolve_deal,
-    resolve_deals,
-    resolve_dealversions,
+from .resolvers.deal import (
     resolve_add_deal_comment,
     resolve_change_deal_status,
-    resolve_deal_edit,
-    resolve_upload_datasource_file,
+    resolve_deal,
     resolve_deal_delete,
+    resolve_deal_edit,
+    resolve_deals,
+    resolve_dealversions,
     resolve_set_confidential,
+    resolve_upload_datasource_file,
 )
-from apps.graphql.resolvers.formfields import resolve_formfields
-from apps.graphql.resolvers.generics import (
-    resolve_resolve_workflow_info,
-    resolve_object_copy,
+from .resolvers.formfields import resolve_formfields
+from .resolvers.generics import (
     resolve_add_workflow_info_reply,
+    resolve_object_copy,
+    resolve_resolve_workflow_info,
 )
-from apps.graphql.resolvers.investor import (
-    resolve_investor,
-    resolve_investors,
-    # resolve_involvements,
-    resolve_investorversions,
-    resolve_investor_edit,
+from .resolvers.investor import (  # resolve_involvements,
     resolve_add_investor_comment,
     resolve_change_investor_status,
+    resolve_investor,
     resolve_investor_delete,
+    resolve_investor_edit,
+    resolve_investors,
+    resolve_investorversions,
 )
-from apps.graphql.resolvers.misc import (
-    resolve_countries,
-    resolve_regions,
+from .resolvers.misc import (
     resolve_chart_descriptions,
+    resolve_countries,
     resolve_currencies,
     resolve_markers,
+    resolve_regions,
 )
-from apps.graphql.resolvers.user import (
-    resolve_user,
-    resolve_users,
-    user_type,
-)
-from apps.graphql.resolvers.user_auth import (
+from .resolvers.user import resolve_user, resolve_users, user_type
+from .resolvers.user_auth import (
     resolve_login,
     resolve_logout,
-    resolve_register,
     resolve_password_reset,
     resolve_password_reset_confirm,
+    resolve_register,
     resolve_register_confirm,
 )
-from apps.graphql.scalars import geopoint_scalar, datetime_scalar
+from .scalars import datetime_scalar, geopoint_scalar
 
 schema_folder = str(pathlib.Path(__file__).parent.joinpath("schema"))
 type_defs = load_schema_from_path(schema_folder)

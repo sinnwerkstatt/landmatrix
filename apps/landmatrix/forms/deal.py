@@ -1,25 +1,25 @@
 from django.forms import ModelForm
 from django.utils.translation import gettext as _
 
-from apps.landmatrix.forms.fields import (
+from ..models.choices import (
+    ANIMALS_CHOICES,
+    CROPS_CHOICES,
+    IMPLEMENTATION_STATUS_CHOICES,
+    INTENTION_CHOICES,
+    MINERALS_CHOICES,
+    NEGOTIATION_STATUS_CHOICES,
+)
+from ..models.deal import Deal
+from .fields import (
+    JSONActorsField,
     JSONDateAreaChoicesField,
     JSONDateAreaField,
     JSONDateChoiceField,
-    JSONActorsField,
     JSONExportsField,
-    JSONLeaseField,
     JSONJobsField,
+    JSONLeaseField,
 )
-from apps.landmatrix.forms.formfieldhelper import JSONFormOutputMixin
-from apps.landmatrix.models.choices import (
-    INTENTION_CHOICES,
-    NEGOTIATION_STATUS_CHOICES,
-    IMPLEMENTATION_STATUS_CHOICES,
-    CROPS_CHOICES,
-    ANIMALS_CHOICES,
-    MINERALS_CHOICES,
-)
-from apps.landmatrix.models.deal import Deal
+from .formfieldhelper import JSONFormOutputMixin
 
 
 class DealForm(JSONFormOutputMixin, ModelForm):

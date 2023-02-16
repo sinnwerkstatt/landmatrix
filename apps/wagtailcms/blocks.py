@@ -12,8 +12,10 @@ from wagtail.embeds.blocks import EmbedBlock
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.snippets.blocks import SnippetChooserBlock
 
-from apps.landmatrix.models.country import Country as DataCountry, Region as DataRegion
-from apps.wagtailcms.twitter import TwitterTimeline
+from apps.landmatrix.models.country import Country as DataCountry
+from apps.landmatrix.models.country import Region as DataRegion
+
+from .twitter import TwitterTimeline
 
 
 class RichTextBlock(blocks.RichTextBlock):

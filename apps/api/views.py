@@ -4,32 +4,38 @@ import csv
 import datetime
 import io
 import json
-import pytz
 import zipfile
 
+import pytz
+from openpyxl.workbook import Workbook
+
 from django.contrib.auth import get_user_model
-from django.db.models import Q, F
+from django.db.models import F, Prefetch, Q
 from django.http import (
-    JsonResponse,
     HttpResponse,
     HttpResponseBadRequest,
     HttpResponseServerError,
+    JsonResponse,
 )
 from django.utils import timezone
-from django.views import View
 from django.utils.timezone import make_aware
-from openpyxl.workbook import Workbook
+from django.views import View
 
-from apps.accounts.models import UserRole
+from apps.accounts.models import UserModel, UserRole
 from apps.graphql.resolvers.charts import create_statistics
 from apps.graphql.tools import parse_filters
-from apps.landmatrix.models.country import Country
-from apps.landmatrix.models.deal import Deal, DealVersion
-from apps.landmatrix.models.investor import Investor, InvestorVersion
+from apps.landmatrix.models.deal import Deal, DealVersion, DealWorkflowInfo
+from apps.landmatrix.models.investor import (
+    Investor,
+    InvestorVersion,
+    InvestorWorkflowInfo,
+)
 from apps.message.models import Message
 from apps.utils import qs_values_to_dict
 
-User = get_user_model()
+from .to_dict import create_lookups, deal_to_dict, investor_to_dict
+
+User: UserModel = get_user_model()
 
 
 def gis_export(request):
@@ -91,18 +97,6 @@ def messages_json(request):
 class Management(View):
     def __init__(self):
         super().__init__()
-        self.users_map = {
-            u.id: {"id": u.id, "username": u.username, "full_name": u.full_name}
-            for u in User.objects.all()
-        }
-        self.countries_map = {
-            c.id: {
-                "id": c.id,
-                "name": c.name,
-                "region": {"id": c.region_id} if c.region_id else None,
-            }
-            for c in Country.objects.all()
-        }
 
     @staticmethod
     def filters(request, is_deal=True):
@@ -181,7 +175,10 @@ class Management(View):
                 "q": Q(current_draft__created_by_id=request.user.id)
                 & ~Q(draft_status=None),
             },
-            "created_by_me": {"staff": False, "q": Q(created_by__id=request.user.id)},
+            "created_by_me": {
+                "staff": False,
+                "q": Q(created_by__id=request.user.id),
+            },
             "modified_by_me": {
                 "staff": False,
                 "q": ~Q(created_by__id=request.user.id)
@@ -198,9 +195,18 @@ class Management(View):
                 "q": Q(workflowinfos__draft_status_before=3)
                 & Q(workflowinfos__from_user_id=request.user.id),
             },
-            "all_items": {"staff": True, "q": Q()},
-            "all_drafts": {"staff": True, "q": ~Q(current_draft=None)},
-            "all_deleted": {"staff": True, "q": Q(status=4)},
+            "all_items": {
+                "staff": True,
+                "q": Q(),
+            },
+            "all_drafts": {
+                "staff": True,
+                "q": ~Q(current_draft=None),
+            },
+            "all_deleted": {
+                "staff": True,
+                "q": Q(status=4),
+            },
         }
 
     def get(self, request, *args, **kwargs):
@@ -208,145 +214,92 @@ class Management(View):
             return HttpResponseServerError("unauthorized")
 
         is_deal = not request.GET.get("model") == "investor"
-        Obj = Deal if is_deal else Investor
         filters = self.filters(request, is_deal)
 
         action = request.GET.get("action")
         if action == "counts":
             return JsonResponse(
                 {
-                    metric: Obj.objects.filter(filters[metric]["q"]).distinct().count()
+                    metric: (Deal if is_deal else Investor)
+                    .objects.filter(filters[metric]["q"])
+                    .distinct()
+                    .count()
                     for metric in filters.keys()
                     if request.user.role > UserRole.REPORTER
                     or not filters[metric]["staff"]
                 }
             )
-        elif action == "all_items":
-            # from timeit import default_timer
-            # start = default_timer()
-            ret = [self._obj_dict(obj) for obj in Obj.objects.all().distinct()]
-            # print('duration', default_timer() - start)
         elif action in filters.keys():
+            lookups = create_lookups()
+            obj_to_dict = deal_to_dict if is_deal else investor_to_dict
+
+            qs = (Deal if is_deal else Investor).objects.prefetch_related(
+                Prefetch(
+                    "versions",
+                    queryset=(DealVersion if is_deal else InvestorVersion)
+                    .objects.defer("serialized_data")
+                    .order_by("created_at"),
+                ),
+                Prefetch(
+                    "workflowinfos",
+                    queryset=(
+                        DealWorkflowInfo if is_deal else InvestorWorkflowInfo
+                    ).objects.order_by("-timestamp"),
+                ),
+            )
+
             ret = [
-                self._obj_dict(obj)
-                for obj in Obj.objects.filter(filters[action]["q"]).distinct()
+                obj_to_dict(obj, lookups)
+                for obj in qs.filter(filters[action]["q"]).order_by("-id").distinct()
             ]
+
+            if rformat := request.GET.get("format"):
+                for x in ret:
+                    self.format_for_export(x)
+
+                if rformat == "csv":
+                    response = HttpResponse(
+                        self._csv_writer(ret), content_type="text/csv"
+                    )
+                    response[
+                        "Content-Disposition"
+                    ] = f'attachment; filename="{action}.csv"'
+                    return response
+                if rformat == "xlsx":
+                    response = HttpResponse(content_type="application/ms-excel")
+                    response[
+                        "Content-Disposition"
+                    ] = f'attachment; filename="{action}.xlsx"'
+                    self._xlsx_writer(ret, response)
+                    return response
+
+            return JsonResponse({"objects": ret})
         else:
             return HttpResponseBadRequest("unknown request")
 
-        if rformat := request.GET.get("format"):
-            for x in ret:
-                # safe get if field is undefined or None
-                x["country"] = (x.get("country", {}) or {}).get("name")
-                x["created_by"] = (x.get("created_by", {}) or {}).get("username")
-                x["modified_by"] = (x.get("modified_by", {}) or {}).get("username")
+    @staticmethod
+    def format_for_export(x):
+        # safe get if field is undefined or None
+        x["country"] = (x.get("country", {}) or {}).get("name")
+        x["created_by"] = (x.get("created_by", {}) or {}).get("username")
+        x["modified_by"] = (x.get("modified_by", {}) or {}).get("username")
 
-                del x["workflowinfos"]
+        del x["workflowinfos"]
 
-                # remove tzinfo from datetime fields and format as string
-                for datetime_field in ["created_at", "modified_at", "fully_updated_at"]:
-                    if isinstance(x[datetime_field], datetime.datetime):
-                        x[datetime_field] = (
-                            x[datetime_field]
-                            .astimezone(pytz.UTC)
-                            .replace(tzinfo=None)
-                            .isoformat(timespec="seconds")
-                            + "Z"
-                        )
-
-            if rformat == "csv":
-                response = HttpResponse(self._csv_writer(ret), content_type="text/csv")
-                response["Content-Disposition"] = f'attachment; filename="{action}.csv"'
-                return response
-            if rformat == "xlsx":
-                response = HttpResponse(content_type="application/ms-excel")
-                response[
-                    "Content-Disposition"
-                ] = f'attachment; filename="{action}.xlsx"'
-                self._xlsx_writer(ret, response)
-                return response
-
-        return JsonResponse({"objects": ret})
-
-    def _obj_dict(self, obj: Deal | Investor):
-        is_deal = isinstance(obj, Deal)
-        obj_dict = {
-            "id": obj.id,
-            "status": obj.status,
-            "draft_status": obj.draft_status,
-            "workflowinfos": [
-                {
-                    "id": w.id,
-                    "from_user": self.users_map.get(w.from_user_id),
-                    "to_user": self.users_map.get(w.to_user_id),
-                    "draft_status_before": w.draft_status_before,
-                    "draft_status_after": w.draft_status_after,
-                    "obj_version_id": w.deal_version_id
-                    if is_deal
-                    else w.investor_version_id,
-                    "timestamp": w.timestamp,
-                    "comment": w.comment,
-                    "resolved": w.resolved,
-                    "replies": w.replies or [],
-                    "__typename": "DealWorkflowInfo"
-                    if is_deal
-                    else "InvestorWorkflowInfo",
-                }
-                for w in obj.workflowinfos.order_by("-id")
-            ],
-        }
-        if obj.current_draft and (draft := obj.current_draft.serialized_data):
-            obj_dict.update(
-                {
-                    "current_draft_id": obj.current_draft_id,
-                    "country": self.countries_map[draft["country"]]
-                    if draft["country"]
-                    else None,
-                    # TODO: @version_overhaul hacky solution to fix modified fields
-                    # creation time
-                    "created_at": obj.created_at,
-                    # creator
-                    "created_by": self.users_map.get(obj.created_by_id),
-                    # last modification time of latest version
-                    "modified_at": obj.current_draft.modified_at,
-                    # creator or latest version
-                    "modified_by": self.users_map.get(obj.current_draft.created_by_id),
-                }
-            )
-            if is_deal:
-                obj_dict["deal_size"] = draft.get("deal_size")
-                obj_dict["fully_updated_at"] = draft["fully_updated_at"]
-            else:
-                obj_dict["name"] = draft.get("name")
-
-        else:
-            newest_version = obj.versions.first()
-            obj_dict.update(
-                {
-                    "country": self.countries_map[obj.country_id]
-                    if obj.country_id
-                    else None,
-                    # TODO: @version_overhaul hacky solution to fix modified fields
-                    "created_at": obj.created_at,
-                    "created_by": self.users_map.get(obj.created_by_id),
-                    "modified_at": newest_version.modified_at,
-                    "modified_by": self.users_map.get(newest_version.created_by_id),
-                }
-            )
-            if is_deal:
-                obj_dict["deal_size"] = int(obj.deal_size)
-                obj_dict["fully_updated_at"] = obj.fully_updated_at
-            else:
-                obj_dict["name"] = obj.name
-
-        if not is_deal:
-            # TODO not performant
-            obj_dict["deals"] = list(
-                Deal.objects.filter(operating_company_id=obj.id)
-                .order_by("id")
-                .values_list("id", "country__region_id")
-            )
-        return obj_dict
+        # remove tzinfo from datetime fields and format as string
+        for datetime_field in [
+            "created_at",
+            "modified_at",
+            "fully_updated_at",
+        ]:
+            if isinstance(x[datetime_field], datetime.datetime):
+                x[datetime_field] = (
+                    x[datetime_field]
+                    .astimezone(pytz.UTC)
+                    .replace(tzinfo=None)
+                    .isoformat(timespec="seconds")
+                    + "Z"
+                )
 
     @staticmethod
     def _csv_writer(data):

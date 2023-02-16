@@ -23,7 +23,7 @@ def task_full_update():
 
 
 def task_initial_setup():
-    fixtures = " ".join(["countries_and_regions", "users_and_groups"])
+    fixtures = " ".join(["countries_and_regions", "users_and_groups", "currencies"])
     return {
         "task_dep": ["update"],
         "actions": [
@@ -67,6 +67,22 @@ def task_reset_db_with_dump():
     return {
         "task_dep": ["reset_db"],
         "actions": [replace_db, reset_site_to_localhost],
+    }
+
+
+def task_test_watch():
+    from doit.action import CmdAction
+
+    def test_watch(files):
+        return (
+            f"ptw {' '.join(files) if files else './apps'} --clear "
+            f"-- --no-cov -p no:warnings"
+        )
+
+    return {
+        "actions": [CmdAction(test_watch)],
+        "pos_arg": "files",
+        "verbosity": 2,
     }
 
 

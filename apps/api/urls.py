@@ -1,7 +1,7 @@
 from django.urls import path
 
 from .export import DataDownload
-from .views import gis_export, messages_json, Management, CaseStatistics
+from .views import CaseStatistics, Management, gis_export, messages_json
 
 
 def data_download(request):

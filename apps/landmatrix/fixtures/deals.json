@@ -1,0 +1,565 @@
+[
+{
+    "model": "landmatrix.deal",
+    "pk": 1,
+    "fields": {
+        "locations": [
+            {
+                "id": "291t4hIP",
+                "name": "Kimberley",
+                "areas": {
+                    "type": "FeatureCollection",
+                    "features": [
+                        {
+                            "type": "Feature",
+                            "geometry": {
+                                "type": "Polygon",
+                                "coordinates": [
+                                    [
+                                        [
+                                            24.77190369460439,
+                                            -28.59806127616794
+                                        ],
+                                        [
+                                            24.78068335307495,
+                                            -28.687955655147668
+                                        ],
+                                        [
+                                            24.80907091546308,
+                                            -28.696427435234256
+                                        ],
+                                        [
+                                            24.813460744698347,
+                                            -28.68898257409542
+                                        ],
+                                        [
+                                            24.827508198251223,
+                                            -28.70181821103658
+                                        ],
+                                        [
+                                            24.859992934593663,
+                                            -28.649695751095557
+                                        ],
+                                        [
+                                            24.855895760640777,
+                                            -28.643788615500554
+                                        ],
+                                        [
+                                            24.862919487417173,
+                                            -28.622725685975453
+                                        ],
+                                        [
+                                            24.852969207817267,
+                                            -28.624780792018235
+                                        ],
+                                        [
+                                            24.835117235593742,
+                                            -28.599346023793743
+                                        ],
+                                        [
+                                            24.80848560489838,
+                                            -28.599089075525058
+                                        ],
+                                        [
+                                            24.79941329114547,
+                                            -28.583928015817648
+                                        ],
+                                        [
+                                            24.77190369460439,
+                                            -28.59806127616794
+                                        ]
+                                    ]
+                                ]
+                            },
+                            "properties": {
+                                "id": "291t4hIP",
+                                "date": "2025",
+                                "name": "Kimberley",
+                                "type": "intended_area",
+                                "current": true
+                            }
+                        },
+                        {
+                            "type": "Feature",
+                            "geometry": {
+                                "type": "Polygon",
+                                "coordinates": [
+                                    [
+                                        [
+                                            25.1708802000287,
+                                            0.477036809464009
+                                        ],
+                                        [
+                                            25.18208379318143,
+                                            0.471266718569901
+                                        ],
+                                        [
+                                            25.183141643178683,
+                                            0.47886400491381
+                                        ],
+                                        [
+                                            25.17472692729144,
+                                            0.480691200363611
+                                        ],
+                                        [
+                                            25.17164954548125,
+                                            0.480402695818905
+                                        ],
+                                        [
+                                            25.17015893866694,
+                                            0.479681434457142
+                                        ],
+                                        [
+                                            25.17015893866694,
+                                            0.479681434457142
+                                        ],
+                                        [
+                                            25.1708802000287,
+                                            0.477036809464009
+                                        ]
+                                    ]
+                                ]
+                            },
+                            "properties": {
+                                "id": "291t4hIP",
+                                "date": "2023",
+                                "name": "Kimberley",
+                                "type": "production_area",
+                                "current": true
+                            }
+                        }
+                    ]
+                },
+                "point": {
+                    "lat": -28.7797,
+                    "lng": 24.80968
+                },
+                "comment": "A beacon",
+                "description": "At Beaconsfield",
+                "facility_name": "Beacon",
+                "level_of_accuracy": "EXACT_LOCATION"
+            }
+        ],
+        "country": 710,
+        "intended_size": "4000.00",
+        "contract_size": [
+            {
+                "area": 4000,
+                "date": "2020",
+                "current": true
+            }
+        ],
+        "production_size": [
+            {
+                "area": 2000,
+                "date": "2023",
+                "current": true
+            }
+        ],
+        "land_area_comment": "This is a comment",
+        "intention_of_investment": [
+            {
+                "area": 2000,
+                "date": "2023",
+                "choices": [
+                    "RENEWABLE_ENERGY"
+                ],
+                "current": true
+            }
+        ],
+        "intention_of_investment_comment": "This is a comment",
+        "nature_of_deal": [
+            "OTHER"
+        ],
+        "nature_of_deal_comment": "This is a comment",
+        "negotiation_status": [
+            {
+                "date": "2023",
+                "choice": "ORAL_AGREEMENT",
+                "current": true
+            }
+        ],
+        "negotiation_status_comment": "This is a comment",
+        "implementation_status": [
+            {
+                "date": "2023",
+                "choice": "IN_OPERATION",
+                "current": true
+            }
+        ],
+        "implementation_status_comment": "This is a comment",
+        "purchase_price": "2000000.00",
+        "purchase_price_currency": 153,
+        "purchase_price_type": "PER_HA",
+        "purchase_price_area": "1000.00",
+        "purchase_price_comment": "This is a comment",
+        "annual_leasing_fee": "200000.00",
+        "annual_leasing_fee_currency": 153,
+        "annual_leasing_fee_type": "PER_HA",
+        "annual_leasing_fee_area": "200.00",
+        "annual_leasing_fee_comment": "This is a comment",
+        "contract_farming": true,
+        "on_the_lease_state": true,
+        "on_the_lease": [
+            {
+                "area": 2000,
+                "date": "2023",
+                "current": true,
+                "farmers": 5,
+                "households": 2
+            },
+            {
+                "area": 4000,
+                "date": "2026",
+                "farmers": 10,
+                "households": 5
+            }
+        ],
+        "off_the_lease_state": false,
+        "off_the_lease": null,
+        "contract_farming_comment": "This is a comment",
+        "contracts": [
+            {
+                "id": "wL5KiPgd",
+                "date": "2020",
+                "number": "0123456789",
+                "comment": "This is a comment",
+                "expiration_date": "2035",
+                "agreement_duration": 15
+            }
+        ],
+        "total_jobs_created": true,
+        "total_jobs_planned": 200,
+        "total_jobs_planned_employees": 400,
+        "total_jobs_planned_daily_workers": 50,
+        "total_jobs_current": [
+            {
+                "date": "2023",
+                "jobs": 200,
+                "current": true,
+                "workers": 200,
+                "employees": 200
+            },
+            {
+                "date": "2025",
+                "jobs": 400,
+                "workers": 400,
+                "employees": 400
+            }
+        ],
+        "total_jobs_created_comment": "This is a comment",
+        "foreign_jobs_created": false,
+        "foreign_jobs_planned": null,
+        "foreign_jobs_planned_employees": null,
+        "foreign_jobs_planned_daily_workers": null,
+        "foreign_jobs_current": null,
+        "foreign_jobs_created_comment": "This is a comment",
+        "domestic_jobs_created": true,
+        "domestic_jobs_planned": 200,
+        "domestic_jobs_planned_employees": 200,
+        "domestic_jobs_planned_daily_workers": 50,
+        "domestic_jobs_current": null,
+        "domestic_jobs_created_comment": "This is a comment",
+        "operating_company": 1,
+        "involved_actors": [
+            {
+                "name": "Government",
+                "role": "GOVERNMENT_OR_STATE_INSTITUTIONS"
+            }
+        ],
+        "project_name": "BEACON",
+        "investment_chain_comment": "This is a comment",
+        "datasources": [
+            {
+                "id": "SWPJnFwT",
+                "date": "2020",
+                "file": "uploads/blank.pdf",
+                "name": "BEACON",
+                "type": "CONTRACT",
+                "email": "info@beacon.com",
+                "phone": "",
+                "comment": "This is a comment",
+                "company": "BEACON",
+                "file_not_public": true,
+                "publication_title": "Contract",
+                "open_land_contracts_id": "0123456789",
+                "includes_in_country_verified_information": true
+            }
+        ],
+        "name_of_community": [
+            "BEACON COMMUNITY"
+        ],
+        "name_of_indigenous_people": [
+            "BEACONS"
+        ],
+        "people_affected_comment": "This is a comment",
+        "recognition_status": [
+            "INDIGENOUS_RIGHTS_RECOGNIZED",
+            "COMMUNITY_RIGHTS_NOT_RECOGNIZED"
+        ],
+        "recognition_status_comment": "This is a comment",
+        "community_consultation": "NOT_CONSULTED",
+        "community_consultation_comment": "This is a comment",
+        "community_reaction": "REJECTION",
+        "community_reaction_comment": "This is a comment",
+        "land_conflicts": true,
+        "land_conflicts_comment": "This is a comment",
+        "displacement_of_people": false,
+        "displaced_people": null,
+        "displaced_households": null,
+        "displaced_people_from_community_land": null,
+        "displaced_people_within_community_land": null,
+        "displaced_households_from_fields": null,
+        "displaced_people_on_completion": null,
+        "displacement_of_people_comment": "This is a comment",
+        "negative_impacts": [
+            "OTHER"
+        ],
+        "negative_impacts_comment": "This is a comment",
+        "promised_compensation": "Money",
+        "received_compensation": "NULL",
+        "promised_benefits": [
+            "ROADS"
+        ],
+        "promised_benefits_comment": "This is a comment",
+        "materialized_benefits": [
+            "ROADS"
+        ],
+        "materialized_benefits_comment": "This is a comment",
+        "presence_of_organizations": "NGOs",
+        "former_land_owner": [
+            "COMMUNITY"
+        ],
+        "former_land_owner_comment": "This is a comment",
+        "former_land_use": [
+            "PASTORALISM"
+        ],
+        "former_land_use_comment": "This is a comment",
+        "former_land_cover": [
+            "RANGELAND"
+        ],
+        "former_land_cover_comment": "This is a comment",
+        "crops": [
+            {
+                "area": 2000,
+                "date": "2023",
+                "yield": 4200,
+                "export": 20,
+                "choices": [
+                    "ALF"
+                ],
+                "current": true
+            }
+        ],
+        "crops_comment": "This is a comment",
+        "animals": null,
+        "animals_comment": "",
+        "mineral_resources": null,
+        "mineral_resources_comment": "",
+        "contract_farming_crops": null,
+        "contract_farming_crops_comment": "",
+        "contract_farming_animals": null,
+        "contract_farming_animals_comment": "",
+        "has_domestic_use": true,
+        "domestic_use": 50.0,
+        "has_export": true,
+        "export": 50.0,
+        "export_country1": 276,
+        "export_country1_ratio": 100.0,
+        "export_country2": null,
+        "export_country2_ratio": null,
+        "export_country3": null,
+        "export_country3_ratio": null,
+        "use_of_produce_comment": "This is a comment",
+        "in_country_processing": false,
+        "in_country_processing_comment": "This is a comment",
+        "in_country_processing_facilities": "BEACONS",
+        "in_country_end_products": "BEACONS",
+        "water_extraction_envisaged": true,
+        "water_extraction_envisaged_comment": "This is a comment",
+        "source_of_water_extraction": [
+            "GROUNDWATER"
+        ],
+        "source_of_water_extraction_comment": "This is a comment",
+        "how_much_do_investors_pay_comment": "This is a comment",
+        "water_extraction_amount": 50,
+        "water_extraction_amount_comment": "This is a comment",
+        "use_of_irrigation_infrastructure": false,
+        "use_of_irrigation_infrastructure_comment": "This is a comment",
+        "water_footprint": "This is a comment",
+        "gender_related_information": "This is a comment",
+        "overall_comment": "This is a comment",
+        "fully_updated": false,
+        "confidential": false,
+        "confidential_comment": null,
+        "is_public": true,
+        "has_known_investor": true,
+        "not_public_reason": "",
+        "current_contract_size": "4000.00",
+        "current_production_size": "2000.00",
+        "current_intention_of_investment": [
+            "RENEWABLE_ENERGY"
+        ],
+        "current_negotiation_status": "ORAL_AGREEMENT",
+        "current_implementation_status": "IN_OPERATION",
+        "current_crops": [
+            "ALF"
+        ],
+        "current_animals": null,
+        "current_mineral_resources": null,
+        "deal_size": "4000.00",
+        "initiation_year": 2023,
+        "forest_concession": false,
+        "transnational": true,
+        "geojson": {
+            "type": "FeatureCollection",
+            "features": [
+                {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Point",
+                        "coordinates": [
+                            24.80968,
+                            -28.7797
+                        ]
+                    },
+                    "properties": {
+                        "id": "291t4hIP",
+                        "name": "Kimberley",
+                        "type": "point",
+                        "spatial_accuracy": "EXACT_LOCATION"
+                    }
+                },
+                {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Polygon",
+                        "coordinates": [
+                            [
+                                [
+                                    24.77190369460439,
+                                    -28.59806127616794
+                                ],
+                                [
+                                    24.78068335307495,
+                                    -28.687955655147668
+                                ],
+                                [
+                                    24.80907091546308,
+                                    -28.696427435234256
+                                ],
+                                [
+                                    24.813460744698347,
+                                    -28.68898257409542
+                                ],
+                                [
+                                    24.827508198251223,
+                                    -28.70181821103658
+                                ],
+                                [
+                                    24.859992934593663,
+                                    -28.649695751095557
+                                ],
+                                [
+                                    24.855895760640777,
+                                    -28.643788615500554
+                                ],
+                                [
+                                    24.862919487417173,
+                                    -28.622725685975453
+                                ],
+                                [
+                                    24.852969207817267,
+                                    -28.624780792018235
+                                ],
+                                [
+                                    24.835117235593742,
+                                    -28.599346023793743
+                                ],
+                                [
+                                    24.80848560489838,
+                                    -28.599089075525058
+                                ],
+                                [
+                                    24.79941329114547,
+                                    -28.583928015817648
+                                ],
+                                [
+                                    24.77190369460439,
+                                    -28.59806127616794
+                                ]
+                            ]
+                        ]
+                    },
+                    "properties": {
+                        "id": "291t4hIP",
+                        "date": "2025",
+                        "name": "Kimberley",
+                        "type": "intended_area",
+                        "current": true
+                    }
+                },
+                {
+                    "type": "Feature",
+                    "geometry": {
+                        "type": "Polygon",
+                        "coordinates": [
+                            [
+                                [
+                                    25.1708802000287,
+                                    0.477036809464009
+                                ],
+                                [
+                                    25.18208379318143,
+                                    0.471266718569901
+                                ],
+                                [
+                                    25.183141643178683,
+                                    0.47886400491381
+                                ],
+                                [
+                                    25.17472692729144,
+                                    0.480691200363611
+                                ],
+                                [
+                                    25.17164954548125,
+                                    0.480402695818905
+                                ],
+                                [
+                                    25.17015893866694,
+                                    0.479681434457142
+                                ],
+                                [
+                                    25.17015893866694,
+                                    0.479681434457142
+                                ],
+                                [
+                                    25.1708802000287,
+                                    0.477036809464009
+                                ]
+                            ]
+                        ]
+                    },
+                    "properties": {
+                        "id": "291t4hIP",
+                        "date": "2023",
+                        "name": "Kimberley",
+                        "type": "production_area",
+                        "current": true
+                    }
+                }
+            ]
+        },
+        "status": 1,
+        "draft_status": 1,
+        "current_draft": 1,
+        "created_at": "2023-02-01T11:24:47.852Z",
+        "created_by": 12,
+        "modified_at": "2023-02-01T12:31:23.364Z",
+        "modified_by": 12,
+        "fully_updated_at": null,
+        "parent_companies": [],
+        "top_investors": []
+    }
+}
+]

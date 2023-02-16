@@ -1,7 +1,7 @@
-from django.db.models import Q
-
 # noinspection PyPackageRequirements
-from graphql import GraphQLResolveInfo, FieldNode
+from graphql import FieldNode, GraphQLResolveInfo
+
+from django.db.models import Q
 
 
 def get_fields(info: GraphQLResolveInfo, recursive=False, exclude=None):
