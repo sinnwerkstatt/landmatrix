@@ -11,7 +11,7 @@
   import type { GQLFilter } from "$lib/types/filters"
   import type { Investor } from "$lib/types/investor"
 
-  import { showContextBar, showFilterBar } from "$components/Data"
+  import { showContextBar, showFilterBar } from "$components/Data/stores"
   import DataContainer from "$components/Data/DataContainer.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import Table from "$components/Table/Table.svelte"

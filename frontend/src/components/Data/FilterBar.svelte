@@ -18,7 +18,7 @@
   import type { Investor } from "$lib/types/investor"
   import { UserRole } from "$lib/types/user"
 
-  import { showFilterBar } from "$components/Data"
+  import { showFilterBar } from "$components/Data/stores"
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
   import CheckboxSwitch from "$components/LowLevel/CheckboxSwitch.svelte"
 

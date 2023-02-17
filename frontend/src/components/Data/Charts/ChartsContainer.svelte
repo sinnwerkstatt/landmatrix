@@ -1,7 +1,7 @@
 <script lang="ts">
   import ContextBarContainer from "../ContextBarContainer.svelte"
   import FilterBar from "../FilterBar.svelte"
-  import { showContextBar, showFilterBar } from "../index"
+  import { showContextBar, showFilterBar } from "../stores"
   import ViewSwitcher from "../ViewSwitcher.svelte"
 </script>
 

@@ -7,7 +7,7 @@
 
   import { filters } from "$lib/filters"
 
-  import { showContextBar } from "$components/Data"
+  import { showContextBar } from "$components/Data/stores"
   import ChartsContainer from "$components/Data/Charts/ChartsContainer.svelte"
   import ContextBarWebOfTransnationalDeals from "$components/Data/Charts/ContextBarWebOfTransnationalDeals.svelte"
   import WebOfTransnationalDeals from "$components/Data/Charts/WebOfTransnationalDeals.svelte"

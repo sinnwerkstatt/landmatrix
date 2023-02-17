@@ -8,8 +8,7 @@
   import { invalidateAll } from "$app/navigation"
   import { page } from "$app/stores"
 
-  import { allUsers } from "$lib/stores"
-  import { draftStatusMap, statusMap } from "$lib/stores.js"
+  import { allUsers, draftStatusMap, statusMap } from "$lib/stores"
   import type { WorkflowInfo as WFInfo } from "$lib/types/generics"
   import { Status } from "$lib/types/generics"
 

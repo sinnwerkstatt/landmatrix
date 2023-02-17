@@ -1,7 +1,5 @@
 import { writable } from "svelte/store"
 
-import { browser } from "$app/environment"
-
 import {
   ImplementationStatus,
   IntentionOfInvestment,
@@ -315,12 +313,14 @@ export class FilterValues {
 // };
 //
 
-const lSfilters = browser ? localStorage.getItem("filters") : undefined
+const lSfilters = localStorage ? localStorage.getItem("filters") : undefined
 export const filters = writable<FilterValues>(
   lSfilters ? new FilterValues(JSON.parse(lSfilters)) : new FilterValues().default(),
 )
 
-filters.subscribe(x => browser && localStorage.setItem("filters", JSON.stringify(x)))
+filters.subscribe(
+  x => localStorage && localStorage.setItem("filters", JSON.stringify(x)),
+)
 
 export const publicOnly = writable(true)
 export const isDefaultFilter = writable(true)
