@@ -19,29 +19,45 @@
   import NavDropDown from "./LowLevel/NavDropDown.svelte"
   import NavbarSearch from "./NavbarSearch.svelte"
 
-  const languages = { en: "English", es: "Español", fr: "Français", ru: "Русский" }
-  const dataLinks = [
+  $: user = $page.data.user
+
+  const languages = {
+    en: "English",
+    es: "Español",
+    fr: "Français",
+    ru: "Русский",
+  }
+
+  let dataLinks: { name: string; href: string }[]
+  $: dataLinks = [
     { name: $_("Map"), href: "/map" },
     { name: $_("Deals"), href: "/list/deals" },
     { name: $_("Investors"), href: "/list/investors" },
     { name: $_("Charts"), href: "/charts" },
   ]
-  const roles = { 1: $_("Reporter"), 2: $_("Editor"), 3: $_("Administrator") }
 
-  let observatoriesGroups = { global: [], regions: [], countries: [] }
-  $observatoryPages.forEach((op: ObservatoryPage) => {
-    if (op.country) observatoriesGroups.countries.push(op)
-    else if (op.region) observatoriesGroups.regions.push(op)
-    else observatoriesGroups.global.push(op)
-  })
+  let roles: { [key: number]: string }
+  $: roles = {
+    1: $_("Reporter"),
+    2: $_("Editor"),
+    3: $_("Administrator"),
+  }
+
+  let observatoriesGroups: { [key: string]: ObservatoryPage[] }
+  $: {
+    observatoriesGroups = { global: [], regions: [], countries: [] }
+    $observatoryPages.forEach((op: ObservatoryPage) => {
+      if (op.country) observatoriesGroups.countries.push(op)
+      else if (op.region) observatoriesGroups.regions.push(op)
+      else observatoriesGroups.global.push(op)
+    })
+  }
 
   async function switchLanguage(lang: string) {
     Cookies.set("django_language", lang)
     await locale.set(lang)
     await fetchBasis(lang, fetch, $page.data.urqlClient)
   }
-
-  $: user = $page.data.user
 
   async function logout() {
     const { data } = await ($page.data.urqlClient as Client)
