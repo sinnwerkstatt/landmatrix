@@ -1,5 +1,4 @@
-import type { GeoJsonObject } from "geojson"
-import type { Feature, FeatureCollection, Geometry } from "geojson"
+import type { GeoJsonObject, Feature, FeatureCollection, Geometry } from "geojson"
 
 import type { Obj, ObjVersion, WorkflowInfo } from "$lib/types/generics"
 import type { Investor } from "$lib/types/investor"

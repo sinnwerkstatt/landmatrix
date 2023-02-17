@@ -7,6 +7,7 @@
   import type { FormField } from "$components/Fields/fields"
 
   export let value: AreaFeatureCollection
+  // svelte-ignore unused-export-let
   export let model
   export let formfield: FormField
 

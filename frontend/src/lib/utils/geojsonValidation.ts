@@ -1,5 +1,4 @@
-import type { FeatureCollection, GeoJsonObject } from "geojson"
-import type { Geometry, Position } from "geojson"
+import type { FeatureCollection, GeoJsonObject, Geometry, Position } from "geojson"
 import gjv from "geojson-validation"
 
 const areAllFeaturesPolygons = (data: FeatureCollection) =>
