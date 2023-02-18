@@ -1,8 +1,6 @@
 from modeltranslation.decorators import register
 from modeltranslation.translator import TranslationOptions
 
-from apps.blog.models import BlogIndexPage, BlogPage
-
 from .models import (
     AboutIndexPage,
     ChartDescriptionsSettings,
@@ -21,16 +19,6 @@ class WagtailRootPageTR(TranslationOptions):
 @register(WagtailPage)
 class WagtailPageTR(TranslationOptions):
     fields = ("body",)
-
-
-@register(BlogIndexPage)
-class BlogIndexPageTR(TranslationOptions):
-    pass
-
-
-@register(BlogPage)
-class BlogPageTR(TranslationOptions):
-    pass
 
 
 @register(AboutIndexPage)

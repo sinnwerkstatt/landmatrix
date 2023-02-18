@@ -5,19 +5,39 @@
 
   import NavDropDown from "$components/LowLevel/NavDropDown.svelte"
 
-  const label = { deals: $_("Deals"), investors: $_("Investors") }
-  const chartEntries = [
+  let dataViews: { title: string; route: string }[]
+  $: dataViews = [
+    {
+      title: $_("Deals"),
+      route: "/list/deals",
+    },
+    {
+      title: $_("Investors"),
+      route: "/list/investors",
+    },
+  ]
+
+  let chartViews: { title: string; route: string }[]
+  $: chartViews = [
     {
       title: $_("Web of transnational deals"),
       route: "/charts/web-of-transnational-deals",
     },
-    { title: $_("Dynamics overview"), route: "/charts/dynamics-overview" },
-    { title: $_("Produce info map"), route: "/charts/produce-info" },
-    { title: $_("Country profiles"), route: "/charts/country-profiles" },
+    {
+      title: $_("Dynamics overview"),
+      route: "/charts/dynamics-overview",
+    },
+    {
+      title: $_("Produce info map"),
+      route: "/charts/produce-info",
+    },
+    {
+      title: $_("Country profiles"),
+      route: "/charts/country-profiles",
+    },
   ]
 
   console.log($page.url.pathname)
-  $: dataItemName = {}
 </script>
 
 <div
@@ -35,24 +55,21 @@
         </a>
       </li>
       <NavDropDown
-        title={$_("Table")}
+        title={$_("Data")}
         class={$page.url.pathname.startsWith("/list") ? "bg-orange text-white" : ""}
       >
         <ul class="border border-orange bg-white">
-          {#if dataItemName !== label.deals}
-            <li>
-              <a href="/list/deals" class="nav-link">
-                {label.deals}
+          {#each dataViews as view}
+            <li class="whitespace-nowrap">
+              <a
+                href={view.route}
+                class="nav-link"
+                class:bg-orange-100={$page.url.pathname === view.route}
+              >
+                {view.title}
               </a>
             </li>
-          {/if}
-          {#if dataItemName !== label.investors}
-            <li>
-              <a href="/list/investors" class="nav-link">
-                {label.investors}
-              </a>
-            </li>
-          {/if}
+          {/each}
         </ul>
       </NavDropDown>
 
@@ -61,10 +78,14 @@
         class={$page.url.pathname.startsWith("/charts") ? "bg-orange text-white" : ""}
       >
         <ul class="border border-orange bg-white">
-          {#each chartEntries as entry}
+          {#each chartViews as view}
             <li class="whitespace-nowrap">
-              <a href={entry.route} class="nav-link">
-                {entry.title}
+              <a
+                href={view.route}
+                class="nav-link"
+                class:bg-orange-100={$page.url.pathname === view.route}
+              >
+                {view.title}
               </a>
             </li>
           {/each}

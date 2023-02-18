@@ -1,7 +1,7 @@
 from django.test import RequestFactory, TestCase
 
 from apps.wagtailcms.blocks import get_country_or_region, get_country_or_region_link
-from apps.wagtailcms.wagtail_hooks import editor_js, whitelister_element_rules
+from apps.wagtailcms.wagtail_hooks import whitelister_element_rules
 
 
 class AttrDict(dict):
@@ -36,9 +36,6 @@ class WagtailCMSModelsTestCase(TestCase):
         request.resolver_match = AttrDict(kwargs={"region_slug": "asia"})
         link = get_country_or_region_link("url", request=request)
         self.assertEqual("url?region=142", link)
-
-    def test_editor_js(self):
-        self.assertGreater(len(editor_js()), 0)
 
     def test_whitelister_element_rules(self):
         rules = whitelister_element_rules()

@@ -7,28 +7,6 @@ from wagtail.core.whitelist import attribute_rule
 from apps.message.models import Message
 
 
-@hooks.register("insert_editor_js")
-def editor_js():
-    return """
-        <script>
-          registerHalloPlugin('hallojustify');
-          $(function () {
-            const region_dd = document.querySelector(".region-or-country #id_region");
-            const country_dd = document.querySelector(".region-or-country #id_country");
-
-            if(region_dd && country_dd) {
-              region_dd.addEventListener("change", (event) => {
-                if (event.target.value) country_dd.value = "";
-              });
-              country_dd.addEventListener("change", (event) => {
-                if (event.target.value) region_dd.value = "";
-              });
-            }
-          });
-        </script>
-        """
-
-
 @hooks.register("register_icons")
 def register_icons(icons):
     return icons + [

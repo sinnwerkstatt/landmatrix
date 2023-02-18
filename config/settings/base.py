@@ -70,6 +70,7 @@ INSTALLED_APPS = [
     "apps.blog",
     "apps.message",
     "apps.landmatrix",
+    # TODO: Delete after models are deleted with next migration
     "apps.editor",
     "apps.wagtailcms",
     # plumbing
@@ -82,6 +83,7 @@ MIDDLEWARE = [
     # "django.middleware.cache.UpdateCacheMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    # should be after SessionMiddleware and before CommonMiddleware
     "django.middleware.locale.LocaleMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",

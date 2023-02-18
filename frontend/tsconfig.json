@@ -10,6 +10,9 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "sourceMap": true,
-    "strict": true
+    "strict": true,
+    "lib": [
+      "es2017" // Array.prototype.includes
+    ]
   }
 }
