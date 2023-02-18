@@ -9,7 +9,7 @@
   import { formfields } from "$lib/stores"
   import type { Deal } from "$lib/types/deal"
 
-  import { showContextBar, showFilterBar } from "$components/Data"
+  import { showContextBar, showFilterBar } from "$components/Data/stores"
   import ChartWrapper from "$components/Data/Charts/DownloadWrapper.svelte"
   import { downloadCSV, downloadJSON, downloadSVG } from "$components/Data/Charts/utils"
   import type { DownloadEvent } from "$components/Data/Charts/utils"

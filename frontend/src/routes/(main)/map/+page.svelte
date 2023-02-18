@@ -14,7 +14,7 @@
   import type { Deal, Location } from "$lib/types/deal"
   import type { Country } from "$lib/types/wagtail"
 
-  import { showContextBar } from "$components/Data"
+  import { showContextBar } from "$components/Data/stores"
   import DataContainer from "$components/Data/DataContainer.svelte"
   import FilterCollapse from "$components/Data/FilterCollapse.svelte"
   import BigMap from "$components/Map/BigMap.svelte"
@@ -22,8 +22,8 @@
     getContextLayers,
     visibleContextLayers,
     visibleLayer,
+    getBaseLayers,
   } from "$components/Map/layers"
-  import { getBaseLayers } from "$components/Map/layers.js"
   import {
     displayDealsCount,
     LMCircleClass,

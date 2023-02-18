@@ -22,7 +22,7 @@
 
   let blogCategoriesWithAll: BlogCategory[]
   $: blogCategoriesWithAll = [
-    { id: -1, slug: null, name: "All categories" },
+    { id: -1, slug: null, name: $_("All categories") },
     ...$blogCategories,
   ]
 </script>

@@ -8,7 +8,7 @@
   import { filters, publicOnly } from "$lib/filters"
   import { formfields, loading } from "$lib/stores"
 
-  import { showContextBar, showFilterBar } from "$components/Data"
+  import { showContextBar, showFilterBar } from "$components/Data/stores"
   import DataContainer from "$components/Data/DataContainer.svelte"
   import FilterCollapse from "$components/Data/FilterCollapse.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"

@@ -6,15 +6,5 @@
   "htmlWhitespaceSensitivity": "ignore",
   "svelteStrictMode": false,
   "svelteAllowShorthand": true,
-  "svelteIndentScriptAndStyle": true,
-  "importOrder": [
-    "^\\$app/(.*)$",
-    "^\\$lib(.*)$",
-    "^\\$views/(.*)$",
-    "^\\$components/(.*)$",
-    "^[./]"
-  ],
-  "importOrderSeparation": true,
-  "importOrderCaseInsensitive": true,
-  "importOrderSortSpecifiers": true
+  "svelteIndentScriptAndStyle": true
 }

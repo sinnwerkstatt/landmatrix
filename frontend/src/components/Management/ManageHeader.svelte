@@ -7,8 +7,13 @@
   import { goto } from "$app/navigation"
   import { page } from "$app/stores"
 
-  import { isAuthorized } from "$lib/helpers"
-  import { findActiveVersion, isAdmin, isCreator, isEditorPlus } from "$lib/helpers.js"
+  import {
+    isAuthorized,
+    findActiveVersion,
+    isAdmin,
+    isCreator,
+    isEditorPlus,
+  } from "$lib/helpers"
   import type { Obj, ObjVersion } from "$lib/types/generics"
   import { DraftStatus, Status } from "$lib/types/generics"
 

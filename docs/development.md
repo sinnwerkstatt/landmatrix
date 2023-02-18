@@ -32,3 +32,23 @@ sudo apt install gdal-bin postgresql-13-postgis-3
 3. `poetry run ./manage.py make_messages -a`
    **Watch out!**  Don't use Django's `makemessages`.
 4. `poetry run doit compilemessages`
+
+### Register existing model for i18n
+
+Model translations are handled by `django-modeltranslation`.
+
+1. Register model as described in the [docs](https://django-modeltranslation.readthedocs.io/en/latest/registration.html).
+2. Create and run migrations.
+   ```shell
+   ./manage.py makemigrations`
+   ./manage.py migrate`
+   ```
+3. Map old to new fields: `./manage.py update_translation_fields`
+
+
+### Restore DB from dump
+
+```shell
+zcat landmatrix.sql.gz | psql -h localhost -U landmatrix landmatrix
+./manage.py migrate
+```

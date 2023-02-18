@@ -9,7 +9,7 @@
   import { filters, publicOnly } from "$lib/filters"
   import { chartDescriptions } from "$lib/stores"
 
-  import { showContextBar } from "$components/Data"
+  import { showContextBar } from "$components/Data/stores"
   import ChartsContainer from "$components/Data/Charts/ChartsContainer.svelte"
   import ProduceInfoMap from "$components/Data/Charts/ProduceInfoMap.svelte"
   import LoadingPulse from "$components/LoadingPulse.svelte"

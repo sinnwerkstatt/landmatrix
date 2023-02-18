@@ -9,7 +9,7 @@
   import { filters, publicOnly } from "$lib/filters"
   import { loading } from "$lib/stores"
 
-  import { showContextBar } from "$components/Data"
+  import { showContextBar } from "$components/Data/stores"
   import ChartsContainer from "$components/Data/Charts/ChartsContainer.svelte"
   import DynamicsOfDeal from "$components/Data/Charts/CountryProfile/DynamicsOfDeal.svelte"
   import IntentionsPerCategory from "$components/Data/Charts/CountryProfile/IntentionsPerCategory.svelte"
