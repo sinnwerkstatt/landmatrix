@@ -70,6 +70,7 @@ INSTALLED_APPS = [
     "apps.blog",
     "apps.message",
     "apps.landmatrix",
+    # TODO: Delete after models are deleted with next migration
     "apps.editor",
     "apps.wagtailcms",
     # plumbing
