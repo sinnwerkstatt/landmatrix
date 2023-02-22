@@ -39,6 +39,7 @@ sentry_sdk = "*"
 gunicorn = "*"
 tzdata = "*"
 python-memcached = "^1.59"
+ramda = "^0.7.6"
 
 [tool.poetry.group.dev.dependencies]
 ipdb = "*"

@@ -1,33 +1,39 @@
 import json
-from typing import Literal, TypedDict, Callable, Any
+from typing import Any, Callable, Literal, TypedDict, cast
+
+# noinspection PyPep8Naming
+import ramda as R  # type: ignore
 
 from django.core.handlers.wsgi import WSGIRequest
-from django.db.models import QuerySet
-from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
 from rest_framework.decorators import api_view
 
 from apps.graphql.tools import parse_filters
 from apps.landmatrix.models.deal import Deal
 from apps.utils import qs_values_to_dict
 
+# Unfortunately, I wasn't able to find a stub library for geojson data.
+# These TypedDicts are not exhaustive. They only include the keys I needed.
 GeometryType = Literal["Point", "Polygon", "MultiPolygon"]
 
 
-# Unfortunately, I wasn't able to find a stub library for geojson data.
-# These TypedDicts are not exhaustive. They only include the keys I needed.
 class Geometry(TypedDict):
     type: GeometryType
+    coordinates: Any
 
 
-class Feature(TypedDict, total=False):
-    properties: dict[str, str]
+class Feature(TypedDict):
+    type: Literal["Feature"]
     geometry: Geometry
+    properties: dict[str, str]
 
 
 class FeatureCollection(TypedDict):
     type: Literal["FeatureCollection"]
     features: list[Feature]
 
+
+DealValues = dict[str, Any]
 
 ExportType = Literal["points", "areas"]
 
@@ -51,13 +57,14 @@ def gis_export(request) -> HttpResponse:
             f"Valid values are: {', '.join(VALID_EXPORT_TYPES)}."
         )
 
-    qs = create_deal_qs(request)
-    response = JsonResponse(create_export_data(export_type, qs))
+    deal_values = get_deal_values(request)
+    export_features = create_export_features(export_type, deal_values)
+    response = JsonResponse(create_feature_collection(export_features))
     response["Content-Disposition"] = f'attachment; filename="{export_type}.geojson"'
     return response
 
 
-def create_deal_qs(request: WSGIRequest) -> QuerySet:
+def get_deal_values(request: WSGIRequest) -> list[DealValues]:
     qs_deals = Deal.objects.visible(
         user=request.user, subset=request.GET.get("subset", "PUBLIC")
     ).exclude(geojson=None)
@@ -65,34 +72,45 @@ def create_deal_qs(request: WSGIRequest) -> QuerySet:
     if filters := request.GET.get("filters"):
         qs_deals = qs_deals.filter(parse_filters(json.loads(filters)))
 
-    return qs_deals
-
-
-def create_export_data(export_type: ExportType, qs: QuerySet) -> FeatureCollection:
-    export_type_to_filter_map: dict[ExportType, Callable[[Feature], bool]] = {
-        "areas": is_polygon,
-        "points": is_point,
-    }
-
     fields = ["id", "country__name", "country__region__name", "geojson"]
+    return qs_values_to_dict(qs_deals, fields)
 
+
+def create_export_features(
+    export_type: ExportType,
+    deal_values: list[DealValues],
+) -> list[Feature]:
+    all_features: list[Feature] = []
+    for deal in deal_values:
+        features = R.pipe(
+            R.path(["geojson", "features"]),
+            R.default_to([]),
+            R.filter(get_feature_filter_fn(export_type)),
+            R.map(fix_feature_properties(deal)),
+        )(deal)
+        all_features.extend(features)
+
+    return all_features
+
+
+def fix_feature_properties(deal: DealValues) -> Callable[[Feature], Feature]:
+    return lambda feature: cast(
+        Feature,
+        {
+            **feature,
+            "properties": {
+                **get_location_properties(feature),
+                **create_deal_properties(deal),
+            },
+        },
+    )
+
+
+def get_location_properties(feature: Feature) -> dict[str, str]:
     location_keys = ["id", "type", "name", "spatial_accuracy"]
 
-    all_features: list[Feature] = []
-    for deal in qs_values_to_dict(qs, fields):
-        deal_props = create_deal_properties(deal)
-        features = filter(
-            export_type_to_filter_map[export_type],
-            deal["geojson"].get("features") or [],
-        )
-
-        for feat in features:
-            old_props = feat.get("properties") or {}
-            location_props = {key: old_props.get(key) or "" for key in location_keys}
-
-            all_features += [{**feat, "properties": {**location_props, **deal_props}}]
-
-    return create_feature_collection(all_features)
+    all_props = feature.get("properties") or {}
+    return {key: all_props.get(key) or "" for key in location_keys}
 
 
 def is_geometry_type(geometry_type: GeometryType, feature: Feature) -> bool:
@@ -113,6 +131,14 @@ def create_feature_collection(features: list[Feature]) -> FeatureCollection:
         "type": "FeatureCollection",
         "features": features,
     }
+
+
+def get_feature_filter_fn(export_type: ExportType):
+    feature_filter_fns: dict[ExportType, Callable[[Feature], bool]] = {
+        "areas": is_polygon,
+        "points": is_point,
+    }
+    return feature_filter_fns[export_type]
 
 
 def create_deal_properties(deal: dict[str, Any]) -> dict[str, str]:

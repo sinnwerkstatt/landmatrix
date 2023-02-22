@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import csv
-from datetime import datetime, timedelta
 import io
+from datetime import datetime, timedelta
 
 import pytz
 from openpyxl.workbook import Workbook
@@ -21,11 +21,7 @@ from django.views import View
 
 from apps.accounts.models import UserRole
 from apps.graphql.resolvers.charts import create_statistics
-from apps.landmatrix.models.deal import (
-    Deal,
-    DealVersion,
-    DealWorkflowInfo,
-)
+from apps.landmatrix.models.deal import Deal, DealVersion, DealWorkflowInfo
 from apps.landmatrix.models.investor import (
     Investor,
     InvestorVersion,
