@@ -35,9 +35,9 @@ class FeatureCollection(TypedDict):
 
 DealValues = dict[str, Any]
 
-ExportType = Literal["points", "areas"]
+ExportType = Literal["locations", "areas"]
 
-VALID_EXPORT_TYPES: list[ExportType] = ["points", "areas"]
+VALID_EXPORT_TYPES: list[ExportType] = ["locations", "areas"]
 
 
 @api_view()
@@ -136,7 +136,7 @@ def create_feature_collection(features: list[Feature]) -> FeatureCollection:
 def get_feature_filter_fn(export_type: ExportType):
     feature_filter_fns: dict[ExportType, Callable[[Feature], bool]] = {
         "areas": is_polygon,
-        "points": is_point,
+        "locations": is_point,
     }
     return feature_filter_fns[export_type]
 

@@ -23,9 +23,9 @@ def test_gis_export_type():
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.content.startswith(b"Invalid 'type' value: 'other'.")
 
-    response = client.get("/api/gis_export/?type=points")
+    response = client.get("/api/gis_export/?type=locations")
     assert response.status_code == status.HTTP_200_OK
-    assert response["Content-Disposition"] == 'attachment; filename="points.geojson"'
+    assert response["Content-Disposition"] == 'attachment; filename="locations.geojson"'
 
     response = client.get("/api/gis_export/?type=areas")
     assert response.status_code == status.HTTP_200_OK
@@ -186,7 +186,7 @@ def test_create_export_data():
         {"geojson": {"features": [point_feature2, polygon_feature]}},
     ]
 
-    export_data_point_features = create_export_features("points", deals)
+    export_data_point_features = create_export_features("locations", deals)
     export_data_area_features = create_export_features("areas", deals)
 
     assert len(export_data_point_features) == 2

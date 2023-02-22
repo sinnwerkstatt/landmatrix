@@ -436,7 +436,7 @@
           </li>
           <li>
             <a
-              href={`/api/gis_export/?type=points&filters=${jsonFilters}&subset=${
+              href={`/api/gis_export/?type=locations&filters=${jsonFilters}&subset=${
                 $publicOnly ? "PUBLIC" : "ACTIVE"
               }`}
               data-sveltekit-reload
