@@ -36,13 +36,12 @@
           { id: "activated", name: $_("Investors activated") },
         ]
 
-  let selectedDateOption = 30
   let daterange = {
-    start: dayjs().subtract(selectedDateOption, "day").toDate(),
+    start: dayjs().subtract(30, "day").toDate(),
     end: new Date(),
   }
 
-  $: selectedDateOption = dayjs(daterange.end).diff(daterange.start, "days")
+  let selectedDateOption = dayjs(daterange.end).diff(daterange.start, "days")
 
   const datePreOptions = [
     { name: "Last 30 days", value: 30 },
@@ -110,11 +109,12 @@
     <select
       bind:value={selectedDateOption}
       class="inpt w-40"
-      on:change={() =>
-        (daterange = {
+      on:change={() => {
+        daterange = {
           start: dayjs().subtract(selectedDateOption, "day").toDate(),
           end: new Date(),
-        })}
+        }
+      }}
     >
       {#each datePreOptions as option}
         <option value={option.value}>

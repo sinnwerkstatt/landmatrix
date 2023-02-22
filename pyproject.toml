@@ -25,7 +25,6 @@ wagtail-headless-preview = "*"
 ariadne = "*"
 ariadne_django = "*"
 fastjsonschema = "*"
-geojson-rewind = "*"
 nanoid = "*"
 openpyxl = "*"
 polib = "*"  # for PO to JSON
@@ -40,6 +39,7 @@ sentry_sdk = "*"
 gunicorn = "*"
 tzdata = "*"
 python-memcached = "^1.59"
+ramda = "^0.7.6"
 
 [tool.poetry.group.dev.dependencies]
 ipdb = "*"
@@ -59,6 +59,10 @@ pydot = "^1.4.1"
 tqdm = "^4.64.0"
 isort = "^5.12.0"
 termtables = "^0.2.4"
+types-pytz = "^2022.7.1.0"
+django-stubs = {extras = ["compatible-mypy"], version = "^1.14.0"}
+types-openpyxl = "^3.0.4.5"
+djangorestframework-stubs = {extras = ["compatible-mypy"], version = "^1.8.0"}
 
 
 [tool.black]
@@ -92,3 +96,11 @@ extend_skip_glob = ["*/migrations/*.py"]
 known_django = ["django", "wagtail", "rest_framework", "wagtail_headless_preview", "modelcluster"]
 known_first_party = ["apps"]
 sections = ["FUTURE", "STDLIB", "THIRDPARTY", "DJANGO", "FIRSTPARTY", "LOCALFOLDER"]
+
+[tool.mypy]
+plugins = ["mypy_django_plugin.main"]
+strict_equality = true
+
+
+[tool.django-stubs]
+django_settings_module = "config.settings.dev"

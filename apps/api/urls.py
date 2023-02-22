@@ -1,7 +1,8 @@
 from django.urls import path
 
 from .export import DataDownload
-from .views import CaseStatistics, Management, gis_export, messages_json
+from .gis_export import gis_export
+from .views import CaseStatistics, Management, messages_json
 
 
 def data_download(request):
@@ -11,7 +12,7 @@ def data_download(request):
 urlpatterns = [
     path("legacy_export/", data_download),
     path("newdeal_legacy/messages/", messages_json),
-    path("data.geojson", gis_export),
+    path("gis_export/", gis_export),
     path("management/", Management.as_view()),
     path("case_statistics/", CaseStatistics.as_view()),
 ]

@@ -436,7 +436,7 @@
           </li>
           <li>
             <a
-              href={`/api/data.geojson?type=points&filters=${jsonFilters}&subset=${
+              href={`/api/gis_export/?type=locations&filters=${jsonFilters}&subset=${
                 $publicOnly ? "PUBLIC" : "ACTIVE"
               }`}
               data-sveltekit-reload
@@ -448,7 +448,7 @@
           </li>
           <li>
             <a
-              href={`/api/data.geojson?type=areas&filters=${jsonFilters}&subset=${
+              href={`/api/gis_export/?type=areas&filters=${jsonFilters}&subset=${
                 $publicOnly ? "PUBLIC" : "ACTIVE"
               }`}
               data-sveltekit-reload
