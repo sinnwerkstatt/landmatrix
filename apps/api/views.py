@@ -1,15 +1,13 @@
 from __future__ import annotations
 
 import csv
-import datetime
+from datetime import datetime, timedelta
 import io
-import json
-import zipfile
 
 import pytz
 from openpyxl.workbook import Workbook
 
-from django.contrib.auth import get_user_model
+from django.core.handlers.wsgi import WSGIRequest
 from django.db.models import F, Prefetch, Q
 from django.http import (
     HttpResponse,
@@ -21,67 +19,21 @@ from django.utils import timezone
 from django.utils.timezone import make_aware
 from django.views import View
 
-from apps.accounts.models import UserModel, UserRole
+from apps.accounts.models import UserRole
 from apps.graphql.resolvers.charts import create_statistics
-from apps.graphql.tools import parse_filters
-from apps.landmatrix.models.deal import Deal, DealVersion, DealWorkflowInfo
+from apps.landmatrix.models.deal import (
+    Deal,
+    DealVersion,
+    DealWorkflowInfo,
+)
 from apps.landmatrix.models.investor import (
     Investor,
     InvestorVersion,
     InvestorWorkflowInfo,
 )
 from apps.message.models import Message
-from apps.utils import qs_values_to_dict
 
 from .to_dict import create_lookups, deal_to_dict, investor_to_dict
-
-User: UserModel = get_user_model()
-
-
-def gis_export(request):
-    point_res = {"type": "FeatureCollection", "features": []}
-    area_res = {"type": "FeatureCollection", "features": []}
-
-    deals = Deal.objects.visible(
-        user=request.user, subset=request.GET.get("subset", "PUBLIC")
-    ).exclude(geojson=None)
-
-    filters = request.GET.get("filters")
-    if filters:
-        deals = deals.filter(parse_filters(json.loads(filters)))
-
-    fields = ["id", "country__name", "country__region__name", "geojson"]
-
-    for deal in qs_values_to_dict(deals, fields):
-        for feat in deal["geojson"].get("features"):
-            props = feat.get("properties", {})
-            props["deal_id"] = deal["id"]
-            if deal.get("country"):
-                props["country"] = deal["country"].get("name")
-                props["region"] = deal["country"].get("region", {}).get("name")
-            if feat["geometry"]["type"] == "Point":
-                point_res["features"] += [feat]
-            else:
-                area_res["features"] += [feat]
-
-    request_type = request.GET.get("type")
-    if request_type == "points":
-        response = JsonResponse(point_res)
-        response["Content-Disposition"] = 'attachment; filename="locations.geojson"'
-        return response
-    elif request_type == "areas":
-        response = JsonResponse(area_res)
-        response["Content-Disposition"] = 'attachment; filename="areas.geojson"'
-        return response
-
-    zip_buffer = io.BytesIO()
-    with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED, False) as zip_file:
-        zip_file.writestr("points.geojson", json.dumps(point_res))
-        zip_file.writestr("areas.geojson", json.dumps(area_res))
-    zip_buffer.seek(0)
-    response = HttpResponse(zip_buffer, content_type="application/zip")
-    response["Content-Disposition"] = 'attachment; filename="geojson.zip"'
-    return response
 
 
 def messages_json(request):
@@ -292,7 +244,7 @@ class Management(View):
             "modified_at",
             "fully_updated_at",
         ]:
-            if isinstance(x[datetime_field], datetime.datetime):
+            if isinstance(x[datetime_field], datetime):
                 x[datetime_field] = (
                     x[datetime_field]
                     .astimezone(pytz.UTC)
@@ -355,10 +307,10 @@ class CaseStatistics(View):
 
     @staticmethod
     def _deal_buckets(
-        start: datetime.datetime,
-        end: datetime.datetime,
-        region: int = None,
-        country: int = None,
+        start: datetime,
+        end: datetime,
+        region: str | None,
+        country: str | None,
     ):
         queries = {
             "added": Q(created_at__gte=start) & Q(created_at__lte=end),
@@ -418,10 +370,10 @@ class CaseStatistics(View):
 
     @staticmethod
     def _investor_buckets(
-        start: datetime.datetime,
-        end: datetime.datetime,
-        region: int = None,
-        country: int = None,
+        start: datetime,
+        end: datetime,
+        region: str | None,
+        country: str | None,
     ):
         queries = {
             "added": Q(created_at__gte=start) & Q(created_at__lte=end),
@@ -457,7 +409,7 @@ class CaseStatistics(View):
 
         return JsonResponse({"buckets": buckets})
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request: WSGIRequest) -> HttpResponse:
         action = request.GET.get("action")
 
         if action == "counts":
@@ -470,20 +422,25 @@ class CaseStatistics(View):
             return self._investors()
 
         if action in ["deal_buckets", "investor_buckets"]:
-            start = parse_date(request.GET.get("start"))
-            # add one day to include end day (important when end = current)
-            end = parse_date(request.GET.get("end")) + datetime.timedelta(1)
-
-            region: int = request.GET.get("region")
-            country: int = request.GET.get("country")
+            start = request.GET.get("start")
+            end = request.GET.get("end")
 
             if not (start and end):
                 return JsonResponse({})
 
+            dt_start = parse_date(start)
+            # add one day to include end day (important when end = current)
+            dt_end = parse_date(end) + timedelta(1)
+
+            region = request.GET.get("region")
+            country = request.GET.get("country")
+
             if action == "deal_buckets":
-                return self._deal_buckets(start, end, region, country)
-            return self._investor_buckets(start, end, region, country)
+                return self._deal_buckets(dt_start, dt_end, region, country)
+            return self._investor_buckets(dt_start, dt_end, region, country)
+
+        return HttpResponseBadRequest(f"Unknown action: {action}")
 
 
 def parse_date(date_str: str):
-    return make_aware(datetime.datetime.strptime(date_str, "%Y-%m-%d"))
+    return make_aware(datetime.strptime(date_str, "%Y-%m-%d"))
