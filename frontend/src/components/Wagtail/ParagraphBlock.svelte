@@ -2,4 +2,4 @@
   export let value: string
 </script>
 
-<div data-block="paragraph">{@html value}</div>
+<div data-block="paragraph" data-sveltekit-reload>{@html value}</div>
