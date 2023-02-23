@@ -201,70 +201,9 @@ class Management(View):
                 for obj in qs.filter(filters[action]["q"]).order_by("-id").distinct()
             ]
 
-            if rformat := request.GET.get("format"):
-                for x in ret:
-                    self.format_for_export(x)
-
-                if rformat == "csv":
-                    response = HttpResponse(
-                        self._csv_writer(ret), content_type="text/csv"
-                    )
-                    response[
-                        "Content-Disposition"
-                    ] = f'attachment; filename="{action}.csv"'
-                    return response
-                if rformat == "xlsx":
-                    response = HttpResponse(content_type="application/ms-excel")
-                    response[
-                        "Content-Disposition"
-                    ] = f'attachment; filename="{action}.xlsx"'
-                    self._xlsx_writer(ret, response)
-                    return response
-
             return JsonResponse({"objects": ret})
         else:
             return HttpResponseBadRequest("unknown request")
-
-    @staticmethod
-    def format_for_export(x):
-        # safe get if field is undefined or None
-        x["country"] = (x.get("country", {}) or {}).get("name")
-        x["created_by"] = (x.get("created_by", {}) or {}).get("username")
-        x["modified_by"] = (x.get("modified_by", {}) or {}).get("username")
-
-        del x["workflowinfos"]
-
-        # remove tzinfo from datetime fields and format as string
-        for datetime_field in [
-            "created_at",
-            "modified_at",
-            "fully_updated_at",
-        ]:
-            if isinstance(x[datetime_field], datetime):
-                x[datetime_field] = (
-                    x[datetime_field]
-                    .astimezone(pytz.UTC)
-                    .replace(tzinfo=None)
-                    .isoformat(timespec="seconds")
-                    + "Z"
-                )
-
-    @staticmethod
-    def _csv_writer(data):
-        file = io.StringIO()
-        writer = csv.writer(file, delimiter=";")  # encoding='cp1252'
-        writer.writerow(data[0].keys())
-        [writer.writerow(item.values()) for item in data]
-        file.seek(0)
-        return file.getvalue()
-
-    @staticmethod
-    def _xlsx_writer(data, response: HttpResponse):
-        wb = Workbook(write_only=True)
-        ws = wb.create_sheet(title="Management")
-        ws.append(list(data[0].keys()))
-        [ws.append(list(item.values())) for item in data]
-        wb.save(response)
 
 
 class CaseStatistics(View):

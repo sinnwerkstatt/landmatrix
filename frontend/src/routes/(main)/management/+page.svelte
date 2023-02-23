@@ -28,6 +28,7 @@
   import { managementFilters } from "./state"
   import TodoFeedbackView from "./TodoFeedbackView.svelte"
   import TodoImprovementView from "./TodoImprovementView.svelte"
+  import { downloadAsCSV, downloadAsXLSX } from "./downloadObjects.js"
 
   dayjs.extend(isSameOrBefore)
   dayjs.extend(isSameOrAfter)
@@ -319,26 +320,22 @@
         <FilterCollapse title={$_("Download")}>
           <ul>
             <li>
-              <a
-                href="/api/management?format=xlsx&action={activeTabId}"
-                on:click={() => trackDownload("xlsx")}
-                rel="external"
+              <button
+                class="text-orange hover:text-orange-200"
+                on:click={() => downloadAsXLSX(filteredObjects, model, activeTabId)}
               >
                 <DownloadIcon />
                 {$_("All attributes")} (xlsx)
-              </a>
+              </button>
             </li>
             <li>
-              <!-- todo: probably remove rel="external" in favor of data-sveltekit-reload -->
-              <a
-                href="/api/management?format=csv&action={activeTabId}"
-                on:click={() => trackDownload("csv")}
-                rel="external"
+              <button
+                class="text-orange hover:text-orange-200"
+                on:click={() => downloadAsCSV(filteredObjects, model, activeTabId)}
               >
-                <i class="fas fa-file-download" />
                 <DownloadIcon />
                 {$_("All attributes")} (csv)
-              </a>
+              </button>
             </li>
           </ul>
         </FilterCollapse>
