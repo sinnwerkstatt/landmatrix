@@ -52,10 +52,10 @@
     on:select={onSelect}
     on:clear={onSelect}
     placeholder={$_("Country")}
-    optionIdentifier="id"
-    labelIdentifier="name"
+    itemId="id"
+    label="name"
     showChevron
-    isDisabled={disabled}
+    {disabled}
     inputAttributes={{ name: formfield.name }}
   />
   {#if disabled && showHint}

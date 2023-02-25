@@ -27,7 +27,7 @@
   items={$allUsers.filter(
     u => extraUserIDs.includes(u.id) || u.role > UserRole.REPORTER,
   )}
-  optionIdentifier="id"
+  itemId="id"
   placeholder={$_("User")}
   showChevron
   inputAttributes={{ required: required && !value }}

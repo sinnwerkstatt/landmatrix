@@ -92,8 +92,8 @@
       on:select={({ detail }) => (value = { id: detail.id, name: detail.name })}
       on:clear={() => (value = null)}
       placeholder={$_("Investor")}
-      optionIdentifier="id"
-      labelIdentifier="name"
+      itemId="id"
+      label="name"
       getOptionLabel={(o, ftxt) =>
         o.isCreator ? `Create "${ftxt}"` : `${o.name} (#${o.id})`}
       getSelectionLabel={o => `${o.name} (#${o.id})`}

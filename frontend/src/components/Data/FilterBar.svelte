@@ -152,8 +152,8 @@
           value={$countries.find(c => c.id === $filters.country_id)}
           on:change={e => ($filters.country_id = e.detail?.id)}
           placeholder={$_("Country")}
-          optionIdentifier="id"
-          labelIdentifier="name"
+          itemId="id"
+          label="name"
           showChevron
           {VirtualList}
         />
@@ -219,8 +219,8 @@
           items={investors}
           bind:value={$filters.investor}
           placeholder={$_("Investor")}
-          optionIdentifier="id"
-          labelIdentifier="name"
+          itemId="id"
+          label="name"
           getOptionLabel={o => `${o.name} (#${o.id})`}
           getSelectionLabel={o => `${o.name} (#${o.id})`}
           showChevron
@@ -232,8 +232,8 @@
           value={$countries.find(c => c.id === $filters.investor_country_id)}
           on:change={e => ($filters.investor_country_id = e.detail?.id)}
           placeholder={$_("Country of registration")}
-          labelIdentifier="name"
-          optionIdentifier="id"
+          label="name"
+          itemId="id"
           showChevron
         />
       </FilterCollapse>
@@ -344,7 +344,7 @@
         <Select
           bind:value={$filters.produce}
           items={produceChoices}
-          isMulti
+          multiple
           showChevron
           groupBy={i => i.group}
         />

@@ -45,8 +45,8 @@
       items={currencies}
       bind:value
       placeholder={$_("Currency")}
-      optionIdentifier="id"
-      labelIdentifier="name"
+      itemId="id"
+      label="name"
       getOptionLabel={o => `${o.name} (${o.code})`}
       getSelectionLabel={o => `${o.name} (${o.code})`}
       showChevron

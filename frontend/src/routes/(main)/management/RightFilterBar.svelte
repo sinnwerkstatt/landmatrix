@@ -36,8 +36,8 @@
         {VirtualList}
         bind:value={$managementFilters.country}
         items={relCountries}
-        labelIdentifier="name"
-        optionIdentifier="id"
+        label="name"
+        itemId="id"
         placeholder={$_("Target country")}
         showChevron
       />
@@ -89,7 +89,7 @@
           getOptionLabel={o => `${o.full_name} (<b>${o.username}</b>)`}
           getSelectionLabel={o => `${o.full_name} (<b>${o.username}</b>)`}
           items={createdByUsers}
-          optionIdentifier="id"
+          itemId="id"
           placeholder={$_("User")}
           showChevron
         />
@@ -122,7 +122,7 @@
           getOptionLabel={o => `${o.full_name} (<b>${o.username}</b>)`}
           getSelectionLabel={o => `${o.full_name} (<b>${o.username}</b>)`}
           items={modifiedByUsers}
-          optionIdentifier="id"
+          itemId="id"
           placeholder={$_("User")}
           showChevron
         />

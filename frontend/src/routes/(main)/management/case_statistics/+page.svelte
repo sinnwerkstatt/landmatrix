@@ -72,13 +72,13 @@
           {VirtualList}
           bind:value={selRegion}
           items={$regions}
-          labelIdentifier="name"
+          label="name"
           on:clear={() => getCounts(undefined, undefined)}
           on:select={() => {
             selCountry = undefined
             getCounts(selRegion, undefined)
           }}
-          optionIdentifier="id"
+          itemId="id"
           placeholder={$_("Region")}
           showChevron
         />
@@ -91,13 +91,13 @@
           {VirtualList}
           bind:value={selCountry}
           items={$countries.filter(c => c.deals && c.deals.length > 0)}
-          labelIdentifier="name"
+          label="name"
           on:clear={() => getCounts(undefined, undefined)}
           on:select={() => {
             selRegion = undefined
             getCounts(undefined, selCountry)
           }}
-          optionIdentifier="id"
+          itemId="id"
           placeholder={$_("Country")}
           showChevron
         />
