@@ -144,19 +144,21 @@
   </div>
 </ManageHeader>
 
-<ManageOverlay
-  bind:visible={showSendToReviewOverlay}
-  title={$_("Submit for review")}
-  commentInput
-  on:submit={sendToReview}
->
-  <div class="mb-6">
-    <label for="data-policy-checkbox" class="underline">{$_("Data policy")}</label>
-    <label class="mt-1 block font-bold">
-      <input required type="checkbox" id="data-policy-checkbox" />
-      {$_("I've read and agree to the")}
-      <a href="/about/data-policy/" target="_blank">{$_("Data policy")}</a>
-      .
-    </label>
-  </div>
-</ManageOverlay>
+{#if showSendToReviewOverlay}
+  <ManageOverlay
+    bind:visible={showSendToReviewOverlay}
+    title={$_("Submit for review")}
+    commentInput
+    on:submit={sendToReview}
+  >
+    <div class="mb-6">
+      <label for="data-policy-checkbox" class="underline">{$_("Data policy")}</label>
+      <label class="mt-1 block font-bold">
+        <input required type="checkbox" id="data-policy-checkbox" />
+        {$_("I've read and agree to the")}
+        <a href="/about/data-policy/" target="_blank">{$_("Data policy")}</a>
+        .
+      </label>
+    </div>
+  </ManageOverlay>
+{/if}

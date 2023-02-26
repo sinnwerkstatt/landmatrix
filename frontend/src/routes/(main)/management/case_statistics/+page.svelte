@@ -1,13 +1,13 @@
 <script lang="ts">
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
-  import Select from "svelte-select"
-  import VirtualList from "svelte-tiny-virtual-list"
 
   import { countries, loading, regions } from "$lib/stores"
   import type { Deal } from "$lib/types/deal"
   import type { Investor } from "$lib/types/investor"
   import type { Country, Region } from "$lib/types/wagtail"
+
+  import VirtualListSelect from "$components/LowLevel/VirtualListSelect.svelte"
 
   import type { Counts } from "./case_statistics"
   import QualityGoals from "./QualityGoals.svelte"
@@ -68,38 +68,32 @@
     <div class="flex w-full items-center gap-2">
       <div>{$_("Region")}:</div>
       <div class="w-full">
-        <Select
-          {VirtualList}
+        <VirtualListSelect
           bind:value={selRegion}
           items={$regions}
           label="name"
-          on:clear={() => getCounts(undefined, undefined)}
-          on:select={() => {
-            selCountry = undefined
-            getCounts(selRegion, undefined)
+          on:input={async () => {
+            if (selRegion) {
+              selCountry = undefined
+              await getCounts(selRegion, undefined)
+            }
           }}
-          itemId="id"
-          placeholder={$_("Region")}
-          showChevron
         />
       </div>
     </div>
     <div class="flex w-full items-center gap-2">
       <div>{$_("Country")}:</div>
       <div class="w-full">
-        <Select
-          {VirtualList}
+        <VirtualListSelect
           bind:value={selCountry}
           items={$countries.filter(c => c.deals && c.deals.length > 0)}
           label="name"
-          on:clear={() => getCounts(undefined, undefined)}
-          on:select={() => {
-            selRegion = undefined
-            getCounts(undefined, selCountry)
+          on:input={async () => {
+            if (selCountry) {
+              selRegion = undefined
+              await getCounts(undefined, selCountry)
+            }
           }}
-          itemId="id"
-          placeholder={$_("Country")}
-          showChevron
         />
       </div>
     </div>

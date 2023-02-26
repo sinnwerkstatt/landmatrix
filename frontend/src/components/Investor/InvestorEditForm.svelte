@@ -249,10 +249,12 @@
   </div>
 </div>
 
-<ManageOverlay
-  bind:visible={showReallyQuitOverlay}
-  on:submit={() => onClickClose(true)}
-  title={$_("Quit without saving?")}
->
-  <div class="font-medium">{$_("Do you really want to close the editor?")}</div>
-</ManageOverlay>
+{#if showReallyQuitOverlay}
+  <ManageOverlay
+    bind:visible={showReallyQuitOverlay}
+    on:submit={() => onClickClose(true)}
+    title={$_("Quit without saving?")}
+  >
+    <div class="font-medium">{$_("Do you really want to close the editor?")}</div>
+  </ManageOverlay>
+{/if}

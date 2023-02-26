@@ -1,13 +1,14 @@
 <script lang="ts">
   import cn from "classnames"
   import { _ } from "svelte-i18n"
-  import Select from "svelte-select"
-  import VirtualList from "svelte-tiny-virtual-list"
 
   import { countries } from "$lib/stores"
   import type { Deal } from "$lib/types/deal"
   import type { Investor } from "$lib/types/investor"
   import type { User } from "$lib/types/user"
+
+  import UserSelect from "$components/LowLevel/UserSelect.svelte"
+  import CountrySelect from "$components/LowLevel/CountrySelect.svelte"
 
   import { managementFilters } from "./state"
 
@@ -32,15 +33,7 @@
   <div class="space-y-4">
     <div>
       <div class="mb-1 font-bold">{$_("Target country")}</div>
-      <Select
-        {VirtualList}
-        bind:value={$managementFilters.country}
-        items={relCountries}
-        label="name"
-        itemId="id"
-        placeholder={$_("Target country")}
-        showChevron
-      />
+      <CountrySelect bind:value={$managementFilters.country} countries={relCountries} />
     </div>
     <hr />
     {#if model === "deal"}
@@ -82,18 +75,7 @@
     </div>
     <div>
       <div class="font-bold">{$_("Created by")}</div>
-      <div>
-        <Select
-          {VirtualList}
-          bind:value={$managementFilters.createdBy}
-          getOptionLabel={o => `${o.full_name} (<b>${o.username}</b>)`}
-          getSelectionLabel={o => `${o.full_name} (<b>${o.username}</b>)`}
-          items={createdByUsers}
-          itemId="id"
-          placeholder={$_("User")}
-          showChevron
-        />
-      </div>
+      <UserSelect bind:value={$managementFilters.createdBy} users={createdByUsers} />
     </div>
     <hr />
     <div>
@@ -115,18 +97,7 @@
     </div>
     <div>
       <div class="font-bold">{$_("Modified by")}</div>
-      <div>
-        <Select
-          {VirtualList}
-          bind:value={$managementFilters.modifiedBy}
-          getOptionLabel={o => `${o.full_name} (<b>${o.username}</b>)`}
-          getSelectionLabel={o => `${o.full_name} (<b>${o.username}</b>)`}
-          items={modifiedByUsers}
-          itemId="id"
-          placeholder={$_("User")}
-          showChevron
-        />
-      </div>
+      <UserSelect bind:value={$managementFilters.modifiedBy} users={modifiedByUsers} />
     </div>
     {#if model === "deal"}
       <hr />

@@ -21,6 +21,7 @@
   import { showFilterBar } from "$components/Data/stores"
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
   import CheckboxSwitch from "$components/LowLevel/CheckboxSwitch.svelte"
+  import CountrySelect from "$components/LowLevel/CountrySelect.svelte"
 
   import FilterBarNegotiationStatusToggle from "./FilterBarNegotiationStatusToggle.svelte"
   import FilterCollapse from "./FilterCollapse.svelte"
@@ -147,15 +148,12 @@
         clearable={!!$filters.country_id}
         on:click={() => ($filters.country_id = null)}
       >
-        <Select
-          items={$countries.filter(c => c.deals && c.deals.length > 0)}
+        <CountrySelect
           value={$countries.find(c => c.id === $filters.country_id)}
-          on:change={e => ($filters.country_id = e.detail?.id)}
-          placeholder={$_("Country")}
-          itemId="id"
-          label="name"
-          showChevron
-          {VirtualList}
+          countries={$countries.filter(c => c.deals && c.deals.length > 0)}
+          on:input={e => {
+            $filters.country_id = e.detail?.id
+          }}
         />
       </FilterCollapse>
 
@@ -227,14 +225,10 @@
           {VirtualList}
         />
         {$_("Country of registration")}
-        <Select
-          items={$countries}
+        <CountrySelect
           value={$countries.find(c => c.id === $filters.investor_country_id)}
-          on:change={e => ($filters.investor_country_id = e.detail?.id)}
-          placeholder={$_("Country of registration")}
-          label="name"
-          itemId="id"
-          showChevron
+          countries={$countries}
+          on:input={e => ($filters.investor_country_id = e.detail?.id)}
         />
       </FilterCollapse>
 
