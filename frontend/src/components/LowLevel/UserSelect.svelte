@@ -17,9 +17,9 @@
 </script>
 
 <VirtualListSelect bind:value items={users} label="username" {required} {itemFilter}>
-  <svelte:fragment slot="selection" let:item>
-    {item.full_name} (
-    <b>{item.username}</b>
+  <svelte:fragment slot="selection" let:selection>
+    {selection.full_name} (
+    <b>{selection.username}</b>
     )
   </svelte:fragment>
   <svelte:fragment slot="item" let:item>

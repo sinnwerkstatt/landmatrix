@@ -58,7 +58,7 @@
   on:input
 >
   <svelte:fragment slot="selection" let:selection>
-    <slot name="selection" item={selection}>
+    <slot name="selection" {selection}>
       {selection[label]}
     </slot>
   </svelte:fragment>
