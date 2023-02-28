@@ -52,8 +52,8 @@
   let newInvestorForm: HTMLFormElement
   let showNewInvestorForm = false
 
-  function initCreateNewInvestor({ detail }) {
-    newInvestor = { name: detail }
+  function initCreateNewInvestor(name: string) {
+    newInvestor = { name }
     showNewInvestorForm = true
   }
 
@@ -93,20 +93,22 @@
   <InvestorSelect
     bind:value
     {investors}
+    creatable
     name={formfield.name}
-    on:input={e => console.log(e.detail)}
+    on:input={e => {
+      const value = e.detail
+      if (value && value.created) {
+        initCreateNewInvestor(value.name)
+      }
+    }}
   />
-  {#if !showNewInvestorForm}
-    {#if value}
-      <div class="container p-2">
-        <a href="/investor/{value.id}" class="investor-link">
-          {$_("Show details for investor")} #{value.id}
-          {value.name}
-        </a>
-      </div>
-    {:else}
-      <button on:click={initCreateNewInvestor}>{$_("Create new investor")}</button>
-    {/if}
+  {#if !showNewInvestorForm && value}
+    <div class="container p-2">
+      <a href="/investor/{value.id}" class="investor-link">
+        {$_("Show details for investor")} #{value.id}
+        {value.name}
+      </a>
+    </div>
   {/if}
   {#if showNewInvestorForm}
     <form bind:this={newInvestorForm} on:submit|preventDefault={addNewInvestor}>
@@ -123,6 +125,16 @@
         {/each}
       </div>
       <button type="submit" class="btn btn-primary">{$_("Save")}</button>
+      <button
+        type="reset"
+        class="btn btn-gray mx-2"
+        on:click={() => {
+          showNewInvestorForm = false
+          value = undefined
+        }}
+      >
+        {$_("Cancel")}
+      </button>
     </form>
   {/if}
 </div>

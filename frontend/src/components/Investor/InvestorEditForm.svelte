@@ -156,7 +156,7 @@
         </button>
       {:else}
         <button
-          class="btn btn-gray btn-sm mx-2"
+          class="btn btn-gray mx-2"
           on:click={() => goto(`/investor/${investorID}/${investorVersion ?? ""}`)}
         >
           {$_("Cancel")}

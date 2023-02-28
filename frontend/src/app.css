@@ -162,17 +162,20 @@
 .svelte-select,
 .svelte-select + .list {
   --height: 38px;
-  --border-radius: 0;
-  --border: 1px solid rgb(209 213 219);
-  --input-font-size: 1rem;
-  /*--selected-item-color: var(--color-orange-600);*/
-  --item-is-active-bg: var(--color-lm-orange);
-  --item-is-active-color: black;
-  /* the following colors are auto-generated via tailwind.config.cjs */
+  --font-size: 1rem;
   /*noinspection CssUnresolvedCustomProperty*/
-  --border-focus-color: var(--color-orange-600);
+  --border: 1px solid var(--color-gray-300);
+  /*noinspection CssUnresolvedCustomProperty*/
+  --border-hover: 1px solid var(--color-gray-300);
+  --border-radius: 0px;
+  --border-focused: 2px solid black;
+  --border-radius-focused: 6px;
+  --clear-select-focus-outline: 2px solid black;
   /*noinspection CssUnresolvedCustomProperty*/
   --item-hover-bg: var(--color-orange-100);
+  --item-is-active-color: black;
+  /*noinspection CssUnresolvedCustomProperty*/
+  --item-is-active-bg: var(--color-orange-400);
 }
 
 th {

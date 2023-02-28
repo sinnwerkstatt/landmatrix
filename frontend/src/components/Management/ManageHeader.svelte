@@ -345,7 +345,7 @@
               <div class="flex items-center gap-4">
                 <div>
                   <button
-                    class="btn btn-gray btn-sm min-w-[8rem]"
+                    class="btn btn-gray min-w-[8rem]"
                     on:click|preventDefault={() => dispatch("copy")}
                   >
                     {$_("Copy deal")}

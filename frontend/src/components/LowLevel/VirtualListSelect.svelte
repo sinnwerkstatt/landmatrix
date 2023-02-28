@@ -2,6 +2,8 @@
   // we assume all items have an id field
   export interface Item {
     id: number | string
+    // [label]: string
+    created?: boolean
   }
 </script>
 
@@ -16,16 +18,32 @@
   export let value: Item | undefined = undefined
   export let required = false
   export let label = undefined
+  export let creatable = false
   type FilterFn<T> = (label: string, filterText: string, option: T) => boolean
   export let itemFilter: FilterFn<Item> | undefined = undefined
+  export let name: string | undefined = undefined
 
   // bind value for keyboard navigation but also set on click virtual list item
   let listOpen = false
   let filterText = ""
   const setValue = (item: Item) => {
-    value = item
-    listOpen = false
+    value = { ...item }
     filterText = ""
+    listOpen = false
+  }
+
+  const onFilter = (filteredItems: Item[]) => {
+    if (
+      creatable &&
+      filterText.length > 0 &&
+      filteredItems.filter(i => !i.created || i[label] === filterText).length === 0
+    ) {
+      // aware MuTaTiOn
+      items = [
+        ...items.filter(i => !i.created),
+        { id: null, [label]: filterText, created: true },
+      ]
+    }
   }
 
   // bind to svelte-select for visualizing a11y keyboard navigation
@@ -58,7 +76,9 @@
   {itemFilter}
   {label}
   {required}
+  {name}
   on:input
+  on:filter={e => onFilter(e.detail)}
 >
   <svelte:fragment slot="selection" let:selection>
     <slot name="selection" {selection}>
@@ -82,8 +102,10 @@
           let:index
           let:style
           {style}
-          on:click={() => setValue(filteredItems[index])}
+          on:pointerdown|stopPropagation
+          on:click|stopPropagation={() => setValue(filteredItems[index])}
           on:mouseover={() => setHoverIndex(index)}
+          on:focus={() => setHoverIndex(index)}
         >
           <slot name="item" item={filteredItems[index]}>
             {filteredItems[index][label]}
