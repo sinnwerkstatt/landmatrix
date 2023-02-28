@@ -9,6 +9,7 @@
 
   import EditField from "$components/Fields/EditField.svelte"
   import type { FormField } from "$components/Fields/fields"
+  import InvestorSelect from "$components/LowLevel/InvestorSelect.svelte"
 
   export let value: Investor
   export let formfield: FormField
@@ -61,7 +62,7 @@
       newInvestorForm.reportValidity()
       return
     }
-    const { data } = await $page.data.urqlClient
+    const res = await $page.data.urqlClient
       .mutation(
         gql`
           mutation ($payload: Payload) {
@@ -75,43 +76,37 @@
       )
       .toPromise()
 
-    let newI = { id: data.investor_edit.investorId, name: newInvestor.name }
-    investors.push(newI)
-    // dispatch("input", newI);
-    value = newI
-    newInvestor = {} as Investor
-    showNewInvestorForm = false
+    if (res.error) {
+      console.error(res.error)
+    } else {
+      const { data } = res
+      let newI = { id: data.investor_edit.investorId, name: newInvestor.name }
+      investors.push(newI)
+      value = newI
+      newInvestor = {} as Investor
+      showNewInvestorForm = false
+    }
   }
 </script>
 
 <div class="investor_foreignkey_field">
-  {#if investors}
-    <Select
-      items={investors}
-      {value}
-      on:select={({ detail }) => (value = { id: detail.id, name: detail.name })}
-      on:clear={() => (value = null)}
-      placeholder={$_("Investor")}
-      itemId="id"
-      label="name"
-      getOptionLabel={(o, ftxt) =>
-        o.isCreator ? `Create "${ftxt}"` : `${o.name} (#${o.id})`}
-      getSelectionLabel={o => `${o.name} (#${o.id})`}
-      showChevron
-      isCreatable
-      createItem={ftxt => ({ name: ftxt, id: "new" })}
-      on:itemCreated={initCreateNewInvestor}
-      inputAttributes={{ name: formfield.name }}
-      {VirtualList}
-    />
-  {/if}
-  {#if !showNewInvestorForm && value}
-    <div class="container p-2">
-      <a href="/investor/{value.id}" class="investor-link">
-        {$_("Show details for investor")} #{value.id}
-        {value.name}
-      </a>
-    </div>
+  <InvestorSelect
+    bind:value
+    {investors}
+    name={formfield.name}
+    on:input={e => console.log(e.detail)}
+  />
+  {#if !showNewInvestorForm}
+    {#if value}
+      <div class="container p-2">
+        <a href="/investor/{value.id}" class="investor-link">
+          {$_("Show details for investor")} #{value.id}
+          {value.name}
+        </a>
+      </div>
+    {:else}
+      <button on:click={initCreateNewInvestor}>{$_("Create new investor")}</button>
+    {/if}
   {/if}
   {#if showNewInvestorForm}
     <form bind:this={newInvestorForm} on:submit|preventDefault={addNewInvestor}>

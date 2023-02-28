@@ -1,12 +1,15 @@
+<script context="module" lang="ts">
+  // we assume all items have an id field
+  export interface Item {
+    id: number | string
+  }
+</script>
+
 <script lang="ts">
   import VirtualList from "svelte-tiny-virtual-list"
   import { tick } from "svelte"
   import Select from "svelte-select"
 
-  // we assume all items have an id field
-  interface Item {
-    id: number | string
-  }
   export const itemId = "id"
 
   export let items: Item[] = []
