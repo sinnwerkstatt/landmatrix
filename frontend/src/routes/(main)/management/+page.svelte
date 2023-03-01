@@ -205,7 +205,7 @@
   $: getCounts(model)
   $: fetchObjects(activeTabId, model)
   $: filteredObjects = objects.filter(d => {
-    if ($managementFilters.country?.id)
+    if ($managementFilters.country)
       if (d.country?.id !== $managementFilters.country.id) return false
 
     if ($managementFilters.createdAtFrom)
