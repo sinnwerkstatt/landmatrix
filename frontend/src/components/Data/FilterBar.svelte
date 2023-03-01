@@ -22,6 +22,7 @@
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
   import CheckboxSwitch from "$components/LowLevel/CheckboxSwitch.svelte"
   import CountrySelect from "$components/LowLevel/CountrySelect.svelte"
+  import InvestorSelect from "$components/LowLevel/InvestorSelect.svelte"
 
   import FilterBarNegotiationStatusToggle from "./FilterBarNegotiationStatusToggle.svelte"
   import FilterCollapse from "./FilterCollapse.svelte"
@@ -213,17 +214,7 @@
           ($filters.investor = null) && ($filters.investor_country_id = null)}
       >
         {$_("Investor name")}
-        <Select
-          items={investors}
-          bind:value={$filters.investor}
-          placeholder={$_("Investor")}
-          itemId="id"
-          label="name"
-          getOptionLabel={o => `${o.name} (#${o.id})`}
-          getSelectionLabel={o => `${o.name} (#${o.id})`}
-          showChevron
-          {VirtualList}
-        />
+        <InvestorSelect bind:value={$filters.investor} {investors} />
         {$_("Country of registration")}
         <CountrySelect
           value={$countries.find(c => c.id === $filters.investor_country_id)}

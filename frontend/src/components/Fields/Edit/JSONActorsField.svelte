@@ -4,6 +4,7 @@
   import { createValueCopy, syncValue } from "$components/Fields/JSONField"
   import MinusIcon from "$components/icons/MinusIcon.svelte"
   import PlusIcon from "$components/icons/PlusIcon.svelte"
+  import TypedChoiceField from "$components/Fields/Edit/TypedChoiceField.svelte"
 
   import type { FormField } from "../fields"
 
@@ -26,7 +27,7 @@
   }
 </script>
 
-<div class="json_date_area_field whitespace-nowrap">
+<div class="json_actors_field whitespace-nowrap">
   <table class="w-full">
     <thead>
       <tr>
@@ -46,18 +47,12 @@
             />
           </td>
           <td>
-            <!-- Required by backend -->
-            <select
+            <!-- Required by backend if name set -->
+            <TypedChoiceField
               bind:value={val.role}
-              class="inpt"
-              name="{formfield.name}_{i}_role"
-              required={val.name}
-            >
-              <option />
-              {#each Object.entries(formfield.choices) as [value, label]}
-                <option {value}>{label}</option>
-              {/each}
-            </select>
+              formfield={{ ...formfield, name: `${formfield.name}_${i}_role` }}
+              required={!!val.name}
+            />
           </td>
 
           <td class="p-1">

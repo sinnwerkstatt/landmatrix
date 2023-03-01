@@ -2,6 +2,7 @@
   import { gql } from "@urql/svelte"
   import { _ } from "svelte-i18n"
   import Select from "svelte-select"
+  import { onMount } from "svelte"
 
   import { page } from "$app/stores"
 
@@ -35,7 +36,7 @@
     currencies = data.currencies
   }
 
-  getCurrencies()
+  onMount(() => getCurrencies())
 </script>
 
 <div class="currency_foreignkey_field">
@@ -50,7 +51,7 @@
       getOptionLabel={o => `${o.name} (${o.code})`}
       getSelectionLabel={o => `${o.name} (${o.code})`}
       showChevron
-      inputAttributes={{ name: formfield.name }}
+      name={formfield.name}
     />
   {/if}
 </div>

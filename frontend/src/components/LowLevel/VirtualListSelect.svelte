@@ -23,6 +23,8 @@
   export let itemFilter: FilterFn<Item> | undefined = undefined
   export let name: string | undefined = undefined
 
+  let focused
+
   // bind value for keyboard navigation but also set on click virtual list item
   let listOpen = false
   let filterText = ""
@@ -66,17 +68,18 @@
 </script>
 
 <Select
-  --list-max-height="150px"
   bind:value
   bind:listOpen
   bind:filterText
   bind:hoverItemIndex
+  bind:focused
   {itemId}
   {items}
   {itemFilter}
   {label}
   {required}
   {name}
+  hasError={required && !value && !focused}
   on:input
   on:filter={e => onFilter(e.detail)}
 >
@@ -87,31 +90,33 @@
   </svelte:fragment>
   <svelte:fragment slot="list" let:filteredItems>
     {#if filteredItems.length > 0}
-      <VirtualList
-        width="100%"
-        height={150}
-        itemCount={filteredItems.length}
-        itemSize={50}
-        scrollToIndex={hoverItemIndex}
-      >
-        <div
-          slot="item"
-          class="item"
-          class:active={filteredItems[index].id === value?.id}
-          class:hover={index === hoverItemIndex}
-          let:index
-          let:style
-          {style}
-          on:pointerdown|stopPropagation
-          on:click|stopPropagation={() => setValue(filteredItems[index])}
-          on:mouseover={() => setHoverIndex(index)}
-          on:focus={() => setHoverIndex(index)}
+      <!--prevent any pointerdown propagation to not destroy focus of svelte-select-->
+      <div on:pointerdown|stopPropagation>
+        <VirtualList
+          width="100%"
+          height={150}
+          itemCount={filteredItems.length}
+          itemSize={38}
+          scrollToIndex={hoverItemIndex}
         >
-          <slot name="item" item={filteredItems[index]}>
-            {filteredItems[index][label]}
-          </slot>
-        </div>
-      </VirtualList>
+          <div
+            slot="item"
+            class="item"
+            class:active={filteredItems[index].id === value?.id}
+            class:hover={index === hoverItemIndex}
+            let:index
+            let:style
+            {style}
+            on:click|stopPropagation={() => setValue(filteredItems[index])}
+            on:mouseover={() => setHoverIndex(index)}
+            on:focus={() => setHoverIndex(index)}
+          >
+            <slot name="item" item={filteredItems[index]}>
+              {filteredItems[index][label]}
+            </slot>
+          </div>
+        </VirtualList>
+      </div>
     {/if}
   </svelte:fragment>
 </Select>

@@ -15,22 +15,23 @@
     const mapped = (valueCopy ?? []).map(item => item.value)
     return mapped.length > 0 ? mapped : null
   }
+
+  $: items = Object.entries(formfield.choices).map(([value, label]) => ({
+    value,
+    label,
+  }))
+
+  let focused
 </script>
 
 <div class="typed_choices_field">
   <Select
     bind:value={valueCopy}
-    class="inpt"
-    items={Object.entries(formfield.choices).map(([value, label]) => ({
-      value,
-      label,
-    }))}
-    inputAttributes={{
-      name: formfield.name,
-      // see: https://github.com/rob-balfre/svelte-select/issues/214#issuecomment-1119348374
-      required: required && !value,
-    }}
+    bind:focused
+    {items}
+    {required}
+    name={formfield.name}
     multiple
-    hasError={required && !value}
+    hasError={required && !value && !focused}
   />
 </div>
