@@ -7,7 +7,6 @@
   import { page } from "$app/stores"
 
   import { investorSections } from "$lib/sections"
-  import type { DataSource } from "$lib/types/deal"
   import type { Investor } from "$lib/types/investor"
   import { Role } from "$lib/types/investor"
   import { removeEmptyEntries } from "$lib/utils/data_processing"
@@ -54,10 +53,10 @@
 
     if (!currentForm.checkValidity()) return currentForm.reportValidity()
 
+    investor.investors = removeEmptyEntries(investor.investors ?? [])
+    investor.datasources = removeEmptyEntries(investor.datasources ?? [])
+
     savingInProgress = true
-    // investor.locations = removeEmptyEntries<Location>(investor.locations);
-    // investor.contracts = removeEmptyEntries<Contract>(investor.contracts);
-    investor.datasources = removeEmptyEntries<DataSource>(investor.datasources)
 
     const { data, error } = await ($page.data.urqlClient as Client)
       .mutation<{ investor_edit: { investorId: number; investorVersion?: number } }>(

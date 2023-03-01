@@ -64,10 +64,11 @@
 
     if (!currentForm.checkValidity()) return currentForm.reportValidity()
 
+    deal.locations = removeEmptyEntries(deal.locations ?? [])
+    deal.contracts = removeEmptyEntries(deal.contracts ?? [])
+    deal.datasources = removeEmptyEntries(deal.datasources ?? [])
+
     savingInProgress = true
-    deal.locations = removeEmptyEntries<LamaLoc>(deal.locations)
-    deal.contracts = removeEmptyEntries<Contract>(deal.contracts)
-    deal.datasources = removeEmptyEntries<DataSource>(deal.datasources)
 
     const { data, error } = await ($page.data.urqlClient as Client)
       .mutation<{ deal_edit: { dealId: number; dealVersion?: number } }>(

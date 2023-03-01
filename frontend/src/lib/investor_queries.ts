@@ -41,10 +41,6 @@ export const investor_gql_query = gql`
         investor {
           id
           name
-          classification
-          country {
-            id
-          }
         }
       }
       ventures {
