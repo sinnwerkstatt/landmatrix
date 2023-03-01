@@ -5,6 +5,15 @@
 
   export let countries: Country[] = []
   export let value: Country | undefined = undefined
+  export let name: string | undefined = undefined
+  export let disabled = false
 </script>
 
-<VirtualListSelect bind:value items={countries} label="name" on:input />
+<VirtualListSelect
+  bind:value
+  items={countries}
+  label="name"
+  {name}
+  {disabled}
+  on:input
+/>

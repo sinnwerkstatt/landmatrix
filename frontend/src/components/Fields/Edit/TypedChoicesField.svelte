@@ -16,12 +16,12 @@
     return mapped.length > 0 ? mapped : null
   }
 
-  $: items = Object.entries(formfield.choices).map(([value, label]) => ({
-    value,
-    label,
-  }))
-
   let focused
+  let items
+  $: items = Object.entries(formfield.choices).map(entry => ({
+    value: entry[0],
+    label: entry[1],
+  }))
 </script>
 
 <div class="typed_choices_field">
@@ -32,6 +32,7 @@
     {required}
     name={formfield.name}
     multiple
+    showChevron
     hasError={required && !value && !focused}
   />
 </div>

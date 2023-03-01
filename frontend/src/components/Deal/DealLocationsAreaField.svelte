@@ -196,11 +196,4 @@
       accept=".geojson,application/geo+json,application/json"
     />
   </div>
-
-  <!--  <select bind:value={toAddFeature.type} class="inpt w-auto" required>-->
-  <!--    <option value>&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;</option>-->
-  <!--    <option value="production_area">{$_("Production area")}</option>-->
-  <!--    <option value="contract_area">{$_("Contract area")}</option>-->
-  <!--    <option value="intended_area">{$_("Intended area")}</option>-->
-  <!--  </select>-->
 </Overlay>

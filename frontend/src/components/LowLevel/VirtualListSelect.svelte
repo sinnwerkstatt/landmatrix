@@ -5,6 +5,8 @@
     // [label]: string
     created?: boolean
   }
+
+  export type FilterFn<T> = (label: string, filterText: string, option: T) => boolean
 </script>
 
 <script lang="ts">
@@ -17,9 +19,10 @@
   export let items: Item[] = []
   export let value: Item | undefined = undefined
   export let required = false
+  export let disabled = false
   export let label = undefined
   export let creatable = false
-  type FilterFn<T> = (label: string, filterText: string, option: T) => boolean
+  export let placeholder = undefined
   export let itemFilter: FilterFn<Item> | undefined = undefined
   export let name: string | undefined = undefined
 
@@ -35,11 +38,11 @@
   }
 
   const onFilter = (filteredItems: Item[]) => {
-    if (
-      creatable &&
-      filterText.length > 0 &&
-      filteredItems.filter(i => !i.created || i[label] === filterText).length === 0
-    ) {
+    const filterActive = filterText.length > 0
+    const noItemsLefts = filteredItems.filter(i => !i.created).length === 0
+    const notCreatedAlready = !filteredItems.find(i => i[label] === filterText)
+
+    if (creatable && filterActive && noItemsLefts && notCreatedAlready) {
       // aware MuTaTiOn
       items = [
         ...items.filter(i => !i.created),
@@ -78,7 +81,10 @@
   {itemFilter}
   {label}
   {required}
+  {disabled}
+  {placeholder}
   {name}
+  showChevron
   hasError={required && !value && !focused}
   on:input
   on:filter={e => onFilter(e.detail)}
@@ -123,16 +129,11 @@
 
 <style>
   .item {
-    height: 30px;
-    /*line-height: 30px;*/
+    height: 38px;
     display: flex;
-    /*text-align: center;*/
     align-items: center;
     padding: 20px;
     cursor: default;
-    /*text-overflow: ellipsis;*/
-    /*white-space: nowrap;*/
-    /*overflow: hidden;*/
   }
 
   .item.hover {
