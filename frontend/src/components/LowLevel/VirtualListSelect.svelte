@@ -1,26 +1,23 @@
-<script context="module" lang="ts">
-  // we assume all items have an id field
-  export interface Item {
-    id: number | string
-    // [label]: string
-    created?: boolean
-  }
-
-  export type FilterFn<T> = (label: string, filterText: string, option: T) => boolean
-</script>
-
 <script lang="ts">
   import VirtualList from "svelte-tiny-virtual-list"
   import { tick } from "svelte"
   import Select from "svelte-select"
 
+  // we assume all items have an id field
+  interface Item {
+    id: number | string | null
+    created?: boolean
+  }
+
+  export type FilterFn<T> = (label: string, filterText: string, option: T) => boolean
+
   export const itemId = "id"
 
   export let items: Item[] = []
   export let value: Item | undefined = undefined
+  export let label = "label"
   export let required = false
   export let disabled = false
-  export let label = undefined
   export let creatable = false
   export let placeholder = undefined
   export let itemFilter: FilterFn<Item> | undefined = undefined

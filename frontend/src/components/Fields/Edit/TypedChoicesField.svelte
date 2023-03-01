@@ -4,35 +4,38 @@
   import type { FormField } from "../fields"
 
   export let formfield: FormField
-  export let value: string
-  export let required: boolean
+  export let value: string[] | undefined = undefined
+  export let required = false
 
-  let valueCopy = JSON.parse(JSON.stringify(value ?? []))
+  interface Item<T> {
+    value: T
+    label: string
+  }
+  const items: Item<string>[] = Object.entries(formfield.choices).map(
+    (entry: [string, string]) => ({
+      value: entry[0],
+      label: entry[1],
+    }),
+  )
 
-  $: value = formatValue(valueCopy)
-
-  const formatValue = valueCopy => {
-    const mapped = (valueCopy ?? []).map(item => item.value)
-    return mapped.length > 0 ? mapped : null
+  const setValue = (items: Item<string>[]) => {
+    // set undefined on empty value array
+    value = !items || items.length === 0 ? undefined : items.map(i => i.value)
   }
 
   let focused
-  let items
-  $: items = Object.entries(formfield.choices).map(entry => ({
-    value: entry[0],
-    label: entry[1],
-  }))
 </script>
 
 <div class="typed_choices_field">
   <Select
-    bind:value={valueCopy}
+    value={items.filter(i => (value || []).includes(i.value))}
     bind:focused
     {items}
     {required}
-    name={formfield.name}
     multiple
     showChevron
+    name={formfield.name}
     hasError={required && !value && !focused}
+    on:input={e => setValue(e.detail)}
   />
 </div>
