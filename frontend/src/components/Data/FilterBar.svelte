@@ -21,6 +21,8 @@
   import { showFilterBar } from "$components/Data/stores"
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
   import CheckboxSwitch from "$components/LowLevel/CheckboxSwitch.svelte"
+  import CountrySelect from "$components/LowLevel/CountrySelect.svelte"
+  import InvestorSelect from "$components/LowLevel/InvestorSelect.svelte"
 
   import FilterBarNegotiationStatusToggle from "./FilterBarNegotiationStatusToggle.svelte"
   import FilterCollapse from "./FilterCollapse.svelte"
@@ -147,15 +149,12 @@
         clearable={!!$filters.country_id}
         on:click={() => ($filters.country_id = null)}
       >
-        <Select
-          items={$countries.filter(c => c.deals && c.deals.length > 0)}
+        <CountrySelect
           value={$countries.find(c => c.id === $filters.country_id)}
-          on:change={e => ($filters.country_id = e.detail?.id)}
-          placeholder={$_("Country")}
-          optionIdentifier="id"
-          labelIdentifier="name"
-          showChevron
-          {VirtualList}
+          countries={$countries.filter(c => c.deals && c.deals.length > 0)}
+          on:input={e => {
+            $filters.country_id = e.detail?.id
+          }}
         />
       </FilterCollapse>
 
@@ -215,26 +214,12 @@
           ($filters.investor = null) && ($filters.investor_country_id = null)}
       >
         {$_("Investor name")}
-        <Select
-          items={investors}
-          bind:value={$filters.investor}
-          placeholder={$_("Investor")}
-          optionIdentifier="id"
-          labelIdentifier="name"
-          getOptionLabel={o => `${o.name} (#${o.id})`}
-          getSelectionLabel={o => `${o.name} (#${o.id})`}
-          showChevron
-          {VirtualList}
-        />
+        <InvestorSelect bind:value={$filters.investor} {investors} />
         {$_("Country of registration")}
-        <Select
-          items={$countries}
+        <CountrySelect
           value={$countries.find(c => c.id === $filters.investor_country_id)}
-          on:change={e => ($filters.investor_country_id = e.detail?.id)}
-          placeholder={$_("Country of registration")}
-          labelIdentifier="name"
-          optionIdentifier="id"
-          showChevron
+          countries={$countries}
+          on:input={e => ($filters.investor_country_id = e.detail?.id)}
         />
       </FilterCollapse>
 
@@ -344,7 +329,7 @@
         <Select
           bind:value={$filters.produce}
           items={produceChoices}
-          isMulti
+          multiple
           showChevron
           groupBy={i => i.group}
         />

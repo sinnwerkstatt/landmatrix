@@ -7,6 +7,7 @@
   import type { Country } from "$lib/types/wagtail"
 
   import type { FormField } from "$components/Fields/fields"
+  import CountrySelect from "$components/LowLevel/CountrySelect.svelte"
 
   export let value: Country | undefined
   export let model: "deal" | "investor" = "deal"
@@ -22,19 +23,20 @@
       ? $countries.filter(c => !c.high_income)
       : $countries
 
-  const onSelect = e => {
-    value = e?.detail
+  const setValue = (country: Country | null) => {
+    value = country
       ? {
+          id: country.id,
+          name: country.name,
+          code_alpha2: country.code_alpha2,
+          point_lat_min: country.point_lat_min,
+          point_lat_max: country.point_lat_max,
+          point_lon_min: country.point_lon_min,
+          point_lon_max: country.point_lon_max,
           __typename: "Country",
-          id: e.detail.id,
-          name: e.detail.name,
-          code_alpha2: e.detail.code_alpha2,
-          point_lat_min: e.detail.point_lat_min,
-          point_lat_max: e.detail.point_lat_max,
-          point_lon_min: e.detail.point_lon_min,
-          point_lon_max: e.detail.point_lon_max,
         }
       : undefined
+
     dispatch("change", value)
   }
 </script>
@@ -46,17 +48,12 @@
   on:mouseout={() => (showHint = false)}
   on:blur={() => (showHint = false)}
 >
-  <Select
-    items={targetCountries}
+  <CountrySelect
     {value}
-    on:select={onSelect}
-    on:clear={onSelect}
-    placeholder={$_("Country")}
-    optionIdentifier="id"
-    labelIdentifier="name"
-    showChevron
-    isDisabled={disabled}
-    inputAttributes={{ name: formfield.name }}
+    countries={targetCountries}
+    {disabled}
+    name={formfield.name}
+    on:input={e => setValue(e.detail)}
   />
   {#if disabled && showHint}
     <span class="absolute text-sm text-gray-500">

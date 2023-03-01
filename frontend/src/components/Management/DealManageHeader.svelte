@@ -302,64 +302,70 @@
   </div>
 </ManageHeader>
 
-<ManageOverlay
-  bind:visible={showSendToReviewOverlay}
-  commentInput
-  on:submit={sendToReview}
-  title={$_("Submit for review")}
->
-  <div class="mb-6">
-    <div class="underline">{$_("Full update")}</div>
-    <p class="mb-1">
+{#if showSendToReviewOverlay}
+  <ManageOverlay
+    bind:visible={showSendToReviewOverlay}
+    commentInput
+    on:submit={sendToReview}
+    title={$_("Submit for review")}
+  >
+    <div class="mb-6">
+      <div class="underline">{$_("Full update")}</div>
+      <p class="mb-1">
+        {$_(
+          'If you have checked the information entered for every single variable, please tick the box beside "I fully updated this deal" - even if no additional information was found, but a complete search through the deal was conducted.',
+        )}
+      </p>
+      <label class="my-1">
+        <input bind:checked={fully_updated} type="checkbox" />
+        {$_("I fully updated this deal.")}
+      </label>
+    </div>
+    <div class="mb-6">
+      <label class="underline" for="data-policy-checkbox">{$_("Data policy")}</label>
+      <label class="mt-1 block font-bold">
+        <input id="data-policy-checkbox" required type="checkbox" />
+        {$_("I've read and agree to the")}
+        <a href="/about/data-policy/" target="_blank">{$_("Data policy")}</a>
+        .
+      </label>
+    </div>
+  </ManageOverlay>
+{/if}
+
+{#if showCopyOverlay}
+  <ManageOverlay
+    bind:visible={showCopyOverlay}
+    on:submit={copyDeal}
+    title={$_("Copy deal")}
+  >
+    <p>
       {$_(
-        'If you have checked the information entered for every single variable, please tick the box beside "I fully updated this deal" - even if no additional information was found, but a complete search through the deal was conducted.',
+        "This creates a completely identical copy of the deal. The copy must then be edited and adjusted to prevent identical duplicates.",
       )}
     </p>
-    <label class="my-1">
-      <input bind:checked={fully_updated} type="checkbox" />
-      {$_("I fully updated this deal.")}
-    </label>
-  </div>
-  <div class="mb-6">
-    <label class="underline" for="data-policy-checkbox">{$_("Data policy")}</label>
-    <label class="mt-1 block font-bold">
-      <input id="data-policy-checkbox" required type="checkbox" />
-      {$_("I've read and agree to the")}
-      <a href="/about/data-policy/" target="_blank">{$_("Data policy")}</a>
-      .
-    </label>
-  </div>
-</ManageOverlay>
+    <div class="font-medium">{$_("Do you really want to copy this deal?")}</div>
+  </ManageOverlay>
+{/if}
 
-<ManageOverlay
-  bind:visible={showCopyOverlay}
-  on:submit={copyDeal}
-  title={$_("Copy deal")}
->
-  <p>
-    {$_(
-      "This creates a completely identical copy of the deal. The copy must then be edited and adjusted to prevent identical duplicates.",
-    )}
-  </p>
-  <div class="font-medium">{$_("Do you really want to copy this deal?")}</div>
-</ManageOverlay>
-
-<ManageOverlay
-  bind:visible={showConfidentialOverlay}
-  commentRequired={!deal.confidential}
-  on:close={() => (deal.confidential = deal.confidential)}
-  on:submit={({ detail }) => toggleConfidential({ ...detail, force: true })}
-  title={deal.confidential ? $_("Unset confidential") : $_("Set confidential")}
->
-  <p>
-    {#if deal.confidential}
-      {$_(
-        "If you unset the confidential flag, this deal will be publicly visible once it is set active. If you want to keep it confidential, click on 'Cancel'.",
-      )}
-    {:else}
-      {$_(
-        "If you set the confidential flag, this deal will not be publicly visible anymore. If you want to keep it public, click on 'Cancel'.",
-      )}
-    {/if}
-  </p>
-</ManageOverlay>
+{#if showConfidentialOverlay}
+  <ManageOverlay
+    bind:visible={showConfidentialOverlay}
+    commentRequired={!deal.confidential}
+    on:close={() => (deal.confidential = deal.confidential)}
+    on:submit={({ detail }) => toggleConfidential({ ...detail, force: true })}
+    title={deal.confidential ? $_("Unset confidential") : $_("Set confidential")}
+  >
+    <p>
+      {#if deal.confidential}
+        {$_(
+          "If you unset the confidential flag, this deal will be publicly visible once it is set active. If you want to keep it confidential, click on 'Cancel'.",
+        )}
+      {:else}
+        {$_(
+          "If you set the confidential flag, this deal will not be publicly visible anymore. If you want to keep it public, click on 'Cancel'.",
+        )}
+      {/if}
+    </p>
+  </ManageOverlay>
+{/if}

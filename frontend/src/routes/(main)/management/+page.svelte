@@ -194,18 +194,13 @@
     })
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  function trackDownload(format) {
-    // TODO implement this? ${format}
-  }
-
   let showFilterOverlay = false
 
   $: activateTab($page.url.hash)
   $: getCounts(model)
   $: fetchObjects(activeTabId, model)
   $: filteredObjects = objects.filter(d => {
-    if ($managementFilters.country?.id)
+    if ($managementFilters.country)
       if (d.country?.id !== $managementFilters.country.id) return false
 
     if ($managementFilters.createdAtFrom)

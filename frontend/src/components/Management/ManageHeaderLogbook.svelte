@@ -69,23 +69,27 @@
   </div>
 </div>
 
-<ManageOverlay
-  assignToUserInput
-  bind:comment={feedbackOverlayComment}
-  bind:visible={showFeedbackOverlay}
-  commentRequired
-  on:submit={addFeedback}
-  title={$_("Send feedback")}
-  submitTitle={$_("Send")}
-  {extraUserIDs}
-  toUserRequired
-/>
+{#if showFeedbackOverlay}
+  <ManageOverlay
+    assignToUserInput
+    bind:comment={feedbackOverlayComment}
+    bind:visible={showFeedbackOverlay}
+    commentRequired
+    on:submit={addFeedback}
+    title={$_("Send feedback")}
+    submitTitle={$_("Send")}
+    {extraUserIDs}
+    toUserRequired
+  />
+{/if}
 
-<ManageOverlay
-  bind:comment={commentOverlayComment}
-  bind:visible={showCommentOverlay}
-  commentRequired
-  on:submit={addComment}
-  submitTitle={$_("Save")}
-  title={$_("Add comment")}
-/>
+{#if showCommentOverlay}
+  <ManageOverlay
+    bind:comment={commentOverlayComment}
+    bind:visible={showCommentOverlay}
+    commentRequired
+    on:submit={addComment}
+    submitTitle={$_("Save")}
+    title={$_("Add comment")}
+  />
+{/if}

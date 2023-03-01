@@ -9,6 +9,7 @@
 
   import EditField from "$components/Fields/EditField.svelte"
   import type { FormField } from "$components/Fields/fields"
+  import InvestorSelect from "$components/LowLevel/InvestorSelect.svelte"
 
   export let value: Investor
   export let formfield: FormField
@@ -51,8 +52,8 @@
   let newInvestorForm: HTMLFormElement
   let showNewInvestorForm = false
 
-  function initCreateNewInvestor({ detail }) {
-    newInvestor = { name: detail }
+  function initCreateNewInvestor(name: string) {
+    newInvestor = { name }
     showNewInvestorForm = true
   }
 
@@ -61,7 +62,7 @@
       newInvestorForm.reportValidity()
       return
     }
-    const { data } = await $page.data.urqlClient
+    const res = await $page.data.urqlClient
       .mutation(
         gql`
           mutation ($payload: Payload) {
@@ -75,36 +76,32 @@
       )
       .toPromise()
 
-    let newI = { id: data.investor_edit.investorId, name: newInvestor.name }
-    investors.push(newI)
-    // dispatch("input", newI);
-    value = newI
-    newInvestor = {} as Investor
-    showNewInvestorForm = false
+    if (res.error) {
+      console.error(res.error)
+    } else {
+      const { data } = res
+      let newI = { id: data.investor_edit.investorId, name: newInvestor.name }
+      investors.push(newI)
+      value = newI
+      newInvestor = {} as Investor
+      showNewInvestorForm = false
+    }
   }
 </script>
 
 <div class="investor_foreignkey_field">
-  {#if investors}
-    <Select
-      items={investors}
-      {value}
-      on:select={({ detail }) => (value = { id: detail.id, name: detail.name })}
-      on:clear={() => (value = null)}
-      placeholder={$_("Investor")}
-      optionIdentifier="id"
-      labelIdentifier="name"
-      getOptionLabel={(o, ftxt) =>
-        o.isCreator ? `Create "${ftxt}"` : `${o.name} (#${o.id})`}
-      getSelectionLabel={o => `${o.name} (#${o.id})`}
-      showChevron
-      isCreatable
-      createItem={ftxt => ({ name: ftxt, id: "new" })}
-      on:itemCreated={initCreateNewInvestor}
-      inputAttributes={{ name: formfield.name }}
-      {VirtualList}
-    />
-  {/if}
+  <InvestorSelect
+    bind:value
+    {investors}
+    creatable
+    name={formfield.name}
+    on:input={e => {
+      const value = e.detail
+      if (value && value.created) {
+        initCreateNewInvestor(value.name)
+      }
+    }}
+  />
   {#if !showNewInvestorForm && value}
     <div class="container p-2">
       <a href="/investor/{value.id}" class="investor-link">
@@ -128,6 +125,16 @@
         {/each}
       </div>
       <button type="submit" class="btn btn-primary">{$_("Save")}</button>
+      <button
+        type="reset"
+        class="btn btn-gray mx-2"
+        on:click={() => {
+          showNewInvestorForm = false
+          value = undefined
+        }}
+      >
+        {$_("Cancel")}
+      </button>
     </form>
   {/if}
 </div>

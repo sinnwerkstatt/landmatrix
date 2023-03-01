@@ -161,7 +161,7 @@
         </button>
       {:else}
         <button
-          class="btn btn-gray btn-sm mx-2"
+          class="btn btn-gray mx-2"
           on:click={() => goto(`/deal/${dealID}/${dealVersion ?? ""}`)}
         >
           {$_("Cancel")}
@@ -276,10 +276,12 @@
   </div>
 </div>
 
-<ManageOverlay
-  bind:visible={showReallyQuitOverlay}
-  title={$_("Quit without saving?")}
-  on:submit={() => onClickClose(true)}
->
-  <div class="font-medium">{$_("Do you really want to close the editor?")}</div>
-</ManageOverlay>
+{#if showReallyQuitOverlay}
+  <ManageOverlay
+    bind:visible={showReallyQuitOverlay}
+    title={$_("Quit without saving?")}
+    on:submit={() => onClickClose(true)}
+  >
+    <div class="font-medium">{$_("Do you really want to close the editor?")}</div>
+  </ManageOverlay>
+{/if}

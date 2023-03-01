@@ -1,10 +1,12 @@
 <script lang="ts">
-  import { createEventDispatcher, onDestroy } from "svelte"
+  import { createEventDispatcher, onDestroy, onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
   import type { User } from "$lib/types/user"
+  import { UserRole } from "$lib/types/user"
+  import { allUsers } from "$lib/stores"
 
-  import UserSelect from "$components/Management/UserSelect.svelte"
+  import UserSelect from "$components/LowLevel/UserSelect.svelte"
   import Overlay from "$components/Overlay.svelte"
 
   const dispatch = createEventDispatcher()
@@ -19,7 +21,7 @@
   export let comment = ""
 
   export let assignToUserInput = false
-  export let toUser: User | null = null
+  export let toUser: User | number | null = null
   export let toUserRequired = false
   export let extraUserIDs: number[] = []
   export let showSubmit = true
@@ -31,7 +33,18 @@
 
     dispatch("submit", { comment, toUser })
   }
+
+  onMount(() => {
+    if (typeof toUser === "number") {
+      toUser = $allUsers.find(u => u.id === toUser)
+    }
+  })
   onDestroy(() => (comment = ""))
+
+  let users: User[]
+  $: users = $allUsers.filter(
+    u => extraUserIDs.includes(u.id) || u.role > UserRole.REPORTER,
+  )
 </script>
 
 <Overlay
@@ -56,7 +69,7 @@
   {#if assignToUserInput}
     <div class="mb-4">
       <div class="mb-1 block underline">{$_("Assign to user")}</div>
-      <UserSelect bind:value={toUser} {extraUserIDs} required={toUserRequired} />
+      <UserSelect bind:value={toUser} {users} required={toUserRequired} />
     </div>
   {/if}
 </Overlay>

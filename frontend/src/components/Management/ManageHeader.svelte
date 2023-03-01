@@ -345,7 +345,7 @@
               <div class="flex items-center gap-4">
                 <div>
                   <button
-                    class="btn btn-gray btn-sm min-w-[8rem]"
+                    class="btn btn-gray min-w-[8rem]"
                     on:click|preventDefault={() => dispatch("copy")}
                   >
                     {$_("Copy deal")}
@@ -369,57 +369,68 @@
   </div>
 </div>
 
-<ManageOverlay
-  bind:visible={showNewDraftOverlay}
-  title={$_("Create a new draft")}
-  commentInput={false}
-  on:submit={() => goto(`/${otype}/edit/${object.id}/${objectVersion ?? ""}`)}
->
-  {$_(
-    "You are not the author of this version. Therefore, a new version will be created if you proceed.",
-  )}
-</ManageOverlay>
+{#if showNewDraftOverlay}
+  <ManageOverlay
+    bind:visible={showNewDraftOverlay}
+    title={$_("Create a new draft")}
+    commentInput={false}
+    on:submit={() => goto(`/${otype}/edit/${object.id}/${objectVersion ?? ""}`)}
+  >
+    {$_(
+      "You are not the author of this version. Therefore, a new version will be created if you proceed.",
+    )}
+  </ManageOverlay>
+{/if}
 
-<ManageOverlay
-  bind:visible={showToDraftOverlay}
-  title={$_("Request improvement")}
-  assignToUserInput
-  commentRequired
-  toUser={lastVersion?.created_by?.id}
-  {extraUserIDs}
-  on:submit={sendToDraft}
-/>
+{#if showToDraftOverlay}
+  <ManageOverlay
+    bind:visible={showToDraftOverlay}
+    title={$_("Request improvement")}
+    assignToUserInput
+    commentRequired
+    toUser={lastVersion?.created_by?.id}
+    toUserRequired
+    {extraUserIDs}
+    on:submit={sendToDraft}
+  />
+{/if}
 
-<ManageOverlay
-  bind:visible={showDeleteOverlay}
-  commentRequired
-  on:submit={doDelete}
-  title={objectVersion
-    ? otype === "deal"
-      ? $_("Remove deal version")
-      : $_("Remove investor version")
-    : isDeleted
-    ? otype === "deal"
-      ? $_("Reactivate deal")
-      : $_("Reactivate investor")
-    : otype === "deal"
-    ? $_("Delete deal")
-    : $_("Delete investor")}
-/>
+{#if showDeleteOverlay}
+  <ManageOverlay
+    bind:visible={showDeleteOverlay}
+    commentRequired
+    on:submit={doDelete}
+    title={objectVersion
+      ? otype === "deal"
+        ? $_("Remove deal version")
+        : $_("Remove investor version")
+      : isDeleted
+      ? otype === "deal"
+        ? $_("Reactivate deal")
+        : $_("Reactivate investor")
+      : otype === "deal"
+      ? $_("Delete deal")
+      : $_("Delete investor")}
+  />
+{/if}
 
-<ManageOverlay
-  bind:visible={showSendToActivationOverlay}
-  commentInput
-  on:submit={sendToActivation}
-  title={$_("Submit for activation")}
-/>
+{#if showSendToActivationOverlay}
+  <ManageOverlay
+    bind:visible={showSendToActivationOverlay}
+    commentInput
+    on:submit={sendToActivation}
+    title={$_("Submit for activation")}
+  />
+{/if}
 
-<ManageOverlay
-  bind:visible={showActivateOverlay}
-  commentInput
-  on:submit={activate}
-  title={$_("Activate")}
-/>
+{#if showActivateOverlay}
+  <ManageOverlay
+    bind:visible={showActivateOverlay}
+    commentInput
+    on:submit={activate}
+    title={$_("Activate")}
+  />
+{/if}
 
 <style>
   .status-field {

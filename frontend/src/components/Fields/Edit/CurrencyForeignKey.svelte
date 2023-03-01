@@ -1,10 +1,11 @@
 <script lang="ts">
   import { gql } from "@urql/svelte"
   import { _ } from "svelte-i18n"
-  import Select from "svelte-select"
+  import { onMount } from "svelte"
 
   import { page } from "$app/stores"
 
+  import VirtualListSelect from "$components/LowLevel/VirtualListSelect.svelte"
   import type { FormField } from "$components/Fields/fields"
 
   export let value: number
@@ -35,22 +36,24 @@
     currencies = data.currencies
   }
 
-  getCurrencies()
+  onMount(() => getCurrencies())
 </script>
 
 <div class="currency_foreignkey_field">
   {#if currencies}
-    <!-- removing "code" here, for "has deal changed" logic -->
-    <Select
-      items={currencies}
+    <VirtualListSelect
       bind:value
+      items={currencies}
       placeholder={$_("Currency")}
-      optionIdentifier="id"
-      labelIdentifier="name"
-      getOptionLabel={o => `${o.name} (${o.code})`}
-      getSelectionLabel={o => `${o.name} (${o.code})`}
-      showChevron
-      inputAttributes={{ name: formfield.name }}
-    />
+      label="name"
+      name={formfield.name}
+    >
+      <svelte:fragment slot="selection" let:selection>
+        {selection.name} ({selection.code})
+      </svelte:fragment>
+      <svelte:fragment slot="item" let:item>
+        {item.name} ({item.code})
+      </svelte:fragment>
+    </VirtualListSelect>
   {/if}
 </div>

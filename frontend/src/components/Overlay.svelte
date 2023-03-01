@@ -57,7 +57,7 @@
         </div>
 
         <div class="border-t px-7 py-5 text-right">
-          <button type="button" class="btn btn-cancel" on:click={close}>
+          <button type="button" class="btn btn-gray mx-2" on:click={close}>
             {closeButtonText}
           </button>
           {#if showSubmit}

@@ -267,11 +267,11 @@
       <div class="pr-3 lg:w-1/3">
         {#each locations as loc, index}
           <div
-            class="border border-4 {hoverLocationID === loc.id
+            class="mt-4 border border-4 {hoverLocationID === loc.id
               ? 'border-orange-400'
               : 'border-white'}"
           >
-            <div class="my-2 flex flex-row items-center justify-between bg-gray-200">
+            <div class="flex flex-row items-center justify-between bg-gray-200">
               <div class="flex-grow p-2" on:click={() => onActivateLocation(loc)}>
                 <h3 class="m-0">
                   {index + 1}. {$_("Location")}
@@ -323,7 +323,7 @@
             {/if}
           </div>
         {/each}
-        <div class="mt-6">
+        <div class="mt-4">
           <button
             type="button"
             class="btn btn-primary flex items-center"
@@ -335,9 +335,9 @@
           </button>
         </div>
       </div>
-      <div class="min-h-[30rem] w-full lg:w-2/3">
+      <div class="mt-4 min-h-[30rem] w-full lg:w-2/3">
         <BigMap
-          containerClass="min-h-[30rem] h-[50%] mt-5"
+          containerClass="min-h-[30rem] h-[50%]"
           options={{ center: [0, 0] }}
           on:ready={onMapReady}
         >
