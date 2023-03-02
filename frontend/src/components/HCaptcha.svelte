@@ -5,13 +5,17 @@
 
   const dispatch = createEventDispatcher()
 
-  export let sitekey = "10000000-ffff-ffff-ffff-000000000001"
   export let hl = ""
   export let size: "normal" | "compact" | "invisible" = "normal"
 
+  // https://docs.hcaptcha.com/#integration-testing-test-keys
+  export const sitekey =
+    import.meta.env.VITE_HCAPTCHA_SITEKEY || "10000000-ffff-ffff-ffff-000000000001"
+
   export const reset = () => {
-    // eslint-disable-next-line no-undef
-    if (mounted && loaded && widgetID) hcaptcha.reset(widgetID)
+    if (mounted && loaded && widgetID) {
+      window.hcaptcha.reset(widgetID)
+    }
   }
 
   let mounted = false
@@ -21,7 +25,6 @@
   onMount(() => {
     if (browser)
       window.hcaptchaOnLoad = () => {
-        // consumers can attach custom on:load handlers
         dispatch("load")
         loaded = true
       }
@@ -35,13 +38,15 @@
     }
     // guard against script loading race conditions
     // i.e. if component is destroyed before hcaptcha reference is loaded
-    // eslint-disable-next-line no-undef
-    if (loaded) hcaptcha = null
+    if (loaded) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      window.hcaptcha = null
+    }
   })
 
-  $: if (mounted && loaded) {
-    // eslint-disable-next-line no-undef
-    widgetID = hcaptcha.render(targetDiv, {
+  $: if (browser && mounted && loaded) {
+    widgetID = window.hcaptcha.render(targetDiv, {
       sitekey,
       hl, // force a specific localisation
       theme: "light",
@@ -56,7 +61,7 @@
 </script>
 
 <svelte:head>
-  {#if mounted && !window?.hcaptcha}
+  {#if browser && mounted && !window.hcaptcha}
     <script
       src="https://js.hcaptcha.com/1/api.js?onload=hcaptchaOnLoad&render=explicit"
       async
