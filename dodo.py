@@ -61,12 +61,18 @@ def task_reset_db_with_dump():
 
     replace_db = f"zcat landmatrix.sql.gz | {user_pg_run}"
 
-    update = "UPDATE wagtailcore_site SET port=9000, hostname='localhost'"
-    reset_site_to_localhost = f'{user_pg_run} -c "{update}"'
+    update_wagtail_site = "UPDATE wagtailcore_site SET port=9000, hostname='localhost'"
+    update_django_site = (
+        "UPDATE django_site SET domain='localhost:9000', name='Landmatrix (local)'"
+    )
 
     return {
         "task_dep": ["reset_db"],
-        "actions": [replace_db, reset_site_to_localhost],
+        "actions": [
+            replace_db,
+            f'{user_pg_run} -c "{update_wagtail_site}"',
+            f'{user_pg_run} -c "{update_django_site}"',
+        ],
     }
 
 

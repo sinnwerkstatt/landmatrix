@@ -32,6 +32,8 @@ DEFAULT_FROM_EMAIL = SERVER_EMAIL
 DATABASES = {"default": env.db("DATABASE_URL")}
 
 INSTALLED_APPS = [
+    # this must come first (before django.contrib.auth)
+    "apps.accounts",
     # django
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -66,7 +68,6 @@ INSTALLED_APPS = [
     "taggit",
     "wagtail_headless_preview",
     #   apps of the actual landmatrix project
-    "apps.accounts",
     "apps.blog",
     "apps.message",
     "apps.landmatrix",
