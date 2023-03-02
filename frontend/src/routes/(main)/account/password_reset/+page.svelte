@@ -10,8 +10,8 @@
   let email = ""
   let form_submitted = false
 
-  function submit() {
-    ;($page.data.urqlClient as Client)
+  const submit = async () => {
+    const res = await ($page.data.urqlClient as Client)
       .mutation(
         gql`
           mutation ($email: String!, $token: String!) {
@@ -21,9 +21,14 @@
         { email, token },
       )
       .toPromise()
-      .then(({ data }) => {
-        if (data.password_reset) form_submitted = true
-      })
+
+    if (res.error) {
+      console.error(res.error.message)
+    } else {
+      if (res.data.password_reset) {
+        form_submitted = true
+      }
+    }
   }
   let token: string
   let disabled = true
@@ -42,7 +47,7 @@
     )}
   </div>
 {:else}
-  <form on:submit|preventDefault={() => submit()}>
+  <form on:submit|preventDefault={submit}>
     <label class="mb-4 block">
       {$_("Email")}
       <input
@@ -50,16 +55,12 @@
         autocomplete="email"
         class="inpt block"
         placeholder={$_("Email")}
+        required
         type="email"
       />
     </label>
     <div class="grid grid-cols-2 gap-4">
-      <HCaptcha
-        class="flex w-full justify-center"
-        sitekey={import.meta.env.VITE_HCAPTCHA_SITEKEY ||
-          "10000000-ffff-ffff-ffff-000000000001"}
-        on:success={captchaVerified}
-      />
+      <HCaptcha class="flex w-full justify-center" on:success={captchaVerified} />
       <div class="flex items-center justify-center">
         <button class="btn btn-primary w-full" type="submit" {disabled}>
           {$_("Reset password")}

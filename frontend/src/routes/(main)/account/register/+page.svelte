@@ -22,8 +22,6 @@
   let disabled = true
   let register_failed_message = ""
   let registration_successful = false
-  let VITE_HCAPTCHA_SITEKEY =
-    import.meta.env.VITE_HCAPTCHA_SITEKEY || "10000000-ffff-ffff-ffff-000000000001"
 
   function captchaVerified(e: CustomEvent<{ token: string }>) {
     token = e.detail.token
@@ -168,11 +166,7 @@
         type="password"
       />
     </label>
-    <HCaptcha
-      class="flex w-full justify-center"
-      sitekey={VITE_HCAPTCHA_SITEKEY}
-      on:success={captchaVerified}
-    />
+    <HCaptcha class="flex w-full justify-center" on:success={captchaVerified} />
     <div class="flex items-center justify-center">
       <button class="btn btn-primary w-full" type="submit" {disabled}>
         {$_("Register")}

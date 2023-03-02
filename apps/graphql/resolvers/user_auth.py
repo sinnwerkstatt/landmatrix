@@ -135,7 +135,7 @@ def resolve_password_reset(_obj, _info, email, token) -> bool:
         return False
     form = PasswordResetForm(data={"email": email})
     if form.is_valid():
-        form.save()
+        form.save(use_https=True)
         return True
     return False
 

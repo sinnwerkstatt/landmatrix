@@ -30,11 +30,17 @@ declare module "@googlemaps/js-api-loader?client" {
 declare module "*?client"
 declare module "*?server"
 
+type HCatchaOnLoad = () => void
+
 declare global {
   interface Window {
     // Matomo
     _paq?: {
       push: (item: string[]) => void
     }
+
+    // HCaptcha
+    hcaptcha: HCaptcha
+    hcaptchaOnLoad: HCatchaOnLoad | null
   }
 }
