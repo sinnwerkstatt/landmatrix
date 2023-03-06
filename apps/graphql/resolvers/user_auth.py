@@ -1,3 +1,5 @@
+from typing import Type
+
 import requests
 
 from django.conf import settings
@@ -12,9 +14,9 @@ from django.template import Context, Template
 from django.utils.http import urlsafe_base64_decode
 from django.utils.translation import gettext_lazy as _
 
-from apps.accounts.models import UserModel
+from apps.accounts.models import User
 
-User: UserModel = auth.get_user_model()
+UserModel: Type[User] = auth.get_user_model()
 
 REGISTRATION_SALT = settings.SECRET_KEY
 
@@ -67,7 +69,7 @@ def resolve_register(
     if not hcaptcha_verify["success"]:
         return {"ok": False, "code": "captcha_problems"}
 
-    new_user = User.objects.create(
+    new_user = UserModel.objects.create(
         username=username,
         first_name=first_name,
         last_name=last_name,
@@ -97,7 +99,7 @@ def resolve_register_confirm(_obj, _info, activation_key):
         return {"ok": False, "code": "expired"}
     except signing.BadSignature:
         return {"ok": False, "code": "invalid_key"}
-    user = User.objects.get(username=username)
+    user = UserModel.objects.get(username=username)
     if user.email_confirmed or user.is_active:
         return {"ok": False, "code": "already_activated"}
     user.email_confirmed = True
@@ -145,8 +147,14 @@ def resolve_password_reset_confirm(
 ) -> bool:
     try:
         uid = urlsafe_base64_decode(uidb64).decode()
-        user = User.objects.get(pk=uid)
-    except (TypeError, ValueError, OverflowError, User.DoesNotExist, ValidationError):
+        user = UserModel.objects.get(pk=uid)
+    except (
+        TypeError,
+        ValueError,
+        OverflowError,
+        UserModel.DoesNotExist,
+        ValidationError,
+    ):
         return False
 
     if user and default_token_generator.check_token(user, token):

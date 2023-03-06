@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Literal
+from typing import Literal, Type
 
 from ariadne.graphql import GraphQLError
 
@@ -25,9 +25,7 @@ from .user_utils import send_comment_to_user
 
 OType = Literal["deal", "investor"]
 
-from apps.accounts.models import UserModel
-
-User: UserModel = get_user_model()
+from apps.accounts.models import User
 
 
 def add_workflow_info(
@@ -289,7 +287,6 @@ def object_edit(
         if (
             obj.draft_status in [DRAFT_STATUS["REVIEW"], DRAFT_STATUS["ACTIVATION"]]
         ) or obj_version.created_by_id != user.id:
-
             oldstatus = obj.draft_status
 
             obj_version.id = None

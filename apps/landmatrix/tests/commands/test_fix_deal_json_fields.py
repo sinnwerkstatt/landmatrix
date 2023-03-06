@@ -1,8 +1,10 @@
+from typing import Type
+
 import pytest
 
 from django.contrib.auth import get_user_model
 
-from apps.accounts.models import UserModel
+from apps.accounts.models import User
 
 from ...management.commands.fix_deal_json_fields import (
     JSON_fields,
@@ -11,12 +13,11 @@ from ...management.commands.fix_deal_json_fields import (
 )
 from ...models.deal import Deal, DealVersion
 
-User: UserModel = get_user_model()
+UserModel: Type[User] = get_user_model()
 
 
 @pytest.mark.django_db
 def test_fix_json_fields_deal():
-
     d1 = Deal.objects.create(**{field: None for field in JSON_fields})
     d2 = Deal.objects.create(**{field: [] for field in JSON_fields})
     d3 = Deal.objects.create(**{field: [{"current": True}] for field in JSON_fields})
@@ -32,7 +33,7 @@ def test_fix_json_fields_deal():
 
 @pytest.mark.django_db()
 def test_fix_json_fields_version():
-    user = User.objects.create()
+    user = UserModel.objects.create()
     modifier_fields = {"modified_at": "2000-01-01", "modified_by": user.id}
 
     v1 = DealVersion.objects.create(

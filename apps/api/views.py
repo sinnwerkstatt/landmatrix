@@ -1,11 +1,6 @@
 from __future__ import annotations
 
-import csv
-import io
 from datetime import datetime, timedelta
-
-import pytz
-from openpyxl.workbook import Workbook
 
 from django.core.handlers.wsgi import WSGIRequest
 from django.db.models import F, Prefetch, Q
@@ -29,7 +24,7 @@ from apps.landmatrix.models.investor import (
 )
 from apps.message.models import Message
 
-from .to_dict import create_lookups, deal_to_dict, investor_to_dict
+from .utils.to_dict import create_lookups, deal_to_dict, investor_to_dict
 
 
 def messages_json(request):

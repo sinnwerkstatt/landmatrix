@@ -1,11 +1,13 @@
+from typing import Type
+
 from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext_lazy as _
 
-from apps.accounts.models import UserModel
+from apps.accounts.models import User
 
-User: UserModel = get_user_model()
+UserModel: Type[User] = get_user_model()
 
 
 class MyUserAdmin(UserAdmin):
@@ -23,4 +25,4 @@ class MyUserAdmin(UserAdmin):
     actions = [set_inactive]
 
 
-admin.site.register(User, MyUserAdmin)
+admin.site.register(UserModel, MyUserAdmin)

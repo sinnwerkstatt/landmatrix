@@ -1,16 +1,18 @@
+from typing import Type
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.core.management.base import BaseCommand
 
-from apps.accounts.models import UserModel, UserRole
+from apps.accounts.models import User, UserRole
 
-User: UserModel = get_user_model()
+UserModel: Type[User] = get_user_model()
 
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        if not User.objects.filter(username="shakespeare").exists():
-            will = User.objects.create_superuser(
+        if not UserModel.objects.filter(username="shakespeare").exists():
+            will = UserModel.objects.create_superuser(
                 username="shakespeare",
                 email="william@shakespeare.dev",
                 password="hamlet4eva",
@@ -22,8 +24,8 @@ class Command(BaseCommand):
             will.save()
             print("Created will")
 
-        if not User.objects.filter(username="test_editor").exists():
-            user = User.objects.create_user(
+        if not UserModel.objects.filter(username="test_editor").exists():
+            user = UserModel.objects.create_user(
                 username="test_editor",
                 email="editor@test.dev",
                 password="love2edit",
@@ -33,8 +35,8 @@ class Command(BaseCommand):
             user.save()
             print("Created test editor")
 
-        if not User.objects.filter(username="test_reporter").exists():
-            user = User.objects.create_user(
+        if not UserModel.objects.filter(username="test_reporter").exists():
+            user = UserModel.objects.create_user(
                 username="test_reporter",
                 email="reporter@test.dev",
                 password="love2report",

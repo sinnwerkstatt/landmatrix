@@ -1,16 +1,17 @@
 from datetime import datetime, timezone
+from typing import Type
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from apps.accounts.models import UserModel
+from apps.accounts.models import User
 from apps.landmatrix.models.abstracts import DRAFT_STATUS, STATUS
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.deal import Deal, DealVersion, DealWorkflowInfo
 
 from .to_dict import create_lookups, deal_to_dict
 
-User: UserModel = get_user_model()
+UserModel: Type[User] = get_user_model()
 
 
 FIRST_OF_JANUARY_2022 = datetime(2022, 1, 1, tzinfo=timezone.utc)
@@ -22,13 +23,13 @@ class ToDictTestCase(TestCase):
     def setUpTestData(cls):
         cls.maxDiff = None
 
-        cls.AGATHA = User.objects.create(
+        cls.AGATHA = UserModel.objects.create(
             id=1001,
             username="agatha",
             first_name="Agatha",
             last_name="Christie",
         )
-        cls.WILLIAM = User.objects.create(
+        cls.WILLIAM = UserModel.objects.create(
             id=1002,
             username="willi",
             first_name="William",

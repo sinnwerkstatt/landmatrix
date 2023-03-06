@@ -1,18 +1,19 @@
 import json
+from typing import Type
 
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 from django.db.transaction import atomic
 from wagtail.core.models import Page, Site
 
-from apps.accounts.models import UserModel
+from apps.accounts.models import User
 from apps.wagtailcms.models import WagtailPage, WagtailRootPage
 
-User: UserModel = get_user_model()
+UserModel: Type[User] = get_user_model()
 
 
 def create_user(name, email, password, firstname, lastname, superuser=False):
-    u_obj = User.objects
+    u_obj = UserModel.objects
     try:
         if superuser:
             user = u_obj.create_superuser(name, email, password)
