@@ -106,12 +106,11 @@
     }
 
     if (e.code === "Enter") {
-      goto(searchResult[selectedSearchIndex].url)
       e.preventDefault()
-      document.getElementById("searchDropdown").click()
+      goto(searchResult[selectedSearchIndex].url)
+      document.getElementById("search").click()
     }
   }
-  // },
 </script>
 
 <NavDropDown placement="right-0">
