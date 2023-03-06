@@ -1,9 +1,11 @@
+from typing import Type
+
 import pytest
 from ariadne.graphql import GraphQLError
 
 from django.contrib.auth import get_user_model
 
-from apps.accounts.models import UserModel
+from apps.accounts.models import User
 from apps.graphql.resolvers.generics import (
     change_object_status,
     object_delete,
@@ -16,7 +18,7 @@ from apps.landmatrix.models.investor import Investor, InvestorVersion
 # noinspection PyProtectedMember
 from ..resolvers.investor import _clean_payload
 
-User: UserModel = get_user_model()
+UserModel: Type[User] = get_user_model()
 
 payload: dict[str, any] = {
     # "investors": [],
@@ -32,7 +34,7 @@ def investor_draft(db) -> list[int]:
     # new draft
     return object_edit(
         otype="investor",
-        user=(User.objects.get(username="reporter")),
+        user=(UserModel.objects.get(username="reporter")),
         obj_id=-1,
         obj_version_id=None,
         payload=payload,
@@ -45,7 +47,7 @@ def test_delete_investor_draft(investor_draft):
     with pytest.raises(GraphQLError):
         object_delete(
             otype="investor",
-            user=User.objects.get(username="reporter-2"),
+            user=UserModel.objects.get(username="reporter-2"),
             obj_id=investor_id,
             obj_version_id=investor_version,
             comment="weg mit dem schmutz",
@@ -54,7 +56,7 @@ def test_delete_investor_draft(investor_draft):
 
     object_delete(
         otype="investor",
-        user=User.objects.get(username="reporter"),
+        user=UserModel.objects.get(username="reporter"),
         obj_id=investor_id,
         obj_version_id=investor_version,
         comment="weg mit dem schmutz",
@@ -69,9 +71,9 @@ def test_edit_investor_draft(investor_draft):
     """
     investor_id, investor_version = investor_draft
 
-    land_reporter = User.objects.get(username="reporter")
-    land_editor = User.objects.get(username="editor")
-    land_admin = User.objects.get(username="administrator")
+    land_reporter = UserModel.objects.get(username="reporter")
+    land_editor = UserModel.objects.get(username="editor")
+    land_admin = UserModel.objects.get(username="administrator")
 
     # verify new draft
     i1 = Investor.objects.get(id=investor_id)
@@ -87,7 +89,7 @@ def test_edit_investor_draft(investor_draft):
 
     new_investor_id, new_investor_version = object_edit(
         otype="investor",
-        user=User.objects.get(username="reporter"),
+        user=UserModel.objects.get(username="reporter"),
         obj_id=i1.id,
         obj_version_id=i1.versions.get().id,
         payload=pl2,
@@ -164,7 +166,7 @@ def test_delete_investor(test_edit_investor_draft):
     with pytest.raises(GraphQLError):
         object_delete(
             otype="investor",
-            user=User.objects.get(username="reporter"),
+            user=UserModel.objects.get(username="reporter"),
             obj_id=investor_id,
             comment="weg mit dem schmutz",
         )
@@ -172,14 +174,14 @@ def test_delete_investor(test_edit_investor_draft):
     with pytest.raises(GraphQLError):
         object_delete(
             otype="investor",
-            user=User.objects.get(username="editor"),
+            user=UserModel.objects.get(username="editor"),
             obj_id=investor_id,
             comment="weg mit dem schmutz",
         )
     assert Investor.objects.filter(id=investor_id).count() == 1
     object_delete(
         otype="investor",
-        user=User.objects.get(username="administrator"),
+        user=UserModel.objects.get(username="administrator"),
         obj_id=investor_id,
         comment="weg mit dem schmutz",
     )
@@ -189,7 +191,7 @@ def test_delete_investor(test_edit_investor_draft):
 
 
 def test_edit_investor(test_edit_investor_draft):
-    land_reporter = User.objects.get(username="reporter")
+    land_reporter = UserModel.objects.get(username="reporter")
     i1 = Investor.objects.get()
     payload.update({"comment": "cool company"})
     investor_id, investor_version = object_edit(
@@ -240,8 +242,8 @@ def test_add_involvements(test_edit_investor_draft):
     i2 = Investor.objects.create(name="Parent investor")
     i3 = Investor.objects.create(name="Parent investor2")
 
-    land_reporter = User.objects.get(username="reporter")
-    land_admin = User.objects.get(username="administrator")
+    land_reporter = UserModel.objects.get(username="reporter")
+    land_admin = UserModel.objects.get(username="administrator")
 
     involvement1 = {
         "role": "PARENT",

@@ -43,6 +43,3 @@ class User(AbstractUser):
             else ""
         )
         super().save(*args, **kwargs)
-
-
-UserModel = Type[User]

@@ -7,11 +7,11 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import gettext as _
 from wagtail.core.models import Site
 
-from apps.accounts.models import UserModel
+from apps.accounts.models import User
 from apps.landmatrix.models.deal import Deal
 from apps.landmatrix.models.investor import Investor
 
-User: UserModel = get_user_model()
+UserModel: Type[User] = get_user_model()
 
 
 # TODO unused, but maybe helpful
@@ -35,11 +35,10 @@ def send_comment_to_user(
     obj: Deal | Investor,
     comment: str,
     from_user: User,
-    to_user_id: int | Type[int],
+    to_user_id: int,
     version_id: int = None,
 ) -> None:
-
-    receiver = User.objects.get(id=to_user_id)
+    receiver = UserModel.objects.get(id=to_user_id)
     subject = "[Landmatrix] " + _("New comment")
 
     obj_desc = (

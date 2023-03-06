@@ -1,16 +1,16 @@
 from collections.abc import Callable, Iterable
 from datetime import datetime
-from typing import TypedDict, TypeVar, cast
+from typing import Type, TypedDict, TypeVar, cast, overload
 
 from django.contrib.auth import get_user_model
 from django.db.models import Model
 
-from apps.accounts.models import UserModel
+from apps.accounts.models import User
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.deal import Deal, DealWorkflowInfo
 from apps.landmatrix.models.investor import Investor, InvestorWorkflowInfo
 
-User: UserModel = get_user_model()
+UserModel: Type[User] = get_user_model()
 
 
 class UserDict(TypedDict):
@@ -84,7 +84,7 @@ def create_model_lookup(
     qs: Iterable[T],
     map_fn: Callable[[T], V],
 ) -> dict[int, V]:
-    return {val.id: map_fn(val) for val in qs}
+    return {val.pk: map_fn(val) for val in qs}
 
 
 def user_to_dict(user: User) -> UserDict:
@@ -113,7 +113,7 @@ def country_to_dict(
 def create_lookups() -> Lookups:
     return {
         "user": create_model_lookup(
-            User.objects.all(),
+            UserModel.objects.all(),
             user_to_dict,
         ),
         "country": create_model_lookup(
@@ -140,6 +140,16 @@ def workflowinfo_to_dict(
         "replies": cast(list[WFReplyDict], wfi.replies) or [],
         "__typename": "DealWorkflowInfo" if is_deal else "InvestorWorkflowInfo",
     }
+
+
+@overload
+def base_obj_to_dict(obj: Deal, lookups: Lookups) -> DealDict:
+    ...
+
+
+@overload
+def base_obj_to_dict(obj: Investor, lookups: Lookups) -> InvestorDict:
+    ...
 
 
 def base_obj_to_dict(
@@ -169,7 +179,7 @@ def deal_to_dict(
     deal: Deal,
     lookups: Lookups,
 ) -> DealDict:
-    deal_dict: DealDict = base_obj_to_dict(deal, lookups)
+    deal_dict = base_obj_to_dict(deal, lookups)
     deal_dict["deal_size"] = int(deal.deal_size)
     deal_dict["fully_updated_at"] = deal.fully_updated_at
     return deal_dict
@@ -179,7 +189,7 @@ def investor_to_dict(
     investor: Investor,
     lookups: Lookups,
 ) -> InvestorDict:
-    investor_dict: InvestorDict = base_obj_to_dict(investor, lookups)
+    investor_dict = base_obj_to_dict(investor, lookups)
     investor_dict["name"] = investor.name
     investor_dict["deals"] = list(investor.deals.order_by("created_at").values("id"))
     return investor_dict
