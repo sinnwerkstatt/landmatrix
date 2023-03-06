@@ -23,6 +23,10 @@ export const investor_gql_query = gql`
       status
       draft_status
       created_at
+      created_by {
+        id
+        username
+      }
       modified_at
       investors {
         id
