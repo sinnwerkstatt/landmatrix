@@ -30,9 +30,10 @@
     if (res.error) {
       // graphql error
       toast.push(`GraphQL Error: ${res.error.message}`)
-      console.error(`GraphQL Error: ${res.error.message}`)
     } else if (res.data?.password_reset.ok) {
       form_submitted = true
+    } else {
+      toast.push(`Server Error: ${res.data?.password_reset.code}`)
     }
   }
   let token: string
