@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Client, gql } from "@urql/svelte"
   import { _ } from "svelte-i18n"
+  import { toast } from "@zerodevx/svelte-toast"
 
   import { page } from "$app/stores"
 
@@ -11,11 +12,15 @@
   let form_submitted = false
 
   const submit = async () => {
-    const res = await ($page.data.urqlClient as Client)
-      .mutation(
+    const urql: Client = $page.data.urqlClient
+    const res = await urql
+      .mutation<{ password_reset: { ok: boolean; code: string } }>(
         gql`
           mutation ($email: String!, $token: String!) {
-            password_reset(email: $email, token: $token)
+            password_reset(email: $email, token: $token) {
+              ok
+              code
+            }
           }
         `,
         { email, token },
@@ -23,11 +28,14 @@
       .toPromise()
 
     if (res.error) {
-      console.error(res.error.message)
+      // graphql error
+      toast.push(`GraphQL Error: ${res.error.message}`)
+      console.error(`GraphQL Error: ${res.error.message}`)
+    } else if (res.data?.password_reset.ok) {
+      form_submitted = true
     } else {
-      if (res.data.password_reset) {
-        form_submitted = true
-      }
+      toast.push(`Server Error: ${res.data?.password_reset.code}`)
+      console.error(`Server Error: ${res.data?.password_reset.code}`)
     }
   }
   let token: string

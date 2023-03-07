@@ -12,7 +12,7 @@ type Mutation {
   register_confirm(activation_key: String!): RegisterPayload
   login(username: String!, password: String!): LoginPayload
   logout: Boolean!
-  password_reset(email: String!, token: String!): Boolean!
+  password_reset(email: String!, token: String!): RegisterPayload
   password_reset_confirm(
     uidb64: String!
     token: String!

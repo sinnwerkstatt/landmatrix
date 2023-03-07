@@ -124,7 +124,7 @@ def resolve_logout(_obj, info) -> bool:
     return False
 
 
-def resolve_password_reset(_obj, _info, email, token) -> bool:
+def resolve_password_reset(_obj, _info, email, token) -> dict:
     hcaptcha_verify = requests.post(
         "https://hcaptcha.com/siteverify",
         data={
@@ -133,13 +133,21 @@ def resolve_password_reset(_obj, _info, email, token) -> bool:
             "sitekey": settings.HCAPTCHA_SITEKEY,
         },
     ).json()
+
     if not hcaptcha_verify["success"]:
-        return False
+        return {"ok": False, "code": "captcha_problems"}
+
     form = PasswordResetForm(data={"email": email})
-    if form.is_valid():
-        form.save(use_https=True)
-        return True
-    return False
+    if not form.is_valid():
+        return {"ok": False, "code": f"form_validation_error: {form.errors}"}
+    if len(list(form.get_users(email))) == 0:
+        return {"ok": False, "code": "no_users_with_mail"}
+
+    try:
+        form.save()
+    except:
+        return {"ok": False, "code": "form_save_error"}
+    return {"ok": True}
 
 
 def resolve_password_reset_confirm(
