@@ -140,13 +140,11 @@ def resolve_password_reset(_obj, _info, email, token) -> dict:
     form = PasswordResetForm(data={"email": email})
     if not form.is_valid():
         return {"ok": False, "code": f"form_validation_error: {form.errors}"}
-    if len(list(form.get_users(email))) == 0:
-        return {"ok": False, "code": "no_users_with_mail"}
+    # if len(list(form.get_users(email))) == 0:
+    #     return {"ok": False, "code": "no_users_with_mail"}
 
-    try:
-        form.save()
-    except:
-        return {"ok": False, "code": "form_save_error"}
+    form.save()
+
     return {"ok": True}
 
 

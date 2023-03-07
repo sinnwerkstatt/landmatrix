@@ -24,7 +24,7 @@
   })
   onMount(() => showContextBar.set(true))
 
-  const title = $_("Produce Info Map")
+  const title = $_("Produce info map")
 </script>
 
 <svelte:head>

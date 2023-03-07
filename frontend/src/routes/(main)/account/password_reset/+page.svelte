@@ -33,9 +33,6 @@
       console.error(`GraphQL Error: ${res.error.message}`)
     } else if (res.data?.password_reset.ok) {
       form_submitted = true
-    } else {
-      toast.push(`Server Error: ${res.data?.password_reset.code}`)
-      console.error(`Server Error: ${res.data?.password_reset.code}`)
     }
   }
   let token: string
@@ -50,8 +47,8 @@
 <PageTitle>{$_("Reset password")}</PageTitle>
 {#if form_submitted}
   <div class="text-center">
-    {$_(
-      "If your email-address is registered with Land Matrix you should receive an email shortly.",
+    {@html $_(
+      "If your email-address is registered <b>and active</b> with Land Matrix you should receive an email shortly.",
     )}
   </div>
 {:else}

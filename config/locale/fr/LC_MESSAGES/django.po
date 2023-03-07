@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-15 23:01+0100\n"
+"POT-Creation-Date: 2023-03-07 11:17+0100\n"
 "PO-Revision-Date: 2022-05-30 13:48+0000\n"
 "Last-Translator: Kurt Gerber <kurt.gerber@unibe.ch>\n"
 "Language-Team: French <http://translate.landmatrix.org/projects/landmatrix/landmatrix/fr/>\n"
@@ -18,6 +18,23 @@ msgstr "Données"
 
 msgid "Role"
 msgstr "Rôle"
+
+#, python-format
+msgid "You're receiving this email because you requested a password reset for your user account at %(site_name)s."
+msgstr ""
+
+msgid "Please go to the following page and choose a new password:"
+msgstr ""
+
+msgid "Your username, in case you’ve forgotten:"
+msgstr ""
+
+msgid "Thanks for using our site!"
+msgstr ""
+
+#, python-format
+msgid "The %(site_name)s team"
+msgstr ""
 
 msgid "Account activation on"
 msgstr "Activation du compte le"
@@ -1610,6 +1627,9 @@ msgstr "Administrateur"
 msgid "All attributes"
 msgstr ""
 
+msgid "All categories"
+msgstr "Toutes les catégories"
+
 msgid "All deleted"
 msgstr ""
 
@@ -1747,9 +1767,6 @@ msgstr ""
 msgid "Copy this deal"
 msgstr ""
 
-msgid "Copy this investor"
-msgstr ""
-
 msgid "Count"
 msgstr ""
 
@@ -1772,6 +1789,9 @@ msgstr "Profils pays"
 
 msgid "Country profiles present national-level data of large-scale land acquisitions and transactions including who the investors are, what the aim of the investment is, who the former owner was and what the land was previously used for, and what the potential benefits and impacts of the land deals are."
 msgstr "Les profils pays présentent des données de niveau national relatives aux transactions et acquisitions de terres à grande échelle, y compris l'identité des investisseurs, l’objectif de l’investissement, l’identité du propriétaire précédent et l'usage précédent de la terre, et les bénéfices et impacts potentiels des transactions foncières."
+
+msgid "Create"
+msgstr ""
 
 msgid "Create a new draft"
 msgstr ""
@@ -1896,9 +1916,6 @@ msgstr "Informations détaillées sur les cultures et les animaux sous agricultu
 msgid "Detailed crop, animal and mineral information"
 msgstr "Informations détaillées sur les cultures, les animaux et les ressources minérales"
 
-msgid "Disable moving of markers"
-msgstr ""
-
 msgid "Displayed data"
 msgstr "Données affichées"
 
@@ -1952,9 +1969,6 @@ msgstr ""
 
 msgid "Employment"
 msgstr "Emploi"
-
-msgid "Enable moving of markers"
-msgstr ""
 
 msgid "Excel document"
 msgstr ""
@@ -2070,7 +2084,7 @@ msgstr ""
 msgid "If you unset the confidential flag, this deal will be publicly visible once it is set active. If you want to keep it confidential, click on 'Cancel'."
 msgstr ""
 
-msgid "If your email-address is registered with Land Matrix you should receive an email shortly."
+msgid "If your email-address is registered <b>and active</b> with Land Matrix you should receive an email shortly."
 msgstr ""
 
 msgid "Improvement requests for me"
@@ -2256,6 +2270,9 @@ msgstr ""
 msgid "Modified by"
 msgstr "Modifiée par"
 
+msgid "Modified by me"
+msgstr ""
+
 msgid "More details"
 msgstr "Plus de détails"
 
@@ -2377,9 +2394,6 @@ msgstr "Produit"
 msgid "Produce info"
 msgstr "Info produit"
 
-msgid "Produce Info Map"
-msgstr ""
-
 msgid "Produce info map"
 msgstr ""
 
@@ -2497,10 +2511,10 @@ msgstr ""
 msgid "Send"
 msgstr ""
 
-msgid "Send a request of improvent and create a new draft version of the deal"
+msgid "Send a request of improvement and create a new draft version of the deal"
 msgstr ""
 
-msgid "Send a request of improvent and create a new draft version of the investor"
+msgid "Send a request of improvement and create a new draft version of the investor"
 msgstr ""
 
 msgid "Send feedback"
@@ -2535,12 +2549,6 @@ msgstr ""
 
 msgid "Size"
 msgstr "Superficie"
-
-msgid "Start editing this deal"
-msgstr ""
-
-msgid "Start editing this investor"
-msgstr ""
 
 msgid "Status"
 msgstr "Statut"
@@ -2579,9 +2587,6 @@ msgid "Submitted for review"
 msgstr ""
 
 msgid "Subsidiary company"
-msgstr ""
-
-msgid "Table"
 msgstr ""
 
 msgid "Table columns"
@@ -4224,9 +4229,6 @@ msgstr "Русский"
 
 #~ msgid "There is currently no content for this category."
 #~ msgstr "Il n’y a actuellement aucun contenu pour cette catégorie."
-
-#~ msgid "All categories"
-#~ msgstr "Toutes les catégories"
 
 #~ msgid "Responses for page"
 #~ msgstr "Réponses pour la page"
