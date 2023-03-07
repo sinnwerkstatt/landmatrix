@@ -203,22 +203,14 @@ export class FilterValues {
       })
 
     if (this.nature_of_deal.length > 0) {
-      const nature_of_deal_choices = [
-        NatureOfDeal.OUTRIGHT_PURCHASE,
-        NatureOfDeal.LEASE,
-        NatureOfDeal.CONCESSION,
-        NatureOfDeal.EXPLOITATION_PERMIT,
-        NatureOfDeal.PURE_CONTRACT_FARMING,
-      ]
+      const allValues = Object.values(NatureOfDeal)
+      const diffValues = allValues.filter(x => !this.nature_of_deal.includes(x))
 
-      const diflist = nature_of_deal_choices.filter(
-        x => !this.nature_of_deal.includes(x),
-      )
-      if (diflist.length > 0)
+      if (diffValues.length > 0)
         filterArray.push({
           field: "nature_of_deal",
           operation: "CONTAINED_BY",
-          value: diflist,
+          value: diffValues,
           exclusion: true,
         })
     }
