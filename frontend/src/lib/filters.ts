@@ -67,6 +67,7 @@ export class FilterValues {
     this.negotiation_status = [
       NegotiationStatus.ORAL_AGREEMENT,
       NegotiationStatus.CONTRACT_SIGNED,
+      NegotiationStatus.CHANGE_OF_OWNERSHIP,
     ]
     // Exclude Pure Contract Farming
     this.nature_of_deal = [
@@ -114,6 +115,7 @@ export class FilterValues {
       _equal(this.negotiation_status, [
         NegotiationStatus.ORAL_AGREEMENT,
         NegotiationStatus.CONTRACT_SIGNED,
+        NegotiationStatus.CHANGE_OF_OWNERSHIP,
       ]),
       _equal(this.nature_of_deal, [
         NatureOfDeal.OUTRIGHT_PURCHASE,
@@ -290,28 +292,6 @@ export class FilterValues {
     return filterArray
   }
 }
-
-// export const DEFAULT_FILTER_IGNORED_KEYS = [
-//   "region_id",
-//   "country_id",
-//   "investor_country_id",
-// ];
-//
-// export const isDefaultFilter = (filters: FilterValues): boolean => {
-//   const defaultKeys = Object.keys(DEFAULT_FILTERS);
-//   for (const key of Object.keys(filters)) {
-//     if (DEFAULT_FILTER_IGNORED_KEYS.includes(key)) continue;
-//     else if (defaultKeys.includes(key)) {
-//       if (Array.isArray(DEFAULT_FILTERS[key])) {
-//         if (!isEqual(DEFAULT_FILTERS[key], filters[key])) return false;
-//       } else {
-//         if (DEFAULT_FILTERS[key] !== filters[key]) return false;
-//       }
-//     } else return false;
-//   }
-//   return true;
-// };
-//
 
 const lSfilters = localStorage ? localStorage.getItem("filters") : undefined
 export const filters = writable<FilterValues>(
