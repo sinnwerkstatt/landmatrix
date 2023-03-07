@@ -153,8 +153,8 @@ _("Editing deal #")
 _("Editing Investor #")
 _("Editor")
 _("Email")
-_("employees")
 _("Employees")
+_("employees")
 _("Employment")
 _("Excel document")
 _("Excluded")
@@ -208,7 +208,7 @@ _(
     "If you unset the confidential flag, this deal will be publicly visible once it is set active. If you want to keep it confidential, click on 'Cancel'."
 )
 _(
-    "If your email-address is registered <b>and active</b> with Land Matrix you should receive an email shortly."
+    "If your email-address is registered <b>and active</b> you should receive an email shortly."
 )
 _("Implementation status")
 _("Improvement requests for me")

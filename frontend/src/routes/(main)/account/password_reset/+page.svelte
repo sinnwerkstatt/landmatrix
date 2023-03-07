@@ -48,7 +48,7 @@
 {#if form_submitted}
   <div class="text-center">
     {@html $_(
-      "If your email-address is registered <b>and active</b> with Land Matrix you should receive an email shortly.",
+      "If your email-address is registered <b>and active</b> you should receive an email shortly.",
     )}
   </div>
 {:else}
