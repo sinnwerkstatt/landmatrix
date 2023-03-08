@@ -154,9 +154,9 @@ def change_object_status(
             and old_wfi.draft_status_after == 1
             and old_wfi.to_user == user
         ):
-            old_wfi.processed_by_received = True
+            old_wfi.resolved = True
             old_wfi.save()
-            send_comment_to_user(obj, "", user, old_wfi.from_user_id, obj_version_id)
+            send_comment_to_user(obj, "", user, old_wfi.from_user.id, obj_version_id)
 
     elif transition == "TO_ACTIVATION":
         if user.role < UserRole.EDITOR:
