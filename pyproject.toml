@@ -97,9 +97,15 @@ known_django = ["django", "wagtail", "rest_framework", "wagtail_headless_preview
 known_first_party = ["apps"]
 sections = ["FUTURE", "STDLIB", "THIRDPARTY", "DJANGO", "FIRSTPARTY", "LOCALFOLDER"]
 
+
+# https://mypy.readthedocs.io/en/latest/config_file.html#using-a-pyproject-toml-file
 [tool.mypy]
 plugins = ["mypy_django_plugin.main"]
 strict_equality = true
+
+[[tool.mypy.overrides]]
+module = 'wagtail.*'
+ignore_missing_imports = true
 
 
 [tool.django-stubs]
