@@ -31,7 +31,7 @@ UserModel: Type[User] = get_user_model()
 
 def send_comment_to_user(
     obj: Deal | Investor,
-    comment: str,
+    comment: str | None,
     from_user: User,
     to_user_id: int,
     version_id: int | None = None,

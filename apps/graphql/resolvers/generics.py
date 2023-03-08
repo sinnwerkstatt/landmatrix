@@ -250,7 +250,7 @@ def object_edit(
     # this is a new Object
     if obj_id == -1:
         obj = Object()
-        obj.update_from_dict(payload)
+        obj.update_from_dict(payload or {})
         obj.recalculate_fields()
         obj.created_by = user
         obj.modified_at = timezone.now()
@@ -272,7 +272,7 @@ def object_edit(
 
     # retrieve the live object; update it with the payload - don't save.
     obj = Object.objects.get(id=obj_id)
-    obj.update_from_dict(payload)
+    obj.update_from_dict(payload or {})
     obj.recalculate_fields()
     obj.modified_at = timezone.now()
 
