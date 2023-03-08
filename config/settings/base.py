@@ -1,5 +1,6 @@
 # noinspection PyPackageRequirements
 import environ
+
 from django.utils.translation import gettext_lazy as _
 
 BASE_DIR = environ.Path(__file__) - 3  # type: environ.Path

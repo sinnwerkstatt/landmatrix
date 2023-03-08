@@ -12,11 +12,7 @@ from apps.api.gis_export import (
     create_location_properties,
     create_point_feature,
 )
-from apps.api.utils.geojson import (
-    Geometry,
-    create_feature,
-    create_feature_collection,
-)
+from apps.api.utils.geojson import Geometry, create_feature, create_feature_collection
 
 
 def test_gis_export_type() -> None:
