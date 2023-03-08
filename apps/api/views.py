@@ -1,6 +1,5 @@
-from __future__ import annotations
-
 from datetime import datetime, timedelta
+from typing import TypedDict
 
 from django.core.handlers.wsgi import WSGIRequest
 from django.db.models import F, Prefetch, Q
@@ -13,6 +12,7 @@ from django.http import (
 from django.utils import timezone
 from django.utils.timezone import make_aware
 from django.views import View
+from rest_framework.decorators import api_view
 
 from apps.accounts.models import UserRole
 from apps.graphql.resolvers.charts import create_statistics
@@ -27,7 +27,8 @@ from apps.message.models import Message
 from .utils.to_dict import create_lookups, deal_to_dict, investor_to_dict
 
 
-def messages_json(request):
+@api_view()
+def messages_json(request) -> HttpResponse:
     msgs = [
         msg.to_dict()
         for msg in Message.objects.filter(is_active=True).exclude(
@@ -37,12 +38,17 @@ def messages_json(request):
     return JsonResponse({"messages": msgs})
 
 
+class Filter(TypedDict):
+    staff: bool
+    q: Q
+
+
 class Management(View):
     def __init__(self):
         super().__init__()
 
     @staticmethod
-    def filters(request, is_deal=True):
+    def filters(request, is_deal=True) -> dict[str, Filter]:
         # TODO should admins see all?
         # user_groups = list(request.user.groups.values_list("name", flat=True))
         region_or_country = Q()
@@ -152,7 +158,7 @@ class Management(View):
             },
         }
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs) -> HttpResponse:
         if not request.user.is_authenticated:
             return HttpResponseServerError("unauthorized")
 
@@ -203,7 +209,7 @@ class Management(View):
 
 class CaseStatistics(View):
     @staticmethod
-    def _counts(request):
+    def _counts(request) -> JsonResponse:
         country_id = request.GET.get("country")
         region_id = request.GET.get("region")
         counts = create_statistics(country_id, region_id)
@@ -215,7 +221,7 @@ class CaseStatistics(View):
         return JsonResponse(counts)
 
     @staticmethod
-    def _deals():
+    def _deals() -> JsonResponse:
         deals = Deal.objects.values(
             "id",
             "deal_size",
@@ -233,6 +239,7 @@ class CaseStatistics(View):
         for d in deals:
             # this is here for CaseStatisticsTable.svelte -> DisplayField
             d["country"] = {"id": d["country"]}
+
         return JsonResponse({"deals": list(deals)})
 
     @staticmethod
@@ -241,7 +248,7 @@ class CaseStatistics(View):
         end: datetime,
         region: str | None,
         country: str | None,
-    ):
+    ) -> JsonResponse:
         queries = {
             "added": Q(created_at__gte=start) & Q(created_at__lte=end),
             "updated": Q(modified_at__gte=start) & Q(modified_at__lte=end),
@@ -282,7 +289,7 @@ class CaseStatistics(View):
         return JsonResponse({"buckets": buckets})
 
     @staticmethod
-    def _investors():
+    def _investors() -> JsonResponse:
         investors = Investor.objects.values(
             "id",
             "name",
@@ -296,6 +303,7 @@ class CaseStatistics(View):
         for inv in investors:
             # this is here for CaseStatisticsTable.svelte -> DisplayField
             inv["country"] = {"id": inv["country"]}
+
         return JsonResponse({"investors": list(investors)})
 
     @staticmethod
@@ -304,7 +312,7 @@ class CaseStatistics(View):
         end: datetime,
         region: str | None,
         country: str | None,
-    ):
+    ) -> JsonResponse:
         queries = {
             "added": Q(created_at__gte=start) & Q(created_at__lte=end),
             "updated": Q(modified_at__gte=start) & Q(modified_at__lte=end),
@@ -372,5 +380,5 @@ class CaseStatistics(View):
         return HttpResponseBadRequest(f"Unknown action: {action}")
 
 
-def parse_date(date_str: str):
+def parse_date(date_str: str) -> datetime:
     return make_aware(datetime.strptime(date_str, "%Y-%m-%d"))
