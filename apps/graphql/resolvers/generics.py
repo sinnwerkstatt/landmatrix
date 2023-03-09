@@ -3,7 +3,7 @@ from typing import Literal, Type, cast
 from ariadne.graphql import GraphQLError
 
 from django.core.exceptions import ValidationError
-from django.db.models import Q
+from django.db.models import Model, Q
 from django.utils import timezone
 
 from apps.accounts.models import User, UserRole
@@ -236,6 +236,9 @@ def object_edit(
     if not (user.is_authenticated and user.role):
         raise GraphQLError("MISSING_AUTHORIZATION")
 
+    if payload is None:
+        payload = {}
+
     # verify that the form is correct
     ObjectForm = DealForm if otype == "deal" else InvestorForm
     form = ObjectForm(payload)
@@ -250,7 +253,7 @@ def object_edit(
     # this is a new Object
     if obj_id == -1:
         obj = Object()
-        obj.update_from_dict(payload or {})
+        obj.update_from_dict(payload)
         obj.recalculate_fields()
         obj.created_by = user
         obj.modified_at = timezone.now()
@@ -272,7 +275,7 @@ def object_edit(
 
     # retrieve the live object; update it with the payload - don't save.
     obj = Object.objects.get(id=obj_id)
-    obj.update_from_dict(payload or {})
+    obj.update_from_dict(payload)
     obj.recalculate_fields()
     obj.modified_at = timezone.now()
 
@@ -522,3 +525,11 @@ def resolve_object_copy(_obj, info, otype: OType, obj_id: int) -> dict:
     )
 
     return {"objId": obj.id, "objVersion": obj_version.id}
+
+
+def get_foreign_keys(model: Type[Model]) -> dict[str, Type[Model]]:
+    return {
+        x.name: x.related_model  # type: ignore
+        for x in model._meta.fields
+        if x.__class__.__name__ == "ForeignKey"
+    }

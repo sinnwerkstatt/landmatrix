@@ -95,6 +95,7 @@ class DealQuerySet(models.QuerySet):
             .annotate(deal_size__sum=Sum("deal__deal_size"))
             .order_by("-deal_size__sum")
         )
+
         if country_id:
             for i, rank in enumerate(rankings, start=1):
                 if rank["country_id"] == country_id:
