@@ -315,7 +315,9 @@ class Investor(models.Model):
             if key in [
                 "id",
                 "created_at",
+                "created_by",
                 "modified_at",
+                "modified_by",
                 "versions",
                 "comments",
                 "status",

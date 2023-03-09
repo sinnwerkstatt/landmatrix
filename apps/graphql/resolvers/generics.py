@@ -440,6 +440,9 @@ def resolve_add_workflow_info_reply(
 
 def resolve_object_copy(_obj, info, otype: OType, obj_id: int) -> dict:
     user = info.context["request"].user
+    if not (user.is_authenticated and user.role):
+        raise GraphQLError("MISSING_AUTHORIZATION")
+
     Object = Deal if otype == "deal" else Investor
     ObjectVersion = DealVersion if otype == "deal" else InvestorVersion
 

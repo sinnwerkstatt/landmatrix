@@ -838,7 +838,9 @@ class Deal(AbstractDealBase):
             if key in [
                 "id",
                 "created_at",
+                "created_by",
                 "modified_at",
+                "modified_by",
                 "fully_updated",
                 "fully_updated_at",
                 "is_public",
