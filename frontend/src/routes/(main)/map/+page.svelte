@@ -193,7 +193,10 @@
     for (let deal of $deals?.data?.deals ?? []) {
       if (!(deal.id in _dealLocationMarkersCache))
         _dealLocationMarkersCache[deal.id] = deal.locations
-          .filter((loc: Location) => !!loc.point)
+          .filter(
+            (loc: Location): loc is LocWithPoint =>
+              !!loc.point && !!loc.point.lng && !!loc.point.lat,
+          )
           .map((loc: LocWithPoint) => {
             let marker = new Marker([loc.point.lat, loc.point.lng]) as MyMarker
             marker.deal = deal
