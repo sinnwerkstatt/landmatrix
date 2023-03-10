@@ -10,6 +10,18 @@ env.read_env(".env")
 DOIT_CONFIG = {"default_tasks": ["update"], "verbosity": 2}
 
 
+PROD = {
+    "SSH": "landmatrix@landmatrix.org",
+    "DB_NAME": "landmatrix",
+    "DB_USER": "landmatrix",
+}
+STAGING = {
+    "SSH": "landmatrix@dev.landmatrix.org",
+    "DB_NAME": "landmatrix",
+    "DB_USER": "landmatrix",
+}
+
+
 def pg_run(cmd: str, database="") -> str:
     return f'sudo -Hiu postgres psql {database} -c "{cmd}"'
 
@@ -53,13 +65,30 @@ def task_reset_db():
     return {"actions": actions}
 
 
+def task_get_db_from_production():
+    return {
+        "actions": [
+            f'ssh {PROD["SSH"]} "pg_dump -xO -h localhost -U {PROD["DB_NAME"]} {PROD["DB_USER"]} | bzip2" > {PROD["DB_NAME"]}.sql.bz2'
+        ]
+    }
+
+
+def task_get_db_from_staging():
+    return {
+        "actions": [
+            f'ssh {STAGING["SSH"]} "pg_dump -xO -h localhost -U {STAGING["DB_NAME"]} {STAGING["DB_USER"]} | bzip2" > {PROD["DB_NAME"]}.sql.bz2'
+        ]
+    }
+
+
 def task_reset_db_with_dump():
     db = env.db()
     user_pg_run = (
         f"PGPASSWORD={db['PASSWORD']} psql -h localhost -U {db['USER']} {db['NAME']}"
     )
 
-    replace_db = f"zcat landmatrix.sql.gz | {user_pg_run}"
+    # replace_db = f"zcat landmatrix.sql.gz | {user_pg_run}"
+    replace_db = f"bzcat landmatrix.sql.bz2 | {user_pg_run}"
 
     update_wagtail_site = "UPDATE wagtailcore_site SET port=9000, hostname='localhost'"
     update_django_site = (

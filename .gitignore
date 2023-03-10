@@ -1,5 +1,6 @@
 landmatrix*.sql
 landmatrix*.sql.gz
+landmatrix*.sql.bz2
 apps/landmatrix/static/css/*.css
 /landmatrix/static/css/.sass-cache/
 
