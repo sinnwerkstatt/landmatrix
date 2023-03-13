@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.db.models import Model
 
 from apps.accounts.models import User
+from apps.landmatrix.models.abstracts import Version, WorkflowInfo
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.deal import Deal, DealWorkflowInfo
 from apps.landmatrix.models.investor import Investor, InvestorWorkflowInfo
@@ -41,8 +42,8 @@ class WorkflowInfoDict(TypedDict):
     comment: str
     from_user: UserDict | None
     to_user: UserDict | None
-    draft_status_before: int
-    draft_status_after: int
+    draft_status_before: int | None
+    draft_status_after: int | None
     timestamp: datetime
     resolved: bool
     replies: list[WFReplyDict]
@@ -124,12 +125,12 @@ def create_lookups() -> Lookups:
 
 
 def workflowinfo_to_dict(
-    wfi: DealWorkflowInfo | InvestorWorkflowInfo,
+    wfi: WorkflowInfo,
     lookups: Lookups,
 ) -> WorkflowInfoDict:
     is_deal = isinstance(wfi, DealWorkflowInfo)
     return {
-        "id": wfi.id,
+        "id": wfi.pk,
         "from_user": lookups["user"].get(wfi.from_user_id),  # noqa
         "to_user": lookups["user"].get(wfi.to_user_id),  # noqa
         "draft_status_before": wfi.draft_status_before,
@@ -156,7 +157,7 @@ def base_obj_to_dict(
     obj: Deal | Investor,
     lookups: Lookups,
 ) -> DealDict | InvestorDict:
-    last_version = obj.versions.order_by("created_at").last()
+    last_version: Version = obj.versions.order_by("created_at").last()
 
     base_obj_dict: BaseObjDict = {
         "id": obj.id,
