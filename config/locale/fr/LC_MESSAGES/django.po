@@ -44,11 +44,11 @@ msgstr "Nouveau commentaire"
 
 #, python-brace-format
 msgid "{from_user.full_name} has addressed you in a comment on {obj_desc}:"
-msgstr ""
+msgstr "{from_user.full_name} vous a mentionné dans un commentaire sur {obj_desc} :"
 
 #, python-brace-format
 msgid "{from_user.full_name} has updated {obj_desc}:"
-msgstr ""
+msgstr "{from_user.full_name} a mis à jour {obj_desc} :"
 
 #, python-brace-format
 msgid "Please review at {url}"
@@ -126,8 +126,9 @@ msgstr "Localisation"
 msgid "Description"
 msgstr "Description"
 
+#, fuzzy
 msgid "Point"
-msgstr ""
+msgstr "Point"
 
 msgid "Facility name"
 msgstr "Nom de l’installation"
@@ -163,10 +164,10 @@ msgid "Comment on contract"
 msgstr "Commentaire sur le contrat"
 
 msgid "Type"
-msgstr ""
+msgstr "Type"
 
 msgid "Url"
-msgstr ""
+msgstr "Url"
 
 msgid "File"
 msgstr "Fichier"
@@ -202,7 +203,7 @@ msgid "Deals"
 msgstr "Transactions"
 
 msgid "Created at"
-msgstr ""
+msgstr "Créé à"
 
 msgid "Involvement type"
 msgstr "Type d'implication"
