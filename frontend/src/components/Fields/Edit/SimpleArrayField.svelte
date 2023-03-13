@@ -31,7 +31,8 @@
         name={formfield.name}
       >
         {#each choices as [v, label]}
-          <option value={v}>{label}</option>
+          <!-- The literal translation strings are defined in apps/landmatrix/models/choices.py -->
+          <option value={v}>{$_(label)}</option>
         {/each}
       </select>
     </div>

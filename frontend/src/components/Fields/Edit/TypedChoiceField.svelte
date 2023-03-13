@@ -1,5 +1,6 @@
 <script lang="ts">
   import Select from "svelte-select"
+  import { _ } from "svelte-i18n"
 
   import type { FormField } from "../fields"
 
@@ -13,9 +14,11 @@
     label: string
   }
 
-  const items: Item<string>[] = Object.entries(formfield.choices).map(entry => ({
+  let items: Item<string>[]
+  $: items = Object.entries(formfield.choices).map(entry => ({
     value: entry[0],
-    label: entry[1],
+    // The literal translation strings are defined in apps/landmatrix/models/choices.py
+    label: $_(entry[1]),
   }))
 
   let focused
