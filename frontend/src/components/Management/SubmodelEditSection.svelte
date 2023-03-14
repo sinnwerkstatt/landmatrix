@@ -46,7 +46,9 @@
 
   function removeEntry(entry: Entry) {
     if (!isEmptySubmodel(entry)) {
-      const areYouSure = confirm(`${$_("Remove")} ${modelName} ${entry.id}?`)
+      const areYouSure = confirm(
+        `${$_("Remove")} ${modelName} ${getDisplayLabel(entry)}?`,
+      )
       if (!areYouSure) return
     }
 
@@ -54,6 +56,16 @@
   }
   function toggleActiveEntry(index: number): void {
     activeEntry = activeEntry === index ? -1 : index
+  }
+
+  const getDisplayLabel = (entry: Entry): string => {
+    if (model == "involvement") {
+      const investor = (entry as Involvement).investor
+      if (investor) {
+        return `${investor.name} #${investor.id}`
+      }
+    }
+    return `#${entry.id}`
   }
 </script>
 
@@ -72,13 +84,7 @@
             <h3 class="m-0">
               {index + 1}. {modelName}
               <small class="text-sm text-gray-500">
-                {#if model === "involvement"}
-                  {#if entry?.investor?.id}
-                    {$_("Investor")} #{entry.investor.id}
-                  {/if}
-                {:else}
-                  #{entry.id}
-                {/if}
+                {getDisplayLabel(entry)}
               </small>
             </h3>
           </div>
