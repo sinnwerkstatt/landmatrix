@@ -105,7 +105,7 @@
   </VirtualList>
 </div>
 
-<style>
+<style lang="css">
   .row {
     display: grid;
     grid-template-columns: repeat(var(--grid-columns), var(--col-width));
