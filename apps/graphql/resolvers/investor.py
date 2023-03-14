@@ -188,21 +188,19 @@ def _clean_payload(payload: dict, investor_id: int) -> dict:
     }
     ret = {}
     for key, value in payload.items():
-        if key in foreignkeys:
-            if value:
-                ret[key] = foreignkeys[key].objects.get(id=value["id"])
-        elif key in "datasources" and value:
-            new_value = [
+        if key in foreignkeys and value:
+            ret[key] = foreignkeys[key].objects.get(id=value["id"])
+        elif key == "datasources" and value:
+            ret[key] = [
                 val for val in value if any([v for k, v in val.items() if k != "id"])
             ]
-            ret[key] = new_value
         elif key == "investors":
             ivis = []
             for entry in value:
                 ivi = InvestorVentureInvolvement()
-                if entry.get("id"):
+                if ivi_id := entry.get("id"):
                     try:
-                        ivi = InvestorVentureInvolvement.objects.get(id=entry["id"])
+                        ivi = InvestorVentureInvolvement.objects.get(id=ivi_id)
                     except (ValueError, InvestorVentureInvolvement.DoesNotExist):
                         pass  # it's okay, we'll use the new instance
                 ivi.venture_id = investor_id
