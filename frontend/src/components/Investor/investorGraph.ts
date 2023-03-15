@@ -4,6 +4,8 @@ import type {
   CytoscapeOptions,
   ElementDefinition,
   NodeSingular,
+  NodeDefinition,
+  EdgeDefinition,
 } from "cytoscape"
 import cyCoseBilkent from "cytoscape-cose-bilkent"
 import type { LayoutOptions } from "cytoscape-cose-bilkent"
@@ -143,7 +145,7 @@ export const createGraphElements = (
 
   if (showDeals) {
     investor.deals?.forEach((deal: Deal) => {
-      const deal_node = {
+      const deal_node: NodeDefinition = {
         data: {
           ...deal,
           _id: deal.id,
@@ -153,10 +155,10 @@ export const createGraphElements = (
           dealNode: true,
         },
       }
-      const deal_edge = {
+      const deal_edge: EdgeDefinition = {
         data: {
           id: `${investor.id}_D${deal.id}`,
-          source: investor.id,
+          source: `${investor.id}`,
           target: "D" + deal.id,
           edge_color: "#fc941f",
         },

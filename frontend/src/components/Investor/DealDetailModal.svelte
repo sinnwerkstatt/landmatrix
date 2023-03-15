@@ -18,7 +18,7 @@
     "intended_size",
     "contract_size",
   ]
-  const createTitle = deal => `${deal.name} (${deal.id})`
+  const createTitle = deal => `${deal.name}`
 </script>
 
 <Overlay on:close title={createTitle(deal)} {visible}>
@@ -32,7 +32,7 @@
       />
     {/each}
     <div class="w-100">
-      <a class="deal" href="/deal/{deal.id}" rel="noreferrer" target="_blank">
+      <a class="deal" href="/deal/{deal._id}" rel="noreferrer" target="_blank">
         {$_("More details about this deal")}
       </a>
     </div>
