@@ -6,7 +6,7 @@ export function dateCurrentFormat(value: { date: string; current?: boolean }): s
   let ret = "["
   if (value.date) ret += value.date
   if (value.date && value.current) ret += ", "
-  if (value.current) ret += get(_)("current")
+  if (value.current) ret += get(_)("current") // TODO: add to translation
   ret += "]"
   return ret
 }

@@ -14,7 +14,7 @@
   let properties: FeatureProps[]
   $: properties = (value?.features ?? []).map(feat => feat.properties)
 
-  const getAreaLabel = (areaType: AreaType) =>
+  $: getAreaLabel = (areaType: AreaType): string =>
     ({
       production_area: $_("Production areas"),
       contract_area: $_("Contract areas"),
