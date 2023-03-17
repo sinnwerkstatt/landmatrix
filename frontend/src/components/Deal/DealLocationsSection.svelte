@@ -1,48 +1,67 @@
 <script lang="ts">
-  import { area } from "@turf/turf"
-  import type { Layer, Map } from "leaflet"
-  import { GeoJSON, LatLngBounds } from "leaflet?client"
+  import type {
+    Map,
+    GeoJSONOptions,
+    GeoJSON,
+    StyleFunction,
+    PathOptions,
+    LatLngBoundsExpression,
+  } from "leaflet"
+  import { latLngBounds, geoJson, DomUtil } from "leaflet?client"
+  import type { Feature, Geometry } from "geojson"
 
-  import type { Deal } from "$lib/types/deal"
+  import type { Deal, AreaType } from "$lib/types/deal"
 
   import BigMap from "$components/Map/BigMap.svelte"
+  import LocationTooltip from "$components/Deal/LocationTooltip.svelte"
 
   import DealSubmodelSection from "./DealSubmodelSection.svelte"
 
   export let deal: Deal
 
-  let bigmap: Map
-  let layer: Layer
-
-  let styles = {
-    contract_area: { dashArray: "5, 5", dashOffset: "0", fillColor: "#ff00ff" },
-    intended_area: { dashArray: "5, 5", dashOffset: "0", fillColor: "#66ff33" },
-    production_area: { fillColor: "#ff0000" },
+  interface FeatureProperties {
+    id: string
+    name: string
+    type: AreaType
+    year: number
   }
 
-  let geojson_options = {
-    style: feature => ({
+  let bigmap: Map
+  let geoJsonLayer: GeoJSON<FeatureProperties>
+
+  const styleFunction: StyleFunction<FeatureProperties> = feature => {
+    const commonStyles: PathOptions = {
       weight: 2,
       color: "#000000",
       opacity: 1,
       fillOpacity: 0.2,
-      ...styles[feature.properties.type],
-    }),
+    }
+    const areaTypeStylesMap: { [key in AreaType]: PathOptions } = {
+      contract_area: { dashArray: "5, 5", dashOffset: "0", fillColor: "#ff00ff" },
+      intended_area: { dashArray: "5, 5", dashOffset: "0", fillColor: "#66ff33" },
+      production_area: { fillColor: "#ff0000" },
+    }
+    return {
+      ...commonStyles,
+      ...areaTypeStylesMap[feature?.properties.type],
+    }
+  }
+
+  const createTooltip = (
+    feature: Feature<Geometry, FeatureProperties>,
+  ): HTMLElement => {
+    const container = DomUtil.create("div")
+    new LocationTooltip({
+      props: { feature },
+      target: container,
+    })
+    return container
+  }
+
+  const geoJsonOptions: GeoJSONOptions<FeatureProperties> = {
+    style: styleFunction,
     onEachFeature: (feature, layer) => {
-      let tooltip = "<div>"
-
-      tooltip += `<div class="font-bold">Location #${feature.properties.id}</div>
-                      <div>Name: ${feature.properties.name}</div>
-                      <div>Type: ${feature.properties.type}</div>`
-
-      if (feature.geometry.type !== "Point") {
-        let farea = (area(layer.toGeoJSON()) / 10000)
-          .toFixed(2)
-          .toString()
-          .replace(/\B(?=(\d{3})+(?!\d))/g, " ")
-        tooltip += `<div>Area: ${farea} ha</div>`
-      }
-      tooltip += "</div>"
+      const tooltip = createTooltip(feature)
 
       layer.bindPopup(tooltip, { permanent: false, sticky: true, keepInView: true })
       layer.on("mouseover", () => layer.openPopup())
@@ -50,33 +69,39 @@
     },
   }
 
-  //   watch: {
-  //     deal() {
-  //       this.refreshMap();
-  //     },
-  //   },
+  const computeBounds = (geoJsonLayer: GeoJSON): LatLngBoundsExpression => {
+    const bounds = geoJsonLayer.getBounds()
 
-  async function refreshMap() {
-    if (!(deal && deal.country && bigmap)) return
-
-    if (layer) {
-      bigmap.removeLayer(layer)
-    }
-    layer = new GeoJSON(deal.geojson, geojson_options)
-    let mybounds = layer.getBounds()
-    let ne = mybounds.getNorthEast()
-    let sw = mybounds.getSouthWest()
+    let ne = bounds.getNorthEast()
+    let sw = bounds.getSouthWest()
     if (ne && sw) {
       if (ne.equals(sw)) {
         ne.lat += 10
         ne.lng += 10
         sw.lat -= 10
         sw.lng -= 10
-        bigmap.fitBounds(new LatLngBounds(ne, sw), { animate: false })
+        return latLngBounds(ne, sw)
       }
-      bigmap.fitBounds(mybounds.pad(1.2), { animate: false })
+      return bounds.pad(1.2)
     }
-    bigmap.addLayer(layer)
+    return
+  }
+
+  const refreshMap = async (): Promise<void> => {
+    if (!(deal && deal.country && bigmap)) {
+      return
+    }
+
+    if (geoJsonLayer) {
+      bigmap.removeLayer(geoJsonLayer)
+    }
+    geoJsonLayer = geoJson(deal.geojson, geoJsonOptions)
+    bigmap.addLayer(geoJsonLayer)
+
+    const bounds = computeBounds(geoJsonLayer)
+    if (bounds) {
+      bigmap.fitBounds(bounds, { animate: false })
+    }
   }
 
   const onMapReady = async (event: CustomEvent<Map>) => {
@@ -94,16 +119,3 @@
     />
   </div>
 </DealSubmodelSection>
-
-<!--<style lang="scss">-->
-<!--  .locations {-->
-<!--    .map-container {-->
-<!--      min-height: 250px;-->
-
-<!--      #bigMap {-->
-<!--        max-height: 50vh;-->
-<!--        margin-top: 2em;-->
-<!--      }-->
-<!--    }-->
-<!--  }-->
-<!--</style>-->
