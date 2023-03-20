@@ -16,11 +16,12 @@ export type AreaType = "production_area" | "contract_area" | "intended_area"
 
 export interface FeatureProps {
   // these are the location id and name -> not unique for feature
-  id?: string
+  id: string
   name?: string
   type?: AreaType
   date?: string
   current?: boolean
+  level_of_accuracy?: ACCURACY_LEVEL
 }
 
 export type AreaFeature = Feature<Geometry, FeatureProps>
@@ -38,6 +39,13 @@ export interface Location {
   level_of_accuracy?: ACCURACY_LEVEL
   comment?: string
   areas?: AreaFeatureCollection
+}
+export interface LocationWithCoordinates extends Location {
+  point: {
+    lat: number
+    lng: number
+  }
+  level_of_accuracy: ACCURACY_LEVEL
 }
 
 export interface Contract {
