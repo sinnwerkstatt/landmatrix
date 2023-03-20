@@ -873,6 +873,9 @@ class DataDownload:
     def location_download_format(data):
         if data.get("point"):
             data["point"] = f"{data['point']['lat']},{data['point']['lng']}"
+        else:
+            # See bug #601 -> point is {} or None
+            data["point"] = ""
         if data.get("level_of_accuracy"):
             data["level_of_accuracy"] = choices.LOCATION_ACCURACY[
                 data["level_of_accuracy"]
