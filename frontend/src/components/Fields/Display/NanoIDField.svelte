@@ -3,8 +3,8 @@
 
   import type { FormField } from "$components/Fields/fields"
 
-  export let value: number
-  export let formfield: FormField
+  export let value: string
+  export let formfield: FormField | undefined = undefined
 </script>
 
 <div class="nanoID_field" data-name={formfield?.name ?? ""}>

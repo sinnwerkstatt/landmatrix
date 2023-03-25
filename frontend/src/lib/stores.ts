@@ -15,6 +15,7 @@ import type {
   Region,
   WagtailPage,
 } from "$lib/types/wagtail"
+import type { AreaType } from "$lib/types/deal"
 
 import type { FormField } from "$components/Fields/fields"
 
@@ -226,6 +227,16 @@ export const draftStatusMap = derived(
     3: $_("Activation"),
     4: $_("Rejected"), // legacy
     5: $_("Deleted"),
+  }),
+)
+
+type AreaTypeMap = { [key in AreaType]: string }
+export const areaTypeMap = derived(
+  _,
+  ($_): AreaTypeMap => ({
+    production_area: $_("Production"),
+    contract_area: $_("Contract"),
+    intended_area: $_("Intended"),
   }),
 )
 

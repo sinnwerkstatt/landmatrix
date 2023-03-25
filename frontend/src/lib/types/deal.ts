@@ -1,4 +1,13 @@
-import type { GeoJsonObject, Feature, FeatureCollection, Geometry } from "geojson"
+import type {
+  FeatureCollection,
+  GeoJsonObject,
+  Polygon,
+  MultiPolygon,
+  Feature,
+  Point,
+  Geometry,
+  GeoJsonProperties,
+} from "geojson"
 
 import type { Obj, ObjVersion, WorkflowInfo } from "$lib/types/generics"
 import type { Investor } from "$lib/types/investor"
@@ -18,14 +27,34 @@ export interface FeatureProps {
   // these are the location id and name -> not unique for feature
   id: string
   name?: string
-  type?: AreaType
-  date?: string
-  current?: boolean
   level_of_accuracy?: ACCURACY_LEVEL
 }
 
-export type AreaFeature = Feature<Geometry, FeatureProps>
-export type AreaFeatureCollection = FeatureCollection<Geometry, FeatureProps>
+export interface AreaFeatureProps extends FeatureProps {
+  type: AreaType
+  date?: string
+  current?: boolean
+}
+export interface TempFeatureProps {
+  visible: boolean
+  area: number
+}
+
+export type FeatureWithId<
+  G extends Geometry | null = Geometry,
+  P = GeoJsonProperties,
+> = Feature<G, P> & { id: string }
+
+export type PointFeature = Feature<Point, FeatureProps>
+export type AreaFeature = Feature<Polygon | MultiPolygon, AreaFeatureProps>
+export type EnhancedAreaFeature = FeatureWithId<
+  Polygon | MultiPolygon,
+  AreaFeatureProps & TempFeatureProps
+>
+export type AreaFeatureCollection = FeatureCollection<
+  Polygon | MultiPolygon,
+  AreaFeatureProps
+>
 
 export interface Location {
   id: string
@@ -38,7 +67,7 @@ export interface Location {
   facility_name?: string
   level_of_accuracy?: ACCURACY_LEVEL
   comment?: string
-  areas?: AreaFeatureCollection
+  areas?: FeatureCollection
 }
 export interface LocationWithCoordinates extends Location {
   point: {
