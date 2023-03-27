@@ -22,13 +22,10 @@
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
   import Table from "$components/Table/Table.svelte"
 
-  import RequestedFeedbackView from "./RequestedFeedbackView.svelte"
-  import RequestedImprovementView from "./RequestedImprovementView.svelte"
   import RightFilterBar from "./RightFilterBar.svelte"
   import { managementFilters } from "./state"
-  import TodoFeedbackView from "./TodoFeedbackView.svelte"
-  import TodoImprovementView from "./TodoImprovementView.svelte"
   import { downloadAsCSV, downloadAsXLSX } from "./downloadObjects.js"
+  import WorkflowInfoView from "./WorkflowInfoView.svelte"
 
   dayjs.extend(isSameOrBefore)
   dayjs.extend(isSameOrAfter)
@@ -244,6 +241,12 @@
 
     return true
   })
+  const WORKFLOWINFO_VIEWS = [
+    "todo_feedback",
+    "todo_improvement",
+    "requested_feedback",
+    "requested_improvement",
+  ]
 </script>
 
 <svelte:head>
@@ -339,14 +342,8 @@
   </nav>
 
   <div class="mt-[60px] w-1 grow px-6 pb-6">
-    {#if activeTabId === "todo_feedback"}
-      <TodoFeedbackView objects={filteredObjects} {model} />
-    {:else if activeTabId === "todo_improvement"}
-      <TodoImprovementView objects={filteredObjects} {model} />
-    {:else if activeTabId === "requested_feedback"}
-      <RequestedFeedbackView objects={filteredObjects} {model} />
-    {:else if activeTabId === "requested_improvement"}
-      <RequestedImprovementView objects={filteredObjects} {model} />
+    {#if WORKFLOWINFO_VIEWS.includes(activeTabId)}
+      <WorkflowInfoView objects={filteredObjects} {model} tabId={activeTabId} />
     {:else}
       <Table items={filteredObjects} {columns} {spans} {labels}>
         <DisplayField

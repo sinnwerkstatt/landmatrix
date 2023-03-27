@@ -7,7 +7,7 @@
   export let draft_status: DraftStatus | null
   export let toString = true
 
-  const combineStatus = (
+  $: combineStatus = (
     status: Status,
     draft_status: DraftStatus | null,
     toString = false,

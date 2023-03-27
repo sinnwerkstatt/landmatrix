@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-07 11:32+0100\n"
+"POT-Creation-Date: 2023-03-27 17:56+0200\n"
 "PO-Revision-Date: 2022-05-30 13:48+0000\n"
 "Last-Translator: Angela Harding <coordination@landmatrix.org>\n"
 "Language-Team: Russian <http://translate.landmatrix.org/projects/landmatrix/landmatrix/ru/>\n"
@@ -1841,6 +1841,9 @@ msgstr "Политикой обработки данных"
 msgid "Data source"
 msgstr "Источник информации"
 
+msgid "Date of request"
+msgstr ""
+
 msgid "Deal history"
 msgstr "История сделки"
 
@@ -1997,6 +2000,9 @@ msgstr "Часто задаваемые вопросы (ЧАВО)"
 msgid "Farmers"
 msgstr "Фермеры"
 
+msgid "Feedback"
+msgstr "Отзывы"
+
 msgid "Feedback by me"
 msgstr "Обратная связь от меня"
 
@@ -2026,6 +2032,9 @@ msgstr "Предыдущее целевое использование"
 
 msgid "from"
 msgstr "от"
+
+msgid "From user"
+msgstr ""
 
 msgid "Full update"
 msgstr "Полное обновление"
@@ -2080,6 +2089,9 @@ msgstr "Я полностью обновил(а) эту сделку."
 
 msgid "I've read and agree to the"
 msgstr "Я ознакомлен/-а и согласен/-сна с"
+
+msgid "ID"
+msgstr "ID"
 
 msgid "ID or Name"
 msgstr "ID или имя"
@@ -2265,9 +2277,6 @@ msgstr "Меморандум о взаимопонимании"
 
 msgid "Meta"
 msgstr "Мета"
-
-msgid "Mineral Resources"
-msgstr "Полезные ископаемые"
 
 msgid "Mineral resources"
 msgstr "Полезные ископаемые"
@@ -2627,6 +2636,9 @@ msgstr "На этом рисунке показано намерение инв�
 msgid "to"
 msgstr "на"
 
+msgid "To user"
+msgstr ""
+
 #, fuzzy
 msgid "Todo"
 msgstr "Задачи"
@@ -2719,6 +2731,9 @@ msgstr "Français"
 msgid "Русский"
 msgstr "Русский"
 
+#~ msgid "Mineral Resources"
+#~ msgstr "Полезные ископаемые"
+
 #~ msgid "Copy this investor"
 #~ msgstr "Скопировать этого инвестора"
 
@@ -2748,9 +2763,6 @@ msgstr "Русский"
 
 #~ msgid "Table"
 #~ msgstr "Таблица"
-
-#~ msgid "Feedback"
-#~ msgstr "Отзывы"
 
 #, python-brace-format
 #~ msgid "{full_name} has addressed you in a comment on {obj_desc}:"
@@ -3029,9 +3041,6 @@ msgstr "Русский"
 
 #~ msgid "Latest added"
 #~ msgstr "Последние добавления"
-
-#~ msgid "ID"
-#~ msgstr "ID"
 
 #~ msgid "Added by"
 #~ msgstr "Добавлено пользователем"

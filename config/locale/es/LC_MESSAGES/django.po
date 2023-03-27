@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-07 11:32+0100\n"
+"POT-Creation-Date: 2023-03-27 17:56+0200\n"
 "PO-Revision-Date: 2022-05-30 13:48+0000\n"
 "Last-Translator: Kurt Gerber <kurt.gerber@unibe.ch>\n"
 "Language-Team: Spanish <http://translate.landmatrix.org/projects/landmatrix/landmatrix/es/>\n"
@@ -1838,6 +1838,9 @@ msgstr "Política de datos"
 msgid "Data source"
 msgstr "Fuente de datos"
 
+msgid "Date of request"
+msgstr ""
+
 msgid "Deal history"
 msgstr "Historial de transacción"
 
@@ -1994,6 +1997,9 @@ msgstr "Preguntas Frecuentes"
 msgid "Farmers"
 msgstr ""
 
+msgid "Feedback"
+msgstr "Retroalimentación"
+
 msgid "Feedback by me"
 msgstr ""
 
@@ -2022,6 +2028,9 @@ msgid "Former use"
 msgstr "Anterior uso"
 
 msgid "from"
+msgstr ""
+
+msgid "From user"
 msgstr ""
 
 msgid "Full update"
@@ -2077,6 +2086,9 @@ msgstr ""
 
 msgid "I've read and agree to the"
 msgstr "He leído y estoy de acuerdo con la"
+
+msgid "ID"
+msgstr "ID"
 
 msgid "ID or Name"
 msgstr ""
@@ -2259,9 +2271,6 @@ msgid "Memorandum of understanding"
 msgstr ""
 
 msgid "Meta"
-msgstr ""
-
-msgid "Mineral Resources"
 msgstr ""
 
 msgid "Mineral resources"
@@ -2620,6 +2629,9 @@ msgstr ""
 msgid "to"
 msgstr "a"
 
+msgid "To user"
+msgstr ""
+
 msgid "Todo"
 msgstr ""
 
@@ -2710,9 +2722,6 @@ msgstr "Français"
 
 msgid "Русский"
 msgstr "Русский"
-
-#~ msgid "Feedback"
-#~ msgstr "Retroalimentación"
 
 #, python-brace-format
 #~ msgid "{full_name} has addressed you in a comment on {obj_desc}:"
@@ -2989,9 +2998,6 @@ msgstr "Русский"
 
 #~ msgid "Latest added"
 #~ msgstr "Último añadido"
-
-#~ msgid "ID"
-#~ msgstr "ID"
 
 #~ msgid "Added by"
 #~ msgstr "Añadido por"

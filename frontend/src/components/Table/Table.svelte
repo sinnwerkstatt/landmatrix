@@ -14,7 +14,7 @@
   export let sortBy: string | null = null
 
   export let rowHeightInPx = 90
-  export let headerHeightInPx = 40
+  export let headerHeightInPx = 90
   export let colWidthInPx = 75
 
   export let rowClasses = ""
@@ -52,7 +52,7 @@
     <div
       slot="item"
       class="row {index === 0
-        ? 'items-center whitespace-nowrap bg-gray-700 pr-4 font-medium text-white'
+        ? 'items-center bg-gray-700 pr-4 font-medium text-white'
         : 'odd:bg-white even:bg-gray-100 hover:bg-gray-200'} {rowClasses}"
       let:index
       let:style
@@ -105,7 +105,7 @@
   </VirtualList>
 </div>
 
-<style>
+<style lang="css">
   .row {
     display: grid;
     grid-template-columns: repeat(var(--grid-columns), var(--col-width));
