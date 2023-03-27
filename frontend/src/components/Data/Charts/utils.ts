@@ -1,5 +1,4 @@
 import { get } from "svelte/store"
-import type { Selection, BaseType } from "d3"
 
 import { filters } from "$lib/filters"
 import { countries, regions } from "$lib/stores"
@@ -75,26 +74,4 @@ export const downloadSVG = (
     }
     image.src = svgString
   }
-}
-
-export function addMarkers(
-  svg: Selection<BaseType, unknown, HTMLElement, unknown>,
-  size = 10,
-): void {
-  const defs = svg.append("defs")
-  const marker_factory = (name: string) =>
-    defs
-      .append("marker")
-      .attr("id", name)
-      .attr("viewBox", "0 -5 10 10")
-      .attr("refX", 0)
-      .attr("refY", 0)
-      .attr("markerWidth", size)
-      .attr("markerHeight", size)
-      .attr("orient", "auto-start-reverse")
-      .attr("markerUnits", "userSpaceOnUse")
-      .append("path")
-      .attr("d", "M0,-5L10,0L0,5")
-  marker_factory("incoming-marker")
-  marker_factory("outgoing-marker")
 }

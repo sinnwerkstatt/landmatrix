@@ -24,8 +24,6 @@ import { feature } from "topojson-client"
 import type { Topology, GeometryCollection } from "topojson-specification"
 import worldTopology from "world-atlas/countries-110m.json"
 
-import { addMarkers } from "$components/Data/Charts/utils"
-
 export interface Investments {
   [targetCountryId: string]: TargetInvestments
 }
@@ -207,4 +205,26 @@ export const createGlobalMapOfInvestments = (
     })
 
   return { drawCountries, injectData, selectCountry }
+}
+
+export function addMarkers(
+  svg: Selection<BaseType, unknown, HTMLElement, unknown>,
+  size = 10,
+): void {
+  const defs = svg.append("defs")
+  const marker_factory = (name: string) =>
+    defs
+      .append("marker")
+      .attr("id", name)
+      .attr("viewBox", "0 -5 10 10")
+      .attr("refX", 0)
+      .attr("refY", 0)
+      .attr("markerWidth", size)
+      .attr("markerHeight", size)
+      .attr("orient", "auto-start-reverse")
+      .attr("markerUnits", "userSpaceOnUse")
+      .append("path")
+      .attr("d", "M0,-5L10,0L0,5")
+  marker_factory("incoming-marker")
+  marker_factory("outgoing-marker")
 }
