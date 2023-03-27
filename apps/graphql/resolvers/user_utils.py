@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from typing import Type
 
 from django.conf import settings
@@ -33,10 +31,10 @@ UserModel: Type[User] = get_user_model()
 
 def send_comment_to_user(
     obj: Deal | Investor,
-    comment: str,
+    comment: str | None,
     from_user: User,
     to_user_id: int,
-    version_id: int = None,
+    version_id: int | None = None,
 ) -> None:
     receiver = UserModel.objects.get(id=to_user_id)
     subject = "[Landmatrix] " + _("New comment")
@@ -47,13 +45,14 @@ def send_comment_to_user(
         else f"investor {obj.name} (#{obj.id})"
     )
 
+    message = ""
     if comment:
-        message = _(
+        message += _(
             f"{from_user.full_name} has addressed you in a comment on {obj_desc}:"
         )
         message += "\n\n" + comment
     else:
-        message = _(f"{from_user.full_name} has updated {obj_desc}:")
+        message += _(f"{from_user.full_name} has updated {obj_desc}:")
 
     site = Site.objects.get(is_default_site=True)
 

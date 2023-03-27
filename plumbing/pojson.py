@@ -1,6 +1,7 @@
+import sys
+
 import polib
 import simplejson
-import sys
 
 
 def po2dict(po):

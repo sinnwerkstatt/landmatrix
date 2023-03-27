@@ -1552,12 +1552,64 @@ socks = ["requests[socks] (>=2.27.0,<3)"]
 test = ["vcrpy (>=1.10.3)"]
 
 [[package]]
+name = "types-colorama"
+version = "0.4.15.8"
+description = "Typing stubs for colorama"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
+name = "types-docutils"
+version = "0.19.1.6"
+description = "Typing stubs for docutils"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
+name = "types-markdown"
+version = "3.4.2.5"
+description = "Typing stubs for Markdown"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "types-openpyxl"
 version = "3.0.4.5"
 description = "Typing stubs for openpyxl"
 category = "dev"
 optional = false
 python-versions = "*"
+
+[[package]]
+name = "types-polib"
+version = "1.2.0.0"
+description = "Typing stubs for polib"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
+name = "types-psycopg2"
+version = "2.9.21.8"
+description = "Typing stubs for psycopg2"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
+name = "types-pygments"
+version = "2.14.0.6"
+description = "Typing stubs for Pygments"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+types-docutils = "*"
+types-setuptools = "*"
 
 [[package]]
 name = "types-pytz"
@@ -1585,6 +1637,30 @@ python-versions = "*"
 
 [package.dependencies]
 types-urllib3 = "<1.27"
+
+[[package]]
+name = "types-setuptools"
+version = "67.6.0.0"
+description = "Typing stubs for setuptools"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
+name = "types-simplejson"
+version = "3.18.0.1"
+description = "Typing stubs for simplejson"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
+name = "types-tqdm"
+version = "4.65.0.0"
+description = "Typing stubs for tqdm"
+category = "dev"
+optional = false
+python-versions = "*"
 
 [[package]]
 name = "types-urllib3"
@@ -1817,7 +1893,7 @@ testing = ["func-timeout", "jaraco.itertools", "pytest (>=6)", "pytest-black (>=
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "a656c98dc019647994558267ee0d11d2b273b7c9e4d9bc4d5fb5553ec98cace1"
+content-hash = "7ad41ea99beba9b11fac879e4d6ee4edd725db12a1a6e4f77a6b2efd34dd9534"
 
 [metadata.files]
 anyascii = [
@@ -2715,9 +2791,33 @@ tweepy = [
     {file = "tweepy-4.10.1-py3-none-any.whl", hash = "sha256:0a21396b646af4fcee69762d2908c104e1fe2e2c4e1dfd6e6078a41b38771382"},
     {file = "tweepy-4.10.1.tar.gz", hash = "sha256:310193775d7fc381abd6f37021a9af27f7e9edfcce5ec51bd73ea5f30c21fa61"},
 ]
+types-colorama = [
+    {file = "types-colorama-0.4.15.8.tar.gz", hash = "sha256:c6bb245aa868c7dd78c3b16bd48484cd366127d61e4efa15676eac23acd82b76"},
+    {file = "types_colorama-0.4.15.8-py3-none-any.whl", hash = "sha256:7ebcb66eb2c672c4f576fc7445a45860eba5f4f05e459de6cea413fac8ef4d2c"},
+]
+types-docutils = [
+    {file = "types-docutils-0.19.1.6.tar.gz", hash = "sha256:a334a703a8688910d0869464f1f6f8bd330d75843bdab4f893547bfb29417a01"},
+    {file = "types_docutils-0.19.1.6-py3-none-any.whl", hash = "sha256:b7e182f371cbe20828a8750ffb150219968452445946f66f33778b08e81c7d89"},
+]
+types-markdown = [
+    {file = "types-Markdown-3.4.2.5.tar.gz", hash = "sha256:e76a2a07166f7c69aadf5fa51ef954d2baaed35eb8fa30c36f10877d8403fcef"},
+    {file = "types_Markdown-3.4.2.5-py3-none-any.whl", hash = "sha256:6707853d2478f6ae9e298db497c93c38fe40d8f89e1d90872d992c3934aa76d7"},
+]
 types-openpyxl = [
     {file = "types-openpyxl-3.0.4.5.tar.gz", hash = "sha256:af09775cd139b7097e27b83566f471fea271ce9a0f45930b266147de5c47a386"},
     {file = "types_openpyxl-3.0.4.5-py3-none-any.whl", hash = "sha256:0a7872680dd1ad157717b42c472731127733f9e9963e5a6a9d601a01980e3d0d"},
+]
+types-polib = [
+    {file = "types-polib-1.2.0.0.tar.gz", hash = "sha256:564208e33701f8fee97da3eadd51c4fa2efcc019f8d9662dbce41ca08e97cab8"},
+    {file = "types_polib-1.2.0.0-py3-none-any.whl", hash = "sha256:a002c8a70fd8e87ee8dfa99bb10ced862ab711e30efe755bdfa7c6f6b24f75eb"},
+]
+types-psycopg2 = [
+    {file = "types-psycopg2-2.9.21.8.tar.gz", hash = "sha256:b629440ffcfdebd742fab07f777ff69aefdd19394a138c18e921a1964c3cf5f6"},
+    {file = "types_psycopg2-2.9.21.8-py3-none-any.whl", hash = "sha256:e747fbec6e0e2502b625bc7686d13cc62fc170e8ae920e5ba27fac946778eeb9"},
+]
+types-pygments = [
+    {file = "types-Pygments-2.14.0.6.tar.gz", hash = "sha256:111c2accae3b8f8e0449889b285f5313f54bdb0ccaed5c4742d56988f867ee9e"},
+    {file = "types_Pygments-2.14.0.6-py3-none-any.whl", hash = "sha256:26b3eb1d69d9e552c4b09060f9663e4245b8290a6fb8a6d6ad637de734347b2b"},
 ]
 types-pytz = [
     {file = "types-pytz-2022.7.1.0.tar.gz", hash = "sha256:918f9c3e7a950ba7e7d6f84b18a7cacabc8886cb7125fb1927ff1c752b4b59de"},
@@ -2730,6 +2830,18 @@ types-pyyaml = [
 types-requests = [
     {file = "types-requests-2.28.11.13.tar.gz", hash = "sha256:3fd332842e8759ea5f7eb7789df8aa772ba155216ccf10ef4aa3b0e5b42e1b46"},
     {file = "types_requests-2.28.11.13-py3-none-any.whl", hash = "sha256:94896f6f8e9f3db11e422c6e3e4abbc5d7ccace853eac74b23bdd65eeee3cdee"},
+]
+types-setuptools = [
+    {file = "types-setuptools-67.6.0.0.tar.gz", hash = "sha256:70b5e6a379e9fccf6579871a93ca3301a46252e3ae66957ec64281a2b6a812d9"},
+    {file = "types_setuptools-67.6.0.0-py3-none-any.whl", hash = "sha256:d669a80ee8e37eb1697dc31a23d41ea2c48a635464e2c7e6370dda811459b466"},
+]
+types-simplejson = [
+    {file = "types-simplejson-3.18.0.1.tar.gz", hash = "sha256:6e0dc74dc7aaecbf94665dd187ab713a1d83bb3cc2dcdbc321e455a15b828db0"},
+    {file = "types_simplejson-3.18.0.1-py3-none-any.whl", hash = "sha256:9219d128def4b0488409a4fa6eed96c2208da25bfbd65ee67bb2f81e76ba63f3"},
+]
+types-tqdm = [
+    {file = "types-tqdm-4.65.0.0.tar.gz", hash = "sha256:8707a0dd16a1f2061e316ddc5ef07908d7465193f0d2ed24be75b55e6b9e6cbe"},
+    {file = "types_tqdm-4.65.0.0-py3-none-any.whl", hash = "sha256:3377b5e34396b4e1661f8df7390051490918b8be36ae0f7b6864c1d806e95ef5"},
 ]
 types-urllib3 = [
     {file = "types-urllib3-1.26.25.6.tar.gz", hash = "sha256:35586727cbd7751acccf2c0f34a88baffc092f435ab62458f10776466590f2d5"},

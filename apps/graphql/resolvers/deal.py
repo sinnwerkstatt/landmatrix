@@ -4,7 +4,7 @@ import os
 from ariadne.graphql import GraphQLError
 
 from django.contrib.gis.geos import Point
-from django.core.files.storage import DefaultStorage
+from django.core.files.storage import DefaultStorage, FileSystemStorage
 
 from apps.accounts.models import UserRole
 from apps.landmatrix.models.country import Country
@@ -15,14 +15,15 @@ from ..tools import get_fields, parse_filters
 from .generics import (
     add_object_comment,
     change_object_status,
+    get_foreign_keys,
     object_delete,
     object_edit,
 )
 
-storage = DefaultStorage()
+storage: FileSystemStorage = DefaultStorage()  # type: ignore
 
 
-def create_storage_layout(s: DefaultStorage):
+def create_storage_layout(s: FileSystemStorage) -> None:
     for dir_name in ["uploads"]:
         dir_path = os.path.join(s.base_location, dir_name)
         if not os.path.isdir(dir_path):
@@ -178,8 +179,8 @@ def resolve_change_deal_status(
     id: int,
     version: int,
     transition: str,
-    comment: str = None,
-    to_user_id: int = None,
+    comment: str | None = None,
+    to_user_id: int | None = None,
     fully_updated: bool = False,  # only relevant on "TO_REVIEW"
 ) -> dict:
     deal_id, deal_version = change_object_status(
@@ -195,17 +196,18 @@ def resolve_change_deal_status(
     return {"dealId": deal_id, "dealVersion": deal_version}
 
 
-def _clean_payload(payload) -> dict:
-    foreignkeys = {
-        x.name: x.related_model
-        for x in Deal._meta.fields
-        if x.__class__.__name__ == "ForeignKey"
-    }
-    ret = {}
+def _clean_payload(payload: dict | None) -> dict:
+    ret: dict = {}
+
+    if payload is None:
+        return ret
+
+    foreign_keys = get_foreign_keys(Deal)
+
     for key, value in payload.items():
-        if key in foreignkeys:
+        if key in foreign_keys:
             if value:
-                ret[key] = foreignkeys[key].objects.get(id=value["id"])
+                ret[key] = foreign_keys[key].objects.get(id=value["id"])
         elif key == "point":
             ret["point"] = Point(value["lng"], value["lat"])
         elif key in ["locations", "datasources", "contracts"]:
@@ -219,21 +221,30 @@ def _clean_payload(payload) -> dict:
 
 
 # noinspection PyShadowingBuiltins
-def resolve_deal_edit(_obj, info, id, version=None, payload: dict = None) -> dict:
-    payload = _clean_payload(payload)
+def resolve_deal_edit(
+    _obj,
+    info,
+    id: int,
+    version: int | None = None,
+    payload: dict | None = None,
+) -> dict:
     deal_id, deal_version = object_edit(
         otype="deal",
         user=info.context["request"].user,
         obj_id=id,
         obj_version_id=version,
-        payload=payload,
+        payload=_clean_payload(payload),
     )
     return {"dealId": deal_id, "dealVersion": deal_version}
 
 
 # noinspection PyShadowingBuiltins
 def resolve_deal_delete(
-    _obj, info, id: int, version: int = None, comment: str = None
+    _obj,
+    info,
+    id: int,
+    version: int | None = None,
+    comment: str | None = None,
 ) -> bool:
     return object_delete(
         otype="deal",

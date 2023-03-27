@@ -1,8 +1,4 @@
-from apps.api.utils.geojson import (
-    Feature,
-    add_properties,
-    create_feature_collection,
-)
+from apps.api.utils.geojson import Feature, add_properties, create_feature_collection
 
 
 def test_create_feature_collection() -> None:
