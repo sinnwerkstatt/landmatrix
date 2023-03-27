@@ -73,7 +73,7 @@
       })
     if (acc.mineralResources)
       root.children.push({
-        name: $_("Mineral Resources"),
+        name: $_("Mineral resources"),
         color: "black",
         children: createChildren(acc.mineralResources),
       })
