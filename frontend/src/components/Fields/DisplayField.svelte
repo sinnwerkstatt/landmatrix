@@ -55,7 +55,6 @@
     DateField: DateField,
     JSONActorsField: JSONActorsField,
     JSONDateAreaChoicesField: JSONDateAreaChoicesField,
-    JSONLocationAreasField: JSONLocationAreasField,
     JSONDateAreaField: JSONDateAreaField,
     JSONDateChoiceField: JSONDateChoiceField,
     JSONExportsField: JSONExportsField,
@@ -99,6 +98,8 @@
       <ForeignKeyField {value} {formfield} />
     {:else if formfield.class === "FileField"}
       <FileField {value} {formfield} {fileNotPublic} />
+    {:else if formfield.class === "JSONLocationAreasField"}
+      <JSONLocationAreasField {value} {formfield} {model} on:toggleVisibility />
     {:else if field}
       <svelte:component this={field} {value} {model} {formfield} />
     {:else}

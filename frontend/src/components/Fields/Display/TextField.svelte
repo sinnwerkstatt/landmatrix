@@ -5,7 +5,7 @@
   export let formfield: FormField
 </script>
 
-<div class="text_field" data-name={formfield?.name ?? ""}>
+<div class="text_field break-words" data-name={formfield?.name ?? ""}>
   {#if !value}
     —
   {:else if formfield.class === "URLField"}

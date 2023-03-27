@@ -5,13 +5,8 @@
   import { _ } from "svelte-i18n"
 
   import type { AreaFeature, AreaType, Location } from "$lib/types/deal"
-  import {
-    getFeatures,
-    setAreaTypeProperty,
-    setCurrentProperty,
-    setFeatures,
-  } from "$lib/utils/dealLocationAreaFeatures"
   import { validate } from "$lib/utils/geojsonValidation"
+  import { setProperty, createFeatureCollection } from "$lib/utils/geojsonHelpers"
 
   import LowLevelDateYearField from "$components/Fields/Edit/LowLevelDateYearField.svelte"
   import EyeIcon from "$components/icons/EyeIcon.svelte"
@@ -29,7 +24,7 @@
   export let hiddenFeatures: AreaFeature[]
 
   let showAddAreaOverlay = false
-  let toAddFiles
+  let toAddFiles: FileList
 
   $: title = {
     production_area: $_("Production areas"),
@@ -42,8 +37,22 @@
   $: hasAreaFeatures = areaFeatures.length > 0
   $: current = areaFeatures.findIndex(feature => feature.properties.current)
 
+  function getFeatures(areaType: AreaType, location: Location): AreaFeature[] {
+    const activeAreas = location.areas ?? createFeatureCollection([])
+    const features = activeAreas.features as AreaFeature[]
+    return features.filter(
+      (feature: AreaFeature) => feature.properties.type === areaType,
+    )
+  }
+
   function setAreaFeatures(location: Location, features: AreaFeature[]): void {
-    setFeatures(areaType, location, features)
+    const activeAreas = location.areas ?? createFeatureCollection([])
+    const otherFeatures = activeAreas.features.filter(
+      (feature: AreaFeature) => feature.properties.type !== areaType,
+    )
+
+    activeAreas.features = [...features, ...otherFeatures]
+    location.areas = activeAreas.features.length > 0 ? activeAreas : undefined
 
     // signal update
     locations = locations
@@ -67,7 +76,7 @@
 
       setAreaFeatures(activeLocation, [
         ...areaFeatures,
-        setAreaTypeProperty(areaType, feature),
+        setProperty("type", areaType, feature),
       ])
 
       showAddAreaOverlay = false
@@ -90,7 +99,12 @@
   }
 
   function updateCurrent(index: number): void {
-    setAreaFeatures(activeLocation, areaFeatures.map(setCurrentProperty(index)))
+    setAreaFeatures(
+      activeLocation,
+      areaFeatures.map((f: AreaFeature, i) =>
+        setProperty("current", i === index ? true : undefined, f),
+      ),
+    )
   }
 </script>
 

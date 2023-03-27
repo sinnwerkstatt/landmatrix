@@ -1,109 +1,99 @@
 <script lang="ts">
-  import { area } from "@turf/turf"
-  import type { Layer, Map } from "leaflet"
-  import { GeoJSON, LatLngBounds } from "leaflet?client"
+  import type { Map, GeoJSON } from "leaflet"
+  import { geoJson } from "leaflet?client"
+  import * as R from "ramda"
 
-  import type { Deal } from "$lib/types/deal"
+  import type { Deal, Location } from "$lib/types/deal"
+  import {
+    padBounds,
+    createEnhancedLocationsCopy,
+    createLocationFeatures,
+    toggleFeatureVisibility,
+    createGeoJsonOptions,
+  } from "$lib/utils/location"
 
+  import DealSubmodelSection from "$components/Deal/DealSubmodelSection.svelte"
   import BigMap from "$components/Map/BigMap.svelte"
-
-  import DealSubmodelSection from "./DealSubmodelSection.svelte"
 
   export let deal: Deal
 
-  let bigmap: Map
-  let layer: Layer
+  let map: Map
 
-  let styles = {
-    contract_area: { dashArray: "5, 5", dashOffset: "0", fillColor: "#ff00ff" },
-    intended_area: { dashArray: "5, 5", dashOffset: "0", fillColor: "#66ff33" },
-    production_area: { fillColor: "#ff0000" },
-  }
+  let locationsCopy: Location[]
+  $: locationsCopy = createEnhancedLocationsCopy(deal.locations)
 
-  let geojson_options = {
-    style: feature => ({
-      weight: 2,
-      color: "#000000",
-      opacity: 1,
-      fillOpacity: 0.2,
-      ...styles[feature.properties.type],
-    }),
-    onEachFeature: (feature, layer) => {
-      let tooltip = "<div>"
+  let geoJsonLayer: GeoJSON
+  let currentLocation: string | undefined
 
-      tooltip += `<div class="font-bold">Location #${feature.properties.id}</div>
-                      <div>Name: ${feature.properties.name}</div>
-                      <div>Type: ${feature.properties.type}</div>`
-
-      if (feature.geometry.type !== "Point") {
-        let farea = (area(layer.toGeoJSON()) / 10000)
-          .toFixed(2)
-          .toString()
-          .replace(/\B(?=(\d{3})+(?!\d))/g, " ")
-        tooltip += `<div>Area: ${farea} ha</div>`
-      }
-      tooltip += "</div>"
-
-      layer.bindPopup(tooltip, { permanent: false, sticky: true, keepInView: true })
-      layer.on("mouseover", () => layer.openPopup())
-      layer.on("mouseout", () => layer.closePopup())
-    },
-  }
-
-  //   watch: {
-  //     deal() {
-  //       this.refreshMap();
-  //     },
-  //   },
-
-  async function refreshMap() {
-    if (!(deal && deal.country && bigmap)) return
-
-    if (layer) {
-      bigmap.removeLayer(layer)
+  // respond to changes in locationsCopy and currentLocation
+  $: if (map) {
+    if (geoJsonLayer) {
+      map.removeLayer(geoJsonLayer)
     }
-    layer = new GeoJSON(deal.geojson, geojson_options)
-    let mybounds = layer.getBounds()
-    let ne = mybounds.getNorthEast()
-    let sw = mybounds.getSouthWest()
-    if (ne && sw) {
-      if (ne.equals(sw)) {
-        ne.lat += 10
-        ne.lng += 10
-        sw.lat -= 10
-        sw.lng -= 10
-        bigmap.fitBounds(new LatLngBounds(ne, sw), { animate: false })
-      }
-      bigmap.fitBounds(mybounds.pad(1.2), { animate: false })
+
+    geoJsonLayer = geoJson(
+      createLocationFeatures(locationsCopy),
+      createGeoJsonOptions({
+        getCurrentLocation: () => currentLocation,
+        setCurrentLocation: (locationId: string) => {
+          currentLocation = locationId
+        },
+      }),
+    )
+
+    map.addLayer(geoJsonLayer)
+
+    const bounds = geoJsonLayer.getBounds()
+    if (bounds.isValid()) {
+      map.fitBounds(padBounds(bounds), { animate: false })
     }
-    bigmap.addLayer(layer)
   }
 
-  const onMapReady = async (event: CustomEvent<Map>) => {
-    bigmap = event.detail
-    await refreshMap()
+  const onMapReady = (e: CustomEvent<Map>) => {
+    map = e.detail
+  }
+
+  const onToggleVisibility = (
+    e: CustomEvent<{ locationId: string; featureId: string }>,
+  ) => {
+    const { locationId, featureId } = e.detail
+
+    locationsCopy = R.adjust(
+      locationsCopy.findIndex(loc => loc.id === locationId),
+      toggleFeatureVisibility(featureId),
+      locationsCopy,
+    )
   }
 </script>
 
-<DealSubmodelSection model="location" modelName="Location" entries={deal.locations}>
-  <div class="min-h-[20rem] w-full lg:w-1/2">
+<section class="flex">
+  <div class="max-h-[75vh] w-full overflow-y-auto p-2 lg:w-1/2">
+    <DealSubmodelSection
+      bind:selectedEntryId={currentLocation}
+      model="location"
+      modelName="Location"
+      entries={locationsCopy}
+      on:toggleVisibility={onToggleVisibility}
+    />
+  </div>
+  <div class="min-h-[20rem] w-full p-2 lg:w-1/2">
     <BigMap
-      containerClass="min-h-full h-full mt-5"
+      containerClass="min-h-full h-full"
       options={{ center: [0, 0] }}
       on:ready={onMapReady}
     />
   </div>
-</DealSubmodelSection>
+</section>
 
-<!--<style lang="scss">-->
-<!--  .locations {-->
-<!--    .map-container {-->
-<!--      min-height: 250px;-->
+<style>
+  :global(path.leaflet-hidden) {
+    /*display: none;*/
+    opacity: 0.5;
+    filter: saturate(0);
+  }
 
-<!--      #bigMap {-->
-<!--        max-height: 50vh;-->
-<!--        margin-top: 2em;-->
-<!--      }-->
-<!--    }-->
-<!--  }-->
-<!--</style>-->
+  :global(img.leaflet-hidden) {
+    opacity: 0.6;
+    filter: saturate(0);
+  }
+</style>
