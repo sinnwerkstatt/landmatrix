@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-07 11:32+0100\n"
+"POT-Creation-Date: 2023-03-27 18:31+0200\n"
 "PO-Revision-Date: 2022-05-30 13:48+0000\n"
 "Last-Translator: Angela Harding <coordination@landmatrix.org>\n"
 "Language-Team: Russian <http://translate.landmatrix.org/projects/landmatrix/landmatrix/ru/>\n"
@@ -1823,6 +1823,9 @@ msgstr "CSV-файл"
 msgid "Currency"
 msgstr "Валюта"
 
+msgid "current"
+msgstr ""
+
 msgid "Current"
 msgstr "В данный момент"
 
@@ -2062,6 +2065,9 @@ msgstr "Перейти к карте"
 
 msgid "here"
 msgstr "здесь"
+
+msgid "Hide"
+msgstr ""
 
 msgid "Households"
 msgstr "Домохозяйства"
@@ -2404,6 +2410,9 @@ msgstr "Информация о продукции"
 
 msgid "Produce info map"
 msgstr "Карта информации о продукции"
+
+msgid "Production"
+msgstr ""
 
 msgid "Production area"
 msgstr "Производственная площадь"
