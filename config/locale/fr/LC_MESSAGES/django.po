@@ -2,9 +2,9 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-27 17:56+0200\n"
-"PO-Revision-Date: 2023-03-27 15:48+0000\n"
-"Last-Translator: Marie Gradeler <accountability@landmatrix.org>\n"
+"POT-Creation-Date: 2023-03-27 18:31+0200\n"
+"PO-Revision-Date: 2022-05-30 13:48+0000\n"
+"Last-Translator: Kurt Gerber <kurt.gerber@unibe.ch>\n"
 "Language-Team: French <http://translate.landmatrix.org/projects/landmatrix/landmatrix/fr/>\n"
 "Language: fr\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1820,6 +1820,9 @@ msgstr "Fichier CSV"
 msgid "Currency"
 msgstr "Devise"
 
+msgid "current"
+msgstr ""
+
 msgid "Current"
 msgstr "Actuel"
 
@@ -2068,6 +2071,9 @@ msgstr "Aller à la carte"
 
 msgid "here"
 msgstr "ici"
+
+msgid "Hide"
+msgstr ""
 
 msgid "Households"
 msgstr "Ménages"
@@ -2408,6 +2414,9 @@ msgstr "Info produit"
 
 msgid "Produce info map"
 msgstr "Produire une carte d’information"
+
+msgid "Production"
+msgstr ""
 
 msgid "Production area"
 msgstr "Zone de production"
