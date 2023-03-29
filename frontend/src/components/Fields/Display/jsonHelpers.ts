@@ -1,8 +1,7 @@
 import { _ } from "svelte-i18n"
 import { get } from "svelte/store"
 
-export function dateCurrentFormat(value: { date?: string; current?: boolean }): string {
-  // mirror syntax of svelte component to better find it
+export function dateCurrentFormat(value: { date: string; current?: boolean }): string {
   const $_ = get(_)
 
   if (!value.date && !value.current) return ""

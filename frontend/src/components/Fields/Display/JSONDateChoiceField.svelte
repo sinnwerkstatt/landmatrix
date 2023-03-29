@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { _ } from "svelte-i18n"
+
   import { ImplementationStatus, NegotiationStatus } from "$lib/types/deal"
 
   import { dateCurrentFormat } from "$components/Fields/Display/jsonHelpers.ts"
@@ -19,7 +21,8 @@
     <div class:font-bold={val.current}>
       <span>{dateCurrentFormat(val)}</span>
       {#if val.choice}
-        {formfield.choices[val.choice]}
+        <!-- The literal translation strings are defined in apps/landmatrix/models/choices.py -->
+        {$_(formfield.choices[val.choice])}
       {/if}
     </div>
   {/each}

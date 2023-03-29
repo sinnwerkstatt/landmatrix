@@ -41,7 +41,8 @@
 
   const parseValues = (value: string[], choices?: Record<string, string>) => {
     if (!value) return "—"
-    if (choices) return value.map(v => choices[v]).join(", ")
+    // The literal translation strings are defined in apps/landmatrix/models/choices.py
+    if (choices) return value.map(v => $_(choices[v])).join(", ")
     return value.join(", ")
   }
 </script>
@@ -55,6 +56,8 @@
         {#if intention_of_investment_map[ioi] != null}
           <svelte:component this={intention_of_investment_map[ioi]} />
         {/if}
+        <!-- This is a special case where the string to be translated is NOT defined
+        in the backend and needs to be defined in the frontend -->
         {$_(flat_intention_of_investment_map[ioi])}
       </span>
     {/each}

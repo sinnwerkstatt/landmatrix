@@ -23,7 +23,8 @@
     <div class:font-bold={val.current}>
       <span>{dateCurrentFormat(val)}</span>
       {#if val.choices}
-        {val.choices.map(v => formfield.choices[v]).join(", ")}
+        <!-- The literal translation strings are defined in apps/landmatrix/models/choices.py -->
+        {val.choices.map(v => $_(formfield.choices[v])).join(", ")}
       {/if}
       {#if val.area}
         (<CircleNotchIcon /> {val.area.toLocaleString("fr")} {$_("ha")})
