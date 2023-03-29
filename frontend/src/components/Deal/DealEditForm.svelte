@@ -52,7 +52,7 @@
       }
   })
 
-  async function saveDeal(hash: string) {
+  async function saveDeal(hash?: string) {
     const currentForm: HTMLFormElement | null =
       document.querySelector<HTMLFormElement>(activeTab)
     if (!currentForm) {
@@ -64,53 +64,55 @@
 
     if (!currentForm.checkValidity()) return currentForm.reportValidity()
 
-    deal.locations = removeEmptyEntries(deal.locations ?? [])
-    deal.contracts = removeEmptyEntries(deal.contracts ?? [])
-    deal.datasources = removeEmptyEntries(deal.datasources ?? [])
+    if (formChanged) {
+      savingInProgress = true
 
-    savingInProgress = true
+      deal.locations = removeEmptyEntries(deal.locations ?? [])
+      deal.contracts = removeEmptyEntries(deal.contracts ?? [])
+      deal.datasources = removeEmptyEntries(deal.datasources ?? [])
 
-    const { data, error } = await ($page.data.urqlClient as Client)
-      .mutation<{ deal_edit: { dealId: number; dealVersion?: number } }>(
-        gql`
-          mutation ($id: Int!, $version: Int, $payload: Payload) {
-            deal_edit(id: $id, version: $version, payload: $payload) {
-              dealId
-              dealVersion
+      const { data, error } = await ($page.data.urqlClient as Client)
+        .mutation<{ deal_edit: { dealId: number; dealVersion?: number } }>(
+          gql`
+            mutation ($id: Int!, $version: Int, $payload: Payload) {
+              deal_edit(id: $id, version: $version, payload: $payload) {
+                dealId
+                dealVersion
+              }
             }
-          }
-        `,
-        {
-          id: dealID ? +dealID : -1,
-          version: dealVersion ? +dealVersion : null,
-          payload: { ...deal, versions: null, comments: null, workflowinfos: null },
-        },
-      )
-      .toPromise()
-    if (error) {
-      if (error.graphQLErrors[0].message === "EDITING_OLD_VERSION")
-        toast.push("You are trying to edit an old version!", { classes: ["error"] })
-      else toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
-      savingInProgress = false
-      return
-    }
-    if (!data) {
-      toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
-      savingInProgress = false
-      return
-    }
-    await invalidateAll()
-    if (location.hash !== hash || +dealVersion !== +data.deal_edit.dealVersion) {
+          `,
+          {
+            id: dealID ? +dealID : -1,
+            version: dealVersion ? +dealVersion : null,
+            payload: { ...deal, versions: null, comments: null, workflowinfos: null },
+          },
+        )
+        .toPromise()
+      if (error) {
+        if (error.graphQLErrors[0].message === "EDITING_OLD_VERSION")
+          toast.push("You are trying to edit an old version!", { classes: ["error"] })
+        else toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
+        savingInProgress = false
+        return
+      }
+      if (!data) {
+        toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
+        savingInProgress = false
+        return
+      }
+
       await goto(
         `/deal/edit/${data.deal_edit.dealId}/${data.deal_edit.dealVersion}${
-          hash ?? ""
+          hash ?? location.hash
         }`,
       )
-    }
 
-    // update original deal only after route change
-    originalDeal = JSON.stringify(discardEmptyFields(deal))
-    savingInProgress = false
+      // update original deal only after route change
+      originalDeal = JSON.stringify(discardEmptyFields(deal))
+      savingInProgress = false
+    } else {
+      await goto(hash ?? location.hash)
+    }
   }
 
   const onClickClose = async (force: boolean) => {
@@ -140,7 +142,7 @@
         type="submit"
         class="btn btn-primary mx-2 flex items-center gap-2"
         class:disabled={!formChanged || savingInProgress}
-        on:click={() => saveDeal(location.hash)}
+        on:click={() => saveDeal()}
       >
         {#if savingInProgress}
           <LoadingSpinner /> {$_("Saving...")}
