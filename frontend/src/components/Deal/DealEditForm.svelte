@@ -159,10 +159,7 @@
           {$_("Close")}
         </button>
       {:else}
-        <button
-          class="btn btn-gray mx-2"
-          on:click={() => goto(`/deal/${dealID}/${dealVersion ?? ""}`)}
-        >
+        <button class="btn btn-gray mx-2" on:click={() => goto(`/`)}>
           {$_("Cancel")}
         </button>
       {/if}
