@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { _ } from "svelte-i18n"
+
   import type { FormField } from "$components/Fields/fields"
 
   enum ActorRole {
@@ -25,7 +27,8 @@
       <span>{val.name}</span>
       {#if val.role}
         <span class="text-sm font-light">
-          ({formfield.choices[val.role]})
+          <!-- The literal translation strings are defined in apps/landmatrix/models/choices.py -->
+          ({$_(formfield.choices[val.role])})
         </span>
       {/if}
     </li>
