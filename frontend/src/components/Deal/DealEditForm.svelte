@@ -7,8 +7,8 @@
   import { page } from "$app/stores"
 
   import { dealSections } from "$lib/sections"
-  import type { Contract, DataSource, Deal, Location as LamaLoc } from "$lib/types/deal"
-  import { removeEmptyEntries } from "$lib/utils/data_processing"
+  import type { Contract, Deal } from "$lib/types/deal"
+  import { removeEmptyEntries, discardEmptyFields } from "$lib/utils/data_processing"
 
   import DealEditSection from "$components/Deal/DealEditSection.svelte"
   import DealLocationsEditSection from "$components/Deal/DealLocationsEditSection.svelte"
@@ -20,11 +20,11 @@
   export let dealID: number
   export let dealVersion: number
 
-  let originalDeal = JSON.stringify(deal)
+  let originalDeal = JSON.stringify(discardEmptyFields(deal))
   let savingInProgress = false
   let showReallyQuitOverlay = false
   $: activeTab = $page.url.hash || "#locations"
-  $: formChanged = JSON.stringify(deal) !== originalDeal
+  $: formChanged = JSON.stringify(discardEmptyFields(deal)) !== originalDeal
   $: tabs = [
     { target: "#locations", name: $_("Locations") },
     { target: "#general", name: $_("General info") },
@@ -99,7 +99,7 @@
       savingInProgress = false
       return
     }
-
+    await invalidateAll()
     if (location.hash !== hash || +dealVersion !== +data.deal_edit.dealVersion) {
       await goto(
         `/deal/edit/${data.deal_edit.dealId}/${data.deal_edit.dealVersion}${
@@ -109,7 +109,7 @@
     }
 
     // update original deal only after route change
-    originalDeal = JSON.stringify(deal)
+    originalDeal = JSON.stringify(discardEmptyFields(deal))
     savingInProgress = false
   }
 
@@ -126,11 +126,7 @@
     if (savingInProgress) return
 
     const hash = (e.target as HTMLAnchorElement).hash
-    if (formChanged) {
-      await saveDeal(hash)
-    } else {
-      await goto(hash)
-    }
+    await saveDeal(hash)
   }
 </script>
 

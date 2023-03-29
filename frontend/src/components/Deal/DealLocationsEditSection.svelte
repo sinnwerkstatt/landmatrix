@@ -125,7 +125,6 @@
   }
 
   function removeEntry(entry: Location) {
-    // TODO: fix isEmptySubmodel not returning true because of entry.point = {}
     if (!isEmptySubmodel(entry)) {
       const areYouSure = confirm(`${$_("Remove")} ${$_("Location")} ${entry.id}?`)
       if (!areYouSure) {
@@ -361,7 +360,7 @@
           {/if}
         </BigMap>
         <div>
-          {#if activeLocationID}
+          {#if locations.length && activeLocationID}
             {#each areaTypes as areaType}
               <DealLocationsAreaField
                 {areaType}

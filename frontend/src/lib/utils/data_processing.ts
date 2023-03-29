@@ -14,9 +14,15 @@ export function custom_is_null(field: unknown): boolean {
     field === undefined ||
     field === null ||
     field === "" ||
-    (Array.isArray(field) && field.length === 0)
+    (Array.isArray(field) && field.length === 0) ||
+    // https://stackoverflow.com/questions/679915
+    (typeof field === "object" &&
+      Object.keys(field).length === 0 &&
+      Object.getPrototypeOf(field) === Object.prototype)
   )
 }
+export const discardEmptyFields = (deal: Deal) =>
+  Object.fromEntries(Object.entries(deal).filter(([, value]) => !custom_is_null(value)))
 
 function sieveSubmodel(entry: SubmodelEntry, ignoreKeys = ["id", "role"]) {
   return Object.entries(entry).filter(([k, v]) =>
