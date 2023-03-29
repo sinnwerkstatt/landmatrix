@@ -834,6 +834,9 @@ class Deal(AbstractDealBase):
         super().save(*args, **kwargs)
 
     def update_from_dict(self, d: dict):
+        if not self.country and "country" not in d.keys():
+            raise Error("Deal country is mandatory.")
+
         for key, value in d.items():
             if key in [
                 "id",
