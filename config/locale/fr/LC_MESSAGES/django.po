@@ -2,9 +2,9 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-27 17:56+0200\n"
-"PO-Revision-Date: 2023-03-27 15:48+0000\n"
-"Last-Translator: Marie Gradeler <accountability@landmatrix.org>\n"
+"POT-Creation-Date: 2023-03-29 14:34+0200\n"
+"PO-Revision-Date: 2022-05-30 13:48+0000\n"
+"Last-Translator: Kurt Gerber <kurt.gerber@unibe.ch>\n"
 "Language-Team: French <http://translate.landmatrix.org/projects/landmatrix/landmatrix/fr/>\n"
 "Language: fr\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1822,6 +1822,9 @@ msgstr "Devise"
 
 msgid "Current"
 msgstr "Actuel"
+
+msgid "current"
+msgstr ""
 
 msgid "Current implementation status"
 msgstr "Statut actuel de la mise en œuvre"
