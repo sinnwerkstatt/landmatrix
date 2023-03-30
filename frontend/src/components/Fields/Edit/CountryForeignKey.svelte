@@ -1,7 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte"
   import { _ } from "svelte-i18n"
-  import Select from "svelte-select"
 
   import { countries } from "$lib/stores"
   import type { Country } from "$lib/types/wagtail"
@@ -18,10 +17,10 @@
 
   let showHint = false
 
-  $: targetCountries =
-    model === "deal" && formfield.name === "country"
-      ? $countries.filter(c => !c.high_income)
-      : $countries
+  $: isDealTargetCountry = model === "deal" && formfield.name === "country"
+  $: targetCountries = isDealTargetCountry
+    ? $countries.filter(c => !c.high_income)
+    : $countries
 
   const setValue = (country: Country | null) => {
     value = country
@@ -51,8 +50,9 @@
   <CountrySelect
     {value}
     countries={targetCountries}
-    {disabled}
     name={formfield.name}
+    required={isDealTargetCountry}
+    {disabled}
     on:input={e => setValue(e.detail)}
   />
   {#if disabled && showHint}

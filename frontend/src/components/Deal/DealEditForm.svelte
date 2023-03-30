@@ -7,8 +7,8 @@
   import { page } from "$app/stores"
 
   import { dealSections } from "$lib/sections"
-  import type { Contract, DataSource, Deal, Location as LamaLoc } from "$lib/types/deal"
-  import { removeEmptyEntries } from "$lib/utils/data_processing"
+  import type { Contract, Deal } from "$lib/types/deal"
+  import { removeEmptyEntries, discardEmptyFields } from "$lib/utils/data_processing"
 
   import DealEditSection from "$components/Deal/DealEditSection.svelte"
   import DealLocationsEditSection from "$components/Deal/DealLocationsEditSection.svelte"
@@ -20,11 +20,11 @@
   export let dealID: number
   export let dealVersion: number
 
-  let originalDeal = JSON.stringify(deal)
+  let originalDeal = JSON.stringify(discardEmptyFields(deal))
   let savingInProgress = false
   let showReallyQuitOverlay = false
   $: activeTab = $page.url.hash || "#locations"
-  $: formChanged = JSON.stringify(deal) !== originalDeal
+  $: formChanged = JSON.stringify(discardEmptyFields(deal)) !== originalDeal
   $: tabs = [
     { target: "#locations", name: $_("Locations") },
     { target: "#general", name: $_("General info") },
@@ -52,23 +52,26 @@
       }
   })
 
-  async function saveDeal(hash: string) {
+  const isFormValid = (): boolean => {
     const currentForm: HTMLFormElement | null =
       document.querySelector<HTMLFormElement>(activeTab)
+
     if (!currentForm) {
       toast.push("Internal error. Can not grab the form. Try reloading the page.", {
         classes: ["error"],
       })
-      return
+      return false
     }
 
-    if (!currentForm.checkValidity()) return currentForm.reportValidity()
+    return !currentForm.checkValidity() && currentForm.reportValidity()
+  }
+
+  const saveDeal = async (): Promise<void> => {
+    savingInProgress = true
 
     deal.locations = removeEmptyEntries(deal.locations ?? [])
     deal.contracts = removeEmptyEntries(deal.contracts ?? [])
     deal.datasources = removeEmptyEntries(deal.datasources ?? [])
-
-    savingInProgress = true
 
     const { data, error } = await ($page.data.urqlClient as Client)
       .mutation<{ deal_edit: { dealId: number; dealVersion?: number } }>(
@@ -100,37 +103,51 @@
       return
     }
 
-    if (location.hash !== hash || +dealVersion !== +data.deal_edit.dealVersion) {
-      await goto(
-        `/deal/edit/${data.deal_edit.dealId}/${data.deal_edit.dealVersion}${
-          hash ?? ""
-        }`,
-      )
-    }
+    await goto(
+      `/deal/edit/${data.deal_edit.dealId}/${data.deal_edit.dealVersion}${location.hash}`,
+    )
 
     // update original deal only after route change
-    originalDeal = JSON.stringify(deal)
+    originalDeal = JSON.stringify(discardEmptyFields(deal))
     savingInProgress = false
   }
 
-  const onClickClose = async (force: boolean) => {
-    if (formChanged && !force) showReallyQuitOverlay = true
-    else {
-      await invalidateAll() // discard changes
-      if (!dealID) await goto("/")
-      else await goto(`/deal/${dealID}/${dealVersion ?? ""}`)
+  const onClickClose = async (force = false): Promise<void> => {
+    if (formChanged && !force) {
+      showReallyQuitOverlay = true
+      return
+    }
+
+    await invalidateAll() // discard changes
+
+    if (!dealID) {
+      await goto("/")
+    } else {
+      await goto(`/deal/${dealID}/${dealVersion ?? ""}`)
     }
   }
 
-  const onClickTab = async (e: PointerEvent) => {
-    if (savingInProgress) return
+  const onClickSave = async (): Promise<void> => {
+    if (savingInProgress || !isFormValid()) {
+      return
+    }
+
+    if (formChanged) {
+      await saveDeal()
+    }
+  }
+
+  const onClickTab = async (e: PointerEvent): Promise<void> => {
+    if (savingInProgress || !isFormValid()) {
+      return
+    }
+
+    if (formChanged) {
+      await saveDeal()
+    }
 
     const hash = (e.target as HTMLAnchorElement).hash
-    if (formChanged) {
-      await saveDeal(hash)
-    } else {
-      await goto(hash)
-    }
+    await goto(hash)
   }
 </script>
 
@@ -141,10 +158,9 @@
     </h1>
     <div class="my-5 flex items-center">
       <button
-        type="submit"
         class="btn btn-primary mx-2 flex items-center gap-2"
         class:disabled={!formChanged || savingInProgress}
-        on:click={() => saveDeal(location.hash)}
+        on:click|preventDefault={() => onClickSave()}
       >
         {#if savingInProgress}
           <LoadingSpinner /> {$_("Saving...")}
@@ -152,23 +168,13 @@
           {$_("Save")}
         {/if}
       </button>
-      {#if dealID}
-        <button
-          class="btn btn-secondary mx-2"
-          disabled={savingInProgress}
-          on:click={() => onClickClose(false)}
-        >
-          {$_("Close")}
-        </button>
-      {:else}
-        <button
-          class="btn btn-gray mx-2"
-          on:click={() => goto(`/deal/${dealID}/${dealVersion ?? ""}`)}
-        >
-          {$_("Cancel")}
-        </button>
-      {/if}
-      <!--            <span>{{ $t("Leaves edit mode") }}</span>-->
+      <button
+        class="btn btn-gray mx-2"
+        class:disabled={savingInProgress}
+        on:click|preventDefault={() => onClickClose()}
+      >
+        {dealID ? $_("Close") : $_("Cancel")}
+      </button>
     </div>
   </div>
   <div class="flex h-full overflow-y-hidden">
@@ -180,17 +186,13 @@
               ? 'border-r-4'
               : 'border-r'}"
           >
-            {#if name}
-              <a
-                href={target}
-                class:text-black={activeTab === target}
-                on:click|preventDefault={onClickTab}
-              >
-                {name}
-              </a>
-            {:else}
-              <hr />
-            {/if}
+            <a
+              href={target}
+              class:text-black={activeTab === target}
+              on:click|preventDefault={onClickTab}
+            >
+              {name}
+            </a>
           </li>
         {/each}
       </ul>

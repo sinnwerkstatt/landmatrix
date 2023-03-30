@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from typing import Literal, Type
+from typing import Literal
 
 from ariadne.graphql import GraphQLError
 
-from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.utils import timezone
@@ -218,6 +217,9 @@ def object_edit(
 
     # this is a new Object
     if obj_id == -1:
+        if "country" not in payload.keys():
+            raise GraphQLError("COUNTRY_IS_MANDATORY")
+
         obj = Object()
         obj.update_from_dict(payload)
         obj.recalculate_fields()
