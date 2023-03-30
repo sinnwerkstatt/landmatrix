@@ -154,14 +154,14 @@ export const createGeoJsonOptions = ({
       weight: 2,
       color: "#000000",
       opacity: castedFeature.properties.visible ? 1 : 0,
-      fillOpacity: castedFeature.properties.visible ? 0.2 : 0,
+      fillOpacity: castedFeature.properties.visible ? 0.4 : 0,
       className:
         castedFeature.properties.id === getCurrentLocation() ? "" : "leaflet-hidden",
     }
     const areaTypeStylesMap: { [key in AreaType]: L.PathOptions } = {
       contract_area: { dashArray: "5, 5", dashOffset: "0", fillColor: "#ff00ff" },
       intended_area: { dashArray: "5, 5", dashOffset: "0", fillColor: "#66ff33" },
-      production_area: { fillColor: "#ff0000" },
+      production_area: { dashArray: "5, 5", dashOffset: "0", fillColor: "#ff0000" },
     }
     return {
       ...commonStyles,
