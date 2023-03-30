@@ -87,9 +87,9 @@
 
 <style>
   :global(path.leaflet-hidden) {
-    /*display: none;*/
-    opacity: 0.5;
-    filter: saturate(0);
+    display: none;
+    /*opacity: 0.5;*/
+    /*filter: saturate(0);*/
   }
 
   :global(img.leaflet-hidden) {

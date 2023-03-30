@@ -150,13 +150,16 @@ export const createGeoJsonOptions = ({
   // area styles
   style: feature => {
     const castedFeature = feature as EnhancedAreaFeature
+    const currentLocation = getCurrentLocation()
     const commonStyles: L.PathOptions = {
       weight: 2,
       color: "#000000",
       opacity: castedFeature.properties.visible ? 1 : 0,
       fillOpacity: castedFeature.properties.visible ? 0.4 : 0,
       className:
-        castedFeature.properties.id === getCurrentLocation() ? "" : "leaflet-hidden",
+        !currentLocation || castedFeature.properties.id === currentLocation
+          ? ""
+          : "leaflet-hidden",
     }
     const areaTypeStylesMap: { [key in AreaType]: L.PathOptions } = {
       contract_area: { dashArray: "5, 5", dashOffset: "0", fillColor: "#ff00ff" },
