@@ -252,6 +252,9 @@ def object_edit(
 
     # this is a new Object
     if obj_id == -1:
+        if "country" not in payload.keys():
+            raise GraphQLError("COUNTRY_IS_MANDATORY")
+
         obj = Object()
         obj.update_from_dict(payload)
         obj.recalculate_fields()

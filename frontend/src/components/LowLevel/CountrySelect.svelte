@@ -7,6 +7,7 @@
   export let value: Country | undefined = undefined
   export let name: string | undefined = undefined
   export let disabled = false
+  export let required = false
 </script>
 
 <VirtualListSelect
@@ -15,5 +16,6 @@
   label="name"
   {name}
   {disabled}
+  {required}
   on:input
 />
