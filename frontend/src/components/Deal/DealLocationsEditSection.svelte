@@ -228,19 +228,27 @@
         .getLayers()
         .filter(isPolygon)
         .forEach(layer => {
-          let style = {}
-
           if (layer.feature) {
+            const defaultStyle = {
+              dashArray: "5, 5",
+              dashOffset: "0",
+              fillOpacity: 0.4,
+              color: "#000000",
+              weight: 1.5,
+              fillColor: colormap[layer.feature.properties.type],
+            }
+
             if (hiddenFeatures.includes(layer.feature)) {
-              style = { color: "rgba(0,0,0,0)" }
+              layer.setStyle({
+                color: "rgba(0,0,0,0)",
+                fillColor: "rgba(0,0,0,0)",
+              })
             } else if (layer.feature === currentHoverFeature) {
-              style = { color: "orange" }
+              layer.setStyle({ ...defaultStyle, color: "#000000", weight: 3 })
             } else {
-              style = { color: colormap[layer.feature.properties.type] }
+              layer.setStyle(defaultStyle)
             }
           }
-
-          layer.setStyle(style)
         })
     }
   }

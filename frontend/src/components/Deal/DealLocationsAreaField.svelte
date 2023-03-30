@@ -121,7 +121,7 @@
     </button>
   </div>
   {#if hasAreaFeatures}
-    <table class="col-span-8 flex-auto">
+    <table class="col-span-8 flex-auto border-collapse">
       <thead>
         <tr>
           <th class="font-normal" />
@@ -139,9 +139,9 @@
             on:mouseout={() => (currentHoverFeature = null)}
             on:blur={() => (currentHoverFeature = null)}
             class={classNames(
-              "px-1",
-              feat === currentHoverFeature ? "border border-4 border-orange-400" : "",
-              hiddenFeatures.includes(feat) ? "bg-gray-200" : "",
+              "border-4 border",
+              feat === currentHoverFeature ? "border-orange-200" : "border-white",
+              hiddenFeatures.includes(feat) ? "border-gray-200 bg-gray-200" : "",
             )}
           >
             <td class="px-1 text-center" on:click={() => toggleVisibility(feat)}>
