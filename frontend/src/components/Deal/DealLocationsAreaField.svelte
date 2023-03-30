@@ -143,6 +143,7 @@
               <input
                 type="radio"
                 bind:group={current}
+                required={hasAreaFeatures}
                 value={i}
                 name="{areaType}_current"
               />
