@@ -63,7 +63,7 @@
       return false
     }
 
-    return !currentForm.checkValidity() && currentForm.reportValidity()
+    return currentForm.reportValidity()
   }
 
   const saveDeal = async (): Promise<void> => {
