@@ -234,9 +234,9 @@ type AreaTypeMap = { [key in AreaType]: string }
 export const areaTypeMap = derived(
   _,
   ($_): AreaTypeMap => ({
-    production_area: $_("Production"),
-    contract_area: $_("Contract"),
-    intended_area: $_("Intended"),
+    production_area: $_("Production area"),
+    contract_area: $_("Contract area"),
+    intended_area: $_("Intended area"),
   }),
 )
 

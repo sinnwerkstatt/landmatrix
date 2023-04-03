@@ -10,6 +10,7 @@
   import type { Location } from "$lib/types/deal"
   import type { Country } from "$lib/types/wagtail"
   import { isEmptySubmodel } from "$lib/utils/data_processing"
+  import { AREA_TYPES, AREA_TYPE_COLOR_MAP, padBounds } from "$lib/utils/location"
 
   import LocationGoogleField from "$components/Fields/Edit/LocationGoogleField.svelte"
   import PointField from "$components/Fields/Edit/PointField.svelte"
@@ -32,14 +33,6 @@
   let markerMode = false
 
   let locationFGs = new Map<string, GeoJSON>()
-
-  const areaTypes = ["production_area", "contract_area", "intended_area"]
-  const colormap = {
-    contract_area: "#ff00ff",
-    intended_area: "#66ff33",
-    production_area: "#ff0000",
-    "": "#ffe600",
-  }
 
   // type guards
   const isPath = (layer: Layer): layer is Path => layer instanceof Path
@@ -102,8 +95,9 @@
     locationFGs.forEach(value => {
       bounds.extend(value.getBounds())
     })
-    if (bounds.isValid()) bounds = bounds.pad(0.5)
-    else {
+    if (bounds.isValid()) {
+      bounds = padBounds(bounds)
+    } else if (country) {
       bounds = new LatLngBounds([
         [country.point_lat_min, country.point_lon_min],
         [country.point_lat_max, country.point_lon_max],
@@ -235,7 +229,7 @@
               fillOpacity: 0.4,
               color: "#000000",
               weight: 1.5,
-              fillColor: colormap[layer.feature.properties.type],
+              fillColor: AREA_TYPE_COLOR_MAP[layer.feature.properties.type],
             }
 
             if (hiddenFeatures.includes(layer.feature)) {
@@ -369,7 +363,7 @@
         </BigMap>
         <div>
           {#if locations.length && activeLocationID}
-            {#each areaTypes as areaType}
+            {#each AREA_TYPES as areaType}
               <DealLocationsAreaField
                 {areaType}
                 bind:locations

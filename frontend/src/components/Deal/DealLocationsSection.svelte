@@ -10,6 +10,7 @@
     createLocationFeatures,
     toggleFeatureVisibility,
     createGeoJsonOptions,
+    createLegend,
   } from "$lib/utils/location"
 
   import DealSubmodelSection from "$components/Deal/DealSubmodelSection.svelte"
@@ -51,6 +52,7 @@
 
   const onMapReady = (e: CustomEvent<Map>) => {
     map = e.detail
+    map.addControl(createLegend())
   }
 
   const onToggleVisibility = (

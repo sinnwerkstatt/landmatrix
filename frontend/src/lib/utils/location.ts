@@ -2,7 +2,7 @@ import type { Feature, Point, FeatureCollection, Geometry } from "geojson"
 import * as L from "leaflet"
 import * as R from "ramda"
 import { area } from "@turf/turf"
-import { marker, icon } from "leaflet"
+import { marker, icon, Control } from "leaflet"
 
 import type {
   AreaType,
@@ -22,6 +22,14 @@ import {
 } from "$lib/utils/geojsonHelpers"
 
 import LocationTooltip from "$components/Deal/LocationTooltip.svelte"
+import LocationLegend from "$components/Deal/LocationLegend.svelte"
+
+export const AREA_TYPES = ["production_area", "contract_area", "intended_area"] as const
+export const AREA_TYPE_COLOR_MAP: { [key in AreaType]: string } = {
+  contract_area: "#ff00ff",
+  intended_area: "#66ff33",
+  production_area: "#ff0000",
+}
 
 export const padBounds = (bounds: L.LatLngBounds): L.LatLngBounds => {
   const ne = bounds.getNorthEast()
@@ -140,6 +148,19 @@ export const createTooltip = (
   return container
 }
 
+export const createLegend = () => {
+  const legend = new Control({ position: "bottomleft" })
+  legend.onAdd = () => {
+    const container = L.DomUtil.create("div")
+    new LocationLegend({
+      props: {},
+      target: container,
+    })
+    return container
+  }
+  return legend
+}
+
 export const createGeoJsonOptions = ({
   getCurrentLocation,
   setCurrentLocation,
@@ -151,11 +172,6 @@ export const createGeoJsonOptions = ({
   style: feature => {
     const castedFeature = feature as EnhancedAreaFeature
     const currentLocation = getCurrentLocation()
-    const colorMap: { [key in AreaType]: string } = {
-      contract_area: "#ff00ff",
-      intended_area: "#66ff33",
-      production_area: "#ff0000",
-    }
 
     return {
       weight: 1.5,
@@ -168,7 +184,7 @@ export const createGeoJsonOptions = ({
           : "leaflet-hidden",
       dashArray: "5, 5",
       dashOffset: "0",
-      fillColor: colorMap[castedFeature?.properties.type],
+      fillColor: AREA_TYPE_COLOR_MAP[castedFeature?.properties.type],
     } as L.PathOptions
   },
   // point styles
