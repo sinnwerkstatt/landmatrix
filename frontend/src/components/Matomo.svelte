@@ -1,9 +1,8 @@
 <script lang="ts">
-  import { onMount } from "svelte"
-  import { writable } from "svelte/store"
-
   import { afterNavigate } from "$app/navigation"
   import { page } from "$app/stores"
+  import { onMount } from "svelte"
+  import { writable } from "svelte/store"
 
   export let url = import.meta.env.VITE_MATOMO_URL
   export let siteId = import.meta.env.VITE_MATOMO_SITE_ID
@@ -21,6 +20,7 @@
     setDoNotTrack()
     enableHeartBeatTimer(heartBeat)
     setCustomUrl(url): void
+    setCustomTrackingParameter(dimension, value): void
     trackPageView(): void
   }
   interface Matomo {
@@ -38,6 +38,7 @@
     if (heartBeat) track.enableHeartBeatTimer(heartBeat)
     await tracker.set(track)
 
+    $tracker.setCustomTrackingParameter("LoggedIn", !!$page.data.user)
     track.setCustomUrl($page.url.href)
     track.trackPageView()
   }
@@ -53,6 +54,7 @@
     }
 
     if (to?.url.href && $tracker) {
+      $tracker.setCustomTrackingParameter("LoggedIn", !!$page.data.user)
       $tracker.setCustomUrl(to.url.href)
       $tracker.trackPageView()
     }
