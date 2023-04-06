@@ -38,7 +38,7 @@
     if (heartBeat) track.enableHeartBeatTimer(heartBeat)
     await tracker.set(track)
 
-    track.setCustomDimension("LoggedIn", !!$page.data.user)
+    track.setCustomDimension(1, $page.data.user ? "true" : "false")
     track.setCustomUrl($page.url.href)
     track.trackPageView()
   }
@@ -54,7 +54,7 @@
     }
 
     if (to?.url.href && $tracker) {
-      $tracker.setCustomDimension(1, !!$page.data.user)
+      $tracker.setCustomDimension(1, $page.data.user ? "true" : "false")
       $tracker.setCustomUrl(to.url.href)
       $tracker.trackPageView()
     }
