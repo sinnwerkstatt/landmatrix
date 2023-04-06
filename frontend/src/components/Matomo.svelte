@@ -20,7 +20,7 @@
     setDoNotTrack()
     enableHeartBeatTimer(heartBeat)
     setCustomUrl(url): void
-    setCustomDimension(dimension, value): void
+    setCustomDimension(dimensionID: number, value: any): this
     trackPageView(): void
   }
   interface Matomo {
@@ -54,7 +54,7 @@
     }
 
     if (to?.url.href && $tracker) {
-      $tracker.setCustomDimension("LoggedIn", !!$page.data.user)
+      $tracker.setCustomDimension(1, !!$page.data.user)
       $tracker.setCustomUrl(to.url.href)
       $tracker.trackPageView()
     }
