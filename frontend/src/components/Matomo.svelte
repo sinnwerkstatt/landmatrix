@@ -38,7 +38,7 @@
     if (heartBeat) track.enableHeartBeatTimer(heartBeat)
     await tracker.set(track)
 
-    $tracker.setCustomTrackingParameter("LoggedIn", !!$page.data.user)
+    track.setCustomTrackingParameter("LoggedIn", !!$page.data.user)
     track.setCustomUrl($page.url.href)
     track.trackPageView()
   }
