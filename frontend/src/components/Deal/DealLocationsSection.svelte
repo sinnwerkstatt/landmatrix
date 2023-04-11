@@ -46,7 +46,7 @@
 
     const bounds = geoJsonLayer.getBounds()
     if (bounds.isValid()) {
-      map.fitBounds(padBounds(bounds), { animate: false })
+      map.fitBounds(padBounds(bounds), { duration: 1 })
     }
   }
 

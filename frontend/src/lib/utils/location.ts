@@ -100,26 +100,28 @@ export const createEnhancedLocationsCopy: (locations: Location[]) => Location[] 
   }),
 )
 
-export const createLocationFeatures = (
-  locations: Location[],
-): (PointFeature | EnhancedAreaFeature)[] => {
-  const pointFeatures: PointFeature[] = locations
-    .filter(isLocationWithCoordinates)
-    .map(createPointFeature)
+const getPointFeatures: (locations: Location[]) => PointFeature[] = R.pipe<
+  [Location[]],
+  LocationWithCoordinates[],
+  PointFeature[]
+>(R.filter(isLocationWithCoordinates), R.map(createPointFeature))
 
-  const areaFeatures: EnhancedAreaFeature[] = R.pipe<
-    [Location[]],
-    EnhancedAreaFeature[][],
-    EnhancedAreaFeature[]
-  >(
-    R.map(
-      R.path(["areas", "features"]) as (location: Location) => EnhancedAreaFeature[],
+const getAreaFeatures: (locations: Location[]) => EnhancedAreaFeature[] = R.pipe(
+  R.map(
+    R.pipe(
+      R.path<EnhancedAreaFeature[]>(["areas", "features"]),
+      R.defaultTo([] as EnhancedAreaFeature[]),
     ),
-    R.flatten,
-  )(locations)
+  ),
+  R.flatten,
+)
 
-  return [...pointFeatures, ...areaFeatures]
-}
+export const createLocationFeatures: (
+  locations: Location[],
+) => (PointFeature | EnhancedAreaFeature)[] = R.converge(
+  R.concat as <T>(a1: T[], a2: T[]) => T[],
+  [getPointFeatures, getAreaFeatures],
+)
 
 export const toggleFeatureVisibility = (
   featureId: string,
@@ -192,10 +194,11 @@ export const createGeoJsonOptions = ({
     const currentLocation = getCurrentLocation()
     return marker(latlng, {
       icon: icon({
-        iconRetinaUrl: "/images/marker-icon-2x.png",
         iconUrl: "/images/marker-icon.png",
         shadowUrl: "/images/marker-shadow.png",
-        shadowSize: [0, 0],
+        // shadowSize: [0, 0],
+        iconAnchor: [12.5, 41],
+        popupAnchor: [0, -35],
         className:
           !currentLocation || currentLocation === feature.properties.id
             ? ""
@@ -209,9 +212,20 @@ export const createGeoJsonOptions = ({
       layer.bindPopup(createTooltip(feature), {
         keepInView: true,
       })
-      layer.on("click", () => setCurrentLocation(feature.properties.id))
+      layer.on("click", () =>
+        setCurrentLocation(
+          feature.properties.id === getCurrentLocation() ? "" : feature.properties.id,
+        ),
+      )
       layer.on("mouseover", () => layer.openPopup())
       layer.on("mouseout", () => layer.closePopup())
     }
+  },
+  filter: (geoJsonFeature: PointFeature | EnhancedAreaFeature) => {
+    if (isPoint(geoJsonFeature)) {
+      return true
+    }
+    const currentLocation = getCurrentLocation()
+    return currentLocation ? geoJsonFeature.properties.id === currentLocation : true
   },
 })
