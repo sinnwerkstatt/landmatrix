@@ -3,6 +3,8 @@
   import { geoJson } from "leaflet?client"
   import * as R from "ramda"
 
+  import { goto } from "$app/navigation"
+
   import type { Deal, Location } from "$lib/types/deal"
   import {
     padBounds,
@@ -36,9 +38,7 @@
       createLocationFeatures(locationsCopy),
       createGeoJsonOptions({
         getCurrentLocation: () => currentLocation,
-        setCurrentLocation: (locationId: string) => {
-          currentLocation = locationId
-        },
+        setCurrentLocation: (locationId: string) => goto(`#locations/${locationId}`),
       }),
     )
 
