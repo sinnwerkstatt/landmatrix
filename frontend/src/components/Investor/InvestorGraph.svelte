@@ -1,5 +1,4 @@
 <script lang="ts">
-  import cn from "classnames"
   import type { ElementDefinition, EventHandler, Core as Graph } from "cytoscape"
   import { onMount, tick } from "svelte"
   import { _ } from "svelte-i18n"
@@ -140,32 +139,15 @@
       <strong>{$_("Legend")}</strong>
       <ul>
         <li>
-          <span
-            class={cn(
-              "relative mr-1 inline-block h-1.5 w-5",
-              "border-t-2 border-t-orange",
-            )}
-          />
+          <span class="colored-line" style:--color="#fc941f" />
           {$_("Is operating company of")}
         </li>
         <li>
-          <span
-            class={cn(
-              "relative mr-3 inline-block h-0 w-0",
-              "border-y-8 border-r-[12px] border-[#f78e8f] border-y-transparent",
-              "after:absolute after:left-2 after:w-3 after:border-t-2 after:border-[#f78e8f]",
-            )}
-          />
+          <span class="colored-arrow" style:--color="#f78e8f" />
           {$_("Is parent company of")}
         </li>
         <li>
-          <span
-            class={cn(
-              "relative mr-3 inline-block h-0 w-0",
-              "border-y-8 border-r-[12px] border-[#72b0fd] border-y-transparent",
-              "after:absolute after:left-2 after:w-3 after:border-t-2 after:border-[#72b0fd]",
-            )}
-          />
+          <span class="colored-arrow" style:--color="#72b0fd" />
           {$_("Is tertiary investor/lender of")}
         </li>
       </ul>
@@ -173,7 +155,16 @@
   </div>
 </div>
 
-<style>
+<style lang="css">
+  .colored-line {
+    @apply relative mr-1 inline-block h-1.5 w-5 border-t-2 border-t-[var(--color)];
+  }
+  .colored-arrow {
+    @apply relative mr-3 inline-block h-0 w-0;
+    @apply border-y-8 border-r-[12px] border-[var(--color)] border-y-transparent;
+    @apply after:absolute after:left-2 after:w-3 after:border-t-2 after:border-[var(--color)];
+  }
+
   :global(.g-tooltip) {
     color: white;
     border-radius: 3px;
