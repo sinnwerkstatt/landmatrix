@@ -426,6 +426,7 @@
               href={`/api/gis_export/?type=locations&filters=${jsonFilters}&subset=${
                 $publicOnly ? "PUBLIC" : "ACTIVE"
               }`}
+              on:click={() => trackDownload("locations")}
               data-sveltekit-reload
             >
               <i class="fas fa-file-download" />
@@ -438,6 +439,7 @@
               href={`/api/gis_export/?type=areas&filters=${jsonFilters}&subset=${
                 $publicOnly ? "PUBLIC" : "ACTIVE"
               }`}
+              on:click={() => trackDownload("areas")}
               data-sveltekit-reload
             >
               <i class="fas fa-file-download" />
