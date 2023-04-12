@@ -3,7 +3,6 @@
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
   import Select from "svelte-select"
-  import VirtualList from "svelte-tiny-virtual-list"
 
   import { page } from "$app/stores"
 
@@ -17,6 +16,7 @@
   import { ProduceGroup } from "$lib/types/deal"
   import type { Investor } from "$lib/types/investor"
   import { UserRole } from "$lib/types/user"
+  import { tracker } from "$lib/stores/tracker"
 
   import { showFilterBar } from "$components/Data/stores"
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
@@ -89,7 +89,9 @@
       name = $countries.find(c => c.id === $filters.country_id).name
     if ($filters.region_id) name = $regions.find(r => r.id === $filters.region_id).name
 
-    if (window._paq) window._paq.push(["trackEvent", "Downloads", format, name])
+    if ($tracker) {
+      $tracker.trackEvent("Downloads", format, name)
+    }
   }
 </script>
 
@@ -424,6 +426,7 @@
               href={`/api/gis_export/?type=locations&filters=${jsonFilters}&subset=${
                 $publicOnly ? "PUBLIC" : "ACTIVE"
               }`}
+              on:click={() => trackDownload("locations")}
               data-sveltekit-reload
             >
               <i class="fas fa-file-download" />
@@ -436,6 +439,7 @@
               href={`/api/gis_export/?type=areas&filters=${jsonFilters}&subset=${
                 $publicOnly ? "PUBLIC" : "ACTIVE"
               }`}
+              on:click={() => trackDownload("areas")}
               data-sveltekit-reload
             >
               <i class="fas fa-file-download" />
