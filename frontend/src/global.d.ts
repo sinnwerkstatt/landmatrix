@@ -1,5 +1,7 @@
 // global.d.ts (or any ambient dts file)
 
+import type { Tracker } from "$lib/stores/tracker"
+
 // named exports
 declare module "leaflet?client" {
   import L from "leaflet"
@@ -30,17 +32,15 @@ declare module "@googlemaps/js-api-loader?client" {
 declare module "*?client"
 declare module "*?server"
 
-type HCatchaOnLoad = () => void
-
 declare global {
   interface Window {
     // Matomo
-    _paq?: {
-      push: (item: string[]) => void
+    Matomo?: {
+      getTracker: (trackerUrl: string, siteId: number) => Tracker | undefined
     }
 
     // HCaptcha
     hcaptcha: HCaptcha
-    hcaptchaOnLoad: HCatchaOnLoad | null
+    hcaptchaOnLoad: (() => void) | null
   }
 }
