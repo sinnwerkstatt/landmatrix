@@ -15,6 +15,18 @@ function SDILegend(layer: string, folder = "lm"): string {
   )
 }
 
+function LandMarkLegend(layer: string, folder: string): string {
+  return (
+    `https://gis.wri.org/server/services/LandMark/${folder}/MapServer/WMSServer?` +
+    "request=GetLegendGraphic&" +
+    "version=1.3.0&" +
+    "format=image%2Fpng&" +
+    "width=25&height=25&" +
+    "legend_options=forceLabels%3A1%3BfontAntiAliasing%3A1%3BfontName%3ANimbus+Sans+L+Regular%3B&" +
+    `layer=${layer}`
+  )
+}
+
 export interface BaseLayer {
   id: string
   name: string
@@ -145,6 +157,21 @@ export const getContextLayers = ($_: (t: string) => string): ContextLayer[] => {
       }),
       legendUrlFunction(): string {
         return SDILegend("ph_icca_areas_2020")
+      },
+    },
+    {
+      id: "landmark_indigenous_lands_acknowledged_by_government_documented",
+      name: $_("Indigenous lands acknowledged by government (documented)"),
+      layer: new TileLayer.WMS("https://gis.wri.org:443/server/services/LandMark/comm_ind_Documented/MapServer/WMSServer?", {
+        layers: "0",
+        format: "image/png",
+        transparent: true,
+        opacity: 0.7,
+        attribution:
+          'Source: <a href="http://www.landmarkmap.org/" target="_blank">LandMark. 2020. LandMark: The Global Platform of Indigenous and Community Land.</a>',
+      }),
+      legendUrlFunction(): string {
+        return LandMarkLegend("0", "comm_ind_Documented")
       },
     },
   ]
