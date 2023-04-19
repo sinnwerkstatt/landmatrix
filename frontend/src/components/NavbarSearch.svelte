@@ -2,6 +2,7 @@
   import { gql } from "@urql/svelte"
   import classNames from "classnames"
   import { _ } from "svelte-i18n"
+  import { onMount } from "svelte"
 
   import { goto } from "$app/navigation"
   import { page } from "$app/stores"
@@ -14,8 +15,18 @@
 
   $: user = $page.data.user
 
+  interface SearchResult {
+    id: number
+    name: string
+    url: string
+    is_public?: boolean
+    investor?: boolean
+  }
+
   let search = ""
   let selectedSearchIndex = 0
+  let searchResult: SearchResult[] = []
+  let searchResultContainer: HTMLUListElement
   let deals: Deal[] = []
   let investors: Investor[] = []
 
@@ -59,58 +70,75 @@
     investors = data?.investors ?? []
   }
 
-  getDeals()
-  getInvestors()
-
-  $: searchResult =
-    search.length >= 2
-      ? [
-          ...deals
-            .filter(d => d.id.toString().includes(search))
-            .map(d => {
-              let name = `#${d.id}`
-              if (d.country) name += ` in ${d.country?.name}`
-              return { id: d.id, name, is_public: d.is_public, url: `/deal/${d.id}/` }
-            }),
-          ...investors
-            .filter(
-              i =>
-                i.id.toString().includes(search) ||
-                i.name.toLowerCase().includes(search.toLowerCase()),
-            )
-            .map(i => {
-              return {
-                id: i.id,
-                name: `${i.name} #${i.id}`,
-                url: `/investor/${i.id}/`,
-                investor: true,
-              }
-            }),
-        ]
-      : []
+  $: {
+    // on search change
+    selectedSearchIndex = 0
+    searchResult =
+      search.length >= 2
+        ? [
+            ...deals
+              .filter(d => d.id.toString().includes(search))
+              .map<SearchResult>(d => {
+                let name = `#${d.id}`
+                if (d.country) name += ` in ${d.country?.name}`
+                return {
+                  id: d.id,
+                  name,
+                  is_public: d.is_public,
+                  url: `/deal/${d.id}/`,
+                }
+              }),
+            ...investors
+              .filter(
+                i =>
+                  i.id.toString().includes(search) ||
+                  i.name.toLowerCase().includes(search.toLowerCase()),
+              )
+              .map<SearchResult>(i => {
+                return {
+                  id: i.id,
+                  name: `${i.name} #${i.id}`,
+                  url: `/investor/${i.id}/`,
+                  investor: true,
+                }
+              }),
+          ]
+        : []
+  }
 
   function searchKeyboardEvent(e) {
-    if (["ArrowDown", "ArrowUp"].includes(e.code)) {
+    if (["ArrowDown", "ArrowUp", "Enter"].includes(e.code)) {
       e.preventDefault()
 
-      if (e.code === "ArrowDown") {
-        selectedSearchIndex = (selectedSearchIndex + 1) % searchResult.length
-      } else {
-        if (selectedSearchIndex === 0) selectedSearchIndex = searchResult.length - 1
-        else selectedSearchIndex = (selectedSearchIndex - 1) % searchResult.length
+      if (!searchResult.length) {
+        return
       }
 
-      let liel = searchResult[selectedSearchIndex]
-      let offset = document.getElementById(`${liel.id}${liel.investor}`).offsetTop
-      document.getElementById("ulle").scrollTop = offset - 100
-    }
-
-    if (e.code === "Enter") {
-      e.preventDefault()
-      goto(searchResult[selectedSearchIndex].url)
-      document.getElementById("search").click()
+      switch (e.code) {
+        case "ArrowDown":
+          selectedSearchIndex = (selectedSearchIndex + 1) % searchResult.length
+          searchResultContainer.children[selectedSearchIndex].scrollIntoView()
+          return
+        case "ArrowUp":
+          selectedSearchIndex =
+            selectedSearchIndex === 0
+              ? searchResult.length - 1
+              : selectedSearchIndex - 1
+          searchResultContainer.children[selectedSearchIndex].scrollIntoView()
+          return
+        case "Enter":
+          goto(searchResult[selectedSearchIndex].url)
+          return
+        default:
+          return
+      }
     }
   }
+
+  onMount(() => {
+    getDeals()
+    getInvestors()
+  })
 </script>
 
 <NavDropDown placement="right-0">
@@ -127,39 +155,33 @@
           type="text"
           class="inpt"
           placeholder={$_("ID or Name")}
+          autocomplete="off"
           on:keydown={searchKeyboardEvent}
         />
       </label>
     </form>
-    {#if searchResult.length > 0}
-      <ul
-        id="ulle"
-        class="relative mt-4 max-h-[55vh] overflow-y-auto border-t-orange pt-2"
-      >
-        {#each searchResult as d, i}
-          <li
+    <ul
+      bind:this={searchResultContainer}
+      id="search-result"
+      class="relative mt-4 max-h-[55vh] overflow-y-auto border-t-orange pt-2"
+    >
+      {#each searchResult as item, index}
+        <li>
+          <a
+            href={item.url}
             class={classNames(
-              "!hover:text-white py-1 px-1.5 transition duration-100",
-              d.investor ? "hover:bg-pelorous" : "hover:bg-orange",
+              "block border-2 py-1 px-1.5 transition duration-100 hover:text-white",
+              selectedSearchIndex === index ? "border-gray-200" : "border-transparent",
+              item.investor
+                ? "text-pelorous hover:bg-pelorous"
+                : "text-orange hover:bg-orange",
             )}
+            class:opacity-40={!item.investor && !item.is_public}
           >
-            <a
-              href={d.url}
-              class={d.investor ? "text-pelorous" : "text-orange"}
-              class:opacity-40={d.is_public === false}
-              class:text-white={selectedSearchIndex === i}
-            >
-              {d.name}
-            </a>
-          </li>
-        {/each}
-      </ul>
-    {/if}
+            {item.name}
+          </a>
+        </li>
+      {/each}
+    </ul>
   </div>
 </NavDropDown>
-
-<style>
-  li:hover > a {
-    color: white !important;
-  }
-</style>

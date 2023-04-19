@@ -2,7 +2,6 @@ import json
 
 
 def nasty_i18n_frontend_hack_for_english(infile, outfile):
-
     with open(infile) as inf:
         input_msgs = json.load(inf)
     output_msgs = {}

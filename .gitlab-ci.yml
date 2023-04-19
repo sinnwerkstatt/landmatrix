@@ -21,7 +21,7 @@ django formatting and linting:
   interruptible: true
   script:
     - poetry install
-    - black . --check
+    - poetry run black . --check
     # - poetry run pylint config  -d unused-wildcard-import,unused-import,wildcard-import
     # - poetry run pylint apps --exit-zero # pylint is quite broken at the moment
 
