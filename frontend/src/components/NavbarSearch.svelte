@@ -81,7 +81,12 @@
               .map<SearchResult>(d => {
                 let name = `#${d.id}`
                 if (d.country) name += ` in ${d.country?.name}`
-                return { id: d.id, name, is_public: d.is_public, url: `/deal/${d.id}/` }
+                return {
+                  id: d.id,
+                  name,
+                  is_public: d.is_public,
+                  url: `/deal/${d.id}/`,
+                }
               }),
             ...investors
               .filter(
