@@ -199,6 +199,7 @@ export const NEGOTIATION_STATUS_GROUP_MAP: {
 }
 
 export interface Deal extends Obj {
+  id: number
   locations: Location[]
   contracts: Contract[]
   datasources: DataSource[]

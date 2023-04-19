@@ -36,8 +36,6 @@
       route: "/charts/country-profiles",
     },
   ]
-
-  console.log($page.url.pathname)
 </script>
 
 <div
