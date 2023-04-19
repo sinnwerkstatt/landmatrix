@@ -27,6 +27,7 @@ export enum Classification {
 }
 
 export interface Investor extends Obj {
+  id: number
   name: string
   classification: Classification
   homepage: string
