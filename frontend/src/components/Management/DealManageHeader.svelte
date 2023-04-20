@@ -79,14 +79,19 @@
         },
       )
       .toPromise()
+
     if (error) {
-      if (error.graphQLErrors[0].message === "EDITING_OLD_VERSION")
-        toast.push("You are trying to edit an old version!", { classes: ["error"] })
-      else toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
+      const message = error.networkError
+        ? "Network Error: Please check your internet connection."
+        : error.graphQLErrors.map(e => e.message).includes("EDITING_OLD_VERSION")
+        ? "You are trying to edit an old version!"
+        : `GraphQLError: ${error.message}`
+
+      toast.push(message, { classes: ["error"] })
       return
     }
     if (!data) {
-      toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
+      toast.push(`Unknown Problem: Please contact support.`, { classes: ["error"] })
       return
     }
 

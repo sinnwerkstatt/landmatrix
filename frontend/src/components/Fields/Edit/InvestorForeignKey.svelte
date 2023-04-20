@@ -2,8 +2,6 @@
   import { gql } from "@urql/svelte"
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
-  import Select from "svelte-select"
-  import VirtualList from "svelte-tiny-virtual-list"
 
   import { page } from "$app/stores"
 
@@ -52,11 +50,6 @@
   let newInvestorForm: HTMLFormElement
   let showNewInvestorForm = false
 
-  function initCreateNewInvestor(name: string) {
-    newInvestor = { name }
-    showNewInvestorForm = true
-  }
-
   async function addNewInvestor() {
     if (!newInvestorForm.checkValidity()) {
       newInvestorForm.reportValidity()
@@ -96,17 +89,17 @@
     creatable
     name={formfield.name}
     on:input={e => {
-      const value = e.detail
-      if (value && value.created) {
-        initCreateNewInvestor(value.name)
+      const investorItem = e.detail
+      if (investorItem && investorItem.created) {
+        newInvestor = { name: investorItem.name }
+        showNewInvestorForm = true
       }
     }}
   />
   {#if !showNewInvestorForm && value}
     <div class="container p-2">
-      <a href="/investor/{value.id}" class="investor-link">
-        {$_("Show details for investor")} #{value.id}
-        {value.name}
+      <a href="/investor/{value.id}" rel="noreferrer" target="_blank">
+        {$_("Show details for investor")}
       </a>
     </div>
   {/if}

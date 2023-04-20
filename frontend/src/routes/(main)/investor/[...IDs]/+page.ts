@@ -15,7 +15,7 @@ export const load: PageLoad = async ({ params, parent }) => {
 
   if (!investorID) throw error(404, "Investor not found")
 
-  const { data } = await urqlClient
+  const res = await urqlClient
     .query<{ investor: Investor }>(investor_gql_query, {
       id: investorID,
       version: investorVersion,
@@ -23,15 +23,25 @@ export const load: PageLoad = async ({ params, parent }) => {
       depth: 1,
     })
     .toPromise()
-  if (!data?.investor) throw error(404, "Investor not found")
-  if (data.investor.status === Status.DRAFT && !investorVersion) {
-    const investorVersion = data.investor.versions?.[0]?.id
+
+  if (res.error) {
+    if (res.error.graphQLErrors.map(e => e.message).includes("INVESTOR_NOT_FOUND"))
+      throw error(404, "Investor not found")
+    if (res.error.graphQLErrors.map(e => e.message).includes("MISSING_AUTHORIZATION"))
+      throw error(401, "Unauthorized")
+    throw error(500, `${res.error}`)
+  }
+  if (!res.data) throw error(500, `Unknown Problem: ${error}`)
+
+  if (!res.data?.investor) throw error(404, "Investor not found")
+  if (res.data.investor.status === Status.DRAFT && !investorVersion) {
+    const investorVersion = res.data.investor.versions?.[0]?.id
     throw redirect(301, `/investor/${investorID}/${investorVersion}`)
   }
   // redirect if version is active version
-  const activeVersion = findActiveVersion(data.investor, "investor")
+  const activeVersion = findActiveVersion(res.data.investor, "investor")
   if (investorVersion && investorVersion === activeVersion?.id) {
     throw redirect(301, `/investor/${investorID}`)
   }
-  return { investor: data.investor, investorID, investorVersion }
+  return { investor: res.data.investor, investorID, investorVersion }
 }
