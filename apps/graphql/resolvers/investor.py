@@ -74,7 +74,7 @@ def resolve_investor(
     else:
         visible_investors = Investor.objects.visible(user, subset).filter(id=id)
         if not visible_investors:
-            raise GraphQLError("not found")
+            raise GraphQLError("INVESTOR_NOT_FOUND")
 
         investor = qs_values_to_dict(
             visible_investors,

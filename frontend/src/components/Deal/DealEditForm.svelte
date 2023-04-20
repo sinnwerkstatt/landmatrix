@@ -90,25 +90,25 @@
         },
       )
       .toPromise()
+
     if (error) {
-      if (error.graphQLErrors[0].message === "EDITING_OLD_VERSION")
-        toast.push("You are trying to edit an old version!", { classes: ["error"] })
-      else toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
-      savingInProgress = false
-      return
-    }
-    if (!data) {
-      toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
-      savingInProgress = false
-      return
+      const message = error.networkError
+        ? "Network Error: Please check your internet connection."
+        : error.graphQLErrors.map(e => e.message).includes("EDITING_OLD_VERSION")
+        ? "You are trying to edit an old version!"
+        : `GraphQLError: ${error.message}`
+
+      toast.push(message, { classes: ["error"] })
+    } else if (!data) {
+      toast.push("Unknown Problem: Please contact support.", { classes: ["error"] })
+    } else {
+      await goto(
+        `/deal/edit/${data.deal_edit.dealId}/${data.deal_edit.dealVersion}${location.hash}`,
+      )
+      // update original deal only after route change
+      originalDeal = JSON.stringify(discardEmptyFields(deal))
     }
 
-    await goto(
-      `/deal/edit/${data.deal_edit.dealId}/${data.deal_edit.dealVersion}${location.hash}`,
-    )
-
-    // update original deal only after route change
-    originalDeal = JSON.stringify(discardEmptyFields(deal))
     savingInProgress = false
   }
 

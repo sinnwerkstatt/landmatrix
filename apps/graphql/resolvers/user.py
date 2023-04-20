@@ -24,7 +24,7 @@ def resolve_user(_obj, info, id=None):
 def resolve_users(_obj, info, sort):
     user = info.context["request"].user
     if not (user.is_authenticated and user.role):
-        raise GraphQLError(message="Not allowed")
+        raise GraphQLError("MISSING_AUTHORIZATION")
 
     users = UserModel.objects.filter(is_active=True).filter(role__gt=0)
     # TODO - we could skip "reporters" here, and manually add the missing Reporter per deal in the frontend
