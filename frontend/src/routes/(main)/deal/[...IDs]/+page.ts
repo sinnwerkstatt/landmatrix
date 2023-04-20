@@ -16,10 +16,11 @@ export const load: PageLoad = async ({ params, parent }) => {
   const res = await urqlClient
     .query<{ deal: Deal }>(deal_gql_query, { id: dealID, version: dealVersion })
     .toPromise()
+
   if (res.error) {
-    if (res.error.graphQLErrors[0].message === "DEAL_NOT_FOUND")
+    if (res.error.graphQLErrors.map(e => e.message).includes("DEAL_NOT_FOUND"))
       throw error(404, "Deal not found")
-    if (res.error.graphQLErrors[0].message === "MISSING_AUTHORIZATION")
+    if (res.error.graphQLErrors.map(e => e.message).includes("MISSING_AUTHORIZATION"))
       throw error(401, "Unauthorized")
     throw error(500, `${res.error}`)
   }
