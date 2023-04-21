@@ -3,6 +3,7 @@
   import { _ } from "svelte-i18n"
 
   import { page } from "$app/stores"
+  import { browser } from "$app/environment"
 
   import { isEmpty } from "$lib/helpers"
   import { subsections } from "$lib/sections"
@@ -22,7 +23,7 @@
 
   export let selectedEntryId: string | undefined
   $: selectedEntryId = $page.url.hash.split("/")?.[1]
-  $: scrollEntryIntoView(selectedEntryId)
+  $: browser && scrollEntryIntoView(selectedEntryId)
 
   const scrollEntryIntoView = (id: string | undefined) => {
     const el = document.getElementById(id ?? "")
