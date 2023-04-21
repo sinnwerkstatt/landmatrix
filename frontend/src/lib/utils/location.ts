@@ -1,8 +1,7 @@
 import type { Feature, Point, FeatureCollection, Geometry } from "geojson"
-import * as L from "leaflet"
+import * as L from "leaflet" // TODO: this breaks SSR
 import * as R from "ramda"
 import { area } from "@turf/turf"
-import { marker, icon, Control } from "leaflet"
 
 import type {
   AreaType,
@@ -151,7 +150,7 @@ export const createTooltip = (
 }
 
 export const createLegend = () => {
-  const legend = new Control({ position: "bottomleft" })
+  const legend = new L.Control({ position: "bottomleft" })
   legend.onAdd = () => {
     const container = L.DomUtil.create("div")
     new LocationLegend({
@@ -192,8 +191,8 @@ export const createGeoJsonOptions = ({
   // point styles
   pointToLayer: (feature: PointFeature, latlng) => {
     const currentLocation = getCurrentLocation()
-    return marker(latlng, {
-      icon: icon({
+    return L.marker(latlng, {
+      icon: L.icon({
         iconUrl: "/images/marker-icon.png",
         shadowUrl: "/images/marker-shadow.png",
         // shadowSize: [0, 0],
@@ -221,11 +220,11 @@ export const createGeoJsonOptions = ({
       layer.on("mouseout", () => layer.closePopup())
     }
   },
-  filter: (geoJsonFeature: PointFeature | EnhancedAreaFeature) => {
-    if (isPoint(geoJsonFeature)) {
-      return true
-    }
-    const currentLocation = getCurrentLocation()
-    return currentLocation ? geoJsonFeature.properties.id === currentLocation : true
-  },
+  // filter: (geoJsonFeature: PointFeature | EnhancedAreaFeature) => {
+  //   if (isPoint(geoJsonFeature)) {
+  //     return true
+  //   }
+  //   const currentLocation = getCurrentLocation()
+  //   return currentLocation ? geoJsonFeature.properties.id === currentLocation : true
+  // },
 })

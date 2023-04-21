@@ -28,8 +28,7 @@
   let geoJsonLayer: GeoJSON
   let currentLocation: string | undefined
 
-  // respond to changes in locationsCopy and currentLocation
-  $: if (map) {
+  const updateGeoJsonLayer = () => {
     if (geoJsonLayer) {
       map.removeLayer(geoJsonLayer)
     }
@@ -43,10 +42,29 @@
     )
 
     map.addLayer(geoJsonLayer)
-
-    const bounds = geoJsonLayer.getBounds()
+  }
+  const updateGeoJsonBounds = () => {
+    const bounds = currentLocation
+      ? geoJson(
+          geoJsonLayer
+            .getLayers()
+            .filter(l => l.feature.properties.id === currentLocation)
+            .map(l => l.feature),
+        ).getBounds()
+      : geoJsonLayer.getBounds()
     if (bounds.isValid()) {
       map.fitBounds(padBounds(bounds), { duration: 1 })
+    }
+  }
+
+  // respond to changes in currentLocation
+  $: if (map) {
+    if (currentLocation) {
+      updateGeoJsonLayer()
+      updateGeoJsonBounds()
+    } else {
+      updateGeoJsonLayer()
+      updateGeoJsonBounds()
     }
   }
 
@@ -65,6 +83,7 @@
       toggleFeatureVisibility(featureId),
       locationsCopy,
     )
+    updateGeoJsonLayer()
   }
 </script>
 
@@ -89,9 +108,9 @@
 
 <style>
   :global(path.leaflet-hidden) {
-    display: none;
-    /*opacity: 0.5;*/
-    /*filter: saturate(0);*/
+    /*display: none;*/
+    opacity: 0.5;
+    filter: saturate(0);
   }
 
   :global(img.leaflet-hidden) {
