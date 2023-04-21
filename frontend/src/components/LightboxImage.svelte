@@ -1,15 +1,19 @@
 <script lang="ts">
+  import { browser } from "$app/environment"
+
   import { lightboxImage } from "$lib/stores"
 
   const onKeydown = (e: KeyboardEvent) => e.key === "Escape" && lightboxImage.set(null)
   const onClick = () => lightboxImage.set(null)
 
-  $: if ($lightboxImage) {
-    document.addEventListener("keydown", onKeydown)
-    document.addEventListener("click", onClick)
-  } else {
-    document.removeEventListener("keydown", onKeydown)
-    document.removeEventListener("click", onClick)
+  $: if (browser) {
+    if ($lightboxImage) {
+      document.addEventListener("keydown", onKeydown)
+      document.addEventListener("click", onClick)
+    } else {
+      document.removeEventListener("keydown", onKeydown)
+      document.removeEventListener("click", onClick)
+    }
   }
 </script>
 
