@@ -6,7 +6,7 @@
 </script>
 
 <div class="border border-black bg-white p-3 font-sans text-lm-dark">
-  <div class="mb-1 text-center text-base">
+  <div class="mb-1 text-center text-sm">
     <strong>{$_("Legend")}</strong>
   </div>
   {#each AREA_TYPES as areaType}
@@ -17,7 +17,7 @@
           style:--color={AREA_TYPE_COLOR_MAP[areaType]}
         />
       </div>
-      <span class="pl-2 text-sm">
+      <span class="pl-2 text-xs">
         {$areaTypeMap[areaType]}
       </span>
     </div>
