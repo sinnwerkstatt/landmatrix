@@ -1,4 +1,4 @@
-import type { Handle, HandleFetch } from "@sveltejs/kit"
+import type { Handle } from "@sveltejs/kit"
 
 import { supportedLanguages } from "$lib/i18n/i18n"
 
@@ -36,14 +36,4 @@ export const handle: Handle = async ({ event, resolve }) => {
   return resolve(event, {
     filterSerializedResponseHeaders: name => name === "content-type",
   })
-  return resolve(event)
-}
-
-export const handleFetch: HandleFetch = async ({ request, fetch, event }) => {
-  if (request.url.startsWith(event.url.origin)) {
-    // Workaround: https://github.com/sveltejs/kit/issues/6608
-    request.headers.set("origin", event.url.origin)
-  }
-
-  return fetch(request)
 }
