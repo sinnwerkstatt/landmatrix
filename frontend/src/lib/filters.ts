@@ -1,5 +1,6 @@
 import { writable, derived } from "svelte/store"
 
+// eslint-disable-next-line import/no-unresolved
 import { browser } from "$app/environment"
 
 import {
