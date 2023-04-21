@@ -1,4 +1,6 @@
-import { writable } from "svelte/store"
+import { writable, derived } from "svelte/store"
+
+import { browser } from "$app/environment"
 
 import {
   ImplementationStatus,
@@ -285,16 +287,24 @@ export class FilterValues {
   }
 }
 
-const lSfilters = localStorage ? localStorage.getItem("filters") : undefined
-export const filters = writable<FilterValues>(
-  lSfilters ? new FilterValues(JSON.parse(lSfilters)) : new FilterValues().default(),
-)
-
-filters.subscribe(
-  x => localStorage && localStorage.setItem("filters", JSON.stringify(x)),
-)
-
+export const filters = writable<FilterValues>(new FilterValues().default())
 export const publicOnly = writable(true)
-export const isDefaultFilter = writable(true)
+export const isDefaultFilter = derived(
+  filters,
+  $filters => $filters && $filters.isDefault(),
+)
 
-filters.subscribe(fltrs => isDefaultFilter.set(fltrs.isDefault()))
+export const hydrateAndSubscribeFilterValuesFromLS = () => {
+  const filterValuesFromLS = localStorage && localStorage.getItem("filters")
+  if (filterValuesFromLS) {
+    filters.set(new FilterValues(JSON.parse(filterValuesFromLS)))
+  }
+  filters.subscribe(
+    filterValues =>
+      localStorage && localStorage.setItem("filters", JSON.stringify(filterValues)),
+  )
+}
+
+if (browser) {
+  hydrateAndSubscribeFilterValuesFromLS()
+}

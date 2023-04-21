@@ -7,7 +7,8 @@ import type { User } from "$lib/types/user"
 
 import type { LayoutLoad } from "./$types"
 
-export const ssr = false
+// ssr turned on by default
+// https://kit.svelte.dev/docs/page-options#ssr
 
 async function fetchMe(urqlClient: Client) {
   const { data } = await urqlClient
