@@ -72,7 +72,6 @@
     "prettier-plugin-svelte": "^2.9.0",
     "prettier-plugin-tailwindcss": "^0.2.1",
     "ramda": "^0.28.0",
-    "siema": "^1.5.1",
     "svelte": "^3.55.0",
     "svelte-chartjs": "^3.1.0",
     "svelte-check": "^2.10.2",
