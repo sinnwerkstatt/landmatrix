@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import json
 
 from django.conf import settings
@@ -929,6 +927,7 @@ class Deal(AbstractDealBase):
         return value
 
     def _calculate_initiation_year(self):
+        self.negotiation_status: list
         valid_negotation_status = (
             [
                 int(x["date"][:4])
@@ -946,6 +945,7 @@ class Deal(AbstractDealBase):
             if self.negotiation_status
             else []
         )
+        self.implementation_status: list
         valid_implementation_status = (
             [
                 int(x["date"][:4])
