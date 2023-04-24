@@ -39,7 +39,11 @@
   <section class="w-full">
     {#each entries as entry, index}
       <div id={entry.id} class={"p-2"} class:selected={selectedEntryId === entry.id}>
-        <h3>{index + 1}. {$_(modelName)}</h3>
+        <h3>
+          <a href={$page.url.hash.split("/")[0] + `/${entry.id}`}>
+            {index + 1}. {$_(modelName)}
+          </a>
+        </h3>
         <DisplayField fieldname="id" value={entry["id"]} {model} showLabel />
         {#each fields as fieldname}
           {#if !isEmpty(entry[fieldname])}
