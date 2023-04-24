@@ -35,7 +35,7 @@ export const padBounds = (bounds: L.LatLngBounds): L.LatLngBounds => {
   const sw = bounds.getSouthWest()
 
   if (ne.equals(sw)) {
-    const margin = 10
+    const margin = 0.2
 
     return L.latLngBounds(
       L.latLng(ne.lat + margin, ne.lng + margin),
