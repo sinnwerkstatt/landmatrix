@@ -3,15 +3,15 @@ from nanoid import generate
 from django.core.management.base import BaseCommand
 
 from apps.landmatrix.models.deal import Deal
+from apps.landmatrix.models.investor import Investor
 
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
+        print("Deals and deal versions.")
         for deal in Deal.objects.all().order_by("id"):
-            print(deal.id, end="")
             updated = False
 
-            # datasources and contracts
             for x in deal.datasources:
                 if not x.get("id") or isinstance(x["id"], int):
                     updated = True
@@ -23,11 +23,10 @@ class Command(BaseCommand):
                     updated = True
                     x["old_id"] = x.get("id")
                     x["id"] = generate(size=8)
-            # #####################################
 
             for x in deal.locations:
-                updated = True
                 if not x.get("id") or isinstance(x["id"], int):
+                    updated = True
                     x["old_id"] = x.get("id")
                     x["id"] = generate(size=8)
                 if x.get("areas"):
@@ -37,30 +36,18 @@ class Command(BaseCommand):
                             and len(feat["properties"]["id"]) == 8
                         ):
                             continue
-                        # live_id = [
-                        #     y
-                        #     for y in deal.locations
-                        #     if y["old_id"] == feat["properties"]["id"]
-                        # ][0]["id"]
+                        updated = True
                         feat["properties"]["id"] = x["id"]
 
             if updated:
-                print(" - updated", end="")
+                print(f"{deal.id} - updated")
                 deal.save()
 
-            if deal.current_draft:
-                ddata = deal.current_draft.serialized_data
-                # datasources and contracts
-                # print(json.dumps(ddata["datasources"], indent=2))
-                # print(json.dumps(deal.datasources, indent=2))
+            for deal_version in deal.versions.all().order_by("id"):
+                updated = False
+                ddata = deal_version.serialized_data
                 for x in ddata["datasources"]:
                     if not x.get("id") or isinstance(x["id"], int):
-                        if not x.get("id"):
-                            x["id"] = generate(size=8)
-                            continue
-                        if x["id"] in [y["id"] for y in deal.datasources]:
-                            print("found ID")
-                            continue
                         updated = True
                         try:
                             live_id = [
@@ -74,11 +61,6 @@ class Command(BaseCommand):
 
                 for x in ddata["contracts"]:
                     if not x.get("id") or isinstance(x["id"], int):
-                        if not x.get("id"):
-                            x["id"] = generate(size=8)
-                            continue
-                        if x["id"] in [y["id"] for y in deal.contracts]:
-                            continue
                         updated = True
                         try:
                             live_id = [
@@ -89,7 +71,6 @@ class Command(BaseCommand):
                         except IndexError:
                             live_id = generate(size=8)
                         x["id"] = live_id
-                # #####################################
 
                 for x in ddata["locations"]:
                     if not x.get("id") or isinstance(x["id"], int):
@@ -110,9 +91,47 @@ class Command(BaseCommand):
                                 and len(feat["properties"]["id"]) == 8
                             ):
                                 continue
+                            updated = True
                             feat["properties"]["id"] = x["id"]
-                if updated:
-                    print(" - draft updated", end="")
-                    deal.current_draft.save()
 
-            print()
+                if updated:
+                    print(f"{deal.id} - {deal_version.id} updated")
+                    deal_version.save()
+
+        print("Investors and investor versions.")
+        for investor in Investor.objects.all().order_by("id"):
+            updated = False
+
+            for x in investor.datasources:
+                if not x.get("id") or isinstance(x["id"], int):
+                    updated = True
+                    x["old_id"] = x.get("id")
+                    x["id"] = generate(size=8)
+
+            if updated:
+                print(f"{investor.id} - updated")
+                investor.save()
+
+            for investor_version in investor.versions.all().order_by("id"):
+                updated = False
+                ddata = investor_version.serialized_data
+
+                if not ddata.get("datasources"):
+                    continue
+
+                for x in ddata["datasources"]:
+                    if not x.get("id") or isinstance(x["id"], int):
+                        updated = True
+                        try:
+                            live_id = [
+                                y
+                                for y in investor.datasources
+                                if y.get("old_id") == x.get("id")
+                            ][0]["id"]
+                        except IndexError:
+                            live_id = generate(size=8)
+                        x["id"] = live_id
+
+                if updated:
+                    print(f"{investor.id} - {investor_version.id} updated")
+                    investor_version.save()
