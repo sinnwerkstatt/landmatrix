@@ -162,14 +162,17 @@ export const getContextLayers = ($_: (t: string) => string): ContextLayer[] => {
     {
       id: "landmark_indigenous_lands_acknowledged_by_government_documented",
       name: $_("Indigenous lands acknowledged by government (documented)"),
-      layer: new TileLayer.WMS("https://gis.wri.org:443/server/services/LandMark/comm_ind_Documented/MapServer/WMSServer?", {
-        layers: "0",
-        format: "image/png",
-        transparent: true,
-        opacity: 0.7,
-        attribution:
-          'Source: <a href="http://www.landmarkmap.org/" target="_blank">LandMark. 2020. LandMark: The Global Platform of Indigenous and Community Land.</a>',
-      }),
+      layer: new TileLayer.WMS(
+        "https://gis.wri.org:443/server/services/LandMark/comm_ind_Documented/MapServer/WMSServer?",
+        {
+          layers: "0",
+          format: "image/png",
+          transparent: true,
+          opacity: 0.7,
+          attribution:
+            'Source: <a href="http://www.landmarkmap.org/" target="_blank">LandMark. 2020. LandMark: The Global Platform of Indigenous and Community Land.</a>',
+        },
+      ),
       legendUrlFunction(): string {
         return LandMarkLegend("0", "comm_ind_Documented")
       },
