@@ -59,10 +59,21 @@ pydot = "^1.4.1"
 tqdm = "^4.64.0"
 isort = "^5.12.0"
 termtables = "^0.2.4"
-types-pytz = "^2022.7.1.0"
+
+# stubs
 django-stubs = {extras = ["compatible-mypy"], version = "^1.14.0"}
-types-openpyxl = "^3.0.4.5"
 djangorestframework-stubs = {extras = ["compatible-mypy"], version = "^1.8.0"}
+
+# types
+types-pytz = "^2022.7.1.0"
+types-openpyxl = "^3.0.4.5"
+types-markdown = "^3.4.2.5"
+types-pygments = "^2.14.0.6"
+types-psycopg2 = "^2.9.21.8"
+types-colorama = "^0.4.15.8"
+types-polib = "^1.2.0.0"
+types-simplejson = "^3.18.0.1"
+types-tqdm = "^4.65.0.0"
 
 
 [tool.black]
@@ -97,9 +108,22 @@ known_django = ["django", "wagtail", "rest_framework", "wagtail_headless_preview
 known_first_party = ["apps"]
 sections = ["FUTURE", "STDLIB", "THIRDPARTY", "DJANGO", "FIRSTPARTY", "LOCALFOLDER"]
 
+
+# https://mypy.readthedocs.io/en/latest/config_file.html#using-a-pyproject-toml-file
 [tool.mypy]
 plugins = ["mypy_django_plugin.main"]
+exclude = ['migrations']
 strict_equality = true
+check_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = [
+  "wagtail.*",
+  "wagtail_headless_preview.*",
+  "modelcluster.*",
+  "modeltranslation.*"
+]
+ignore_missing_imports = true
 
 
 [tool.django-stubs]

@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import json
 
 from django.conf import settings
@@ -95,6 +93,7 @@ class DealQuerySet(models.QuerySet):
             .annotate(deal_size__sum=Sum("deal__deal_size"))
             .order_by("-deal_size__sum")
         )
+
         if country_id:
             for i, rank in enumerate(rankings, start=1):
                 if rank["country_id"] == country_id:
@@ -928,6 +927,7 @@ class Deal(AbstractDealBase):
         return value
 
     def _calculate_initiation_year(self):
+        self.negotiation_status: list
         valid_negotation_status = (
             [
                 int(x["date"][:4])
@@ -945,6 +945,7 @@ class Deal(AbstractDealBase):
             if self.negotiation_status
             else []
         )
+        self.implementation_status: list
         valid_implementation_status = (
             [
                 int(x["date"][:4])

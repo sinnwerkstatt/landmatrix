@@ -13,6 +13,7 @@
   import { countries, loading, regions } from "$lib/stores"
   import type { Deal, Location } from "$lib/types/deal"
   import type { Country } from "$lib/types/wagtail"
+  import type { GQLFilter } from "$lib/types/filters"
 
   import { showContextBar } from "$components/Data/stores"
   import DataContainer from "$components/Data/DataContainer.svelte"
@@ -67,7 +68,10 @@
   let markersFeatureGroup: FeatureGroup
   let skipMapRefresh = false
 
-  $: deals = queryStore({
+  type Subset = "UNFILTERED" | "ACTIVE" | "PUBLIC"
+
+  let deals
+  $: deals = queryStore<{ deals: Deal[] }, { filters: GQLFilter[]; subset: Subset }>({
     client: $page.data.urqlClient,
     query: data_deal_query_gql,
     variables: {

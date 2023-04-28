@@ -15,6 +15,7 @@ from ..tools import get_fields, parse_filters
 from .generics import (
     add_object_comment,
     change_object_status,
+    get_foreign_keys,
     object_delete,
     object_edit,
 )
@@ -29,7 +30,7 @@ def resolve_investor(
     subset="PUBLIC",
     involvements_depth: int = 4,
     involvements_include_ventures: bool = True,
-):
+) -> dict | None:
     user = info.context["request"].user
 
     fields = get_fields(info, recursive=True, exclude=["__typename"])
@@ -56,7 +57,7 @@ def resolve_investor(
             investor_version = InvestorVersion.objects.get(id=version)
             investor = investor_version.enriched_dict()
         except InvestorVersion.DoesNotExist:
-            return
+            return None
 
         if not any(
             [
@@ -165,8 +166,8 @@ def resolve_change_investor_status(
     id: int,
     version: int,
     transition: str,
-    comment: str = None,
-    to_user_id: int = None,
+    comment: str | None = None,
+    to_user_id: int | None = None,
 ) -> dict:
     investor_id, investor_version = change_object_status(
         otype="investor",
@@ -180,16 +181,17 @@ def resolve_change_investor_status(
     return {"investorId": investor_id, "investorVersion": investor_version}
 
 
-def _clean_payload(payload: dict, investor_id: int) -> dict:
-    foreignkeys = {
-        x.name: x.related_model
-        for x in Deal._meta.fields
-        if x.__class__.__name__ == "ForeignKey"
-    }
-    ret = {}
+def _clean_payload(payload: dict | None, investor_id: int) -> dict:
+    ret: dict = {}
+
+    if payload is None:
+        return ret
+
+    foreign_keys = get_foreign_keys(Investor)
+
     for key, value in payload.items():
-        if key in foreignkeys and value:
-            ret[key] = foreignkeys[key].objects.get(id=value["id"])
+        if key in foreign_keys and value:
+            ret[key] = foreign_keys[key].objects.get(id=value["id"])
         elif key == "datasources" and value:
             ret[key] = [
                 val for val in value if any([v for k, v in val.items() if k != "id"])
@@ -225,22 +227,30 @@ def _clean_payload(payload: dict, investor_id: int) -> dict:
 
 
 # noinspection PyShadowingBuiltins
-def resolve_investor_edit(_obj, info, id, version=None, payload: dict = None) -> dict:
-    payload = _clean_payload(payload, investor_id=id)
-
+def resolve_investor_edit(
+    _obj,
+    info,
+    id: int,
+    version: int | None = None,
+    payload: dict | None = None,
+) -> dict:
     investor_id, investor_version = object_edit(
         otype="investor",
         user=info.context["request"].user,
         obj_id=id,
         obj_version_id=version,
-        payload=payload,
+        payload=_clean_payload(payload, investor_id=id),
     )
     return {"investorId": investor_id, "investorVersion": investor_version}
 
 
 # noinspection PyShadowingBuiltins
 def resolve_investor_delete(
-    _obj, info, id: int, version: int = None, comment: str = None
+    _obj,
+    info,
+    id: int,
+    version: int | None = None,
+    comment: str | None = None,
 ) -> bool:
     return object_delete(
         otype="investor",

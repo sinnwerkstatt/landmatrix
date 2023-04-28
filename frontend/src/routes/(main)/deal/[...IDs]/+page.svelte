@@ -116,7 +116,7 @@
   {#if $page.data.user?.role > UserRole.ANYBODY}
     <DealManageHeader {deal} dealVersion={data.dealVersion} on:reload={reloadDeal} />
   {:else}
-    <div class="md:ju<stify-between md:flex md:flex-row">
+    <div class="md:flex md:flex-row md:justify-between">
       <h1>
         {$_("Deal")}
         #{deal.id}
@@ -141,7 +141,7 @@
     </div>
   {/if}
   <div class="flex min-h-full">
-    <nav class="flex-initial p-2">
+    <nav class="w-1/6 p-2">
       <ul>
         {#each tabs as { target, name }}
           <li
@@ -158,7 +158,7 @@
         {/each}
       </ul>
     </nav>
-    <div class="mb-12 w-full flex-auto pl-4">
+    <div class="mb-12 w-5/6 pl-4">
       {#if activeTab === "#locations"}
         <DealLocationsSection {deal} />
       {/if}

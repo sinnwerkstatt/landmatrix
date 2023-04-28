@@ -7,6 +7,8 @@ import { Status } from "$lib/types/generics"
 
 import type { PageLoad } from "./$types"
 
+export const ssr = false
+
 export const load: PageLoad = async ({ params, parent }) => {
   const { urqlClient } = await parent()
   const [dealID, dealVersion] = params.IDs.split("/").map(x => (x ? +x : undefined))

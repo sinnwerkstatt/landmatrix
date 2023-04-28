@@ -12,3 +12,9 @@ export function dateCurrentFormat(value: { date: string; current?: boolean }): s
   ret += "]"
   return ret
 }
+
+export const formatArea = (area: number): string =>
+  (area / 10000)
+    .toFixed(2)
+    .toString()
+    .replace(/\B(?=(\d{3})+(?!\d))/g, " ")

@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-29 14:34+0200\n"
+"POT-Creation-Date: 2023-03-29 14:52+0200\n"
 "PO-Revision-Date: 2022-05-30 13:48+0000\n"
 "Last-Translator: Kurt Gerber <kurt.gerber@unibe.ch>\n"
 "Language-Team: Spanish <http://translate.landmatrix.org/projects/landmatrix/landmatrix/es/>\n"
@@ -1820,10 +1820,10 @@ msgstr ""
 msgid "Currency"
 msgstr ""
 
-msgid "Current"
+msgid "current"
 msgstr ""
 
-msgid "current"
+msgid "Current"
 msgstr ""
 
 msgid "Current implementation status"
@@ -2070,6 +2070,9 @@ msgid "Go to map"
 msgstr "Ir al mapa"
 
 msgid "here"
+msgstr ""
+
+msgid "Hide"
 msgstr ""
 
 msgid "Households"
@@ -2410,6 +2413,9 @@ msgid "Produce info"
 msgstr "Información de Producto"
 
 msgid "Produce info map"
+msgstr ""
+
+msgid "Production"
 msgstr ""
 
 msgid "Production area"

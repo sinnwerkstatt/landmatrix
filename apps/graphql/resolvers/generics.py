@@ -1,14 +1,12 @@
-from __future__ import annotations
-
-from typing import Literal
+from typing import Literal, Type, cast
 
 from ariadne.graphql import GraphQLError
 
 from django.core.exceptions import ValidationError
-from django.db.models import Q
+from django.db.models import Model, Q
 from django.utils import timezone
 
-from apps.accounts.models import UserRole
+from apps.accounts.models import User, UserRole
 from apps.landmatrix.forms.deal import DealForm
 from apps.landmatrix.forms.investor import InvestorForm
 from apps.landmatrix.models.abstracts import DRAFT_STATUS, STATUS, WorkflowInfo
@@ -24,22 +22,47 @@ from .user_utils import send_comment_to_user
 
 OType = Literal["deal", "investor"]
 
-from apps.accounts.models import User
+
+DraftStatus = Literal["DRAFT", "REVIEW", "ACTIVATION", "REJECTED", "TO_DELETE"]
+
+
+# @overload
+# def add_workflow_info(
+#     otype: Literal["deal"],
+#     obj: Deal,
+#     obj_version: DealVersion | None = None,
+#     **kwargs,
+# ) -> DealWorkflowInfo:
+#     ...
+#
+#
+# @overload
+# def add_workflow_info(
+#     otype: Literal["investor"],
+#     obj: Investor,
+#     obj_version: InvestorVersion | None = None,
+#     **kwargs,
+# ) -> InvestorWorkflowInfo:
+#     ...
 
 
 def add_workflow_info(
     otype: OType,
     obj: Deal | Investor,
-    obj_version: DealVersion | InvestorVersion = None,
+    obj_version: DealVersion | InvestorVersion | None = None,
     **kwargs,
 ) -> DealWorkflowInfo | InvestorWorkflowInfo:
     if otype == "deal":
         return DealWorkflowInfo.objects.create(
-            deal=obj, deal_version=obj_version, **kwargs
+            deal=cast(Deal, obj),
+            deal_version=cast(DealVersion | None, obj_version),
+            **kwargs,
         )
     else:
         return InvestorWorkflowInfo.objects.create(
-            investor=obj, investor_version=obj_version, **kwargs
+            investor=cast(Investor, obj),
+            investor_version=cast(InvestorVersion | None, obj_version),
+            **kwargs,
         )
 
 
@@ -49,19 +72,22 @@ def add_object_comment(
     obj_id: int,
     obj_version_id: int,
     comment: str,
-    to_user_id=None,
+    to_user_id: int | None = None,
 ) -> None:
     if not (user.is_authenticated and user.role):
         raise GraphQLError("MISSING_AUTHORIZATION")
 
-    obj = (Deal if otype == "deal" else Investor).objects.get(id=obj_id)
-    obj_version = None
-    draft_status = None
+    Object: Type[Deal | Investor] = Deal if otype == "deal" else Investor
+    obj: Deal | Investor = Object.objects.get(id=obj_id)
+
+    obj_version: DealVersion | InvestorVersion | None = None
+    draft_status: DraftStatus | None = None
 
     if obj_version_id:
-        obj_version = (DealVersion if otype == "deal" else InvestorVersion).objects.get(
-            id=obj_version_id
+        ObjectVersion: Type[DealVersion | InvestorVersion] = (
+            DealVersion if otype == "deal" else InvestorVersion
         )
+        obj_version = ObjectVersion.objects.get(id=obj_version_id)
         draft_status = obj_version.serialized_data["draft_status"]
 
     add_workflow_info(
@@ -85,16 +111,20 @@ def change_object_status(
     obj_id: int,
     obj_version_id: int,
     transition: str,
-    comment: str = None,
-    to_user_id: int = None,
+    comment: str | None = None,
+    to_user_id: int | None = None,
     fully_updated: bool = False,  # only relevant on "TO_REVIEW"
 ) -> list[int]:
     if not (user.is_authenticated and user.role):
         raise GraphQLError("MISSING_AUTHORIZATION")
-    Object = Deal if otype == "deal" else Investor
-    ObjectVersion = DealVersion if otype == "deal" else InvestorVersion
-    obj = Object.objects.get(id=obj_id)
-    obj_version = ObjectVersion.objects.get(id=obj_version_id)
+    Object: Type[Deal | Investor] = Deal if otype == "deal" else Investor
+    ObjectVersion: Type[DealVersion | InvestorVersion] = (
+        DealVersion if otype == "deal" else InvestorVersion
+    )
+    obj: Deal | Investor = Object.objects.get(id=obj_id)
+    obj_version: DealVersion | InvestorVersion = ObjectVersion.objects.get(
+        id=obj_version_id
+    )
 
     old_draft_status = obj_version.serialized_data["draft_status"]
 
@@ -117,16 +147,16 @@ def change_object_status(
         Object.objects.filter(id=obj_id).update(draft_status=draft_status)
 
         # if there was a request for improvement workflowinfo, email the requester
-        old_wfi: WorkflowInfo = obj.workflowinfos.last()
+        old_wfi: WorkflowInfo | None = obj.workflowinfos.last()
         if (
             old_wfi
             and old_wfi.draft_status_before in [2, 3]
             and old_wfi.draft_status_after == 1
             and old_wfi.to_user == user
         ):
-            old_wfi.processed_by_received = True
+            old_wfi.resolved = True
             old_wfi.save()
-            send_comment_to_user(obj, "", user, old_wfi.from_user_id, obj_version_id)
+            send_comment_to_user(obj, "", user, old_wfi.from_user.id, obj_version_id)
 
     elif transition == "TO_ACTIVATION":
         if user.role < UserRole.EDITOR:
@@ -200,11 +230,14 @@ def object_edit(
     otype: OType,
     user: User,
     obj_id: int,
-    obj_version_id: int = None,
-    payload: dict = None,
+    obj_version_id: int | None = None,
+    payload: dict | None = None,
 ) -> list[int]:
     if not (user.is_authenticated and user.role):
         raise GraphQLError("MISSING_AUTHORIZATION")
+
+    if payload is None:
+        payload = {}
 
     # verify that the form is correct
     ObjectForm = DealForm if otype == "deal" else InvestorForm
@@ -212,8 +245,10 @@ def object_edit(
     if not form.is_valid():
         raise ValidationError(dict(form.errors.items()))
 
-    Object = Deal if otype == "deal" else Investor
-    ObjectVersion = DealVersion if otype == "deal" else InvestorVersion
+    Object: Type[Deal | Investor] = Deal if otype == "deal" else Investor
+    ObjectVersion: Type[DealVersion | InvestorVersion] = (
+        DealVersion if otype == "deal" else InvestorVersion
+    )
 
     # this is a new Object
     if obj_id == -1:
@@ -336,19 +371,23 @@ def object_delete(
     otype: OType,
     user: User,
     obj_id: int,
-    obj_version_id: int = None,
-    comment: str = None,
+    obj_version_id: int | None = None,
+    comment: str | None = None,
 ) -> bool:
     if not (user.is_authenticated and user.role):
         raise GraphQLError("MISSING_AUTHORIZATION")
 
-    Object = Deal if otype == "deal" else Investor
-    obj = Object.objects.get(id=obj_id)
+    Object: Type[Deal | Investor] = Deal if otype == "deal" else Investor
+    obj: Deal | Investor = Object.objects.get(id=obj_id)
 
     # if it's just a draft,
     if obj_version_id:
-        ObjectVersion = DealVersion if otype == "deal" else InvestorVersion
-        obj_version = ObjectVersion.objects.get(id=obj_version_id)
+        ObjectVersion: Type[DealVersion | InvestorVersion] = (
+            DealVersion if otype == "deal" else InvestorVersion
+        )
+        obj_version: DealVersion | InvestorVersion = ObjectVersion.objects.get(
+            id=obj_version_id
+        )
         if not (obj_version.created_by == user or user.role >= UserRole.EDITOR):
             raise GraphQLError("MISSING_AUTHORIZATION")
         old_draft_status = obj_version.serialized_data["draft_status"]
@@ -402,6 +441,7 @@ def resolve_resolve_workflow_info(_obj, info, id: int, type: str) -> bool:
     if not (user.is_authenticated and user.role):
         raise GraphQLError("MISSING_AUTHORIZATION")
 
+    wi: DealWorkflowInfo | InvestorWorkflowInfo
     if type == "DealWorkflowInfo":
         wi = DealWorkflowInfo.objects.get(id=id)
     elif type == "InvestorWorkflowInfo":
@@ -415,12 +455,18 @@ def resolve_resolve_workflow_info(_obj, info, id: int, type: str) -> bool:
 
 # noinspection PyShadowingBuiltins
 def resolve_add_workflow_info_reply(
-    _obj, info, id: int, type: str, from_user_id: int, comment: str
+    _obj,
+    info,
+    id: int,
+    type: str,
+    from_user_id: int,
+    comment: str,
 ) -> bool:
     user = info.context["request"].user
     if not (user.is_authenticated and user.role):
         raise GraphQLError("MISSING_AUTHORIZATION")
 
+    wi: DealWorkflowInfo | InvestorWorkflowInfo
     if type == "DealWorkflowInfo":
         wi = DealWorkflowInfo.objects.get(id=id)
     elif type == "InvestorWorkflowInfo":
@@ -445,10 +491,11 @@ def resolve_object_copy(_obj, info, otype: OType, obj_id: int) -> dict:
     if not (user.is_authenticated and user.role):
         raise GraphQLError("MISSING_AUTHORIZATION")
 
-    Object = Deal if otype == "deal" else Investor
-    ObjectVersion = DealVersion if otype == "deal" else InvestorVersion
-
-    obj = Object.objects.get(id=obj_id)
+    Object: Type[Deal | Investor] = Deal if otype == "deal" else Investor
+    ObjectVersion: Type[DealVersion | InvestorVersion] = (
+        DealVersion if otype == "deal" else InvestorVersion
+    )
+    obj: Deal | Investor = Object.objects.get(id=obj_id)
     obj.id = None
 
     old_comp_id = None
@@ -481,3 +528,11 @@ def resolve_object_copy(_obj, info, otype: OType, obj_id: int) -> dict:
     )
 
     return {"objId": obj.id, "objVersion": obj_version.id}
+
+
+def get_foreign_keys(model: Type[Model]) -> dict[str, Type[Model]]:
+    return {
+        x.name: x.related_model  # type: ignore
+        for x in model._meta.fields
+        if x.__class__.__name__ == "ForeignKey"
+    }
