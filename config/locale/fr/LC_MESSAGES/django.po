@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-29 14:52+0200\n"
+"POT-Creation-Date: 2023-04-28 12:42+0200\n"
 "PO-Revision-Date: 2022-05-30 13:48+0000\n"
 "Last-Translator: Kurt Gerber <kurt.gerber@unibe.ch>\n"
 "Language-Team: French <http://translate.landmatrix.org/projects/landmatrix/landmatrix/fr/>\n"
@@ -2126,6 +2126,9 @@ msgstr "Listes d’indicateurs"
 msgid "Indigenous and community conserved area, Philippines"
 msgstr "Zone conservée par les autochtones et les communautés locales, Philippines"
 
+msgid "Indigenous lands acknowledged by government (documented)"
+msgstr ""
+
 msgid "Intended"
 msgstr "Prévu"
 
@@ -2414,9 +2417,6 @@ msgstr "Info produit"
 
 msgid "Produce info map"
 msgstr "Produire une carte d’information"
-
-msgid "Production"
-msgstr ""
 
 msgid "Production area"
 msgstr "Zone de production"
