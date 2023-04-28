@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-03-29 14:52+0200\n"
+"POT-Creation-Date: 2023-04-28 12:42+0200\n"
 "PO-Revision-Date: 2022-05-30 13:48+0000\n"
 "Last-Translator: Angela Harding <coordination@landmatrix.org>\n"
 "Language-Team: Russian <http://translate.landmatrix.org/projects/landmatrix/landmatrix/ru/>\n"
@@ -2129,6 +2129,9 @@ msgstr "Списки индикаторов"
 msgid "Indigenous and community conserved area, Philippines"
 msgstr "Заповедная территория коренных народов и общин, Филиппины"
 
+msgid "Indigenous lands acknowledged by government (documented)"
+msgstr ""
+
 msgid "Intended"
 msgstr "Предварительные сделки"
 
@@ -2419,9 +2422,6 @@ msgstr "Информация о продукции"
 
 msgid "Produce info map"
 msgstr "Карта информации о продукции"
-
-msgid "Production"
-msgstr ""
 
 msgid "Production area"
 msgstr "Производственная площадь"
