@@ -9,7 +9,7 @@ from apps.landmatrix.models.investor import (
     InvestorWorkflowInfo,
 )
 from apps.landmatrix.utils import InvolvementNetwork
-from apps.utils import qs_values_to_dict
+from apps.utils import qs_values_to_dict, set_sensible_fields_to_null
 
 from ..tools import get_fields, parse_filters
 from .generics import (
@@ -111,6 +111,9 @@ def resolve_investor(
     if investor.get("ventures") is None:
         investor["ventures"] = []
 
+    if not user.is_authenticated:
+        set_sensible_fields_to_null(investor)
+
     return investor
 
 
@@ -136,11 +139,16 @@ def resolve_investors(
 
     qs = qs[:limit] if limit != 0 else qs
 
-    return qs_values_to_dict(
+    results = qs_values_to_dict(
         qs,
         fields,
         ["involvements", "ventures", "investors", "deals", "workflowinfos", "versions"],
     )
+
+    if not user.is_authenticated:
+        set_sensible_fields_to_null(results)
+
+    return results
 
 
 def resolve_investorversions(_obj, _info, filters=None):

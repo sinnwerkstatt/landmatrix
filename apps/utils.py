@@ -1,5 +1,6 @@
 import datetime
 import itertools
+from typing import Any
 
 from django.utils.duration import duration_iso_string
 from django.utils.timezone import is_aware
@@ -99,3 +100,27 @@ def ecma262(o: datetime) -> str:
         return r
     elif isinstance(o, datetime.timedelta):
         return duration_iso_string(o)
+
+
+def set_sensible_fields_to_null(obj: list[Any] | dict[str, Any]):
+    fields = ["workflowinfos", "created_by", "modified_by", "current_draft"]
+    set_null_recursively(obj, fields)
+
+
+def set_null_recursively(
+    obj: list[Any] | dict[str, Any],
+    fields: list[str],
+):
+    if isinstance(obj, dict):
+        for key, val in obj.items():
+            if key in fields:
+                obj[key] = None
+                continue
+
+            if isinstance(val, (dict, list)):
+                set_null_recursively(obj[key], fields)
+
+    if isinstance(obj, list):
+        for el in obj:
+            if isinstance(el, (dict, list)):
+                set_null_recursively(el, fields)
