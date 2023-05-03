@@ -43,6 +43,7 @@ def test_related_resolver():
             "country",
             "versions__created_by",
         ],
+        ["versions"],
     ) == [
         {
             "id": obj_id,

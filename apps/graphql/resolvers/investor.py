@@ -140,7 +140,9 @@ def resolve_investors(
     qs = qs.filter(id__in=qs[:limit].values("id"))
 
     return qs_values_to_dict(
-        qs, fields, ["involvements", "ventures", "investors", "deals", "workflowinfos"]
+        qs,
+        fields,
+        ["involvements", "ventures", "investors", "deals", "workflowinfos", "versions"],
     )
 
 
