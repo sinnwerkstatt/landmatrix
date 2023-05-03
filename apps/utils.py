@@ -30,7 +30,9 @@ def qs_values_to_dict(qs, fields, many_to_many_relations=None):
     if "id" not in fields:  # we need an ID to group by.
         fields += ["id"]
 
-    qs_values = qs.values(*fields)
+    qs_values = qs.order_by("id").values(
+        *fields,
+    )  # needs to be ordered in order to be grouped :S
     grouped_results = itertools.groupby(qs_values, key=lambda value: value["id"])
     results = []
 
