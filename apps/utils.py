@@ -19,8 +19,17 @@ def qs_values_to_dict(qs, fields, many_to_many_relations=None):
         newtarget = target[kx]
         _subkey_expode(newtarget, morekey, v)
 
+    nested_keys = [field.split("__")[0] for field in fields if "__" in field]
+    foreign_keys = [k for k in nested_keys if k not in many_to_many_relations]
+
+    for nested_key in nested_keys:
+        nested_id = f"{nested_key}__id"
+        if nested_id not in fields:
+            fields += [nested_id]
+
     if "id" not in fields:  # we need an ID to group by.
         fields += ["id"]
+
     qs_values = qs.values(*fields)
     grouped_results = itertools.groupby(qs_values, key=lambda value: value["id"])
     results = []
@@ -32,8 +41,13 @@ def qs_values_to_dict(qs, fields, many_to_many_relations=None):
         for mtm in many_to_many_relations:
             richdeal[mtm] = []
             seen_mtms[mtm] = set()
+        seen_fks = {}
+        for fk in foreign_keys:
+            richdeal[fk] = []
+            seen_fks[fk] = set()
         for group in dealgroup:
             manytomany_combine = {mtm: {} for mtm in many_to_many_relations}
+            fk_combine = {fk: {} for fk in foreign_keys}
             for key, val in group.items():
                 if val is None:
                     continue
@@ -41,8 +55,8 @@ def qs_values_to_dict(qs, fields, many_to_many_relations=None):
                     keyprefix, restkey = key.split("__", 1)
                     if many_to_many_relations and keyprefix in many_to_many_relations:
                         _subkey_expode(manytomany_combine[keyprefix], restkey, val)
-                    elif firstround:
-                        _subkey_expode(richdeal, key, val)
+                    else:
+                        _subkey_expode(fk_combine[keyprefix], restkey, val)
                 elif firstround:
                     richdeal[key] = val
 
@@ -56,6 +70,15 @@ def qs_values_to_dict(qs, fields, many_to_many_relations=None):
                 richdeal[mtm] = sorted(
                     richdeal[mtm], key=lambda x: x["id"], reverse=True
                 )
+
+            for fk in foreign_keys:
+                fk_add = fk_combine[fk]
+                if fk_add and fk_add["id"] not in seen_fks[fk]:
+                    richdeal[fk] += [fk_add]
+                    seen_fks[fk].add(fk_add["id"])
+            for fk in foreign_keys:
+                richdeal[fk] = sorted(richdeal[fk], key=lambda x: x["id"], reverse=True)
+
         results += [richdeal]
     return results
 
