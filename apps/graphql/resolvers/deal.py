@@ -125,7 +125,7 @@ def resolve_deals(
     return qs_values_to_dict(
         qs,
         fields,
-        ["top_investors", "parent_companies", "workflowinfos"],
+        ["top_investors", "parent_companies", "workflowinfos", "versions"],
     )
 
 

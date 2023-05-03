@@ -137,7 +137,9 @@ def resolve_investors(
     qs = qs[:limit] if limit != 0 else qs
 
     return qs_values_to_dict(
-        qs, fields, ["involvements", "ventures", "investors", "deals", "workflowinfos"]
+        qs,
+        fields,
+        ["involvements", "ventures", "investors", "deals", "workflowinfos", "versions"],
     )
 
 

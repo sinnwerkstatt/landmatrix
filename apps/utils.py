@@ -19,9 +19,17 @@ def qs_values_to_dict(qs, fields, many_to_many_relations=None):
         newtarget = target[kx]
         _subkey_expode(newtarget, morekey, v)
 
+    for related_field in many_to_many_relations:
+        related_id_field = f"{related_field}__id"
+        if related_id_field not in fields:
+            fields += [related_id_field]
+
     if "id" not in fields:  # we need an ID to group by.
         fields += ["id"]
-    qs_values = qs.values(*fields)
+
+    qs_values = qs.order_by("id").values(
+        *fields,
+    )  # needs to be ordered in order to be grouped :S
     grouped_results = itertools.groupby(qs_values, key=lambda value: value["id"])
     results = []
 
@@ -39,8 +47,10 @@ def qs_values_to_dict(qs, fields, many_to_many_relations=None):
                     continue
                 if "__" in key:
                     keyprefix, restkey = key.split("__", 1)
-                    if many_to_many_relations and keyprefix in many_to_many_relations:
+                    # many2many / foreign key related
+                    if keyprefix in many_to_many_relations:
                         _subkey_expode(manytomany_combine[keyprefix], restkey, val)
+                    # foreign key pointer / one2one
                     elif firstround:
                         _subkey_expode(richdeal, key, val)
                 elif firstround:
