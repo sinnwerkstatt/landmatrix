@@ -108,6 +108,9 @@ def resolve_deals(
     subset="PUBLIC",
     filters=None,
 ):
+    if not limit:
+        limit = 20
+
     user = info.context["request"].user
     qs = Deal.objects.visible(user=user, subset=subset).order_by(sort)
 
@@ -120,7 +123,7 @@ def resolve_deals(
 
     qs = qs.filter(parse_filters(filters)) if filters else qs
 
-    qs = qs[:limit] if limit != 0 else qs
+    qs = qs.filter(id__in=qs[:limit].values("id"))
 
     return qs_values_to_dict(
         qs,
