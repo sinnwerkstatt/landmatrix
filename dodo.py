@@ -111,7 +111,7 @@ def task_test_watch():
     def test_watch(files):
         return (
             f"ptw {' '.join(files) if files else './apps'} --clear "
-            f"-- --reuse-db --no-cov -p no:warnings -v"
+            f"-- --no-cov -p no:warnings"
         )
 
     return {

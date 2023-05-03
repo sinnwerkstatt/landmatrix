@@ -122,9 +122,6 @@ def resolve_investors(
     subset="PUBLIC",
     filters=None,
 ):
-    if not limit:
-        limit = 20
-
     user = info.context["request"].user
     qs = Investor.objects.visible(user=user, subset=subset).order_by(sort)
 
@@ -137,7 +134,7 @@ def resolve_investors(
 
     qs = qs.filter(parse_filters(filters)) if filters else qs
 
-    qs = qs.filter(id__in=qs[:limit].values("id"))
+    qs = qs[:limit] if limit != 0 else qs
 
     return qs_values_to_dict(
         qs, fields, ["involvements", "ventures", "investors", "deals", "workflowinfos"]
