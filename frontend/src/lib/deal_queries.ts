@@ -20,7 +20,7 @@ export const data_deal_query_gql = gql`
       current_animals
       current_mineral_resources
       intended_size
-      locations
+      locations # for map
       fully_updated_at # for listing
       operating_company {
         # for map pin popover & listing

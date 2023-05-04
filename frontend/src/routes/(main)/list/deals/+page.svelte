@@ -14,18 +14,22 @@
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import Table from "$components/Table/Table.svelte"
 
-  let activeColumns: Array<keyof typeof allColumnsWithSpan> = [
+  const COLUMNS = [
     "fully_updated_at",
     "id",
     "country",
     "current_intention_of_investment",
     "current_negotiation_status",
     "current_implementation_status",
+    "current_contract_size",
+    "intended_size",
     "deal_size",
     "operating_company",
-  ]
+  ] as const
 
-  const allColumnsWithSpan: { [key: string]: number } = {
+  type ColumnName = (typeof COLUMNS)[number]
+
+  const columnSpanMap: { [key in ColumnName]: number } = {
     fully_updated_at: 2,
     id: 1,
     country: 3,
@@ -38,14 +42,19 @@
     operating_company: 4,
   }
 
-  $: labels = activeColumns.map(col => $formfields.deal[col].label)
-  $: spans = Object.entries(allColumnsWithSpan)
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    .filter(([col, _]: [string, number]) => activeColumns.includes(col))
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    .map(([_, colSpan]) => colSpan)
+  let activeColumns: ColumnName[] = [
+    "fully_updated_at",
+    "id",
+    "country",
+    "current_intention_of_investment",
+    "current_negotiation_status",
+    "current_implementation_status",
+    "deal_size",
+    "operating_company",
+  ]
 
-  showContextBar.set(false)
+  $: labels = activeColumns.map(col => $formfields.deal[col].label)
+  $: spans = activeColumns.map(col => columnSpanMap[col])
 
   $: deals = queryStore({
     client: $page.data.urqlClient,
@@ -56,6 +65,8 @@
     },
   })
   $: loading.set($deals?.fetching ?? false)
+
+  showContextBar.set(false)
 </script>
 
 <DataContainer>
@@ -99,7 +110,7 @@
   <div slot="FilterBar">
     <FilterCollapse title={$_("Table columns")}>
       <div class="flex flex-col">
-        {#each Object.keys(allColumnsWithSpan) as opt}
+        {#each COLUMNS as opt}
           <label>
             <input type="checkbox" bind:group={activeColumns} value={opt} />
             {$_($formfields.deal[opt]?.label)}
