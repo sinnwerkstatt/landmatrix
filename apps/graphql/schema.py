@@ -19,7 +19,6 @@ from .resolvers.deal import (
     resolve_deal_delete,
     resolve_deal_edit,
     resolve_deals,
-    resolve_dealversions,
     resolve_set_confidential,
     resolve_upload_datasource_file,
 )
@@ -36,7 +35,6 @@ from .resolvers.investor import (  # resolve_involvements,
     resolve_investor_delete,
     resolve_investor_edit,
     resolve_investors,
-    resolve_investorversions,
 )
 from .resolvers.misc import (
     resolve_chart_descriptions,
@@ -65,11 +63,9 @@ query.set_field("user", resolve_user)
 query.set_field("users", resolve_users)
 query.set_field("deal", resolve_deal)
 query.set_field("deals", resolve_deals)
-query.set_field("dealversions", resolve_dealversions)
 query.set_field("deal_aggregations", resolve_deal_aggregations)
 query.set_field("investor", resolve_investor)
 query.set_field("investors", resolve_investors)
-query.set_field("investorversions", resolve_investorversions)
 # query.set_field("involvements", resolve_involvements)
 query.set_field("countries", resolve_countries)
 query.set_field("regions", resolve_regions)

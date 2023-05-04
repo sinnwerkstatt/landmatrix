@@ -9,7 +9,7 @@ from django.core.files.storage import DefaultStorage, FileSystemStorage
 from apps.accounts.models import UserRole
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.deal import Deal, DealVersion, DealWorkflowInfo
-from apps.utils import qs_values_to_dict
+from apps.utils import qs_values_to_dict, set_sensible_fields_to_null
 
 from ..tools import get_fields, parse_filters
 from .generics import (
@@ -97,6 +97,9 @@ def resolve_deal(_obj, info, id, version=None, subset="PUBLIC"):
     if deal.get("datasources") is None:
         deal["datasources"] = []
 
+    if not user.is_authenticated:
+        set_sensible_fields_to_null(deal)
+
     return deal
 
 
@@ -120,32 +123,18 @@ def resolve_deals(
 
     qs = qs.filter(parse_filters(filters)) if filters else qs
 
-    qs = qs[:limit] if limit != 0 else qs
+    qs = qs.filter(id__in=qs[:limit].values("id")) if limit > 0 else qs
 
-    return qs_values_to_dict(
+    results = qs_values_to_dict(
         qs,
         fields,
-        ["top_investors", "parent_companies", "workflowinfos"],
+        ["top_investors", "parent_companies", "workflowinfos", "versions"],
     )
 
+    if not user.is_authenticated:
+        set_sensible_fields_to_null(results)
 
-def resolve_dealversions(_obj, _info, filters=None, country_id=None, region_id=None):
-    # TODO-1 We are not restricting queries here!!!
-    qs = DealVersion.objects.all()
-
-    if filters:
-        qs = qs.filter(parse_filters(filters))
-
-    if country_id:
-        qs = qs.filter(serialized_data__country=country_id)
-
-    if region_id:
-        country_ids = list(
-            Country.objects.filter(region_id=region_id).values_list("id", flat=True)
-        )
-        qs = qs.filter(serialized_data__country__in=country_ids)
-
-    return [dv.to_dict() for dv in qs]
+    return results
 
 
 def resolve_upload_datasource_file(_obj, info, filename, payload) -> str:
