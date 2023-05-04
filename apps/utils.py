@@ -22,7 +22,10 @@ def qs_values_to_dict(qs, fields, many_to_many_relations=None):
 
     for related_field in many_to_many_relations:
         related_id_field = f"{related_field}__id"
-        if related_id_field not in fields:
+        if (
+            any(f.startswith(related_field) for f in fields)
+            and related_id_field not in fields
+        ):
             fields += [related_id_field]
 
     if "id" not in fields:  # we need an ID to group by.

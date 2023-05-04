@@ -137,7 +137,7 @@ def resolve_investors(
 
     qs = qs.filter(parse_filters(filters)) if filters else qs
 
-    qs = qs[:limit] if limit != 0 else qs
+    qs = qs.filter(id__in=qs[:limit].values("id")) if limit > 0 else qs
 
     results = qs_values_to_dict(
         qs,
