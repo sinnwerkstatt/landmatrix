@@ -15,12 +15,6 @@ type Query {
     filters: [Filter]
     subset: Subset = PUBLIC
   ): DealAggregations
-  dealversions(
-    filters: [Filter]
-    country_id: Int
-    region_id: Int
-    at_date: Date
-  ): [DealVersion]
 
   investor(
     id: Int!
@@ -35,7 +29,6 @@ type Query {
     subset: Subset = PUBLIC
     filters: [Filter]
   ): [Investor]
-  investorversions(filters: [Filter]): [InvestorVersion]
 
   countries: [Country]
   regions: [Region]

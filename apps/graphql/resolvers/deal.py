@@ -137,25 +137,6 @@ def resolve_deals(
     return results
 
 
-def resolve_dealversions(_obj, _info, filters=None, country_id=None, region_id=None):
-    # TODO-1 We are not restricting queries here!!!
-    qs = DealVersion.objects.all()
-
-    if filters:
-        qs = qs.filter(parse_filters(filters))
-
-    if country_id:
-        qs = qs.filter(serialized_data__country=country_id)
-
-    if region_id:
-        country_ids = list(
-            Country.objects.filter(region_id=region_id).values_list("id", flat=True)
-        )
-        qs = qs.filter(serialized_data__country__in=country_ids)
-
-    return [dv.to_dict() for dv in qs]
-
-
 def resolve_upload_datasource_file(_obj, info, filename, payload) -> str:
     user = info.context["request"].user
     if not user.is_authenticated:

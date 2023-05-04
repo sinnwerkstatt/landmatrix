@@ -151,13 +151,6 @@ def resolve_investors(
     return results
 
 
-def resolve_investorversions(_obj, _info, filters=None):
-    qs = InvestorVersion.objects.all()
-    if filters:
-        qs = qs.filter(parse_filters(filters))
-    return [iv.to_dict() for iv in qs]
-
-
 # noinspection PyShadowingBuiltins
 def resolve_add_investor_comment(
     _obj, info, id: int, version: int, comment: str, to_user_id=None
