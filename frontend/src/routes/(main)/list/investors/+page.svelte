@@ -16,9 +16,18 @@
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import Table from "$components/Table/Table.svelte"
 
-  showContextBar.set(false)
+  const COLUMNS = [
+    "modified_at",
+    "id",
+    "name",
+    "country",
+    "classification",
+    "deals",
+  ] as const
 
-  const allColumnsWithSpan = {
+  type ColumnName = (typeof COLUMNS)[number]
+
+  const columnSpanMap: { [key in ColumnName]: number } = {
     modified_at: 2,
     id: 1,
     name: 3,
@@ -27,9 +36,9 @@
     deals: 1,
   }
 
-  $: columns = Object.keys(allColumnsWithSpan)
-  $: labels = columns.map(col => $formfields.investor[col].label)
-  $: spans = Object.entries(allColumnsWithSpan).map(([, colSpan]) => colSpan)
+  $: columns = COLUMNS.map(col => col)
+  $: labels = COLUMNS.map(col => $formfields.investor[col].label)
+  $: spans = COLUMNS.map(col => columnSpanMap[col])
 
   $: deals = queryStore({
     client: $page.data.urqlClient,
@@ -103,6 +112,8 @@
   }
 
   $: getInvestors($deals?.data?.deals ?? [], $filters)
+
+  showContextBar.set(false)
 </script>
 
 <DataContainer>
