@@ -23,13 +23,24 @@ REGISTRATION_SALT = settings.SECRET_KEY
 activation_email_body = """
 Activate account at {{ site.name }}:
 
-https://{{ site.domain }}/account/activate/{{ activation_key }}/
+{{ scheme }}://{{ site.domain }}/account/activate/{{ activation_key }}/
 
 Link is valid for {{ expiration_days }} days.
 """
 
+activate_email_body_admin = """
+A new user has registered and and waits for registration:
 
-def _send_activation_email(user, request):
+username: {{ user.username }}
+email: {{ user.email }}
+info: {{ user.information }}
+
+{{ scheme }}://{{ site.domain }}/admin/accounts/user/{{ user.id }}/
+"""
+
+
+def request_email_confirmation(user: User, request):
+    """Ask for email confirmation from user."""
     activation_key = signing.dumps(obj=user.get_username(), salt=REGISTRATION_SALT)
     site = get_current_site(request)
     context = {
@@ -44,6 +55,25 @@ def _send_activation_email(user, request):
     tmpl = Template(activation_email_body)
     message = tmpl.render(Context(context))
     user.email_user(subject, message, settings.DEFAULT_FROM_EMAIL)
+
+
+def request_activation_from_user_admins(user: User, request):
+    """Send mail to request account activation from user admins."""
+    site = get_current_site(request)
+
+    subject = f"A new user has registered on {site.name}"
+    context = {
+        "scheme": "https" if request.is_secure() else "http",
+        "site": site,
+        "user": user,
+    }
+    tmpl = Template(activate_email_body_admin)
+    message = tmpl.render(Context(context))
+
+    for user_admin in UserModel.objects.filter(
+        groups=Group.objects.get(name="User Management")
+    ):
+        user_admin.email_user(subject, message, settings.DEFAULT_FROM_EMAIL)
 
 
 def resolve_register(
@@ -84,7 +114,7 @@ def resolve_register(
     group, created = Group.objects.get_or_create(name="Reporters")
     new_user.groups.add(group)
 
-    _send_activation_email(new_user, info.context["request"])
+    request_email_confirmation(new_user, info.context["request"])
     return {"ok": True}
 
 
@@ -99,21 +129,34 @@ def resolve_register_confirm(_obj, _info, activation_key):
         return {"ok": False, "code": "expired"}
     except signing.BadSignature:
         return {"ok": False, "code": "invalid_key"}
+
     user = UserModel.objects.get(username=username)
-    if user.email_confirmed or user.is_active:
+    if user.is_active:
         return {"ok": False, "code": "already_activated"}
-    user.email_confirmed = True
-    user.save()
+
+    if not user.email_confirmed:
+        user.email_confirmed = True
+        user.save()
+
+        request_activation_from_user_admins(user, _info.context["request"])
+
     return {"ok": True, "user": user}
 
 
 def resolve_login(_obj, info, username, password) -> dict:
     request = info.context["request"]
+
+    if not UserModel.objects.filter(username=username).exists():
+        return {"status": False, "error": _("Invalid username or password.")}
+    if not UserModel.objects.get(username=username).is_active:
+        return {"status": False, "error": _("Account not yet activated.")}
+
     user = auth.authenticate(request, username=username, password=password)
-    if user:
-        auth.login(request, user)
-        return {"status": True, "user": user}
-    return {"status": False, "error": "Invalid username or password"}
+    if not user:
+        return {"status": False, "error": _("Invalid username or password.")}
+
+    auth.login(request, user)
+    return {"status": True, "user": user}
 
 
 def resolve_logout(_obj, info) -> bool:
