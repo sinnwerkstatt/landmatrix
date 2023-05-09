@@ -176,7 +176,7 @@
   --item-is-active-color: black;
   /*noinspection CssUnresolvedCustomProperty*/
   --item-is-active-bg: var(--color-orange-400);
-  --list-max-height: 152px;
+  --list-max-height: 180px;
   --list-border: 1px solid black;
   /*noinspection CssUnresolvedCustomProperty*/
   --error-border: 2px solid var(--color-red-600);
