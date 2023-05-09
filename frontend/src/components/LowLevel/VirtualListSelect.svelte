@@ -97,20 +97,22 @@
       <div on:pointerdown|stopPropagation>
         <VirtualList
           width="100%"
-          height={150}
+          height={152}
           itemCount={filteredItems.length}
           itemSize={38}
           scrollToIndex={hoverItemIndex}
         >
           <div
             slot="item"
-            class="item"
-            class:active={filteredItems[index].id === value?.id}
-            class:hover={index === hoverItemIndex}
+            class="block h-[38px] cursor-default overflow-clip text-ellipsis whitespace-nowrap px-3 align-middle leading-[38px]"
+            title={filteredItems[index][label]}
+            class:item-active={filteredItems[index].id === value?.id}
+            class:item-hover={index === hoverItemIndex}
             let:index
             let:style
             {style}
             on:click|stopPropagation={() => setValue(filteredItems[index])}
+            on:keydown|stopPropagation
             on:mouseover={() => setHoverIndex(index)}
             on:focus={() => setHoverIndex(index)}
           >
@@ -125,19 +127,11 @@
 </Select>
 
 <style>
-  .item {
-    height: 38px;
-    display: flex;
-    align-items: center;
-    padding: 20px;
-    cursor: default;
-  }
-
-  .item.hover {
+  .item-hover {
     background: var(--item-hover-bg, #e7f2ff);
   }
 
-  .item.active {
+  .item-active {
     background: var(--item-is-active-bg, #007aff);
     color: var(--item-is-active-color, #fff);
   }
