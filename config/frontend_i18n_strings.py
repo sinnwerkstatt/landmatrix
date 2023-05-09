@@ -2,6 +2,7 @@ from django.utils.translation import gettext as _
 
 _("About")
 _("Access more information about this contract on OpenLandContracts.org")
+_("Account activated")
 _("Account confirmed")
 _("Accountability")
 _("Actions")
@@ -95,7 +96,6 @@ _("CSV file")
 _("Currency")
 _("current")
 _("Current")
-_("current")
 _("Current implementation status")
 _("Current negotiation status")
 _("Data")
@@ -159,6 +159,7 @@ _("Email")
 _("employees")
 _("Employees")
 _("Employment")
+_("Error")
 _("Excel document")
 _("Excluded")
 _(
@@ -346,7 +347,6 @@ _("Presence of organizations and actions taken (e.g. farmer organizations, NGOs,
 _("Produce")
 _("Produce info")
 _("Produce info map")
-_("Production")
 _("Production area")
 _("Production areas")
 _("Promised benefits for local communities")
@@ -430,7 +430,6 @@ _("Tertiary investors/lenders")
 _(
     "The investor network diagram is not visible in draft mode. Go to {liveLink} to see it."
 )
-_("This account has already been activated. You can probably log in now.")
 _(
     "This creates a completely identical copy of the deal. The copy must then be edited and adjusted to prevent identical duplicates."
 )
@@ -467,10 +466,13 @@ _(
     "You are not the author of this version. Therefore, a new version will be created if you proceed."
 )
 _("You can only change the country when no locations are defined.")
+_("Your account has been activated. You can log in now.")
 _(
     "Your contact information will help our researchers get in touch with you for additional information. We respect and protect your privacy and anonymity, and will never share or publish your personal information. You can also write us directly at data@landmatrix.org."
 )
-_("Your email address is confirmed. You can log in now.")
+_(
+    "Your email address is confirmed. Your account awaits activation by an admin. If this does not happen within the next 24 hours, please contact the following address:"
+)
 _("YYYY-MM-DD")
 _(
     "{x} deals have multiple intentions, resulting in a total of {y} intentions for {z} deals."

@@ -28,7 +28,7 @@ def process():
 
     with open("../config/frontend_i18n_strings.py", "w") as f:
         f.write("from django.utils.translation import gettext as _\n\n")
-        for string in sorted(results, key=lambda a: a.lower()):
+        for string in sorted(results, key=lambda a: (a.lower(), a.swapcase())):
             f.write(f'_("{string}")\n')
 
     subprocess.run(["black", "../config/frontend_i18n_strings.py"])

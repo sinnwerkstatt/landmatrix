@@ -33,13 +33,12 @@
   {#if ret.data.register_confirm.ok}
     <PageTitle>{$_("Account confirmed")}</PageTitle>
     {$_(
-      "Your email address is confirmed. It needs to be activated by an administrator. " +
-        "If this does not happen within the next 24 hours, please contact the following address:",
+      "Your email address is confirmed. Your account awaits activation by an admin. If this does not happen within the next 24 hours, please contact the following address:",
     )}
     <a href="mailto:data@landmatrix.org">data@landmatrix.org</a>
   {:else if ret.data.register_confirm.code === "already_activated"}
     <PageTitle>{$_("Account activated")}</PageTitle>
-    {$_("This account has been activated. You can log in now.")}
+    {$_("Your account has been activated. You can log in now.")}
     <div class="text-right">
       <a href="/account/login" class="btn btn-primary">{$_("Login")}</a>
     </div>
