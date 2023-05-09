@@ -15,11 +15,9 @@
   $: if (expandedContent) dispatch("expanded")
 </script>
 
-<div
-  class="-mx-2 border-b border-gray-300 bg-lm-lightgray pl-1 text-lm-dark hover:cursor-pointer"
->
+<div class="-mx-2 border-b border-gray-300 bg-lm-lightgray pl-1 text-lm-dark">
   <div
-    class="relative flex justify-between py-1.5 pr-2"
+    class="relative flex cursor-pointer justify-between py-1.5 pr-2"
     class:collapsed={!expanded}
     class:text-orange={clearable}
     on:click={() => (expanded = !expanded)}
