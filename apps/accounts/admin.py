@@ -15,14 +15,19 @@ class MyUserAdmin(UserAdmin):
         # let's exclude the requester, otherwise they will snooker themselves
         queryset.exclude(id=request.user.id).update(is_active=False)
 
-    set_inactive.short_description = "Set selected users INACTIVE"
+    set_inactive.short_description = "Flag selected users as inactive"
+
+    def set_active(self, request, queryset):
+        queryset.exclude(id=request.user.id).update(is_active=True)
+
+    set_active.short_description = "Activate selected users"
 
     list_display = UserAdmin.list_display + ("is_active", "role")
     list_filter = UserAdmin.list_filter + ("role",)
     fieldsets = UserAdmin.fieldsets + (
         (_("Data"), {"fields": ("role", "country", "region")}),
     )
-    actions = [set_inactive]
+    actions = [set_active, set_inactive]
 
 
 admin.site.register(UserModel, MyUserAdmin)
