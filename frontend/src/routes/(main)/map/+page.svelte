@@ -341,6 +341,7 @@
               alt="Legend for {layer.name}"
               src={layer.legendUrlFunction()}
               class="mt-2 mb-4 ml-4 border"
+              loading="lazy"
             />
           {/if}
         </label>

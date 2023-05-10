@@ -18,7 +18,7 @@
       on:keydown|preventDefault|stopPropagation={e =>
         e.code === "Enter" && lightboxImage.set(value)}
     >
-      <img class="w-full max-w-full cursor-pointer" {src} alt="" />
+      <img class="w-full max-w-full cursor-pointer" {src} alt="" loading="lazy" />
     </a>
   {:else if link}
     <a
@@ -26,10 +26,10 @@
       target={externalLink ? "_blank" : "_self"}
       rel={externalLink ? "noreferrer" : ""}
     >
-      <img class="w-full max-w-full" {src} alt="" />
+      <img class="w-full max-w-full" {src} alt="" loading="lazy" />
     </a>
   {:else}
-    <img class="w-full max-w-full" {src} alt="" />
+    <img class="w-full max-w-full" {src} alt="" loading="lazy" />
   {/if}
   {#if caption}
     <div class="caption bg-[rgba(0,0,0,.75)] p-3 font-bold text-orange">
