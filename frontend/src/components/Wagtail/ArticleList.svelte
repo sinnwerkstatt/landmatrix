@@ -16,6 +16,7 @@
         src={article.header_image}
         alt="Header for {article.title}"
         class="h-48 w-48"
+        loading="lazy"
       />
     {/if}
 

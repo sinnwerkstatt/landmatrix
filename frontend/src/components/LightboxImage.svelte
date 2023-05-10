@@ -25,6 +25,7 @@
       class="max-h-full max-w-full border"
       src={$lightboxImage.image.url}
       alt={$lightboxImage.url}
+      loading="lazy"
     />
   </div>
 {/if}
