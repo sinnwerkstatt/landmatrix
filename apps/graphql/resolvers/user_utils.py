@@ -3,7 +3,7 @@ from typing import Type
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext as _
-from wagtail.core.models import Site
+from wagtail.models import Site
 
 from apps.accounts.models import User
 from apps.landmatrix.models.deal import Deal

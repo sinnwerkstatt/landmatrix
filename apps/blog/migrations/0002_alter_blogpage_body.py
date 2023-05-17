@@ -2,8 +2,8 @@
 
 import apps.wagtailcms.blocks
 from django.db import migrations
-import wagtail.core.blocks
-import wagtail.core.fields
+import wagtail.blocks
+import wagtail.fields
 import wagtail.embeds.blocks
 import wagtail.images.blocks
 
@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="blogpage",
             name="body",
-            field=wagtail.core.fields.StreamField(
+            field=wagtail.fields.StreamField(
                 [
                     (
                         "paragraph",
@@ -39,11 +39,11 @@ class Migration(migrations.Migration):
                     ),
                     (
                         "link",
-                        wagtail.core.blocks.StructBlock(
+                        wagtail.blocks.StructBlock(
                             [
                                 (
                                     "cls",
-                                    wagtail.core.blocks.ChoiceBlock(
+                                    wagtail.blocks.ChoiceBlock(
                                         choices=[
                                             ("btn", "Button"),
                                             (
@@ -55,27 +55,27 @@ class Migration(migrations.Migration):
                                         required=False,
                                     ),
                                 ),
-                                ("url", wagtail.core.blocks.URLBlock(label="URL")),
-                                ("text", wagtail.core.blocks.CharBlock()),
+                                ("url", wagtail.blocks.URLBlock(label="URL")),
+                                ("text", wagtail.blocks.CharBlock()),
                             ],
                             icon="link",
                         ),
                     ),
                     (
                         "anchor",
-                        wagtail.core.blocks.StructBlock(
-                            [("slug", wagtail.core.blocks.CharBlock())], icon="link"
+                        wagtail.blocks.StructBlock(
+                            [("slug", wagtail.blocks.CharBlock())], icon="link"
                         ),
                     ),
                     ("image", apps.wagtailcms.blocks.ImageBlock()),
                     (
                         "linked_image",
-                        wagtail.core.blocks.StructBlock(
+                        wagtail.blocks.StructBlock(
                             [
                                 ("image", wagtail.images.blocks.ImageChooserBlock()),
                                 (
                                     "url",
-                                    wagtail.core.blocks.URLBlock(
+                                    wagtail.blocks.URLBlock(
                                         label="URL", required=False
                                     ),
                                 ),
@@ -87,7 +87,7 @@ class Migration(migrations.Migration):
                                 ),
                                 (
                                     "lightbox",
-                                    wagtail.core.blocks.BooleanBlock(
+                                    wagtail.blocks.BooleanBlock(
                                         default=False,
                                         help_text="When selected, this image becomes clickable to show a maximized version.<br/>Beware: combining this with the URL will not work.",
                                         required=False,
@@ -99,11 +99,11 @@ class Migration(migrations.Migration):
                     ("media", wagtail.embeds.blocks.EmbedBlock(icon="media")),
                     (
                         "gallery",
-                        wagtail.core.blocks.StructBlock(
+                        wagtail.blocks.StructBlock(
                             [
                                 (
                                     "columns",
-                                    wagtail.core.blocks.ChoiceBlock(
+                                    wagtail.blocks.ChoiceBlock(
                                         choices=[
                                             (1, "1 column"),
                                             (2, "2 columns"),
@@ -117,8 +117,8 @@ class Migration(migrations.Migration):
                                 ),
                                 (
                                     "images",
-                                    wagtail.core.blocks.ListBlock(
-                                        wagtail.core.blocks.StructBlock(
+                                    wagtail.blocks.ListBlock(
+                                        wagtail.blocks.StructBlock(
                                             [
                                                 (
                                                     "image",
@@ -126,7 +126,7 @@ class Migration(migrations.Migration):
                                                 ),
                                                 (
                                                     "url",
-                                                    wagtail.core.blocks.URLBlock(
+                                                    wagtail.blocks.URLBlock(
                                                         label="URL", required=False
                                                     ),
                                                 ),
@@ -138,7 +138,7 @@ class Migration(migrations.Migration):
                                                 ),
                                                 (
                                                     "lightbox",
-                                                    wagtail.core.blocks.BooleanBlock(
+                                                    wagtail.blocks.BooleanBlock(
                                                         default=False,
                                                         help_text="When selected, this image becomes clickable to show a maximized version.<br/>Beware: combining this with the URL will not work.",
                                                         required=False,
@@ -153,12 +153,12 @@ class Migration(migrations.Migration):
                     ),
                     (
                         "slider",
-                        wagtail.core.blocks.StructBlock(
+                        wagtail.blocks.StructBlock(
                             [
                                 (
                                     "images",
-                                    wagtail.core.blocks.ListBlock(
-                                        wagtail.core.blocks.StructBlock(
+                                    wagtail.blocks.ListBlock(
+                                        wagtail.blocks.StructBlock(
                                             [
                                                 (
                                                     "image",
@@ -166,7 +166,7 @@ class Migration(migrations.Migration):
                                                 ),
                                                 (
                                                     "url",
-                                                    wagtail.core.blocks.URLBlock(
+                                                    wagtail.blocks.URLBlock(
                                                         label="URL", required=False
                                                     ),
                                                 ),
@@ -178,7 +178,7 @@ class Migration(migrations.Migration):
                                                 ),
                                                 (
                                                     "lightbox",
-                                                    wagtail.core.blocks.BooleanBlock(
+                                                    wagtail.blocks.BooleanBlock(
                                                         default=False,
                                                         help_text="When selected, this image becomes clickable to show a maximized version.<br/>Beware: combining this with the URL will not work.",
                                                         required=False,
@@ -191,23 +191,23 @@ class Migration(migrations.Migration):
                             ]
                         ),
                     ),
-                    ("section_divider", wagtail.core.blocks.StructBlock([])),
+                    ("section_divider", wagtail.blocks.StructBlock([])),
                     (
                         "faqs_block",
-                        wagtail.core.blocks.StructBlock(
+                        wagtail.blocks.StructBlock(
                             [
                                 (
                                     "faqs",
-                                    wagtail.core.blocks.ListBlock(
-                                        wagtail.core.blocks.StructBlock(
+                                    wagtail.blocks.ListBlock(
+                                        wagtail.blocks.StructBlock(
                                             [
                                                 (
                                                     "slug",
-                                                    wagtail.core.blocks.CharBlock(),
+                                                    wagtail.blocks.CharBlock(),
                                                 ),
                                                 (
                                                     "question",
-                                                    wagtail.core.blocks.CharBlock(),
+                                                    wagtail.blocks.CharBlock(),
                                                 ),
                                                 (
                                                     "answer",

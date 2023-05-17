@@ -4,7 +4,7 @@ from typing import Type
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 from django.db.transaction import atomic
-from wagtail.core.models import Page, Site
+from wagtail.models import Page, Site
 
 from apps.accounts.models import User
 from apps.wagtailcms.models import WagtailPage, WagtailRootPage

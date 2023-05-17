@@ -8,8 +8,8 @@ from django.db import migrations, models
 import django.db.models.deletion
 import modelcluster.contrib.taggit
 import modelcluster.fields
-import wagtail.core.blocks
-import wagtail.core.fields
+import wagtail.blocks
+import wagtail.fields
 import wagtail.embeds.blocks
 import wagtail.images.blocks
 
@@ -48,7 +48,7 @@ class Migration(migrations.Migration):
             name='BlogPage',
             fields=[
                 ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.page')),
-                ('body', wagtail.core.fields.RichTextField()),
+                ('body', wagtail.fields.RichTextField()),
                 ('header_image', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='wagtailimages.image')),
             ],
             options={
@@ -96,7 +96,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='blogpage',
             name='body',
-            field=wagtail.core.fields.RichTextField(verbose_name='body'),
+            field=wagtail.fields.RichTextField(verbose_name='body'),
         ),
         migrations.AlterField(
             model_name='blogpage',
@@ -120,7 +120,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='blogpage',
             name='body',
-            field=wagtail.core.fields.RichTextField(blank=True, verbose_name='body'),
+            field=wagtail.fields.RichTextField(blank=True, verbose_name='body'),
         ),
         migrations.AddField(
             model_name='blogpage',
@@ -135,7 +135,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='blogpage',
             name='body',
-            field=wagtail.core.fields.StreamField([('paragraph', apps.wagtailcms.blocks.RichTextBlock(features=['bold', 'italic', 'h2', 'h3', 'ol', 'ul', 'hr', 'link', 'image', 'document-link'])), ('link', wagtail.core.blocks.StructBlock([('cls', wagtail.core.blocks.ChoiceBlock(choices=[('btn', 'Button'), ('btn btn-with-space', 'Button (with space)')], label='Type', required=False)), ('url', wagtail.core.blocks.URLBlock(label='URL')), ('text', wagtail.core.blocks.CharBlock())], icon='link')), ('anchor', wagtail.core.blocks.StructBlock([('slug', wagtail.core.blocks.CharBlock())], icon='link')), ('image', apps.wagtailcms.blocks.ImageBlock()), ('linked_image', wagtail.core.blocks.StructBlock([('image', wagtail.images.blocks.ImageChooserBlock()), ('url', wagtail.core.blocks.URLBlock(label='URL', required=False)), ('caption', apps.wagtailcms.blocks.RichTextBlock(required=False))])), ('media', wagtail.embeds.blocks.EmbedBlock(icon='media')), ('gallery', wagtail.core.blocks.StructBlock([('columns', wagtail.core.blocks.ChoiceBlock(choices=[(1, '1 column'), (2, '2 columns'), (3, '3 columns'), (4, '4 columns'), (5, '5 columns'), (6, '6 columns')], icon='fa fa-columns')), ('images', wagtail.core.blocks.ListBlock(wagtail.core.blocks.StructBlock([('image', wagtail.images.blocks.ImageChooserBlock()), ('url', wagtail.core.blocks.URLBlock(label='URL', required=False)), ('caption', apps.wagtailcms.blocks.RichTextBlock(required=False))])))])), ('slider', wagtail.core.blocks.StructBlock([('images', wagtail.core.blocks.ListBlock(wagtail.core.blocks.StructBlock([('image', wagtail.images.blocks.ImageChooserBlock()), ('url', wagtail.core.blocks.URLBlock(label='URL', required=False)), ('caption', apps.wagtailcms.blocks.RichTextBlock(required=False))])))])), ('section_divider', wagtail.core.blocks.StructBlock([])), ('faqs_block', wagtail.core.blocks.StructBlock([('faqs', wagtail.core.blocks.ListBlock(wagtail.core.blocks.StructBlock([('slug', wagtail.core.blocks.CharBlock()), ('question', wagtail.core.blocks.CharBlock()), ('answer', apps.wagtailcms.blocks.RichTextBlock())])))]))], blank=True, verbose_name='body'),
+            field=wagtail.fields.StreamField([('paragraph', apps.wagtailcms.blocks.RichTextBlock(features=['bold', 'italic', 'h2', 'h3', 'ol', 'ul', 'hr', 'link', 'image', 'document-link'])), ('link', wagtail.blocks.StructBlock([('cls', wagtail.blocks.ChoiceBlock(choices=[('btn', 'Button'), ('btn btn-with-space', 'Button (with space)')], label='Type', required=False)), ('url', wagtail.blocks.URLBlock(label='URL')), ('text', wagtail.blocks.CharBlock())], icon='link')), ('anchor', wagtail.blocks.StructBlock([('slug', wagtail.blocks.CharBlock())], icon='link')), ('image', apps.wagtailcms.blocks.ImageBlock()), ('linked_image', wagtail.blocks.StructBlock([('image', wagtail.images.blocks.ImageChooserBlock()), ('url', wagtail.blocks.URLBlock(label='URL', required=False)), ('caption', apps.wagtailcms.blocks.RichTextBlock(required=False))])), ('media', wagtail.embeds.blocks.EmbedBlock(icon='media')), ('gallery', wagtail.blocks.StructBlock([('columns', wagtail.blocks.ChoiceBlock(choices=[(1, '1 column'), (2, '2 columns'), (3, '3 columns'), (4, '4 columns'), (5, '5 columns'), (6, '6 columns')], icon='fa fa-columns')), ('images', wagtail.blocks.ListBlock(wagtail.blocks.StructBlock([('image', wagtail.images.blocks.ImageChooserBlock()), ('url', wagtail.blocks.URLBlock(label='URL', required=False)), ('caption', apps.wagtailcms.blocks.RichTextBlock(required=False))])))])), ('slider', wagtail.blocks.StructBlock([('images', wagtail.blocks.ListBlock(wagtail.blocks.StructBlock([('image', wagtail.images.blocks.ImageChooserBlock()), ('url', wagtail.blocks.URLBlock(label='URL', required=False)), ('caption', apps.wagtailcms.blocks.RichTextBlock(required=False))])))])), ('section_divider', wagtail.blocks.StructBlock([])), ('faqs_block', wagtail.blocks.StructBlock([('faqs', wagtail.blocks.ListBlock(wagtail.blocks.StructBlock([('slug', wagtail.blocks.CharBlock()), ('question', wagtail.blocks.CharBlock()), ('answer', apps.wagtailcms.blocks.RichTextBlock())])))]))], blank=True, verbose_name='body'),
         ),
         migrations.CreateModel(
             name='BlogIndexPage',
@@ -151,6 +151,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='blogpage',
             name='body',
-            field=wagtail.core.fields.StreamField([('paragraph', apps.wagtailcms.blocks.RichTextBlock(features=['bold', 'italic', 'h2', 'h3', 'ol', 'ul', 'hr', 'link', 'image', 'document-link'])), ('link', wagtail.core.blocks.StructBlock([('cls', wagtail.core.blocks.ChoiceBlock(choices=[('btn', 'Button'), ('btn btn-with-space', 'Button (with space)')], label='Type', required=False)), ('url', wagtail.core.blocks.URLBlock(label='URL')), ('text', wagtail.core.blocks.CharBlock())], icon='link')), ('anchor', wagtail.core.blocks.StructBlock([('slug', wagtail.core.blocks.CharBlock())], icon='link')), ('image', apps.wagtailcms.blocks.ImageBlock()), ('linked_image', wagtail.core.blocks.StructBlock([('image', wagtail.images.blocks.ImageChooserBlock()), ('url', wagtail.core.blocks.URLBlock(label='URL', required=False)), ('caption', apps.wagtailcms.blocks.RichTextBlock(required=False))])), ('media', wagtail.embeds.blocks.EmbedBlock(icon='media')), ('gallery', wagtail.core.blocks.StructBlock([('columns', wagtail.core.blocks.ChoiceBlock(choices=[(1, '1 column'), (2, '2 columns'), (3, '3 columns'), (4, '4 columns'), (5, '5 columns'), (6, '6 columns')], icon='fa-columns')), ('images', wagtail.core.blocks.ListBlock(wagtail.core.blocks.StructBlock([('image', wagtail.images.blocks.ImageChooserBlock()), ('url', wagtail.core.blocks.URLBlock(label='URL', required=False)), ('caption', apps.wagtailcms.blocks.RichTextBlock(required=False))])))])), ('slider', wagtail.core.blocks.StructBlock([('images', wagtail.core.blocks.ListBlock(wagtail.core.blocks.StructBlock([('image', wagtail.images.blocks.ImageChooserBlock()), ('url', wagtail.core.blocks.URLBlock(label='URL', required=False)), ('caption', apps.wagtailcms.blocks.RichTextBlock(required=False))])))])), ('section_divider', wagtail.core.blocks.StructBlock([])), ('faqs_block', wagtail.core.blocks.StructBlock([('faqs', wagtail.core.blocks.ListBlock(wagtail.core.blocks.StructBlock([('slug', wagtail.core.blocks.CharBlock()), ('question', wagtail.core.blocks.CharBlock()), ('answer', apps.wagtailcms.blocks.RichTextBlock())])))]))], blank=True, verbose_name='body'),
+            field=wagtail.fields.StreamField([('paragraph', apps.wagtailcms.blocks.RichTextBlock(features=['bold', 'italic', 'h2', 'h3', 'ol', 'ul', 'hr', 'link', 'image', 'document-link'])), ('link', wagtail.blocks.StructBlock([('cls', wagtail.blocks.ChoiceBlock(choices=[('btn', 'Button'), ('btn btn-with-space', 'Button (with space)')], label='Type', required=False)), ('url', wagtail.blocks.URLBlock(label='URL')), ('text', wagtail.blocks.CharBlock())], icon='link')), ('anchor', wagtail.blocks.StructBlock([('slug', wagtail.blocks.CharBlock())], icon='link')), ('image', apps.wagtailcms.blocks.ImageBlock()), ('linked_image', wagtail.blocks.StructBlock([('image', wagtail.images.blocks.ImageChooserBlock()), ('url', wagtail.blocks.URLBlock(label='URL', required=False)), ('caption', apps.wagtailcms.blocks.RichTextBlock(required=False))])), ('media', wagtail.embeds.blocks.EmbedBlock(icon='media')), ('gallery', wagtail.blocks.StructBlock([('columns', wagtail.blocks.ChoiceBlock(choices=[(1, '1 column'), (2, '2 columns'), (3, '3 columns'), (4, '4 columns'), (5, '5 columns'), (6, '6 columns')], icon='fa-columns')), ('images', wagtail.blocks.ListBlock(wagtail.blocks.StructBlock([('image', wagtail.images.blocks.ImageChooserBlock()), ('url', wagtail.blocks.URLBlock(label='URL', required=False)), ('caption', apps.wagtailcms.blocks.RichTextBlock(required=False))])))])), ('slider', wagtail.blocks.StructBlock([('images', wagtail.blocks.ListBlock(wagtail.blocks.StructBlock([('image', wagtail.images.blocks.ImageChooserBlock()), ('url', wagtail.blocks.URLBlock(label='URL', required=False)), ('caption', apps.wagtailcms.blocks.RichTextBlock(required=False))])))])), ('section_divider', wagtail.blocks.StructBlock([])), ('faqs_block', wagtail.blocks.StructBlock([('faqs', wagtail.blocks.ListBlock(wagtail.blocks.StructBlock([('slug', wagtail.blocks.CharBlock()), ('question', wagtail.blocks.CharBlock()), ('answer', apps.wagtailcms.blocks.RichTextBlock())])))]))], blank=True, verbose_name='body'),
         ),
     ]

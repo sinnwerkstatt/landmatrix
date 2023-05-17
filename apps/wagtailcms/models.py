@@ -1,16 +1,11 @@
 from django import forms
 from django.db import models
-from wagtail.admin.edit_handlers import (
-    FieldPanel,
-    FieldRowPanel,
-    RichTextFieldPanel,
-    StreamFieldPanel,
-)
+from wagtail.admin.panels import FieldPanel, FieldRowPanel
 from wagtail.api import APIField
-from wagtail.contrib.settings.models import BaseSetting, register_setting
-from wagtail.core.fields import RichTextField, StreamField
-from wagtail.core.models import Page
-from wagtail.core.rich_text import expand_db_html
+from wagtail.contrib.settings.models import register_setting, BaseGenericSetting
+from wagtail.fields import RichTextField, StreamField
+from wagtail.models import Page
+from wagtail.rich_text import expand_db_html
 from wagtail_headless_preview.models import HeadlessPreviewMixin
 
 from apps.blog.models import BlogPage
@@ -28,7 +23,7 @@ from .twitter import TwitterTimeline
 
 
 @register_setting(icon="radio-empty")
-class ChartDescriptionsSettings(BaseSetting):
+class ChartDescriptionsSettings(BaseGenericSetting):
     web_of_transnational_deals = RichTextField()
     dynamics_overview = RichTextField()
     produce_info_map = RichTextField()
@@ -46,27 +41,27 @@ class ChartDescriptionsSettings(BaseSetting):
         }
 
     panels = [
-        RichTextFieldPanel("web_of_transnational_deals"),
-        RichTextFieldPanel("dynamics_overview"),
-        RichTextFieldPanel("produce_info_map"),
+        FieldPanel("web_of_transnational_deals"),
+        FieldPanel("dynamics_overview"),
+        FieldPanel("produce_info_map"),
     ]
 
 
 class WagtailRootPage(HeadlessPreviewMixin, Page):
     is_creatable = False
-    body = NoWrapsStreamField(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
+    body = NoWrapsStreamField(
+        CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS, use_json_field=True
+    )
 
-    content_panels = Page.content_panels + [
-        StreamFieldPanel("body"),
-    ]
-    api_fields = [
-        APIField("body"),
-    ]
+    content_panels = Page.content_panels + [FieldPanel("body")]
+    api_fields = [APIField("body")]
 
 
 class WagtailPage(HeadlessPreviewMixin, Page):
-    body = NoWrapsStreamField(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
-    content_panels = Page.content_panels + [StreamFieldPanel("body")]
+    body = NoWrapsStreamField(
+        CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS, use_json_field=True
+    )
+    content_panels = Page.content_panels + [FieldPanel("body")]
     api_fields = [APIField("body")]
 
 
@@ -104,7 +99,7 @@ class ObservatoryPage(HeadlessPreviewMixin, Page):
         blank=True,
         help_text="Introduction before 'Read more'",
     )
-    body = StreamField(SIMPLE_CONTENT_BLOCKS)
+    body = StreamField(SIMPLE_CONTENT_BLOCKS, use_json_field=True)
 
     twitter_username = models.CharField(max_length=200, blank=True)
 
@@ -113,7 +108,7 @@ class ObservatoryPage(HeadlessPreviewMixin, Page):
             [FieldPanel("region"), FieldPanel("country")], classname="region-or-country"
         ),
         FieldPanel("introduction_text", widget=forms.Textarea),
-        StreamFieldPanel("body"),
+        FieldPanel("body"),
     ]
     promote_panels = [
         FieldPanel("short_description", widget=forms.Textarea),

@@ -14,18 +14,12 @@ from django.utils.text import Truncator
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey, ParentalManyToManyField
 from rest_framework.fields import ListField
-from wagtail.admin.edit_handlers import (
-    FieldPanel,
-    FieldRowPanel,
-    MultiFieldPanel,
-    StreamFieldPanel,
-)
+from wagtail.admin.panels import FieldPanel, FieldRowPanel, MultiFieldPanel
 from wagtail.api import APIField
-from wagtail.core.fields import StreamField
-from wagtail.core.models import Page
+from wagtail.fields import StreamField
 from wagtail.images import get_image_model_string
-from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.images.models import SourceImageIOError
+from wagtail.models import Page
 from wagtail.search import index
 from wagtail.snippets.models import register_snippet
 from wagtail_headless_preview.models import HeadlessPreviewMixin
@@ -220,7 +214,9 @@ def limit_author_choices():
 
 
 class BlogPage(HeadlessPreviewMixin, Page):
-    body = StreamField(SIMPLE_CONTENT_BLOCKS, verbose_name="body", blank=True)
+    body = StreamField(
+        SIMPLE_CONTENT_BLOCKS, verbose_name="body", blank=True, use_json_field=True
+    )
     tags = ClusterTaggableManager(through="BlogPageTag", blank=True)
     date = models.DateField(
         "Post date",
@@ -292,8 +288,8 @@ class BlogPage(HeadlessPreviewMixin, Page):
             ],
             heading="Tags and Categories",
         ),
-        ImageChooserPanel("header_image"),
-        StreamFieldPanel("body", classname="full"),
+        FieldPanel("header_image"),
+        FieldPanel("body", classname="full"),
     ]
 
     def get_blog_index(self):

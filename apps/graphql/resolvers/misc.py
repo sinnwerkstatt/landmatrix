@@ -1,5 +1,5 @@
 from django.utils import translation
-from wagtail.core.models import Site
+from wagtail.models import Site
 
 from apps.graphql.tools import get_fields
 from apps.landmatrix.models.country import Country, Region

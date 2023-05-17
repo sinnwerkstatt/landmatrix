@@ -1,5 +1,5 @@
 from rest_framework import fields
-from wagtail.core.rich_text import expand_db_html
+from wagtail.rich_text import expand_db_html
 
 
 class APIRichTextSerializer(fields.CharField):
