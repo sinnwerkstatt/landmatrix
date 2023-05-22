@@ -26,8 +26,9 @@ def resolve_currencies(_obj, info):
 
 def resolve_chart_descriptions(_obj, info, language="en"):
     with translation.override(language):
-        site = Site.find_for_request(info.context["request"])
-        return ChartDescriptionsSettings.for_site(site).to_dict()
+        return ChartDescriptionsSettings.load(
+            request_or_site=info.context["request"]
+        ).to_dict()
 
 
 def resolve_markers(_obj, _info, region_id=None, country_id=None):
