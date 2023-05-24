@@ -3,12 +3,9 @@
 
   import { browser } from "$app/environment"
 
-  import { loading } from "$lib/stores"
-
   import type { FileType } from "$components/Data/Charts/utils"
   import FileCodeIcon from "$components/icons/FileCodeIcon.svelte"
   import FileImageIcon from "$components/icons/FileImageIcon.svelte"
-  import LoadingPulse from "$components/LoadingPulse.svelte"
 
   export let title: string
   export let wrapperClasses = ""
@@ -30,11 +27,11 @@
   <div
     class="svg-wrapper flex max-w-full flex-auto items-center justify-center bg-white"
   >
-    {#if $loading}
-      <div class="absolute">
-        <LoadingPulse />
-      </div>
-    {/if}
+    <!--{#if $loading}-->
+    <!--  <div class="absolute">-->
+    <!--    <LoadingPulse />-->
+    <!--  </div>-->
+    <!--{/if}-->
     <slot />
   </div>
   <div class="bg-[#2d2d2d] text-sm text-lm-light">

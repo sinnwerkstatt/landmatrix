@@ -64,7 +64,7 @@ export const downloadSVG = (
     if (!context) return
 
     canvas.width = 800
-    canvas.height = 800
+    canvas.height = 400
     context.clearRect(0, 0, canvas.width, canvas.height)
 
     const image = new Image()
