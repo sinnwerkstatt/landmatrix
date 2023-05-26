@@ -216,7 +216,11 @@
           ($filters.investor = null) && ($filters.investor_country_id = null)}
       >
         {$_("Investor name")}
-        <InvestorSelect bind:value={$filters.investor} {investors} />
+        <InvestorSelect
+          value={$filters.investor}
+          {investors}
+          on:input={e => ($filters.investor = e.detail)}
+        />
         {$_("Country of registration")}
         <CountrySelect
           value={$countries.find(c => c.id === $filters.investor_country_id)}
