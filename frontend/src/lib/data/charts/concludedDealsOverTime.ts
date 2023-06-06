@@ -182,11 +182,15 @@ export const drawGraph = (
     .append("g")
     .attr("transform", `translate(0,${height - margin.bottom})`)
     .call(xAxis)
+    .attr("stroke", "black")
+    .attr("stroke-width", 0.1)
 
-  svg //
+  svg
     .append("g")
     .attr("transform", `translate(${margin.left},0)`)
     .call(yAxis)
+    .attr("stroke", "black")
+    .attr("stroke-width", 0.1)
 
   const area = d3
     .area<[Date, number]>()
@@ -197,7 +201,7 @@ export const drawGraph = (
   svg
     .append("path")
     .datum(chartData)
-    .classed("colored-area", true)
+    .attr("stroke", "current-color")
     .attr("stroke-width", 1.5)
     .attr("d", area)
 

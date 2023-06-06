@@ -52,7 +52,7 @@
 </script>
 
 <ChartWrapper {title} on:download={handleDownload}>
-  <svg bind:this={svgComp} />
+  <svg fill="#cce5df" stroke="#69b3a2" bind:this={svgComp} />
 
   <div slot="legend">
     {$_(
@@ -66,10 +66,3 @@
     )}
   </div>
 </ChartWrapper>
-
-<style lang="css">
-  svg :global(.colored-area) {
-    fill: #cce5df;
-    stroke: #69b3a2;
-  }
-</style>
