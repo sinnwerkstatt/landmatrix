@@ -22,6 +22,8 @@ export const data_deal_query_gql = gql`
       intended_size
       locations # for map
       fully_updated_at # for listing
+      negotiation_status
+      contract_size
       operating_company {
         # for map pin popover & listing
         id

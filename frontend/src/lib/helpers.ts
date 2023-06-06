@@ -1,4 +1,5 @@
 import { nanoid } from "nanoid"
+import * as R from "ramda"
 
 import type { Obj, ObjVersion } from "$lib/types/generics"
 import { DraftStatus, Status } from "$lib/types/generics"
@@ -56,3 +57,17 @@ export function isAuthorized(user: User, obj: Obj): boolean {
       return false
   }
 }
+
+const cumulativeSum: (list: number[]) => number[] = R.pipe(
+  R.reduce(
+    (acc, val) => {
+      const sum = acc.sum + val
+      return {
+        ret: [...acc.ret, sum],
+        sum,
+      }
+    },
+    { ret: [] as number[], sum: 0 },
+  ),
+  R.prop("ret"),
+)

@@ -235,6 +235,17 @@ export const NEGOTIATION_STATUS_GROUP_MAP: {
   [NegotiationStatus.CONTRACT_EXPIRED]: NegotiationStatusGroup.CONTRACT_EXPIRED,
 }
 
+export interface BaseItem {
+  date?: string
+  current?: boolean
+}
+export interface NegotiationStatusItem extends BaseItem {
+  choice: NegotiationStatus
+}
+export interface ContractSizeItem extends BaseItem {
+  area: number
+}
+
 export interface Deal extends Obj {
   id: number
   locations: Location[]
@@ -242,6 +253,8 @@ export interface Deal extends Obj {
   datasources: DataSource[]
   versions: DealVersion[]
   workflowinfos?: DealWorkflowInfo[]
+  negotiation_status?: NegotiationStatusItem[]
+  contract_size?: ContractSizeItem[]
   current_intention_of_investment?: IntentionOfInvestment[]
   current_negotiation_status?: NegotiationStatus
   current_implementation_status?: ImplementationStatus
