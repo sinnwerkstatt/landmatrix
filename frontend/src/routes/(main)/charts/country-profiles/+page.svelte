@@ -17,7 +17,6 @@
   import LoadingPulse from "$components/LoadingPulse.svelte"
   import CumulativeNumberOfDeals from "$components/Data/Charts/CountryProfile/CumulativeNumberOfDeals.svelte"
   import CumulativeSizeUnderContract from "$components/Data/Charts/CountryProfile/CumulativeSizeUnderContract.svelte"
-  // import CumulativeSizeUnderContract from "$components/Data/Charts/CountryProfile/CumulativeSizeUnderContract.svelte"
 
   $: deals = queryStore({
     client: $page.data.urqlClient,
@@ -47,9 +46,9 @@
     {:else}
       <CumulativeNumberOfDeals deals={$deals.data.deals} />
       <CumulativeSizeUnderContract deals={$deals.data.deals} />
-      <!--      <IntentionsPerCategory deals={$deals.data.deals} />-->
-      <!--      <LSLAByNegotiation deals={$deals.data.deals} />-->
-      <!--      <DynamicsOfDeal deals={$deals.data.deals} />-->
+      <IntentionsPerCategory deals={$deals.data.deals} />
+      <LSLAByNegotiation deals={$deals.data.deals} />
+      <DynamicsOfDeal deals={$deals.data.deals} />
     {/if}
   </div>
 </ChartsContainer>

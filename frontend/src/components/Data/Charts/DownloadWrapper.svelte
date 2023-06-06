@@ -27,11 +27,6 @@
   <div
     class="svg-wrapper flex max-w-full flex-auto items-center justify-center bg-white"
   >
-    <!--{#if $loading}-->
-    <!--  <div class="absolute">-->
-    <!--    <LoadingPulse />-->
-    <!--  </div>-->
-    <!--{/if}-->
     <slot />
   </div>
   <div class="bg-[#2d2d2d] text-sm text-lm-light">

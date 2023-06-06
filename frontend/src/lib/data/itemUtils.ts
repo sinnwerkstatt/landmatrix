@@ -45,26 +45,3 @@ export const getLastByDate = <T extends Item>(items: T[]): Dated<T> | undefined 
 
 export const getCurrent: <T extends Item>(item: T[]) => IsCurrent<T> | undefined =
   R.find(isCurrent)
-
-// export const getCurrentOrLast = R.cond([
-//   [R.any(R.has("current")), R.find(R.has("current"))],
-//   [R.any(isDated), R.pipe(R.sortBy(R.prop("date")), R.last)],
-//   [R.T, R.last],
-// ])
-
-// export const isConcluded: (item: NegotiationStatusItem) => boolean = R.propSatisfies(
-//   R.includes(R.__, [
-//     NegotiationStatus.ORAL_AGREEMENT,
-//     NegotiationStatus.CONTRACT_SIGNED,
-//   ]),
-//   "choice",
-// )
-
-// export const isCanceled: (item: NegotiationStatusItem) => boolean = R.propSatisfies(
-//   R.includes(R.__, [
-//     NegotiationStatus.CONTRACT_CANCELED,
-//     NegotiationStatus.CONTRACT_EXPIRED,
-//     NegotiationStatus.NEGOTIATIONS_FAILED,
-//   ]),
-//   "choice",
-// )

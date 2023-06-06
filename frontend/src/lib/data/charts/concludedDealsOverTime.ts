@@ -96,9 +96,7 @@ export const createConcludedDealsOverTimeReducer = (years: number[]) => {
     }
     // valid
     return R.evolve(
-      {
-        buckets: R.zipWith(R.mergeWith(R.add), createBuckets(years)(deal)),
-      },
+      { buckets: R.zipWith(R.mergeWith(R.add), createBuckets(years)(deal)) },
       acc,
     )
   }
@@ -109,6 +107,8 @@ export interface ChartData {
   sizes: [Date, number][]
   counts: [Date, number][]
 }
+
+const asDate: (year: number) => Date = R.pipe(R.toString, R.constructN(1, Date))
 
 export const createChartData = (deals: Deal[]): ChartData => {
   const years = createYears()
@@ -121,16 +121,12 @@ export const createChartData = (deals: Deal[]): ChartData => {
   return {
     excluded: data.excluded,
     sizes: R.zipWith(
-      (year: number, { size }: Bucket) => {
-        return [new Date(R.toString(year)), size]
-      },
+      (year: number, { size }: Bucket) => [asDate(year), size],
       years,
       data.buckets,
     ),
     counts: R.zipWith(
-      (year: number, { count }: Bucket) => {
-        return [new Date(R.toString(year)), count]
-      },
+      (year: number, { count }: Bucket) => [asDate(year), count],
       years,
       data.buckets,
     ),
