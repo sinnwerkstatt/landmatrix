@@ -15,14 +15,17 @@
   import { downloadJSON, downloadCSV, downloadSVG } from "$components/Data/Charts/utils"
 
   export let deals: Deal[] = []
+  export const START_YEAR = 2000
 
-  $: title = $_("Cumulative area size under contract since the year 2000")
+  $: title = $_("Cumulative area size under contract since the year {year}", {
+    values: { year: START_YEAR },
+  })
 
   let svgComp: SVGElement
 
   let chartData: ChartData
 
-  $: chartData = createChartData(deals)
+  $: chartData = createChartData(START_YEAR, deals)
 
   $: if (svgComp) {
     clearGraph(svgComp)

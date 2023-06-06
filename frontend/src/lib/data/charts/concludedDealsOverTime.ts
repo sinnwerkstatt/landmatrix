@@ -12,14 +12,13 @@ import {
   getCurrentSize,
 } from "$lib/data/dealUtils"
 
-const START_YEAR = 2000
-
 const getCurrentYear: () => number = R.pipe(
   R.constructN(0, Date),
   R.invoker(0, "getFullYear"),
 )
 
-export const createYears: () => number[] = R.pipe(getCurrentYear, R.range(START_YEAR))
+export const createYears: (startYear: number) => number[] = startYear =>
+  R.range(startYear, getCurrentYear())
 
 export const createYearSizeMap: (deal: Deal) => Record<string, number> = R.pipe<
   [Deal],
@@ -110,8 +109,8 @@ export interface ChartData {
 
 const asDate: (year: number) => Date = R.pipe(R.toString, R.constructN(1, Date))
 
-export const createChartData = (deals: Deal[]): ChartData => {
-  const years = createYears()
+export const createChartData = (startYear: number, deals: Deal[]): ChartData => {
+  const years = createYears(startYear)
 
   const data = R.reduce(createConcludedDealsOverTimeReducer(years), {
     buckets: R.map(() => ({ size: 0, count: 0 }), years),

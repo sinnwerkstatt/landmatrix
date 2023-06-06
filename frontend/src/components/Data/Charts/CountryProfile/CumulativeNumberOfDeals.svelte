@@ -15,13 +15,16 @@
   import type { DownloadEvent } from "$components/Data/Charts/utils"
 
   export let deals: Deal[] = []
+  export const START_YEAR = 2000
 
-  $: title = $_("Concluded deals over time since the year 2000")
+  $: title = $_("Concluded deals over time since the year {year}", {
+    values: { year: START_YEAR },
+  })
 
   let svgComp: SVGElement
 
   let chartData: ChartData
-  $: chartData = createChartData(deals)
+  $: chartData = createChartData(START_YEAR, deals)
 
   $: if (svgComp) {
     clearGraph(svgComp)
