@@ -8,15 +8,18 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-04-28 12:42+0200\n"
-"PO-Revision-Date: 2022-05-30 13:48+0000\n"
-"Last-Translator: Angela Harding <coordination@landmatrix.org>\n"
-"Language-Team: Russian <http://translate.landmatrix.org/projects/landmatrix/landmatrix/ru/>\n"
+"PO-Revision-Date: 2023-06-06 12:42+0000\n"
+"Last-Translator: Kurt Gerber <kurt.gerber@unibe.ch>\n"
+"Language-Team: Russian <http://translate.landmatrix.org/projects/landmatrix/"
+"landmatrix/ru/>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);\n"
-"X-Generator: Weblate 4.8\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
+"%100>=11 && n%100<=14)? 2 : 3);\n"
+"X-Generator: Weblate 4.14.2\n"
 
 msgid "Data"
 msgstr "Данные"
@@ -27,19 +30,21 @@ msgstr "Роль"
 #, python-format
 msgid "You're receiving this email because you requested a password reset for your user account at %(site_name)s."
 msgstr ""
+"Вы получаете это письмо, потому что запросили сброс пароля для своей учетной "
+"записи на сайте %(site_name)s."
 
 msgid "Please go to the following page and choose a new password:"
-msgstr ""
+msgstr "Пожалуйста, перейдите на следующую страницу и выберите новый пароль:"
 
 msgid "Your username, in case you’ve forgotten:"
-msgstr ""
+msgstr "Ваше имя пользователя, если вы забыли:"
 
 msgid "Thanks for using our site!"
-msgstr ""
+msgstr "Спасибо, что пользуетесь нашим сайтом!"
 
 #, python-format
 msgid "The %(site_name)s team"
-msgstr ""
+msgstr "Команда %(site_name)s"
 
 msgid "Account activation on"
 msgstr "Активация учетной записи на"
@@ -527,9 +532,8 @@ msgstr "Маниок"
 msgid "Cashew"
 msgstr "Кешью"
 
-#, fuzzy
 msgid "Chat"
-msgstr "Кат"
+msgstr "Чат"
 
 msgid "Cherries"
 msgstr "Вишни"
@@ -1797,7 +1801,7 @@ msgid "Country profiles present national-level data of large-scale land acquisit
 msgstr "Профили стран представляют данные на национальном уровне о крупномасштабных приобретениях и сделках, в том числе о том, кто являются инвесторами, какова цель инвестиций, кем был бывший владелец, для чего ранее использовалась земля, и каковы потенциальные выгоды и последствия сделок."
 
 msgid "Create"
-msgstr ""
+msgstr "Создать"
 
 msgid "Create a new draft"
 msgstr "Создать новый черновик"
@@ -1824,7 +1828,7 @@ msgid "Currency"
 msgstr "Валюта"
 
 msgid "current"
-msgstr ""
+msgstr "текущий"
 
 msgid "Current"
 msgstr "В данный момент"
@@ -1845,7 +1849,7 @@ msgid "Data source"
 msgstr "Источник информации"
 
 msgid "Date of request"
-msgstr ""
+msgstr "Дата запроса"
 
 msgid "Deal history"
 msgstr "История сделки"
@@ -2037,7 +2041,7 @@ msgid "from"
 msgstr "от"
 
 msgid "From user"
-msgstr ""
+msgstr "От пользователя"
 
 msgid "Full update"
 msgstr "Полное обновление"
@@ -2076,7 +2080,7 @@ msgid "here"
 msgstr "здесь"
 
 msgid "Hide"
-msgstr ""
+msgstr "Скрыть"
 
 msgid "Households"
 msgstr "Домохозяйства"
@@ -2110,6 +2114,8 @@ msgstr "Если вы снимете флаг конфиденциальност
 
 msgid "If your email-address is registered <b>and active</b> you should receive an email shortly."
 msgstr ""
+"Если ваш адрес электронной почты зарегистрирован <b>и активен</b>, вы должны "
+"получить письмо в ближайшее время."
 
 msgid "Improvement requests for me"
 msgstr "Запросы на улучшение для меня"
@@ -2130,7 +2136,7 @@ msgid "Indigenous and community conserved area, Philippines"
 msgstr "Заповедная территория коренных народов и общин, Филиппины"
 
 msgid "Indigenous lands acknowledged by government (documented)"
-msgstr ""
+msgstr "Земли коренных народов, признанные правительством (документально)"
 
 msgid "Intended"
 msgstr "Предварительные сделки"
@@ -2261,14 +2267,12 @@ msgstr "Выйти"
 msgid "Longitude"
 msgstr "Долгота"
 
-#, fuzzy
 msgid "LSLA by negotiation status"
 msgstr "Земельная сделка по статусу переговоров"
 
 msgid "Manage"
 msgstr "Управление"
 
-#, fuzzy
 msgid "Management"
 msgstr "Управление"
 
@@ -2297,7 +2301,7 @@ msgid "Modified by"
 msgstr "Изменено пользователем"
 
 msgid "Modified by me"
-msgstr ""
+msgstr "Изменено мной"
 
 msgid "More details"
 msgstr "Подробнее"
@@ -2507,9 +2511,8 @@ msgstr "Запросить улучшение"
 msgid "Reset password"
 msgstr "Сбосить пароль"
 
-#, fuzzy
 msgid "Resolve thread"
-msgstr "Разрешить поток"
+msgstr "Решить вопрос"
 
 msgid "Resources"
 msgstr "Ресурсы"
@@ -2517,7 +2520,6 @@ msgstr "Ресурсы"
 msgid "Reviewed by me"
 msgstr "Проверено мной"
 
-#, fuzzy
 msgid "Satellite"
 msgstr "Спутник"
 
@@ -2540,10 +2542,10 @@ msgid "Send"
 msgstr "Отправить"
 
 msgid "Send a request of improvement and create a new draft version of the deal"
-msgstr ""
+msgstr "Отправьте запрос на улучшение и создайте новую черновую версию сделки"
 
 msgid "Send a request of improvement and create a new draft version of the investor"
-msgstr ""
+msgstr "Отправить запрос на улучшение и создать новую черновую версию инвестора"
 
 msgid "Send feedback"
 msgstr "Отправить отзыв"
@@ -2646,9 +2648,8 @@ msgid "to"
 msgstr "на"
 
 msgid "To user"
-msgstr ""
+msgstr "Пользователю"
 
-#, fuzzy
 msgid "Todo"
 msgstr "Задачи"
 
