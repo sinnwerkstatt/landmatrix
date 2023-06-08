@@ -62,21 +62,26 @@
   async function reloadInvestor() {
     console.log("Investor detail: reload")
     loading.set(true)
-    const ret = (
-      await ($page.data.urqlClient as Client)
-        .query<{ investor: Investor }>(
-          investor_gql_query,
-          {
-            id: data.investorID,
-            version: data.investorVersion,
-            includeDeals: true,
-            depth: 5, // max depth
-          },
-          { requestPolicy: "network-only" },
-        )
-        .toPromise()
-    ).data
-    investor = ret.investor
+
+    const ret = await ($page.data.urqlClient as Client)
+      .query<{ investor: Investor }>(
+        investor_gql_query,
+        {
+          id: data.investorID,
+          version: data.investorVersion,
+          includeDeals: true,
+          depth: 5, // max depth
+        },
+        { requestPolicy: "network-only" },
+      )
+      .toPromise()
+
+    if (ret.error || !ret.data) {
+      console.error(ret.error)
+    } else {
+      investor = ret.data.investor
+    }
+
     loading.set(false)
   }
 

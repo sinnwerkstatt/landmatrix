@@ -1,6 +1,6 @@
 <script lang="ts">
   import { error } from "@sveltejs/kit"
-  import { gql } from "@urql/svelte"
+  import { Client, gql } from "@urql/svelte"
   import { _ } from "svelte-i18n"
   import { slide } from "svelte/transition"
 
@@ -40,8 +40,16 @@
     filters.region_id = regionID
     filters.country_id = countryID
 
-    const { data } = await $storePage.data.urqlClient
-      .query(
+    const { error, data } = await ($storePage.data.urqlClient as Client)
+      .query<{
+        deal_aggregations: {
+          current_negotiation_status: {
+            value: NegotiationStatus
+            size: number
+            count: number
+          }[]
+        }
+      }>(
         gql`
           query DealAggregations(
             $fields: [String]!
@@ -64,8 +72,13 @@
         },
       )
       .toPromise()
-    const curNegStat = data.deal_aggregations.current_negotiation_status
-    // const curNegStat = page.current_negotiation_status_metrics
+
+    if (error || !data) {
+      console.error(error)
+    }
+
+    const curNegStat = data?.deal_aggregations.current_negotiation_status ?? []
+
     totalCount = curNegStat
       .map(ns => ns.count)
       .reduce((a, b) => +a + +b, 0)

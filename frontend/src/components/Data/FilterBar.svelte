@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { gql } from "@urql/svelte"
+  import { gql, Client } from "@urql/svelte"
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
   import Select from "svelte-select"
@@ -58,7 +58,7 @@
   let investors: Investor[] = []
 
   async function getInvestors() {
-    const { data } = await $page.data.urqlClient
+    const { error, data } = await ($page.data.urqlClient as Client)
       .query<{ investors: Investor[] }>(
         gql`
           query SInvestors($subset: Subset) {
@@ -71,6 +71,11 @@
         { subset: user?.is_authenticated ? "UNFILTERED" : "PUBLIC" },
       )
       .toPromise()
+
+    if (error || !data) {
+      console.error(error)
+      return
+    }
     investors = data.investors
   }
 

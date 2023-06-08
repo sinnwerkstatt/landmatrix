@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { gql } from "@urql/svelte"
+  import { gql, Client } from "@urql/svelte"
   import dayjs from "dayjs"
   import { onMount } from "svelte"
 
@@ -19,7 +19,7 @@
 
   let deal: Deal
   async function queryDeal() {
-    const { data } = await $page.data.urqlClient
+    const { error, data } = await ($page.data.urqlClient as Client)
       .query(
         gql`
           query ($id: Int!) {
@@ -47,8 +47,12 @@
         { requestPolicy: "network-only" },
       )
       .toPromise()
+
+    if (error || !data) {
+      console.error(error)
+      return
+    }
     deal = data.deal
-    console.log(data.deal)
   }
 
   onMount(() => queryDeal())

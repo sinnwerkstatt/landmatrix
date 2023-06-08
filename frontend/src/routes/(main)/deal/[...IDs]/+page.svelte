@@ -55,16 +55,21 @@
   async function reloadDeal() {
     console.log("Deal detail: reload")
     loading.set(true)
-    const ret = (
-      await ($page.data.urqlClient as Client)
-        .query<{ deal: Deal }>(
-          deal_gql_query,
-          { id: data.dealID, version: data.dealVersion },
-          { requestPolicy: "network-only" },
-        )
-        .toPromise()
-    ).data
-    deal = ret.deal
+
+    const ret = await ($page.data.urqlClient as Client)
+      .query<{ deal: Deal }>(
+        deal_gql_query,
+        { id: data.dealID, version: data.dealVersion },
+        { requestPolicy: "network-only" },
+      )
+      .toPromise()
+
+    if (ret.error || !ret.data) {
+      console.error(ret.error)
+    } else {
+      deal = ret.data.deal
+    }
+
     loading.set(false)
   }
 
@@ -74,34 +79,38 @@
   let investor: Investor
   async function fetchInvestor() {
     if (!deal.operating_company?.id) return
-    const ret = (
-      await ($page.data.urqlClient as Client)
-        .query<{ investor: Investor }>(
-          gql`
-            query ($id: Int!) {
-              investor(
-                id: $id
-                involvements_depth: 5
-                involvements_include_ventures: false
-              ) {
+
+    const ret = await ($page.data.urqlClient as Client)
+      .query<{ investor: Investor }>(
+        gql`
+          query ($id: Int!) {
+            investor(
+              id: $id
+              involvements_depth: 5
+              involvements_include_ventures: false
+            ) {
+              id
+              name
+              classification
+              country {
                 id
                 name
-                classification
-                country {
-                  id
-                  name
-                }
-                homepage
-                comment
-                involvements
               }
+              homepage
+              comment
+              involvements
             }
-          `,
-          { id: deal?.operating_company?.id },
-        )
-        .toPromise()
-    ).data
-    investor = ret.investor
+          }
+        `,
+        { id: deal?.operating_company?.id },
+      )
+      .toPromise()
+
+    if (ret.error || !ret.data) {
+      console.error(ret.error)
+    } else {
+      investor = ret.data.investor
+    }
   }
   onMount(fetchInvestor)
 </script>
