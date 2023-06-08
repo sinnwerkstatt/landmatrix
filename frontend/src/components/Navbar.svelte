@@ -60,7 +60,7 @@
   }
 
   async function logout() {
-    const { data } = await ($page.data.urqlClient as Client)
+    const { error, data } = await ($page.data.urqlClient as Client)
       .mutation<{ logout: boolean }>(
         gql`
           mutation {
@@ -71,7 +71,11 @@
       )
       .toPromise()
 
-    if (data?.logout) location.reload()
+    if (error || !data) {
+      console.error(error)
+      return
+    }
+    if (data.logout) location.reload()
   }
 </script>
 

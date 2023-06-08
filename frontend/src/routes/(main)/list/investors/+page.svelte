@@ -66,7 +66,7 @@
     if (s_filters.investor_country_id)
       filters.push({ field: "country_id", value: s_filters.investor_country_id })
 
-    const { data } = await ($page.data.urqlClient as Client)
+    const { error, data } = await ($page.data.urqlClient as Client)
       .query<{ investors: Investor[] }>(
         gql`
           query Investors($filters: [Filter]) {
@@ -95,8 +95,9 @@
         { filters },
       )
       .toPromise()
-    if (!data?.investors) {
-      console.error("could not grab investors")
+
+    if (error || !data) {
+      console.error(error)
       return
     }
 

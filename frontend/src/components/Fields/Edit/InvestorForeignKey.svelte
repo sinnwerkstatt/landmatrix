@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { gql } from "@urql/svelte"
+  import { gql, Client } from "@urql/svelte"
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
@@ -20,7 +20,7 @@
   let investors: Investor[] = []
 
   async function getInvestors() {
-    const { data } = await $page.data.urqlClient
+    const { error, data } = await ($page.data.urqlClient as Client)
       .query<{
         investors: Investor[]
       }>(
@@ -37,9 +37,15 @@
             }
           }
         `,
+        {},
       )
       .toPromise()
-    investors = [...data.investors]
+
+    if (error || !data) {
+      console.error(error)
+      return
+    }
+    investors = data.investors
   }
 
   onMount(() => {
@@ -55,8 +61,13 @@
       newInvestorForm.reportValidity()
       return
     }
-    const res = await $page.data.urqlClient
-      .mutation(
+    const { error, data } = await ($page.data.urqlClient as Client)
+      .mutation<{
+        investor_edit: {
+          investorId: number
+          investorVersion: number
+        }
+      }>(
         gql`
           mutation ($payload: Payload) {
             investor_edit(id: -1, payload: $payload) {
@@ -69,16 +80,16 @@
       )
       .toPromise()
 
-    if (res.error) {
-      console.error(res.error)
-    } else {
-      const { data } = res
-      let newI = { id: data.investor_edit.investorId, name: newInvestor.name }
-      investors.push(newI)
-      value = newI
-      newInvestor = {} as Investor
-      showNewInvestorForm = false
+    if (error || !data) {
+      console.error(error)
+      return
     }
+
+    const newI = { id: data.investor_edit.investorId, name: newInvestor.name }
+    investors.push(newI)
+    value = newI
+    newInvestor = {} as Investor
+    showNewInvestorForm = false
   }
 </script>
 

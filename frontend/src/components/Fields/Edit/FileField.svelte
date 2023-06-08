@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { gql } from "@urql/svelte"
+  import { gql, Client } from "@urql/svelte"
   import { _ } from "svelte-i18n"
 
   import { page } from "$app/stores"
@@ -19,7 +19,7 @@
     if (!files.length) return
     let fr = new FileReader()
     fr.onload = async () => {
-      const res = await $page.data.urqlClient
+      const { error, data } = await ($page.data.urqlClient as Client)
         .mutation<{ upload_datasource_file: string }>(
           gql`
             mutation ($filename: String!, $payload: String!) {
@@ -29,8 +29,12 @@
           { filename: files[0].name, payload: fr.result },
         )
         .toPromise()
-      if (res.error) alert(`Error uploading file: ${files[0].name}`)
-      else value = res.data.upload_datasource_file
+
+      if (error || !data) {
+        alert(`Error uploading file: ${files[0].name}`)
+      } else {
+        value = data.upload_datasource_file
+      }
     }
     fr.readAsDataURL(files[0])
   }
