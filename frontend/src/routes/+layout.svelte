@@ -5,7 +5,7 @@
   import { SvelteToast } from "@zerodevx/svelte-toast"
   import { onMount } from "svelte"
 
-  import { getAllUsers } from "$lib/stores"
+  import { getAllUsers, isDarkMode } from "$lib/stores"
   import type { User } from "$lib/types/user"
   import { UserRole } from "$lib/types/user"
 
@@ -37,6 +37,13 @@
     if (data.user?.role >= UserRole.EDITOR) {
       await getAllUsers(data.urqlClient)
     }
+    $isDarkMode =
+      window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+    window
+      .matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", event => {
+        $isDarkMode = event.matches
+      })
   })
 </script>
 
