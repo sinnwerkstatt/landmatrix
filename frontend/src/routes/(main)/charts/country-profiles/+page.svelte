@@ -36,9 +36,7 @@
 </svelte:head>
 
 <ChartsContainer>
-  <div
-    class="country-profile mt-20 flex w-[clamp(500px,90%,1000px)] flex-col overflow-visible"
-  >
+  <div class="mt-20 flex w-[clamp(500px,90%,1000px)] flex-col overflow-visible">
     {#if $deals.fetching}
       <LoadingPulse />
     {:else if $deals.error}

@@ -301,9 +301,9 @@
         {:else}
           <li>
             <a
-              class="nav-link hover:bg-gray-100 hover:text-orange-500"
+              class="nav-link"
               href="/account/login/?next={$page.url.pathname}"
-              title="Login/Register"
+              title={$_("Login/Register")}
             >
               <UserRegular class="h-5 w-5" />
             </a>

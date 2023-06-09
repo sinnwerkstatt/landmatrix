@@ -19,20 +19,20 @@
 
 <div
   id="${title}_wrapper"
-  class="mx-4 my-12 flex flex-col flex-nowrap bg-orange-50 p-1 drop-shadow {wrapperClasses}"
+  class="mx-4 my-12 flex flex-col flex-nowrap bg-lm-lightgray p-1 drop-shadow {wrapperClasses} dark:bg-gray-700"
 >
   <slot name="heading">
     <h2>{title}</h2>
   </slot>
-  <div
-    class="svg-wrapper flex max-w-full flex-auto items-center justify-center bg-white"
-  >
+  <div class="svg-wrapper flex max-w-full flex-auto items-center justify-center">
     <slot />
   </div>
-  <div class="bg-lm-dark text-sm text-lm-lightgray">
+  <div
+    class="m-1 bg-lm-dark p-1 text-sm text-lm-lightgray dark:bg-gray-700 dark:text-white"
+  >
     <span id="download-svg">
       <button
-        class="px-3 pb-1"
+        class="px-3 pb-1 hover:text-orange-200"
         class:grey-out={disableSVG}
         on:click={() => dispatch("download", "svg")}
       >
@@ -46,7 +46,7 @@
       title={isChrome ? "" : "At the moment, downloading PNG does not work in Firefox."}
     >
       <button
-        class="px-3 pb-1"
+        class="px-3 pb-1 hover:text-orange-200"
         class:grey-out={!isChrome}
         on:click={() => dispatch("download", "png")}
       >
@@ -62,7 +62,7 @@
         : "At the moment, downloading WebP does not work in Firefox."}
     >
       <button
-        class="px-3 pb-1"
+        class="px-3 pb-1 hover:text-orange-200"
         class:grey-out={!isChrome}
         on:click={() => dispatch("download", "webp")}
       >
@@ -73,7 +73,10 @@
     <span style="margin: 2rem 0">|</span>
 
     <span id="download-json">
-      <button class="px-3 pb-1" on:click={() => dispatch("download", "json")}>
+      <button
+        class="px-3 pb-1 hover:text-orange-200"
+        on:click={() => dispatch("download", "json")}
+      >
         <FileCodeIcon />
         JSON
       </button>
@@ -81,7 +84,7 @@
 
     <span id="download-csv">
       <button
-        class="px-3 pb-1"
+        class="px-3 pb-1 hover:text-orange-200"
         class:grey-out={disableCSV}
         on:click={() => dispatch("download", "csv")}
       >
@@ -90,7 +93,7 @@
       </button>
     </span>
   </div>
-  <div class="flex-shrink-0 p-2">
+  <div class="flex-shrink-0">
     <slot name="legend" />
   </div>
 </div>
