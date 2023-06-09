@@ -116,7 +116,11 @@
           <ul class="border border-orange bg-white dark:bg-gray-800">
             {#each dataLinks as { name, href }}
               <li class="whitespace-nowrap">
-                <a {href} class="nav-link">
+                <a
+                  {href}
+                  class="nav-link"
+                  class:active={$page.url.pathname.startsWith(href)}
+                >
                   {name}
                 </a>
               </li>
@@ -132,7 +136,13 @@
               <ul>
                 {#each obs as observatory}
                   <li class="whitespace-nowrap">
-                    <a class="nav-link" href="/observatory/{observatory.meta.slug}">
+                    <a
+                      class="nav-link"
+                      class:active={$page.url.pathname.startsWith(
+                        `/observatory/${observatory.meta.slug}`,
+                      )}
+                      href="/observatory/{observatory.meta.slug}"
+                    >
                       {observatory.title}
                     </a>
                   </li>
@@ -152,7 +162,11 @@
           <ul class="border border-orange bg-white dark:bg-gray-800">
             {#each $blogCategories as cat}
               <li class="whitespace-nowrap">
-                <a class="nav-link" href="/resources/?category={cat.slug}">
+                <a
+                  class="nav-link"
+                  class:active={$page.url.searchParams.get("category") === cat.slug}
+                  href="/resources/?category={cat.slug}"
+                >
                   <!-- TODO: discuss replacing this somehow? comes from DB though -->
                   {$_(cat.name)}
                 </a>
@@ -165,7 +179,11 @@
           <ul class="border border-orange bg-white dark:bg-gray-800">
             {#each $aboutPages as { title, meta }}
               <li class="whitespace-nowrap">
-                <a class="nav-link" href="/about/{meta.slug}/">
+                <a
+                  class="nav-link"
+                  class:active={$page.url.pathname.startsWith(`/about/${meta.slug}`)}
+                  href="/about/{meta.slug}/"
+                >
                   {title}
                 </a>
               </li>
