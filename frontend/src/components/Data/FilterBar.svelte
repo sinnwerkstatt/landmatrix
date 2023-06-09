@@ -101,7 +101,7 @@
 </script>
 
 <div
-  class="absolute top-0 left-0 bottom-0 z-10 flex bg-white/80 text-sm drop-shadow-[3px_-3px_1px_rgba(0,0,0,0.3)] {$showFilterBar
+  class="absolute top-0 left-0 bottom-0 z-10 flex bg-white/80 text-sm drop-shadow-[3px_-3px_1px_rgba(0,0,0,0.3)] dark:bg-gray-700 {$showFilterBar
     ? 'w-[clamp(220px,20%,300px)]'
     : 'w-0'}"
 >
@@ -114,7 +114,7 @@
     class:hidden={!$showFilterBar}
   >
     <div class="w-full self-start">
-      <h3 class="my-2 text-black">{$_("Filter")}</h3>
+      <h3 class="my-2">{$_("Filter")}</h3>
       <CheckboxSwitch
         class="text-base"
         checked={$isDefaultFilter}

@@ -29,7 +29,7 @@
   >
     <slot />
   </div>
-  <div class="bg-[#2d2d2d] text-sm text-lm-light">
+  <div class="bg-lm-dark text-sm text-lm-lightgray">
     <span id="download-svg">
       <button
         class="px-3 pb-1"

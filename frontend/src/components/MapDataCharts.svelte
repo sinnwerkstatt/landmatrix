@@ -2,7 +2,7 @@
   import { _ } from "svelte-i18n"
 </script>
 
-<div class="map-data-charts my-8 flex gap-8" on:click on:keydown on:keyup>
+<div class="my-8 flex gap-8" on:click on:keydown on:keyup>
   <a href="/map" class="square">
     <div>
       <h3>{$_("Map")}</h3>
@@ -83,6 +83,6 @@
 
 <style lang="postcss">
   .square {
-    @apply block bg-lm-light p-4 text-center text-black hover:drop-shadow-[2px_2px_4px_rgba(0,0,0,0.35)];
+    @apply block bg-lm-lightgray p-4 text-center text-black hover:drop-shadow-[2px_2px_4px_rgba(0,0,0,0.35)] dark:bg-gray-700 dark:text-white;
   }
 </style>

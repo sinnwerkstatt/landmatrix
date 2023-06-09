@@ -15,7 +15,9 @@
   $: if (expandedContent) dispatch("expanded")
 </script>
 
-<div class="-mx-2 border-b border-gray-300 bg-lm-lightgray pl-1 text-lm-dark">
+<div
+  class="-mx-2 border-b border-gray-300 bg-lm-lightgray pl-1 text-lm-dark dark:bg-gray-800 dark:text-white"
+>
   <div
     class="relative flex cursor-pointer justify-between py-1.5 pr-2"
     class:collapsed={!expanded}
@@ -37,7 +39,7 @@
   {#if expanded}
     <div
       transition:slide={{ duration: 200 }}
-      class="-ml-[0.5em] bg-lm-light p-2 shadow-inner"
+      class="-ml-[0.5em] p-2 shadow-inner"
       bind:this={expandedContent}
     >
       <slot />

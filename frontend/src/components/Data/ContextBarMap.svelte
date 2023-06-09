@@ -34,7 +34,7 @@
     currentItem = {
       name: "Global",
       observatory_page: $observatoryPages.find(o => !o.country && !o.region),
-    }
+    } as CountryOrRegion
   } else {
     currentItem = {
       ...($filters.region_id
@@ -77,16 +77,16 @@
       <div class="my-3 w-full text-center font-bold">
         {totalCount}
       </div>
-      <div class="mb-3 w-full">
-        <h5 class="mt-4 text-left text-lg">{$_("Negotiation status")}</h5>
+      <div class="mb-6 w-full">
+        <h5 class="mb-3 text-center text-lg">{$_("Negotiation status")}</h5>
         <StatusPieChart data={chartNegStat} {unit} />
       </div>
-      <div class="mb-3 w-full">
-        <h5 class="mt-4 text-left text-lg">{$_("Implementation status")}</h5>
+      <div class="mb-6 w-full">
+        <h5 class="mb-3 text-center text-lg">{$_("Implementation status")}</h5>
         <StatusPieChart data={chartImpStat} {unit} />
       </div>
-      <div class="mb-3 w-full">
-        <h5 class="mt-4 text-left text-lg">{$_("Produce")}</h5>
+      <div class="mb-6 w-full">
+        <h5 class="mb-3 text-center text-lg">{$_("Produce")}</h5>
         <StatusPieChart data={chartProd} {unit} />
       </div>
     </div>

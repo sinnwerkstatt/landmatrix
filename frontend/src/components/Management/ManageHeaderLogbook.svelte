@@ -36,11 +36,11 @@
   }
 </script>
 
-<div class="flex flex-col bg-lm-warmgray px-3 lg:w-1/3">
+<div class="flex flex-col bg-lm-darkgray px-3 lg:w-1/3">
   <h3 class="my-1 font-medium">{$_("Logbook")}</h3>
 
   <div
-    class="h-0 flex-grow cursor-default overflow-y-scroll border-lm-dark bg-lm-warmgray px-[2px] pt-1 pb-4 shadow-inner"
+    class="h-0 flex-grow cursor-default overflow-y-scroll border-lm-dark bg-lm-darkgray px-[2px] pt-1 pb-4 shadow-inner"
   >
     {#each workflowInfos as info}
       <WorkflowInfo {info} />
