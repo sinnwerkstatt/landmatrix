@@ -174,6 +174,8 @@
   /*noinspection CssUnresolvedCustomProperty*/
   --item-hover-bg: var(--color-orange-100);
   --item-is-active-color: black;
+  --item-color: black;
+  --selected-item-color: black;
   /*noinspection CssUnresolvedCustomProperty*/
   --item-is-active-bg: var(--color-orange-400);
   --list-max-height: 180px;
