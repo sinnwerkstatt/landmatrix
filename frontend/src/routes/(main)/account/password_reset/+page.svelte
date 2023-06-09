@@ -47,13 +47,13 @@
 
 <PageTitle>{$_("Reset password")}</PageTitle>
 {#if form_submitted}
-  <div class="text-center">
+  <div class="text-center text-lm-dark dark:text-white">
     {@html $_(
       "If your email-address is registered <b>and active</b> you should receive an email shortly.",
     )}
   </div>
 {:else}
-  <form on:submit|preventDefault={submit}>
+  <form class="text-lm-dark dark:text-white" on:submit|preventDefault={submit}>
     <label class="mb-4 block">
       {$_("Email")}
       <input

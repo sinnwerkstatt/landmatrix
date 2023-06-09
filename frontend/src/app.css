@@ -65,7 +65,7 @@
     @apply px-3 py-1;
   }
   .btn-primary {
-    @apply border-orange bg-orange text-center text-white;
+    @apply border-orange bg-orange text-center text-lg text-white;
     @apply hover:border-orange-300 hover:bg-orange-300;
     @apply active:bg-orange-700;
   }
