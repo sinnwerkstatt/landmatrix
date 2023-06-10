@@ -58,13 +58,13 @@
   <div class="container mx-auto grid gap-4 px-10 md:grid-cols-2 lg:grid-cols-3">
     {#each filteredBlogpages as blogpage}
       <div class="col-md-6 col-lg-4 mb-3">
-        <div class="rounded border border-black/20">
+        <div class="rounded border border-black/20 bg-lm-lightgray dark:bg-gray-700">
           {#if blogpage.header_image}
             <img src={blogpage.header_image} class="rounded-t" alt="" loading="lazy" />
           {/if}
           <div class="p-2">
             <h5 class="mb-4 text-lg font-bold">
-              <a href={blogpage.url} class="text-lm-dark">
+              <a href={blogpage.url} class="text-lm-dark dark:text-white">
                 {blogpage.title}
               </a>
             </h5>
