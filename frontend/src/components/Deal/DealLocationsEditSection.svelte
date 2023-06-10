@@ -268,11 +268,13 @@
       <div class="pr-3 lg:w-1/3">
         {#each locations as loc, index}
           <div
-            class="mt-4 border border-4 {hoverLocationID === loc.id
+            class="mt-4 border-4 {hoverLocationID === loc.id
               ? 'border-orange-400'
-              : 'border-white'}"
+              : 'border-white dark:border-gray-800'}"
           >
-            <div class="flex flex-row items-center justify-between bg-gray-200">
+            <div
+              class="flex flex-row items-center justify-between bg-gray-200 dark:bg-gray-700"
+            >
               <div class="flex-grow p-2" on:click={() => onActivateLocation(loc)}>
                 <h3 class="m-0">
                   {index + 1}. {$_("Location")}

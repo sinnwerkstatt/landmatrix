@@ -139,9 +139,13 @@
             on:mouseout={() => (currentHoverFeature = null)}
             on:blur={() => (currentHoverFeature = null)}
             class={classNames(
-              "border-4 border",
-              feat === currentHoverFeature ? "border-orange-200" : "border-white",
-              hiddenFeatures.includes(feat) ? "border-gray-200 bg-gray-200" : "",
+              "border-4",
+              feat === currentHoverFeature
+                ? "border-orange-200"
+                : "border-white dark:border-gray-800",
+              hiddenFeatures.includes(feat)
+                ? "border-gray-200 bg-gray-200 dark:bg-gray-700"
+                : "",
             )}
           >
             <td class="px-1 text-center" on:click={() => toggleVisibility(feat)}>

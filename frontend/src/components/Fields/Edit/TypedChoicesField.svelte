@@ -27,7 +27,7 @@
   let focused
 </script>
 
-<div class="typed_choices_field">
+<div data-name={formfield?.name ?? ""}>
   <Select
     value={items.filter(i => (value || []).includes(i.value))}
     bind:focused

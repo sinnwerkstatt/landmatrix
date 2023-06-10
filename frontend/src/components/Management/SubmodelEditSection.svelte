@@ -73,7 +73,9 @@
   <form {id} class="w-full">
     {#each entries.filter(entriesFilter) as entry, index}
       <div class="{model}-entry">
-        <div class="my-2 flex flex-row items-center justify-between bg-gray-200">
+        <div
+          class="my-2 flex flex-row items-center justify-between bg-gray-200 dark:bg-gray-700"
+        >
           <div
             role="button"
             class="flex-grow p-2"
