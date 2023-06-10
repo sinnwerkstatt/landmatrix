@@ -52,8 +52,8 @@
     <div
       slot="item"
       class="row {index === 0
-        ? 'items-center bg-gray-700 pr-4 font-medium text-white'
-        : 'odd:bg-white even:bg-gray-100 hover:bg-gray-200'} {rowClasses}"
+        ? 'items-center bg-gray-800 pr-4 font-medium text-white'
+        : 'odd:bg-white even:bg-gray-100 hover:bg-gray-200 dark:odd:bg-gray-600 dark:even:bg-gray-700 dark:hover:bg-gray-500'} {rowClasses}"
       let:index
       let:style
       style="--grid-columns: {nCols}; --col-width: {colWidthInPx}px; {style}"
