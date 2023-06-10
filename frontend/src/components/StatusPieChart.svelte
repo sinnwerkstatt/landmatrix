@@ -11,7 +11,11 @@
   import { Pie } from "svelte-chartjs?client"
   import { _ } from "svelte-i18n"
 
+  import { isDarkMode } from "$lib/stores"
+
   ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale)
+
+  $: ChartJS.defaults.color = $isDarkMode ? "#ffffff" : "#000000"
 
   export let data: ChartData
   export let unit = ""
@@ -47,6 +51,8 @@
   }
 
   $: {
+    $isDarkMode // listen to changes in color scheme
+
     if (chart) {
       chart.data = i18nData
       chart.update()

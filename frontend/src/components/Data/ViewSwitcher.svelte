@@ -42,7 +42,9 @@
   class="pointer-events-none absolute inset-x-0 top-3 z-30 mx-auto text-center drop-shadow"
 >
   <nav id="data-navigation">
-    <ul class="pointer-events-auto inline-flex bg-white text-left drop-shadow">
+    <ul
+      class="pointer-events-auto inline-flex border border-orange bg-white text-left drop-shadow dark:bg-gray-800"
+    >
       <li>
         <a
           href="/map"
@@ -52,17 +54,14 @@
           {$_("Map")}
         </a>
       </li>
-      <NavDropDown
-        title={$_("Data")}
-        class={$page.url.pathname.startsWith("/list") ? "bg-orange text-white" : ""}
-      >
-        <ul class="border border-orange bg-white">
+      <NavDropDown title={$_("Data")}>
+        <ul class="border border-orange bg-white dark:bg-gray-800">
           {#each dataViews as view}
             <li class="whitespace-nowrap">
               <a
                 href={view.route}
                 class="nav-link"
-                class:bg-orange-100={$page.url.pathname === view.route}
+                class:active={$page.url.pathname.startsWith(view.route)}
               >
                 {view.title}
               </a>
@@ -71,17 +70,14 @@
         </ul>
       </NavDropDown>
 
-      <NavDropDown
-        title={$_("Charts")}
-        class={$page.url.pathname.startsWith("/charts") ? "bg-orange text-white" : ""}
-      >
-        <ul class="border border-orange bg-white">
+      <NavDropDown title={$_("Charts")}>
+        <ul class="border border-orange bg-white dark:bg-gray-800">
           {#each chartViews as view}
             <li class="whitespace-nowrap">
               <a
                 href={view.route}
                 class="nav-link"
-                class:bg-orange-100={$page.url.pathname === view.route}
+                class:active={$page.url.pathname.startsWith(view.route)}
               >
                 {view.title}
               </a>

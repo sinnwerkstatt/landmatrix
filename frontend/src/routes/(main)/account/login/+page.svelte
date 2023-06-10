@@ -71,6 +71,7 @@
 </script>
 
 <PageTitle class="">{$_("Login")}</PageTitle>
+
 {#if logged_in}
   <p class="mt-3 text-green-500">
     {$_("Login successful.")}
@@ -80,7 +81,8 @@
     {login_failed_message}
   </p>
 {/if}
-<form on:submit|preventDefault={login}>
+
+<form class="text-lm-dark dark:text-white" on:submit|preventDefault={login}>
   <label class="mb-6 block">
     {$_("Username")}
     <input

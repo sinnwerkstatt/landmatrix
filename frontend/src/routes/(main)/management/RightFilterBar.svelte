@@ -25,7 +25,7 @@
 
 <div
   class={cn(
-    "h-full w-96 border-black bg-neutral-100  p-3 drop-shadow-[-3px_-3px_3px_rgba(0,0,0,0.3)] transition-all",
+    "h-full w-96 border-black bg-lm-lightgray p-3 drop-shadow-[-3px_-3px_3px_rgba(0,0,0,0.3)] transition-all dark:bg-gray-700",
     showFilters ? "visible " : "hidden",
   )}
 >

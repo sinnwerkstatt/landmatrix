@@ -64,6 +64,6 @@
 
 <style lang="css">
   .selected {
-    @apply animate-fadeToWhite bg-orange-100;
+    @apply animate-fadeToWhite dark:animate-fadeToGray;
   }
 </style>

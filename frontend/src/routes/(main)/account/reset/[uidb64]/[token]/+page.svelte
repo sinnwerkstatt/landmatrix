@@ -40,7 +40,7 @@
 
 <PageTitle>{$_("Change password")}</PageTitle>
 {#if form_submitted}
-  <div>
+  <div class="text-lm-dark dark:text-white">
     {$_("Password successfully updated.")}
 
     <div class="text-right">
@@ -48,7 +48,7 @@
     </div>
   </div>
 {:else}
-  <form on:submit|preventDefault={() => submit()}>
+  <form class="text-lm-dark dark:text-white" on:submit|preventDefault={() => submit()}>
     <label class="block">
       {$_("Password")}
       <input

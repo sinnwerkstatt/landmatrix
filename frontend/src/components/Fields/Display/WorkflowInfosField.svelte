@@ -46,10 +46,10 @@
     <div
       transition:slide
       use:clickOutside={() => (showMoreInfos = !showMoreInfos)}
-      class="absolute top-0 z-10 w-[368px] rounded-sm border border-black bg-lm-warmgray shadow-md"
+      class="absolute top-0 z-10 w-[368px] rounded-sm border border-black bg-lm-darkgray shadow-md"
     >
       <div
-        class="h-auto max-h-[330px] cursor-default overflow-y-scroll bg-lm-warmgray px-[2px] pt-1 pb-4 shadow-inner"
+        class="h-auto max-h-[330px] cursor-default overflow-y-scroll bg-lm-darkgray px-[2px] pt-1 pb-4 shadow-inner"
       >
         {#each value as info}
           <WorkflowInfo bind:info />

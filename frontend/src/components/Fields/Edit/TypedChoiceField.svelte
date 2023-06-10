@@ -24,7 +24,7 @@
   let focused
 </script>
 
-<div class="typed_choice_field">
+<div data-name={formfield?.name ?? ""}>
   <Select
     value={items.find(i => i.value === value)}
     bind:justValue={value}

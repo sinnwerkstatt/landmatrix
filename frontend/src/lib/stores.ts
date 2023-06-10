@@ -241,3 +241,5 @@ export const areaTypeMap = derived(
 )
 
 export const lightboxImage = writable<BlockImage | null>(null)
+
+export const isDarkMode = writable(false)

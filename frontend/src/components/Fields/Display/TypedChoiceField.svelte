@@ -7,7 +7,7 @@
   export let formfield: FormField
 </script>
 
-<div class="typed_choice_field whitespace-nowrap" data-name={formfield?.name ?? ""}>
+<div class="whitespace-nowrap" data-name={formfield?.name ?? ""}>
   <!-- The literal translation strings are defined in apps/landmatrix/models/choices.py -->
   {value ? $_(formfield.choices[value]) : "—"}
 </div>

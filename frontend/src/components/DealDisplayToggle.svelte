@@ -3,8 +3,12 @@
 
   import { displayDealsCount } from "$components/Map/map_helper"
 
-  $: displayDeals = $displayDealsCount ? "bg-orange text-white" : "bg-white"
-  $: displaySize = !$displayDealsCount ? "bg-orange text-white" : "bg-white"
+  $: displayDeals = $displayDealsCount
+    ? "bg-orange text-white"
+    : "bg-white dark:bg-gray-800"
+  $: displaySize = !$displayDealsCount
+    ? "bg-orange text-white"
+    : "bg-white dark:bg-gray-800"
 </script>
 
 <div class="mt-8 flex justify-center text-center">

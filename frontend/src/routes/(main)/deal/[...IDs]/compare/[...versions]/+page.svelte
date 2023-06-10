@@ -82,20 +82,20 @@
     {#each Object.entries($dealSections) as [label, section]}
       {#if anyFieldFromSection(section)}
         <tr>
-          <th colspan="3" class="bg-gray-500 py-4">
+          <th colspan="3" class="bg-lm-dark py-4">
             <h2 class="my-0 pl-2 text-white">{labels[label]}</h2>
           </th>
         </tr>
         {#each section as subsec}
           {#if anyFieldFromSubSection(subsec)}
             <tr>
-              <th colspan="3" class="bg-gray-300 py-2">
+              <th colspan="3" class="bg-lm-darkgray py-2 dark:bg-gray-600">
                 <h3 class="m-0 pl-5 text-lg">{subsec.name}</h3>
               </th>
             </tr>
             {#each subsec.fields as field}
               {#if data.dealdiff.has(field)}
-                <tr class="odd:bg-gray-100">
+                <tr class="odd:bg-lm-lightgray dark:odd:bg-gray-700">
                   <th class="whitespace-nowrap py-2 pl-8">
                     {$formfields.deal[field].label}
                   </th>
@@ -122,20 +122,20 @@
     {/each}
 
     {#if data.locationsdiff}
-      <tr class="border-t-[3rem] border-white">
-        <th colspan="3" class="bg-gray-500 py-4">
+      <tr class="border-t-[3rem] border-white dark:border-gray-800">
+        <th colspan="3" class="bg-lm-dark py-4">
           <h2 class="my-0 pl-2 text-white">{$_("Locations")}</h2>
         </th>
       </tr>
       {#each [...data.locationsdiff] as field}
         <tr>
-          <th colspan="3" class="bg-gray-300 py-2">
+          <th colspan="3" class="bg-lm-darkgray py-2 dark:bg-gray-600">
             <h3 class="m-0 pl-5 text-lg">{$_("Location")} #{+field + 1}</h3>
           </th>
         </tr>
         {#each subsections.location as jfield}
           {#if hasDifference(data.dealFrom.locations, data.dealTo.locations, field, jfield)}
-            <tr class="odd:bg-gray-100">
+            <tr class="odd:bg-lm-lightgray dark:odd:bg-gray-700">
               <th class="whitespace-nowrap py-2 pl-8">
                 {$formfields.location[jfield].label}
               </th>
@@ -166,20 +166,20 @@
     {/if}
 
     {#if data.datasourcesdiff}
-      <tr class="border-t-[3rem] border-white">
-        <th colspan="3" class="bg-gray-500 py-4">
+      <tr class="border-t-[3rem] border-white dark:border-gray-800">
+        <th colspan="3" class="bg-lm-dark py-4">
           <h2 class="my-0 pl-2 text-white">{$_("Data sources")}</h2>
         </th>
       </tr>
       {#each [...data.datasourcesdiff] as field}
         <tr>
-          <th colspan="3" class="bg-gray-300 py-2">
+          <th colspan="3" class="bg-lm-darkgray py-2 dark:bg-gray-600">
             <h3 class="m-0 pl-5 text-lg">{$_("Data source")} #{+field + 1}</h3>
           </th>
         </tr>
         {#each subsections.datasource as jfield}
           {#if hasDifference(data.dealFrom.datasources, data.dealTo.datasources, field, jfield)}
-            <tr class="odd:bg-gray-100">
+            <tr class="odd:bg-lm-lightgray dark:odd:bg-gray-700">
               <th class="whitespace-nowrap py-2 pl-8">
                 {$formfields.datasource[jfield].label}
               </th>
@@ -210,20 +210,20 @@
     {/if}
 
     {#if data.contractsdiff}
-      <tr class="border-t-[3rem] border-white">
-        <th colspan="3" class="bg-gray-500 py-4">
+      <tr class="border-t-[3rem] border-white dark:border-gray-800">
+        <th colspan="3" class="bg-lm-dark py-4">
           <h2 class="my-0 pl-2 text-white">{$_("Contracts")}</h2>
         </th>
       </tr>
       {#each [...data.contractsdiff] as field}
         <tr>
-          <th colspan="3" class="bg-gray-300 py-2">
+          <th colspan="3" class="bg-lm-darkgray py-2 dark:bg-gray-600">
             <h3 class="m-0 pl-5 text-lg">{$_("Contract")} #{+field + 1}</h3>
           </th>
         </tr>
         {#each subsections.contract as jfield}
           {#if hasDifference(data.dealFrom.contracts, data.dealTo.contracts, field, jfield)}
-            <tr class="odd:bg-gray-100">
+            <tr class="odd:bg-lm-lightgray dark:odd:bg-gray-700">
               <th class="whitespace-nowrap py-2 pl-8">
                 {$formfields.contract[jfield].label}
               </th>

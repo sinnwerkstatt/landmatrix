@@ -51,7 +51,7 @@
   {#if formfield?.name === "current_intention_of_investment"}
     {#each value ?? [] as ioi}
       <span
-        class="mx-1 my-0.5 inline-flex items-center gap-1 whitespace-nowrap border border-black/10 bg-black/5 px-1 py-0.5 text-gray-900"
+        class="mx-1 my-0.5 inline-flex items-center gap-1 whitespace-nowrap border border-lm-darkgray bg-lm-lightgray px-1 py-0.5 text-gray-800 dark:border-transparent dark:bg-gray-800 dark:text-white"
       >
         {#if intention_of_investment_map[ioi] != null}
           <svelte:component this={intention_of_investment_map[ioi]} />

@@ -190,12 +190,12 @@
   {/if}
 </div>
 
-<div class="charts mt-0 mb-8 bg-lm-light p-0 pb-6">
+<div class="mt-2 mb-8 bg-lm-lightgray py-6 dark:bg-gray-700">
   <div class="mx-auto min-h-[300px] w-[clamp(20rem,75%,56rem)]">
     {#if totalSize === ""}
       <LoadingPulse class="h-[300px]" />
     {:else}
-      <h3>{$_("We currently have information about:")}</h3>
+      <h3 class="pb-2">{$_("We currently have information about:")}</h3>
       <div class="grid font-bold md:grid-cols-2">
         <div class="text-center">
           <div class="text-orange">{$_("Size")}</div>

@@ -104,7 +104,7 @@
         >
           <div
             slot="item"
-            class="block h-[38px] cursor-default overflow-clip text-ellipsis whitespace-nowrap px-3 align-middle leading-[38px]"
+            class="block h-[38px] cursor-default overflow-clip text-ellipsis whitespace-nowrap px-3 align-middle leading-[38px] dark:text-black"
             title={filteredItems[index][label]}
             class:item-active={filteredItems[index].id === value?.id}
             class:item-hover={index === hoverItemIndex}
@@ -128,11 +128,11 @@
 
 <style>
   .item-hover {
-    background: var(--item-hover-bg, #e7f2ff);
+    background: var(--item-hover-bg, lightgrey);
   }
 
   .item-active {
-    background: var(--item-is-active-bg, #007aff);
-    color: var(--item-is-active-color, #fff);
+    background: var(--item-is-active-bg, orange);
+    color: var(--item-is-active-color, black);
   }
 </style>

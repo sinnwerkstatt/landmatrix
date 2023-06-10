@@ -258,7 +258,7 @@
     disabled={locations && locations.length > 0}
     labelClasses="w-1/4"
     valueClasses="w-3/4"
-    wrapperClasses="flex my-3"
+    wrapperClasses="flex my-3 items-center"
     fieldname="country"
     on:change={onCountryChange}
   />
@@ -268,23 +268,29 @@
       <div class="pr-3 lg:w-1/3">
         {#each locations as loc, index}
           <div
-            class="mt-4 border border-4 {hoverLocationID === loc.id
+            class="mt-4 border-4 bg-lm-lightgray p-2 dark:bg-gray-800 {hoverLocationID ===
+            loc.id
               ? 'border-orange-400'
-              : 'border-white'}"
+              : activeLocationID === loc.id
+              ? 'border-lm-dark dark:border-gray-600'
+              : 'border-lm-darkgray dark:border-gray-700'}"
           >
-            <div class="flex flex-row items-center justify-between bg-gray-200">
-              <div class="flex-grow p-2" on:click={() => onActivateLocation(loc)}>
+            <div class="flex flex-row items-center justify-between">
+              <button
+                class="flex-grow cursor-pointer p-2 text-left"
+                on:click={() => onActivateLocation(loc)}
+              >
                 <h3 class="m-0">
                   {index + 1}. {$_("Location")}
                   <small class="text-sm text-gray-500">#{loc.id}</small>
                 </h3>
-              </div>
-              <div class="flex-initial p-2" on:click={() => removeEntry(loc)}>
+              </button>
+              <button class="flex-initial p-2" on:click={() => removeEntry(loc)}>
                 <TrashIcon class="h-8 w-6 cursor-pointer text-red-600" />
-              </div>
+              </button>
             </div>
             {#if activeLocationID === loc.id}
-              <div transition:slide={{ duration: 200 }} class="">
+              <div transition:slide={{ duration: 200 }} class="mt-4">
                 <EditField
                   fieldname="level_of_accuracy"
                   bind:value={loc["level_of_accuracy"]}

@@ -106,13 +106,15 @@
         {investor.name}
         <small>#{investor.id}</small>
       </h1>
-      <div class="my-2 flex w-auto items-center rounded bg-gray-50 p-3">
-        <div class="mr-10 text-xs text-lm-dark md:mx-5 md:text-sm">
+      <div
+        class="my-2 flex w-auto items-center rounded bg-lm-lightgray p-3 text-lm-dark dark:bg-gray-700 dark:text-white"
+      >
+        <div class="mr-10 text-xs md:mx-5 md:text-sm">
           {$_("Created")}
           <br />
           <DateTimeField value={investor.created_at} />
         </div>
-        <div class="mr-10 text-xs text-lm-dark md:mx-5 md:text-sm">
+        <div class="mr-10 text-xs md:mx-5 md:text-sm">
           {$_("Last update")}
           <br />
           <DateTimeField value={investor.modified_at} />
@@ -131,7 +133,12 @@
               : 'border-r'}"
           >
             {#if name}
-              <a href={target} class:text-black={activeTab === target}>{name}</a>
+              <a
+                href={target}
+                class={activeTab === target ? "text-lm-dark dark:text-white" : ""}
+              >
+                {name}
+              </a>
             {:else}
               <hr />
             {/if}

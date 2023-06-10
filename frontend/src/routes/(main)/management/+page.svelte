@@ -253,17 +253,17 @@
   <title>{$_("Management")} | {$_("Land Matrix")}</title>
 </svelte:head>
 
-<div class="relative flex h-full w-full bg-stone-100">
+<div class="relative flex h-full w-full">
   <nav
-    class="h-full shrink-0 basis-1/4 flex-col overflow-y-scroll bg-white/80 p-2 drop-shadow-[3px_-3px_1px_rgba(0,0,0,0.3)] xl:basis-1/6"
+    class="h-full shrink-0 basis-1/4 flex-col overflow-y-scroll bg-white/80 p-2 drop-shadow-[3px_-3px_1px_rgba(0,0,0,0.3)] dark:bg-gray-700 xl:basis-1/6"
   >
     <div
-      class="flex justify-center gap-4 border-b border-gray-200 p-1 pb-6 text-lg font-bold"
+      class="flex justify-center gap-4 border-b border-gray-200 pt-1 pb-6 text-lg font-bold"
     >
       <button
         class={model === "deal"
-          ? "border-b border-solid border-black text-black"
-          : "text-gray-500 hover:text-gray-600"}
+          ? "border-b border-orange text-orange"
+          : "text-gray-600 hover:text-orange dark:text-white"}
         on:click={() => (model = "deal")}
         type="button"
       >
@@ -271,8 +271,8 @@
       </button>
       <button
         class={model === "investor"
-          ? "border-b border-solid border-black text-black"
-          : "text-gray-500 hover:text-gray-600"}
+          ? "border-b border-pelorous text-pelorous"
+          : "text-gray-600 hover:text-pelorous dark:text-white"}
         on:click={() => (model = "investor")}
         type="button"
       >
@@ -296,10 +296,11 @@
                     class={cn(
                       "block text-left",
                       activeTabId === item.id
-                        ? model === "deal"
-                          ? "font-bold text-orange"
-                          : "font-bold text-pelorous"
-                        : "text-gray-600",
+                        ? "font-bold"
+                        : "text-lm-dark dark:text-white",
+                      model === "deal"
+                        ? "text-orange hover:text-orange"
+                        : "text-pelorous hover:text-pelorous",
                     )}
                     href="#{item.id}"
                   >
@@ -351,7 +352,7 @@
           let:fieldName
           let:obj
           wrapperClasses=""
-          valueClasses="text-lm-dark"
+          valueClasses="text-lm-dark dark:text-white"
           fieldname={fieldName}
           value={obj[fieldName]}
           objectVersion={obj.current_draft_id}
