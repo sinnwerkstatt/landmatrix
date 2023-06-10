@@ -130,18 +130,20 @@
         {$_("Deal")}
         #{deal.id}
       </h1>
-      <div class="my-2 flex w-auto items-center rounded bg-gray-50 p-3">
-        <div class="mr-10 text-xs text-lm-dark md:mx-5 md:text-sm">
+      <div
+        class="my-2 flex w-auto items-center rounded bg-lm-lightgray p-3 text-lm-dark dark:bg-gray-700 dark:text-white"
+      >
+        <div class="mr-10 text-xs md:mx-5 md:text-sm">
           {$_("Created")}
           <br />
           <DateTimeField value={deal.created_at} />
         </div>
-        <div class="mr-10 text-xs text-lm-dark md:mx-5 md:text-sm">
+        <div class="mr-10 text-xs md:mx-5 md:text-sm">
           {$_("Last update")}
           <br />
           <DateTimeField value={deal.modified_at} />
         </div>
-        <div class="mr-10 text-xs text-lm-dark md:mx-5 md:text-sm">
+        <div class="mr-10 text-xs md:mx-5 md:text-sm">
           {$_("Last full update")}
           <br />
           <DateTimeField value={deal.fully_updated_at} />

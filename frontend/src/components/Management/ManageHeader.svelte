@@ -92,7 +92,7 @@
 
 <div class="my-6">
   <div class="flex flex-col p-0 lg:flex-row">
-    <div class="grow-[2] bg-neutral-200">
+    <div class="grow-[2] bg-lm-lightgray dark:bg-gray-600">
       <div class="-mt-5 flex justify-center gap-4">
         {#if hasActiveVersion && !isActiveVersion}
           <a href="/{otype}/{object.id}" class="btn btn-gray">
@@ -110,23 +110,25 @@
         class="title-and-date-bar mt-4 flex w-full flex-row justify-between gap-4 p-4"
       >
         <div>
-          <h1 class="mb-0 text-3xl text-black">
+          <h1 class="mb-0 text-3xl text-lm-dark dark:text-white">
             <slot name="heading" />
           </h1>
         </div>
-        <div class="my-2 flex w-auto items-center rounded bg-gray-50 p-3">
-          <div class="mr-10 text-xs text-lm-dark md:mx-5 md:text-sm">
+        <div
+          class="my-2 flex w-auto items-center rounded bg-lm-lightgray p-3 text-lm-dark dark:bg-gray-700 dark:text-white"
+        >
+          <div class="mr-10 text-xs md:mx-5 md:text-sm">
             {$_("Created")}
             <br />
             <DateTimeField value={object.created_at} />
           </div>
-          <div class="mr-10 text-xs text-lm-dark md:mx-5 md:text-sm">
+          <div class="mr-10 text-xs md:mx-5 md:text-sm">
             {$_("Last update")}
             <br />
             <DateTimeField value={object.modified_at} />
           </div>
           {#if object.fully_updated_at}
-            <div class="mr-10 text-xs text-lm-dark md:mx-5 md:text-sm">
+            <div class="mr-10 text-xs md:mx-5 md:text-sm">
               {$_("Last full update")}
               <br />
               <DateTimeField value={object.fully_updated_at} />
@@ -284,7 +286,7 @@
                       {$_("Edit")}
                     </a>
                   </div>
-                  <div class="italic text-black/50">
+                  <div class="italic text-lm-dark dark:text-white">
                     {$_("Edit this version")}
                   </div>
                 {:else}
@@ -294,7 +296,7 @@
                   >
                     {$_("Edit")}
                   </button>
-                  <div class="italic text-black/50">
+                  <div class="italic text-lm-dark dark:text-white">
                     {otype === "deal"
                       ? $_("Create a new draft version of this deal")
                       : $_("Create a new draft version of this investor")}
@@ -312,7 +314,7 @@
                     {isDeleted ? $_("Undelete") : $_("Delete")}
                   </button>
                 </div>
-                <div class="italic text-black/50">
+                <div class="italic text-lm-dark dark:text-white">
                   {#if isDeleted}
                     {otype === "deal"
                       ? $_("Reactivate this deal")
@@ -334,7 +336,7 @@
                     {$_("Remove")}
                   </button>
                 </div>
-                <div class="italic text-black/50">
+                <div class="italic text-lm-dark dark:text-white">
                   {otype === "deal"
                     ? $_("Completely removes this version of the deal")
                     : $_("Completely removes this version of the investor")}
@@ -351,7 +353,7 @@
                     {$_("Copy deal")}
                   </button>
                 </div>
-                <div class="italic text-black/50">
+                <div class="italic text-lm-dark dark:text-white">
                   {$_("Copy this deal")}
                 </div>
               </div>
@@ -434,18 +436,18 @@
 
 <style>
   .status-field {
-    @apply relative flex h-16 w-1/4 items-center justify-center border-2 bg-zinc-300 pl-5;
+    @apply relative flex h-16 w-1/4 items-center justify-center border-2 bg-lm-darkgray pl-5 text-lm-dark;
   }
   .status-field:before {
     @apply content-[""];
-    @apply border-y border-y-[31px] border-y-transparent;
-    @apply border-l border-l-[18px] border-l-neutral-200;
+    @apply border-y-[31px] border-y-transparent;
+    @apply border-l-[18px] border-l-neutral-200;
     @apply absolute inset-y-0 left-0;
   }
   .status-field:after {
     @apply content-[""];
-    @apply border-y border-y-[31px] border-y-transparent;
-    @apply border-l border-l-[18px] border-l-zinc-300;
+    @apply border-y-[31px] border-y-transparent;
+    @apply border-l-[18px] border-l-lm-darkgray;
     @apply absolute inset-y-0 right-[-17px];
   }
   .status-field:first-child:before {
