@@ -61,7 +61,6 @@
   }[formfield.class]
 </script>
 
-{formfield.class}
 <div class={wrapperClasses}>
   {#if showLabel}
     <div class={labelClasses}>

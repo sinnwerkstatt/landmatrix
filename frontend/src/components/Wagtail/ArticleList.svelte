@@ -29,7 +29,7 @@
   </div>
 {/each}
 {#if limit && limit < articles.length}
-  <button type="button" class="btn-white" on:click={() => (limit = 0)}>
+  <button type="button" class="btn btn-white" on:click={() => (limit = 0)}>
     {$_("Show all")}
     {articles.length}
   </button>

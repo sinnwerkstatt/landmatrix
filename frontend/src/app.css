@@ -54,7 +54,7 @@
   }
 
   .btn {
-    @apply m-0.5 inline-block transform whitespace-nowrap border px-4 py-2 shadow transition;
+    @apply m-0.5 inline-block transform whitespace-nowrap border px-4 py-2 text-center shadow transition;
     @apply focus:outline-none focus:ring;
   }
   .btn.disabled,
@@ -65,7 +65,7 @@
     @apply px-3 py-1;
   }
   .btn-primary {
-    @apply border-orange bg-orange text-center text-lg text-white;
+    @apply border-orange bg-orange text-white;
     @apply hover:border-orange-300 hover:bg-orange-300;
     @apply active:bg-orange-700;
   }
@@ -75,22 +75,14 @@
     @apply active:bg-orange-700;
     @apply dark:bg-gray-900 dark:text-orange-200;
   }
-
   .btn-white {
-    @apply border border-black bg-white px-5 py-1 text-base uppercase text-black;
+    @apply border-black bg-white text-black;
+    @apply hover:bg-lm-lightgray;
   }
-
-  .btn-link {
-    @apply border-none bg-none text-orange shadow-none;
-    @apply hover:text-orange-200;
-    @apply active:text-orange-500;
-  }
-
   .btn-gray {
-    @apply bg-gray-300 text-gray-600;
+    @apply border-lm-dark bg-gray-300 text-gray-600;
     @apply hover:bg-gray-400 hover:text-white;
   }
-
   .btn-pelorous {
     @apply border-pelorous bg-pelorous-300 text-white;
     @apply hover:bg-pelorous hover:text-white;

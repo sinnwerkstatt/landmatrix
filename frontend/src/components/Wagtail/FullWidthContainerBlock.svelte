@@ -5,7 +5,7 @@
 
   export let value: {
     content: WagtailStreamfieldBlock[]
-    color?: string
+    color?: "white" | "lightgrey" | "darkgrey"
   }
 
   const colorMap = {
@@ -15,7 +15,10 @@
   }
 </script>
 
-<div data-block="full_width_container" class="dark:bg-l p-4 {colorMap[value.color]}">
+<div
+  data-block="full_width_container"
+  class="p-4 {value.color ? colorMap[value.color] : ''}"
+>
   {#each value.content as block}
     <svelte:component this={blockMap[block.type]} bind:value={block.value} />
   {/each}
