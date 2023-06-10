@@ -68,17 +68,19 @@
   }
 </script>
 
-<div class="relative flex h-[400px] w-full border bg-stone-100">
+<h2>{$_("Indicator listings")}</h2>
+
+<div class="relative flex h-[400px] w-full border">
   <nav
-    class="h-full shrink-0 basis-1/4 bg-white/80 p-2 drop-shadow-[2px_0px_1px_rgba(0,0,0,0.3)] xl:basis-1/5"
+    class="h-full shrink-0 basis-1/4 border-r bg-lm-lightgray p-2 drop-shadow-[2px_0px_1px_rgba(0,0,0,0.3)] dark:bg-gray-700 xl:basis-1/5"
   >
     <div
-      class="flex justify-center gap-4 border-b border-gray-200 p-1 pb-6 text-lg font-bold"
+      class="flex justify-center gap-4 border-b border-gray-200 pt-1 pb-6 text-lg font-bold"
     >
       <button
         class={model === "deal"
-          ? "border-b border-solid border-black text-black"
-          : "text-gray-500 hover:text-gray-600"}
+          ? "border-b border-orange text-orange"
+          : "text-gray-600 hover:text-orange dark:text-white"}
         on:click={() => {
           model = "deal"
           activeTabId = "pending"
@@ -89,8 +91,8 @@
       </button>
       <button
         class={model === "investor"
-          ? "border-b border-solid border-black text-black"
-          : "text-gray-500 hover:text-gray-600"}
+          ? "border-b border-pelorous text-pelorous"
+          : "text-gray-600 hover:text-pelorous dark:text-white"}
         on:click={() => {
           model = "investor"
           activeTabId = "pending"
@@ -117,7 +119,7 @@
                   ? model === "deal"
                     ? "font-bold text-orange"
                     : "font-bold text-pelorous"
-                  : "text-gray-600",
+                  : "text-lm-dark dark:text-white",
               )}
               on:click={() => (activeTabId = item.id)}
             >

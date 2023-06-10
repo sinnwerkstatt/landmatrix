@@ -62,7 +62,7 @@
   <title>{$_("Case statistics")} | {$_("Land Matrix")}</title>
 </svelte:head>
 
-<div class="absolute z-10 w-full border-b border-orange bg-white py-2">
+<div class="absolute z-10 w-full border-b border-orange bg-white py-2 dark:bg-gray-800">
   <h1 class="container mx-auto mt-0 mb-1 text-xl">{$_("Case statistics")}</h1>
   <div class="container mx-auto flex w-full gap-5">
     <div class="flex w-full items-center gap-2">
@@ -103,12 +103,11 @@
 <div class="container mx-auto mt-28">
   <QualityGoals {counts} />
 
-  <div class="mb-10">
-    <h2 class="mt-10">{$_("Indicator listings")}</h2>
+  <div class="my-10">
     <StatisticsTable deals={filteredDeals} investors={filteredInvestors} />
   </div>
 
-  <div class="mb-10">
+  <div class="my-10">
     <TimespanChanges region={selRegion} country={selCountry} />
   </div>
 </div>
