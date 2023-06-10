@@ -351,7 +351,7 @@
           slot="field"
           let:fieldName
           let:obj
-          wrapperClasses=""
+          wrapperClasses="p-1"
           valueClasses="text-lm-dark dark:text-white"
           fieldname={fieldName}
           value={obj[fieldName]}
