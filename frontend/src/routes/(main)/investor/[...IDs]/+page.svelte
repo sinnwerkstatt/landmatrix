@@ -131,7 +131,12 @@
               : 'border-r'}"
           >
             {#if name}
-              <a href={target} class:text-black={activeTab === target}>{name}</a>
+              <a
+                href={target}
+                class={activeTab === target ? "text-lm-dark dark:text-white" : ""}
+              >
+                {name}
+              </a>
             {:else}
               <hr />
             {/if}

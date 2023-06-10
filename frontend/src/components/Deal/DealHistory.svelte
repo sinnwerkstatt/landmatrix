@@ -85,7 +85,7 @@
     </thead>
     <tbody>
       {#each enrichedVersions as version, i}
-        <tr class="odd:bg-gray-100">
+        <tr class="odd:bg-gray-100 dark:odd:bg-gray-700">
           <td>{dayjs(version.created_at).format("YYYY-MM-DD HH:mm")}</td>
           {#if $page.data.user?.is_authenticated}
             <td>

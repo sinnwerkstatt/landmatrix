@@ -108,7 +108,7 @@
     />
   </div>
 
-  <div class="flex flex-row bg-white">
+  <div class="flex flex-row bg-white dark:bg-gray-700">
     {#if showControls}
       <div class="basis-1/2 p-2">
         <div class="pb-3">
