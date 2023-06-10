@@ -72,20 +72,20 @@
     {#each Object.entries($investorSections) as [label, section]}
       {#if anyFieldFromSection(section)}
         <tr>
-          <th colspan="3" class="bg-gray-500 py-4">
+          <th colspan="3" class="bg-lm-dark py-4">
             <h2 class="my-0 pl-2 text-white">{labels[label]}</h2>
           </th>
         </tr>
         {#each section as subsec}
           {#if anyFieldFromSubSection(subsec)}
             <tr>
-              <th colspan="3" class="bg-gray-300 py-2">
+              <th colspan="3" class="bg-lm-darkgray py-2 dark:bg-gray-600">
                 <h3 class="m-0 pl-5 text-lg">{subsec.name}</h3>
               </th>
             </tr>
             {#each subsec.fields as field}
               {#if data.investordiff.has(field)}
-                <tr class="odd:bg-gray-100">
+                <tr class="odd:bg-lm-lightgray dark:odd:bg-gray-700">
                   <th class="whitespace-nowrap py-2 pl-8">
                     {$formfields.investor[field].label}
                   </th>
@@ -114,20 +114,20 @@
     {/each}
 
     {#if data.involvementsdiff}
-      <tr class="border-t-[3rem] border-white">
-        <th colspan="3" class="bg-gray-500 py-4">
+      <tr class="border-t-[3rem] border-white dark:border-gray-800">
+        <th colspan="3" class="bg-lm-dark py-4">
           <h2 class="my-0 pl-2 text-white">{$_("Involvements")}</h2>
         </th>
       </tr>
       {#each [...data.involvementsdiff] as field}
         <tr>
-          <th colspan="3" class="bg-gray-300 py-2">
+          <th colspan="3" class="bg-lm-darkgray py-2 dark:bg-gray-600">
             <h3 class="m-0 pl-5 text-lg">{$_("Involvement")} #{+field + 1}</h3>
           </th>
         </tr>
         {#each subsections.involvement as jfield}
           {#if hasDifference(data.investorFrom.investors, data.investorTo.investors, field, jfield)}
-            <tr class="odd:bg-gray-100">
+            <tr class="odd:bg-lm-lightgray dark:odd:bg-gray-700">
               <th class="whitespace-nowrap py-2 pl-8">
                 {$formfields.involvement[jfield].label}
               </th>
@@ -159,20 +159,20 @@
     {/if}
 
     {#if data.datasourcesdiff}
-      <tr class="border-t-[3rem] border-white">
-        <th colspan="3" class="bg-gray-500 py-4">
+      <tr class="border-t-[3rem] border-white dark:border-gray-800">
+        <th colspan="3" class="bg-lm-dark py-4">
           <h2 class="my-0 pl-2 text-white">{$_("Data sources")}</h2>
         </th>
       </tr>
       {#each [...data.datasourcesdiff] as field}
         <tr>
-          <th colspan="3" class="bg-gray-300 py-2">
+          <th colspan="3" class="bg-lm-darkgray py-2 dark:bg-gray-600">
             <h3 class="m-0 pl-5 text-lg">{$_("Data source")} #{+field + 1}</h3>
           </th>
         </tr>
         {#each subsections.datasource as jfield}
           {#if hasDifference(data.investorFrom.datasources, data.investorTo.datasources, field, jfield)}
-            <tr class="odd:bg-gray-100">
+            <tr class="odd:bg-lm-lightgray dark:odd:bg-gray-700">
               <th class="whitespace-nowrap py-2 pl-8">
                 {$formfields.datasource[jfield].label}
               </th>
