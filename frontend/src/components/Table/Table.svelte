@@ -20,6 +20,7 @@
   export let rowClasses = ""
 
   $: sortedItems = sortBy ? [...items].sort(sortFn(sortBy)) : items
+  $: nItems = sortedItems?.length ?? 0
 
   $: labels = labels ?? columns
   $: spans = spans ?? columns.map(() => 1)
@@ -39,20 +40,23 @@
 <div
   bind:clientWidth={width}
   bind:clientHeight={height}
-  class="h-full w-full overflow-x-auto border border-gray-700"
+  class={cn(
+    "h-full w-full overflow-x-auto border border-gray-700",
+    nItems % 2 ? "bg-white dark:bg-gray-600" : "bg-gray-100 dark:bg-gray-700",
+  )}
 >
   <VirtualList
     bind:this={virtualList}
     width="{width > colWidthInPx * nCols ? width : colWidthInPx * nCols}px"
     {height}
-    itemCount={sortedItems?.length + 1}
+    itemCount={nItems + 1}
     itemSize={index => (index === 0 ? headerHeightInPx : rowHeightInPx)}
     stickyIndices={[0]}
   >
     <div
       slot="item"
       class="row {index === 0
-        ? 'items-center bg-gray-800 pr-4 font-medium text-white'
+        ? 'items-center border-b border-gray-700 bg-gray-800 pr-4 font-medium text-white'
         : 'odd:bg-white even:bg-gray-100 hover:bg-gray-200 dark:odd:bg-gray-600 dark:even:bg-gray-700 dark:hover:bg-gray-500'} {rowClasses}"
       let:index
       let:style
@@ -73,14 +77,14 @@
                   "absolute top-0 inline",
                   "rotate-180",
                   "h-4 w-4 rounded",
-                  sortBy == `-${col}` ? "text-orange" : "text-gray-400",
+                  sortBy === `-${col}` ? "text-orange" : "text-gray-400",
                 )}
               />
               <ChevronDownIcon
                 class={cn(
                   "absolute top-2 inline",
                   "h-4 w-4 rounded",
-                  sortBy == col ? "text-orange" : "text-gray-400",
+                  sortBy === col ? "text-orange" : "text-gray-400",
                 )}
               />
             </span>
