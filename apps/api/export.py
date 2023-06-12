@@ -548,13 +548,14 @@ class DataDownload:
         zip_file.writestr("investors.csv", self._csv_writer(investors_data))
 
         zip_file.close()
-        response = HttpResponse(
+
+        return HttpResponse(
+            result.getvalue(),
             headers={
                 "Content-Type": "application/x-zip-compressed",
                 "Content-Disposition": f"attachment; filename={self.filename}.zip",
-            }
+            },
         )
-        return response
 
     @staticmethod
     def deal_download_format(data):
