@@ -41,8 +41,10 @@ def gis_export(request) -> HttpResponse:
 
     deal_values = get_deal_values(request)
     export_features = create_export_features(export_type, deal_values)
-    response = JsonResponse(create_feature_collection(export_features))
-    response["Content-Disposition"] = f'attachment; filename="{export_type}.geojson"'
+    response = JsonResponse(
+        create_feature_collection(export_features),
+        headers={"Content-Disposition": f"attachment; filename={export_type}.geojson"},
+    )
     return response
 
 

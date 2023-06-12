@@ -455,8 +455,12 @@ class DataDownload:
         return render(self.request, "landmatrix/export_table.html", ctx)
 
     def xlsx(self):
-        response = HttpResponse(content_type="application/ms-excel")
-        response["Content-Disposition"] = f'attachment; filename="{self.filename}.xlsx"'
+        response = HttpResponse(
+            headers={
+                "Content-Type": "application/ms-excel",
+                "Content-Disposition": f"attachment; filename={self.filename}.xlsx",
+            }
+        )
         wb = Workbook(write_only=True)
         # wb = Workbook()
 
@@ -545,9 +549,11 @@ class DataDownload:
 
         zip_file.close()
         response = HttpResponse(
-            result.getvalue(), content_type="application/x-zip-compressed"
+            headers={
+                "Content-Type": "application/x-zip-compressed",
+                "Content-Disposition": f"attachment; filename={self.filename}.zip",
+            }
         )
-        response["Content-Disposition"] = f'attachment; filename="{self.filename}.zip"'
         return response
 
     @staticmethod

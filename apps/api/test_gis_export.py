@@ -27,11 +27,11 @@ def test_gis_export_type() -> None:
 
     response = client.get("/api/gis_export/?type=locations")
     assert response.status_code == status.HTTP_200_OK
-    assert response["Content-Disposition"] == 'attachment; filename="locations.geojson"'
+    assert response["Content-Disposition"] == "attachment; filename=locations.geojson"
 
     response = client.get("/api/gis_export/?type=areas")
     assert response.status_code == status.HTTP_200_OK
-    assert response["Content-Disposition"] == 'attachment; filename="areas.geojson"'
+    assert response["Content-Disposition"] == "attachment; filename=areas.geojson"
 
 
 def test_create_point_feature() -> None:
