@@ -56,7 +56,7 @@
 </script>
 
 <ChartWrapper {title} on:download={handleDownload}>
-  <svg fill="#fee1c0" stroke="#fc941f" bind:this={svgComp} />
+  <svg fill="#fee1c0" stroke="#fc941f" color="black" bind:this={svgComp} />
 
   <div slot="legend">
     {$_(
