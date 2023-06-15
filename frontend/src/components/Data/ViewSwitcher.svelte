@@ -3,7 +3,7 @@
 
   import { page } from "$app/stores"
 
-  import NavDropDown from "$components/LowLevel/NavDropDown.svelte"
+  import NavDropDownCSS from "$components/Navbar/NavDropDownCSS.svelte"
 
   let dataViews: { title: string; route: string }[]
   $: dataViews = [
@@ -39,13 +39,13 @@
 </script>
 
 <div
-  class="pointer-events-none absolute inset-x-0 top-3 z-30 mx-auto text-center drop-shadow"
+  class="pointer-events-none absolute inset-x-0 top-3 z-30 mx-auto hidden text-center drop-shadow xl:block"
 >
   <nav id="data-navigation">
     <ul
-      class="pointer-events-auto inline-flex border border-orange bg-white text-left drop-shadow dark:bg-gray-800"
+      class="pointer-events-auto inline-flex items-center border border-orange bg-white text-left drop-shadow dark:bg-gray-800"
     >
-      <li>
+      <li class="p-2">
         <a
           href="/map"
           class="nav-link"
@@ -54,8 +54,11 @@
           {$_("Map")}
         </a>
       </li>
-      <NavDropDown title={$_("Data")}>
-        <ul class="border border-orange bg-white dark:bg-gray-800">
+      <NavDropDownCSS>
+        <svelte:fragment slot="title">
+          <span class="capitalize">{$_("Data")}</span>
+        </svelte:fragment>
+        <ul class="border-2 border-orange bg-white dark:bg-gray-800">
           {#each dataViews as view}
             <li class="whitespace-nowrap">
               <a
@@ -68,10 +71,12 @@
             </li>
           {/each}
         </ul>
-      </NavDropDown>
-
-      <NavDropDown title={$_("Charts")}>
-        <ul class="border border-orange bg-white dark:bg-gray-800">
+      </NavDropDownCSS>
+      <NavDropDownCSS>
+        <svelte:fragment slot="title">
+          <span class="capitalize">{$_("Charts")}</span>
+        </svelte:fragment>
+        <ul class="border-2 border-orange bg-white dark:bg-gray-800">
           {#each chartViews as view}
             <li class="whitespace-nowrap">
               <a
@@ -84,7 +89,7 @@
             </li>
           {/each}
         </ul>
-      </NavDropDown>
+      </NavDropDownCSS>
     </ul>
   </nav>
 </div>

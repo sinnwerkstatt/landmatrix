@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { gql, Client } from "@urql/svelte"
-  import classNames from "classnames"
+  import { gql } from "@urql/svelte"
   import { _ } from "svelte-i18n"
   import { onMount } from "svelte"
+  import cn from "classnames"
 
   import { goto } from "$app/navigation"
   import { page } from "$app/stores"
@@ -10,8 +10,9 @@
   import type { Deal } from "$lib/types/deal"
   import type { Investor } from "$lib/types/investor"
 
-  import SearchIcon from "./icons/SearchIcon.svelte"
-  import NavDropDown from "./LowLevel/NavDropDown.svelte"
+  import XIcon from "$components/icons/XIcon.svelte"
+
+  import SearchIcon from "../icons/SearchIcon.svelte"
 
   $: user = $page.data.user
 
@@ -23,7 +24,7 @@
     investor?: boolean
   }
 
-  let search = ""
+  let searchString = ""
   let selectedSearchIndex = 0
   let searchResult: SearchResult[] = []
   let searchResultContainer: HTMLUListElement
@@ -31,7 +32,7 @@
   let investors: Investor[] = []
 
   async function getDeals() {
-    const { error, data } = await ($page.data.urqlClient as Client)
+    const { data } = await $page.data.urqlClient
       .query<{ deals: Deal[] }>(
         gql`
           query SDeals($subset: Subset) {
@@ -50,16 +51,11 @@
         },
       )
       .toPromise()
-
-    if (error || !data) {
-      console.error(error)
-      return
-    }
-    deals = data.deals
+    deals = data?.deals ?? []
   }
 
   async function getInvestors() {
-    const { error, data } = await ($page.data.urqlClient as Client)
+    const { data } = await $page.data.urqlClient
       .query<{ investors: Investor[] }>(
         gql`
           query SInvestors($subset: Subset) {
@@ -72,22 +68,17 @@
         { subset: user?.is_authenticated ? "UNFILTERED" : "PUBLIC" },
       )
       .toPromise()
-
-    if (error || !data) {
-      console.error(error)
-      return
-    }
-    investors = data.investors
+    investors = data?.investors ?? []
   }
 
   $: {
     // on search change
     selectedSearchIndex = 0
     searchResult =
-      search.length >= 2
+      searchString.length >= 2
         ? [
             ...deals
-              .filter(d => d.id.toString().includes(search))
+              .filter(d => d.id.toString().includes(searchString))
               .map<SearchResult>(d => {
                 let name = `#${d.id}`
                 if (d.country) name += ` in ${d.country?.name}`
@@ -101,8 +92,8 @@
             ...investors
               .filter(
                 i =>
-                  i.id.toString().includes(search) ||
-                  i.name.toLowerCase().includes(search.toLowerCase()),
+                  i.id.toString().includes(searchString) ||
+                  i.name.toLowerCase().includes(searchString.toLowerCase()),
               )
               .map<SearchResult>(i => {
                 return {
@@ -127,14 +118,14 @@
       switch (e.code) {
         case "ArrowDown":
           selectedSearchIndex = (selectedSearchIndex + 1) % searchResult.length
-          searchResultContainer.children[selectedSearchIndex].scrollIntoView()
+          searchResultContainer.children[selectedSearchIndex].scrollIntoView(false)
           return
         case "ArrowUp":
           selectedSearchIndex =
             selectedSearchIndex === 0
               ? searchResult.length - 1
               : selectedSearchIndex - 1
-          searchResultContainer.children[selectedSearchIndex].scrollIntoView()
+          searchResultContainer.children[selectedSearchIndex].scrollIntoView(false)
           return
         case "Enter":
           goto(searchResult[selectedSearchIndex].url)
@@ -151,35 +142,45 @@
   })
 </script>
 
-<NavDropDown placement="right-0">
-  <div slot="title">
-    <SearchIcon class="mr-2 h-5 w-5" />
+<div class="relative my-auto">
+  <div class="flex w-[200px] px-2">
+    <input
+      id="search"
+      bind:value={searchString}
+      class="inpt my-auto"
+      placeholder={$_("Search")}
+      autocomplete="off"
+      on:keydown={searchKeyboardEvent}
+    />
+    <button
+      on:click={() => {
+        searchString = ""
+      }}
+    >
+      {#if searchString !== ""}
+        <XIcon class="my-auto inline h-5 w-5" />
+      {:else}
+        <SearchIcon class="my-auto inline h-5 w-5" />
+      {/if}
+    </button>
   </div>
-  <div class="border border-orange bg-white py-2 px-4 dark:bg-gray-800">
-    <form>
-      <label for="search" class="flex flex-col whitespace-nowrap">
-        {$_("Search deals and investors")}
-        <input
-          id="search"
-          bind:value={search}
-          type="text"
-          class="inpt"
-          placeholder={$_("ID or Name")}
-          autocomplete="off"
-          on:keydown={searchKeyboardEvent}
-        />
-      </label>
-    </form>
+
+  {#if searchResult.length}
     <ul
       bind:this={searchResultContainer}
       id="search-result"
-      class="relative mt-4 max-h-[55vh] overflow-y-auto border-t-orange pt-2"
+      class={cn(
+        "right-0 w-full overflow-y-auto border-t-orange",
+        "bg-white dark:bg-gray-800",
+        "xl:absolute xl:z-50 xl:max-h-[55vh] xl:w-[300px]",
+        "xl:border-2 xl:border-orange xl:shadow-xl",
+      )}
     >
-      {#each searchResult as item, index}
+      {#each searchResult.filter((item, index) => index < 10) as item, index}
         <li>
           <a
             href={item.url}
-            class={classNames(
+            class={cn(
               "block border-2 py-1 px-1.5 transition duration-100 hover:text-white",
               selectedSearchIndex === index ? "border-gray-200" : "border-transparent",
               item.investor
@@ -193,5 +194,11 @@
         </li>
       {/each}
     </ul>
-  </div>
-</NavDropDown>
+  {/if}
+</div>
+
+<style>
+  :global(#search + button) {
+    margin-left: -30px;
+  }
+</style>

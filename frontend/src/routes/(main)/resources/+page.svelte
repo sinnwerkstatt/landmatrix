@@ -45,7 +45,7 @@
           <a
             href={cat.slug ? `?category=${cat.slug}` : "/resources"}
             class="block whitespace-nowrap px-4 py-2 {data.category === cat.slug
-              ? 'bg-orange text-white'
+              ? 'bg-orange font-bold text-white hover:text-white'
               : ''}"
           >
             <!-- TODO: discuss replacing this somehow? comes from DB though -->

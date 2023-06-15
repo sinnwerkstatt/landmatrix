@@ -5,9 +5,9 @@
   import TwitterIcon from "$components/icons/TwitterIcon.svelte"
 </script>
 
-<footer class="relative bg-lm-dark px-4 py-1.5 text-sm text-white">
-  <div class="text-center">
-    <p class="mb-0">
+<footer class="sticky bg-lm-dark px-2 py-1.5 text-sm text-white">
+  <div class="text-left md:text-center">
+    <p class="mb-0 w-5/6 truncate md:w-full">
       &copy; {new Date().getFullYear()} The Land Matrix |
       {$_("All rights reserved")}
     </p>

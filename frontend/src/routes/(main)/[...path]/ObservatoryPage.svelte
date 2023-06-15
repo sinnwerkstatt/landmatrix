@@ -196,7 +196,7 @@
       <LoadingPulse class="h-[300px]" />
     {:else}
       <h3 class="pb-2">{$_("We currently have information about:")}</h3>
-      <div class="grid font-bold md:grid-cols-2">
+      <div class="grid gap-8 font-bold last:mb-8 sm:grid-cols-2">
         <div class="text-center">
           <div class="text-orange">{$_("Size")}</div>
           <div class="mb-2">{totalSize} ha</div>

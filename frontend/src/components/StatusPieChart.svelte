@@ -45,6 +45,7 @@
         },
       },
       legend: {
+        maxHeight: 50,
         position: "bottom",
       },
     },

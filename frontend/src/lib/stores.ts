@@ -5,6 +5,9 @@ import { gql } from "@urql/svelte"
 import { _ } from "svelte-i18n"
 import { derived, get, writable } from "svelte/store"
 
+// eslint-disable-next-line import/no-unresolved
+import { browser } from "$app/environment"
+
 import type { BlockImage } from "$lib/types/custom"
 import type { DraftStatus, Status } from "$lib/types/generics"
 import type { User } from "$lib/types/user"
@@ -22,7 +25,6 @@ import type { FormField } from "$components/Fields/fields"
 export const aboutPages = writable<WagtailPage[]>([])
 
 async function getAboutPages(fetch: LoadEvent["fetch"]) {
-  // console.log("getAboutPages")
   const url = `/api/wagtail/v2/pages/?order=title&type=wagtailcms.AboutIndexPage`
   const res = await (
     await fetch(url, { headers: { Accept: "application/json" } })
@@ -38,19 +40,34 @@ async function getAboutPages(fetch: LoadEvent["fetch"]) {
 }
 export const observatoryPages = writable<ObservatoryPage[]>([])
 
+type ObservatoryGroups = {
+  [key in "global" | "regions" | "countries"]: ObservatoryPage[]
+}
+
 async function getObservatoryPages(fetch: LoadEvent["fetch"]) {
-  // console.log("getObservatoryPages", { language })
   const url = `/api/wagtail/v2/pages/?order=title&type=wagtailcms.ObservatoryPage&fields=region,country,short_description`
   const res = await (
     await fetch(url, { headers: { Accept: "application/json" } })
   ).json()
-  observatoryPages.set(res.items)
+  const pages: ObservatoryPage[] = res.items
+  const groups: ObservatoryGroups = pages.reduce(
+    (acc: ObservatoryGroups, value) => {
+      if (value.country) {
+        return { ...acc, countries: [...acc.countries, value] }
+      }
+      if (value.region) {
+        return { ...acc, regions: [...acc.regions, value] }
+      }
+      return { ...acc, global: [...acc.global, value] }
+    },
+    { global: [], regions: [], countries: [] },
+  )
+  observatoryPages.set([...groups.global, ...groups.regions, ...groups.countries])
 }
 
 export const blogCategories = writable<BlogCategory[]>([])
 
 async function getBlogCategories(language = "en", urqlClient: Client) {
-  // console.log("getBlogCategories", { language })
   const { data } = await urqlClient
     .query<{ blogcategories: BlogCategory[] }>(
       gql`
@@ -82,7 +99,6 @@ export const regions = writable<Region[]>([])
 export const formfields = writable<FormFields>(undefined)
 
 async function getCountriesRegionsFormfields(language = "en", urqlClient: Client) {
-  // console.log("getCountriesRegionsFormfields")
   const { data } = await urqlClient
     .query(
       gql`
@@ -140,7 +156,6 @@ export const chartDescriptions = writable<{
 }>(undefined)
 
 async function getChartDescriptions(language = "en", urqlClient: Client) {
-  // console.log("getChartDescriptions", { language })
   const { data } = await urqlClient
     .query(
       gql`
@@ -243,3 +258,15 @@ export const areaTypeMap = derived(
 export const lightboxImage = writable<BlockImage | null>(null)
 
 export const isDarkMode = writable(false)
+
+const bindIsDarkModeToPreferredColorScheme = () =>
+  window.matchMedia &&
+  window
+    .matchMedia("(prefers-color-scheme: dark)")
+    .addEventListener("change", event => {
+      isDarkMode.set(event.matches)
+    })
+
+if (browser) {
+  bindIsDarkModeToPreferredColorScheme()
+}
