@@ -5,6 +5,7 @@ import { gql } from "@urql/svelte"
 import { _ } from "svelte-i18n"
 import { derived, get, writable } from "svelte/store"
 
+// eslint-disable-next-line import/no-unresolved
 import { browser } from "$app/environment"
 
 import type { BlockImage } from "$lib/types/custom"
