@@ -5,7 +5,9 @@
   import { SvelteToast } from "@zerodevx/svelte-toast"
   import { onMount } from "svelte"
 
-  import { getAllUsers, isDarkMode } from "$lib/stores"
+  import { afterNavigate } from "$app/navigation"
+
+  import { getAllUsers } from "$lib/stores"
   import type { User } from "$lib/types/user"
   import { UserRole } from "$lib/types/user"
 
@@ -13,7 +15,7 @@
   import LightboxImage from "$components/LightboxImage.svelte"
   import Matomo from "$components/Matomo.svelte"
   import Messages from "$components/Messages.svelte"
-  import Navbar from "$components/Navbar.svelte"
+  import Navbar from "$components/Navbar/Navbar.svelte"
   import NavigationLoader from "$components/NavigationLoader.svelte"
 
   import "../app.css"
@@ -37,23 +39,26 @@
     if (data.user?.role >= UserRole.EDITOR) {
       await getAllUsers(data.urqlClient)
     }
-    $isDarkMode =
-      window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
-    window
-      .matchMedia("(prefers-color-scheme: dark)")
-      .addEventListener("change", event => {
-        $isDarkMode = event.matches
-      })
   })
+
+  let contentRoot: Element
+  afterNavigate(() => contentRoot.scrollTo(0, 0))
 </script>
 
 <Messages />
 <NavigationLoader />
-<Navbar />
-<div class="h-[calc(100vh-58px-32px)] overflow-x-auto">
+
+<div class="h-[70px]">
+  <Navbar />
+</div>
+
+<div bind:this={contentRoot} class="h-[calc(100vh-70px-32px)] overflow-x-auto">
   <slot />
 </div>
-<Footer />
+
+<div class="h-[32px]">
+  <Footer />
+</div>
 
 <Matomo />
 

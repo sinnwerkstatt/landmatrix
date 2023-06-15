@@ -71,3 +71,22 @@ const cumulativeSum: (list: number[]) => number[] = R.pipe(
   ),
   R.prop("ret"),
 )
+
+export const clickOutside = (
+  node: Node,
+): {
+  update?: (params: unknown) => void
+  destroy: () => void
+} => {
+  const onClick = (event: Event) => {
+    if (event.target && !node.contains(event.target as Node)) {
+      node.dispatchEvent(new CustomEvent("outClick"))
+    }
+  }
+  document.addEventListener("click", onClick)
+  return {
+    destroy() {
+      document.removeEventListener("click", onClick)
+    },
+  }
+}

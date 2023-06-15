@@ -1,6 +1,7 @@
 <script lang="ts">
   import { slide } from "svelte/transition"
 
+  import { clickOutside } from "$lib/helpers"
   import type { WorkflowInfo as WFInfo } from "$lib/types/generics"
 
   import type { FormField } from "$components/Fields/fields"
@@ -10,25 +11,6 @@
   export let formfield: FormField
 
   let showMoreInfos = false
-
-  function clickOutside(element, callbackFunction) {
-    function onClick(event) {
-      if (!element.contains(event.target)) callbackFunction()
-    }
-
-    document.body.addEventListener("click", onClick)
-
-    // the destroy function is actually in use, linter is wrong
-    // noinspection JSUnusedGlobalSymbols
-    return {
-      update(newCallbackFunction) {
-        callbackFunction = newCallbackFunction
-      },
-      destroy() {
-        document.body.removeEventListener("click", onClick)
-      },
-    }
-  }
 </script>
 
 <div
@@ -45,7 +27,8 @@
   {#if showMoreInfos}
     <div
       transition:slide
-      use:clickOutside={() => (showMoreInfos = !showMoreInfos)}
+      use:clickOutside
+      on:outClick={() => (showMoreInfos = !showMoreInfos)}
       class="absolute top-0 z-10 w-[368px] rounded-sm border border-black bg-lm-darkgray shadow-md"
     >
       <div
