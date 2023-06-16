@@ -342,9 +342,9 @@
           </button>
         </div>
       </div>
-      <div class="mt-4 min-h-[30rem] w-full lg:w-2/3">
+      <div class="mt-4 h-[30rem] w-full lg:w-2/3">
         <BigMap
-          containerClass="min-h-[30rem] h-[50%]"
+          containerClass="h-[30rem]"
           options={{ center: [0, 0] }}
           on:ready={onMapReady}
         >
