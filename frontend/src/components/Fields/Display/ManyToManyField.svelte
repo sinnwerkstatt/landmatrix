@@ -11,15 +11,21 @@
   export let value: ForeignKey
 </script>
 
-<div class="manytomany_field" data-name={formfield?.name ?? ""}>
-  {#if formfield.related_model === "Investor"}
+{#if formfield.related_model === "Investor"}
+  <ul>
     {#each value as val}
-      <a class="investor" target="_blank" rel="noreferrer" href="/investor/{value.id}">
-        {val.name} (#{val.id})
-      </a>
-      <br />
+      <li>
+        <a
+          class="investor"
+          target="_blank"
+          rel="noreferrer"
+          href="/investor/{value.id}"
+        >
+          {val.name} (#{val.id})
+        </a>
+      </li>
     {/each}
-  {:else}
-    {value}
-  {/if}
-</div>
+  </ul>
+{:else}
+  {value}
+{/if}

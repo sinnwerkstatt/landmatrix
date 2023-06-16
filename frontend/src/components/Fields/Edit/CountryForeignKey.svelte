@@ -41,7 +41,6 @@
 </script>
 
 <div
-  class="country_foreignkey_field"
   on:mouseover={() => (showHint = true)}
   on:focus={() => (showHint = true)}
   on:mouseout={() => (showHint = false)}

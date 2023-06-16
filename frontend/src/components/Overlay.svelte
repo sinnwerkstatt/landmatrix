@@ -37,7 +37,7 @@
 {#if visible}
   <div
     transition:fade={{ duration: 100 }}
-    class="fixed inset-0 z-10 flex h-screen max-h-screen w-screen items-center justify-center bg-[rgba(0,0,0,0.3)] backdrop-blur-sm"
+    class="fixed inset-0 z-[100] flex h-screen max-h-screen w-screen items-center justify-center bg-[rgba(0,0,0,0.3)] backdrop-blur-sm"
     on:click|self={close}
     on:keyup|self={close}
   >

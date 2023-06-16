@@ -56,15 +56,13 @@
   onMount(checkValidity)
 </script>
 
-<div class="whitespace-nowrap">
-  <input
-    bind:this={inputField}
-    value={value ?? ""}
-    type="text"
-    class="inpt"
-    placeholder={$_("YYYY-MM-DD")}
-    {required}
-    {name}
-    on:input|preventDefault={onInput}
-  />
-</div>
+<input
+  bind:this={inputField}
+  value={value ?? ""}
+  type="text"
+  class="inpt"
+  placeholder={$_("YYYY-MM-DD")}
+  {required}
+  {name}
+  on:input|preventDefault={onInput}
+/>

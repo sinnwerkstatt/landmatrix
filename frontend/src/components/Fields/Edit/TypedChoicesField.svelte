@@ -27,16 +27,14 @@
   let focused
 </script>
 
-<div data-name={formfield?.name ?? ""}>
-  <Select
-    value={items.filter(i => (value || []).includes(i.value))}
-    bind:focused
-    {items}
-    {required}
-    multiple
-    showChevron
-    name={formfield.name}
-    hasError={required && !value && !focused}
-    on:input={e => setValue(e.detail)}
-  />
-</div>
+<Select
+  value={items.filter(i => (value || []).includes(i.value))}
+  bind:focused
+  {items}
+  {required}
+  multiple
+  showChevron
+  name={formfield.name}
+  hasError={required && !value && !focused}
+  on:input={e => setValue(e.detail)}
+/>

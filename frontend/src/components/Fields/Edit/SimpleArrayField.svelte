@@ -20,34 +20,30 @@
     : false
 </script>
 
-<div class="simplearray_field">
-  {#if choices}
-    <div>
-      <select
-        value={value ?? []}
-        on:change={onSelect}
-        multiple
-        class="inpt"
-        name={formfield.name}
-      >
-        {#each choices as [v, label]}
-          <!-- The literal translation strings are defined in apps/landmatrix/models/choices.py -->
-          <option value={v}>{$_(label)}</option>
-        {/each}
-      </select>
-    </div>
-  {:else}
-    <div class="flex flex-col">
-      <textarea
-        value={value ? value.join("\n") : ""}
-        on:input={x => (value = x.target.value ? x.target.value.split("\n") : null)}
-        class="inpt"
-        rows="5"
-        name={formfield.name}
-      />
-      <small class="text-gray-500">
-        {$_("Put each value on a new line, i.e. press enter between each name")}
-      </small>
-    </div>
-  {/if}
-</div>
+{#if choices}
+  <select
+    value={value ?? []}
+    on:change={onSelect}
+    multiple
+    class="inpt"
+    name={formfield.name}
+  >
+    {#each choices as [v, label]}
+      <!-- The literal translation strings are defined in apps/landmatrix/models/choices.py -->
+      <option value={v}>{$_(label)}</option>
+    {/each}
+  </select>
+{:else}
+  <div class="flex flex-col">
+    <textarea
+      value={value ? value.join("\n") : ""}
+      on:input={x => (value = x.target.value ? x.target.value.split("\n") : null)}
+      class="inpt"
+      rows="5"
+      name={formfield.name}
+    />
+    <small class="text-gray-500">
+      {$_("Put each value on a new line, i.e. press enter between each name")}
+    </small>
+  </div>
+{/if}

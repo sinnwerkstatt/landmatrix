@@ -19,7 +19,7 @@
 
 {#if $lightboxImage}
   <div
-    class="fixed inset-0 z-[20000] flex h-screen w-screen items-center justify-center bg-gray-600 bg-opacity-90 p-2"
+    class="fixed inset-0 z-[100] flex h-screen w-screen items-center justify-center bg-gray-600 bg-opacity-90 p-2"
   >
     <img
       class="max-h-full max-w-full border"

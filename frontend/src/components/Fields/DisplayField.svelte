@@ -6,7 +6,6 @@
   import ArrayField from "$components/Fields/Display/ArrayField.svelte"
   import AutoField from "$components/Fields/Display/AutoField.svelte"
   import BooleanField from "$components/Fields/Display/BooleanField.svelte"
-  import DateField from "$components/Fields/Display/DateField.svelte"
   import DateTimeField from "$components/Fields/Display/DateTimeField.svelte"
   import DecimalField from "$components/Fields/Display/DecimalField.svelte"
   import FileField from "$components/Fields/Display/FileField.svelte"
@@ -52,7 +51,8 @@
   $: formfield = { name: fieldname, ...$formfields[model][fieldname] }
 
   $: field = {
-    DateField: DateField,
+    DateField: DateTimeField,
+    DateTimeField: DateTimeField,
     JSONActorsField: JSONActorsField,
     JSONDateAreaChoicesField: JSONDateAreaChoicesField,
     JSONDateAreaField: JSONDateAreaField,
@@ -65,7 +65,11 @@
   }[formfield.class]
 </script>
 
-<div class={wrapperClasses}>
+<div
+  data-class={formfield?.class ?? ""}
+  data-name={formfield?.name ?? ""}
+  class={wrapperClasses}
+>
   {#if showLabel}
     <div class={labelClasses}>
       {$_(formfield.label)}
@@ -90,8 +94,6 @@
       <TextField {value} {formfield} />
     {:else if ["DecimalField", "FloatField", "IntegerField"].includes(formfield.class)}
       <DecimalField {value} {formfield} />
-    {:else if formfield.class === "DateTimeField"}
-      <DateTimeField {value} {formfield} />
     {:else if formfield.class === "LengthField"}
       <LengthField {value} {formfield} />
     {:else if ["CountryForeignKey", "CurrencyForeignKey", "ForeignKey", "InvestorForeignKey", "ModelChoiceField"].includes(formfield.class)}

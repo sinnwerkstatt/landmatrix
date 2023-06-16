@@ -47,21 +47,19 @@
   }
 </script>
 
-<div class="array_field" data-name={formfield?.name ?? ""}>
-  {#if formfield?.name === "current_intention_of_investment"}
-    {#each value ?? [] as ioi}
-      <span
-        class="mx-1 my-0.5 inline-flex items-center gap-1 whitespace-nowrap border border-lm-darkgray bg-lm-lightgray px-1 py-0.5 text-gray-800 dark:border-transparent dark:bg-gray-800 dark:text-white"
-      >
-        {#if intention_of_investment_map[ioi] != null}
-          <svelte:component this={intention_of_investment_map[ioi]} />
-        {/if}
-        <!-- This is a special case where the string to be translated is NOT defined
+{#if formfield?.name === "current_intention_of_investment"}
+  {#each value ?? [] as ioi}
+    <span
+      class="mx-1 my-0.5 inline-flex items-center gap-1 whitespace-nowrap border border-lm-darkgray bg-lm-lightgray px-1 py-0.5 text-gray-800 dark:border-transparent dark:bg-gray-800 dark:text-white"
+    >
+      {#if intention_of_investment_map[ioi] != null}
+        <svelte:component this={intention_of_investment_map[ioi]} />
+      {/if}
+      <!-- This is a special case where the string to be translated is NOT defined
         in the backend and needs to be defined in the frontend -->
-        {$_(flat_intention_of_investment_map[ioi])}
-      </span>
-    {/each}
-  {:else}
-    {parseValues(value, formfield.choices)}
-  {/if}
-</div>
+      {$_(flat_intention_of_investment_map[ioi])}
+    </span>
+  {/each}
+{:else}
+  {parseValues(value, formfield.choices)}
+{/if}

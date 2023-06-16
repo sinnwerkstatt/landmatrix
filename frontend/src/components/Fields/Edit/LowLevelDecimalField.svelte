@@ -9,7 +9,9 @@
   export let min: number | undefined
   export let decimals = 2
 
+  let step: number
   $: step = 1 / 10 ** decimals
+  let placeholder: string
   $: placeholder = min && max ? `${min} – ${max}` : step === 1 ? "0" : "123.45"
 
   const onInput = (event: InputEvent) => {
@@ -18,7 +20,7 @@
   }
 </script>
 
-<div class="flex whitespace-nowrap">
+<div class="flex">
   <input
     value={value ?? ""}
     type="number"
@@ -32,9 +34,7 @@
     on:input|preventDefault={onInput}
   />
   {#if unit}
-    <div
-      class="flex items-center justify-center border border-l-0 border-gray-300 bg-gray-200 py-1.5 px-3 text-gray-600"
-    >
+    <div class="flex items-center bg-lm-dark px-3 font-bold text-white">
       {$_(unit)}
     </div>
   {/if}

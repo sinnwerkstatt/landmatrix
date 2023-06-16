@@ -38,82 +38,80 @@
     values.length > 0 && !anySelectedAsCurrent(values)
 </script>
 
-<div class="json_date_area_field whitespace-nowrap">
-  <table class="w-full">
-    <thead>
-      <tr>
-        <th class="pr-2 text-center font-normal">{$_("Current")}</th>
-        <th class="font-normal">{$_("Date")}</th>
-        <th class="font-normal">{$_("Area")}</th>
-        <th class="font-normal">{$_("Choices")}</th>
-        <th class="font-normal">{$_("Yield")}</th>
-        <th class="font-normal">{$_("Export")}</th>
-        <th />
+<table class="w-full">
+  <thead>
+    <tr>
+      <th class="pr-2 text-center font-normal">{$_("Current")}</th>
+      <th class="font-normal">{$_("Date")}</th>
+      <th class="font-normal">{$_("Area")}</th>
+      <th class="font-normal">{$_("Choices")}</th>
+      <th class="font-normal">{$_("Yield")}</th>
+      <th class="font-normal">{$_("Export")}</th>
+      <th />
+    </tr>
+  </thead>
+  <tbody>
+    {#each valueCopy as val, i}
+      <tr class:is-current={val.current}>
+        <td class="p-1 text-center">
+          <input
+            type="checkbox"
+            bind:checked={val.current}
+            name="{formfield.name}_current"
+            required={isCurrentRequired(valueCopy)}
+            disabled={!val.choices}
+          />
+        </td>
+
+        <td class="w-1/6 p-1">
+          <LowLevelDateYearField
+            bind:value={val.date}
+            name="{formfield.name}_{i}_date"
+          />
+        </td>
+        <td class="w-1/6 p-1">
+          <LowLevelDecimalField
+            bind:value={val.area}
+            name="{formfield.name}_{i}_area"
+            unit="ha"
+          />
+        </td>
+        <td class="w-2/6 p-1">
+          <TypedChoicesField
+            bind:value={val.choices}
+            formfield={{ ...formfield, name: `${formfield.name}_${i}_choices` }}
+            required={val.date || val.area || val.yield || val.export}
+          />
+        </td>
+        <td class="w-1/6 p-1">
+          <LowLevelDecimalField
+            bind:value={val.yield}
+            unit="tons"
+            name="{formfield.name}_{i}_yield"
+          />
+        </td>
+        <td class="w-1/6 p-1">
+          <LowLevelDecimalField
+            bind:value={val.export}
+            name="{formfield.name}_{i}_export"
+            unit="%"
+            max={100}
+          />
+        </td>
+
+        <td class="p-1">
+          <button type="button" on:click={addEntry}>
+            <PlusIcon class="h-5 w-5 text-black" />
+          </button>
+          <button
+            type="button"
+            disabled={valueCopy.length <= 1}
+            on:click={() => removeEntry(i)}
+          >
+            <MinusIcon class="h-5 w-5 text-red-600" />
+          </button>
+        </td>
       </tr>
-    </thead>
-    <tbody>
-      {#each valueCopy as val, i}
-        <tr class:is-current={val.current}>
-          <td class="p-1 text-center">
-            <input
-              type="checkbox"
-              bind:checked={val.current}
-              name="{formfield.name}_current"
-              required={isCurrentRequired(valueCopy)}
-              disabled={!val.choices}
-            />
-          </td>
-
-          <td class="w-1/6 p-1">
-            <LowLevelDateYearField
-              bind:value={val.date}
-              name="{formfield.name}_{i}_date"
-            />
-          </td>
-          <td class="w-1/6 p-1">
-            <LowLevelDecimalField
-              bind:value={val.area}
-              name="{formfield.name}_{i}_area"
-              unit="ha"
-            />
-          </td>
-          <td class="w-2/6 p-1">
-            <TypedChoicesField
-              bind:value={val.choices}
-              formfield={{ ...formfield, name: `${formfield.name}_${i}_choices` }}
-              required={val.date || val.area || val.yield || val.export}
-            />
-          </td>
-          <td class="w-1/6 p-1">
-            <LowLevelDecimalField
-              bind:value={val.yield}
-              unit="tons"
-              name="{formfield.name}_{i}_yield"
-            />
-          </td>
-          <td class="w-1/6 p-1">
-            <LowLevelDecimalField
-              bind:value={val.export}
-              name="{formfield.name}_{i}_export"
-              unit="%"
-              max={100}
-            />
-          </td>
-
-          <td class="p-1">
-            <button type="button" on:click={addEntry}>
-              <PlusIcon class="h-5 w-5 text-black" />
-            </button>
-            <button
-              type="button"
-              disabled={valueCopy.length <= 1}
-              on:click={() => removeEntry(i)}
-            >
-              <MinusIcon class="h-5 w-5 text-red-600" />
-            </button>
-          </td>
-        </tr>
-      {/each}
-    </tbody>
-  </table>
-</div>
+    {/each}
+  </tbody>
+</table>

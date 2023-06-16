@@ -6,6 +6,4 @@
   export let value
 </script>
 
-<div class="date_field">
-  <LowLevelDateYearField bind:value name={formfield.name} />
-</div>
+<LowLevelDateYearField bind:value name={formfield.name} />

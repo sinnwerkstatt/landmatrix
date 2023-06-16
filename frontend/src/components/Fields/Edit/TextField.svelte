@@ -7,12 +7,10 @@
   export let value: string
 </script>
 
-<div class="text_field">
-  <textarea
-    bind:value
-    placeholder={$_(formfield.label)}
-    name={formfield.name}
-    rows="3"
-    class="inpt"
-  />
-</div>
+<textarea
+  bind:value
+  placeholder={$_(formfield.label)}
+  name={formfield.name}
+  rows="5"
+  class="inpt"
+/>

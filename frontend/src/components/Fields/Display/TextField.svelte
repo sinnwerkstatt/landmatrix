@@ -5,12 +5,10 @@
   export let formfield: FormField
 </script>
 
-<div class="text_field break-words" data-name={formfield?.name ?? ""}>
-  {#if !value}
-    —
-  {:else if formfield.class === "URLField"}
-    <a href={value} target="_blank" rel="noreferrer">{new URL(value).hostname}</a>
-  {:else}
-    {value}
-  {/if}
-</div>
+{#if !value}
+  —
+{:else if formfield.class === "URLField"}
+  <a href={value} target="_blank" rel="noreferrer">{new URL(value).hostname}</a>
+{:else}
+  {value}
+{/if}

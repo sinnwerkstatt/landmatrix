@@ -7,12 +7,10 @@
   export let formfield: FormField
 </script>
 
-<div class="boolean_field" data-name={formfield?.name ?? ""}>
-  {#if value}
-    {$_("Yes")}
-  {:else if value === false}
-    {$_("No")}
-  {:else}
-    —
-  {/if}
-</div>
+{#if value}
+  {$_("Yes")}
+{:else if value === false}
+  {$_("No")}
+{:else}
+  —
+{/if}

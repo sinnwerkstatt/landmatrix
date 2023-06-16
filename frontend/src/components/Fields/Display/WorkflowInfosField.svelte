@@ -14,11 +14,11 @@
 </script>
 
 <div
-  class="workflowinfo-field cursor-pointer"
-  data-name={formfield?.name ?? ""}
-  on:click={event => {
-    if (!showMoreInfos) showMoreInfos = true
-    event.stopPropagation()
+  class="cursor-pointer"
+  on:click|stopPropagation={() => {
+    if (!showMoreInfos) {
+      showMoreInfos = true
+    }
   }}
 >
   <slot>
@@ -28,7 +28,7 @@
     <div
       transition:slide
       use:clickOutside
-      on:outClick={() => (showMoreInfos = !showMoreInfos)}
+      on:outClick={() => (showMoreInfos = false)}
       class="absolute top-0 z-10 w-[368px] rounded-sm border border-black bg-lm-darkgray shadow-md"
     >
       <div

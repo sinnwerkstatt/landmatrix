@@ -7,17 +7,15 @@
   export let value: string
 </script>
 
-<div class="ocid_field" data-name={formfield?.name ?? ""}>
-  {#if value}
-    {value}
-    <a
-      href="https://www.openlandcontracts.org/contract/{value}/view#/pdf"
-      target="_blank"
-      rel="noreferrer"
-    >
-      {$_("Access more information about this contract on OpenLandContracts.org")}
-    </a>
-  {:else}
-    —
-  {/if}
-</div>
+{#if value}
+  {value}
+  <a
+    href="https://www.openlandcontracts.org/contract/{value}/view#/pdf"
+    target="_blank"
+    rel="noreferrer"
+  >
+    {$_("Access more information about this contract on OpenLandContracts.org")}
+  </a>
+{:else}
+  —
+{/if}
