@@ -9,17 +9,23 @@
   import ChevronDownIcon from "$components/icons/ChevronDownIcon.svelte"
 
   export let showChevron = false
-  export let placement = "mt-2 right-0"
+  export let placement = "right-0"
 
   let isOpen = false
+  let isHover = false
 
   afterNavigate(() => (isOpen = false))
 </script>
 
 <div
-  class="relative z-[100] {$$props.class}"
+  class="relative {$$props.class}"
   use:clickOutside
   on:outClick={() => (isOpen = false)}
+  on:mouseenter={() => (isHover = true)}
+  on:mouseleave={() => {
+    isHover = false
+    isOpen = false
+  }}
 >
   <button
     class="flex items-center p-2 hover:text-orange"
@@ -35,8 +41,8 @@
       )}
     />
   </button>
-  {#if isOpen}
-    <div class="absolute {placement}" transition:slide={{ duration: 200 }}>
+  {#if isOpen || isHover}
+    <div class="absolute z-50 {placement}" transition:slide={{ duration: 200 }}>
       <slot />
     </div>
   {/if}

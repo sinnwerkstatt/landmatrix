@@ -259,13 +259,16 @@ export const lightboxImage = writable<BlockImage | null>(null)
 
 export const isDarkMode = writable(false)
 
-const bindIsDarkModeToPreferredColorScheme = () =>
-  window.matchMedia &&
-  window
-    .matchMedia("(prefers-color-scheme: dark)")
-    .addEventListener("change", event => {
+const bindIsDarkModeToPreferredColorScheme = () => {
+  if (window.matchMedia) {
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
+
+    isDarkMode.set(mediaQuery.matches)
+    mediaQuery.addEventListener("change", event => {
       isDarkMode.set(event.matches)
     })
+  }
+}
 
 if (browser) {
   bindIsDarkModeToPreferredColorScheme()

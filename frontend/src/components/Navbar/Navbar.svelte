@@ -5,6 +5,7 @@
   import { page } from "$app/stores"
 
   import { blogCategories, aboutPages, observatoryPages, isDarkMode } from "$lib/stores"
+  import { clickOutside } from "$lib/helpers"
 
   import BurgerMenuIcon from "$components/icons/BurgerMenuIcon.svelte"
   import ChevronDownIcon from "$components/icons/ChevronDownIcon.svelte"
@@ -95,7 +96,7 @@
       <li class="xl:hidden">
         <button
           class="h-full p-2"
-          on:click={() => {
+          on:click|stopPropagation={() => {
             menuHidden = !menuHidden
           }}
         >
@@ -114,6 +115,8 @@
         "bg-white dark:bg-gray-800",
         "border-t-2 border-b-8 border-orange xl:border-0",
       )}
+      use:clickOutside
+      on:outClick={resetMenu}
     >
       <ul
         class={cn(
@@ -130,14 +133,14 @@
               >
                 {entry.title}
                 <ChevronDownIcon
-                  class={cn("inline h-5 w-5", "duration-100 group-hover:rotate-180")}
+                  class={cn("inline h-5 w-5", "group-hover:rotate-180")}
                 />
               </button>
               <ul
                 class={cn(
                   "hidden flex-wrap justify-around",
                   "bg-lm-lightgray dark:bg-gray-700 dark:xl:bg-gray-800",
-                  "xl:absolute xl:right-0 xl:z-50 xl:whitespace-nowrap",
+                  "xl:absolute xl:z-50 xl:whitespace-nowrap",
                   "border-t xl:border-2 xl:border-orange",
                   "group-focus-within:flex xl:group-focus-within:hidden xl:group-hover:block",
                 )}
@@ -160,6 +163,7 @@
                 class="nav-link truncate text-center xl:max-w-[120px]"
                 title={entry.title}
                 href={entry.href}
+                on:click={resetMenu}
               >
                 {entry.title}
               </a>
