@@ -41,18 +41,8 @@
   }
 
   onMount(locationAutocomplete)
-  // onDestroy(() => {
-  //   console.log("onDestroy. loader", loader);
-  // });
-  //
-  // afterUpdate(() => {
-  //   console.log("afterUpdate. loader", loader);
-  // });
 
   $: autocomplete?.setComponentRestrictions({ country: countryCode })
 </script>
 
-<div class="input-group">
-  <input bind:this={inputField} bind:value placeholder={$_("Location")} class="inpt" />
-  <!--  on:keydown|preventDefault=.enter.prevent=""-->
-</div>
+<input bind:this={inputField} bind:value placeholder={$_("Location")} class="inpt" />

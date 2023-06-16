@@ -7,8 +7,8 @@
   export let value: number
 </script>
 
-<div class="boolean_field space-x-6">
-  {#if formfield.class === "NullBooleanField"}
+{#if formfield.class === "NullBooleanField"}
+  <div class="space-x-6">
     <label>
       <input type="radio" bind:group={value} value={true} name={formfield.name} />
       {$_("Yes")}
@@ -21,7 +21,7 @@
       <input type="radio" bind:group={value} value={null} name={formfield.name} />
       {$_("Unknown")}
     </label>
-  {:else}
-    <input bind:checked={value} type="checkbox" name={formfield.name} />
-  {/if}
-</div>
+  </div>
+{:else}
+  <input bind:checked={value} type="checkbox" name={formfield.name} />
+{/if}

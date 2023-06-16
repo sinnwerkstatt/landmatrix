@@ -19,9 +19,9 @@
   export let value: JSONLeaseFieldType[] = []
 </script>
 
-<div class="jsonlease_field whitespace-nowrap" data-name={formfield?.name ?? ""}>
+<ul>
   {#each value ?? [] as val}
-    <div class:font-bold={val.current}>
+    <li class:font-bold={val.current}>
       <span>{dateCurrentFormat(val)}</span>
       {#if val.area}
         <span class="mx-2">
@@ -41,6 +41,6 @@
           {val.households.toLocaleString("fr")}
         </span>
       {/if}
-    </div>
+    </li>
   {/each}
-</div>
+</ul>

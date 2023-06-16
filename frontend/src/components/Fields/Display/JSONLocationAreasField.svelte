@@ -28,9 +28,9 @@
   }
 </script>
 
-<div data-name={formfield?.name ?? ""}>
+<ul>
   {#each features as feature}
-    <div class:font-bold={feature.properties.current} class="flex">
+    <li class:font-bold={feature.properties.current} class="flex">
       <button
         class="flex cursor-pointer p-1 text-left"
         on:click={() => toggleVisibility(feature.id)}
@@ -50,6 +50,6 @@
           {dateCurrentFormat(feature.properties)}
         </span>
       </button>
-    </div>
+    </li>
   {/each}
-</div>
+</ul>

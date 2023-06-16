@@ -17,9 +17,9 @@
   export let value: JSONJobsFieldType[] = []
 </script>
 
-<div class="jsonjobs_field whitespace-nowrap" data-name={formfield?.name ?? ""}>
+<ul>
   {#each value ?? [] as val}
-    <div class:font-bold={val.current}>
+    <li class:font-bold={val.current}>
       {dateCurrentFormat(val)}
       {#if val.jobs}
         <span class="mx-2">
@@ -37,6 +37,6 @@
           {$_("workers")}
         </span>
       {/if}
-    </div>
+    </li>
   {/each}
-</div>
+</ul>

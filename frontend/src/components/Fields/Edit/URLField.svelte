@@ -9,7 +9,7 @@
   export let value: string
 </script>
 
-<div class="url_field flex">
+<div class="flex">
   <input
     bind:value
     type="url"

@@ -45,21 +45,19 @@
   onMount(() => getCurrencies())
 </script>
 
-<div class="currency_foreignkey_field">
-  {#if currencies}
-    <VirtualListSelect
-      bind:value
-      items={currencies}
-      placeholder={$_("Currency")}
-      label="name"
-      name={formfield.name}
-    >
-      <svelte:fragment slot="selection" let:selection>
-        {selection.name} ({selection.code})
-      </svelte:fragment>
-      <svelte:fragment slot="item" let:item>
-        {item.name} ({item.code})
-      </svelte:fragment>
-    </VirtualListSelect>
-  {/if}
-</div>
+{#if currencies}
+  <VirtualListSelect
+    bind:value
+    items={currencies}
+    placeholder={$_("Currency")}
+    label="name"
+    name={formfield.name}
+  >
+    <svelte:fragment slot="selection" let:selection>
+      {selection.name} ({selection.code})
+    </svelte:fragment>
+    <svelte:fragment slot="item" let:item>
+      {item.name} ({item.code})
+    </svelte:fragment>
+  </VirtualListSelect>
+{/if}

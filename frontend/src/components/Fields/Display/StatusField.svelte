@@ -28,4 +28,4 @@
   }
 </script>
 
-<span class="status_field">{combineStatus(status, draft_status, toString)}</span>
+<span>{combineStatus(status, draft_status, toString)}</span>

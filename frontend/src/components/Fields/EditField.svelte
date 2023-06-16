@@ -61,7 +61,11 @@
   }[formfield.class]
 </script>
 
-<div class={wrapperClasses}>
+<div
+  data-class={formfield?.class ?? ""}
+  data-name={formfield?.name ?? ""}
+  class={wrapperClasses}
+>
   {#if showLabel}
     <div class={labelClasses}>
       {$_(formfield.label)}

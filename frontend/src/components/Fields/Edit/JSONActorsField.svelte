@@ -27,48 +27,46 @@
   }
 </script>
 
-<div class="json_actors_field whitespace-nowrap">
-  <table class="w-full">
-    <thead>
+<table class="w-full">
+  <thead>
+    <tr>
+      <th class="font-normal">{$_("Name")}</th>
+      <th class="font-normal">{$_("Role")}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {#each valueCopy as val, i}
       <tr>
-        <th class="font-normal">{$_("Name")}</th>
-        <th class="font-normal">{$_("Role")}</th>
-      </tr>
-    </thead>
-    <tbody>
-      {#each valueCopy as val, i}
-        <tr>
-          <td class="w-1/3">
-            <input
-              type="text"
-              bind:value={val.name}
-              class="inpt"
-              name="{formfield.name}_{i}_name"
-            />
-          </td>
-          <td>
-            <!-- Required by backend if name set -->
-            <TypedChoiceField
-              bind:value={val.role}
-              formfield={{ ...formfield, name: `${formfield.name}_${i}_role` }}
-              required={!!val.name}
-            />
-          </td>
+        <td class="w-1/3">
+          <input
+            type="text"
+            bind:value={val.name}
+            class="inpt"
+            name="{formfield.name}_{i}_name"
+          />
+        </td>
+        <td>
+          <!-- Required by backend if name set -->
+          <TypedChoiceField
+            bind:value={val.role}
+            formfield={{ ...formfield, name: `${formfield.name}_${i}_role` }}
+            required={!!val.name}
+          />
+        </td>
 
-          <td class="p-1">
-            <button type="button" on:click={addEntry}>
-              <PlusIcon class="h-5 w-5 text-black" />
-            </button>
-            <button
-              type="button"
-              disabled={valueCopy.length <= 1}
-              on:click={() => removeEntry(i)}
-            >
-              <MinusIcon class="h-5 w-5 text-red-600" />
-            </button>
-          </td>
-        </tr>
-      {/each}
-    </tbody>
-  </table>
-</div>
+        <td class="p-1">
+          <button type="button" on:click={addEntry}>
+            <PlusIcon class="h-5 w-5 text-black" />
+          </button>
+          <button
+            type="button"
+            disabled={valueCopy.length <= 1}
+            on:click={() => removeEntry(i)}
+          >
+            <MinusIcon class="h-5 w-5 text-red-600" />
+          </button>
+        </td>
+      </tr>
+    {/each}
+  </tbody>
+</table>

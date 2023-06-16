@@ -24,16 +24,14 @@
   let focused
 </script>
 
-<div data-name={formfield?.name ?? ""}>
-  <Select
-    value={items.find(i => i.value === value)}
-    bind:justValue={value}
-    bind:focused
-    {items}
-    {required}
-    {disabled}
-    name={formfield.name}
-    hasError={required && !value && !focused}
-    showChevron
-  />
-</div>
+<Select
+  value={items.find(i => i.value === value)}
+  bind:justValue={value}
+  bind:focused
+  {items}
+  {required}
+  {disabled}
+  name={formfield.name}
+  hasError={required && !value && !focused}
+  showChevron
+/>
