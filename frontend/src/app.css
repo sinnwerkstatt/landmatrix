@@ -177,10 +177,6 @@
   --error-border: 2px solid var(--color-red-600);
 }
 
-th {
-  text-align: left;
-}
-
 /* toasts */
 /* colors taken from https://getbootstrap.com/docs/5.1/components/alerts/ */
 .toast {

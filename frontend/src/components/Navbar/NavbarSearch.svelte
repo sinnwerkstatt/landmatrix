@@ -10,7 +10,7 @@
   import type { Deal } from "$lib/types/deal"
   import type { Investor } from "$lib/types/investor"
 
-  import XIcon from "$components/icons/XIcon.svelte"
+  import NavDropDown from "$components/Navbar/NavDropDown.svelte"
 
   import SearchIcon from "../icons/SearchIcon.svelte"
 
@@ -142,27 +142,22 @@
   })
 </script>
 
-<div class="relative my-auto">
-  <div class="flex w-[200px] px-2">
-    <input
-      id="search"
-      bind:value={searchString}
-      class="inpt my-auto"
-      placeholder={$_("Search")}
-      autocomplete="off"
-      on:keydown={searchKeyboardEvent}
-    />
-    <button
-      on:click={() => {
-        searchString = ""
-      }}
-    >
-      {#if searchString !== ""}
-        <XIcon class="my-auto inline h-5 w-5" />
-      {:else}
-        <SearchIcon class="my-auto inline h-5 w-5" />
-      {/if}
-    </button>
+<NavDropDown>
+  <svelte:fragment slot="title">
+    <SearchIcon class="h-5 w-5" />
+  </svelte:fragment>
+  <div class="relative w-[300px] border-2 border-orange bg-white p-2 dark:bg-gray-800">
+    <label for="search" class="flex w-[280px] flex-col">
+      {$_("Search deals and investors")}
+      <input
+        id="search"
+        bind:value={searchString}
+        class="inpt"
+        placeholder={$_("Search")}
+        autocomplete="off"
+        on:keydown={searchKeyboardEvent}
+      />
+    </label>
   </div>
 
   {#if searchResult.length}
@@ -195,7 +190,7 @@
       {/each}
     </ul>
   {/if}
-</div>
+</NavDropDown>
 
 <style>
   :global(#search + button) {

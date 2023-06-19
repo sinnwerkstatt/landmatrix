@@ -3,7 +3,7 @@
 
   import { page } from "$app/stores"
 
-  import NavDropDownCSS from "$components/Navbar/NavDropDownCSS.svelte"
+  import NavDropDown from "$components/Navbar/NavDropDown.svelte"
 
   let dataViews: { title: string; route: string }[]
   $: dataViews = [
@@ -45,7 +45,7 @@
     <ul
       class="pointer-events-auto inline-flex items-center border border-orange bg-white text-left drop-shadow dark:bg-gray-800"
     >
-      <li class="p-2">
+      <li>
         <a
           href="/map"
           class="nav-link"
@@ -54,7 +54,7 @@
           {$_("Map")}
         </a>
       </li>
-      <NavDropDownCSS>
+      <NavDropDown>
         <svelte:fragment slot="title">
           <span class="capitalize">{$_("Data")}</span>
         </svelte:fragment>
@@ -71,8 +71,8 @@
             </li>
           {/each}
         </ul>
-      </NavDropDownCSS>
-      <NavDropDownCSS>
+      </NavDropDown>
+      <NavDropDown>
         <svelte:fragment slot="title">
           <span class="capitalize">{$_("Charts")}</span>
         </svelte:fragment>
@@ -89,7 +89,7 @@
             </li>
           {/each}
         </ul>
-      </NavDropDownCSS>
+      </NavDropDown>
     </ul>
   </nav>
 </div>

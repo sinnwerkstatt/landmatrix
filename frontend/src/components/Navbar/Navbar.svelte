@@ -64,7 +64,7 @@
 <!--https://blog.logrocket.com/building-responsive-navbar-tailwind-css/-->
 <nav
   class={cn(
-    "h-full w-full p-2",
+    "h-full w-full p-1",
     "text-lg text-gray-700 dark:text-white",
     "bg-white dark:bg-gray-800",
     "border-b-8 border-b-orange",
@@ -111,9 +111,9 @@
       class={cn(
         menuHidden ? "hidden xl:block" : "",
         "absolute xl:static",
-        "top-[60px] left-0 z-50 w-full xl:w-auto",
+        "top-[58px] left-0 z-50 w-full xl:w-auto",
         "bg-white dark:bg-gray-800",
-        "border-t-2 border-b-8 border-orange xl:border-0",
+        "border-b-8 border-orange xl:border-0",
       )}
       use:clickOutside
       on:outClick={resetMenu}
@@ -139,14 +139,14 @@
               <ul
                 class={cn(
                   "hidden flex-wrap justify-around",
-                  "bg-lm-lightgray dark:bg-gray-700 dark:xl:bg-gray-800",
+                  "bg-lm-lightgray dark:bg-gray-700 xl:bg-white dark:xl:bg-gray-800",
                   "xl:absolute xl:z-50 xl:whitespace-nowrap",
                   "border-t xl:border-2 xl:border-orange",
                   "group-focus-within:flex xl:group-focus-within:hidden xl:group-hover:block",
                 )}
               >
                 {#each entry.subEntries as subEntry, subIndex}
-                  <li>
+                  <li class="mx-7 xl:mx-0">
                     <a
                       class="nav-link"
                       class:active={$page.url.pathname.startsWith(subEntry.href)}

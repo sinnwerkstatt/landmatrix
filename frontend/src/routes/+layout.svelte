@@ -48,11 +48,11 @@
 <Messages />
 <NavigationLoader />
 
-<div class="h-[70px]">
+<div class="h-[62px]">
   <Navbar />
 </div>
 
-<div bind:this={contentRoot} class="h-[calc(100vh-70px-32px)] overflow-x-auto">
+<div bind:this={contentRoot} class="h-[calc(100vh-62px-32px)] overflow-x-auto">
   <slot />
 </div>
 
