@@ -146,11 +146,11 @@ class Management(View):
             },
             "all_items": {
                 "staff": True,
-                "q": Q(),
+                "q": ~Q(status=4),
             },
             "all_drafts": {
                 "staff": True,
-                "q": ~Q(current_draft=None),
+                "q": ~Q(status=4) & ~Q(current_draft=None),
             },
             "all_deleted": {
                 "staff": True,
