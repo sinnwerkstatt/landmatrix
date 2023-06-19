@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { gql } from "@urql/svelte"
+  import { gql, Client } from "@urql/svelte"
   import { _ } from "svelte-i18n"
   import { onMount } from "svelte"
   import cn from "classnames"
@@ -32,7 +32,7 @@
   let investors: Investor[] = []
 
   async function getDeals() {
-    const { data } = await $page.data.urqlClient
+    const { error, data } = await ($page.data.urqlClient as Client)
       .query<{ deals: Deal[] }>(
         gql`
           query SDeals($subset: Subset) {
@@ -51,15 +51,25 @@
         },
       )
       .toPromise()
-    deals = data?.deals ?? []
+
+    if (error || !data) {
+      console.error(error)
+      return
+    }
+
+    deals = data.deals
   }
 
   async function getInvestors() {
-    const { data } = await $page.data.urqlClient
+    const { error, data } = await ($page.data.urqlClient as Client)
       .query<{ investors: Investor[] }>(
         gql`
           query SInvestors($subset: Subset) {
-            investors(limit: 0, subset: $subset) {
+            investors(
+              limit: 0
+              subset: $subset
+              filters: [{ field: "status", value: 4, exclusion: true }]
+            ) {
               id
               name
             }
@@ -68,7 +78,13 @@
         { subset: user?.is_authenticated ? "UNFILTERED" : "PUBLIC" },
       )
       .toPromise()
-    investors = data?.investors ?? []
+
+    if (error || !data) {
+      console.error(error)
+      return
+    }
+
+    investors = data.investors
   }
 
   $: {

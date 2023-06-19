@@ -17,6 +17,7 @@
   import type { Investor } from "$lib/types/investor"
   import { UserRole } from "$lib/types/user"
   import { tracker } from "$lib/stores/tracker"
+  import type { Country, Region } from "$lib/types/wagtail"
 
   import { showFilterBar } from "$components/Data/stores"
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
@@ -62,7 +63,11 @@
       .query<{ investors: Investor[] }>(
         gql`
           query SInvestors($subset: Subset) {
-            investors(limit: 0, subset: $subset) {
+            investors(
+              limit: 0
+              subset: $subset
+              filters: [{ field: "status", value: 4, exclusion: true }]
+            ) {
               id
               name
             }
@@ -90,9 +95,12 @@
 
   function trackDownload(format) {
     let name = "Global"
-    if ($filters.country_id)
-      name = $countries.find(c => c.id === $filters.country_id).name
-    if ($filters.region_id) name = $regions.find(r => r.id === $filters.region_id).name
+    if ($filters.country_id) {
+      name = ($countries.find(c => c.id === $filters.country_id) as Country).name
+    }
+    if ($filters.region_id) {
+      name = ($regions.find(r => r.id === $filters.region_id) as Region).name
+    }
 
     if ($tracker) {
       $tracker.trackEvent("Downloads", format, name)
