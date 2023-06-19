@@ -31,9 +31,9 @@ export interface Obj {
   draft_status: DraftStatus | null
   versions: ObjVersion[]
   workflowinfos?: WorkflowInfo[]
-  created_at?: Date
+  created_at: Date
   created_by?: User
-  modified_at?: Date
+  modified_at: Date
   modified_by?: User
   country?: Country
   country_id?: number

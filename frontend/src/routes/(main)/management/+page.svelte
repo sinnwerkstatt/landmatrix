@@ -196,37 +196,40 @@
   $: activateTab($page.url.hash)
   $: getCounts(model)
   $: fetchObjects(activeTabId, model)
-  $: filteredObjects = objects.filter(d => {
+  $: filteredObjects = objects.filter(obj => {
     if ($managementFilters.country)
-      if (d.country?.id !== $managementFilters.country.id) return false
+      if (obj.country?.id !== $managementFilters.country.id) return false
 
     if ($managementFilters.createdAtFrom)
-      if (dayjs(d.created_at).isBefore($managementFilters.createdAtFrom, "day"))
+      if (dayjs(obj.created_at).isBefore($managementFilters.createdAtFrom, "day"))
         return false
     if ($managementFilters.createdAtTo)
-      if (dayjs(d.created_at).isAfter($managementFilters.createdAtTo, "day"))
+      if (dayjs(obj.created_at).isAfter($managementFilters.createdAtTo, "day"))
         return false
     if ($managementFilters.createdBy)
-      if (d.created_by?.id !== $managementFilters.createdBy.id) return false
+      if (obj.created_by?.id !== $managementFilters.createdBy.id) return false
 
     if ($managementFilters.modifiedAtFrom)
-      if (dayjs(d.modified_at).isBefore($managementFilters.modifiedAtFrom, "day"))
+      if (dayjs(obj.modified_at).isBefore($managementFilters.modifiedAtFrom, "day"))
         return false
     if ($managementFilters.modifiedAtTo)
-      if (dayjs(d.modified_at).isAfter($managementFilters.modifiedAtTo, "day"))
+      if (dayjs(obj.modified_at).isAfter($managementFilters.modifiedAtTo, "day"))
         return false
     if ($managementFilters.modifiedBy)
-      if (d.modified_by?.id !== $managementFilters.modifiedBy.id) return false
+      if (obj.modified_by?.id !== $managementFilters.modifiedBy.id) return false
 
     if (model === "deal") {
+      const deal = obj as Deal
+
       if ($managementFilters.dealSizeFrom)
-        if (d.deal_size < $managementFilters.dealSizeFrom) return false
+        if (deal.deal_size < $managementFilters.dealSizeFrom) return false
       if ($managementFilters.dealSizeTo)
-        if (d.deal_size > $managementFilters.dealSizeTo) return false
+        if (deal.deal_size > $managementFilters.dealSizeTo) return false
 
       if ($managementFilters.fullyUpdatedAtFrom)
         if (
-          dayjs(d.fully_updated_at).isBefore(
+          !deal.fully_updated_at ||
+          dayjs(deal.fully_updated_at).isBefore(
             $managementFilters.fullyUpdatedAtFrom,
             "day",
           )
@@ -234,7 +237,11 @@
           return false
       if ($managementFilters.fullyUpdatedAtTo)
         if (
-          dayjs(d.fully_updated_at).isAfter($managementFilters.fullyUpdatedAtTo, "day")
+          !deal.fully_updated_at ||
+          dayjs(deal.fully_updated_at).isAfter(
+            $managementFilters.fullyUpdatedAtTo,
+            "day",
+          )
         )
           return false
     }
