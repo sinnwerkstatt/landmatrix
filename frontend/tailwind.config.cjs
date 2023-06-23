@@ -35,6 +35,7 @@ const config = {
           800: "#163C3C",
           900: "#071313",
         },
+        "lm-red-deleted": "hsl(0,33%,68%)",
         "lm-dark": "#4a4a4a",
         "lm-lightgray": "#f9f9f9",
         "lm-darkgray": "#c4c4c4",

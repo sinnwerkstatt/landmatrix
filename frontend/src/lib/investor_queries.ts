@@ -44,6 +44,7 @@ export const investor_gql_query = gql`
         comment
         investor {
           id
+          status
           name
         }
       }
@@ -63,6 +64,7 @@ export const investor_gql_query = gql`
         comment
         venture {
           id
+          status
           name
           classification
           country {

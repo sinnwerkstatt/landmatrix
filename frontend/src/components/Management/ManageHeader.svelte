@@ -142,7 +142,7 @@
           class={cn(
             "flex h-16 w-full items-center justify-center border-2",
             "text-lg font-medium text-white",
-            isActive ? "bg-pelorous-300" : "bg-[hsl(0,33%,68%)]",
+            isActive ? "bg-pelorous-300" : "bg-lm-red-deleted",
           )}
         >
           {isActive ? $_("Activated") : $_("Deleted")}

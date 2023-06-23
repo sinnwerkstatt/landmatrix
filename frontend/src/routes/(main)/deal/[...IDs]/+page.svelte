@@ -4,8 +4,8 @@
   import { _ } from "svelte-i18n"
 
   import { page } from "$app/stores"
+  import { invalidate } from "$app/navigation"
 
-  import { deal_gql_query } from "$lib/deal_queries"
   import { dealSections } from "$lib/sections.js"
   import { loading } from "$lib/stores"
   import type { Deal } from "$lib/types/deal"
@@ -52,24 +52,10 @@
     { target: "#actions", name: $_("Actions") },
   ]
 
-  async function reloadDeal() {
-    console.log("Deal detail: reload")
+  const reloadDeal = async () => {
+    // console.log("Deal detail: reload")
     loading.set(true)
-
-    const ret = await ($page.data.urqlClient as Client)
-      .query<{ deal: Deal }>(
-        deal_gql_query,
-        { id: data.dealID, version: data.dealVersion },
-        { requestPolicy: "network-only" },
-      )
-      .toPromise()
-
-    if (ret.error || !ret.data) {
-      console.error(ret.error)
-    } else {
-      deal = ret.data.deal
-    }
-
+    await invalidate(url => url.pathname === "/graphql/")
     loading.set(false)
   }
 

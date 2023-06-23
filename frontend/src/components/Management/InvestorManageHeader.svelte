@@ -127,7 +127,7 @@
       .toPromise()
       .then(async dat => {
         //todo: if it was just a draft, and we deleted the whole thing, jump to investor list
-        console.log(dat)
+        // console.log(dat)
         if (investorVersion) await goto(`/investor/${investor.id}`)
         dispatch("reload")
       })
