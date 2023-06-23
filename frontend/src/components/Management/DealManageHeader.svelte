@@ -107,7 +107,6 @@
   }
 
   function addComment({ detail: { comment, toUser } }) {
-    console.log("doing the addcomment", comment, toUser)
     $page.data.urqlClient
       .mutation(
         gql`
@@ -148,7 +147,7 @@
       .toPromise()
       .then(async dat => {
         //todo: if it was just a draft, and we deleted the whole thing, jump to deal list
-        console.log(dat)
+        // console.log(dat)
         if (dealVersion) await goto(`/deal/${deal.id}`)
         dispatch("reload")
       })

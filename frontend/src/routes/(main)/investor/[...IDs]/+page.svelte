@@ -1,15 +1,14 @@
 <script lang="ts">
-  import type { Client } from "@urql/svelte"
-  import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
   import { page } from "$app/stores"
+  import { invalidate } from "$app/navigation"
 
-  import { investor_gql_query } from "$lib/investor_queries"
-  import { loading } from "$lib/stores"
   import { Role } from "$lib/types/investor"
-  import type { Investor } from "$lib/types/investor"
+  import type { Investor, Involvement } from "$lib/types/investor"
   import { UserRole } from "$lib/types/user"
+  import { Status } from "$lib/types/generics"
+  import { loading } from "$lib/stores"
 
   import DealSubmodelSection from "$components/Deal/DealSubmodelSection.svelte"
   import DateTimeField from "$components/Fields/Display/DateTimeField.svelte"
@@ -17,7 +16,6 @@
   import InvestorGraph from "$components/Investor/InvestorGraph.svelte"
   import InvestorHistory from "$components/Investor/InvestorHistory.svelte"
   import InvestorManageHeader from "$components/Management/InvestorManageHeader.svelte"
-
   // import type { PageData } from "./$types";
   //
   // export let data: PageData;
@@ -30,19 +28,37 @@
   let investor: Investor = data.investor
   $: investor = data.investor
 
-  $: simple_involvements = [
-    ...investor.investors.map(i => ({
-      ...i,
-      role:
-        i.role === Role.PARENT ? $_("Parent company") : $_("Tertiary investor/lender"),
-    })),
-    ...investor.ventures.map(i => ({
-      ...i,
-      investor: i.venture,
-      role:
-        i.role === Role.PARENT ? $_("Subsidiary company") : $_("Beneficiary company"),
-    })),
+  let simpleInvolvements: Involvement[]
+  $: simpleInvolvements = [
+    ...investor.investors.map(
+      i =>
+        ({
+          ...i,
+          role:
+            i.role === Role.PARENT
+              ? $_("Parent company")
+              : $_("Tertiary investor/lender"),
+        } as Involvement),
+    ),
+    ...investor.ventures.map(
+      i =>
+        ({
+          ...i,
+          venture: undefined, // unify by renaming props: venture -> investor
+          investor: i.venture,
+          role:
+            i.role === Role.PARENT
+              ? $_("Subsidiary company")
+              : $_("Beneficiary company"),
+        } as Involvement),
+    ),
   ]
+
+  $: if (!$page.data.user) {
+    simpleInvolvements = simpleInvolvements.filter(
+      involvement => involvement.investor.status != Status.DELETED,
+    )
+  }
 
   $: activeTab = $page.url.hash.split("/")[0] || "#general"
 
@@ -59,33 +75,13 @@
       ? allTabs
       : allTabs.filter(tab => tab.target !== "#data_sources")
 
-  async function reloadInvestor() {
-    console.log("Investor detail: reload")
+  const reloadInvestor = async () => {
+    // console.log("Investor detail: reload")
     loading.set(true)
-
-    const ret = await ($page.data.urqlClient as Client)
-      .query<{ investor: Investor }>(
-        investor_gql_query,
-        {
-          id: data.investorID,
-          version: data.investorVersion,
-          includeDeals: true,
-          depth: 5, // max depth
-        },
-        { requestPolicy: "network-only" },
-      )
-      .toPromise()
-
-    if (ret.error || !ret.data) {
-      console.error(ret.error)
-    } else {
-      investor = ret.data.investor
-    }
-
+    await invalidate(url => url.pathname === "/graphql/")
     loading.set(false)
   }
 
-  onMount(reloadInvestor)
   $: liveLink = `<a href="/investor/${data.investorID}/#network_graph">https://landmatrix.org/investor/${data.investorID}/</a>`
 </script>
 
@@ -158,9 +154,9 @@
         {/each}
       {/if}
       {#if activeTab === "#involvements"}
-        <h3>{$_("Involvements")} ({simple_involvements.length})</h3>
+        <h3>{$_("Involvements")} ({simpleInvolvements.length})</h3>
         <table class="relative mb-20 w-full table-auto">
-          <thead class="border-b-2 ">
+          <thead class="border-b-2 dark:border-gray-800">
             <tr>
               <th>{$_("Investor ID")}</th>
               <th>{$_("Name")}</th>
@@ -171,8 +167,12 @@
             </tr>
           </thead>
           <tbody>
-            {#each simple_involvements as involvement}
-              <tr>
+            {#each simpleInvolvements as involvement}
+              <tr
+                class={involvement.investor.status === Status.DELETED
+                  ? "bg-lm-red-deleted"
+                  : ""}
+              >
                 <td>
                   <DisplayField
                     value={involvement.investor.id}
