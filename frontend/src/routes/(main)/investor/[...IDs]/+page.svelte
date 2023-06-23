@@ -1,16 +1,14 @@
 <script lang="ts">
-  import type { Client } from "@urql/svelte"
-  import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
   import { page } from "$app/stores"
+  import { invalidate } from "$app/navigation"
 
-  import { investor_gql_query } from "$lib/investor_queries"
-  import { loading } from "$lib/stores"
   import { Role } from "$lib/types/investor"
   import type { Investor, Involvement } from "$lib/types/investor"
   import { UserRole } from "$lib/types/user"
   import { Status } from "$lib/types/generics"
+  import { loading } from "$lib/stores"
 
   import DealSubmodelSection from "$components/Deal/DealSubmodelSection.svelte"
   import DateTimeField from "$components/Fields/Display/DateTimeField.svelte"
@@ -77,33 +75,13 @@
       ? allTabs
       : allTabs.filter(tab => tab.target !== "#data_sources")
 
-  async function reloadInvestor() {
-    console.log("Investor detail: reload")
+  const reloadInvestor = async () => {
+    // console.log("Investor detail: reload")
     loading.set(true)
-
-    const ret = await ($page.data.urqlClient as Client)
-      .query<{ investor: Investor }>(
-        investor_gql_query,
-        {
-          id: data.investorID,
-          version: data.investorVersion,
-          includeDeals: true,
-          depth: 5, // max depth
-        },
-        { requestPolicy: "network-only" },
-      )
-      .toPromise()
-
-    if (ret.error || !ret.data) {
-      console.error(ret.error)
-    } else {
-      investor = ret.data.investor
-    }
-
+    await invalidate(url => url.pathname === "/graphql/")
     loading.set(false)
   }
 
-  onMount(reloadInvestor)
   $: liveLink = `<a href="/investor/${data.investorID}/#network_graph">https://landmatrix.org/investor/${data.investorID}/</a>`
 </script>
 
