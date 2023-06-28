@@ -323,12 +323,12 @@
                   <a
                     class={cn(
                       "block text-left",
+                      model === "deal" ? "hover:text-orange" : "hover:text-pelorous",
                       activeTabId === item.id
-                        ? "font-bold"
+                        ? model === "deal"
+                          ? "font-bold text-orange"
+                          : "font-bold text-pelorous"
                         : "text-lm-dark dark:text-white",
-                      model === "deal"
-                        ? "text-orange hover:text-orange"
-                        : "text-pelorous hover:text-pelorous",
                     )}
                     href="#{item.id}"
                   >
