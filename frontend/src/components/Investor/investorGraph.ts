@@ -24,6 +24,7 @@ cytoscape.use(cyPopper)
 export const CY_OPTIONS: CytoscapeOptions = {
   minZoom: 0.3,
   maxZoom: 5,
+  wheelSensitivity: 0.2,
   layout: {
     name: "cose-bilkent",
     quality: "proof",
@@ -41,7 +42,7 @@ export const CY_OPTIONS: CytoscapeOptions = {
           return el.data("name")
         },
         "text-valign": "center",
-        "font-size": "9pt",
+        "font-size": "9px",
         "text-wrap": "wrap",
         "text-max-width": "120px",
         // "shape": "ellipse",
