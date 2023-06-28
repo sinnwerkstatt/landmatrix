@@ -57,7 +57,7 @@ def resolve_investor(
             investor_version = InvestorVersion.objects.get(id=version)
             investor = investor_version.enriched_dict()
         except InvestorVersion.DoesNotExist:
-            return None
+            raise GraphQLError("INVESTOR_NOT_FOUND")
 
         if not any(
             [
@@ -96,7 +96,7 @@ def resolve_investor(
         ]
     if add_deals:
         investor["deals"] = (
-            Deal.objects.visible(info.context["request"].user, subset)
+            Deal.objects.visible(user, subset)
             .filter(operating_company_id=id)
             .order_by("id")
         )
