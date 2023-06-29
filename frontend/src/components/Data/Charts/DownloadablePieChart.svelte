@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { Chart } from "chart.js"
-  import type { ChartData } from "chart.js"
+  import type { Chart, ChartData } from "chart.js"
 
   import ChartWrapper from "$components/Data/Charts/DownloadWrapper.svelte"
   import {
