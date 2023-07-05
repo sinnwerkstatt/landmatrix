@@ -268,6 +268,7 @@ class BlogPage(HeadlessPreviewMixin, Page):
     ]
 
     def save_revision(self, *args, **kwargs):
+        # dirty hack to disallow saving of blog pages for non-authorized users
         if not self.author:
             self.author = self.owner
         return super().save_revision(*args, **kwargs)
