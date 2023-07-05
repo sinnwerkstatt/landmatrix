@@ -1,7 +1,9 @@
 from wagtailorderable.modeladmin.mixins import OrderableMixin
 
-from wagtail.contrib.modeladmin.options import ModelAdmin, modeladmin_register
+from django.templatetags.static import static
+from django.utils.html import format_html
 from wagtail import hooks
+from wagtail.contrib.modeladmin.options import ModelAdmin, modeladmin_register
 from wagtail.whitelist import attribute_rule
 
 from apps.message.models import Message
@@ -34,6 +36,14 @@ def whitelister_element_rules():
         "h5": attribute_rule({"style": True}),
         "p": attribute_rule({"style": True}),
     }
+
+
+@hooks.register("insert_global_admin_js", order=100)
+def monkeypatch_wagtail_modeltranslation():
+    return format_html(
+        '<script src="{}"></script>',
+        static("/js/cleanForSlug.js"),
+    )
 
 
 class MessageAdmin(OrderableMixin, ModelAdmin):
