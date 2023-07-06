@@ -1,6 +1,5 @@
 from wagtailorderable.modeladmin.mixins import OrderableMixin
 
-from django.templatetags.static import static
 from django.utils.html import format_html
 from wagtail import hooks
 from wagtail.contrib.modeladmin.options import ModelAdmin, modeladmin_register
@@ -42,7 +41,7 @@ def whitelister_element_rules():
 def monkeypatch_wagtail_modeltranslation():
     return format_html(
         '<script src="{}"></script>',
-        static("/js/cleanForSlug.js"),
+        "/static/js/cleanForSlug.js",
     )
 
 

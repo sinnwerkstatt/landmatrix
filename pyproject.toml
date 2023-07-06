@@ -9,7 +9,7 @@ description = "Land Matrix"
 [tool.poetry.dependencies]
 python = "^3.8"
 Django = "*"
-wagtail = "*"
+wagtail = "5.0.1"
 psycopg2-binary = "*"
 
 django-cors-headers = "*"

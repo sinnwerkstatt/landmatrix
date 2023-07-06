@@ -10,6 +10,7 @@ apps/landmatrix/static/css/*.css
 /temporary.db
 /static/**/*.css
 /static-collected/
+/static-collected-bk/
 /media/
 *.mo
 .es_index_ab_switch
