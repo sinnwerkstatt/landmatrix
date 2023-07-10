@@ -4,7 +4,11 @@
   let actives = []
   let drafts = []
   async function getSearchResults(v) {
-    if (value.length < 3) return
+    if (value.length < 3) {
+      actives = []
+      drafts = []
+      return
+    }
     let ret = await fetch(`/api/investor_search/?q=${v}`)
     const retJson = await ret.json()
     actives = retJson.investors.filter(i => i.status !== 1)
