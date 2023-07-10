@@ -13,6 +13,7 @@ from django.utils import timezone
 from django.utils.timezone import make_aware
 from django.views import View
 from rest_framework.decorators import api_view
+from rest_framework.exceptions import NotAuthenticated
 
 from apps.accounts.models import UserRole
 from apps.graphql.resolvers.charts import create_statistics
@@ -366,9 +367,9 @@ class CaseStatistics(View):
             if not (start and end):
                 return JsonResponse({})
 
-            dt_start = parse_date(start)
+            dt_start = _parse_date(start)
             # add one day to include end day (important when end = current)
-            dt_end = parse_date(end) + timedelta(1)
+            dt_end = _parse_date(end) + timedelta(1)
 
             region = request.GET.get("region")
             country = request.GET.get("country")
@@ -380,5 +381,25 @@ class CaseStatistics(View):
         return HttpResponseBadRequest(f"Unknown action: {action}")
 
 
-def parse_date(date_str: str) -> datetime:
+def _parse_date(date_str: str) -> datetime:
     return make_aware(datetime.strptime(date_str, "%Y-%m-%d"))
+
+
+def investor_search(request):
+    if not request.user.is_authenticated:
+        raise NotAuthenticated
+    q = request.GET.get("q")
+    if not q or len(q) <= 2:
+        return JsonResponse({"investors": []})
+
+    fltr = ~Q(status=4)
+    # qs = Investor.objects.filter(status__ne=4)
+    for term in q.split(" "):
+        fltr &= Q(name__icontains=term) | Q(country__name__icontains=term)
+
+    investors = (
+        Investor.objects.filter(fltr)
+        .order_by("id")
+        .values("id", "name", "country__name", "status")
+    )
+    return JsonResponse({"investors": list(investors)})
