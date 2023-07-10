@@ -142,33 +142,11 @@ export const createGraphElements = (
         rootNode: true,
       },
     })
+    if (showDeals) {
+      addDealNodesAndEdges(investor, elements)
+    }
   }
 
-  if (showDeals) {
-    investor.deals?.forEach((deal: Deal) => {
-      const deal_node: NodeDefinition = {
-        data: {
-          ...deal,
-          _id: deal.id,
-          id: "D" + deal.id,
-          name: "#" + deal.id,
-          bgColor: "#fc941f",
-          dealNode: true,
-        },
-      }
-      const deal_edge: EdgeDefinition = {
-        data: {
-          id: `${investor.id}_D${deal.id}`,
-          source: `${investor.id}`,
-          target: "D" + deal.id,
-          edge_color: "#fc941f",
-        },
-      }
-
-      elements.push(deal_node)
-      elements.push(deal_edge)
-    })
-  }
   if (investor.involvements && investor.involvements.length) {
     investor.involvements.forEach((involvement: Involvement) => {
       const investor_node = {
@@ -207,9 +185,39 @@ export const createGraphElements = (
       elements.push(investor_node)
       elements.push(investor_edge)
 
+      if (showDeals) {
+        addDealNodesAndEdges(involvement.investor, elements)
+      }
+
       createGraphElements(involvement.investor, elements, showDeals, depth - 1)
     })
   }
 
   return elements
+}
+
+const addDealNodesAndEdges = (investor: Investor, elements: ElementDefinition[]) => {
+  investor.deals?.forEach((deal: Deal) => {
+    const deal_node: NodeDefinition = {
+      data: {
+        ...deal,
+        _id: deal.id,
+        id: "D" + deal.id,
+        name: "#" + deal.id,
+        bgColor: "#fc941f",
+        dealNode: true,
+      },
+    }
+    const deal_edge: EdgeDefinition = {
+      data: {
+        id: `${investor.id}_D${deal.id}`,
+        source: `${investor.id}`,
+        target: "D" + deal.id,
+        edge_color: "#fc941f",
+      },
+    }
+
+    elements.push(deal_node)
+    elements.push(deal_edge)
+  })
 }
