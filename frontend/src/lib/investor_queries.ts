@@ -1,14 +1,8 @@
 import { gql } from "@urql/svelte"
 
 export const investor_gql_query = gql`
-  query Investor($id: Int!, $version: Int, $depth: Int, $includeDeals: Boolean!) {
-    investor(
-      id: $id
-      version: $version
-      involvements_depth: $depth
-      involvements_include_ventures: true
-      subset: UNFILTERED
-    ) {
+  query Investor($id: Int!, $version: Int, $includeDeals: Boolean!) {
+    investor(id: $id, version: $version, subset: UNFILTERED) {
       id
       name
       country {
@@ -88,7 +82,6 @@ export const investor_gql_query = gql`
         current_implementation_status
         deal_size
       }
-      involvements
       workflowinfos {
         id
         from_user {

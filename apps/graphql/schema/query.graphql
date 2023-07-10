@@ -20,8 +20,6 @@ type Query {
     id: Int!
     version: Int
     subset: Subset = PUBLIC
-    involvements_depth: Int = 4
-    involvements_include_ventures: Boolean = true
   ): Investor
   investors(
     sort: String = "id"
@@ -29,6 +27,11 @@ type Query {
     subset: Subset = PUBLIC
     filters: [Filter]
   ): [Investor]
+  investor_involvement_network(
+    id: Int!
+    depth: Int = 1
+    include_ventures: Boolean = true
+  ): InvolvementsNetwork
 
   countries: [Country]
   regions: [Region]

@@ -63,9 +63,12 @@ export const CY_OPTIONS: CytoscapeOptions = {
   ],
 }
 
-export const createGraph = (elements: ElementDefinition[]) =>
+export const createGraph = (
+  containerElement: HTMLDivElement,
+  elements: ElementDefinition[],
+) =>
   cytoscape({
-    container: document.getElementById("investor-network"),
+    container: containerElement,
     elements: elements,
     ...CY_OPTIONS,
   })
@@ -123,6 +126,7 @@ export const registerTippy = (cyGraph: Graph) => {
 
 export const createGraphElements = (
   investor: Investor,
+  involvements: Involvement[],
   elements: ElementDefinition[],
   showDeals: boolean,
   depth: number,
@@ -147,8 +151,8 @@ export const createGraphElements = (
     }
   }
 
-  if (investor.involvements && investor.involvements.length) {
-    investor.involvements.forEach((involvement: Involvement) => {
+  if (involvements && involvements.length) {
+    involvements.forEach((involvement: Involvement) => {
       const investor_node = {
         data: {
           id: `${involvement.investor.id}`,
@@ -189,7 +193,13 @@ export const createGraphElements = (
         addDealNodesAndEdges(involvement.investor, elements)
       }
 
-      createGraphElements(involvement.investor, elements, showDeals, depth - 1)
+      createGraphElements(
+        involvement.investor,
+        involvement.investor.involvements,
+        elements,
+        showDeals,
+        depth - 1,
+      )
     })
   }
 

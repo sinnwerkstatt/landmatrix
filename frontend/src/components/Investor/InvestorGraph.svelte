@@ -1,9 +1,13 @@
 <script lang="ts">
   import type { ElementDefinition, EventHandler, Core as Graph } from "cytoscape"
-  import { onMount, tick } from "svelte"
+  import { tick } from "svelte"
   import { _ } from "svelte-i18n"
+  import type { Client } from "@urql/svelte"
+  import { gql } from "@urql/svelte"
 
-  import type { Investor } from "$lib/types/investor"
+  import { page } from "$app/stores"
+
+  import type { Investor, Involvement } from "$lib/types/investor"
 
   import CompressIcon from "$components/icons/CompressIcon.svelte"
   import ExpandIcon from "$components/icons/ExpandIcon.svelte"
@@ -14,16 +18,53 @@
     createGraphElements,
     registerTippy,
   } from "$components/Investor/investorGraph"
+  import LoadingPulse from "$components/LoadingPulse.svelte"
 
   export let investor: Investor
   export let showDealsOnLoad = true
   export let initDepth = 1
+  export let includeVentures = false
   export let showControls = false
+
+  let involvements: [Involvement] = []
+  const fetchInvolvementNetwork = async (depth: number): Promise<void> => {
+    const { error, data } = await ($page.data.urqlClient as Client)
+      .query<{ investor_involvement_network: Involvement[] }>(
+        gql`
+          query InvolvementNetwork(
+            $id: Int!
+            $depth: Int!
+            $include_ventures: Boolean
+          ) {
+            investor_involvement_network(
+              id: $id
+              depth: $depth
+              include_ventures: $include_ventures
+            )
+          }
+        `,
+        {
+          id: investor.id,
+          depth: depth,
+          include_ventures: includeVentures,
+        },
+      )
+      .toPromise()
+
+    if (error || !data) {
+      console.error(error)
+      return
+    }
+
+    involvements = data.investor_involvement_network
+  }
 
   const MAX_DEPTH = 5
   let depth = initDepth
 
-  let modalData = {}
+  $: involvementNetworkPromise = fetchInvolvementNetwork(depth)
+
+  let modalData: { dealNode: boolean } = {}
   let isFullscreen = false
   let showInvestorModal = false
   let showDealModal = false
@@ -31,18 +72,17 @@
 
   let cyGraph: Graph
   const drawGraph = () => {
-    cyGraph = createGraph(elements)
+    cyGraph = createGraph(graphContainer, elements)
     registerTippy(cyGraph)
     registerModal(cyGraph)
   }
 
   let elements: ElementDefinition[] = []
+  let graphContainer: HTMLDivElement
   $: {
-    if (investor) {
-      elements = createGraphElements(investor, [], showDeals, depth)
-      if (cyGraph) {
-        drawGraph()
-      }
+    if (investor && graphContainer) {
+      elements = createGraphElements(investor, involvements, [], showDeals, depth)
+      drawGraph()
     }
   }
 
@@ -66,8 +106,6 @@
     await tick()
     drawGraph()
   }
-
-  onMount(drawGraph)
 </script>
 
 <InvestorDetailModal
@@ -82,78 +120,82 @@
   on:close={() => (showDealModal = false)}
 />
 
-<p class="mb-5">
-  {$_("Please click the nodes to get more details.")}
-</p>
+{#await involvementNetworkPromise}
+  <LoadingPulse />
+{:then res}
+  <p class="mb-5">
+    {$_("Please click the nodes to get more details.")}
+  </p>
+  <div
+    class={isFullscreen
+      ? "fixed top-12 left-0 mx-[5%] my-[5%] h-[70%] w-[90%] border border-solid border-black bg-white"
+      : "relative"}
+  >
+    <div class="absolute right-3 top-1.5 z-[9] cursor-pointer">
+      <button type="button" on:click={toggleFullscreen}>
+        {#if isFullscreen}
+          <CompressIcon />
+        {:else}
+          <ExpandIcon />
+        {/if}
+      </button>
+    </div>
 
-<div
-  class={isFullscreen
-    ? "fixed top-12 left-0 mx-[5%] my-[5%] h-[70%] w-[90%] border border-solid border-black bg-white"
-    : "relative"}
->
-  <div class="absolute right-3 top-1.5 z-[9] cursor-pointer">
-    <button type="button" on:click={toggleFullscreen}>
-      {#if isFullscreen}
-        <CompressIcon />
-      {:else}
-        <ExpandIcon />
-      {/if}
-    </button>
-  </div>
+    <div class={isFullscreen ? "h-full" : "h-96"}>
+      <div
+        bind:this={graphContainer}
+        id="investor-network"
+        class="min-h-full w-full cursor-all-scroll border-2 border-solid"
+      />
+    </div>
 
-  <div class={isFullscreen ? "h-full" : "h-96"}>
-    <div
-      id="investor-network"
-      class="min-h-full w-full cursor-all-scroll border-2 border-solid"
-    />
-  </div>
+    <div class="flex flex-row bg-white dark:bg-gray-700">
+      {#if showControls}
+        <div class="basis-1/2 p-2">
+          <div class="pb-3">
+            <label for="investor-level">
+              <strong>{$_("Level of parent investors")}</strong>
+            </label>
+            <div class="w-1/2">
+              <input
+                bind:value={depth}
+                id="investor-level"
+                type="range"
+                min="1"
+                max={MAX_DEPTH}
+              />
+              {depth}
+            </div>
+          </div>
 
-  <div class="flex flex-row bg-white dark:bg-gray-700">
-    {#if showControls}
-      <div class="basis-1/2 p-2">
-        <div class="pb-3">
-          <label for="investor-level">
-            <strong>{$_("Level of parent investors")}</strong>
-          </label>
-          <div class="w-1/2">
-            <input
-              bind:value={depth}
-              id="investor-level"
-              type="range"
-              min="1"
-              max={MAX_DEPTH}
-            />
-            {depth}
+          <div>
+            <label for="investor-deals" class="pr-3">
+              <strong>{$_("Show deals")}</strong>
+            </label>
+            <input bind:checked={showDeals} id="investor-deals" type="checkbox" />
           </div>
         </div>
-
-        <div>
-          <label for="investor-deals" class="pr-3">
-            <strong>{$_("Show deals")}</strong>
-          </label>
-          <input bind:checked={showDeals} id="investor-deals" type="checkbox" />
-        </div>
+      {/if}
+      <div class="basis-1/2 p-2">
+        <strong>{$_("Legend")}</strong>
+        <ul>
+          <li>
+            <span class="colored-line" style:--color="#fc941f" />
+            {$_("Is operating company of")}
+          </li>
+          <li>
+            <span class="colored-arrow" style:--color="#f78e8f" />
+            {$_("Is parent company of")}
+          </li>
+          <li>
+            <span class="colored-arrow" style:--color="#72b0fd" />
+            {$_("Is tertiary investor/lender of")}
+          </li>
+        </ul>
       </div>
-    {/if}
-    <div class="basis-1/2 p-2">
-      <strong>{$_("Legend")}</strong>
-      <ul>
-        <li>
-          <span class="colored-line" style:--color="#fc941f" />
-          {$_("Is operating company of")}
-        </li>
-        <li>
-          <span class="colored-arrow" style:--color="#f78e8f" />
-          {$_("Is parent company of")}
-        </li>
-        <li>
-          <span class="colored-arrow" style:--color="#72b0fd" />
-          {$_("Is tertiary investor/lender of")}
-        </li>
-      </ul>
     </div>
   </div>
-</div>
+{/await}
 
 <style lang="css">
   .colored-line {

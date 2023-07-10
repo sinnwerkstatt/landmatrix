@@ -271,7 +271,7 @@
       {/if}
       {#if activeTab === "#network_graph"}
         {#if !data.investorVersion}
-          <InvestorGraph {investor} showControls />
+          <InvestorGraph {investor} showControls includeVentures />
         {:else}
           <div class="m-10 bg-neutral-200 px-12 py-24 text-center text-zinc-700">
             {@html $_(

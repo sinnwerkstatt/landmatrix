@@ -28,8 +28,6 @@ def resolve_investor(
     id,
     version=None,
     subset="PUBLIC",
-    involvements_depth: int = 4,
-    involvements_include_ventures: bool = True,
 ) -> dict | None:
     user = info.context["request"].user
 
@@ -38,7 +36,6 @@ def resolve_investor(
     add_versions = False
     add_deals = False
     add_workflowinfos = False
-    add_involvements = False
     filtered_fields = []
     for field in fields:
         if "versions" in field:
@@ -99,11 +96,6 @@ def resolve_investor(
             Deal.objects.public().filter(operating_company_id=id).order_by("id")
         )
 
-    if add_involvements and not version:
-        investor["involvements"] = InvolvementNetwork(
-            involvements_include_ventures, max_depth=involvements_depth
-        ).get_network(id)
-
     if investor.get("investors") is None:
         investor["investors"] = []
     if investor.get("ventures") is None:
@@ -113,6 +105,17 @@ def resolve_investor(
         set_sensible_fields_to_null(investor)
 
     return investor
+
+
+def resolve_investor_involvement_network(
+    _obj,
+    info,
+    id: int,
+    depth: int = 4,
+    include_ventures: bool = True,
+):
+    user = info.context["request"].user
+    return InvolvementNetwork(include_ventures, max_depth=depth).get_network(id)
 
 
 def resolve_investors(

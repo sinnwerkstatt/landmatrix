@@ -20,7 +20,6 @@ export const load: PageLoad = async ({ params, parent }) => {
       id: investorID,
       version: investorVersion,
       includeDeals: true,
-      depth: 1,
     })
     .toPromise()
 
