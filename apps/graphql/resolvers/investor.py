@@ -96,9 +96,7 @@ def resolve_investor(
         ]
     if add_deals:
         investor["deals"] = (
-            Deal.objects.visible(user, subset)
-            .filter(operating_company_id=id)
-            .order_by("id")
+            Deal.objects.public().filter(operating_company_id=id).order_by("id")
         )
 
     if add_involvements and not version:
