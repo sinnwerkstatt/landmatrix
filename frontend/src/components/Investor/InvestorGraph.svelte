@@ -47,7 +47,8 @@
     `,
     variables: {
       id: investor.id,
-      depth: depth,
+      // depth,
+      depth: 5,
       include_ventures: includeVentures,
     },
   })
