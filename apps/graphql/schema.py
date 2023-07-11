@@ -28,13 +28,14 @@ from .resolvers.generics import (
     resolve_object_copy,
     resolve_resolve_workflow_info,
 )
-from .resolvers.investor import (  # resolve_involvements,
+from .resolvers.investor import (
     resolve_add_investor_comment,
     resolve_change_investor_status,
     resolve_investor,
     resolve_investor_delete,
     resolve_investor_edit,
     resolve_investors,
+    resolve_involvement_network,
 )
 from .resolvers.misc import (
     resolve_chart_descriptions,
@@ -65,6 +66,7 @@ query.set_field("deal", resolve_deal)
 query.set_field("deals", resolve_deals)
 query.set_field("deal_aggregations", resolve_deal_aggregations)
 query.set_field("investor", resolve_investor)
+query.set_field("involvement_network", resolve_involvement_network)
 query.set_field("investors", resolve_investors)
 # query.set_field("involvements", resolve_involvements)
 query.set_field("countries", resolve_countries)

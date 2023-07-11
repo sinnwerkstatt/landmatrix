@@ -1,6 +1,6 @@
 import { gql } from "@urql/svelte"
 
-export const data_deal_query_gql = gql`
+export const dealsQuery = gql`
   query ($subset: Subset, $filters: [Filter]) {
     deals(limit: 0, subset: $subset, filters: $filters) {
       id
@@ -39,7 +39,7 @@ export const data_deal_query_gql = gql`
   }
 `
 
-export const deal_gql_query = gql`
+export const dealQuery = gql`
   query Deal($id: Int!, $version: Int) {
     deal(id: $id, version: $version, subset: UNFILTERED) {
       id

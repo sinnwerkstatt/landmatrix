@@ -8,7 +8,7 @@
 
   import { page } from "$app/stores"
 
-  import { data_deal_query_gql } from "$lib/deal_queries"
+  import { dealsQuery } from "$lib/dealQueries"
   import { filters, publicOnly } from "$lib/filters"
   import { countries, loading, regions } from "$lib/stores"
   import type { Deal, Location } from "$lib/types/deal"
@@ -73,7 +73,7 @@
   let deals
   $: deals = queryStore<{ deals: Deal[] }, { filters: GQLFilter[]; subset: Subset }>({
     client: $page.data.urqlClient,
-    query: data_deal_query_gql,
+    query: dealsQuery,
     variables: {
       filters: $filters.toGQLFilterArray(),
       subset: $publicOnly ? "PUBLIC" : "ACTIVE",

@@ -43,7 +43,7 @@
   >
     <div
       transition:slide={{ duration: 150 }}
-      class="max-h-[99vh] w-[clamp(300px,70vw,800px)] overflow-y-auto border bg-white text-black shadow-xl {$$props.class ??
+      class="max-h-[99vh] w-[clamp(300px,70vw,800px)] overflow-y-auto border bg-white text-black shadow-xl dark:bg-gray-700 dark:text-white {$$props.class ??
         ''}"
     >
       <form on:submit|preventDefault>

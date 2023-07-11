@@ -1,7 +1,7 @@
 import { error } from "@sveltejs/kit"
 import { diff } from "deep-object-diff"
 
-import { deal_gql_query } from "$lib/deal_queries"
+import { dealQuery } from "$lib/dealQueries"
 import type { Deal } from "$lib/types/deal"
 
 import type { PageLoad } from "./$types"
@@ -19,7 +19,7 @@ export const load: PageLoad = async ({ params, parent }) => {
 
   const vFrom = await urqlClient
     .query<{ deal: Deal }>(
-      deal_gql_query,
+      dealQuery,
       { id: dealID, version: versionFrom },
       { requestPolicy: "network-only" },
     )
@@ -27,7 +27,7 @@ export const load: PageLoad = async ({ params, parent }) => {
   const dealFrom = vFrom.data?.deal
   const vTo = await urqlClient
     .query<{ deal: Deal }>(
-      deal_gql_query,
+      dealQuery,
       { id: dealID, version: versionTo },
       { requestPolicy: "network-only" },
     )

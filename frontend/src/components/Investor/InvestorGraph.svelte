@@ -1,9 +1,12 @@
 <script lang="ts">
   import type { ElementDefinition, EventHandler, Core as Graph } from "cytoscape"
-  import { onMount, tick } from "svelte"
+  import { tick } from "svelte"
   import { _ } from "svelte-i18n"
+  import { gql, queryStore } from "@urql/svelte"
 
-  import type { Investor } from "$lib/types/investor"
+  import { page } from "$app/stores"
+
+  import type { Investor, Involvement } from "$lib/types/investor"
 
   import CompressIcon from "$components/icons/CompressIcon.svelte"
   import ExpandIcon from "$components/icons/ExpandIcon.svelte"
@@ -14,35 +17,60 @@
     createGraphElements,
     registerTippy,
   } from "$components/Investor/investorGraph"
-
-  export let investor: Investor
-  export let showDealsOnLoad = true
-  export let initDepth = 1
-  export let showControls = false
+  import LoadingPulse from "$components/LoadingPulse.svelte"
 
   const MAX_DEPTH = 5
-  let depth = initDepth
 
-  let modalData = {}
-  let isFullscreen = false
+  export let investor: Investor
+  export let initDepth = 1
+  export let showDealsOnLoad = true
+  export let includeVentures = false
+  export let showControls = false
+
+  let depth = initDepth
+  let showDeals = showDealsOnLoad
+  let modalData: { dealNode: boolean } = {}
   let showInvestorModal = false
   let showDealModal = false
-  let showDeals = showDealsOnLoad
-
-  let cyGraph: Graph
-  const drawGraph = () => {
-    cyGraph = createGraph(elements)
-    registerTippy(cyGraph)
-    registerModal(cyGraph)
-  }
+  let isFullscreen = false
 
   let elements: ElementDefinition[] = []
-  $: {
-    if (investor) {
-      elements = createGraphElements(investor, [], showDeals, depth)
-      if (cyGraph) {
-        drawGraph()
+  let cyGraph: Graph
+  let graphContainer: HTMLDivElement
+
+  $: involvements = queryStore({
+    client: $page.data.urqlClient,
+    query: gql<{ involvement_network: Involvement[] }>`
+      query InvolvementNetwork($id: Int!, $depth: Int!, $include_ventures: Boolean) {
+        involvement_network(id: $id, depth: $depth, include_ventures: $include_ventures)
       }
+    `,
+    variables: {
+      id: investor.id,
+      // depth,
+      depth: 5,
+      include_ventures: includeVentures,
+    },
+  })
+
+  $: if (investor && $involvements.data) {
+    elements = createGraphElements(
+      investor,
+      $involvements.data.involvement_network,
+      [],
+      showDeals,
+      depth,
+    )
+  }
+
+  const showNodeModal: EventHandler = e => {
+    e.preventDefault()
+    modalData = e.target.data()
+
+    if (modalData.dealNode) {
+      showDealModal = true
+    } else {
+      showInvestorModal = true
     }
   }
 
@@ -53,12 +81,14 @@
     })
   }
 
-  const showNodeModal: EventHandler = e => {
-    e.preventDefault()
-    modalData = e.target.data()
+  const drawGraph = () => {
+    cyGraph = createGraph(graphContainer, elements)
+    registerTippy(cyGraph)
+    registerModal(cyGraph)
+  }
 
-    if (modalData.dealNode) showDealModal = true
-    else showInvestorModal = true
+  $: if (elements && graphContainer) {
+    drawGraph()
   }
 
   const toggleFullscreen = async () => {
@@ -66,8 +96,6 @@
     await tick()
     drawGraph()
   }
-
-  onMount(drawGraph)
 </script>
 
 <InvestorDetailModal
@@ -85,7 +113,6 @@
 <p class="mb-5">
   {$_("Please click the nodes to get more details.")}
 </p>
-
 <div
   class={isFullscreen
     ? "fixed top-12 left-0 mx-[5%] my-[5%] h-[70%] w-[90%] border border-solid border-black bg-white"
@@ -102,10 +129,16 @@
   </div>
 
   <div class={isFullscreen ? "h-full" : "h-96"}>
-    <div
-      id="investor-network"
-      class="min-h-full w-full cursor-all-scroll border-2 border-solid"
-    />
+    {#if $involvements.fetching}
+      <LoadingPulse class="pt-5" />
+    {:else if $involvements.error}
+      <p>Error...{$involvements.error.message}</p>
+    {:else}
+      <div
+        bind:this={graphContainer}
+        class="min-h-full w-full cursor-all-scroll border-2 border-solid"
+      />
+    {/if}
   </div>
 
   <div class="flex flex-row bg-white dark:bg-gray-700">

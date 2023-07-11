@@ -1,7 +1,7 @@
 import { error, redirect } from "@sveltejs/kit"
 
 import { findActiveVersion } from "$lib/helpers"
-import { investor_gql_query } from "$lib/investor_queries"
+import { investorQuery } from "$lib/investorQueries"
 import type { Investor } from "$lib/types/investor"
 
 import type { PageLoad } from "./$types"
@@ -14,7 +14,7 @@ export const load: PageLoad = async ({ params, parent }) => {
     x ? +x : undefined,
   )
   const { data } = await urqlClient
-    .query<{ investor: Investor }>(investor_gql_query, {
+    .query<{ investor: Investor }>(investorQuery, {
       id: investorID,
       version: investorVersion,
       depth: 0,

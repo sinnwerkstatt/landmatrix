@@ -1,7 +1,7 @@
 import { error, redirect } from "@sveltejs/kit"
 
 import { findActiveVersion } from "$lib/helpers"
-import { investor_gql_query } from "$lib/investor_queries"
+import { investorQuery } from "$lib/investorQueries"
 import { Status } from "$lib/types/generics"
 import type { Investor } from "$lib/types/investor"
 
@@ -16,11 +16,10 @@ export const load: PageLoad = async ({ params, parent }) => {
   if (!investorID) throw error(404, "Investor not found")
 
   const res = await urqlClient
-    .query<{ investor: Investor }>(investor_gql_query, {
+    .query<{ investor: Investor }>(investorQuery, {
       id: investorID,
       version: investorVersion,
       includeDeals: true,
-      depth: 1,
     })
     .toPromise()
 
