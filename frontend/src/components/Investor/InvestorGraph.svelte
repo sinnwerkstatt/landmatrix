@@ -2,8 +2,7 @@
   import type { ElementDefinition, EventHandler, Core as Graph } from "cytoscape"
   import { tick } from "svelte"
   import { _ } from "svelte-i18n"
-  import type { Client } from "@urql/svelte"
-  import { gql } from "@urql/svelte"
+  import { gql, queryStore } from "@urql/svelte"
 
   import { page } from "$app/stores"
 
@@ -26,43 +25,22 @@
   export let includeVentures = false
   export let showControls = false
 
-  let involvements: Involvement[] = []
-  const fetchInvolvementNetwork = async (depth: number): Promise<void> => {
-    const { error, data } = await ($page.data.urqlClient as Client)
-      .query<{ involvement_network: Involvement[] }>(
-        gql`
-          query InvolvementNetwork(
-            $id: Int!
-            $depth: Int!
-            $include_ventures: Boolean
-          ) {
-            involvement_network(
-              id: $id
-              depth: $depth
-              include_ventures: $include_ventures
-            )
-          }
-        `,
-        {
-          id: investor.id,
-          depth: depth,
-          include_ventures: includeVentures,
-        },
-      )
-      .toPromise()
-
-    if (error || !data) {
-      console.error(error)
-      return
-    }
-
-    involvements = data.involvement_network
-  }
-
   const MAX_DEPTH = 5
   let depth = initDepth
 
-  $: involvementNetworkPromise = fetchInvolvementNetwork(depth)
+  $: involvements = queryStore({
+    client: $page.data.urqlClient,
+    query: gql<{ involvement_network: Involvement[] }>`
+      query InvolvementNetwork($id: Int!, $depth: Int!, $include_ventures: Boolean) {
+        involvement_network(id: $id, depth: $depth, include_ventures: $include_ventures)
+      }
+    `,
+    variables: {
+      id: investor.id,
+      depth: depth,
+      include_ventures: includeVentures,
+    },
+  })
 
   let modalData: { dealNode: boolean } = {}
   let isFullscreen = false
@@ -78,12 +56,19 @@
   }
 
   let elements: ElementDefinition[] = []
+  $: if (investor && $involvements.data) {
+    elements = createGraphElements(
+      investor,
+      $involvements.data.involvement_network,
+      [],
+      showDeals,
+      depth,
+    )
+  }
+
   let graphContainer: HTMLDivElement
-  $: {
-    if (investor && graphContainer) {
-      elements = createGraphElements(investor, involvements, [], showDeals, depth)
-      drawGraph()
-    }
+  $: if (graphContainer) {
+    drawGraph()
   }
 
   const registerModal = cyGraph => {
@@ -120,82 +105,83 @@
   on:close={() => (showDealModal = false)}
 />
 
-{#await involvementNetworkPromise}
-  <LoadingPulse />
-{:then res}
-  <p class="mb-5">
-    {$_("Please click the nodes to get more details.")}
-  </p>
-  <div
-    class={isFullscreen
-      ? "fixed top-12 left-0 mx-[5%] my-[5%] h-[70%] w-[90%] border border-solid border-black bg-white"
-      : "relative"}
-  >
-    <div class="absolute right-3 top-1.5 z-[9] cursor-pointer">
-      <button type="button" on:click={toggleFullscreen}>
-        {#if isFullscreen}
-          <CompressIcon />
-        {:else}
-          <ExpandIcon />
-        {/if}
-      </button>
-    </div>
+<p class="mb-5">
+  {$_("Please click the nodes to get more details.")}
+</p>
+<div
+  class={isFullscreen
+    ? "fixed top-12 left-0 mx-[5%] my-[5%] h-[70%] w-[90%] border border-solid border-black bg-white"
+    : "relative"}
+>
+  <div class="absolute right-3 top-1.5 z-[9] cursor-pointer">
+    <button type="button" on:click={toggleFullscreen}>
+      {#if isFullscreen}
+        <CompressIcon />
+      {:else}
+        <ExpandIcon />
+      {/if}
+    </button>
+  </div>
 
-    <div class={isFullscreen ? "h-full" : "h-96"}>
+  <div class={isFullscreen ? "h-full" : "h-96"}>
+    {#if $involvements.fetching}
+      <LoadingPulse class="pt-5" />
+    {:else if $involvements.error}
+      <p>Error...{$involvements.error.message}</p>
+    {:else}
       <div
         bind:this={graphContainer}
-        id="investor-network"
         class="min-h-full w-full cursor-all-scroll border-2 border-solid"
       />
-    </div>
+    {/if}
+  </div>
 
-    <div class="flex flex-row bg-white dark:bg-gray-700">
-      {#if showControls}
-        <div class="basis-1/2 p-2">
-          <div class="pb-3">
-            <label for="investor-level">
-              <strong>{$_("Level of parent investors")}</strong>
-            </label>
-            <div class="w-1/2">
-              <input
-                bind:value={depth}
-                id="investor-level"
-                type="range"
-                min="1"
-                max={MAX_DEPTH}
-              />
-              {depth}
-            </div>
-          </div>
-
-          <div>
-            <label for="investor-deals" class="pr-3">
-              <strong>{$_("Show deals")}</strong>
-            </label>
-            <input bind:checked={showDeals} id="investor-deals" type="checkbox" />
+  <div class="flex flex-row bg-white dark:bg-gray-700">
+    {#if showControls}
+      <div class="basis-1/2 p-2">
+        <div class="pb-3">
+          <label for="investor-level">
+            <strong>{$_("Level of parent investors")}</strong>
+          </label>
+          <div class="w-1/2">
+            <input
+              bind:value={depth}
+              id="investor-level"
+              type="range"
+              min="1"
+              max={MAX_DEPTH}
+            />
+            {depth}
           </div>
         </div>
-      {/if}
-      <div class="basis-1/2 p-2">
-        <strong>{$_("Legend")}</strong>
-        <ul>
-          <li>
-            <span class="colored-line" style:--color="#fc941f" />
-            {$_("Is operating company of")}
-          </li>
-          <li>
-            <span class="colored-arrow" style:--color="#f78e8f" />
-            {$_("Is parent company of")}
-          </li>
-          <li>
-            <span class="colored-arrow" style:--color="#72b0fd" />
-            {$_("Is tertiary investor/lender of")}
-          </li>
-        </ul>
+
+        <div>
+          <label for="investor-deals" class="pr-3">
+            <strong>{$_("Show deals")}</strong>
+          </label>
+          <input bind:checked={showDeals} id="investor-deals" type="checkbox" />
+        </div>
       </div>
+    {/if}
+    <div class="basis-1/2 p-2">
+      <strong>{$_("Legend")}</strong>
+      <ul>
+        <li>
+          <span class="colored-line" style:--color="#fc941f" />
+          {$_("Is operating company of")}
+        </li>
+        <li>
+          <span class="colored-arrow" style:--color="#f78e8f" />
+          {$_("Is parent company of")}
+        </li>
+        <li>
+          <span class="colored-arrow" style:--color="#72b0fd" />
+          {$_("Is tertiary investor/lender of")}
+        </li>
+      </ul>
     </div>
   </div>
-{/await}
+</div>
 
 <style lang="css">
   .colored-line {
