@@ -1,7 +1,7 @@
 import { error } from "@sveltejs/kit"
 import { diff } from "deep-object-diff"
 
-import { investor_gql_query } from "$lib/investor_queries"
+import { investorQuery } from "$lib/investorQueries"
 import type { Investor } from "$lib/types/investor"
 
 import type { PageLoad } from "./$types"
@@ -19,7 +19,7 @@ export const load: PageLoad = async ({ params, parent }) => {
 
   const vFrom = await urqlClient
     .query(
-      investor_gql_query,
+      investorQuery,
       { id: investorID, version: versionFrom, includeDeals: false },
       { requestPolicy: "network-only" },
     )
@@ -27,7 +27,7 @@ export const load: PageLoad = async ({ params, parent }) => {
   const investorFrom: Investor = vFrom.data.investor
   const vTo = await urqlClient
     .query(
-      investor_gql_query,
+      investorQuery,
       { id: investorID, version: versionTo, includeDeals: false },
       { requestPolicy: "network-only" },
     )

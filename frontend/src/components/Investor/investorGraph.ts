@@ -63,9 +63,12 @@ export const CY_OPTIONS: CytoscapeOptions = {
   ],
 }
 
-export const createGraph = (elements: ElementDefinition[]) =>
+export const createGraph = (
+  containerElement: HTMLDivElement,
+  elements: ElementDefinition[],
+) =>
   cytoscape({
-    container: document.getElementById("investor-network"),
+    container: containerElement,
     elements: elements,
     ...CY_OPTIONS,
   })
@@ -123,6 +126,7 @@ export const registerTippy = (cyGraph: Graph) => {
 
 export const createGraphElements = (
   investor: Investor,
+  involvements: Involvement[],
   elements: ElementDefinition[],
   showDeals: boolean,
   depth: number,
@@ -142,35 +146,13 @@ export const createGraphElements = (
         rootNode: true,
       },
     })
+    if (showDeals) {
+      addDealNodesAndEdges(investor, elements)
+    }
   }
 
-  if (showDeals) {
-    investor.deals?.forEach((deal: Deal) => {
-      const deal_node: NodeDefinition = {
-        data: {
-          ...deal,
-          _id: deal.id,
-          id: "D" + deal.id,
-          name: "#" + deal.id,
-          bgColor: "#fc941f",
-          dealNode: true,
-        },
-      }
-      const deal_edge: EdgeDefinition = {
-        data: {
-          id: `${investor.id}_D${deal.id}`,
-          source: `${investor.id}`,
-          target: "D" + deal.id,
-          edge_color: "#fc941f",
-        },
-      }
-
-      elements.push(deal_node)
-      elements.push(deal_edge)
-    })
-  }
-  if (investor.involvements && investor.involvements.length) {
-    investor.involvements.forEach((involvement: Involvement) => {
+  if (involvements && involvements.length) {
+    involvements.forEach((involvement: Involvement) => {
       const investor_node = {
         data: {
           id: `${involvement.investor.id}`,
@@ -207,9 +189,45 @@ export const createGraphElements = (
       elements.push(investor_node)
       elements.push(investor_edge)
 
-      createGraphElements(involvement.investor, elements, showDeals, depth - 1)
+      if (showDeals) {
+        addDealNodesAndEdges(involvement.investor, elements)
+      }
+
+      createGraphElements(
+        involvement.investor,
+        involvement.investor.involvements,
+        elements,
+        showDeals,
+        depth - 1,
+      )
     })
   }
 
   return elements
+}
+
+const addDealNodesAndEdges = (investor: Investor, elements: ElementDefinition[]) => {
+  investor.deals?.forEach((deal: Deal) => {
+    const deal_node: NodeDefinition = {
+      data: {
+        ...deal,
+        _id: deal.id,
+        id: "D" + deal.id,
+        name: "#" + deal.id,
+        bgColor: "#fc941f",
+        dealNode: true,
+      },
+    }
+    const deal_edge: EdgeDefinition = {
+      data: {
+        id: `${investor.id}_D${deal.id}`,
+        source: `${investor.id}`,
+        target: "D" + deal.id,
+        edge_color: "#fc941f",
+      },
+    }
+
+    elements.push(deal_node)
+    elements.push(deal_edge)
+  })
 }

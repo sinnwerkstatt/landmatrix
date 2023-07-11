@@ -1,6 +1,6 @@
 import { error, redirect } from "@sveltejs/kit"
 
-import { deal_gql_query } from "$lib/deal_queries"
+import { dealQuery } from "$lib/dealQueries"
 import { findActiveVersion } from "$lib/helpers"
 import type { Deal } from "$lib/types/deal"
 
@@ -14,7 +14,7 @@ export const load: PageLoad = async ({ params, parent }) => {
 
   const [dealID, dealVersion] = params.IDs.split("/").map(x => (x ? +x : undefined))
   const { data } = await urqlClient
-    .query<{ deal: Deal }>(deal_gql_query, { id: dealID, version: dealVersion })
+    .query<{ deal: Deal }>(dealQuery, { id: dealID, version: dealVersion })
     .toPromise()
   if (!data?.deal)
     throw error(404, dealVersion ? "Deal version not found" : "Deal not found")

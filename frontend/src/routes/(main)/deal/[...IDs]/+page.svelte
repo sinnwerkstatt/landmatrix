@@ -70,11 +70,7 @@
       .query<{ investor: Investor }>(
         gql`
           query ($id: Int!) {
-            investor(
-              id: $id
-              involvements_depth: 5
-              involvements_include_ventures: false
-            ) {
+            investor(id: $id) {
               id
               name
               classification
@@ -84,7 +80,6 @@
               }
               homepage
               comment
-              involvements
             }
           }
         `,
@@ -183,7 +178,7 @@
             <h4 class="mb-2">
               Network of parent companies and tertiary investors/lenders
             </h4>
-            <InvestorGraph {investor} />
+            <InvestorGraph {investor} initDepth={5} />
           {/if}
         </DealSection>
       {/if}
