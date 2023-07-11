@@ -26,17 +26,17 @@
   export let includeVentures = false
   export let showControls = false
 
-  let involvements: [Involvement] = []
+  let involvements: Involvement[] = []
   const fetchInvolvementNetwork = async (depth: number): Promise<void> => {
     const { error, data } = await ($page.data.urqlClient as Client)
-      .query<{ investor_involvement_network: Involvement[] }>(
+      .query<{ involvement_network: Involvement[] }>(
         gql`
           query InvolvementNetwork(
             $id: Int!
             $depth: Int!
             $include_ventures: Boolean
           ) {
-            investor_involvement_network(
+            involvement_network(
               id: $id
               depth: $depth
               include_ventures: $include_ventures
@@ -56,7 +56,7 @@
       return
     }
 
-    involvements = data.investor_involvement_network
+    involvements = data.involvement_network
   }
 
   const MAX_DEPTH = 5

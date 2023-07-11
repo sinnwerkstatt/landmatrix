@@ -107,7 +107,7 @@ def resolve_investor(
     return investor
 
 
-def resolve_investor_involvement_network(
+def resolve_involvement_network(
     _obj,
     info,
     id: int,

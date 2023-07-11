@@ -27,7 +27,7 @@ type Query {
     subset: Subset = PUBLIC
     filters: [Filter]
   ): [Investor]
-  investor_involvement_network(
+  involvement_network(
     id: Int!
     depth: Int = 1
     include_ventures: Boolean = true
