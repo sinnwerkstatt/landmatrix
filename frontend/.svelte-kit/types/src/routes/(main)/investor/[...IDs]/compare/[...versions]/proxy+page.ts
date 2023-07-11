@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { error } from "@sveltejs/kit"
 import { diff } from "deep-object-diff"
 
@@ -6,7 +7,7 @@ import type { Investor } from "$lib/types/investor"
 
 import type { PageLoad } from "./$types"
 
-export const load: PageLoad = async ({ params, parent }) => {
+export const load = async ({ params, parent }: Parameters<PageLoad>[0]) => {
   const { urqlClient } = await parent()
   const [investorID] = params.IDs.split("/").map(x => (x ? +x : undefined))
   if (!investorID) throw error(404, "Investor not found")

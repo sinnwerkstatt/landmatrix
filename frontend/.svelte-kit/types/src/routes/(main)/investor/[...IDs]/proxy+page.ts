@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { error, redirect } from "@sveltejs/kit"
 
 import { findActiveVersion } from "$lib/helpers"
@@ -7,7 +8,7 @@ import type { Investor } from "$lib/types/investor"
 
 import type { PageLoad } from "./$types"
 
-export const load: PageLoad = async ({ params, parent }) => {
+export const load = async ({ params, parent }: Parameters<PageLoad>[0]) => {
   const { urqlClient } = await parent()
   const [investorID, investorVersion] = params.IDs.split("/").map(x =>
     x ? +x : undefined,

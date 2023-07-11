@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { error, redirect } from "@sveltejs/kit"
 
 import { findActiveVersion } from "$lib/helpers"
@@ -6,7 +7,7 @@ import type { Investor } from "$lib/types/investor"
 
 import type { PageLoad } from "./$types"
 
-export const load: PageLoad = async ({ params, parent }) => {
+export const load = async ({ params, parent }: Parameters<PageLoad>[0]) => {
   const { user, urqlClient } = await parent()
   if (!user) throw error(403, "Permission denied")
 

@@ -1,6 +1,6 @@
 import { gql } from "@urql/svelte"
 
-export const investor_gql_query = gql`
+export const investorQuery = gql`
   query Investor($id: Int!, $version: Int, $includeDeals: Boolean!) {
     investor(id: $id, version: $version, subset: UNFILTERED) {
       id

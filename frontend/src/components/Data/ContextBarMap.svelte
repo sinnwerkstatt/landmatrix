@@ -7,7 +7,7 @@
   import { createImplementationStatusChartData } from "$lib/data/charts/implementationStatus"
   import { createNegotiationStatusChartData } from "$lib/data/charts/negotiationStatusGroup"
   import { createProduceGroupChartData } from "$lib/data/charts/produceGroup"
-  import { data_deal_query_gql } from "$lib/deal_queries"
+  import { dealsQuery } from "$lib/dealQueries"
   import { filters, publicOnly } from "$lib/filters"
   import { countries, loading, observatoryPages, regions } from "$lib/stores"
   import type { CountryOrRegion } from "$lib/types/wagtail"
@@ -21,7 +21,7 @@
 
   $: deals = queryStore({
     client: $page.data.urqlClient,
-    query: data_deal_query_gql,
+    query: dealsQuery,
     variables: {
       filters: $filters.toGQLFilterArray(),
       subset: $publicOnly ? "PUBLIC" : "ACTIVE",

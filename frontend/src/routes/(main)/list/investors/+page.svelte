@@ -4,7 +4,7 @@
 
   import { page } from "$app/stores"
 
-  import { data_deal_query_gql } from "$lib/deal_queries"
+  import { dealsQuery } from "$lib/dealQueries"
   import { filters, FilterValues, publicOnly } from "$lib/filters"
   import { formfields } from "$lib/stores"
   import type { Deal } from "$lib/types/deal"
@@ -42,7 +42,7 @@
 
   $: deals = queryStore({
     client: $page.data.urqlClient,
-    query: data_deal_query_gql,
+    query: dealsQuery,
     variables: {
       filters: $filters.toGQLFilterArray(),
       subset: $publicOnly ? "PUBLIC" : "ACTIVE",
