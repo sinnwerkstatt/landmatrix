@@ -19,14 +19,24 @@
   } from "$components/Investor/investorGraph"
   import LoadingPulse from "$components/LoadingPulse.svelte"
 
+  const MAX_DEPTH = 5
+
   export let investor: Investor
-  export let showDealsOnLoad = true
   export let initDepth = 1
+  export let showDealsOnLoad = true
   export let includeVentures = false
   export let showControls = false
 
-  const MAX_DEPTH = 5
   let depth = initDepth
+  let showDeals = showDealsOnLoad
+  let modalData: { dealNode: boolean } = {}
+  let showInvestorModal = false
+  let showDealModal = false
+  let isFullscreen = false
+
+  let elements: ElementDefinition[] = []
+  let cyGraph: Graph
+  let graphContainer: HTMLDivElement
 
   $: involvements = queryStore({
     client: $page.data.urqlClient,
@@ -42,20 +52,6 @@
     },
   })
 
-  let modalData: { dealNode: boolean } = {}
-  let isFullscreen = false
-  let showInvestorModal = false
-  let showDealModal = false
-  let showDeals = showDealsOnLoad
-
-  let cyGraph: Graph
-  const drawGraph = () => {
-    cyGraph = createGraph(graphContainer, elements)
-    registerTippy(cyGraph)
-    registerModal(cyGraph)
-  }
-
-  let elements: ElementDefinition[] = []
   $: if (investor && $involvements.data) {
     elements = createGraphElements(
       investor,
@@ -66,9 +62,15 @@
     )
   }
 
-  let graphContainer: HTMLDivElement
-  $: if (graphContainer) {
-    drawGraph()
+  const showNodeModal: EventHandler = e => {
+    e.preventDefault()
+    modalData = e.target.data()
+
+    if (modalData.dealNode) {
+      showDealModal = true
+    } else {
+      showInvestorModal = true
+    }
   }
 
   const registerModal = cyGraph => {
@@ -78,12 +80,14 @@
     })
   }
 
-  const showNodeModal: EventHandler = e => {
-    e.preventDefault()
-    modalData = e.target.data()
+  const drawGraph = () => {
+    cyGraph = createGraph(graphContainer, elements)
+    registerTippy(cyGraph)
+    registerModal(cyGraph)
+  }
 
-    if (modalData.dealNode) showDealModal = true
-    else showInvestorModal = true
+  $: if (elements && graphContainer) {
+    drawGraph()
   }
 
   const toggleFullscreen = async () => {
