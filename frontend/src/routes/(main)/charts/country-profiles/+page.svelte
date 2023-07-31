@@ -15,7 +15,8 @@
   import LoadingPulse from "$components/LoadingPulse.svelte"
   import CumulativeNumberOfDeals from "$components/Data/Charts/CountryProfile/CumulativeNumberOfDeals.svelte"
   import CumulativeSizeUnderContract from "$components/Data/Charts/CountryProfile/CumulativeSizeUnderContract.svelte"
-  import LandAcquisitionsByCategoryOfProduction from "$components/Data/Charts/CountryProfile/LandAcquisitionsByCategoryOfProduction.svelte"
+
+  import LandAcquisitionsByCategoryOfProduction from "./land-acquisitions-by-category-of-production/LACOPChart.svelte"
 
   $: deals = queryStore({
     client: $page.data.urqlClient,
@@ -33,18 +34,23 @@
 </svelte:head>
 
 <ChartsContainer>
-  <div class="mt-20 flex w-[clamp(500px,90%,1000px)] flex-col overflow-visible">
+  <div class="h-full w-full overflow-visible">
     {#if $deals.fetching}
       <LoadingPulse />
     {:else if $deals.error}
       <p>Error...{$deals.error.message}</p>
     {:else}
-      <LandAcquisitionsByCategoryOfProduction deals={$deals.data.deals} />
-      <CumulativeNumberOfDeals deals={$deals.data.deals} />
-      <CumulativeSizeUnderContract deals={$deals.data.deals} />
-      <IntentionsPerCategory deals={$deals.data.deals} />
-      <LSLAByNegotiation deals={$deals.data.deals} />
-      <DynamicsOfDeal deals={$deals.data.deals} />
+      <div class="flex flex-col md:flex-row">
+        <div class="flex-grow">
+          <LandAcquisitionsByCategoryOfProduction deals={$deals.data.deals} />
+        </div>
+
+        <!--        <CumulativeNumberOfDeals deals={$deals.data.deals} />-->
+        <!--        <CumulativeSizeUnderContract deals={$deals.data.deals} />-->
+        <!--        <IntentionsPerCategory deals={$deals.data.deals} />-->
+        <!--        <LSLAByNegotiation deals={$deals.data.deals} />-->
+        <!--        <DynamicsOfDeal deals={$deals.data.deals} />-->
+      </div>
     {/if}
   </div>
 </ChartsContainer>

@@ -6,21 +6,15 @@
 </script>
 
 <div class="relative h-full w-full p-0">
-  <ViewSwitcher />
+  <!--  <ViewSwitcher />-->
   <FilterBar />
   <ContextBarContainer>
     <slot name="ContextBar" />
   </ContextBarContainer>
   <div class="h-full w-full">
-    <div
-      class="{$showFilterBar ? 'w-[clamp(220px,20%,300px)]' : 'w-0'} float-left h-full"
-    />
-    <div
-      class="{$showContextBar
-        ? 'w-[clamp(220px,20%,300px)]'
-        : 'w-0'} float-right h-full"
-    />
-    <div class="flex h-full justify-center overflow-x-auto overflow-y-auto text-center">
+    <div class="float-left h-full w-0 xl:w-[clamp(220px,20%,300px)]" />
+    <div class="float-right h-full w-0 xl:w-[clamp(220px,20%,300px)]" />
+    <div class="h-full overflow-auto">
       <slot />
     </div>
   </div>
