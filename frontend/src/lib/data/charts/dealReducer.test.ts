@@ -1,4 +1,4 @@
-import { createBucketMap } from "$lib/data/buckets"
+import { createEmptyBuckets } from "$lib/data/buckets"
 import { agricultureIntentionReducer } from "$lib/data/charts/agricultureIntention"
 import { implementationStatusReducer } from "$lib/data/charts/implementationStatus"
 import { intentionOfInvestmentGroupReducer } from "$lib/data/charts/intentionOfInvestmentGroup"
@@ -40,7 +40,7 @@ describe("Intention of Investment Group", () => {
 
     const bucketMap = deals.reduce(
       intentionOfInvestmentGroupReducer,
-      createBucketMap(Object.values(IoIGroup)),
+      createEmptyBuckets(Object.values(IoIGroup)),
     )
 
     expect(bucketMap).toEqual({
@@ -74,7 +74,7 @@ describe("Agriculture Intention of Investment", () => {
 
     const bucketMap = deals.reduce(
       agricultureIntentionReducer,
-      createBucketMap(Object.values(AgricultureIoI)),
+      createEmptyBuckets(Object.values(AgricultureIoI)),
     )
 
     expect(bucketMap).toEqual({
@@ -105,7 +105,7 @@ describe("Produce Group", () => {
 
     const bucketMap = deals.reduce(
       produceGroupReducer,
-      createBucketMap(Object.values(ProduceGroup)),
+      createEmptyBuckets(Object.values(ProduceGroup)),
     )
 
     expect(bucketMap).toEqual({
@@ -135,7 +135,7 @@ describe("Negotiation Status Group", () => {
 
     const bucketMap = deals.reduce(
       negotiationStatusGroupReducer,
-      createBucketMap(Object.values(NegotiationStatusGroup)),
+      createEmptyBuckets(Object.values(NegotiationStatusGroup)),
     )
 
     expect(bucketMap).toEqual({
@@ -166,7 +166,7 @@ describe("Implementation Status", () => {
 
     const bucketMap = deals.reduce(
       implementationStatusReducer,
-      createBucketMap(Object.values(ImplementationStatus)),
+      createEmptyBuckets(Object.values(ImplementationStatus)),
     )
 
     expect(bucketMap).toEqual({

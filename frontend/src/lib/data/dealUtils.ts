@@ -29,9 +29,18 @@ export const isCanceledItem: (item: NegotiationStatusItem) => boolean = R.propSa
   "choice",
 )
 
-export const isConcluded: (deal: Deal) => boolean = R.pipe(
+export const hasBeenConcluded: (deal: Deal) => boolean = R.pipe(
   R.propOr<NegotiationStatusItem[]>([], "negotiation_status"),
   R.any(isConcludedItem),
+)
+
+export const isConcluded: (deal: Deal) => boolean = R.propSatisfies(
+  R.includes(R.__, [
+    NegotiationStatus.ORAL_AGREEMENT,
+    NegotiationStatus.CONTRACT_SIGNED,
+    NegotiationStatus.CHANGE_OF_OWNERSHIP,
+  ]),
+  "current_negotiation_status",
 )
 
 export const getCanceledDate: (deal: Deal) => number | undefined = R.pipe<

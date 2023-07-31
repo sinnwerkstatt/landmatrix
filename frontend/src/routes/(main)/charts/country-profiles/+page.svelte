@@ -1,6 +1,5 @@
 <script lang="ts">
   import { queryStore } from "@urql/svelte"
-  import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
   import { page } from "$app/stores"
@@ -9,7 +8,6 @@
   import { filters, publicOnly } from "$lib/filters"
   import { loading } from "$lib/stores"
 
-  import { showContextBar } from "$components/Data/stores"
   import ChartsContainer from "$components/Data/Charts/ChartsContainer.svelte"
   import DynamicsOfDeal from "$components/Data/Charts/CountryProfile/DynamicsOfDeal.svelte"
   import IntentionsPerCategory from "$components/Data/Charts/CountryProfile/IntentionsPerCategory.svelte"
@@ -17,6 +15,7 @@
   import LoadingPulse from "$components/LoadingPulse.svelte"
   import CumulativeNumberOfDeals from "$components/Data/Charts/CountryProfile/CumulativeNumberOfDeals.svelte"
   import CumulativeSizeUnderContract from "$components/Data/Charts/CountryProfile/CumulativeSizeUnderContract.svelte"
+  import LandAcquisitionsByCategoryOfProduction from "$components/Data/Charts/CountryProfile/LandAcquisitionsByCategoryOfProduction.svelte"
 
   $: deals = queryStore({
     client: $page.data.urqlClient,
@@ -27,8 +26,6 @@
     },
   })
   $: loading.set($deals?.fetching ?? false)
-
-  onMount(() => showContextBar.set(false))
 </script>
 
 <svelte:head>
@@ -42,6 +39,7 @@
     {:else if $deals.error}
       <p>Error...{$deals.error.message}</p>
     {:else}
+      <LandAcquisitionsByCategoryOfProduction deals={$deals.data.deals} />
       <CumulativeNumberOfDeals deals={$deals.data.deals} />
       <CumulativeSizeUnderContract deals={$deals.data.deals} />
       <IntentionsPerCategory deals={$deals.data.deals} />
