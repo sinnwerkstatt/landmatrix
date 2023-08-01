@@ -8,7 +8,7 @@
 
   import { dealsQuery } from "$lib/dealQueries"
   import { filters, publicOnly } from "$lib/filters"
-  import { loading } from "$lib/stores"
+  import { loading, isMobile } from "$lib/stores"
 
   import ChartsContainer from "$components/Data/Charts/ChartsContainer.svelte"
   import DynamicsOfDeal from "$components/Data/Charts/CountryProfile/DynamicsOfDeal.svelte"
@@ -77,12 +77,9 @@
   })
   $: loading.set($deals?.fetching ?? false)
 
-  // TODO: Implement isMobile
-  $: isMobile = true
-
   onMount(() => {
-    showContextBar.set(!isMobile)
-    showFilterBar.set(!isMobile)
+    showContextBar.set(!$isMobile)
+    showFilterBar.set(!$isMobile)
   })
 </script>
 

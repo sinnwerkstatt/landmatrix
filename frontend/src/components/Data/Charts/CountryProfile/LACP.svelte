@@ -11,20 +11,16 @@
   } from "chart.js?client"
   import { _ } from "svelte-i18n"
 
-  import type { Bucket, BucketMap, SortBy } from "$lib/data/buckets"
+  import type { SortBy } from "$lib/data/buckets"
   import type { Deal } from "$lib/types/deal"
-  import { IoI, INTENTION_OF_INVESTMENT_GROUP_MAP, IoIGroup } from "$lib/types/deal"
+  import { IoI, INTENTION_OF_INVESTMENT_GROUP_MAP } from "$lib/types/deal"
   import {
     createBucketMapReducer,
     createEmptyBuckets,
     bucketEntries,
-    sumBuckets,
   } from "$lib/data/buckets"
   import { isConcluded } from "$lib/data/dealUtils"
-  import {
-    flat_intention_of_investment_map,
-    intention_of_investment_group_choices,
-  } from "$lib/choices"
+  import { intention_of_investment_group_choices } from "$lib/choices"
 
   import DoughnutWrapper from "$components/Data/Charts/CountryProfile/DoughnutWrapper.svelte"
 
@@ -107,12 +103,10 @@
           label(context) {
             const item = context.raw as Item
             const percentage = item["value"] * 100
-            // return ` ${item["label"]} (${percentage.toFixed(2)}%) `
             return ` ${percentage.toFixed(2)}%`
           },
           title(items) {
-            // return items[0].dataset.label
-            return items[0].raw["label"]
+            return (items[0].raw as Item)["label"]
           },
         },
       },
@@ -196,7 +190,7 @@
 
 <!-- https://www.chartjs.org/docs/latest/configuration/responsive.html#important-note-->
 <div class="relative mx-auto h-[80vh] p-5 md:p-10">
-  <DoughnutWrapper {data} {options} {Doughnut} />
+  <DoughnutWrapper {data} {options} />
 </div>
 
 <button

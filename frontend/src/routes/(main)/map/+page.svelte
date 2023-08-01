@@ -10,7 +10,7 @@
 
   import { dealsQuery } from "$lib/dealQueries"
   import { filters, publicOnly } from "$lib/filters"
-  import { countries, loading, regions } from "$lib/stores"
+  import { countries, loading, regions, isMobile } from "$lib/stores"
   import type { Deal, Location } from "$lib/types/deal"
   import type { Country } from "$lib/types/wagtail"
   import type { GQLFilter } from "$lib/types/filters"
@@ -266,11 +266,9 @@
   const displayDealsCountUnsubscribe = displayDealsCount.subscribe(() => refreshMap())
   $: flyToCountryOrRegion($filters.country_id, $filters.region_id)
 
-  $: isMobile = true
-
   onMount(() => {
-    showContextBar.set(!isMobile)
-    showFilterBar.set(!isMobile)
+    showContextBar.set(!$isMobile)
+    showFilterBar.set(!$isMobile)
   })
 
   onDestroy(() => {
