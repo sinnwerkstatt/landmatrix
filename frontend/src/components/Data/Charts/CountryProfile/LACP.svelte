@@ -1,6 +1,6 @@
 <script lang="ts">
   import * as R from "ramda"
-  import type { ChartData, ChartOptions, LabelItem } from "chart.js"
+  import type { ChartData, ChartOptions, LegendItem } from "chart.js"
   import {
     ArcElement,
     Tooltip,
@@ -145,7 +145,7 @@
           generateLabels(chart: ChartJS) {
             const original =
               ChartJS.overrides.doughnut.plugins.legend.labels.generateLabels
-            const labelsOriginal: LabelItem[] = original.call(this, chart)
+            const labelsOriginal: LegendItem[] = original.call(this, chart)
 
             const groupColors = chart.data.datasets[1].backgroundColor
 
@@ -192,20 +192,19 @@
       },
     },
   }
-  let chart: ChartJS
 </script>
 
-<!--<div class="flex flex-col items-center text-center">-->
-<!--  <p>Showing deal {sortBy}</p>-->
-<!--  <button-->
-<!--    on:click={() => {-->
-<!--      sortBy = sortBy === "count" ? "size" : "count"-->
-<!--    }}-->
-<!--  >-->
-<!--    Toggle sort-->
-<!--  </button>-->
+<!-- https://www.chartjs.org/docs/latest/configuration/responsive.html#important-note-->
 <div class="relative mx-auto h-[80vh] p-5 md:p-10">
-  <!--    <Doughnut bind:chart {data} {options} />-->
-  <DoughnutWrapper {data} {options} />
+  <DoughnutWrapper {data} {options} {Doughnut} />
 </div>
-<!--</div>-->
+
+<button
+  class="btn btn-primary"
+  on:click={() => {
+    sortBy = sortBy === "count" ? "size" : "count"
+  }}
+>
+  {$_("Show deal")}
+  {sortBy === "count" ? "size" : "count"}
+</button>

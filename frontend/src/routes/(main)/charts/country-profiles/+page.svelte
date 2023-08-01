@@ -107,7 +107,7 @@
       {#each countryProfiles as profile (profile.key)}
         <li>
           <button
-            class="btn btn-secondary w-full whitespace-break-spaces text-left"
+            class="btn btn-secondary whitespace-break-spaces w-full text-left"
             on:click={() => {
               currentProfileKey = profile.key
             }}
