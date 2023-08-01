@@ -1,7 +1,7 @@
 import type { ChartData } from "chart.js"
 
 import type { AnyKey, BucketMap, SortBy } from "$lib/data/buckets"
-import { createBucketMap, sortBuckets } from "$lib/data/buckets"
+import { createEmptyBuckets, sortBuckets } from "$lib/data/buckets"
 import type { Deal } from "$lib/types/deal"
 
 export const COLORS = {
@@ -30,7 +30,7 @@ export const createChartData =
     colorFn: MapFn<TKey>,
   ) =>
   (deals: Deal[], sortBy: SortBy): ChartData => {
-    const bucketMap = deals.reduce(dealReducer, createBucketMap(bucketKeys))
+    const bucketMap = deals.reduce(dealReducer, createEmptyBuckets(bucketKeys))
     const [keys, buckets] = sortBuckets(sortBy, bucketMap)
 
     return {

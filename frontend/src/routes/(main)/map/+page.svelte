@@ -10,12 +10,12 @@
 
   import { dealsQuery } from "$lib/dealQueries"
   import { filters, publicOnly } from "$lib/filters"
-  import { countries, loading, regions } from "$lib/stores"
+  import { countries, loading, regions, isMobile } from "$lib/stores"
   import type { Deal, Location } from "$lib/types/deal"
   import type { Country } from "$lib/types/wagtail"
   import type { GQLFilter } from "$lib/types/filters"
 
-  import { showContextBar } from "$components/Data/stores"
+  import { showContextBar, showFilterBar } from "$components/Data/stores"
   import DataContainer from "$components/Data/DataContainer.svelte"
   import FilterCollapse from "$components/Data/FilterCollapse.svelte"
   import BigMap from "$components/Map/BigMap.svelte"
@@ -266,7 +266,10 @@
   const displayDealsCountUnsubscribe = displayDealsCount.subscribe(() => refreshMap())
   $: flyToCountryOrRegion($filters.country_id, $filters.region_id)
 
-  onMount(() => showContextBar.set(true))
+  onMount(() => {
+    showContextBar.set(!$isMobile)
+    showFilterBar.set(!$isMobile)
+  })
 
   onDestroy(() => {
     markersRefreshUnsubscribe()
@@ -340,7 +343,7 @@
             <img
               alt="Legend for {layer.name}"
               src={layer.legendUrlFunction()}
-              class="mt-2 mb-4 ml-4 border"
+              class="mb-4 ml-4 mt-2 border"
               loading="lazy"
             />
           {/if}

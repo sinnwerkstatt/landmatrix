@@ -4,6 +4,7 @@ import type { Client } from "@urql/core"
 import { gql } from "@urql/svelte"
 import { _ } from "svelte-i18n"
 import { derived, get, writable } from "svelte/store"
+import type { Writable } from "svelte/store"
 
 // eslint-disable-next-line import/no-unresolved
 import { browser } from "$app/environment"
@@ -270,6 +271,19 @@ const bindIsDarkModeToPreferredColorScheme = () => {
   }
 }
 
+export const isMobile: Writable<boolean | null> = writable(null)
+
+const TAILWIND_SM_BREAKPOINT_IN_PX = 640
+
+const bindIsMobileToScreenInnerWidth = () => {
+  isMobile.set(window.innerWidth <= TAILWIND_SM_BREAKPOINT_IN_PX)
+
+  window.addEventListener("resize", () => {
+    isMobile.set(window.innerWidth <= TAILWIND_SM_BREAKPOINT_IN_PX)
+  })
+}
+
 if (browser) {
   bindIsDarkModeToPreferredColorScheme()
+  bindIsMobileToScreenInnerWidth()
 }

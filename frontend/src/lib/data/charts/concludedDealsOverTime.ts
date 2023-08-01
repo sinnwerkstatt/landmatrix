@@ -7,7 +7,7 @@ import { isDated, parseDate } from "$lib/data/itemUtils"
 import {
   getConcludedRange,
   getInitialSize,
-  isConcluded,
+  hasBeenConcluded,
   hasConcludedDate,
   getCurrentSize,
 } from "$lib/data/dealUtils"
@@ -78,7 +78,7 @@ export const createConcludedDealsOverTimeReducer = (years: number[]) => {
     deal: Deal,
   ): ConcludedDealsOverTimeAccumulator => {
     // filtered
-    if (!isConcluded(deal)) {
+    if (!hasBeenConcluded(deal)) {
       return acc
     }
     // excluded

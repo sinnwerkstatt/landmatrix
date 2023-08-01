@@ -1,11 +1,15 @@
-import { createBucketMap, createBucketMapReducer, sortBuckets } from "$lib/data/buckets"
+import {
+  createEmptyBuckets,
+  createBucketMapReducer,
+  sortBuckets,
+} from "$lib/data/buckets"
 
 describe("buckets", () => {
   test("createBuckets", () => {
     type Key = "a" | "b"
     const keys: Key[] = ["a", "b", "a"]
 
-    const bucketMap = createBucketMap(keys)
+    const bucketMap = createEmptyBuckets(keys)
 
     expect(bucketMap).toEqual({
       a: { size: 0, count: 0 },

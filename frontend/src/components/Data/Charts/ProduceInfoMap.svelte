@@ -218,6 +218,6 @@
   }
 </script>
 
-<ChartWrapper {title} on:download={handleDownload}>
+<ChartWrapper {title} wrapperClasses="mx-auto w-full" on:download={handleDownload}>
   <svg id="produce-info-map" bind:this={svgComp} />
 </ChartWrapper>
