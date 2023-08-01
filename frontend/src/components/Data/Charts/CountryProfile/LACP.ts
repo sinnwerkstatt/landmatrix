@@ -1,4 +1,6 @@
 import * as R from "ramda"
+import { get } from "svelte/store"
+import type { Readable } from "svelte/store"
 
 import { IoIGroup, IoI } from "$lib/types/deal"
 import type { Bucket, SortBy, BucketMap } from "$lib/data/buckets"
@@ -7,8 +9,6 @@ import {
   intention_of_investment_group_choices,
 } from "$lib/choices"
 import { sumBuckets } from "$lib/data/buckets"
-
-const toggleSortBy = (sortBy: SortBy): SortBy => (sortBy === "count" ? "size" : "count")
 
 export const IOI_GROUP_COLORS: {
   [key in IoIGroup]: string
@@ -40,8 +40,7 @@ export interface Item<Key extends string = string> {
   value: number
   label: string
 }
-import { get } from "svelte/store"
-import type { Readable } from "svelte/store"
+
 export const createData = (
   _: Readable<any>,
   sortBy: SortBy,

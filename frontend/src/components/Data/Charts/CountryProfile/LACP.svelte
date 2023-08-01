@@ -92,6 +92,9 @@
     ],
   }
 
+  const splitIntoChunks = (str: string): string[] =>
+    str.match(/.{1,40}(?= |$)/g) as string[]
+
   let options: ChartOptions<"doughnut">
   $: options = {
     // aspectRatio: 1.2,
@@ -112,6 +115,7 @@
       },
       title: {
         display: true,
+        // fullSize: false,
         text: $_("Land acquisitions by category of production"),
         font: {
           size: 35,
@@ -120,18 +124,26 @@
       subtitle: {
         display: true,
         position: "bottom",
-        text: [
-          (sortBy === "count" ? "Number of deals" : "Size under contract") +
-            " per category of production,",
-          "represented as the percentage of total",
-          sortBy === "count" ? "concluded deals" : "concluded size",
-        ],
+        // fullSize: false,
+        text: splitIntoChunks(
+          sortBy === "count"
+            ? $_(
+                "Number of deals per category of production, represented as the percentage of total concluded deals",
+              )
+            : $_(
+                "Size under contract per category of production, represented as the percentage of total concluded size",
+              ),
+        ),
+        padding: {
+          top: 10,
+        },
         font: {
           size: 25,
         },
       },
       legend: {
         display: true,
+        // position: "right",
         labels: {
           font: {
             size: 20,
@@ -199,6 +211,5 @@
     sortBy = sortBy === "count" ? "size" : "count"
   }}
 >
-  {$_("Show deal")}
-  {sortBy === "count" ? "size" : "count"}
+  {sortBy === "count" ? $_("Show deal size") : $_("Show deal count")}
 </button>
