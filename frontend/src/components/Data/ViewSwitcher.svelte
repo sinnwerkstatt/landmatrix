@@ -39,7 +39,7 @@
 </script>
 
 <div
-  class="pointer-events-none absolute inset-x-0 top-3 z-30 mx-auto hidden text-center drop-shadow xl:block"
+  class="pointer-events-none absolute inset-x-0 top-3 z-30 mx-auto text-center drop-shadow"
 >
   <nav id="data-navigation">
     <ul

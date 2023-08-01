@@ -38,8 +38,14 @@
   onMount(() => redrawSpider(deals, $filters.country_id))
 </script>
 
-<ChartWrapper {title} disableCSV wrapperClasses="w-3/4" on:download={handleDownload}>
+<ChartWrapper
+  {title}
+  disableCSV
+  wrapperClasses="mx-auto w-3/4"
+  on:download={handleDownload}
+>
   <svg id="web-of-transnational-deals" class="bg-lm-lightgray" bind:this={svgComp}>
+    <!-- Include styles with fallback colors in svg for export-->
     <!-- Include styles with fallback colors in svg for export-->
     <style>
       #incoming-marker {

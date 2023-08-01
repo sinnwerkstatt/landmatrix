@@ -1,6 +1,8 @@
 <script lang="ts">
   import { queryStore } from "@urql/svelte"
   import { _ } from "svelte-i18n"
+  import type { ComponentType } from "svelte"
+  import { onMount } from "svelte"
 
   import { page } from "$app/stores"
 
@@ -15,8 +17,55 @@
   import LoadingPulse from "$components/LoadingPulse.svelte"
   import CumulativeNumberOfDeals from "$components/Data/Charts/CountryProfile/CumulativeNumberOfDeals.svelte"
   import CumulativeSizeUnderContract from "$components/Data/Charts/CountryProfile/CumulativeSizeUnderContract.svelte"
+  import LACP from "$components/Data/Charts/CountryProfile/LACP.svelte"
+  import { showContextBar, showFilterBar } from "$components/Data/stores"
 
-  import LandAcquisitionsByCategoryOfProduction from "./land-acquisitions-by-category-of-production/LACOPChart.svelte"
+  interface CountryProfile {
+    component: ComponentType
+    label: string
+    key: string
+  }
+
+  let countryProfiles: CountryProfile[]
+  $: countryProfiles = [
+    {
+      key: "lacp",
+      label: $_("Land acquisitions by category of production"),
+      component: LACP,
+    },
+    {
+      key: "lsla",
+      label: $_("LSLA by negotiation status"),
+      component: LSLAByNegotiation,
+    },
+    {
+      key: "dynamicsOfDeal",
+      label: $_("Dynamics of deal by investor type"),
+      component: DynamicsOfDeal,
+    },
+    {
+      key: "intentions",
+      label: $_("Number of intentions per category of production"),
+      component: IntentionsPerCategory,
+    },
+    {
+      key: "cumCount",
+      label: $_("Concluded deals over time since the year {year}", {
+        values: { year: 2000 },
+      }),
+      component: CumulativeNumberOfDeals,
+    },
+    {
+      key: "cumSize",
+      label: $_("Cumulative area size under contract since the year {year}", {
+        values: { year: 2000 },
+      }),
+      component: CumulativeSizeUnderContract,
+    },
+  ]
+
+  let currentProfileKey = "lacp"
+  $: currentProfile = countryProfiles.find(profile => profile.key === currentProfileKey)
 
   $: deals = queryStore({
     client: $page.data.urqlClient,
@@ -27,6 +76,14 @@
     },
   })
   $: loading.set($deals?.fetching ?? false)
+
+  // TODO: Implement isMobile
+  $: isMobile = true
+
+  onMount(() => {
+    showContextBar.set(!isMobile)
+    showFilterBar.set(!isMobile)
+  })
 </script>
 
 <svelte:head>
@@ -40,17 +97,25 @@
     {:else if $deals.error}
       <p>Error...{$deals.error.message}</p>
     {:else}
-      <div class="flex flex-col md:flex-row">
-        <div class="flex-grow">
-          <LandAcquisitionsByCategoryOfProduction deals={$deals.data.deals} />
-        </div>
-
-        <!--        <CumulativeNumberOfDeals deals={$deals.data.deals} />-->
-        <!--        <CumulativeSizeUnderContract deals={$deals.data.deals} />-->
-        <!--        <IntentionsPerCategory deals={$deals.data.deals} />-->
-        <!--        <LSLAByNegotiation deals={$deals.data.deals} />-->
-        <!--        <DynamicsOfDeal deals={$deals.data.deals} />-->
-      </div>
+      <svelte:component this={currentProfile?.component} deals={$deals.data.deals} />
     {/if}
+  </div>
+
+  <div slot="ContextBar">
+    <h2>{$_("Country profile graphs")}</h2>
+    <ul>
+      {#each countryProfiles as profile (profile.key)}
+        <li>
+          <button
+            class="btn btn-secondary w-full whitespace-break-spaces text-left"
+            on:click={() => {
+              currentProfileKey = profile.key
+            }}
+          >
+            {profile.label}
+          </button>
+        </li>
+      {/each}
+    </ul>
   </div>
 </ChartsContainer>

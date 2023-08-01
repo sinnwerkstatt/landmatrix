@@ -120,9 +120,9 @@
 <DataContainer>
   <div class="flex h-full">
     <div
-      class="h-full min-h-[3px] flex-none {$showFilterBar
-        ? 'w-[clamp(220px,20%,300px)]'
-        : 'w-0'}"
+      class="h-full min-h-[3px] w-0 flex-none {$showFilterBar
+        ? 'md:w-[clamp(220px,20%,300px)]'
+        : ''}"
     />
 
     <div class="flex h-full w-1 grow flex-col px-6 pb-6">
@@ -143,10 +143,10 @@
         />
       </Table>
     </div>
-    <div
-      class="h-full min-h-[3px] flex-none {$showContextBar
-        ? 'w-[clamp(220px,20%,300px)]'
-        : 'w-0'}"
-    />
+    <!--    <div-->
+    <!--      class="h-full min-h-[3px] flex-none {$showContextBar-->
+    <!--        ? 'w-[clamp(220px,20%,300px)]'-->
+    <!--        : 'w-0'}"-->
+    <!--    />-->
   </div>
 </DataContainer>
