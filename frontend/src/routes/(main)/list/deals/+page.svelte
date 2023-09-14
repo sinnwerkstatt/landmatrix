@@ -6,7 +6,7 @@
 
   import { dealsQuery } from "$lib/dealQueries"
   import { filters, publicOnly } from "$lib/filters"
-  import { formfields, loading } from "$lib/stores"
+  import { formfields, loading, isMobile } from "$lib/stores"
 
   import { showContextBar, showFilterBar } from "$components/Data/stores"
   import DataContainer from "$components/Data/DataContainer.svelte"
@@ -67,6 +67,7 @@
   $: loading.set($deals?.fetching ?? false)
 
   showContextBar.set(false)
+  showFilterBar.set(!$isMobile)
 </script>
 
 <DataContainer>

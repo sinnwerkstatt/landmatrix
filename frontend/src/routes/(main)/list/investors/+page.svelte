@@ -6,7 +6,7 @@
 
   import { dealsQuery } from "$lib/dealQueries"
   import { filters, FilterValues, publicOnly } from "$lib/filters"
-  import { formfields } from "$lib/stores"
+  import { formfields, isMobile } from "$lib/stores"
   import type { Deal } from "$lib/types/deal"
   import type { GQLFilter } from "$lib/types/filters"
   import type { Investor } from "$lib/types/investor"
@@ -115,6 +115,7 @@
   $: getInvestors($deals?.data?.deals ?? [], $filters)
 
   showContextBar.set(false)
+  showFilterBar.set(!$isMobile)
 </script>
 
 <DataContainer>
