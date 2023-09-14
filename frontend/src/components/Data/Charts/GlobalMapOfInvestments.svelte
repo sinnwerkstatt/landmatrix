@@ -99,21 +99,25 @@
 
   :global(svg .target-country-line) {
     fill: none;
-    stroke: var(--color-lm-orange-light);
+    /*stroke: var(--color-lm-orange);*/
+    stroke: black;
+    /*stroke-dasharray: 5px 2px;*/
     stroke-width: 0.6;
     marker-end: url(#outgoing-marker);
   }
   :global(svg .investor-country-line) {
     fill: none;
-    stroke: var(--color-lm-investor-light);
+    /*stroke: var(--color-lm-investor);*/
+    stroke: black;
+    /*stroke-dasharray: 5px 2px;*/
     stroke-width: 0.6;
     marker-end: url(#incoming-marker);
   }
 
   :global(svg #incoming-marker) {
-    fill: var(--color-lm-investor-dark);
+    fill: none;
   }
   :global(svg #outgoing-marker) {
-    fill: var(--color-lm-orange-dark);
+    fill: none;
   }
 </style>
