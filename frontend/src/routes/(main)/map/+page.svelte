@@ -1,10 +1,11 @@
 <script lang="ts">
   import { queryStore } from "@urql/svelte"
-  import type { LeafletEvent, Map } from "leaflet"
-  import { DivIcon, FeatureGroup, Marker, Popup } from "leaflet?client"
+  import type { LeafletEvent, Map, Marker, FeatureGroup } from "leaflet"
+  import { divIcon, featureGroup, marker, popup } from "leaflet?client"
   import { groupBy } from "lodash"
   import { onDestroy, onMount } from "svelte"
   import { _ } from "svelte-i18n"
+  import type { OperationResultStore } from "@urql/svelte/dist/types/common"
 
   import { page } from "$app/stores"
 
@@ -70,7 +71,7 @@
 
   type Subset = "UNFILTERED" | "ACTIVE" | "PUBLIC"
 
-  let deals
+  let deals: OperationResultStore
   $: deals = queryStore<{ deals: Deal[] }, { filters: GQLFilter[]; subset: Subset }>({
     client: $page.data.urqlClient,
     query: dealsQuery,
@@ -97,7 +98,7 @@
     bigmap = evt.detail
     bigmap.on("zoomend", () => refreshMap())
     bigmap.on("moveend", () => refreshMap())
-    markersFeatureGroup = new FeatureGroup()
+    markersFeatureGroup = featureGroup()
     bigmap.addLayer(markersFeatureGroup)
     refreshMap()
     flyToCountryOrRegion($filters.country_id, $filters.region_id)
@@ -117,8 +118,8 @@
       // cluster by Region
       Object.entries(groupBy(markers, mark => mark.region_id)).forEach(([key, val]) => {
         if (key === "undefined") return
-        let circle = new Marker(REGION_COORDINATES[+key], {
-          icon: new DivIcon({ className: LMCircleClass }),
+        let circle = marker(REGION_COORDINATES[+key], {
+          icon: divIcon({ className: LMCircleClass }),
         })
         circle.on("click", () => ($filters.region_id = +key))
 
@@ -142,8 +143,8 @@
         ([key, val]) => {
           // console.log("doing markers for region");
           if (key === "undefined") return
-          let circle = new Marker(country_coords[+key], {
-            icon: new DivIcon({ className: LMCircleClass }),
+          let circle = marker(country_coords[+key], {
+            icon: divIcon({ className: LMCircleClass }),
           })
           circle.on("click", () => ($filters.country_id = +key))
           markersFeatureGroup.addLayer(circle)
@@ -202,17 +203,17 @@
               !!loc.point && !!loc.point.lng && !!loc.point.lat,
           )
           .map((loc: LocWithPoint) => {
-            let marker = new Marker([loc.point.lat, loc.point.lng]) as MyMarker
-            marker.deal = deal
-            marker.loc = loc
-            marker.deal_id = deal.id
-            marker.deal_size = deal.deal_size
+            let myMarker = marker([loc.point.lat, loc.point.lng]) as MyMarker
+            myMarker.deal = deal
+            myMarker.loc = loc
+            myMarker.deal_id = deal.id
+            myMarker.deal_size = deal.deal_size
             if (deal.country) {
-              marker.region_id = deal.country.region.id
-              marker.country_id = deal.country.id
+              myMarker.region_id = deal.country.region.id
+              myMarker.country_id = deal.country.id
             }
-            marker.on("click", createMarkerPopup)
-            return marker
+            myMarker.on("click", createMarkerPopup)
+            return myMarker
           })
 
       markers.push(..._dealLocationMarkersCache[deal.id])
@@ -222,16 +223,16 @@
   }
 
   async function createMarkerPopup(event: LeafletEvent) {
-    const marker = event.target as MyMarker
+    const myMarker = event.target as MyMarker
 
     const markerContainerDiv = document.createElement("div")
     new MapMarkerPopup({
       target: markerContainerDiv,
-      props: { deal: marker.deal, location: marker.loc },
+      props: { deal: myMarker.deal, location: myMarker.loc },
     })
-    new Popup()
+    popup()
       .setContent(markerContainerDiv)
-      .setLatLng(marker.getLatLng())
+      .setLatLng(myMarker.getLatLng())
       .openOn(bigmap)
   }
 
