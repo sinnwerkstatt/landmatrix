@@ -150,7 +150,7 @@
 
   .btn {
     @apply m-0.5 inline-block transform whitespace-nowrap border px-4 py-2 text-center shadow transition;
-    @apply focus:outline-none focus:ring;
+    @apply focus:outline-none;
   }
 
   .btn.disabled,
@@ -172,6 +172,7 @@
     @apply border-orange bg-white text-orange;
     @apply hover:border-orange-300 hover:bg-orange-300 hover:text-white;
     @apply active:bg-orange-700;
+    /*@apply focus:bg-orange-700 focus:text-black;*/
     @apply dark:bg-gray-900 dark:text-orange-200;
   }
 
