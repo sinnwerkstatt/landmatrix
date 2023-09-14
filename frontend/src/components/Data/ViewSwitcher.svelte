@@ -9,11 +9,11 @@
   $: dataViews = [
     {
       title: $_("Deals"),
-      route: "/list/deals",
+      route: "/list/deals/",
     },
     {
       title: $_("Investors"),
-      route: "/list/investors",
+      route: "/list/investors/",
     },
   ]
 
@@ -21,19 +21,19 @@
   $: chartViews = [
     {
       title: $_("Web of transnational deals"),
-      route: "/charts/web-of-transnational-deals",
+      route: "/charts/web-of-transnational-deals/",
     },
     {
       title: $_("Dynamics overview"),
-      route: "/charts/dynamics-overview",
+      route: "/charts/dynamics-overview/",
     },
     {
       title: $_("Produce info map"),
-      route: "/charts/produce-info",
+      route: "/charts/produce-info/",
     },
     {
       title: $_("Country profiles"),
-      route: "/charts/country-profiles",
+      route: "/charts/country-profiles/",
     },
   ]
 </script>
@@ -47,7 +47,7 @@
     >
       <li>
         <a
-          href="/map"
+          href="/map/"
           class="nav-link"
           class:active={$page.url.pathname.startsWith("/map")}
         >
@@ -62,9 +62,11 @@
           {#each dataViews as view}
             <li class="whitespace-nowrap">
               <a
+                data-sveltekit-reload
                 href={view.route}
                 class="nav-link"
                 class:active={$page.url.pathname.startsWith(view.route)}
+                on:click={() => {}}
               >
                 {view.title}
               </a>
@@ -80,9 +82,11 @@
           {#each chartViews as view}
             <li class="whitespace-nowrap">
               <a
+                data-sveltekit-reload
                 href={view.route}
                 class="nav-link"
                 class:active={$page.url.pathname.startsWith(view.route)}
+                on:click={() => {}}
               >
                 {view.title}
               </a>

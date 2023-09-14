@@ -19,12 +19,12 @@
 
 <div
   id="${title}_wrapper"
-  class="mx-4 my-12 flex flex-col flex-nowrap bg-lm-darkgray p-1 drop-shadow {wrapperClasses} dark:bg-gray-700"
+  class="flex flex-col flex-nowrap bg-lm-darkgray p-1 drop-shadow {wrapperClasses} dark:bg-gray-700"
 >
   <slot name="heading">
     <h2>{title}</h2>
   </slot>
-  <div class="svg-wrapper flex max-w-full flex-auto items-center justify-center">
+  <div class="svg-wrapper flex items-center justify-center">
     <slot />
   </div>
   <div

@@ -201,7 +201,7 @@
 </script>
 
 <!-- https://www.chartjs.org/docs/latest/configuration/responsive.html#important-note-->
-<div class="relative mx-auto h-[80vh] p-5 md:p-10">
+<div class="relative mx-auto h-[75vh] p-5 md:p-10">
   <DoughnutWrapper {data} {options} />
 </div>
 
