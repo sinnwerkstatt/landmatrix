@@ -14,6 +14,7 @@ import {
   NegotiationStatusGroup,
   OtherIoI,
   ProduceGroup,
+  RenewableEnergyIoI,
 } from "$lib/types/deal"
 
 describe("Intention of Investment Group", () => {
@@ -24,6 +25,7 @@ describe("Intention of Investment Group", () => {
           ForestryIoI.CARBON,
           ForestryIoI.TIMBER_PLANTATION,
           ForestryIoI.FOREST_LOGGING,
+          RenewableEnergyIoI.SOLAR_PARK,
           AgricultureIoI.BIOFUELS,
         ],
         deal_size: 500,
@@ -33,6 +35,7 @@ describe("Intention of Investment Group", () => {
           OtherIoI.MINING,
           OtherIoI.CONVERSATION,
           AgricultureIoI.BIOFUELS,
+          RenewableEnergyIoI.WIND_FARM,
         ],
         deal_size: 100,
       },
@@ -46,6 +49,7 @@ describe("Intention of Investment Group", () => {
     expect(bucketMap).toEqual({
       [IoIGroup.FORESTRY]: { count: 1, size: 500 },
       [IoIGroup.AGRICULTURE]: { count: 2, size: 600 },
+      [IoIGroup.RENEWABLE_ENERGY]: { count: 2, size: 600 },
       [IoIGroup.OTHER]: { count: 1, size: 100 },
     })
   })
