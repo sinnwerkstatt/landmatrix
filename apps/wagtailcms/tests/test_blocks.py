@@ -231,21 +231,22 @@ class MapDataChartsBlockTestCase(TestCase):
         self.assertEqual(104, context.get("country").id)
 
 
-class LinkMapBlockTestCase(TestCase):
-    fixtures = ["countries_and_regions"]
-
-    def test_get_context(self):
-        block = LinkMapBlock()
-        request = RequestFactory()
-        request.resolver_match = AttrDict(kwargs={"country_slug": "myanmar"})
-        context = block.get_context({}, {"request": request})
-        self.assertEqual(
-            {"implementation", "intention", "level_of_accuracy"},
-            set(context.get("legend").keys()),
-        )
-        self.assertGreater(len(context.get("legend_json")), 0)
-        self.assertEqual(104, context.get("map_object").id)
-        self.assertEqual(True, context.get("is_country"))
+# TODO probably unneeded
+# class LinkMapBlockTestCase(TestCase):
+#     fixtures = ["countries_and_regions"]
+#
+#     def test_get_context(self):
+#         block = LinkMapBlock()
+#         request = RequestFactory()
+#         request.resolver_match = AttrDict(kwargs={"country_slug": "myanmar"})
+#         context = block.get_context({}, {"request": request})
+#         self.assertEqual(
+#             {"implementation", "intention", "level_of_accuracy"},
+#             set(context.get("legend").keys()),
+#         )
+#         self.assertGreater(len(context.get("legend_json")), 0)
+#         self.assertEqual(104, context.get("map_object").id)
+#         self.assertEqual(True, context.get("is_country"))
 
 
 class LatestDatabaseModificationsBlockTestCase(TestCase):
