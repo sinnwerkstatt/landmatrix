@@ -1,5 +1,6 @@
 from django import forms
 from django.db import models
+from django.db.models import QuerySet
 from wagtail.admin.panels import FieldPanel, FieldRowPanel
 from wagtail.api import APIField
 from wagtail.contrib.settings.models import register_setting, BaseGenericSetting
@@ -127,15 +128,9 @@ class ObservatoryPage(HeadlessPreviewMixin, Page):
                 }
 
     def related_blogpages(self):
-        if not self.region and not self.country:
-            return []
-        slug = self.country.slug if self.country else self.region.slug
-
-        return [
-            article.get_dict("fill-500x500|jpegquality-60")
-            for article in BlogPage.objects.live()
+        qs: QuerySet[BlogPage] = (
+            BlogPage.objects.live()
             .order_by("-date")
-            .filter(tags__slug=slug)
             .filter(
                 blog_categories__slug__in=[
                     "country-profile",
@@ -143,7 +138,11 @@ class ObservatoryPage(HeadlessPreviewMixin, Page):
                     "publications",
                 ]
             )
-        ]
+        )
+        if self.country or self.region:
+            slug = self.country.slug if self.country else self.region.slug
+            qs = qs.filter(tags__slug=slug)
+        return [article.get_dict("fill-500x500|jpegquality-60") for article in qs]
 
     # @staticmethod
     # def current_negotiation_status_metrics():
