@@ -14,6 +14,7 @@
   import OilIcon from "$components/icons/OilIcon.svelte"
   import PlaneIcon from "$components/icons/PlaneIcon.svelte"
   import RenewableEnergyIcon from "$components/icons/RenewableEnergyIcon.svelte"
+  import SolarPanelIcon from "$components/icons/SolarPanelIcon.svelte"
 
   export let value: string[]
   export let formfield: FormField
@@ -35,6 +36,8 @@
     INDUSTRY: IndustryIcon,
     CONVERSATION: null,
     LAND_SPECULATION: LandSpeculationIcon,
+    SOLAR_PARK: SolarPanelIcon,
+    WIND_FARM: RenewableEnergyIcon,
     RENEWABLE_ENERGY: RenewableEnergyIcon,
     OTHER: null,
   }

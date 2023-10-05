@@ -17,7 +17,9 @@ INTENTION_CHOICES = [
     ("INDUSTRY", _("Industry")),
     ("CONVERSATION", _("Conservation")),
     ("LAND_SPECULATION", _("Land speculation")),
-    ("RENEWABLE_ENERGY", _("Renewable energy")),
+    ("SOLAR_PARK", _("Solar park")),
+    ("WIND_FARM", _("Wind farm")),
+    ("RENEWABLE_ENERGY", _("Renewable energy unspecified")),
     ("OTHER", _("Other")),
 ]
 NATURE_OF_DEAL_CHOICES = [

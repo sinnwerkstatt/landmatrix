@@ -14,6 +14,7 @@ const INTENTION_OF_INVESTMENT_GROUP_COLORS: {
 } = {
   [IntentionOfInvestmentGroup.AGRICULTURE]: COLORS.ORANGE,
   [IntentionOfInvestmentGroup.FORESTRY]: COLORS.ORANGE_DARK,
+  [IntentionOfInvestmentGroup.RENEWABLE_ENERGY]: COLORS.ORANGE_LIGHT,
   [IntentionOfInvestmentGroup.OTHER]: COLORS.BLACK,
 }
 

@@ -124,6 +124,7 @@ export enum ImplementationStatus {
 export enum IntentionOfInvestmentGroup {
   AGRICULTURE = "AGRICULTURE",
   FORESTRY = "FORESTRY",
+  RENEWABLE_ENERGY = "RENEWABLE_ENERGY",
   OTHER = "OTHER",
 }
 export const IoIGroup = IntentionOfInvestmentGroup
@@ -145,6 +146,11 @@ export enum ForestryIoI {
   FORESTRY_UNSPECIFIED = "FORESTRY_UNSPECIFIED",
 }
 
+export enum RenewableEnergyIoI {
+  SOLAR_PARK = "SOLAR_PARK",
+  WIND_FARM = "WIND_FARM",
+  RENEWABLE_ENERGY = "RENEWABLE_ENERGY",
+}
 export enum OtherIoI {
   MINING = "MINING",
   OIL_GAS_EXTRACTION = "OIL_GAS_EXTRACTION",
@@ -152,7 +158,6 @@ export enum OtherIoI {
   INDUSTRY = "INDUSTRY",
   CONVERSATION = "CONVERSATION",
   LAND_SPECULATION = "LAND_SPECULATION",
-  RENEWABLE_ENERGY = "RENEWABLE_ENERGY",
   OTHER = "OTHER",
 }
 
@@ -161,6 +166,7 @@ export enum OtherIoI {
 export const IntentionOfInvestment = {
   ...ForestryIoI,
   ...AgricultureIoI,
+  ...RenewableEnergyIoI,
   ...OtherIoI,
 }
 
@@ -186,13 +192,16 @@ export const INTENTION_OF_INVESTMENT_GROUP_MAP: {
   [ForestryIoI.CARBON]: IoIGroup.FORESTRY,
   [ForestryIoI.FORESTRY_UNSPECIFIED]: IoIGroup.FORESTRY,
 
+  [RenewableEnergyIoI.SOLAR_PARK]: IoIGroup.RENEWABLE_ENERGY,
+  [RenewableEnergyIoI.WIND_FARM]: IoIGroup.RENEWABLE_ENERGY,
+  [RenewableEnergyIoI.RENEWABLE_ENERGY]: IoIGroup.RENEWABLE_ENERGY,
+
   [OtherIoI.MINING]: IoIGroup.OTHER,
   [OtherIoI.OIL_GAS_EXTRACTION]: IoIGroup.OTHER,
   [OtherIoI.TOURISM]: IoIGroup.OTHER,
   [OtherIoI.INDUSTRY]: IoIGroup.OTHER,
   [OtherIoI.CONVERSATION]: IoIGroup.OTHER,
   [OtherIoI.LAND_SPECULATION]: IoIGroup.OTHER,
-  [OtherIoI.RENEWABLE_ENERGY]: IoIGroup.OTHER,
   [OtherIoI.OTHER]: IoIGroup.OTHER,
 }
 

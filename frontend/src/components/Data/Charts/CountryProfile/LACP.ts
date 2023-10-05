@@ -15,6 +15,7 @@ export const IOI_GROUP_COLORS: {
 } = {
   [IoIGroup.FORESTRY]: "#179961",
   [IoIGroup.AGRICULTURE]: "#00bfff",
+  [IoIGroup.RENEWABLE_ENERGY]: "#ff6bdc",
   [IoIGroup.OTHER]: "#ff7c63",
 }
 export type GroupedBuckets = { [key in IoIGroup]: BucketMap<IoI> }

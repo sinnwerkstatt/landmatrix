@@ -7,6 +7,7 @@ import {
   NatureOfDeal,
   NegotiationStatusGroup,
   OtherIoI,
+  RenewableEnergyIoI,
 } from "$lib/types/deal"
 import { Classification } from "$lib/types/investor"
 
@@ -72,7 +73,13 @@ export const forestry_investment_choices: {
   [ForestryIoI.CARBON]: "For carbon sequestration/REDD",
   [ForestryIoI.FORESTRY_UNSPECIFIED]: "Forestry unspecified",
 }
-
+export const renewable_energy_investment_choices: {
+  [key in RenewableEnergyIoI]: string
+} = {
+  [RenewableEnergyIoI.SOLAR_PARK]: "Solar park",
+  [RenewableEnergyIoI.WIND_FARM]: "Wind farm",
+  [RenewableEnergyIoI.RENEWABLE_ENERGY]: "Renewable energy unspecified",
+}
 export const other_intention_choices: { [key in OtherIoI]: string } = {
   [OtherIoI.MINING]: "Mining",
   [OtherIoI.OIL_GAS_EXTRACTION]: "Oil / Gas extraction",
@@ -80,7 +87,6 @@ export const other_intention_choices: { [key in OtherIoI]: string } = {
   [OtherIoI.INDUSTRY]: "Industry",
   [OtherIoI.CONVERSATION]: "Conservation",
   [OtherIoI.LAND_SPECULATION]: "Land speculation",
-  [OtherIoI.RENEWABLE_ENERGY]: "Renewable energy",
   [OtherIoI.OTHER]: "Other",
 }
 
@@ -89,12 +95,14 @@ export const intention_of_investment_group_choices: {
 } = {
   [IntentionOfInvestmentGroup.AGRICULTURE]: "Agriculture",
   [IntentionOfInvestmentGroup.FORESTRY]: "Forestry",
+  [IntentionOfInvestmentGroup.RENEWABLE_ENERGY]: "Renewable energy",
   [IntentionOfInvestmentGroup.OTHER]: "Other",
 }
 
 export const intention_of_investment_choices = {
   Agriculture: agriculture_investment_choices,
   Forestry: forestry_investment_choices,
+  "Renewable energy power plants": renewable_energy_investment_choices,
   Other: other_intention_choices,
 }
 
@@ -103,6 +111,7 @@ export const flat_intention_of_investment_map: {
 } = {
   ...agriculture_investment_choices,
   ...forestry_investment_choices,
+  ...renewable_energy_investment_choices,
   ...other_intention_choices,
 }
 
