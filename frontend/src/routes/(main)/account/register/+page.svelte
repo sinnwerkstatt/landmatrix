@@ -7,6 +7,7 @@
 
   import HCaptcha from "$components/HCaptcha.svelte"
   import PageTitle from "$components/PageTitle.svelte"
+  import { slugify } from "$lib/utils"
 
   let user = {
     username: "",
@@ -28,7 +29,9 @@
     disabled = false
     console.log(token)
   }
-
+  function usernameChange() {
+    user = { ...user, username: slugify(user.username) }
+  }
   async function register() {
     const ret = await ($page.data.urqlClient as Client)
       .mutation<{ register: { ok: boolean; code: string } }>(
@@ -101,7 +104,10 @@
         placeholder={$_("Username")}
         type="text"
         required
+        pattern="[@_+.a-zA-Z0-9 \-]+"
+        on:input={usernameChange}
       />
+      <span class="text-xs">{$_("Letters, digits and @/./+/-/_ only.")}</span>
     </label>
     <label>
       {$_("Email")}

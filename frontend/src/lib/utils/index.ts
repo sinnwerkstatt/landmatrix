@@ -47,3 +47,16 @@ export const sortFn =
 
     return 0
   }
+
+export function slugify(str: string) {
+  return str
+    .replace("ä", "ae")
+    .replace("ö", "oe")
+    .replace("ü", "ue")
+    .replace("ß", "ss")
+    .normalize("NFD") // split an accented letter in the base letter and the acent
+    .replace(/[\u0300-\u036f]/g, "") // remove all previously split accents
+    .replace(/\s+/g, "_") // separator
+    .replace(/[^@_+.a-zA-Z0-9 -]/g, "") // remove all chars not letters, numbers and spaces (to be replaced)
+    .trim()
+}
