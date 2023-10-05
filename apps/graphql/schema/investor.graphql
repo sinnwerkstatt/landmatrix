@@ -1,5 +1,5 @@
 type Investor {
-  id: Int!
+  id: Int
   name: String!
   country: Country
   classification: String
