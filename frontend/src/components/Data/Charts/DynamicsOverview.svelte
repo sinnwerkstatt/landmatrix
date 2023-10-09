@@ -22,7 +22,7 @@
 </script>
 
 <div>
-  <div class="grid grid-cols-2 grid-rows-2 gap-4">
+  <div class="mx-8 grid grid-rows-1 gap-8 md:mx-16 md:grid-cols-2 md:gap-16">
     <DownloadablePieChart
       title={$_("Intention of investment")}
       data={chartIoI}
