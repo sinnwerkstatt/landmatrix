@@ -66,7 +66,6 @@
                 href={view.route}
                 class="nav-link"
                 class:active={$page.url.pathname.startsWith(view.route)}
-                on:click={() => {}}
               >
                 {view.title}
               </a>
@@ -86,7 +85,6 @@
                 href={view.route}
                 class="nav-link"
                 class:active={$page.url.pathname.startsWith(view.route)}
-                on:click={() => {}}
               >
                 {view.title}
               </a>
