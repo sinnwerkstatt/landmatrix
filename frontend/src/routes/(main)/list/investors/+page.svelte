@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Client, gql, queryStore } from "@urql/svelte"
   import { _ } from "svelte-i18n"
+  import { onMount } from "svelte"
 
   import { page } from "$app/stores"
 
@@ -114,8 +115,10 @@
 
   $: getInvestors($deals?.data?.deals ?? [], $filters)
 
-  showContextBar.set(false)
-  showFilterBar.set(!$isMobile)
+  onMount(() => {
+    showContextBar.set(false)
+    showFilterBar.set(!$isMobile)
+  })
 </script>
 
 <DataContainer>

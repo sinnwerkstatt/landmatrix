@@ -22,7 +22,6 @@
       subset: $publicOnly ? "PUBLIC" : "ACTIVE",
     },
   })
-  onMount(() => showContextBar.set(true))
 
   const title = $_("Produce info map")
 

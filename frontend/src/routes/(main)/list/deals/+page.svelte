@@ -1,6 +1,7 @@
 <script lang="ts">
   import { queryStore } from "@urql/svelte"
   import { _ } from "svelte-i18n"
+  import { onMount } from "svelte"
 
   import { page } from "$app/stores"
 
@@ -66,8 +67,10 @@
   })
   $: loading.set($deals?.fetching ?? false)
 
-  showContextBar.set(false)
-  showFilterBar.set(!$isMobile)
+  onMount(() => {
+    showContextBar.set(false)
+    showFilterBar.set(!$isMobile)
+  })
 </script>
 
 <DataContainer>
