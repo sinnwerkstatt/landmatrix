@@ -5,7 +5,7 @@
   import "leaflet/dist/leaflet.css"
   import { Icon, Map } from "leaflet?client"
   import { nanoid } from "nanoid"
-  import { createEventDispatcher, onMount } from "svelte"
+  import { createEventDispatcher, onMount, onDestroy } from "svelte"
   import { _ } from "svelte-i18n"
 
   import LoadingPulse from "$components/LoadingPulse.svelte"
@@ -60,6 +60,14 @@
     })
 
     map.whenReady(() => dispatch("ready", map))
+  })
+
+  // See bug ticket #668: Sometimes not called when switching views quickly.
+  onDestroy(() => {
+    if (map) {
+      map.remove()
+      map = undefined
+    }
   })
 
   $: if (map && $visibleLayer) {
