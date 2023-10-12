@@ -6,7 +6,7 @@
     IMPLEMENTATION_STATUS_COLORS,
     implementationStatusReducer,
   } from "$lib/data/charts/implementationStatus"
-  import { createChartData, COLORS } from "$lib/data/createChartData"
+  import { createChartData } from "$lib/data/createChartData"
   import { ImplementationStatus } from "$lib/types/deal"
   import { implementationStatusMap } from "$lib/stores"
   import type { SortBy } from "$lib/data/buckets"
