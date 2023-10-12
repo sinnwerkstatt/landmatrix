@@ -99,16 +99,21 @@
     @apply font-oswald text-[72px] font-bold leading-[125%] md:text-[120px];
   }
 
+  .heading1,
+  .heading2,
+  .heading3 {
+    @apply font-oswald font-bold leading-[125%] text-lm-black;
+  }
   .heading1 {
-    @apply font-oswald text-[48px] font-bold leading-[125%] md:text-[60px];
+    @apply text-[48px] md:text-[60px];
   }
 
   .heading2 {
-    @apply font-oswald text-[40px] font-bold leading-[125%] md:text-[48px];
+    @apply text-[40px] md:text-[48px];
   }
 
   .heading3 {
-    @apply font-oswald text-[32px] font-bold leading-[125%] md:text-[40px];
+    @apply text-[32px] md:text-[40px];
   }
   .heading4 {
     @apply font-oswald text-[28px] font-semibold leading-[125%] md:text-[32px];
@@ -132,7 +137,7 @@
   }
 
   .caption {
-    @apply text-[12px] font-bold uppercase leading-[125%] tracking-[5%] md:text-[14px];
+    @apply text-[12px] font-bold uppercase leading-[125%] tracking-[5%] text-lm-black md:text-[14px];
   }
 
   .button1 {
