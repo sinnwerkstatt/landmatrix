@@ -84,7 +84,7 @@
   }
 
   h3 {
-    @apply heading1 my-5 text-[22px] font-bold text-lm-dark dark:text-gray-200;
+    @apply my-5 text-[22px] font-bold text-lm-dark dark:text-gray-200;
   }
 
   h3 a {
