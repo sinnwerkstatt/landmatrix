@@ -64,8 +64,8 @@ const config = {
           300: "#BDE39E",
           400: "#AADC83",
           500: "#A0D875",
-          "light": "#E2F3D6",
-          "dark": "#477722",
+          light: "#E2F3D6",
+          dark: "#477722",
         },
         "lm-red": {
           DEFAULT: "#E8726A",
@@ -75,8 +75,8 @@ const config = {
           300: "#EF9C97",
           400: "#EA8079",
           500: "#E8726A",
-          "light": "#F8D5D2",
-          "dark": "#B11B1B",
+          light: "#F8D5D2",
+          dark: "#B11B1B",
         },
         "lm-yellow": {
           DEFAULT: "#E7CC41",
@@ -89,9 +89,9 @@ const config = {
         },
         "lm-red-deleted": "hsl(0,33%,68%)",
         gray: {
-          "dark": "#666666",
-          "medium": "#999999",
-          "light": "#CCCCCC",
+          dark: "#666666",
+          medium: "#999999",
+          light: "#CCCCCC",
         },
         "lm-black": "#190E00",
         "lm-dark": "#4a4a4a",
@@ -107,30 +107,30 @@ const config = {
       },
       keyframes: theme => ({
         fadeToWhite: {
-          "0%": {backgroundColor: theme("colors.white")},
-          "10%": {backgroundColor: theme("colors.orange.200")},
-          "100%": {backgroundColor: theme("colors.orange.50")},
+          "0%": { backgroundColor: theme("colors.white") },
+          "10%": { backgroundColor: theme("colors.orange.200") },
+          "100%": { backgroundColor: theme("colors.orange.50") },
         },
         fadeToGray: {
-          "0%": {backgroundColor: theme("colors.white")},
-          "100%": {backgroundColor: theme("colors.gray.700")},
+          "0%": { backgroundColor: theme("colors.white") },
+          "100%": { backgroundColor: theme("colors.gray.700") },
         },
       }),
     },
   },
 
   plugins: [
-    function ({addBase, theme}) {
+    function ({ addBase, theme }) {
       function extractColorVars(colorObj, colorGroup = "") {
         return Object.keys(colorObj).reduce((vars, colorKey) => {
           const value = colorObj[colorKey]
 
           const newVars =
             typeof value === "string"
-              ? {[`--color${colorGroup}-${colorKey}`]: value}
+              ? { [`--color${colorGroup}-${colorKey}`]: value }
               : extractColorVars(value, `-${colorKey}`)
 
-          return {...vars, ...newVars}
+          return { ...vars, ...newVars }
         }, {})
       }
 
