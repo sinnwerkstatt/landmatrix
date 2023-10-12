@@ -10,11 +10,15 @@
   import { chartDescriptions, isMobile } from "$lib/stores"
 
   import ChartsContainer from "$components/Data/Charts/ChartsContainer.svelte"
-  import DynamicsOverview from "$components/Data/Charts/DynamicsOverview.svelte"
   import DealDisplayToggle from "$components/DealDisplayToggle.svelte"
   import LoadingPulse from "$components/LoadingPulse.svelte"
   import { displayDealsCount } from "$components/Map/map_helper"
   import { showContextBar, showFilterBar } from "$components/Data/stores"
+
+  import AgricultureIntentionChart from "./AgricultureIntentionChart.svelte"
+  import ImplementationStatusChart from "./ImplementationStatusChart.svelte"
+  import IoIGroupChart from "./IoIGroupChart.svelte"
+  import NegotiationStatusGroupChart from "./NegotiationStatusGroupChart.svelte"
 
   $: deals = queryStore({
     client: $page.data.urqlClient,
@@ -47,10 +51,24 @@
     {:else if $deals.error}
       <p>Error...{$deals.error.message}</p>
     {:else}
-      <DynamicsOverview
-        deals={$deals.data.deals}
-        displayDealsCount={$displayDealsCount}
-      />
+      <div class="mx-8 grid grid-rows-1 gap-8 md:mx-16 md:grid-cols-2 md:gap-16">
+        <IoIGroupChart
+          deals={$deals.data.deals}
+          displayDealsCount={$displayDealsCount}
+        />
+        <AgricultureIntentionChart
+          deals={$deals.data.deals}
+          displayDealsCount={$displayDealsCount}
+        />
+        <NegotiationStatusGroupChart
+          deals={$deals.data.deals}
+          displayDealsCount={$displayDealsCount}
+        />
+        <ImplementationStatusChart
+          deals={$deals.data.deals}
+          displayDealsCount={$displayDealsCount}
+        />
+      </div>
     {/if}
   </div>
 </ChartsContainer>

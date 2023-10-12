@@ -14,7 +14,7 @@
   export let data: ChartData<"pie">
   export let unit = ""
 
-  let chart: Chart<"pie"> | null = null
+  let chart: Chart<"pie">
 
   const toCSV = (data: ChartData<"pie">) =>
     [data.labels?.join(","), ...data.datasets.map(set => set.data.join(","))].join("\n")

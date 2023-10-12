@@ -29,7 +29,7 @@ export const createChartData =
     labelFn: MapFn<TKey>,
     colorFn: MapFn<TKey>,
   ) =>
-  (deals: Deal[], sortBy: SortBy): ChartData => {
+  (deals: Deal[], sortBy: SortBy): ChartData<"pie"> => {
     const bucketMap = deals.reduce(dealReducer, createEmptyBuckets(bucketKeys))
     const [keys, buckets] = sortBuckets(sortBy, bucketMap)
 

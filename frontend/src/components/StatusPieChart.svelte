@@ -9,7 +9,6 @@
     Tooltip,
   } from "chart.js?client"
   import { Pie } from "svelte-chartjs?client"
-  import { _ } from "svelte-i18n"
 
   import { isDarkMode } from "$lib/stores"
 
@@ -19,14 +18,12 @@
 
   export let data: ChartData
   export let unit = ""
-  export let chart: ChartJS | null
+  export let chart: ChartJS = undefined
 
   $: totals = data.datasets.map(dSet => dSet.data.reduce((sum, value) => sum + value))
-  let i18nData: ChartData
-  // TODO Marcus: refactor $_(label) up to the source
-  $: i18nData = { ...data, labels: data.labels?.map(label => $_(label)) }
 
-  const options: ChartOptions<"pie"> = {
+  let options: ChartOptions<"pie">
+  $: options = {
     responsive: true,
     aspectRatio: 1,
     plugins: {
@@ -50,17 +47,8 @@
       },
     },
   }
-
-  $: {
-    $isDarkMode // listen to changes in color scheme
-
-    if (chart) {
-      chart.data = i18nData
-      chart.update()
-    }
-  }
 </script>
 
 <!--svelte plugin for IntelliJ cannot index props for SvelteComponentTyped-->
 <!--https://github.com/tomblachut/svelte-intellij/issues/206-->
-<Pie bind:chart data={i18nData} {options} />
+<Pie bind:chart {data} {options} />
