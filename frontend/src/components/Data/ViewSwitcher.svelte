@@ -62,7 +62,6 @@
           {#each dataViews as view}
             <li class="whitespace-nowrap">
               <a
-                data-sveltekit-reload
                 href={view.route}
                 class="nav-link"
                 class:active={$page.url.pathname.startsWith(view.route)}
@@ -81,7 +80,6 @@
           {#each chartViews as view}
             <li class="whitespace-nowrap">
               <a
-                data-sveltekit-reload
                 href={view.route}
                 class="nav-link"
                 class:active={$page.url.pathname.startsWith(view.route)}
