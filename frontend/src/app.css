@@ -15,6 +15,48 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: "Oswald";
+  font-style: normal;
+  font-weight: 200;
+  src: local(""), url("/fonts/Oswald-ExtraLight.ttf") format("truetype-variations");
+}
+
+@font-face {
+  font-family: "Oswald";
+  font-style: normal;
+  font-weight: 300;
+  src: local(""), url("/fonts/Oswald-Light.ttf") format("truetype-variations");
+}
+
+@font-face {
+  font-family: "Oswald";
+  font-style: normal;
+  font-weight: 400;
+  src: local(""), url("/fonts/Oswald-Regular.ttf") format("truetype-variations");
+}
+
+@font-face {
+  font-family: "Oswald";
+  font-style: normal;
+  font-weight: 500;
+  src: local(""), url("/fonts/Oswald-Regular.ttf") format("truetype-variations");
+}
+
+@font-face {
+  font-family: "Oswald";
+  font-style: normal;
+  font-weight: 600;
+  src: local(""), url("/fonts/Oswald-SemiBold.ttf") format("truetype-variations");
+}
+
+@font-face {
+  font-family: "Oswald";
+  font-style: normal;
+  font-weight: 700;
+  src: local(""), url("/fonts/Oswald-Bold.ttf") format("truetype-variations");
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -42,7 +84,7 @@
   }
 
   h3 {
-    @apply my-5 text-[22px] font-bold text-lm-dark dark:text-gray-200;
+    @apply heading1 my-5 text-[22px] font-bold text-lm-dark dark:text-gray-200;
   }
 
   h3 a {
@@ -53,46 +95,103 @@
     @apply my-5 text-lg font-bold text-lm-dark dark:text-gray-200;
   }
 
+  .display1 {
+    @apply font-oswald text-[72px] font-bold leading-[125%] md:text-[120px];
+  }
+
+  .heading1 {
+    @apply font-oswald text-[48px] font-bold leading-[125%] md:text-[60px];
+  }
+
+  .heading2 {
+    @apply font-oswald text-[40px] font-bold leading-[125%] md:text-[48px];
+  }
+
+  .heading3 {
+    @apply font-oswald text-[32px] font-bold leading-[125%] md:text-[40px];
+  }
+  .heading4 {
+    @apply font-oswald text-[28px] font-semibold leading-[125%] md:text-[32px];
+  }
+
+  .heading5 {
+    @apply font-oswald text-[24px]  leading-[125%] md:text-[28px];
+  }
+
+  .subtitle1 {
+    @apply text-[16px] font-bold leading-[125%] md:text-[18px];
+  }
+  .subtitle2 {
+    @apply text-[14px] font-bold leading-[125%] md:text-[16px];
+  }
+  .body1 {
+    @apply text-[16px] leading-[125%] md:text-[18px];
+  }
+  .body2 {
+    @apply text-[14px] leading-[125%] md:text-[16px];
+  }
+
+  .caption {
+    @apply text-[12px] font-bold uppercase leading-[125%] tracking-[5%] md:text-[14px];
+  }
+
+  .button1 {
+    @apply text-[16px] font-bold leading-[125%] tracking-[5%] md:text-[18px];
+  }
+
+  .button-active {
+    @apply text-[16px] font-bold leading-[125%] tracking-[10%] md:text-[18px];
+  }
+
   .btn {
     @apply m-0.5 inline-block transform whitespace-nowrap border px-4 py-2 text-center shadow transition;
     @apply focus:outline-none focus:ring;
   }
+
   .btn.disabled,
   .btn:disabled {
     @apply pointer-events-none opacity-60;
   }
+
   .btn-slim {
     @apply px-3 py-1;
   }
+
   .btn-primary {
     @apply border-orange bg-orange text-white;
     @apply hover:border-orange-300 hover:bg-orange-300;
     @apply active:bg-orange-700;
   }
+
   .btn-secondary {
     @apply border-orange bg-white text-orange;
     @apply hover:border-orange-300 hover:bg-orange-300 hover:text-white;
     @apply active:bg-orange-700;
     @apply dark:bg-gray-900 dark:text-orange-200;
   }
+
   .btn-white {
     @apply border-black bg-white text-black;
     @apply hover:bg-lm-lightgray;
   }
+
   .btn-gray {
     @apply border-lm-dark bg-gray-300 text-gray-600;
     @apply hover:bg-gray-400 hover:text-white;
   }
+
   .btn-pelorous {
     @apply border-pelorous bg-pelorous-300 text-white;
     @apply hover:bg-pelorous hover:text-white;
     @apply active:bg-pelorous active:text-white;
   }
+
   .btn-pelorous-secondary {
     @apply border-pelorous bg-white text-pelorous;
     @apply hover:bg-pelorous-200 hover:text-white;
     @apply active:bg-pelorous active:text-white;
   }
+
   .btn-danger {
     @apply border-dotted border-red-600 bg-transparent text-red-600;
     @apply hover:bg-red-400 hover:text-white;
@@ -102,10 +201,12 @@
     @apply w-full border border-gray-300 bg-white py-1.5 px-3 text-black;
     @apply dark:border-gray-500 dark:bg-gray-600 dark:text-white;
   }
+
   textarea.inpt,
   select[multiple].inpt {
     height: unset;
   }
+
   .inpt:not(:placeholder-shown):not(:focus):invalid {
     @apply border-2 border-red-600 text-red-700;
   }
@@ -117,6 +218,7 @@
   .inpt[readonly] {
     @apply cursor-not-allowed bg-gray-100 text-gray-500 focus:outline-none;
   }
+
   .field-has-appendix {
     @apply flex;
   }
@@ -134,12 +236,15 @@
 .richtext-image {
   @apply h-auto w-auto max-w-[40%];
 }
+
 .richtext-image.left {
   @apply float-left mr-12;
 }
+
 .richtext-image.right {
   @apply float-right ml-12;
 }
+
 .richtext-image.fullwidth {
   @apply mx-auto block max-h-[700px] w-auto max-w-full text-center;
 }
@@ -147,9 +252,11 @@
 .radio-btn {
   @apply h-4 w-4 appearance-none rounded-full border border-gray-400 bg-white transition duration-200 checked:border-2 checked:border-orange-200 checked:bg-orange;
 }
+
 .checkbox-btn {
   @apply h-4 w-4 appearance-none border border-gray-400 transition duration-200 checked:border-2 checked:border-orange-200 checked:bg-orange;
 }
+
 /*form-check-input*/
 
 .svelte-select,
@@ -190,24 +297,29 @@ th {
   --toastPadding: 0 0 0 0.5em;
   --toastWidth: 20rem;
 }
+
 .toast.info {
   --toastColor: #084298;
   --toastBackground: #cfe2ff;
   --toastBarBackground: #b6d4fe;
 }
+
 .toast.success {
   --toastColor: #0f5132;
   --toastBackground: #d1e7dd;
   --toastBarBackground: #badbcc;
 }
+
 .toast.warning {
   --toastColor: #664d03;
   --toastBackground: #fff3cd;
   --toastBarBackground: #ffecb5;
 }
+
 .toast.error {
   --toastColor: #842029;
   --toastBackground: #f8d7da;
   --toastBarBackground: #f5c2c7;
 }
+
 /* toasts end */
