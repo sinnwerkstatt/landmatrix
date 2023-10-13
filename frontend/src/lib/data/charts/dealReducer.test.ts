@@ -83,6 +83,7 @@ describe("Agriculture Intention of Investment", () => {
 
     expect(bucketMap).toEqual({
       [AgricultureIoI.BIOFUELS]: { count: 2, size: 600 },
+      [AgricultureIoI.BIOMASS_ENERGY_GENERATION]: { count: 0, size: 0 },
       [AgricultureIoI.FOOD_CROPS]: { count: 1, size: 100 },
       [AgricultureIoI.FODDER]: { count: 0, size: 0 },
       [AgricultureIoI.LIVESTOCK]: { count: 0, size: 0 },
