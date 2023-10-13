@@ -57,9 +57,10 @@ export const negotiation_status_group_choices: {
 export const agriculture_investment_choices: {
   [key in AgricultureIoI]: string
 } = {
-  [AgricultureIoI.BIOFUELS]: "Biofuels",
-  [AgricultureIoI.FOOD_CROPS]: "Food crops",
+  [AgricultureIoI.BIOFUELS]: "Biomass for biofuels",
+  [AgricultureIoI.BIOMASS_ENERGY_GENERATION]: "Biomass for energy generation",
   [AgricultureIoI.FODDER]: "Fodder",
+  [AgricultureIoI.FOOD_CROPS]: "Food crops",
   [AgricultureIoI.LIVESTOCK]: "Livestock",
   [AgricultureIoI.NON_FOOD_AGRICULTURE]: "Non-food agricultural commodities",
   [AgricultureIoI.AGRICULTURE_UNSPECIFIED]: "Agriculture unspecified",
@@ -68,9 +69,10 @@ export const agriculture_investment_choices: {
 export const forestry_investment_choices: {
   [key in ForestryIoI]: string
 } = {
-  [ForestryIoI.TIMBER_PLANTATION]: "Timber plantation",
-  [ForestryIoI.FOREST_LOGGING]: "Forest logging / management",
+  [ForestryIoI.BIOMASS_ENERGY_PRODUCTION]: "Biomass for energy production",
   [ForestryIoI.CARBON]: "For carbon sequestration/REDD",
+  [ForestryIoI.FOREST_LOGGING]: "Forest logging / management for wood and fiber",
+  [ForestryIoI.TIMBER_PLANTATION]: "Timber plantation for wood and fiber",
   [ForestryIoI.FORESTRY_UNSPECIFIED]: "Forestry unspecified",
 }
 export const renewable_energy_investment_choices: {
@@ -81,12 +83,12 @@ export const renewable_energy_investment_choices: {
   [RenewableEnergyIoI.RENEWABLE_ENERGY]: "Renewable energy unspecified",
 }
 export const other_intention_choices: { [key in OtherIoI]: string } = {
+  [OtherIoI.CONVERSATION]: "Conservation",
+  [OtherIoI.INDUSTRY]: "Industry",
+  [OtherIoI.LAND_SPECULATION]: "Land speculation",
   [OtherIoI.MINING]: "Mining",
   [OtherIoI.OIL_GAS_EXTRACTION]: "Oil / Gas extraction",
   [OtherIoI.TOURISM]: "Tourism",
-  [OtherIoI.INDUSTRY]: "Industry",
-  [OtherIoI.CONVERSATION]: "Conservation",
-  [OtherIoI.LAND_SPECULATION]: "Land speculation",
   [OtherIoI.OTHER]: "Other",
 }
 

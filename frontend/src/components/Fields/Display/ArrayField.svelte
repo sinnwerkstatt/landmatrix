@@ -20,25 +20,31 @@
   export let formfield: FormField
 
   const intention_of_investment_map = {
+    // agriculture
     BIOFUELS: AgricultureIcon,
-    FOOD_CROPS: FoodCropsIcon,
+    BIOMASS_ENERGY_GENERATION: AgricultureIcon,
     FODDER: FoodCropsIcon,
+    FOOD_CROPS: FoodCropsIcon,
     LIVESTOCK: LifestockIcon,
     NON_FOOD_AGRICULTURE: AgricultureIcon,
     AGRICULTURE_UNSPECIFIED: AgricultureIcon,
-    TIMBER_PLANTATION: ForestIcon,
-    FOREST_LOGGING: ForestIcon,
+    // forest
+    BIOMASS_ENERGY_PRODUCTION: ForestIcon,
     CARBON: ForestIcon,
+    FOREST_LOGGING: ForestIcon,
+    TIMBER_PLANTATION: ForestIcon,
     FORESTRY_UNSPECIFIED: ForestIcon,
-    MINING: MiningIcon,
-    OIL_GAS_EXTRACTION: OilIcon,
-    TOURISM: PlaneIcon,
-    INDUSTRY: IndustryIcon,
-    CONVERSATION: null,
-    LAND_SPECULATION: LandSpeculationIcon,
+    // renewable
     SOLAR_PARK: SolarPanelIcon,
     WIND_FARM: RenewableEnergyIcon,
     RENEWABLE_ENERGY: RenewableEnergyIcon,
+    // other
+    CONVERSATION: null,
+    INDUSTRY: IndustryIcon,
+    LAND_SPECULATION: LandSpeculationIcon,
+    MINING: MiningIcon,
+    OIL_GAS_EXTRACTION: OilIcon,
+    TOURISM: PlaneIcon,
     OTHER: null,
   }
 

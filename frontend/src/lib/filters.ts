@@ -83,21 +83,29 @@ export class FilterValues {
     this.initiation_year_min = 2000
     // Exclude: Oil / Gas extraction & Mining
     this.intention_of_investment = [
+      // agriculture
       IntentionOfInvestment.BIOFUELS,
-      IntentionOfInvestment.FOOD_CROPS,
+      IntentionOfInvestment.BIOMASS_ENERGY_GENERATION,
       IntentionOfInvestment.FODDER,
+      IntentionOfInvestment.FOOD_CROPS,
       IntentionOfInvestment.LIVESTOCK,
       IntentionOfInvestment.NON_FOOD_AGRICULTURE,
       IntentionOfInvestment.AGRICULTURE_UNSPECIFIED,
-      IntentionOfInvestment.TIMBER_PLANTATION,
-      IntentionOfInvestment.FOREST_LOGGING,
+      // forest
+      IntentionOfInvestment.BIOMASS_ENERGY_PRODUCTION,
       IntentionOfInvestment.CARBON,
+      IntentionOfInvestment.FOREST_LOGGING,
+      IntentionOfInvestment.TIMBER_PLANTATION,
       IntentionOfInvestment.FORESTRY_UNSPECIFIED,
-      IntentionOfInvestment.TOURISM,
-      IntentionOfInvestment.INDUSTRY,
-      IntentionOfInvestment.CONVERSATION,
-      IntentionOfInvestment.LAND_SPECULATION,
+      // renewable
+      IntentionOfInvestment.SOLAR_PARK,
+      IntentionOfInvestment.WIND_FARM,
       IntentionOfInvestment.RENEWABLE_ENERGY,
+      // other
+      IntentionOfInvestment.CONVERSATION,
+      IntentionOfInvestment.INDUSTRY,
+      IntentionOfInvestment.LAND_SPECULATION,
+      IntentionOfInvestment.TOURISM,
       IntentionOfInvestment.OTHER,
     ]
     // Transnational True
@@ -134,6 +142,7 @@ export class FilterValues {
       this.implementation_status.length === 0,
       _equal(this.intention_of_investment, [
         IntentionOfInvestment.BIOFUELS,
+        IntentionOfInvestment.BIOMASS_ENERGY_GENERATION,
         IntentionOfInvestment.FOOD_CROPS,
         IntentionOfInvestment.FODDER,
         IntentionOfInvestment.LIVESTOCK,

@@ -1,25 +1,31 @@
 from django.utils.translation import gettext as _
 
 INTENTION_CHOICES = [
-    ("BIOFUELS", _("Biofuels")),
-    ("FOOD_CROPS", _("Food crops")),
+    # agriculture
+    ("BIOFUELS", _("Biomass for biofuels")),
+    ("BIOMASS_ENERGY_GENERATION", _("Biomass for energy generation")),
     ("FODDER", _("Fodder")),
+    ("FOOD_CROPS", _("Food crops")),
     ("LIVESTOCK", _("Livestock")),
     ("NON_FOOD_AGRICULTURE", _("Non-food agricultural commodities")),
     ("AGRICULTURE_UNSPECIFIED", _("Agriculture unspecified")),
-    ("TIMBER_PLANTATION", _("Timber plantation")),
-    ("FOREST_LOGGING", _("Forest logging / management")),
+    # forest
+    ("BIOMASS_ENERGY_PRODUCTION", _("Biomass for energy production")),
     ("CARBON", _("For carbon sequestration/REDD")),
+    ("FOREST_LOGGING", _("Forest logging / management for wood and fiber")),
+    ("TIMBER_PLANTATION", _("Timber plantation for wood and fiber")),
     ("FORESTRY_UNSPECIFIED", _("Forestry unspecified")),
-    ("MINING", _("Mining")),
-    ("OIL_GAS_EXTRACTION", _("Oil / Gas extraction")),
-    ("TOURISM", _("Tourism")),
-    ("INDUSTRY", _("Industry")),
-    ("CONVERSATION", _("Conservation")),
-    ("LAND_SPECULATION", _("Land speculation")),
+    # renewable
     ("SOLAR_PARK", _("Solar park")),
     ("WIND_FARM", _("Wind farm")),
     ("RENEWABLE_ENERGY", _("Renewable energy unspecified")),
+    # other
+    ("CONVERSATION", _("Conservation")),
+    ("INDUSTRY", _("Industry")),
+    ("LAND_SPECULATION", _("Land speculation")),
+    ("MINING", _("Mining")),
+    ("OIL_GAS_EXTRACTION", _("Oil / Gas extraction")),
+    ("TOURISM", _("Tourism")),
     ("OTHER", _("Other")),
 ]
 NATURE_OF_DEAL_CHOICES = [
