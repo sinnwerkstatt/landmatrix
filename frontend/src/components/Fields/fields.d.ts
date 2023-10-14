@@ -4,7 +4,8 @@ export interface FormField {
   class: string
   required?: boolean
   related_model?: string
-  choices?: { [key: string | number]: string }
+  // choices?: { [key: string | number]: string }
+  choices?: { value: string; label: string; group?: string }[]
   unit?: string
   help_text?: string
   max_length?: number

@@ -48,11 +48,15 @@
     OTHER: null,
   }
 
-  const parseValues = (value: string[], choices?: Record<string, string>) => {
-    if (!value) return "—"
+  const parseValues = (
+    value: string[],
+    choices?: { value: string; label: string }[],
+  ) => {
+    if (!value) return ["—"]
+    if (!choices) return value
+
     // The literal translation strings are defined in apps/landmatrix/models/choices.py
-    if (choices) return value.map(v => $_(choices[v])).join(", ")
-    return value.join(", ")
+    return value.map(v => $_(choices.find(c => c.value === v)?.label))
   }
 </script>
 
@@ -70,5 +74,9 @@
     </span>
   {/each}
 {:else}
-  {parseValues(value, formfield.choices)}
+  <ul class="">
+    {#each parseValues(value, formfield.choices) as val}
+      <li>{val}</li>
+    {/each}
+  </ul>
 {/if}

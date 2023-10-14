@@ -1,5 +1,55 @@
 from django.utils.translation import gettext as _
 
+INTENTION_CHOICES_GROUPED = [
+    # agriculture
+    (
+        _("Agriculture"),
+        [
+            ("BIOFUELS", _("Biomass for biofuels")),
+            ("BIOMASS_ENERGY_GENERATION", _("Biomass for energy generation")),
+            ("FODDER", _("Fodder")),
+            ("FOOD_CROPS", _("Food crops")),
+            ("LIVESTOCK", _("Livestock")),
+            ("NON_FOOD_AGRICULTURE", _("Non-food agricultural commodities")),
+            ("AGRICULTURE_UNSPECIFIED", _("Agriculture unspecified")),
+        ],
+    ),
+    # forest
+    (
+        _("Forestry"),
+        [
+            ("BIOMASS_ENERGY_PRODUCTION", _("Biomass for energy production")),
+            ("CARBON", _("For carbon sequestration/REDD")),
+            ("FOREST_LOGGING", _("Forest logging / management for wood and fiber")),
+            ("TIMBER_PLANTATION", _("Timber plantation for wood and fiber")),
+            ("FORESTRY_UNSPECIFIED", _("Forestry unspecified")),
+        ],
+    ),
+    # renewable
+    (
+        _("Renewable energy power plants"),
+        (
+            ("SOLAR_PARK", _("Solar park")),
+            ("WIND_FARM", _("Wind farm")),
+            ("RENEWABLE_ENERGY", _("Renewable energy unspecified")),
+        ),
+    ),
+    # other
+    (
+        _("Other"),
+        [
+            ("CONVERSATION", _("Conservation")),
+            ("INDUSTRY", _("Industry")),
+            ("LAND_SPECULATION", _("Land speculation")),
+            ("MINING", _("Mining")),
+            ("OIL_GAS_EXTRACTION", _("Oil / Gas extraction")),
+            ("TOURISM", _("Tourism")),
+        ],
+    ),
+    ("OTHER", _("Other")),
+]
+
+
 INTENTION_CHOICES = [
     # agriculture
     ("BIOFUELS", _("Biomass for biofuels")),
@@ -49,6 +99,36 @@ NEGOTIATION_STATUS_CHOICES = [
     ("CHANGE_OF_OWNERSHIP", _("Concluded (Change of ownership)")),
     ("NEGOTIATIONS_FAILED", _("Failed (Negotiations failed)")),
     ("CONTRACT_CANCELED", _("Failed (Contract cancelled)")),
+    ("CONTRACT_EXPIRED", _("Contract expired")),
+]
+
+NEGOTIATION_STATUS_CHOICES_GROUPED = [
+    (
+        "Intended",
+        [
+            ("EXPRESSION_OF_INTEREST", _("Intended (Expression of interest)")),
+            ("UNDER_NEGOTIATION", _("Intended (Under negotiation)")),
+            (
+                "MEMORANDUM_OF_UNDERSTANDING",
+                _("Intended (Memorandum of understanding)"),
+            ),
+        ],
+    ),
+    (
+        "Concluded",
+        [
+            ("ORAL_AGREEMENT", _("Concluded (Oral Agreement)")),
+            ("CONTRACT_SIGNED", _("Concluded (Contract signed)")),
+            ("CHANGE_OF_OWNERSHIP", _("Concluded (Change of ownership)")),
+        ],
+    ),
+    (
+        "Failed",
+        [
+            ("NEGOTIATIONS_FAILED", _("Failed (Negotiations failed)")),
+            ("CONTRACT_CANCELED", _("Failed (Contract cancelled)")),
+        ],
+    ),
     ("CONTRACT_EXPIRED", _("Contract expired")),
 ]
 

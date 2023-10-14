@@ -80,7 +80,7 @@
           <TypedChoicesField
             bind:value={val.choices}
             formfield={{ ...formfield, name: `${formfield.name}_${i}_choices` }}
-            required={val.date || val.area || val.yield || val.export}
+            required={!!(val.date || val.area || val.yield || val.export)}
           />
         </td>
         <td class="w-1/6 p-1">

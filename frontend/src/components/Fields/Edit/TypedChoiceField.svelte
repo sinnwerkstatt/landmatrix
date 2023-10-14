@@ -9,19 +9,19 @@
   export let required = false
   export let disabled = false
 
-  interface Item<T> {
-    value: T
+  interface Item {
+    value: string
     label: string
+    group?: string
   }
 
-  let items: Item<string>[]
-  $: items = Object.entries(formfield.choices).map(entry => ({
-    value: entry[0],
+  let items: Item[]
+  $: items = (formfield.choices ?? [])
     // The literal translation strings are defined in apps/landmatrix/models/choices.py
-    label: $_(entry[1]),
-  }))
+    .map(i => ({ ...i, label: $_(i.label), group: i.group ? $_(i.group) : undefined }))
+    .sort((a, b) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()))
 
-  let focused
+  let focused: boolean
 </script>
 
 <Select
@@ -34,4 +34,5 @@
   name={formfield.name}
   hasError={required && !value && !focused}
   showChevron
+  groupBy={item => item.group}
 />

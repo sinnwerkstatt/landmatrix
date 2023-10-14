@@ -9,6 +9,13 @@ from ..models.choices import ACTOR_MAP
 class JSONDateAreaChoicesField(JSONField):
     def __init__(self, encoder=None, decoder=None, **kwargs):
         self.choices = kwargs.pop("choices")
+        self.choices_keys = []
+        for k, v in self.choices:
+            if isinstance(v, list | tuple):
+                for i, j in v:
+                    self.choices_keys += [i]
+            else:
+                self.choices_keys += [k]
         super().__init__(encoder, decoder, **kwargs)
 
     def _validate_schema(self, value):
@@ -28,10 +35,7 @@ class JSONDateAreaChoicesField(JSONField):
                         "area": {"type": ["number", "null"]},
                         "choices": {
                             "type": "array",
-                            "items": {
-                                "type": "string",
-                                "enum": [x[0] for x in self.choices],
-                            },
+                            "items": {"type": "string", "enum": self.choices_keys},
                         },
                     },
                 },
@@ -84,6 +88,13 @@ class JSONDateAreaField(JSONField):
 class JSONDateChoiceField(JSONField):
     def __init__(self, encoder=None, decoder=None, **kwargs):
         self.choices = kwargs.pop("choices")
+        self.choices_keys = [None]
+        for k, v in self.choices:
+            if isinstance(v, list | tuple):
+                for i, j in v:
+                    self.choices_keys += [i]
+            else:
+                self.choices_keys += [k]
         super().__init__(encoder, decoder, **kwargs)
 
     def _validate_schema(self, value):
@@ -100,7 +111,7 @@ class JSONDateChoiceField(JSONField):
                             "type": ["string", "null"],
                             "pattern": r"^\d{4}(-(0?[1-9]|1[012])(-(0?[1-9]|[12][0-9]|3[01]))?)?$",
                         },
-                        "choice": {"enum": [x[0] for x in self.choices] + [None]},
+                        "choice": {"enum": self.choices_keys},
                     },
                 },
             }
@@ -153,6 +164,13 @@ class JSONActorsField(JSONField):
 class JSONExportsField(JSONField):
     def __init__(self, encoder=None, decoder=None, **kwargs):
         self.choices = kwargs.pop("choices")
+        self.choices_keys = []
+        for k, v in self.choices:
+            if isinstance(v, list | tuple):
+                for i, j in v:
+                    self.choices_keys += [i]
+            else:
+                self.choices_keys += [k]
         super().__init__(encoder, decoder, **kwargs)
 
     def _validate_schema(self, value):
@@ -171,10 +189,7 @@ class JSONExportsField(JSONField):
                         },
                         "choices": {
                             "type": "array",
-                            "items": {
-                                "type": "string",
-                                "enum": [x[0] for x in self.choices],
-                            },
+                            "items": {"type": "string", "enum": self.choices_keys},
                         },
                         "area": {"type": ["number", "null"]},
                         "yield": {"type": ["number", "null"]},
