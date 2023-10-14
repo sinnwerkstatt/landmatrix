@@ -76,7 +76,7 @@
           <TypedChoicesField
             bind:value={val.choices}
             formfield={{ ...formfield, name: `${formfield.name}_${i}_choices` }}
-            required={val.date || val.area}
+            required={!!(val.date || val.area)}
           />
         </td>
         <td class="p-1">

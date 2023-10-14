@@ -5,8 +5,8 @@
   export let value: number | undefined
   export let required = false
   export let unit = ""
-  export let max: number | undefined
-  export let min: number | undefined
+  export let max: number | undefined = undefined
+  export let min: number | undefined = undefined
   export let decimals = 2
 
   let step: number
