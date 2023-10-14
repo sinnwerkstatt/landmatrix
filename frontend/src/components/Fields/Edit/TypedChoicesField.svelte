@@ -24,7 +24,7 @@
     value = !items || items.length === 0 ? undefined : items.map(i => i.value)
   }
 
-  let focused
+  let focused: boolean
 </script>
 
 <Select

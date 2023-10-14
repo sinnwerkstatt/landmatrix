@@ -320,7 +320,7 @@ MINERALS = {
     "PHP": {"name": _("Phosphorous")},
     "PLT": {"name": _("Platinum")},
     "PUM": {"name": _("Hydrocarbons (e.g. crude oil)")},
-    "PYR": {"name": _(" Pyrolisis Plant")},
+    "PYR": {"name": _("Pyrolisis Plant")},
     "RUT": {"name": _("Rutile")},
     "SAN": {"name": _("Sand")},
     "SIC": {"name": _("Silica")},

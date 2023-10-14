@@ -21,7 +21,7 @@
     label: $_(entry[1]),
   }))
 
-  let focused
+  let focused: boolean
 </script>
 
 <Select
