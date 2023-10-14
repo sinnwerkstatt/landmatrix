@@ -2,11 +2,10 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-28 12:42+0200\n"
+"POT-Creation-Date: 2023-10-14 10:53+0200\n"
 "PO-Revision-Date: 2023-06-06 12:42+0000\n"
 "Last-Translator: Marie Gradeler <accountability@landmatrix.org>\n"
-"Language-Team: French <http://translate.landmatrix.org/projects/landmatrix/"
-"landmatrix/fr/>\n"
+"Language-Team: French <http://translate.landmatrix.org/projects/landmatrix/landmatrix/fr/>\n"
 "Language: fr\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -39,6 +38,12 @@ msgstr "L’équipe de %(site_name)s"
 
 msgid "Account activation on"
 msgstr "Activation du compte le"
+
+msgid "Invalid username or password."
+msgstr ""
+
+msgid "Account not yet activated."
+msgstr ""
 
 msgid "New comment"
 msgstr "Nouveau commentaire"
@@ -232,14 +237,20 @@ msgstr "Rejeté"
 msgid "To Delete"
 msgstr "A supprimer"
 
-msgid "Biofuels"
-msgstr "Biocombustibles"
+msgid "Agriculture"
+msgstr "Agriculture"
 
-msgid "Food crops"
-msgstr "Cultures vivrières"
+msgid "Biomass for biofuels"
+msgstr ""
+
+msgid "Biomass for energy generation"
+msgstr ""
 
 msgid "Fodder"
 msgstr "Fourrage"
+
+msgid "Food crops"
+msgstr "Cultures vivrières"
 
 msgid "Livestock"
 msgstr "Animaux d’élevage"
@@ -250,17 +261,47 @@ msgstr "Produits agricoles non alimentaires"
 msgid "Agriculture unspecified"
 msgstr "Agriculture - Autres"
 
-msgid "Timber plantation"
-msgstr "Plantation d’arbres"
+msgid "Forestry"
+msgstr "Foresterie"
 
-msgid "Forest logging / management"
-msgstr "Exploitation/gestion forestière"
+msgid "Biomass for energy production"
+msgstr ""
 
 msgid "For carbon sequestration/REDD"
 msgstr "Pour la séquestration du carbone/REDD"
 
+msgid "Forest logging / management for wood and fiber"
+msgstr ""
+
+msgid "Timber plantation for wood and fiber"
+msgstr ""
+
 msgid "Forestry unspecified"
 msgstr "Foresterie - Autres"
+
+msgid "Renewable energy power plants"
+msgstr ""
+
+msgid "Solar park"
+msgstr ""
+
+msgid "Wind farm"
+msgstr ""
+
+msgid "Renewable energy unspecified"
+msgstr ""
+
+msgid "Other"
+msgstr "Autre"
+
+msgid "Conservation"
+msgstr "Conservation"
+
+msgid "Industry"
+msgstr "Industrie"
+
+msgid "Land speculation"
+msgstr "Spéculation foncière"
 
 msgid "Mining"
 msgstr "Exploitation minière"
@@ -270,21 +311,6 @@ msgstr "Extraction pétrolière et gazière"
 
 msgid "Tourism"
 msgstr "Tourisme"
-
-msgid "Industry"
-msgstr "Industrie"
-
-msgid "Conservation"
-msgstr "Conservation"
-
-msgid "Land speculation"
-msgstr "Spéculation foncière"
-
-msgid "Renewable energy"
-msgstr "Energies renouvelables"
-
-msgid "Other"
-msgstr "Autre"
 
 msgid "Outright purchase"
 msgstr "Achat ferme"
@@ -426,9 +452,6 @@ msgstr "Pastoralisme"
 
 msgid "Hunting/Gathering"
 msgstr "Chasse/cueillette"
-
-msgid "Forestry"
-msgstr "Foresterie"
 
 msgid "per ha"
 msgstr "par ha"
@@ -886,8 +909,8 @@ msgstr "Platine"
 msgid "Hydrocarbons (e.g. crude oil)"
 msgstr "Hydrocarbures (ex. pétrole brut)"
 
-msgid " Pyrolisis Plant"
-msgstr " Usine de Pyrolyse"
+msgid "Pyrolisis Plant"
+msgstr "Usine de Pyrolyse"
 
 msgid "Rutile"
 msgstr "Rutile"
@@ -1544,41 +1567,17 @@ msgstr "Message"
 msgid "Messages"
 msgstr "Messages"
 
-msgid "Project not started"
-msgstr "Projet non initié"
-
-msgid "Startup phase (no production)"
-msgstr "Phase de lancement (pas de production)"
-
-msgid "In operation (production)"
-msgstr "En cours d’exploitation (production)"
-
-msgid "Project abandoned"
-msgstr "Projet abandonné"
-
-msgid "Unknown"
-msgstr "Inconnu"
-
-msgid "Agriculture"
-msgstr "Agriculture"
-
-msgid "Renewable Energy"
-msgstr "Energies renouvelables"
-
-msgid "Spatial accuracy"
-msgstr "Précision spatiale"
-
 msgid "About"
 msgstr "A propos"
 
 msgid "Access more information about this contract on OpenLandContracts.org"
 msgstr "Plus d'informations sur ce contrat sur OpenLandContracts.org"
 
+msgid "Account activated"
+msgstr ""
+
 msgid "Account confirmed"
 msgstr "Compte validé"
-
-msgid "Accountability"
-msgstr "Responsabilité"
 
 msgid "Actions"
 msgstr "Actions"
@@ -1685,6 +1684,9 @@ msgstr "Annuler"
 msgid "Case statistics"
 msgstr "Statistiques du cas"
 
+msgid "Category"
+msgstr "Catégorie"
+
 msgid "Change"
 msgstr "Modifier"
 
@@ -1731,6 +1733,10 @@ msgstr "Supprime entièrement cette version de l’investisseur"
 
 msgid "Concluded"
 msgstr "Conclus"
+
+#, python-brace-format
+msgid "Concluded deals over time since the year {year}"
+msgstr ""
 
 msgid "Confidential"
 msgstr "Confidentiel"
@@ -1814,6 +1820,10 @@ msgstr "Cultures"
 
 msgid "CSV file"
 msgstr "Fichier CSV"
+
+#, python-brace-format
+msgid "Cumulative area size under contract since the year {year}"
+msgstr ""
 
 msgid "Currency"
 msgstr "Devise"
@@ -2067,6 +2077,9 @@ msgstr "Aller au brouillon actuel"
 msgid "Go to map"
 msgstr "Aller à la carte"
 
+msgid "Group"
+msgstr ""
+
 msgid "here"
 msgstr "ici"
 
@@ -2093,9 +2106,6 @@ msgstr "Je déclare avoir lu et approuvé"
 
 msgid "ID"
 msgstr "ID"
-
-msgid "ID or Name"
-msgstr "ID ou Nom"
 
 msgid "If you set the confidential flag, this deal will not be publicly visible anymore. If you want to keep it public, click on 'Cancel'."
 msgstr "Si vous marquez cette transaction comme étant confidentielle, elle ne sera plus visible par le public. Si vous souhaitez qu’elle reste publique, cliquez sur \"Annuler\"."
@@ -2202,6 +2212,9 @@ msgstr "Emplois"
 msgid "Key biodiversity areas, Philippines"
 msgstr "Zones clés pour la biodiversité, Philippines"
 
+msgid "Land acquisitions by category of production"
+msgstr ""
+
 msgid "Land area"
 msgstr "Superficie des terres"
 
@@ -2232,6 +2245,9 @@ msgstr "Frais de location"
 msgid "Legend"
 msgstr "Légende"
 
+msgid "Letters, digits and @/./+/-/_ only."
+msgstr ""
+
 msgid "Level of parent investors"
 msgstr "Niveau des entreprises d'investissement mères"
 
@@ -2249,6 +2265,9 @@ msgstr "Connexion"
 
 msgid "Login successful."
 msgstr "Connexion réussie."
+
+msgid "Login/Register"
+msgstr "Connexion/enregistrement"
 
 msgid "Logout"
 msgstr "Déconnexion"
@@ -2282,6 +2301,9 @@ msgstr "Méta"
 
 msgid "Mineral resources"
 msgstr "Ressources minérales"
+
+msgid "Mode"
+msgstr ""
 
 msgid "Modified at"
 msgstr "Modifié le"
@@ -2346,14 +2368,27 @@ msgstr "Pas entièrement mis à jour"
 msgid "Not publicly visible"
 msgstr "Non visible du public"
 
+#, python-brace-format
+msgid "Note: There is no year information for {count} deals with a corresponding area size of {size} ha."
+msgstr ""
+
+msgid "Note: This graph shows changes in size under contract (increases/decreases). Therefore, the number of deals can remain the same even though the size may change."
+msgstr ""
+
 msgid "Number of deal locations"
 msgstr "Nombre de localisations de transactions"
 
 msgid "Number of deals"
 msgstr "Nombre de transactions"
 
+msgid "Number of deals per category of production, represented as the percentage of total concluded deals"
+msgstr ""
+
 msgid "Number of domestic jobs created"
 msgstr "Nombre d’emplois nationaux créés"
+
+msgid "Number of intentions per category of production"
+msgstr ""
 
 msgid "Number of intentions per category of production according to implementation status"
 msgstr "Nombre d’intentions par catégorie de production en fonction de l’état d’avancement de la mise en œuvre"
@@ -2406,6 +2441,9 @@ msgstr "Remarque : {number} transactions ont plusieurs types d’investisseurs.
 
 msgid "Please provide a comment explaining your request"
 msgstr "Veuillez expliquer votre demande en commentaire"
+
+msgid "Please select"
+msgstr ""
 
 msgid "Produce"
 msgstr "Produit"
@@ -2521,6 +2559,9 @@ msgstr "Enregistrement en cours…"
 msgid "Scope"
 msgstr "Portée"
 
+msgid "Search"
+msgstr "Rechercher"
+
 msgid "Search and filter the dataset through pre-configured entry points or drill down to single deals."
 msgstr "Consultez et filtrez l’ensemble de données par le biais de points d'entrée préconfigurés ou explorez en détail les transactions individuelles."
 
@@ -2557,6 +2598,12 @@ msgstr "Montrer"
 msgid "Show all"
 msgstr "Afficher toutes"
 
+msgid "Show deal count"
+msgstr ""
+
+msgid "Show deal size"
+msgstr ""
+
 msgid "Show deals"
 msgstr "Afficher les transactions"
 
@@ -2568,6 +2615,9 @@ msgstr "Montrer les derniers changements"
 
 msgid "Size"
 msgstr "Superficie"
+
+msgid "Size under contract per category of production, represented as the percentage of total concluded size"
+msgstr ""
 
 msgid "Status"
 msgstr "Statut"
@@ -2624,9 +2674,6 @@ msgstr "Prêteurs/investisseurs tertiaires"
 msgid "The investor network diagram is not visible in draft mode. Go to {liveLink} to see it."
 msgstr "Le diagramme du réseau d’investisseurs n’est pas visible en mode brouillon. Il est accessible sur {liveLink}."
 
-msgid "This account has already been activated. You can probably log in now."
-msgstr "Ce compte a déjà été activé. Vous pouvez probablement vous connecter maintenant."
-
 msgid "This creates a completely identical copy of the deal. The copy must then be edited and adjusted to prevent identical duplicates."
 msgstr "Cette opération permet de créer une copie totalement identique de la transaction. La copie doit ensuite être éditée et ajustée afin d’éviter les doublons."
 
@@ -2653,6 +2700,9 @@ msgstr "Annuler la suppression"
 
 msgid "Under negotiation"
 msgstr "En cours de négociation"
+
+msgid "Unknown"
+msgstr "Inconnu"
 
 msgid "Unset confidential"
 msgstr "Annuler le statut confidentiel"
@@ -2705,11 +2755,14 @@ msgstr "Vous n’êtes pas l’auteur de cette version. Par conséquent, une nou
 msgid "You can only change the country when no locations are defined."
 msgstr "Vous pouvez modifier un pays seulement si aucune localisation n’est définie."
 
+msgid "Your account has been activated. You can log in now."
+msgstr ""
+
 msgid "Your contact information will help our researchers get in touch with you for additional information. We respect and protect your privacy and anonymity, and will never share or publish your personal information. You can also write us directly at data@landmatrix.org."
 msgstr "Vos coordonnées permettront à nos chercheurs de vous contacter pour toute information supplémentaire. Nous respectons et protégeons votre vie privée et votre anonymat, et nous engageons à ne jamais communiquer ou publier vos informations personnelles. Vous pouvez également nous écrire directement à l’adresse data@landmatrix.org."
 
-msgid "Your email address is confirmed. You can log in now."
-msgstr "Votre adresse électronique est confirmée. Vous pouvez maintenant vous connecter."
+msgid "Your email address is confirmed. Your account awaits activation by an admin. If this does not happen within the next 24 hours, please contact the following address:"
+msgstr ""
 
 msgid "YYYY-MM-DD"
 msgstr "AAAA-MM-JJ"
@@ -2729,6 +2782,42 @@ msgstr "Français"
 
 msgid "Русский"
 msgstr "Русский"
+
+#~ msgid "Biofuels"
+#~ msgstr "Biocombustibles"
+
+#~ msgid "Timber plantation"
+#~ msgstr "Plantation d’arbres"
+
+#~ msgid "Forest logging / management"
+#~ msgstr "Exploitation/gestion forestière"
+
+#~ msgid "Project not started"
+#~ msgstr "Projet non initié"
+
+#~ msgid "Startup phase (no production)"
+#~ msgstr "Phase de lancement (pas de production)"
+
+#~ msgid "In operation (production)"
+#~ msgstr "En cours d’exploitation (production)"
+
+#~ msgid "Project abandoned"
+#~ msgstr "Projet abandonné"
+
+#~ msgid "Renewable Energy"
+#~ msgstr "Energies renouvelables"
+
+#~ msgid "Spatial accuracy"
+#~ msgstr "Précision spatiale"
+
+#~ msgid "Accountability"
+#~ msgstr "Responsabilité"
+
+#~ msgid "ID or Name"
+#~ msgstr "ID ou Nom"
+
+#~ msgid "Your email address is confirmed. You can log in now."
+#~ msgstr "Votre adresse électronique est confirmée. Vous pouvez maintenant vous connecter."
 
 #~ msgid "Mineral Resources"
 #~ msgstr "Ressources Minérales"
@@ -2777,9 +2866,6 @@ msgstr "Русский"
 
 #~ msgid "Blog Categories"
 #~ msgstr "Catégories du Blog"
-
-#~ msgid "Category"
-#~ msgstr "Catégorie"
 
 #~ msgid "body"
 #~ msgstr "corps"
@@ -3251,12 +3337,6 @@ msgstr "Русский"
 #, python-format
 #~ msgid " (%s %s)"
 #~ msgstr " (%s %s)"
-
-#~ msgid "Timber plantation (for wood and fibre)"
-#~ msgstr "Plantation d’arbres (pour le bois et la fibre)"
-
-#~ msgid "Forest logging / management (for wood and fibre)"
-#~ msgstr "Exploitation/gestion forestière (pour le bois et la fibre)"
 
 #~ msgid "---------"
 #~ msgstr "---------"
@@ -4101,9 +4181,6 @@ msgstr "Русский"
 #~ msgid "Show info about"
 #~ msgstr "Montrer les information concernant"
 
-#~ msgid "Search"
-#~ msgstr "Rechercher"
-
 #~ msgid "Type in the field below to search for a location."
 #~ msgstr "Veuillez saisir l'objet de votre recherche dans le champ suivant."
 
@@ -4267,9 +4344,6 @@ msgstr "Русский"
 #~ msgid "Clear filters"
 #~ msgstr "Eliminer les filtres"
 
-#~ msgid "Login/Register"
-#~ msgstr "Connexion/enregistrement"
-
 #~ msgid "Stay informed"
 #~ msgstr "Rester informé"
 
@@ -4308,14 +4382,8 @@ msgstr "Русский"
 #~ msgid "Back to the article"
 #~ msgstr "Retour à l’article"
 
-#~ msgid "Account activation failed"
-#~ msgstr "L’activation du compte a échoué"
-
 #~ msgid "Activation complete"
 #~ msgstr "Activation terminée"
-
-#~ msgid "Your account is now activated."
-#~ msgstr "Votre compte est désormais activé."
 
 #~ msgid "Activate account at"
 #~ msgstr "Activer compte à"
