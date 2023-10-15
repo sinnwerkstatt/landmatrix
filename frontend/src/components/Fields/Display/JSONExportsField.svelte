@@ -9,10 +9,10 @@
 
   type JSONExportsFieldType = {
     current?: boolean
-    area?: string
-    yield?: string
-    export?: string
-    choices: Array<{ [key: string]: string }>
+    area: number | null
+    yield: number | null
+    export: number | null
+    choices: string[]
   }
 
   export let value: JSONExportsFieldType[] = []
@@ -25,20 +25,23 @@
       <span>{dateCurrentFormat(val)}</span>
       {#if val.choices}
         <!-- The literal translation strings are defined in apps/landmatrix/models/choices.py -->
-        {val.choices.map(v => $_(formfield.choices[v])).join(", ")}
-      {/if}{#if val.area}
+        {val.choices.map(v => $_(formfield.choices?.[v])).join(", ")}
+      {/if}
+      {#if val.area}
         <span>
           <CircleNotchIcon />
           {val.area.toLocaleString("fr")}
           {$_("ha")}
         </span>
-      {/if}{#if val.yield}
+      {/if}
+      {#if val.yield}
         <span class="mx-2">
           <WeightIcon />
           {val.yield.toLocaleString("fr")}
           {$_("tons")}
         </span>
-      {/if}{#if val.export}
+      {/if}
+      {#if val.export}
         <span class="mx-2">
           <PlaneIcon />
           {val.export.toLocaleString("fr")} %

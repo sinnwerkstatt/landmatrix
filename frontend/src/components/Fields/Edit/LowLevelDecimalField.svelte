@@ -5,8 +5,8 @@
   export let value: number | undefined
   export let required = false
   export let unit = ""
-  export let max: number | undefined
-  export let min: number | undefined
+  export let max: number | undefined = undefined
+  export let min: number | undefined = undefined
   export let decimals = 2
 
   let step: number
@@ -20,11 +20,11 @@
   }
 </script>
 
-<div class="flex">
+<div class="flex grow justify-end">
   <input
     value={value ?? ""}
     type="number"
-    class="inpt"
+    class="inpt {$$props.class ?? ''}"
     {placeholder}
     {required}
     {min}
@@ -39,3 +39,17 @@
     </div>
   {/if}
 </div>
+
+<style>
+  /* Chrome, Safari, Edge, Opera */
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox */
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+</style>

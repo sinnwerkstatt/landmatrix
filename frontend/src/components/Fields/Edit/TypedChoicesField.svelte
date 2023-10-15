@@ -34,6 +34,7 @@
   {required}
   multiple
   showChevron
+  placeholder={$_("Please select")}
   name={formfield.name}
   hasError={required && !value && !focused}
   on:input={e => setValue(e.detail)}
