@@ -31,7 +31,7 @@
         <!-- The literal translation strings are defined in apps/landmatrix/models/choices.py -->
         {val.choices.map(v => $_(flat_choices[v])).join(", ")}
       {/if}
-        {#if val.area}
+      {#if val.area}
         <span>
           <CircleNotchIcon />
           {val.area.toLocaleString("fr")}
