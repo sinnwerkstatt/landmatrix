@@ -13,11 +13,7 @@
     value = opts.length === 0 ? null : opts
   }
 
-  let choices: [string, string][] | false
-  $: choices = formfield.choices
-    ? // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      Object.entries(formfield.choices).filter(([v, label]) => !!v)
-    : false
+  $: choices = formfield.choices?.filter(c => !!c.value)
 </script>
 
 {#if choices}
@@ -28,9 +24,9 @@
     class="inpt"
     name={formfield.name}
   >
-    {#each choices as [v, label]}
+    {#each choices as choice}
       <!-- The literal translation strings are defined in apps/landmatrix/models/choices.py -->
-      <option value={v}>{$_(label)}</option>
+      <option value={choice.value}>{$_(choice.label)}</option>
     {/each}
   </select>
 {:else}

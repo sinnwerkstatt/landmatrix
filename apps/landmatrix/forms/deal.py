@@ -17,7 +17,7 @@ from ..models.choices import (
     ANIMALS_CHOICES,
     CROPS_CHOICES,
     IMPLEMENTATION_STATUS_CHOICES,
-    INTENTION_CHOICES,
+    INTENTION_CHOICES_GROUPED,
     MINERALS_CHOICES,
     NEGOTIATION_STATUS_CHOICES,
 )
@@ -34,7 +34,9 @@ class DealForm(JSONFormOutputMixin, ModelForm):
         label=_("Size in operation (production, in ha)"),
     )
     intention_of_investment = JSONDateAreaChoicesField(
-        required=False, label=_("Intention of investment"), choices=INTENTION_CHOICES
+        required=False,
+        label=_("Intention of investment"),
+        choices=INTENTION_CHOICES_GROUPED,
     )
     negotiation_status = JSONDateChoiceField(
         required=False,

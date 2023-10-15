@@ -33,7 +33,9 @@ class JSONFormOutputMixin:
                 field_json["max_length"] = field.max_length
 
             if isinstance(field, TypedChoiceField):
-                field_json["choices"] = {x[0]: x[1] for x in field.choices}
+                field_json["choices"] = [
+                    {"value": x[0], "label": x[1]} for x in field.choices
+                ]
             # if isinstance(field, IntegerField):
             #     breakpoint()
             # "min_value": field.min_value,
@@ -43,9 +45,9 @@ class JSONFormOutputMixin:
                 field_json["related_model"] = field.queryset.model.__name__
             if isinstance(field, SimpleArrayField):
                 if hasattr(field.base_field, "choices"):
-                    field_json["choices"] = {
-                        x[0]: x[1] for x in field.base_field.choices
-                    }
+                    field_json["choices"] = [
+                        {"value": x[0], "label": x[1]} for x in field.base_field.choices
+                    ]
             if isinstance(
                 field,
                 (
@@ -57,7 +59,17 @@ class JSONFormOutputMixin:
                     JSONCarbonSequestrationField,
                 ),
             ):
-                field_json["choices"] = {x[0]: x[1] for x in field.choices}
+                field_json["choices"] = []
+                for k, v in field.choices:
+                    if isinstance(v, list | tuple):
+                        for i, j in v:
+                            field_json["choices"] += [
+                                {"value": i, "label": j, "group": k}
+                            ]
+                    else:
+                        field_json["choices"] += [{"value": k, "label": v}]
+
+                # field_json["choices"] = {x[0]: x[1] for x in field.choices}
 
             # if name == "land_area_comment":
             #     breakpoint()
