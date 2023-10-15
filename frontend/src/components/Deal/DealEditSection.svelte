@@ -12,8 +12,8 @@
 <section>
   <form {id}>
     {#each sections as subsection}
-      <div class="mt-2 space-y-4">
-        <h3 class="my-0">{subsection.name}</h3>
+      <div class="mt-10 space-y-4 border-t-2 first:border-t-0">
+        <h3 class="my-0 pt-8 text-[26px]">{subsection.name}</h3>
         {#each subsection.fields as field}
           <ExpandableEditField {field} bind:deal />
         {/each}

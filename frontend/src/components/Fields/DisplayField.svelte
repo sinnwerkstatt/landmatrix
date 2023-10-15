@@ -27,6 +27,8 @@
   import TypedChoiceField from "$components/Fields/Display/TypedChoiceField.svelte"
   import WorkflowInfosField from "$components/Fields/Display/WorkflowInfosField.svelte"
   import type { FormField } from "$components/Fields/fields"
+  import JSONElectricityGenerationField from "$components/Fields/Display/JSONElectricityGenerationField.svelte"
+  import JSONCarbonSequestrationField from "$components/Fields/Display/JSONCarbonSequestrationField.svelte"
 
   export let fieldname: string
   export let value
@@ -60,6 +62,9 @@
     JSONExportsField: JSONExportsField,
     JSONJobsField: JSONJobsField,
     JSONLeaseField: JSONLeaseField,
+    JSONElectricityGenerationField: JSONElectricityGenerationField,
+    JSONCarbonSequestrationField: JSONCarbonSequestrationField,
+
     ManyToManyField: ManyToManyField,
     OCIDField: OCIDField,
   }[formfield.class]

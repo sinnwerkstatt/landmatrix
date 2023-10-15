@@ -275,6 +275,8 @@ export interface Deal extends Obj {
   current_crops?: string[]
   current_animals?: string[]
   current_mineral_resources?: string[]
+  current_electricity_generation?: string[]
+  current_carbon_sequestration?: string[]
   fully_updated_at?: Date
   fully_updated?: boolean
   top_investors?: Investor[]

@@ -7,6 +7,8 @@ from .fields import (
     JSONDateAreaChoicesField,
     JSONDateChoiceField,
     JSONExportsField,
+    JSONElectricityGenerationField,
+    JSONCarbonSequestrationField,
 )
 
 
@@ -51,6 +53,8 @@ class JSONFormOutputMixin:
                     JSONDateChoiceField,
                     JSONActorsField,
                     JSONExportsField,
+                    JSONElectricityGenerationField,
+                    JSONCarbonSequestrationField,
                 ),
             ):
                 field_json["choices"] = {x[0]: x[1] for x in field.choices}

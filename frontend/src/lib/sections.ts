@@ -228,6 +228,14 @@ export const dealSections = derived(_, $_ => ({
       ],
     },
     {
+      name: $_("Detailed electricity generation information"),
+      fields: ["electricity_generation", "electricity_generation_comment"],
+    },
+    {
+      name: $_("Detailed carbon sequestration information\n"),
+      fields: ["carbon_sequestration", "carbon_sequestration_comment"],
+    },
+    {
       name: $_("Use of produce"),
       fields: [
         { name: "has_domestic_use", fields: ["domestic_use"] },

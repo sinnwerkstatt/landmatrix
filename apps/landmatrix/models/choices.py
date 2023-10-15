@@ -280,6 +280,25 @@ ANIMALS = {
 }
 ANIMALS_CHOICES = [(k, v["name"]) for k, v in ANIMALS.items()]
 
+ELECTRICITY_GENERATION_OPTIONS = [
+    {"value": "WIND", "label": _("On-shore wind turbines")},
+    {"value": "PHOTOVOLTAIC", "label": _("Solar (Photovoltaic)")},
+    {"value": "SOLAR_HEAT", "label": _("Solar (Thermal system)")},
+]
+ELECTRICITY_GENERATIONS_CHOICES = [
+    (x["value"], x["label"]) for x in ELECTRICITY_GENERATION_OPTIONS
+]
+
+CARBON_SEQUESTRATION_OPTIONS = [
+    {"value": "REFORESTATION", "label": _("Reforestation & afforestation")},
+    {"value": "FOREST_PROECTION", "label": _("Forest protection")},
+    {"value": "PEATLAND_RESTORATION", "label": _("Peatland restoration")},
+    {"value": "Other", "label": _("Other (please specify in a comment)")},
+]
+CARBON_SEQUESTRATION_CHOICES = [
+    (x["value"], x["label"]) for x in CARBON_SEQUESTRATION_OPTIONS
+]
+
 MINERALS = {
     "ALU": {"name": _("Aluminum")},
     "ASP": {"name": _("Asphaltite")},

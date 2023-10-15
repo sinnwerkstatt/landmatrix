@@ -24,6 +24,19 @@ const config = {
           800: "#713D02",
           900: "#3A1F01",
         },
+        "lm-orange": {
+          DEFAULT: "#FC941E",
+          50: "#FFF3E6",
+          100: "#FEE7CD",
+          200: "#FECF9A",
+          300: "#FDB768",
+          400: "#FCA036",
+          500: "#FC941E",
+          600: "#E07803",
+          700: "#A95A02",
+          800: "#713D02",
+          900: "#3A1F01",
+        },
         //ToDO: rename "lm-pelorous"
         pelorous: {
           DEFAULT: "#44B7B5",

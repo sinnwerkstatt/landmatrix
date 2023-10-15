@@ -547,6 +547,15 @@ class AbstractDealBase(models.Model):
         _("Comment on contract farming livestock"), blank=True
     )
 
+    electricity_generation = models.JSONField(blank=True, null=True)
+    electricity_generation_comment = models.TextField(
+        _("Comment on electricity generation"), blank=True
+    )
+    carbon_sequestration = models.JSONField(blank=True, null=True)
+    carbon_sequestration_comment = models.TextField(
+        _("Comment on carbon sequestration"), blank=True
+    )
+
     has_domestic_use = models.BooleanField(_("Has domestic use"), null=True)
     domestic_use = models.FloatField(
         _("Domestic use"),
@@ -734,6 +743,10 @@ class Deal(AbstractDealBase):
     current_mineral_resources = ArrayField(
         models.CharField(max_length=100), blank=True, null=True
     )
+    current_electricity_generation = ArrayField(
+        models.CharField(), blank=True, null=True
+    )
+    current_carbon_sequestration = ArrayField(models.CharField(), blank=True, null=True)
 
     deal_size = models.DecimalField(
         max_digits=18,
@@ -807,6 +820,12 @@ class Deal(AbstractDealBase):
             )
             self.current_mineral_resources = self._get_current(
                 self.mineral_resources, "choices", multi=True
+            )
+            self.current_electricity_generation = self._get_current(
+                self.electricity_generation, "choices", multi=True
+            )
+            self.current_carbon_sequestration = self._get_current(
+                self.carbon_sequestration, "choices", multi=True
             )
 
             # these only depend on the _get_current calls right above.

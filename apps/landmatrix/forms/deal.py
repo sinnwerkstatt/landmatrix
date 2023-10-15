@@ -1,6 +1,18 @@
 from django.forms import ModelForm
 from django.utils.translation import gettext as _
 
+from .fields import (
+    JSONActorsField,
+    JSONDateAreaChoicesField,
+    JSONDateAreaField,
+    JSONDateChoiceField,
+    JSONExportsField,
+    JSONJobsField,
+    JSONLeaseField,
+    JSONElectricityGenerationField,
+    JSONCarbonSequestrationField,
+)
+from .formfieldhelper import JSONFormOutputMixin
 from ..models.choices import (
     ANIMALS_CHOICES,
     CROPS_CHOICES,
@@ -10,16 +22,6 @@ from ..models.choices import (
     NEGOTIATION_STATUS_CHOICES,
 )
 from ..models.deal import Deal
-from .fields import (
-    JSONActorsField,
-    JSONDateAreaChoicesField,
-    JSONDateAreaField,
-    JSONDateChoiceField,
-    JSONExportsField,
-    JSONJobsField,
-    JSONLeaseField,
-)
-from .formfieldhelper import JSONFormOutputMixin
 
 
 class DealForm(JSONFormOutputMixin, ModelForm):
@@ -90,6 +92,12 @@ class DealForm(JSONFormOutputMixin, ModelForm):
         help_text=_("ha"),
         required=False,
         choices=ANIMALS_CHOICES,
+    )
+    electricity_generation = JSONElectricityGenerationField(
+        label=_("Electricity generation"), required=False
+    )
+    carbon_sequestration = JSONCarbonSequestrationField(
+        label=_("Carbon Sequestration"), required=False
     )
 
     extra_display_fields = {
