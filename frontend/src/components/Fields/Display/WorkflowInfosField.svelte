@@ -16,9 +16,7 @@
 <div
   class="cursor-pointer"
   on:click|stopPropagation={() => {
-    if (!showMoreInfos) {
-      showMoreInfos = true
-    }
+    if (!showMoreInfos) showMoreInfos = true
   }}
 >
   <slot>

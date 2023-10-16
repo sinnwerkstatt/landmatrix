@@ -6,7 +6,6 @@
   export let value: string
   export let formfield: FormField
 
-  $: console.log(formfield.choices)
   $: flat_choices = formfield.choices
     ? Object.fromEntries(formfield.choices.map(c => [c.value, c.label]))
     : {}
