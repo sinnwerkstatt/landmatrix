@@ -10,7 +10,7 @@ import type { Writable } from "svelte/store"
 import { browser } from "$app/environment"
 
 import type { BlockImage } from "$lib/types/custom"
-import type { DraftStatus, Status } from "$lib/types/generics"
+import type { DraftStatus, FieldDefinition, Status } from "$lib/types/generics"
 import type { User } from "$lib/types/user"
 import type {
   BlogCategory,
@@ -342,3 +342,5 @@ if (browser) {
   bindIsDarkModeToPreferredColorScheme()
   bindIsMobileToScreenInnerWidth()
 }
+
+export const fieldDefinitions: Writable<FieldDefinition[]> = writable([])

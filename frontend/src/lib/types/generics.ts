@@ -66,3 +66,12 @@ export interface WorkflowInfo {
   replies: WFReply[]
   __typename?: string
 }
+
+export interface FieldDefinition {
+  id: number
+  model: "deal" | "investor"
+  field: string
+  short_description: string
+  long_description: string
+  editor_description: string
+}

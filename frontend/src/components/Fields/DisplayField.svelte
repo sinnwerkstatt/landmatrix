@@ -29,6 +29,7 @@
   import type { FormField } from "$components/Fields/fields"
   import JSONElectricityGenerationField from "$components/Fields/Display/JSONElectricityGenerationField.svelte"
   import JSONCarbonSequestrationField from "$components/Fields/Display/JSONCarbonSequestrationField.svelte"
+  import Label from "$components/Fields/Label.svelte"
 
   export let fieldname: string
   export let value
@@ -76,9 +77,7 @@
   class={wrapperClasses}
 >
   {#if showLabel}
-    <div class={labelClasses}>
-      {$_(formfield.label)}
-    </div>
+    <Label {formfield} class={labelClasses} {model} />
   {/if}
   <div class={valueClasses}>
     {#if formfield.class === "AutoField"}

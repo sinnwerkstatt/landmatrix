@@ -21,6 +21,7 @@ async function fetchMe(urqlClient: Client) {
             full_name
             is_authenticated
             is_impersonate
+            is_superuser
             role
             country {
               id

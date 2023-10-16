@@ -22,6 +22,7 @@ export interface User {
   is_active: boolean
   is_authenticated: boolean
   is_impersonate: boolean
+  is_superuser: boolean
   date_joined: Date
   country: Country
   region: Region
