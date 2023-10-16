@@ -7,10 +7,10 @@
 </script>
 
 <div>
-  <div class="h-40 w-40 rounded-lg {tileColor}" />
-  <div class="mt-3">
+  <div class="h-24 w-24 rounded-lg lg:h-40 lg:w-40 {tileColor}" />
+  <div class="mt-3 text-xs md:text-sm lg:text-base">
     <b>{title}</b>
-    <ul>
+    <ul class="">
       {#each allColors[defs] ?? [] as def}
         <li>{def}</li>
       {/each}
