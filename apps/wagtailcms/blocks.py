@@ -82,7 +82,7 @@ class FAQsBlock(StructBlock):
     faqs = blocks.ListBlock(FAQBlock())
 
     class Meta:
-        icon = "medkit"
+        icon = "suitcase-medical"
 
     def get_context(self, value, parent_context=None):
         context = super().get_context(value, parent_context)
@@ -280,7 +280,7 @@ class GalleryBlock(StructBlock):
         return context
 
     class Meta:
-        icon = "th"
+        icon = "table-cells-large"
         label = "Gallery"
 
 
@@ -559,7 +559,7 @@ class LinkMapBlock(StructBlock):
     # TODO this seems to be unused, it's not even implemented in the svelte frontend
     #
     # class Meta:
-    #     icon = "map-marker"
+    #     icon = "location-dot"
     #     label = "Map"
     #
     # def get_context(self, value, parent_context=None):
@@ -602,7 +602,7 @@ class LatestDatabaseModificationsBlock(StructBlock):
 
 class RegionBlock(StructBlock):
     class Meta:
-        icon = "map-marker"
+        icon = "location-dot"
         label = "Region"
 
     def get_context(self, value, parent_context=None):
@@ -664,7 +664,7 @@ class Columns1To1Block(StructBlock):
 
     class Meta:
         label = "Two Columns"
-        icon = "columns"
+        icon = "table-columns"
         group = "Layout"
 
 
@@ -685,7 +685,7 @@ class ThreeColumnsBlock(StructBlock):
 
     class Meta:
         label = "Three Columns"
-        icon = "columns"
+        icon = "table-columns"
         group = "Layout"
 
 
@@ -744,7 +744,7 @@ class FullWidthContainerBlock(StructBlock):
         return context
 
     class Meta:
-        icon = "arrows-alt-h"
+        icon = "left-right"
         label = "Full width container"
         group = "Layout"
 

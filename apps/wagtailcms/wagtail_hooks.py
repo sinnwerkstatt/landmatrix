@@ -12,17 +12,17 @@ from apps.message.models import Message
 def register_icons(icons):
     return icons + [
         "wagtailfontawesomesvg/brands/twitter.svg",
-        "wagtailfontawesomesvg/solid/arrows-alt-h.svg",
-        "wagtailfontawesomesvg/solid/columns.svg",
+        "wagtailfontawesomesvg/solid/left-right.svg",
+        "wagtailfontawesomesvg/solid/table-columns.svg",
         "wagtailfontawesomesvg/solid/flag.svg",
         "wagtailfontawesomesvg/solid/folder.svg",
         "wagtailfontawesomesvg/solid/image.svg",
         "wagtailfontawesomesvg/solid/link.svg",
         "wagtailfontawesomesvg/solid/list.svg",
-        "wagtailfontawesomesvg/solid/map-marker.svg",
-        "wagtailfontawesomesvg/solid/medkit.svg",
+        "wagtailfontawesomesvg/solid/location-dot.svg",
+        "wagtailfontawesomesvg/solid/suitcase-medical.svg",
         "wagtailfontawesomesvg/solid/minus.svg",
-        "wagtailfontawesomesvg/solid/th.svg",
+        "wagtailfontawesomesvg/solid/table-cells-large.svg",
     ]
 
 
