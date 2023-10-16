@@ -11,6 +11,8 @@ import ResourcesTeasersBlock from "$components/Wagtail/ResourcesTeasersBlock.sve
 import SectionDividerBlock from "$components/Wagtail/SectionDividerBlock.svelte"
 import SliderBlock from "$components/Wagtail/SliderBlock.svelte"
 import TitleBlock from "$components/Wagtail/TitleBlock.svelte"
+import ImageTextBlock from "$components/Wagtail/ImageTextBlock.svelte"
+import DealCountBlock from "$components/Wagtail/DealCountBlock.svelte"
 
 export const blockMap = {
   columns_1_1: Columns1on1Block,
@@ -27,4 +29,6 @@ export const blockMap = {
   slider: SliderBlock,
   title: TitleBlock,
   section_divider: SectionDividerBlock,
+  image_text_block: ImageTextBlock,
+  dealcount: DealCountBlock,
 }

@@ -12,7 +12,6 @@ from wagtail.snippets.blocks import SnippetChooserBlock
 
 from apps.landmatrix.models.country import Country as DataCountry
 from apps.landmatrix.models.country import Region as DataRegion
-
 from .twitter import TwitterTimeline
 
 
@@ -172,6 +171,35 @@ class ImageBlock(ImageChooserBlock):
         return ret
 
 
+class NewLinkBlock(blocks.StructBlock):
+    page = blocks.PageChooserBlock(label=_("Interne Seite"), required=False)
+    external_url = blocks.URLBlock(
+        label=_("Externe URL"),
+        required=False,
+        help_text="Die externe URL wird nur verwendet, wenn keine interne Seite im vorigen Feld gesetzt ist",
+    )
+    text = blocks.CharBlock(label=_("Button-Text"), required=False, default="click here")
+
+    def get_api_representation(self, value, context=None):
+        link = {"text": value.get("text")}
+        if page := value.get("page"):
+            link["href"] = page.url
+        elif href := value.get("external_url"):
+            link["href"] = href
+            link["rel_external"]: True
+        return link
+
+
+
+class ImageTextBlock(StructBlock):
+    title = blocks.CharBlock(required=False)
+    subtitle = blocks.CharBlock(required=False)
+    text = RichTextBlock(required=False)
+    link = NewLinkBlock(required=False)
+    image= ImageBlock()
+    class Meta:
+        icon = "doc-full"
+
 class SectionDivider(StructBlock):
     class Meta:
         icon = "minus"
@@ -324,6 +352,11 @@ CONTENT_BLOCKS = [
     ("section_divider", SectionDivider()),
     ("twitter", TwitterBlock()),
     ("faqs_block", FAQsBlock()),
+
+]
+
+NEW_BLOCKS = [
+    ("image_text_block", ImageTextBlock()),
 ]
 
 SIMPLE_CONTENT_BLOCKS = [
