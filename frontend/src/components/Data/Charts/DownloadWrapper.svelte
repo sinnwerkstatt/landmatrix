@@ -17,20 +17,22 @@
   $: isChrome = browser && /Google Inc/.test(navigator.vendor)
 </script>
 
-<div
-  id="${title}_wrapper"
-  class="mx-4 my-12 flex flex-col flex-nowrap bg-lm-darkgray p-1 drop-shadow {wrapperClasses} dark:bg-gray-700"
->
+<div id="${title}_wrapper" class="flex flex-col flex-nowrap px-5 {wrapperClasses}">
   <slot name="heading">
-    <h2>{title}</h2>
+    {#if title}
+      <h2>{title}</h2>
+    {/if}
   </slot>
-  <div class="svg-wrapper flex max-w-full flex-auto items-center justify-center">
+  <div class="svg-wrapper flex items-center justify-center">
     <slot />
   </div>
-  <div
-    class="m-1 bg-lm-dark p-1 text-sm text-lm-lightgray dark:bg-gray-700 dark:text-white"
+  <div class="flex-shrink-0">
+    <slot name="legend" />
+  </div>
+  <ul
+    class="my-2 mx-auto flex w-fit bg-white p-1 font-oswald text-sm text-lm-dark dark:bg-gray-800 dark:text-white"
   >
-    <span id="download-svg">
+    <li id="download-svg">
       <button
         class="px-3 pb-1 hover:text-orange-200"
         class:grey-out={disableSVG}
@@ -39,9 +41,9 @@
         <FileImageIcon />
         SVG
       </button>
-    </span>
+    </li>
 
-    <span
+    <li
       id="download-png"
       title={isChrome ? "" : "At the moment, downloading PNG does not work in Firefox."}
     >
@@ -53,9 +55,9 @@
         <FileImageIcon />
         PNG
       </button>
-    </span>
+    </li>
 
-    <span
+    <li
       id="download-webp"
       title={isChrome
         ? ""
@@ -68,11 +70,11 @@
       >
         <FileImageIcon /> WebP
       </button>
-    </span>
+    </li>
 
-    <span style="margin: 2rem 0">|</span>
+    <span>|</span>
 
-    <span id="download-json">
+    <li id="download-json">
       <button
         class="px-3 pb-1 hover:text-orange-200"
         on:click={() => dispatch("download", "json")}
@@ -80,9 +82,9 @@
         <FileCodeIcon />
         JSON
       </button>
-    </span>
+    </li>
 
-    <span id="download-csv">
+    <li id="download-csv">
       <button
         class="px-3 pb-1 hover:text-orange-200"
         class:grey-out={disableCSV}
@@ -91,11 +93,8 @@
         <FileCodeIcon />
         CSV
       </button>
-    </span>
-  </div>
-  <div class="flex-shrink-0">
-    <slot name="legend" />
-  </div>
+    </li>
+  </ul>
 </div>
 
 <style>

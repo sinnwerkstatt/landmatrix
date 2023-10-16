@@ -1,12 +1,13 @@
 <script lang="ts">
   import { Client, gql, queryStore } from "@urql/svelte"
   import { _ } from "svelte-i18n"
+  import { onMount } from "svelte"
 
   import { page } from "$app/stores"
 
   import { dealsQuery } from "$lib/dealQueries"
   import { filters, FilterValues, publicOnly } from "$lib/filters"
-  import { formfields } from "$lib/stores"
+  import { formfields, isMobile } from "$lib/stores"
   import type { Deal } from "$lib/types/deal"
   import type { GQLFilter } from "$lib/types/filters"
   import type { Investor } from "$lib/types/investor"
@@ -114,7 +115,10 @@
 
   $: getInvestors($deals?.data?.deals ?? [], $filters)
 
-  showContextBar.set(false)
+  onMount(() => {
+    showContextBar.set(false)
+    showFilterBar.set(!$isMobile)
+  })
 </script>
 
 <DataContainer>

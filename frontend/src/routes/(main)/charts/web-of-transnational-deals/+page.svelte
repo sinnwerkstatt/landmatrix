@@ -6,8 +6,9 @@
   import { page } from "$app/stores"
 
   import { filters } from "$lib/filters"
+  import { isMobile } from "$lib/stores"
 
-  import { showContextBar } from "$components/Data/stores"
+  import { showContextBar, showFilterBar } from "$components/Data/stores"
   import ChartsContainer from "$components/Data/Charts/ChartsContainer.svelte"
   import ContextBarWebOfTransnationalDeals from "$components/Data/Charts/ContextBarWebOfTransnationalDeals.svelte"
   import WebOfTransnationalDeals from "$components/Data/Charts/WebOfTransnationalDeals.svelte"
@@ -31,7 +32,10 @@
     },
   })
 
-  onMount(() => showContextBar.set(true))
+  onMount(() => {
+    showContextBar.set(!$isMobile)
+    showFilterBar.set(!$isMobile)
+  })
 </script>
 
 <svelte:head>
@@ -39,13 +43,15 @@
 </svelte:head>
 
 <ChartsContainer>
-  {#if $deals.fetching}
-    <LoadingPulse />
-  {:else if $deals.error}
-    <p>Error...{$deals.error.message}</p>
-  {:else}
-    <WebOfTransnationalDeals {title} deals={$deals.data.transnational_deals} />
-  {/if}
+  <div class="mt-8">
+    {#if $deals.fetching}
+      <LoadingPulse />
+    {:else if $deals.error}
+      <p>Error...{$deals.error.message}</p>
+    {:else}
+      <WebOfTransnationalDeals {title} deals={$deals.data.transnational_deals} />
+    {/if}
+  </div>
 
   <div slot="ContextBar">
     <ContextBarWebOfTransnationalDeals />

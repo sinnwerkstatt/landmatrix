@@ -9,11 +9,11 @@
   $: dataViews = [
     {
       title: $_("Deals"),
-      route: "/list/deals",
+      route: "/list/deals/",
     },
     {
       title: $_("Investors"),
-      route: "/list/investors",
+      route: "/list/investors/",
     },
   ]
 
@@ -21,19 +21,19 @@
   $: chartViews = [
     {
       title: $_("Web of transnational deals"),
-      route: "/charts/web-of-transnational-deals",
+      route: "/charts/web-of-transnational-deals/",
     },
     {
       title: $_("Dynamics overview"),
-      route: "/charts/dynamics-overview",
+      route: "/charts/dynamics-overview/",
     },
     {
       title: $_("Produce info map"),
-      route: "/charts/produce-info",
+      route: "/charts/produce-info/",
     },
     {
       title: $_("Country profiles"),
-      route: "/charts/country-profiles",
+      route: "/charts/country-profiles/",
     },
   ]
 </script>
@@ -47,7 +47,7 @@
     >
       <li>
         <a
-          href="/map"
+          href="/map/"
           class="nav-link"
           class:active={$page.url.pathname.startsWith("/map")}
         >

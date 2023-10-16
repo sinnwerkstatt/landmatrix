@@ -1,4 +1,5 @@
-import { intention_of_investment_group_choices } from "$lib/choices"
+import { get } from "svelte/store"
+
 import type { BucketMap } from "$lib/data/buckets"
 import { createBucketMapReducer } from "$lib/data/buckets"
 import { COLORS, createChartData } from "$lib/data/createChartData"
@@ -8,8 +9,9 @@ import {
   INTENTION_OF_INVESTMENT_GROUP_MAP,
   IntentionOfInvestmentGroup,
 } from "$lib/types/deal"
+import { intentionOfInvestmentGroupMap } from "$lib/stores"
 
-const INTENTION_OF_INVESTMENT_GROUP_COLORS: {
+export const INTENTION_OF_INVESTMENT_GROUP_COLORS: {
   [key in IntentionOfInvestmentGroup]: string
 } = {
   [IntentionOfInvestmentGroup.AGRICULTURE]: COLORS.ORANGE,
@@ -20,7 +22,7 @@ const INTENTION_OF_INVESTMENT_GROUP_COLORS: {
 
 const getIntentionOfInvestmentGroupLabel = (
   intentionGroup: IntentionOfInvestmentGroup,
-) => intention_of_investment_group_choices[intentionGroup]
+) => get(intentionOfInvestmentGroupMap)[intentionGroup]
 
 const getIntentionOfInvestmentGroupColor = (
   intentionGroup: IntentionOfInvestmentGroup,

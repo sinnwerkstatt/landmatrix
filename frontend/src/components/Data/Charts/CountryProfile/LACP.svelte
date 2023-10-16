@@ -1,43 +1,33 @@
 <script lang="ts">
-  import * as R from "ramda"
-  import type { ChartData, ChartOptions, LegendItem } from "chart.js"
-  import {
-    ArcElement,
-    Tooltip,
-    Title,
-    SubTitle,
-    Legend,
-    Chart as ChartJS,
-  } from "chart.js?client"
   import { _ } from "svelte-i18n"
+  import * as R from "ramda"
 
+  import type { Deal, IoIGroup } from "$lib/types/deal"
   import type { SortBy } from "$lib/data/buckets"
-  import type { Deal } from "$lib/types/deal"
-  import { IoI, INTENTION_OF_INVESTMENT_GROUP_MAP } from "$lib/types/deal"
+  import { isConcluded } from "$lib/data/dealUtils"
   import {
     createBucketMapReducer,
     createEmptyBuckets,
     bucketEntries,
   } from "$lib/data/buckets"
-  import { isConcluded } from "$lib/data/dealUtils"
-  import { intention_of_investment_group_choices } from "$lib/choices"
+  import { IoI, INTENTION_OF_INVESTMENT_GROUP_MAP } from "$lib/types/deal"
+  import { intentionOfInvestmentMap, intentionOfInvestmentGroupMap } from "$lib/stores"
+  import { clearGraph } from "$lib/data/charts/concludedDealsOverTime"
 
-  import DoughnutWrapper from "$components/Data/Charts/CountryProfile/DoughnutWrapper.svelte"
-
-  import type { GroupedEntries, Item, GroupedBuckets } from "./LACP"
+  import ChartWrapper from "$components/Data/Charts/DownloadWrapper.svelte"
   import {
-    getSortedEntries,
-    createBackgroundColors,
-    createData,
-    createGroupData,
+    drawGraph,
     IOI_GROUP_COLORS,
-  } from "./LACP"
-
-  ChartJS.register(ArcElement, Tooltip, Title, SubTitle, Legend)
+  } from "$components/Data/Charts/CountryProfile/LACP"
+  import type { Data } from "$components/Data/Charts/CountryProfile/LACP"
+  import type { DownloadEvent } from "$components/Data/Charts/utils"
+  import { downloadJSON, downloadCSV, downloadSVG } from "$components/Data/Charts/utils"
+  import { displayDealsCount } from "$components/Map/map_helper.js"
 
   export let deals: Deal[] = []
 
-  let sortBy: SortBy = "count"
+  let sortBy: SortBy
+  $: sortBy = $displayDealsCount ? "count" : "size"
 
   $: filtered = deals.filter(isConcluded)
 
@@ -52,164 +42,66 @@
     )
   }, createEmptyBuckets(Object.values(IoI)))
 
-  let groupedBuckets: GroupedBuckets
-  $: groupedBuckets = bucketEntries(buckets).reduce((groups, [key, bucket]) => {
-    const group = INTENTION_OF_INVESTMENT_GROUP_MAP[key]
+  let data: Data
+  $: data = bucketEntries(buckets)
+    .map(([key, value]) => {
+      const groupKey = INTENTION_OF_INVESTMENT_GROUP_MAP[key]
+      return {
+        key,
+        label: $intentionOfInvestmentMap[key],
+        value: sortBy === "count" ? value.count : value.size,
+        groupKey,
+        groupLabel: $intentionOfInvestmentGroupMap[groupKey],
+        color: IOI_GROUP_COLORS[groupKey],
+      }
+    })
+    .sort((a, b) => b.value - a.value)
+
+  let svgElement: SVGElement
+
+  $: title = $_("Land acquisitions by category of production")
+  $: xLabel = $_("Category of production")
+  $: yLabel = $displayDealsCount ? $_("Number of deals") : $_("Deal size (ha)")
+  $: groups = Object.entries<string>($intentionOfInvestmentGroupMap).map(entry => {
+    const key = entry[0] as IoIGroup
     return {
-      ...groups,
-      [group]: {
-        ...groups[group],
-        [key]: bucket,
-      },
+      key,
+      label: entry[1],
+      color: IOI_GROUP_COLORS[key],
     }
-  }, {} as GroupedBuckets)
+  })
 
-  let sortedGroupedEntries: GroupedEntries
-  $: sortedGroupedEntries = getSortedEntries(sortBy, groupedBuckets)
-
-  let data: ChartData<"doughnut", Item[]>
-  $: data = {
-    labels: sortedGroupedEntries.map(([key]) =>
-      $_(intention_of_investment_group_choices[key]),
-    ),
-    datasets: [
-      {
-        label: $_("Category"),
-        data: createData(_, sortBy)(sortedGroupedEntries),
-        backgroundColor: createBackgroundColors(sortedGroupedEntries),
-        normalized: true,
-        borderWidth: 1,
-        // weight: 3,
-      },
-      {
-        label: $_("Group"),
-        data: createGroupData(_, sortBy)(sortedGroupedEntries),
-        backgroundColor: sortedGroupedEntries.map(([key]) => IOI_GROUP_COLORS[key]),
-        normalized: true,
-        // weight: 2,
-        borderWidth: 2,
-      },
-    ],
+  $: if (svgElement) {
+    clearGraph(svgElement)
+    drawGraph(svgElement, data, groups, title, xLabel, yLabel)
   }
 
-  const splitIntoChunks = (str: string): string[] =>
-    str.match(/.{1,40}(?= |$)/g) as string[]
+  export const toJSON: (data: Data) => string = R.partialRight(JSON.stringify, [
+    null,
+    2,
+  ])
 
-  let options: ChartOptions<"doughnut">
-  $: options = {
-    // aspectRatio: 1.2,
-    maintainAspectRatio: false,
-    cutout: "30%",
-    plugins: {
-      tooltip: {
-        callbacks: {
-          label(context) {
-            const item = context.raw as Item
-            const percentage = item["value"] * 100
-            return ` ${percentage.toFixed(2)}%`
-          },
-          title(items) {
-            return (items[0].raw as Item)["label"]
-          },
-        },
-      },
-      title: {
-        display: true,
-        // fullSize: false,
-        text: $_("Land acquisitions by category of production"),
-        font: {
-          size: 35,
-        },
-      },
-      subtitle: {
-        display: true,
-        position: "bottom",
-        // fullSize: false,
-        text: splitIntoChunks(
-          sortBy === "count"
-            ? $_(
-                "Number of deals per category of production, represented as the percentage of total concluded deals",
-              )
-            : $_(
-                "Size under contract per category of production, represented as the percentage of total concluded size",
-              ),
-        ),
-        padding: {
-          top: 10,
-        },
-        font: {
-          size: 25,
-        },
-      },
-      legend: {
-        display: true,
-        // position: "right",
-        labels: {
-          font: {
-            size: 20,
-          },
-          generateLabels(chart: ChartJS) {
-            const original =
-              ChartJS.overrides.doughnut.plugins.legend.labels.generateLabels
-            const labelsOriginal: LegendItem[] = original.call(this, chart)
+  export const toCSV: (data: Data) => string = R.pipe(
+    R.map(({ label, value }) => `${label},${value}`),
+    R.prepend("Intention of investment,value"),
+    R.join("\n"),
+  )
 
-            const groupColors = chart.data.datasets[1].backgroundColor
-
-            return labelsOriginal.map((label, index) => ({
-              ...label,
-              fillStyle: groupColors[index],
-            }))
-          },
-        },
-        onClick(event, legendItem, legend) {
-          const groupIndex = legendItem.index as number
-          const chart = legend.chart
-
-          const hiddenGroups =
-            legend.legendItems?.map((item, index) =>
-              groupIndex === index ? !item.hidden : item.hidden,
-            ) ?? []
-
-          const booleanMask = sortedGroupedEntries
-            .map(([_, entries], i) => {
-              return R.repeat(groupIndex == i, entries.length)
-            })
-            .flat()
-
-          if (hiddenGroups[groupIndex]) {
-            chart.hide(1, groupIndex)
-            booleanMask.forEach((val, index) => {
-              if (val) {
-                chart.hide(0, index)
-              }
-            })
-          } else {
-            chart.show(1, groupIndex)
-            booleanMask.forEach((val, index) => {
-              if (val) {
-                chart.show(0, index)
-              }
-            })
-          }
-          legend.legendItems?.forEach((item, index) => {
-            item.hidden = hiddenGroups[index]
-          })
-        },
-      },
-    },
+  const handleDownload = ({ detail: fileType }: DownloadEvent) => {
+    switch (fileType) {
+      case "json":
+        return downloadJSON(toJSON(data), title)
+      case "csv":
+        return downloadCSV(toCSV(data), title)
+      default:
+        return downloadSVG(svgElement, fileType, title)
+    }
   }
 </script>
 
-<!-- https://www.chartjs.org/docs/latest/configuration/responsive.html#important-note-->
-<div class="relative mx-auto h-[80vh] p-5 md:p-10">
-  <DoughnutWrapper {data} {options} />
-</div>
-
-<button
-  class="btn btn-primary"
-  on:click={() => {
-    sortBy = sortBy === "count" ? "size" : "count"
-  }}
->
-  {sortBy === "count" ? $_("Show deal size") : $_("Show deal count")}
-</button>
+<ChartWrapper title="" on:download={handleDownload}>
+  <svg
+    bind:this={svgElement}
+    class="stroke-lm-dark stroke-[0.2] font-oswald text-lm-dark dark:text-white"
+  />
+</ChartWrapper>

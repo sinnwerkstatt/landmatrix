@@ -1,11 +1,15 @@
-import { negotiation_status_group_choices } from "$lib/choices"
+import { get } from "svelte/store"
+
 import type { BucketMap } from "$lib/data/buckets"
 import { createBucketMapReducer } from "$lib/data/buckets"
 import { COLORS, createChartData } from "$lib/data/createChartData"
 import type { DealReducer } from "$lib/data/createChartData"
 import { NEGOTIATION_STATUS_GROUP_MAP, NegotiationStatusGroup } from "$lib/types/deal"
+import { negotiationStatusGroupMap } from "$lib/stores"
 
-const NEGOTIATION_STATUS_GROUP_COLORS: { [key in NegotiationStatusGroup]: string } = {
+export const NEGOTIATION_STATUS_GROUP_COLORS: {
+  [key in NegotiationStatusGroup]: string
+} = {
   [NegotiationStatusGroup.INTENDED]: COLORS.ORANGE_LIGHTER,
   [NegotiationStatusGroup.CONCLUDED]: COLORS.ORANGE,
   [NegotiationStatusGroup.FAILED]: COLORS.ORANGE_DARK,
@@ -14,7 +18,7 @@ const NEGOTIATION_STATUS_GROUP_COLORS: { [key in NegotiationStatusGroup]: string
 
 const getNegotiationStatusGroupLabel = (
   negotiationStatusGroup: NegotiationStatusGroup,
-) => negotiation_status_group_choices[negotiationStatusGroup]
+) => get(negotiationStatusGroupMap)[negotiationStatusGroup]
 
 const getNegotiationStatusGroupColor = (
   negotiationStatusGroup: NegotiationStatusGroup,

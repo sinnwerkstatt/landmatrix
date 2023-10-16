@@ -41,7 +41,7 @@
 <ChartWrapper
   {title}
   disableCSV
-  wrapperClasses="mx-auto w-3/4"
+  wrapperClasses="mx-auto xl:w-4/5"
   on:download={handleDownload}
 >
   <svg id="web-of-transnational-deals" class="bg-lm-lightgray" bind:this={svgComp}>
