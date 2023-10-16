@@ -24,6 +24,16 @@
   }
 
   let focused: boolean
+
+  let groupFilter: () => string[] | undefined = undefined
+  $: if (formfield.name.startsWith("intention_of_investment")) {
+    groupFilter = () => [
+      $_("Agriculture"),
+      $_("Forestry"),
+      $_("Renewable energy power plants"),
+      $_("Other"),
+    ]
+  }
 </script>
 
 <Select
@@ -34,6 +44,7 @@
   multiple
   showChevron
   groupBy={item => item.group}
+  {groupFilter}
   name={formfield.name}
   hasError={required && !value && !focused}
   on:input={e => setValue(e.detail)}
