@@ -154,7 +154,7 @@
   }
 
   .button1 {
-    @apply text-[16px] font-bold leading-tight tracking-[5%] md:text-[18px];
+    @apply text-[16px] font-bold leading-tight tracking-[5%] md:text-[18px] hover:text-pelorous-300;
   }
 
   .button-active {

@@ -171,6 +171,7 @@ class ImageBlock(ImageChooserBlock):
         return ret
 
 
+# New Screendesign
 class NewLinkBlock(blocks.StructBlock):
     page = blocks.PageChooserBlock(label=_("Interne Seite"), required=False)
     external_url = blocks.URLBlock(
@@ -190,15 +191,23 @@ class NewLinkBlock(blocks.StructBlock):
         return link
 
 
+# New Sreendesign
+class ThreeColumsBlock(StructBlock):
+    title = blocks.CharBlock(required=False)
+    subtitle = blocks.CharBlock(required=False)
 
+
+# New Sreendesign
 class ImageTextBlock(StructBlock):
     title = blocks.CharBlock(required=False)
     subtitle = blocks.CharBlock(required=False)
     text = RichTextBlock(required=False)
     link = NewLinkBlock(required=False)
-    image= ImageBlock()
+    image = ImageBlock()
+
     class Meta:
         icon = "doc-full"
+
 
 class SectionDivider(StructBlock):
     class Meta:
@@ -355,10 +364,6 @@ CONTENT_BLOCKS = [
 
 ]
 
-NEW_BLOCKS = [
-    ("image_text_block", ImageTextBlock()),
-]
-
 SIMPLE_CONTENT_BLOCKS = [
     (
         "paragraph",
@@ -447,6 +452,31 @@ class LatestNewsBlock(StructBlock):
         context["tag"] = tag
         context["news"] = queryset[: int(limit)]
         return context
+
+
+# New Screendesign
+class NewResourcesTeasersBlock(StructBlock):
+    title = blocks.CharBlock(required=False)
+    subtitle = blocks.CharBlock(required=False)
+    categories = blocks.ListBlock(SnippetChooserBlock("blog.BlogCategory"))
+
+    class Meta:
+        icon = "list"
+        label = "Resources teasers"
+
+    def get_api_representation(self, value, context=None):
+        from apps.blog.models import BlogPage
+
+        bp = BlogPage.objects.filter(blog_categories__in=value["categories"])[:4]
+        print(bp)
+        ret = {
+            "title": value.get("title"),
+            "subtitle": value.get("subtitle"),
+            "articles": [
+                article.get_dict("fill-500x500") for article in bp
+            ]
+        }
+        return ret
 
 
 class ResourcesTeasersBlock(StructBlock):
@@ -779,5 +809,10 @@ class FullWidthContainerBlock(StructBlock):
         label = "Full width container"
         group = "Layout"
 
+
+NEW_BLOCKS = [
+    ("image_text_block", ImageTextBlock()),
+    ("latest_resources", NewResourcesTeasersBlock()),
+]
 
 CONTENT_BLOCKS += [("full_width_container", FullWidthContainerBlock(form_classname=""))]
