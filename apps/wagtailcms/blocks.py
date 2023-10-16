@@ -179,7 +179,9 @@ class NewLinkBlock(blocks.StructBlock):
         required=False,
         help_text="Die externe URL wird nur verwendet, wenn keine interne Seite im vorigen Feld gesetzt ist",
     )
-    text = blocks.CharBlock(label=_("Button-Text"), required=False, default="click here")
+    text = blocks.CharBlock(
+        label=_("Button-Text"), required=False, default="click here"
+    )
 
     def get_api_representation(self, value, context=None):
         link = {"text": value.get("text")}
@@ -361,7 +363,6 @@ CONTENT_BLOCKS = [
     ("section_divider", SectionDivider()),
     ("twitter", TwitterBlock()),
     ("faqs_block", FAQsBlock()),
-
 ]
 
 SIMPLE_CONTENT_BLOCKS = [
@@ -472,9 +473,7 @@ class NewResourcesTeasersBlock(StructBlock):
         ret = {
             "title": value.get("title"),
             "subtitle": value.get("subtitle"),
-            "articles": [
-                article.get_dict("fill-500x500") for article in bp
-            ]
+            "articles": [article.get_dict("fill-500x500") for article in bp],
         }
         return ret
 

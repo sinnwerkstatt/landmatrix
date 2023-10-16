@@ -20,7 +20,8 @@ from .blocks import (
     CONTENT_BLOCKS,
     DATA_BLOCKS,
     SIMPLE_CONTENT_BLOCKS,
-    NoWrapsStreamField, NEW_BLOCKS,
+    NoWrapsStreamField,
+    NEW_BLOCKS,
 )
 from .twitter import TwitterTimeline
 
@@ -74,14 +75,16 @@ class HomePage(HeadlessPreviewMixin, Page):
             deals = Deal.objects.filter(is_public=True)
             count_deals = deals.count()
 
-            x = deals.aggregate(sum_ha=Sum('current_contract_size'))
+            x = deals.aggregate(sum_ha=Sum("current_contract_size"))
 
-            return {"sum_ha": x['sum_ha'], "deals": count_deals,
-                    "text": value.get("text")}
+            return {
+                "sum_ha": x["sum_ha"],
+                "deals": count_deals,
+                "text": value.get("text"),
+            }
 
     body = StreamField(
-        NEW_BLOCKS + [
-            ("dealcount", DealCountBlock())], use_json_field=True
+        NEW_BLOCKS + [("dealcount", DealCountBlock())], use_json_field=True
     )
 
     content_panels = Page.content_panels + [FieldPanel("body")]
@@ -142,9 +145,9 @@ class ObservatoryPage(HeadlessPreviewMixin, Page):
         FieldPanel("body"),
     ]
     promote_panels = [
-                         FieldPanel("short_description", widget=forms.Textarea),
-                         FieldPanel("twitter_username"),
-                     ] + Page.promote_panels
+        FieldPanel("short_description", widget=forms.Textarea),
+        FieldPanel("twitter_username"),
+    ] + Page.promote_panels
     parent_page_types = ["wagtailcms.ObservatoryIndexPage"]
     subpage_types = ["wagtailcms.WagtailPage"]
 

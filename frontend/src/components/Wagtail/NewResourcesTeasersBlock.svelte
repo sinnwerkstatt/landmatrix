@@ -2,7 +2,7 @@
   import type { BlogPage } from "$lib/types/wagtail"
 
   import ArticleList from "$components/Wagtail/ArticleList.svelte"
-  import NewArticleList from "$components/Wagtail/NewArticleList.svelte";
+  import NewArticleList from "$components/Wagtail/NewArticleList.svelte"
 
   export let value: { articles: BlogPage[] }
 </script>
@@ -21,12 +21,12 @@
         <p class="body1">
           {@html value.articles[0].excerpt}
         </p>
-          <a class="button1 text-pelorous" href={value.articles[0].url}>Read more >></a>
+        <a class="button1 text-pelorous" href={value.articles[0].url}>Read more >></a>
       </div>
     </div>
-      <div class="lg:col-span-4 lg:col-start-7">
-          <NewArticleList articles={value.articles.slice(1)}></NewArticleList>
-      </div>
+    <div class="lg:col-span-4 lg:col-start-7">
+      <NewArticleList articles={value.articles.slice(1)} />
+    </div>
   </div>
   <!--  <ArticleList articles={value.articles} />-->
 </div>

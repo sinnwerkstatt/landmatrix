@@ -7,13 +7,15 @@ from .models import (
     ObservatoryIndexPage,
     ObservatoryPage,
     WagtailPage,
-    WagtailRootPage, HomePage,
+    WagtailRootPage,
+    HomePage,
 )
 
 
 @register(WagtailRootPage)
 class WagtailRootPageTR(TranslationOptions):
     fields = ("body",)
+
 
 @register(HomePage)
 class HomePageTR(TranslationOptions):
