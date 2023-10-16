@@ -24,7 +24,7 @@
       route: "/charts/web-of-transnational-deals/",
     },
     {
-      title: $_("Global Map of Investments"),
+      title: $_("Global map of Investments"),
       route: "/charts/global-map-of-investments/",
     },
     {

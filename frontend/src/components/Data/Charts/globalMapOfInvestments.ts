@@ -99,8 +99,8 @@ export const createGlobalMapOfInvestments = (
       .attr("class", "country")
       .attr("data-id", getId)
       .attr("d", path)
-
-    addMarkers(svg, 5)
+      .append("title")
+      .text(d => d.properties?.name)
   }
 
   const injectData = (
@@ -177,22 +177,22 @@ export const createGlobalMapOfInvestments = (
     const { investorCountries, targetCountries } =
       getInvestorAndTargetCountries(selectedCountry)
 
-    gMoneyLines
-      .selectAll<BaseType, Country>(".investor-country-line")
-      .data(investorCountries)
-      .enter()
-      .append("path")
-      .attr("class", "investor-country-line")
-      .attr("d", investorCountry => moneyLine(investorCountry, selectedCountry))
-
-    gMoneyLines
-      .selectAll<BaseType, Country>(".target-country-line")
-      .data(targetCountries)
-      .enter()
-      .append("path")
-      .attr("class", "target-country-line")
-      .attr("d", targetCountry => moneyLine(selectedCountry, targetCountry))
-
+    //   gMoneyLines
+    //     .selectAll<BaseType, Country>(".investor-country-line")
+    //     .data(investorCountries)
+    //     .enter()
+    //     .append("path")
+    //     .attr("class", "investor-country-line")
+    //     .attr("d", investorCountry => moneyLine(investorCountry, selectedCountry))
+    //
+    //   gMoneyLines
+    //     .selectAll<BaseType, Country>(".target-country-line")
+    //     .data(targetCountries)
+    //     .enter()
+    //     .append("path")
+    //     .attr("class", "target-country-line")
+    //     .attr("d", targetCountry => moneyLine(selectedCountry, targetCountry))
+    //
     gCountries
       .selectAll<BaseType, Country>(".country")
       .classed("selected-country", country => country === selectedCountry)
@@ -200,33 +200,11 @@ export const createGlobalMapOfInvestments = (
       .classed("target-country", country => targetCountries.includes(country))
   }
 
-  const moneyLine = (source: Country, target: Country): string | null =>
-    path({
-      type: "LineString",
-      coordinates: [geoCentroid(source), geoCentroid(target)],
-    })
+  // const moneyLine = (source: Country, target: Country): string | null =>
+  //   path({
+  //     type: "LineString",
+  //     coordinates: [geoCentroid(source), geoCentroid(target)],
+  //   })
 
   return { drawCountries, injectData, selectCountry }
-}
-
-export function addMarkers(
-  svg: Selection<BaseType, unknown, HTMLElement, unknown>,
-  size = 10,
-): void {
-  const defs = svg.append("defs")
-  const marker_factory = (name: string) =>
-    defs
-      .append("marker")
-      .attr("id", name)
-      .attr("viewBox", "0 -5 10 10")
-      .attr("refX", 0)
-      .attr("refY", 0)
-      .attr("markerWidth", size)
-      .attr("markerHeight", size)
-      .attr("orient", "auto-start-reverse")
-      .attr("markerUnits", "userSpaceOnUse")
-      .append("path")
-      .attr("d", "M0,-5L10,0L0,5")
-  marker_factory("incoming-marker")
-  marker_factory("outgoing-marker")
 }

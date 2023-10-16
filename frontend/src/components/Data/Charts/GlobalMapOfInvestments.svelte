@@ -53,63 +53,43 @@
   {#if !investments}
     <LoadingPulse />
   {/if}
-  <svg id="svg" />
+  <svg id="svg">
+    <defs>
+      <pattern id="diagonalHatch" patternUnits="userSpaceOnUse" width="10" height="10">
+        <rect width="10" height="10" class="fill-lm-green" />
+        <path
+          class="stroke-lm-red stroke-[3]"
+          d="
+            M -2 2 L 2 -2
+            M 0 10 L 10 0
+            M 12 8 L 8 12
+          "
+        />
+      </pattern>
+    </defs>
+  </svg>
 </div>
 
 <style lang="css">
   :global(svg .country) {
-    fill: white;
-    stroke-width: 0.3;
-    stroke: black;
-    stroke-linejoin: round;
+    @apply fill-white stroke-black stroke-[0.3];
   }
-
   :global(svg .hover) {
-    fill: hsla(0, 0%, 62%, 0.5);
+    @apply fill-gray-light;
   }
   :global(svg .selected-country) {
-    fill: hsl(0, 0%, 32%);
+    @apply fill-gray-dark;
   }
   :global(svg .target-country) {
-    fill: var(--color-lm-orange);
+    @apply fill-lm-green;
   }
   :global(svg .investor-country) {
-    fill: var(--color-lm-investor);
+    @apply fill-lm-red;
   }
-
-  /*from https://codepen.io/chrislaskey/pen/jqabBQ*/
-  /*.world-outline {*/
-  /*  fill: #942a25;*/
-  /*  stroke: rgba(0, 0, 0, 0.1);*/
-  /*  stroke-width: 5px;*/
-  /*  color: #942a25;*/
-  /*}*/
-
+  :global(svg .investor-country.target-country) {
+    @apply fill-[url(#diagonalHatch)];
+  }
   :global(svg .background) {
     fill: #7cb4d5;
-  }
-
-  :global(svg .target-country-line) {
-    fill: none;
-    /*stroke: var(--color-lm-orange);*/
-    stroke: black;
-    /*stroke-dasharray: 5px 2px;*/
-    stroke-width: 0.6;
-    marker-end: url(#outgoing-marker);
-  }
-  :global(svg .investor-country-line) {
-    fill: none;
-    /*stroke: var(--color-lm-investor);*/
-    stroke: black;
-    /*stroke-dasharray: 5px 2px;*/
-    stroke-width: 0.6;
-    marker-end: url(#incoming-marker);
-  }
-
-  :global(svg #incoming-marker) {
-    fill: none;
-  }
-  :global(svg #outgoing-marker) {
-    fill: none;
   }
 </style>

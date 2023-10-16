@@ -75,59 +75,50 @@
 
 <div class="text-lm-dark dark:text-white">
   {#if country}
+    <h3>{country.name}</h3>
     {#if investing_countries.length > 0}
-      <div
-        class="mb-5 border border-gray-300 bg-gray-100 p-4 text-sm shadow-inner dark:bg-gray-700"
-      >
-        <div>
-          <span class="text-lg font-bold text-pelorous">
-            {$_("Countries investing in {country}", {
-              values: { country: country.name },
-            })}
-          </span>
-          <table class="table-striped w-full">
-            <tbody>
-              {#each investing_countries as icountry}
-                <tr>
-                  <th class="text-left">{icountry.country_name}</th>
-                  <td class="whitespace-nowrap text-right">
-                    {icountry.count} deals
-                    <br />
-                    {icountry.size} ha
-                  </td>
-                </tr>
-              {/each}
-            </tbody>
-          </table>
-        </div>
+      <h4 class="my-0 border-2 border-b-0 border-lm-red py-2 text-center">
+        {$_("Incoming")}
+        <!--{$_("Investments from")}-->
+      </h4>
+      <div class="mb-5 border-2 border-lm-red p-4 text-sm shadow-inner">
+        <table class="table-striped w-full">
+          <tbody>
+            {#each investing_countries as icountry}
+              <tr>
+                <th class="text-left">{icountry.country_name}</th>
+                <td class="whitespace-nowrap text-right">
+                  {icountry.count} deals
+                  <br />
+                  {icountry.size} ha
+                </td>
+              </tr>
+            {/each}
+          </tbody>
+        </table>
       </div>
     {/if}
 
     {#if invested_countries.length > 0}
-      <div
-        class="mb-5 border border-gray-300 bg-gray-100 p-4 text-sm shadow-inner dark:bg-gray-700"
-      >
-        <div>
-          <span class="text-lg font-bold text-orange">
-            {$_("Countries {country} invests in", {
-              values: { country: country.name },
-            })}
-          </span>
-          <table class="table-striped w-full">
-            <tbody>
-              {#each invested_countries as icountry}
-                <tr>
-                  <th class="text-left">{icountry.country_name}</th>
-                  <td class="whitespace-nowrap text-right">
-                    {icountry.count} deals
-                    <br />
-                    {icountry.size} ha
-                  </td>
-                </tr>
-              {/each}
-            </tbody>
-          </table>
-        </div>
+      <h4 class="my-0 border-2 border-b-0 border-lm-green py-2 text-center">
+        {$_("Outgoing")}
+        <!--{$_("Investments in")}-->
+      </h4>
+      <div class="mb-5 border-2 border-lm-green p-4 text-sm shadow-inner">
+        <table class="table-striped w-full">
+          <tbody>
+            {#each invested_countries as icountry}
+              <tr>
+                <th class="text-left">{icountry.country_name}</th>
+                <td class="whitespace-nowrap text-right">
+                  {icountry.count} deals
+                  <br />
+                  {icountry.size} ha
+                </td>
+              </tr>
+            {/each}
+          </tbody>
+        </table>
       </div>
     {/if}
   {:else}

@@ -13,7 +13,7 @@
     showContextBar.set(!$isMobile)
     showFilterBar.set(!$isMobile)
   })
-  $: title = $_("Global Map of Investments")
+  $: title = $_("Global map of Investments")
 </script>
 
 <svelte:head>
