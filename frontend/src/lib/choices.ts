@@ -71,7 +71,7 @@ export const forestry_investment_choices: {
 } = {
   [ForestryIoI.BIOMASS_ENERGY_PRODUCTION]: "Biomass for energy production",
   [ForestryIoI.CARBON]: "For carbon sequestration/REDD",
-  [ForestryIoI.FOREST_LOGGING]: "Forest logging / management for wood and fiber",
+  [ForestryIoI.FOREST_LOGGING]: "Forest logging for wood and fiber",
   [ForestryIoI.TIMBER_PLANTATION]: "Timber plantation for wood and fiber",
   [ForestryIoI.FORESTRY_UNSPECIFIED]: "Forestry unspecified",
 }

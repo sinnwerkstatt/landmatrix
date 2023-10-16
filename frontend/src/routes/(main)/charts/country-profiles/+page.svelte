@@ -19,6 +19,7 @@
   import CumulativeSizeUnderContract from "$components/Data/Charts/CountryProfile/CumulativeSizeUnderContract.svelte"
   import LACP from "$components/Data/Charts/CountryProfile/LACP.svelte"
   import { showContextBar, showFilterBar } from "$components/Data/stores"
+  import DealDisplayToggle from "$components/DealDisplayToggle.svelte"
 
   interface CountryProfile {
     component: ComponentType
@@ -116,5 +117,6 @@
         </li>
       {/each}
     </ul>
+    <DealDisplayToggle />
   </div>
 </ChartsContainer>
