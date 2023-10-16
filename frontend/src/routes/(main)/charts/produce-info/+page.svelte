@@ -23,7 +23,7 @@
     },
   })
 
-  const title = $_("Produce info map")
+  $: title = $_("Produce info map")
 
   onMount(() => {
     showContextBar.set(!$isMobile)
@@ -36,17 +36,16 @@
 </svelte:head>
 
 <ChartsContainer>
+  {#if $deals.fetching}
+    <LoadingPulse />
+  {:else if $deals.error}
+    <p>Error...{$deals.error.message}</p>
+  {:else}
+    <ProduceInfoMap deals={$deals.data.deals} {title} />
+  {/if}
+
   <div slot="ContextBar">
     <h2>{title}</h2>
-    <div>{@html $chartDescriptions?.produce_info_map}</div>
-  </div>
-  <div class="mt-8">
-    {#if $deals.fetching}
-      <LoadingPulse />
-    {:else if $deals.error}
-      <p>Error...{$deals.error.message}</p>
-    {:else}
-      <ProduceInfoMap deals={$deals.data.deals} {title} />
-    {/if}
+    <div>{@html $chartDescriptions?.produce_info_map ?? ""}</div>
   </div>
 </ChartsContainer>
