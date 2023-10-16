@@ -473,7 +473,8 @@ class NewResourcesTeasersBlock(StructBlock):
         ret = {
             "title": value.get("title"),
             "subtitle": value.get("subtitle"),
-            "articles": [article.get_dict("fill-500x500") for article in bp],
+            "image": bp[0].get_dict("fill-500x500")["header_image"],
+            "articles": [article.get_teaser() for article in bp],
         }
         return ret
 

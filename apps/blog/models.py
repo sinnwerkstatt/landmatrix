@@ -1,8 +1,6 @@
 import datetime
 from typing import Type
 
-from taggit.models import Tag, TaggedItemBase
-
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
@@ -14,6 +12,7 @@ from django.utils.text import Truncator
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey, ParentalManyToManyField
 from rest_framework.fields import ListField
+from taggit.models import Tag, TaggedItemBase
 from wagtail.admin.panels import FieldPanel, FieldRowPanel, MultiFieldPanel
 from wagtail.api import APIField
 from wagtail.fields import StreamField
@@ -26,7 +25,6 @@ from wagtail_headless_preview.models import HeadlessPreviewMixin
 
 from apps.accounts.models import User
 from apps.wagtailcms.blocks import SIMPLE_CONTENT_BLOCKS
-
 from .utils import unique_slugify
 
 UserModel: Type[User] = get_user_model()
@@ -306,6 +304,17 @@ class BlogPage(HeadlessPreviewMixin, Page):
         context["blogs"] = self.get_blog_index().blogindexpage.blogs
         context = get_blog_context(context)
         return context
+
+    def get_teaser(self):
+        body = str(self.body)
+        return {
+            "id": self.id,
+            "title": self.title,
+            "excerpt": Truncator(body).words(50, html=True, truncate=" …"),
+            "date": self.date,
+            "categories": list(self.blog_categories.all().values()),
+            "url": self.get_url(),
+        }
 
     def get_dict(self, rendition_str):
         try:

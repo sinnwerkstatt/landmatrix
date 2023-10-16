@@ -4,7 +4,12 @@
   import ArticleList from "$components/Wagtail/ArticleList.svelte"
   import NewArticleList from "$components/Wagtail/NewArticleList.svelte"
 
-  export let value: { articles: BlogPage[] }
+  export let value: {
+    title: string
+    subtitle: string
+    image: string
+    articles: BlogPage[]
+  }
 </script>
 
 <div data-block="new_resources_teasers" class="container mx-auto px-10 pt-6 pb-0">
@@ -12,7 +17,7 @@
   <h3 class="heading3 xl:heading1">{value.subtitle}</h3>
   <div class="lg:grid lg:grid-cols-10">
     <div class="mb-12 lg:col-span-5">
-      <img src={value.articles[0].header_image} class="" />
+      <img src={value.image} class="" />
       <div class="my-[24px]">
         <p class="caption text-orange">{value.articles[0].categories[0].name}</p>
         <h4 class="heading4 -mt-3 text-orange">{value.articles[0].title}</h4>
