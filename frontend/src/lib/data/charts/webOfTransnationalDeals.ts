@@ -80,8 +80,8 @@ function addMarkers(
 export function LandMatrixRadialSpider(
   svgElement: SVGElement,
   data_hierarchical: EdgeBundlingData,
-  selectedCountry: number,
-  updateCountryFn: (country: number) => void,
+  selectedCountry: number | undefined,
+  updateCountryFn: (country: number | undefined) => void,
 ) {
   select(svgElement).selectAll("g").remove()
   select(svgElement).selectAll("defs").remove()

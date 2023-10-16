@@ -72,22 +72,19 @@
 
 <style lang="css">
   :global(svg .country) {
-    @apply fill-white stroke-black stroke-[0.3];
-  }
-  :global(svg .hover) {
-    @apply fill-gray-light;
+    @apply cursor-pointer fill-white stroke-black stroke-[0.3] hover:fill-gray-light;
   }
   :global(svg .selected-country) {
-    @apply fill-gray-dark;
+    @apply fill-gray-dark hover:fill-gray-medium;
   }
   :global(svg .target-country) {
-    @apply fill-lm-green;
+    @apply fill-lm-green hover:fill-lm-green-300;
   }
   :global(svg .investor-country) {
-    @apply fill-lm-red;
+    @apply fill-lm-red hover:fill-lm-red-300;
   }
   :global(svg .investor-country.target-country) {
-    @apply fill-[url(#diagonalHatch)];
+    @apply fill-[url(#diagonalHatch)] hover:opacity-70;
   }
   :global(svg .background) {
     fill: #7cb4d5;

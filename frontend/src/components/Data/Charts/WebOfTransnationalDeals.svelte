@@ -14,12 +14,12 @@
 
   let svgComp: SVGElement
 
-  const redrawSpider = (deals, country_id): void =>
+  const redrawSpider = (deals: EdgeBundlingData, countryId: number | undefined): void =>
     LandMatrixRadialSpider(
       svgComp,
       deals,
-      country_id,
-      country => ($filters.country_id = +country),
+      countryId,
+      countryId => ($filters.country_id = countryId),
     )
 
   const handleDownload = ({ detail: fileType }: DownloadEvent) => {
