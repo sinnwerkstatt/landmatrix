@@ -26,6 +26,7 @@ from .twitter import TwitterTimeline
 @register_setting(icon="radio-empty")
 class ChartDescriptionsSettings(BaseGenericSetting):
     web_of_transnational_deals = RichTextField()
+    global_web_of_investments = RichTextField()
     dynamics_overview = RichTextField()
     produce_info_map = RichTextField()
 
@@ -39,9 +40,11 @@ class ChartDescriptionsSettings(BaseGenericSetting):
             ),
             "dynamics_overview": expand_db_html(self.dynamics_overview),
             "produce_info_map": expand_db_html(self.produce_info_map),
+            "global_web_of_investments": expand_db_html(self.global_web_of_investments),
         }
 
     panels = [
+        FieldPanel("global_web_of_investments"),
         FieldPanel("web_of_transnational_deals"),
         FieldPanel("dynamics_overview"),
         FieldPanel("produce_info_map"),

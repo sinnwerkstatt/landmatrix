@@ -17,10 +17,10 @@
   $: isChrome = browser && /Google Inc/.test(navigator.vendor)
 </script>
 
-<div id="${title}_wrapper" class="flex flex-col flex-nowrap px-5 {wrapperClasses}">
+<div id="${title}_wrapper" class="flex flex-col flex-nowrap {wrapperClasses}">
   <slot name="heading">
     {#if title}
-      <h2>{title}</h2>
+      <h2 class="mt-4">{title}</h2>
     {/if}
   </slot>
   <div class="svg-wrapper flex items-center justify-center">

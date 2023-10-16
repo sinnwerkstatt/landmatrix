@@ -14,7 +14,7 @@
     <div class="float-left h-full w-0 xl:w-[clamp(220px,20%,300px)]" />
     <div class="float-right h-full w-0 xl:w-[clamp(220px,20%,300px)]" />
     <div class="flex h-full flex-col overflow-auto text-center md:flex-row">
-      <div class="mx-4 mt-16 mb-12 flex-grow">
+      <div class="mt-16 flex-grow md:mx-4 md:px-5">
         <slot />
       </div>
     </div>

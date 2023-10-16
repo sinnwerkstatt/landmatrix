@@ -6,15 +6,15 @@
   import { page } from "$app/stores"
 
   import { filters } from "$lib/filters"
-  import { isMobile } from "$lib/stores"
+  import { isMobile, chartDescriptions } from "$lib/stores"
 
   import { showContextBar, showFilterBar } from "$components/Data/stores"
   import ChartsContainer from "$components/Data/Charts/ChartsContainer.svelte"
-  import ContextBarWebOfTransnationalDeals from "$components/Data/Charts/ContextBarWebOfTransnationalDeals.svelte"
+  import CountryInvestorInfo from "$components/Data/Charts/CountryInvestorInfo.svelte"
   import WebOfTransnationalDeals from "$components/Data/Charts/WebOfTransnationalDeals.svelte"
   import LoadingPulse from "$components/LoadingPulse.svelte"
 
-  const title = $_("Web of transnational deals")
+  $: title = $_("Web of transnational deals")
 
   const transnationalDealsQuery = gql`
     query ($filters: [Filter]) {
@@ -43,17 +43,17 @@
 </svelte:head>
 
 <ChartsContainer>
-  <div class="mt-8">
-    {#if $deals.fetching}
-      <LoadingPulse />
-    {:else if $deals.error}
-      <p>Error...{$deals.error.message}</p>
-    {:else}
-      <WebOfTransnationalDeals {title} deals={$deals.data.transnational_deals} />
-    {/if}
-  </div>
+  {#if $deals.fetching}
+    <LoadingPulse />
+  {:else if $deals.error}
+    <p>Error...{$deals.error.message}</p>
+  {:else}
+    <WebOfTransnationalDeals {title} deals={$deals.data.transnational_deals} />
+  {/if}
 
   <div slot="ContextBar">
-    <ContextBarWebOfTransnationalDeals />
+    <h2>{title}</h2>
+    <div>{@html $chartDescriptions?.web_of_transnational_deals ?? ""}</div>
+    <CountryInvestorInfo />
   </div>
 </ChartsContainer>

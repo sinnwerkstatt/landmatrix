@@ -88,6 +88,7 @@ type ChartDescriptions {
   web_of_transnational_deals: String
   dynamics_overview: String
   produce_info_map: String
+  global_web_of_investments: String
 }
 
 type DealAggregation {

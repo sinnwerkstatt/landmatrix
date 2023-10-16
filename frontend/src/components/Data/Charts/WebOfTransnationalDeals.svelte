@@ -14,12 +14,12 @@
 
   let svgComp: SVGElement
 
-  const redrawSpider = (deals, country_id): void =>
+  const redrawSpider = (deals: EdgeBundlingData, countryId: number | undefined): void =>
     LandMatrixRadialSpider(
       svgComp,
       deals,
-      country_id,
-      country => ($filters.country_id = +country),
+      countryId,
+      countryId => ($filters.country_id = countryId),
     )
 
   const handleDownload = ({ detail: fileType }: DownloadEvent) => {
@@ -44,55 +44,55 @@
   wrapperClasses="mx-auto xl:w-4/5"
   on:download={handleDownload}
 >
-  <svg id="web-of-transnational-deals" class="bg-lm-lightgray" bind:this={svgComp}>
-    <!-- Include styles with fallback colors in svg for export-->
-    <!-- Include styles with fallback colors in svg for export-->
-    <style>
-      #incoming-marker {
-        fill: var(--color-lm-orange, #fc941dff);
-      }
-
-      #outgoing-marker {
-        fill: var(--color-lm-investor, #43b6b5ff);
-      }
-
-      path.incoming-highlighted {
-        stroke: var(--color-lm-orange, #fc941dff);
-        stroke-width: 2;
-        marker-start: url(#incoming-marker);
-      }
-
-      path.outgoing-highlighted {
-        stroke: var(--color-lm-investor, #43b6b5ff);
-        stroke-width: 2;
-        marker-start: url(#outgoing-marker);
-      }
-
-      path.incoming-permahighlight {
-        stroke: var(--color-lm-orange, #fc941dff);
-        stroke-width: 2.5;
-        marker-start: url(#incoming-marker);
-      }
-
-      path.outgoing-permahighlight {
-        stroke: var(--color-lm-investor, #43b6b5ff);
-        stroke-width: 2.5;
-        marker-start: url(#outgoing-marker);
-      }
-
-      text.incoming-highlighted {
-        font-size: 14px;
-        cursor: pointer;
-        font-weight: bold;
-        fill: var(--color-lm-orange, #fc941dff);
-      }
-
-      text.outgoing-highlighted {
-        font-size: 14px;
-        cursor: pointer;
-        font-weight: bold;
-        fill: var(--color-lm-investor, #43b6b5ff);
-      }
-    </style>
-  </svg>
+  <svg id="web-of-transnational-deals" bind:this={svgComp} />
 </ChartWrapper>
+
+<style lang="css">
+  :global(svg #incoming-marker) {
+    @apply fill-lm-green;
+  }
+
+  :global(svg #outgoing-marker) {
+    @apply fill-lm-red;
+  }
+
+  :global(svg path.incoming-highlighted) {
+    @apply stroke-lm-green stroke-2;
+    marker-start: url(#incoming-marker);
+  }
+
+  :global(svg path.outgoing-highlighted) {
+    @apply stroke-lm-red stroke-2;
+    marker-start: url(#outgoing-marker);
+  }
+
+  :global(svg path.incoming-permahighlight) {
+    @apply stroke-lm-green stroke-[3];
+    marker-start: url(#incoming-marker);
+  }
+
+  :global(svg path.outgoing-permahighlight) {
+    @apply stroke-lm-red stroke-2;
+    marker-start: url(#outgoing-marker);
+  }
+
+  :global(svg text.incoming-highlighted) {
+    @apply cursor-pointer fill-lm-green font-bold;
+  }
+
+  :global(svg text.outgoing-highlighted) {
+    @apply cursor-pointer fill-lm-red font-bold;
+  }
+
+  :global(svg text.incoming-permahighlight) {
+    @apply cursor-pointer fill-lm-green font-bold;
+  }
+
+  :global(svg text.outgoing-permahighlight) {
+    @apply cursor-pointer fill-lm-red font-bold;
+  }
+
+  :global(svg text.incoming-permahighlight.outgoing-permahighlight) {
+    @apply cursor-pointer fill-lm-dark font-bold;
+  }
+</style>

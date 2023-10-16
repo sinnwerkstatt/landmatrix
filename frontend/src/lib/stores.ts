@@ -163,6 +163,7 @@ export const chartDescriptions = writable<{
   web_of_transnational_deals: string
   dynamics_overview: string
   produce_info_map: string
+  global_web_of_investments: string
 }>(undefined)
 
 async function getChartDescriptions(language = "en", urqlClient: Client) {
@@ -174,6 +175,7 @@ async function getChartDescriptions(language = "en", urqlClient: Client) {
             web_of_transnational_deals
             dynamics_overview
             produce_info_map
+            global_web_of_investments
           }
         }
       `,

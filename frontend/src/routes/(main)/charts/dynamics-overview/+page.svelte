@@ -42,33 +42,29 @@
 <ChartsContainer>
   <div slot="ContextBar">
     <h2>{$_("Dynamics overview charts")}</h2>
-    <div>{@html $chartDescriptions?.dynamics_overview}</div>
+    <div>{@html $chartDescriptions?.dynamics_overview ?? ""}</div>
     <DealDisplayToggle />
   </div>
-  <div class="mt-8">
-    {#if $deals.fetching}
-      <LoadingPulse />
-    {:else if $deals.error}
-      <p>Error...{$deals.error.message}</p>
-    {:else}
-      <div class="mx-8 grid grid-rows-1 gap-8 md:mx-16 md:grid-cols-2 md:gap-16">
-        <IoIGroupChart
-          deals={$deals.data.deals}
-          displayDealsCount={$displayDealsCount}
-        />
-        <AgricultureIntentionChart
-          deals={$deals.data.deals}
-          displayDealsCount={$displayDealsCount}
-        />
-        <NegotiationStatusGroupChart
-          deals={$deals.data.deals}
-          displayDealsCount={$displayDealsCount}
-        />
-        <ImplementationStatusChart
-          deals={$deals.data.deals}
-          displayDealsCount={$displayDealsCount}
-        />
-      </div>
-    {/if}
-  </div>
+
+  {#if $deals.fetching}
+    <LoadingPulse />
+  {:else if $deals.error}
+    <p>Error...{$deals.error.message}</p>
+  {:else}
+    <div class="mx-8 grid grid-rows-1 gap-8 md:mx-32 md:grid-cols-2 md:gap-x-32">
+      <IoIGroupChart deals={$deals.data.deals} displayDealsCount={$displayDealsCount} />
+      <AgricultureIntentionChart
+        deals={$deals.data.deals}
+        displayDealsCount={$displayDealsCount}
+      />
+      <NegotiationStatusGroupChart
+        deals={$deals.data.deals}
+        displayDealsCount={$displayDealsCount}
+      />
+      <ImplementationStatusChart
+        deals={$deals.data.deals}
+        displayDealsCount={$displayDealsCount}
+      />
+    </div>
+  {/if}
 </ChartsContainer>
