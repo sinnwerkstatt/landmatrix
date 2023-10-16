@@ -9,6 +9,7 @@
   import LowLevelDateYearField from "./LowLevelDateYearField.svelte"
   import LowLevelDecimalField from "./LowLevelDecimalField.svelte"
   import TypedChoicesField from "./TypedChoicesField.svelte"
+  import { slide } from "svelte/transition"
 
   interface JSONElectricityGenerationField {
     current?: boolean
@@ -93,6 +94,7 @@
         <label
           class="flex flex-wrap items-center justify-between gap-2"
           for={undefined}
+          transition:slide
         >
           {$_("Number of turbines")}
 

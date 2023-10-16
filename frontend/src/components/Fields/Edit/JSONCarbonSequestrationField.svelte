@@ -10,6 +10,7 @@
   import LowLevelDecimalField from "./LowLevelDecimalField.svelte"
   import TypedChoicesField from "./TypedChoicesField.svelte"
   import LowLevelNullBooleanField from "$components/Fields/Edit/LowLevelNullBooleanField.svelte"
+  import { slide } from "svelte/transition"
 
   interface JSONCarbonSequestrationField {
     current?: boolean
@@ -110,15 +111,21 @@
           wrapperClass="space-x-3"
         />
       </label>
-      <label class="flex flex-wrap items-center justify-between gap-2" for={undefined}>
-        {$_("Name of certification standard")}
-        <input
-          bind:value={val.certification_standard_name}
-          type="text"
-          class="inpt"
-          placeholder={$_("Name")}
-        />
-      </label>
+      {#if val.certification_standard === true}
+        <label
+          class="flex flex-wrap items-center justify-between gap-2"
+          for={undefined}
+          transition:slide
+        >
+          {$_("Name of certification standard")}
+          <input
+            bind:value={val.certification_standard_name}
+            type="text"
+            class="inpt"
+            placeholder={$_("Name")}
+          />
+        </label>
+      {/if}
       <label class="flex flex-wrap items-center justify-between gap-2" for={undefined}>
         {$_("Comment on certification standard")}
         <input

@@ -33,24 +33,24 @@
 
   $: produceChoices = $formfields
     ? [
-        ...Object.entries($formfields.deal.crops.choices).map(([v, k]) => ({
-          value: v,
-          label: k,
+        ...($formfields.deal.crops.choices?.map(item => ({
+          value: item["value"],
+          label: item["label"],
           groupID: ProduceGroup.CROPS,
           group: $_("Crops"),
-        })),
-        ...Object.entries($formfields.deal.animals.choices).map(([v, k]) => ({
-          value: v,
-          label: k,
+        })) ?? []),
+        ...($formfields.deal.animals.choices?.map(item => ({
+          value: item["value"],
+          label: item["label"],
           groupID: ProduceGroup.ANIMALS,
           group: $_("Animals"),
-        })),
-        ...Object.entries($formfields.deal.mineral_resources.choices).map(([v, k]) => ({
-          value: v,
-          label: k,
+        })) ?? []),
+        ...($formfields.deal.mineral_resources.choices?.map(item => ({
+          value: item["value"],
+          label: item["label"],
           groupID: ProduceGroup.MINERAL_RESOURCES,
           group: $_("Mineral resources"),
-        })),
+        })) ?? []),
       ]
     : []
 
