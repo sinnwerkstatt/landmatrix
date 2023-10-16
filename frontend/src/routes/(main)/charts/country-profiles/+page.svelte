@@ -105,7 +105,7 @@
       {#each countryProfiles as profile (profile.key)}
         <li>
           <button
-            class="btn btn-secondary w-full whitespace-normal text-left font-bold"
+            class="btn w-full whitespace-normal text-left font-bold"
             class:bg-orange-500={currentProfileKey === profile.key}
             class:text-white={currentProfileKey === profile.key}
             on:click|preventDefault={() => {

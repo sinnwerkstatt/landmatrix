@@ -1,7 +1,6 @@
 <script lang="ts">
   import type { Client } from "@urql/svelte"
   import { gql } from "@urql/svelte"
-  import { onMount } from "svelte"
 
   import { browser } from "$app/environment"
   import { page } from "$app/stores"
@@ -11,9 +10,9 @@
   import LoadingPulse from "$components/LoadingPulse.svelte"
 
   import type { Investments } from "./globalMapOfInvestments"
-  import { createGlobalMapOfInvestments } from "./globalMapOfInvestments.ts"
+  import { createGlobalMapOfInvestments } from "./globalMapOfInvestments"
 
-  let globalMap: ReturnType<createGlobalMapOfInvestments> | null = null
+  let globalMap: ReturnType<typeof createGlobalMapOfInvestments> | null = null
   let investments: Investments | null = null
 
   const grabInvestments = async () => {
@@ -38,10 +37,10 @@
     investments = data?.global_map_of_investments ?? null
   }
 
-  onMount(() => {
+  $: if (investments) {
     globalMap = createGlobalMapOfInvestments("#svg", id => ($filters.country_id = +id))
     globalMap.drawCountries()
-  })
+  }
 
   $: $filters && grabInvestments()
   $: browser &&
@@ -58,13 +57,6 @@
 </div>
 
 <style lang="css">
-  .svg-container {
-    height: 100%;
-    width: 100%;
-    overflow: hidden;
-    background: #dff0fa;
-  }
-
   :global(svg .country) {
     fill: white;
     stroke-width: 0.3;

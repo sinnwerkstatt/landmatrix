@@ -24,16 +24,16 @@
       route: "/charts/web-of-transnational-deals/",
     },
     {
+      title: $_("Global Map of Investments"),
+      route: "/charts/global-map-of-investments/",
+    },
+    {
       title: $_("Dynamics overview"),
       route: "/charts/dynamics-overview/",
     },
     {
       title: $_("Produce info map"),
       route: "/charts/produce-info/",
-    },
-    {
-      title: $_("Global Map of Investments"),
-      route: "/charts/global-map-of-investments",
     },
     {
       title: $_("Country profiles"),

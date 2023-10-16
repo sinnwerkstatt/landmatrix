@@ -73,20 +73,18 @@
   $: _grabInvestmentsAndRankings($filters.country_id, $filters)
 </script>
 
-<div>
-  <h2>{$_("Web of transnational deals")}</h2>
-  <div>{@html $chartDescriptions?.web_of_transnational_deals}</div>
+<div class="text-lm-dark dark:text-white">
   {#if country}
     {#if investing_countries.length > 0}
       <div
         class="mb-5 border border-gray-300 bg-gray-100 p-4 text-sm shadow-inner dark:bg-gray-700"
       >
         <div>
-          <b class="text-lg">
+          <span class="text-lg font-bold text-pelorous">
             {$_("Countries investing in {country}", {
               values: { country: country.name },
             })}
-          </b>
+          </span>
           <table class="table-striped w-full">
             <tbody>
               {#each investing_countries as icountry}
@@ -110,11 +108,11 @@
         class="mb-5 border border-gray-300 bg-gray-100 p-4 text-sm shadow-inner dark:bg-gray-700"
       >
         <div>
-          <b class="text-lg">
+          <span class="text-lg font-bold text-orange">
             {$_("Countries {country} invests in", {
               values: { country: country.name },
             })}
-          </b>
+          </span>
           <table class="table-striped w-full">
             <tbody>
               {#each invested_countries as icountry}
@@ -132,5 +130,9 @@
         </div>
       </div>
     {/if}
+  {:else}
+    <span class="font-bold">
+      {$_("Select or click on a country for investment details.")}
+    </span>
   {/if}
 </div>

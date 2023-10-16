@@ -60,7 +60,9 @@ export const createGlobalMapOfInvestments = (
 
   const zoomFn = zoom().scaleExtent([1, 3]).on("zoom", zoomed)
 
-  const svg = select(svgSelector).attr("viewBox", `0 0 ${width} ${height}`)
+  const svg = select(svgSelector)
+    .attr("viewBox", `0 0 ${width} ${height}`)
+    .style("width", "100%")
   const gZoom = svg.append("g").call(zoomFn as any)
 
   // add background
