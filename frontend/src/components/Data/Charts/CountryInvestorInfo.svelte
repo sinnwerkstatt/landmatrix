@@ -100,11 +100,11 @@
     {/if}
 
     {#if invested_countries.length > 0}
-      <h4 class="my-0 border-2 border-b-0 border-lm-green py-2 text-center">
+      <h4 class="my-0 border-2 border-b-0 border-lm-purple py-2 text-center">
         {$_("Outgoing")}
         <!--{$_("Investments in")}-->
       </h4>
-      <div class="mb-5 border-2 border-lm-green p-4 text-sm shadow-inner">
+      <div class="mb-5 border-2 border-lm-purple p-4 text-sm shadow-inner">
         <table class="table-striped w-full">
           <tbody>
             {#each invested_countries as icountry}

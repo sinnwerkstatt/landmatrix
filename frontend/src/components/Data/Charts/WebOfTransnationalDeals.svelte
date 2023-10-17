@@ -19,7 +19,7 @@
       svgComp,
       deals,
       countryId,
-      countryId => ($filters.country_id = countryId),
+      countryId => ($filters.country_id = +countryId),
     )
 
   const handleDownload = ({ detail: fileType }: DownloadEvent) => {
@@ -49,7 +49,7 @@
 
 <style lang="css">
   :global(svg #incoming-marker) {
-    @apply fill-lm-green;
+    @apply fill-lm-purple;
   }
 
   :global(svg #outgoing-marker) {
@@ -57,7 +57,7 @@
   }
 
   :global(svg path.incoming-highlighted) {
-    @apply stroke-lm-green stroke-2;
+    @apply stroke-lm-purple stroke-2;
     marker-start: url(#incoming-marker);
   }
 
@@ -67,7 +67,7 @@
   }
 
   :global(svg path.incoming-permahighlight) {
-    @apply stroke-lm-green stroke-[3];
+    @apply stroke-lm-purple stroke-[3];
     marker-start: url(#incoming-marker);
   }
 
@@ -77,7 +77,7 @@
   }
 
   :global(svg text.incoming-highlighted) {
-    @apply cursor-pointer fill-lm-green font-bold;
+    @apply cursor-pointer fill-lm-purple font-bold;
   }
 
   :global(svg text.outgoing-highlighted) {
@@ -85,7 +85,7 @@
   }
 
   :global(svg text.incoming-permahighlight) {
-    @apply cursor-pointer fill-lm-green font-bold;
+    @apply cursor-pointer fill-lm-purple font-bold;
   }
 
   :global(svg text.outgoing-permahighlight) {

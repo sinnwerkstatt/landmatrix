@@ -56,7 +56,7 @@
   <svg id="svg">
     <defs>
       <pattern id="diagonalHatch" patternUnits="userSpaceOnUse" width="10" height="10">
-        <rect width="10" height="10" class="fill-lm-green" />
+        <rect width="10" height="10" class="fill-lm-purple" />
         <path
           class="stroke-lm-red stroke-[3]"
           d="
@@ -78,7 +78,7 @@
     @apply fill-gray-dark hover:fill-gray-medium;
   }
   :global(svg .target-country) {
-    @apply fill-lm-green hover:fill-lm-green-300;
+    @apply fill-lm-purple hover:fill-lm-purple-300;
   }
   :global(svg .investor-country) {
     @apply fill-lm-red hover:fill-lm-red-300;
