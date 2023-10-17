@@ -109,7 +109,7 @@
   }
 
   .display1 {
-    @apply font-oswald text-[72px] font-bold leading-tight md:text-[120px];
+    @apply font-oswald text-7xl font-bold leading-tight md:text-[120px];
   }
 
   .heading1,
@@ -118,11 +118,11 @@
     @apply font-oswald font-bold leading-tight text-lm-black;
   }
   .heading1 {
-    @apply text-[48px] md:text-[60px];
+    @apply text-5xl md:text-6xl;
   }
 
   .heading2 {
-    @apply text-[40px] md:text-[48px];
+    @apply text-[40px] md:text-5xl;
   }
 
   .heading3 {
@@ -133,32 +133,32 @@
   }
 
   .heading5 {
-    @apply font-oswald text-[24px]  leading-tight md:text-[28px];
+    @apply font-oswald text-2xl  leading-tight md:text-[28px];
   }
 
   .subtitle1 {
-    @apply text-[16px] font-bold leading-tight md:text-[18px];
+    @apply text-base font-bold leading-tight md:text-lg;
   }
   .subtitle2 {
-    @apply text-[14px] font-bold leading-tight md:text-[16px];
+    @apply text-sm font-bold leading-tight md:text-base;
   }
   .body1 {
-    @apply text-[16px] leading-tight md:text-[18px];
+    @apply text-base leading-tight md:text-lg;
   }
   .body2 {
-    @apply text-[14px] leading-tight md:text-[16px];
+    @apply text-sm leading-tight md:text-base;
   }
 
   .caption {
-    @apply text-[12px] font-bold uppercase leading-tight tracking-[5%] text-lm-black md:text-[14px];
+    @apply text-xs font-bold uppercase leading-tight tracking-[5%] text-lm-black md:text-sm;
   }
 
   .button1 {
-    @apply text-[16px] font-bold leading-tight tracking-[5%] hover:text-pelorous-300 md:text-[18px];
+    @apply text-base font-bold leading-tight tracking-[5%] md:text-lg;
   }
 
   .button-active {
-    @apply text-[16px] font-bold leading-tight tracking-[10%] md:text-[18px];
+    @apply text-base font-bold leading-tight tracking-[10%] md:text-lg;
   }
 
   .btn {

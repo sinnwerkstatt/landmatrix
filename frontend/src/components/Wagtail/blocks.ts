@@ -14,6 +14,7 @@ import TitleBlock from "$components/Wagtail/TitleBlock.svelte"
 import ImageTextBlock from "$components/Wagtail/ImageTextBlock.svelte"
 import DealCountBlock from "$components/Wagtail/DealCountBlock.svelte"
 import NewResourcesTeasersBlock from "$components/Wagtail/NewResourcesTeasersBlock.svelte"
+import DataTeaserBlock from "$components/Wagtail/DataTeaserBlock.svelte"
 
 export const blockMap = {
   columns_1_1: Columns1on1Block,
@@ -33,4 +34,5 @@ export const blockMap = {
   image_text_block: ImageTextBlock,
   dealcount: DealCountBlock,
   latest_resources: NewResourcesTeasersBlock,
+  data_teaser: DataTeaserBlock,
 }

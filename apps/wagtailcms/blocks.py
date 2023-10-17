@@ -451,20 +451,21 @@ class LatestNewsBlock(StructBlock):
 
 
 # New Screendesign
-class ThreeColumnsTeaserBlock(StructBlock):
+class DataTeaserBlock(StructBlock):
     class CardBlock(StructBlock):
-        teaser = blocks.CharBlock(max_length=200, required=False)
-        image = ImageBlock(required=False)
+        title = blocks.CharBlock(max_length=200, required=False)
         teaser = blocks.CharBlock(max_length=200, required=False)
         link = NewLinkBlock(required=False)
 
     title = blocks.CharBlock(required=False)
     subtitle = blocks.CharBlock(required=False)
-    cards = CardBlock(min_num=3, max_num=3)
+    cards = blocks.ListBlock(
+        CardBlock(), min_num=3, max_num=3, help_text="Icons: 1.Maps, 2.Charts, 3.Tables"
+    )
 
     class Meta:
-        icon = "redirect"
-        label = "Three Columns Teaser-Block"
+        icon = "link"
+        label = "Data-Teaser"
 
 
 # New Screendesign
@@ -825,7 +826,7 @@ class FullWidthContainerBlock(StructBlock):
 NEW_BLOCKS = [
     ("image_text_block", ImageTextBlock()),
     ("latest_resources", NewResourcesTeasersBlock()),
-    ("Three_col_teaser", ThreeColumnsTeaserBlock()),
+    ("data_teaser", DataTeaserBlock()),
 ]
 
 CONTENT_BLOCKS += [("full_width_container", FullWidthContainerBlock(form_classname=""))]
