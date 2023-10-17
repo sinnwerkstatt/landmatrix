@@ -72,7 +72,7 @@ class HomePage(HeadlessPreviewMixin, Page):
 
         # sum_ha = _sum([d.current_contract_size for d in deals])
         def get_api_representation(self, value, context=None):
-            deals = Deal.objects.filter(is_public=True)
+            deals = Deal.objects.public()
             count_deals = deals.count()
 
             x = deals.aggregate(sum_ha=Sum("current_contract_size"))
