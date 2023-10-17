@@ -194,12 +194,6 @@ class NewLinkBlock(blocks.StructBlock):
 
 
 # New Sreendesign
-class ThreeColumsBlock(StructBlock):
-    title = blocks.CharBlock(required=False)
-    subtitle = blocks.CharBlock(required=False)
-
-
-# New Sreendesign
 class ImageTextBlock(StructBlock):
     title = blocks.CharBlock(required=False)
     subtitle = blocks.CharBlock(required=False)
@@ -208,6 +202,7 @@ class ImageTextBlock(StructBlock):
     image = ImageBlock()
 
     class Meta:
+        label = "Image-Text-Block"
         icon = "doc-full"
 
 
@@ -453,6 +448,23 @@ class LatestNewsBlock(StructBlock):
         context["tag"] = tag
         context["news"] = queryset[: int(limit)]
         return context
+
+
+# New Screendesign
+class ThreeColumnsTeaserBlock(StructBlock):
+    class CardBlock(StructBlock):
+        teaser = blocks.CharBlock(max_length=200, required=False)
+        image = ImageBlock(required=False)
+        teaser = blocks.CharBlock(max_length=200, required=False)
+        link = NewLinkBlock(required=False)
+
+    title = blocks.CharBlock(required=False)
+    subtitle = blocks.CharBlock(required=False)
+    cards = CardBlock(min_num=3, max_num=3)
+
+    class Meta:
+        icon = "redirect"
+        label = "Three Columns Teaser-Block"
 
 
 # New Screendesign
@@ -813,6 +825,7 @@ class FullWidthContainerBlock(StructBlock):
 NEW_BLOCKS = [
     ("image_text_block", ImageTextBlock()),
     ("latest_resources", NewResourcesTeasersBlock()),
+    ("Three_col_teaser", ThreeColumnsTeaserBlock()),
 ]
 
 CONTENT_BLOCKS += [("full_width_container", FullWidthContainerBlock(form_classname=""))]
