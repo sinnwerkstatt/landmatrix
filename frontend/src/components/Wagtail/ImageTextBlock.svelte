@@ -16,7 +16,7 @@
   }
 </script>
 
-<div class:bg-orange={value.bg_color === "orange"}>
+<div class:bg-orange={value.bg_color === "orange"} class="my-24">
   <div class="container mx-auto px-10 py-20 lg:grid lg:grid-cols-2 lg:gap-[120px]">
     <div>
       <h2 class="caption">{value.title}</h2>
@@ -37,3 +37,4 @@
     </div>
   </div>
 </div>
+f
