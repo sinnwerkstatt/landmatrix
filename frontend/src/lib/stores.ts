@@ -346,3 +346,7 @@ if (browser) {
 }
 
 export const fieldDefinitions: Writable<FieldDefinition[]> = writable([])
+export async function fetchFieldDefinitions(fetch: LoadEvent["fetch"]) {
+  const res = await fetch("/api/field_definitions/")
+  fieldDefinitions.set(await res.json())
+}
