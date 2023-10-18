@@ -12,27 +12,28 @@
       id: number
       url: string
     }
+    bg_color: string
   }
 </script>
 
-<div
-  class="bg-orange px-12 py-20 lg:grid lg:grid-cols-2 lg:gap-[120px] lg:px-20 xl:px-[120px]"
->
-  <div>
-    <h2 class="caption">{value.title}</h2>
-    <h3 class="heading3 xl:heading1">{value.subtitle}</h3>
-    <p class="body1 pb-8">{@html value.text}</p>
-    <a
-      href={value.link.href}
-      rel={value.link.rel_external ? "external" : ""}
-      target={value.link.rel_external ? "_blank" : ""}
-    >
-      <div class="button1 w-fit rounded bg-black py-[10px] px-5 text-white">
-        {value.link.text}
-      </div>
-    </a>
-  </div>
-  <div class="mx-auto my-auto">
-    <img src={value.image.url} loading="lazy" />
+<div class:bg-orange={value.bg_color === "orange"}>
+  <div class="container mx-auto px-10 py-20 lg:grid lg:grid-cols-2 lg:gap-[120px]">
+    <div>
+      <h2 class="caption">{value.title}</h2>
+      <h3 class="heading3 xl:heading1">{value.subtitle}</h3>
+      <p class="body1 pb-8">{@html value.text}</p>
+      <a
+        href={value.link.href}
+        rel={value.link.rel_external ? "external" : ""}
+        target={value.link.rel_external ? "_blank" : ""}
+      >
+        <div class="button1 w-fit rounded bg-black py-[10px] px-5 text-white">
+          {value.link.text}
+        </div>
+      </a>
+    </div>
+    <div class="mx-auto my-auto">
+      <img src={value.image.url} loading="lazy" />
+    </div>
   </div>
 </div>

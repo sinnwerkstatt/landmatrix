@@ -1,6 +1,10 @@
 from django.utils.html import format_html
 from wagtail import hooks
+from wagtail.contrib.modeladmin.mixins import ThumbnailMixin
+from wagtail.contrib.modeladmin.options import ModelAdmin, modeladmin_register
 from wagtail.whitelist import attribute_rule
+
+from apps.wagtailcms.partners import Partner
 
 
 @hooks.register("register_icons")
@@ -38,3 +42,17 @@ def monkeypatch_wagtail_modeltranslation():
         '<script src="{}"></script>',
         "/static/js/cleanForSlug.js",
     )
+
+
+class PartnerAdmin(ThumbnailMixin, ModelAdmin):
+    model = Partner
+    list_display = ["name", "admin_thumb", "homepage"]
+    search_fields = ["name", "homepage"]
+    thumb_image_field_name = "logo"
+    thumb_image_filter_spec = "fill-300x100"
+    thumb_image_width = 200
+    menu_icon = "user"
+    menu_order = 203
+
+
+modeladmin_register(PartnerAdmin)

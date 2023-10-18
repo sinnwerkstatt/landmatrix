@@ -12,6 +12,7 @@ from wagtail.snippets.blocks import SnippetChooserBlock
 
 from apps.landmatrix.models.country import Country as DataCountry
 from apps.landmatrix.models.country import Region as DataRegion
+from .partners import Partner
 from .twitter import TwitterTimeline
 
 
@@ -200,10 +201,19 @@ class ImageTextBlock(StructBlock):
     text = RichTextBlock(required=False)
     link = NewLinkBlock(required=False)
     image = ImageBlock()
+    bg_color = blocks.ChoiceBlock(
+        choices=[("white", "white"), ("orange", "orange")], default="white"
+    )
 
     class Meta:
         label = "Image-Text-Block"
         icon = "doc-full"
+
+
+# New Screendesign
+class PartnerBlock(StructBlock):
+    def get_api_representation(self, value, context=None):
+        return [p.to_dict("max-220x220") for p in Partner.objects.all()]
 
 
 class SectionDivider(StructBlock):
@@ -827,6 +837,7 @@ NEW_BLOCKS = [
     ("image_text_block", ImageTextBlock()),
     ("latest_resources", NewResourcesTeasersBlock()),
     ("data_teaser", DataTeaserBlock()),
+    ("partners", PartnerBlock()),
 ]
 
 CONTENT_BLOCKS += [("full_width_container", FullWidthContainerBlock(form_classname=""))]
