@@ -44,9 +44,9 @@ INTENTION_CHOICES_GROUPED = [
             ("MINING", _("Mining")),
             ("OIL_GAS_EXTRACTION", _("Oil / Gas extraction")),
             ("TOURISM", _("Tourism")),
+            ("OTHER", _("Other")),
         ],
     ),
-    ("OTHER", _("Other")),
 ]
 
 
