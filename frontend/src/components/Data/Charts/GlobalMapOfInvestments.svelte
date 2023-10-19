@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Client } from "@urql/svelte"
   import { gql } from "@urql/svelte"
+  import { _ } from "svelte-i18n"
 
   import { browser } from "$app/environment"
   import { page } from "$app/stores"
@@ -9,7 +10,7 @@
 
   import LoadingPulse from "$components/LoadingPulse.svelte"
 
-  import type { Investments } from "./globalMapOfInvestments"
+  import type { Investments, TooltipData } from "./globalMapOfInvestments"
   import { createGlobalMapOfInvestments } from "./globalMapOfInvestments"
 
   let globalMap: ReturnType<typeof createGlobalMapOfInvestments> | null = null
@@ -38,7 +39,13 @@
   }
 
   $: if (investments) {
-    globalMap = createGlobalMapOfInvestments("#svg", id => ($filters.country_id = +id))
+    globalMap = createGlobalMapOfInvestments(
+      "#svg",
+      id => ($filters.country_id = +id),
+      tooltipData => {
+        tooltip = tooltipData
+      },
+    )
     globalMap.drawCountries()
   }
 
@@ -47,28 +54,47 @@
     globalMap &&
     investments &&
     globalMap.injectData(investments, $filters.country_id)
+
+  let tooltip: TooltipData | undefined
 </script>
 
-<div class="svg-container">
-  {#if !investments}
-    <LoadingPulse />
-  {/if}
-  <svg id="svg">
-    <defs>
-      <pattern id="diagonalHatch" patternUnits="userSpaceOnUse" width="10" height="10">
-        <rect width="10" height="10" class="fill-lm-purple" />
-        <path
-          class="stroke-lm-red stroke-[3]"
-          d="
+{#if !investments}
+  <LoadingPulse />
+{/if}
+<svg id="svg">
+  <defs>
+    <pattern id="diagonalHatch" patternUnits="userSpaceOnUse" width="10" height="10">
+      <rect width="10" height="10" class="fill-lm-purple" />
+      <path
+        class="stroke-lm-red stroke-[3]"
+        d="
             M -2 2 L 2 -2
             M 0 10 L 10 0
             M 12 8 L 8 12
           "
-        />
-      </pattern>
-    </defs>
-  </svg>
-</div>
+      />
+    </pattern>
+  </defs>
+</svg>
+
+{#if tooltip}
+  <div
+    class="absolute z-10 rounded border border-gray-dark bg-white p-2 text-left dark:bg-gray-dark"
+    style="top:{tooltip.y}px;left:{tooltip.x}px;"
+  >
+    <h4 class="my-0 dark:text-white">{tooltip.name}</h4>
+    <div class="flex flex-col">
+      <span class="font-bold text-lm-purple">
+        {tooltip.nTargets}
+        {tooltip.nTargets === 1 ? $_("target country") : $_("target countries")}
+      </span>
+      <span class="font-bold text-lm-red">
+        {tooltip.nInvestors}
+        {tooltip.nInvestors === 1 ? $_("investor country") : $_("investor countries")}
+      </span>
+    </div>
+  </div>
+{/if}
 
 <style lang="css">
   :global(svg .country) {
