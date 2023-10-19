@@ -1,6 +1,5 @@
 from django.db import models
 from wagtail.images import get_image_model_string
-from wagtail.images.models import SourceImageIOError
 from wagtailorderable.models import Orderable
 
 
@@ -29,14 +28,10 @@ class Partner(Orderable):
         return self.name
 
     def to_dict(self, rendition_str):
-        try:
-            logo = self.logo.get_rendition(rendition_str).url
-        except (AttributeError, SourceImageIOError):
-            logo = None
         return {
             "id": self.id,
             "name": self.name,
-            "logo": logo,
+            "logo": self.logo.get_rendition(rendition_str).url if self.logo else None,
             "category": self.category.title(),
             "homepage": self.homepage,
         }
