@@ -9,7 +9,7 @@
 </script>
 
 <div
-  class="content-fit my-12 bg-[url('/images/Background_hoehenlinien.png')] bg-contain p-6 text-center"
+  class="content-fit my-20 bg-[url('/images/Background_hoehenlinien.png')] bg-contain p-6 text-center"
 >
   <h3 class="heading1">{value.text}</h3>
   <p class="display1 text-pelorous">{value.deals} {$_("deals")}</p>

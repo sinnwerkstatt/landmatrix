@@ -16,7 +16,7 @@
   }
 </script>
 
-<div class="container mx-auto px-10 pt-6 pb-0">
+<div class="container mx-auto my-20 px-10 py-6">
   <h2 class="caption text-center lg:text-left">{value.title}</h2>
   <h3 class="heading2 mb-10 text-center underline lg:w-1/2 lg:text-left">
     {value.subtitle}
@@ -61,6 +61,6 @@
     @apply button1 text-pelorous hover:text-pelorous-300;
   }
   .card-container {
-    @apply mx-auto mb-8 text-center;
+    @apply mx-auto mb-20 text-center md:mb-0;
   }
 </style>
