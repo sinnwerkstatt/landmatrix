@@ -48,7 +48,7 @@
 <Messages />
 <NavigationLoader />
 
-<div class="h-[62px]">
+<div class="69px">
   <Navbar />
 </div>
 

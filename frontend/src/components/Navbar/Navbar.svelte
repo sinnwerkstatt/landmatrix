@@ -67,7 +67,7 @@
     "h-full w-full p-1",
     "text-lg text-gray-700 dark:text-white",
     "bg-white dark:bg-gray-800",
-    "border-b-8 border-b-orange",
+    "py-3 shadow-lg",
   )}
 >
   <div
@@ -100,7 +100,9 @@
             menuHidden = !menuHidden
           }}
         >
-          <BurgerMenuIcon class="inline h-7 w-7 text-lm-dark dark:text-lm-lightgray" />
+          <BurgerMenuIcon
+            class="mx-3 inline h-7 w-7 text-black dark:text-lm-lightgray"
+          />
         </button>
       </li>
     </ul>
@@ -113,7 +115,7 @@
         "absolute xl:static",
         "left-0 top-[58px] z-50 w-full xl:w-auto",
         "bg-white dark:bg-gray-800",
-        "border-b-8 border-orange xl:border-0",
+        "shadow-lg xl:shadow-none",
       )}
       use:clickOutside
       on:outClick={resetMenu}
@@ -121,32 +123,29 @@
       <ul
         class={cn(
           "divide-y divide-solid px-4",
-          "xl:flex xl:items-center xl:justify-between xl:divide-transparent",
+          "gap-y-6 p-6 lg:flex lg:flex-wrap lg:items-center lg:justify-center lg:gap-y-0 lg:gap-x-12 lg:divide-transparent lg:p-0 xl:justify-between xl:gap-x-0",
         )}
       >
         {#each menuEntries as entry}
           <li class="group xl:relative">
             {#if entry.subEntries}
               <button
-                class="w-full truncate py-2 text-center text-black hover:text-orange dark:text-white xl:p-2"
+                class="button1 w-full truncate py-2 text-center text-black hover:text-orange dark:text-white xl:p-2"
                 title={entry.title}
               >
                 {entry.title}
-                <ChevronDownIcon
-                  class={cn("inline h-5 w-5", "group-hover:rotate-180")}
-                />
               </button>
               <ul
                 class={cn(
                   "hidden flex-wrap justify-around",
-                  "bg-lm-lightgray dark:bg-gray-700 xl:bg-white dark:xl:bg-gray-800",
-                  "xl:absolute xl:z-50 xl:whitespace-nowrap",
-                  "border-t xl:border-2 xl:border-orange",
-                  "group-focus-within:flex xl:group-focus-within:hidden xl:group-hover:block",
+                  "bg-lm-lightgray dark:bg-gray-700 lg:bg-white dark:lg:bg-gray-800",
+                  "lg:absolute lg:z-50 lg:whitespace-nowrap",
+                  "border-t py-6 lg:border-none lg:shadow-2xl",
+                  "group-focus-within:flex lg:group-focus-within:hidden lg:group-hover:block",
                 )}
               >
                 {#each entry.subEntries as subEntry}
-                  <li class="mx-7 xl:mx-0">
+                  <li class="mx-7 hover:bg-orange-100 lg:mx-0 lg:px-6">
                     <a
                       class="nav-link"
                       class:active={$page.url.pathname.startsWith(subEntry.href)}
@@ -160,7 +159,7 @@
               </ul>
             {:else}
               <a
-                class="nav-link truncate text-center xl:max-w-[120px]"
+                class="nav-link button1 truncate text-center hover:bg-white hover:text-orange xl:max-w-[120px]"
                 title={entry.title}
                 href={entry.href}
                 on:click={resetMenu}
@@ -178,11 +177,11 @@
 <style lang="postcss">
   :global(.nav-link) {
     @apply block p-2 text-black dark:text-white;
-    @apply hover:bg-gray-200 hover:text-orange dark:hover:bg-gray-700;
+    @apply hover:bg-orange-100 hover:text-black dark:hover:bg-gray-700;
     @apply active:bg-orange active:text-white;
   }
 
   :global(.nav-link.active) {
-    @apply bg-orange text-white;
+    @apply font-bold text-orange;
   }
 </style>

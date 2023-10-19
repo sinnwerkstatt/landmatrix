@@ -26,8 +26,7 @@
 
 <NavDropDown>
   <svelte:fragment slot="title">
-    <TranslateIcon class="mr-0.5 inline h-5 w-5" />
-    <span class="w-5 uppercase">{$locale}</span>
+    <span class="button1 mx-3 text-black underline">{languages[$locale]}</span>
   </svelte:fragment>
 
   <ul class="border-2 border-orange bg-white dark:bg-gray-800">

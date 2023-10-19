@@ -113,11 +113,13 @@
     </div>
   </NavDropDown>
 {:else}
-  <a
-    class="nav-link"
-    href="/account/login/?next={$page.url.pathname}"
-    title={$_("Login/Register")}
-  >
-    <UserRegular class="h-5 w-5" />
-  </a>
+  <div class="transition hover:scale-[105%]">
+    <a
+      class="button1 mx-3 w-fit rounded bg-orange py-2 px-10 text-white hover:text-white"
+      href="/account/login/?next={$page.url.pathname}"
+      title={$_("Login/Register")}
+    >
+      Log in
+    </a>
+  </div>
 {/if}

@@ -31,36 +31,46 @@
   ]
 </script>
 
-<div class="bg-lm-dark px-10 py-6 text-white lg:px-20 lg:py-12">
-  <div class="container">
-    <div class="gap-y-3 md:grid md:grid-cols-12 md:gap-x-6 xl:gap-x-12">
-      <div class="heading3 col-span-12 col-start-3 text-white">
-        Sign up for our eBulletin
+<div class="bg-lm-dark px-10 py-12 text-white lg:px-20">
+  <div class="container mx-auto">
+    <!--    Newsletter-->
+    <div class="items-end gap-6 lg:flex">
+      <div class="max-w-[200px]">
+        <img src="/images/lm-logo-dark.png" />
       </div>
-      <div class="col-span-2 col-start-1"><img src="/images/lm-logo-dark.png" /></div>
-      <div class="col-span-8">
-        <input type="text" class="h-12 w-full rounded px-3 text-black" />
+      <div class="w-full grow sm:flex sm:items-end sm:gap-6">
+        <div class="grow">
+          <h3 class="heading3 text-white">Sign up for our eBulletin</h3>
+          <input type="text" class="my-3 h-12 w-full rounded px-3 text-black sm:my-0" />
+        </div>
+        <div class="sm:w-1/3 lg:w-1/4 xl:w-1/6">
+          <button
+            class="button1 h-12 w-full rounded bg-orange py-[10px] px-5 text-white"
+          >
+            Sign up
+          </button>
+        </div>
       </div>
-      <div class="col-span-2 col-start-11">
-        <button class="button1 w-full rounded bg-orange py-[10px] px-5 text-white">
-          Sign up
-        </button>
-      </div>
-      <div class="col-span-4 mt-6">
+    </div>
+    <hr class="my-10 text-white lg:hidden" />
+    <!--    Menu-->
+    <div class="w-full lg:mt-6 lg:grid lg:grid-cols-3">
+      <div class="my-6">
         {#each menuEntries.slice(0, 4) as entry}
           <div class="entry">
             <a href={entry.href}>{entry.title}</a>
           </div>
         {/each}
       </div>
-      <div class="col-span-4 mt-6">
+
+      <div class="mt-6">
         {#each menuEntries.slice(4) as entry}
           <div class="entry">
             <a href={entry.href}>{entry.title}</a>
           </div>
         {/each}
       </div>
-      <div class="subtitle1 col-span-4 mt-6">
+      <div class="subtitle1 mt-6">
         <p>Join us</p>
         <a
           class="text-white hover:text-orange"
