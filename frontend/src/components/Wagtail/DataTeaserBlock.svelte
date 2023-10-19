@@ -17,8 +17,10 @@
 </script>
 
 <div class="container mx-auto my-20 px-10 py-6">
-  <h2 class="caption text-center lg:text-left">{value.title}</h2>
-  <h3 class="heading2 mb-10 text-center underline lg:w-1/2 lg:text-left">
+  <h2 class="caption text-center dark:text-white lg:text-left">{value.title}</h2>
+  <h3
+    class="heading2 mb-10 text-center underline dark:text-white lg:w-1/2 lg:text-left"
+  >
     {value.subtitle}
   </h3>
 
@@ -28,7 +30,7 @@
   >
     <div class="card-container">
       <MapTeaser />
-      <h3 class="heading2 ">{value.cards[0].title}</h3>
+      <h3 class="heading2 dark:text-white ">{value.cards[0].title}</h3>
       <p class="card-text ">{value.cards[0].teaser}</p>
       <a class="link-button" href={value.cards[0].link.href}>
         {value.cards[0].link.text}
@@ -36,7 +38,7 @@
     </div>
     <div class="card-container">
       <CakeTeaser />
-      <h3 class="heading2 ">{value.cards[1].title}</h3>
+      <h3 class="heading2 dark:text-white ">{value.cards[1].title}</h3>
       <p class="card-text ">{value.cards[1].teaser}</p>
       <a class="link-button" href={value.cards[1].link.href}>
         {value.cards[1].link.text}
@@ -44,7 +46,7 @@
     </div>
     <div class="card-container">
       <TableTeaser />
-      <h3 class="heading2 ">{value.cards[2].title}</h3>
+      <h3 class="heading2 dark:text-white ">{value.cards[2].title}</h3>
       <p class="card-text ">{value.cards[2].teaser}</p>
       <a class="link-button" href={value.cards[2].link.href}>
         {value.cards[2].link.text}

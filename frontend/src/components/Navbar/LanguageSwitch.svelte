@@ -26,7 +26,9 @@
 
 <NavDropDown>
   <svelte:fragment slot="title">
-    <span class="button1 mx-3 text-black underline">{languages[$locale]}</span>
+    <span class="button1 mx-3 text-black underline dark:text-white">
+      {languages[$locale]}
+    </span>
   </svelte:fragment>
 
   <ul class="border-2 border-orange bg-white dark:bg-gray-800">

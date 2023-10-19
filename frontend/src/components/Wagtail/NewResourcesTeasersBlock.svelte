@@ -13,8 +13,8 @@
 </script>
 
 <div data-block="new_resources_teasers" class="container mx-auto my-20 px-10 py-6 pb-0">
-  <h2 class="caption">{value.title}</h2>
-  <h3 class="heading3 xl:heading1">{value.subtitle}</h3>
+  <h2 class="caption dark:text-white">{value.title}</h2>
+  <h3 class="heading3 xl:heading1 dark:text-white">{value.subtitle}</h3>
   <div class="lg:grid lg:grid-cols-10">
     <div class="mb-12 lg:col-span-5">
       <img src={value.image} class="" />

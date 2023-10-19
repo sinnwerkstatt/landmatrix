@@ -89,15 +89,15 @@
   }
 
   h1 {
-    @apply my-5 text-3xl font-bold text-lm-dark dark:text-gray-200;
+    @apply my-5 text-3xl font-bold text-lm-black dark:text-gray-200;
   }
 
   h2 {
-    @apply my-5 text-xl font-bold text-lm-dark dark:text-gray-200;
+    @apply my-5 text-xl font-bold text-lm-black dark:text-gray-200;
   }
 
   h3 {
-    @apply my-5 text-[22px] font-bold text-lm-dark dark:text-gray-200;
+    @apply my-5 text-[22px] font-bold text-lm-black dark:text-gray-200;
   }
 
   h3 a {
@@ -115,7 +115,7 @@
   .heading1,
   .heading2,
   .heading3 {
-    @apply font-oswald font-bold leading-tight text-lm-black;
+    @apply font-oswald font-bold leading-tight;
   }
   .heading1 {
     @apply text-5xl md:text-6xl;
