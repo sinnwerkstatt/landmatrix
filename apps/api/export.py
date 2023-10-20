@@ -133,6 +133,10 @@ deal_fields = {
     "contract_farming_crops_comment": "Comment on contract farming crops",
     "contract_farming_animals": "Contract farming livestock",
     "contract_farming_animals_comment": "Comment on contract farming livestock",
+    "electricity_generation": "Electricity generation",
+    "electricity_generation_comment": "Comment on electricity generation",
+    "carbon_sequestration": "Carbon sequestration",
+    "carbon_sequestration_comment": "Comment on carbon sequestration",
     "has_domestic_use": "Has domestic use",
     "domestic_use": "Domestic use",
     "has_export": "Has export",
@@ -866,6 +870,11 @@ class DataDownload:
                         for dat in data[produce_type]
                     ]
                 )
+
+        if (eg := data.get("electricity_generation")) is not None:
+            data["electricity_generation"] = str(eg)
+        if (cs := data.get("carbon_sequestration")) is not None:
+            data["carbon_sequestration"] = str(cs)
 
         flatten_array_choices(
             data, "source_of_water_extraction", dict(choices.WATER_SOURCE_CHOICES)
