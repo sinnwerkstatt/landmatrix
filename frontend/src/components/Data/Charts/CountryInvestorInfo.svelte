@@ -6,15 +6,15 @@
   import { page } from "$app/stores"
 
   import { filters, FilterValues } from "$lib/filters"
-  import { chartDescriptions, countries } from "$lib/stores"
+  import { countries } from "$lib/stores"
 
   $: country = $filters.country_id && $countries.find(c => c.id === $filters.country_id)
 
   interface CountryStat {
     country_id: number
     count: number
-    size: string
-    country_name?: string
+    size: number
+    name?: string
   }
   let investing_countries: CountryStat[] = []
   let invested_countries: CountryStat[] = []
@@ -50,20 +50,23 @@
     let countryInvestmentsAndRankings = ret.data.country_investments_and_rankings
 
     investing_countries = countryInvestmentsAndRankings.investing.map(x => ({
-      country_name: $countries.find(c => c.id === x.country_id)?.name,
+      name: $countries.find(c => c.id === x.country_id)?.name,
       ...x,
+      size: +x.size,
     }))
     investing_countries.sort(sortByDealSizeAndCount)
+
     invested_countries = countryInvestmentsAndRankings.invested.map(x => ({
-      country_name: $countries.find(c => c.id === x.country_id)?.name,
+      name: $countries.find(c => c.id === x.country_id)?.name,
       ...x,
+      size: +x.size,
     }))
     invested_countries.sort(sortByDealSizeAndCount)
   }
 
   const sortByDealSizeAndCount = (a: CountryStat, b: CountryStat): number => {
-    if (+a.size > +b.size) return -1
-    if (+a.size < +b.size) return 1
+    if (a.size > b.size) return -1
+    if (a.size < b.size) return 1
 
     if (a.count > b.count) return -1
     else if (a.count < b.count) return 1
@@ -78,19 +81,19 @@
     <h3>{country.name}</h3>
     {#if investing_countries.length > 0}
       <h4 class="my-0 border-2 border-b-0 border-lm-red py-2 text-center">
-        {$_("Incoming")}
-        <!--{$_("Investments from")}-->
+        {$_("Investor countries")}
       </h4>
       <div class="mb-5 border-2 border-lm-red p-4 text-sm shadow-inner">
         <table class="table-striped w-full">
           <tbody>
-            {#each investing_countries as icountry}
+            {#each investing_countries as country}
               <tr>
-                <th class="text-left">{icountry.country_name}</th>
+                <th class="text-left">{country.name}</th>
                 <td class="whitespace-nowrap text-right">
-                  {icountry.count} deals
+                  {country.count}
+                  {country.count === 1 ? "deal" : "deals"}
                   <br />
-                  {icountry.size} ha
+                  {country.size.toLocaleString("fr")} ha
                 </td>
               </tr>
             {/each}
@@ -101,19 +104,19 @@
 
     {#if invested_countries.length > 0}
       <h4 class="my-0 border-2 border-b-0 border-lm-purple py-2 text-center">
-        {$_("Outgoing")}
-        <!--{$_("Investments in")}-->
+        {$_("Target countries")}
       </h4>
       <div class="mb-5 border-2 border-lm-purple p-4 text-sm shadow-inner">
         <table class="table-striped w-full">
           <tbody>
-            {#each invested_countries as icountry}
+            {#each invested_countries as country}
               <tr>
-                <th class="text-left">{icountry.country_name}</th>
+                <th class="text-left">{country.name}</th>
                 <td class="whitespace-nowrap text-right">
-                  {icountry.count} deals
+                  {country.count}
+                  {country.count === 1 ? "deal" : "deals"}
                   <br />
-                  {icountry.size} ha
+                  {country.size.toLocaleString("fr")} ha
                 </td>
               </tr>
             {/each}

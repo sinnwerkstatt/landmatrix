@@ -11,15 +11,14 @@
  * http://bl.ocks.org/tlfrd/df1f1f705c7940a6a7c0dca47041fec8
  */
 import {
-  geoCentroid,
   geoNaturalEarth1, // geoOrthographic,
   geoPath,
   select,
   zoom,
   zoomIdentity,
 } from "d3"
-import type { BaseType, D3ZoomEvent, GeoPath, Selection } from "d3"
-import type { Feature, GeoJsonProperties } from "geojson"
+import type { BaseType, D3ZoomEvent, GeoPath } from "d3"
+import type { Feature, Point } from "geojson"
 import { feature } from "topojson-client"
 import type { Topology, GeometryCollection } from "topojson-specification"
 import worldTopology from "world-atlas/countries-110m.json"
@@ -35,34 +34,55 @@ interface TargetInvestments {
   }
 }
 
-type Country = Feature
+export interface TooltipData {
+  name: string
+  nInvestors: number
+  nTargets: number
+  x: number
+  y: number
+}
 
-const getId = (country: Country) => +(country.id as string)
-const hasId = (id: string) => (country: Country) => getId(country) === +id
+const createInverseInvestments = (investments: Investments): Investments => {
+  const inverseInvestments: Investments = {}
+
+  Object.entries(investments).forEach(([targetCountryId, targetInvestment]) =>
+    Object.entries(targetInvestment).forEach(([countryId, bucket]) => {
+      inverseInvestments[countryId] = {
+        ...inverseInvestments[countryId],
+        [targetCountryId]: bucket,
+      }
+    }),
+  )
+
+  return inverseInvestments
+}
+
+type Country = Feature<Point, { name: string }>
 const unique = <T>(arr: Array<T>) => [...new Set(arr)]
+
+const isAntarctica = (countryId: number) => countryId === 10
 
 export const createGlobalMapOfInvestments = (
   svgSelector: string,
   setCountryFilter: (id: string) => void,
+  setTooltip: (data: TooltipData | undefined) => void,
 ) => {
   const width = 950
   const height = 500
+
+  const svg = select(svgSelector)
+    .attr("viewBox", `0 0 ${width} ${height}`)
+    .style("width", "100%")
 
   // https://github.com/d3/d3-zoom
   // https://stackoverflow.com/questions/29320905
   // https://gist.github.com/KarolAltamirano/b54c263184be0516a59d6baf7f053f3e
   // https://d3-graph-gallery.com/graph/interactivity_zoom.html
   // https://www.freecodecamp.org/news/5d963b0a153e
-
   const zoomed = (event: D3ZoomEvent<Element, unknown>): void => {
     gZoom.attr("transform", event.transform.toString())
   }
-
   const zoomFn = zoom().scaleExtent([1, 3]).on("zoom", zoomed)
-
-  const svg = select(svgSelector)
-    .attr("viewBox", `0 0 ${width} ${height}`)
-    .style("width", "100%")
   const gZoom = svg.append("g").call(zoomFn as any)
 
   // add background
@@ -73,11 +93,10 @@ export const createGlobalMapOfInvestments = (
     .attr("class", "background")
 
   const gCountries = gZoom.append("g").attr("class", "countries")
-  const gMoneyLines = gZoom.append("g").attr("class", "money-lines")
 
-  const countries: Country[] = feature(
+  const countries = feature(
     worldTopology as unknown as Topology,
-    worldTopology.objects.countries as GeometryCollection<GeoJsonProperties>,
+    worldTopology.objects.countries as GeometryCollection<{ name: string }>,
   ).features
 
   const resetZoom = () =>
@@ -88,7 +107,8 @@ export const createGlobalMapOfInvestments = (
 
   const path: GeoPath = geoPath().projection(geoNaturalEarth1())
 
-  let investments: Investments
+  let incomingInvestments: Investments
+  let outgoingInvestments: Investments
 
   const drawCountries = () => {
     gCountries
@@ -97,30 +117,39 @@ export const createGlobalMapOfInvestments = (
       .enter()
       .append("path")
       .attr("class", "country")
-      .attr("data-id", getId)
       .attr("d", path)
-      .append("title")
-      .text(d => d.properties?.name)
   }
 
   const injectData = (
-    data: Investments,
+    investments: Investments,
     selectedCountryId: number | undefined,
   ): void => {
-    investments = data
+    incomingInvestments = investments
+    outgoingInvestments = createInverseInvestments(incomingInvestments)
 
     gCountries
       .selectAll<BaseType, Country>("*")
-      .on("mouseover", (event: MouseEvent) =>
-        select(event.target as HTMLElement).classed("hover", true),
-      )
-      .on("mouseout", (event: MouseEvent) =>
-        select(event.target as HTMLElement).classed("hover", false),
-      )
-      .on("click", (event: PointerEvent) => {
-        const countryId = (event.target as HTMLElement).dataset.id as string
-        selectCountry(countryId)
-        setCountryFilter(countryId)
+      .on("mouseover", async (event: MouseEvent, country) => {
+        const eventTarget = event.target as HTMLElement
+        const countryId = country.id ? +country.id : -1
+
+        select(eventTarget).classed("hover", true)
+        setTooltip({
+          name: country.properties.name,
+          nInvestors: Object.values(incomingInvestments[countryId] ?? {}).length,
+          nTargets: Object.values(outgoingInvestments[countryId] ?? {}).length,
+          x: event.pageX + 10,
+          y: event.pageY - (isAntarctica(+countryId) ? 150 : 50),
+        })
+      })
+      .on("mouseout", (event: MouseEvent) => {
+        const eventTarget = event.target as HTMLElement
+        select(eventTarget).classed("hover", false)
+        setTooltip(undefined)
+      })
+      .on("click", (_, { id }) => {
+        selectCountry(id)
+        setCountryFilter(id)
       })
 
     if (selectedCountryId) {
@@ -128,35 +157,7 @@ export const createGlobalMapOfInvestments = (
     }
   }
 
-  const getInvestorAndTargetCountries = (
-    selectedCountry: Country,
-  ): { investorCountries: Country[]; targetCountries: Country[] } => {
-    const investorCountries: Country[] = []
-    const targetCountries: Country[] = []
-
-    Object.entries<TargetInvestments>(investments).forEach(
-      ([targetCountryId, targetInvestments]) => {
-        const targetCountry = countries.find(hasId(targetCountryId))
-        if (!targetCountry) return
-
-        Object.keys(targetInvestments).forEach(investorCountryId => {
-          const investorCountry = countries.find(hasId(investorCountryId))
-
-          if (!investorCountry || targetCountry === investorCountry) return
-          if (targetCountry === selectedCountry) investorCountries.push(investorCountry)
-          if (investorCountry === selectedCountry) targetCountries.push(targetCountry)
-        })
-      },
-    )
-
-    return {
-      investorCountries: unique(investorCountries),
-      targetCountries: unique(targetCountries),
-    }
-  }
-
   const clearSelection = (): void => {
-    gMoneyLines.selectAll<BaseType, Country>("*").remove()
     gCountries
       .selectAll<BaseType, Country>(".country")
       .classed("selected-country", false)
@@ -168,43 +169,29 @@ export const createGlobalMapOfInvestments = (
     clearSelection()
     resetZoom()
 
-    const selectedCountry = countries.find(hasId(countryId))
+    const selectedCountry = countries.find(c => +c.id === +countryId)
     if (!selectedCountry) {
       console.error("Country not found in map", countryId)
       return
     }
 
-    const { investorCountries, targetCountries } =
-      getInvestorAndTargetCountries(selectedCountry)
+    const investorCountries = unique(
+      Object.keys(incomingInvestments[countryId] ?? {}),
+    ).filter(key => key !== countryId)
+    const targetCountries = unique(
+      Object.keys(outgoingInvestments[countryId] ?? {}),
+    ).filter(key => key !== countryId)
 
-    //   gMoneyLines
-    //     .selectAll<BaseType, Country>(".investor-country-line")
-    //     .data(investorCountries)
-    //     .enter()
-    //     .append("path")
-    //     .attr("class", "investor-country-line")
-    //     .attr("d", investorCountry => moneyLine(investorCountry, selectedCountry))
-    //
-    //   gMoneyLines
-    //     .selectAll<BaseType, Country>(".target-country-line")
-    //     .data(targetCountries)
-    //     .enter()
-    //     .append("path")
-    //     .attr("class", "target-country-line")
-    //     .attr("d", targetCountry => moneyLine(selectedCountry, targetCountry))
-    //
+    const isSelected = ({ id }: Country) => +id === +countryId
+    const isInvestor = ({ id }: Country) => investorCountries.includes((+id).toString())
+    const isTarget = ({ id }: Country) => targetCountries.includes((+id).toString())
+
     gCountries
       .selectAll<BaseType, Country>(".country")
-      .classed("selected-country", country => country === selectedCountry)
-      .classed("investor-country", country => investorCountries.includes(country))
-      .classed("target-country", country => targetCountries.includes(country))
+      .classed("selected-country", isSelected)
+      .classed("investor-country", isInvestor)
+      .classed("target-country", isTarget)
   }
-
-  // const moneyLine = (source: Country, target: Country): string | null =>
-  //   path({
-  //     type: "LineString",
-  //     coordinates: [geoCentroid(source), geoCentroid(target)],
-  //   })
 
   return { drawCountries, injectData, selectCountry }
 }
