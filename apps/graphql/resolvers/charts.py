@@ -35,73 +35,80 @@ LONG_COUNTRIES = {
 }
 
 
-def _deal_investors(filters=None):
+def investmentsdict():
+    """
+    A dict representing incoming or outgoing investments between countries.
+
+    Example:
+        investments = investmentsdict()
+        investments[from_country_id][to_country_id] = { 'size': 2000, 'count': 2 }
+    """
+
+    return defaultdict(
+        lambda: defaultdict(
+            lambda: dict(size=0, count=0),
+        )
+    )
+
+
+def get_deal_top_investments(filters=None):
     deals = Deal.objects.active()
     if filters:
         deals = deals.filter(parse_filters(filters))
 
-    deals_investors = (
-        DealTopInvestors.objects.filter(investor__status__in=(2, 3))
-        .filter(deal__in=deals)
-        .prefetch_related("deal")
-        .prefetch_related("investor")
-        .order_by("deal__country_id")
-    )
+    incoming = investmentsdict()
+    outgoing = investmentsdict()
 
-    relevant_countries = set()
-    retdings = defaultdict(dict)
-    for deal_invest in deals_investors:
-        dc_id = deal_invest.deal.country_id
-        ic_id = deal_invest.investor.country_id
-        relevant_countries.update({dc_id, ic_id})
-        if dc_id and ic_id:
-            if retdings.get(dc_id) and retdings[dc_id].get(ic_id):
-                retdings[dc_id][ic_id]["size"] += deal_invest.deal.deal_size
-                retdings[dc_id][ic_id]["count"] += 1
-            else:
-                retdings[dc_id][ic_id] = {
-                    "size": deal_invest.deal.deal_size,
-                    "count": 1,
-                }
-    return {"links": retdings, "relevant_countries": relevant_countries}
+    for deal_country_id, investor_country_id, size in (
+        DealTopInvestors.objects.filter(investor__status__in=(2, 3), deal__in=deals)
+        .values_list("deal__country_id", "investor__country_id", "deal__deal_size")
+        .order_by("deal__country_id")
+    ):
+        # Ignore deals and investors without country association.
+        if deal_country_id is None or investor_country_id is None:
+            continue
+
+        # Skip investments in own country.
+        if deal_country_id == investor_country_id:
+            continue
+
+        incoming[deal_country_id][investor_country_id]["size"] += size
+        incoming[deal_country_id][investor_country_id]["count"] += 1
+
+        outgoing[investor_country_id][deal_country_id]["size"] += size
+        outgoing[investor_country_id][deal_country_id]["count"] += 1
+
+    return {
+        "incoming": incoming,
+        "outgoing": outgoing,
+    }
 
 
 def resolve_global_map_of_investments(_obj, _info, filters=None):
-    deal_investors = _deal_investors(filters)
-    return dict(deal_investors["links"])
+    investments = get_deal_top_investments(filters)
+    return investments["incoming"]
 
 
 def resolve_web_of_transnational_deals(_obj, _info, filters=None):
-    deal_investors = _deal_investors(filters)
-    _relevant_countries = deal_investors["relevant_countries"]
+    investments = get_deal_top_investments(filters)
+    countries = investments["incoming"].keys() | investments["outgoing"].keys()
 
-    country_dict = {c.id: c for c in Country.objects.filter(id__in=_relevant_countries)}
+    country_dict = {c.id: c for c in Country.objects.filter(id__in=countries)}
 
     regions = defaultdict(list)
     for country_id, country in country_dict.items():
         imports = []
-        # regiondata = defaultdict(dict)
-        for k, v in deal_investors["links"][country_id].items():
+        for k, v in investments["incoming"][country_id].items():
             imp_c = country_dict[k]
             short_name = LONG_COUNTRIES.get(imp_c.name, imp_c.name)
             imports += [f"lama.{imp_c.region_id}.{short_name}"]
-            # regiondata_for_x = regiondata.get(imp_c.region_id)
-            # if regiondata_for_x:
-            #     regiondata_for_x["size"] += v["size"]
-            #     regiondata_for_x["count"] += v["count"]
-            # else:
-            #     regiondata[imp_c.region_id] = {
-            #         "size": v["size"],
-            #         "count": v["count"],
-            #     }
-
         short_name = LONG_COUNTRIES.get(country.name, country.name)
+
         regions[country.region_id] += [
             {
                 "id": country.id,
                 "name": short_name,
                 "imports": imports,
-                # "deals": regiondata,
             }
         ]
 
@@ -113,40 +120,17 @@ def resolve_web_of_transnational_deals(_obj, _info, filters=None):
 
 # noinspection PyShadowingBuiltins
 def country_investments_and_rankings(_obj, _info, id, filters=None):
-    deals = Deal.objects.active()
-    if filters:
-        deals = deals.filter(parse_filters(filters))
-    active_dtis = DealTopInvestors.objects.filter(
-        deal__in=deals,
-        investor__status__in=(2, 3),
-    )
+    investments = get_deal_top_investments(filters)
 
-    investing = list(
-        active_dtis.filter(deal__country_id=id)
-        .exclude(investor__country=None)
-        .exclude(investor__country_id=id)
-        .values(country_id=F("investor__country_id"))
-        .order_by("country_id")
-        .annotate(count=Count("deal"))
-        .annotate(size=Sum("deal__deal_size"))
-    )
-    invested = list(
-        active_dtis.filter(investor__country_id=id)
-        .exclude(deal__country=None)
-        .exclude(deal__country_id=id)
-        .values(country_id=F("deal__country_id"))
-        .order_by("country_id")
-        .annotate(count=Count("deal"))
-        .annotate(size=Sum("deal__deal_size"))
-    )
     return {
-        "investing": investing,
-        "invested": invested,
-        # deactivated for now
-        # "ranking_deal": Deal.objects.active().get_deal_country_rankings(id),
-        # "ranking_investor": Deal.objects.active().get_investor_country_rankings(id),
-        "ranking_deal": None,
-        "ranking_investor": None,
+        "investing": [
+            {"country_id": country_id, "size": bucket["size"], "count": bucket["count"]}
+            for country_id, bucket in investments["incoming"][id].items()
+        ],
+        "invested": [
+            {"country_id": country_id, "size": bucket["size"], "count": bucket["count"]}
+            for country_id, bucket in investments["outgoing"][id].items()
+        ],
     }
 
 
