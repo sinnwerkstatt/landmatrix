@@ -79,14 +79,15 @@
 <div class="text-lm-dark dark:text-white">
   {#if country}
     <h3>{country.name}</h3>
-    {#if investing_countries.length > 0}
-      <h4 class="my-0 border-2 border-b-0 border-lm-red py-2 text-center">
-        {$_("Investor countries")}
+
+    {#if invested_countries.length > 0}
+      <h4 class="my-0 rounded-t border-2 border-b-0 border-lm-purple py-2 text-center">
+        {$_("invests in")}
       </h4>
-      <div class="mb-5 border-2 border-lm-red p-4 text-sm shadow-inner">
+      <div class="mb-5 rounded-b border-2 border-lm-purple p-4 text-sm shadow-inner">
         <table class="table-striped w-full">
           <tbody>
-            {#each investing_countries as country}
+            {#each invested_countries as country}
               <tr>
                 <th class="text-left">{country.name}</th>
                 <td class="whitespace-nowrap text-right">
@@ -102,14 +103,14 @@
       </div>
     {/if}
 
-    {#if invested_countries.length > 0}
-      <h4 class="my-0 border-2 border-b-0 border-lm-purple py-2 text-center">
-        {$_("Target countries")}
+    {#if investing_countries.length > 0}
+      <h4 class="my-0 rounded-t border-2 border-b-0 border-lm-red py-2 text-center">
+        {$_("investments from")}
       </h4>
-      <div class="mb-5 border-2 border-lm-purple p-4 text-sm shadow-inner">
+      <div class="mb-5 rounded-b border-2 border-lm-red p-4 text-sm shadow-inner">
         <table class="table-striped w-full">
           <tbody>
-            {#each invested_countries as country}
+            {#each investing_countries as country}
               <tr>
                 <th class="text-left">{country.name}</th>
                 <td class="whitespace-nowrap text-right">
