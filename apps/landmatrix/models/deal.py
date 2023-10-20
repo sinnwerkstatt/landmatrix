@@ -700,11 +700,18 @@ class Deal(AbstractDealBase):
     not_public_reason = models.CharField(
         max_length=100, blank=True, choices=choices.NOT_PUBLIC_REASON_CHOICES
     )
+    # NOTE: Next two fields should have used through keyword.
+    # Can be queried via DealParentCompanies view model.
     parent_companies = models.ManyToManyField(
-        Investor, verbose_name=_("Parent companies"), related_name="child_deals"
+        Investor,
+        verbose_name=_("Parent companies"),
+        related_name="child_deals",
     )
+    # Can be queried via DealTopInvestors view model.
     top_investors = models.ManyToManyField(
-        Investor, verbose_name=_("Top parent companies"), related_name="+"
+        Investor,
+        verbose_name=_("Top parent companies"),
+        related_name="+",
     )
     current_contract_size = models.DecimalField(
         verbose_name=_("Current contract size"),
@@ -1176,6 +1183,8 @@ class DealWorkflowInfo(WorkflowInfo):
 
 
 class DealParentCompanies(models.Model):
+    """A view on deal.parent_companies M2M relation table."""
+
     deal = models.ForeignKey(Deal, on_delete=models.CASCADE, related_name="+")
     investor = models.ForeignKey(Investor, on_delete=models.CASCADE, related_name="+")
 
@@ -1188,6 +1197,8 @@ class DealParentCompanies(models.Model):
 
 
 class DealTopInvestors(models.Model):
+    """A view on deal.top_investors M2M relation table."""
+
     deal = models.ForeignKey(Deal, on_delete=models.CASCADE, related_name="+")
     investor = models.ForeignKey(Investor, on_delete=models.CASCADE, related_name="+")
 
