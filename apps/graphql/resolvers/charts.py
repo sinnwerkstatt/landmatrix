@@ -85,8 +85,7 @@ def get_deal_top_investments(filters=None):
 
 
 def resolve_global_map_of_investments(_obj, _info, filters=None):
-    investments = get_deal_top_investments(filters)
-    return investments["incoming"]
+    return get_deal_top_investments(filters)
 
 
 def resolve_web_of_transnational_deals(_obj, _info, filters=None):

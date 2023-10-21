@@ -44,6 +44,7 @@
         },
       )
       .toPromise()
+
     if (!ret.data?.country_investments_and_rankings)
       throw error(502, `problems fetching data: ${ret.error}`)
 

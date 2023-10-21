@@ -7,7 +7,8 @@
   import { showContextBar, showFilterBar } from "$components/Data/stores"
   import ChartsContainer from "$components/Data/Charts/ChartsContainer.svelte"
   import CountryInvestorInfo from "$components/Data/Charts/CountryInvestorInfo.svelte"
-  import GlobalMapOfInvestments from "$components/Data/Charts/GlobalMapOfInvestments.svelte"
+
+  import GlobalMapOfInvestments from "./GlobalMapOfInvestments.svelte"
 
   onMount(() => {
     showContextBar.set(!$isMobile)
