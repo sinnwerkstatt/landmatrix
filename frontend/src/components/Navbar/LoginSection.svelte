@@ -46,72 +46,81 @@
 </script>
 
 {#if user}
-  <NavDropDown>
-    <svelte:fragment slot="title">
-      <span class="pr-1">
-        {user.full_name
-          ? user.full_name
-              .split(" ")
-              .map(x => x[0])
-              .join("")
-          : user.username.substring(0, 2)}
-      </span>
-      {#if user.role === UserRole.ADMINISTRATOR}
-        <UserAstronautSolid class="inline h-4 w-4" />
-      {:else if user.role === UserRole.EDITOR}
-        <UserNurseSolid class="inline h-4 w-4" />
-      {:else if user.is_impersonate}
-        <UserSecretSolid class="inline h-4 w-4" />
-      {:else}
-        <UserRegular class="inline h-4 w-4" />
-      {/if}
-    </svelte:fragment>
+  <div class="flex">
+    <NavDropDown>
+      <svelte:fragment slot="title">
+        <div
+          class="heading5 mx-auto my-auto flex h-fit w-fit content-center justify-center rounded-full bg-pelorous p-1.5 font-bold uppercase text-black"
+        >
+          {user.full_name
+            ? user.full_name
+                .split(" ")
+                .map(x => x[0])
+                .join("")
+            : user.username.substring(0, 2)}
+        </div>
+      </svelte:fragment>
 
-    <div class="divide-y divide-solid border-2 border-orange bg-white dark:bg-gray-800">
-      <p class="m-0 whitespace-nowrap p-2 leading-5 text-gray-400">
-        {user.full_name}
-        <br />
-        <small>{user.role ? roles[user.role] : ""}</small>
-      </p>
+      <div class="divide-y divide-solid bg-white shadow-lg dark:bg-lm-black">
+        <p class="m-0 whitespace-nowrap p-2 leading-5 text-gray-400">
+          {user.full_name}
+          <br />
+          <small>{user.role ? roles[user.role] : ""}</small>
+        </p>
 
-      {#if user.is_impersonate}
+        {#if user.is_impersonate}
+          <ul>
+            <li>
+              <a
+                class="nav-link hover:bg-pelorous-100"
+                href="/impersonate/stop/?next=/dashboard/"
+              >
+                {$_("Stop impersonation")}
+              </a>
+            </li>
+          </ul>
+        {/if}
+
         <ul>
           <li>
-            <a class="nav-link" href="/impersonate/stop/?next=/dashboard/">
-              {$_("Stop impersonation")}
+            <a class="nav-link" href="/management/">
+              {$_("Manage")}
+            </a>
+          </li>
+          <li class="whitespace-nowrap">
+            <a
+              class="nav-link"
+              href="/management/case_statistics"
+              data-sveltekit-reload
+            >
+              {$_("Case statistics")}
             </a>
           </li>
         </ul>
-      {/if}
-
-      <ul>
-        <li>
-          <a class="nav-link" href="/management/">
-            {$_("Manage")}
-          </a>
-        </li>
-        <li class="whitespace-nowrap">
-          <a class="nav-link" href="/management/case_statistics" data-sveltekit-reload>
-            {$_("Case statistics")}
-          </a>
-        </li>
-      </ul>
-      <ul>
-        <li>
-          <a class="nav-link" href="/deal/add">{$_("Add a deal")}</a>
-        </li>
-        <li>
-          <button
-            type="button"
-            class="nav-link w-full text-left"
-            on:click|preventDefault={logout}
-          >
-            {$_("Logout")}
-          </button>
-        </li>
-      </ul>
-    </div>
-  </NavDropDown>
+        <ul>
+          <li>
+            <a class="nav-link" href="/deal/add">{$_("Add a deal")}</a>
+          </li>
+          <li>
+            <button
+              type="button"
+              class="nav-link w-full text-left"
+              on:click|preventDefault={logout}
+            >
+              {$_("Logout")}
+            </button>
+          </li>
+        </ul>
+      </div>
+    </NavDropDown>
+    <button
+      type="button"
+      class="button1 mx-3 hidden w-full text-left text-lm-black transition hover:text-orange dark:text-white xl:block"
+      on:click|preventDefault={logout}
+    >
+      {$_("Logout")}
+    </button>
+  </div>
 {:else}
   <div class="transition hover:scale-[105%]">
     <a

@@ -52,7 +52,10 @@
   <Navbar />
 </div>
 
-<div bind:this={contentRoot} class="h-[calc(100vh-62px-32px)] overflow-x-auto">
+<div
+  bind:this={contentRoot}
+  class="h-[calc(100vh-62px-32px)] overflow-x-auto dark:bg-lm-black"
+>
   <slot />
 </div>
 

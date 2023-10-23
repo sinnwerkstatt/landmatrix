@@ -66,25 +66,32 @@
   class={cn(
     "h-full w-full p-1",
     "text-lg text-gray-700 dark:text-white",
-    "bg-white dark:bg-gray-800",
-    "py-3 shadow-lg",
+    "bg-white dark:bg-lm-black",
+    "py-1 shadow-lg",
   )}
 >
   <div
     class="container mx-auto flex h-full w-full flex-wrap items-center justify-between align-middle"
   >
     <!--   LOGO   -->
-    <a class="order-first mr-3 self-center lg:mr-10" href="/" on:click={resetMenu}>
+    <a class="order-first mr-3 self-center xl:mr-10" href="/" on:click={resetMenu}>
       <img
         alt="Land Matrix"
-        class="h-[36px] w-[144px] min-w-[144px] max-w-[144px]"
+        class="hidden h-[36px] w-[144px] min-w-[144px] max-w-[144px] md:block"
         src={$isDarkMode ? "/images/lm-logo-dark.png" : "/images/lm-logo.png"}
+      />
+      <img
+        alt="Land Matrix"
+        class="mx-3 h-[48px] max-w-[144px] md:hidden"
+        src={$isDarkMode
+          ? "/images/lm-logo-mobile-dark.png"
+          : "/images/lm-logo-mobile.png"}
       />
     </a>
 
     <!--   MOBILE MENU   -->
     <ul id="menu-mobile" class="order-last flex flex-grow items-center justify-end">
-      <li class="hidden xl:block">
+      <li class="hidden sm:block">
         <NavbarSearch />
       </li>
       <li>
@@ -123,14 +130,14 @@
       <ul
         class={cn(
           "divide-y divide-solid px-4",
-          "gap-y-6 p-6 lg:flex lg:flex-wrap lg:items-center lg:justify-center lg:gap-y-0 lg:gap-x-12 lg:divide-transparent lg:p-0 xl:justify-between xl:gap-x-0",
+          "gap-y-6 p-6 dark:bg-lm-black lg:flex lg:flex-wrap lg:items-center lg:justify-center lg:gap-y-0 lg:gap-x-12 lg:divide-transparent lg:p-0 xl:justify-between xl:gap-x-0",
         )}
       >
         {#each menuEntries as entry}
           <li class="group xl:relative">
             {#if entry.subEntries}
               <button
-                class="button1 w-full truncate py-2 text-center text-black hover:text-orange dark:text-white xl:p-2"
+                class="nav-link button1 w-full truncate py-2 text-center text-black hover:text-orange dark:text-white xl:p-2"
                 title={entry.title}
               >
                 {entry.title}
@@ -138,14 +145,14 @@
               <ul
                 class={cn(
                   "hidden flex-wrap justify-around",
-                  "bg-lm-lightgray dark:bg-gray-700 lg:bg-white dark:lg:bg-gray-800",
+                  "bg-lm-lightgray dark:bg-lm-black lg:bg-white dark:lg:bg-lm-black",
                   "lg:absolute lg:z-50 lg:whitespace-nowrap",
                   "border-t py-6 lg:border-none lg:shadow-2xl",
                   "group-focus-within:flex lg:group-focus-within:hidden lg:group-hover:block",
                 )}
               >
                 {#each entry.subEntries as subEntry}
-                  <li class="mx-7 hover:bg-orange-100 lg:mx-0 lg:px-6">
+                  <li class="mx-7 lg:mx-0 lg:px-6 lg:hover:bg-orange-100">
                     <a
                       class="nav-link"
                       class:active={$page.url.pathname.startsWith(subEntry.href)}
@@ -159,7 +166,7 @@
               </ul>
             {:else}
               <a
-                class="nav-link button1 truncate text-center hover:bg-white hover:text-orange xl:max-w-[120px]"
+                class="nav-link button1 truncate text-center hover:bg-white hover:text-orange dark:hover:bg-lm-black xl:max-w-[120px]"
                 title={entry.title}
                 href={entry.href}
                 on:click={resetMenu}
@@ -177,7 +184,7 @@
 <style lang="postcss">
   :global(.nav-link) {
     @apply block p-2 text-black dark:text-white;
-    @apply hover:bg-orange-100 hover:text-black dark:hover:bg-gray-700;
+    @apply lg:hover:bg-orange-100 lg:hover:text-black;
     @apply active:bg-orange active:text-white;
   }
 

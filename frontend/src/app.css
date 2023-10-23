@@ -88,6 +88,7 @@
     @apply mb-4;
   }
 
+  /*ToDo: get rid of h-styles*/
   h1 {
     @apply my-5 text-3xl font-bold text-lm-black dark:text-gray-200;
   }
