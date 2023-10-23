@@ -45,10 +45,15 @@ export const drawGraph = async (
     .attr("height", "100%")
     .attr("width", "100%")
 
+  const nonZeroData = data.filter(d => !!d.value)
   const x = d3
     .scaleBand()
-    .range([margin.left, width - margin.right])
-    .domain(data.map(d => d.label))
+    .range([
+      margin.left,
+      margin.left +
+        ((width - margin.right - margin.left) / data.length) * nonZeroData.length,
+    ])
+    .domain(nonZeroData.map(d => d.label))
     .padding(0.1)
 
   const xAxis = d3.axisBottom(x)
