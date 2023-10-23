@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-14 10:54+0200\n"
+"POT-Creation-Date: 2023-10-23 11:00+0200\n"
 "PO-Revision-Date: 2023-06-06 12:42+0000\n"
 "Last-Translator: Kurt Gerber <kurt.gerber@unibe.ch>\n"
 "Language-Team: Spanish <http://translate.landmatrix.org/projects/landmatrix/landmatrix/es/>\n"
@@ -113,6 +113,12 @@ msgstr "ha"
 
 msgid "Contract farming livestock"
 msgstr "Animales de granja de agricultura contractual"
+
+msgid "Electricity generation"
+msgstr ""
+
+msgid "Carbon Sequestration"
+msgstr ""
 
 msgid "Comments / History"
 msgstr "Comentarios / Historia"
@@ -795,6 +801,27 @@ msgstr "Ovejas"
 msgid "Shrimp"
 msgstr "Gambas"
 
+msgid "On-shore wind turbines"
+msgstr ""
+
+msgid "Solar (Photovoltaic)"
+msgstr ""
+
+msgid "Solar (Thermal system)"
+msgstr ""
+
+msgid "Reforestation & afforestation"
+msgstr ""
+
+msgid "Forest protection"
+msgstr ""
+
+msgid "Peatland restoration"
+msgstr ""
+
+msgid "Other (please specify in a comment)"
+msgstr ""
+
 msgid "Aluminum"
 msgstr "Aluminio"
 
@@ -1290,6 +1317,12 @@ msgstr "Comentario sobre cultivos de agricultura contractual"
 msgid "Comment on contract farming livestock"
 msgstr "Comentario sobre animales de granja de agricultura contractual"
 
+msgid "Comment on electricity generation"
+msgstr ""
+
+msgid "Comment on carbon sequestration"
+msgstr ""
+
 msgid "Has domestic use"
 msgstr "Hectáreas de uso nacional"
 
@@ -1657,6 +1690,9 @@ msgstr "Zona"
 msgid "Area (ha)"
 msgstr "Superficie (ha)"
 
+msgid "Area covered by installations"
+msgstr ""
+
 msgid "Areas (as geojson)"
 msgstr "Áreas (como geojson)"
 
@@ -1687,7 +1723,10 @@ msgstr "Cancelar"
 msgid "Case statistics"
 msgstr "Estadísticas de caso"
 
-msgid "Category"
+msgid "Category of production"
+msgstr ""
+
+msgid "Certification standard"
 msgstr ""
 
 msgid "Change"
@@ -1713,6 +1752,9 @@ msgstr "Opciones"
 
 msgid "Close"
 msgstr "Cerrar"
+
+msgid "Comment on certification standard"
+msgstr ""
 
 msgid "Compare"
 msgstr "Comparar"
@@ -1780,14 +1822,6 @@ msgstr "Copiar esta transacción"
 msgid "Count"
 msgstr "Cuenta"
 
-#, python-brace-format
-msgid "Countries investing in {country}"
-msgstr "Países que invierten en {country}"
-
-#, python-brace-format
-msgid "Countries {country} invests in"
-msgstr "Países en los que invierte {country}"
-
 msgid "Country of registration"
 msgstr "País de registro"
 
@@ -1843,6 +1877,9 @@ msgstr "Estado actual de la implementación"
 msgid "Current negotiation status"
 msgstr "Estado actual de la negociación"
 
+msgid "Currently installed capacity"
+msgstr ""
+
 msgid "Data overview"
 msgstr "Resumen de datos"
 
@@ -1863,6 +1900,9 @@ msgstr "ID de transacción"
 
 msgid "Deal size"
 msgstr "Tamaño de transacción"
+
+msgid "Deal size (ha)"
+msgstr ""
 
 msgid "Deals (Involvements as Operating company)"
 msgstr "Transacciones (Involucramientos como Empresa Operadora)"
@@ -1930,11 +1970,17 @@ msgstr "Eliminar esta transacción"
 msgid "Delete this investor"
 msgstr "Eliminar este inversor"
 
+msgid "Detailed carbon sequestration information\n"
+msgstr ""
+
 msgid "Detailed contract farming crop and animal information"
 msgstr "Información detallada sobre cultivo y animales de la agricultura contractual"
 
 msgid "Detailed crop, animal and mineral information"
 msgstr "Información detallada sobre cultivos, animales y minerales"
+
+msgid "Detailed electricity generation information"
+msgstr ""
 
 msgid "Displayed data"
 msgstr "Datos visualizados"
@@ -2071,6 +2117,9 @@ msgstr "Global"
 msgid "Global Cropland"
 msgstr "Tierra de Cultivo Global"
 
+msgid "Global map of Investments"
+msgstr ""
+
 msgid "Go to active version"
 msgstr "Ir a la versión activa"
 
@@ -2079,9 +2128,6 @@ msgstr "Ir al borrador actual"
 
 msgid "Go to map"
 msgstr "Ir al mapa"
-
-msgid "Group"
-msgstr ""
 
 msgid "here"
 msgstr "aquí"
@@ -2125,6 +2171,9 @@ msgstr "Solicitudes de mejora para mí"
 msgid "Improvements requested by me"
 msgstr "Mejoras solicitadas por mí"
 
+msgid "In operation (production)"
+msgstr "En operación (producción)"
+
 msgid "Include unknown years"
 msgstr "Incluir años desconocidos"
 
@@ -2149,6 +2198,9 @@ msgstr "Área planeada"
 msgid "Intended areas"
 msgstr "Áreas previstas"
 
+msgid "Intended capacity"
+msgstr ""
+
 msgid "Intention unknown"
 msgstr "Intención desconocida"
 
@@ -2157,6 +2209,9 @@ msgstr "Formato no válido. Utilice AAAA, AAAA-MM o AAAA-MM-DD"
 
 msgid "Investment in agriculture"
 msgstr "Inversión en agricultura"
+
+msgid "investments from"
+msgstr ""
 
 msgid "Investor ID"
 msgstr "ID de inversor"
@@ -2179,6 +2234,18 @@ msgstr "Inversores activos"
 msgid "Investors added"
 msgstr "Inversores añadidos"
 
+#, python-brace-format
+msgid "Investors from {countryName} are involved in {nCountries} countries"
+msgstr ""
+
+#, python-brace-format
+msgid "Investors from {investingCountryName} are involved in {nDeals} deals ({totalDealSize} ha) in {targetCountryName}"
+msgstr ""
+
+#, python-brace-format
+msgid "Investors from {nCountries} countries are involved in {countryName}"
+msgstr ""
+
 msgid "Investors pending"
 msgstr "Inversores pendientes"
 
@@ -2193,6 +2260,9 @@ msgstr "Inversores actualizados"
 
 msgid "Investors with name"
 msgstr "Inversores con nombre"
+
+msgid "invests in"
+msgstr "invierte en"
 
 msgid "Involvement"
 msgstr "Involucramiento"
@@ -2326,6 +2396,9 @@ msgstr "Más detalles sobre esta transacción"
 msgid "More details about this investor"
 msgstr "Más detalles sobre este inversor"
 
+msgid "MW"
+msgstr ""
+
 msgid "My data"
 msgstr "Mis datos"
 
@@ -2334,6 +2407,9 @@ msgstr "Mis borradores"
 
 msgid "My requests"
 msgstr "Mis peticiones"
+
+msgid "Name of certification standard"
+msgstr ""
 
 msgid "Names of communities / indigenous peoples affected"
 msgstr "Nombre de comunidades/Pueblos Indígenas con afectación"
@@ -2384,9 +2460,6 @@ msgstr "Número de ubicaciones de transacción"
 msgid "Number of deals"
 msgstr "Número de transacciones"
 
-msgid "Number of deals per category of production, represented as the percentage of total concluded deals"
-msgstr ""
-
 msgid "Number of domestic jobs created"
 msgstr "Número de puestos de trabajo nacionales creados"
 
@@ -2401,6 +2474,9 @@ msgstr "Número de puestos de trabajo creados para personas extranjeras"
 
 msgid "Number of total jobs created"
 msgstr "Número total de puestos de trabajo creados"
+
+msgid "Number of turbines"
+msgstr ""
 
 msgid "Observatories"
 msgstr "Observatorios"
@@ -2462,6 +2538,18 @@ msgstr "Área de producción"
 
 msgid "Production areas"
 msgstr "Áreas de producción"
+
+msgid "Project abandoned"
+msgstr "Proyecto abandonado"
+
+msgid "Project not started"
+msgstr "Proyecto sin empezar"
+
+msgid "Projected annual carbon sequestration"
+msgstr ""
+
+msgid "Projected carbon sequestration during project lifetime"
+msgstr ""
 
 msgid "Promised or received compensation"
 msgstr "Compensación prometida o recibida"
@@ -2571,6 +2659,9 @@ msgstr "Busque y filtre el conjunto de datos a través de puntos de entrada prec
 msgid "Search deals and investors"
 msgstr "Buscar transacciones e inversores"
 
+msgid "Select or click on a country for investment details."
+msgstr ""
+
 msgid "Send"
 msgstr "Enviar"
 
@@ -2601,12 +2692,6 @@ msgstr "Mostrar"
 msgid "Show all"
 msgstr "Mostrar todos"
 
-msgid "Show deal count"
-msgstr ""
-
-msgid "Show deal size"
-msgstr ""
-
 msgid "Show deals"
 msgstr "Mostrar transacciones"
 
@@ -2619,8 +2704,8 @@ msgstr "Mostrar los últimos cambios"
 msgid "Size"
 msgstr "Tamaño"
 
-msgid "Size under contract per category of production, represented as the percentage of total concluded size"
-msgstr ""
+msgid "Startup phase (no production)"
+msgstr "Etapa sin producción"
 
 msgid "Status"
 msgstr "Estado"
@@ -2669,6 +2754,9 @@ msgstr "País objetivo NO definido"
 
 msgid "Target country is set"
 msgstr "País objetivo definido"
+
+msgid "tCO2e"
+msgstr ""
 
 msgid "Tertiary investors/lenders"
 msgstr "Inversores/prestamistas terciarios"
@@ -2786,6 +2874,14 @@ msgstr "Français"
 msgid "Русский"
 msgstr "Русский"
 
+#, python-brace-format
+#~ msgid "Countries investing in {country}"
+#~ msgstr "Países que invierten en {country}"
+
+#, python-brace-format
+#~ msgid "Countries {country} invests in"
+#~ msgstr "Países en los que invierte {country}"
+
 #~ msgid "Biofuels"
 #~ msgstr "Biocombustibles"
 
@@ -2794,18 +2890,6 @@ msgstr "Русский"
 
 #~ msgid "Forest logging / management"
 #~ msgstr "Tala de árboles/gestión"
-
-#~ msgid "Project not started"
-#~ msgstr "Proyecto sin empezar"
-
-#~ msgid "Startup phase (no production)"
-#~ msgstr "Etapa sin producción"
-
-#~ msgid "In operation (production)"
-#~ msgstr "En operación (producción)"
-
-#~ msgid "Project abandoned"
-#~ msgstr "Proyecto abandonado"
 
 #~ msgid "Renewable Energy"
 #~ msgstr "Energía Renovable"
@@ -3055,9 +3139,6 @@ msgstr "Русский"
 
 #~ msgid "Regions"
 #~ msgstr "Regiones"
-
-#~ msgid "invests in"
-#~ msgstr "invierte en"
 
 #~ msgid "Show all outbound deals"
 #~ msgstr "Mostrar todas las transacciones salientes"
