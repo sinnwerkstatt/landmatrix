@@ -1,11 +1,14 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
-  import { fieldDefinitions } from "$lib/stores"
-  import type { FormField } from "$components/Fields/fields"
-  import type { FieldDefinition } from "$lib/types/generics"
-  import QuestionMarkCircleIcon from "$components/icons/QuestionMarkCircleIcon.svelte"
-  import { clickOutside } from "$lib/helpers"
+
   import { page } from "$app/stores"
+
+  import { fieldDefinitions } from "$lib/stores"
+  import { clickOutside } from "$lib/helpers"
+  import type { FieldDefinition } from "$lib/types/generics"
+
+  import type { FormField } from "$components/Fields/fields"
+  import QuestionMarkCircleIcon from "$components/icons/QuestionMarkCircleIcon.svelte"
 
   export let formfield: FormField
   export let model:

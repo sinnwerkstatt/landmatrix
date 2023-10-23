@@ -1,6 +1,7 @@
 <script lang="ts">
-  import { fetchFieldDefinitions } from "$lib/stores"
   import { onMount } from "svelte"
+
+  import { fetchFieldDefinitions } from "$lib/stores"
 
   onMount(() => {
     fetchFieldDefinitions(fetch)

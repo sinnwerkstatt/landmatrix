@@ -1,16 +1,16 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
+  import { slide } from "svelte/transition"
 
   import { createValueCopy, syncValue } from "$components/Fields/JSONField"
   import MinusIcon from "$components/icons/MinusIcon.svelte"
   import PlusIcon from "$components/icons/PlusIcon.svelte"
+  import LowLevelNullBooleanField from "$components/Fields/Edit/LowLevelNullBooleanField.svelte"
 
   import type { FormField } from "../fields"
   import LowLevelDateYearField from "./LowLevelDateYearField.svelte"
   import LowLevelDecimalField from "./LowLevelDecimalField.svelte"
   import TypedChoicesField from "./TypedChoicesField.svelte"
-  import LowLevelNullBooleanField from "$components/Fields/Edit/LowLevelNullBooleanField.svelte"
-  import { slide } from "svelte/transition"
 
   interface JSONCarbonSequestrationField {
     current?: boolean
