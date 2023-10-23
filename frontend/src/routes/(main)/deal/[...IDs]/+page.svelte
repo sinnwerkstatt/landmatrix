@@ -80,6 +80,9 @@
               }
               homepage
               comment
+              deals {
+                id
+              }
             }
           }
         `,
