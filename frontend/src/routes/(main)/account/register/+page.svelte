@@ -9,6 +9,7 @@
 
   import HCaptcha from "$components/HCaptcha.svelte"
   import PageTitle from "$components/PageTitle.svelte"
+  import { slugify } from "$lib/utils"
 
   let user = {
     username: "",
