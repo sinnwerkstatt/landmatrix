@@ -18,7 +18,7 @@
     "intended_size",
     "contract_size",
   ]
-  const createTitle = deal => `${deal.name}`
+  const createTitle = (deal: Deal) => `${deal.name}`
 </script>
 
 <Overlay on:close title={createTitle(deal)} {visible}>

@@ -346,17 +346,27 @@ class Investor(models.Model):
             "status": self.status,
             "draft_status": self.draft_status,
             "deals": list(
-                self.deals.public().values(
-                    "id",
-                    "recognition_status",
-                    "country__name",
-                    "nature_of_deal",
-                    "intention_of_investment",
-                    "intended_size",
-                    "contract_size",
-                    "negotiation_status",
-                    "implementation_status",
-                    "deal_size",
+                map(
+                    lambda d: {
+                        **d,
+                        "country": {
+                            "id": d["country__id"],
+                            "name": d["country__name"],
+                        },
+                    },
+                    self.deals.public().values(
+                        "id",
+                        "recognition_status",
+                        "country__id",
+                        "country__name",
+                        "nature_of_deal",
+                        "intention_of_investment",
+                        "intended_size",
+                        "contract_size",
+                        "negotiation_status",
+                        "implementation_status",
+                        "deal_size",
+                    ),
                 )
             ),
         }

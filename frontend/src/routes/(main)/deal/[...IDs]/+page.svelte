@@ -82,6 +82,15 @@
               comment
               deals {
                 id
+                country {
+                  id
+                  name
+                }
+                intention_of_investment
+                implementation_status
+                negotiation_status
+                intended_size
+                contract_size
               }
             }
           }
