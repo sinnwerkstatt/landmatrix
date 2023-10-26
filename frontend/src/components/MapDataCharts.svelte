@@ -2,10 +2,12 @@
   import { _ } from "svelte-i18n"
   import cn from "classnames"
   import type { ComponentType } from "svelte"
-
-  import DataIcon from "./icons/DataIcon.svelte"
-  import MapIcon from "./icons/MapIcon.svelte"
-  import ChartsIcon from "./icons/ChartsIcon.svelte"
+  import ChartsIcon from "$components/Data/Charts/CakeTeaser.svelte"
+  import DataIcon from "$components/Data/TableTeaser.svelte"
+  import MapIcon from "$components/Data/MapTeaser.svelte"
+  // import DataIcon from "./icons/DataIcon.svelte"
+  // import MapIcon from "./icons/MapIcon.svelte"
+  // import ChartsIcon from "./icons/ChartsIcon.svelte"
 
   interface Card {
     title: string
@@ -49,13 +51,13 @@
       class={cn(
         "block bg-lm-lightgray p-4 dark:bg-gray-700",
         "text-center text-black hover:text-inherit dark:text-white",
-        "hover:shadow-[1px_1px_4px_4px] hover:shadow-black/30 dark:hover:shadow-white/40",
+        "rounded hover:shadow-[1px_1px_4px_4px] hover:shadow-black/30 dark:hover:shadow-white/40",
       )}
       on:click
     >
-      <h3>{card.title}</h3>
-      <svelte:component this={card.icon} class="mx-auto mt-2 h-20 text-orange" />
-      <div class="mt-6 text-lg">
+      <h3 class="heading4">{card.title}</h3>
+      <svelte:component this={card.icon} class="mx-auto mt-2 text-orange" />
+      <div class="body1 mt-6">
         {card.description}
       </div>
     </a>

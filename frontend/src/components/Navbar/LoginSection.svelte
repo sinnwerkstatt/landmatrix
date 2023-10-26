@@ -122,9 +122,9 @@
     </button>
   </div>
 {:else}
-  <div class="transition hover:scale-[105%]">
+  <div>
     <a
-      class="button1 mx-3 w-fit rounded bg-orange py-2 px-10 text-white hover:text-white"
+      class="button1 mx-3 w-fit rounded bg-orange py-2 px-10 text-white transition hover:bg-orange-600 hover:text-white"
       href="/account/login/?next={$page.url.pathname}"
       title={$_("Login/Register")}
     >

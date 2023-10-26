@@ -89,25 +89,25 @@
   }
 
   /*ToDo: get rid of h-styles*/
-  h1 {
-    @apply my-5 text-3xl font-bold text-lm-black dark:text-gray-200;
-  }
+  /*h1 {*/
+  /*  @apply my-5 text-3xl font-bold text-lm-black dark:text-gray-200;*/
+  /*}*/
 
-  h2 {
-    @apply my-5 text-xl font-bold text-lm-black dark:text-gray-200;
-  }
+  /*h2 {*/
+  /*  @apply my-5  font-bold text-lm-black dark:text-gray-200;*/
+  /*}*/
 
-  h3 {
-    @apply my-5 text-[22px] font-bold text-lm-black dark:text-gray-200;
-  }
+  /*h3 {*/
+  /*  @apply my-5 font-bold text-lm-black dark:text-gray-200;*/
+  /*}*/
 
-  h3 a {
-    @apply text-lm-dark dark:text-gray-200;
-  }
+  /*h3 a {*/
+  /*  @apply text-lm-dark dark:text-gray-200;*/
+  /*}*/
 
-  h4 {
-    @apply my-5 text-lg font-bold text-lm-dark dark:text-gray-200;
-  }
+  /*h4 {*/
+  /*  @apply my-5 text-lg font-bold text-lm-dark dark:text-gray-200;*/
+  /*}*/
 
   .display1 {
     @apply font-oswald text-7xl font-bold leading-tight md:text-[120px];
@@ -116,25 +116,25 @@
   .heading1,
   .heading2,
   .heading3 {
-    @apply font-oswald font-bold leading-tight;
+    @apply mb-5 font-oswald font-bold leading-tight;
   }
   .heading1 {
     @apply text-5xl md:text-6xl;
   }
 
   .heading2 {
-    @apply text-[40px] md:text-5xl;
+    @apply text-[40px] md:text-[48px];
   }
 
   .heading3 {
     @apply text-[32px] md:text-[40px];
   }
   .heading4 {
-    @apply font-oswald text-[28px] font-semibold leading-tight md:text-[32px];
+    @apply mb-5 font-oswald text-[28px] font-semibold leading-tight md:text-[32px];
   }
 
   .heading5 {
-    @apply font-oswald text-2xl  leading-tight md:text-[28px];
+    @apply mb-3 font-oswald text-2xl leading-tight md:text-[28px];
   }
 
   .subtitle1 {

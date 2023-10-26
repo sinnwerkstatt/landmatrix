@@ -44,9 +44,10 @@
         <li>
           <a
             href={cat.slug ? `?category=${cat.slug}` : "/resources"}
-            class="btn block whitespace-nowrap {data.category === cat.slug
-              ? 'bg-orange font-bold text-white hover:text-white'
-              : ''}"
+            class="button1 mx-1 block w-fit whitespace-nowrap rounded border border-orange py-2 px-3 shadow transition hover:border-orange-700 {data.category ===
+            cat.slug
+              ? 'bg-orange font-bold text-white hover:bg-orange-700 hover:text-white'
+              : 'hover:text-orange-700 '}"
           >
             <!-- TODO: discuss replacing this somehow? comes from DB though -->
             {$_(cat.name)}
@@ -59,14 +60,17 @@
     {#each filteredBlogpages as blogpage}
       <div class="col-md-6 col-lg-4 mb-3">
         <div
-          class="rounded border border-lm-dark bg-lm-lightgray dark:border-white dark:bg-gray-800"
+          class="h-full rounded border border-lm-black bg-lm-lightgray dark:border-white dark:bg-gray-800"
         >
           {#if blogpage.header_image}
             <img src={blogpage.header_image} class="rounded-t" alt="" loading="lazy" />
           {/if}
           <div class="p-2">
-            <h5 class="mb-4 text-lg font-bold">
-              <a href={blogpage.url} class="text-lm-dark dark:text-white">
+            <h5 class="heading5 mb-4 ">
+              <a
+                href={blogpage.url}
+                class=" text-lm-black hover:text-orange dark:text-white"
+              >
                 {blogpage.title}
               </a>
             </h5>

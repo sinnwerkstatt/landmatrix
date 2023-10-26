@@ -45,7 +45,7 @@
         </div>
         <div class="sm:w-1/3 lg:w-1/4 xl:w-1/6">
           <button
-            class="button1 h-12 w-full rounded bg-orange py-[10px] px-5 text-white"
+            class="button1 h-12 w-full rounded bg-orange py-[10px] px-5 text-white transition hover:bg-orange-600"
           >
             Sign up
           </button>

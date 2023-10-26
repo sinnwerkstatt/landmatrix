@@ -60,7 +60,7 @@
     @apply body1 mx-auto w-2/3 lg:w-full;
   }
   .link-button {
-    @apply button1 text-pelorous hover:text-pelorous-300;
+    @apply button1 text-pelorous transition hover:text-pelorous-600;
   }
   .card-container {
     @apply mx-auto mb-20 text-center md:mb-0;

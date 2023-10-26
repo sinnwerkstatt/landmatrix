@@ -15,7 +15,7 @@
   }
 </script>
 
-<h2 class="mb-2 mt-10">{$_("Quality goals")}</h2>
+<h2 class="heading5 mb-2 pt-3">{$_("Quality goals")}</h2>
 
 <div class="grid grid-cols-2">
   <div>

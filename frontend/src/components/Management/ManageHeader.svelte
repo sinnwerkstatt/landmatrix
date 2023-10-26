@@ -110,7 +110,7 @@
         class="title-and-date-bar mt-4 flex w-full flex-row justify-between gap-4 p-4"
       >
         <div>
-          <h1 class="mb-0 text-3xl text-lm-dark dark:text-white">
+          <h1 class="heading4">
             <slot name="heading" />
           </h1>
         </div>
