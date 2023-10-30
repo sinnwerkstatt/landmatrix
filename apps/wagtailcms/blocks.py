@@ -482,21 +482,25 @@ class DataTeaserBlock(StructBlock):
 class NewResourcesTeasersBlock(StructBlock):
     title = blocks.CharBlock(required=False)
     subtitle = blocks.CharBlock(required=False)
-    categories = blocks.ListBlock(SnippetChooserBlock("blog.BlogCategory"))
+    # categories = blocks.ListBlock(SnippetChooserBlock("blog.BlogCategory"))
+    article_highlight = blocks.PageChooserBlock(page_type="blog.BlogPage")
 
     class Meta:
         icon = "list"
         label = "Resources teasers"
 
     def get_api_representation(self, value, context=None):
-        from apps.blog.models import BlogPage
-
-        bp = BlogPage.objects.filter(blog_categories__in=value["categories"])[:4]
+        from ..blog.models import BlogPage
+        latest_news = BlogPage.objects.filter(blog_categories=2).last()
+        latest_event = BlogPage.objects.filter(blog_categories=5).last()
+        latest_publication = BlogPage.objects.filter(blog_categories=3).last()
+        bp = [value["article_highlight"], latest_publication, latest_event, latest_news]
         print(bp)
         ret = {
             "title": value.get("title"),
             "subtitle": value.get("subtitle"),
-            "image": bp[0].get_dict("fill-500x500")["header_image"],
+            "image": value["article_highlight"].get_dict("fill-500x500")[
+                "header_image"],
             "articles": [article.get_teaser() for article in bp],
         }
         return ret

@@ -33,5 +33,4 @@
       <NewArticleList articles={value.articles.slice(1)} />
     </div>
   </div>
-  <!--  <ArticleList articles={value.articles} />-->
 </div>
