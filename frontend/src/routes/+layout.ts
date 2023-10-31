@@ -8,6 +8,7 @@ import type { LayoutLoad } from "./$types"
 
 // ssr turned on by default
 // https://kit.svelte.dev/docs/page-options#ssr
+export const ssr = false
 
 async function fetchMe(urqlClient: Client) {
   const { data } = await urqlClient
