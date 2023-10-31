@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
 from django.views.generic.base import RedirectView
-from rest_framework import viewsets, permissions
+from rest_framework import permissions, viewsets
 
 from apps.landmatrix.models import FieldDefinition
 from apps.landmatrix.serializers import FieldDefinitionSerializer

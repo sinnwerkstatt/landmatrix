@@ -4,11 +4,11 @@ from django.utils.translation import gettext
 
 from .fields import (
     JSONActorsField,
+    JSONCarbonSequestrationField,
     JSONDateAreaChoicesField,
     JSONDateChoiceField,
-    JSONExportsField,
     JSONElectricityGenerationField,
-    JSONCarbonSequestrationField,
+    JSONExportsField,
 )
 
 

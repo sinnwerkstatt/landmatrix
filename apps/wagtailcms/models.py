@@ -3,7 +3,7 @@ from django.db import models
 from django.db.models import QuerySet
 from wagtail.admin.panels import FieldPanel, FieldRowPanel
 from wagtail.api import APIField
-from wagtail.contrib.settings.models import register_setting, BaseGenericSetting
+from wagtail.contrib.settings.models import BaseGenericSetting, register_setting
 from wagtail.fields import RichTextField, StreamField
 from wagtail.models import Page
 from wagtail.rich_text import expand_db_html

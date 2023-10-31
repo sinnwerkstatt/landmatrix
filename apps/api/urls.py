@@ -1,10 +1,11 @@
-from django.urls import path, include
+from django.urls import include, path
 from rest_framework import routers
 
 from apps.landmatrix.views import FieldDefinitionViewSet
+
 from .export import DataDownload
 from .gis_export import gis_export
-from .views import CaseStatistics, Management, messages_json, investor_search
+from .views import CaseStatistics, Management, investor_search, messages_json
 
 
 def data_download(request):

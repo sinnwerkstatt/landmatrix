@@ -4,10 +4,11 @@ from django.core.management import BaseCommand
 
 from apps.api.utils.geojson import (
     add_properties,
-    is_geometry_type,
     create_feature_collection,
+    is_geometry_type,
 )
-from ...models.deal import DealVersion, Deal
+
+from ...models.deal import Deal, DealVersion
 
 
 class Command(BaseCommand):

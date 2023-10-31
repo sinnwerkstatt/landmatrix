@@ -1,15 +1,13 @@
-import json
 import re
 
 from django.contrib.sites.models import Site
 from django.utils.html import format_html_join
-from django.utils.translation import gettext as _
 from wagtail import blocks
 from wagtail.blocks import Block, RawHTMLBlock, StreamBlock, StructBlock
-from wagtail.fields import StreamField
-from wagtail.rich_text import expand_db_html
 from wagtail.embeds.blocks import EmbedBlock
+from wagtail.fields import StreamField
 from wagtail.images.blocks import ImageChooserBlock
+from wagtail.rich_text import expand_db_html
 from wagtail.snippets.blocks import SnippetChooserBlock
 
 from apps.landmatrix.models.country import Country as DataCountry

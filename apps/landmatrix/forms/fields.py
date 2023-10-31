@@ -5,8 +5,8 @@ from django.forms import JSONField
 
 from ..models.choices import (
     ACTOR_MAP,
-    ELECTRICITY_GENERATIONS_CHOICES,
     CARBON_SEQUESTRATION_CHOICES,
+    ELECTRICITY_GENERATIONS_CHOICES,
 )
 
 
