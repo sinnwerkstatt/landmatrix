@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-23 11:00+0200\n"
+"POT-Creation-Date: 2023-10-31 09:59+0100\n"
 "PO-Revision-Date: 2023-06-06 12:42+0000\n"
 "Last-Translator: Kurt Gerber <kurt.gerber@unibe.ch>\n"
 "Language-Team: Spanish <http://translate.landmatrix.org/projects/landmatrix/landmatrix/es/>\n"
@@ -273,17 +273,14 @@ msgstr "Agricultura sin especificar"
 msgid "Forestry"
 msgstr "Silvicultura"
 
-msgid "Biomass for energy production"
-msgstr ""
-
 msgid "For carbon sequestration/REDD"
 msgstr "Para secuestro de carbono/REDD"
 
 msgid "Forest logging / management for wood and fiber"
-msgstr "Tala de árboles / gestión para madera y fibra"
+msgstr ""
 
 msgid "Timber plantation for wood and fiber"
-msgstr "Plantación forestal para madera y fibra"
+msgstr ""
 
 msgid "Forestry unspecified"
 msgstr "Silvicultura sin especificar"
@@ -298,7 +295,7 @@ msgid "Wind farm"
 msgstr ""
 
 msgid "Renewable energy unspecified"
-msgstr "Energía renovable sin especificar"
+msgstr ""
 
 msgid "Other"
 msgstr "Otro"
@@ -940,7 +937,7 @@ msgid "Hydrocarbons (e.g. crude oil)"
 msgstr "Hidrocarburos (p. ej. petróleo crudo)"
 
 msgid "Pyrolisis Plant"
-msgstr "Planta de pirólisis"
+msgstr ""
 
 msgid "Rutile"
 msgstr "Rutilo"
@@ -2522,7 +2519,7 @@ msgid "Please provide a comment explaining your request"
 msgstr "Escriba un comentario explicando su solicitud"
 
 msgid "Please select"
-msgstr "Por favor, seleccione"
+msgstr ""
 
 msgid "Produce"
 msgstr "Producto"
@@ -2847,7 +2844,7 @@ msgid "You can only change the country when no locations are defined."
 msgstr "Sólo puede cambiar el país cuando no hay ninguna localidad definida."
 
 msgid "Your account has been activated. You can log in now."
-msgstr "Su cuenta ha sido confirmada. Usted puede iniciar sesión ahora."
+msgstr ""
 
 msgid "Your contact information will help our researchers get in touch with you for additional information. We respect and protect your privacy and anonymity, and will never share or publish your personal information. You can also write us directly at data@landmatrix.org."
 msgstr "Su información personal ayudará a nuestro personal de investigación a contactar con usted para la obtención de información adicional. Respetamos y protegemos su privacidad y anonimato, y nunca compartiremos o publicaremos su información personal. También nos puede escribir directamente a data@landmatrix.org."
@@ -2874,14 +2871,6 @@ msgstr "Français"
 msgid "Русский"
 msgstr "Русский"
 
-#, python-brace-format
-#~ msgid "Countries investing in {country}"
-#~ msgstr "Países que invierten en {country}"
-
-#, python-brace-format
-#~ msgid "Countries {country} invests in"
-#~ msgstr "Países en los que invierte {country}"
-
 #~ msgid "Biofuels"
 #~ msgstr "Biocombustibles"
 
@@ -2890,6 +2879,12 @@ msgstr "Русский"
 
 #~ msgid "Forest logging / management"
 #~ msgstr "Tala de árboles/gestión"
+
+#~ msgid "Renewable energy"
+#~ msgstr "Energía renovable"
+
+#~ msgid " Pyrolisis Plant"
+#~ msgstr " Planta de pirólisis"
 
 #~ msgid "Renewable Energy"
 #~ msgstr "Energía Renovable"
@@ -2900,8 +2895,19 @@ msgstr "Русский"
 #~ msgid "Accountability"
 #~ msgstr "Responsabilidad"
 
+#, python-brace-format
+#~ msgid "Countries investing in {country}"
+#~ msgstr "Países que invierten en {country}"
+
+#, python-brace-format
+#~ msgid "Countries {country} invests in"
+#~ msgstr "Países en los que invierte {country}"
+
 #~ msgid "ID or Name"
 #~ msgstr "ID o Nombre"
+
+#~ msgid "This account has already been activated. You can probably log in now."
+#~ msgstr "Esta cuenta ya ha sido activada. Usted probablemente pueda iniciar sesión ahora."
 
 #~ msgid "Your email address is confirmed. You can log in now."
 #~ msgstr "Su dirección de correo electrónico ha sido confirmada. Usted puede iniciar sesión ahora."
@@ -3352,6 +3358,12 @@ msgstr "Русский"
 #, python-format
 #~ msgid " (%s %s)"
 #~ msgstr " (%s %s)"
+
+#~ msgid "Timber plantation (for wood and fibre)"
+#~ msgstr "Plantación forestal (para madera y fibra)"
+
+#~ msgid "Forest logging / management (for wood and fibre)"
+#~ msgstr "Tala de árboles/gestión (para madera y fibra)"
 
 #~ msgid "---------"
 #~ msgstr "---------"
@@ -4397,8 +4409,14 @@ msgstr "Русский"
 #~ msgid "Back to the article"
 #~ msgstr "Volver al artículo"
 
+#~ msgid "Account activation failed"
+#~ msgstr "Activación de la cuenta fallida"
+
 #~ msgid "Activation complete"
 #~ msgstr "Activación finalizada"
+
+#~ msgid "Your account is now activated."
+#~ msgstr "Su cuenta está ahora activada."
 
 #~ msgid "Activate account at"
 #~ msgstr "Activar cuenta en"

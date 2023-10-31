@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-23 11:00+0200\n"
+"POT-Creation-Date: 2023-10-31 09:59+0100\n"
 "PO-Revision-Date: 2023-06-06 12:42+0000\n"
 "Last-Translator: Marie Gradeler <accountability@landmatrix.org>\n"
 "Language-Team: French <http://translate.landmatrix.org/projects/landmatrix/landmatrix/fr/>\n"
@@ -269,9 +269,6 @@ msgstr "Agriculture - Autres"
 
 msgid "Forestry"
 msgstr "Foresterie"
-
-msgid "Biomass for energy production"
-msgstr ""
 
 msgid "For carbon sequestration/REDD"
 msgstr "Pour la séquestration du carbone/REDD"
@@ -937,7 +934,7 @@ msgid "Hydrocarbons (e.g. crude oil)"
 msgstr "Hydrocarbures (ex. pétrole brut)"
 
 msgid "Pyrolisis Plant"
-msgstr "Usine de Pyrolyse"
+msgstr ""
 
 msgid "Rutile"
 msgstr "Rutile"
@@ -2871,17 +2868,6 @@ msgstr "Français"
 msgid "Русский"
 msgstr "Русский"
 
-#~ msgid "Category"
-#~ msgstr "Catégorie"
-
-#, python-brace-format
-#~ msgid "Countries investing in {country}"
-#~ msgstr "Pays investissant en {country}"
-
-#, python-brace-format
-#~ msgid "Countries {country} invests in"
-#~ msgstr "Pays dans lesquels {country} investit"
-
 #~ msgid "Biofuels"
 #~ msgstr "Biocombustibles"
 
@@ -2890,6 +2876,12 @@ msgstr "Русский"
 
 #~ msgid "Forest logging / management"
 #~ msgstr "Exploitation/gestion forestière"
+
+#~ msgid "Renewable energy"
+#~ msgstr "Energies renouvelables"
+
+#~ msgid " Pyrolisis Plant"
+#~ msgstr " Usine de Pyrolyse"
 
 #~ msgid "Renewable Energy"
 #~ msgstr "Energies renouvelables"
@@ -2900,8 +2892,19 @@ msgstr "Русский"
 #~ msgid "Accountability"
 #~ msgstr "Responsabilité"
 
+#, python-brace-format
+#~ msgid "Countries investing in {country}"
+#~ msgstr "Pays investissant en {country}"
+
+#, python-brace-format
+#~ msgid "Countries {country} invests in"
+#~ msgstr "Pays dans lesquels {country} investit"
+
 #~ msgid "ID or Name"
 #~ msgstr "ID ou Nom"
+
+#~ msgid "This account has already been activated. You can probably log in now."
+#~ msgstr "Ce compte a déjà été activé. Vous pouvez probablement vous connecter maintenant."
 
 #~ msgid "Your email address is confirmed. You can log in now."
 #~ msgstr "Votre adresse électronique est confirmée. Vous pouvez maintenant vous connecter."
@@ -2953,6 +2956,9 @@ msgstr "Русский"
 
 #~ msgid "Blog Categories"
 #~ msgstr "Catégories du Blog"
+
+#~ msgid "Category"
+#~ msgstr "Catégorie"
 
 #~ msgid "body"
 #~ msgstr "corps"
@@ -3421,6 +3427,12 @@ msgstr "Русский"
 #, python-format
 #~ msgid " (%s %s)"
 #~ msgstr " (%s %s)"
+
+#~ msgid "Timber plantation (for wood and fibre)"
+#~ msgstr "Plantation d’arbres (pour le bois et la fibre)"
+
+#~ msgid "Forest logging / management (for wood and fibre)"
+#~ msgstr "Exploitation/gestion forestière (pour le bois et la fibre)"
 
 #~ msgid "---------"
 #~ msgstr "---------"
@@ -4466,8 +4478,14 @@ msgstr "Русский"
 #~ msgid "Back to the article"
 #~ msgstr "Retour à l’article"
 
+#~ msgid "Account activation failed"
+#~ msgstr "L’activation du compte a échoué"
+
 #~ msgid "Activation complete"
 #~ msgstr "Activation terminée"
+
+#~ msgid "Your account is now activated."
+#~ msgstr "Votre compte est désormais activé."
 
 #~ msgid "Activate account at"
 #~ msgstr "Activer compte à"
