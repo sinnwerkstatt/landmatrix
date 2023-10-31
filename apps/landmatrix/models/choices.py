@@ -18,7 +18,7 @@ INTENTION_CHOICES_GROUPED = [
     (
         _("Forestry"),
         [
-            ("BIOMASS_ENERGY_PRODUCTION", _("Biomass for energy production")),
+            ("BIOMASS_ENERGY_PRODUCTION", _("Biomass for energy generation")),
             ("CARBON", _("For carbon sequestration/REDD")),
             ("FOREST_LOGGING", _("Forest logging / management for wood and fiber")),
             ("TIMBER_PLANTATION", _("Timber plantation for wood and fiber")),
@@ -60,7 +60,7 @@ INTENTION_CHOICES = [
     ("NON_FOOD_AGRICULTURE", _("Non-food agricultural commodities")),
     ("AGRICULTURE_UNSPECIFIED", _("Agriculture unspecified")),
     # forest
-    ("BIOMASS_ENERGY_PRODUCTION", _("Biomass for energy production")),
+    ("BIOMASS_ENERGY_PRODUCTION", _("Biomass for energy generation")),
     ("CARBON", _("For carbon sequestration/REDD")),
     ("FOREST_LOGGING", _("Forest logging / management for wood and fiber")),
     ("TIMBER_PLANTATION", _("Timber plantation for wood and fiber")),

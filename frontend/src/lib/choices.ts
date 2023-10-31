@@ -69,7 +69,7 @@ export const agriculture_investment_choices: {
 export const forestry_investment_choices: {
   [key in ForestryIoI]: string
 } = {
-  [ForestryIoI.BIOMASS_ENERGY_PRODUCTION]: "Biomass for energy production",
+  [ForestryIoI.BIOMASS_ENERGY_PRODUCTION]: "Biomass for energy generation",
   [ForestryIoI.CARBON]: "For carbon sequestration/REDD",
   [ForestryIoI.FOREST_LOGGING]: "Forest logging for wood and fiber",
   [ForestryIoI.TIMBER_PLANTATION]: "Timber plantation for wood and fiber",
