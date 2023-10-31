@@ -172,7 +172,9 @@
       <SearchIcon class="h-6" />
     </div>
   </svelte:fragment>
-  <div class="relative w-[250px] rounded bg-white p-2 shadow-lg dark:bg-lm-black">
+  <div
+    class="relative w-[250px] rounded bg-white p-2 shadow-lg dark:bg-lm-black xl:hidden"
+  >
     <input
       id="search"
       bind:value={searchString}
