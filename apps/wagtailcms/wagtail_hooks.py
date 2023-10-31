@@ -2,7 +2,8 @@ from wagtailorderable.modeladmin.mixins import OrderableMixin
 
 from django.utils.html import format_html
 from wagtail import hooks
-from wagtail.contrib.modeladmin.options import ModelAdmin, modeladmin_register
+from wagtail.snippets.models import register_snippet
+from wagtail.snippets.views.snippets import SnippetViewSet
 from wagtail.whitelist import attribute_rule
 
 from apps.message.models import Message
@@ -45,10 +46,10 @@ def monkeypatch_wagtail_modeltranslation():
     )
 
 
-class MessageAdmin(OrderableMixin, ModelAdmin):
+class MessageAdmin(OrderableMixin, SnippetViewSet):
     model = Message
     menu_label = "Messages"
-    menu_icon = "pilcrow"
+    icon = "pilcrow"
     menu_order = 1000  # will put in 3rd place (000 being 1st, 100 2nd)
     add_to_settings_menu = True
     list_display = (
@@ -64,4 +65,4 @@ class MessageAdmin(OrderableMixin, ModelAdmin):
     ordering = ["sort_order"]
 
 
-modeladmin_register(MessageAdmin)
+register_snippet(MessageAdmin)
