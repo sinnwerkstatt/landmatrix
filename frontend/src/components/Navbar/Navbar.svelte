@@ -15,7 +15,10 @@
 
   interface MenuEntry {
     title: string
-    subEntries?: { title: string; href: string }[]
+    subEntries?: {
+      title: string
+      href: string
+    }[]
     href?: string
   }
 
@@ -137,7 +140,7 @@
           <li class="group xl:relative">
             {#if entry.subEntries}
               <button
-                class="nav-link button1 w-full truncate py-2 text-center text-black hover:text-orange dark:text-white xl:p-2"
+                class="button1 w-full truncate py-2 text-center text-black hover:text-orange dark:text-white xl:p-2"
                 title={entry.title}
               >
                 {entry.title}
@@ -147,7 +150,7 @@
                   "hidden flex-wrap justify-around",
                   "bg-lm-lightgray dark:bg-lm-black lg:bg-white dark:lg:bg-lm-black",
                   "lg:absolute lg:z-50 lg:whitespace-nowrap",
-                  "border-t py-6 lg:border-none lg:shadow-2xl",
+                  "border-t py-3 lg:border-none lg:shadow-2xl",
                   "group-focus-within:flex lg:group-focus-within:hidden lg:group-hover:block",
                 )}
               >
@@ -185,7 +188,7 @@
   :global(.nav-link) {
     @apply block p-2 text-black dark:text-white;
     @apply lg:hover:bg-orange-100 lg:hover:text-black;
-    @apply active:bg-orange active:text-white;
+    /*@apply active:bg-orange active:text-white;*/
   }
 
   :global(.nav-link.active) {
