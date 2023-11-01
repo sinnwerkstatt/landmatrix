@@ -1,4 +1,5 @@
 import { Client, cacheExchange, fetchExchange, gql } from "@urql/core"
+import { devtoolsExchange } from "@urql/devtools"
 
 import { i18nload } from "$lib/i18n/i18n"
 import { fetchBasis } from "$lib/stores"
@@ -46,7 +47,7 @@ async function fetchMe(urqlClient: Client) {
 export const load: LayoutLoad = async ({ fetch, data }) => {
   const urqlClient = new Client({
     url: "/graphql/",
-    exchanges: [cacheExchange, fetchExchange],
+    exchanges: [devtoolsExchange, cacheExchange, fetchExchange],
     fetch,
     fetchOptions: () => ({ credentials: "include" }),
   })
