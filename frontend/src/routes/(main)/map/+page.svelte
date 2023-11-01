@@ -5,7 +5,6 @@
   import * as R from "ramda"
   import { onDestroy, onMount } from "svelte"
   import { _ } from "svelte-i18n"
-  import type { OperationResultStore } from "@urql/svelte"
 
   import { page } from "$app/stores"
 
@@ -35,9 +34,9 @@
 
   interface MyMarker extends Marker {
     deal: Deal
-    region_id: number
-    country_id: number
-    deal_size: number
+    region_id?: number
+    country_id?: number
+    deal_size?: number
     loc: Location
     deal_id: number
   }
@@ -71,7 +70,6 @@
 
   type Subset = "UNFILTERED" | "ACTIVE" | "PUBLIC"
 
-  let deals: OperationResultStore
   $: deals = queryStore<{ deals: Deal[] }, { filters: GQLFilter[]; subset: Subset }>({
     client: $page.data.urqlClient,
     query: dealsQuery,
@@ -132,7 +130,7 @@
           circle,
           $displayDealsCount
             ? val.length
-            : val.map(m => m.deal_size).reduce((x, y) => x + y, 0),
+            : val.map(m => m.deal_size ?? 0).reduce((x, y) => x + y, 0),
           $regions.find(r => r.id === +key)?.name ?? "",
           $displayDealsCount,
         )
@@ -156,7 +154,7 @@
           circle,
           $displayDealsCount
             ? val.length
-            : val.map(m => m.deal_size).reduce((x, y) => x + y, 0),
+            : val.map(m => m.deal_size ?? 0).reduce((x, y) => x + y, 0),
           $countries.find(c => c.id === +key)?.name ?? "",
           $displayDealsCount,
         )
@@ -202,7 +200,7 @@
             myMarker.deal_id = deal.id
             myMarker.deal_size = deal.deal_size
             if (deal.country) {
-              myMarker.region_id = deal.country.region.id
+              myMarker.region_id = deal.country.region?.id
               myMarker.country_id = deal.country.id
             }
             myMarker.on("click", createMarkerPopup)
@@ -254,8 +252,8 @@
     }
   }
 
-  $: markersRefreshUnsubscribe = deals?.subscribe(() => refreshMarkers())
   const displayDealsCountUnsubscribe = displayDealsCount.subscribe(() => refreshMap())
+  $: deals && $deals.data?.deals && refreshMarkers()
   $: flyToCountryOrRegion($filters.country_id, $filters.region_id)
 
   onMount(() => {
@@ -264,7 +262,6 @@
   })
 
   onDestroy(() => {
-    markersRefreshUnsubscribe()
     displayDealsCountUnsubscribe()
   })
 </script>
