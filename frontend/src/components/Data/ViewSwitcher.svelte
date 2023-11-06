@@ -23,10 +23,10 @@
       title: $_("Web of transnational deals"),
       route: "/charts/web-of-transnational-deals/",
     },
-    {
-      title: $_("Global map of Investments"),
-      route: "/charts/global-map-of-investments/",
-    },
+    // {
+    //   title: $_("Global map of Investments"),
+    //   route: "/charts/global-map-of-investments/",
+    // },
     {
       title: $_("Dynamics overview"),
       route: "/charts/dynamics-overview/",
