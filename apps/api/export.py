@@ -124,7 +124,6 @@ deal_fields = {
     "former_land_cover": "Former land cover",
     "former_land_cover_comment": "Comment on former land cover",
     "crops": "Crops area/yield/export",
-    "crops_json": "Crops area/yield/export JSON",
     "crops_comment": "Comment on crops",
     "animals": "Livestock area/yield/export",
     "animals_comment": "Comment on livestock",
@@ -828,8 +827,8 @@ class DataDownload:
             if data.get(country):
                 data[country] = mchoices.get("country")[data[country]]
 
-        if (crops := data.get("crops")) is not None:
-            data["crops_json"] = json.dumps(crops)
+        # if (crops := data.get("crops")) is not None:
+        #     data["crops_json"] = json.dumps(crops)
 
         for produce_type in ["crops", "animals", "mineral_resources"]:
             if data.get(produce_type) is not None:
