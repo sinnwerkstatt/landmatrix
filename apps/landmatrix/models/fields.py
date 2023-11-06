@@ -27,6 +27,7 @@ class JSONSchemaField(JSONField):
             try:
                 cls.schema_definition(value)
             except JsonSchemaException as e:
+                print(f"\nValue: {value}\n\nError: {e}\n\n")
                 raise ValidationError(e, code="invalid")
 
     def formfield(self, **kwargs):

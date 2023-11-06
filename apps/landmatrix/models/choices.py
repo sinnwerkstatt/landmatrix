@@ -487,6 +487,8 @@ DATASOURCE_TYPE_MAP = {
 DATASOURCE_TYPE_OPTIONS = [
     {"value": k, "label": v} for k, v in DATASOURCE_TYPE_MAP.items()
 ]
+DATASOURCE_TYPE_CHOICES = ((k, v) for k, v in DATASOURCE_TYPE_MAP.items())
+
 
 LOCATION_ACCURACY = {
     "COUNTRY": _("Country"),
@@ -499,3 +501,5 @@ LOCATION_ACCURACY = {
 LOCATION_ACCURACY_OPTIONS = [
     {"value": k, "label": v} for k, v in LOCATION_ACCURACY.items()
 ]
+
+LEVEL_OF_ACCURACY_CHOICES = ((k, v) for k, v in LOCATION_ACCURACY.items())
