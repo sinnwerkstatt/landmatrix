@@ -20,11 +20,9 @@ class Message(Orderable, models.Model):
         (LEVEL_ERROR, _("Error")),
     )
 
-    title = models.CharField(_("Title"), max_length=255, blank=True, null=True)
+    title = models.CharField(_("Title"), blank=True, null=True)
     text = RichTextField(_("Text"))
-    level = models.CharField(
-        _("Level"), max_length=10, choices=LEVEL_CHOICES, default=LEVEL_INFO
-    )
+    level = models.CharField(_("Level"), choices=LEVEL_CHOICES, default=LEVEL_INFO)
     allow_users_to_hide = models.BooleanField(
         _("Allow users to hide message"),
         help_text=_(

@@ -105,7 +105,7 @@ class ObservatoryPage(HeadlessPreviewMixin, Page):
     )
     body = StreamField(SIMPLE_CONTENT_BLOCKS, use_json_field=True)
 
-    twitter_username = models.CharField(max_length=200, blank=True)
+    twitter_username = models.CharField(blank=True)
 
     content_panels = Page.content_panels + [
         FieldRowPanel(
