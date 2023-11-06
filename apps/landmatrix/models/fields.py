@@ -1,16 +1,73 @@
-from fastjsonschema import JsonSchemaException
+import json
 
 from django import forms
 from django.contrib.postgres.fields import ArrayField as _ArrayField
 from django.core.exceptions import ValidationError
-from django.db.models import JSONField
+from django.core.validators import RegexValidator
+from django.db.models import JSONField, CharField
+from fastjsonschema import JsonSchemaException, compile
 
+from .choices import (
+    ACTOR_ITEMS,
+    ELECTRICITY_GENERATION_ITEMS,
+    CARBON_SEQUESTRATION_ITEMS,
+)
 from .schemas import contracts_schema, datasources_schema, locations_schema
+
+loose_date_re_val = RegexValidator(
+    regex=r"^\d{4}(-(0?[1-9]|1[012])(-(0?[1-9]|[12][0-9]|3[01]))?)?$",
+    message="Use yyyy or yyyy-mm or yyyy-mm-dd",
+    code="invalid_date",
+)
+
+
+class LooseDateField(CharField):
+    default_validators = [loose_date_re_val]
+
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("max_length", 10)
+        super().__init__(*args, **kwargs)
+
+
+class NanoIDField(CharField):
+    pass
 
 
 class ArrayField(_ArrayField):
     def value_to_string(self, obj):
         return self.value_from_object(obj)
+
+
+class ChoiceArrayField(ArrayField):
+    """
+    A field that allows us to store an array of choices.
+
+    Uses Django 4.2's postgres ArrayField
+    and a TypeMultipleChoiceField for its formfield.
+
+    Usage:
+
+        choices = ChoiceArrayField(
+            models.CharField(max_length=..., choices=(...,)), blank=[...], default=[...]
+        )
+    """
+
+    class _TypedMultipleChoiceField(forms.TypedMultipleChoiceField):
+        def __init__(self, *args, **kwargs):
+            kwargs.pop("base_field", None)
+            kwargs.pop("max_length", None)
+            super().__init__(*args, **kwargs)
+
+    def formfield(self, **kwargs):
+        defaults = {
+            "form_class": self._TypedMultipleChoiceField,
+            "choices": self.base_field.choices,
+            "coerce": self.base_field.to_python,
+        }
+        defaults.update(kwargs)
+        # Skip our parent's formfield implementation completely as we don't care for it.
+        # pylint:disable=bad-super-call
+        return super().formfield(**defaults)
 
 
 class JSONSchemaField(JSONField):
@@ -21,22 +78,27 @@ class JSONSchemaField(JSONField):
         self.validate_schema(value)
         return value
 
-    @classmethod
-    def validate_schema(cls, value):
-        if value:  # do schema validation here
+    def validate_schema(self, value):
+        if not value:
+            return
+        if isinstance(value, str):
             try:
-                cls.schema_definition(value)
-            except JsonSchemaException as e:
-                print(f"\nValue: {value}\n\nError: {e}\n\n")
-                raise ValidationError(e, code="invalid")
+                value = json.loads(value)
+            except json.JSONDecodeError as e:
+                raise ValidationError(f"invalid JSON: {e}")
+
+        try:
+            self.schema_definition(value)
+        except JsonSchemaException as e:
+            raise ValidationError(e, code="invalid")
 
     def formfield(self, **kwargs):
-        current_class = self.__class__
+        current_self = self
 
         class JSONSchemaFormField(forms.JSONField):
             def to_python(self, value):
+                current_self.validate_schema(value)
                 value = super().to_python(value)
-                current_class.validate_schema(value)
                 return value
 
         return super().formfield(**{"form_class": JSONSchemaFormField, **kwargs})
@@ -49,67 +111,265 @@ class JSONSchemaField(JSONField):
 
 
 class LocationsField(JSONSchemaField):
-    schema_definition = locations_schema
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.schema_definition = locations_schema
 
 
 class ContractsField(JSONSchemaField):
-    schema_definition = contracts_schema
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.schema_definition = contracts_schema
 
 
 class DatasourcesField(JSONSchemaField):
-    schema_definition = datasources_schema
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.schema_definition = datasources_schema
 
 
-# class JSONDateAreaChoicesField(JSONField):
-#     def _check_choices(self):
-#         return []
-#
-#     def __init__(self, *args, **kwargs):
-#         if kwargs.get("choices"):
-#             self.choices = [x[0] for x in kwargs.get("choices")]
-#         super().__init__(*args, **kwargs)
-#
-#     def pre_save(self, model_instance, add):
-#         value = super().pre_save(model_instance, add)
-#         self.validate_schema(value, self.choices)
-#         return value
-#
-#     @staticmethod
-#     def validate_schema(value, choices):
-#         date_area_choices_def = {
-#             "$schema": "http://json-schema.org/draft-07/schema#",
-#             "type": "array",
-#             "items": {
-#                 "type": "object",
-#                 "additionalProperties": False,
-#                 "properties": {
-#                     "current": {"type": ["boolean", "null"]},
-#                     "name": {"type": "string"},
-#                     "area": {"type": ["string", "null"]},
-#                     "choices": {
-#                         "type": "array",
-#                         "items": {"type": "string", "enum": choices},
-#                     },
-#                 },
-#             },
-#         }
-#         schema = compile(date_area_choices_def)
-#         try:
-#             schema(value)
-#         except JsonSchemaException as e:
-#             raise ValidationError(e, code="invalid")
-#
-#     def formfield(self, **kwargs):
-#         validate_schema = self.validate_schema
-#         choices = [x[0] for x in self.choices]
-#         self.choices = None
-#
-#         class JSONDateAreaChoicesFormField(forms.JSONField):
-#             def to_python(self, value):
-#                 value = super().to_python(value)
-#                 validate_schema(value, choices)
-#                 return value
-#
-#         return super().formfield(
-#             **{"form_class": JSONDateAreaChoicesFormField, **kwargs}
-#         )
+class JSONCurrentDateAreaField(JSONSchemaField):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.schema_definition = compile(
+            {
+                "$schema": "http://json-schema.org/draft-07/schema",
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "properties": {
+                        "current": {"type": ["boolean"]},
+                        "date": {
+                            "type": ["string", "null"],
+                            "pattern": r"^\d{4}(-(0?[1-9]|1[012])(-(0?[1-9]|[12][0-9]|3[01]))?)?$",
+                        },
+                        "area": {"type": ["number"]},
+                    },
+                },
+            }
+        )
+
+
+class JSONCurrentDateAreaChoicesField(JSONSchemaField):
+    def __init__(self, *args, choices=None, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.schema_definition = compile(
+            {
+                "$schema": "http://json-schema.org/draft-07/schema",
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "properties": {
+                        "current": {"type": ["boolean"]},
+                        "date": {
+                            "type": ["string", "null"],
+                            "pattern": r"^\d{4}(-(0?[1-9]|1[012])(-(0?[1-9]|[12][0-9]|3[01]))?)?$",
+                        },
+                        "area": {"type": ["number", "null"]},
+                        "choices": {
+                            "type": "array",
+                            "items": {"type": "string", "enum": choices or []},
+                        },
+                    },
+                },
+            }
+        )
+
+
+class JSONCurrentDateChoiceField(JSONSchemaField):
+    def __init__(self, *args, choices=None, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.schema_definition = compile(
+            {
+                "$schema": "http://json-schema.org/draft-07/schema",
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "properties": {
+                        "current": {"type": ["boolean"]},
+                        "date": {
+                            "type": ["string", "null"],
+                            "pattern": r"^\d{4}(-(0?[1-9]|1[012])(-(0?[1-9]|[12][0-9]|3[01]))?)?$",
+                        },
+                        "choice": {"enum": choices or []},
+                    },
+                },
+            }
+        )
+
+
+class JSONLeaseField(JSONSchemaField):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.schema_definition = compile(
+            {
+                "$schema": "http://json-schema.org/draft-07/schema",
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "properties": {
+                        "current": {"type": ["boolean"]},
+                        "date": {
+                            "type": ["string", "null"],
+                            "pattern": r"^\d{4}(-(0?[1-9]|1[012])(-(0?[1-9]|[12][0-9]|3[01]))?)?$",
+                        },
+                        "area": {"type": ["number"]},
+                        "farmers": {"type": ["number"]},
+                        "households": {"type": ["number"]},
+                    },
+                },
+            }
+        )
+
+
+class JSONJobsField(JSONSchemaField):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.schema_definition = compile(
+            {
+                "$schema": "http://json-schema.org/draft-07/schema",
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "properties": {
+                        "current": {"type": ["boolean"]},
+                        "date": {
+                            "type": ["string", "null"],
+                            "pattern": r"^\d{4}(-(0?[1-9]|1[012])(-(0?[1-9]|[12][0-9]|3[01]))?)?$",
+                        },
+                        "jobs": {"type": ["number"]},
+                        "employees": {"type": ["number"]},
+                        "workers": {"type": ["number"]},
+                    },
+                },
+            }
+        )
+
+
+class JSONActorsField(JSONSchemaField):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.schema_definition = compile(
+            {
+                "$schema": "http://json-schema.org/draft-07/schema",
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "properties": {
+                        "name": {"type": "string"},
+                        "role": {
+                            "type": "string",
+                            "enum": [x["value"] for x in ACTOR_ITEMS],
+                        },
+                    },
+                },
+            }
+        )
+
+
+class JSONExportsField(JSONSchemaField):
+    def __init__(self, *args, choices=None, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.schema_definition = compile(
+            {
+                "$schema": "http://json-schema.org/draft-07/schema",
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "properties": {
+                        "current": {"type": ["boolean"]},
+                        "date": {
+                            "type": ["string", "null"],
+                            "pattern": r"^\d{4}(-(0?[1-9]|1[012])(-(0?[1-9]|[12][0-9]|3[01]))?)?$",
+                        },
+                        "choices": {
+                            "type": "array",
+                            "items": {"type": "string", "enum": choices or []},
+                        },
+                        "area": {"type": ["number", "null"]},
+                        "yield": {"type": ["number", "null"]},
+                        "export": {"type": ["number", "null"]},
+                    },
+                },
+            }
+        )
+
+
+class JSONElectricityGenerationField(JSONSchemaField):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        choices = [x["value"] for x in ELECTRICITY_GENERATION_ITEMS]
+        self.schema_definition = compile(
+            {
+                "$schema": "http://json-schema.org/draft-07/schema",
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "properties": {
+                        "current": {"type": ["boolean"]},
+                        "date": {
+                            "type": ["string", "null"],
+                            "pattern": r"^\d{4}(-(0?[1-9]|1[012])(-(0?[1-9]|[12][0-9]|3[01]))?)?$",
+                        },
+                        "area": {"type": ["number", "null"]},
+                        "choices": {
+                            "type": "array",
+                            "items": {"type": "string", "enum": choices},
+                        },
+                        "export": {"type": ["number", "null"]},
+                        "windfarm_count": {"type": ["number", "null"]},
+                        "current_capacity": {"type": ["number", "null"]},
+                        "intended_capacity": {"type": ["number", "null"]},
+                    },
+                },
+            }
+        )
+
+
+class JSONCarbonSequestrationField(JSONSchemaField):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        choices = [x["value"] for x in CARBON_SEQUESTRATION_ITEMS]
+        self.schema_definition = compile(
+            {
+                "$schema": "http://json-schema.org/draft-07/schema",
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "properties": {
+                        "current": {"type": ["boolean"]},
+                        "date": {
+                            "type": ["string", "null"],
+                            "pattern": r"^\d{4}(-(0?[1-9]|1[012])(-(0?[1-9]|[12][0-9]|3[01]))?)?$",
+                        },
+                        "area": {"type": ["number", "null"]},
+                        "choices": {
+                            "type": "array",
+                            "items": {"type": "string", "enum": choices},
+                        },
+                        "projected_lifetime_sequestration": {
+                            "type": ["number", "null"]
+                        },
+                        "projected_annual_sequestration": {"type": ["number", "null"]},
+                        "certification_standard": {"type": ["boolean", "null"]},
+                        "certification_standard_name": {"type": "string"},
+                        "certification_standard_comment": {"type": "string"},
+                    },
+                },
+            }
+        )
