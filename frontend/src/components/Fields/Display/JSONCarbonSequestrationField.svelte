@@ -1,12 +1,9 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import type { IntentionOfInvestment } from "$lib/types/deal"
-
   import { dateCurrentFormat } from "$components/Fields/Display/jsonHelpers"
   import type { FormField } from "$components/Fields/fields"
   import CircleNotchIcon from "$components/icons/CircleNotchIcon.svelte"
-  import PlaneIcon from "$components/icons/PlaneIcon.svelte"
 
   interface JSONCarbonSequestrationField {
     current?: boolean

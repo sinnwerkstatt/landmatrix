@@ -112,7 +112,7 @@
         class="btn btn-primary flex items-center"
         on:click={addEntry}
       >
-        <PlusIcon class="mr-2 -ml-2 h-6 w-5" />
+        <PlusIcon class="-ml-2 mr-2 h-6 w-5" />
         {$_("Add")}
         {modelName}
       </button>

@@ -2,9 +2,9 @@
   import type { Feature } from "geojson"
   import type { GeoJSONOptions, Layer, LeafletMouseEvent, Map as LMap } from "leaflet"
   import { GeoJSON, LatLngBounds, Marker, Path, Polygon } from "leaflet?client"
-  import { onMount } from "svelte"
+  import { onMount } from "svelte" // eslint-disable-line import/no-duplicates
   import { _ } from "svelte-i18n"
-  import { slide } from "svelte/transition"
+  import { slide } from "svelte/transition" // eslint-disable-line import/no-duplicates
 
   import { newNanoid } from "$lib/helpers"
   import type { Location } from "$lib/types/deal"
@@ -336,7 +336,7 @@
             class="btn btn-primary flex items-center"
             on:click={addEntry}
           >
-            <PlusIcon class="mr-2 -ml-2 h-6 w-5" />
+            <PlusIcon class="-ml-2 mr-2 h-6 w-5" />
             {$_("Add")}
             {$_("Location")}
           </button>
@@ -356,7 +356,7 @@
             >
               <button
                 type="button"
-                class="z-10 rounded border-2 border-black/30 px-2 pt-0.5 pb-1.5"
+                class="z-10 rounded border-2 border-black/30 px-2 pb-1.5 pt-0.5"
                 on:click={() => {
                   markerMode = !markerMode
                 }}

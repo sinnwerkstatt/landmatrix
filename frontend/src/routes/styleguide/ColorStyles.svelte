@@ -1,6 +1,5 @@
 <script>
   import ColorDef from "./ColorDef.svelte"
-  import { allColors } from "./colors"
 </script>
 
 <h2 class="display1">Color styles</h2>

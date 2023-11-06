@@ -19,7 +19,7 @@
   export let investorVersion: number | undefined
 
   let showSendToReviewOverlay = false
-  async function sendToReview({ detail: { comment } }) {
+  async function sendToReview({ detail: { comment = "" } }) {
     await changeStatus({ detail: { transition: "TO_REVIEW", comment } })
     showSendToReviewOverlay = false
   }
@@ -125,9 +125,8 @@
         { id: investor.id, version: investorVersion, comment },
       )
       .toPromise()
-      .then(async dat => {
+      .then(async () => {
         //todo: if it was just a draft, and we deleted the whole thing, jump to investor list
-        // console.log(dat)
         if (investorVersion) await goto(`/investor/${investor.id}`)
         dispatch("reload")
       })

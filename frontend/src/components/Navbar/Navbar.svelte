@@ -111,7 +111,7 @@
       class={cn(
         menuHidden ? "hidden xl:block" : "",
         "absolute xl:static",
-        "top-[58px] left-0 z-50 w-full xl:w-auto",
+        "left-0 top-[58px] z-50 w-full xl:w-auto",
         "bg-white dark:bg-gray-800",
         "border-b-8 border-orange xl:border-0",
       )}
@@ -124,7 +124,7 @@
           "xl:flex xl:items-center xl:justify-between xl:divide-transparent",
         )}
       >
-        {#each menuEntries as entry, index}
+        {#each menuEntries as entry}
           <li class="group xl:relative">
             {#if entry.subEntries}
               <button
@@ -145,7 +145,7 @@
                   "group-focus-within:flex xl:group-focus-within:hidden xl:group-hover:block",
                 )}
               >
-                {#each entry.subEntries as subEntry, subIndex}
+                {#each entry.subEntries as subEntry}
                   <li class="mx-7 xl:mx-0">
                     <a
                       class="nav-link"

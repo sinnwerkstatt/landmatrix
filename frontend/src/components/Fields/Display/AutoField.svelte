@@ -13,7 +13,7 @@
 
 <a
   class={cn(
-    "inline whitespace-nowrap py-1 px-2 text-center align-baseline text-xs font-bold text-white",
+    "inline whitespace-nowrap px-2 py-1 text-center align-baseline text-xs font-bold text-white",
     model === "deal"
       ? "bg-orange hover:bg-orange-600"
       : "bg-pelorous hover:bg-pelorous-600 hover:text-pelorous-200",

@@ -286,7 +286,7 @@
     class="h-full shrink-0 basis-1/4 flex-col overflow-y-scroll bg-white/80 p-2 drop-shadow-[3px_-3px_1px_rgba(0,0,0,0.3)] dark:bg-gray-700 xl:basis-1/6"
   >
     <div
-      class="flex justify-center gap-4 border-b border-gray-200 pt-1 pb-6 text-lg font-bold"
+      class="flex justify-center gap-4 border-b border-gray-200 pb-6 pt-1 text-lg font-bold"
     >
       <button
         class={model === "deal"
@@ -333,7 +333,9 @@
                     href="#{item.id}"
                   >
                     {item.name}
-                    {#if item.count} ({item.count}){/if}
+                    {#if item.count}
+                      ({item.count})
+                    {/if}
                   </a>
                 </li>
               {/each}

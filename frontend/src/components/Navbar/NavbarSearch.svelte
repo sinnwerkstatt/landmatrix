@@ -192,7 +192,7 @@
           <a
             href={item.url}
             class={cn(
-              "block border-2 py-1 px-1.5 transition duration-100 hover:text-white",
+              "block border-2 px-1.5 py-1 transition duration-100 hover:text-white",
               selectedSearchIndex === index ? "border-gray-200" : "border-transparent",
               item.investor
                 ? "text-pelorous hover:bg-pelorous"

@@ -134,7 +134,7 @@
     class="h-full shrink-0 basis-1/4 border-r bg-lm-lightgray p-2 drop-shadow-[2px_0px_1px_rgba(0,0,0,0.3)] dark:bg-gray-700 xl:basis-1/5"
   >
     <div
-      class="flex justify-center gap-4 border-b border-gray-200 pt-1 pb-6 text-lg font-bold"
+      class="flex justify-center gap-4 border-b border-gray-200 pb-6 pt-1 text-lg font-bold"
     >
       <button
         class={model === "deal"
@@ -184,7 +184,9 @@
             >
               <span class="font-bold">
                 {#if model === "deal"}
-                  {#if dealBuckets[item.id]} {dealBuckets[item.id].length}{/if}
+                  {#if dealBuckets[item.id]}
+                    {dealBuckets[item.id].length}
+                  {/if}
                 {:else if investorBuckets[item.id]}
                   {investorBuckets[item.id].length}
                 {/if}
