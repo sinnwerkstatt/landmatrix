@@ -23,10 +23,10 @@
       title: $_("Web of transnational deals"),
       route: "/charts/web-of-transnational-deals/",
     },
-    {
-      title: $_("Global map of Investments"),
-      route: "/charts/global-map-of-investments/",
-    },
+    // {
+    //   title: $_("Global map of Investments"),
+    //   route: "/charts/global-map-of-investments/",
+    // },
     {
       title: $_("Dynamics overview"),
       route: "/charts/dynamics-overview/",
@@ -35,9 +35,29 @@
       title: $_("Produce info map"),
       route: "/charts/produce-info/",
     },
+  ]
+
+  let countryProfileViews: { title: string; route: string }[]
+  $: countryProfileViews = [
     {
-      title: $_("Country profiles"),
-      route: "/charts/country-profiles/",
+      title: $_("Land acquisitions by category of production"),
+      route: "/country-profile/land-acquisitions/",
+    },
+    {
+      title: $_("LSLA by negotiation status"),
+      route: "/country-profile/lsla/",
+    },
+    {
+      title: $_("Dynamics of deal by investor type"),
+      route: "/country-profile/dynamics-of-deal/",
+    },
+    {
+      title: $_("Number of intentions per category of production"),
+      route: "/country-profile/intentions-of-investments/",
+    },
+    {
+      title: $_("Concluded deals over time"),
+      route: "/country-profile/concluded-deals-over-time/",
     },
   ]
 </script>
@@ -82,6 +102,24 @@
         </svelte:fragment>
         <ul class="border-2 border-orange bg-white dark:bg-gray-800">
           {#each chartViews as view}
+            <li class="whitespace-nowrap">
+              <a
+                href={view.route}
+                class="nav-link"
+                class:active={$page.url.pathname.startsWith(view.route)}
+              >
+                {view.title}
+              </a>
+            </li>
+          {/each}
+        </ul>
+      </NavDropDown>
+      <NavDropDown>
+        <svelte:fragment slot="title">
+          <span class="capitalize">{$_("Country profiles")}</span>
+        </svelte:fragment>
+        <ul class="border-2 border-orange bg-white dark:bg-gray-800">
+          {#each countryProfileViews as view}
             <li class="whitespace-nowrap">
               <a
                 href={view.route}

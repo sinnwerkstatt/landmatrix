@@ -2,10 +2,9 @@
   import { queryStore } from "@urql/svelte"
   import type { LeafletEvent, Map, Marker, FeatureGroup } from "leaflet"
   import { divIcon, featureGroup, marker, popup } from "leaflet?client"
-  import { groupBy } from "lodash"
+  import * as R from "ramda"
   import { onDestroy, onMount } from "svelte"
   import { _ } from "svelte-i18n"
-  import type { OperationResultStore } from "@urql/svelte/dist/types/common"
 
   import { page } from "$app/stores"
 
@@ -35,9 +34,9 @@
 
   interface MyMarker extends Marker {
     deal: Deal
-    region_id: number
-    country_id: number
-    deal_size: number
+    region_id?: number
+    country_id?: number
+    deal_size?: number
     loc: Location
     deal_id: number
   }
@@ -71,7 +70,6 @@
 
   type Subset = "UNFILTERED" | "ACTIVE" | "PUBLIC"
 
-  let deals: OperationResultStore
   $: deals = queryStore<{ deals: Deal[] }, { filters: GQLFilter[]; subset: Subset }>({
     client: $page.data.urqlClient,
     query: dealsQuery,
@@ -94,7 +92,6 @@
 
   function bigMapIsReady(evt: CustomEvent<Map>) {
     if (import.meta.env.SSR) return
-    // console.log("The big map is ready.");
     bigmap = evt.detail
     bigmap.on("zoomend", () => refreshMap())
     bigmap.on("moveend", () => refreshMap())
@@ -105,18 +102,22 @@
   }
 
   function refreshMap() {
-    if (!bigmap || skipMapRefresh) return
-    // console.log("Clearing layers");
+    if (
+      !bigmap ||
+      $deals?.data?.deals?.length === 0 ||
+      markers.length === 0 ||
+      skipMapRefresh
+    ) {
+      return
+    }
     markersFeatureGroup?.clearLayers()
-    // console.log("Clearing layers: done");
-    if ($deals?.data?.deals?.length === 0 || markers.length === 0) return
-
-    // console.log("Refreshing map");
     current_zoom = bigmap.getZoom()
 
     if (current_zoom < ZOOM_LEVEL.COUNTRY_CLUSTERS && !$filters.country_id) {
       // cluster by Region
-      Object.entries(groupBy(markers, mark => mark.region_id)).forEach(([key, val]) => {
+      Object.entries(
+        R.groupBy(R.pipe(R.prop("region_id"), R.toString), markers),
+      ).forEach(([key, val]) => {
         if (key === "undefined") return
         let circle = marker(REGION_COORDINATES[+key], {
           icon: divIcon({ className: LMCircleClass }),
@@ -129,7 +130,7 @@
           circle,
           $displayDealsCount
             ? val.length
-            : val.map(m => m.deal_size).reduce((x, y) => x + y, 0),
+            : val.map(m => m.deal_size ?? 0).reduce((x, y) => x + y, 0),
           $regions.find(r => r.id === +key)?.name ?? "",
           $displayDealsCount,
         )
@@ -139,47 +140,38 @@
       Object.keys(country_coords).length
     ) {
       // cluster by country
-      Object.entries(groupBy(markers, mark => mark.country_id)).forEach(
-        ([key, val]) => {
-          // console.log("doing markers for region");
-          if (key === "undefined") return
-          let circle = marker(country_coords[+key], {
-            icon: divIcon({ className: LMCircleClass }),
-          })
-          circle.on("click", () => ($filters.country_id = +key))
-          markersFeatureGroup.addLayer(circle)
+      Object.entries(
+        R.groupBy(R.pipe(R.prop("country_id"), R.toString), markers),
+      ).forEach(([key, val]) => {
+        if (key === "undefined") return
+        let circle = marker(country_coords[+key], {
+          icon: divIcon({ className: LMCircleClass }),
+        })
+        circle.on("click", () => ($filters.country_id = +key))
+        markersFeatureGroup.addLayer(circle)
 
-          styleCircle(
-            circle,
-            $displayDealsCount
-              ? val.length
-              : val.map(m => m.deal_size).reduce((x, y) => x + y, 0),
-            $countries.find(c => c.id === +key)?.name ?? "",
-            $displayDealsCount,
-          )
-        },
-      )
+        styleCircle(
+          circle,
+          $displayDealsCount
+            ? val.length
+            : val.map(m => m.deal_size ?? 0).reduce((x, y) => x + y, 0),
+          $countries.find(c => c.id === +key)?.name ?? "",
+          $displayDealsCount,
+        )
+      })
     } else {
-      // cluster deals with markercluster
+      // show all deals
       const mapBounds = bigmap.getBounds()
-      Object.entries(groupBy(markers, mark => mark.country_id)).forEach(
-        ([key, val]) => {
-          if (key === "undefined") return
-          // let mcluster = new MarkerClusterGroup({ chunkedLoading: true });
-          // mcluster.on("clusterclick", (a) => {
-          //   let bounds = a.layer.getBounds().pad(0.5);
-          //   bigmap.fitBounds(bounds);
-          // });
-          // val.forEach((mark) => mcluster.addLayer(mark));
-          // markersFeatureGroup.addLayer(mcluster);
-          val.forEach(mark => {
-            if (mapBounds.contains(mark.getLatLng())) markersFeatureGroup.addLayer(mark)
-            else markersFeatureGroup.removeLayer(mark)
-          })
-        },
-      )
+      Object.entries(
+        R.groupBy(R.pipe(R.prop("country_id"), R.toString), markers),
+      ).forEach(([key, val]) => {
+        if (key === "undefined") return
+        val.forEach(mark => {
+          if (mapBounds.contains(mark.getLatLng())) markersFeatureGroup.addLayer(mark)
+          else markersFeatureGroup.removeLayer(mark)
+        })
+      })
     }
-    // console.log("Refreshing map done.");
   }
 
   let _dealLocationMarkersCache: { [key: number]: MyMarker[] } = {}
@@ -193,7 +185,6 @@
 
   async function refreshMarkers() {
     if (import.meta.env.SSR) return
-    // console.log("computing markers ...");
     markers = []
     for (let deal of $deals?.data?.deals ?? []) {
       if (!(deal.id in _dealLocationMarkersCache))
@@ -209,7 +200,7 @@
             myMarker.deal_id = deal.id
             myMarker.deal_size = deal.deal_size
             if (deal.country) {
-              myMarker.region_id = deal.country.region.id
+              myMarker.region_id = deal.country.region?.id
               myMarker.country_id = deal.country.id
             }
             myMarker.on("click", createMarkerPopup)
@@ -218,7 +209,6 @@
 
       markers.push(..._dealLocationMarkersCache[deal.id])
     }
-    // console.log(`computing markers: done - ${markers.length}`);
     refreshMap()
   }
 
@@ -238,7 +228,6 @@
 
   async function flyToCountryOrRegion(country_id?: number, region_id?: number) {
     if (import.meta.env.SSR || !bigmap) return
-    // console.log("Flying to country or region now");
     let coords: [number, number] = [0, 0]
     let zoom = ZOOM_LEVEL.REGION_CLUSTERS
     if (country_id) {
@@ -263,8 +252,8 @@
     }
   }
 
-  $: markersRefreshUnsubscribe = deals?.subscribe(() => refreshMarkers())
   const displayDealsCountUnsubscribe = displayDealsCount.subscribe(() => refreshMap())
+  $: deals && $deals.data?.deals && refreshMarkers()
   $: flyToCountryOrRegion($filters.country_id, $filters.region_id)
 
   onMount(() => {
@@ -273,7 +262,6 @@
   })
 
   onDestroy(() => {
-    markersRefreshUnsubscribe()
     displayDealsCountUnsubscribe()
   })
 </script>

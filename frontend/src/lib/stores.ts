@@ -164,6 +164,7 @@ export const chartDescriptions = writable<{
   dynamics_overview: string
   produce_info_map: string
   global_web_of_investments: string
+  [key: string]: string
 }>(undefined)
 
 async function getChartDescriptions(language = "en", urqlClient: Client) {

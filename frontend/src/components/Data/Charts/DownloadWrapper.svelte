@@ -30,7 +30,7 @@
     <slot name="legend" />
   </div>
   <ul
-    class="my-2 mx-auto flex w-fit bg-white p-1 font-oswald text-sm text-lm-dark dark:bg-gray-800 dark:text-white"
+    class="mx-auto my-2 flex w-fit bg-white p-1 text-sm text-lm-dark dark:bg-gray-800 dark:text-white"
   >
     <li id="download-svg">
       <button

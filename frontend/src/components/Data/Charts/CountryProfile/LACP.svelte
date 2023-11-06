@@ -102,6 +102,6 @@
 <ChartWrapper title="" on:download={handleDownload}>
   <svg
     bind:this={svgElement}
-    class="stroke-lm-dark stroke-[0.2] font-oswald text-lm-dark dark:text-white"
+    class="stroke-lm-dark stroke-[0.2] text-lm-dark dark:text-white"
   />
 </ChartWrapper>

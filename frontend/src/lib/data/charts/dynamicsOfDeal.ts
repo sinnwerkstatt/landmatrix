@@ -72,6 +72,7 @@ export class DynamicsOfDeal {
           .tickSizeOuter(0),
       )
       .attr("font-size", "1rem")
+      .attr("font-family", "inherit")
   }
 }
 
