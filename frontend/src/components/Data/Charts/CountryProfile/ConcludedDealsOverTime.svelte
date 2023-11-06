@@ -36,30 +36,44 @@
     drawGraph(svgComp, $displayDealsCount ? chartData.counts : chartData.sizes)
   }
 
-  export const toJSON: (data: [Date, number][]) => string = R.pipe(
-    R.map(([date, count]) => ({ year: date.getFullYear(), count })),
-    R.partialRight(JSON.stringify, [null, 2]),
-  )
+  export const toJSON: (displayDealsCount: boolean) => (data: ChartData) => string = (
+    displayDealsCount: boolean,
+  ) =>
+    R.pipe(
+      R.prop(displayDealsCount ? "counts" : "sizes"),
+      R.map(([date, val]) => ({
+        year: date.getFullYear(),
+        [displayDealsCount ? "count" : "size"]: val,
+      })),
+      R.partialRight(JSON.stringify, [null, 2]),
+    )
 
-  export const toCSV: (data: [Date, number][]) => string = R.pipe(
-    R.map(([date, count]) => `${date.getFullYear()},${count}`),
-    R.prepend(`Year,${$displayDealsCount ? "Count" : "Size (Ha)"}`),
-    R.join("\n"),
-  )
+  export const toCSV: (displayDealsCount: boolean) => (data: ChartData) => string = (
+    displayDealsCount: boolean,
+  ) =>
+    R.pipe(
+      R.prop(displayDealsCount ? "counts" : "sizes"),
+      R.map(([date, val]) => `${date.getFullYear()},${val}`),
+      R.prepend(`Year,${displayDealsCount ? "Count" : "Size (Ha)"}`),
+      R.join("\n"),
+    )
 
-  const handleDownload = ({ detail: fileType }: DownloadEvent) => {
+  const handleDownload = (
+    { detail: fileType }: DownloadEvent,
+    displayDealsCount: boolean,
+  ) => {
     switch (fileType) {
       case "json":
-        return downloadJSON(toJSON(chartData.counts), title)
+        return downloadJSON(toJSON(displayDealsCount)(chartData), title)
       case "csv":
-        return downloadCSV(toCSV(chartData.counts), title)
+        return downloadCSV(toCSV(displayDealsCount)(chartData), title)
       default:
         return downloadSVG(svgComp, fileType, title)
     }
   }
 </script>
 
-<ChartWrapper {title} on:download={handleDownload}>
+<ChartWrapper {title} on:download={e => handleDownload(e, $displayDealsCount)}>
   <svg
     fill={$displayDealsCount ? "#cce5df" : "#fee1c0"}
     stroke={$displayDealsCount ? "#69b3a2" : "#fc941f"}

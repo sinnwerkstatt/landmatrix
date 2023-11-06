@@ -36,7 +36,7 @@
 </svelte:head>
 
 <ChartsContainer>
-  <div class="h-full w-full overflow-visible">
+  <div class="h-full w-full overflow-visible font-oswald">
     {#if $deals.fetching}
       <LoadingPulse />
     {:else if $deals.error}
