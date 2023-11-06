@@ -7,12 +7,13 @@
 
   import { dealsQuery } from "$lib/dealQueries"
   import { filters, publicOnly } from "$lib/filters"
-  import { loading, isMobile } from "$lib/stores"
+  import { loading, isMobile, chartDescriptions } from "$lib/stores"
 
   import ChartsContainer from "$components/Data/Charts/ChartsContainer.svelte"
   import LoadingPulse from "$components/LoadingPulse.svelte"
   import { showContextBar, showFilterBar } from "$components/Data/stores"
   import DealDisplayToggle from "$components/DealDisplayToggle.svelte"
+
   export let data
 
   $: deals = queryStore({
@@ -42,12 +43,13 @@
     {:else if $deals.error}
       <p>Error...{$deals.error.message}</p>
     {:else}
-      <svelte:component this={data.component} deals={$deals.data.deals} />
+      <svelte:component this={data.profile.component} deals={$deals.data.deals} />
     {/if}
   </div>
 
   <div slot="ContextBar">
     <h2>{$_("Country profiles")}</h2>
+    <div>{@html $chartDescriptions[data.profile.key] ?? ""}</div>
     <DealDisplayToggle />
   </div>
 </ChartsContainer>

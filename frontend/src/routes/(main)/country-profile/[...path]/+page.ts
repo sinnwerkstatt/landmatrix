@@ -46,5 +46,5 @@ export const load: PageLoad = async ({ params }) => {
   if (!profile) {
     throw error(404, "Page not found")
   }
-  return { component: profile.component }
+  return { profile }
 }

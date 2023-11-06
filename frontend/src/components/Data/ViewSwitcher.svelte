@@ -80,7 +80,7 @@
       </li>
       <NavDropDown>
         <svelte:fragment slot="title">
-          <span class="capitalize">{$_("Tables")}</span>
+          <span class="capitalize">{$_("Data")}</span>
         </svelte:fragment>
         <ul class="border-2 border-orange bg-white dark:bg-gray-800">
           {#each dataViews as view}
