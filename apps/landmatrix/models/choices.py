@@ -1,5 +1,84 @@
 from django.utils.translation import gettext as _
 
+
+INTENTION_OF_INVESTMENT_ITEMS = [
+    {
+        "value": "BIOFUELS",
+        "label": _("Biomass for biofuels"),
+        "group": _("Agriculture"),
+    },
+    {
+        "value": "BIOMASS_ENERGY_GENERATION",
+        "label": _("Biomass for energy generation"),
+        "group": _("Agriculture"),
+    },
+    {"value": "FODDER", "label": _("Fodder"), "group": _("Agriculture")},
+    {"value": "FOOD_CROPS", "label": _("Food crops"), "group": _("Agriculture")},
+    {"value": "LIVESTOCK", "label": _("Livestock"), "group": _("Agriculture")},
+    {
+        "value": "NON_FOOD_AGRICULTURE",
+        "label": _("Non-food agricultural commodities"),
+        "group": _("Agriculture"),
+    },
+    {
+        "value": "AGRICULTURE_UNSPECIFIED",
+        "label": _("Agriculture unspecified"),
+        "group": _("Agriculture"),
+    },
+    {
+        "value": "BIOMASS_ENERGY_PRODUCTION",
+        "label": _("Biomass for energy generation"),
+        "group": _("Forestry"),
+    },
+    {
+        "value": "CARBON",
+        "label": _("For carbon sequestration/REDD"),
+        "group": _("Forestry"),
+    },
+    {
+        "value": "FOREST_LOGGING",
+        "label": _("Forest logging / management for wood and fiber"),
+        "group": _("Forestry"),
+    },
+    {
+        "value": "TIMBER_PLANTATION",
+        "label": _("Timber plantation for wood and fiber"),
+        "group": _("Forestry"),
+    },
+    {
+        "value": "FORESTRY_UNSPECIFIED",
+        "label": _("Forestry unspecified"),
+        "group": _("Forestry"),
+    },
+    {
+        "value": "SOLAR_PARK",
+        "label": _("Solar park"),
+        "group": _("Renewable energy power plants"),
+    },
+    {
+        "value": "WIND_FARM",
+        "label": _("Wind farm"),
+        "group": _("Renewable energy power plants"),
+    },
+    {
+        "value": "RENEWABLE_ENERGY",
+        "label": _("Renewable energy unspecified"),
+        "group": _("Renewable energy power plants"),
+    },
+    {"value": "CONVERSATION", "label": _("Conservation"), "group": _("Other")},
+    {"value": "INDUSTRY", "label": _("Industry"), "group": _("Other")},
+    {"value": "LAND_SPECULATION", "label": _("Land speculation"), "group": _("Other")},
+    {"value": "MINING", "label": _("Mining"), "group": _("Other")},
+    {
+        "value": "OIL_GAS_EXTRACTION",
+        "label": _("Oil / Gas extraction"),
+        "group": _("Other"),
+    },
+    {"value": "TOURISM", "label": _("Tourism"), "group": _("Other")},
+    {"value": "OTHER", "label": _("Other"), "group": _("Other")},
+]
+
+
 INTENTION_CHOICES_GROUPED = [
     # agriculture
     (
@@ -49,35 +128,8 @@ INTENTION_CHOICES_GROUPED = [
     ),
 ]
 
+INTENTION_CHOICES = [(x["value"], x["label"]) for x in INTENTION_OF_INVESTMENT_ITEMS]
 
-INTENTION_CHOICES = [
-    # agriculture
-    ("BIOFUELS", _("Biomass for biofuels")),
-    ("BIOMASS_ENERGY_GENERATION", _("Biomass for energy generation")),
-    ("FODDER", _("Fodder")),
-    ("FOOD_CROPS", _("Food crops")),
-    ("LIVESTOCK", _("Livestock")),
-    ("NON_FOOD_AGRICULTURE", _("Non-food agricultural commodities")),
-    ("AGRICULTURE_UNSPECIFIED", _("Agriculture unspecified")),
-    # forest
-    ("BIOMASS_ENERGY_PRODUCTION", _("Biomass for energy generation")),
-    ("CARBON", _("For carbon sequestration/REDD")),
-    ("FOREST_LOGGING", _("Forest logging / management for wood and fiber")),
-    ("TIMBER_PLANTATION", _("Timber plantation for wood and fiber")),
-    ("FORESTRY_UNSPECIFIED", _("Forestry unspecified")),
-    # renewable
-    ("SOLAR_PARK", _("Solar park")),
-    ("WIND_FARM", _("Wind farm")),
-    ("RENEWABLE_ENERGY", _("Renewable energy unspecified")),
-    # other
-    ("CONVERSATION", _("Conservation")),
-    ("INDUSTRY", _("Industry")),
-    ("LAND_SPECULATION", _("Land speculation")),
-    ("MINING", _("Mining")),
-    ("OIL_GAS_EXTRACTION", _("Oil / Gas extraction")),
-    ("TOURISM", _("Tourism")),
-    ("OTHER", _("Other")),
-]
 NATURE_OF_DEAL_CHOICES = [
     ("OUTRIGHT_PURCHASE", _("Outright purchase")),
     ("LEASE", _("Lease")),
@@ -90,74 +142,84 @@ NATURE_OF_DEAL_CHOICES = [
     ("OTHER", _("Other")),
 ]
 
+NEGOTIATION_STATUS_ITEMS = [
+    {
+        "value": "EXPRESSION_OF_INTEREST",
+        "label": _("Intended (Expression of interest)"),
+        "group": _("Intended"),
+    },
+    {
+        "value": "UNDER_NEGOTIATION",
+        "label": _("Intended (Under negotiation)"),
+        "group": _("Intended"),
+    },
+    {
+        "value": "MEMORANDUM_OF_UNDERSTANDING",
+        "label": _("Intended (Memorandum of understanding)"),
+        "group": _("Intended"),
+    },
+    {
+        "value": "ORAL_AGREEMENT",
+        "label": _("Concluded (Oral Agreement)"),
+        "group": _("Concluded"),
+    },
+    {
+        "value": "CONTRACT_SIGNED",
+        "label": _("Concluded (Contract signed)"),
+        "group": _("Concluded"),
+    },
+    {
+        "value": "CHANGE_OF_OWNERSHIP",
+        "label": _("Concluded (Change of ownership)"),
+        "group": _("Concluded"),
+    },
+    {
+        "value": "NEGOTIATIONS_FAILED",
+        "label": _("Failed (Negotiations failed)"),
+        "group": _("Failed"),
+    },
+    {
+        "value": "CONTRACT_CANCELED",
+        "label": _("Failed (Contract cancelled)"),
+        "group": _("Failed"),
+    },
+    {"value": "CONTRACT_EXPIRED", "label": _("Contract expired")},
+]
 NEGOTIATION_STATUS_CHOICES = [
-    ("EXPRESSION_OF_INTEREST", _("Intended (Expression of interest)")),
-    ("UNDER_NEGOTIATION", _("Intended (Under negotiation)")),
-    ("MEMORANDUM_OF_UNDERSTANDING", _("Intended (Memorandum of understanding)")),
-    ("ORAL_AGREEMENT", _("Concluded (Oral Agreement)")),
-    ("CONTRACT_SIGNED", _("Concluded (Contract signed)")),
-    ("CHANGE_OF_OWNERSHIP", _("Concluded (Change of ownership)")),
-    ("NEGOTIATIONS_FAILED", _("Failed (Negotiations failed)")),
-    ("CONTRACT_CANCELED", _("Failed (Contract cancelled)")),
-    ("CONTRACT_EXPIRED", _("Contract expired")),
+    (x["value"], x["label"]) for x in NEGOTIATION_STATUS_ITEMS
 ]
 
-NEGOTIATION_STATUS_CHOICES_GROUPED = [
-    (
-        "Intended",
-        [
-            ("EXPRESSION_OF_INTEREST", _("Intended (Expression of interest)")),
-            ("UNDER_NEGOTIATION", _("Intended (Under negotiation)")),
-            (
-                "MEMORANDUM_OF_UNDERSTANDING",
-                _("Intended (Memorandum of understanding)"),
-            ),
-        ],
-    ),
-    (
-        "Concluded",
-        [
-            ("ORAL_AGREEMENT", _("Concluded (Oral Agreement)")),
-            ("CONTRACT_SIGNED", _("Concluded (Contract signed)")),
-            ("CHANGE_OF_OWNERSHIP", _("Concluded (Change of ownership)")),
-        ],
-    ),
-    (
-        "Failed",
-        [
-            ("NEGOTIATIONS_FAILED", _("Failed (Negotiations failed)")),
-            ("CONTRACT_CANCELED", _("Failed (Contract cancelled)")),
-        ],
-    ),
-    ("CONTRACT_EXPIRED", _("Contract expired")),
+IMPLEMENTATION_STATUS_ITEMS = [
+    {"value": "PROJECT_NOT_STARTED", "label": _("Project not started")},
+    {"value": "STARTUP_PHASE", "label": _("Startup phase (no production)")},
+    {"value": "IN_OPERATION", "label": _("In operation (production)")},
+    {"value": "PROJECT_ABANDONED", "label": _("Project abandoned")},
 ]
-
 IMPLEMENTATION_STATUS_CHOICES = [
-    ("PROJECT_NOT_STARTED", "Project not started"),
-    ("STARTUP_PHASE", "Startup phase (no production)"),
-    ("IN_OPERATION", "In operation (production)"),
-    ("PROJECT_ABANDONED", "Project abandoned"),
+    (x["value"], x["label"]) for x in IMPLEMENTATION_STATUS_ITEMS
 ]
 
-ACTOR_MAP = [
-    (
-        "GOVERNMENT_OR_STATE_INSTITUTIONS",
-        _(
+ACTOR_ITEMS = [
+    {
+        "value": "GOVERNMENT_OR_STATE_INSTITUTIONS",
+        "label": _(
             "Government / state institutions (government, ministries, departments, agencies etc.)"
         ),
-    ),
-    (
-        "TRADITIONAL_LAND_OWNERS_OR_COMMUNITIES",
-        _("Traditional land-owners / communities"),
-    ),
-    (
-        "TRADITIONAL_LOCAL_AUTHORITY",
-        _("Traditional local authority (e.g. Chiefdom council / Chiefs)"),
-    ),
-    ("BROKER", _("Broker")),
-    ("INTERMEDIARY", _("Intermediary")),
-    ("OTHER", _("Other (please specify)")),
+    },
+    {
+        "value": "TRADITIONAL_LAND_OWNERS_OR_COMMUNITIES",
+        "label": _("Traditional land-owners / communities"),
+    },
+    {
+        "value": "TRADITIONAL_LOCAL_AUTHORITY",
+        "label": _("Traditional local authority (e.g. Chiefdom council / Chiefs)"),
+    },
+    {"value": "BROKER", "label": _("Broker")},
+    {"value": "INTERMEDIARY", "label": _("Intermediary")},
+    {"value": "OTHER", "label": _("Other (please specify)")},
 ]
+ACTOR_MAP = [(x["value"], x["label"]) for x in ACTOR_ITEMS]
+
 
 RECOGNITION_STATUS_CHOICES = (
     (
@@ -253,120 +315,135 @@ FORMER_LAND_COVER_CHOICES = (
     ),
 )
 
+CROPS_ITEMS = [
+    {"value": "ACC", "label": _("Accacia"), "produce": "NON_FOOD"},
+    {"value": "ALF", "label": _("Alfalfa"), "produce": "NON_FOOD"},
+    {
+        "value": "ALG",
+        "label": _("Seaweed / Macroalgae(unspecified)"),
+        "produce": "NON_FOOD",
+    },
+    {"value": "ALM", "label": _("Almond"), "produce": "FOOD_CROP"},
+    {"value": "ALV", "label": _("Aloe Vera"), "produce": "NON_FOOD"},
+    {"value": "APL", "label": _("Apple"), "produce": "FOOD_CROP"},
+    {
+        "value": "AQU",
+        "label": _("Aquaculture (unspecified crops)"),
+        "produce": "FOOD_CROP",
+    },
+    {"value": "BAM", "label": _("Bamboo"), "produce": "NON_FOOD"},
+    {"value": "BAN", "label": _("Banana"), "produce": "FOOD_CROP"},
+    {"value": "BEA", "label": _("Bean"), "produce": "FOOD_CROP"},
+    {"value": "BOT", "label": _("Bottle Gourd"), "produce": "FOOD_CROP"},
+    {"value": "BRL", "label": _("Barley"), "produce": "FOOD_CROP"},
+    {"value": "BWT", "label": _("Buckwheat"), "produce": "FOOD_CROP"},
+    {"value": "CAC", "label": _("Cacao"), "produce": "FOOD_CROP"},
+    {"value": "CAS", "label": _("Cassava (Maniok)"), "produce": "FOOD_CROP"},
+    {"value": "CAW", "label": _("Cashew"), "produce": "FOOD_CROP"},
+    {"value": "CHA", "label": _("Chat")},
+    {"value": "CHE", "label": _("Cherries"), "produce": "FOOD_CROP"},
+    {"value": "CNL", "label": _("Canola"), "produce": "FLEX_CROP"},
+    {"value": "COC", "label": _("Coconut"), "produce": "FOOD_CROP"},
+    {"value": "COF", "label": _("Coffee Plant"), "produce": "FOOD_CROP"},
+    {"value": "COT", "label": _("Cotton"), "produce": "NON_FOOD"},
+    {"value": "CRL", "label": _("Cereals (unspecified)"), "produce": "FOOD_CROP"},
+    {"value": "CRN", "label": _("Corn (Maize)"), "produce": "FOOD_CROP"},
+    {"value": "CRO", "label": _("Croton"), "produce": "NON_FOOD"},
+    {"value": "CST", "label": _("Castor Oil Plant"), "produce": "NON_FOOD"},
+    {"value": "CTR", "label": _("Citrus Fruits (unspecified)"), "produce": "FOOD_CROP"},
+    {"value": "DIL", "label": _("Dill"), "produce": "NON_FOOD"},
+    {"value": "EUC", "label": _("Eucalyptus"), "produce": "NON_FOOD"},
+    {"value": "FLW", "label": _("Flowers (unspecified)"), "produce": "NON_FOOD"},
+    {"value": "FNT", "label": _("Fig-Nut"), "produce": "FOOD_CROP"},
+    {"value": "FOD", "label": _("Fodder Plants (unspecified)"), "produce": "NON_FOOD"},
+    {"value": "FOO", "label": _("Food crops (unspecified)"), "produce": "FOOD_CROP"},
+    {"value": "FRT", "label": _("Fruit (unspecified)"), "produce": "FOOD_CROP"},
+    {"value": "GRA", "label": _("Grapes"), "produce": "FOOD_CROP"},
+    {"value": "GRN", "label": _("Grains (unspecified)"), "produce": "FOOD_CROP"},
+    {"value": "HRB", "label": _("Herbs (unspecified)")},
+    {"value": "JTR", "label": _("Jatropha"), "produce": "NON_FOOD"},
+    {"value": "LNT", "label": _("Lentils"), "produce": "FOOD_CROP"},
+    {"value": "MAN", "label": _("Mango"), "produce": "FOOD_CROP"},
+    {"value": "MUS", "label": _("Mustard"), "produce": "FOOD_CROP"},
+    {"value": "OAT", "label": _("Oats")},
+    {"value": "OIL", "label": _("Oil Seeds (unspecified)"), "produce": "FLEX_CROP"},
+    {"value": "OLE", "label": _("Oleagionous plant"), "produce": "FLEX_CROP"},
+    {"value": "OLV", "label": _("Olives"), "produce": "FOOD_CROP"},
+    {"value": "ONI", "label": _("Onion"), "produce": "FOOD_CROP"},
+    {"value": "OPL", "label": _("Oil Palm"), "produce": "FLEX_CROP"},
+    {"value": "OTH", "label": _("Other crops (please specify)")},
+    {"value": "PAL", "label": _("Palms"), "produce": "FOOD_CROP"},
+    {"value": "PAP", "label": _("Papaya"), "produce": "FOOD_CROP"},
+    {"value": "PAS", "label": _("Passion fruit"), "produce": "FOOD_CROP"},
+    {"value": "PEA", "label": _("Peanut (groundnut)"), "produce": "FOOD_CROP"},
+    {"value": "PEP", "label": _("Pepper"), "produce": "FOOD_CROP"},
+    {"value": "PES", "label": _("Peas"), "produce": "FOOD_CROP"},
+    {"value": "PIE", "label": _("Pine"), "produce": "FOOD_CROP"},
+    {"value": "PIN", "label": _("Pineapple"), "produce": "FOOD_CROP"},
+    {"value": "PLS", "label": _("Pulses (unspecified)"), "produce": "FOOD_CROP"},
+    {"value": "POM", "label": _("Pomegranate"), "produce": "FOOD_CROP"},
+    {"value": "PON", "label": _("Pongamia Pinnata"), "produce": "NON_FOOD"},
+    {"value": "PTT", "label": _("Potatoes"), "produce": "FOOD_CROP"},
+    {"value": "RAP", "label": _("Rapeseed"), "produce": "FOOD_CROP"},
+    {"value": "RCH", "label": _("Rice (hybrid)"), "produce": "FOOD_CROP"},
+    {"value": "RIC", "label": _("Rice"), "produce": "FOOD_CROP"},
+    {"value": "ROS", "label": _("Roses"), "produce": "NON_FOOD"},
+    {"value": "RUB", "label": _("Rubber tree"), "produce": "NON_FOOD"},
+    {"value": "RYE", "label": _("Rye"), "produce": "FOOD_CROP"},
+    {
+        "value": "SEE",
+        "label": _("Seeds Production (unspecified)"),
+        "produce": "FOOD_CROP",
+    },
+    {"value": "SES", "label": _("Sesame"), "produce": "FOOD_CROP"},
+    {"value": "SOR", "label": _("Sorghum"), "produce": "FOOD_CROP"},
+    {"value": "SOY", "label": _("Soya Beans"), "produce": "FLEX_CROP"},
+    {"value": "SPI", "label": _("Spices (unspecified)")},
+    {"value": "SSL", "label": _("Sisal"), "produce": "NON_FOOD"},
+    {"value": "SUB", "label": _("Sugar beet"), "produce": "FLEX_CROP"},
+    {"value": "SUC", "label": _("Sugar Cane"), "produce": "FLEX_CROP"},
+    {"value": "SUG", "label": _("Sugar (unspecified)"), "produce": "FLEX_CROP"},
+    {"value": "SUN", "label": _("Sun Flower"), "produce": "FLEX_CROP"},
+    {"value": "SWP", "label": _("Sweet Potatoes"), "produce": "FOOD_CROP"},
+    {"value": "TBC", "label": _("Tobacco"), "produce": "NON_FOOD"},
+    {"value": "TEA", "label": _("Tea"), "produce": "FOOD_CROP"},
+    {"value": "TEF", "label": _("Teff"), "produce": "FOOD_CROP"},
+    {"value": "TEK", "label": _("Teak"), "produce": "NON_FOOD"},
+    {"value": "TOM", "label": _("Tomatoes"), "produce": "FOOD_CROP"},
+    {"value": "TRE", "label": _("Trees (unspecified)"), "produce": "NON_FOOD"},
+    {"value": "VGT", "label": _("Vegetables (unspecified)"), "produce": "FOOD_CROP"},
+    {"value": "VIN", "label": _("Vineyard"), "produce": "FOOD_CROP"},
+    {"value": "WHT", "label": _("Wheat"), "produce": "FOOD_CROP"},
+    {"value": "YAM", "label": _("Yam"), "produce": "FOOD_CROP"},
+]
 CROPS = {
-    "ACC": {"name": _("Accacia"), "produce": "NON_FOOD"},
-    "ALF": {"name": _("Alfalfa"), "produce": "NON_FOOD"},
-    "ALG": {"name": _("Seaweed / Macroalgae(unspecified)"), "produce": "NON_FOOD"},
-    "ALM": {"name": _("Almond"), "produce": "FOOD_CROP"},
-    "ALV": {"name": _("Aloe Vera"), "produce": "NON_FOOD"},
-    "APL": {"name": _("Apple"), "produce": "FOOD_CROP"},
-    "AQU": {"name": _("Aquaculture (unspecified crops)"), "produce": "FOOD_CROP"},
-    "BAM": {"name": _("Bamboo"), "produce": "NON_FOOD"},
-    "BAN": {"name": _("Banana"), "produce": "FOOD_CROP"},
-    "BEA": {"name": _("Bean"), "produce": "FOOD_CROP"},
-    "BOT": {"name": _("Bottle Gourd"), "produce": "FOOD_CROP"},
-    "BRL": {"name": _("Barley"), "produce": "FOOD_CROP"},
-    "BWT": {"name": _("Buckwheat"), "produce": "FOOD_CROP"},
-    "CAC": {"name": _("Cacao"), "produce": "FOOD_CROP"},
-    "CAS": {"name": _("Cassava (Maniok)"), "produce": "FOOD_CROP"},
-    "CAW": {"name": _("Cashew"), "produce": "FOOD_CROP"},
-    "CHA": {"name": _("Chat")},
-    "CHE": {"name": _("Cherries"), "produce": "FOOD_CROP"},
-    "CNL": {"name": _("Canola"), "produce": "FLEX_CROP"},
-    "COC": {"name": _("Coconut"), "produce": "FOOD_CROP"},
-    "COF": {"name": _("Coffee Plant"), "produce": "FOOD_CROP"},
-    "COT": {"name": _("Cotton"), "produce": "NON_FOOD"},
-    "CRL": {"name": _("Cereals (unspecified)"), "produce": "FOOD_CROP"},
-    "CRN": {"name": _("Corn (Maize)"), "produce": "FOOD_CROP"},
-    "CRO": {"name": _("Croton"), "produce": "NON_FOOD"},
-    "CST": {"name": _("Castor Oil Plant"), "produce": "NON_FOOD"},
-    "CTR": {"name": _("Citrus Fruits (unspecified)"), "produce": "FOOD_CROP"},
-    "DIL": {"name": _("Dill"), "produce": "NON_FOOD"},
-    "EUC": {"name": _("Eucalyptus"), "produce": "NON_FOOD"},
-    "FLW": {"name": _("Flowers (unspecified)"), "produce": "NON_FOOD"},
-    "FNT": {"name": _("Fig-Nut"), "produce": "FOOD_CROP"},
-    "FOD": {"name": _("Fodder Plants (unspecified)"), "produce": "NON_FOOD"},
-    "FOO": {"name": _("Food crops (unspecified)"), "produce": "FOOD_CROP"},
-    "FRT": {"name": _("Fruit (unspecified)"), "produce": "FOOD_CROP"},
-    "GRA": {"name": _("Grapes"), "produce": "FOOD_CROP"},
-    "GRN": {"name": _("Grains (unspecified)"), "produce": "FOOD_CROP"},
-    "HRB": {"name": _("Herbs (unspecified)")},
-    "JTR": {"name": _("Jatropha"), "produce": "NON_FOOD"},
-    "LNT": {"name": _("Lentils"), "produce": "FOOD_CROP"},
-    "MAN": {"name": _("Mango"), "produce": "FOOD_CROP"},
-    "MUS": {"name": _("Mustard"), "produce": "FOOD_CROP"},
-    "OAT": {"name": _("Oats")},
-    "OIL": {"name": _("Oil Seeds (unspecified)"), "produce": "FLEX_CROP"},
-    "OLE": {"name": _("Oleagionous plant"), "produce": "FLEX_CROP"},
-    "OLV": {"name": _("Olives"), "produce": "FOOD_CROP"},
-    "ONI": {"name": _("Onion"), "produce": "FOOD_CROP"},
-    "OPL": {"name": _("Oil Palm"), "produce": "FLEX_CROP"},
-    "OTH": {"name": _("Other crops (please specify)")},
-    "PAL": {"name": _("Palms"), "produce": "FOOD_CROP"},
-    "PAP": {"name": _("Papaya"), "produce": "FOOD_CROP"},
-    "PAS": {"name": _("Passion fruit"), "produce": "FOOD_CROP"},
-    "PEA": {"name": _("Peanut (groundnut)"), "produce": "FOOD_CROP"},
-    "PEP": {"name": _("Pepper"), "produce": "FOOD_CROP"},
-    "PES": {"name": _("Peas"), "produce": "FOOD_CROP"},
-    "PIE": {"name": _("Pine"), "produce": "FOOD_CROP"},
-    "PIN": {"name": _("Pineapple"), "produce": "FOOD_CROP"},
-    "PLS": {"name": _("Pulses (unspecified)"), "produce": "FOOD_CROP"},
-    "POM": {"name": _("Pomegranate"), "produce": "FOOD_CROP"},
-    "PON": {"name": _("Pongamia Pinnata"), "produce": "NON_FOOD"},
-    "PTT": {"name": _("Potatoes"), "produce": "FOOD_CROP"},
-    "RAP": {"name": _("Rapeseed"), "produce": "FOOD_CROP"},
-    "RCH": {"name": _("Rice (hybrid)"), "produce": "FOOD_CROP"},
-    "RIC": {"name": _("Rice"), "produce": "FOOD_CROP"},
-    "ROS": {"name": _("Roses"), "produce": "NON_FOOD"},
-    "RUB": {"name": _("Rubber tree"), "produce": "NON_FOOD"},
-    "RYE": {"name": _("Rye"), "produce": "FOOD_CROP"},
-    "SEE": {"name": _("Seeds Production (unspecified)"), "produce": "FOOD_CROP"},
-    "SES": {"name": _("Sesame"), "produce": "FOOD_CROP"},
-    "SOR": {"name": _("Sorghum"), "produce": "FOOD_CROP"},
-    "SOY": {"name": _("Soya Beans"), "produce": "FLEX_CROP"},
-    "SPI": {"name": _("Spices (unspecified)")},
-    "SSL": {"name": _("Sisal"), "produce": "NON_FOOD"},
-    "SUB": {"name": _("Sugar beet"), "produce": "FLEX_CROP"},
-    "SUC": {"name": _("Sugar Cane"), "produce": "FLEX_CROP"},
-    "SUG": {"name": _("Sugar (unspecified)"), "produce": "FLEX_CROP"},
-    "SUN": {"name": _("Sun Flower"), "produce": "FLEX_CROP"},
-    "SWP": {"name": _("Sweet Potatoes"), "produce": "FOOD_CROP"},
-    "TBC": {"name": _("Tobacco"), "produce": "NON_FOOD"},
-    "TEA": {"name": _("Tea"), "produce": "FOOD_CROP"},
-    "TEF": {"name": _("Teff"), "produce": "FOOD_CROP"},
-    "TEK": {"name": _("Teak"), "produce": "NON_FOOD"},
-    "TOM": {"name": _("Tomatoes"), "produce": "FOOD_CROP"},
-    "TRE": {"name": _("Trees (unspecified)"), "produce": "NON_FOOD"},
-    "VGT": {"name": _("Vegetables (unspecified)"), "produce": "FOOD_CROP"},
-    "VIN": {"name": _("Vineyard"), "produce": "FOOD_CROP"},
-    "WHT": {"name": _("Wheat"), "produce": "FOOD_CROP"},
-    "YAM": {"name": _("Yam"), "produce": "FOOD_CROP"},
+    x["value"]: {"name": x["label"], "produce": x.get("produce")} for x in CROPS_ITEMS
 }
+CROPS_CHOICES = [(x["value"], x["label"]) for x in CROPS_ITEMS]
 
-CROPS_CHOICES = [(k, v["name"]) for k, v in CROPS.items()]
+ANIMALS_ITEMS = [
+    {"value": "AQU", "label": _("Aquaculture (animals)")},
+    {"value": "BEE", "label": _("Beef Cattle")},
+    {"value": "CTL", "label": _("Cattle")},
+    {"value": "DCT", "label": _("Dairy Cattle")},
+    {"value": "FSH", "label": _("Fish")},
+    {"value": "GOT", "label": _("Goats")},
+    {"value": "OTH", "label": _("Other livestock (please specify)")},
+    {"value": "PIG", "label": _("Pork")},
+    {"value": "POU", "label": _("Poultry")},
+    {"value": "SHP", "label": _("Sheep")},
+    {"value": "SHR", "label": _("Shrimp")},
+]
+ANIMALS = {x["value"]: {"name": x["label"]} for x in ANIMALS_ITEMS}
+ANIMALS_CHOICES = [(x["value"], x["label"]) for x in ANIMALS_ITEMS]
 
-ANIMALS = {
-    "AQU": {"name": _("Aquaculture (animals)")},
-    "BEE": {"name": _("Beef Cattle")},
-    "CTL": {"name": _("Cattle")},
-    "DCT": {"name": _("Dairy Cattle")},
-    "FSH": {"name": _("Fish")},
-    "GOT": {"name": _("Goats")},
-    "OTH": {"name": _("Other livestock (please specify)")},
-    "PIG": {"name": _("Pork")},
-    "POU": {"name": _("Poultry")},
-    "SHP": {"name": _("Sheep")},
-    "SHR": {"name": _("Shrimp")},
-}
-ANIMALS_CHOICES = [(k, v["name"]) for k, v in ANIMALS.items()]
-
-ELECTRICITY_GENERATION_OPTIONS = [
+ELECTRICITY_GENERATION_ITEMS = [
     {"value": "WIND", "label": _("On-shore wind turbines")},
     {"value": "PHOTOVOLTAIC", "label": _("Solar (Photovoltaic)")},
     {"value": "SOLAR_HEAT", "label": _("Solar (Thermal system)")},
 ]
 ELECTRICITY_GENERATIONS_CHOICES = [
-    (x["value"], x["label"]) for x in ELECTRICITY_GENERATION_OPTIONS
+    (x["value"], x["label"]) for x in ELECTRICITY_GENERATION_ITEMS
 ]
 
 CARBON_SEQUESTRATION_ITEMS = [
@@ -403,59 +480,60 @@ CARBON_SEQUESTRATION_CERT_CHOICES = [
     (x["value"], x["label"]) for x in CARBON_SEQUESTRATION_CERT_ITEMS
 ]
 
-MINERALS = {
-    "ALU": {"name": _("Aluminum")},
-    "ASP": {"name": _("Asphaltite")},
-    "ATC": {"name": _("Anthracite")},
-    "BAR": {"name": _("Barite")},
-    "BAS": {"name": _("Basalt")},
-    "BAX": {"name": _("Bauxite")},
-    "BEN": {"name": _("Bentonite")},
-    "BUM": {"name": _("Building materials")},
-    "CAR": {"name": _("Carbon")},
-    "CHR": {"name": _("Chromite")},
-    "CLA": {"name": _("Clay")},
-    "COA": {"name": _("Coal")},
-    "COB": {"name": _("Cobalt")},
-    "COP": {"name": _("Copper")},
-    "DIA": {"name": _("Diamonds")},
-    "EME": {"name": _("Emerald")},
-    "FLD": {"name": _("Feldspar")},
-    "FLO": {"name": _("Fluoride")},
-    "GAS": {"name": _("Gas")},
-    "GLD": {"name": _("Gold")},
-    "GRT": {"name": _("Granite")},
-    "GRV": {"name": _("Gravel")},
-    "HEA": {"name": _("Heavy Mineral Sands")},
-    "ILM": {"name": _("Ilmenite")},
-    "IRO": {"name": _("Iron")},
-    "JAD": {"name": _("Jade")},
-    "LED": {"name": _("Lead")},
-    "LIM": {"name": _("Limestone")},
-    "LIT": {"name": _("Lithium")},
-    "MAG": {"name": _("Magnetite")},
-    "MBD": {"name": _("Molybdenum")},
-    "MGN": {"name": _("Manganese")},
-    "MRB": {"name": _("Marble")},
-    "NIK": {"name": _("Nickel")},
-    "OTH": {"name": _("Other minerals (please specify)")},
-    "PET": {"name": _("Petroleum")},
-    "PHP": {"name": _("Phosphorous")},
-    "PLT": {"name": _("Platinum")},
-    "PUM": {"name": _("Hydrocarbons (e.g. crude oil)")},
-    "PYR": {"name": _("Pyrolisis Plant")},
-    "RUT": {"name": _("Rutile")},
-    "SAN": {"name": _("Sand")},
-    "SIC": {"name": _("Silica")},
-    "SIL": {"name": _("Silver")},
-    "SLT": {"name": _("Salt")},
-    "STO": {"name": _("Stone")},
-    "TIN": {"name": _("Tin")},
-    "TTM": {"name": _("Titanium")},
-    "URM": {"name": _("Uranium")},
-    "ZNC": {"name": _("Zinc")},
-}
-MINERALS_CHOICES = [(k, v["name"]) for k, v in MINERALS.items()]
+MINERALS_ITEMS = [
+    {"value": "ALU", "label": _("Aluminum")},
+    {"value": "ASP", "label": _("Asphaltite")},
+    {"value": "ATC", "label": _("Anthracite")},
+    {"value": "BAR", "label": _("Barite")},
+    {"value": "BAS", "label": _("Basalt")},
+    {"value": "BAX", "label": _("Bauxite")},
+    {"value": "BEN", "label": _("Bentonite")},
+    {"value": "BUM", "label": _("Building materials")},
+    {"value": "CAR", "label": _("Carbon")},
+    {"value": "CHR", "label": _("Chromite")},
+    {"value": "CLA", "label": _("Clay")},
+    {"value": "COA", "label": _("Coal")},
+    {"value": "COB", "label": _("Cobalt")},
+    {"value": "COP", "label": _("Copper")},
+    {"value": "DIA", "label": _("Diamonds")},
+    {"value": "EME", "label": _("Emerald")},
+    {"value": "FLD", "label": _("Feldspar")},
+    {"value": "FLO", "label": _("Fluoride")},
+    {"value": "GAS", "label": _("Gas")},
+    {"value": "GLD", "label": _("Gold")},
+    {"value": "GRT", "label": _("Granite")},
+    {"value": "GRV", "label": _("Gravel")},
+    {"value": "HEA", "label": _("Heavy Mineral Sands")},
+    {"value": "ILM", "label": _("Ilmenite")},
+    {"value": "IRO", "label": _("Iron")},
+    {"value": "JAD", "label": _("Jade")},
+    {"value": "LED", "label": _("Lead")},
+    {"value": "LIM", "label": _("Limestone")},
+    {"value": "LIT", "label": _("Lithium")},
+    {"value": "MAG", "label": _("Magnetite")},
+    {"value": "MBD", "label": _("Molybdenum")},
+    {"value": "MGN", "label": _("Manganese")},
+    {"value": "MRB", "label": _("Marble")},
+    {"value": "NIK", "label": _("Nickel")},
+    {"value": "OTH", "label": _("Other minerals (please specify)")},
+    {"value": "PET", "label": _("Petroleum")},
+    {"value": "PHP", "label": _("Phosphorous")},
+    {"value": "PLT", "label": _("Platinum")},
+    {"value": "PUM", "label": _("Hydrocarbons (e.g. crude oil)")},
+    {"value": "PYR", "label": _("Pyrolisis Plant")},
+    {"value": "RUT", "label": _("Rutile")},
+    {"value": "SAN", "label": _("Sand")},
+    {"value": "SIC", "label": _("Silica")},
+    {"value": "SIL", "label": _("Silver")},
+    {"value": "SLT", "label": _("Salt")},
+    {"value": "STO", "label": _("Stone")},
+    {"value": "TIN", "label": _("Tin")},
+    {"value": "TTM", "label": _("Titanium")},
+    {"value": "URM", "label": _("Uranium")},
+    {"value": "ZNC", "label": _("Zinc")},
+]
+MINERALS = {x["value"]: {"name": x["label"]} for x in MINERALS_ITEMS}
+MINERALS_CHOICES = [(x["value"], x["label"]) for x in MINERALS_ITEMS]
 
 WATER_SOURCE_CHOICES = (
     ("GROUNDWATER", _("Groundwater")),
