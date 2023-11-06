@@ -854,8 +854,6 @@ class DataDownload:
                     ]
                 )
 
-
-
         for produce_type in ["contract_farming_crops", "contract_farming_animals"]:
             if data.get(produce_type) is not None:
                 data[produce_type] = "|".join(
