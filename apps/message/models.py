@@ -46,6 +46,9 @@ class Message(Orderable, models.Model):
         verbose_name_plural = _("Messages")
         ordering = ["sort_order"]
 
+    def __str__(self):
+        return self.title
+
     def to_dict(self):
         return {
             "id": self.id,

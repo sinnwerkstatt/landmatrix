@@ -1,12 +1,6 @@
-from wagtailorderable.modeladmin.mixins import OrderableMixin
-
 from django.utils.html import format_html
 from wagtail import hooks
-from wagtail.snippets.models import register_snippet
-from wagtail.snippets.views.snippets import SnippetViewSet
 from wagtail.whitelist import attribute_rule
-
-from apps.message.models import Message
 
 
 @hooks.register("register_icons")
@@ -44,25 +38,3 @@ def monkeypatch_wagtail_modeltranslation():
         '<script src="{}"></script>',
         "/static/js/cleanForSlug.js",
     )
-
-
-class MessageAdmin(OrderableMixin, SnippetViewSet):
-    model = Message
-    menu_label = "Messages"
-    icon = "pilcrow"
-    menu_order = 1000  # will put in 3rd place (000 being 1st, 100 2nd)
-    add_to_settings_menu = True
-    list_display = (
-        "title",
-        "text",
-        "level",
-        "allow_users_to_hide",
-        "is_active",
-        "expires_at",
-    )
-    list_filter = ("level", "is_active")
-    search_fields = ("title",)
-    ordering = ["sort_order"]
-
-
-register_snippet(MessageAdmin)
