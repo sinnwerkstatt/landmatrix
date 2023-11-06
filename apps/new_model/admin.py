@@ -1,0 +1,97 @@
+from django.contrib import admin
+
+from apps.new_model.models import (
+    DealHull,
+    DealVersion2,
+    Location,
+    Area,
+    DataSource,
+    Contract,
+)
+
+
+class ReadonlyInline(admin.TabularInline):
+    extra = 0
+    can_delete = False
+
+    # noinspection PyMethodMayBeStatic,PyUnusedLocal
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    # noinspection PyMethodMayBeStatic,PyUnusedLocal
+    def has_change_permission(self, request, obj=None):
+        return False
+
+
+@admin.register(DealVersion2)
+class DealVersion2Admin(admin.ModelAdmin):
+    model = DealVersion2
+    readonly_fields = [
+        "operating_company",
+        "parent_companies",
+        "top_investors",
+    ]
+
+
+class DealVersionInline(ReadonlyInline):
+    model = DealVersion2
+    fields = [
+        "id",
+        "status",
+        "created_at",
+        "created_by",
+        "sent_to_review_at",
+        "sent_to_review_by",
+        "reviewed_at",
+        "reviewed_by",
+        "activated_at",
+        "activated_by",
+        "contract_size",
+        "intention_of_investment",
+        "nature_of_deal",
+        "negotiation_status",
+        "fully_updated",
+    ]
+
+
+@admin.register(DealHull)
+class DealHullAdmin(admin.ModelAdmin):
+    readonly_fields = [
+        "active_version",
+        "draft_version",
+        "confidential",
+        "confidential_comment",
+        "deleted",
+        "deleted_comment",
+        "created_at",
+        "created_by",
+        "fully_updated_at",
+        "country",
+    ]
+    inlines = [DealVersionInline]
+
+
+class AreaInline(admin.TabularInline):
+    model = Area
+    extra = 0
+    can_delete = False
+
+
+@admin.register(Location)
+class LocationAdmin(admin.ModelAdmin):
+    inlines = [AreaInline]
+
+
+@admin.register(Area)
+class AreaAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Contract)
+class ContractAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(DataSource)
+class DataSourceAdmin(admin.ModelAdmin):
+    list_display = ["__str__", "id", "file", "date"]
