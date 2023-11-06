@@ -66,6 +66,7 @@
     },
   })
   $: loading.set($deals?.fetching ?? false)
+  $: console.log("dealsStore (list/deals)", $deals)
 
   onMount(() => {
     showContextBar.set(false)

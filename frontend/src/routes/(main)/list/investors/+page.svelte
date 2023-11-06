@@ -7,7 +7,7 @@
 
   import { dealsQuery } from "$lib/dealQueries"
   import { filters, FilterValues, publicOnly } from "$lib/filters"
-  import { formfields, isMobile } from "$lib/stores"
+  import { formfields, isMobile, loading } from "$lib/stores"
   import type { Deal } from "$lib/types/deal"
   import type { GQLFilter } from "$lib/types/filters"
   import type { Investor } from "$lib/types/investor"
@@ -49,6 +49,8 @@
       subset: $publicOnly ? "PUBLIC" : "ACTIVE",
     },
   })
+  $: loading.set($deals?.fetching ?? false)
+  $: console.log("dealsStore (list/investors)", $deals)
 
   let investors: Investor[] = []
 
