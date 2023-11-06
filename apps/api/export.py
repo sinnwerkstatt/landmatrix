@@ -124,6 +124,7 @@ deal_fields = {
     "former_land_cover": "Former land cover",
     "former_land_cover_comment": "Comment on former land cover",
     "crops": "Crops area/yield/export",
+    "crops_json": "Crops area/yield/export JSON",
     "crops_comment": "Comment on crops",
     "animals": "Livestock area/yield/export",
     "animals_comment": "Comment on livestock",
@@ -827,6 +828,9 @@ class DataDownload:
             if data.get(country):
                 data[country] = mchoices.get("country")[data[country]]
 
+        if (crops := data.get("crops")) is not None:
+            data["crops_json"] = json.dumps(crops)
+
         for produce_type in ["crops", "animals", "mineral_resources"]:
             if data.get(produce_type) is not None:
                 data[produce_type] = "|".join(
@@ -850,6 +854,8 @@ class DataDownload:
                     ]
                 )
 
+
+
         for produce_type in ["contract_farming_crops", "contract_farming_animals"]:
             if data.get(produce_type) is not None:
                 data[produce_type] = "|".join(
@@ -872,9 +878,9 @@ class DataDownload:
                 )
 
         if (eg := data.get("electricity_generation")) is not None:
-            data["electricity_generation"] = str(eg)
+            data["electricity_generation"] = json.dumps(eg)
         if (cs := data.get("carbon_sequestration")) is not None:
-            data["carbon_sequestration"] = str(cs)
+            data["carbon_sequestration"] = json.dumps(cs)
 
         flatten_array_choices(
             data, "source_of_water_extraction", dict(choices.WATER_SOURCE_CHOICES)
