@@ -13,13 +13,18 @@
   import ChartWrapper from "$components/Data/Charts/DownloadWrapper.svelte"
   import { downloadCSV, downloadJSON, downloadSVG } from "$components/Data/Charts/utils"
   import type { DownloadEvent } from "$components/Data/Charts/utils"
+  import { displayDealsCount } from "$components/Map/map_helper.js"
 
   export let deals: Deal[] = []
   export const START_YEAR = 2000
 
-  $: title = $_("Concluded deals over time since the year {year}", {
-    values: { year: START_YEAR },
-  })
+  $: title = $displayDealsCount
+    ? $_("Concluded deals over time since the year {year}", {
+        values: { year: START_YEAR },
+      })
+    : $_("Cumulative area size under contract since the year {year}", {
+        values: { year: START_YEAR },
+      })
 
   let svgComp: SVGElement
 
@@ -28,7 +33,7 @@
 
   $: if (svgComp) {
     clearGraph(svgComp)
-    drawGraph(svgComp, chartData.counts)
+    drawGraph(svgComp, $displayDealsCount ? chartData.counts : chartData.sizes)
   }
 
   export const toJSON: (data: [Date, number][]) => string = R.pipe(
@@ -38,7 +43,7 @@
 
   export const toCSV: (data: [Date, number][]) => string = R.pipe(
     R.map(([date, count]) => `${date.getFullYear()},${count}`),
-    R.prepend("Year,Count"),
+    R.prepend(`Year,${$displayDealsCount ? "Count" : "Size (Ha)"}`),
     R.join("\n"),
   )
 
@@ -55,17 +60,26 @@
 </script>
 
 <ChartWrapper {title} on:download={handleDownload}>
-  <svg fill="#cce5df" stroke="#69b3a2" color="black" bind:this={svgComp} />
+  <svg
+    fill={$displayDealsCount ? "#cce5df" : "#fee1c0"}
+    stroke={$displayDealsCount ? "#69b3a2" : "#fc941f"}
+    color="black"
+    bind:this={svgComp}
+  />
 
   <div slot="legend">
-    {$_(
-      "Note: There is no year information for {count} deals with a corresponding area size of {size} ha.",
-      {
-        values: {
-          count: $number(chartData.excluded.count),
-          size: $number(chartData.excluded.size),
-        },
-      },
-    )}
+    {$displayDealsCount
+      ? $_(
+          "Note: There is no year information for {count} deals with a corresponding area size of {size} ha.",
+          {
+            values: {
+              count: $number(chartData.excluded.count),
+              size: $number(chartData.excluded.size),
+            },
+          },
+        )
+      : $_(
+          "Note: This graph shows changes in size under contract (increases/decreases). Therefore, the number of deals can remain the same even though the size may change.",
+        )}
   </div>
 </ChartWrapper>
