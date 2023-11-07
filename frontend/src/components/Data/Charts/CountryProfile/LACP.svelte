@@ -31,16 +31,19 @@
 
   $: filtered = deals.filter(isConcluded)
 
-  $: buckets = filtered.reduce((buckets, deal) => {
-    const intentions = deal.current_intention_of_investment ?? []
-    return intentions.reduce(
-      createBucketMapReducer(
-        (deal.deal_size ?? 0) / intentions.length,
-        1 / intentions.length,
-      ),
-      buckets,
-    )
-  }, createEmptyBuckets(Object.values(IoI)))
+  $: buckets = filtered.reduce(
+    (buckets, deal) => {
+      const intentions = deal.current_intention_of_investment ?? []
+      return intentions.reduce(
+        createBucketMapReducer(
+          (deal.deal_size ?? 0) / intentions.length,
+          1 / intentions.length,
+        ),
+        buckets,
+      )
+    },
+    createEmptyBuckets(Object.values(IoI)),
+  )
 
   let data: Data
   $: data = bucketEntries(buckets)

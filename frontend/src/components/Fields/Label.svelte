@@ -40,7 +40,7 @@
       </button>
       {#if showDefinition}
         <div
-          class="absolute top-full left-full z-30 w-80 border border-lm-black bg-gray-light px-4 py-3"
+          class="absolute left-full top-full z-30 w-80 border border-lm-black bg-gray-light px-4 py-3"
         >
           <div class="text-lg text-lm-purple-500">{$_(formfield.label)}</div>
           {fd.short_description}

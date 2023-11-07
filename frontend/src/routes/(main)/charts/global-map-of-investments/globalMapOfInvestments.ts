@@ -67,7 +67,7 @@ export const createGlobalMapOfInvestments = (
     gZoom.attr("transform", event.transform.toString())
   }
   const zoomFn = zoom().scaleExtent([1, 3]).on("zoom", zoomed)
-  const gZoom = svg.append("g").call(zoomFn as any)
+  const gZoom = svg.append("g").call(zoomFn as never)
 
   // add background
   gZoom
@@ -87,7 +87,7 @@ export const createGlobalMapOfInvestments = (
     gZoom
       .transition()
       .duration(500)
-      .call(zoomFn.transform as any, zoomIdentity)
+      .call(zoomFn.transform as never, zoomIdentity)
 
   const path: GeoPath = geoPath().projection(geoNaturalEarth1())
 

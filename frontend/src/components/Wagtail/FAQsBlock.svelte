@@ -21,7 +21,7 @@
   {#each value.faqs as faq}
     <div>
       <button
-        class="w-full cursor-pointer border-b border-gray-400 bg-lm-dark py-4 px-6 text-left font-bold text-orange"
+        class="w-full cursor-pointer border-b border-gray-400 bg-lm-dark px-6 py-4 text-left font-bold text-orange"
         on:click={() => updateHash(`#${faq.slug}`)}
       >
         {faq.question}

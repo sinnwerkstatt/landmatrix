@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n"
-
   import { formfields } from "$lib/stores"
 
   import ArrayField from "$components/Fields/Display/ArrayField.svelte"

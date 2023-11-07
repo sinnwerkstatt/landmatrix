@@ -145,9 +145,8 @@
         { id: deal.id, version: dealVersion, comment },
       )
       .toPromise()
-      .then(async dat => {
+      .then(async () => {
         //todo: if it was just a draft, and we deleted the whole thing, jump to deal list
-        // console.log(dat)
         if (dealVersion) await goto(`/deal/${deal.id}`)
         dispatch("reload")
       })

@@ -8,7 +8,7 @@ import {
   select,
   selectAll,
 } from "d3"
-import type { BaseType, Selection, HierarchyNode, HierarchyPointNode } from "d3"
+import type { BaseType, Selection, HierarchyNode } from "d3"
 
 export interface EdgeBundlingData {
   id?: number

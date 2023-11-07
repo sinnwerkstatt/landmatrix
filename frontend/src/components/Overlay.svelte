@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte"
+  import { createEventDispatcher } from "svelte" // eslint-disable-line import/no-duplicates
   import { _ } from "svelte-i18n"
-  import { fade, slide } from "svelte/transition"
+  import { fade, slide } from "svelte/transition" // eslint-disable-line import/no-duplicates
 
   import { browser } from "$app/environment"
 
@@ -24,7 +24,7 @@
     }
   }
 
-  function escape_key(e) {
+  function escape_key(e: KeyboardEvent) {
     if (e.key === "Escape") close()
   }
 
@@ -36,6 +36,7 @@
 
 {#if visible}
   <div
+    role="none"
     transition:fade={{ duration: 100 }}
     class="fixed inset-0 z-[100] flex h-screen max-h-screen w-screen items-center justify-center bg-[rgba(0,0,0,0.3)] backdrop-blur-sm"
     on:click|self={close}

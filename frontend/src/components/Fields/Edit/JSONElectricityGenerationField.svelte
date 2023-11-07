@@ -42,7 +42,7 @@
 
 <div class="grid gap-2 xl:grid-cols-2">
   {#each valueCopy as val, i}
-    <div class:border-lm-orange={val.current} class="flex  flex-col gap-4 border p-3">
+    <div class:border-lm-orange={val.current} class="flex flex-col gap-4 border p-3">
       <label class="flex items-center justify-between gap-2">
         {$_("Current")}
         <input

@@ -40,7 +40,7 @@
   <h3 class="my-1 font-medium">{$_("Logbook")}</h3>
 
   <div
-    class="h-0 flex-grow cursor-default overflow-y-scroll border-lm-dark px-[2px] pt-1 pb-4 shadow-inner"
+    class="h-0 flex-grow cursor-default overflow-y-scroll border-lm-dark px-[2px] pb-4 pt-1 shadow-inner"
   >
     {#each workflowInfos as info}
       <WorkflowInfo {info} />

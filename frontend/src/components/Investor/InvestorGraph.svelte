@@ -115,7 +115,7 @@
 </p>
 <div
   class={isFullscreen
-    ? "fixed top-12 left-0 mx-[5%] my-[5%] h-[70%] w-[90%] border border-solid border-black bg-white"
+    ? "fixed left-0 top-12 mx-[5%] my-[5%] h-[70%] w-[90%] border border-solid border-black bg-white"
     : "relative"}
 >
   <div class="absolute right-3 top-1.5 z-[9] cursor-pointer">
