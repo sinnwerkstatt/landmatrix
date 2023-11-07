@@ -2,7 +2,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-31 09:59+0100\n"
+"POT-Creation-Date: 2023-11-07 15:15+0100\n"
 "PO-Revision-Date: 2023-06-06 12:42+0000\n"
 "Last-Translator: Marie Gradeler <accountability@landmatrix.org>\n"
 "Language-Team: French <http://translate.landmatrix.org/projects/landmatrix/landmatrix/fr/>\n"
@@ -1773,6 +1773,9 @@ msgstr "Supprime entièrement cette version de l’investisseur"
 msgid "Concluded"
 msgstr "Conclus"
 
+msgid "Concluded deals over time"
+msgstr ""
+
 #, python-brace-format
 msgid "Concluded deals over time since the year {year}"
 msgstr ""
@@ -1819,8 +1822,8 @@ msgstr "Compte"
 msgid "Country of registration"
 msgstr "Pays de domiciliation"
 
-msgid "Country profile graphs"
-msgstr "Graphiques du profil du pays"
+msgid "Country profile charts"
+msgstr ""
 
 msgid "Country profiles"
 msgstr "Profils pays"
@@ -2867,6 +2870,9 @@ msgstr "Français"
 
 msgid "Русский"
 msgstr "Русский"
+
+#~ msgid "Country profile graphs"
+#~ msgstr "Graphiques du profil du pays"
 
 #~ msgid "Biofuels"
 #~ msgstr "Biocombustibles"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-31 09:59+0100\n"
+"POT-Creation-Date: 2023-11-07 15:15+0100\n"
 "PO-Revision-Date: 2023-06-06 12:42+0000\n"
 "Last-Translator: Kurt Gerber <kurt.gerber@unibe.ch>\n"
 "Language-Team: Russian <http://translate.landmatrix.org/projects/landmatrix/landmatrix/ru/>\n"
@@ -1778,6 +1778,9 @@ msgstr "Полностью удалить эту версию инвестора
 msgid "Concluded"
 msgstr "Заключенные сделки"
 
+msgid "Concluded deals over time"
+msgstr ""
+
 #, python-brace-format
 msgid "Concluded deals over time since the year {year}"
 msgstr ""
@@ -1824,8 +1827,8 @@ msgstr "Счет"
 msgid "Country of registration"
 msgstr "Страна регистрации"
 
-msgid "Country profile graphs"
-msgstr "Графики профиля страны"
+msgid "Country profile charts"
+msgstr ""
 
 msgid "Country profiles"
 msgstr "Профили стран"
@@ -2872,6 +2875,9 @@ msgstr "Français"
 
 msgid "Русский"
 msgstr "Русский"
+
+#~ msgid "Country profile graphs"
+#~ msgstr "Графики профиля страны"
 
 #~ msgid "Biofuels"
 #~ msgstr "Биотопливо"

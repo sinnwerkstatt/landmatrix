@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-10-31 09:59+0100\n"
+"POT-Creation-Date: 2023-11-07 15:15+0100\n"
 "PO-Revision-Date: 2023-06-06 12:42+0000\n"
 "Last-Translator: Kurt Gerber <kurt.gerber@unibe.ch>\n"
 "Language-Team: Spanish <http://translate.landmatrix.org/projects/landmatrix/landmatrix/es/>\n"
@@ -1776,6 +1776,9 @@ msgstr "Elimina por completo esta versión del inversor"
 msgid "Concluded"
 msgstr "Concluído"
 
+msgid "Concluded deals over time"
+msgstr ""
+
 #, python-brace-format
 msgid "Concluded deals over time since the year {year}"
 msgstr ""
@@ -1822,8 +1825,8 @@ msgstr "Cuenta"
 msgid "Country of registration"
 msgstr "País de registro"
 
-msgid "Country profile graphs"
-msgstr "Gráficos de perfiles de países"
+msgid "Country profile charts"
+msgstr ""
 
 msgid "Country profiles"
 msgstr "Perfiles de país"
@@ -2870,6 +2873,9 @@ msgstr "Français"
 
 msgid "Русский"
 msgstr "Русский"
+
+#~ msgid "Country profile graphs"
+#~ msgstr "Gráficos de perfiles de países"
 
 #~ msgid "Biofuels"
 #~ msgstr "Biocombustibles"
