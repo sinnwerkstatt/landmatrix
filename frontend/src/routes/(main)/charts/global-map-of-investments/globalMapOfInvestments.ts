@@ -133,7 +133,7 @@ export const createGlobalMapOfInvestments = (
     resetZoom()
 
     if (!countryId) {
-      console.error("Country not found in map", countryId)
+      // console.error("Country not found in map", countryId)
       return
     }
 

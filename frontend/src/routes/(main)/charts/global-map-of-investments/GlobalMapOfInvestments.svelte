@@ -23,6 +23,7 @@
   const setSelectedCountryId = (id: number | undefined) => {
     selectedCountryId = id
     $filters.country_id = id
+    $filters.region_id = undefined
   }
   const setHoverCountryId = (id: number | undefined) => {
     hoverCountryId = id

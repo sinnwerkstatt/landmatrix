@@ -93,7 +93,7 @@
     $publicOnly ? "PUBLIC" : "ACTIVE"
   }&format=`
 
-  function trackDownload(format) {
+  function trackDownload(format: string) {
     let name = "Global"
     if ($filters.country_id) {
       name = ($countries.find(c => c.id === $filters.country_id) as Country).name
@@ -105,6 +105,12 @@
     if ($tracker) {
       $tracker.trackEvent("Downloads", format, name)
     }
+  }
+
+  const toggleDefaultFilter = (e: Event) => {
+    $filters = (e.currentTarget as HTMLInputElement).checked
+      ? $filters.empty().default()
+      : $filters.empty()
   }
 </script>
 
@@ -127,10 +133,7 @@
         <CheckboxSwitch
           class="text-base"
           checked={$isDefaultFilter}
-          on:change={val =>
-            val.target.checked
-              ? filters.set($filters.empty().default())
-              : filters.set($filters.empty())}
+          on:change={toggleDefaultFilter}
         >
           {$_("Default filter")}
         </CheckboxSwitch>

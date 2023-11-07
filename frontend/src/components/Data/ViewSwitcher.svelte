@@ -23,10 +23,10 @@
       title: $_("Web of transnational deals"),
       route: "/charts/web-of-transnational-deals/",
     },
-    // {
-    //   title: $_("Global map of Investments"),
-    //   route: "/charts/global-map-of-investments/",
-    // },
+    {
+      title: $_("Global map of Investments"),
+      route: "/charts/global-map-of-investments/",
+    },
     {
       title: $_("Dynamics overview"),
       route: "/charts/dynamics-overview/",
@@ -112,13 +112,11 @@
               </a>
             </li>
           {/each}
-        </ul>
-      </NavDropDown>
-      <NavDropDown>
-        <svelte:fragment slot="title">
-          <span class="capitalize">{$_("Country profiles")}</span>
-        </svelte:fragment>
-        <ul class="border-2 border-orange bg-white dark:bg-gray-800">
+          <li
+            class="whitespace-nowrap border-y-2 border-orange bg-lm-lightgray p-2 font-bold text-orange dark:bg-gray-700"
+          >
+            {$_("Country profiles")}:
+          </li>
           {#each countryProfileViews as view}
             <li class="whitespace-nowrap">
               <a
