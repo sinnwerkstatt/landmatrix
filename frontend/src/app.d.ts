@@ -4,19 +4,28 @@
 
 import type { Client } from "@urql/core"
 
-declare namespace App {
-  // interface Errors {}
+// https://github.com/sveltejs/kit/discussions/3772#discussioncomment-2131563
+declare global {
+  namespace App {
+    // interface Errors {}
 
-  interface Locals {
-    cookie?: string
-    locale: string
+    interface Locals {
+      cookie?: string
+      locale: string
+    }
+
+    interface PageData {
+      urqlClient: Client
+    }
+
+    // interface Platform {}
   }
 
-  interface PageData {
-    urqlClient: Client
+  namespace svelteHTML {
+    interface HTMLAttributes {
+      "on:outClick"?: (event: CustomEvent) => void
+    }
   }
-
-  // interface Platform {}
 }
 
 export {}
