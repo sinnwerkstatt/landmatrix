@@ -78,58 +78,60 @@
           {$_("Map")}
         </a>
       </li>
-      <NavDropDown>
-        <svelte:fragment slot="title">
-          <span class="capitalize">{$_("Data")}</span>
-        </svelte:fragment>
-        <ul class="border-2 border-orange bg-white dark:bg-gray-800">
-          {#each dataViews as view}
-            <li class="whitespace-nowrap">
-              <a
-                href={view.route}
-                class="nav-link"
-                class:active={$page.url.pathname.startsWith(view.route)}
-              >
-                {view.title}
-              </a>
+      <li>
+        <NavDropDown>
+          <svelte:fragment slot="title">
+            <span class="capitalize">{$_("Data")}</span>
+          </svelte:fragment>
+          <ul class="border-2 border-orange bg-white dark:bg-gray-800">
+            {#each dataViews as view}
+              <li class="whitespace-nowrap">
+                <a
+                  href={view.route}
+                  class="nav-link"
+                  class:active={$page.url.pathname.startsWith(view.route)}
+                >
+                  {view.title}
+                </a>
+              </li>
+            {/each}
+          </ul>
+        </NavDropDown>
+      </li>
+      <li>
+        <NavDropDown>
+          <svelte:fragment slot="title">
+            <span class="capitalize">{$_("Charts")}</span>
+          </svelte:fragment>
+          <ul class="border-2 border-orange bg-white dark:bg-gray-800">
+            {#each chartViews as view}
+              <li class="whitespace-nowrap">
+                <a
+                  href={view.route}
+                  class="nav-link"
+                  class:active={$page.url.pathname.startsWith(view.route)}
+                >
+                  {view.title}
+                </a>
+              </li>
+            {/each}
+            <li class="whitespace-nowrap bg-lm-dark px-4 py-1 font-bold text-white">
+              {$_("Country profiles")}
             </li>
-          {/each}
-        </ul>
-      </NavDropDown>
-      <NavDropDown>
-        <svelte:fragment slot="title">
-          <span class="capitalize">{$_("Charts")}</span>
-        </svelte:fragment>
-        <ul class="border-2 border-orange bg-white dark:bg-gray-800">
-          {#each chartViews as view}
-            <li class="whitespace-nowrap">
-              <a
-                href={view.route}
-                class="nav-link"
-                class:active={$page.url.pathname.startsWith(view.route)}
-              >
-                {view.title}
-              </a>
-            </li>
-          {/each}
-          <li
-            class="whitespace-nowrap border-y-2 border-orange bg-lm-lightgray p-2 font-bold text-orange dark:bg-gray-700"
-          >
-            {$_("Country profiles")}:
-          </li>
-          {#each countryProfileViews as view}
-            <li class="whitespace-nowrap">
-              <a
-                href={view.route}
-                class="nav-link"
-                class:active={$page.url.pathname.startsWith(view.route)}
-              >
-                {view.title}
-              </a>
-            </li>
-          {/each}
-        </ul>
-      </NavDropDown>
+            {#each countryProfileViews as view}
+              <li class="whitespace-nowrap">
+                <a
+                  href={view.route}
+                  class="nav-link"
+                  class:active={$page.url.pathname.startsWith(view.route)}
+                >
+                  {view.title}
+                </a>
+              </li>
+            {/each}
+          </ul>
+        </NavDropDown>
+      </li>
     </ul>
   </nav>
 </div>

@@ -18,7 +18,8 @@
 </script>
 
 <div
-  class="relative {$$props.class}"
+  role="none"
+  class="relative {$$props.class ?? ''}"
   use:clickOutside
   on:outClick={() => (isOpen = false)}
   on:mouseenter={() => (isHover = true)}
