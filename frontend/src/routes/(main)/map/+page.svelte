@@ -79,7 +79,6 @@
     },
   })
   $: loading.set($deals?.fetching ?? false)
-  $: console.log("dealsStore (map)", $deals)
 
   function generateCountryCoords(countries: CountryWCoords[]): {
     [key: number]: [number, number]

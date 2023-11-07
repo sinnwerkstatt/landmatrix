@@ -76,7 +76,6 @@
       : allTabs.filter(tab => tab.target !== "#data_sources")
 
   const reloadInvestor = async () => {
-    // console.log("Investor detail: reload")
     loading.set(true)
     await invalidate(url => url.pathname === "/graphql/")
     loading.set(false)

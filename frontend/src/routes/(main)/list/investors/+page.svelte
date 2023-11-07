@@ -50,7 +50,6 @@
     },
   })
   $: loading.set($deals?.fetching ?? false)
-  $: console.log("dealsStore (list/investors)", $deals)
 
   let investors: Investor[] = []
 

@@ -28,7 +28,6 @@
   function captchaVerified(e: CustomEvent<{ token: string }>) {
     token = e.detail.token
     disabled = false
-    console.log(token)
   }
   function usernameChange() {
     user = { ...user, username: slugify(user.username) }
