@@ -33,7 +33,7 @@
 </script>
 
 <svelte:head>
-  <title>{$_("Country profiles")} | {$_("Land Matrix")}</title>
+  <title>{$_("Country profile charts")} | {$_("Land Matrix")}</title>
 </svelte:head>
 
 <ChartsContainer>
@@ -48,7 +48,7 @@
   </div>
 
   <div slot="ContextBar">
-    <h2>{$_("Country profiles")}</h2>
+    <h2>{$_("Country profile charts")}</h2>
     <div>{@html $chartDescriptions[data.profile.key] ?? ""}</div>
     <DealDisplayToggle />
   </div>

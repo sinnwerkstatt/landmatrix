@@ -116,7 +116,7 @@
               </li>
             {/each}
             <li class="whitespace-nowrap bg-lm-dark px-4 py-1 font-bold text-white">
-              {$_("Country profiles")}
+              {$_("Country profile charts")}
             </li>
             {#each countryProfileViews as view}
               <li class="whitespace-nowrap">
