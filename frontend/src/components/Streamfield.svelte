@@ -21,5 +21,3 @@
   {/each}
 </div>
 
-<style lang="postcss">
-</style>

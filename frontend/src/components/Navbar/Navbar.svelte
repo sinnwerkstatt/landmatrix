@@ -1,17 +1,16 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n"
+  import { _, locale } from "svelte-i18n"
   import cn from "classnames"
-
-  import { page } from "$app/stores"
 
   import { blogCategories, aboutPages, observatoryPages, isDarkMode } from "$lib/stores"
   import { clickOutside } from "$lib/helpers"
 
   import BurgerMenuIcon from "$components/icons/BurgerMenuIcon.svelte"
-  import ChevronDownIcon from "$components/icons/ChevronDownIcon.svelte"
   import NavbarSearch from "$components/Navbar/NavbarSearch.svelte"
   import LanguageSwitch from "$components/Navbar/LanguageSwitch.svelte"
   import LoginSection from "$components/Navbar/LoginSection.svelte"
+  import SubEntries from "$components/Navbar/SubEntries.svelte"
+  import * as events from "events"
 
   interface MenuEntry {
     title: string
@@ -62,6 +61,9 @@
   const resetMenu = () => {
     menuHidden = true
   }
+  function closeMenu(event: events) {
+    menuHidden = true
+  }
 </script>
 
 <!--https://blog.logrocket.com/building-responsive-navbar-tailwind-css/-->
@@ -85,7 +87,7 @@
       />
       <img
         alt="Land Matrix"
-        class="mx-3 h-[48px] max-w-[144px] md:hidden"
+        class="ml-3 h-[48px] max-w-[144px] sm:mr-3 md:hidden"
         src={$isDarkMode
           ? "/images/lm-logo-mobile-dark.png"
           : "/images/lm-logo-mobile.png"}
@@ -94,7 +96,7 @@
 
     <!--   MOBILE MENU   -->
     <ul id="menu-mobile" class="order-last flex flex-grow items-center justify-end">
-      <li class="hidden sm:block">
+      <li>
         <NavbarSearch />
       </li>
       <li>
@@ -123,7 +125,7 @@
       class={cn(
         menuHidden ? "hidden xl:block" : "",
         "absolute xl:static",
-        "left-0 top-[58px] z-50 w-full xl:w-auto",
+        "top-[54px] left-0 z-50 w-full xl:w-auto",
         "bg-white dark:bg-gray-800",
         "shadow-lg xl:shadow-none",
       )}
@@ -137,47 +139,12 @@
         )}
       >
         {#each menuEntries as entry}
-          <li class="group xl:relative">
-            {#if entry.subEntries}
-              <button
-                class="button1 w-full truncate py-2 text-center text-black hover:text-orange dark:text-white xl:p-2"
-                title={entry.title}
-              >
-                {entry.title}
-              </button>
-              <ul
-                class={cn(
-                  "hidden flex-wrap justify-around",
-                  "bg-lm-lightgray dark:bg-lm-black lg:bg-white dark:lg:bg-lm-black",
-                  "lg:absolute lg:z-50 lg:whitespace-nowrap",
-                  "border-t py-3 lg:border-none lg:shadow-2xl",
-                  "group-focus-within:flex lg:group-focus-within:hidden lg:group-hover:block",
-                )}
-              >
-                {#each entry.subEntries as subEntry}
-                  <li class="mx-7 lg:mx-0 lg:px-6 lg:hover:bg-orange-100">
-                    <a
-                      class="nav-link"
-                      class:active={$page.url.pathname.startsWith(subEntry.href)}
-                      href={subEntry.href}
-                      on:click={resetMenu}
-                    >
-                      {subEntry.title}
-                    </a>
-                  </li>
-                {/each}
-              </ul>
-            {:else}
-              <a
-                class="nav-link button1 truncate text-center hover:bg-white hover:text-orange dark:hover:bg-lm-black xl:max-w-[120px]"
-                title={entry.title}
-                href={entry.href}
-                on:click={resetMenu}
-              >
-                {entry.title}
-              </a>
-            {/if}
-          </li>
+          <SubEntries
+            title={entry.title}
+            subEntries={entry.subEntries}
+            href={entry.href}
+            on:close={closeMenu}
+          />
         {/each}
       </ul>
     </div>

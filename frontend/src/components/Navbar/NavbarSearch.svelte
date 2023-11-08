@@ -160,7 +160,9 @@
 
 <NavDropDown>
   <svelte:fragment slot="title">
-    <div class="flex w-[250px] items-center justify-end bg-white px-2 dark:bg-lm-black">
+    <div
+      class="flex items-center justify-end bg-white px-2 dark:bg-lm-black lg:w-[250px]"
+    >
       <input
         id="search"
         bind:value={searchString}
@@ -173,7 +175,7 @@
     </div>
   </svelte:fragment>
   <div
-    class="relative w-[250px] rounded bg-white p-2 shadow-lg dark:bg-lm-black xl:hidden"
+    class="relative w-[300px] rounded bg-white p-2 shadow-lg dark:bg-lm-black xl:hidden"
   >
     <input
       id="search"
@@ -189,7 +191,7 @@
       bind:this={searchResultContainer}
       id="search-result"
       class={cn(
-        "right-0 w-full overflow-y-auto border-t-orange",
+        "w-full overflow-y-auto border-t-orange",
         "bg-white dark:bg-gray-800",
         "xl:absolute xl:z-50 xl:max-h-[55vh] xl:w-[300px]",
         "xl:shadow-xl",

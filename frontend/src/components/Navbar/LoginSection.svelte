@@ -115,7 +115,7 @@
     </NavDropDown>
     <button
       type="button"
-      class="button1 mx-3 hidden w-full text-left text-lm-black transition hover:text-orange dark:text-white xl:block"
+      class="button1 hidden w-full text-left text-lm-black transition hover:text-orange dark:text-white sm:mx-3 xl:block"
       on:click|preventDefault={logout}
     >
       {$_("Logout")}
@@ -124,7 +124,7 @@
 {:else}
   <div>
     <a
-      class="button1 mx-3 w-fit rounded bg-orange py-2 px-10 text-white transition hover:bg-orange-600 hover:text-white"
+      class="button1 w-fit rounded bg-orange py-1 px-3 text-white transition hover:bg-orange-600 hover:text-white sm:mx-3 sm:py-2 sm:px-6 lg:px-10"
       href="/account/login/?next={$page.url.pathname}"
       title={$_("Login/Register")}
     >

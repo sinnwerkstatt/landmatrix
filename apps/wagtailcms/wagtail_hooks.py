@@ -1,6 +1,7 @@
+from wagtail.contrib.modeladmin.mixins import ThumbnailMixin
+
 from django.utils.html import format_html
 from wagtail import hooks
-from wagtail.contrib.modeladmin.mixins import ThumbnailMixin
 from wagtail.contrib.modeladmin.options import ModelAdmin, modeladmin_register
 from wagtail.whitelist import attribute_rule
 
@@ -42,6 +43,7 @@ def monkeypatch_wagtail_modeltranslation():
         '<script src="{}"></script>',
         "/static/js/cleanForSlug.js",
     )
+
 
 
 class PartnerAdmin(ThumbnailMixin, ModelAdmin):

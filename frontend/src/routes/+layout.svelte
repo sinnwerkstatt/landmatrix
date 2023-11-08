@@ -19,6 +19,7 @@
   import NavigationLoader from "$components/NavigationLoader.svelte"
 
   import "../app.css"
+  import NewFooter from "$components/NewFooter.svelte"
 
   // import type { LayoutData } from "./$types"
   // export let data: LayoutData
@@ -53,13 +54,10 @@
 
 <div
   bind:this={$contentRootElement}
-  class="h-[calc(100vh-69px-32px)] overflow-x-auto dark:bg-lm-black"
+  class="h-[calc(100vh-69px)] overflow-x-auto dark:bg-lm-black"
 >
   <slot />
-</div>
-
-<div class="h-[32px]">
-  <Footer />
+  <NewFooter />
 </div>
 
 <Matomo />
