@@ -352,4 +352,4 @@ export async function fetchFieldDefinitions(fetch: LoadEvent["fetch"]) {
   fieldDefinitions.set(await res.json())
 }
 
-export const contentRootElement: Writable<HTMLElement> = writable();
+export const contentRootElement: Writable<HTMLElement> = writable()
