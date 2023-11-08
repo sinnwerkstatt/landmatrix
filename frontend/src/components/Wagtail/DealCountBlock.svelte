@@ -21,8 +21,7 @@
   async function checkPosition() {
     if (countElementInWindow) {
       await progress.set(value.deals)
-    }
-    else setTimeout(() => checkPosition().then(), 3000)
+    } else setTimeout(() => checkPosition().then(), 3000)
   }
   async function setProgress() {
     await progress.set(value.deals)
