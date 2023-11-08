@@ -1,8 +1,6 @@
-from wagtail.contrib.modeladmin.mixins import ThumbnailMixin
-
 from django.utils.html import format_html
 from wagtail import hooks
-from wagtail.contrib.modeladmin.options import ModelAdmin, modeladmin_register
+from wagtail.admin.viewsets.model import ModelViewSet
 from wagtail.whitelist import attribute_rule
 
 from apps.wagtailcms.partners import Partner
@@ -45,16 +43,17 @@ def monkeypatch_wagtail_modeltranslation():
     )
 
 
-
-class PartnerAdmin(ThumbnailMixin, ModelAdmin):
+class PartnerViewSet(ModelViewSet):
     model = Partner
-    list_display = ["name", "admin_thumb", "homepage"]
+    add_to_settings_menu = True
+    exclude_form_fields = []
+    list_display = ["name", "homepage"]
     search_fields = ["name", "homepage"]
-    thumb_image_field_name = "logo"
-    thumb_image_filter_spec = "fill-300x100"
-    thumb_image_width = 200
-    menu_icon = "user"
-    menu_order = 203
+    icon = "user"
 
 
-modeladmin_register(PartnerAdmin)
+partner_viewset = PartnerViewSet("partner")
+
+@hooks.register("register_admin_viewset")
+def register_viewset():
+    return partner_viewset
