@@ -31,9 +31,9 @@ export interface Obj {
   draft_status: DraftStatus | null
   versions: ObjVersion[]
   workflowinfos?: WorkflowInfo[]
-  created_at?: Date
+  created_at: Date
   created_by?: User
-  modified_at?: Date
+  modified_at: Date
   modified_by?: User
   country?: Country
   country_id?: number
@@ -65,4 +65,13 @@ export interface WorkflowInfo {
   resolved: boolean
   replies: WFReply[]
   __typename?: string
+}
+
+export interface FieldDefinition {
+  id: number
+  model: "deal" | "investor"
+  field: string
+  short_description: string
+  long_description: string
+  editor_description: string
 }

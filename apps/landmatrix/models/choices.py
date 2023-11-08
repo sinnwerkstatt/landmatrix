@@ -1,23 +1,81 @@
 from django.utils.translation import gettext as _
 
+INTENTION_CHOICES_GROUPED = [
+    # agriculture
+    (
+        _("Agriculture"),
+        [
+            ("BIOFUELS", _("Biomass for biofuels")),
+            ("BIOMASS_ENERGY_GENERATION", _("Biomass for energy generation")),
+            ("FODDER", _("Fodder")),
+            ("FOOD_CROPS", _("Food crops")),
+            ("LIVESTOCK", _("Livestock")),
+            ("NON_FOOD_AGRICULTURE", _("Non-food agricultural commodities")),
+            ("AGRICULTURE_UNSPECIFIED", _("Agriculture unspecified")),
+        ],
+    ),
+    # forest
+    (
+        _("Forestry"),
+        [
+            ("BIOMASS_ENERGY_PRODUCTION", _("Biomass for energy generation")),
+            ("CARBON", _("For carbon sequestration/REDD")),
+            ("FOREST_LOGGING", _("Forest logging / management for wood and fiber")),
+            ("TIMBER_PLANTATION", _("Timber plantation for wood and fiber")),
+            ("FORESTRY_UNSPECIFIED", _("Forestry unspecified")),
+        ],
+    ),
+    # renewable
+    (
+        _("Renewable energy power plants"),
+        (
+            ("SOLAR_PARK", _("Solar park")),
+            ("WIND_FARM", _("Wind farm")),
+            ("RENEWABLE_ENERGY", _("Renewable energy unspecified")),
+        ),
+    ),
+    # other
+    (
+        _("Other"),
+        [
+            ("CONVERSATION", _("Conservation")),
+            ("INDUSTRY", _("Industry")),
+            ("LAND_SPECULATION", _("Land speculation")),
+            ("MINING", _("Mining")),
+            ("OIL_GAS_EXTRACTION", _("Oil / Gas extraction")),
+            ("TOURISM", _("Tourism")),
+            ("OTHER", _("Other")),
+        ],
+    ),
+]
+
+
 INTENTION_CHOICES = [
-    ("BIOFUELS", _("Biofuels")),
-    ("FOOD_CROPS", _("Food crops")),
+    # agriculture
+    ("BIOFUELS", _("Biomass for biofuels")),
+    ("BIOMASS_ENERGY_GENERATION", _("Biomass for energy generation")),
     ("FODDER", _("Fodder")),
+    ("FOOD_CROPS", _("Food crops")),
     ("LIVESTOCK", _("Livestock")),
     ("NON_FOOD_AGRICULTURE", _("Non-food agricultural commodities")),
     ("AGRICULTURE_UNSPECIFIED", _("Agriculture unspecified")),
-    ("TIMBER_PLANTATION", _("Timber plantation")),
-    ("FOREST_LOGGING", _("Forest logging / management")),
+    # forest
+    ("BIOMASS_ENERGY_PRODUCTION", _("Biomass for energy generation")),
     ("CARBON", _("For carbon sequestration/REDD")),
+    ("FOREST_LOGGING", _("Forest logging / management for wood and fiber")),
+    ("TIMBER_PLANTATION", _("Timber plantation for wood and fiber")),
     ("FORESTRY_UNSPECIFIED", _("Forestry unspecified")),
+    # renewable
+    ("SOLAR_PARK", _("Solar park")),
+    ("WIND_FARM", _("Wind farm")),
+    ("RENEWABLE_ENERGY", _("Renewable energy unspecified")),
+    # other
+    ("CONVERSATION", _("Conservation")),
+    ("INDUSTRY", _("Industry")),
+    ("LAND_SPECULATION", _("Land speculation")),
     ("MINING", _("Mining")),
     ("OIL_GAS_EXTRACTION", _("Oil / Gas extraction")),
     ("TOURISM", _("Tourism")),
-    ("INDUSTRY", _("Industry")),
-    ("CONVERSATION", _("Conservation")),
-    ("LAND_SPECULATION", _("Land speculation")),
-    ("RENEWABLE_ENERGY", _("Renewable energy")),
     ("OTHER", _("Other")),
 ]
 NATURE_OF_DEAL_CHOICES = [
@@ -41,6 +99,36 @@ NEGOTIATION_STATUS_CHOICES = [
     ("CHANGE_OF_OWNERSHIP", _("Concluded (Change of ownership)")),
     ("NEGOTIATIONS_FAILED", _("Failed (Negotiations failed)")),
     ("CONTRACT_CANCELED", _("Failed (Contract cancelled)")),
+    ("CONTRACT_EXPIRED", _("Contract expired")),
+]
+
+NEGOTIATION_STATUS_CHOICES_GROUPED = [
+    (
+        "Intended",
+        [
+            ("EXPRESSION_OF_INTEREST", _("Intended (Expression of interest)")),
+            ("UNDER_NEGOTIATION", _("Intended (Under negotiation)")),
+            (
+                "MEMORANDUM_OF_UNDERSTANDING",
+                _("Intended (Memorandum of understanding)"),
+            ),
+        ],
+    ),
+    (
+        "Concluded",
+        [
+            ("ORAL_AGREEMENT", _("Concluded (Oral Agreement)")),
+            ("CONTRACT_SIGNED", _("Concluded (Contract signed)")),
+            ("CHANGE_OF_OWNERSHIP", _("Concluded (Change of ownership)")),
+        ],
+    ),
+    (
+        "Failed",
+        [
+            ("NEGOTIATIONS_FAILED", _("Failed (Negotiations failed)")),
+            ("CONTRACT_CANCELED", _("Failed (Contract cancelled)")),
+        ],
+    ),
     ("CONTRACT_EXPIRED", _("Contract expired")),
 ]
 
@@ -272,6 +360,25 @@ ANIMALS = {
 }
 ANIMALS_CHOICES = [(k, v["name"]) for k, v in ANIMALS.items()]
 
+ELECTRICITY_GENERATION_OPTIONS = [
+    {"value": "WIND", "label": _("On-shore wind turbines")},
+    {"value": "PHOTOVOLTAIC", "label": _("Solar (Photovoltaic)")},
+    {"value": "SOLAR_HEAT", "label": _("Solar (Thermal system)")},
+]
+ELECTRICITY_GENERATIONS_CHOICES = [
+    (x["value"], x["label"]) for x in ELECTRICITY_GENERATION_OPTIONS
+]
+
+CARBON_SEQUESTRATION_OPTIONS = [
+    {"value": "REFORESTATION", "label": _("Reforestation & afforestation")},
+    {"value": "FOREST_PROECTION", "label": _("Forest protection")},
+    {"value": "PEATLAND_RESTORATION", "label": _("Peatland restoration")},
+    {"value": "Other", "label": _("Other (please specify in a comment)")},
+]
+CARBON_SEQUESTRATION_CHOICES = [
+    (x["value"], x["label"]) for x in CARBON_SEQUESTRATION_OPTIONS
+]
+
 MINERALS = {
     "ALU": {"name": _("Aluminum")},
     "ASP": {"name": _("Asphaltite")},
@@ -312,7 +419,7 @@ MINERALS = {
     "PHP": {"name": _("Phosphorous")},
     "PLT": {"name": _("Platinum")},
     "PUM": {"name": _("Hydrocarbons (e.g. crude oil)")},
-    "PYR": {"name": _(" Pyrolisis Plant")},
+    "PYR": {"name": _("Pyrolisis Plant")},
     "RUT": {"name": _("Rutile")},
     "SAN": {"name": _("Sand")},
     "SIC": {"name": _("Silica")},
@@ -353,6 +460,9 @@ DATASOURCE_TYPE_MAP = {
     "CROWDSOURCING": _("Crowdsourcing"),
     "OTHER": _("Other (Please specify in comment field)"),
 }
+DATASOURCE_TYPE_OPTIONS = [
+    {"value": k, "label": v} for k, v in DATASOURCE_TYPE_MAP.items()
+]
 
 LOCATION_ACCURACY = {
     "COUNTRY": _("Country"),
@@ -361,3 +471,7 @@ LOCATION_ACCURACY = {
     "EXACT_LOCATION": _("Exact location"),
     "COORDINATES": _("Coordinates"),
 }
+
+LOCATION_ACCURACY_OPTIONS = [
+    {"value": k, "label": v} for k, v in LOCATION_ACCURACY.items()
+]

@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte"
-  import { slide } from "svelte/transition"
+  import { createEventDispatcher } from "svelte" // eslint-disable-line import/no-duplicates
+  import { slide } from "svelte/transition" // eslint-disable-line import/no-duplicates
 
   import ChevronDownIcon from "$components/icons/ChevronDownIcon.svelte"
   import ClearFilter from "$components/icons/ClearFilter.svelte"
@@ -18,8 +18,8 @@
 <div
   class="-mx-2 border-b border-gray-300 bg-lm-lightgray pl-1 text-lm-dark dark:bg-gray-800 dark:text-white"
 >
-  <div
-    class="relative flex cursor-pointer justify-between py-1.5 pr-2"
+  <button
+    class="flex w-full cursor-pointer justify-between py-1.5 pr-2"
     class:collapsed={!expanded}
     class:text-orange={clearable}
     on:click={() => (expanded = !expanded)}
@@ -35,7 +35,7 @@
     {#if clearable}
       <ClearFilter on:click />
     {/if}
-  </div>
+  </button>
   {#if expanded}
     <div
       transition:slide={{ duration: 200 }}

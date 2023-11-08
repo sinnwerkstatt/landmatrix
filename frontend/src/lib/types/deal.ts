@@ -124,6 +124,7 @@ export enum ImplementationStatus {
 export enum IntentionOfInvestmentGroup {
   AGRICULTURE = "AGRICULTURE",
   FORESTRY = "FORESTRY",
+  RENEWABLE_ENERGY = "RENEWABLE_ENERGY",
   OTHER = "OTHER",
 }
 export const IoIGroup = IntentionOfInvestmentGroup
@@ -131,28 +132,34 @@ export type IoIGroup = IntentionOfInvestmentGroup
 
 export enum AgricultureIoI {
   BIOFUELS = "BIOFUELS",
-  FOOD_CROPS = "FOOD_CROPS",
+  BIOMASS_ENERGY_GENERATION = "BIOMASS_ENERGY_GENERATION",
   FODDER = "FODDER",
+  FOOD_CROPS = "FOOD_CROPS",
   LIVESTOCK = "LIVESTOCK",
   NON_FOOD_AGRICULTURE = "NON_FOOD_AGRICULTURE",
   AGRICULTURE_UNSPECIFIED = "AGRICULTURE_UNSPECIFIED",
 }
 
 export enum ForestryIoI {
-  TIMBER_PLANTATION = "TIMBER_PLANTATION",
-  FOREST_LOGGING = "FOREST_LOGGING",
+  BIOMASS_ENERGY_PRODUCTION = "BIOMASS_ENERGY_PRODUCTION",
   CARBON = "CARBON",
+  FOREST_LOGGING = "FOREST_LOGGING",
+  TIMBER_PLANTATION = "TIMBER_PLANTATION",
   FORESTRY_UNSPECIFIED = "FORESTRY_UNSPECIFIED",
 }
 
+export enum RenewableEnergyIoI {
+  SOLAR_PARK = "SOLAR_PARK",
+  WIND_FARM = "WIND_FARM",
+  RENEWABLE_ENERGY = "RENEWABLE_ENERGY",
+}
 export enum OtherIoI {
+  CONVERSATION = "CONVERSATION",
+  INDUSTRY = "INDUSTRY",
+  LAND_SPECULATION = "LAND_SPECULATION",
   MINING = "MINING",
   OIL_GAS_EXTRACTION = "OIL_GAS_EXTRACTION",
   TOURISM = "TOURISM",
-  INDUSTRY = "INDUSTRY",
-  CONVERSATION = "CONVERSATION",
-  LAND_SPECULATION = "LAND_SPECULATION",
-  RENEWABLE_ENERGY = "RENEWABLE_ENERGY",
   OTHER = "OTHER",
 }
 
@@ -161,6 +168,7 @@ export enum OtherIoI {
 export const IntentionOfInvestment = {
   ...ForestryIoI,
   ...AgricultureIoI,
+  ...RenewableEnergyIoI,
   ...OtherIoI,
 }
 
@@ -174,25 +182,31 @@ export type IoI = IntentionOfInvestment
 export const INTENTION_OF_INVESTMENT_GROUP_MAP: {
   [key in IoI]: IntentionOfInvestmentGroup
 } = {
+  // agriculture
   [AgricultureIoI.BIOFUELS]: IoIGroup.AGRICULTURE,
+  [AgricultureIoI.BIOMASS_ENERGY_GENERATION]: IoIGroup.AGRICULTURE,
   [AgricultureIoI.FOOD_CROPS]: IoIGroup.AGRICULTURE,
   [AgricultureIoI.FODDER]: IoIGroup.AGRICULTURE,
   [AgricultureIoI.LIVESTOCK]: IoIGroup.AGRICULTURE,
   [AgricultureIoI.NON_FOOD_AGRICULTURE]: IoIGroup.AGRICULTURE,
   [AgricultureIoI.AGRICULTURE_UNSPECIFIED]: IoIGroup.AGRICULTURE,
-
-  [ForestryIoI.TIMBER_PLANTATION]: IoIGroup.FORESTRY,
-  [ForestryIoI.FOREST_LOGGING]: IoIGroup.FORESTRY,
+  // forest
+  [ForestryIoI.BIOMASS_ENERGY_PRODUCTION]: IoIGroup.FORESTRY,
   [ForestryIoI.CARBON]: IoIGroup.FORESTRY,
+  [ForestryIoI.FOREST_LOGGING]: IoIGroup.FORESTRY,
+  [ForestryIoI.TIMBER_PLANTATION]: IoIGroup.FORESTRY,
   [ForestryIoI.FORESTRY_UNSPECIFIED]: IoIGroup.FORESTRY,
-
+  // renewable
+  [RenewableEnergyIoI.SOLAR_PARK]: IoIGroup.RENEWABLE_ENERGY,
+  [RenewableEnergyIoI.WIND_FARM]: IoIGroup.RENEWABLE_ENERGY,
+  [RenewableEnergyIoI.RENEWABLE_ENERGY]: IoIGroup.RENEWABLE_ENERGY,
+  // other
+  [OtherIoI.CONVERSATION]: IoIGroup.OTHER,
+  [OtherIoI.INDUSTRY]: IoIGroup.OTHER,
+  [OtherIoI.LAND_SPECULATION]: IoIGroup.OTHER,
   [OtherIoI.MINING]: IoIGroup.OTHER,
   [OtherIoI.OIL_GAS_EXTRACTION]: IoIGroup.OTHER,
   [OtherIoI.TOURISM]: IoIGroup.OTHER,
-  [OtherIoI.INDUSTRY]: IoIGroup.OTHER,
-  [OtherIoI.CONVERSATION]: IoIGroup.OTHER,
-  [OtherIoI.LAND_SPECULATION]: IoIGroup.OTHER,
-  [OtherIoI.RENEWABLE_ENERGY]: IoIGroup.OTHER,
   [OtherIoI.OTHER]: IoIGroup.OTHER,
 }
 
@@ -261,6 +275,8 @@ export interface Deal extends Obj {
   current_crops?: string[]
   current_animals?: string[]
   current_mineral_resources?: string[]
+  current_electricity_generation?: string[]
+  current_carbon_sequestration?: string[]
   fully_updated_at?: Date
   fully_updated?: boolean
   top_investors?: Investor[]

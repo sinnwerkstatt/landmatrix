@@ -9,7 +9,7 @@
     created?: boolean
   }
 
-  export type FilterFn<T> = (label: string, filterText: string, option: T) => boolean
+  type FilterFn<T> = (label: string, filterText: string, option: T) => boolean
 
   export const itemId = "id"
 
@@ -19,11 +19,11 @@
   export let required = false
   export let disabled = false
   export let creatable = false
-  export let placeholder = undefined
+  export let placeholder: string | undefined = undefined
   export let itemFilter: FilterFn<Item> | undefined = undefined
   export let name: string | undefined = undefined
 
-  let focused
+  let focused: boolean
 
   // bind value for keyboard navigation but also set on click virtual list item
   let listOpen = false
@@ -97,7 +97,7 @@
       <div on:pointerdown|stopPropagation>
         <VirtualList
           width="100%"
-          height={152}
+          height={252}
           itemCount={filteredItems.length}
           itemSize={38}
           scrollToIndex={hoverItemIndex}

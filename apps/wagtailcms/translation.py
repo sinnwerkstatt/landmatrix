@@ -38,4 +38,9 @@ class ObservatoryPageTR(TranslationOptions):
 
 @register(ChartDescriptionsSettings)
 class ChartDescriptionsSettingsTR(TranslationOptions):
-    fields = ("web_of_transnational_deals", "dynamics_overview", "produce_info_map")
+    fields = (
+        "web_of_transnational_deals",
+        "dynamics_overview",
+        "produce_info_map",
+        "global_web_of_investments",
+    )

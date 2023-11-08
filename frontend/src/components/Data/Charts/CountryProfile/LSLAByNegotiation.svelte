@@ -121,7 +121,11 @@
 </script>
 
 <ChartWrapper {title} on:download={handleDownload}>
-  <svg id="lsla-by-negotiation-chart" bind:this={svgComp} />
+  <svg
+    class="stroke-lm-dark stroke-[0.2]"
+    id="lsla-by-negotiation-chart"
+    bind:this={svgComp}
+  />
   <!--  TODO:-->
   <!--  <div slot="legend" />-->
 </ChartWrapper>

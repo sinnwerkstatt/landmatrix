@@ -2,7 +2,6 @@
   "extends": "./.svelte-kit/tsconfig.json",
   "compilerOptions": {
     "types": ["vitest/globals", "@hcaptcha/types"],
-    "baseUrl": "./.svelte-kit",
     "allowJs": true,
     "checkJs": true,
     "esModuleInterop": true,

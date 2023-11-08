@@ -14,7 +14,7 @@ def get_submodels_fields():
             "level_of_accuracy": {
                 "label": _("Spatial accuracy level"),
                 "class": "TypedChoiceField",
-                "choices": choices.LOCATION_ACCURACY,
+                "choices": choices.LOCATION_ACCURACY_OPTIONS,
             },
             "comment": {"label": _("Comment"), "class": "TextField"},
             "areas": {"label": _("Areas"), "class": "JSONLocationAreasField"},
@@ -48,7 +48,8 @@ def get_submodels_fields():
             "type": {
                 "label": _("Type"),
                 "class": "TypedChoiceField",
-                "choices": {"": "--------", **choices.DATASOURCE_TYPE_MAP},
+                "choices": [{"value": "", "label": "--------"}]
+                + choices.DATASOURCE_TYPE_OPTIONS,
             },
             "url": {"label": _("Url"), "class": "URLField", "type": "url"},
             "file": {"label": _("File"), "class": "FileField"},

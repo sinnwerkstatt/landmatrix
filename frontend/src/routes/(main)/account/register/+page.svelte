@@ -5,9 +5,10 @@
 
   import { page } from "$app/stores"
 
+  import { slugify } from "$lib/utils"
+
   import HCaptcha from "$components/HCaptcha.svelte"
   import PageTitle from "$components/PageTitle.svelte"
-  import { slugify } from "$lib/utils"
 
   let user = {
     username: "",
@@ -27,7 +28,6 @@
   function captchaVerified(e: CustomEvent<{ token: string }>) {
     token = e.detail.token
     disabled = false
-    console.log(token)
   }
   function usernameChange() {
     user = { ...user, username: slugify(user.username) }

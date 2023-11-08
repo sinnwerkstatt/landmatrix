@@ -15,6 +15,7 @@
   import type { Investor } from "$lib/types/investor"
   import type { User } from "$lib/types/user"
   import { UserRole } from "$lib/types/user"
+  import { DraftStatus, Status } from "$lib/types/generics"
 
   import FilterCollapse from "$components/Data/FilterCollapse.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"
@@ -23,33 +24,38 @@
   import Table from "$components/Table/Table.svelte"
 
   import RightFilterBar from "./RightFilterBar.svelte"
-  import { managementFilters } from "./state"
+  import { managementFilters, modeMap, Mode } from "./state"
   import { downloadAsCSV, downloadAsXLSX } from "./downloadObjects.js"
   import WorkflowInfoView from "./WorkflowInfoView.svelte"
 
   dayjs.extend(isSameOrBefore)
   dayjs.extend(isSameOrAfter)
 
+  const user = $page.data.user
+
+  let model: "deal" | "investor" = "deal"
+  let activeTabId: string
+  let objects: Array<(Deal | Investor) & { mode?: Mode }> = []
+
   interface Tab {
     id: string
     name: string
     staff?: boolean
     count?: number
+    useWorkflowInfoView?: boolean
   }
-
-  const user = $page.data.user
-
-  let model: "deal" | "investor" = "deal"
-  let activeTabId: string
-  let objects: Array<Deal | Investor> = []
 
   let navTabs: { name: string; expanded?: boolean; items: Tab[] }[]
   $: navTabs = [
     {
       name: $_("Todo"),
       items: [
-        { id: "todo_feedback", name: $_("Feedback for me") },
-        { id: "todo_improvement", name: $_("Improvement requests for me") },
+        { id: "todo_feedback", name: $_("Feedback for me"), useWorkflowInfoView: true },
+        {
+          id: "todo_improvement",
+          name: $_("Improvement requests for me"),
+          useWorkflowInfoView: true,
+        },
         { id: "todo_review", name: $_("Review"), staff: true },
         { id: "todo_activation", name: $_("Activation"), staff: true },
       ],
@@ -57,11 +63,16 @@
     {
       name: $_("My requests"),
       items: [
-        { id: "requested_feedback", name: $_("Feedback by me") },
+        {
+          id: "requested_feedback",
+          name: $_("Feedback by me"),
+          useWorkflowInfoView: true,
+        },
         {
           id: "requested_improvement",
           name: $_("Improvements requested by me"),
           staff: true,
+          useWorkflowInfoView: true,
         },
       ],
     },
@@ -84,9 +95,12 @@
       ],
     },
   ]
+  $: flatTabs = navTabs.reduce((acc, val) => [...acc, ...val.items], [])
+  $: activeTab = flatTabs.find(item => item.id === activeTabId)
 
   const dealColumns = {
     id: 1,
+    mode: 2,
     country: 2,
     deal_size: 2,
     created_at: 2,
@@ -95,23 +109,25 @@
     modified_by: 2,
     fully_updated_at: 2,
     workflowinfos: 5,
-    // combined_status: 1,
   }
 
   const investorColumns = {
     id: 1,
+    mode: 2,
     name: 3,
     country: 4,
     deals: 1,
     created_at: 2,
     created_by: 3,
     workflowinfos: 5,
-    // combined_status: 1,
   }
 
   $: columnsWithSpan = model === "deal" ? dealColumns : investorColumns
   $: columns = Object.keys(columnsWithSpan)
-  $: labels = columns.map(col => $formfields?.[model]?.[col]?.label)
+  $: labels = columns.map(col => {
+    if (col === "mode") return $_("Mode")
+    return $formfields?.[model]?.[col]?.label
+  })
   $: spans = Object.entries(columnsWithSpan).map(([, colSpan]) => colSpan)
 
   async function getCounts(model) {
@@ -148,6 +164,9 @@
       const createdBy = new Set<number>()
       const modifiedBy = new Set<number>()
       objects.forEach(o => {
+        // Add mode to be able to sort objects in table
+        o.mode = computeMode(o)
+
         if (o.created_by && !createdBy.has(o.created_by.id)) {
           createdByUsers.push(o.created_by)
           createdBy.add(o.created_by.id)
@@ -181,52 +200,63 @@
     if (!$page.url.hash) goto("#todo_feedback")
   })
 
-  async function activateTab(hash) {
-    navTabs.some(navTab => {
-      const item = navTab.items.find(i => "#" + i.id === hash)
-      if (item) {
-        activeTabId = item.id
-        return true
-      }
-    })
+  const activateTab = (hash: string): void => {
+    const item = flatTabs.find(item => `#${item.id}` === hash)
+    if (item) {
+      activeTabId = item.id
+    }
   }
+
+  $: activateTab($page.url.hash)
 
   let showFilterOverlay = false
 
-  $: activateTab($page.url.hash)
+  // aka combinedStatus
+  const computeMode = (obj: Deal | Investor): Mode | undefined => {
+    if (obj.status === Status.DELETED) return Mode.DELETED
+    if (obj.draft_status === DraftStatus.DRAFT) return Mode.DRAFT
+    if (obj.draft_status === DraftStatus.REVIEW) return Mode.REVIEW
+    if (obj.draft_status === DraftStatus.ACTIVATION) return Mode.ACTIVATION
+    if (obj.draft_status === DraftStatus.REJECTED) return Mode.REJECTED
+    if (obj.status === Status.LIVE || obj.status === Status.UPDATED) return Mode.ACTIVE
+  }
+
   $: getCounts(model)
   $: fetchObjects(activeTabId, model)
-  $: filteredObjects = objects.filter(d => {
+  $: filteredObjects = objects.filter(obj => {
+    if ($managementFilters.mode) if (obj.mode !== $managementFilters.mode) return false
     if ($managementFilters.country)
-      if (d.country?.id !== $managementFilters.country.id) return false
-
+      if (obj.country?.id !== $managementFilters.country.id) return false
     if ($managementFilters.createdAtFrom)
-      if (dayjs(d.created_at).isBefore($managementFilters.createdAtFrom, "day"))
+      if (dayjs(obj.created_at).isBefore($managementFilters.createdAtFrom, "day"))
         return false
     if ($managementFilters.createdAtTo)
-      if (dayjs(d.created_at).isAfter($managementFilters.createdAtTo, "day"))
+      if (dayjs(obj.created_at).isAfter($managementFilters.createdAtTo, "day"))
         return false
     if ($managementFilters.createdBy)
-      if (d.created_by?.id !== $managementFilters.createdBy.id) return false
+      if (obj.created_by?.id !== $managementFilters.createdBy.id) return false
 
     if ($managementFilters.modifiedAtFrom)
-      if (dayjs(d.modified_at).isBefore($managementFilters.modifiedAtFrom, "day"))
+      if (dayjs(obj.modified_at).isBefore($managementFilters.modifiedAtFrom, "day"))
         return false
     if ($managementFilters.modifiedAtTo)
-      if (dayjs(d.modified_at).isAfter($managementFilters.modifiedAtTo, "day"))
+      if (dayjs(obj.modified_at).isAfter($managementFilters.modifiedAtTo, "day"))
         return false
     if ($managementFilters.modifiedBy)
-      if (d.modified_by?.id !== $managementFilters.modifiedBy.id) return false
+      if (obj.modified_by?.id !== $managementFilters.modifiedBy.id) return false
 
     if (model === "deal") {
+      const deal = obj as Deal
+
       if ($managementFilters.dealSizeFrom)
-        if (d.deal_size < $managementFilters.dealSizeFrom) return false
+        if (deal.deal_size < $managementFilters.dealSizeFrom) return false
       if ($managementFilters.dealSizeTo)
-        if (d.deal_size > $managementFilters.dealSizeTo) return false
+        if (deal.deal_size > $managementFilters.dealSizeTo) return false
 
       if ($managementFilters.fullyUpdatedAtFrom)
         if (
-          dayjs(d.fully_updated_at).isBefore(
+          !deal.fully_updated_at ||
+          dayjs(deal.fully_updated_at).isBefore(
             $managementFilters.fullyUpdatedAtFrom,
             "day",
           )
@@ -234,19 +264,17 @@
           return false
       if ($managementFilters.fullyUpdatedAtTo)
         if (
-          dayjs(d.fully_updated_at).isAfter($managementFilters.fullyUpdatedAtTo, "day")
+          !deal.fully_updated_at ||
+          dayjs(deal.fully_updated_at).isAfter(
+            $managementFilters.fullyUpdatedAtTo,
+            "day",
+          )
         )
           return false
     }
 
     return true
   })
-  const WORKFLOWINFO_VIEWS = [
-    "todo_feedback",
-    "todo_improvement",
-    "requested_feedback",
-    "requested_improvement",
-  ]
 </script>
 
 <svelte:head>
@@ -258,7 +286,7 @@
     class="h-full shrink-0 basis-1/4 flex-col overflow-y-scroll bg-white/80 p-2 drop-shadow-[3px_-3px_1px_rgba(0,0,0,0.3)] dark:bg-gray-700 xl:basis-1/6"
   >
     <div
-      class="flex justify-center gap-4 border-b border-gray-200 pt-1 pb-6 text-lg font-bold"
+      class="flex justify-center gap-4 border-b border-gray-200 pb-6 pt-1 text-lg font-bold"
     >
       <button
         class={model === "deal"
@@ -305,7 +333,9 @@
                     href="#{item.id}"
                   >
                     {item.name}
-                    {#if item.count} ({item.count}){/if}
+                    {#if item.count}
+                      ({item.count})
+                    {/if}
                   </a>
                 </li>
               {/each}
@@ -343,21 +373,24 @@
   </nav>
 
   <div class="mt-[60px] w-1 grow px-6 pb-6">
-    {#if WORKFLOWINFO_VIEWS.includes(activeTabId)}
-      <WorkflowInfoView objects={filteredObjects} {model} tabId={activeTabId} />
+    {#if activeTab?.useWorkflowInfoView}
+      <WorkflowInfoView objects={filteredObjects} {model} tabId={activeTab.id} />
     {:else}
       <Table items={filteredObjects} {columns} {spans} {labels}>
-        <DisplayField
-          slot="field"
-          let:fieldName
-          let:obj
-          wrapperClasses="p-1"
-          valueClasses="text-lm-dark dark:text-white"
-          fieldname={fieldName}
-          value={obj[fieldName]}
-          objectVersion={obj.current_draft_id}
-          {model}
-        />
+        <svelte:fragment slot="field" let:fieldName let:obj>
+          {#if fieldName === "mode"}
+            {$modeMap[obj.mode]}
+          {:else}
+            <DisplayField
+              wrapperClasses="p-1"
+              valueClasses="text-lm-dark dark:text-white"
+              fieldname={fieldName}
+              value={obj[fieldName]}
+              objectVersion={obj.current_draft_id}
+              {model}
+            />
+          {/if}
+        </svelte:fragment>
       </Table>
     {/if}
   </div>

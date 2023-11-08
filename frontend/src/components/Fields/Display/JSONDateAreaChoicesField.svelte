@@ -9,6 +9,7 @@
 
   type JSONDateAreaChoicesFieldType = {
     current?: boolean
+    date?: string
     name: string
     area?: string
     choices: Array<IntentionOfInvestment>
@@ -16,6 +17,10 @@
 
   export let formfield: FormField
   export let value: JSONDateAreaChoicesFieldType[] = []
+
+  $: flat_choices = formfield.choices
+    ? Object.fromEntries(formfield.choices.map(c => [c.value, c.label]))
+    : {}
 </script>
 
 <ul>
@@ -24,7 +29,7 @@
       <span>{dateCurrentFormat(val)}</span>
       {#if val.choices}
         <!-- The literal translation strings are defined in apps/landmatrix/models/choices.py -->
-        {val.choices.map(v => $_(formfield.choices[v])).join(", ")}
+        {val.choices.map(v => $_(flat_choices[v])).join(", ")}
       {/if}
       {#if val.area}
         (<CircleNotchIcon /> {val.area.toLocaleString("fr")} {$_("ha")})

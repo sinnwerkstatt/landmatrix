@@ -108,8 +108,12 @@ class BlogIndexPage(HeadlessPreviewMixin, Page):
 
 @register_snippet
 class BlogCategory(models.Model):
-    name = models.CharField(max_length=80, unique=True, verbose_name="Category Name")
-    slug = models.SlugField(unique=True, max_length=80)
+    name = models.CharField(unique=True, verbose_name="Category Name")
+    slug = models.SlugField(
+        unique=True,
+        # settings max_length to None intentionally because it's got a default of 50
+        max_length=None,
+    )
     parent = models.ForeignKey(
         "self",
         blank=True,
@@ -120,7 +124,7 @@ class BlogCategory(models.Model):
         " and Big Band. Totally optional.",
         on_delete=models.CASCADE,
     )
-    description = models.CharField(max_length=500, blank=True)
+    description = models.TextField(blank=True)
 
     class Meta:
         ordering = ["name"]

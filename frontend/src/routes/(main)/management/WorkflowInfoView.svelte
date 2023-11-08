@@ -45,41 +45,13 @@
 
   $: columns = [
     { key: "star", label: "", span: 1 },
-    {
-      key: "dateOfRequest",
-      label: $_("Date of request"),
-      span: 3,
-    },
-    {
-      key: "id",
-      label: $_("ID"),
-      span: 1,
-    },
-    {
-      key: "country",
-      label: $_("Country"),
-      span: 3,
-    },
-    {
-      key: "status",
-      label: $_("Status"),
-      span: 2,
-    },
-    {
-      key: "fromUser",
-      label: $_("From user"),
-      span: 2,
-    },
-    {
-      key: "toUser",
-      label: $_("To user"),
-      span: 2,
-    },
-    {
-      key: "feedback",
-      label: $_("Feedback"),
-      span: 5,
-    },
+    { key: "dateOfRequest", label: $_("Date of request"), span: 3 },
+    { key: "id", label: $_("ID"), span: 1 },
+    { key: "country", label: $_("Country"), span: 3 },
+    { key: "status", label: $_("Status"), span: 2 },
+    { key: "fromUser", label: $_("From user"), span: 2 },
+    { key: "toUser", label: $_("To user"), span: 2 },
+    { key: "feedback", label: $_("Feedback"), span: 5 },
   ]
 </script>
 

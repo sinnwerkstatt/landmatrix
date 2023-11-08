@@ -1,11 +1,13 @@
-import { implementation_status_choices } from "$lib/choices"
+import { get } from "svelte/store"
+
 import type { BucketMap } from "$lib/data/buckets"
 import { createBucketMapReducer } from "$lib/data/buckets"
 import { COLORS, createChartData } from "$lib/data/createChartData"
 import { ImplementationStatus } from "$lib/types/deal"
 import type { Deal } from "$lib/types/deal"
+import { implementationStatusMap } from "$lib/stores"
 
-const IMPLEMENTATION_STATUS_COLORS: { [key in ImplementationStatus]: string } = {
+export const IMPLEMENTATION_STATUS_COLORS: { [key in ImplementationStatus]: string } = {
   [ImplementationStatus.PROJECT_NOT_STARTED]: COLORS.ORANGE_LIGHTER,
   [ImplementationStatus.STARTUP_PHASE]: COLORS.ORANGE_LIGHT,
   [ImplementationStatus.IN_OPERATION]: COLORS.ORANGE,
@@ -13,7 +15,7 @@ const IMPLEMENTATION_STATUS_COLORS: { [key in ImplementationStatus]: string } = 
 }
 
 const getImplementationStatusLabel = (status: ImplementationStatus) =>
-  implementation_status_choices[status]
+  get(implementationStatusMap)[status]
 
 const getImplementationStatusColor = (status: ImplementationStatus) =>
   IMPLEMENTATION_STATUS_COLORS[status]

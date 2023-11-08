@@ -20,6 +20,8 @@
   import JSONDateAreaField from "./Edit/JSONDateAreaField.svelte"
   import JSONDateChoiceField from "./Edit/JSONDateChoiceField.svelte"
   import JSONExportsField from "./Edit/JSONExportsField.svelte"
+  import JSONElectricityGenerationField from "./Edit/JSONElectricityGenerationField.svelte"
+  import JSONCarbonSequestrationField from "./Edit/JSONCarbonSequestrationField.svelte"
   import JSONJobsField from "./Edit/JSONJobsField.svelte"
   import JSONLeaseField from "./Edit/JSONLeaseField.svelte"
   import SimpleArrayField from "./Edit/SimpleArrayField.svelte"
@@ -53,6 +55,8 @@
     JSONDateAreaField: JSONDateAreaField,
     JSONDateChoiceField: JSONDateChoiceField,
     JSONExportsField: JSONExportsField,
+    JSONElectricityGenerationField: JSONElectricityGenerationField,
+    JSONCarbonSequestrationField: JSONCarbonSequestrationField,
     JSONJobsField: JSONJobsField,
     JSONLeaseField: JSONLeaseField,
     SimpleArrayField: SimpleArrayField,

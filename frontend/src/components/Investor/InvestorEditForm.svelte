@@ -183,7 +183,7 @@
         {/each}
       </ul>
     </nav>
-    <div class="w-full flex-auto overflow-y-auto pl-4 pr-2 pb-16">
+    <div class="w-full flex-auto overflow-y-auto pb-16 pl-4 pr-2">
       {#if activeTab === "#general"}
         <section>
           <form id="general">

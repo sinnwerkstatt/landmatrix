@@ -8,23 +8,32 @@
   export let value: string[] | undefined = undefined
   export let required = false
 
-  interface Item<T> {
-    value: T
+  interface Item {
+    value: string
     label: string
+    group?: string
   }
-  let items: Item<string>[]
-  $: items = Object.entries(formfield.choices).map((entry: [string, string]) => ({
-    value: entry[0],
-    // The literal translation strings are defined in apps/landmatrix/models/choices.py
-    label: $_(entry[1]),
-  }))
+  let items: Item[]
+  $: items = (formfield.choices ?? [])
+    .map(i => ({ ...i, label: $_(i.label), group: i.group ? $_(i.group) : undefined }))
+    .sort((a, b) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()))
 
-  const setValue = (items: Item<string>[]) => {
+  const setValue = (items: Item[]) => {
     // set undefined on empty value array
     value = !items || items.length === 0 ? undefined : items.map(i => i.value)
   }
 
-  let focused
+  let focused: boolean
+
+  let groupFilter: () => string[] | undefined = undefined
+  $: if (formfield.name.startsWith("intention_of_investment")) {
+    groupFilter = () => [
+      $_("Agriculture"),
+      $_("Forestry"),
+      $_("Renewable energy power plants"),
+      $_("Other"),
+    ]
+  }
 </script>
 
 <Select
@@ -34,7 +43,10 @@
   {required}
   multiple
   showChevron
+  groupBy={item => item.group}
+  {groupFilter}
   name={formfield.name}
   hasError={required && !value && !focused}
   on:input={e => setValue(e.detail)}
+  placeholder={$_("Please select")}
 />

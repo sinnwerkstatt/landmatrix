@@ -19,6 +19,9 @@ stages:
 django formatting and linting:
   stage: test
   interruptible: true
+  services:
+    - name: postgis/postgis:12-3.2
+      alias: postgres
   script:
     - poetry install
     - poetry run black . --check

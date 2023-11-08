@@ -5,16 +5,18 @@ from ..models.choices import (
     ANIMALS_CHOICES,
     CROPS_CHOICES,
     IMPLEMENTATION_STATUS_CHOICES,
-    INTENTION_CHOICES,
+    INTENTION_CHOICES_GROUPED,
     MINERALS_CHOICES,
     NEGOTIATION_STATUS_CHOICES,
 )
 from ..models.deal import Deal
 from .fields import (
     JSONActorsField,
+    JSONCarbonSequestrationField,
     JSONDateAreaChoicesField,
     JSONDateAreaField,
     JSONDateChoiceField,
+    JSONElectricityGenerationField,
     JSONExportsField,
     JSONJobsField,
     JSONLeaseField,
@@ -32,7 +34,9 @@ class DealForm(JSONFormOutputMixin, ModelForm):
         label=_("Size in operation (production, in ha)"),
     )
     intention_of_investment = JSONDateAreaChoicesField(
-        required=False, label=_("Intention of investment"), choices=INTENTION_CHOICES
+        required=False,
+        label=_("Intention of investment"),
+        choices=INTENTION_CHOICES_GROUPED,
     )
     negotiation_status = JSONDateChoiceField(
         required=False,
@@ -90,6 +94,12 @@ class DealForm(JSONFormOutputMixin, ModelForm):
         help_text=_("ha"),
         required=False,
         choices=ANIMALS_CHOICES,
+    )
+    electricity_generation = JSONElectricityGenerationField(
+        label=_("Electricity generation"), required=False
+    )
+    carbon_sequestration = JSONCarbonSequestrationField(
+        label=_("Carbon Sequestration"), required=False
     )
 
     extra_display_fields = {

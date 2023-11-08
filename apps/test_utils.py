@@ -1,6 +1,7 @@
 import pytest
-from django.contrib.auth import get_user_model
 from graphql import GraphQLError
+
+from django.contrib.auth import get_user_model
 
 from apps.graphql.resolvers.generics import object_edit
 from apps.landmatrix.models.country import Country

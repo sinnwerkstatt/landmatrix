@@ -6,14 +6,15 @@
   import { page } from "$app/stores"
 
   import { filters } from "$lib/filters"
+  import { isMobile, chartDescriptions } from "$lib/stores"
 
-  import { showContextBar } from "$components/Data/stores"
+  import { showContextBar, showFilterBar } from "$components/Data/stores"
   import ChartsContainer from "$components/Data/Charts/ChartsContainer.svelte"
-  import ContextBarWebOfTransnationalDeals from "$components/Data/Charts/ContextBarWebOfTransnationalDeals.svelte"
+  import CountryInvestorInfo from "$components/Data/Charts/CountryInvestorInfo.svelte"
   import WebOfTransnationalDeals from "$components/Data/Charts/WebOfTransnationalDeals.svelte"
   import LoadingPulse from "$components/LoadingPulse.svelte"
 
-  const title = $_("Web of transnational deals")
+  $: title = $_("Web of transnational deals")
 
   const transnationalDealsQuery = gql`
     query ($filters: [Filter]) {
@@ -31,7 +32,10 @@
     },
   })
 
-  onMount(() => showContextBar.set(true))
+  onMount(() => {
+    showContextBar.set(!$isMobile)
+    showFilterBar.set(!$isMobile)
+  })
 </script>
 
 <svelte:head>
@@ -48,6 +52,8 @@
   {/if}
 
   <div slot="ContextBar">
-    <ContextBarWebOfTransnationalDeals />
+    <h2>{title}</h2>
+    <div>{@html $chartDescriptions?.web_of_transnational_deals ?? ""}</div>
+    <CountryInvestorInfo />
   </div>
 </ChartsContainer>

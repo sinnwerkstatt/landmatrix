@@ -19,6 +19,8 @@ export const dealsQuery = gql`
       current_crops
       current_animals
       current_mineral_resources
+      current_electricity_generation
+      current_carbon_sequestration
       intended_size
       locations # for map
       fully_updated_at # for listing
@@ -166,6 +168,10 @@ export const dealQuery = gql`
       animals_comment
       mineral_resources
       mineral_resources_comment
+      electricity_generation
+      electricity_generation_comment
+      carbon_sequestration
+      carbon_sequestration_comment
       contract_farming_crops
       contract_farming_crops_comment
       contract_farming_animals

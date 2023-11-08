@@ -5,11 +5,10 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-04-28 12:42+0200\n"
+"POT-Creation-Date: 2023-11-07 15:15+0100\n"
 "PO-Revision-Date: 2023-06-06 12:42+0000\n"
 "Last-Translator: Kurt Gerber <kurt.gerber@unibe.ch>\n"
-"Language-Team: Spanish <http://translate.landmatrix.org/projects/landmatrix/"
-"landmatrix/es/>\n"
+"Language-Team: Spanish <http://translate.landmatrix.org/projects/landmatrix/landmatrix/es/>\n"
 "Language: es\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -25,9 +24,7 @@ msgstr "Rol"
 
 #, python-format
 msgid "You're receiving this email because you requested a password reset for your user account at %(site_name)s."
-msgstr ""
-"Está recibiendo este correo electrónico porque solicitó restablecer la "
-"contraseña de su cuenta de usuario en %(site_name)s."
+msgstr "Está recibiendo este correo electrónico porque solicitó restablecer la contraseña de su cuenta de usuario en %(site_name)s."
 
 msgid "Please go to the following page and choose a new password:"
 msgstr "Por favor, vaya a la siguiente página y elija una nueva contraseña:"
@@ -45,14 +42,18 @@ msgstr "El equipo de %(site_name)s"
 msgid "Account activation on"
 msgstr "Activación de la cuenta el"
 
+msgid "Invalid username or password."
+msgstr ""
+
+msgid "Account not yet activated."
+msgstr ""
+
 msgid "New comment"
 msgstr "Nuevo comentario"
 
 #, python-brace-format
 msgid "{from_user.full_name} has addressed you in a comment on {obj_desc}:"
-msgstr ""
-"{from_user.full_name} se ha dirigido a usted en un comentario sobre "
-"{obj_desc}:"
+msgstr "{from_user.full_name} se ha dirigido a usted en un comentario sobre {obj_desc}:"
 
 #, python-brace-format
 msgid "{from_user.full_name} has updated {obj_desc}:"
@@ -112,6 +113,12 @@ msgstr "ha"
 
 msgid "Contract farming livestock"
 msgstr "Animales de granja de agricultura contractual"
+
+msgid "Electricity generation"
+msgstr ""
+
+msgid "Carbon Sequestration"
+msgstr ""
 
 msgid "Comments / History"
 msgstr "Comentarios / Historia"
@@ -239,14 +246,20 @@ msgstr "Rechazada"
 msgid "To Delete"
 msgstr "Para eliminar"
 
-msgid "Biofuels"
-msgstr "Biocombustibles"
+msgid "Agriculture"
+msgstr "Agricultura"
 
-msgid "Food crops"
-msgstr "Cultivos de Alimentos"
+msgid "Biomass for biofuels"
+msgstr ""
+
+msgid "Biomass for energy generation"
+msgstr ""
 
 msgid "Fodder"
 msgstr "Forraje"
+
+msgid "Food crops"
+msgstr "Cultivos de Alimentos"
 
 msgid "Livestock"
 msgstr "Animales de Granja"
@@ -257,17 +270,44 @@ msgstr "Mercancías agrícolas no comestibles"
 msgid "Agriculture unspecified"
 msgstr "Agricultura sin especificar"
 
-msgid "Timber plantation"
-msgstr "Plantación forestal"
-
-msgid "Forest logging / management"
-msgstr "Tala de árboles/gestión"
+msgid "Forestry"
+msgstr "Silvicultura"
 
 msgid "For carbon sequestration/REDD"
 msgstr "Para secuestro de carbono/REDD"
 
+msgid "Forest logging / management for wood and fiber"
+msgstr ""
+
+msgid "Timber plantation for wood and fiber"
+msgstr ""
+
 msgid "Forestry unspecified"
 msgstr "Silvicultura sin especificar"
+
+msgid "Renewable energy power plants"
+msgstr ""
+
+msgid "Solar park"
+msgstr ""
+
+msgid "Wind farm"
+msgstr ""
+
+msgid "Renewable energy unspecified"
+msgstr ""
+
+msgid "Other"
+msgstr "Otro"
+
+msgid "Conservation"
+msgstr "Conservación"
+
+msgid "Industry"
+msgstr "Industria"
+
+msgid "Land speculation"
+msgstr "Especulación de tierras"
 
 msgid "Mining"
 msgstr "Minería"
@@ -277,21 +317,6 @@ msgstr "Extracción de petróleo/gas"
 
 msgid "Tourism"
 msgstr "Turismo"
-
-msgid "Industry"
-msgstr "Industria"
-
-msgid "Conservation"
-msgstr "Conservación"
-
-msgid "Land speculation"
-msgstr "Especulación de tierras"
-
-msgid "Renewable energy"
-msgstr "Energía renovable"
-
-msgid "Other"
-msgstr "Otro"
 
 msgid "Outright purchase"
 msgstr "Compra directa"
@@ -433,9 +458,6 @@ msgstr "Pastoralismo"
 
 msgid "Hunting/Gathering"
 msgstr "Caza/Recolección"
-
-msgid "Forestry"
-msgstr "Silvicultura"
 
 msgid "per ha"
 msgstr "por ha"
@@ -776,6 +798,27 @@ msgstr "Ovejas"
 msgid "Shrimp"
 msgstr "Gambas"
 
+msgid "On-shore wind turbines"
+msgstr ""
+
+msgid "Solar (Photovoltaic)"
+msgstr ""
+
+msgid "Solar (Thermal system)"
+msgstr ""
+
+msgid "Reforestation & afforestation"
+msgstr ""
+
+msgid "Forest protection"
+msgstr ""
+
+msgid "Peatland restoration"
+msgstr ""
+
+msgid "Other (please specify in a comment)"
+msgstr ""
+
 msgid "Aluminum"
 msgstr "Aluminio"
 
@@ -893,8 +936,8 @@ msgstr "Platino"
 msgid "Hydrocarbons (e.g. crude oil)"
 msgstr "Hidrocarburos (p. ej. petróleo crudo)"
 
-msgid " Pyrolisis Plant"
-msgstr " Planta de pirólisis"
+msgid "Pyrolisis Plant"
+msgstr ""
 
 msgid "Rutile"
 msgstr "Rutilo"
@@ -1271,6 +1314,12 @@ msgstr "Comentario sobre cultivos de agricultura contractual"
 msgid "Comment on contract farming livestock"
 msgstr "Comentario sobre animales de granja de agricultura contractual"
 
+msgid "Comment on electricity generation"
+msgstr ""
+
+msgid "Comment on carbon sequestration"
+msgstr ""
+
 msgid "Has domestic use"
 msgstr "Hectáreas de uso nacional"
 
@@ -1551,41 +1600,17 @@ msgstr "Mensaje"
 msgid "Messages"
 msgstr "Mensajes"
 
-msgid "Project not started"
-msgstr "Proyecto sin empezar"
-
-msgid "Startup phase (no production)"
-msgstr "Etapa sin producción"
-
-msgid "In operation (production)"
-msgstr "En operación (producción)"
-
-msgid "Project abandoned"
-msgstr "Proyecto abandonado"
-
-msgid "Unknown"
-msgstr "Desconocido"
-
-msgid "Agriculture"
-msgstr "Agricultura"
-
-msgid "Renewable Energy"
-msgstr "Energía Renovable"
-
-msgid "Spatial accuracy"
-msgstr "Precisión espacial"
-
 msgid "About"
 msgstr "Sobre"
 
 msgid "Access more information about this contract on OpenLandContracts.org"
 msgstr "Acceda a más información sobre este contrato en OpenLandContracts.org"
 
+msgid "Account activated"
+msgstr ""
+
 msgid "Account confirmed"
 msgstr "Cuenta confirmada"
-
-msgid "Accountability"
-msgstr "Responsabilidad"
 
 msgid "Actions"
 msgstr "Acciones"
@@ -1662,6 +1687,9 @@ msgstr "Zona"
 msgid "Area (ha)"
 msgstr "Superficie (ha)"
 
+msgid "Area covered by installations"
+msgstr ""
+
 msgid "Areas (as geojson)"
 msgstr "Áreas (como geojson)"
 
@@ -1692,6 +1720,12 @@ msgstr "Cancelar"
 msgid "Case statistics"
 msgstr "Estadísticas de caso"
 
+msgid "Category of production"
+msgstr ""
+
+msgid "Certification standard"
+msgstr ""
+
 msgid "Change"
 msgstr "Cambiar"
 
@@ -1716,6 +1750,9 @@ msgstr "Opciones"
 msgid "Close"
 msgstr "Cerrar"
 
+msgid "Comment on certification standard"
+msgstr ""
+
 msgid "Compare"
 msgstr "Comparar"
 
@@ -1738,6 +1775,13 @@ msgstr "Elimina por completo esta versión del inversor"
 
 msgid "Concluded"
 msgstr "Concluído"
+
+msgid "Concluded deals over time"
+msgstr ""
+
+#, python-brace-format
+msgid "Concluded deals over time since the year {year}"
+msgstr ""
 
 msgid "Confidential"
 msgstr "Confidencial"
@@ -1778,19 +1822,11 @@ msgstr "Copiar esta transacción"
 msgid "Count"
 msgstr "Cuenta"
 
-#, python-brace-format
-msgid "Countries investing in {country}"
-msgstr "Países que invierten en {country}"
-
-#, python-brace-format
-msgid "Countries {country} invests in"
-msgstr "Países en los que invierte {country}"
-
 msgid "Country of registration"
 msgstr "País de registro"
 
-msgid "Country profile graphs"
-msgstr "Gráficos de perfiles de países"
+msgid "Country profile charts"
+msgstr ""
 
 msgid "Country profiles"
 msgstr "Perfiles de país"
@@ -1822,6 +1858,10 @@ msgstr "Cultivos"
 msgid "CSV file"
 msgstr "Archivo CSV"
 
+#, python-brace-format
+msgid "Cumulative area size under contract since the year {year}"
+msgstr ""
+
 msgid "Currency"
 msgstr "Moneda"
 
@@ -1836,6 +1876,9 @@ msgstr "Estado actual de la implementación"
 
 msgid "Current negotiation status"
 msgstr "Estado actual de la negociación"
+
+msgid "Currently installed capacity"
+msgstr ""
 
 msgid "Data overview"
 msgstr "Resumen de datos"
@@ -1857,6 +1900,9 @@ msgstr "ID de transacción"
 
 msgid "Deal size"
 msgstr "Tamaño de transacción"
+
+msgid "Deal size (ha)"
+msgstr ""
 
 msgid "Deals (Involvements as Operating company)"
 msgstr "Transacciones (Involucramientos como Empresa Operadora)"
@@ -1895,9 +1941,7 @@ msgid "Deals updated"
 msgstr "Transacciones actualizadas"
 
 msgid "Deals with at least one location with either accuracy level 'Coordinates' or 'Exact location' or at least one polygon."
-msgstr ""
-"Transacciones con al menos una localización con nivel de precisión "
-"\"Coordenadas\" o \"Localización exacta\" o al menos un polígono."
+msgstr "Transacciones con al menos una localización con nivel de precisión \"Coordenadas\" o \"Localización exacta\" o al menos un polígono."
 
 msgid "Deals with polygon data"
 msgstr "Transacciones con datos poligonales"
@@ -1926,11 +1970,17 @@ msgstr "Eliminar esta transacción"
 msgid "Delete this investor"
 msgstr "Eliminar este inversor"
 
+msgid "Detailed carbon sequestration information\n"
+msgstr ""
+
 msgid "Detailed contract farming crop and animal information"
 msgstr "Información detallada sobre cultivo y animales de la agricultura contractual"
 
 msgid "Detailed crop, animal and mineral information"
 msgstr "Información detallada sobre cultivos, animales y minerales"
+
+msgid "Detailed electricity generation information"
+msgstr ""
 
 msgid "Displayed data"
 msgstr "Datos visualizados"
@@ -2067,6 +2117,9 @@ msgstr "Global"
 msgid "Global Cropland"
 msgstr "Tierra de Cultivo Global"
 
+msgid "Global map of Investments"
+msgstr ""
+
 msgid "Go to active version"
 msgstr "Ir a la versión activa"
 
@@ -2103,31 +2156,23 @@ msgstr "He leído y estoy de acuerdo con la"
 msgid "ID"
 msgstr "ID"
 
-msgid "ID or Name"
-msgstr "ID o Nombre"
-
 msgid "If you set the confidential flag, this deal will not be publicly visible anymore. If you want to keep it public, click on 'Cancel'."
-msgstr ""
-"Si activa el indicador de confidencialidad, este acuerdo dejará de ser "
-"visible públicamente. Si quieres que siga siendo público, haz clic en "
-"\"Cancelar\"."
+msgstr "Si activa el indicador de confidencialidad, este acuerdo dejará de ser visible públicamente. Si quieres que siga siendo público, haz clic en \"Cancelar\"."
 
 msgid "If you unset the confidential flag, this deal will be publicly visible once it is set active. If you want to keep it confidential, click on 'Cancel'."
-msgstr ""
-"Si desactiva el indicador de confidencialidad, este acuerdo será visible "
-"públicamente una vez que se active. Si desea que siga siendo confidencial, "
-"haga clic en \"Cancelar\"."
+msgstr "Si desactiva el indicador de confidencialidad, este acuerdo será visible públicamente una vez que se active. Si desea que siga siendo confidencial, haga clic en \"Cancelar\"."
 
 msgid "If your email-address is registered <b>and active</b> you should receive an email shortly."
-msgstr ""
-"Si su dirección de correo electrónico está registrada <b>y activa</b>, en "
-"breve recibirá un mensaje."
+msgstr "Si su dirección de correo electrónico está registrada <b>y activa</b>, en breve recibirá un mensaje."
 
 msgid "Improvement requests for me"
 msgstr "Solicitudes de mejora para mí"
 
 msgid "Improvements requested by me"
 msgstr "Mejoras solicitadas por mí"
+
+msgid "In operation (production)"
+msgstr "En operación (producción)"
 
 msgid "Include unknown years"
 msgstr "Incluir años desconocidos"
@@ -2153,6 +2198,9 @@ msgstr "Área planeada"
 msgid "Intended areas"
 msgstr "Áreas previstas"
 
+msgid "Intended capacity"
+msgstr ""
+
 msgid "Intention unknown"
 msgstr "Intención desconocida"
 
@@ -2161,6 +2209,9 @@ msgstr "Formato no válido. Utilice AAAA, AAAA-MM o AAAA-MM-DD"
 
 msgid "Investment in agriculture"
 msgstr "Inversión en agricultura"
+
+msgid "investments from"
+msgstr ""
 
 msgid "Investor ID"
 msgstr "ID de inversor"
@@ -2183,6 +2234,18 @@ msgstr "Inversores activos"
 msgid "Investors added"
 msgstr "Inversores añadidos"
 
+#, python-brace-format
+msgid "Investors from {countryName} are involved in {nCountries} countries"
+msgstr ""
+
+#, python-brace-format
+msgid "Investors from {investingCountryName} are involved in {nDeals} deals ({totalDealSize} ha) in {targetCountryName}"
+msgstr ""
+
+#, python-brace-format
+msgid "Investors from {nCountries} countries are involved in {countryName}"
+msgstr ""
+
 msgid "Investors pending"
 msgstr "Inversores pendientes"
 
@@ -2197,6 +2260,9 @@ msgstr "Inversores actualizados"
 
 msgid "Investors with name"
 msgstr "Inversores con nombre"
+
+msgid "invests in"
+msgstr "invierte en"
 
 msgid "Involvement"
 msgstr "Involucramiento"
@@ -2218,6 +2284,9 @@ msgstr "Empleo"
 
 msgid "Key biodiversity areas, Philippines"
 msgstr "Áreas clave de biodiversidad, Filipinas"
+
+msgid "Land acquisitions by category of production"
+msgstr ""
 
 msgid "Land area"
 msgstr "Área de tierra"
@@ -2249,6 +2318,9 @@ msgstr "Cuotas de arrendamiento"
 msgid "Legend"
 msgstr "Leyenda"
 
+msgid "Letters, digits and @/./+/-/_ only."
+msgstr ""
+
 msgid "Level of parent investors"
 msgstr "Nivel de inversores matriz"
 
@@ -2266,6 +2338,9 @@ msgstr "Iniciar sesión"
 
 msgid "Login successful."
 msgstr "Inicio de sesión correcto."
+
+msgid "Login/Register"
+msgstr "Iniciar sesión/Regístrese"
 
 msgid "Logout"
 msgstr "Cerrar sesión"
@@ -2300,6 +2375,9 @@ msgstr "Meta"
 msgid "Mineral resources"
 msgstr "Recursos minerales"
 
+msgid "Mode"
+msgstr ""
+
 msgid "Modified at"
 msgstr "Modificado en"
 
@@ -2318,6 +2396,9 @@ msgstr "Más detalles sobre esta transacción"
 msgid "More details about this investor"
 msgstr "Más detalles sobre este inversor"
 
+msgid "MW"
+msgstr ""
+
 msgid "My data"
 msgstr "Mis datos"
 
@@ -2326,6 +2407,9 @@ msgstr "Mis borradores"
 
 msgid "My requests"
 msgstr "Mis peticiones"
+
+msgid "Name of certification standard"
+msgstr ""
 
 msgid "Names of communities / indigenous peoples affected"
 msgstr "Nombre de comunidades/Pueblos Indígenas con afectación"
@@ -2363,6 +2447,13 @@ msgstr "No totalmente actualizado"
 msgid "Not publicly visible"
 msgstr "No visible para el público"
 
+#, python-brace-format
+msgid "Note: There is no year information for {count} deals with a corresponding area size of {size} ha."
+msgstr ""
+
+msgid "Note: This graph shows changes in size under contract (increases/decreases). Therefore, the number of deals can remain the same even though the size may change."
+msgstr ""
+
 msgid "Number of deal locations"
 msgstr "Número de ubicaciones de transacción"
 
@@ -2372,16 +2463,20 @@ msgstr "Número de transacciones"
 msgid "Number of domestic jobs created"
 msgstr "Número de puestos de trabajo nacionales creados"
 
-msgid "Number of intentions per category of production according to implementation status"
+msgid "Number of intentions per category of production"
 msgstr ""
-"Número de intenciones por categoría de producción según el estado de "
-"aplicación"
+
+msgid "Number of intentions per category of production according to implementation status"
+msgstr "Número de intenciones por categoría de producción según el estado de aplicación"
 
 msgid "Number of jobs for foreigners created"
 msgstr "Número de puestos de trabajo creados para personas extranjeras"
 
 msgid "Number of total jobs created"
 msgstr "Número total de puestos de trabajo creados"
+
+msgid "Number of turbines"
+msgstr ""
 
 msgid "Observatories"
 msgstr "Observatorios"
@@ -2421,12 +2516,13 @@ msgstr "Nota: una transacción puede tener más de una intención."
 
 #, python-brace-format
 msgid "Please note: {number} deals have multiple investor types. The full size of the deal is assigned to each investor type."
-msgstr ""
-"Nota: {number} operaciones tienen varios tipos de inversor. El tamaño total "
-"de la operación se asigna a cada tipo de inversor."
+msgstr "Nota: {number} operaciones tienen varios tipos de inversor. El tamaño total de la operación se asigna a cada tipo de inversor."
 
 msgid "Please provide a comment explaining your request"
 msgstr "Escriba un comentario explicando su solicitud"
+
+msgid "Please select"
+msgstr ""
 
 msgid "Produce"
 msgstr "Producto"
@@ -2442,6 +2538,18 @@ msgstr "Área de producción"
 
 msgid "Production areas"
 msgstr "Áreas de producción"
+
+msgid "Project abandoned"
+msgstr "Proyecto abandonado"
+
+msgid "Project not started"
+msgstr "Proyecto sin empezar"
+
+msgid "Projected annual carbon sequestration"
+msgstr ""
+
+msgid "Projected carbon sequestration during project lifetime"
+msgstr ""
 
 msgid "Promised or received compensation"
 msgstr "Compensación prometida o recibida"
@@ -2492,9 +2600,7 @@ msgid "Register"
 msgstr "Regístrese"
 
 msgid "Registration successful. You can now close this window and check your emails."
-msgstr ""
-"Registro realizado con éxito. Ahora puede cerrar esta ventana y consultar su "
-"correo electrónico."
+msgstr "Registro realizado con éxito. Ahora puede cerrar esta ventana y consultar su correo electrónico."
 
 msgid "Relationship"
 msgstr "Relación"
@@ -2544,24 +2650,26 @@ msgstr "Guardando…"
 msgid "Scope"
 msgstr "Alcance"
 
+msgid "Search"
+msgstr "Buscar"
+
 msgid "Search and filter the dataset through pre-configured entry points or drill down to single deals."
 msgstr "Busque y filtre el conjunto de datos a través de puntos de entrada preconfigurados o profundice en transacciones individuales."
 
 msgid "Search deals and investors"
 msgstr "Buscar transacciones e inversores"
 
+msgid "Select or click on a country for investment details."
+msgstr ""
+
 msgid "Send"
 msgstr "Enviar"
 
 msgid "Send a request of improvement and create a new draft version of the deal"
-msgstr ""
-"Enviar una solicitud de mejora y crear una nueva versión preliminar de la "
-"transacción"
+msgstr "Enviar una solicitud de mejora y crear una nueva versión preliminar de la transacción"
 
 msgid "Send a request of improvement and create a new draft version of the investor"
-msgstr ""
-"Enviar una solicitud de mejora y crear una nueva versión preliminar del "
-"inversor"
+msgstr "Enviar una solicitud de mejora y crear una nueva versión preliminar del inversor"
 
 msgid "Send feedback"
 msgstr "Enviar comentarios"
@@ -2595,6 +2703,9 @@ msgstr "Mostrar los últimos cambios"
 
 msgid "Size"
 msgstr "Tamaño"
+
+msgid "Startup phase (no production)"
+msgstr "Etapa sin producción"
 
 msgid "Status"
 msgstr "Estado"
@@ -2644,29 +2755,21 @@ msgstr "País objetivo NO definido"
 msgid "Target country is set"
 msgstr "País objetivo definido"
 
+msgid "tCO2e"
+msgstr ""
+
 msgid "Tertiary investors/lenders"
 msgstr "Inversores/prestamistas terciarios"
 
 #, python-brace-format
 msgid "The investor network diagram is not visible in draft mode. Go to {liveLink} to see it."
-msgstr ""
-"El diagrama de la red de inversores no es visible en modo borrador. Vaya a "
-"{liveLink} para verlo."
-
-msgid "This account has already been activated. You can probably log in now."
-msgstr ""
-"Esta cuenta ya ha sido activada. Usted probablemente pueda iniciar sesión "
-"ahora."
+msgstr "El diagrama de la red de inversores no es visible en modo borrador. Vaya a {liveLink} para verlo."
 
 msgid "This creates a completely identical copy of the deal. The copy must then be edited and adjusted to prevent identical duplicates."
-msgstr ""
-"Esto crea una copia completamente idéntica de la transacción. A "
-"continuación, la copia debe editarse y ajustarse para evitar duplicados "
-"idénticos."
+msgstr "Esto crea una copia completamente idéntica de la transacción. A continuación, la copia debe editarse y ajustarse para evitar duplicados idénticos."
 
 msgid "This figure lists the intention of investments per negotiation status."
-msgstr ""
-"Esta cifra enumera la intención de inversiones por estado de negociación."
+msgstr "Esta cifra enumera la intención de inversiones por estado de negociación."
 
 msgid "to"
 msgstr "a"
@@ -2688,6 +2791,9 @@ msgstr "Desborrar"
 
 msgid "Under negotiation"
 msgstr "En curso de negociación"
+
+msgid "Unknown"
+msgstr "Desconocido"
 
 msgid "Unset confidential"
 msgstr "Confidencial sin fijar"
@@ -2735,20 +2841,19 @@ msgid "Yield"
 msgstr "Rendimiento"
 
 msgid "You are not the author of this version. Therefore, a new version will be created if you proceed."
-msgstr ""
-"Usted no es el autor de esta versión. Por lo tanto, se creará una nueva "
-"versión si continúa."
+msgstr "Usted no es el autor de esta versión. Por lo tanto, se creará una nueva versión si continúa."
 
 msgid "You can only change the country when no locations are defined."
 msgstr "Sólo puede cambiar el país cuando no hay ninguna localidad definida."
 
+msgid "Your account has been activated. You can log in now."
+msgstr ""
+
 msgid "Your contact information will help our researchers get in touch with you for additional information. We respect and protect your privacy and anonymity, and will never share or publish your personal information. You can also write us directly at data@landmatrix.org."
 msgstr "Su información personal ayudará a nuestro personal de investigación a contactar con usted para la obtención de información adicional. Respetamos y protegemos su privacidad y anonimato, y nunca compartiremos o publicaremos su información personal. También nos puede escribir directamente a data@landmatrix.org."
 
-msgid "Your email address is confirmed. You can log in now."
+msgid "Your email address is confirmed. Your account awaits activation by an admin. If this does not happen within the next 24 hours, please contact the following address:"
 msgstr ""
-"Su dirección de correo electrónico ha sido confirmada. Usted puede iniciar "
-"sesión ahora."
 
 msgid "YYYY-MM-DD"
 msgstr "AAAA-MM-DD"
@@ -2768,6 +2873,50 @@ msgstr "Français"
 
 msgid "Русский"
 msgstr "Русский"
+
+#~ msgid "Country profile graphs"
+#~ msgstr "Gráficos de perfiles de países"
+
+#~ msgid "Biofuels"
+#~ msgstr "Biocombustibles"
+
+#~ msgid "Timber plantation"
+#~ msgstr "Plantación forestal"
+
+#~ msgid "Forest logging / management"
+#~ msgstr "Tala de árboles/gestión"
+
+#~ msgid "Renewable energy"
+#~ msgstr "Energía renovable"
+
+#~ msgid " Pyrolisis Plant"
+#~ msgstr " Planta de pirólisis"
+
+#~ msgid "Renewable Energy"
+#~ msgstr "Energía Renovable"
+
+#~ msgid "Spatial accuracy"
+#~ msgstr "Precisión espacial"
+
+#~ msgid "Accountability"
+#~ msgstr "Responsabilidad"
+
+#, python-brace-format
+#~ msgid "Countries investing in {country}"
+#~ msgstr "Países que invierten en {country}"
+
+#, python-brace-format
+#~ msgid "Countries {country} invests in"
+#~ msgstr "Países en los que invierte {country}"
+
+#~ msgid "ID or Name"
+#~ msgstr "ID o Nombre"
+
+#~ msgid "This account has already been activated. You can probably log in now."
+#~ msgstr "Esta cuenta ya ha sido activada. Usted probablemente pueda iniciar sesión ahora."
+
+#~ msgid "Your email address is confirmed. You can log in now."
+#~ msgstr "Su dirección de correo electrónico ha sido confirmada. Usted puede iniciar sesión ahora."
 
 #, python-brace-format
 #~ msgid "{full_name} has addressed you in a comment on {obj_desc}:"
@@ -3002,9 +3151,6 @@ msgstr "Русский"
 
 #~ msgid "Regions"
 #~ msgstr "Regiones"
-
-#~ msgid "invests in"
-#~ msgstr "invierte en"
 
 #~ msgid "Show all outbound deals"
 #~ msgstr "Mostrar todas las transacciones salientes"
@@ -4068,9 +4214,6 @@ msgstr "Русский"
 #~ msgid "Show info about"
 #~ msgstr "Mostrar info sobre"
 
-#~ msgid "Search"
-#~ msgstr "Buscar"
-
 #~ msgid "Type in the field below to search for a location."
 #~ msgstr "Escriba en el campo de abajo para buscar una ubicación."
 
@@ -4233,9 +4376,6 @@ msgstr "Русский"
 
 #~ msgid "Clear filters"
 #~ msgstr "Quitar filtros"
-
-#~ msgid "Login/Register"
-#~ msgstr "Iniciar sesión/Regístrese"
 
 #~ msgid "Stay informed"
 #~ msgstr "Mantente informado"

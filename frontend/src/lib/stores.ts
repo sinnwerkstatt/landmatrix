@@ -4,12 +4,13 @@ import type { Client } from "@urql/core"
 import { gql } from "@urql/svelte"
 import { _ } from "svelte-i18n"
 import { derived, get, writable } from "svelte/store"
+import type { Writable } from "svelte/store"
 
 // eslint-disable-next-line import/no-unresolved
 import { browser } from "$app/environment"
 
 import type { BlockImage } from "$lib/types/custom"
-import type { DraftStatus, Status } from "$lib/types/generics"
+import type { DraftStatus, FieldDefinition, Status } from "$lib/types/generics"
 import type { User } from "$lib/types/user"
 import type {
   BlogCategory,
@@ -18,7 +19,16 @@ import type {
   Region,
   WagtailPage,
 } from "$lib/types/wagtail"
-import type { AreaType } from "$lib/types/deal"
+import type { AreaType, IntentionOfInvestment } from "$lib/types/deal"
+import {
+  ImplementationStatus,
+  NegotiationStatusGroup,
+  IntentionOfInvestmentGroup,
+} from "$lib/types/deal"
+import {
+  flat_intention_of_investment_map,
+  intention_of_investment_group_choices,
+} from "$lib/choices"
 
 import type { FormField } from "$components/Fields/fields"
 
@@ -153,6 +163,8 @@ export const chartDescriptions = writable<{
   web_of_transnational_deals: string
   dynamics_overview: string
   produce_info_map: string
+  global_web_of_investments: string
+  [key: string]: string
 }>(undefined)
 
 async function getChartDescriptions(language = "en", urqlClient: Client) {
@@ -164,6 +176,7 @@ async function getChartDescriptions(language = "en", urqlClient: Client) {
             web_of_transnational_deals
             dynamics_overview
             produce_info_map
+            global_web_of_investments
           }
         }
       `,
@@ -245,6 +258,52 @@ export const draftStatusMap = derived(
   }),
 )
 
+type ImplementationStatusMap = { [key in ImplementationStatus]: string }
+export const implementationStatusMap = derived(
+  _,
+  ($_): ImplementationStatusMap => ({
+    [ImplementationStatus.PROJECT_NOT_STARTED]: $_("Project not started"),
+    [ImplementationStatus.STARTUP_PHASE]: $_("Startup phase (no production)"),
+    [ImplementationStatus.IN_OPERATION]: $_("In operation (production)"),
+    [ImplementationStatus.PROJECT_ABANDONED]: $_("Project abandoned"),
+  }),
+)
+
+type NegotiationStatusGroupMap = { [key in NegotiationStatusGroup]: string }
+export const negotiationStatusGroupMap = derived(
+  _,
+  ($_): NegotiationStatusGroupMap => ({
+    [NegotiationStatusGroup.INTENDED]: $_("Intended"),
+    [NegotiationStatusGroup.CONCLUDED]: $_("Concluded"),
+    [NegotiationStatusGroup.FAILED]: $_("Failed"),
+    [NegotiationStatusGroup.CONTRACT_EXPIRED]: $_("Contract expired"),
+  }),
+)
+
+type IntentionOfInvestmentGroupMap = { [key in IntentionOfInvestmentGroup]: string }
+export const intentionOfInvestmentGroupMap = derived(
+  _,
+  ($_): IntentionOfInvestmentGroupMap =>
+    Object.fromEntries(
+      Object.entries(intention_of_investment_group_choices).map(([key, value]) => [
+        key,
+        $_(value),
+      ]),
+    ) as IntentionOfInvestmentGroupMap,
+)
+
+type IntentionOfInvestmentMap = { [key in IntentionOfInvestment]: string }
+export const intentionOfInvestmentMap = derived(
+  _,
+  ($_): IntentionOfInvestmentMap =>
+    Object.fromEntries(
+      Object.entries(flat_intention_of_investment_map).map(([key, value]) => [
+        key,
+        $_(value),
+      ]),
+    ) as IntentionOfInvestmentMap,
+)
+
 type AreaTypeMap = { [key in AreaType]: string }
 export const areaTypeMap = derived(
   _,
@@ -270,6 +329,25 @@ const bindIsDarkModeToPreferredColorScheme = () => {
   }
 }
 
+export const isMobile: Writable<boolean | null> = writable(null)
+
+const TAILWIND_SM_BREAKPOINT_IN_PX = 640
+
+const bindIsMobileToScreenInnerWidth = () => {
+  isMobile.set(window.innerWidth <= TAILWIND_SM_BREAKPOINT_IN_PX)
+
+  window.addEventListener("resize", () => {
+    isMobile.set(window.innerWidth <= TAILWIND_SM_BREAKPOINT_IN_PX)
+  })
+}
+
 if (browser) {
   bindIsDarkModeToPreferredColorScheme()
+  bindIsMobileToScreenInnerWidth()
+}
+
+export const fieldDefinitions: Writable<FieldDefinition[]> = writable([])
+export async function fetchFieldDefinitions(fetch: LoadEvent["fetch"]) {
+  const res = await fetch("/api/field_definitions/")
+  fieldDefinitions.set(await res.json())
 }

@@ -171,7 +171,7 @@
   <QuasiStaticMap {countryID} {regionID} markers={page.markers} />
 
   {#if page.introduction_text}
-    <div class="pt-6 pb-3">
+    <div class="pb-3 pt-6">
       <div class="intro">
         {page.introduction_text}
       </div>
@@ -190,7 +190,7 @@
   {/if}
 </div>
 
-<div class="mt-2 mb-8 bg-lm-lightgray py-6 dark:bg-gray-700">
+<div class="mb-8 mt-2 bg-lm-lightgray py-6 dark:bg-gray-700">
   <div class="mx-auto min-h-[300px] w-[clamp(20rem,75%,56rem)]">
     {#if totalSize === ""}
       <LoadingPulse class="h-[300px]" />

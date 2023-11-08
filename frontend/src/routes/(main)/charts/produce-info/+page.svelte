@@ -7,9 +7,9 @@
 
   import { dealsQuery } from "$lib/dealQueries"
   import { filters, publicOnly } from "$lib/filters"
-  import { chartDescriptions } from "$lib/stores"
+  import { chartDescriptions, isMobile } from "$lib/stores"
 
-  import { showContextBar } from "$components/Data/stores"
+  import { showContextBar, showFilterBar } from "$components/Data/stores"
   import ChartsContainer from "$components/Data/Charts/ChartsContainer.svelte"
   import ProduceInfoMap from "$components/Data/Charts/ProduceInfoMap.svelte"
   import LoadingPulse from "$components/LoadingPulse.svelte"
@@ -22,9 +22,13 @@
       subset: $publicOnly ? "PUBLIC" : "ACTIVE",
     },
   })
-  onMount(() => showContextBar.set(true))
 
-  const title = $_("Produce info map")
+  $: title = $_("Produce info map")
+
+  onMount(() => {
+    showContextBar.set(!$isMobile)
+    showFilterBar.set(!$isMobile)
+  })
 </script>
 
 <svelte:head>
@@ -32,17 +36,16 @@
 </svelte:head>
 
 <ChartsContainer>
+  {#if $deals.fetching}
+    <LoadingPulse />
+  {:else if $deals.error}
+    <p>Error...{$deals.error.message}</p>
+  {:else}
+    <ProduceInfoMap deals={$deals.data.deals} {title} />
+  {/if}
+
   <div slot="ContextBar">
     <h2>{title}</h2>
-    <div>{@html $chartDescriptions?.produce_info_map}</div>
-  </div>
-  <div class="mt-20 h-5/6 w-5/6">
-    {#if $deals.fetching}
-      <LoadingPulse />
-    {:else if $deals.error}
-      <p>Error...{$deals.error.message}</p>
-    {:else}
-      <ProduceInfoMap deals={$deals.data.deals} {title} />
-    {/if}
+    <div>{@html $chartDescriptions?.produce_info_map ?? ""}</div>
   </div>
 </ChartsContainer>

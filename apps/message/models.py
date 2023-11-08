@@ -20,11 +20,9 @@ class Message(Orderable, models.Model):
         (LEVEL_ERROR, _("Error")),
     )
 
-    title = models.CharField(_("Title"), max_length=255, blank=True, null=True)
+    title = models.CharField(_("Title"), blank=True, null=True)
     text = RichTextField(_("Text"))
-    level = models.CharField(
-        _("Level"), max_length=10, choices=LEVEL_CHOICES, default=LEVEL_INFO
-    )
+    level = models.CharField(_("Level"), choices=LEVEL_CHOICES, default=LEVEL_INFO)
     allow_users_to_hide = models.BooleanField(
         _("Allow users to hide message"),
         help_text=_(
@@ -45,6 +43,9 @@ class Message(Orderable, models.Model):
         verbose_name = _("Message")
         verbose_name_plural = _("Messages")
         ordering = ["sort_order"]
+
+    def __str__(self):
+        return self.title
 
     def to_dict(self):
         return {

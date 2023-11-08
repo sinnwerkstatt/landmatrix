@@ -33,24 +33,24 @@
 
   $: produceChoices = $formfields
     ? [
-        ...Object.entries($formfields.deal.crops.choices).map(([v, k]) => ({
-          value: v,
-          label: k,
+        ...($formfields.deal.crops.choices?.map(item => ({
+          value: item["value"],
+          label: item["label"],
           groupID: ProduceGroup.CROPS,
           group: $_("Crops"),
-        })),
-        ...Object.entries($formfields.deal.animals.choices).map(([v, k]) => ({
-          value: v,
-          label: k,
+        })) ?? []),
+        ...($formfields.deal.animals.choices?.map(item => ({
+          value: item["value"],
+          label: item["label"],
           groupID: ProduceGroup.ANIMALS,
           group: $_("Animals"),
-        })),
-        ...Object.entries($formfields.deal.mineral_resources.choices).map(([v, k]) => ({
-          value: v,
-          label: k,
+        })) ?? []),
+        ...($formfields.deal.mineral_resources.choices?.map(item => ({
+          value: item["value"],
+          label: item["label"],
           groupID: ProduceGroup.MINERAL_RESOURCES,
           group: $_("Mineral resources"),
-        })),
+        })) ?? []),
       ]
     : []
 
@@ -93,7 +93,7 @@
     $publicOnly ? "PUBLIC" : "ACTIVE"
   }&format=`
 
-  function trackDownload(format) {
+  function trackDownload(format: string) {
     let name = "Global"
     if ($filters.country_id) {
       name = ($countries.find(c => c.id === $filters.country_id) as Country).name
@@ -106,10 +106,16 @@
       $tracker.trackEvent("Downloads", format, name)
     }
   }
+
+  const toggleDefaultFilter = (e: Event) => {
+    $filters = (e.currentTarget as HTMLInputElement).checked
+      ? $filters.empty().default()
+      : $filters.empty()
+  }
 </script>
 
 <div
-  class="absolute top-0 left-0 bottom-0 z-10 flex bg-white/80 text-sm drop-shadow-[3px_-3px_1px_rgba(0,0,0,0.3)] dark:bg-gray-700 {$showFilterBar
+  class="absolute bottom-0 left-0 top-0 z-10 flex bg-white/80 text-sm drop-shadow-[3px_-3px_1px_rgba(0,0,0,0.3)] dark:bg-gray-700 {$showFilterBar
     ? 'w-[clamp(220px,20%,300px)]'
     : 'w-0'}"
 >
@@ -127,10 +133,7 @@
         <CheckboxSwitch
           class="text-base"
           checked={$isDefaultFilter}
-          on:change={val =>
-            val.target.checked
-              ? filters.set($filters.empty().default())
-              : filters.set($filters.empty())}
+          on:change={toggleDefaultFilter}
         >
           {$_("Default filter")}
         </CheckboxSwitch>

@@ -187,7 +187,7 @@
       {/if}
       {#if openThread && info.from_user.id === $page.data.user.id}
         <button
-          class="btn btn-primary btn-slim ml-auto mt-1 mr-1 flex items-center gap-1"
+          class="btn btn-primary btn-slim ml-auto mr-1 mt-1 flex items-center gap-1"
           type="button"
           on:click={resolveThread}
         >

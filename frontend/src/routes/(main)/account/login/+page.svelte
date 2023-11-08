@@ -73,7 +73,7 @@
 <PageTitle class="">{$_("Login")}</PageTitle>
 
 {#if logged_in}
-  <p class="mt-3 text-green-500">
+  <p class="mt-3 text-lm-green-dark">
     {$_("Login successful.")}
   </p>
 {:else}

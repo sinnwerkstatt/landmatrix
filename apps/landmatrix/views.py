@@ -3,6 +3,10 @@ from django.contrib import messages
 from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
 from django.views.generic.base import RedirectView
+from rest_framework import permissions, viewsets
+
+from apps.landmatrix.models import FieldDefinition
+from apps.landmatrix.serializers import FieldDefinitionSerializer
 
 
 class SwitchLanguageView(RedirectView):
@@ -26,3 +30,9 @@ def handler500(request):
     response = render(request, template_name="500.html")
     response.status_code = 500
     return response
+
+
+class FieldDefinitionViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = FieldDefinition.objects.all()
+    permission_classes = [permissions.AllowAny]
+    serializer_class = FieldDefinitionSerializer

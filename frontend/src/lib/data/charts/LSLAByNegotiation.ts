@@ -77,19 +77,19 @@ export class LSLAByNegotiation {
       .append("text")
       .attr("x", "300")
       .attr("y", "20")
-      .style("font-size", "20px")
+      .style("font-size", "1rem")
       .text(this.$t("Number of deals").toString())
     svg
       .append("text")
       .attr("x", "610")
       .attr("y", "20")
-      .style("font-size", "20px")
+      .style("font-size", "1rem")
       .text(this.$t("Size under contract").toString())
     svg
       .append("text")
       .attr("x", "920")
       .attr("y", "20")
-      .style("font-size", "20px")
+      .style("font-size", "1rem")
       .text(this.$t("Intended size").toString())
 
     const y = scaleBand()

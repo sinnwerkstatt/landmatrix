@@ -1,5 +1,5 @@
 {#if $$slots?.default}
-  <div class="container isolate mx-auto mt-16 mb-12">
+  <div class="container isolate mx-auto mb-12 mt-16">
     <h1
       class="relative text-center text-3xl before:absolute before:top-1/2 before:block before:h-[1px] before:w-full before:bg-gray-300 before:content-[''] dark:before:bg-gray-500"
     >

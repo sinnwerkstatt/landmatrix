@@ -5,7 +5,11 @@
 
   export let value: string
   export let formfield: FormField
+
+  $: flat_choices = formfield.choices
+    ? Object.fromEntries(formfield.choices.map(c => [c.value, c.label]))
+    : {}
 </script>
 
 <!-- The literal translation strings are defined in apps/landmatrix/models/choices.py -->
-{value ? $_(formfield.choices[value]) : "—"}
+{value ? $_(flat_choices[value]) : "—"}

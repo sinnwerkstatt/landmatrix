@@ -19,8 +19,12 @@ class Country(models.Model):
     )
     code_alpha2 = models.CharField(_("Code ISO 3166-1 alpha2"), max_length=2)
     code_alpha3 = models.CharField(_("Code ISO 3166-1 alpha3"), max_length=3)
-    name = models.CharField("Name", max_length=255)
-    slug = models.SlugField("Slug", max_length=100)
+    name = models.CharField("Name")
+    slug = models.SlugField(
+        "Slug",
+        max_length=100,  # not changing max_length to None, because it yields database problems for some reason
+    )
+
     point_lat = models.DecimalField(
         _("Latitude of central point"),
         max_digits=18,
@@ -109,7 +113,7 @@ class Country(models.Model):
 
 
 class Region(models.Model):
-    name = models.CharField("Name", max_length=255)
+    name = models.CharField("Name")
     slug = models.SlugField("Slug")
     point_lat_min = models.DecimalField(
         _("Latitude of northernmost point"),

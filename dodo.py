@@ -26,8 +26,22 @@ def pg_run(cmd: str, database="") -> str:
     return f'sudo -Hiu postgres psql {database} -c "{cmd}"'
 
 
+# waiting for https://github.com/infoportugal/wagtail-modeltranslation/pull/407
+def task_monkeypatch_wagtail_modeltranslation():
+    monkeypatch = "sed -i static-collected/wagtail_modeltranslation/js/language_toggles.js -e 's/= $(`form .tab-content`);/= $(`form .tab-content, form .nice-padding`);/'"
+    return {"task_dep": ["collectstatic"], "actions": [monkeypatch]}
+
+
 def task_update():
-    return {"task_dep": ["collectstatic", "compilemessages", "migrate"], "actions": []}
+    return {
+        "task_dep": [
+            "collectstatic",
+            "compilemessages",
+            "monkeypatch_wagtail_modeltranslation",
+            "migrate",
+        ],
+        "actions": [],
+    }
 
 
 def task_full_update():

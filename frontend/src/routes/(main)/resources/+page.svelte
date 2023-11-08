@@ -39,12 +39,12 @@
   </PageTitle>
 
   <div class="mb-4 text-center">
-    <ul class="flex flex-wrap justify-center">
+    <ul class="flex flex-wrap justify-center gap-1">
       {#each blogCategoriesWithAll as cat}
         <li>
           <a
             href={cat.slug ? `?category=${cat.slug}` : "/resources"}
-            class="block whitespace-nowrap px-4 py-2 {data.category === cat.slug
+            class="btn block whitespace-nowrap {data.category === cat.slug
               ? 'bg-orange font-bold text-white hover:text-white'
               : ''}"
           >
@@ -58,7 +58,9 @@
   <div class="container mx-auto grid gap-4 px-10 md:grid-cols-2 lg:grid-cols-3">
     {#each filteredBlogpages as blogpage}
       <div class="col-md-6 col-lg-4 mb-3">
-        <div class="rounded border border-black/20 bg-lm-lightgray dark:bg-gray-700">
+        <div
+          class="rounded border border-lm-dark bg-lm-lightgray dark:border-white dark:bg-gray-800"
+        >
           {#if blogpage.header_image}
             <img src={blogpage.header_image} class="rounded-t" alt="" loading="lazy" />
           {/if}

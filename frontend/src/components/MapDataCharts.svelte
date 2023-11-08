@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
-  import type { SvelteComponent } from "svelte"
   import cn from "classnames"
+  import type { ComponentType } from "svelte"
 
   import DataIcon from "./icons/DataIcon.svelte"
   import MapIcon from "./icons/MapIcon.svelte"
@@ -11,7 +11,7 @@
     title: string
     href: string
     description: string
-    icon: SvelteComponent
+    icon: ComponentType
   }
 
   const cards: Card[] = [

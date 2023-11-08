@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n"
-
   import { formfields } from "$lib/stores"
 
   import ArrayField from "$components/Fields/Display/ArrayField.svelte"
@@ -27,6 +25,9 @@
   import TypedChoiceField from "$components/Fields/Display/TypedChoiceField.svelte"
   import WorkflowInfosField from "$components/Fields/Display/WorkflowInfosField.svelte"
   import type { FormField } from "$components/Fields/fields"
+  import JSONElectricityGenerationField from "$components/Fields/Display/JSONElectricityGenerationField.svelte"
+  import JSONCarbonSequestrationField from "$components/Fields/Display/JSONCarbonSequestrationField.svelte"
+  import Label from "$components/Fields/Label.svelte"
 
   export let fieldname: string
   export let value
@@ -60,6 +61,9 @@
     JSONExportsField: JSONExportsField,
     JSONJobsField: JSONJobsField,
     JSONLeaseField: JSONLeaseField,
+    JSONElectricityGenerationField: JSONElectricityGenerationField,
+    JSONCarbonSequestrationField: JSONCarbonSequestrationField,
+
     ManyToManyField: ManyToManyField,
     OCIDField: OCIDField,
   }[formfield.class]
@@ -71,9 +75,7 @@
   class={wrapperClasses}
 >
   {#if showLabel}
-    <div class={labelClasses}>
-      {$_(formfield.label)}
-    </div>
+    <Label {formfield} class={labelClasses} {model} />
   {/if}
   <div class={valueClasses}>
     {#if formfield.class === "AutoField"}

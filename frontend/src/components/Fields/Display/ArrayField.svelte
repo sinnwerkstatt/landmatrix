@@ -14,36 +14,49 @@
   import OilIcon from "$components/icons/OilIcon.svelte"
   import PlaneIcon from "$components/icons/PlaneIcon.svelte"
   import RenewableEnergyIcon from "$components/icons/RenewableEnergyIcon.svelte"
+  import SolarPanelIcon from "$components/icons/SolarPanelIcon.svelte"
 
   export let value: string[]
   export let formfield: FormField
 
   const intention_of_investment_map = {
+    // agriculture
     BIOFUELS: AgricultureIcon,
-    FOOD_CROPS: FoodCropsIcon,
+    BIOMASS_ENERGY_GENERATION: AgricultureIcon,
     FODDER: FoodCropsIcon,
+    FOOD_CROPS: FoodCropsIcon,
     LIVESTOCK: LifestockIcon,
     NON_FOOD_AGRICULTURE: AgricultureIcon,
     AGRICULTURE_UNSPECIFIED: AgricultureIcon,
-    TIMBER_PLANTATION: ForestIcon,
-    FOREST_LOGGING: ForestIcon,
+    // forest
+    BIOMASS_ENERGY_PRODUCTION: ForestIcon,
     CARBON: ForestIcon,
+    FOREST_LOGGING: ForestIcon,
+    TIMBER_PLANTATION: ForestIcon,
     FORESTRY_UNSPECIFIED: ForestIcon,
+    // renewable
+    SOLAR_PARK: SolarPanelIcon,
+    WIND_FARM: RenewableEnergyIcon,
+    RENEWABLE_ENERGY: RenewableEnergyIcon,
+    // other
+    CONVERSATION: null,
+    INDUSTRY: IndustryIcon,
+    LAND_SPECULATION: LandSpeculationIcon,
     MINING: MiningIcon,
     OIL_GAS_EXTRACTION: OilIcon,
     TOURISM: PlaneIcon,
-    INDUSTRY: IndustryIcon,
-    CONVERSATION: null,
-    LAND_SPECULATION: LandSpeculationIcon,
-    RENEWABLE_ENERGY: RenewableEnergyIcon,
     OTHER: null,
   }
 
-  const parseValues = (value: string[], choices?: Record<string, string>) => {
-    if (!value) return "—"
+  const parseValues = (
+    value: string[],
+    choices?: { value: string; label: string }[],
+  ) => {
+    if (!value) return ["—"]
+    if (!choices) return value
+
     // The literal translation strings are defined in apps/landmatrix/models/choices.py
-    if (choices) return value.map(v => $_(choices[v])).join(", ")
-    return value.join(", ")
+    return value.map(v => $_(choices.find(c => c.value === v)?.label))
   }
 </script>
 
@@ -61,5 +74,9 @@
     </span>
   {/each}
 {:else}
-  {parseValues(value, formfield.choices)}
+  <ul class="">
+    {#each parseValues(value, formfield.choices) as val}
+      <li>{val}</li>
+    {/each}
+  </ul>
 {/if}

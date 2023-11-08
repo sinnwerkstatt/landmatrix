@@ -69,9 +69,13 @@
     <thead>
       <tr>
         <th>{$_("Created")}</th>
-        {#if $page.data.user?.is_authenticated} <th>{$_("User")}</th> {/if}
+        {#if $page.data.user?.is_authenticated}
+          <th>{$_("User")}</th>
+        {/if}
         <th>{$_("Fully updated")}</th>
-        {#if $page.data.user?.is_authenticated} <th>{$_("Status")}</th> {/if}
+        {#if $page.data.user?.is_authenticated}
+          <th>{$_("Status")}</th>
+        {/if}
         <th class="text-right">
           {$_("Show")} /
           <a
@@ -132,9 +136,13 @@
     <tfoot>
       <tr>
         <td />
-        {#if $page.data.user?.is_authenticated} <td /> {/if}
+        {#if $page.data.user?.is_authenticated}
+          <td />
+        {/if}
         <td />
-        {#if $page.data.user?.is_authenticated} <td /> {/if}
+        {#if $page.data.user?.is_authenticated}
+          <td />
+        {/if}
         {#if compareFrom && compareTo}
           <td>
             <a

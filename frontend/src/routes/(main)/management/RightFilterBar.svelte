@@ -1,6 +1,7 @@
 <script lang="ts">
   import cn from "classnames"
   import { _ } from "svelte-i18n"
+  import Select from "svelte-select"
 
   import { countries } from "$lib/stores"
   import type { Deal } from "$lib/types/deal"
@@ -10,7 +11,8 @@
   import UserSelect from "$components/LowLevel/UserSelect.svelte"
   import CountrySelect from "$components/LowLevel/CountrySelect.svelte"
 
-  import { managementFilters } from "./state"
+  import { managementFilters, MODES, modeMap } from "./state"
+  import type { Mode } from "./state"
 
   export let showFilters = false
   export let objects: Array<Deal | Investor> = []
@@ -21,6 +23,9 @@
 
   $: objectsCountryIDs = objects?.map(d => d.country?.id)
   $: relCountries = $countries.filter(c => objectsCountryIDs.includes(c.id))
+
+  let modeItems: { value: Mode; label: string }[]
+  $: modeItems = MODES.map(mode => ({ value: mode, label: $modeMap[mode] }))
 </script>
 
 <div
@@ -31,6 +36,10 @@
 >
   <h3 class="mt-0">{$_("Filters")}</h3>
   <div class="space-y-4">
+    <div>
+      <div class="mb-1 font-bold">{$_("Mode")}</div>
+      <Select bind:justValue={$managementFilters.mode} items={modeItems} showChevron />
+    </div>
     <div>
       <div class="mb-1 font-bold">{$_("Target country")}</div>
       <CountrySelect bind:value={$managementFilters.country} countries={relCountries} />

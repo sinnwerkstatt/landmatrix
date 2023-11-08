@@ -1,6 +1,5 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
-  import { createEventDispatcher } from "svelte"
 
   import VirtualListSelect from "./VirtualListSelect.svelte"
 
@@ -13,7 +12,7 @@
   export let value: InvestorItem | undefined = undefined
   export let required = false
   export let creatable = false
-  export let name = undefined
+  export let name: string | undefined = undefined
 
   const itemFilter = (label: string, filterText: string, option: InvestorItem) => {
     const filterTextLower = filterText.toLowerCase()

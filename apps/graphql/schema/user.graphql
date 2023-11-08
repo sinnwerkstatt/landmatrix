@@ -9,6 +9,7 @@ type User {
   is_authenticated: Boolean
   is_staff: Boolean
   is_impersonate: Boolean
+  is_superuser: Boolean
   date_joined: DateTime
   phone: String
   information: String

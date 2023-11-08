@@ -49,7 +49,6 @@ INSTALLED_APPS = [
     "wagtail_modeltranslation.makemigrations",
     "wagtail_modeltranslation.migrate",
     # wagtail
-    "wagtail.contrib.modeladmin",
     "wagtail.contrib.redirects",
     "wagtail.contrib.settings",
     "wagtail.embeds",

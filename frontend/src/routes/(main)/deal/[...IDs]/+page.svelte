@@ -53,7 +53,6 @@
   ]
 
   const reloadDeal = async () => {
-    // console.log("Deal detail: reload")
     loading.set(true)
     await invalidate(url => url.pathname === "/graphql/")
     loading.set(false)

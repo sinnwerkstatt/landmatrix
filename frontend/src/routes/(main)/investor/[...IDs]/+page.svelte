@@ -38,7 +38,7 @@
             i.role === Role.PARENT
               ? $_("Parent company")
               : $_("Tertiary investor/lender"),
-        } as Involvement),
+        }) as Involvement,
     ),
     ...investor.ventures.map(
       i =>
@@ -50,7 +50,7 @@
             i.role === Role.PARENT
               ? $_("Subsidiary company")
               : $_("Beneficiary company"),
-        } as Involvement),
+        }) as Involvement,
     ),
   ]
 
@@ -76,7 +76,6 @@
       : allTabs.filter(tab => tab.target !== "#data_sources")
 
   const reloadInvestor = async () => {
-    // console.log("Investor detail: reload")
     loading.set(true)
     await invalidate(url => url.pathname === "/graphql/")
     loading.set(false)
@@ -225,7 +224,7 @@
             {$_("Deals (Involvements as Operating company)")} ({investor.deals.length})
           </h3>
 
-          <table class="relative w-full  table-auto">
+          <table class="relative w-full table-auto">
             <thead class="border-b-2">
               <tr>
                 <th>{$_("Deal ID")}</th>

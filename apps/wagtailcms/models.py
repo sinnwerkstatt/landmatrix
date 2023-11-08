@@ -3,7 +3,7 @@ from django.db import models
 from django.db.models import QuerySet
 from wagtail.admin.panels import FieldPanel, FieldRowPanel
 from wagtail.api import APIField
-from wagtail.contrib.settings.models import register_setting, BaseGenericSetting
+from wagtail.contrib.settings.models import BaseGenericSetting, register_setting
 from wagtail.fields import RichTextField, StreamField
 from wagtail.models import Page
 from wagtail.rich_text import expand_db_html
@@ -26,6 +26,7 @@ from .twitter import TwitterTimeline
 @register_setting(icon="radio-empty")
 class ChartDescriptionsSettings(BaseGenericSetting):
     web_of_transnational_deals = RichTextField()
+    global_web_of_investments = RichTextField()
     dynamics_overview = RichTextField()
     produce_info_map = RichTextField()
 
@@ -39,9 +40,11 @@ class ChartDescriptionsSettings(BaseGenericSetting):
             ),
             "dynamics_overview": expand_db_html(self.dynamics_overview),
             "produce_info_map": expand_db_html(self.produce_info_map),
+            "global_web_of_investments": expand_db_html(self.global_web_of_investments),
         }
 
     panels = [
+        FieldPanel("global_web_of_investments"),
         FieldPanel("web_of_transnational_deals"),
         FieldPanel("dynamics_overview"),
         FieldPanel("produce_info_map"),
@@ -102,7 +105,7 @@ class ObservatoryPage(HeadlessPreviewMixin, Page):
     )
     body = StreamField(SIMPLE_CONTENT_BLOCKS, use_json_field=True)
 
-    twitter_username = models.CharField(max_length=200, blank=True)
+    twitter_username = models.CharField(blank=True)
 
     content_panels = Page.content_panels + [
         FieldRowPanel(

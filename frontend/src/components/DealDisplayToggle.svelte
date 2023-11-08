@@ -15,14 +15,14 @@
   <button
     type="button"
     on:click={() => displayDealsCount.set(true)}
-    class="my-2 transform border py-2 px-3 font-bold duration-100 hover:underline {displayDeals}"
+    class="my-2 transform border px-3 py-2 font-bold duration-100 hover:underline {displayDeals}"
   >
     {$_("No. of deals")}
   </button>
   <button
     type="button"
     on:click={() => displayDealsCount.set(false)}
-    class="my-2 transform border py-2 px-3 font-bold duration-100 hover:underline {displaySize}"
+    class="my-2 transform border px-3 py-2 font-bold duration-100 hover:underline {displaySize}"
   >
     {$_("Deal size")}
   </button>

@@ -60,7 +60,7 @@
   bind:this={inputField}
   value={value ?? ""}
   type="text"
-  class="inpt"
+  class="inpt {$$props.class ?? ''}"
   placeholder={$_("YYYY-MM-DD")}
   {required}
   {name}

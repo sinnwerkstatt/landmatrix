@@ -41,7 +41,6 @@
   function captchaVerified(e: CustomEvent<{ token: string }>) {
     token = e.detail.token
     disabled = false
-    console.log(token)
   }
 </script>
 

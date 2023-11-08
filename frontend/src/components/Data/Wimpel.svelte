@@ -3,8 +3,8 @@
   export let flipped = false
 </script>
 
-<span
-  class="absolute top-[calc(50%-100px)] -right-5 cursor-pointer"
+<button
+  class="absolute -right-5 top-[calc(50%-100px)] cursor-pointer"
   class:flipped
   on:click
   on:keydown
@@ -15,7 +15,7 @@
       {showing ? "‹" : "›"}
     </text>
   </svg>
-</span>
+</button>
 
 <style>
   .flipped {

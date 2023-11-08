@@ -9,7 +9,7 @@
 </script>
 
 <div
-  class="absolute top-[10px] right-[10px] z-10 rounded border-2 border-black/30 bg-white px-2 pt-1 pb-2"
+  class="absolute right-[10px] top-[10px] z-10 rounded border-2 border-black/30 bg-white px-2 pb-2 pt-1"
   on:mouseleave={() => (shown = false)}
 >
   {#if !shown}

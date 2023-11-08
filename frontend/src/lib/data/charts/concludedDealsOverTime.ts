@@ -7,7 +7,7 @@ import { isDated, parseDate } from "$lib/data/itemUtils"
 import {
   getConcludedRange,
   getInitialSize,
-  isConcluded,
+  hasBeenConcluded,
   hasConcludedDate,
   getCurrentSize,
 } from "$lib/data/dealUtils"
@@ -78,7 +78,7 @@ export const createConcludedDealsOverTimeReducer = (years: number[]) => {
     deal: Deal,
   ): ConcludedDealsOverTimeAccumulator => {
     // filtered
-    if (!isConcluded(deal)) {
+    if (!hasBeenConcluded(deal)) {
       return acc
     }
     // excluded
@@ -177,6 +177,7 @@ export const drawGraph = (
     .append("g")
     .attr("transform", `translate(0,${height - margin.bottom})`)
     .call(xAxis)
+    .attr("font-family", "inherit")
     .attr("stroke", "black")
     .attr("stroke-width", 0.1)
 
@@ -184,6 +185,7 @@ export const drawGraph = (
     .append("g")
     .attr("transform", `translate(${margin.left},0)`)
     .call(yAxis)
+    .attr("font-family", "inherit")
     .attr("stroke", "black")
     .attr("stroke-width", 0.1)
 

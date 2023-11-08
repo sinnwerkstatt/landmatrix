@@ -1,13 +1,19 @@
-from django.urls import path
+from django.urls import include, path
+from rest_framework import routers
+
+from apps.landmatrix.views import FieldDefinitionViewSet
 
 from .export import DataDownload
 from .gis_export import gis_export
-from .views import CaseStatistics, Management, messages_json, investor_search
+from .views import CaseStatistics, Management, investor_search, messages_json
 
 
 def data_download(request):
     return DataDownload(request).get_response()
 
+
+router = routers.DefaultRouter()
+router.register(r"field_definitions", FieldDefinitionViewSet)
 
 urlpatterns = [
     path("legacy_export/", data_download),
@@ -16,4 +22,5 @@ urlpatterns = [
     path("management/", Management.as_view()),
     path("case_statistics/", CaseStatistics.as_view()),
     path("investor_search/", investor_search),
+    path("", include(router.urls)),
 ]

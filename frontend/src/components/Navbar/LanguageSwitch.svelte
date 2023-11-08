@@ -4,7 +4,7 @@
 
   import { page } from "$app/stores"
 
-  import { fetchBasis } from "$lib/stores"
+  import { fetchBasis, fetchFieldDefinitions } from "$lib/stores"
 
   import TranslateIcon from "$components/icons/TranslateIcon.svelte"
   import NavDropDown from "$components/Navbar/NavDropDown.svelte"
@@ -19,6 +19,7 @@
   const switchLanguage = async (lang: string) => {
     Cookies.set("django_language", lang)
     await locale.set(lang)
+    await fetchFieldDefinitions(fetch)
     await fetchBasis(lang, fetch, $page.data.urqlClient)
   }
 </script>

@@ -71,28 +71,6 @@
         if (startflagging) {
           dv.showEntry = true
         }
-        // if (prev_dses.length > dses.length) {
-        //   startflagging = true;
-        //   dv.showEntry = true;
-        //   // ret.at(-1).showEntry = true;
-        //
-        //   // // try to map the entries
-        //   // for (let [index, ds] of dses.entries()) {
-        //   //   const pds = prev_dses[index];
-        //   //   if (
-        //   //     ds.type === pds.type &&
-        //   //     ds.url === pds.url &&
-        //   //     ds.date === pds.date
-        //   //   ) {
-        //   //     // this is fine
-        //   //   } else {
-        //   //     const pds2 = prev_dses[index + 1];
-        //   //     ds.file_is_probably_broken = true;
-        //   //     ds.file_prop = pds2.file;
-        //   //     console.log({ index, ds, pds });
-        //   //   }
-        //   // }
-        // }
 
         if (new Date(dv.created_at).getTime() >= new Date(2018, 1, 1).getTime()) {
           if (prev_dses.length > dses.length) {
@@ -107,7 +85,6 @@
                 const pds2 = prev_dses[index + 1]
                 ds.file_is_probably_broken = true
                 ds.file_prop = pds2.file
-                console.log({ index, ds, pds })
               }
             }
           }

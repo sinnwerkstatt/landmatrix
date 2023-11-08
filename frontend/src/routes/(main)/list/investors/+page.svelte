@@ -1,12 +1,13 @@
 <script lang="ts">
   import { Client, gql, queryStore } from "@urql/svelte"
   import { _ } from "svelte-i18n"
+  import { onMount } from "svelte"
 
   import { page } from "$app/stores"
 
   import { dealsQuery } from "$lib/dealQueries"
   import { filters, FilterValues, publicOnly } from "$lib/filters"
-  import { formfields } from "$lib/stores"
+  import { formfields, isMobile, loading } from "$lib/stores"
   import type { Deal } from "$lib/types/deal"
   import type { GQLFilter } from "$lib/types/filters"
   import type { Investor } from "$lib/types/investor"
@@ -48,6 +49,7 @@
       subset: $publicOnly ? "PUBLIC" : "ACTIVE",
     },
   })
+  $: loading.set($deals?.fetching ?? false)
 
   let investors: Investor[] = []
 
@@ -114,15 +116,18 @@
 
   $: getInvestors($deals?.data?.deals ?? [], $filters)
 
-  showContextBar.set(false)
+  onMount(() => {
+    showContextBar.set(false)
+    showFilterBar.set(!$isMobile)
+  })
 </script>
 
 <DataContainer>
   <div class="flex h-full">
     <div
-      class="h-full min-h-[3px] flex-none {$showFilterBar
-        ? 'w-[clamp(220px,20%,300px)]'
-        : 'w-0'}"
+      class="h-full min-h-[3px] w-0 flex-none {$showFilterBar
+        ? 'md:w-[clamp(220px,20%,300px)]'
+        : ''}"
     />
 
     <div class="flex h-full w-1 grow flex-col px-6 pb-6">
@@ -143,10 +148,10 @@
         />
       </Table>
     </div>
-    <div
-      class="h-full min-h-[3px] flex-none {$showContextBar
-        ? 'w-[clamp(220px,20%,300px)]'
-        : 'w-0'}"
-    />
+    <!--    <div-->
+    <!--      class="h-full min-h-[3px] flex-none {$showContextBar-->
+    <!--        ? 'w-[clamp(220px,20%,300px)]'-->
+    <!--        : 'w-0'}"-->
+    <!--    />-->
   </div>
 </DataContainer>

@@ -1,4 +1,4 @@
-import { createBucketMap } from "$lib/data/buckets"
+import { createEmptyBuckets } from "$lib/data/buckets"
 import { agricultureIntentionReducer } from "$lib/data/charts/agricultureIntention"
 import { implementationStatusReducer } from "$lib/data/charts/implementationStatus"
 import { intentionOfInvestmentGroupReducer } from "$lib/data/charts/intentionOfInvestmentGroup"
@@ -14,6 +14,7 @@ import {
   NegotiationStatusGroup,
   OtherIoI,
   ProduceGroup,
+  RenewableEnergyIoI,
 } from "$lib/types/deal"
 
 describe("Intention of Investment Group", () => {
@@ -24,6 +25,7 @@ describe("Intention of Investment Group", () => {
           ForestryIoI.CARBON,
           ForestryIoI.TIMBER_PLANTATION,
           ForestryIoI.FOREST_LOGGING,
+          RenewableEnergyIoI.SOLAR_PARK,
           AgricultureIoI.BIOFUELS,
         ],
         deal_size: 500,
@@ -33,6 +35,7 @@ describe("Intention of Investment Group", () => {
           OtherIoI.MINING,
           OtherIoI.CONVERSATION,
           AgricultureIoI.BIOFUELS,
+          RenewableEnergyIoI.WIND_FARM,
         ],
         deal_size: 100,
       },
@@ -40,12 +43,13 @@ describe("Intention of Investment Group", () => {
 
     const bucketMap = deals.reduce(
       intentionOfInvestmentGroupReducer,
-      createBucketMap(Object.values(IoIGroup)),
+      createEmptyBuckets(Object.values(IoIGroup)),
     )
 
     expect(bucketMap).toEqual({
       [IoIGroup.FORESTRY]: { count: 1, size: 500 },
       [IoIGroup.AGRICULTURE]: { count: 2, size: 600 },
+      [IoIGroup.RENEWABLE_ENERGY]: { count: 2, size: 600 },
       [IoIGroup.OTHER]: { count: 1, size: 100 },
     })
   })
@@ -74,11 +78,12 @@ describe("Agriculture Intention of Investment", () => {
 
     const bucketMap = deals.reduce(
       agricultureIntentionReducer,
-      createBucketMap(Object.values(AgricultureIoI)),
+      createEmptyBuckets(Object.values(AgricultureIoI)),
     )
 
     expect(bucketMap).toEqual({
       [AgricultureIoI.BIOFUELS]: { count: 2, size: 600 },
+      [AgricultureIoI.BIOMASS_ENERGY_GENERATION]: { count: 0, size: 0 },
       [AgricultureIoI.FOOD_CROPS]: { count: 1, size: 100 },
       [AgricultureIoI.FODDER]: { count: 0, size: 0 },
       [AgricultureIoI.LIVESTOCK]: { count: 0, size: 0 },
@@ -105,7 +110,7 @@ describe("Produce Group", () => {
 
     const bucketMap = deals.reduce(
       produceGroupReducer,
-      createBucketMap(Object.values(ProduceGroup)),
+      createEmptyBuckets(Object.values(ProduceGroup)),
     )
 
     expect(bucketMap).toEqual({
@@ -135,7 +140,7 @@ describe("Negotiation Status Group", () => {
 
     const bucketMap = deals.reduce(
       negotiationStatusGroupReducer,
-      createBucketMap(Object.values(NegotiationStatusGroup)),
+      createEmptyBuckets(Object.values(NegotiationStatusGroup)),
     )
 
     expect(bucketMap).toEqual({
@@ -166,7 +171,7 @@ describe("Implementation Status", () => {
 
     const bucketMap = deals.reduce(
       implementationStatusReducer,
-      createBucketMap(Object.values(ImplementationStatus)),
+      createEmptyBuckets(Object.values(ImplementationStatus)),
     )
 
     expect(bucketMap).toEqual({

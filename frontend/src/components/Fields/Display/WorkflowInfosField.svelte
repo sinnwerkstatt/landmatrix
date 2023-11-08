@@ -16,9 +16,7 @@
 <div
   class="cursor-pointer"
   on:click|stopPropagation={() => {
-    if (!showMoreInfos) {
-      showMoreInfos = true
-    }
+    if (!showMoreInfos) showMoreInfos = true
   }}
 >
   <slot>
@@ -32,7 +30,7 @@
       class="absolute top-0 z-10 w-[368px] rounded-sm border border-black bg-lm-darkgray shadow-md"
     >
       <div
-        class="h-auto max-h-[330px] cursor-default overflow-y-scroll bg-lm-darkgray px-[2px] pt-1 pb-4 shadow-inner"
+        class="h-auto max-h-[330px] cursor-default overflow-y-scroll bg-lm-darkgray px-[2px] pb-4 pt-1 shadow-inner"
       >
         {#each value as info}
           <WorkflowInfo bind:info />

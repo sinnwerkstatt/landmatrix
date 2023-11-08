@@ -1,5 +1,5 @@
-import type { Client } from "@urql/core"
-import { createClient, gql } from "@urql/svelte"
+import { Client, cacheExchange, fetchExchange, gql } from "@urql/core"
+// import { devtoolsExchange } from "@urql/devtools"
 
 import { i18nload } from "$lib/i18n/i18n"
 import { fetchBasis } from "$lib/stores"
@@ -21,6 +21,7 @@ async function fetchMe(urqlClient: Client) {
             full_name
             is_authenticated
             is_impersonate
+            is_superuser
             role
             country {
               id
@@ -44,8 +45,9 @@ async function fetchMe(urqlClient: Client) {
 }
 
 export const load: LayoutLoad = async ({ fetch, data }) => {
-  const urqlClient = await createClient({
+  const urqlClient = new Client({
     url: "/graphql/",
+    exchanges: [cacheExchange, fetchExchange],
     fetch,
     fetchOptions: () => ({ credentials: "include" }),
   })

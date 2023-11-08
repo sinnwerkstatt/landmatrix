@@ -21,10 +21,16 @@
 
   const SIZE_THRESHOLD = 0.005
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const asKeyMap = (array: { value: any; label: string }[] | undefined) =>
+    array
+      ? array.reduce((acc, { value, label }) => ({ ...acc, [value]: label }), {})
+      : {}
+
   $: keyMap = {
-    ...$formfields.deal["crops"].choices,
-    ...$formfields.deal["animals"].choices,
-    ...$formfields.deal["mineral_resources"].choices,
+    ...asKeyMap($formfields.deal["crops"].choices),
+    ...asKeyMap($formfields.deal["animals"].choices),
+    ...asKeyMap($formfields.deal["mineral_resources"].choices),
   }
 
   interface ProduceAccumulator {
@@ -218,6 +224,6 @@
   }
 </script>
 
-<ChartWrapper {title} on:download={handleDownload}>
+<ChartWrapper {title} wrapperClasses="mx-auto w-full" on:download={handleDownload}>
   <svg id="produce-info-map" bind:this={svgComp} />
 </ChartWrapper>

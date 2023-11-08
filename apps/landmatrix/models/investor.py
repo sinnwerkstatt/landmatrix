@@ -83,7 +83,7 @@ class InvestorVersion(Version):
 
 
 class Investor(models.Model):
-    name = models.CharField(_("Name"), max_length=1024)
+    name = models.CharField(_("Name"))
     country = models.ForeignKey(
         Country,
         verbose_name=_("Country of registration/origin"),
@@ -116,7 +116,6 @@ class Investor(models.Model):
     )
     classification = models.CharField(
         verbose_name=_("Classification"),
-        max_length=100,
         choices=CLASSIFICATION_CHOICES,
         blank=True,
         null=True,
@@ -432,16 +431,14 @@ class InvestorVentureInvolvement(models.Model):
         ("PARENT", _("Parent company")),
         ("LENDER", _("Tertiary investor/lender")),
     )
-    role = models.CharField(
-        verbose_name=_("Relation type"), max_length=100, choices=ROLE_CHOICES
-    )
+    role = models.CharField(verbose_name=_("Relation type"), choices=ROLE_CHOICES)
 
     INVESTMENT_TYPE_CHOICES = (
         ("EQUITY", _("Shares/Equity")),
         ("DEBT_FINANCING", _("Debt financing")),
     )
     investment_type = ArrayField(
-        models.CharField(max_length=100, choices=INVESTMENT_TYPE_CHOICES),
+        models.CharField(choices=INVESTMENT_TYPE_CHOICES),
         verbose_name=_("Investment type"),
         blank=True,
         null=True,
@@ -470,7 +467,6 @@ class InvestorVentureInvolvement(models.Model):
     )
     parent_relation = models.CharField(
         verbose_name=_("Parent relation"),
-        max_length=100,
         choices=PARENT_RELATION_CHOICES,
         blank=True,
         null=True,
