@@ -3,11 +3,11 @@
   import { BrowserTracing } from "@sentry/tracing"
   import type { Client } from "@urql/core"
   import { SvelteToast } from "@zerodevx/svelte-toast"
-  import { onMount } from "svelte"
+  import { onMount, setContext } from "svelte"
 
   import { afterNavigate } from "$app/navigation"
 
-  import { getAllUsers } from "$lib/stores"
+  import { contentRootElement, getAllUsers } from "$lib/stores"
   import type { User } from "$lib/types/user"
   import { UserRole } from "$lib/types/user"
 
@@ -36,13 +36,12 @@
     Sentry.configureScope(scope => scope.setUser({ id: (data.user as User).username }))
 
   onMount(async () => {
-    if (data.user?.role >= UserRole.EDITOR) {
+    if ((data.user?.role || -1) >= UserRole.EDITOR) {
       await getAllUsers(data.urqlClient)
     }
   })
 
-  let contentRoot: Element
-  afterNavigate(() => contentRoot.scrollTo(0, 0))
+  afterNavigate(() => $contentRootElement?.scrollTo(0, 0))
 </script>
 
 <Messages />
@@ -53,8 +52,8 @@
 </div>
 
 <div
-  bind:this={contentRoot}
-  class="h-[calc(100vh-62px-32px)] overflow-x-auto dark:bg-lm-black"
+  bind:this={$contentRootElement}
+  class="h-[calc(100vh-69px-32px)] overflow-x-auto dark:bg-lm-black"
 >
   <slot />
 </div>
