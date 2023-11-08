@@ -2,6 +2,7 @@ import re
 
 from django.contrib.sites.models import Site
 from django.utils.html import format_html_join
+from django.utils.translation import gettext as _
 from wagtail import blocks
 from wagtail.blocks import Block, RawHTMLBlock, StreamBlock, StructBlock
 from wagtail.embeds.blocks import EmbedBlock
