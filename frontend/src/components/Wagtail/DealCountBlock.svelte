@@ -43,7 +43,7 @@
 </script>
 
 <div
-  class="content-fit container mx-auto my-20 bg-[url('/images/Background_hoehenlinien.png')] bg-contain  p-6 text-center dark:bg-[url('/images/Background_hoehenlinien_dark.png')]"
+  class="content-fit container mx-auto my-20 bg-[url('/images/Background_hoehenlinien.png')] bg-contain p-6 text-center dark:bg-[url('/images/Background_hoehenlinien_dark.png')]"
   bind:this={element}
 >
   <h3 class="heading1 dark:text-white">{value.text}</h3>

@@ -29,7 +29,7 @@
         target={value.link.rel_external ? "_blank" : ""}
       >
         <div
-          class="button1 w-fit rounded bg-black py-[10px] px-5 text-white transition hover:bg-opacity-80"
+          class="button1 w-fit rounded bg-black px-5 py-[10px] text-white transition hover:bg-opacity-80"
         >
           {value.link.text}
         </div>
@@ -45,7 +45,7 @@
       target={value.link.rel_external ? "_blank" : ""}
     >
       <div
-        class="button1 mx-auto w-fit rounded bg-black py-[10px] px-5 text-white transition hover:bg-lm-dark"
+        class="button1 mx-auto w-fit rounded bg-black px-5 py-[10px] text-white transition hover:bg-lm-dark"
       >
         {value.link.text}
       </div>

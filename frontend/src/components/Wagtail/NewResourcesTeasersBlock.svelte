@@ -22,7 +22,7 @@
         <p class="caption text-orange">{value.articles[0].categories[0].name}</p>
         <h4 class="heading4 -mt-3 text-orange">{value.articles[0].title}</h4>
 
-        <div class="body2 mb-6 -mt-3">{value.articles[0].date}</div>
+        <div class="body2 -mt-3 mb-6">{value.articles[0].date}</div>
         <p class="body1">
           {@html value.articles[0].excerpt}
         </p>

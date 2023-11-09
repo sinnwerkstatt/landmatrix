@@ -30,24 +30,24 @@
   >
     <div class="card-container">
       <MapTeaser />
-      <h3 class="heading2 dark:text-white ">{value.cards[0].title}</h3>
-      <p class="card-text ">{value.cards[0].teaser}</p>
+      <h3 class="heading2 dark:text-white">{value.cards[0].title}</h3>
+      <p class="card-text">{value.cards[0].teaser}</p>
       <a class="link-button" href={value.cards[0].link.href}>
         {value.cards[0].link.text}
       </a>
     </div>
     <div class="card-container">
       <CakeTeaser />
-      <h3 class="heading2 dark:text-white ">{value.cards[1].title}</h3>
-      <p class="card-text ">{value.cards[1].teaser}</p>
+      <h3 class="heading2 dark:text-white">{value.cards[1].title}</h3>
+      <p class="card-text">{value.cards[1].teaser}</p>
       <a class="link-button" href={value.cards[1].link.href}>
         {value.cards[1].link.text}
       </a>
     </div>
     <div class="card-container">
       <TableTeaser />
-      <h3 class="heading2 dark:text-white ">{value.cards[2].title}</h3>
-      <p class="card-text ">{value.cards[2].teaser}</p>
+      <h3 class="heading2 dark:text-white">{value.cards[2].title}</h3>
+      <p class="card-text">{value.cards[2].teaser}</p>
       <a class="link-button" href={value.cards[2].link.href}>
         {value.cards[2].link.text}
       </a>

@@ -124,7 +124,7 @@
 {:else}
   <div>
     <a
-      class="button1 w-fit rounded bg-orange py-1 px-3 text-white transition hover:bg-orange-600 hover:text-white sm:mx-3 sm:py-2 sm:px-6 lg:px-10"
+      class="button1 w-fit rounded bg-orange px-3 py-1 text-white transition hover:bg-orange-600 hover:text-white sm:mx-3 sm:px-6 sm:py-2 lg:px-10"
       href="/account/login/?next={$page.url.pathname}"
       title={$_("Login/Register")}
     >

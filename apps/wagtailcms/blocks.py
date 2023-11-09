@@ -492,6 +492,7 @@ class NewResourcesTeasersBlock(StructBlock):
 
     def get_api_representation(self, value, context=None):
         from ..blog.models import BlogPage
+
         latest_news = BlogPage.objects.filter(blog_categories=2).last()
         latest_event = BlogPage.objects.filter(blog_categories=5).last()
         latest_publication = BlogPage.objects.filter(blog_categories=3).last()
@@ -501,7 +502,8 @@ class NewResourcesTeasersBlock(StructBlock):
             "title": value.get("title"),
             "subtitle": value.get("subtitle"),
             "image": value["article_highlight"].get_dict("fill-500x500")[
-                "header_image"],
+                "header_image"
+            ],
             "articles": [article.get_teaser() for article in bp],
         }
         return ret

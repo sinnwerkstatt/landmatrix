@@ -14,7 +14,7 @@
     <p class="caption text-orange">{article.categories[0].name}</p>
     <h4 class="heading4 -mt-3 text-orange">{article.title}</h4>
 
-    <div class="body2 mb-6 -mt-3">{article.date}</div>
+    <div class="body2 -mt-3 mb-6">{article.date}</div>
     <p class="body1 excerpt">
       {@html article.excerpt}
     </p>

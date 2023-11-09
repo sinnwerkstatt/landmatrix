@@ -44,7 +44,7 @@
         <li>
           <a
             href={cat.slug ? `?category=${cat.slug}` : "/resources"}
-            class="button1 mx-1 block w-fit whitespace-nowrap rounded border border-orange py-2 px-3 shadow transition hover:border-orange-700 {data.category ===
+            class="button1 mx-1 block w-fit whitespace-nowrap rounded border border-orange px-3 py-2 shadow transition hover:border-orange-700 {data.category ===
             cat.slug
               ? 'bg-orange font-bold text-white hover:bg-orange-700 hover:text-white'
               : 'hover:text-orange-700 '}"
@@ -66,7 +66,7 @@
             <img src={blogpage.header_image} class="rounded-t" alt="" loading="lazy" />
           {/if}
           <div class="p-2">
-            <h5 class="heading5 mb-4 ">
+            <h5 class="heading5 mb-4">
               <a
                 href={blogpage.url}
                 class=" text-lm-black hover:text-orange dark:text-white"

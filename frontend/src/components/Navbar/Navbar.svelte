@@ -125,7 +125,7 @@
       class={cn(
         menuHidden ? "hidden xl:block" : "",
         "absolute xl:static",
-        "top-[54px] left-0 z-50 w-full xl:w-auto",
+        "left-0 top-[54px] z-50 w-full xl:w-auto",
         "bg-white dark:bg-gray-800",
         "shadow-lg xl:shadow-none",
       )}
@@ -135,7 +135,7 @@
       <ul
         class={cn(
           "divide-y divide-solid px-4",
-          "gap-y-6 p-6 dark:bg-lm-black lg:flex lg:flex-wrap lg:items-center lg:justify-center lg:gap-y-0 lg:gap-x-12 lg:divide-transparent lg:p-0 xl:justify-between xl:gap-x-0",
+          "gap-y-6 p-6 dark:bg-lm-black lg:flex lg:flex-wrap lg:items-center lg:justify-center lg:gap-x-12 lg:gap-y-0 lg:divide-transparent lg:p-0 xl:justify-between xl:gap-x-0",
         )}
       >
         {#each menuEntries as entry}
