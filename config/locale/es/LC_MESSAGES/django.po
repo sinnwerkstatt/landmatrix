@@ -216,6 +216,12 @@ msgstr "Comentario sobre fuente de datos"
 msgid "Deals"
 msgstr "Transacciones"
 
+msgid "deals"
+msgstr "transacciones"
+
+msgid "Equals"
+msgstr ""
+
 msgid "Created at"
 msgstr "Creado el"
 

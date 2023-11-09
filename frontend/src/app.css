@@ -88,37 +88,38 @@
     @apply mb-4;
   }
 
-  h1 {
-    @apply my-5 text-3xl font-bold text-lm-dark dark:text-gray-200;
-  }
+  /*ToDo: get rid of h-styles*/
+  /*h1 {*/
+  /*  @apply my-5 text-3xl font-bold text-lm-black dark:text-gray-200;*/
+  /*}*/
 
-  h2 {
-    @apply my-5 text-xl font-bold text-lm-dark dark:text-gray-200;
-  }
+  /*h2 {*/
+  /*  @apply my-5  font-bold text-lm-black dark:text-gray-200;*/
+  /*}*/
 
-  h3 {
-    @apply my-5 text-[22px] font-bold text-lm-dark dark:text-gray-200;
-  }
+  /*h3 {*/
+  /*  @apply my-5 font-bold text-lm-black dark:text-gray-200;*/
+  /*}*/
 
-  h3 a {
-    @apply text-lm-dark dark:text-gray-200;
-  }
+  /*h3 a {*/
+  /*  @apply text-lm-dark dark:text-gray-200;*/
+  /*}*/
 
-  h4 {
-    @apply my-5 text-lg font-bold text-lm-dark dark:text-gray-200;
-  }
+  /*h4 {*/
+  /*  @apply my-5 text-lg font-bold text-lm-dark dark:text-gray-200;*/
+  /*}*/
 
   .display1 {
-    @apply font-oswald text-[72px] font-bold leading-tight md:text-[120px];
+    @apply font-oswald text-7xl font-bold leading-tight md:text-[120px];
   }
 
   .heading1,
   .heading2,
   .heading3 {
-    @apply font-oswald font-bold leading-tight text-lm-black;
+    @apply mb-5 font-oswald font-bold leading-tight;
   }
   .heading1 {
-    @apply text-[48px] md:text-[60px];
+    @apply text-5xl md:text-6xl;
   }
 
   .heading2 {
@@ -129,36 +130,36 @@
     @apply text-[32px] md:text-[40px];
   }
   .heading4 {
-    @apply font-oswald text-[28px] font-semibold leading-tight md:text-[32px];
+    @apply mb-5 font-oswald text-[28px] font-semibold leading-tight md:text-[32px];
   }
 
   .heading5 {
-    @apply font-oswald text-[24px]  leading-tight md:text-[28px];
+    @apply mb-3 font-oswald text-2xl leading-tight md:text-[28px];
   }
 
   .subtitle1 {
-    @apply text-[16px] font-bold leading-tight md:text-[18px];
+    @apply text-base font-bold leading-tight md:text-lg;
   }
   .subtitle2 {
-    @apply text-[14px] font-bold leading-tight md:text-[16px];
+    @apply text-sm font-bold leading-tight md:text-base;
   }
   .body1 {
-    @apply text-[16px] leading-tight md:text-[18px];
+    @apply text-base leading-tight md:text-lg;
   }
   .body2 {
-    @apply text-[14px] leading-tight md:text-[16px];
+    @apply text-sm leading-tight md:text-base;
   }
 
   .caption {
-    @apply text-[12px] font-bold uppercase leading-tight tracking-[5%] text-lm-black md:text-[14px];
+    @apply text-xs font-bold uppercase leading-tight tracking-[5%] text-lm-black md:text-sm;
   }
 
   .button1 {
-    @apply text-[16px] font-bold leading-tight tracking-[5%] md:text-[18px];
+    @apply text-base font-bold leading-tight tracking-[5%] md:text-lg;
   }
 
   .button-active {
-    @apply text-[16px] font-bold leading-tight tracking-[10%] md:text-[18px];
+    @apply text-base font-bold leading-tight tracking-[10%] md:text-lg;
   }
 
   .btn {
@@ -176,8 +177,8 @@
   }
 
   .btn-primary {
-    @apply border-orange bg-orange text-white;
-    @apply hover:border-orange-300 hover:bg-orange-300;
+    @apply button1 rounded border-orange bg-orange text-white;
+    @apply hover:border-orange-600 hover:bg-orange-600;
     @apply active:bg-orange-700;
   }
 
@@ -195,24 +196,24 @@
   }
 
   .btn-gray {
-    @apply border-lm-dark bg-gray-300 text-gray-600;
+    @apply button1 rounded border-lm-dark bg-gray-300 text-gray-600;
     @apply hover:bg-gray-400 hover:text-white;
   }
 
   .btn-pelorous {
-    @apply border-pelorous bg-pelorous-300 text-white;
+    @apply button1 rounded border-pelorous bg-pelorous-300 text-white;
     @apply hover:bg-pelorous hover:text-white;
     @apply active:bg-pelorous active:text-white;
   }
 
   .btn-pelorous-secondary {
-    @apply border-pelorous bg-white text-pelorous;
+    @apply button1 rounded border-pelorous bg-white text-pelorous;
     @apply hover:bg-pelorous-200 hover:text-white;
     @apply active:bg-pelorous active:text-white;
   }
 
   .btn-danger {
-    @apply border-dotted border-red-600 bg-transparent text-red-600;
+    @apply button1 rounded border-dotted border-red-600 bg-transparent text-red-600;
     @apply hover:bg-red-400 hover:text-white;
   }
 

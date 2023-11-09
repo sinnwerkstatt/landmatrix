@@ -7,11 +7,10 @@
 
   import { afterNavigate } from "$app/navigation"
 
-  import { getAllUsers } from "$lib/stores"
+  import { contentRootElement, getAllUsers } from "$lib/stores"
   import type { User } from "$lib/types/user"
   import { UserRole } from "$lib/types/user"
 
-  import Footer from "$components/Footer.svelte"
   import LightboxImage from "$components/LightboxImage.svelte"
   import Matomo from "$components/Matomo.svelte"
   import Messages from "$components/Messages.svelte"
@@ -19,6 +18,7 @@
   import NavigationLoader from "$components/NavigationLoader.svelte"
 
   import "../app.css"
+  import NewFooter from "$components/NewFooter.svelte"
 
   // import type { LayoutData } from "./$types"
   // export let data: LayoutData
@@ -36,28 +36,27 @@
     Sentry.configureScope(scope => scope.setUser({ id: (data.user as User).username }))
 
   onMount(async () => {
-    if (data.user?.role >= UserRole.EDITOR) {
+    if ((data.user?.role || -1) >= UserRole.EDITOR) {
       await getAllUsers(data.urqlClient)
     }
   })
 
-  let contentRoot: Element
-  afterNavigate(() => contentRoot.scrollTo(0, 0))
+  afterNavigate(() => $contentRootElement?.scrollTo(0, 0))
 </script>
 
 <Messages />
 <NavigationLoader />
 
-<div class="h-[62px]">
+<div class="69px">
   <Navbar />
 </div>
 
-<div bind:this={contentRoot} class="h-[calc(100vh-62px-32px)] overflow-x-auto">
+<div
+  bind:this={$contentRootElement}
+  class="h-[calc(100vh-69px)] overflow-x-auto dark:bg-lm-black"
+>
   <slot />
-</div>
-
-<div class="h-[32px]">
-  <Footer />
+  <NewFooter />
 </div>
 
 <Matomo />

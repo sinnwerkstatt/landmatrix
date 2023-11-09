@@ -218,6 +218,12 @@ msgstr "Примечание об источнике информации"
 msgid "Deals"
 msgstr "Сделки"
 
+msgid "deals"
+msgstr "Сделки"
+
+msgid "Equals"
+msgstr ""
+
 msgid "Created at"
 msgstr "Созданны в"
 

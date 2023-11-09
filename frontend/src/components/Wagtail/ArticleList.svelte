@@ -21,15 +21,21 @@
     {/if}
 
     <div>
-      <h5 class="text-lg font-bold">
-        <a href={article.url} class="text-orange">{article.title}</a>
+      <h5 class="heading5">
+        <a href={article.url} class="text-orange transition hover:text-orange-700">
+          {article.title}
+        </a>
       </h5>
       {@html article.excerpt}
     </div>
   </div>
 {/each}
 {#if limit && limit < articles.length}
-  <button type="button" class="btn btn-white" on:click={() => (limit = 0)}>
+  <button
+    type="button"
+    class="button1 rounded bg-lm-orange p-2 px-4 text-white transition hover:bg-orange-600"
+    on:click={() => (limit = 0)}
+  >
     {$_("Show all")}
     {articles.length}
   </button>

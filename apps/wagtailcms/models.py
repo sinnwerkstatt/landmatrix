@@ -1,9 +1,11 @@
 from django import forms
 from django.db import models
 from django.db.models import QuerySet
+from django.db.models import Sum
 from wagtail.admin.panels import FieldPanel, FieldRowPanel
 from wagtail.api import APIField
 from wagtail.contrib.settings.models import BaseGenericSetting, register_setting
+from wagtail.blocks import StructBlock, CharBlock
 from wagtail.fields import RichTextField, StreamField
 from wagtail.models import Page
 from wagtail.rich_text import expand_db_html
@@ -19,6 +21,7 @@ from .blocks import (
     DATA_BLOCKS,
     SIMPLE_CONTENT_BLOCKS,
     NoWrapsStreamField,
+    NEW_BLOCKS,
 )
 from .twitter import TwitterTimeline
 
@@ -55,6 +58,33 @@ class WagtailRootPage(HeadlessPreviewMixin, Page):
     is_creatable = False
     body = NoWrapsStreamField(
         CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS, use_json_field=True
+    )
+
+    content_panels = Page.content_panels + [FieldPanel("body")]
+    api_fields = [APIField("body")]
+
+
+class HomePage(HeadlessPreviewMixin, Page):
+    max_count = 1
+
+    class DealCountBlock(StructBlock):
+        text = CharBlock(default="It's a big deal")
+
+        # sum_ha = _sum([d.current_contract_size for d in deals])
+        def get_api_representation(self, value, context=None):
+            deals = Deal.objects.public()
+            count_deals = deals.count()
+
+            x = deals.aggregate(sum_ha=Sum("current_contract_size"))
+
+            return {
+                "sum_ha": x["sum_ha"],
+                "deals": count_deals,
+                "text": value.get("text"),
+            }
+
+    body = StreamField(
+        NEW_BLOCKS + [("dealcount", DealCountBlock())], use_json_field=True
     )
 
     content_panels = Page.content_panels + [FieldPanel("body")]

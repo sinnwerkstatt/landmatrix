@@ -63,7 +63,7 @@
 </svelte:head>
 
 <div class="absolute z-10 w-full border-b border-orange bg-white py-2 dark:bg-gray-800">
-  <h1 class="container mx-auto mb-1 mt-0 text-xl">{$_("Case statistics")}</h1>
+  <h1 class="heading4 container mx-auto mb-3">{$_("Case statistics")}</h1>
   <div class="container mx-auto flex w-full gap-5">
     <div class="flex w-full items-center gap-2">
       <div>{$_("Region")}:</div>

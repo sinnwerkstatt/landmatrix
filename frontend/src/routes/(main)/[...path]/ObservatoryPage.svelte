@@ -221,7 +221,7 @@
 </div>
 
 <div class="container mx-auto my-8 w-[clamp(20rem,75%,56rem)]">
-  <h3>{$_("Country profiles")}</h3>
+  <h3 class="heading4 mb-3">{$_("Country profiles")}</h3>
   <div>
     <p>
       {$_(
@@ -235,13 +235,13 @@
       <a href="/contribute">{$_("here")}</a>
       .
     </p>
-    <h4>{$_("Download country profiles for")}:</h4>
+    <h4 class="heading5">{$_("Download country profiles for")}:</h4>
   </div>
   <ArticleList articles={filteredCountryProfiles} />
 </div>
 
 <div class="container mx-auto my-8 w-[clamp(20rem,75%,56rem)]">
-  <h3>{$_("News & publications")}</h3>
+  <h3 class="heading4 mb-3">{$_("News & publications")}</h3>
   <ArticleList articles={filteredNewsPubs} />
 </div>
 

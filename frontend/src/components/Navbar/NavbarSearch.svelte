@@ -160,31 +160,41 @@
 
 <NavDropDown>
   <svelte:fragment slot="title">
-    <SearchIcon class="h-5 w-5" />
-  </svelte:fragment>
-  <div class="relative w-[300px] border-2 border-orange bg-white p-2 dark:bg-gray-800">
-    <label for="search" class="flex w-[280px] flex-col">
-      {$_("Search deals and investors")}
+    <div
+      class="flex items-center justify-end bg-white px-2 dark:bg-lm-black lg:w-[250px]"
+    >
       <input
         id="search"
         bind:value={searchString}
-        class="inpt"
-        placeholder={$_("Search")}
+        class="inpt mr-3 hidden rounded xl:block"
+        placeholder={$_("Search for...")}
         autocomplete="off"
         on:keydown={searchKeyboardEvent}
       />
-    </label>
+      <SearchIcon class="h-6" />
+    </div>
+  </svelte:fragment>
+  <div
+    class="relative w-[300px] rounded bg-white p-2 shadow-lg dark:bg-lm-black xl:hidden"
+  >
+    <input
+      id="search"
+      bind:value={searchString}
+      class="inpt"
+      placeholder={$_("Search")}
+      autocomplete="off"
+      on:keydown={searchKeyboardEvent}
+    />
   </div>
-
   {#if searchResult.length}
     <ul
       bind:this={searchResultContainer}
       id="search-result"
       class={cn(
-        "right-0 w-full overflow-y-auto border-t-orange",
+        "w-full overflow-y-auto border-t-orange",
         "bg-white dark:bg-gray-800",
         "xl:absolute xl:z-50 xl:max-h-[55vh] xl:w-[300px]",
-        "xl:border-2 xl:border-orange xl:shadow-xl",
+        "xl:shadow-xl",
       )}
     >
       {#each searchResult.filter((item, index) => index < 10) as item, index}

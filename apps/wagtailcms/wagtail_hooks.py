@@ -1,6 +1,10 @@
 from django.utils.html import format_html
 from wagtail import hooks
+from wagtail.snippets.models import register_snippet
+from wagtail.snippets.views.snippets import SnippetViewSet
 from wagtail.whitelist import attribute_rule
+
+from apps.wagtailcms.partners import Partner
 
 
 @hooks.register("register_icons")
@@ -38,3 +42,15 @@ def monkeypatch_wagtail_modeltranslation():
         '<script src="{}"></script>',
         "/static/js/cleanForSlug.js",
     )
+
+
+class PartnerViewSet(SnippetViewSet):
+    model = Partner
+    add_to_admin_menu = False
+    form_fields_exclude = []
+    list_display = ["name", "logo", "homepage"]
+    list_filter = ["name", "homepage"]
+    menu_icon = "user"
+
+
+register_snippet(PartnerViewSet)

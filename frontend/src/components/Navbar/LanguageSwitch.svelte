@@ -6,7 +6,6 @@
 
   import { fetchBasis, fetchFieldDefinitions } from "$lib/stores"
 
-  import TranslateIcon from "$components/icons/TranslateIcon.svelte"
   import NavDropDown from "$components/Navbar/NavDropDown.svelte"
 
   const languages = {
@@ -26,15 +25,16 @@
 
 <NavDropDown>
   <svelte:fragment slot="title">
-    <TranslateIcon class="mr-0.5 inline h-5 w-5" />
-    <span class="w-5 uppercase">{$locale}</span>
+    <span class="button1 mx-3 text-black dark:text-white">
+      {languages[$locale]}
+    </span>
   </svelte:fragment>
 
-  <ul class="border-2 border-orange bg-white dark:bg-gray-800">
+  <ul class="bg-white shadow-lg dark:bg-lm-black">
     {#each Object.entries(languages) as [lcode, lingo]}
       <li>
         <button
-          class="nav-link w-full whitespace-nowrap"
+          class="nav-link w-full whitespace-nowrap px-6"
           class:active={lcode === $locale}
           on:click={() => switchLanguage(lcode)}
         >

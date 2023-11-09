@@ -97,7 +97,7 @@
     />
   {:else}
     <div class="md:flex md:flex-row md:justify-between">
-      <h1>
+      <h1 class="heading4 mt-3">
         {investor.name}
         <small>#{investor.id}</small>
       </h1>

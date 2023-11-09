@@ -129,7 +129,7 @@
 
 <div class="container mx-auto flex h-full min-h-full flex-col">
   <div class="border-b border-orange md:flex md:flex-row md:justify-between">
-    <h1>
+    <h1 class="heading4 mt-3">
       {investorID ? $_("Editing Investor #") + investorID : $_("Adding new investor")}
     </h1>
     <div class="my-5 flex items-center">

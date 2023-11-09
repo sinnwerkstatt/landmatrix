@@ -2,6 +2,7 @@ import re
 
 from django.contrib.sites.models import Site
 from django.utils.html import format_html_join
+from django.utils.translation import gettext as _
 from wagtail import blocks
 from wagtail.blocks import Block, RawHTMLBlock, StreamBlock, StructBlock
 from wagtail.embeds.blocks import EmbedBlock
@@ -12,7 +13,7 @@ from wagtail.snippets.blocks import SnippetChooserBlock
 
 from apps.landmatrix.models.country import Country as DataCountry
 from apps.landmatrix.models.country import Region as DataRegion
-
+from .partners import Partner
 from .twitter import TwitterTimeline
 
 
@@ -170,6 +171,50 @@ class ImageBlock(ImageChooserBlock):
         prep_val = self.get_prep_value(value)
         ret = {"id": prep_val, "url": url}
         return ret
+
+
+# New Screendesign
+class NewLinkBlock(blocks.StructBlock):
+    page = blocks.PageChooserBlock(label=_("Interne Seite"), required=False)
+    external_url = blocks.URLBlock(
+        label=_("Externe URL"),
+        required=False,
+        help_text="Die externe URL wird nur verwendet, wenn keine interne Seite im vorigen Feld gesetzt ist",
+    )
+    text = blocks.CharBlock(
+        label=_("Button-Text"), required=False, default="click here"
+    )
+
+    def get_api_representation(self, value, context=None):
+        link = {"text": value.get("text")}
+        if page := value.get("page"):
+            link["href"] = page.url
+        elif href := value.get("external_url"):
+            link["href"] = href
+            link["rel_external"]: True
+        return link
+
+
+# New Sreendesign
+class ImageTextBlock(StructBlock):
+    title = blocks.CharBlock(required=False)
+    subtitle = blocks.CharBlock(required=False)
+    text = RichTextBlock(required=False)
+    link = NewLinkBlock(required=False)
+    image = ImageBlock()
+    bg_color = blocks.ChoiceBlock(
+        choices=[("white", "white"), ("orange", "orange")], default="white"
+    )
+
+    class Meta:
+        label = "Image-Text-Block"
+        icon = "doc-full"
+
+
+# New Screendesign
+class PartnerBlock(StructBlock):
+    def get_api_representation(self, value, context=None):
+        return [p.to_dict("max-220x220") for p in Partner.objects.all()]
 
 
 class SectionDivider(StructBlock):
@@ -414,6 +459,54 @@ class LatestNewsBlock(StructBlock):
         context["tag"] = tag
         context["news"] = queryset[: int(limit)]
         return context
+
+
+# New Screendesign
+class DataTeaserBlock(StructBlock):
+    class CardBlock(StructBlock):
+        title = blocks.CharBlock(max_length=200, required=False)
+        teaser = blocks.CharBlock(max_length=200, required=False)
+        link = NewLinkBlock(required=False)
+
+    title = blocks.CharBlock(required=False)
+    subtitle = blocks.CharBlock(required=False)
+    cards = blocks.ListBlock(
+        CardBlock(), min_num=3, max_num=3, help_text="Icons: 1.Maps, 2.Charts, 3.Tables"
+    )
+
+    class Meta:
+        icon = "link"
+        label = "Data-Teaser"
+
+
+# New Screendesign
+class NewResourcesTeasersBlock(StructBlock):
+    title = blocks.CharBlock(required=False)
+    subtitle = blocks.CharBlock(required=False)
+    # categories = blocks.ListBlock(SnippetChooserBlock("blog.BlogCategory"))
+    article_highlight = blocks.PageChooserBlock(page_type="blog.BlogPage")
+
+    class Meta:
+        icon = "list"
+        label = "Resources teasers"
+
+    def get_api_representation(self, value, context=None):
+        from ..blog.models import BlogPage
+
+        latest_news = BlogPage.objects.filter(blog_categories=2).last()
+        latest_event = BlogPage.objects.filter(blog_categories=5).last()
+        latest_publication = BlogPage.objects.filter(blog_categories=3).last()
+        bp = [value["article_highlight"], latest_publication, latest_event, latest_news]
+        print(bp)
+        ret = {
+            "title": value.get("title"),
+            "subtitle": value.get("subtitle"),
+            "image": value["article_highlight"].get_dict("fill-500x500")[
+                "header_image"
+            ],
+            "articles": [article.get_teaser() for article in bp],
+        }
+        return ret
 
 
 class ResourcesTeasersBlock(StructBlock):
@@ -746,5 +839,12 @@ class FullWidthContainerBlock(StructBlock):
         label = "Full width container"
         group = "Layout"
 
+
+NEW_BLOCKS = [
+    ("image_text_block", ImageTextBlock()),
+    ("latest_resources", NewResourcesTeasersBlock()),
+    ("data_teaser", DataTeaserBlock()),
+    ("partners", PartnerBlock()),
+]
 
 CONTENT_BLOCKS += [("full_width_container", FullWidthContainerBlock(form_classname=""))]
