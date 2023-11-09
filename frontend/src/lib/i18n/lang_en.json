@@ -4,6 +4,12 @@
   "Please review at {url}": "Please review at {url}",
   "Comparing deal #{dealID}": "Comparing deal #{dealID}",
   "Comparing investor #{investorID}": "Comparing investor #{investorID}",
+  "Concluded deals over time since the year {year}": "Concluded deals over time since the year {year}",
+  "Cumulative area size under contract since the year {year}": "Cumulative area size under contract since the year {year}",
+  "Investors from {countryName} are involved in {nCountries} countries": "Investors from {countryName} are involved in {nCountries} countries",
+  "Investors from {investingCountryName} are involved in {nDeals} deals ({totalDealSize} ha) in {targetCountryName}": "Investors from {investingCountryName} are involved in {nDeals} deals ({totalDealSize} ha) in {targetCountryName}",
+  "Investors from {nCountries} countries are involved in {countryName}": "Investors from {nCountries} countries are involved in {countryName}",
+  "Note: There is no year information for {count} deals with a corresponding area size of {size} ha.": "Note: There is no year information for {count} deals with a corresponding area size of {size} ha.",
   "Please note: {number} deals have multiple investor types. The full size of the deal is assigned to each investor type.": "Please note: {number} deals have multiple investor types. The full size of the deal is assigned to each investor type.",
   "The investor network diagram is not visible in draft mode. Go to {liveLink} to see it.": "The investor network diagram is not visible in draft mode. Go to {liveLink} to see it.",
   "{x} deals have multiple intentions, resulting in a total of {y} intentions for {z} deals.": "{x} deals have multiple intentions, resulting in a total of {y} intentions for {z} deals."

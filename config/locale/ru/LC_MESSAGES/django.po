@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-07 15:15+0100\n"
+"POT-Creation-Date: 2023-11-09 17:58+0100\n"
 "PO-Revision-Date: 2023-06-06 12:42+0000\n"
 "Last-Translator: Kurt Gerber <kurt.gerber@unibe.ch>\n"
 "Language-Team: Russian <http://translate.landmatrix.org/projects/landmatrix/landmatrix/ru/>\n"
@@ -217,12 +217,6 @@ msgstr "Примечание об источнике информации"
 
 msgid "Deals"
 msgstr "Сделки"
-
-msgid "deals"
-msgstr "Сделки"
-
-msgid "Equals"
-msgstr ""
 
 msgid "Created at"
 msgstr "Созданны в"
@@ -1608,6 +1602,15 @@ msgstr "Сообщение"
 msgid "Messages"
 msgstr "Сообщения"
 
+msgid "Interne Seite"
+msgstr ""
+
+msgid "Externe URL"
+msgstr ""
+
+msgid "Button-Text"
+msgstr ""
+
 msgid "About"
 msgstr "О"
 
@@ -2044,6 +2047,9 @@ msgstr "Сотрудники"
 msgid "Employment"
 msgstr "Трудоустройство"
 
+msgid "Equals"
+msgstr ""
+
 msgid "Excel document"
 msgstr "Документ Excel"
 
@@ -2172,6 +2178,9 @@ msgstr "Если вы снимете флаг конфиденциальност
 
 msgid "If your email-address is registered <b>and active</b> you should receive an email shortly."
 msgstr "Если ваш адрес электронной почты зарегистрирован <b>и активен</b>, вы должны получить письмо в ближайшее время."
+
+msgid "Impressum"
+msgstr ""
 
 msgid "Improvement requests for me"
 msgstr "Запросы на улучшение для меня"
@@ -2664,8 +2673,8 @@ msgstr "Поиск"
 msgid "Search and filter the dataset through pre-configured entry points or drill down to single deals."
 msgstr "Используйте посик и фильтруйте набор данных с помощью предварительно настроенных точек входа или переходите к отдельным сделкам."
 
-msgid "Search deals and investors"
-msgstr "Поиск сделок и инвесторов"
+msgid "Search for..."
+msgstr ""
 
 msgid "Select or click on a country for investment details."
 msgstr ""
@@ -2882,8 +2891,14 @@ msgstr "Français"
 msgid "Русский"
 msgstr "Русский"
 
+#~ msgid "deals"
+#~ msgstr "Сделки"
+
 #~ msgid "Country profile graphs"
 #~ msgstr "Графики профиля страны"
+
+#~ msgid "Search deals and investors"
+#~ msgstr "Поиск сделок и инвесторов"
 
 #~ msgid "Biofuels"
 #~ msgstr "Биотопливо"
@@ -3717,9 +3732,6 @@ msgstr "Русский"
 
 #~ msgid "There are currently no deals matching your search criteria"
 #~ msgstr "Сделки, соответствующие вашему поисковому запросу, не найдены"
-
-#~ msgid "deals"
-#~ msgstr "сделки"
 
 #~ msgid "Add another"
 #~ msgstr "Добавить новую"
