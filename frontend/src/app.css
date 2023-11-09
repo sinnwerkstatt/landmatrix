@@ -177,8 +177,8 @@
   }
 
   .btn-primary {
-    @apply border-orange bg-orange text-white;
-    @apply hover:border-orange-300 hover:bg-orange-300;
+    @apply button1 rounded border-orange bg-orange text-white;
+    @apply hover:border-orange-600 hover:bg-orange-600;
     @apply active:bg-orange-700;
   }
 
@@ -196,24 +196,24 @@
   }
 
   .btn-gray {
-    @apply border-lm-dark bg-gray-300 text-gray-600;
+    @apply button1 rounded border-lm-dark bg-gray-300 text-gray-600;
     @apply hover:bg-gray-400 hover:text-white;
   }
 
   .btn-pelorous {
-    @apply border-pelorous bg-pelorous-300 text-white;
+    @apply button1 border-pelorous bg-pelorous-300 text-white rounded;
     @apply hover:bg-pelorous hover:text-white;
     @apply active:bg-pelorous active:text-white;
   }
 
   .btn-pelorous-secondary {
-    @apply border-pelorous bg-white text-pelorous;
+    @apply button1 border-pelorous bg-white text-pelorous rounded;
     @apply hover:bg-pelorous-200 hover:text-white;
     @apply active:bg-pelorous active:text-white;
   }
 
   .btn-danger {
-    @apply border-dotted border-red-600 bg-transparent text-red-600;
+    @apply button1 rounded border-dotted border-red-600 bg-transparent text-red-600;
     @apply hover:bg-red-400 hover:text-white;
   }
 

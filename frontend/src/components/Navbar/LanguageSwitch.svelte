@@ -6,7 +6,6 @@
 
   import { fetchBasis, fetchFieldDefinitions } from "$lib/stores"
 
-  import TranslateIcon from "$components/icons/TranslateIcon.svelte"
   import NavDropDown from "$components/Navbar/NavDropDown.svelte"
 
   const languages = {

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { _, locale } from "svelte-i18n"
+  import { _ } from "svelte-i18n"
   import cn from "classnames"
 
   import { blogCategories, aboutPages, observatoryPages, isDarkMode } from "$lib/stores"
@@ -10,7 +10,6 @@
   import LanguageSwitch from "$components/Navbar/LanguageSwitch.svelte"
   import LoginSection from "$components/Navbar/LoginSection.svelte"
   import SubEntries from "$components/Navbar/SubEntries.svelte"
-  import * as events from "events"
 
   interface MenuEntry {
     title: string
@@ -61,7 +60,7 @@
   const resetMenu = () => {
     menuHidden = true
   }
-  function closeMenu(event: events) {
+  function closeMenu() {
     menuHidden = true
   }
 </script>

@@ -1,12 +1,7 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n"
-
   import type { BlogPage } from "$lib/types/wagtail"
 
   export let articles: BlogPage[] = []
-  let limit = 3
-
-  $: limitedArticles = limit ? articles.slice(0, limit) : articles
 </script>
 
 {#each articles as article}

@@ -2,6 +2,7 @@
   import { _ } from "svelte-i18n"
   import cn from "classnames"
   import type { ComponentType } from "svelte"
+
   import ChartsIcon from "$components/Data/Charts/CakeTeaser.svelte"
   import DataIcon from "$components/Data/TableTeaser.svelte"
   import MapIcon from "$components/Data/MapTeaser.svelte"

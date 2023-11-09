@@ -3,7 +3,7 @@
   import { BrowserTracing } from "@sentry/tracing"
   import type { Client } from "@urql/core"
   import { SvelteToast } from "@zerodevx/svelte-toast"
-  import { onMount, setContext } from "svelte"
+  import { onMount } from "svelte"
 
   import { afterNavigate } from "$app/navigation"
 
@@ -11,7 +11,6 @@
   import type { User } from "$lib/types/user"
   import { UserRole } from "$lib/types/user"
 
-  import Footer from "$components/Footer.svelte"
   import LightboxImage from "$components/LightboxImage.svelte"
   import Matomo from "$components/Matomo.svelte"
   import Messages from "$components/Messages.svelte"

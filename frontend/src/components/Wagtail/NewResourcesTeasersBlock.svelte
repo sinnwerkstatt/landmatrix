@@ -1,7 +1,6 @@
 <script lang="ts">
   import type { BlogPage } from "$lib/types/wagtail"
 
-  import ArticleList from "$components/Wagtail/ArticleList.svelte"
   import NewArticleList from "$components/Wagtail/NewArticleList.svelte"
 
   export let value: {

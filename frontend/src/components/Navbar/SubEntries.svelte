@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { page } from "$app/stores"
   import cn from "classnames"
-  import { slide } from "svelte/transition"
+  import { slide } from "svelte/transition" // eslint-disable-line import/no-duplicates
+  import { createEventDispatcher } from "svelte" // eslint-disable-line import/no-duplicates
 
+  import { page } from "$app/stores"
   import { afterNavigate } from "$app/navigation"
 
   import { clickOutside } from "$lib/helpers"
-  import { createEventDispatcher } from "svelte"
 
   const dispatch = createEventDispatcher()
   export let subEntries
@@ -59,7 +59,7 @@
             "group-focus-within:flex lg:group-focus-within:hidden lg:group-hover:block",
           )}
         >
-          {#each subEntries as subEntry, subIndex}
+          {#each subEntries as subEntry}
             <li class="mx-7 lg:mx-0 lg:px-6 lg:hover:bg-orange-100">
               <a
                 class="nav-link"

@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { onMount } from "svelte"
-
+  import { onMount } from "svelte" // eslint-disable-line import/no-duplicates
   import { _ } from "svelte-i18n"
-  import { expoOut } from "svelte/easing"
-  import { tweened } from "svelte/motion"
+  import { tweened } from "svelte/motion" // eslint-disable-line import/no-duplicates
+  import { expoOut } from "svelte/easing" // eslint-disable-line import/no-duplicates
+
   import { contentRootElement } from "$lib/stores"
 
   export let value: {
@@ -11,7 +11,7 @@
     deals: number
     text: string
   }
-  let scrollTime = 0
+
   let element: HTMLElement
   let countElement: HTMLElement
   const progress = tweened(0, { duration: 3000, easing: expoOut })

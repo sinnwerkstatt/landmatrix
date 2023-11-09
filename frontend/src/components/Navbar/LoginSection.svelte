@@ -4,14 +4,9 @@
 
   import { page } from "$app/stores"
 
-  import { UserRole } from "$lib/types/user.js"
   import type { User } from "$lib/types/user.js"
 
-  import UserSecretSolid from "$components/icons/UserSecretSolid.svelte"
-  import UserRegular from "$components/icons/UserRegular.svelte"
   import NavDropDown from "$components/Navbar/NavDropDown.svelte"
-  import UserNurseSolid from "$components/icons/UserNurseSolid.svelte"
-  import UserAstronautSolid from "$components/icons/UserAstronautSolid.svelte"
 
   let user: User | null
   $: user = $page.data.user

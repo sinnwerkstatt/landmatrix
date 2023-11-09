@@ -16,7 +16,6 @@ import DealCountBlock from "$components/Wagtail/DealCountBlock.svelte"
 import NewResourcesTeasersBlock from "$components/Wagtail/NewResourcesTeasersBlock.svelte"
 import DataTeaserBlock from "$components/Wagtail/DataTeaserBlock.svelte"
 import PartnerBlock from "$components/Wagtail/PartnerBlock.svelte"
-import CTABlock from "$components/Wagtail/CTABlock.svelte"
 
 export const blockMap = {
   columns_1_1: Columns1on1Block,
