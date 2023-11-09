@@ -1,6 +1,7 @@
 from django.utils.html import format_html
 from wagtail import hooks
-from wagtail.admin.viewsets.model import ModelViewSet
+from wagtail.snippets.models import register_snippet
+from wagtail.snippets.views.snippets import SnippetViewSet
 from wagtail.whitelist import attribute_rule
 
 from apps.wagtailcms.partners import Partner
@@ -43,17 +44,13 @@ def monkeypatch_wagtail_modeltranslation():
     )
 
 
-class PartnerViewSet(ModelViewSet):
+class PartnerViewSet(SnippetViewSet):
     model = Partner
-    add_to_settings_menu = True
-    exclude_form_fields = []
-    list_display = ["name", "homepage"]
-    search_fields = ["name", "homepage"]
-    icon = "user"
+    add_to_admin_menu = False
+    form_fields_exclude = []
+    list_display = ["name", "logo", "homepage"]
+    list_filter = ["name", "homepage"]
+    menu_icon = "user"
 
 
-partner_viewset = PartnerViewSet("partner")
-
-@hooks.register("register_admin_viewset")
-def register_viewset():
-    return partner_viewset
+register_snippet(PartnerViewSet)
