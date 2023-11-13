@@ -8,7 +8,7 @@
   export let wrapperClass = "space-x-6"
 
   onMount(() => {
-    if (value === undefined) value = null
+    if (value === undefined) value = nullable ? null : false
   })
 </script>
 
