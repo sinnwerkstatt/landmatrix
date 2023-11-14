@@ -73,9 +73,12 @@ class WagtailRootPage(HeadlessPreviewMixin, Page):
             }
 
     body = NoWrapsStreamField(
-        NEW_BLOCKS + [("dealcount",
-                       DealCountBlock())] + CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS,
-        use_json_field=True
+        NEW_BLOCKS
+        + [("dealcount", DealCountBlock())]
+        + CONTENT_BLOCKS
+        + DATA_BLOCKS
+        + COLUMN_BLOCKS,
+        use_json_field=True,
     )
 
     content_panels = Page.content_panels + [FieldPanel("body")]
@@ -136,9 +139,9 @@ class ObservatoryPage(HeadlessPreviewMixin, Page):
         FieldPanel("body"),
     ]
     promote_panels = [
-                         FieldPanel("short_description", widget=forms.Textarea),
-                         FieldPanel("twitter_username"),
-                     ] + Page.promote_panels
+        FieldPanel("short_description", widget=forms.Textarea),
+        FieldPanel("twitter_username"),
+    ] + Page.promote_panels
     parent_page_types = ["wagtailcms.ObservatoryIndexPage"]
     subpage_types = ["wagtailcms.WagtailPage"]
 
