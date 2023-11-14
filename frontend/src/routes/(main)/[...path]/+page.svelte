@@ -18,8 +18,7 @@
   }
 
   $: wagtailPage = {
-    HomePage: HomePage,
-    WagtailRootPage: BasePage,
+    WagtailRootPage: HomePage,
     WagtailPage: BasePage,
     ObservatoryPage: ObservatoryPage,
   }[data.page.meta?.type.split(".")[1]]

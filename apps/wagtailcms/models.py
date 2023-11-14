@@ -4,8 +4,8 @@ from django.db.models import QuerySet
 from django.db.models import Sum
 from wagtail.admin.panels import FieldPanel, FieldRowPanel
 from wagtail.api import APIField
-from wagtail.contrib.settings.models import BaseGenericSetting, register_setting
 from wagtail.blocks import StructBlock, CharBlock
+from wagtail.contrib.settings.models import BaseGenericSetting, register_setting
 from wagtail.fields import RichTextField, StreamField
 from wagtail.models import Page
 from wagtail.rich_text import expand_db_html
@@ -14,7 +14,6 @@ from wagtail_headless_preview.models import HeadlessPreviewMixin
 from apps.blog.models import BlogPage
 from apps.landmatrix.models.country import Country, Region
 from apps.landmatrix.models.deal import Deal
-
 from .blocks import (
     COLUMN_BLOCKS,
     CONTENT_BLOCKS,
@@ -56,16 +55,6 @@ class ChartDescriptionsSettings(BaseGenericSetting):
 
 class WagtailRootPage(HeadlessPreviewMixin, Page):
     is_creatable = False
-    body = NoWrapsStreamField(
-        CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS, use_json_field=True
-    )
-
-    content_panels = Page.content_panels + [FieldPanel("body")]
-    api_fields = [APIField("body")]
-
-
-class HomePage(HeadlessPreviewMixin, Page):
-    max_count = 1
 
     class DealCountBlock(StructBlock):
         text = CharBlock(default="It's a big deal")
@@ -83,8 +72,10 @@ class HomePage(HeadlessPreviewMixin, Page):
                 "text": value.get("text"),
             }
 
-    body = StreamField(
-        NEW_BLOCKS + [("dealcount", DealCountBlock())], use_json_field=True
+    body = NoWrapsStreamField(
+        NEW_BLOCKS + [("dealcount",
+                       DealCountBlock())] + CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS,
+        use_json_field=True
     )
 
     content_panels = Page.content_panels + [FieldPanel("body")]
@@ -145,9 +136,9 @@ class ObservatoryPage(HeadlessPreviewMixin, Page):
         FieldPanel("body"),
     ]
     promote_panels = [
-        FieldPanel("short_description", widget=forms.Textarea),
-        FieldPanel("twitter_username"),
-    ] + Page.promote_panels
+                         FieldPanel("short_description", widget=forms.Textarea),
+                         FieldPanel("twitter_username"),
+                     ] + Page.promote_panels
     parent_page_types = ["wagtailcms.ObservatoryIndexPage"]
     subpage_types = ["wagtailcms.WagtailPage"]
 
