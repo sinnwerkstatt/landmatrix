@@ -38,6 +38,6 @@ class User(AbstractUser):
         self.full_name = (
             f"{self.first_name} {self.last_name}".strip()
             if (self.first_name or self.last_name)
-            else ""
+            else self.username
         )
         super().save(*args, **kwargs)

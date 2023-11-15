@@ -30,12 +30,12 @@ from .utils.to_dict import create_lookups, deal_to_dict, investor_to_dict
 
 @api_view()
 def messages_json(request) -> HttpResponse:
-    msgs = [
-        msg.to_dict()
-        for msg in Message.objects.filter(is_active=True).exclude(
-            expires_at__lte=timezone.localdate()
-        )
-    ]
+    msgs = []
+    for msg in Message.objects.filter(is_active=True).exclude(
+        expires_at__lte=timezone.localdate()
+    ):
+        msg: Message
+        msgs += [msg.to_dict()]
     return JsonResponse({"messages": msgs})
 
 
