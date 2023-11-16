@@ -12,6 +12,7 @@ from django.utils.translation import gettext_lazy as _
 from apps.utils import ecma262
 
 from .abstracts import DRAFT_STATUS_CHOICES, STATUS_CHOICES, Version, WorkflowInfo
+from .choices import INVESTOR_CLASSIFICATION_CHOICES
 from .country import Country
 from .currency import Currency
 from .fields import DatasourcesField
@@ -92,31 +93,9 @@ class Investor(models.Model):
         on_delete=models.PROTECT,
     )
 
-    CLASSIFICATION_CHOICES = (
-        ("GOVERNMENT", _("Government")),
-        ("GOVERNMENT_INSTITUTION", _("Government institution")),
-        ("STATE_OWNED_COMPANY", _("State-/government (owned) company")),
-        ("SEMI_STATE_OWNED_COMPANY", _("Semi state-owned company")),
-        ("ASSET_MANAGEMENT_FIRM", _("Asset management firm")),
-        (
-            "BILATERAL_DEVELOPMENT_BANK",
-            _("Bilateral Development Bank / Development Finance Institution"),
-        ),
-        ("STOCK_EXCHANGE_LISTED_COMPANY", _("Stock-exchange listed company")),
-        ("COMMERCIAL_BANK", _("Commercial Bank")),
-        ("INSURANCE_FIRM", _("Insurance firm")),
-        ("INVESTMENT_BANK", _("Investment Bank")),
-        ("INVESTMENT_FUND", _("Investment fund")),
-        ("MULTILATERAL_DEVELOPMENT_BANK", _("Multilateral Development Bank (MDB)")),
-        ("PRIVATE_COMPANY", _("Private company")),
-        ("PRIVATE_EQUITY_FIRM", _("Private equity firm")),
-        ("INDIVIDUAL_ENTREPRENEUR", _("Individual entrepreneur")),
-        ("NON_PROFIT", _("Non - Profit organization (e.g. Church, University etc.)")),
-        ("OTHER", _("Other (please specify in comment field)")),
-    )
     classification = models.CharField(
         verbose_name=_("Classification"),
-        choices=CLASSIFICATION_CHOICES,
+        choices=INVESTOR_CLASSIFICATION_CHOICES,
         blank=True,
         null=True,
     )

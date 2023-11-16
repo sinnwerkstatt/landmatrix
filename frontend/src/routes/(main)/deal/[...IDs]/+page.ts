@@ -12,10 +12,10 @@ export const load: PageLoad = async ({ fetch, params }) => {
   if (!dealID) throw error(404, "Deal not found")
 
   const url = dealVersion
-    ? `/api/deal/${dealID}/${dealVersion}/`
-    : `/api/deal/${dealID}/`
-  const restDeal = await fetch(url)
-  const deal: DealHull = await restDeal.json()
+    ? `/api/deals/${dealID}/${dealVersion}/`
+    : `/api/deals/${dealID}/`
+  const ret = await fetch(url)
+  const deal: DealHull = await ret.json()
   //
   // if (res.error) {
   //   if (res.error.graphQLErrors.map(e => e.message).includes("DEAL_NOT_FOUND"))

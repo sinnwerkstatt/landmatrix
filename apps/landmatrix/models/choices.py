@@ -581,3 +581,38 @@ LOCATION_ACCURACY_OPTIONS = [
 ]
 
 LEVEL_OF_ACCURACY_CHOICES = ((k, v) for k, v in LOCATION_ACCURACY.items())
+
+INVESTOR_CLASSIFICATION_ITEMS = [
+    {"value": "GOVERNMENT", "label": _("Government")},
+    {"value": "GOVERNMENT_INSTITUTION", "label": _("Government institution")},
+    {"value": "STATE_OWNED_COMPANY", "label": _("State-/government (owned) company")},
+    {"value": "SEMI_STATE_OWNED_COMPANY", "label": _("Semi state-owned company")},
+    {"value": "ASSET_MANAGEMENT_FIRM", "label": _("Asset management firm")},
+    {
+        "value": "BILATERAL_DEVELOPMENT_BANK",
+        "label": _("Bilateral Development Bank / Development Finance Institution"),
+    },
+    {
+        "value": "STOCK_EXCHANGE_LISTED_COMPANY",
+        "label": _("Stock-exchange listed company"),
+    },
+    {"value": "COMMERCIAL_BANK", "label": _("Commercial Bank")},
+    {"value": "INSURANCE_FIRM", "label": _("Insurance firm")},
+    {"value": "INVESTMENT_BANK", "label": _("Investment Bank")},
+    {"value": "INVESTMENT_FUND", "label": _("Investment fund")},
+    {
+        "value": "MULTILATERAL_DEVELOPMENT_BANK",
+        "label": _("Multilateral Development Bank (MDB)"),
+    },
+    {"value": "PRIVATE_COMPANY", "label": _("Private company")},
+    {"value": "PRIVATE_EQUITY_FIRM", "label": _("Private equity firm")},
+    {"value": "INDIVIDUAL_ENTREPRENEUR", "label": _("Individual entrepreneur")},
+    {
+        "value": "NON_PROFIT",
+        "label": _("Non - Profit organization (e.g. Church, University etc.)"),
+    },
+    {"value": "OTHER", "label": _("Other (please specify in comment field)")},
+]
+INVESTOR_CLASSIFICATION_CHOICES = [
+    (x["value"], x["label"]) for x in INVESTOR_CLASSIFICATION_ITEMS
+]

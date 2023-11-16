@@ -9,7 +9,8 @@
   import { loading } from "$lib/stores"
   import { UserRole } from "$lib/types/user"
 
-  import DealDates from "./DealDates.svelte"
+  import HeaderDates from "$components/HeaderDates.svelte"
+
   import DealManageHeader from "./DealManageHeader.svelte"
   import SectionDataSources from "./SectionDataSources.svelte"
   import SectionGeneralInfo from "./SectionGeneralInfo.svelte"
@@ -115,7 +116,7 @@
         {$_("Deal")}
         #{data.deal.id}
       </h1>
-      <DealDates deal={data.deal} />
+      <HeaderDates obj={data.deal} />
     </div>
   {/if}
   <div class="flex min-h-full">

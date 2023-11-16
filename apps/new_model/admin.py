@@ -5,7 +5,7 @@ from apps.new_model.models import (
     DealVersion2,
     Location,
     Area,
-    DataSource,
+    DealDataSource,
     Contract,
 )
 
@@ -92,6 +92,6 @@ class ContractAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(DataSource)
-class DataSourceAdmin(admin.ModelAdmin):
+@admin.register(DealDataSource)
+class DealDataSourceAdmin(admin.ModelAdmin):
     list_display = ["__str__", "id", "file", "date"]

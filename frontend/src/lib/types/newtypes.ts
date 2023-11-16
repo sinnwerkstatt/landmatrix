@@ -11,21 +11,18 @@ export enum DealVersion2Status {
   REJECTED = "REJECTED",
   TO_DELETE = "TO_DELETE",
 }
-export interface DealHull {
+
+interface Hull {
   id: number
-  country: Country
-  active_version_id: number | null
-  draft_version_id: number | null
-  confidential: boolean
-  confidential_comment: string
+  // watch out: DRF does not append _id to Foreignkeys, but means _id.
+  active_version: number | null
+  draft_version: number | null
   deleted: boolean
   deleted_comment: string
   created_at: string
   created_by_id: number
-  fully_updated_at: string
-  selected_version: DealVersion2
   versions: {
-    id: string
+    id: number
     created_at: string
     created_by_id: number
     sent_to_review_at: string
@@ -37,6 +34,16 @@ export interface DealHull {
     fully_updated: boolean
     status: DealVersion2Status
   }[]
+}
+export interface DealHull extends Hull {
+  country: Country
+  confidential: boolean
+  confidential_comment: string
+  fully_updated_at: string
+  selected_version: DealVersion2
+}
+export interface InvestorHull extends Hull {
+  selected_version: InvestorVersion2
 }
 
 interface DataSource {
@@ -106,4 +113,16 @@ interface Location2 {
   level_of_accuracy: string
   comment: string
   areas: Area[]
+}
+
+export interface InvestorVersion2 {
+  id: number
+  name: string
+  country: Country
+  classification: string
+  homepage: string
+  opencorporates: string
+  comment: string
+  activated_at: string
+  activated_by_id: number
 }

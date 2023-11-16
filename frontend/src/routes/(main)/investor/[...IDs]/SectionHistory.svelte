@@ -4,14 +4,14 @@
 
   import { stateMap } from "$lib/newUtils"
   import { allUsers } from "$lib/stores"
-  import type { DealHull } from "$lib/types/newtypes"
+  import type { InvestorHull } from "$lib/types/newtypes"
 
   import CheckCircleIcon from "$components/icons/CheckCircleIcon.svelte"
   import CircleIcon from "$components/icons/CircleIcon.svelte"
 
-  export let deal: DealHull
-  export let dealID: number
-  export let dealVersion: number | undefined
+  export let investor: InvestorHull
+  export let investorID: number
+  export let investorVersion: number | undefined
   let compareFrom: number
   let compareTo: number
 </script>
@@ -32,7 +32,7 @@
           {$_("Show")} /
           <a
             class="text-nowrap"
-            href={`/deal/${dealID}/compare/${compareFrom}/${compareTo}/`}
+            href={`/investor/${investorID}/compare/${compareFrom}/${compareTo}/`}
           >
             {$_("Compare")}
           </a>
@@ -40,7 +40,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each deal.versions as version}
+      {#each investor.versions as version}
         <tr class="odd:bg-gray-100 dark:odd:bg-gray-700">
           <td>{version.id}</td>
           <td>
@@ -97,10 +97,10 @@
             {$stateMap[version.status]}
           </td>
           <td class="whitespace-nowrap text-right">
-            {#if dealVersion ? dealVersion === version.id : deal.active_version === version.id}
+            {#if investorVersion ? investorVersion === version.id : investor.active_version === version.id}
               {$_("Current")}
             {:else}
-              <a href="/deal/{dealID}/{version.id}/">{$_("Show")}</a>
+              <a href="/investor/{investorID}/{version.id}/">{$_("Show")}</a>
             {/if}
             <span class="ml-4 whitespace-nowrap text-right">
               <input
@@ -133,7 +133,7 @@
         {#if compareFrom && compareTo}
           <td>
             <a
-              href={`/deal/${dealID}/compare/${compareFrom}/${compareTo}/`}
+              href={`/investor/${investorID}/compare/${compareFrom}/${compareTo}/`}
               class="btn btn-primary text-nowrap"
             >
               {$_("Compare versions")}

@@ -1,11 +1,11 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import type { DealHull } from "$lib/types/newtypes"
+  import type { DealHull, InvestorHull } from "$lib/types/newtypes"
 
   import DateTimeField from "$components/Fields/Display2/DateTimeField.svelte"
 
-  export let deal: DealHull
+  export let obj: DealHull | InvestorHull
 </script>
 
 <div
@@ -14,16 +14,18 @@
   <div class="mr-10 text-xs md:mx-5 md:text-sm">
     {$_("Created")}
     <br />
-    <DateTimeField value={deal.created_at} />
+    <DateTimeField value={obj.created_at} />
   </div>
   <div class="mr-10 text-xs md:mx-5 md:text-sm">
     {$_("Last update")}
     <br />
-    <DateTimeField value={deal.selected_version.activated_at} />
+    <DateTimeField value={obj.selected_version.activated_at} />
   </div>
-  <div class="mr-10 text-xs md:mx-5 md:text-sm">
-    {$_("Last full update")}
-    <br />
-    <DateTimeField value={deal.fully_updated_at} />
-  </div>
+  {#if obj.fully_updated_at}
+    <div class="mr-10 text-xs md:mx-5 md:text-sm">
+      {$_("Last full update")}
+      <br />
+      <DateTimeField value={obj.fully_updated_at} />
+    </div>
+  {/if}
 </div>

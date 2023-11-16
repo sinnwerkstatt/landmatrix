@@ -8,7 +8,7 @@ from apps.new_model.models import (
     Location,
     Area,
     Contract,
-    DataSource,
+    DealDataSource,
 )
 
 from django.contrib.gis.geos import Point, GEOSGeometry
@@ -56,7 +56,7 @@ class Command(BaseCommand):
             .exclude(id__in=exclude_ids)
             # .prefetch_related("versions")
             # .all()[:1000]
-            .filter(id=3)
+            .filter(id__in=[3, 23])
             # .filter(id=2)
         )
         for old_deal in deals:  # type: Deal
@@ -78,10 +78,12 @@ class Command(BaseCommand):
             #     return
 
             deal_hull: DealHull
-            deal_hull, _ = DealHull.objects.get_or_create(id=old_deal.id)
+            deal_hull, _ = DealHull.objects.get_or_create(
+                id=old_deal.id,
+                created_by=old_deal.created_by,
+                created_at=old_deal.created_at,
+            )
 
-            deal_hull.created_by = old_deal.created_by
-            deal_hull.created_at = old_deal.created_at
             deal_hull.fully_updated_at = old_deal.fully_updated_at
 
             print(old_deal.id, "status:", old_deal.status)
@@ -187,7 +189,9 @@ def map_contracts(nv: DealVersion2, contracts: list[dict]):
 
 def map_datasources(nv: DealVersion2, datasources: list[dict]):
     for dats in datasources:
-        ds1, _ = DataSource.objects.get_or_create(dealversion_id=nv.id, nid=dats["id"])
+        ds1, _ = DealDataSource.objects.get_or_create(
+            dealversion_id=nv.id, nid=dats["id"]
+        )
         ds1.type = dats.get("type", "")
         ds1.url = dats.get("url", "")
         if dats.get("file"):

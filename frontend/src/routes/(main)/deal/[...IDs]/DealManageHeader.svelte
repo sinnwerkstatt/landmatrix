@@ -3,25 +3,24 @@
 
   import type { DealHull } from "$lib/types/newtypes"
 
+  import HeaderDates from "$components/HeaderDates.svelte"
   import CheckIcon from "$components/icons/CheckIcon.svelte"
   import EyeIcon from "$components/icons/EyeIcon.svelte"
   import EyeSlashIcon from "$components/icons/EyeSlashIcon.svelte"
   import XIcon from "$components/icons/XIcon.svelte"
-
-  import DealDates from "./DealDates.svelte"
 
   export let deal: DealHull
   export let dealVersion: number | undefined
 </script>
 
 <div class="my-4 grid grid-cols-3">
-  <div class="col-span-2 bg-gray-light ">
+  <div class="col-span-2 bg-gray-light">
     <div class="flex items-center justify-between gap-4 p-2">
       <div>
         <h1 class="heading3 my-0">Deal #{deal.id}</h1>
         <div class="heading4">{deal.country.name}</div>
       </div>
-      <DealDates {deal} />
+      <HeaderDates obj={deal} />
       <!--      <div class="bg-white px-4 py-2">Draft version</div>-->
     </div>
     <hr class="h-0.5 bg-black" />

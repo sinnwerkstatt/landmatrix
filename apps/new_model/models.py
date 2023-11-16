@@ -998,179 +998,6 @@ class DealVersion2(DealVersionBaseFields):
         self.recalculate_fields(recalculate_independent, recalculate_dependent)
         super().save(*args, **kwargs)
 
-    # def to_detail_dict(self):
-    #     return {
-    #         "id": self.id,
-    #         "locations": [
-    #             x.to_dict() for x in self.locations.prefetch_related("areas")
-    #         ],
-    #         "intended_size": self.intended_size,
-    #         "contract_size": self.contract_size,
-    #         "production_size": self.production_size,
-    #         "land_area_comment": self.land_area_comment,
-    #         "intention_of_investment": self.intention_of_investment,
-    #         "intention_of_investment_comment": self.intention_of_investment_comment,
-    #         "nature_of_deal": self.nature_of_deal,
-    #         "nature_of_deal_comment": self.nature_of_deal_comment,
-    #         "negotiation_status": self.negotiation_status,
-    #         "negotiation_status_comment": self.negotiation_status_comment,
-    #         "implementation_status": self.implementation_status,
-    #         "implementation_status_comment": self.implementation_status_comment,
-    #         "purchase_price": self.purchase_price,
-    #         "purchase_price_currency_id": self.purchase_price_currency_id,
-    #         "purchase_price_type": self.purchase_price_type,
-    #         "purchase_price_area": self.purchase_price_area,
-    #         "purchase_price_comment": self.purchase_price_comment,
-    #         "annual_leasing_fee": self.annual_leasing_fee,
-    #         "annual_leasing_fee_currency_id": self.annual_leasing_fee_currency_id,
-    #         "annual_leasing_fee_type": self.annual_leasing_fee_type,
-    #         "annual_leasing_fee_area": self.annual_leasing_fee_area,
-    #         "annual_leasing_fee_comment": self.annual_leasing_fee_comment,
-    #         "contract_farming": self.contract_farming,
-    #         "on_the_lease_state": self.on_the_lease_state,
-    #         "on_the_lease": self.on_the_lease,
-    #         "off_the_lease_state": self.off_the_lease_state,
-    #         "off_the_lease": self.off_the_lease,
-    #         "contract_farming_comment": self.contract_farming_comment,
-    #         "contracts": [x.to_dict() for x in self.contracts.all()],
-    #         "total_jobs_created": self.total_jobs_created,
-    #         "total_jobs_planned": self.total_jobs_planned,
-    #         "total_jobs_planned_employees": self.total_jobs_planned_employees,
-    #         "total_jobs_planned_daily_workers": self.total_jobs_planned_daily_workers,
-    #         "total_jobs_current": self.total_jobs_current,
-    #         "total_jobs_created_comment": self.total_jobs_created_comment,
-    #         "foreign_jobs_created": self.foreign_jobs_created,
-    #         "foreign_jobs_planned": self.foreign_jobs_planned,
-    #         "foreign_jobs_planned_employees": self.foreign_jobs_planned_employees,
-    #         "foreign_jobs_planned_daily_workers": self.foreign_jobs_planned_daily_workers,
-    #         "foreign_jobs_current": self.foreign_jobs_current,
-    #         "foreign_jobs_created_comment": self.foreign_jobs_created_comment,
-    #         "domestic_jobs_created": self.domestic_jobs_created,
-    #         "domestic_jobs_planned": self.domestic_jobs_planned,
-    #         "domestic_jobs_planned_employees": self.domestic_jobs_planned_employees,
-    #         "domestic_jobs_planned_daily_workers": self.domestic_jobs_planned_daily_workers,
-    #         "domestic_jobs_current": self.domestic_jobs_current,
-    #         "domestic_jobs_created_comment": self.domestic_jobs_created_comment,
-    #         "operating_company_id": self.operating_company_id,
-    #         "involved_actors": self.involved_actors,
-    #         "project_name": self.project_name,
-    #         "investment_chain_comment": self.investment_chain_comment,
-    #         "datasources": [x.to_dict() for x in self.datasources.all()],
-    #         "name_of_community": self.name_of_community,
-    #         "name_of_indigenous_people": self.name_of_indigenous_people,
-    #         "people_affected_comment": self.people_affected_comment,
-    #         "recognition_status": self.recognition_status,
-    #         "recognition_status_comment": self.recognition_status_comment,
-    #         "community_consultation": self.community_consultation,
-    #         "community_consultation_comment": self.community_consultation_comment,
-    #         "community_reaction": self.community_reaction,
-    #         "community_reaction_comment": self.community_reaction_comment,
-    #         "land_conflicts": self.land_conflicts,
-    #         "land_conflicts_comment": self.land_conflicts_comment,
-    #         "displacement_of_people": self.displacement_of_people,
-    #         "displaced_people": self.displaced_people,
-    #         "displaced_households": self.displaced_households,
-    #         "displaced_people_from_community_land": self.displaced_people_from_community_land,
-    #         "displaced_people_within_community_land": self.displaced_people_within_community_land,
-    #         "displaced_households_from_fields": self.displaced_households_from_fields,
-    #         "displaced_people_on_completion": self.displaced_people_on_completion,
-    #         "displacement_of_people_comment": self.displacement_of_people_comment,
-    #         "negative_impacts": self.negative_impacts,
-    #         "negative_impacts_comment": self.negative_impacts_comment,
-    #         "promised_compensation": self.promised_compensation,
-    #         "received_compensation": self.received_compensation,
-    #         "promised_benefits": self.promised_benefits,
-    #         "promised_benefits_comment": self.promised_benefits_comment,
-    #         "materialized_benefits": self.materialized_benefits,
-    #         "materialized_benefits_comment": self.materialized_benefits_comment,
-    #         "presence_of_organizations": self.presence_of_organizations,
-    #         "former_land_owner": self.former_land_owner,
-    #         "former_land_owner_comment": self.former_land_owner_comment,
-    #         "former_land_use": self.former_land_use,
-    #         "former_land_use_comment": self.former_land_use_comment,
-    #         "former_land_cover": self.former_land_cover,
-    #         "former_land_cover_comment": self.former_land_cover_comment,
-    #         "crops": self.crops,
-    #         "crops_comment": self.crops_comment,
-    #         "animals": self.animals,
-    #         "animals_comment": self.animals_comment,
-    #         "mineral_resources": self.mineral_resources,
-    #         "mineral_resources_comment": self.mineral_resources_comment,
-    #         "contract_farming_crops": self.contract_farming_crops,
-    #         "contract_farming_crops_comment": self.contract_farming_crops_comment,
-    #         "contract_farming_animals": self.contract_farming_animals,
-    #         "contract_farming_animals_comment": self.contract_farming_animals_comment,
-    #         "has_domestic_use": self.has_domestic_use,
-    #         "domestic_use": self.domestic_use,
-    #         "has_export": self.has_export,
-    #         "export": self.export,
-    #         "export_country1_id": self.export_country1_id,
-    #         "export_country1_ratio": self.export_country1_ratio,
-    #         "export_country2_id": self.export_country2_id,
-    #         "export_country2_ratio": self.export_country2_ratio,
-    #         "export_country3_id": self.export_country3_id,
-    #         "export_country3_ratio": self.export_country3_ratio,
-    #         "use_of_produce_comment": self.use_of_produce_comment,
-    #         "in_country_processing": self.in_country_processing,
-    #         "in_country_processing_comment": self.in_country_processing_comment,
-    #         "in_country_processing_facilities": self.in_country_processing_facilities,
-    #         "in_country_end_products": self.in_country_end_products,
-    #         "water_extraction_envisaged": self.water_extraction_envisaged,
-    #         "water_extraction_envisaged_comment": self.water_extraction_envisaged_comment,
-    #         "source_of_water_extraction": self.source_of_water_extraction,
-    #         "source_of_water_extraction_comment": self.source_of_water_extraction_comment,
-    #         "how_much_do_investors_pay_comment": self.how_much_do_investors_pay_comment,
-    #         "water_extraction_amount": self.water_extraction_amount,
-    #         "water_extraction_amount_comment": self.water_extraction_amount_comment,
-    #         "use_of_irrigation_infrastructure": self.use_of_irrigation_infrastructure,
-    #         "use_of_irrigation_infrastructure_comment": self.use_of_irrigation_infrastructure_comment,
-    #         "water_footprint": self.water_footprint,
-    #         "gender_related_information": self.gender_related_information,
-    #         "overall_comment": self.overall_comment,
-    #         "is_public": self.is_public,
-    #         "has_known_investor": self.has_known_investor,
-    #         "current_contract_size": self.current_contract_size,
-    #         "current_production_size": self.current_production_size,
-    #         "current_intention_of_investment": self.current_intention_of_investment,
-    #         "current_negotiation_status": self.current_negotiation_status,
-    #         "current_implementation_status": self.current_implementation_status,
-    #         "current_crops": self.current_crops,
-    #         "current_animals": self.current_animals,
-    #         "current_mineral_resources": self.current_mineral_resources,
-    #         "deal_size": self.deal_size,
-    #         "initiation_year": self.initiation_year,
-    #         "forest_concession": self.forest_concession,
-    #         "transnational": self.transnational,
-    #         "fully_updated": self.fully_updated,
-    #         "status": self.status,
-    #         "created_at": self.created_at,
-    #         "created_by_id": self.created_by_id,
-    #         "sent_to_review_at": self.sent_to_review_at,
-    #         "sent_to_review_by_id": self.sent_to_review_by_id,
-    #         "reviewed_at": self.reviewed_at,
-    #         "reviewed_by_id": self.reviewed_by_id,
-    #         "activated_at": self.activated_at,
-    #         "activated_by_id": self.activated_by_id,
-    #     }
-
-    # def to_dict(self, fields: list):
-    #     ret = {}
-    #     for field in fields:
-    #         if field == "locations":
-    #             ret[field] = [
-    #                 x.to_dict() for x in self.locations.all().prefetch_related("areas")
-    #             ]
-    #         elif field == "datasources":
-    #             ret[field] = [x.to_dict() for x in self.datasources.all()]
-    #         elif field == "contracts":
-    #             ret[field] = [x.to_dict() for x in self.contracts.all()]
-    #         elif field == "intended_size":
-    #             ic("INTE", getattr(self, field))
-    #             ret[field] = getattr(self, field)
-    #         else:
-    #             ret[field] = getattr(self, field)
-    #     return ret
-
 
 class Location(models.Model):
     dealversion = models.ForeignKey(
@@ -1265,10 +1092,7 @@ class Contract(models.Model):
         indexes = [models.Index(fields=["dealversion", "nid"])]
 
 
-class DataSource(models.Model):
-    dealversion = models.ForeignKey(
-        DealVersion2, on_delete=models.PROTECT, related_name="datasources"
-    )
+class BaseDataSource(models.Model):
     nid = NanoIDField("ID", max_length=15, db_index=True)
     type = models.CharField(_("Type"), choices=DATASOURCE_TYPE_CHOICES, blank=True)
     url = models.URLField(_("Url"), blank=True, max_length=1000)
@@ -1305,6 +1129,17 @@ class DataSource(models.Model):
         }
 
     class Meta:
+        abstract = True
+        unique_together = ["dealversion", "nid"]
+        indexes = [models.Index(fields=["dealversion", "nid"])]
+
+
+class DealDataSource(BaseDataSource):
+    dealversion = models.ForeignKey(
+        DealVersion2, on_delete=models.PROTECT, related_name="datasources"
+    )
+
+    class Meta:
         unique_together = ["dealversion", "nid"]
         indexes = [models.Index(fields=["dealversion", "nid"])]
 
@@ -1335,6 +1170,8 @@ class DealHull(models.Model):
         Country,
         verbose_name=_("Target country"),
         on_delete=models.PROTECT,
+        blank=True,
+        null=True,
         related_name="newModel_dealHulls",
     )
 
@@ -1376,35 +1213,149 @@ class DealHull(models.Model):
             return self.versions.get(id=self._selected_version_id)
         return self.active_version or self.draft_version
 
-    # def to_detail_dict(self, version_id: int):
-    #     versions = [
-    #         {
-    #             "id": x.id,
-    #             "created_at": x.created_at,
-    #             "created_by_id": x.created_by_id,
-    #             "sent_to_review_at": x.sent_to_review_at,
-    #             "sent_to_review_by_id": x.sent_to_review_by_id,
-    #             "reviewed_at": x.reviewed_at,
-    #             "reviewed_by_id": x.reviewed_by_id,
-    #             "activated_at": x.activated_at,
-    #             "activated_by_id": x.activated_by_id,
-    #             "fully_updated": x.fully_updated,
-    #             "status": x.status,
-    #         }
-    #         for x in DealVersion2.objects.filter(deal=self).order_by("-id")
-    #     ]
-    #     return {
-    #         "id": self.id,
-    #         "country": {"id": self.country_id, "name": self.country.name},
-    #         "active_version_id": self.active_version_id,
-    #         "draft_version_id": self.draft_version_id,
-    #         "confidential": self.confidential,
-    #         "confidential_comment": self.confidential_comment,
-    #         "deleted": self.deleted,
-    #         "deleted_comment": self.deleted_comment,
-    #         "created_at": self.created_at,
-    #         "created_by_id": self.created_by_id,
-    #         "fully_updated_at": self.fully_updated_at,
-    #         "version": self.versions.get(id=version_id).to_detail_dict(),
-    #         "versions": versions,
-    #     }
+
+class InvestorVersion2(models.Model):
+    investor = models.ForeignKey(
+        "new_model.InvestorHull", on_delete=models.PROTECT, related_name="versions"
+    )
+
+    name = models.CharField(_("Name"), blank=True)
+    country = models.ForeignKey(
+        Country,
+        verbose_name=_("Country of registration/origin"),
+        blank=True,
+        null=True,
+        on_delete=models.PROTECT,
+    )
+
+    classification = models.CharField(
+        verbose_name=_("Classification"),
+        choices=choices.INVESTOR_CLASSIFICATION_CHOICES,
+        blank=True,
+        null=True,
+    )
+
+    homepage = models.URLField(_("Investor homepage"), blank=True)
+    opencorporates = models.URLField(_("Opencorporates link"), blank=True)
+    comment = models.TextField(_("Comment"), blank=True)
+
+    # """ Data sources """
+
+    # # NOTE maybe toss this out; seems to confuse more.
+    # involvements = models.ManyToManyField(
+    #     "self",
+    #     through="InvestorVentureInvolvement",
+    #     through_fields=("venture", "investor"),
+    #     symmetrical=False,
+    # )
+
+    # META
+    status = models.CharField(choices=VERSION_STATUS_CHOICES, default="DRAFT")
+    created_at = models.DateTimeField(_("Created at"), default=timezone.now, blank=True)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        null=True,
+        on_delete=models.PROTECT,
+        related_name="+",
+    )
+    modified_at = models.DateTimeField(
+        _("Modified at"), default=timezone.now, blank=True
+    )
+    modified_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        null=True,
+        on_delete=models.PROTECT,
+        related_name="+",
+    )
+    sent_to_review_at = models.DateTimeField(
+        _("Sent to review at"), null=True, blank=True
+    )
+    sent_to_review_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        null=True,
+        on_delete=models.PROTECT,
+        related_name="+",
+    )
+    reviewed_at = models.DateTimeField(_("Reviewed at"), null=True, blank=True)
+    reviewed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        null=True,
+        on_delete=models.PROTECT,
+        related_name="+",
+    )
+    activated_at = models.DateTimeField(_("Activated at"), null=True, blank=True)
+    activated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        null=True,
+        on_delete=models.PROTECT,
+        related_name="+",
+    )
+
+    """ # computed properties """
+    # The following flag is needed at the moment to filter through Deals (public-filter)
+    # NOTE This should be replaced by an option to _NOT_ specify the investor name.
+    is_actually_unknown = models.BooleanField(default=False)
+
+    def recalculate_fields(self):
+        self.is_actually_unknown = bool(
+            re.search(r"(unknown|unnamed)", self.name, re.IGNORECASE)
+        )
+
+    def save(self, *args, **kwargs):
+        self.recalculate_fields()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.name} (#{self.id})"
+
+
+class InvestorDataSource(BaseDataSource):
+    investorversion = models.ForeignKey(
+        InvestorVersion2, on_delete=models.PROTECT, related_name="datasources"
+    )
+
+    class Meta:
+        unique_together = ["investorversion", "nid"]
+        indexes = [models.Index(fields=["investorversion", "nid"])]
+
+
+class InvestorHull(models.Model):
+    active_version = models.ForeignKey(
+        InvestorVersion2,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="+",
+    )
+    draft_version = models.ForeignKey(
+        InvestorVersion2,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="+",
+    )
+
+    deleted = models.BooleanField(default=False)
+    deleted_comment = models.TextField(
+        _("Comment why this investor is deleted"), blank=True
+    )
+
+    # ## calculated
+    # this just mirrors the created_at/by from the first version.
+    created_at = models.DateTimeField(_("Created"), default=timezone.now, blank=True)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="+"
+    )
+
+    def __str__(self):
+        return f"Investor #{self.id}"
+
+    def selected_version(self):
+        if hasattr(self, "_selected_version_id"):
+            return self.versions.get(id=self._selected_version_id)
+        return self.active_version or self.draft_version
