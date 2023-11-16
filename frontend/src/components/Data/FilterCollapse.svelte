@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte" // eslint-disable-line import/no-duplicates
-  import { slide } from "svelte/transition" // eslint-disable-line import/no-duplicates
+  import { createEventDispatcher } from "svelte"
+  import { slide } from "svelte/transition"
 
   import ChevronDownIcon from "$components/icons/ChevronDownIcon.svelte"
   import ClearFilter from "$components/icons/ClearFilter.svelte"

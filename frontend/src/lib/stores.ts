@@ -6,7 +6,6 @@ import { _ } from "svelte-i18n"
 import { derived, get, writable } from "svelte/store"
 import type { Writable } from "svelte/store"
 
-// eslint-disable-next-line import/no-unresolved
 import { browser } from "$app/environment"
 
 import {

@@ -2,9 +2,9 @@
   import type { Feature } from "geojson"
   import type { GeoJSONOptions, Layer, LeafletMouseEvent, Map as LMap } from "leaflet"
   import { GeoJSON, LatLngBounds, Marker, Path, Polygon } from "leaflet?client"
-  import { onMount } from "svelte" // eslint-disable-line import/no-duplicates
+  import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
-  import { slide } from "svelte/transition" // eslint-disable-line import/no-duplicates
+  import { slide } from "svelte/transition"
 
   import { newNanoid } from "$lib/helpers"
   import type { Location } from "$lib/types/deal"
