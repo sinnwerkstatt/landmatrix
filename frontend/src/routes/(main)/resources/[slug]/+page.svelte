@@ -1,13 +1,8 @@
 <script lang="ts">
-  import type { BlogPage } from "$lib/types/wagtail"
-
   import PageTitle from "$components/PageTitle.svelte"
   import Streamfield from "$components/Streamfield.svelte"
 
-  // import type { PageData } from "./$types";
-  //
-  // export let data: PageData;
-  export let data: { page: BlogPage }
+  export let data
 </script>
 
 <div>

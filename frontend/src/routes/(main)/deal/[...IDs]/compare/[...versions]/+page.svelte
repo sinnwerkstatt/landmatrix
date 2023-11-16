@@ -3,27 +3,15 @@
 
   import { dealSections, subsections } from "$lib/sections"
   import { formfields } from "$lib/stores"
-  import type { Deal } from "$lib/types/deal"
 
   import DisplayField from "$components/Fields/DisplayField.svelte"
 
-  // import type { PageData } from "./$types";
-  //
-  // export let data: PageData;
-  export let data: {
-    dealID: number
-    versionFrom: number
-    versionTo: number
-    dealFrom: Deal
-    dealTo: Deal
-    dealdiff: Set<string>
-    locationsdiff: Set<string> | null
-    datasourcesdiff: Set<string> | null
-    contractsdiff: Set<string> | null
-  }
+  export let data
+
   function anyFieldFromSection(subsections) {
     return subsections.some(subsec => anyFieldFromSubSection(subsec))
   }
+
   function anyFieldFromSubSection(subsec) {
     return subsec.fields.some(f => data.dealdiff.has(f))
   }
@@ -265,12 +253,15 @@
   table th {
     @apply border-b border-r p-2 dark:border-lm-darkgray;
   }
+
   table th:first-child {
     @apply border-l dark:border-lm-darkgray;
   }
+
   h2 {
     @apply my-0 text-center text-lg md:text-xl xl:text-2xl;
   }
+
   h3 {
     @apply my-0 text-center text-sm md:text-base xl:text-lg;
   }

@@ -2,8 +2,6 @@
 // for information about these interfaces
 // and what to do when importing types
 
-import type { Client } from "@urql/core"
-
 // https://github.com/sveltejs/kit/discussions/3772#discussioncomment-2131563
 declare global {
   namespace App {
@@ -12,10 +10,6 @@ declare global {
     interface Locals {
       cookie?: string
       locale: string
-    }
-
-    interface PageData {
-      urqlClient: Client
     }
 
     // interface Platform {}

@@ -21,10 +21,7 @@
   import InvestorGraph from "$components/Investor/InvestorGraph.svelte"
   import DealManageHeader from "$components/Management/DealManageHeader.svelte"
 
-  // import type { PageData } from "./$types";
-  //
-  // export let data: PageData;
-  export let data: { deal: Deal; dealID: number; dealVersion: number }
+  export let data
 
   let deal: Deal = data.deal
   $: deal = data.deal

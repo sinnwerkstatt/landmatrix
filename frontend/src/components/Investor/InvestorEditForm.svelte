@@ -17,8 +17,8 @@
   import SubmodelEditSection from "$components/Management/SubmodelEditSection.svelte"
 
   export let investor: Investor
-  export let investorID: number
-  export let investorVersion: number
+  export let investorID: number | undefined
+  export let investorVersion: number | undefined
 
   let originalInvestor = JSON.stringify(investor)
   let savingInProgress = false

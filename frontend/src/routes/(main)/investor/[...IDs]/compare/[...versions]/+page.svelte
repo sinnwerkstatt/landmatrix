@@ -3,23 +3,11 @@
 
   import { investorSections, subsections } from "$lib/sections"
   import { formfields } from "$lib/stores"
-  import type { Investor } from "$lib/types/investor"
 
   import DisplayField from "$components/Fields/DisplayField.svelte"
 
-  // import type { PageData } from "./$types";
-  //
-  // export let data: PageData;
-  export let data: {
-    investorID: number
-    versionFrom: number
-    versionTo: number
-    investorFrom: Investor
-    investorTo: Investor
-    investordiff: Set<string>
-    datasourcesdiff: Set<string> | null
-    involvementsdiff: Set<string> | null
-  }
+  export let data
+
   function anyFieldFromSection(subsections) {
     return subsections.some(subsec => anyFieldFromSubSection(subsec))
   }

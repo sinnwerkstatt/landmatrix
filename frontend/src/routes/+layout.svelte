@@ -1,7 +1,6 @@
 <script lang="ts">
   import * as Sentry from "@sentry/svelte"
   import { BrowserTracing } from "@sentry/tracing"
-  import type { Client } from "@urql/core"
   import { SvelteToast } from "@zerodevx/svelte-toast"
   import { onMount } from "svelte"
 
@@ -21,9 +20,7 @@
 
   import NewFooter from "$components/NewFooter.svelte"
 
-  // import type { LayoutData } from "./$types"
-  // export let data: LayoutData
-  export let data: { user: User | undefined; urqlClient: Client } = {}
+  export let data
 
   Sentry.init({
     dsn: import.meta.env.VITE_SENTRY_DSN,

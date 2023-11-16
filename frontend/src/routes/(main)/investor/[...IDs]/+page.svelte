@@ -17,14 +17,7 @@
   import InvestorHistory from "$components/Investor/InvestorHistory.svelte"
   import InvestorManageHeader from "$components/Management/InvestorManageHeader.svelte"
 
-  // import type { PageData } from "./$types";
-  //
-  // export let data: PageData;
-  export let data: {
-    investor: Investor
-    investorID: number
-    investorVersion: number | undefined
-  }
+  export let data
 
   let investor: Investor = data.investor
   $: investor = data.investor
