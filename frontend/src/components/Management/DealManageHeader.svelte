@@ -35,8 +35,8 @@
     !dealVersion && deal.status === Status.DELETED
       ? false
       : !dealVersion && !!deal.draft_status
-      ? false
-      : isAuthorized($page.data.user, deal)
+        ? false
+        : isAuthorized($page.data.user, deal)
 
   let showSendToReviewOverlay = false
   async function sendToReview({ detail: { comment } }) {
@@ -84,8 +84,8 @@
       const message = error.networkError
         ? "Network Error: Please check your internet connection."
         : error.graphQLErrors.map(e => e.message).includes("EDITING_OLD_VERSION")
-        ? "You are trying to edit an old version!"
-        : `GraphQLError: ${error.message}`
+          ? "You are trying to edit an old version!"
+          : `GraphQLError: ${error.message}`
 
       toast.push(message, { classes: ["error"] })
       return

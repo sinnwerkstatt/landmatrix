@@ -1,16 +1,16 @@
-import * as R from "ramda"
 import * as d3 from "d3"
+import * as R from "ramda"
 
-import type { Deal, ContractSizeItem } from "$lib/types/deal"
-import type { Dated } from "$lib/data/itemUtils"
-import { isDated, parseDate } from "$lib/data/itemUtils"
 import {
   getConcludedRange,
+  getCurrentSize,
   getInitialSize,
   hasBeenConcluded,
   hasConcludedDate,
-  getCurrentSize,
 } from "$lib/data/dealUtils"
+import type { Dated } from "$lib/data/itemUtils"
+import { isDated, parseDate } from "$lib/data/itemUtils"
+import type { ContractSizeItem, Deal } from "$lib/types/deal"
 
 const getCurrentYear: () => number = R.pipe(
   R.constructN(0, Date),

@@ -3,8 +3,8 @@
 
   import { page } from "$app/stores"
 
-  import { fieldDefinitions } from "$lib/stores"
   import { clickOutside } from "$lib/helpers"
+  import { fieldDefinitions } from "$lib/stores"
   import type { FieldDefinition } from "$lib/types/generics"
 
   import type { FormField } from "$components/Fields/fields"

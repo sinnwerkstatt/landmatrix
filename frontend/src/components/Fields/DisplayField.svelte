@@ -9,9 +9,11 @@
   import FileField from "$components/Fields/Display/FileField.svelte"
   import ForeignKeyField from "$components/Fields/Display/ForeignKeyField.svelte"
   import JSONActorsField from "$components/Fields/Display/JSONActorsField.svelte"
+  import JSONCarbonSequestrationField from "$components/Fields/Display/JSONCarbonSequestrationField.svelte"
   import JSONDateAreaChoicesField from "$components/Fields/Display/JSONDateAreaChoicesField.svelte"
   import JSONDateAreaField from "$components/Fields/Display/JSONDateAreaField.svelte"
   import JSONDateChoiceField from "$components/Fields/Display/JSONDateChoiceField.svelte"
+  import JSONElectricityGenerationField from "$components/Fields/Display/JSONElectricityGenerationField.svelte"
   import JSONExportsField from "$components/Fields/Display/JSONExportsField.svelte"
   import JSONJobsField from "$components/Fields/Display/JSONJobsField.svelte"
   import JSONLeaseField from "$components/Fields/Display/JSONLeaseField.svelte"
@@ -25,8 +27,6 @@
   import TypedChoiceField from "$components/Fields/Display/TypedChoiceField.svelte"
   import WorkflowInfosField from "$components/Fields/Display/WorkflowInfosField.svelte"
   import type { FormField } from "$components/Fields/fields"
-  import JSONElectricityGenerationField from "$components/Fields/Display/JSONElectricityGenerationField.svelte"
-  import JSONCarbonSequestrationField from "$components/Fields/Display/JSONCarbonSequestrationField.svelte"
   import Label from "$components/Fields/Label.svelte"
 
   export let fieldname: string

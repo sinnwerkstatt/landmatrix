@@ -3,8 +3,8 @@
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
-  import { page } from "$app/stores"
   import { invalidate } from "$app/navigation"
+  import { page } from "$app/stores"
 
   import { dealSections } from "$lib/sections.js"
   import { loading } from "$lib/stores"

@@ -1,7 +1,7 @@
 <script lang="ts">
-  import VirtualList from "svelte-tiny-virtual-list"
   import { tick } from "svelte"
   import Select from "svelte-select"
+  import VirtualList from "svelte-tiny-virtual-list"
 
   // we assume all items have an id field
   interface Item {

@@ -8,9 +8,9 @@
   import { page } from "$app/stores"
 
   import {
-    isAuthorized,
     findActiveVersion,
     isAdmin,
+    isAuthorized,
     isCreator,
     isEditorPlus,
   } from "$lib/helpers"
@@ -236,8 +236,8 @@
                         "Activate submitted version replacing currently active version",
                       )
                     : otype === "deal"
-                    ? $_("Set the deal active")
-                    : $_("Set the investor active")}
+                      ? $_("Set the deal active")
+                      : $_("Set the investor active")}
                   class="btn btn-pelorous"
                   on:click={() => (showActivateOverlay = true)}
                 >
@@ -407,12 +407,12 @@
         ? $_("Remove deal version")
         : $_("Remove investor version")
       : isDeleted
-      ? otype === "deal"
-        ? $_("Reactivate deal")
-        : $_("Reactivate investor")
-      : otype === "deal"
-      ? $_("Delete deal")
-      : $_("Delete investor")}
+        ? otype === "deal"
+          ? $_("Reactivate deal")
+          : $_("Reactivate investor")
+        : otype === "deal"
+          ? $_("Delete deal")
+          : $_("Delete investor")}
   />
 {/if}
 

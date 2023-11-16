@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { gql, Client } from "@urql/svelte"
-  import { _ } from "svelte-i18n"
-  import { onMount } from "svelte"
+  import { Client, gql } from "@urql/svelte"
   import cn from "classnames"
+  import { onMount } from "svelte"
+  import { _ } from "svelte-i18n"
 
   import { goto } from "$app/navigation"
   import { page } from "$app/stores"

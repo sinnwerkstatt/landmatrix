@@ -1,6 +1,6 @@
 <script lang="ts">
-  import Select from "svelte-select"
   import { _ } from "svelte-i18n"
+  import Select from "svelte-select"
 
   import type { FormField } from "../fields"
 

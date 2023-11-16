@@ -1,5 +1,9 @@
 {
-  "plugins": ["prettier-plugin-svelte", "prettier-plugin-tailwindcss"],
+  "plugins": [
+    "prettier-plugin-svelte",
+    "@ianvs/prettier-plugin-sort-imports",
+    "prettier-plugin-tailwindcss"
+  ],
   "printWidth": 88,
   "semi": false,
   "trailingComma": "all",
@@ -7,5 +11,18 @@
   "htmlWhitespaceSensitivity": "ignore",
   "svelteStrictMode": false,
   "svelteAllowShorthand": true,
-  "svelteIndentScriptAndStyle": true
+  "svelteIndentScriptAndStyle": true,
+  "importOrder": [
+    "<BUILTIN_MODULES>",
+    "",
+    "<THIRD_PARTY_MODULES>",
+    "",
+    "^\\$app/(.*)$",
+    "",
+    "^\\$lib(.*)$",
+    "",
+    "^\\$components/(.*)$",
+    "",
+    "^[./]"
+  ]
 }

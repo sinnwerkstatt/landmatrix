@@ -1,7 +1,7 @@
 import type { Deal, DealWorkflowInfo } from "$lib/types/deal"
-import type { Investor } from "$lib/types/investor"
 import type { WorkflowInfo } from "$lib/types/generics"
 import { DraftStatus } from "$lib/types/generics"
+import type { Investor } from "$lib/types/investor"
 
 export type WorkflowInfoView = (Deal | Investor) & {
   relevantWFI: WorkflowInfo

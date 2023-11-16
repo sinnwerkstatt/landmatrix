@@ -8,8 +8,8 @@
   import type { WagtailPage } from "$lib/types/wagtail"
 
   import BasePage from "./BasePage.svelte"
-  import ObservatoryPage from "./ObservatoryPage.svelte"
   import HomePage from "./HomePage.svelte"
+  import ObservatoryPage from "./ObservatoryPage.svelte"
 
   // import type { PageData } from "./$types";
   // export let data: PageData;

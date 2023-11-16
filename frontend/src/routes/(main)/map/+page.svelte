@@ -1,6 +1,6 @@
 <script lang="ts">
   import { queryStore } from "@urql/svelte"
-  import type { LeafletEvent, Map, Marker, FeatureGroup } from "leaflet"
+  import type { FeatureGroup, LeafletEvent, Map, Marker } from "leaflet"
   import { divIcon, featureGroup, marker, popup } from "leaflet?client"
   import * as R from "ramda"
   import { onDestroy, onMount } from "svelte"
@@ -10,20 +10,20 @@
 
   import { dealsQuery } from "$lib/dealQueries"
   import { filters, publicOnly } from "$lib/filters"
-  import { countries, loading, regions, isMobile } from "$lib/stores"
+  import { countries, isMobile, loading, regions } from "$lib/stores"
   import type { Deal, Location } from "$lib/types/deal"
-  import type { Country } from "$lib/types/wagtail"
   import type { GQLFilter } from "$lib/types/filters"
+  import type { Country } from "$lib/types/wagtail"
 
-  import { showContextBar, showFilterBar } from "$components/Data/stores"
   import DataContainer from "$components/Data/DataContainer.svelte"
   import FilterCollapse from "$components/Data/FilterCollapse.svelte"
+  import { showContextBar, showFilterBar } from "$components/Data/stores"
   import BigMap from "$components/Map/BigMap.svelte"
   import {
+    getBaseLayers,
     getContextLayers,
     visibleContextLayers,
     visibleLayer,
-    getBaseLayers,
   } from "$components/Map/layers"
   import {
     displayDealsCount,

@@ -1,12 +1,12 @@
 import type {
+  Feature,
   FeatureCollection,
   GeoJsonObject,
-  Polygon,
-  MultiPolygon,
-  Feature,
-  Point,
-  Geometry,
   GeoJsonProperties,
+  Geometry,
+  MultiPolygon,
+  Point,
+  Polygon,
 } from "geojson"
 
 import type { Obj, ObjVersion, WorkflowInfo } from "$lib/types/generics"

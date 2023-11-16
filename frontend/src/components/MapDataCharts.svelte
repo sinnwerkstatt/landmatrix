@@ -1,11 +1,12 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n"
   import cn from "classnames"
   import type { ComponentType } from "svelte"
+  import { _ } from "svelte-i18n"
 
   import ChartsIcon from "$components/Data/Charts/CakeTeaser.svelte"
-  import DataIcon from "$components/Data/TableTeaser.svelte"
   import MapIcon from "$components/Data/MapTeaser.svelte"
+  import DataIcon from "$components/Data/TableTeaser.svelte"
+
   // import DataIcon from "./icons/DataIcon.svelte"
   // import MapIcon from "./icons/MapIcon.svelte"
   // import ChartsIcon from "./icons/ChartsIcon.svelte"

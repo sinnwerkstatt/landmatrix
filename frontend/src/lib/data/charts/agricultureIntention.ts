@@ -3,13 +3,13 @@ import { get } from "svelte/store"
 import type { BucketMap } from "$lib/data/buckets"
 import { createBucketMapReducer } from "$lib/data/buckets"
 import { createChartData } from "$lib/data/createChartData"
+import { intentionOfInvestmentMap } from "$lib/stores"
 import type { Deal } from "$lib/types/deal"
 import {
   AgricultureIoI,
   INTENTION_OF_INVESTMENT_GROUP_MAP,
   IntentionOfInvestmentGroup,
 } from "$lib/types/deal"
-import { intentionOfInvestmentMap } from "$lib/stores"
 
 const getAgricultureIntentionLabel = (intention: AgricultureIoI) =>
   get(intentionOfInvestmentMap)[intention]

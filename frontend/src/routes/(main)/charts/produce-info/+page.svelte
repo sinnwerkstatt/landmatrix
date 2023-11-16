@@ -9,9 +9,9 @@
   import { filters, publicOnly } from "$lib/filters"
   import { chartDescriptions, isMobile } from "$lib/stores"
 
-  import { showContextBar, showFilterBar } from "$components/Data/stores"
   import ChartsContainer from "$components/Data/Charts/ChartsContainer.svelte"
   import ProduceInfoMap from "$components/Data/Charts/ProduceInfoMap.svelte"
+  import { showContextBar, showFilterBar } from "$components/Data/stores"
   import LoadingPulse from "$components/LoadingPulse.svelte"
 
   $: deals = queryStore({

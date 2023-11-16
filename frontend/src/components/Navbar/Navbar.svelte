@@ -1,14 +1,14 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n"
   import cn from "classnames"
+  import { _ } from "svelte-i18n"
 
-  import { blogCategories, aboutPages, observatoryPages, isDarkMode } from "$lib/stores"
   import { clickOutside } from "$lib/helpers"
+  import { aboutPages, blogCategories, isDarkMode, observatoryPages } from "$lib/stores"
 
   import BurgerMenuIcon from "$components/icons/BurgerMenuIcon.svelte"
-  import NavbarSearch from "$components/Navbar/NavbarSearch.svelte"
   import LanguageSwitch from "$components/Navbar/LanguageSwitch.svelte"
   import LoginSection from "$components/Navbar/LoginSection.svelte"
+  import NavbarSearch from "$components/Navbar/NavbarSearch.svelte"
   import SubEntries from "$components/Navbar/SubEntries.svelte"
 
   interface MenuEntry {

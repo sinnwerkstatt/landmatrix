@@ -1,15 +1,15 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import type { Deal } from "$lib/types/deal"
+  import type { SortBy } from "$lib/data/buckets"
   import {
     IMPLEMENTATION_STATUS_COLORS,
     implementationStatusReducer,
   } from "$lib/data/charts/implementationStatus"
   import { createChartData } from "$lib/data/createChartData"
-  import { ImplementationStatus } from "$lib/types/deal"
   import { implementationStatusMap } from "$lib/stores"
-  import type { SortBy } from "$lib/data/buckets"
+  import type { Deal } from "$lib/types/deal"
+  import { ImplementationStatus } from "$lib/types/deal"
 
   import DownloadablePieChart from "$components/Data/Charts/DownloadablePieChart.svelte"
 

@@ -2,10 +2,10 @@
   import { _ } from "svelte-i18n"
   import { slide } from "svelte/transition"
 
+  import LowLevelNullBooleanField from "$components/Fields/Edit/LowLevelNullBooleanField.svelte"
   import { createValueCopy, syncValue } from "$components/Fields/JSONField"
   import MinusIcon from "$components/icons/MinusIcon.svelte"
   import PlusIcon from "$components/icons/PlusIcon.svelte"
-  import LowLevelNullBooleanField from "$components/Fields/Edit/LowLevelNullBooleanField.svelte"
 
   import type { FormField } from "../fields"
   import LowLevelDateYearField from "./LowLevelDateYearField.svelte"

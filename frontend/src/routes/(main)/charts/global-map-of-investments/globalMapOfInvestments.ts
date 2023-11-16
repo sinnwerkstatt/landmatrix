@@ -20,7 +20,7 @@ import {
 import type { BaseType, D3ZoomEvent, GeoPath } from "d3"
 import type { Feature, Geometry } from "geojson"
 import { feature } from "topojson-client"
-import type { Topology, GeometryCollection } from "topojson-specification"
+import type { GeometryCollection, Topology } from "topojson-specification"
 import worldTopology from "world-atlas/countries-110m.json"
 
 export interface Investments {

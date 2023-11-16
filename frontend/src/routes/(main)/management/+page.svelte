@@ -12,10 +12,10 @@
 
   import { formfields, loading } from "$lib/stores"
   import type { Deal } from "$lib/types/deal"
+  import { DraftStatus, Status } from "$lib/types/generics"
   import type { Investor } from "$lib/types/investor"
   import type { User } from "$lib/types/user"
   import { UserRole } from "$lib/types/user"
-  import { DraftStatus, Status } from "$lib/types/generics"
 
   import FilterCollapse from "$components/Data/FilterCollapse.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"
@@ -23,9 +23,9 @@
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
   import Table from "$components/Table/Table.svelte"
 
-  import RightFilterBar from "./RightFilterBar.svelte"
-  import { managementFilters, modeMap, Mode } from "./state"
   import { downloadAsCSV, downloadAsXLSX } from "./downloadObjects.js"
+  import RightFilterBar from "./RightFilterBar.svelte"
+  import { managementFilters, Mode, modeMap } from "./state"
   import WorkflowInfoView from "./WorkflowInfoView.svelte"
 
   dayjs.extend(isSameOrBefore)

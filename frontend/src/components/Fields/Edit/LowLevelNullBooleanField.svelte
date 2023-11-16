@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n"
   import { onMount } from "svelte"
+  import { _ } from "svelte-i18n"
 
   export let value: boolean | null | undefined = undefined
   export let nullable = false

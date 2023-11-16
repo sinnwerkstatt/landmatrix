@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Client, gql, queryStore } from "@urql/svelte"
-  import { _ } from "svelte-i18n"
   import { onMount } from "svelte"
+  import { _ } from "svelte-i18n"
 
   import { page } from "$app/stores"
 
@@ -12,8 +12,8 @@
   import type { GQLFilter } from "$lib/types/filters"
   import type { Investor } from "$lib/types/investor"
 
-  import { showContextBar, showFilterBar } from "$components/Data/stores"
   import DataContainer from "$components/Data/DataContainer.svelte"
+  import { showContextBar, showFilterBar } from "$components/Data/stores"
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import Table from "$components/Table/Table.svelte"
 

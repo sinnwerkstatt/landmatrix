@@ -1,10 +1,10 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
+  import TypedChoiceField from "$components/Fields/Edit/TypedChoiceField.svelte"
   import { createValueCopy, syncValue } from "$components/Fields/JSONField"
   import MinusIcon from "$components/icons/MinusIcon.svelte"
   import PlusIcon from "$components/icons/PlusIcon.svelte"
-  import TypedChoiceField from "$components/Fields/Edit/TypedChoiceField.svelte"
 
   import type { FormField } from "../fields"
 

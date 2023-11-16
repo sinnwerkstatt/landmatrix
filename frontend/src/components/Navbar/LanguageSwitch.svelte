@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { locale } from "svelte-i18n"
   import Cookies from "js-cookie"
+  import { locale } from "svelte-i18n"
 
   import { page } from "$app/stores"
 

@@ -1,10 +1,10 @@
 <script lang="ts">
   import cn from "classnames"
-  import { slide } from "svelte/transition" // eslint-disable-line import/no-duplicates
   import { createEventDispatcher } from "svelte" // eslint-disable-line import/no-duplicates
+  import { slide } from "svelte/transition" // eslint-disable-line import/no-duplicates
 
-  import { page } from "$app/stores"
   import { afterNavigate } from "$app/navigation"
+  import { page } from "$app/stores"
 
   import { clickOutside } from "$lib/helpers"
 

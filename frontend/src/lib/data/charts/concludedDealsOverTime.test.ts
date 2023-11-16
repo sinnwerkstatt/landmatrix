@@ -1,10 +1,10 @@
-import { NegotiationStatus } from "$lib/types/deal"
-import type { Deal, ContractSizeItem } from "$lib/types/deal"
 import {
-  createYearSizeMap,
-  createConcludedDealsOverTimeReducer,
   createBuckets,
+  createConcludedDealsOverTimeReducer,
+  createYearSizeMap,
 } from "$lib/data/charts/concludedDealsOverTime"
+import { NegotiationStatus } from "$lib/types/deal"
+import type { ContractSizeItem, Deal } from "$lib/types/deal"
 
 describe("Cumulative number of deals", () => {
   test("a.1) Date is given on concluded negotiation status.", () => {

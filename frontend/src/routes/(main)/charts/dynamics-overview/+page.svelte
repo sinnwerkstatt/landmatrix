@@ -1,7 +1,7 @@
 <script lang="ts">
   import { queryStore } from "@urql/svelte"
-  import { _ } from "svelte-i18n"
   import { onMount } from "svelte"
+  import { _ } from "svelte-i18n"
 
   import { page } from "$app/stores"
 
@@ -10,10 +10,10 @@
   import { chartDescriptions, isMobile } from "$lib/stores"
 
   import ChartsContainer from "$components/Data/Charts/ChartsContainer.svelte"
+  import { showContextBar, showFilterBar } from "$components/Data/stores"
   import DealDisplayToggle from "$components/DealDisplayToggle.svelte"
   import LoadingPulse from "$components/LoadingPulse.svelte"
   import { displayDealsCount } from "$components/Map/map_helper"
-  import { showContextBar, showFilterBar } from "$components/Data/stores"
 
   import AgricultureIntentionChart from "./AgricultureIntentionChart.svelte"
   import ImplementationStatusChart from "./ImplementationStatusChart.svelte"

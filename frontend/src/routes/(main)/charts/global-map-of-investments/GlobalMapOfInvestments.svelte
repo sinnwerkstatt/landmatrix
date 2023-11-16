@@ -9,9 +9,9 @@
 
   import LoadingPulse from "$components/LoadingPulse.svelte"
 
-  import type { Investments, GlobalMap } from "./globalMapOfInvestments"
-  import { createGlobalMapOfInvestments } from "./globalMapOfInvestments"
   import CountryTooltip from "./CountryTooltip.svelte"
+  import type { GlobalMap, Investments } from "./globalMapOfInvestments"
+  import { createGlobalMapOfInvestments } from "./globalMapOfInvestments"
 
   let globalMap: GlobalMap | null = null
   let investments: Investments | null = null

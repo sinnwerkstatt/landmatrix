@@ -3,6 +3,7 @@
 
   import FacebookIcon from "$components/icons/FacebookIcon.svelte"
   import TwitterIcon from "$components/icons/TwitterIcon.svelte"
+
   interface MenuEntry {
     title: string
     href?: string

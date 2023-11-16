@@ -1,8 +1,8 @@
 <script lang="ts">
   import { onMount } from "svelte" // eslint-disable-line import/no-duplicates
   import { _ } from "svelte-i18n"
-  import { tweened } from "svelte/motion" // eslint-disable-line import/no-duplicates
   import { expoOut } from "svelte/easing" // eslint-disable-line import/no-duplicates
+  import { tweened } from "svelte/motion" // eslint-disable-line import/no-duplicates
 
   import { contentRootElement } from "$lib/stores"
 

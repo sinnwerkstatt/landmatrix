@@ -1,11 +1,15 @@
 <script lang="ts">
   import type { MapOptions } from "leaflet"
+
   import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css"
+
   import { GestureHandling } from "leaflet-gesture-handling?client"
+
   import "leaflet/dist/leaflet.css"
+
   import { Icon, Map } from "leaflet?client"
   import { nanoid } from "nanoid"
-  import { createEventDispatcher, onMount, onDestroy } from "svelte"
+  import { createEventDispatcher, onDestroy, onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
   import LoadingPulse from "$components/LoadingPulse.svelte"

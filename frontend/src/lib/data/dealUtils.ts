@@ -1,15 +1,15 @@
 import * as R from "ramda"
 
-import type { Deal, ContractSizeItem, NegotiationStatusItem } from "$lib/types/deal"
-import { NegotiationStatus } from "$lib/types/deal"
 import {
-  parseDate,
-  isDated,
+  getCurrent,
   getFirstByDate,
   getLastByDate,
-  getCurrent,
+  isDated,
+  parseDate,
 } from "$lib/data/itemUtils"
 import type { IsCurrent } from "$lib/data/itemUtils"
+import type { ContractSizeItem, Deal, NegotiationStatusItem } from "$lib/types/deal"
+import { NegotiationStatus } from "$lib/types/deal"
 
 export const isConcludedItem: (item: NegotiationStatusItem) => boolean =
   R.propSatisfies(

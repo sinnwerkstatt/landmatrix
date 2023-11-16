@@ -1,19 +1,19 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n"
-  import { createEventDispatcher } from "svelte"
   import type { FeatureCollection } from "geojson"
+  import { createEventDispatcher } from "svelte"
+  import { _ } from "svelte-i18n"
 
   import { areaTypeMap } from "$lib/stores"
   import type { EnhancedAreaFeature } from "$lib/types/deal"
 
+  import { dateCurrentFormat, formatArea } from "$components/Fields/Display/jsonHelpers"
+  import type { FormField } from "$components/Fields/fields"
+  import EyeIcon from "$components/icons/EyeIcon.svelte"
+  import EyeSlashIcon from "$components/icons/EyeSlashIcon.svelte"
+
   const dispatch = createEventDispatcher<{
     toggleVisibility: { locationId: string; featureId: string }
   }>()
-
-  import { dateCurrentFormat, formatArea } from "$components/Fields/Display/jsonHelpers"
-  import type { FormField } from "$components/Fields/fields"
-  import EyeSlashIcon from "$components/icons/EyeSlashIcon.svelte"
-  import EyeIcon from "$components/icons/EyeIcon.svelte"
 
   export let value: FeatureCollection
   export const model: "deal" | "investor" = "deal"

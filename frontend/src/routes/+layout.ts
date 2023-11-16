@@ -1,4 +1,5 @@
-import { Client, cacheExchange, fetchExchange, gql } from "@urql/core"
+import { cacheExchange, Client, fetchExchange, gql } from "@urql/core"
+
 // import { devtoolsExchange } from "@urql/devtools"
 
 import { i18nload } from "$lib/i18n/i18n"

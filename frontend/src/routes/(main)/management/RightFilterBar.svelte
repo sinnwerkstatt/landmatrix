@@ -8,10 +8,10 @@
   import type { Investor } from "$lib/types/investor"
   import type { User } from "$lib/types/user"
 
-  import UserSelect from "$components/LowLevel/UserSelect.svelte"
   import CountrySelect from "$components/LowLevel/CountrySelect.svelte"
+  import UserSelect from "$components/LowLevel/UserSelect.svelte"
 
-  import { managementFilters, MODES, modeMap } from "./state"
+  import { managementFilters, modeMap, MODES } from "./state"
   import type { Mode } from "./state"
 
   export let showFilters = false

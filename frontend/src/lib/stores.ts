@@ -9,7 +9,17 @@ import type { Writable } from "svelte/store"
 // eslint-disable-next-line import/no-unresolved
 import { browser } from "$app/environment"
 
+import {
+  flat_intention_of_investment_map,
+  intention_of_investment_group_choices,
+} from "$lib/choices"
 import type { BlockImage } from "$lib/types/custom"
+import type { AreaType, IntentionOfInvestment } from "$lib/types/deal"
+import {
+  ImplementationStatus,
+  IntentionOfInvestmentGroup,
+  NegotiationStatusGroup,
+} from "$lib/types/deal"
 import type { DraftStatus, FieldDefinition, Status } from "$lib/types/generics"
 import type { User } from "$lib/types/user"
 import type {
@@ -19,16 +29,6 @@ import type {
   Region,
   WagtailPage,
 } from "$lib/types/wagtail"
-import type { AreaType, IntentionOfInvestment } from "$lib/types/deal"
-import {
-  ImplementationStatus,
-  NegotiationStatusGroup,
-  IntentionOfInvestmentGroup,
-} from "$lib/types/deal"
-import {
-  flat_intention_of_investment_map,
-  intention_of_investment_group_choices,
-} from "$lib/choices"
 
 import type { FormField } from "$components/Fields/fields"
 

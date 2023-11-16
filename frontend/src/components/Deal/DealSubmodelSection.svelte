@@ -2,8 +2,8 @@
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
-  import { page } from "$app/stores"
   import { browser } from "$app/environment"
+  import { page } from "$app/stores"
 
   import { isEmpty } from "$lib/helpers"
   import { subsections } from "$lib/sections"

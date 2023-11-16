@@ -1,11 +1,11 @@
 import cytoscape from "cytoscape"
 import type {
-  Core as Graph,
   CytoscapeOptions,
-  ElementDefinition,
-  NodeSingular,
-  NodeDefinition,
   EdgeDefinition,
+  ElementDefinition,
+  Core as Graph,
+  NodeDefinition,
+  NodeSingular,
 } from "cytoscape"
 import cyCoseBilkent from "cytoscape-cose-bilkent"
 import type { LayoutOptions } from "cytoscape-cose-bilkent"
@@ -15,7 +15,7 @@ import type { Instance as TippyInstance } from "tippy.js"
 
 import { classification_choices } from "$lib/choices"
 import type { Deal } from "$lib/types/deal"
-import type { Investor, Involvement, Classification } from "$lib/types/investor"
+import type { Classification, Investor, Involvement } from "$lib/types/investor"
 import { Role } from "$lib/types/investor"
 
 cytoscape.use(cyCoseBilkent)

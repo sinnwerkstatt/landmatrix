@@ -1,27 +1,27 @@
-import type { Feature, Point, FeatureCollection, Geometry } from "geojson"
+import { area } from "@turf/turf"
+import type { Feature, FeatureCollection, Geometry, Point } from "geojson"
 import * as L from "leaflet" // TODO: this breaks SSR
 import * as R from "ramda"
-import { area } from "@turf/turf"
 
 import type {
+  AreaFeature,
   AreaType,
+  EnhancedAreaFeature,
   FeatureProps,
   Location,
   LocationWithCoordinates,
-  AreaFeature,
   PointFeature,
-  EnhancedAreaFeature,
 } from "$lib/types/deal"
 import {
-  upsertProperties,
-  createFeatureCollection,
   addTempIds,
-  setProperty,
+  createFeatureCollection,
   isPoint,
+  setProperty,
+  upsertProperties,
 } from "$lib/utils/geojsonHelpers"
 
-import LocationTooltip from "$components/Deal/LocationTooltip.svelte"
 import LocationLegend from "$components/Deal/LocationLegend.svelte"
+import LocationTooltip from "$components/Deal/LocationTooltip.svelte"
 
 export const AREA_TYPES = ["production_area", "contract_area", "intended_area"] as const
 export const AREA_TYPE_COLOR_MAP: { [key in AreaType]: string } = {

@@ -1,6 +1,6 @@
 import { getConcludedDate, hasConcludedDate } from "$lib/data/dealUtils"
 import { NegotiationStatus } from "$lib/types/deal"
-import type { Deal, ContractSizeItem, NegotiationStatusItem } from "$lib/types/deal"
+import type { ContractSizeItem, Deal, NegotiationStatusItem } from "$lib/types/deal"
 
 describe("getConcludedDate", () => {
   it("returns year on concluded negotiation status", () => {

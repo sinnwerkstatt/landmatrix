@@ -32,3 +32,4 @@ mprofile_*.dat
 
 node_modules/
 tests/storageState
+/.pytest_cache/

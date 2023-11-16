@@ -3,10 +3,10 @@
 
   import { areaTypeMap } from "$lib/stores"
   import type { AreaFeature, PointFeature } from "$lib/types/deal"
-  import { isPolygon, isPoint } from "$lib/utils/geojsonHelpers"
+  import { isPoint, isPolygon } from "$lib/utils/geojsonHelpers"
 
-  import NanoIDField from "$components/Fields/Display/NanoIDField.svelte"
   import { formatArea } from "$components/Fields/Display/jsonHelpers"
+  import NanoIDField from "$components/Fields/Display/NanoIDField.svelte"
 
   export let feature: PointFeature | AreaFeature
 </script>

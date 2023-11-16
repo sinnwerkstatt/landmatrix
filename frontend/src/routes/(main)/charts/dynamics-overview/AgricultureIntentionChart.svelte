@@ -1,12 +1,12 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import type { Deal } from "$lib/types/deal"
-  import { createChartData } from "$lib/data/createChartData"
-  import { AgricultureIoI } from "$lib/types/deal"
-  import { intentionOfInvestmentMap } from "$lib/stores"
-  import { agricultureIntentionReducer } from "$lib/data/charts/agricultureIntention"
   import type { SortBy } from "$lib/data/buckets"
+  import { agricultureIntentionReducer } from "$lib/data/charts/agricultureIntention"
+  import { createChartData } from "$lib/data/createChartData"
+  import { intentionOfInvestmentMap } from "$lib/stores"
+  import type { Deal } from "$lib/types/deal"
+  import { AgricultureIoI } from "$lib/types/deal"
 
   import DownloadablePieChart from "$components/Data/Charts/DownloadablePieChart.svelte"
 

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Client, gql } from "@urql/svelte"
-  import { _ } from "svelte-i18n"
   import { toast } from "@zerodevx/svelte-toast"
+  import { _ } from "svelte-i18n"
 
   import { page } from "$app/stores"
 

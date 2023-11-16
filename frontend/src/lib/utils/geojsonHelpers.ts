@@ -3,10 +3,10 @@ import type {
   FeatureCollection,
   GeoJsonProperties,
   Geometry,
+  MultiPoint,
+  MultiPolygon,
   Point,
   Polygon,
-  MultiPolygon,
-  MultiPoint,
 } from "geojson"
 import * as R from "ramda"
 

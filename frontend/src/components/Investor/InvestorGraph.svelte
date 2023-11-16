@@ -1,8 +1,8 @@
 <script lang="ts">
+  import { gql, queryStore } from "@urql/svelte"
   import type { ElementDefinition, EventHandler, Core as Graph } from "cytoscape"
   import { tick } from "svelte"
   import { _ } from "svelte-i18n"
-  import { gql, queryStore } from "@urql/svelte"
 
   import { page } from "$app/stores"
 

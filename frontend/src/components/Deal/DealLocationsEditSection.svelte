@@ -10,7 +10,7 @@
   import type { Location } from "$lib/types/deal"
   import type { Country } from "$lib/types/wagtail"
   import { isEmptySubmodel } from "$lib/utils/data_processing"
-  import { AREA_TYPES, AREA_TYPE_COLOR_MAP, padBounds } from "$lib/utils/location"
+  import { AREA_TYPE_COLOR_MAP, AREA_TYPES, padBounds } from "$lib/utils/location"
 
   import LocationGoogleField from "$components/Fields/Edit/LocationGoogleField.svelte"
   import PointField from "$components/Fields/Edit/PointField.svelte"
@@ -272,8 +272,8 @@
             loc.id
               ? 'border-orange-400'
               : activeLocationID === loc.id
-              ? 'border-lm-dark dark:border-gray-600'
-              : 'border-lm-darkgray dark:border-gray-700'}"
+                ? 'border-lm-dark dark:border-gray-600'
+                : 'border-lm-darkgray dark:border-gray-700'}"
           >
             <div class="flex flex-row items-center justify-between">
               <button

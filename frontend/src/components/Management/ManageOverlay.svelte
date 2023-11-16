@@ -2,9 +2,9 @@
   import { createEventDispatcher, onDestroy, onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
+  import { allUsers } from "$lib/stores"
   import type { User } from "$lib/types/user"
   import { UserRole } from "$lib/types/user"
-  import { allUsers } from "$lib/stores"
 
   import UserSelect from "$components/LowLevel/UserSelect.svelte"
   import Overlay from "$components/Overlay.svelte"

@@ -1,14 +1,14 @@
 <script lang="ts">
-  import { _, number } from "svelte-i18n"
   import * as R from "ramda"
+  import { _, number } from "svelte-i18n"
 
-  import type { Deal } from "$lib/types/deal"
   import {
-    createChartData,
     clearGraph,
+    createChartData,
     drawGraph,
   } from "$lib/data/charts/concludedDealsOverTime"
   import type { ChartData } from "$lib/data/charts/concludedDealsOverTime"
+  import type { Deal } from "$lib/types/deal"
 
   import ChartWrapper from "$components/Data/Charts/DownloadWrapper.svelte"
   import { downloadCSV, downloadJSON, downloadSVG } from "$components/Data/Charts/utils"

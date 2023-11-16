@@ -15,9 +15,9 @@
   import Table from "$components/Table/Table.svelte"
 
   import {
-    createTodoFeedbackView,
-    createRequestImprovementView,
     createRequestFeedbackView,
+    createRequestImprovementView,
+    createTodoFeedbackView,
     createTodoImprovementView,
   } from "./workflowViews"
   import type { CreateWorkflowInfoViewFn } from "./workflowViews"

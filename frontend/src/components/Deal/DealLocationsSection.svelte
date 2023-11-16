@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Map, GeoJSON } from "leaflet"
+  import type { GeoJSON, Map } from "leaflet"
   import { geoJson } from "leaflet?client"
   import * as R from "ramda"
 
@@ -7,12 +7,12 @@
 
   import type { Deal, Location } from "$lib/types/deal"
   import {
-    padBounds,
     createEnhancedLocationsCopy,
-    createLocationFeatures,
-    toggleFeatureVisibility,
     createGeoJsonOptions,
     createLegend,
+    createLocationFeatures,
+    padBounds,
+    toggleFeatureVisibility,
   } from "$lib/utils/location"
 
   import DealSubmodelSection from "$components/Deal/DealSubmodelSection.svelte"

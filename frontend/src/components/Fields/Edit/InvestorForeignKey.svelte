@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { gql, Client } from "@urql/svelte"
+  import { Client, gql } from "@urql/svelte"
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 

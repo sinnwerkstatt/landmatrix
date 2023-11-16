@@ -21,8 +21,8 @@
   $: confidentialStatusChange = info.comment?.startsWith("[SET_CONFIDENTIAL]")
     ? "bg-red-400"
     : info.comment?.startsWith("[UNSET_CONFIDENTIAL]")
-    ? "bg-green-600 line-through"
-    : false
+      ? "bg-green-600 line-through"
+      : false
 
   $: cleanedComment = info.comment
     ?.replace("[SET_CONFIDENTIAL]", "")

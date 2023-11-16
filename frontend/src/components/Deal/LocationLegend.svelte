@@ -1,8 +1,8 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import { AREA_TYPES, AREA_TYPE_COLOR_MAP } from "$lib/utils/location"
   import { areaTypeMap } from "$lib/stores"
+  import { AREA_TYPE_COLOR_MAP, AREA_TYPES } from "$lib/utils/location"
 </script>
 
 <div class="border border-black bg-white p-3 font-sans text-lm-dark">

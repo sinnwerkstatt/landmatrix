@@ -18,6 +18,7 @@
   import NavigationLoader from "$components/NavigationLoader.svelte"
 
   import "../app.css"
+
   import NewFooter from "$components/NewFooter.svelte"
 
   // import type { LayoutData } from "./$types"

@@ -8,7 +8,7 @@
 
   import { dealSections } from "$lib/sections"
   import type { Deal } from "$lib/types/deal"
-  import { removeEmptyEntries, discardEmptyFields } from "$lib/utils/data_processing"
+  import { discardEmptyFields, removeEmptyEntries } from "$lib/utils/data_processing"
 
   import DealEditSection from "$components/Deal/DealEditSection.svelte"
   import DealLocationsEditSection from "$components/Deal/DealLocationsEditSection.svelte"
@@ -95,8 +95,8 @@
       const message = error.networkError
         ? "Network Error: Please check your internet connection."
         : error.graphQLErrors.map(e => e.message).includes("EDITING_OLD_VERSION")
-        ? "You are trying to edit an old version!"
-        : `GraphQLError: ${error.message}`
+          ? "You are trying to edit an old version!"
+          : `GraphQLError: ${error.message}`
 
       toast.push(message, { classes: ["error"] })
     } else if (!data) {

@@ -1,7 +1,7 @@
 import type { Feature } from "geojson"
 import * as R from "ramda"
 
-import { upsertProperties, setProperty, addTempIds } from "./geojsonHelpers"
+import { addTempIds, setProperty, upsertProperties } from "./geojsonHelpers"
 
 describe("geojsonHelpers", () => {
   test("upsertProperties", () => {

@@ -1,11 +1,11 @@
-import type { ComponentType } from "svelte"
 import { error } from "@sveltejs/kit"
+import type { ComponentType } from "svelte"
 
-import LACP from "$components/Data/Charts/CountryProfile/LACP.svelte"
-import LSLAByNegotiation from "$components/Data/Charts/CountryProfile/LSLAByNegotiation.svelte"
+import ConcludedDealsOverTime from "$components/Data/Charts/CountryProfile/ConcludedDealsOverTime.svelte"
 import DynamicsOfDeal from "$components/Data/Charts/CountryProfile/DynamicsOfDeal.svelte"
 import IntentionsPerCategory from "$components/Data/Charts/CountryProfile/IntentionsPerCategory.svelte"
-import ConcludedDealsOverTime from "$components/Data/Charts/CountryProfile/ConcludedDealsOverTime.svelte"
+import LACP from "$components/Data/Charts/CountryProfile/LACP.svelte"
+import LSLAByNegotiation from "$components/Data/Charts/CountryProfile/LSLAByNegotiation.svelte"
 
 import type { PageLoad } from "./$types"
 

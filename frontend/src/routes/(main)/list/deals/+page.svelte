@@ -1,17 +1,17 @@
 <script lang="ts">
   import { queryStore } from "@urql/svelte"
-  import { _ } from "svelte-i18n"
   import { onMount } from "svelte"
+  import { _ } from "svelte-i18n"
 
   import { page } from "$app/stores"
 
   import { dealsQuery } from "$lib/dealQueries"
   import { filters, publicOnly } from "$lib/filters"
-  import { formfields, loading, isMobile } from "$lib/stores"
+  import { formfields, isMobile, loading } from "$lib/stores"
 
-  import { showContextBar, showFilterBar } from "$components/Data/stores"
   import DataContainer from "$components/Data/DataContainer.svelte"
   import FilterCollapse from "$components/Data/FilterCollapse.svelte"
+  import { showContextBar, showFilterBar } from "$components/Data/stores"
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import Table from "$components/Table/Table.svelte"
 

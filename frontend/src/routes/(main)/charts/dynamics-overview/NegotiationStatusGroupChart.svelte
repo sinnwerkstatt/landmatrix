@@ -1,15 +1,15 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import type { Deal } from "$lib/types/deal"
-  import { createChartData } from "$lib/data/createChartData"
-  import { NegotiationStatusGroup } from "$lib/types/deal"
-  import {
-    negotiationStatusGroupReducer,
-    NEGOTIATION_STATUS_GROUP_COLORS,
-  } from "$lib/data/charts/negotiationStatusGroup"
-  import { negotiationStatusGroupMap } from "$lib/stores"
   import type { SortBy } from "$lib/data/buckets"
+  import {
+    NEGOTIATION_STATUS_GROUP_COLORS,
+    negotiationStatusGroupReducer,
+  } from "$lib/data/charts/negotiationStatusGroup"
+  import { createChartData } from "$lib/data/createChartData"
+  import { negotiationStatusGroupMap } from "$lib/stores"
+  import type { Deal } from "$lib/types/deal"
+  import { NegotiationStatusGroup } from "$lib/types/deal"
 
   import DownloadablePieChart from "$components/Data/Charts/DownloadablePieChart.svelte"
 

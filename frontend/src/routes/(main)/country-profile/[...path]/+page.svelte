@@ -1,18 +1,18 @@
 <script lang="ts">
   import { queryStore } from "@urql/svelte"
-  import { _ } from "svelte-i18n"
   import { onMount } from "svelte"
+  import { _ } from "svelte-i18n"
 
   import { page } from "$app/stores"
 
   import { dealsQuery } from "$lib/dealQueries"
   import { filters, publicOnly } from "$lib/filters"
-  import { loading, isMobile, chartDescriptions } from "$lib/stores"
+  import { chartDescriptions, isMobile, loading } from "$lib/stores"
 
   import ChartsContainer from "$components/Data/Charts/ChartsContainer.svelte"
-  import LoadingPulse from "$components/LoadingPulse.svelte"
   import { showContextBar, showFilterBar } from "$components/Data/stores"
   import DealDisplayToggle from "$components/DealDisplayToggle.svelte"
+  import LoadingPulse from "$components/LoadingPulse.svelte"
 
   export let data
 

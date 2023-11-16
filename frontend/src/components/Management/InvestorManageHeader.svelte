@@ -63,8 +63,8 @@
       const message = error.networkError
         ? "Network Error: Please check your internet connection."
         : error.graphQLErrors.map(e => e.message).includes("EDITING_OLD_VERSION")
-        ? "You are trying to edit an old version!"
-        : `GraphQLError: ${error.message}`
+          ? "You are trying to edit an old version!"
+          : `GraphQLError: ${error.message}`
 
       toast.push(message, { classes: ["error"] })
       return

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { gql, Client } from "@urql/svelte"
+  import { Client, gql } from "@urql/svelte"
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
   import Select from "svelte-select"
@@ -13,10 +13,10 @@
   } from "$lib/choices"
   import { filters, isDefaultFilter, publicOnly } from "$lib/filters"
   import { countries, formfields, regions } from "$lib/stores"
+  import { tracker } from "$lib/stores/tracker"
   import { ProduceGroup } from "$lib/types/deal"
   import type { Investor } from "$lib/types/investor"
   import { UserRole } from "$lib/types/user"
-  import { tracker } from "$lib/stores/tracker"
   import type { Country, Region } from "$lib/types/wagtail"
 
   import { showFilterBar } from "$components/Data/stores"

@@ -3,7 +3,7 @@ import { latLng, latLngBounds } from "leaflet"
 import type { LocationWithCoordinates } from "$lib/types/deal"
 import { ACCURACY_LEVEL } from "$lib/types/deal"
 
-import { padBounds, createPointFeature, isLocationWithCoordinates } from "./location"
+import { createPointFeature, isLocationWithCoordinates, padBounds } from "./location"
 
 const LAGOS_NIGERIA = latLng(6.455027, 3.384082)
 const ABUJA_NIGERIA = latLng(9.4, 7.29)

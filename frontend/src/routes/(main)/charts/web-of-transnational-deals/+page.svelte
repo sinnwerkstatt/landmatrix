@@ -6,12 +6,12 @@
   import { page } from "$app/stores"
 
   import { filters } from "$lib/filters"
-  import { isMobile, chartDescriptions } from "$lib/stores"
+  import { chartDescriptions, isMobile } from "$lib/stores"
 
-  import { showContextBar, showFilterBar } from "$components/Data/stores"
   import ChartsContainer from "$components/Data/Charts/ChartsContainer.svelte"
   import CountryInvestorInfo from "$components/Data/Charts/CountryInvestorInfo.svelte"
   import WebOfTransnationalDeals from "$components/Data/Charts/WebOfTransnationalDeals.svelte"
+  import { showContextBar, showFilterBar } from "$components/Data/stores"
   import LoadingPulse from "$components/LoadingPulse.svelte"
 
   $: title = $_("Web of transnational deals")

@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte" // eslint-disable-line import/no-duplicates
+  import { createEventDispatcher } from "svelte"
   import { _ } from "svelte-i18n"
-  import { fade, slide } from "svelte/transition" // eslint-disable-line import/no-duplicates
+  import { fade, slide } from "svelte/transition"
 
   import { browser } from "$app/environment"
 

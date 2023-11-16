@@ -1,7 +1,8 @@
 <script lang="ts">
   import CakeTeaser from "$components/Data/Charts/CakeTeaser.svelte"
-  import TableTeaser from "$components/Data/TableTeaser.svelte"
   import MapTeaser from "$components/Data/MapTeaser.svelte"
+  import TableTeaser from "$components/Data/TableTeaser.svelte"
+
   export let value: {
     title: string
     subtitle: string

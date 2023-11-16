@@ -1,14 +1,14 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import { page } from "$app/stores"
   import { invalidate } from "$app/navigation"
+  import { page } from "$app/stores"
 
+  import { loading } from "$lib/stores"
+  import { Status } from "$lib/types/generics"
   import { Role } from "$lib/types/investor"
   import type { Investor, Involvement } from "$lib/types/investor"
   import { UserRole } from "$lib/types/user"
-  import { Status } from "$lib/types/generics"
-  import { loading } from "$lib/stores"
 
   import DealSubmodelSection from "$components/Deal/DealSubmodelSection.svelte"
   import DateTimeField from "$components/Fields/Display/DateTimeField.svelte"
@@ -16,6 +16,7 @@
   import InvestorGraph from "$components/Investor/InvestorGraph.svelte"
   import InvestorHistory from "$components/Investor/InvestorHistory.svelte"
   import InvestorManageHeader from "$components/Management/InvestorManageHeader.svelte"
+
   // import type { PageData } from "./$types";
   //
   // export let data: PageData;

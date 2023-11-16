@@ -17,8 +17,8 @@
         bp.categories.map(c => c.slug).includes(data.category),
       )
     : data.tag
-    ? data.blogpages.filter(bp => bp.tags.map(t => t.slug).includes(data.tag))
-    : data.blogpages
+      ? data.blogpages.filter(bp => bp.tags.map(t => t.slug).includes(data.tag))
+      : data.blogpages
 
   let blogCategoriesWithAll: BlogCategory[]
   $: blogCategoriesWithAll = [

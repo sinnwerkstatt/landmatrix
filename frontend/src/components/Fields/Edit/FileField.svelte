@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { gql, Client } from "@urql/svelte"
+  import { Client, gql } from "@urql/svelte"
   import { _ } from "svelte-i18n"
 
   import { page } from "$app/stores"
 
-  import FilePdfIcon from "$components/icons/FilePdfIcon.svelte"
   import type { FormField } from "$components/Fields/fields"
+  import FilePdfIcon from "$components/icons/FilePdfIcon.svelte"
 
   export let value: string
   export let accept: string

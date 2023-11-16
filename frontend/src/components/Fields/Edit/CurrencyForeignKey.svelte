@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { gql, Client } from "@urql/svelte"
-  import { _ } from "svelte-i18n"
+  import { Client, gql } from "@urql/svelte"
   import { onMount } from "svelte"
+  import { _ } from "svelte-i18n"
 
   import { page } from "$app/stores"
 
-  import VirtualListSelect from "$components/LowLevel/VirtualListSelect.svelte"
   import type { FormField } from "$components/Fields/fields"
+  import VirtualListSelect from "$components/LowLevel/VirtualListSelect.svelte"
 
   export let value: number
   export let formfield: FormField

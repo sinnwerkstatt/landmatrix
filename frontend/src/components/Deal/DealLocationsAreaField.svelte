@@ -5,8 +5,8 @@
   import { _ } from "svelte-i18n"
 
   import type { AreaFeature, AreaType, Location } from "$lib/types/deal"
+  import { createFeatureCollection, setProperty } from "$lib/utils/geojsonHelpers"
   import { validate } from "$lib/utils/geojsonValidation"
-  import { setProperty, createFeatureCollection } from "$lib/utils/geojsonHelpers"
 
   import LowLevelDateYearField from "$components/Fields/Edit/LowLevelDateYearField.svelte"
   import EyeIcon from "$components/icons/EyeIcon.svelte"
