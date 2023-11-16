@@ -1,6 +1,7 @@
 import { area } from "@turf/turf"
 import type { Feature, FeatureCollection, Geometry, Point } from "geojson"
 import * as L from "leaflet" // TODO: this breaks SSR
+import type { GeoJSONOptions, LatLngBounds, LatLngLiteral, PathOptions } from "leaflet"
 import * as R from "ramda"
 
 import type {
@@ -30,7 +31,7 @@ export const AREA_TYPE_COLOR_MAP: { [key in AreaType]: string } = {
   production_area: "#ff0000",
 }
 
-export const padBounds = (bounds: L.LatLngBounds): L.LatLngBounds => {
+export const padBounds = (bounds: LatLngBounds): LatLngBounds => {
   const ne = bounds.getNorthEast()
   const sw = bounds.getSouthWest()
 
@@ -38,8 +39,8 @@ export const padBounds = (bounds: L.LatLngBounds): L.LatLngBounds => {
     const margin = 0.2
 
     return L.latLngBounds(
-      L.latLng(ne.lat + margin, ne.lng + margin),
-      L.latLng(sw.lat - margin, sw.lng - margin),
+      { lat: ne.lat + margin, lng: ne.lng + margin } as LatLngLiteral,
+      { lat: sw.lat - margin, lng: sw.lng - margin } as LatLngLiteral,
     )
   }
 
@@ -75,10 +76,7 @@ export const createPointFeature = (
 export const addTempProperties: (features: Feature) => AreaFeature = R.converge(
   upsertProperties,
   [
-    R.applySpec({
-      visible: R.pipe(R.path(["properties", "current"]), Boolean),
-      area,
-    }),
+    R.applySpec({ visible: R.pipe(R.path(["properties", "current"]), Boolean), area }),
     R.identity,
   ],
 )
@@ -94,9 +92,7 @@ export const createEnhancedAreasCopy: (
 )
 
 export const createEnhancedLocationsCopy: (locations: Location[]) => Location[] = R.map(
-  R.evolve({
-    areas: createEnhancedAreasCopy,
-  }),
+  R.evolve({ areas: createEnhancedAreasCopy }),
 )
 
 const getPointFeatures: (locations: Location[]) => PointFeature[] = R.pipe<
@@ -168,7 +164,7 @@ export const createGeoJsonOptions = ({
 }: {
   getCurrentLocation: () => string | undefined
   setCurrentLocation: (locationId: string) => void
-}): L.GeoJSONOptions => ({
+}): GeoJSONOptions => ({
   // area styles
   style: feature => {
     const castedFeature = feature as EnhancedAreaFeature
@@ -186,7 +182,7 @@ export const createGeoJsonOptions = ({
       dashArray: "5, 5",
       dashOffset: "0",
       fillColor: AREA_TYPE_COLOR_MAP[castedFeature?.properties.type],
-    } as L.PathOptions
+    } as PathOptions
   },
   // point styles
   pointToLayer: (feature: PointFeature, latlng) => {
