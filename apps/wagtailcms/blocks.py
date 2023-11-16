@@ -1,10 +1,9 @@
 import re
 
 from django.contrib.sites.models import Site
-from django.utils.html import format_html_join
 from django.utils.translation import gettext as _
 from wagtail import blocks
-from wagtail.blocks import Block, RawHTMLBlock, StreamBlock, StructBlock
+from wagtail.blocks import RawHTMLBlock, StructBlock
 from wagtail.embeds.blocks import EmbedBlock
 from wagtail.fields import StreamField
 from wagtail.images.blocks import ImageChooserBlock
@@ -127,31 +126,14 @@ class TwitterBlock(StructBlock):
         return val
 
 
-# Overwrite Stream block to disable wrapping DIVs
-class NoWrapsStreamBlock(StreamBlock):
-    def render_basic(self, value, context=None):
-        def get_class(block):
-            if block.block_type != "full_width_container":
-                return "block-%s block" % block.block_type
-            else:
-                return ""
-
-        return format_html_join(
-            "\n",
-            '<div class="{1}">{0}</div>',
-            [(child.render(context=context), get_class(child)) for child in value],
-        )
+class NoWrapsStreamBlock(blocks.StreamBlock):
+    # legacy class. keeping it for the migrations for now.
+    pass
 
 
 class NoWrapsStreamField(StreamField):
-    def __init__(self, block_types, **kwargs):
-        super().__init__(block_types, **kwargs)
-        if isinstance(block_types, Block):
-            self.stream_block = block_types
-        elif isinstance(block_types, type):
-            self.stream_block = block_types()
-        else:
-            self.stream_block = NoWrapsStreamBlock(block_types)
+    # legacy class. keeping it for the migrations for now.
+    pass
 
 
 class ImageBlock(ImageChooserBlock):
@@ -824,7 +806,7 @@ class FullWidthContainerBlock(StructBlock):
         ],
         default="white",
     )
-    content = NoWrapsStreamBlock(
+    content = blocks.StreamBlock(
         COLUMN_BLOCKS + DATA_BLOCKS + CONTENT_BLOCKS, form_classname="pull-right"
     )
 

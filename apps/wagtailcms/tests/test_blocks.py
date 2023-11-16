@@ -61,30 +61,30 @@ class TwitterBlockTestCase(TestCase):
         self.assertEqual("Land_Matrix", context.get("username"))
 
 
-class NoWrapsStreamBlockTestCase(TestCase):
-    def setUp(self):
-        self.block = NoWrapsStreamBlock()
-
-        class ChildBlock:
-            block_type = ""
-
-            def __init__(self, value, block_type=""):
-                self.value = value
-                self.block_type = block_type
-
-            def render(self, context=None):
-                return self.value
-
-        self.children = [
-            ChildBlock("1", "full_width_container"),
-            ChildBlock("2", "test"),
-        ]
-
-    def test_render_basic(self):
-        output = self.block.render_basic(self.children)
-        self.assertEqual(
-            '<div class="">1</div>\n<div class="block-test block">2</div>', output
-        )
+# class NoWrapsStreamBlockTestCase(TestCase):
+#     def setUp(self):
+#         self.block = StreamBlock()
+#
+#         class ChildBlock:
+#             block_type = ""
+#
+#             def __init__(self, value, block_type=""):
+#                 self.value = value
+#                 self.block_type = block_type
+#
+#             def render(self, context=None):
+#                 return self.value
+#
+#         self.children = [
+#             ChildBlock("1", "full_width_container"),
+#             ChildBlock("2", "test"),
+#         ]
+#
+#     def test_render_basic(self):
+#         output = self.block.render_basic(self.children)
+#         self.assertEqual(
+#             '<div class="">1</div>\n<div class="block-test block">2</div>', output
+#         )
 
 
 # TODO dont run this test. probably dont need it anymore anyways

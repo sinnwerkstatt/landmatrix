@@ -19,7 +19,6 @@ from .blocks import (
     CONTENT_BLOCKS,
     DATA_BLOCKS,
     SIMPLE_CONTENT_BLOCKS,
-    NoWrapsStreamField,
     NEW_BLOCKS,
 )
 from .twitter import TwitterTimeline
@@ -72,7 +71,7 @@ class WagtailRootPage(HeadlessPreviewMixin, Page):
                 "text": value.get("text"),
             }
 
-    body = NoWrapsStreamField(
+    body = StreamField(
         NEW_BLOCKS
         + [("dealcount", DealCountBlock())]
         + CONTENT_BLOCKS
@@ -86,7 +85,7 @@ class WagtailRootPage(HeadlessPreviewMixin, Page):
 
 
 class WagtailPage(HeadlessPreviewMixin, Page):
-    body = NoWrapsStreamField(
+    body = StreamField(
         CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS, use_json_field=True
     )
     content_panels = Page.content_panels + [FieldPanel("body")]

@@ -4,8 +4,6 @@ from wagtail.models import Page
 SF_CLASS_NAMES = [
     "StreamField",
     "TranslationStreamField",
-    "TranslationNoWrapsStreamField",
-    "NoWrapsStreamField",
 ]
 
 

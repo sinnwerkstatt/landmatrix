@@ -165,8 +165,6 @@ WAGTAIL_HEADLESS_PREVIEW = {
     # set to True to redirect to the preview instead of using the Wagtail default mechanism
 }
 
-MODELTRANSLATION_CUSTOM_FIELDS = ("NoWrapsStreamField",)
-
 # Django REST Framework settings
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
