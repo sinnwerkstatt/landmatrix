@@ -35,7 +35,7 @@
 
   onMount(async () => {
     if ((data.user?.role || -1) >= UserRole.EDITOR) {
-      await getAllUsers(data.urqlClient)
+      await getAllUsers(fetch)
     }
   })
 

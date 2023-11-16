@@ -6,25 +6,17 @@
   import { invalidate } from "$app/navigation"
   import { page } from "$app/stores"
 
-  import { dealSections } from "$lib/sections.js"
   import { loading } from "$lib/stores"
-  import type { Deal } from "$lib/types/deal"
-  import type { Investor } from "$lib/types/investor"
   import { UserRole } from "$lib/types/user"
 
-  import DealHistory from "$components/Deal/DealHistory.svelte"
-  import DealLocationsSection from "$components/Deal/DealLocationsSection.svelte"
-  import DealSection from "$components/Deal/DealSection.svelte"
-  import DealSubmodelSection from "$components/Deal/DealSubmodelSection.svelte"
-  import DateTimeField from "$components/Fields/Display/DateTimeField.svelte"
-  import DownloadIcon from "$components/icons/DownloadIcon.svelte"
-  import InvestorGraph from "$components/Investor/InvestorGraph.svelte"
-  import DealManageHeader from "$components/Management/DealManageHeader.svelte"
+  import DealDates from "./DealDates.svelte"
+  import DealManageHeader from "./DealManageHeader.svelte"
+  import SectionDataSources from "./SectionDataSources.svelte"
+  import SectionGeneralInfo from "./SectionGeneralInfo.svelte"
+  import SectionHistory from "./SectionHistory.svelte"
+  import SectionLocations from "./SectionLocations.svelte"
 
   export let data
-
-  let deal: Deal = data.deal
-  $: deal = data.deal
 
   $: activeTab = $page.url.hash.split("/")[0] || "#locations"
 
@@ -51,93 +43,79 @@
 
   const reloadDeal = async () => {
     loading.set(true)
-    await invalidate(url => url.pathname === "/graphql/")
+    await invalidate(`/api/deal/${data.dealID}/`)
     loading.set(false)
   }
 
-  const downloadLink = (format: string): string =>
-    `/api/legacy_export/?deal_id=${data.dealID}&subset=UNFILTERED&format=${format}`
+  // const downloadLink = (format: string): string =>
+  //   `/api/legacy_export/?deal_id=${data.dealID}&subset=UNFILTERED&format=${format}`
 
-  let investor: Investor
-  async function fetchInvestor() {
-    if (!deal.operating_company?.id) return
-
-    const ret = await $page.data.urqlClient
-      .query<{ investor: Investor }>(
-        gql`
-          query ($id: Int!) {
-            investor(id: $id) {
-              id
-              name
-              classification
-              country {
-                id
-                name
-              }
-              homepage
-              comment
-              deals {
-                id
-                country {
-                  id
-                  name
-                }
-                intention_of_investment
-                implementation_status
-                negotiation_status
-                intended_size
-                contract_size
-              }
-            }
-          }
-        `,
-        { id: deal?.operating_company?.id },
-      )
-      .toPromise()
-
-    if (ret.error || !ret.data) {
-      console.error(ret.error)
-    } else {
-      investor = ret.data.investor
-    }
-  }
-  onMount(fetchInvestor)
+  // let investor: Investor
+  // async function fetchInvestor() {
+  //   if (!deal.operating_company?.id) return
+  //
+  //   const ret = await $page.data.urqlClient
+  //     .query<{ investor: Investor }>(
+  //       gql`
+  //         query ($id: Int!) {
+  //           investor(id: $id) {
+  //             id
+  //             name
+  //             classification
+  //             country {
+  //               id
+  //               name
+  //             }
+  //             homepage
+  //             comment
+  //             deals {
+  //               id
+  //               country {
+  //                 id
+  //                 name
+  //               }
+  //               intention_of_investment
+  //               implementation_status
+  //               negotiation_status
+  //               intended_size
+  //               contract_size
+  //             }
+  //           }
+  //         }
+  //       `,
+  //       { id: deal?.operating_company?.id },
+  //     )
+  //     .toPromise()
+  //
+  //   if (ret.error || !ret.data) {
+  //     console.error(ret.error)
+  //   } else {
+  //     investor = ret.data.investor
+  //   }
+  // }
+  // onMount(fetchInvestor)
 </script>
 
 <svelte:head>
   <title>
-    {$_("Deal")} #{deal.id}
+    {$_("Deal")} #{data.deal.id}
   </title>
 </svelte:head>
 
 <div class="container mx-auto min-h-full">
   {#if $page.data.user?.role > UserRole.ANYBODY}
-    <DealManageHeader {deal} dealVersion={data.dealVersion} on:reload={reloadDeal} />
+    <DealManageHeader
+      deal={data.deal}
+      dealVersion={data.dealVersion}
+      on:reload={reloadDeal}
+    />
   {:else}
     <div class="md:flex md:flex-row md:justify-between">
       <h1 class="heading4 mt-3">
         {$_("Deal")}
-        #{deal.id}
+        #{data.deal.id}
       </h1>
-      <div
-        class="my-2 flex w-auto items-center rounded bg-lm-lightgray p-3 text-lm-dark dark:bg-gray-700 dark:text-white"
-      >
-        <div class="mr-10 text-xs md:mx-5 md:text-sm">
-          {$_("Created")}
-          <br />
-          <DateTimeField value={deal.created_at} />
-        </div>
-        <div class="mr-10 text-xs md:mx-5 md:text-sm">
-          {$_("Last update")}
-          <br />
-          <DateTimeField value={deal.modified_at} />
-        </div>
-        <div class="mr-10 text-xs md:mx-5 md:text-sm">
-          {$_("Last full update")}
-          <br />
-          <DateTimeField value={deal.fully_updated_at} />
-        </div>
-      </div>
+      <DealDates deal={data.deal} />
     </div>
   {/if}
   <div class="flex min-h-full">
@@ -165,84 +143,84 @@
     </nav>
     <div class="mb-12 w-5/6 pl-4">
       {#if activeTab === "#locations"}
-        <DealLocationsSection {deal} />
+        <SectionLocations version={data.deal.selected_version} />
       {/if}
       {#if activeTab === "#general"}
-        <DealSection {deal} sections={$dealSections.general_info} />
+        <SectionGeneralInfo version={data.deal.selected_version} />
       {/if}
-      {#if activeTab === "#contracts"}
-        <DealSubmodelSection
-          model="contract"
-          modelName="Contract"
-          entries={deal.contracts}
-        />
-      {/if}
-      {#if activeTab === "#employment"}
-        <DealSection {deal} sections={$dealSections.employment} />
-      {/if}
-      {#if activeTab === "#investor_info"}
-        <DealSection {deal} sections={$dealSections.investor_info}>
-          {#if investor}
-            <h4 class="mb-2">
-              Network of parent companies and tertiary investors/lenders
-            </h4>
-            <InvestorGraph {investor} initDepth={5} />
-          {/if}
-        </DealSection>
-      {/if}
+      <!--      {#if activeTab === "#contracts"}-->
+      <!--        <DealSubmodelSection-->
+      <!--          model="contract"-->
+      <!--          modelName="Contract"-->
+      <!--          entries={deal.contracts}-->
+      <!--        />-->
+      <!--      {/if}-->
+      <!--      {#if activeTab === "#employment"}-->
+      <!--        <DealSection {deal} sections={$dealSections.employment} />-->
+      <!--      {/if}-->
+      <!--      {#if activeTab === "#investor_info"}-->
+      <!--        <DealSection {deal} sections={$dealSections.investor_info}>-->
+      <!--          {#if investor}-->
+      <!--            <h4 class="mb-2">-->
+      <!--              Network of parent companies and tertiary investors/lenders-->
+      <!--            </h4>-->
+      <!--            <InvestorGraph {investor} initDepth={5} />-->
+      <!--          {/if}-->
+      <!--        </DealSection>-->
+      <!--      {/if}-->
       {#if activeTab === "#data_sources"}
-        <DealSubmodelSection
-          model="datasource"
-          modelName="Data source"
-          entries={deal.datasources}
+        <SectionDataSources version={data.deal.selected_version} />
+      {/if}
+      <!--      {#if activeTab === "#local_communities"}-->
+      <!--        <DealSection {deal} sections={$dealSections.local_communities} />-->
+      <!--      {/if}-->
+      <!--      {#if activeTab === "#former_use"}-->
+      <!--        <DealSection {deal} sections={$dealSections.former_use} />-->
+      <!--      {/if}-->
+      <!--      {#if activeTab === "#produce_info"}-->
+      <!--        <DealSection {deal} sections={$dealSections.produce_info} />-->
+      <!--      {/if}-->
+      <!--      {#if activeTab === "#water"}-->
+      <!--        <DealSection {deal} sections={$dealSections.water} />-->
+      <!--      {/if}-->
+      <!--      {#if activeTab === "#gender_related_info"}-->
+      <!--        <DealSection {deal} sections={$dealSections.gender_related_info} />-->
+      <!--      {/if}-->
+      <!--      {#if activeTab === "#overall_comment"}-->
+      <!--        <DealSection {deal} sections={$dealSections.overall_comment} />-->
+      <!--      {/if}-->
+      {#if activeTab === "#history"}
+        <SectionHistory
+          deal={data.deal}
+          dealID={data.dealID}
+          dealVersion={data.dealVersion}
         />
       {/if}
-      {#if activeTab === "#local_communities"}
-        <DealSection {deal} sections={$dealSections.local_communities} />
-      {/if}
-      {#if activeTab === "#former_use"}
-        <DealSection {deal} sections={$dealSections.former_use} />
-      {/if}
-      {#if activeTab === "#produce_info"}
-        <DealSection {deal} sections={$dealSections.produce_info} />
-      {/if}
-      {#if activeTab === "#water"}
-        <DealSection {deal} sections={$dealSections.water} />
-      {/if}
-      {#if activeTab === "#gender_related_info"}
-        <DealSection {deal} sections={$dealSections.gender_related_info} />
-      {/if}
-      {#if activeTab === "#overall_comment"}
-        <DealSection {deal} sections={$dealSections.overall_comment} />
-      {/if}
-      {#if activeTab === "#history"}
-        <DealHistory {deal} dealID={data.dealID} dealVersion={data.dealVersion} />
-      {/if}
-      {#if activeTab === "#actions"}
-        <section>
-          <h3>{$_("Download")}</h3>
+      <!--      {#if activeTab === "#actions"}-->
+      <!--        <section>-->
+      <!--          <h3>{$_("Download")}</h3>-->
 
-          <a
-            target="_blank"
-            href={downloadLink("xlsx")}
-            rel="noreferrer"
-            data-sveltekit-reload
-          >
-            <DownloadIcon />
-            {$_("Excel document")}
-          </a>
-          <br />
-          <a
-            target="_blank"
-            href={downloadLink("csv")}
-            rel="noreferrer"
-            data-sveltekit-reload
-          >
-            <DownloadIcon />
-            {$_("CSV file")}
-          </a>
-        </section>
-      {/if}
+      <!--          <a-->
+      <!--            target="_blank"-->
+      <!--            href={downloadLink("xlsx")}-->
+      <!--            rel="noreferrer"-->
+      <!--            data-sveltekit-reload-->
+      <!--          >-->
+      <!--            <DownloadIcon />-->
+      <!--            {$_("Excel document")}-->
+      <!--          </a>-->
+      <!--          <br />-->
+      <!--          <a-->
+      <!--            target="_blank"-->
+      <!--            href={downloadLink("csv")}-->
+      <!--            rel="noreferrer"-->
+      <!--            data-sveltekit-reload-->
+      <!--          >-->
+      <!--            <DownloadIcon />-->
+      <!--            {$_("CSV file")}-->
+      <!--          </a>-->
+      <!--        </section>-->
+      <!--      {/if}-->
     </div>
   </div>
 </div>

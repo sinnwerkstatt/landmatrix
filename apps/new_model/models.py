@@ -1,3 +1,4 @@
+import json
 import re
 
 from django.conf import settings
@@ -7,6 +8,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models, transaction
 from django.utils import timezone
 from django.utils.translation import gettext as _
+from icecream import ic
 
 from apps.landmatrix.models import choices
 from apps.landmatrix.models.choices import (
@@ -36,6 +38,7 @@ from apps.landmatrix.models.fields import (
     LooseDateField,
     JSONCarbonSequestrationField,
     JSONElectricityGenerationField,
+    DecimalIntField,
 )
 from apps.landmatrix.models.investor import Investor
 
@@ -57,17 +60,28 @@ DRAFT_STATUS_CHOICES = (
     ("REJECTED", _("OLD: Rejected")),
     ("TO_DELETE", _("OLD: To Delete")),
 )
+VERSION_STATUS_CHOICES = (
+    ("DRAFT", _("Draft")),
+    ("REVIEW", _("Review")),
+    ("ACTIVATION", _("Activation")),
+    ("ACTIVATED", _("Activated")),
+    # TODO: old, can probably remove?
+    ("REJECTED", _("OLD: Rejected")),
+    ("TO_DELETE", _("OLD: To Delete")),
+)
 
 
 class DealVersionBaseFields(models.Model):
-    deal = models.ForeignKey("new_model.DealHull", on_delete=models.PROTECT)
+    deal = models.ForeignKey(
+        "new_model.DealHull", on_delete=models.PROTECT, related_name="versions"
+    )
 
     # """ Locations """
     # via Foreignkey
 
     """ General info """
     # Land area
-    intended_size = models.DecimalField(
+    intended_size = DecimalIntField(
         _("Intended size (in ha)"),
         max_digits=12,
         decimal_places=2,
@@ -122,7 +136,7 @@ class DealVersionBaseFields(models.Model):
     )
 
     # Purchase price
-    purchase_price = models.DecimalField(
+    purchase_price = DecimalIntField(
         _("Purchase price"), max_digits=18, decimal_places=2, blank=True, null=True
     )
     purchase_price_currency = models.ForeignKey(
@@ -139,7 +153,7 @@ class DealVersionBaseFields(models.Model):
         blank=True,
         null=True,
     )
-    purchase_price_area = models.DecimalField(
+    purchase_price_area = DecimalIntField(
         _("Purchase price area"),
         max_digits=18,
         decimal_places=2,
@@ -151,7 +165,7 @@ class DealVersionBaseFields(models.Model):
     )
 
     # Leasing fees
-    annual_leasing_fee = models.DecimalField(
+    annual_leasing_fee = DecimalIntField(
         _("Annual leasing fee"), max_digits=18, decimal_places=2, blank=True, null=True
     )
     annual_leasing_fee_currency = models.ForeignKey(
@@ -168,7 +182,7 @@ class DealVersionBaseFields(models.Model):
         blank=True,
         null=True,
     )
-    annual_leasing_fee_area = models.DecimalField(
+    annual_leasing_fee_area = DecimalIntField(
         _("Annual leasing fee area"),
         max_digits=18,
         decimal_places=2,
@@ -647,14 +661,14 @@ class DealVersion2(DealVersionBaseFields):
         related_name="+",
         blank=True,
     )
-    current_contract_size = models.DecimalField(
+    current_contract_size = DecimalIntField(
         verbose_name=_("Current contract size"),
         max_digits=18,
         decimal_places=2,
         blank=True,
         null=True,
     )
-    current_production_size = models.DecimalField(
+    current_production_size = DecimalIntField(
         max_digits=18,
         decimal_places=2,
         blank=True,
@@ -685,7 +699,7 @@ class DealVersion2(DealVersionBaseFields):
         models.CharField(), blank=True, default=list
     )
 
-    deal_size = models.DecimalField(
+    deal_size = DecimalIntField(
         max_digits=18,
         decimal_places=2,
         blank=True,
@@ -699,7 +713,7 @@ class DealVersion2(DealVersionBaseFields):
 
     # META
     fully_updated = models.BooleanField(default=False)
-    status = models.CharField(choices=DRAFT_STATUS_CHOICES, default="DRAFT")
+    status = models.CharField(choices=VERSION_STATUS_CHOICES, default="DRAFT")
 
     created_at = models.DateTimeField(_("Created at"), default=timezone.now, blank=True)
     created_by = models.ForeignKey(
@@ -984,11 +998,178 @@ class DealVersion2(DealVersionBaseFields):
         self.recalculate_fields(recalculate_independent, recalculate_dependent)
         super().save(*args, **kwargs)
 
-    def to_dict(self, fields: list):
-        ret = {}
-        for field in fields:
-            ret[field] = getattr(self, field)
-        return ret
+    # def to_detail_dict(self):
+    #     return {
+    #         "id": self.id,
+    #         "locations": [
+    #             x.to_dict() for x in self.locations.prefetch_related("areas")
+    #         ],
+    #         "intended_size": self.intended_size,
+    #         "contract_size": self.contract_size,
+    #         "production_size": self.production_size,
+    #         "land_area_comment": self.land_area_comment,
+    #         "intention_of_investment": self.intention_of_investment,
+    #         "intention_of_investment_comment": self.intention_of_investment_comment,
+    #         "nature_of_deal": self.nature_of_deal,
+    #         "nature_of_deal_comment": self.nature_of_deal_comment,
+    #         "negotiation_status": self.negotiation_status,
+    #         "negotiation_status_comment": self.negotiation_status_comment,
+    #         "implementation_status": self.implementation_status,
+    #         "implementation_status_comment": self.implementation_status_comment,
+    #         "purchase_price": self.purchase_price,
+    #         "purchase_price_currency_id": self.purchase_price_currency_id,
+    #         "purchase_price_type": self.purchase_price_type,
+    #         "purchase_price_area": self.purchase_price_area,
+    #         "purchase_price_comment": self.purchase_price_comment,
+    #         "annual_leasing_fee": self.annual_leasing_fee,
+    #         "annual_leasing_fee_currency_id": self.annual_leasing_fee_currency_id,
+    #         "annual_leasing_fee_type": self.annual_leasing_fee_type,
+    #         "annual_leasing_fee_area": self.annual_leasing_fee_area,
+    #         "annual_leasing_fee_comment": self.annual_leasing_fee_comment,
+    #         "contract_farming": self.contract_farming,
+    #         "on_the_lease_state": self.on_the_lease_state,
+    #         "on_the_lease": self.on_the_lease,
+    #         "off_the_lease_state": self.off_the_lease_state,
+    #         "off_the_lease": self.off_the_lease,
+    #         "contract_farming_comment": self.contract_farming_comment,
+    #         "contracts": [x.to_dict() for x in self.contracts.all()],
+    #         "total_jobs_created": self.total_jobs_created,
+    #         "total_jobs_planned": self.total_jobs_planned,
+    #         "total_jobs_planned_employees": self.total_jobs_planned_employees,
+    #         "total_jobs_planned_daily_workers": self.total_jobs_planned_daily_workers,
+    #         "total_jobs_current": self.total_jobs_current,
+    #         "total_jobs_created_comment": self.total_jobs_created_comment,
+    #         "foreign_jobs_created": self.foreign_jobs_created,
+    #         "foreign_jobs_planned": self.foreign_jobs_planned,
+    #         "foreign_jobs_planned_employees": self.foreign_jobs_planned_employees,
+    #         "foreign_jobs_planned_daily_workers": self.foreign_jobs_planned_daily_workers,
+    #         "foreign_jobs_current": self.foreign_jobs_current,
+    #         "foreign_jobs_created_comment": self.foreign_jobs_created_comment,
+    #         "domestic_jobs_created": self.domestic_jobs_created,
+    #         "domestic_jobs_planned": self.domestic_jobs_planned,
+    #         "domestic_jobs_planned_employees": self.domestic_jobs_planned_employees,
+    #         "domestic_jobs_planned_daily_workers": self.domestic_jobs_planned_daily_workers,
+    #         "domestic_jobs_current": self.domestic_jobs_current,
+    #         "domestic_jobs_created_comment": self.domestic_jobs_created_comment,
+    #         "operating_company_id": self.operating_company_id,
+    #         "involved_actors": self.involved_actors,
+    #         "project_name": self.project_name,
+    #         "investment_chain_comment": self.investment_chain_comment,
+    #         "datasources": [x.to_dict() for x in self.datasources.all()],
+    #         "name_of_community": self.name_of_community,
+    #         "name_of_indigenous_people": self.name_of_indigenous_people,
+    #         "people_affected_comment": self.people_affected_comment,
+    #         "recognition_status": self.recognition_status,
+    #         "recognition_status_comment": self.recognition_status_comment,
+    #         "community_consultation": self.community_consultation,
+    #         "community_consultation_comment": self.community_consultation_comment,
+    #         "community_reaction": self.community_reaction,
+    #         "community_reaction_comment": self.community_reaction_comment,
+    #         "land_conflicts": self.land_conflicts,
+    #         "land_conflicts_comment": self.land_conflicts_comment,
+    #         "displacement_of_people": self.displacement_of_people,
+    #         "displaced_people": self.displaced_people,
+    #         "displaced_households": self.displaced_households,
+    #         "displaced_people_from_community_land": self.displaced_people_from_community_land,
+    #         "displaced_people_within_community_land": self.displaced_people_within_community_land,
+    #         "displaced_households_from_fields": self.displaced_households_from_fields,
+    #         "displaced_people_on_completion": self.displaced_people_on_completion,
+    #         "displacement_of_people_comment": self.displacement_of_people_comment,
+    #         "negative_impacts": self.negative_impacts,
+    #         "negative_impacts_comment": self.negative_impacts_comment,
+    #         "promised_compensation": self.promised_compensation,
+    #         "received_compensation": self.received_compensation,
+    #         "promised_benefits": self.promised_benefits,
+    #         "promised_benefits_comment": self.promised_benefits_comment,
+    #         "materialized_benefits": self.materialized_benefits,
+    #         "materialized_benefits_comment": self.materialized_benefits_comment,
+    #         "presence_of_organizations": self.presence_of_organizations,
+    #         "former_land_owner": self.former_land_owner,
+    #         "former_land_owner_comment": self.former_land_owner_comment,
+    #         "former_land_use": self.former_land_use,
+    #         "former_land_use_comment": self.former_land_use_comment,
+    #         "former_land_cover": self.former_land_cover,
+    #         "former_land_cover_comment": self.former_land_cover_comment,
+    #         "crops": self.crops,
+    #         "crops_comment": self.crops_comment,
+    #         "animals": self.animals,
+    #         "animals_comment": self.animals_comment,
+    #         "mineral_resources": self.mineral_resources,
+    #         "mineral_resources_comment": self.mineral_resources_comment,
+    #         "contract_farming_crops": self.contract_farming_crops,
+    #         "contract_farming_crops_comment": self.contract_farming_crops_comment,
+    #         "contract_farming_animals": self.contract_farming_animals,
+    #         "contract_farming_animals_comment": self.contract_farming_animals_comment,
+    #         "has_domestic_use": self.has_domestic_use,
+    #         "domestic_use": self.domestic_use,
+    #         "has_export": self.has_export,
+    #         "export": self.export,
+    #         "export_country1_id": self.export_country1_id,
+    #         "export_country1_ratio": self.export_country1_ratio,
+    #         "export_country2_id": self.export_country2_id,
+    #         "export_country2_ratio": self.export_country2_ratio,
+    #         "export_country3_id": self.export_country3_id,
+    #         "export_country3_ratio": self.export_country3_ratio,
+    #         "use_of_produce_comment": self.use_of_produce_comment,
+    #         "in_country_processing": self.in_country_processing,
+    #         "in_country_processing_comment": self.in_country_processing_comment,
+    #         "in_country_processing_facilities": self.in_country_processing_facilities,
+    #         "in_country_end_products": self.in_country_end_products,
+    #         "water_extraction_envisaged": self.water_extraction_envisaged,
+    #         "water_extraction_envisaged_comment": self.water_extraction_envisaged_comment,
+    #         "source_of_water_extraction": self.source_of_water_extraction,
+    #         "source_of_water_extraction_comment": self.source_of_water_extraction_comment,
+    #         "how_much_do_investors_pay_comment": self.how_much_do_investors_pay_comment,
+    #         "water_extraction_amount": self.water_extraction_amount,
+    #         "water_extraction_amount_comment": self.water_extraction_amount_comment,
+    #         "use_of_irrigation_infrastructure": self.use_of_irrigation_infrastructure,
+    #         "use_of_irrigation_infrastructure_comment": self.use_of_irrigation_infrastructure_comment,
+    #         "water_footprint": self.water_footprint,
+    #         "gender_related_information": self.gender_related_information,
+    #         "overall_comment": self.overall_comment,
+    #         "is_public": self.is_public,
+    #         "has_known_investor": self.has_known_investor,
+    #         "current_contract_size": self.current_contract_size,
+    #         "current_production_size": self.current_production_size,
+    #         "current_intention_of_investment": self.current_intention_of_investment,
+    #         "current_negotiation_status": self.current_negotiation_status,
+    #         "current_implementation_status": self.current_implementation_status,
+    #         "current_crops": self.current_crops,
+    #         "current_animals": self.current_animals,
+    #         "current_mineral_resources": self.current_mineral_resources,
+    #         "deal_size": self.deal_size,
+    #         "initiation_year": self.initiation_year,
+    #         "forest_concession": self.forest_concession,
+    #         "transnational": self.transnational,
+    #         "fully_updated": self.fully_updated,
+    #         "status": self.status,
+    #         "created_at": self.created_at,
+    #         "created_by_id": self.created_by_id,
+    #         "sent_to_review_at": self.sent_to_review_at,
+    #         "sent_to_review_by_id": self.sent_to_review_by_id,
+    #         "reviewed_at": self.reviewed_at,
+    #         "reviewed_by_id": self.reviewed_by_id,
+    #         "activated_at": self.activated_at,
+    #         "activated_by_id": self.activated_by_id,
+    #     }
+
+    # def to_dict(self, fields: list):
+    #     ret = {}
+    #     for field in fields:
+    #         if field == "locations":
+    #             ret[field] = [
+    #                 x.to_dict() for x in self.locations.all().prefetch_related("areas")
+    #             ]
+    #         elif field == "datasources":
+    #             ret[field] = [x.to_dict() for x in self.datasources.all()]
+    #         elif field == "contracts":
+    #             ret[field] = [x.to_dict() for x in self.contracts.all()]
+    #         elif field == "intended_size":
+    #             ic("INTE", getattr(self, field))
+    #             ret[field] = getattr(self, field)
+    #         else:
+    #             ret[field] = getattr(self, field)
+    #     return ret
 
 
 class Location(models.Model):
@@ -1006,6 +1187,18 @@ class Location(models.Model):
         choices=LEVEL_OF_ACCURACY_CHOICES,
     )
     comment = models.TextField(_("Comment"), blank=True)
+
+    def to_dict(self):
+        return {
+            "nid": self.nid,
+            "name": self.name,
+            "description": self.description,
+            "point": json.loads(self.point.geojson) if self.point else None,
+            "facility_name": self.facility_name,
+            "level_of_accuracy": self.level_of_accuracy,
+            "comment": self.comment,
+            "areas": [area.to_dict() for area in self.areas.all()],
+        }
 
     class Meta:
         unique_together = ["dealversion", "nid"]
@@ -1029,11 +1222,19 @@ class Area(models.Model):
     date = LooseDateField(_("Date"), blank=True, null=True)
     area = gis_models.GeometryField()
 
-    class Meta:
-        unique_together = ["location", "type", "current"]
-
     def __str__(self):
         return f"{self.location} >> {self.type}"
+
+    def to_dict(self):
+        return {
+            "type": self.type,
+            "current": self.current,
+            "date": self.date,
+            "area": json.loads(self.area.geojson) if self.area else None,
+        }
+
+    class Meta:
+        unique_together = ["location", "type", "current"]
 
 
 class Contract(models.Model):
@@ -1048,6 +1249,16 @@ class Contract(models.Model):
         _("Duration of the agreement"), blank=True, null=True
     )
     comment = models.TextField(_("Comment"), blank=True)
+
+    def to_dict(self):
+        return {
+            "nid": self.nid,
+            "number": self.number,
+            "date": self.date,
+            "expiration_date": self.expiration_date,
+            "agreement_duration": self.agreement_duration,
+            "comment": self.comment,
+        }
 
     class Meta:
         unique_together = ["dealversion", "nid"]
@@ -1074,6 +1285,24 @@ class DataSource(models.Model):
     )
     open_land_contracts_id = models.CharField(_("Open Contracting ID"), blank=True)
     comment = models.TextField(_("Comment"), blank=True)
+
+    def to_dict(self):
+        return {
+            "nid": self.nid,
+            "type": self.type,
+            "url": self.url,
+            "file": str(self.file),
+            "file_not_public": self.file_not_public,
+            "publication_title": self.publication_title,
+            "date": self.date,
+            "name": self.name,
+            "company": self.company,
+            "email": self.email,
+            "phone": self.phone,
+            "includes_in_country_verified_information": self.includes_in_country_verified_information,
+            "open_land_contracts_id": self.open_land_contracts_id,
+            "comment": self.comment,
+        }
 
     class Meta:
         unique_together = ["dealversion", "nid"]
@@ -1106,9 +1335,7 @@ class DealHull(models.Model):
         Country,
         verbose_name=_("Target country"),
         on_delete=models.PROTECT,
-        blank=True,
-        null=True,
-        related_name="newModel_deals",
+        related_name="newModel_dealHulls",
     )
 
     active_version = models.ForeignKey(
@@ -1131,11 +1358,7 @@ class DealHull(models.Model):
     # this just mirrors the created_at/by from the first version.
     created_at = models.DateTimeField(_("Created"), default=timezone.now, blank=True)
     created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        blank=True,
-        null=True,
-        on_delete=models.PROTECT,
-        related_name="+",
+        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="+"
     )
     fully_updated_at = models.DateTimeField(
         _("Last full update"), null=True, blank=True
@@ -1147,3 +1370,41 @@ class DealHull(models.Model):
         if self.country:
             return f"#{self.id} in {self.country.name}"
         return f"#{self.id}"
+
+    def selected_version(self):
+        if hasattr(self, "_selected_version_id"):
+            return self.versions.get(id=self._selected_version_id)
+        return self.active_version or self.draft_version
+
+    # def to_detail_dict(self, version_id: int):
+    #     versions = [
+    #         {
+    #             "id": x.id,
+    #             "created_at": x.created_at,
+    #             "created_by_id": x.created_by_id,
+    #             "sent_to_review_at": x.sent_to_review_at,
+    #             "sent_to_review_by_id": x.sent_to_review_by_id,
+    #             "reviewed_at": x.reviewed_at,
+    #             "reviewed_by_id": x.reviewed_by_id,
+    #             "activated_at": x.activated_at,
+    #             "activated_by_id": x.activated_by_id,
+    #             "fully_updated": x.fully_updated,
+    #             "status": x.status,
+    #         }
+    #         for x in DealVersion2.objects.filter(deal=self).order_by("-id")
+    #     ]
+    #     return {
+    #         "id": self.id,
+    #         "country": {"id": self.country_id, "name": self.country.name},
+    #         "active_version_id": self.active_version_id,
+    #         "draft_version_id": self.draft_version_id,
+    #         "confidential": self.confidential,
+    #         "confidential_comment": self.confidential_comment,
+    #         "deleted": self.deleted,
+    #         "deleted_comment": self.deleted_comment,
+    #         "created_at": self.created_at,
+    #         "created_by_id": self.created_by_id,
+    #         "fully_updated_at": self.fully_updated_at,
+    #         "version": self.versions.get(id=version_id).to_detail_dict(),
+    #         "versions": versions,
+    #     }

@@ -1,42 +1,40 @@
-import { error, redirect } from "@sveltejs/kit"
+import { error } from "@sveltejs/kit"
 
-import { dealQuery } from "$lib/dealQueries"
-import { findActiveVersion } from "$lib/helpers"
-import type { Deal } from "$lib/types/deal"
-import { Status } from "$lib/types/generics"
+import type { DealHull } from "$lib/types/newtypes"
 
 import type { PageLoad } from "./$types"
 
 export const ssr = false
 
-export const load: PageLoad = async ({ params, parent }) => {
-  const { urqlClient } = await parent()
+export const load: PageLoad = async ({ fetch, params }) => {
   const [dealID, dealVersion] = params.IDs.split("/").map(x => (x ? +x : undefined))
 
   if (!dealID) throw error(404, "Deal not found")
 
-  const res = await urqlClient
-    .query<{ deal: Deal }>(dealQuery, { id: dealID, version: dealVersion })
-    .toPromise()
-
-  if (res.error) {
-    if (res.error.graphQLErrors.map(e => e.message).includes("DEAL_NOT_FOUND"))
-      throw error(404, "Deal not found")
-    if (res.error.graphQLErrors.map(e => e.message).includes("MISSING_AUTHORIZATION"))
-      throw error(401, "Unauthorized")
-    throw error(500, `${res.error}`)
-  }
-  if (!res.data) throw error(500, `Unknown Problem: ${error}`)
-
-  if (!res.data.deal) throw error(404, "Deal not found")
-  if (res.data.deal.status === Status.DRAFT && !dealVersion) {
-    const dealV = res.data.deal.versions?.[0]?.id
-    throw redirect(301, `/deal/${dealID}/${dealV}`)
-  }
-  // redirect if version is active version
-  const activeVersion = findActiveVersion(res.data.deal, "deal")
-  if (dealVersion && dealVersion === activeVersion?.id) {
-    throw redirect(301, `/deal/${dealID}`)
-  }
-  return { deal: res.data.deal, dealID, dealVersion }
+  const url = dealVersion
+    ? `/api/deal/${dealID}/${dealVersion}/`
+    : `/api/deal/${dealID}/`
+  const restDeal = await fetch(url)
+  const deal: DealHull = await restDeal.json()
+  //
+  // if (res.error) {
+  //   if (res.error.graphQLErrors.map(e => e.message).includes("DEAL_NOT_FOUND"))
+  //     throw error(404, "Deal not found")
+  //   if (res.error.graphQLErrors.map(e => e.message).includes("MISSING_AUTHORIZATION"))
+  //     throw error(401, "Unauthorized")
+  //   throw error(500, `${res.error}`)
+  // }
+  // if (!res.data) throw error(500, `Unknown Problem: ${error}`)
+  //
+  // if (!res.data.deal) throw error(404, "Deal not found")
+  // if (res.data.deal.status === Status.DRAFT && !dealVersion) {
+  //   const dealV = res.data.deal.versions?.[0]?.id
+  //   throw redirect(301, `/deal/${dealID}/${dealV}`)
+  // }
+  // // redirect if version is active version
+  // const activeVersion = findActiveVersion(res.data.deal, "deal")
+  // if (dealVersion && dealVersion === activeVersion?.id) {
+  //   throw redirect(301, `/deal/${dealID}`)
+  // }
+  return { deal, dealID, dealVersion }
 }

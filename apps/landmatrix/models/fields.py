@@ -4,7 +4,7 @@ from django import forms
 from django.contrib.postgres.fields import ArrayField as _ArrayField
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
-from django.db.models import JSONField, CharField
+from django.db.models import JSONField, CharField, DecimalField
 from fastjsonschema import JsonSchemaException, compile
 
 from .choices import (
@@ -31,6 +31,13 @@ class LooseDateField(CharField):
 
 class NanoIDField(CharField):
     pass
+
+
+class DecimalIntField(DecimalField):
+    def from_db_value(self, value, expression, connection):
+        if value is None:
+            return None
+        return float(value)
 
 
 class ArrayField(_ArrayField):

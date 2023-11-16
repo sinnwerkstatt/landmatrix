@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from apps.landmatrix.models.deal import Deal, DealWorkflowInfo
+from apps.landmatrix.models.deal import Deal, DealWorkflowInfo, DealVersion
 from apps.landmatrix.models.investor import Investor
 from apps.new_model.models import (
     DealHull,
@@ -82,14 +82,17 @@ class Command(BaseCommand):
 
             deal_hull.created_by = old_deal.created_by
             deal_hull.created_at = old_deal.created_at
+            deal_hull.fully_updated_at = old_deal.fully_updated_at
 
             print(old_deal.id, "status:", old_deal.status)
             for old_dv in old_deal.versions.all().order_by("id"):
                 old_dv_dict = old_dv.serialized_data
                 new_dv: DealVersion2
-                new_dv, _ = DealVersion2.objects.get_or_create(
-                    deal_id=old_deal.id, id=old_dv.id
-                )
+                try:
+                    new_dv = DealVersion2.objects.get(deal_id=old_deal.id, id=old_dv.id)
+                except DealVersion2.DoesNotExist:
+                    new_dv = DealVersion2(deal_id=old_deal.id, id=old_dv.id)
+
                 map_version_payload(old_dv, new_dv)
                 deal_hull.country_id = old_dv_dict["country"]
 
@@ -133,6 +136,7 @@ class Command(BaseCommand):
                 else:
                     print("VERSION OHO", old_deal.id, old_dv_dict["status"])
                     # return
+                # print(old_dv.workflowinfos.all())
                 new_dv.save(recalculate_dependent=False, recalculate_independent=False)
 
             # deal_hull.draft_version_id = old_deal.current_draft_id
@@ -159,10 +163,14 @@ def map_locations(nv: DealVersion2, locations: list[dict]):
         l1.save()
         if area := loc["areas"]:
             for feat in area["features"]:
-                a1, _ = Area.objects.get_or_create(
+                a1, _ = Area.objects.update_or_create(
                     location=l1,
                     area=GEOSGeometry(str(feat["geometry"])),
-                    defaults={"type": feat["properties"]["type"]},
+                    defaults={
+                        "type": feat["properties"]["type"],
+                        "current": feat["properties"].get("current", False),
+                        "date": feat["properties"].get("date"),
+                    },
                 )
 
 
@@ -199,7 +207,7 @@ def map_datasources(nv: DealVersion2, datasources: list[dict]):
         ds1.save()
 
 
-def map_version_payload(old_deal_version, nv: DealVersion2):
+def map_version_payload(old_deal_version: DealVersion, nv: DealVersion2):
     ov: dict = old_deal_version.serialized_data
     # nv.country_id = ov["country"]
     nv.intended_size = ov["intended_size"]
@@ -332,6 +340,8 @@ def map_version_payload(old_deal_version, nv: DealVersion2):
     nv.gender_related_information = ov["gender_related_information"]
     nv.overall_comment = ov["overall_comment"]
 
+    nv.save(recalculate_dependent=False, recalculate_independent=False)
+
     map_locations(nv, ov["locations"])
     map_contracts(nv, ov["contracts"])
     map_datasources(nv, ov["datasources"])
@@ -383,7 +393,7 @@ def do_workflows(deal_id):
             continue
         # if dwi.deal_version_id in [43461, 43462]:
         #     print(dwi, dwi.draft_status_before, dwi.draft_status_after, dwi.comment)
-        dv = DealVersion2.objects.get(id=dwi.deal_version_id)
+        dv: DealVersion2 = DealVersion2.objects.get(id=dwi.deal_version_id)
         if dwi.draft_status_before is None and dwi.draft_status_after == 1:
             ...  # TODO new draft.. what to do?
         elif dwi.draft_status_before in [2, 3] and dwi.draft_status_after == 1:

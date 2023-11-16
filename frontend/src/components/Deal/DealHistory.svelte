@@ -41,10 +41,10 @@
     })
   }
 
-  let enrichedVersions
+  let enrichedVersions: DealVersion[]
   $: enrichedVersions = calcVersionList(deal.versions ?? [])
 
-  function calcDeducedPosition(versions) {
+  function calcDeducedPosition(versions: DealVersion[]) {
     if (versions.length === 0) return 0
     if (dealVersion) {
       return versions.findIndex(v => +v.id === +dealVersion)

@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     "wagtail",
     "wagtail.api.v2",
     "rest_framework",
+    "rest_framework_gis",
     "wagtailfontawesomesvg",
     "wagtailorderable",
     "modelcluster",
@@ -72,6 +73,7 @@ INSTALLED_APPS = [
     "apps.message",
     "apps.landmatrix",
     "apps.wagtailcms",
+    "apps.new_model",
     # plumbing
     "impersonate",
     "ariadne_django",

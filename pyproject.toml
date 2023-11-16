@@ -12,6 +12,9 @@ Django = "*"
 wagtail = "<5.3"
 psycopg2-binary = "*"
 
+djangorestframework = "*"
+djangorestframework-gis = "*"
+
 django-cors-headers = "*"
 django-environ = "*"
 django-impersonate = "*"
@@ -40,6 +43,7 @@ gunicorn = "*"
 tzdata = "*"
 python-memcached = "^1.59"
 ramda = "^0.7.6"
+icecream = "^2.1.3"
 
 [tool.poetry.group.dev.dependencies]
 ipdb = "*"

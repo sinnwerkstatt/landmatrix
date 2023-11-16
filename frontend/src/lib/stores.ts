@@ -205,28 +205,14 @@ export async function fetchBasis(
 
 export const allUsers = writable<User[]>([])
 let fetchingAllUsers = false
-export async function getAllUsers(urqlClient: Client) {
+export async function getAllUsers(fetch: LoadEvent["fetch"]) {
   if (get(allUsers).length > 0 || fetchingAllUsers) return
   fetchingAllUsers = true
-  const ret = await urqlClient
-    .query<{ users: User[] }>(
-      gql`
-        {
-          users {
-            id
-            full_name
-            username
-            role
-          }
-        }
-      `,
-      {},
-    )
-    .toPromise()
-  if (!ret.data?.users) throw error(500, "could not fetch users from database")
+  const ret = await fetch("/api/users/")
+  const users = await ret.json()
+  if (!users) throw error(500, "could not fetch users from database")
 
-  const usrs = ret.data.users.sort((a, b) => a.full_name.localeCompare(b.full_name))
-  allUsers.set(usrs)
+  allUsers.set(users)
   fetchingAllUsers = false
 }
 
