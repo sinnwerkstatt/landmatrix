@@ -9,7 +9,7 @@
 </script>
 
 <div
-  class="my-2 flex w-auto items-center bg-lm-lightgray p-3 text-center text-lm-dark dark:bg-gray-700 dark:text-white"
+  class="my-2 flex w-auto items-center whitespace-nowrap bg-lm-lightgray p-3 text-center text-lm-dark dark:bg-gray-700 dark:text-white"
 >
   <div class="mr-10 text-xs md:mx-5 md:text-sm">
     {$_("Created")}
@@ -19,7 +19,9 @@
   <div class="mr-10 text-xs md:mx-5 md:text-sm">
     {$_("Last update")}
     <br />
-    <DateTimeField value={obj.selected_version.activated_at} />
+    <DateTimeField
+      value={obj.selected_version.modified_at ?? obj.selected_version.created_at}
+    />
   </div>
   {#if obj.fully_updated_at}
     <div class="mr-10 text-xs md:mx-5 md:text-sm">

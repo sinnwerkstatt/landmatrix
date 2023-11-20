@@ -1,6 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
+  import { fieldChoices } from "$lib/stores"
   import type { InvestorVersion2 } from "$lib/types/newtypes"
 
   import CountryField from "$components/Fields/Display2/CountryField.svelte"
@@ -22,6 +23,7 @@
       fieldname="investor.classification"
       label={$_("Classification")}
       value={version.classification}
+      choices={$fieldChoices.investor.classification}
     />
     <TextField
       fieldname="investor.homepage"

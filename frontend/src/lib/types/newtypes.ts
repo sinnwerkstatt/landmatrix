@@ -2,7 +2,7 @@ import type { GeoJsonObject, Point } from "geojson"
 
 import type { Country } from "$lib/types/wagtail"
 
-export enum DealVersion2Status {
+export enum Version2Status {
   DRAFT = "DRAFT",
   REVIEW = "REVIEW",
   ACTIVATION = "ACTIVATION",
@@ -32,18 +32,21 @@ interface Hull {
     activated_at: string
     activated_by_id: number
     fully_updated: boolean
-    status: DealVersion2Status
+    status: Version2Status
   }[]
 }
 export interface DealHull extends Hull {
+  selected_version: DealVersion2
   country: Country
   confidential: boolean
   confidential_comment: string
   fully_updated_at: string
-  selected_version: DealVersion2
 }
 export interface InvestorHull extends Hull {
   selected_version: InvestorVersion2
+  confidential: never
+  confidential_comment: never
+  fully_updated_at: never
 }
 
 interface DataSource {
@@ -68,10 +71,8 @@ interface DealVersionBase {
 
   datasources: DataSource[]
 }
-export interface DealVersion2 extends DealVersionBase {
-  is_public: boolean
-  has_known_investor: boolean
 
+interface VersionTimestampMixins {
   created_at: string
   created_by_id: number
   modified_at: string
@@ -82,6 +83,12 @@ export interface DealVersion2 extends DealVersionBase {
   reviewed_by_id: number
   activated_at: string
   activated_by_id: number
+}
+export interface DealVersion2 extends DealVersionBase, VersionTimestampMixins {
+  is_public: boolean
+  has_known_investor: boolean
+
+  status: Version2Status
 }
 
 type JSONCurrentDateAreaFieldType = Array<{
@@ -115,14 +122,15 @@ interface Location2 {
   areas: Area[]
 }
 
-export interface InvestorVersion2 {
+export interface InvestorVersion2 extends VersionTimestampMixins {
   id: number
   name: string
+  name_unknown: boolean
   country: Country
   classification: string
   homepage: string
   opencorporates: string
   comment: string
-  activated_at: string
-  activated_by_id: number
+
+  status: Version2Status
 }

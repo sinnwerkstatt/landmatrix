@@ -6,6 +6,7 @@ from django.contrib.gis.db import models as gis_models
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models, transaction
+from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import gettext as _
 from icecream import ic
@@ -201,7 +202,7 @@ class DealVersionBaseFields(models.Model):
     #     ("IN_PLANNING", _("In Planning")),
     #     ("NO", _("No")),
     # )
-    # models.CharField(choices=YES_IN_PLANNING_NO_CHOICES, default="")
+    # models.CharField(choices=YES_IN_PLANNING_NO_CHOICES)
     contract_farming = models.BooleanField(null=True)
 
     on_the_lease_state = models.BooleanField(_("On leased / purchased"), null=True)
@@ -267,7 +268,7 @@ class DealVersionBaseFields(models.Model):
 
     """ Investor info """
     operating_company = models.ForeignKey(
-        Investor,
+        "new_model.InvestorVersion2",
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
@@ -279,8 +280,7 @@ class DealVersionBaseFields(models.Model):
         _("Comment on investment chain"), blank=True
     )
 
-    # """ Data sources """
-    # via Foreignkey
+    # """ Data sources """  via Foreignkey
 
     """ Local communities / indigenous peoples """
     name_of_community = ArrayField(
@@ -642,7 +642,55 @@ class DealVersionBaseFields(models.Model):
 #         return self
 
 
-class DealVersion2(DealVersionBaseFields):
+class VersionTimestampsMixins(models.Model):
+    created_at = models.DateTimeField(_("Created at"), blank=True)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        null=True,
+        on_delete=models.PROTECT,
+        related_name="+",
+    )
+    modified_at = models.DateTimeField(_("Modified at"), blank=True, null=True)
+    modified_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        null=True,
+        on_delete=models.PROTECT,
+        related_name="+",
+    )
+    sent_to_review_at = models.DateTimeField(
+        _("Sent to review at"), null=True, blank=True
+    )
+    sent_to_review_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        null=True,
+        on_delete=models.PROTECT,
+        related_name="+",
+    )
+    reviewed_at = models.DateTimeField(_("Reviewed at"), null=True, blank=True)
+    reviewed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        null=True,
+        on_delete=models.PROTECT,
+        related_name="+",
+    )
+    activated_at = models.DateTimeField(_("Activated at"), null=True, blank=True)
+    activated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        null=True,
+        on_delete=models.PROTECT,
+        related_name="+",
+    )
+
+    class Meta:
+        abstract = True
+
+
+class DealVersion2(DealVersionBaseFields, VersionTimestampsMixins):
 
     """# CALCULATED FIELDS #"""
 
@@ -715,53 +763,6 @@ class DealVersion2(DealVersionBaseFields):
     fully_updated = models.BooleanField(default=False)
     status = models.CharField(choices=VERSION_STATUS_CHOICES, default="DRAFT")
 
-    created_at = models.DateTimeField(_("Created at"), default=timezone.now, blank=True)
-    created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        blank=True,
-        null=True,
-        on_delete=models.PROTECT,
-        related_name="+",
-    )
-    modified_at = models.DateTimeField(
-        _("Modified at"), default=timezone.now, blank=True
-    )
-    modified_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        blank=True,
-        null=True,
-        on_delete=models.PROTECT,
-        related_name="+",
-    )
-    sent_to_review_at = models.DateTimeField(
-        _("Sent to review at"), null=True, blank=True
-    )
-    sent_to_review_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        blank=True,
-        null=True,
-        on_delete=models.PROTECT,
-        related_name="+",
-    )
-    reviewed_at = models.DateTimeField(_("Reviewed at"), null=True, blank=True)
-    reviewed_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        blank=True,
-        null=True,
-        on_delete=models.PROTECT,
-        related_name="+",
-    )
-    activated_at = models.DateTimeField(_("Activated at"), null=True, blank=True)
-    activated_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        blank=True,
-        null=True,
-        on_delete=models.PROTECT,
-        related_name="+",
-    )
-
-    # objects = DealVersionQuerySet.as_manager()
-
     def __str__(self):
         return f"v{self.id} for #{self.deal_id}"
 
@@ -829,7 +830,7 @@ class DealVersion2(DealVersionBaseFields):
     def _has_no_known_investor(self) -> bool:
         if not self.operating_company_id:
             return True
-        oc = Investor.objects.get(id=self.operating_company_id)
+        oc = InvestorVersion2.objects.get(id=self.operating_company_id)
         # if the Operating Company is known, we have a known investor and exit.
         if not oc.is_actually_unknown:
             return False
@@ -1214,12 +1215,14 @@ class DealHull(models.Model):
         return self.active_version or self.draft_version
 
 
-class InvestorVersion2(models.Model):
+class InvestorVersion2(VersionTimestampsMixins, models.Model):
     investor = models.ForeignKey(
         "new_model.InvestorHull", on_delete=models.PROTECT, related_name="versions"
     )
 
     name = models.CharField(_("Name"), blank=True)
+    name_unknown = models.BooleanField(default=False)
+
     country = models.ForeignKey(
         Country,
         verbose_name=_("Country of registration/origin"),
@@ -1239,72 +1242,16 @@ class InvestorVersion2(models.Model):
     opencorporates = models.URLField(_("Opencorporates link"), blank=True)
     comment = models.TextField(_("Comment"), blank=True)
 
-    # """ Data sources """
+    # """ Data sources """  via Foreignkey
 
-    # # NOTE maybe toss this out; seems to confuse more.
-    # involvements = models.ManyToManyField(
-    #     "self",
-    #     through="InvestorVentureInvolvement",
-    #     through_fields=("venture", "investor"),
-    #     symmetrical=False,
-    # )
-
-    # META
     status = models.CharField(choices=VERSION_STATUS_CHOICES, default="DRAFT")
-    created_at = models.DateTimeField(_("Created at"), default=timezone.now, blank=True)
-    created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        blank=True,
-        null=True,
-        on_delete=models.PROTECT,
-        related_name="+",
-    )
-    modified_at = models.DateTimeField(
-        _("Modified at"), default=timezone.now, blank=True
-    )
-    modified_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        blank=True,
-        null=True,
-        on_delete=models.PROTECT,
-        related_name="+",
-    )
-    sent_to_review_at = models.DateTimeField(
-        _("Sent to review at"), null=True, blank=True
-    )
-    sent_to_review_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        blank=True,
-        null=True,
-        on_delete=models.PROTECT,
-        related_name="+",
-    )
-    reviewed_at = models.DateTimeField(_("Reviewed at"), null=True, blank=True)
-    reviewed_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        blank=True,
-        null=True,
-        on_delete=models.PROTECT,
-        related_name="+",
-    )
-    activated_at = models.DateTimeField(_("Activated at"), null=True, blank=True)
-    activated_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        blank=True,
-        null=True,
-        on_delete=models.PROTECT,
-        related_name="+",
-    )
 
-    """ # computed properties """
-    # The following flag is needed at the moment to filter through Deals (public-filter)
-    # NOTE This should be replaced by an option to _NOT_ specify the investor name.
-    is_actually_unknown = models.BooleanField(default=False)
+    """ calculated properties """
+    involvements_snapshot = models.JSONField(blank=True, null=True)
 
     def recalculate_fields(self):
-        self.is_actually_unknown = bool(
-            re.search(r"(unknown|unnamed)", self.name, re.IGNORECASE)
-        )
+        # TODO create involvements_snapshot
+        pass
 
     def save(self, *args, **kwargs):
         self.recalculate_fields()
@@ -1355,7 +1302,111 @@ class InvestorHull(models.Model):
     def __str__(self):
         return f"Investor #{self.id}"
 
+    # This method is used by DRF.
     def selected_version(self):
         if hasattr(self, "_selected_version_id"):
             return self.versions.get(id=self._selected_version_id)
         return self.active_version or self.draft_version
+
+    # This method is used by DRF.
+    def involvements(self):
+        if not hasattr(self, "_selected_version_id") and self.active_version:
+            return Involvement.objects.filter(
+                Q(parent_investor_id=self.id) | Q(child_investor_id=self.id)
+            )
+        return
+
+
+class Involvement(models.Model):
+    # parent_investor_id = models.IntegerField()
+    # child_investor_id = models.IntegerField()
+    parent_investor = models.ForeignKey(
+        InvestorHull,
+        verbose_name=_("Investor"),
+        db_index=True,
+        related_name="ventures",
+        on_delete=models.PROTECT,
+    )
+    child_investor = models.ForeignKey(
+        InvestorHull,
+        verbose_name=_("Venture Company"),
+        db_index=True,
+        related_name="investors",
+        on_delete=models.PROTECT,
+    )
+
+    role = models.CharField(
+        verbose_name=_("Relation type"),
+        choices=(
+            ("PARENT", _("Parent company")),
+            ("LENDER", _("Tertiary investor/lender")),
+        ),
+    )
+
+    investment_type = ChoiceArrayField(
+        models.CharField(
+            choices=(
+                ("EQUITY", _("Shares/Equity")),
+                ("DEBT_FINANCING", _("Debt financing")),
+            )
+        ),
+        verbose_name=_("Investment type"),
+        blank=True,
+        default=list,
+    )
+
+    percentage = models.FloatField(
+        _("Ownership share"),
+        blank=True,
+        null=True,
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+    )
+    loans_amount = models.FloatField(_("Loan amount"), blank=True, null=True)
+    loans_currency = models.ForeignKey(
+        Currency,
+        verbose_name=_("Loan currency"),
+        blank=True,
+        null=True,
+        on_delete=models.PROTECT,
+    )
+    loans_date = LooseDateField(_("Loan date"), blank=True)
+
+    PARENT_RELATION_CHOICES = (
+        ("SUBSIDIARY", _("Subsidiary of parent company")),
+        ("LOCAL_BRANCH", _("Local branch of parent company")),
+        ("JOINT_VENTURE", _("Joint venture of parent companies")),
+    )
+    parent_relation = models.CharField(
+        verbose_name=_("Parent relation"),
+        choices=PARENT_RELATION_CHOICES,
+        blank=True,
+        null=True,
+    )
+    comment = models.TextField(_("Comment"), blank=True)
+
+    class Meta:
+        verbose_name = _("Investor Venture Involvement")
+        verbose_name_plural = _("Investor Venture Involvements")
+        ordering = ["-id"]
+
+    # def __str__(self):
+    #     if self.role == "PARENT":
+    #         role = _("<is PARENT of>")
+    #     else:
+    #         role = _("<is INVESTOR of>")
+    #     return f"{self.investor} {role} {self.venture}"
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "parent_investor_id": self.parent_investor_id,
+            "child_investor_id": self.child_investor_id,
+            "role": self.role,
+            "investment_type": self.investment_type,
+            "percentage": self.percentage,
+            "loans_amount": self.loans_amount,
+            "loans_currency": self.loans_currency,
+            "loans_date": self.loans_date,
+            "parent_relation": self.parent_relation,
+            "comment": self.comment,
+        }

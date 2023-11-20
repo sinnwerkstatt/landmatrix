@@ -207,7 +207,7 @@
   }
 
   .btn {
-    @apply m-0.5 inline-block transform whitespace-nowrap border px-4 py-2 text-center shadow transition;
+    @apply m-0.5 inline-block transform cursor-pointer whitespace-nowrap border bg-white px-4 py-2 text-center shadow transition;
     @apply focus:outline-none;
   }
 

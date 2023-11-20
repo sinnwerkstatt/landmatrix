@@ -1,8 +1,10 @@
 from django.db.models import Prefetch
+from django.http import JsonResponse
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from apps.landmatrix.models.choices import INVESTOR_CLASSIFICATION_ITEMS
 from apps.new_model.models import DealHull, InvestorHull, DealVersion2, InvestorVersion2
 from apps.new_model.serializers import Deal2Serializer, Investor2Serializer
 
@@ -45,3 +47,7 @@ class Investor2ViewSet(viewsets.ReadOnlyModelViewSet):
             instance._selected_version_id = version_id
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
+
+
+def field_choices(request):
+    return JsonResponse({"investor": {"classification": INVESTOR_CLASSIFICATION_ITEMS}})

@@ -1,6 +1,8 @@
+from django.db.models import Q, QuerySet
 from rest_framework import serializers
 
 from apps.landmatrix.models.country import Country
+from apps.landmatrix.models.investor import InvestorWorkflowInfo
 from apps.new_model.models import (
     DealVersion2,
     DealHull,
@@ -11,6 +13,7 @@ from apps.new_model.models import (
     InvestorHull,
     InvestorVersion2,
     InvestorDataSource,
+    Involvement,
 )
 
 
@@ -64,10 +67,17 @@ class ContractSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class OperatingCompanySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = InvestorVersion2
+        fields = "__all__"
+
+
 class DealVersionSerializer(serializers.ModelSerializer):
     locations = LocationSerializer(many=True, read_only=True)
     contracts = ContractSerializer(many=True, read_only=True)
     datasources = DealDataSourceSerializer(many=True, read_only=True)
+    operating_company = OperatingCompanySerializer()
 
     class Meta:
         model = DealVersion2
@@ -116,10 +126,41 @@ class InvestorVersionSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+# class InvolvementSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Involvement
+#         fields = "__all__"
+
+
 class Investor2Serializer(serializers.ModelSerializer):
     versions = InvestorVersionVersionsListSerializer(many=True)
     selected_version = InvestorVersionSerializer()
+    # involvements = InvolvementSerializer(many=True)
+    involvements = serializers.SerializerMethodField()
+    workflowinfos = serializers.SerializerMethodField()
 
     class Meta:
         model = InvestorHull
         fields = "__all__"
+
+    @staticmethod
+    def get_involvements(obj: InvestorHull):
+        if hasattr(obj, "_selected_version_id"):
+            return obj.versions.get(id=obj._selected_version_id).involvements_snapshot
+        if obj.active_version:
+            involvements: QuerySet[Involvement] = Involvement.objects.filter(
+                Q(parent_investor_id=obj.id) | Q(child_investor_id=obj.id)
+            )
+            return [invo.to_dict() for invo in involvements]
+        else:
+            # TODO should the draft version also have this involvements_snapshot?
+            return obj.draft_version.involvements_snapshot
+
+    @staticmethod
+    def get_workflowinfos(obj: InvestorHull):
+        return [
+            x.to_new_dict()
+            for x in InvestorWorkflowInfo.objects.filter(investor_id=obj.id).order_by(
+                "-id"
+            )
+        ]

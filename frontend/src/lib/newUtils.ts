@@ -1,9 +1,9 @@
 import { _ } from "svelte-i18n"
 import { derived } from "svelte/store"
 
-import type { DealVersion2Status } from "$lib/types/newtypes"
+import type { Version2Status } from "$lib/types/newtypes"
 
-type VersionStatusMap = { [key in DealVersion2Status]: string }
+type VersionStatusMap = { [key in Version2Status]: string }
 
 export const stateMap = derived(
   _,

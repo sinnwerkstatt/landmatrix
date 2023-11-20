@@ -47,6 +47,18 @@ async function getAboutPages(fetch: LoadEvent["fetch"]) {
     aboutPages.set(res_children.items)
   }
 }
+
+export const fieldChoices = writable({})
+
+async function getFieldChoices(fetch: LoadEvent["fetch"]) {
+  const url = `/api/field_choices/`
+  const res = await (
+    await fetch(url, { headers: { Accept: "application/json" } })
+  ).json()
+  fieldChoices.set(res)
+  // console.log(res)
+}
+
 export const observatoryPages = writable<ObservatoryPage[]>([])
 
 type ObservatoryGroups = {
@@ -194,6 +206,7 @@ export async function fetchBasis(
     await Promise.all([
       getAboutPages(fetch),
       getObservatoryPages(fetch),
+      getFieldChoices(fetch),
       getBlogCategories(lang, urqlClient),
       getCountriesRegionsFormfields(lang, urqlClient),
       getChartDescriptions(lang, urqlClient),

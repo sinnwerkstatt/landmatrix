@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+from icecream import ic
 
 from apps.landmatrix.models.deal import Deal, DealWorkflowInfo, DealVersion
 from apps.landmatrix.models.investor import Investor
@@ -9,6 +10,7 @@ from apps.new_model.models import (
     Area,
     Contract,
     DealDataSource,
+    InvestorHull,
 )
 
 from django.contrib.gis.geos import Point, GEOSGeometry
@@ -149,7 +151,6 @@ class Command(BaseCommand):
             do_workflows(old_deal.id)
 
             deal_hull.save()
-            # return
 
 
 def map_locations(nv: DealVersion2, locations: list[dict]):
@@ -260,7 +261,16 @@ def map_version_payload(old_deal_version: DealVersion, nv: DealVersion2):
     nv.domestic_jobs_planned_daily_workers = ov["domestic_jobs_planned_daily_workers"]
     nv.domestic_jobs_current = ov["domestic_jobs_current"] or []
     nv.domestic_jobs_created_comment = ov["domestic_jobs_created_comment"]
-    nv.operating_company_id = ov["operating_company"]
+    if oid := ov["operating_company"]:
+        all_versions = InvestorHull.objects.get(id=oid).versions.all()
+        versions = all_versions.order_by("-created_at").filter(
+            created_at__lte=ov["modified_at"]
+        )
+        if versions:
+            nv.operating_company_id = versions.first().id
+        else:
+            nv.operating_company_id = all_versions.last().id
+
     nv.involved_actors = ov["involved_actors"] or []
     nv.project_name = ov["project_name"]
     nv.investment_chain_comment = ov["investment_chain_comment"]
@@ -409,16 +419,16 @@ def do_workflows(deal_id):
         elif dwi.draft_status_before in [None, 1] and dwi.draft_status_after == 2:
             dv.sent_to_review_at = dwi.timestamp
             dv.sent_to_review_by = dwi.from_user
-            dv.save()
+            dv.save(recalculate_independent=False, recalculate_dependent=False)
         elif dwi.draft_status_before == 2 and dwi.draft_status_after == 3:
             dv.reviewed_at = dwi.timestamp
             dv.reviewed_by = dwi.from_user
-            dv.save()
+            dv.save(recalculate_independent=False, recalculate_dependent=False)
             # dv.status
         elif dwi.draft_status_before in [2, 3] and dwi.draft_status_after is None:
             dv.activated_at = dwi.timestamp
             dv.activated_by = dwi.from_user
-            dv.save()
+            dv.save(recalculate_independent=False, recalculate_dependent=False)
         elif dwi.draft_status_before == 4 or dwi.draft_status_after == 4:
             ...  # deleted status change
         else:

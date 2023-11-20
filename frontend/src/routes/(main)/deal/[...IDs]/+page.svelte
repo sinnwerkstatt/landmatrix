@@ -112,7 +112,7 @@
     />
   {:else}
     <div class="md:flex md:flex-row md:justify-between">
-      <h1 class="heading4 mt-3">
+      <h1 class="heading3 mt-3">
         {$_("Deal")}
         #{data.deal.id}
       </h1>

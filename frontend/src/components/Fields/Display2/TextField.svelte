@@ -6,6 +6,10 @@
   export let label = ""
   export let hideLabel = false
   export let url = false
+
+  export let choices: { value: string; label: string }[] | undefined
+
+  $: selectedChoice = choices?.find(c => c.value === value)?.label ?? null
 </script>
 
 {#if value}
@@ -16,6 +20,8 @@
     <div class="text-lm-dark dark:text-white md:w-7/12 lg:w-8/12">
       {#if !value}
         —
+      {:else if selectedChoice}
+        {selectedChoice}
       {:else if url}
         <a href={value} target="_blank" rel="noreferrer">{new URL(value).hostname}</a>
       {:else}

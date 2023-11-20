@@ -1,3 +1,5 @@
+import sys
+
 from django.core.management.base import BaseCommand
 from django.db.models import QuerySet
 from icecream import ic
@@ -13,84 +15,111 @@ from apps.new_model.models import (
     InvestorDataSource,
 )
 
+status_map_dings = {
+    1: "DRAFT",
+    2: "REVIEW",
+    3: "ACTIVATION",
+    4: "REJECTED",
+    5: "TO_DELETE",
+}
+
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        investors: QuerySet[Investor] = Investor.objects.all().order_by("id").all()[:10]
+        investors: QuerySet[Investor] = (
+            Investor.objects.all()
+            .order_by("id")
+            .all()
+            # .filter(id__gte=35659)
+            .filter(id__in=[2])
+            # [:2000]
+        )
         for old_investor in investors:
             investor_hull: InvestorHull
             investor_hull, _ = InvestorHull.objects.get_or_create(
                 id=old_investor.id,
-                created_by=old_investor.created_by,
+                created_by_id=old_investor.created_by_id or 1,
                 created_at=old_investor.created_at,
             )
 
-            print(old_investor.id, "status:", old_investor.status)
-            for old_dv in old_investor.versions.all().order_by("id"):
-                old_dv_dict = old_dv.serialized_data
+            ic(old_investor.id, old_investor.status)
+            for old_version in old_investor.versions.all().order_by("id"):
                 new_version: InvestorVersion2
+                base_payload = {
+                    "investor_id": old_investor.id,
+                    "id": old_version.id,
+                    "created_at": old_version.created_at,
+                    "created_by_id": old_version.created_by_id,
+                    "modified_at": old_version.modified_at,
+                    "modified_by_id": old_version.modified_by_id,
+                }
                 try:
-                    new_version = InvestorVersion2.objects.get(
-                        investor_id=old_investor.id, id=old_dv.id
-                    )
+                    new_version = InvestorVersion2.objects.get(**base_payload)
                 except InvestorVersion2.DoesNotExist:
-                    new_version = InvestorVersion2(
-                        investor_id=old_investor.id, id=old_dv.id
-                    )
+                    new_version = InvestorVersion2(**base_payload)
 
-                map_version_payload(old_dv, new_version)
-                # investor_hull.country_id = old_dv_dict["country"]
-
-                if old_dv_dict["status"] == 1:
-                    map_dings = {
-                        1: "DRAFT",
-                        2: "REVIEW",
-                        3: "ACTIVATION",
-                        4: "REJECTED",
-                        5: "TO_DELETE",
-                    }
-                    new_version.status = map_dings[old_dv_dict["draft_status"]]
-                    investor_hull.draft_version_id = old_dv.id
-                elif old_dv_dict["status"] in [2, 3]:
-                    if old_dv_dict["draft_status"] is None:
-                        new_version.status = "ACTIVATED"
-                        investor_hull.active_version_id = old_dv.id
-                        investor_hull.draft_version_id = None
-                    elif old_dv_dict["draft_status"] == 1:
-                        new_version.status = "DRAFT"
-                        investor_hull.draft_version_id = old_dv.id
-                    elif old_dv_dict["draft_status"] == 2:
-                        new_version.status = "REVIEW"
-                        investor_hull.draft_version_id = old_dv.id
-                    elif old_dv_dict["draft_status"] == 3:
-                        new_version.status = "ACTIVATION"
-                        investor_hull.draft_version_id = old_dv.id
-                    elif old_dv_dict["draft_status"] == 4:
-                        new_version.status = "REJECTED"
-                        # investor_hull.active_version_id = investor_version.id
-                    else:
-                        # print("TODO?!", old_dv_dict["draft_status"])
-                        new_version.status = "DELETED"
-                elif old_dv_dict["status"] == 4:
-                    if old_dv_dict["draft_status"] is None:
-                        new_version.status = "TO_DELETE"
-                        investor_hull.active_version_id = old_dv.id
-                    else:
-                        print("TODO DELETE else?!")
-                        ...  # TODO !!
+                ov: dict = old_version.serialized_data
+                new_version.country_id = ov["country"]
+                new_version.name = ov["name"]
+                new_version.name_unknown = ov["is_actually_unknown"]
+                new_version.classification = ov["classification"]
+                new_version.homepage = ov["homepage"]
+                new_version.opencorporates = ov["opencorporates"]
+                new_version.comment = ov["comment"]
+                new_version.involvements_snapshot = _map_involvements_to_new_format(
+                    ov["investors"]
+                )
+                new_version.save()
+                if ov.get("datasources"):
+                    map_datasources(new_version, ov["datasources"])
                 else:
-                    print("VERSION OHO", old_investor.id, old_dv_dict["status"])
-                    # return
-                # print(old_dv.workflowinfos.all())
+                    new_version.datasources.set([])
+
+                _map_status(investor_hull, new_version, old_version)
                 new_version.save()
 
-            # investor_hull.draft_version_id = old_investor.current_draft_id
             investor_hull.deleted = old_investor.status == 4
 
             do_workflows(old_investor.id)
 
             investor_hull.save()
-            # return
+
+
+def _map_status(investor_hull, new_version, old_version: InvestorVersion):
+    old_version_dict = old_version.serialized_data
+
+    if old_version_dict["status"] == 1:
+        new_version.status = status_map_dings[old_version_dict["draft_status"]]
+        investor_hull.draft_version_id = old_version.id
+    elif old_version_dict["status"] in [2, 3]:
+        if old_version_dict["draft_status"] is None:
+            new_version.status = "ACTIVATED"
+            investor_hull.active_version_id = old_version.id
+            investor_hull.draft_version_id = None
+        elif old_version_dict["draft_status"] == 1:
+            new_version.status = "DRAFT"
+            investor_hull.draft_version_id = old_version.id
+        elif old_version_dict["draft_status"] == 2:
+            new_version.status = "REVIEW"
+            investor_hull.draft_version_id = old_version.id
+        elif old_version_dict["draft_status"] == 3:
+            new_version.status = "ACTIVATION"
+            investor_hull.draft_version_id = old_version.id
+        elif old_version_dict["draft_status"] == 4:
+            new_version.status = "REJECTED"
+            # investor_hull.active_version_id = investor_version.id
+        else:
+            # print("TODO?!", old_version_dict["draft_status"])
+            new_version.status = "DELETED"
+    elif old_version_dict["status"] == 4:
+        if old_version_dict["draft_status"] is None:
+            new_version.status = "TO_DELETE"
+            investor_hull.active_version_id = old_version.id
+        else:
+            print("TODO DELETE else?!")
+            ...  # TODO !!
+    else:
+        print("VERSION OHO", old_version.object_id, old_version_dict["status"])
 
 
 def map_datasources(nv: InvestorVersion2, datasources: list[dict]):
@@ -117,20 +146,27 @@ def map_datasources(nv: InvestorVersion2, datasources: list[dict]):
         ds1.save()
 
 
-def map_version_payload(old_investor_version: InvestorVersion, nv: InvestorVersion2):
-    ov: dict = old_investor_version.serialized_data
-    nv.country_id = ov["country"]
-    nv.name = ov["name"]
-    nv.classification = ov["classification"]
-    nv.homepage = ov["homepage"]
-    nv.opencorporates = ov["opencorporates"]
-    nv.comment = ov["comment"]
-    nv.save()
-    if ov.get("datasources"):
-        map_datasources(nv, ov["datasources"])
-
-    nv.created_by_id = old_investor_version.created_by_id
-    nv.created_at = old_investor_version.created_at
+def _map_involvements_to_new_format(invos: list) -> list:
+    if not invos:
+        return []
+    ret = []
+    for invo in invos:
+        ret += [
+            {
+                "id": invo["id"],
+                "parent_investor_id": invo["investor"],
+                "child_investor_id": invo["venture"],
+                "role": invo["role"],
+                "investment_type": invo["investment_type"] or [],
+                "percentage": invo["percentage"],
+                "loans_amount": invo["loans_amount"],
+                "loans_currency": invo["loans_currency"],
+                "loans_date": invo["loans_date"],
+                "parent_relation": invo["parent_relation"] or None,
+                "comment": invo["comment"],
+            }
+        ]
+    return ret
 
 
 def do_workflows(investor_id):
@@ -139,20 +175,26 @@ def do_workflows(investor_id):
             continue
         dv: InvestorVersion2 = InvestorVersion2.objects.get(id=wfi.investor_version_id)
         if wfi.draft_status_before is None and wfi.draft_status_after == 1:
-            ic("new draft.. what to do?")
-            ...  # TODO new draft.. what to do?
+            ...  # TODO I think we're good here. Don't see anything that we ought to be doing.
         elif wfi.draft_status_before in [2, 3] and wfi.draft_status_after == 1:
-            ic("new draft.. what to do?")
-            ...  # TODO new draft.. what to do?
+            # ic(
+            #     "new draft... what to do?",
+            #     wfi.timestamp,
+            #     wfi.from_user,
+            #     wfi.draft_status_before,
+            #     wfi.draft_status_after
+            # )
+            ...  # TODO I think we're good here. Don't see anything that we ought to be doing.
+
         elif (wfi.draft_status_before is None and wfi.draft_status_after is None) or (
             wfi.draft_status_before == wfi.draft_status_after
         ):
             ...  # nothing?
-        elif wfi.draft_status_before in [None, 1] and wfi.draft_status_after == 2:
+        elif wfi.draft_status_before in [None, 1, 5] and wfi.draft_status_after == 2:
             dv.sent_to_review_at = wfi.timestamp
             dv.sent_to_review_by = wfi.from_user
             dv.save()
-        elif wfi.draft_status_before == 2 and wfi.draft_status_after == 3:
+        elif wfi.draft_status_before in [None, 2, 5] and wfi.draft_status_after == 3:
             dv.reviewed_at = wfi.timestamp
             dv.reviewed_by = wfi.from_user
             dv.save()
@@ -162,13 +204,38 @@ def do_workflows(investor_id):
             dv.activated_by = wfi.from_user
             dv.save()
         elif wfi.draft_status_before == 4 or wfi.draft_status_after == 4:
-            ...  # deleted status change
+            ...  # TODO REJECTED status change
+            # ic(
+            #     "DWI OHO",
+            #     wfi.id,
+            #     wfi.timestamp,
+            #     wfi.from_user,
+            #     wfi.investor_id,
+            #     wfi.draft_status_before,
+            #     wfi.draft_status_after,z
+            #     wfi.comment,
+            # )
+            # sys.exit(1)
+        elif wfi.draft_status_after == 5:
+            dv.status = "TO_DELETE"
+            dv.save()
+        elif wfi.draft_status_before == 5 and wfi.draft_status_after != 5:
+            if not wfi.draft_status_after:
+                # TODO What is going on here?
+                ...
+            else:
+                dv.status = status_map_dings[wfi.draft_status_after]
+                dv.save()
         else:
             ...
-            print(
+            ic(
                 "DWI OHO",
+                wfi.id,
+                wfi.timestamp,
+                wfi.from_user,
                 wfi.investor_id,
                 wfi.draft_status_before,
                 wfi.draft_status_after,
                 wfi.comment,
             )
+            sys.exit(1)
