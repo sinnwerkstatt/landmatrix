@@ -372,10 +372,14 @@ class InvestorWorkflowInfo(WorkflowInfo):
         return d
 
     def to_new_dict(self) -> dict:
-        return {
-            "investor_id": self.investor_id,
-            "investor_version_id": self.investor_version_id,
-        }
+        d = super().to_new_dict()
+        d.update(
+            {
+                "investor_id": self.investor_id,
+                "investor_version_id": self.investor_version_id,
+            }
+        )
+        return d
 
 
 class InvestorVentureInvolvementQuerySet(models.QuerySet):

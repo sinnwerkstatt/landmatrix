@@ -8,7 +8,7 @@
   import DetailsSummary from "$components/DetailsSummary.svelte"
   import HeaderDates from "$components/HeaderDates.svelte"
   import Cog6ToothIcon from "$components/icons/Cog6ToothIcon.svelte"
-  import ManageHeaderLogbook from "$components/Management/ManageHeaderLogbook.svelte"
+  import ManageHeaderLogbook from "$components/New/ManageHeaderLogbook.svelte"
 
   export let object: DealHull | InvestorHull
   export let objectVersion: number | undefined
@@ -40,14 +40,14 @@
           </li>
           <li>
             <div class="flex items-center gap-2">
-              <a class="btn bg-red-500" href="">delete</a>
+              <a class="btn bg-lm-red-500" href="">delete</a>
               this will mark the deal as deleted. only admins will be able to see it, it
               wont count towards any metrics
             </div>
           </li>
           <li>
             <div class="flex items-center gap-2">
-              <a class="btn bg-red-700" href="">set confidential</a>
+              <a class="btn bg-lm-red-700" href="">set confidential</a>
               this will copy the current deal and create blablabla...
             </div>
           </li>
@@ -89,14 +89,14 @@
     <div class="p-2 py-4">
       {#if object.deleted}
         <div
-          class="flex flex-col items-center justify-center gap-1 bg-red-500 py-2 text-white"
+          class="flex flex-col items-center justify-center gap-1 bg-lm-red-500 py-2 text-white"
         >
           <div class="heading4 mb-0">{$_("Deleted")}</div>
           <span>{object.deleted_comment}</span>
         </div>
       {:else if object.confidential}
         <div
-          class="flex flex-col items-center justify-center gap-1 bg-red-700 py-2 text-white"
+          class="flex flex-col items-center justify-center gap-1 bg-lm-red-700 py-2 text-white"
         >
           <div class="heading4 mb-0">{$_("Confidential")}</div>
           <span>{object.confidential_comment}</span>
@@ -108,7 +108,7 @@
         </div>
         {#if object.selected_version.status === Version2Status.ACTIVATED}
           <div
-            class="flex flex-col items-center justify-center gap-1 bg-green-700 py-2 text-white"
+            class="flex flex-col items-center justify-center gap-1 bg-lm-green-700 py-2 text-white"
           >
             <div class="heading4 mb-0">{$_("Activated")}</div>
             <div class="">

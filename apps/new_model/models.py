@@ -272,7 +272,7 @@ class DealVersionBaseFields(models.Model):
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        related_name="newModel_deals",
+        related_name="deals",
     )
     involved_actors = JSONActorsField(blank=True, default=list)
     project_name = models.CharField(_("Name of investment project"), blank=True)

@@ -58,7 +58,7 @@ class Command(BaseCommand):
             .exclude(id__in=exclude_ids)
             # .prefetch_related("versions")
             # .all()[:1000]
-            .filter(id__in=[3, 23])
+            .filter(id__in=[3, 23, 4747])
             # .filter(id=2)
         )
         for old_deal in deals:  # type: Deal
@@ -89,18 +89,28 @@ class Command(BaseCommand):
             deal_hull.fully_updated_at = old_deal.fully_updated_at
 
             print(old_deal.id, "status:", old_deal.status)
-            for old_dv in old_deal.versions.all().order_by("id"):
-                old_dv_dict = old_dv.serialized_data
-                new_dv: DealVersion2
+            for old_version in old_deal.versions.all().order_by("id"):
+                new_version: DealVersion2
+                base_payload = {
+                    "deal_id": old_deal.id,
+                    "id": old_version.id,
+                    "created_at": old_version.created_at,
+                    "created_by_id": old_version.created_by_id,
+                    "modified_at": old_version.modified_at,
+                    "modified_by_id": old_version.modified_by_id,
+                }
                 try:
-                    new_dv = DealVersion2.objects.get(deal_id=old_deal.id, id=old_dv.id)
+                    new_version = DealVersion2.objects.get(**base_payload)
                 except DealVersion2.DoesNotExist:
-                    new_dv = DealVersion2(deal_id=old_deal.id, id=old_dv.id)
+                    new_version = DealVersion2(**base_payload)
 
-                map_version_payload(old_dv, new_dv)
-                deal_hull.country_id = old_dv_dict["country"]
+                old_version_dict = old_version.serialized_data
 
-                if old_dv_dict["status"] == 1:
+                map_version_payload(old_version_dict, new_version)
+
+                deal_hull.country_id = old_version_dict["country"]
+
+                if old_version_dict["status"] == 1:
                     map_dings = {
                         1: "DRAFT",
                         2: "REVIEW",
@@ -108,40 +118,42 @@ class Command(BaseCommand):
                         4: "REJECTED",
                         5: "TO_DELETE",
                     }
-                    new_dv.status = map_dings[old_dv_dict["draft_status"]]
-                    deal_hull.draft_version_id = old_dv.id
-                elif old_dv_dict["status"] in [2, 3]:
-                    if old_dv_dict["draft_status"] is None:
-                        new_dv.status = "ACTIVATED"
-                        deal_hull.active_version_id = old_dv.id
+                    new_version.status = map_dings[old_version_dict["draft_status"]]
+                    deal_hull.draft_version_id = old_version.id
+                elif old_version_dict["status"] in [2, 3]:
+                    if old_version_dict["draft_status"] is None:
+                        new_version.status = "ACTIVATED"
+                        deal_hull.active_version_id = old_version.id
                         deal_hull.draft_version_id = None
-                    elif old_dv_dict["draft_status"] == 1:
-                        new_dv.status = "DRAFT"
-                        deal_hull.draft_version_id = old_dv.id
-                    elif old_dv_dict["draft_status"] == 2:
-                        new_dv.status = "REVIEW"
-                        deal_hull.draft_version_id = old_dv.id
-                    elif old_dv_dict["draft_status"] == 3:
-                        new_dv.status = "ACTIVATION"
-                        deal_hull.draft_version_id = old_dv.id
-                    elif old_dv_dict["draft_status"] == 4:
-                        new_dv.status = "REJECTED"
+                    elif old_version_dict["draft_status"] == 1:
+                        new_version.status = "DRAFT"
+                        deal_hull.draft_version_id = old_version.id
+                    elif old_version_dict["draft_status"] == 2:
+                        new_version.status = "REVIEW"
+                        deal_hull.draft_version_id = old_version.id
+                    elif old_version_dict["draft_status"] == 3:
+                        new_version.status = "ACTIVATION"
+                        deal_hull.draft_version_id = old_version.id
+                    elif old_version_dict["draft_status"] == 4:
+                        new_version.status = "REJECTED"
                         # deal_hull.active_version_id = deal_version.id
                     else:
-                        # print("TODO?!", old_dv_dict["draft_status"])
-                        new_dv.status = "DELETED"
-                elif old_dv_dict["status"] == 4:
-                    if old_dv_dict["draft_status"] is None:
-                        new_dv.status = "TO_DELETE"
-                        deal_hull.active_version_id = old_dv.id
+                        # print("TODO?!", old_version_dict["draft_status"])
+                        new_version.status = "DELETED"
+                elif old_version_dict["status"] == 4:
+                    if old_version_dict["draft_status"] is None:
+                        new_version.status = "TO_DELETE"
+                        deal_hull.active_version_id = old_version.id
                     else:
                         print("TODO DELETE else?!")
                         ...  # TODO !!
                 else:
-                    print("VERSION OHO", old_deal.id, old_dv_dict["status"])
+                    print("VERSION OHO", old_deal.id, old_version_dict["status"])
                     # return
-                # print(old_dv.workflowinfos.all())
-                new_dv.save(recalculate_dependent=False, recalculate_independent=False)
+                # print(old_version.workflowinfos.all())
+                new_version.save(
+                    recalculate_dependent=False, recalculate_independent=False
+                )
 
             # deal_hull.draft_version_id = old_deal.current_draft_id
             deal_hull.deleted = old_deal.status == 4
@@ -212,8 +224,7 @@ def map_datasources(nv: DealVersion2, datasources: list[dict]):
         ds1.save()
 
 
-def map_version_payload(old_deal_version: DealVersion, nv: DealVersion2):
-    ov: dict = old_deal_version.serialized_data
+def map_version_payload(ov: dict, nv: DealVersion2):
     # nv.country_id = ov["country"]
     nv.intended_size = ov["intended_size"]
     nv.contract_size = ov["contract_size"] or []
@@ -396,9 +407,6 @@ def map_version_payload(old_deal_version: DealVersion, nv: DealVersion2):
     nv.transnational = ov["transnational"]
 
     nv.fully_updated = ov["fully_updated"]
-
-    nv.created_by_id = old_deal_version.created_by_id
-    nv.created_at = old_deal_version.created_at
 
 
 def do_workflows(deal_id):

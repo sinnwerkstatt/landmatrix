@@ -126,5 +126,18 @@ class WorkflowInfo(models.Model):
             "replies": self.replies or [],
         }
 
+    def to_new_dict(self) -> dict:
+        return {
+            "id": self.id,
+            "from_user_id": self.from_user_id,
+            "to_user_id": self.to_user_id,
+            "draft_status_before": self.draft_status_before,
+            "draft_status_after": self.draft_status_after,
+            "timestamp": self.timestamp,
+            "comment": self.comment,
+            "resolved": self.resolved,
+            "replies": self.replies or [],
+        }
+
     class Meta:
         abstract = True

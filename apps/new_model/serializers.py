@@ -117,9 +117,16 @@ class InvestorDataSourceSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class Investor2DealSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DealVersion2
+        fields = ["id", "deal_id"]
+
+
 class InvestorVersionSerializer(serializers.ModelSerializer):
     datasources = InvestorDataSourceSerializer(many=True, read_only=True)
     country = CountrySerializer()
+    deals = Investor2DealSerializer(many=True)
 
     class Meta:
         model = InvestorVersion2
@@ -155,6 +162,9 @@ class Investor2Serializer(serializers.ModelSerializer):
         else:
             # TODO should the draft version also have this involvements_snapshot?
             return obj.draft_version.involvements_snapshot
+
+    # def get_deals(self):
+    #     return
 
     @staticmethod
     def get_workflowinfos(obj: InvestorHull):
