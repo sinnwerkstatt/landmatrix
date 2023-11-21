@@ -43,6 +43,7 @@ from apps.landmatrix.models.fields import (
     DecimalIntField,
 )
 from apps.landmatrix.models.investor import Investor
+from apps.new_model.utils import InvolvementNetwork
 
 DRAFT_STATUS = {
     "DRAFT": 1,
@@ -1062,8 +1063,8 @@ class Area(models.Model):
             "area": json.loads(self.area.geojson) if self.area else None,
         }
 
-    class Meta:
-        unique_together = ["location", "type", "current"]
+    # class Meta:
+    #     unique_together = ["location", "type", "current"]
 
 
 class Contract(models.Model):
@@ -1316,6 +1317,11 @@ class InvestorHull(models.Model):
                 Q(parent_investor_id=self.id) | Q(child_investor_id=self.id)
             )
         return
+
+    def involvements_graph(self, depth, include_deals):
+        return InvolvementNetwork().get_network(
+            self.id, depth, include_deals=include_deals
+        )
 
 
 class Involvement(models.Model):

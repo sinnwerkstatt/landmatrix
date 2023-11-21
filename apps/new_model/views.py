@@ -55,6 +55,13 @@ class Investor2ViewSet(viewsets.ReadOnlyModelViewSet):
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
+    @action(methods=["get"], detail=True)
+    def involvements_graph(self, request, pk=None, version_id=None):
+        depth = int(request.GET.get("depth", 5))
+        include_deals = request.GET.get("include_deals", "") == "true"
+        instance: InvestorHull = self.get_object()
+        return Response({"network": instance.involvements_graph(depth, include_deals)})
+
 
 def field_choices(request):
     return JsonResponse(

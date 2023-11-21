@@ -4,16 +4,16 @@ CREATE_VIEW = """
 create view involvements_bidi as
 (
 select i.id,
-       array_remove(array_agg(distinct (a.venture_id)), NULL)  as children,
-       array_remove(array_agg(distinct (b.investor_id)), NULL) as parents
+       array_remove(array_agg(distinct (a.child_investor_id)), NULL)  as children,
+       array_remove(array_agg(distinct (b.parent_investor_id)), NULL) as parents
 from landmatrix_investor i
-         full outer join landmatrix_investorventureinvolvement a on i.id = a.investor_id
-         full outer join landmatrix_investorventureinvolvement b on i.id = b.venture_id
+         full outer join new_model_involvement a on i.id = a.parent_investor_id
+         full outer join new_model_involvement b on i.id = b.child_investor_id
 group by (i.id)
     );
 """
 
-QUERY_USE_VIEW="""
+QUERY_USE_VIEW = """
 with recursive
     search_involvements(id, down_edges, up_edges, down_path, up_path, depth)
         as (select id, children, parents, array [id], array [id], 15
@@ -51,7 +51,7 @@ with recursive
             select g.id,
                    children,
                    parents,
-                   down_path || g.id,
+                   g.id || down_path,
                    up_path || g.id,
                    depth - 1
             FROM involvements_bidi g,
@@ -63,13 +63,14 @@ with recursive
                 )),
     involvements_bidi as
         (select i.id,
-                array_remove(array_agg(distinct (a.venture_id)), NULL)  as children,
-                array_remove(array_agg(distinct (b.investor_id)), NULL) as parents
-         from landmatrix_investor i
-                  full outer join landmatrix_investorventureinvolvement a on i.id = a.investor_id
-                  full outer join landmatrix_investorventureinvolvement b on i.id = b.venture_id
+                array_remove(array_agg(distinct (a.child_investor_id)), NULL)  as children,
+                array_remove(array_agg(distinct (b.parent_investor_id)), NULL) as parents
+         from new_model_investorhull i
+                  full outer join new_model_involvement a on i.id = a.parent_investor_id
+                  full outer join new_model_involvement b on i.id = b.child_investor_id
+                  where i.active_version_id is not null
          group by (i.id))
-select depth, id, down_path, up_path
+select depth, id, down_edges, up_edges
 from search_involvements
-order by (depth, id, down_path, up_path) desc;
+order by (depth, id) desc;
 """

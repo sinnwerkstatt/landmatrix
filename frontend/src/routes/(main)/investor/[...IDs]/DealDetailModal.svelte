@@ -3,6 +3,7 @@
 
   import type { Deal } from "$lib/types/deal"
 
+  import CountryField from "$components/Fields/Display2/CountryField.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import Overlay from "$components/Overlay.svelte"
 
@@ -22,15 +23,20 @@
 
 <Overlay on:close title={createTitle(deal)} {visible}>
   <div>
-    {#each fields as fieldName}
-      <DisplayField
-        fieldname={fieldName}
-        value={deal[fieldName]}
-        model="deal"
-        showLabel
-      />
-    {/each}
-    <div class="w-100">
+    <CountryField
+      fieldname="deal.country"
+      label={$_("Target country")}
+      value={deal.country_id}
+    />
+    <!--{#each fields as fieldName}-->
+    <!--  <DisplayField-->
+    <!--    fieldname={fieldName}-->
+    <!--    value={deal[fieldName]}-->
+    <!--    model="deal"-->
+    <!--    showLabel-->
+    <!--  />-->
+    <!--{/each}-->
+    <div class="w-100 mt-8">
       <a class="deal" href="/deal/{deal._id}" rel="noreferrer" target="_blank">
         {$_("More details about this deal")}
       </a>

@@ -4,7 +4,7 @@
 
   import Label2 from "$components/Fields/Display2/Label2.svelte"
 
-  export let value: Country | undefined
+  export let value: Country | undefined | number
   export let fieldname: string
   export let label = ""
   export let wrapperClass = "mb-3 flex flex-wrap leading-5"
@@ -18,7 +18,7 @@
       <Label2 value={label} class={labelClass} />
     {/if}
     <div class={valueClass}>
-      {$countries.find(c => c.id === value.id)?.name ?? ""}
+      {$countries.find(c => c.id === (value?.id ?? value))?.name ?? ""}
     </div>
   </div>
 {/if}
