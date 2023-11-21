@@ -36,11 +36,10 @@
     )
     const retJson = await ret.json()
 
-    elements = retJson.network.elements
-    console.log("nodes", elements.nodes.length)
-    if (retJson.network.full_depth) {
+    elements = retJson.elements
+    if (retJson.full_depth) {
       reachedMaxDepth = true
-      max_depth = retJson.network.full_depth
+      max_depth = retJson.full_depth
       depth = max_depth
     }
     loading.set(false)
@@ -132,15 +131,15 @@
     <strong>{$_("Legend")}</strong>
     <ul>
       <li>
-        <span class="colored-line" style:--color="#fc941f" />
+        <span class="colored-line" style:--color="rgba(252,148,30,1)" />
         {$_("Is operating company of")}
       </li>
       <li>
-        <span class="colored-arrow" style:--color="#f78e8f" />
+        <span class="colored-arrow" style:--color="rgba(234,128,121,1)" />
         {$_("Is parent company of")}
       </li>
       <li>
-        <span class="colored-arrow" style:--color="#72b0fd" />
+        <span class="colored-arrow" style:--color="rgba(133,146,238,1)" />
         {$_("Is tertiary investor/lender of")}
       </li>
     </ul>
@@ -185,9 +184,9 @@
 
   /*No space when all classes apply to same element*/
   :global(.g-tooltip.deal) {
-    background-color: var(--color-lm-orange);
+    background-color: rgba(252, 148, 30, 1);
   }
   :global(.g-tooltip.investor) {
-    background-color: var(--color-lm-investor);
+    background-color: rgba(68, 183, 181, 1);
   }
 </style>

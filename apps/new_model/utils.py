@@ -60,6 +60,16 @@ class InvolvementNetwork:
             )
         )
 
+        rich_nodes = []
+        for node in all_investors:
+            if node["id"] == investor_id:
+                node["bgColor"] = "rgba(68,183,181,1)"
+                node["rootNode"] = True
+            else:
+                node["bgColor"] = "rgba(143,214,212,1)"
+            node["name"] = node["active_version__name"]
+            rich_nodes += [{"data": node}]
+
         rich_edges = []
         for edge in edges:
             involvement = next(
@@ -71,7 +81,11 @@ class InvolvementNetwork:
                 )
             )
 
-            edge_color = "#F78E8F" if involvement["role"] == "PARENT" else "#72B0FD"
+            edge_color = (
+                "rgba(234,128,121,1)"
+                if involvement["role"] == "PARENT"
+                else "rgba(133,146,238,1)"
+            )
             rich_edges += [
                 {
                     "data": {
@@ -79,19 +93,10 @@ class InvolvementNetwork:
                         "source": edge[0],
                         "target": edge[1],
                         "edge_color": edge_color,
+                        "target_arrow_shape": "triangle",
                     }
                 }
             ]
-
-        rich_nodes = []
-        for node in all_investors:
-            if node["id"] == investor_id:
-                node["bgColor"] = "#44b7b6"
-                node["rootNode"] = True
-            else:
-                node["bgColor"] = "#bee7e7"
-            node["name"] = node["active_version__name"]
-            rich_nodes += [{"data": node}]
 
         if include_deals:
             deals = DealHull.objects.filter(
@@ -102,7 +107,6 @@ class InvolvementNetwork:
                 "id", "country_id", "active_version__operating_company__investor_id"
             )
 
-            print(deals)
             for deal in deals:
                 rich_nodes += [
                     {
@@ -111,7 +115,7 @@ class InvolvementNetwork:
                             "id": f"D{deal['id']}",
                             "name": f"#{deal['id']}",
                             "country_id": deal["country_id"],
-                            "bgColor": "#fc941f",
+                            "bgColor": "rgba(252,148,30,1)",
                             "dealNode": True,
                         }
                     }
@@ -124,12 +128,12 @@ class InvolvementNetwork:
                                 "active_version__operating_company__investor_id"
                             ],
                             "target": f"D{deal['id']}",
-                            "edge_color": "#fc941f",
+                            "edge_color": "rgba(252,148,30,1)",
                         }
                     }
                 ]
 
-        ret = {
+        return {
             "elements": {
                 "nodes": rich_nodes,
                 "edges": rich_edges,
@@ -138,5 +142,3 @@ class InvolvementNetwork:
             "more_exist": min_depth == 0,
             "full_depth": None if min_depth == 0 else (depth - min_depth + 1),
         }
-        # print(ret)
-        return ret

@@ -13,6 +13,7 @@
   import SectionGeneralInfo from "./SectionGeneralInfo.svelte"
   import SectionHistory from "./SectionHistory.svelte"
   import SectionInvolvements from "./SectionInvolvements.svelte"
+  import SectionInvolvementsGraph from "./SectionInvolvementsGraph.svelte"
 
   export let data
 
@@ -110,18 +111,20 @@
           investorVersion={data.investorVersion}
         />
       {/if}
-      <!--{#if activeTab === "#network_graph"}-->
-      <!--  {#if !data.investorVersion}-->
-      <!--    <InvestorGraph {investor} showControls includeVentures />-->
-      <!--  {:else}-->
-      <!--    <div class="m-10 bg-neutral-200 px-12 py-24 text-center text-zinc-700">-->
-      <!--      {@html $_(-->
-      <!--        "The investor network diagram is not visible in draft mode. Go to {liveLink} to see it.",-->
-      <!--        { values: { liveLink } },-->
-      <!--      )}-->
-      <!--    </div>-->
-      <!--  {/if}-->
-      <!--{/if}-->
+
+      {#if activeTab === "#network_graph"}
+        <SectionInvolvementsGraph investor={data.investor} />
+        <!--{#if !data.investorVersion}-->
+        <!--  <InvestorGraph {investor} showControls includeVentures />-->
+        <!--{:else}-->
+        <!--  <div class="m-10 bg-neutral-200 px-12 py-24 text-center text-zinc-700">-->
+        <!--    {@html $_(-->
+        <!--      "The investor network diagram is not visible in draft mode. Go to {liveLink} to see it.",-->
+        <!--      { values: { liveLink } },-->
+        <!--    )}-->
+        <!--  </div>-->
+        <!--{/if}-->
+      {/if}
     </div>
   </div>
 </div>

@@ -60,7 +60,7 @@ class Investor2ViewSet(viewsets.ReadOnlyModelViewSet):
         depth = int(request.GET.get("depth", 5))
         include_deals = request.GET.get("include_deals", "") == "true"
         instance: InvestorHull = self.get_object()
-        return Response({"network": instance.involvements_graph(depth, include_deals)})
+        return Response(instance.involvements_graph(depth, include_deals))
 
 
 def field_choices(request):
