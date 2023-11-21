@@ -568,6 +568,14 @@ DATASOURCE_TYPE_OPTIONS = [
 DATASOURCE_TYPE_CHOICES = ((k, v) for k, v in DATASOURCE_TYPE_MAP.items())
 
 
+LOCATION_ACCURACY_ITEMS = [
+    {"value": "COUNTRY", "label": _("Country")},
+    {"value": "ADMINISTRATIVE_REGION", "label": _("Administrative region")},
+    {"value": "APPROXIMATE_LOCATION", "label": _("Approximate location")},
+    {"value": "EXACT_LOCATION", "label": _("Exact location")},
+    {"value": "COORDINATES", "label": _("Coordinates")},
+]
+
 LOCATION_ACCURACY = {
     "COUNTRY": _("Country"),
     "ADMINISTRATIVE_REGION": _("Administrative region"),
@@ -615,4 +623,9 @@ INVESTOR_CLASSIFICATION_ITEMS = [
 ]
 INVESTOR_CLASSIFICATION_CHOICES = [
     (x["value"], x["label"]) for x in INVESTOR_CLASSIFICATION_ITEMS
+]
+
+INVESTMENT_TYPE_ITEMS = [
+    {"value": "EQUITY", "label": _("Shares/Equity")},
+    {"value": "DEBT_FINANCING", "label": _("Debt financing")},
 ]

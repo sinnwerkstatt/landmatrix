@@ -44,9 +44,7 @@
     class="h-0 flex-grow cursor-default overflow-y-scroll border-lm-dark px-[2px] pb-4 pt-1 shadow-inner"
   >
     {#each workflowInfos as info}
-      <div class="bg-white">
-        <WorkflowInfoNew {info} />
-      </div>
+      <WorkflowInfoNew {info} />
     {/each}
   </div>
 

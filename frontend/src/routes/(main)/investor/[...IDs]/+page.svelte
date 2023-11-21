@@ -16,38 +16,6 @@
 
   export let data
 
-  // let simpleInvolvements: Involvement[]
-  // $: simpleInvolvements = [
-  //   ...investor.investors.map(
-  //     i =>
-  //       ({
-  //         ...i,
-  //         role:
-  //           i.role === Role.PARENT
-  //             ? $_("Parent company")
-  //             : $_("Tertiary investor/lender"),
-  //       }) as Involvement,
-  //   ),
-  //   ...investor.ventures.map(
-  //     i =>
-  //       ({
-  //         ...i,
-  //         venture: undefined, // unify by renaming props: venture -> investor
-  //         investor: i.venture,
-  //         role:
-  //           i.role === Role.PARENT
-  //             ? $_("Subsidiary company")
-  //             : $_("Beneficiary company"),
-  //       }) as Involvement,
-  //   ),
-  // ]
-
-  // $: if (!$page.data.user) {
-  //   simpleInvolvements = simpleInvolvements.filter(
-  //     involvement => involvement.investor.status != Status.DELETED,
-  //   )
-  // }
-
   $: activeTab = $page.url.hash.split("/")[0] || "#general"
 
   $: allTabs = [
@@ -127,6 +95,14 @@
       {#if activeTab === "#involvements"}
         <SectionInvolvements investor={data.investor} />
       {/if}
+      <!--{/if}-->
+      <!--{#if activeTab === "#data_sources"}-->
+      <!--  <DealSubmodelSection-->
+      <!--    model="datasource"-->
+      <!--    modelName="Data source"-->
+      <!--    entries={investor.datasources}-->
+      <!--  />-->
+
       {#if activeTab === "#history"}
         <SectionHistory
           investor={data.investor}

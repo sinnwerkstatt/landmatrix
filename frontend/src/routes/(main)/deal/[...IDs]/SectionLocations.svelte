@@ -4,6 +4,7 @@
 
   import { page } from "$app/stores"
 
+  import { fieldChoices } from "$lib/stores"
   import type { DealVersion2 } from "$lib/types/newtypes"
   import { createLegend } from "$lib/utils/location"
 
@@ -115,6 +116,7 @@
               label={$_("Spatial accuracy level")}
               value={location.level_of_accuracy}
               fieldname="location.level_of_accuracy"
+              choices={$fieldChoices.deal.level_of_accuracy}
             />
             <TextField
               label={$_("Location")}

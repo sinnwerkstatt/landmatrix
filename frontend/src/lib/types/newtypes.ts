@@ -47,6 +47,21 @@ export interface InvestorHull extends Hull {
   confidential: never
   confidential_comment: never
   fully_updated_at: never
+
+  involvements: {
+    id: number
+    other_investor: {
+      id: number
+      name: string
+      country?: Country
+      classification: string
+
+      deleted: boolean
+    }
+    relationship: string
+    percentage: number
+    investment_type: string
+  }[]
 }
 
 interface DataSource {
@@ -87,6 +102,10 @@ interface VersionTimestampMixins {
 export interface DealVersion2 extends DealVersionBase, VersionTimestampMixins {
   is_public: boolean
   has_known_investor: boolean
+
+  current_negotiation_status: string
+  current_implementation_status: string
+  deal_size: number
 
   status: Version2Status
 }
@@ -133,4 +152,5 @@ export interface InvestorVersion2 extends VersionTimestampMixins {
   comment: string
 
   status: Version2Status
+  deals: DealHull[]
 }

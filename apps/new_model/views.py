@@ -4,7 +4,14 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from apps.landmatrix.models.choices import INVESTOR_CLASSIFICATION_ITEMS
+from apps.landmatrix.models.choices import (
+    INVESTOR_CLASSIFICATION_ITEMS,
+    INTENTION_OF_INVESTMENT_ITEMS,
+    NEGOTIATION_STATUS_ITEMS,
+    IMPLEMENTATION_STATUS_ITEMS,
+    LOCATION_ACCURACY_ITEMS,
+    INVESTMENT_TYPE_ITEMS,
+)
 from apps.new_model.models import DealHull, InvestorHull, DealVersion2, InvestorVersion2
 from apps.new_model.serializers import Deal2Serializer, Investor2Serializer
 
@@ -50,4 +57,15 @@ class Investor2ViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 def field_choices(request):
-    return JsonResponse({"investor": {"classification": INVESTOR_CLASSIFICATION_ITEMS}})
+    return JsonResponse(
+        {
+            "deal": {
+                "intention_of_investment": INTENTION_OF_INVESTMENT_ITEMS,
+                "negotiation_status": NEGOTIATION_STATUS_ITEMS,
+                "implementation_status": IMPLEMENTATION_STATUS_ITEMS,
+                "level_of_accuracy": LOCATION_ACCURACY_ITEMS,
+            },
+            "investor": {"classification": INVESTOR_CLASSIFICATION_ITEMS},
+            "involvement": {"investment_type": INVESTMENT_TYPE_ITEMS},
+        }
+    )

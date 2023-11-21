@@ -126,7 +126,33 @@ class Investor2DealSerializer(serializers.ModelSerializer):
 class InvestorVersionSerializer(serializers.ModelSerializer):
     datasources = InvestorDataSourceSerializer(many=True, read_only=True)
     country = CountrySerializer()
-    deals = Investor2DealSerializer(many=True)
+    # deals = Investor2DealSerializer(many=True)
+    deals = serializers.SerializerMethodField()
+
+    @staticmethod
+    def get_deals(obj: InvestorVersion2):
+        target_deals = (
+            DealHull.objects.filter(
+                id__in=obj.dealversions.all().values_list("deal_id", flat=True)
+            )
+            .exclude(active_version=None)
+            .prefetch_related("active_version")
+        )
+
+        return [
+            {
+                "id": d.id,
+                "country": {"id": d.country_id} if d.country else None,
+                "selected_version": {
+                    "id": d.active_version.id,
+                    "current_intention_of_investment": d.active_version.current_intention_of_investment,
+                    "current_negotiation_status": d.active_version.current_negotiation_status,
+                    "current_implementation_status": d.active_version.current_implementation_status,
+                    "deal_size": d.active_version.deal_size,
+                },
+            }
+            for d in target_deals
+        ]
 
     class Meta:
         model = InvestorVersion2
@@ -158,7 +184,7 @@ class Investor2Serializer(serializers.ModelSerializer):
             involvements: QuerySet[Involvement] = Involvement.objects.filter(
                 Q(parent_investor_id=obj.id) | Q(child_investor_id=obj.id)
             )
-            return [invo.to_dict() for invo in involvements]
+            return [invo.to_dict(target_id=obj.id) for invo in involvements]
         else:
             # TODO should the draft version also have this involvements_snapshot?
             return obj.draft_version.involvements_snapshot

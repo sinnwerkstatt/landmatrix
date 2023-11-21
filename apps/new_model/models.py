@@ -21,6 +21,7 @@ from apps.landmatrix.models.choices import (
     CROPS_ITEMS,
     ANIMALS_ITEMS,
     MINERALS_ITEMS,
+    INVESTMENT_TYPE_ITEMS,
 )
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.currency import Currency
@@ -272,7 +273,7 @@ class DealVersionBaseFields(models.Model):
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        related_name="deals",
+        related_name="dealversions",
     )
     involved_actors = JSONActorsField(blank=True, default=list)
     project_name = models.CharField(_("Name of investment project"), blank=True)
@@ -1345,10 +1346,7 @@ class Involvement(models.Model):
 
     investment_type = ChoiceArrayField(
         models.CharField(
-            choices=(
-                ("EQUITY", _("Shares/Equity")),
-                ("DEBT_FINANCING", _("Debt financing")),
-            )
+            choices=[(x["value"], x["label"]) for x in INVESTMENT_TYPE_ITEMS]
         ),
         verbose_name=_("Investment type"),
         blank=True,
@@ -1396,12 +1394,48 @@ class Involvement(models.Model):
     #         role = _("<is INVESTOR of>")
     #     return f"{self.investor} {role} {self.venture}"
 
-    def to_dict(self):
+    def to_dict(self, target_id=None):
+        relationship = self.role
+        other_investor = None
+        if target_id is None:
+            pass
+        elif self.parent_investor_id == target_id:
+            relationship = (
+                _("Subsidiary company")
+                if self.role == "PARENT"
+                else _("Beneficiary company")
+            )
+            other_investor = self.child_investor
+        elif self.child_investor_id == target_id:
+            relationship = (
+                _("Parent company")
+                if self.role == "PARENT"
+                else _("Tertiary investor/lender")
+            )
+            other_investor = self.parent_investor
+        else:
+            pass
+
+        other_investor_dict = (
+            {
+                "id": other_investor.id,
+                "name": other_investor.active_version.name
+                if other_investor.active_version
+                else None,
+                "country": {"id": other_investor.active_version.country_id}
+                if other_investor.active_version
+                else None,
+                "classification": other_investor.active_version.classification,
+                "deleted": other_investor.deleted,
+            }
+            if other_investor
+            else None
+        )
+
         return {
             "id": self.id,
-            "parent_investor_id": self.parent_investor_id,
-            "child_investor_id": self.child_investor_id,
-            "role": self.role,
+            "other_investor": other_investor_dict,
+            "relationship": relationship,
             "investment_type": self.investment_type,
             "percentage": self.percentage,
             "loans_amount": self.loans_amount,

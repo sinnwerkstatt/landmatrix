@@ -20,7 +20,7 @@ export type WagtailPageMeta = {
 }
 
 export interface CountryOrRegion {
-  id?: number
+  id: number
   name: string
   slug?: string
   observatory_page_id?: number

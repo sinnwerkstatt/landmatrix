@@ -48,7 +48,35 @@ async function getAboutPages(fetch: LoadEvent["fetch"]) {
   }
 }
 
-export const fieldChoices = writable({})
+export interface ValueLabelEntry {
+  value: string
+  label: string
+}
+
+interface FieldChoicesType {
+  deal: {
+    intention_of_investment: ValueLabelEntry[]
+    negotiation_status: ValueLabelEntry[]
+    implementation_status: ValueLabelEntry[]
+    level_of_accuracy: ValueLabelEntry[]
+  }
+  investor: {
+    classification: ValueLabelEntry[]
+  }
+  involvement: {
+    investment_type: ValueLabelEntry[]
+  }
+}
+export const fieldChoices = writable<FieldChoicesType>({
+  deal: {
+    intention_of_investment: [],
+    negotiation_status: [],
+    implementation_status: [],
+    level_of_accuracy: [],
+  },
+  investor: { classification: [] },
+  involvement: { investment_type: [] },
+})
 
 async function getFieldChoices(fetch: LoadEvent["fetch"]) {
   const url = `/api/field_choices/`
