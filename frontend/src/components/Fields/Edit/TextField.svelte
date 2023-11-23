@@ -4,7 +4,7 @@
   import type { FormField } from "../fields"
 
   export let formfield: FormField
-  export let value: string
+  export let value: string = ""
 </script>
 
 <textarea
