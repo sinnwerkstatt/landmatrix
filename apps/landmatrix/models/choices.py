@@ -369,14 +369,38 @@ ELECTRICITY_GENERATIONS_CHOICES = [
     (x["value"], x["label"]) for x in ELECTRICITY_GENERATION_OPTIONS
 ]
 
-CARBON_SEQUESTRATION_OPTIONS = [
+CARBON_SEQUESTRATION_ITEMS = [
     {"value": "REFORESTATION", "label": _("Reforestation & afforestation")},
-    {"value": "FOREST_PROECTION", "label": _("Forest protection")},
+    {"value": "AVOIDED_FOREST_CONVERSION", "label": _("Avoided forest conversion")},
+    {
+        "value": "AVOIDED_GRASSLAND_CONVERSION",
+        "label": _("Avoided grassland conversion"),
+    },
     {"value": "PEATLAND_RESTORATION", "label": _("Peatland restoration")},
-    {"value": "Other", "label": _("Other (please specify in a comment)")},
+    {"value": "IMPROVED_FOREST_MANAGEMENT", "label": _("Improved forest management")},
+    {"value": "SUSTAINABLE_AGRICULTURE", "label": _("Sustainable agriculture")},
+    {
+        "value": "SUSTAINABLE_GRASSLAND_MANAGEMENT",
+        "label": _("Sustainable grassland management"),
+    },
+    {"value": "RICE_EMISSION_REDUCTIONS", "label": _("Rice emission reductions")},
+    {"value": "OTHER", "label": _("Other (please specify in a comment)")},
 ]
 CARBON_SEQUESTRATION_CHOICES = [
-    (x["value"], x["label"]) for x in CARBON_SEQUESTRATION_OPTIONS
+    (x["value"], x["label"]) for x in CARBON_SEQUESTRATION_ITEMS
+]
+
+CARBON_SEQUESTRATION_CERT_ITEMS = [
+    {"value": "REDD", "label": _("REDD+")},
+    {"value": "VCS", "label": _("Verified Carbon Standard (VCS)")},
+    {"value": "GOLD", "label": _("Gold Standard for the Global Goals (GOLD)")},
+    {"value": "CDM", "label": _("Clean Development Mechanism (CDM)")},
+    {"value": "CAR", "label": _("Climate Action Reserve (CAR)")},
+    {"value": "VIVO", "label": _("Plan Vivo")},
+    {"value": "OTHER", "label": _("Other (please specify in a comment)")},
+]
+CARBON_SEQUESTRATION_CERT_CHOICES = [
+    (x["value"], x["label"]) for x in CARBON_SEQUESTRATION_CERT_ITEMS
 ]
 
 MINERALS = {

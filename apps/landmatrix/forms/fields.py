@@ -7,6 +7,7 @@ from ..models.choices import (
     ACTOR_MAP,
     CARBON_SEQUESTRATION_CHOICES,
     ELECTRICITY_GENERATIONS_CHOICES,
+    CARBON_SEQUESTRATION_CERT_CHOICES,
 )
 
 
@@ -89,7 +90,9 @@ class JSONCarbonSequestrationField(JSONField):
                         },
                         "projected_annual_sequestration": {"type": ["number", "null"]},
                         "certification_standard": {"type": ["boolean", "null"]},
-                        "certification_standard_name": {"type": "string"},
+                        "certification_standard_name": {
+                            "enum": [x[0] for x in CARBON_SEQUESTRATION_CERT_CHOICES]
+                        },
                         "certification_standard_comment": {"type": "string"},
                     },
                 },
