@@ -13,12 +13,22 @@
     projected_lifetime_sequestration?: number
     projected_annual_sequestration?: number
     certification_standard: boolean | null
-    certification_standard_name: string
+    certification_standard_name: string | null
     certification_standard_comment: string
   }
 
   export let formfield: FormField
   export let value: JSONCarbonSequestrationField[] = []
+
+  const CARBON_SEQUESTRATION_CERT_ITEMS = [
+    { value: "REDD", label: $_("REDD+") },
+    { value: "VCS", label: $_("Verified Carbon Standard (VCS)") },
+    { value: "GOLD", label: $_("Gold Standard for the Global Goals (GOLD)") },
+    { value: "CDM", label: $_("Clean Development Mechanism (CDM)") },
+    { value: "CAR", label: $_("Climate Action Reserve (CAR)") },
+    { value: "VIVO", label: $_("Plan Vivo") },
+    { value: "OTHER", label: $_("Other (see comment)") },
+  ]
 </script>
 
 <ul>
@@ -55,7 +65,9 @@
       {#if val.certification_standard_name}
         <span class="mr-2">
           {$_("Name of certification standard")}:
-          {val.certification_standard_name}
+          {CARBON_SEQUESTRATION_CERT_ITEMS.find(
+            i => i.value === val.certification_standard_name,
+          )?.label ?? "--"}
         </span>
       {/if}
       {#if val.certification_standard_comment}

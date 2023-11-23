@@ -1,6 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
   import { slide } from "svelte/transition"
+  import Select from "svelte-select"
 
   import LowLevelNullBooleanField from "$components/Fields/Edit/LowLevelNullBooleanField.svelte"
   import { createValueCopy, syncValue } from "$components/Fields/JSONField"
@@ -20,12 +21,22 @@
     projected_lifetime_sequestration?: number
     projected_annual_sequestration?: number
     certification_standard: boolean | null
-    certification_standard_name: string
+    certification_standard_name: string | null
     certification_standard_comment: string
   }
 
   export let formfield: FormField
   export let value: JSONCarbonSequestrationField[] | null
+
+  const CARBON_SEQUESTRATION_CERT_ITEMS = [
+    { value: "REDD", label: $_("REDD+") },
+    { value: "VCS", label: $_("Verified Carbon Standard (VCS)") },
+    { value: "GOLD", label: $_("Gold Standard for the Global Goals (GOLD)") },
+    { value: "CDM", label: $_("Clean Development Mechanism (CDM)") },
+    { value: "CAR", label: $_("Climate Action Reserve (CAR)") },
+    { value: "VIVO", label: $_("Plan Vivo") },
+    { value: "OTHER", label: $_("Other (please specify in a comment)") },
+  ]
 
   let valueCopy = createValueCopy(value)
   $: value = syncValue(val => !!val.choices, valueCopy)
@@ -66,7 +77,7 @@
       </label>
 
       <label class="flex flex-wrap items-center justify-between gap-2" for={undefined}>
-        {$_("Area covered by installations")}
+        {$_("Area")}
         <LowLevelDecimalField
           bind:value={val.area}
           unit="ha"
@@ -102,8 +113,7 @@
         />
       </label>
       <label class="flex flex-wrap items-center justify-between gap-2" for={undefined}>
-        {$_("Certification standard")}
-
+        {$_("Certification standard/mechanism")}
         <LowLevelNullBooleanField
           bind:value={val.certification_standard}
           nullable
@@ -117,17 +127,21 @@
           for={undefined}
           transition:slide
         >
-          {$_("Name of certification standard")}
-          <input
-            bind:value={val.certification_standard_name}
-            type="text"
-            class="inpt"
-            placeholder={$_("Name")}
+          {$_("Name of certification standard/mechanism")}
+          <Select
+            value={CARBON_SEQUESTRATION_CERT_ITEMS.find(
+              i => i.value === val.certification_standard_name,
+            )}
+            items={CARBON_SEQUESTRATION_CERT_ITEMS}
+            on:change={e => (val.certification_standard_name = e.detail.value)}
+            on:clear={() => (val.certification_standard_name = null)}
+            showChevron
+            placeholder={$_("Name of certification standard/mechanism")}
           />
         </label>
       {/if}
       <label class="flex flex-wrap items-center justify-between gap-2" for={undefined}>
-        {$_("Comment on certification standard")}
+        {$_("Comment on certtification standard/mechanism")}
         <input
           bind:value={val.certification_standard_comment}
           type="text"
