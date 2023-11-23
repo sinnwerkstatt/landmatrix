@@ -2,6 +2,7 @@
   import { _ } from "svelte-i18n"
   import Select from "svelte-select"
   import { slide } from "svelte/transition"
+  import Select from "svelte-select"
 
   import LowLevelNullBooleanField from "$components/Fields/Edit/LowLevelNullBooleanField.svelte"
   import { createValueCopy, syncValue } from "$components/Fields/JSONField"
