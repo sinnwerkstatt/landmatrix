@@ -14,12 +14,10 @@
   </component>
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/.mypy_cache" />
       <excludeFolder url="file://$MODULE_DIR$/.pytest_cache" />
-      <excludeFolder url="file://$MODULE_DIR$/.pytest_cache/v" />
       <excludeFolder url="file://$MODULE_DIR$/frontend/.svelte-kit" />
-      <excludeFolder url="file://$MODULE_DIR$/media/images" />
-      <excludeFolder url="file://$MODULE_DIR$/media/original_images" />
-      <excludeFolder url="file://$MODULE_DIR$/media/uploads" />
+      <excludeFolder url="file://$MODULE_DIR$/media" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
