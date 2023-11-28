@@ -844,6 +844,13 @@ class Deal(AbstractDealBase):
         self, recalculate_independent=True, recalculate_dependent=True, *args, **kwargs
     ):
         self.recalculate_fields(recalculate_independent, recalculate_dependent)
+
+        # TextField values to empty string if None, see https://git.sinntern.de/landmatrix/landmatrix/-/issues/683
+        if self.electricity_generation_comment is None:
+            self.electricity_generation_comment = ""
+        if self.carbon_sequestration_comment is None:
+            self.carbon_sequestration_comment = ""
+
         super().save(*args, **kwargs)
 
     def update_from_dict(self, d: dict):
