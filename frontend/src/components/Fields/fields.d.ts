@@ -1,5 +1,5 @@
 export interface FormField {
-  name: string
+  name?: string
   label: string
   class: string
   required?: boolean

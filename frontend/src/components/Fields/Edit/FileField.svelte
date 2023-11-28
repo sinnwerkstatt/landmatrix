@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Client, gql } from "@urql/svelte"
   import { _ } from "svelte-i18n"
+  import type { ChangeEventHandler } from "svelte/elements"
 
   import { page } from "$app/stores"
 
@@ -8,17 +9,26 @@
   import FilePdfIcon from "$components/icons/FilePdfIcon.svelte"
 
   export let value: string
-  export let accept: string
   export let formfield: FormField
-  // "application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint," +
-  // " text/plain, application/pdf, image/*";
+  export let accept =
+    "application/msword, " +
+    "application/vnd.ms-excel, " +
+    "application/vnd.ms-powerpoint, " +
+    "text/plain, " +
+    "application/pdf, " +
+    "image/*"
 
-  function removeFile() {
-    if (confirm($_("Do you really want to remove this file?")) === true) value = ""
+  const removeFile = () => {
+    if (confirm($_("Do you really want to remove this file?"))) {
+      value = ""
+    }
   }
 
-  function uploadFile({ target: { files = [] } }) {
-    if (!files.length) return
+  const uploadFile: ChangeEventHandler<HTMLInputElement> = ({
+    currentTarget: { files },
+  }) => {
+    if (!files || !files.length) return
+
     let fr = new FileReader()
     fr.onload = async () => {
       const { error, data } = await ($page.data.urqlClient as Client)
@@ -55,7 +65,7 @@
       </a>
       <br />
       {$_("Change")}:
-      <input type="file" on:change={uploadFile} {accept} />
+      <input type="file" name={formfield.name} on:change={uploadFile} {accept} />
     </div>
 
     <button class="btn btn-danger" on:click|preventDefault={removeFile}>
@@ -63,6 +73,6 @@
     </button>
   </div>
 {:else}
-  <input type="file" on:change={uploadFile} {accept} />
+  <input type="file" name={formfield.name} on:change={uploadFile} {accept} />
 {/if}
 <small class="block pt-2 text-gray-500">{$_("Maximum file size: 10MB")}</small>

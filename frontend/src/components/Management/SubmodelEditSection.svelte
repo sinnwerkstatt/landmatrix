@@ -17,7 +17,7 @@
   export let model: "datasource" | "contract" | "involvement"
   export let modelName: string
   export let entries: Entry[]
-  export let entriesFilter: (i: Involvement) => boolean = () => true
+  export let entriesFilter: (i: Entry) => boolean = () => true
   export let newEntryExtras = {}
   export let id: string
 
