@@ -95,7 +95,7 @@ async function getBlogCategories(language = "en", urqlClient: Client) {
   if (data?.blogcategories) await blogCategories.set(data.blogcategories)
 }
 
-type FormFields = {
+export type FormFields = {
   deal: { [key: string]: FormField }
   location: { [key: string]: FormField }
   contract: { [key: string]: FormField }
