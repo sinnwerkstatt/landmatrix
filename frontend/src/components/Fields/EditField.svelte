@@ -29,8 +29,8 @@
   import URLField from "./Edit/URLField.svelte"
 
   export let fieldname: string
-  export let value
-  export let model = "deal"
+  export let value: never
+  export let model: "deal" | "investor" = "deal"
 
   export let showLabel = true
   export let wrapperClasses = "mb-3 leading-5 flex flex-col"
@@ -77,7 +77,7 @@
   {/if}
   <div class={valueClasses}>
     {#if formfield.class === "FileField"}
-      <FileField bind:value {model} {formfield} on:change />
+      <FileField bind:value {formfield} on:change />
     {:else if formfield.class === "TextField"}
       <TextField bind:value {formfield} on:change />
     {:else if ["CharField", "OCIDField"].includes(formfield.class)}
