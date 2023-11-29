@@ -1,5 +1,6 @@
-from wagtail.admin.viewsets.model import ModelViewSet
 from wagtailorderable.modeladmin.mixins import OrderableMixin
+
+from wagtail.admin.viewsets.model import ModelViewSet
 
 from apps.message.models import Message
 

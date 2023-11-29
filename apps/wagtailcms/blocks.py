@@ -1,9 +1,10 @@
 import re
 
 from django.contrib.sites.models import Site
+from django.db.models import Sum
 from django.utils.translation import gettext as _
 from wagtail import blocks
-from wagtail.blocks import RawHTMLBlock, StructBlock
+from wagtail.blocks import CharBlock, RawHTMLBlock, StructBlock
 from wagtail.embeds.blocks import EmbedBlock
 from wagtail.fields import StreamField
 from wagtail.images.blocks import ImageChooserBlock
@@ -12,6 +13,8 @@ from wagtail.snippets.blocks import SnippetChooserBlock
 
 from apps.landmatrix.models.country import Country as DataCountry
 from apps.landmatrix.models.country import Region as DataRegion
+from apps.landmatrix.models.deal import Deal
+
 from .partners import Partner
 from .twitter import TwitterTimeline
 
@@ -176,6 +179,11 @@ class NewLinkBlock(blocks.StructBlock):
             link["rel_external"]: True
         return link
 
+    class Meta:
+        label = "LinkBlock"
+        label_format = "LinkBlock"
+        group = "LandingPage 2023"
+
 
 # New Sreendesign
 class ImageTextBlock(StructBlock):
@@ -189,14 +197,42 @@ class ImageTextBlock(StructBlock):
     )
 
     class Meta:
-        label = "Image-Text-Block"
+        label = "ImageTextBlock"
+        label_format = "ImageTextBlock {title}"
         icon = "doc-full"
+        group = "LandingPage 2023"
 
 
 # New Screendesign
 class PartnerBlock(StructBlock):
     def get_api_representation(self, value, context=None):
         return [p.to_dict("max-220x220") for p in Partner.objects.all()]
+
+    class Meta:
+        label = "PartnerBlock"
+        label_format = "PartnerBlock"
+        group = "LandingPage 2023"
+
+
+class DealCountBlock(StructBlock):
+    text = CharBlock(default="It's a big deal")
+
+    def get_api_representation(self, value, context=None):
+        deals = Deal.objects.public()
+        count_deals = deals.count()
+
+        x = deals.aggregate(sum_ha=Sum("current_contract_size"))
+
+        return {
+            "sum_ha": x["sum_ha"],
+            "deals": count_deals,
+            "text": value.get("text"),
+        }
+
+    class Meta:
+        label = "DealCountBlock"
+        label_format = "DealCountBlock"
+        group = "LandingPage 2023"
 
 
 class SectionDivider(StructBlock):
@@ -458,7 +494,9 @@ class DataTeaserBlock(StructBlock):
 
     class Meta:
         icon = "link"
-        label = "Data-Teaser"
+        label = "DataTeaser"
+        label_format = "DataTeaser"
+        group = "LandingPage 2023"
 
 
 # New Screendesign
@@ -470,7 +508,9 @@ class NewResourcesTeasersBlock(StructBlock):
 
     class Meta:
         icon = "list"
-        label = "Resources teasers"
+        label = "ResourceTeasers"
+        label_format = "ResourceTeasers"
+        group = "LandingPage 2023"
 
     def get_api_representation(self, value, context=None):
         from ..blog.models import BlogPage
@@ -827,6 +867,7 @@ NEW_BLOCKS = [
     ("latest_resources", NewResourcesTeasersBlock()),
     ("data_teaser", DataTeaserBlock()),
     ("partners", PartnerBlock()),
+    ("dealcount", DealCountBlock()),
 ]
 
 CONTENT_BLOCKS += [("full_width_container", FullWidthContainerBlock(form_classname=""))]

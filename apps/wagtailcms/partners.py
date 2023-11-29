@@ -1,6 +1,7 @@
+from wagtailorderable.models import Orderable
+
 from django.db import models
 from wagtail.images import get_image_model_string
-from wagtailorderable.models import Orderable
 
 
 class Partner(Orderable):
