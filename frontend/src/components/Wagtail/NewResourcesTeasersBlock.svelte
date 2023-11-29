@@ -18,7 +18,7 @@
     <div class="mb-12 lg:col-span-5">
       <img src={value.image} class="" />
       <div class="my-[24px]">
-        <p class="caption text-orange">{value.articles[0].categories[0].name}</p>
+        <p class="caption text-orange">{value.articles[0].categories[0]?.name}</p>
         <h4 class="heading4 -mt-3 text-orange">{value.articles[0].title}</h4>
 
         <div class="body2 -mt-3 mb-6">{value.articles[0].date}</div>
