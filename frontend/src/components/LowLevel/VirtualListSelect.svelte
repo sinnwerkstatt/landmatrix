@@ -97,7 +97,7 @@
       <div on:pointerdown|stopPropagation>
         <VirtualList
           width="100%"
-          height={252}
+          height={228}
           itemCount={filteredItems.length}
           itemSize={38}
           scrollToIndex={hoverItemIndex}
