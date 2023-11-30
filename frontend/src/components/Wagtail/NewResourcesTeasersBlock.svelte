@@ -16,7 +16,11 @@
   <h3 class="heading3 xl:heading1 dark:text-white">{value.subtitle}</h3>
   <div class="lg:grid lg:grid-cols-10">
     <div class="mb-12 lg:col-span-5">
-      <img src={value.image} class="" />
+      <img
+        class="min-h-[500px] bg-lm-lightgray"
+        src={value.image}
+        alt="Featured resource thumbnail"
+      />
       <div class="my-[24px]">
         <p class="caption text-orange">{value.articles[0].categories[0]?.name}</p>
         <h4 class="heading4 -mt-3 text-orange">{value.articles[0].title}</h4>
