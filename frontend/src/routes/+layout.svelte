@@ -45,13 +45,13 @@
 <Messages />
 <NavigationLoader />
 
-<div class="69px">
+<div class="h-[71px]">
   <Navbar />
 </div>
 
 <div
   bind:this={$contentRootElement}
-  class="h-[calc(100vh-69px)] overflow-x-auto dark:bg-lm-black"
+  class="h-[calc(100vh-71px)] overflow-x-auto dark:bg-lm-black"
 >
   <slot />
   <NewFooter />
