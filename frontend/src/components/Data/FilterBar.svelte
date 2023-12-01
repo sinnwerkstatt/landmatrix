@@ -12,6 +12,7 @@
     intention_of_investment_choices,
   } from "$lib/choices"
   import { filters, isDefaultFilter, publicOnly } from "$lib/filters"
+  import type { Produce } from "$lib/filters"
   import { countries, formfields, regions } from "$lib/stores"
   import { tracker } from "$lib/stores/tracker"
   import { ProduceGroup } from "$lib/types/deal"
@@ -31,24 +32,25 @@
 
   $: user = $page.data.user
 
+  let produceChoices: Produce[]
   $: produceChoices = $formfields
     ? [
         ...($formfields.deal.crops.choices?.map(item => ({
           value: item["value"],
           label: item["label"],
-          groupID: ProduceGroup.CROPS,
+          groupId: ProduceGroup.CROPS,
           group: $_("Crops"),
         })) ?? []),
         ...($formfields.deal.animals.choices?.map(item => ({
           value: item["value"],
           label: item["label"],
-          groupID: ProduceGroup.ANIMALS,
+          groupId: ProduceGroup.ANIMALS,
           group: $_("Animals"),
         })) ?? []),
         ...($formfields.deal.mineral_resources.choices?.map(item => ({
           value: item["value"],
           label: item["label"],
-          groupID: ProduceGroup.MINERAL_RESOURCES,
+          groupId: ProduceGroup.MINERAL_RESOURCES,
           group: $_("Mineral resources"),
         })) ?? []),
       ]
@@ -112,10 +114,12 @@
       ? $filters.empty().default()
       : $filters.empty()
   }
+
+  const groupByProduce = (p: Produce) => p.groupId
 </script>
 
 <div
-  class="absolute bottom-0 left-0 top-0 z-10 flex bg-white/80 text-sm drop-shadow-[3px_-3px_1px_rgba(0,0,0,0.3)] dark:bg-gray-700 {$showFilterBar
+  class="absolute bottom-0 left-0 top-0 z-10 flex bg-white/90 text-sm shadow-inner drop-shadow-[3px_-3px_1px_rgba(0,0,0,0.3)] dark:bg-gray-700 {$showFilterBar
     ? 'w-[clamp(220px,20%,300px)]'
     : 'w-0'}"
 >
@@ -124,12 +128,13 @@
     on:click={() => showFilterBar.set(!$showFilterBar)}
   />
   <div
-    class="flex h-full w-full flex-col overflow-y-auto overflow-x-hidden p-2"
+    dir="rtl"
+    class="flex h-full w-full flex-col overflow-y-auto"
     class:hidden={!$showFilterBar}
   >
-    <div class="w-full self-start">
-      <h3 class="my-2">{$_("Filter")}</h3>
-      <div class="my-2">
+    <div dir="ltr" class="w-full self-start">
+      <h2 class="heading5 my-2 px-2">{$_("Filter")}</h2>
+      <div class="my-2 px-2">
         <CheckboxSwitch
           class="text-base"
           checked={$isDefaultFilter}
@@ -148,13 +153,14 @@
       <FilterCollapse
         title={$_("Land Matrix region")}
         clearable={!!$filters.region_id}
-        on:click={() => ($filters.region_id = undefined)}
+        on:clear={() => ($filters.region_id = undefined)}
       >
         {#each regionsWithGlobal as reg}
           <label class="block">
             <input
               type="radio"
               class="radio-btn"
+              name="lm-region-filter"
               bind:group={$filters.region_id}
               value={reg.id}
               on:change={() => ($filters.country_id = undefined)}
@@ -167,7 +173,7 @@
       <FilterCollapse
         title={$_("Country")}
         clearable={!!$filters.country_id}
-        on:click={() => ($filters.country_id = null)}
+        on:clear={() => ($filters.country_id = undefined)}
       >
         <CountrySelect
           value={$countries.find(c => c.id === $filters.country_id)}
@@ -181,7 +187,7 @@
       <FilterCollapse
         title={$_("Deal size")}
         clearable={!!($filters.deal_size_min || $filters.deal_size_max)}
-        on:click={() => ($filters.deal_size_min = $filters.deal_size_max = undefined)}
+        on:clear={() => ($filters.deal_size_min = $filters.deal_size_max = undefined)}
       >
         <div class="field-has-appendix">
           <input
@@ -212,7 +218,7 @@
       <FilterCollapse
         title={$_("Nature of the deal")}
         clearable={$filters.nature_of_deal.length > 0}
-        on:click={() => ($filters.nature_of_deal = [])}
+        on:clear={() => ($filters.nature_of_deal = [])}
       >
         {#each Object.entries(getNatureOfDealChoices($_)) as [isval, isname]}
           <label class="block">
@@ -230,8 +236,8 @@
       <FilterCollapse
         title={$_("Investor")}
         clearable={!!($filters.investor || $filters.investor_country_id)}
-        on:click={() =>
-          ($filters.investor = null) && ($filters.investor_country_id = null)}
+        on:clear={() =>
+          ($filters.investor = undefined) && ($filters.investor_country_id = undefined)}
       >
         {$_("Investor name")}
         <InvestorSelect
@@ -250,7 +256,7 @@
       <FilterCollapse
         title={$_("Year of initiation")}
         clearable={!!($filters.initiation_year_min || $filters.initiation_year_max)}
-        on:click={() =>
+        on:clear={() =>
           ($filters.initiation_year_min = $filters.initiation_year_max = undefined)}
       >
         <div class="flex gap-1">
@@ -289,7 +295,7 @@
       <FilterCollapse
         title={$_("Implementation status")}
         clearable={$filters.implementation_status.length > 0}
-        on:click={() => ($filters.implementation_status = [])}
+        on:clear={() => ($filters.implementation_status = [])}
       >
         <label class="block">
           <input
@@ -316,7 +322,7 @@
       <FilterCollapse
         title={$_("Intention of investment")}
         clearable={$filters.intention_of_investment.length > 0}
-        on:click={() => ($filters.intention_of_investment = [])}
+        on:clear={() => ($filters.intention_of_investment = [])}
       >
         <label class="block">
           <input
@@ -347,26 +353,27 @@
 
       <FilterCollapse
         title={$_("Produce")}
-        clearable={$filters.produce?.length > 0}
-        on:click={() => ($filters.produce = [])}
+        clearable={$filters.produce ? $filters.produce.length > 0 : false}
+        on:clear={() => ($filters.produce = [])}
       >
         <Select
           bind:value={$filters.produce}
           items={produceChoices}
           multiple
           showChevron
-          groupBy={i => i.group}
+          groupBy={groupByProduce}
         />
       </FilterCollapse>
 
       <FilterCollapse
         title={$_("Scope")}
         clearable={$filters.transnational !== null}
-        on:click={() => ($filters.transnational = null)}
+        on:clear={() => ($filters.transnational = null)}
       >
         <label class="block">
           <input
             type="radio"
+            name="scope-filter"
             bind:group={$filters.transnational}
             value={true}
             class="radio-btn"
@@ -376,6 +383,7 @@
         <label class="block">
           <input
             type="radio"
+            name="scope-filter"
             bind:group={$filters.transnational}
             value={false}
             class="radio-btn"
@@ -387,11 +395,12 @@
       <FilterCollapse
         title={$_("Forest concession")}
         clearable={$filters.forest_concession !== null}
-        on:click={() => ($filters.forest_concession = null)}
+        on:clear={() => ($filters.forest_concession = null)}
       >
         <label class="block">
           <input
             type="radio"
+            name="forest-concession-filter"
             bind:group={$filters.forest_concession}
             value={null}
             class="radio-btn"
@@ -401,6 +410,7 @@
         <label class="block">
           <input
             type="radio"
+            name="forest-concession-filter"
             bind:group={$filters.forest_concession}
             value={false}
             class="radio-btn"
@@ -410,6 +420,7 @@
         <label class="block">
           <input
             type="radio"
+            name="forest-concession-filter"
             bind:group={$filters.forest_concession}
             value={true}
             class="radio-btn"
@@ -418,7 +429,7 @@
         </label>
       </FilterCollapse>
     </div>
-    <div class="mt-auto w-full self-end pt-10">
+    <div dir="ltr" class="mt-auto w-full self-end">
       <slot />
       <FilterCollapse title={$_("Download")}>
         <ul>

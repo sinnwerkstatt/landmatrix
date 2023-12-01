@@ -16,30 +16,36 @@
 </script>
 
 <div
-  class="-mx-2 border-b border-gray-300 bg-lm-lightgray pl-1 text-lm-dark dark:bg-gray-800 dark:text-white"
+  class="border-b border-gray-300 bg-lm-lightgray text-lm-dark dark:bg-gray-800 dark:text-white"
 >
-  <button
-    class="flex w-full cursor-pointer justify-between py-1.5 pr-2"
-    class:collapsed={!expanded}
-    class:text-orange={clearable}
-    on:click={() => (expanded = !expanded)}
-  >
-    <span class="pr-0">
+  <div class="flex w-full" class:text-lm-orange={clearable}>
+    <button
+      class="m-0.5 flex-grow p-1 text-left"
+      on:click={() => (expanded = !expanded)}
+    >
       <ChevronDownIcon
-        class="transition-duration-300 mr-1 inline h-4 w-4 rounded transition-transform {expanded
+        class="transition-duration-300 inline h-4 w-4 rounded transition-transform {expanded
           ? 'rotate-180'
           : ''}"
       />
       {title}
-    </span>
+    </button>
     {#if clearable}
-      <ClearFilter on:click />
+      <button
+        class="m-0.5 p-1"
+        on:click={() => {
+          expanded = false
+          dispatch("clear")
+        }}
+      >
+        <ClearFilter />
+      </button>
     {/if}
-  </button>
+  </div>
   {#if expanded}
     <div
       transition:slide={{ duration: 200 }}
-      class="-ml-[0.5em] p-2 shadow-inner"
+      class="p-2 shadow-inner"
       bind:this={expandedContent}
     >
       <slot />

@@ -283,32 +283,35 @@
   </div>
 
   <div slot="FilterBar">
-    <h4>{$_("Map settings")}</h4>
-    <FilterCollapse expanded title={$_("Displayed data")}>
-      <label class="block">
-        <input
-          bind:group={$displayDealsCount}
-          class="radio-btn"
-          type="radio"
-          value={true}
-        />
-        {$_("Number of deal locations")}
-      </label>
-      <label class="block">
-        <input
-          bind:group={$displayDealsCount}
-          class="radio-btn"
-          type="radio"
-          value={false}
-        />
-        {$_("Area (ha)")}
-      </label>
-    </FilterCollapse>
+    <h2 class="heading5 my-2 px-2">{$_("Map settings")}</h2>
+    <!--    <FilterCollapse expanded title={$_("Displayed data")}>-->
+    <!--      <label class="block">-->
+    <!--        <input-->
+    <!--          bind:group={$displayDealsCount}-->
+    <!--          name="deals-count-display"-->
+    <!--          class="radio-btn"-->
+    <!--          type="radio"-->
+    <!--          value={true}-->
+    <!--        />-->
+    <!--        {$_("Number of deal locations")}-->
+    <!--      </label>-->
+    <!--      <label class="block">-->
+    <!--        <input-->
+    <!--          bind:group={$displayDealsCount}-->
+    <!--          name="deals-count-display"-->
+    <!--          class="radio-btn"-->
+    <!--          type="radio"-->
+    <!--          value={false}-->
+    <!--        />-->
+    <!--        {$_("Area (ha)")}-->
+    <!--      </label>-->
+    <!--    </FilterCollapse>-->
     <FilterCollapse expanded title={$_("Base layer")}>
       {#each getBaseLayers($_) as layer}
         <label class="block">
           <input
             type="radio"
+            name="base-layer-switch"
             bind:group={$visibleLayer}
             value={layer.id}
             class="radio-btn"

@@ -4,6 +4,7 @@
 
   import { page } from "$app/stores"
 
+  import type { SortBy } from "$lib/data/buckets"
   import { createImplementationStatusChartData } from "$lib/data/charts/implementationStatus"
   import { createNegotiationStatusChartData } from "$lib/data/charts/negotiationStatusGroup"
   import { createProduceGroupChartData } from "$lib/data/charts/produceGroup"
@@ -45,6 +46,9 @@
       o => o.id === currentItem.observatory_page_id,
     )
   }
+
+  let unit: "deals" | "ha"
+  let sortBy: SortBy
   $: unit = $displayDealsCount ? "deals" : "ha"
   $: sortBy = $displayDealsCount ? "count" : "size"
   $: dealsArray = $deals?.data?.deals ?? []
@@ -60,7 +64,7 @@
 
 <ContextBarContainer>
   {#if currentItem}
-    <h2>{currentItem.name}</h2>
+    <h2 class="heading5">{currentItem.name}</h2>
     {#if currentItem?.observatory_page}
       <p class="mb-1">
         {currentItem.observatory_page.short_description}

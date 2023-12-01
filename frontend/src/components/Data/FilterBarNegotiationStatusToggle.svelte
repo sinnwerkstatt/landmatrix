@@ -7,13 +7,13 @@
   import FilterCollapse from "./FilterCollapse.svelte"
 
   interface Choice {
-    value?: NegotiationStatus
-    name?: string
+    value: NegotiationStatus
+    name: string
   }
 
-  interface GroupChoice extends Choice {
+  interface GroupChoice {
     group: string
-    options: { value: NegotiationStatus; name: string }[]
+    options: Choice[]
   }
 
   function isSuperset(set: Set<string>, subset: Set<string>): boolean {
@@ -26,7 +26,7 @@
     return false
   }
 
-  // const choices: Array<Choice | GroupChoice> = [
+  let choices: Array<GroupChoice | Choice>
   $: choices = [
     {
       group: $_("Intended"),
@@ -35,7 +35,10 @@
           value: NegotiationStatus.EXPRESSION_OF_INTEREST,
           name: $_("Expression of interest"),
         },
-        { value: NegotiationStatus.UNDER_NEGOTIATION, name: $_("Under negotiation") },
+        {
+          value: NegotiationStatus.UNDER_NEGOTIATION,
+          name: $_("Under negotiation"),
+        },
         {
           value: NegotiationStatus.MEMORANDUM_OF_UNDERSTANDING,
           name: $_("Memorandum of understanding"),
@@ -45,8 +48,14 @@
     {
       group: $_("Concluded"),
       options: [
-        { value: NegotiationStatus.ORAL_AGREEMENT, name: $_("Oral agreement") },
-        { value: NegotiationStatus.CONTRACT_SIGNED, name: $_("Contract signed") },
+        {
+          value: NegotiationStatus.ORAL_AGREEMENT,
+          name: $_("Oral agreement"),
+        },
+        {
+          value: NegotiationStatus.CONTRACT_SIGNED,
+          name: $_("Contract signed"),
+        },
         {
           value: NegotiationStatus.CHANGE_OF_OWNERSHIP,
           name: $_("Change of ownership"),
@@ -60,13 +69,21 @@
           value: NegotiationStatus.NEGOTIATIONS_FAILED,
           name: $_("Negotiations failed"),
         },
-        { value: NegotiationStatus.CONTRACT_CANCELED, name: $_("Contract cancelled") },
+        {
+          value: NegotiationStatus.CONTRACT_CANCELED,
+          name: $_("Contract cancelled"),
+        },
       ],
     },
-    { value: NegotiationStatus.CONTRACT_EXPIRED, name: $_("Contract expired") },
+    {
+      value: NegotiationStatus.CONTRACT_EXPIRED,
+      name: $_("Contract expired"),
+    },
   ]
 
-  const isGroupChoice = (c): c is GroupChoice => !!c?.group
+  const isGroupChoice = (c: Choice | GroupChoice): c is GroupChoice =>
+    Object.prototype.hasOwnProperty.call(c, "group")
+
   const checkGroups = () => {
     choices.forEach(choice => {
       if (isGroupChoice(choice)) {
@@ -106,12 +123,12 @@
 
 <FilterCollapse
   clearable={$filters.negotiation_status.length > 0}
-  on:click={() => ($filters.negotiation_status = [])}
+  on:clear={() => ($filters.negotiation_status = [])}
   on:expanded={checkGroups}
   title={$_("Negotiation status")}
 >
   {#each choices as nstat}
-    {#if nstat.group}
+    {#if isGroupChoice(nstat)}
       <label class="block font-bold">
         <input
           id={nstat.group}

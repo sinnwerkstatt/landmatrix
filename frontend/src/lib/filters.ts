@@ -14,10 +14,11 @@ import type { GQLFilter } from "./types/filters"
 import type { Investor } from "./types/investor"
 
 export interface Produce {
-  name: string
-  id: string
+  // id: string
   value: string
-  groupID: ProduceGroup
+  label: string
+  groupId: ProduceGroup
+  group: string
 }
 
 export class FilterValues {
@@ -258,9 +259,9 @@ export class FilterValues {
       const animals = []
       const minerals = []
       for (const prod of this.produce) {
-        if (prod.groupID === ProduceGroup.CROPS) crops.push(prod.value)
-        else if (prod.groupID === ProduceGroup.ANIMALS) animals.push(prod.value)
-        else if (prod.groupID === ProduceGroup.MINERAL_RESOURCES)
+        if (prod.groupId === ProduceGroup.CROPS) crops.push(prod.value)
+        else if (prod.groupId === ProduceGroup.ANIMALS) animals.push(prod.value)
+        else if (prod.groupId === ProduceGroup.MINERAL_RESOURCES)
           minerals.push(prod.value)
       }
       if (crops.length > 0) {
