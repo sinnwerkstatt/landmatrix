@@ -30,6 +30,12 @@ export const sortFn =
       y = dotResolve(sortKey, b)
     }
 
+    if (sortKey.includes("workflowinfos")) {
+      if (x.length === 0) return -1
+      if (y.length === 0) return 1
+      return new Date(x[0].timestamp) - new Date(y[0].timestamp)
+    }
+
     if (x === null || x === undefined) return -1
     if (y === null || y === undefined) return 1
 

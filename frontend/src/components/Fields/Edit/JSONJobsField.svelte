@@ -56,12 +56,13 @@
   <tbody>
     {#each valueCopy as val, i}
       <tr class:is-current={val.current}>
-        <td class="p-1 text-center" on:click={() => updateCurrent(i)}>
+        <td class="p-1 text-center">
           <input
             type="radio"
             bind:group={current}
             name="{formfield.name}_current"
             required={valueCopy.length > 0}
+            on:change={() => updateCurrent(i)}
             disabled={!val.jobs && !val.employees && !val.workers}
             value={i}
           />
@@ -77,7 +78,7 @@
         <td class="w-1/4 p-1">
           <LowLevelDecimalField
             bind:value={val.jobs}
-            required={val.date && !(val.employees || val.workers)}
+            required={!!val.date && !(val.employees || val.workers)}
             name="{formfield.name}_{i}_jobs"
             decimals={0}
             unit=""
@@ -86,7 +87,7 @@
         <td class="w-1/4 p-1">
           <LowLevelDecimalField
             bind:value={val.employees}
-            required={val.date && !(val.workers || val.jobs)}
+            required={!!val.date && !(val.workers || val.jobs)}
             name="{formfield.name}_{i}_employees"
             decimals={0}
             unit=""
@@ -95,7 +96,7 @@
         <td class="w-1/4 p-1">
           <LowLevelDecimalField
             bind:value={val.workers}
-            required={val.date && !(val.jobs || val.employees)}
+            required={!!val.date && !(val.jobs || val.employees)}
             name="{formfield.name}_{i}_workers"
             decimals={0}
             unit=""
