@@ -5,7 +5,7 @@
   import { _ } from "svelte-i18n"
 
   import { goto } from "$app/navigation"
-  import { page } from "$app/stores"
+  import { navigating, page } from "$app/stores"
 
   import {
     findActiveVersion,
@@ -14,6 +14,7 @@
     isCreator,
     isEditorPlus,
   } from "$lib/helpers"
+  import { loading } from "$lib/stores"
   import type { Obj, ObjVersion } from "$lib/types/generics"
   import { DraftStatus, Status } from "$lib/types/generics"
 
@@ -95,12 +96,20 @@
     <div class="grow-[2] bg-lm-lightgray dark:bg-gray-600">
       <div class="-mt-5 flex justify-center gap-4">
         {#if hasActiveVersion && !isActiveVersion}
-          <a href="/{otype}/{object.id}" class="btn btn-gray">
+          <a
+            href="/{otype}/{object.id}"
+            class="btn btn-gray"
+            class:disabled={$loading || $navigating}
+          >
             {$_("Go to active version")}
           </a>
         {/if}
         {#if hasCurrentDraft && !isCurrentDraft && canGoToDraftVersion}
-          <a href="/{otype}/{object.id}/{lastVersion.id}/" class="btn btn-gray">
+          <a
+            href="/{otype}/{object.id}/{lastVersion.id}/"
+            class="btn btn-gray"
+            class:disabled={$loading || $navigating}
+          >
             {$_("Go to current draft")}
           </a>
         {/if}
@@ -183,7 +192,7 @@
               {#if object.draft_status === DraftStatus.DRAFT && isAuthorized($page.data.user, object)}
                 <button
                   type="button"
-                  class:disabled={!isCurrentDraft}
+                  class:disabled={!isCurrentDraft || $loading || $navigating}
                   title={otype === "deal"
                     ? $_("Submit the deal for review")
                     : $_("Submit the investor for review")}
@@ -196,7 +205,7 @@
               {#if (object.draft_status === DraftStatus.REVIEW || object.draft_status === DraftStatus.ACTIVATION) && isAuthorized($page.data.user, object)}
                 <button
                   type="button"
-                  class:disabled={!isCurrentDraft}
+                  class:disabled={!isCurrentDraft || $loading || $navigating}
                   title={otype === "deal"
                     ? $_(
                         "Send a request of improvement and create a new draft version of the deal",
@@ -215,7 +224,7 @@
               {#if object.draft_status === DraftStatus.REVIEW && isAuthorized($page.data.user, object)}
                 <button
                   type="button"
-                  class:disabled={!isCurrentDraft}
+                  class:disabled={!isCurrentDraft || $loading || $navigating}
                   title={otype === "deal"
                     ? $_("Submit the deal for activation")
                     : $_("Submit the investor for activation")}
@@ -230,7 +239,7 @@
               {#if object.draft_status === DraftStatus.ACTIVATION && isAuthorized($page.data.user, object)}
                 <button
                   type="button"
-                  class:disabled={!isCurrentDraft}
+                  class:disabled={!isCurrentDraft || $loading || $navigating}
                   title={hasActiveVersion
                     ? $_(
                         "Activate submitted version replacing currently active version",
@@ -282,6 +291,7 @@
                     <a
                       href="/{otype}/edit/{object.id}/{objectVersion ?? ''}"
                       class="btn btn-primary min-w-[8rem]"
+                      class:disabled={$loading || $navigating}
                     >
                       {$_("Edit")}
                     </a>
@@ -292,6 +302,7 @@
                 {:else}
                   <button
                     class="btn btn-primary min-w-[8rem]"
+                    class:disabled={$loading || $navigating}
                     on:click|preventDefault={() => (showNewDraftOverlay = true)}
                   >
                     {$_("Edit")}
@@ -309,6 +320,7 @@
                 <div>
                   <button
                     class="btn btn-danger min-w-[8rem]"
+                    class:disabled={$loading || $navigating}
                     on:click|preventDefault={() => (showDeleteOverlay = true)}
                   >
                     {isDeleted ? $_("Undelete") : $_("Delete")}
@@ -331,6 +343,7 @@
                 <div>
                   <button
                     class="btn btn-danger min-w-[8rem]"
+                    class:disabled={$loading || $navigating}
                     on:click|preventDefault={() => (showDeleteOverlay = true)}
                   >
                     {$_("Remove")}
@@ -348,6 +361,7 @@
                 <div>
                   <button
                     class="btn btn-gray min-w-[8rem]"
+                    class:disabled={$loading || $navigating}
                     on:click|preventDefault={() => dispatch("copy")}
                   >
                     {$_("Copy deal")}

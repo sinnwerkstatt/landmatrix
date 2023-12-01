@@ -2,8 +2,9 @@
   import { createEventDispatcher } from "svelte"
   import { _ } from "svelte-i18n"
 
-  import { page } from "$app/stores"
+  import { navigating, page } from "$app/stores"
 
+  import { loading } from "$lib/stores"
   import type { User } from "$lib/types/user"
   import { UserRole } from "$lib/types/user"
 
@@ -51,6 +52,7 @@
     {#if $page.data.user.role > UserRole.REPORTER}
       <button
         class="btn btn-pelorous-secondary btn-slim inline-flex items-center gap-2 px-2"
+        class:disabled={$loading || $navigating}
         on:click={() => (showFeedbackOverlay = true)}
         type="button"
       >
@@ -60,6 +62,7 @@
     {/if}
     <button
       class="btn btn-pelorous btn-slim inline-flex items-center gap-2 px-2"
+      class:disabled={$loading || $navigating}
       on:click={() => (showCommentOverlay = true)}
       type="submit"
     >
