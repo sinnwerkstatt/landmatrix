@@ -52,12 +52,13 @@
   <tbody>
     {#each valueCopy as val, i}
       <tr class:is-current={val.current}>
-        <td class="p-1 text-center" on:click={() => updateCurrent(i)}>
+        <td class="p-1 text-center">
           <input
             type="radio"
             bind:group={current}
             name="{formfield.name}_current"
             required={valueCopy.length > 0}
+            on:change={() => updateCurrent(i)}
             disabled={!val.choice}
             value={i}
           />
