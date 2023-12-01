@@ -57,7 +57,7 @@
           <input
             type="checkbox"
             bind:checked={val.current}
-            name="{formfield.name}_current"
+            name="{formfield.name}_{i}_current"
             required={isCurrentRequired(valueCopy)}
             disabled={!val.choices}
           />
