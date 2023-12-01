@@ -503,7 +503,6 @@ class DataTeaserBlock(StructBlock):
 class NewResourcesTeasersBlock(StructBlock):
     title = blocks.CharBlock(required=False)
     subtitle = blocks.CharBlock(required=False)
-    # categories = blocks.ListBlock(SnippetChooserBlock("blog.BlogCategory"))
     article_highlight = blocks.PageChooserBlock(page_type="blog.BlogPage")
 
     class Meta:
@@ -519,11 +518,11 @@ class NewResourcesTeasersBlock(StructBlock):
         latest_event = BlogPage.objects.filter(blog_categories=5).last()
         latest_publication = BlogPage.objects.filter(blog_categories=3).last()
         bp = [value["article_highlight"], latest_publication, latest_event, latest_news]
-        print(bp)
+
         ret = {
             "title": value.get("title"),
             "subtitle": value.get("subtitle"),
-            "image": value["article_highlight"].get_dict("fill-500x500")[
+            "image": value["article_highlight"].get_dict("fill-500x500|jpegquality-60")[
                 "header_image"
             ],
             "articles": [article.get_teaser() for article in bp],

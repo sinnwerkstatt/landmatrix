@@ -342,6 +342,7 @@ class BlogPage(HeadlessPreviewMixin, Page):
         }
 
     parent_page_types = ["blog.BlogIndexPage"]
+    subpage_types = []
 
     def dict_tags(self):
         return [
