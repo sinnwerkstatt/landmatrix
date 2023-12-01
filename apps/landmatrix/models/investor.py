@@ -241,7 +241,7 @@ class Investor(models.Model):
             ix.loans_amount = ivi["loans_amount"]
             if x := ivi["loans_currency"]:
                 if isinstance(x, dict):
-                    ix.loans_currency_id = ivi["loans_currency"]['id']
+                    ix.loans_currency_id = ivi["loans_currency"]["id"]
                 else:
                     ix.loans_currency_id = ivi["loans_currency"]
             ix.loans_date = ivi["loans_date"]
