@@ -33,7 +33,7 @@ export const sortFn =
     if (sortKey.includes("workflowinfos")) {
       if (x.length === 0) return -1
       if (y.length === 0) return 1
-      return new Date(x[0].timestamp).getTime() - new Date(y[0].timestamp).getTime()
+      return new Date(x[0].timestamp) - new Date(y[0].timestamp)
     }
 
     if (x === null || x === undefined) return -1
