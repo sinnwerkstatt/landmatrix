@@ -21,7 +21,7 @@
   export let comment = ""
 
   export let assignToUserInput = false
-  export let toUser: User | number | null = null
+  export let toUser: User | number | undefined = undefined
   export let toUserRequired = false
   export let extraUserIDs: number[] = []
   export let showSubmit = true

@@ -27,7 +27,7 @@
   const dispatch = createEventDispatcher()
 
   export let deal: Deal
-  export let dealVersion: number
+  export let dealVersion: number | undefined
 
   let fully_updated = false
 
