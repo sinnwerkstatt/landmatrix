@@ -148,10 +148,8 @@
         />
       </Table>
     </div>
-    <!--    <div-->
-    <!--      class="h-full min-h-[3px] flex-none {$showContextBar-->
-    <!--        ? 'w-[clamp(220px,20%,300px)]'-->
-    <!--        : 'w-0'}"-->
-    <!--    />-->
+  </div>
+  <div slot="FilterBar">
+    <h2 class="heading5 my-2 px-2">{$_("Data settings")}</h2>
   </div>
 </DataContainer>

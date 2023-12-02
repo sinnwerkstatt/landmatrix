@@ -112,6 +112,7 @@
   </div>
 
   <div slot="FilterBar">
+    <h2 class="heading5 my-2 px-2">{$_("Data settings")}</h2>
     <FilterCollapse title={$_("Table columns")}>
       <div class="flex flex-col">
         {#each COLUMNS as opt}
