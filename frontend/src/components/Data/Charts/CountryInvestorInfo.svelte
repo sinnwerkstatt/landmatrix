@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Client, gql } from "@urql/svelte"
+  import { gql } from "@urql/svelte"
   import { _ } from "svelte-i18n"
 
   import { page } from "$app/stores"
@@ -27,7 +27,7 @@
   ) {
     if (!country) return
 
-    const ret = await ($page.data.urqlClient as Client)
+    const ret = await $page.data.urqlClient
       .query<{
         country_investments_and_rankings: {
           investing: CountryStat[]

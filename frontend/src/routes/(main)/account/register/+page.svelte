@@ -1,5 +1,4 @@
 <script lang="ts">
-  import type { Client } from "@urql/svelte"
   import { gql } from "@urql/svelte"
   import { _ } from "svelte-i18n"
 
@@ -33,7 +32,7 @@
     user = { ...user, username: slugify(user.username) }
   }
   async function register() {
-    const ret = await ($page.data.urqlClient as Client)
+    const ret = await $page.data.urqlClient
       .mutation<{ register: { ok: boolean; code: string } }>(
         gql`
           mutation Register(

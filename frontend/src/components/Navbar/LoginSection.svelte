@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Client, gql } from "@urql/svelte"
+  import { gql } from "@urql/svelte"
   import { _ } from "svelte-i18n"
 
   import { page } from "$app/stores"
@@ -19,7 +19,7 @@
   }
 
   const logout = async () => {
-    const { error, data } = await ($page.data.urqlClient as Client)
+    const { error, data } = await $page.data.urqlClient
       .mutation<{ logout: boolean }>(
         gql`
           mutation {

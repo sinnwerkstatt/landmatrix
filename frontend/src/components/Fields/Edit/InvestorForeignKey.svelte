@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Client, gql } from "@urql/svelte"
+  import { gql } from "@urql/svelte"
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
@@ -20,7 +20,7 @@
   let investors: Investor[] = []
 
   async function getInvestors() {
-    const { error, data } = await ($page.data.urqlClient as Client)
+    const { error, data } = await $page.data.urqlClient
       .query<{
         investors: Investor[]
       }>(
@@ -61,7 +61,7 @@
       newInvestorForm.reportValidity()
       return
     }
-    const { error, data } = await ($page.data.urqlClient as Client)
+    const { error, data } = await $page.data.urqlClient
       .mutation<{
         investor_edit: {
           investorId: number

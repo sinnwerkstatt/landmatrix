@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Client, gql } from "@urql/svelte"
+  import { gql } from "@urql/svelte"
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
@@ -9,7 +9,7 @@
 
   let ret = undefined
   async function register_confirm() {
-    ret = await ($page.data.urqlClient as Client)
+    ret = await $page.data.urqlClient
       .mutation<{ register_confirm: { ok: boolean; code: string } }>(
         gql`
           mutation Register($activation_key: String!) {

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Client, gql } from "@urql/svelte"
+  import { gql } from "@urql/svelte"
   import { toast } from "@zerodevx/svelte-toast"
   import { _ } from "svelte-i18n"
 
@@ -73,7 +73,7 @@
     deal.contracts = removeEmptyEntries(deal.contracts ?? [])
     deal.datasources = removeEmptyEntries(deal.datasources ?? [])
 
-    const { data, error } = await ($page.data.urqlClient as Client)
+    const { data, error } = await $page.data.urqlClient
       .mutation<{ deal_edit: { dealId: number; dealVersion?: number } }>(
         gql`
           mutation ($id: Int!, $version: Int, $payload: Payload) {

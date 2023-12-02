@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Client, gql } from "@urql/svelte"
+  import { gql } from "@urql/svelte"
   import { toast } from "@zerodevx/svelte-toast"
   import dayjs from "dayjs"
   import { _ } from "svelte-i18n"
@@ -37,7 +37,7 @@
   let reply = ""
 
   async function sendReply() {
-    const { data, error } = await ($page.data.urqlClient as Client)
+    const { data, error } = await $page.data.urqlClient
       .mutation<{ add_workflow_info_reply: boolean }>(
         gql`
           mutation ($id: Int!, $type: String!, $from_user_id: Int!, $comment: String!) {
@@ -80,7 +80,7 @@
   }
 
   async function resolveThread() {
-    const { data, error } = await ($page.data.urqlClient as Client)
+    const { data, error } = await $page.data.urqlClient
       .mutation<{ resolve_workflow_info: boolean }>(
         gql`
           mutation ($id: Int!, $type: String!) {

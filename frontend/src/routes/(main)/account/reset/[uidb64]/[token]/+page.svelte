@@ -1,5 +1,4 @@
 <script lang="ts">
-  import type { Client } from "@urql/svelte"
   import { gql } from "@urql/svelte"
   import { _ } from "svelte-i18n"
 
@@ -12,7 +11,7 @@
   let form_submitted = false
 
   function submit() {
-    ;($page.data.urqlClient as Client)
+    $page.data.urqlClient
       .mutation<{ password_reset_confirm: boolean }>(
         gql`
           mutation ($uidb64: String!, $token: String!, $np1: String!, $np2: String!) {

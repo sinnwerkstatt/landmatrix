@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Client, gql } from "@urql/svelte"
+  import { gql } from "@urql/svelte"
   import cn from "classnames"
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
@@ -32,7 +32,7 @@
   let investors: Investor[] = []
 
   async function getDeals() {
-    const { error, data } = await ($page.data.urqlClient as Client)
+    const { error, data } = await $page.data.urqlClient
       .query<{ deals: Deal[] }>(
         gql`
           query SDeals($subset: Subset) {
@@ -61,7 +61,7 @@
   }
 
   async function getInvestors() {
-    const { error, data } = await ($page.data.urqlClient as Client)
+    const { error, data } = await $page.data.urqlClient
       .query<{ investors: Investor[] }>(
         gql`
           query SInvestors($subset: Subset) {
