@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { error } from "@sveltejs/kit"
   import { Client, gql } from "@urql/svelte"
   import { _ } from "svelte-i18n"
 
@@ -7,8 +6,7 @@
 
   import { filters, FilterValues } from "$lib/filters"
   import { countries } from "$lib/stores"
-
-  $: country = $filters.country_id && $countries.find(c => c.id === $filters.country_id)
+  import type { Country } from "$lib/types/wagtail"
 
   interface CountryStat {
     country_id: number
@@ -16,14 +14,19 @@
     size: number
     name?: string
   }
-  let investing_countries: CountryStat[] = []
-  let invested_countries: CountryStat[] = []
 
-  async function _grabInvestmentsAndRankings(
-    countryID: number | undefined,
+  let country: Country | undefined
+  $: country = $countries.find(c => c.id === $filters.country_id)
+
+  let investingCountries: CountryStat[] = []
+  let investedCountries: CountryStat[] = []
+
+  async function grabInvestmentsAndRankings(
+    country: Country | undefined,
     fltrs: FilterValues,
   ) {
-    if (!countryID) return
+    if (!country) return
+
     const ret = await ($page.data.urqlClient as Client)
       .query<{
         country_investments_and_rankings: {
@@ -37,7 +40,7 @@
           }
         `,
         {
-          id: countryID,
+          id: country.id,
           filters: fltrs
             .toGQLFilterArray()
             .filter(f => f.field !== "country_id" && f.field !== "country.region_id"),
@@ -45,24 +48,25 @@
       )
       .toPromise()
 
-    if (!ret.data?.country_investments_and_rankings)
-      throw error(502, `problems fetching data: ${ret.error}`)
+    if (ret.error || !ret.data) {
+      console.error(ret.error)
+      return
+    }
+    const rankings = ret.data.country_investments_and_rankings
 
-    let countryInvestmentsAndRankings = ret.data.country_investments_and_rankings
-
-    investing_countries = countryInvestmentsAndRankings.investing.map(x => ({
+    investingCountries = rankings.investing.map(x => ({
       name: $countries.find(c => c.id === x.country_id)?.name,
       ...x,
       size: +x.size,
     }))
-    investing_countries.sort(sortByDealSizeAndCount)
+    investingCountries.sort(sortByDealSizeAndCount)
 
-    invested_countries = countryInvestmentsAndRankings.invested.map(x => ({
+    investedCountries = rankings.invested.map(x => ({
       name: $countries.find(c => c.id === x.country_id)?.name,
       ...x,
       size: +x.size,
     }))
-    invested_countries.sort(sortByDealSizeAndCount)
+    investedCountries.sort(sortByDealSizeAndCount)
   }
 
   const sortByDealSizeAndCount = (a: CountryStat, b: CountryStat): number => {
@@ -74,21 +78,23 @@
     else return 0
   }
 
-  $: _grabInvestmentsAndRankings($filters.country_id, $filters)
+  $: grabInvestmentsAndRankings(country, $filters)
 </script>
 
 <div class="text-lm-dark dark:text-white">
   {#if country}
     <h3>{country.name}</h3>
 
-    {#if invested_countries.length > 0}
-      <h4 class="my-0 rounded-t border-2 border-b-0 border-lm-purple py-2 text-center">
+    {#if investedCountries.length > 0}
+      <h4
+        class="heading5 my-0 rounded-t border-2 border-b-0 border-lm-purple py-2 text-center"
+      >
         {$_("invests in")}
       </h4>
       <div class="mb-5 rounded-b border-2 border-lm-purple p-4 text-sm shadow-inner">
         <table class="table-striped w-full">
           <tbody>
-            {#each invested_countries as country}
+            {#each investedCountries as country}
               <tr>
                 <th class="text-left">{country.name}</th>
                 <td class="whitespace-nowrap text-right">
@@ -106,12 +112,13 @@
 
     {#if investing_countries.length > 0}
       <h4 class="my-0 rounded-t border-2 border-b-0 border-lm-red py-2 text-center">
+    {#if investingCountries.length > 0}
         {$_("investments from")}
       </h4>
       <div class="mb-5 rounded-b border-2 border-lm-red p-4 text-sm shadow-inner">
         <table class="table-striped w-full">
           <tbody>
-            {#each investing_countries as country}
+            {#each investingCountries as country}
               <tr>
                 <th class="text-left">{country.name}</th>
                 <td class="whitespace-nowrap text-right">
