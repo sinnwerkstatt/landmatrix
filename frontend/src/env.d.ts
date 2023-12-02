@@ -5,5 +5,7 @@ interface ImportMeta {
     readonly VITE_GAPI_KEY: string
     readonly VITE_MATOMO_URL: string
     readonly VITE_MATOMO_SITE_ID: string
+    // feature flags
+    readonly VITE_FF_DISPLAY_ALL_CHARTS: string
   }
 }
