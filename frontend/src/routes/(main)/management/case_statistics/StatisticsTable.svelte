@@ -68,7 +68,7 @@
   }
 </script>
 
-<h2>{$_("Indicator listings")}</h2>
+<h2 class="heading5">{$_("Indicator listings")}</h2>
 
 <div class="relative flex h-[400px] w-full border">
   <nav

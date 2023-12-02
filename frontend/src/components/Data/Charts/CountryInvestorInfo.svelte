@@ -83,7 +83,7 @@
 
 <div class="text-lm-dark dark:text-white">
   {#if country}
-    <h3>{country.name}</h3>
+    <h3 class="heading4 text-center text-lm-dark">{country.name}</h3>
 
     {#if investedCountries.length > 0}
       <h4
@@ -110,9 +110,10 @@
       </div>
     {/if}
 
-    {#if investing_countries.length > 0}
-      <h4 class="my-0 rounded-t border-2 border-b-0 border-lm-red py-2 text-center">
     {#if investingCountries.length > 0}
+      <h4
+        class="heading5 my-0 rounded-t border-2 border-b-0 border-lm-red py-2 text-center"
+      >
         {$_("investments from")}
       </h4>
       <div class="mb-5 rounded-b border-2 border-lm-red p-4 text-sm shadow-inner">
