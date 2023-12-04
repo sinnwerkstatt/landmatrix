@@ -36,7 +36,11 @@
           { id: "activated", name: $_("Investors activated") },
         ]
 
-  let daterange = {
+  interface Daterange {
+    start: Date
+    end: Date
+  }
+  let daterange: Daterange = {
     start: dayjs().subtract(30, "day").toDate(),
     end: new Date(),
   }
@@ -56,7 +60,7 @@
   async function _fetchDeals(
     region: Region | undefined,
     country: Country | undefined,
-    daterange,
+    daterange: Daterange,
   ) {
     const params = new URLSearchParams({
       action: "deal_buckets",
@@ -73,7 +77,7 @@
   async function _fetchInvestors(
     region: Region | undefined,
     country: Country | undefined,
-    daterange,
+    daterange: Daterange,
   ) {
     const params = new URLSearchParams({
       action: "investor_buckets",
@@ -90,7 +94,7 @@
   async function fetchObjs(
     region: Region | undefined,
     country: Country | undefined,
-    daterange,
+    daterange: Daterange,
   ) {
     loading.set(true)
     await Promise.all([
@@ -103,30 +107,27 @@
   $: fetchObjs(region, country, daterange)
 </script>
 
-<div class="mb-4 mt-10 flex items-center gap-8">
-  <h2 class="m-0 whitespace-nowrap">{$_("Changes within timespan")}</h2>
-  <div class="flex items-center gap-6">
-    <select
-      bind:value={selectedDateOption}
-      class="inpt w-40"
-      on:change={() => {
-        daterange = {
-          start: dayjs().subtract(selectedDateOption, "day").toDate(),
-          end: new Date(),
-        }
-      }}
-    >
-      {#each datePreOptions as option}
-        <option value={option.value}>
-          {option.name}
-        </option>
-      {/each}
-    </select>
-    <div class="flex gap-2">
-      <DateInput bind:value={daterange.start} format="yyyy-MM-dd" />
-      <DateInput bind:value={daterange.end} format="yyyy-MM-dd" />
-    </div>
-  </div>
+<h2 class="heading5">{$_("Changes within timespan")}</h2>
+
+<div class="my-2 flex items-center gap-6">
+  <select
+    bind:value={selectedDateOption}
+    class="inpt w-40"
+    on:change={() => {
+      daterange = {
+        start: dayjs().subtract(selectedDateOption, "day").toDate(),
+        end: new Date(),
+      }
+    }}
+  >
+    {#each datePreOptions as option}
+      <option value={option.value}>
+        {option.name}
+      </option>
+    {/each}
+  </select>
+  <DateInput bind:value={daterange.start} format="yyyy-MM-dd" />
+  <DateInput bind:value={daterange.end} format="yyyy-MM-dd" />
 </div>
 
 <div class="relative flex h-[400px] w-full border">

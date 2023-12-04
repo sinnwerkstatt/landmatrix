@@ -1,6 +1,5 @@
 <script lang="ts">
   import { gql } from "@urql/svelte"
-  import type { Client } from "@urql/svelte"
   import { toast } from "@zerodevx/svelte-toast"
   import { _ } from "svelte-i18n"
 
@@ -18,7 +17,7 @@
   let next = $page.url.searchParams.get("next") || "/"
 
   async function login() {
-    const ret = await ($page.data.urqlClient as Client)
+    const ret = await $page.data.urqlClient
       .mutation<{ login: { status: string; error: string; user: User } }>(
         gql`
           mutation Login($username: String!, $password: String!) {

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Client, gql, queryStore } from "@urql/svelte"
+  import { gql, queryStore } from "@urql/svelte"
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
@@ -68,7 +68,7 @@
     if (s_filters.investor_country_id)
       filters.push({ field: "country_id", value: s_filters.investor_country_id })
 
-    const { error, data } = await ($page.data.urqlClient as Client)
+    const { error, data } = await $page.data.urqlClient
       .query<{ investors: Investor[] }>(
         gql`
           query Investors($filters: [Filter]) {

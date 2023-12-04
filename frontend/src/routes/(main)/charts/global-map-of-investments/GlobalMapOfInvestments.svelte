@@ -1,5 +1,4 @@
 <script lang="ts">
-  import type { Client } from "@urql/svelte"
   import { gql } from "@urql/svelte"
 
   import { browser } from "$app/environment"
@@ -30,7 +29,7 @@
   }
 
   const grabInvestments = async () => {
-    const { error, data } = await ($page.data.urqlClient as Client)
+    const { error, data } = await $page.data.urqlClient
       .query<{
         global_map_of_investments: Investments
       }>(

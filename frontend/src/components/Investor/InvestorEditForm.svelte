@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Client, gql } from "@urql/svelte"
+  import { gql } from "@urql/svelte"
   import { toast } from "@zerodevx/svelte-toast"
   import { _ } from "svelte-i18n"
 
@@ -58,7 +58,7 @@
 
     savingInProgress = true
 
-    const { data, error } = await ($page.data.urqlClient as Client)
+    const { data, error } = await $page.data.urqlClient
       .mutation<{ investor_edit: { investorId: number; investorVersion?: number } }>(
         gql`
           mutation ($id: Int!, $version: Int, $payload: Payload) {

@@ -1,5 +1,4 @@
 <script lang="ts">
-  import type { Client } from "@urql/svelte"
   import { gql } from "@urql/svelte"
   import { toast } from "@zerodevx/svelte-toast"
   import { createEventDispatcher } from "svelte"
@@ -45,7 +44,7 @@
   }
 
   async function changeStatus({ detail: { transition, comment = "", toUser = null } }) {
-    const { data, error } = await ($page.data.urqlClient as Client)
+    const { data, error } = await $page.data.urqlClient
       .mutation<{ change_deal_status: { dealId: number; dealVersion: number } }>(
         gql`
           mutation (

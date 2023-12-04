@@ -1,4 +1,5 @@
 import { nanoid } from "nanoid"
+import type { ActionReturn } from "svelte/action"
 
 import type { Obj, ObjVersion } from "$lib/types/generics"
 import { DraftStatus, Status } from "$lib/types/generics"
@@ -57,20 +58,21 @@ export function isAuthorized(user: User, obj: Obj): boolean {
   }
 }
 
+interface ClickOutsideAttributes {
+  "on:outClick": (e: CustomEvent) => void
+}
+
 export const clickOutside = (
-  node: Node,
-): {
-  update?: (params: unknown) => void
-  destroy: () => void
-} => {
-  const onClick = (event: Event) => {
-    if (event.target && !node.contains(event.target as Node)) {
+  node: HTMLElement,
+): ActionReturn<undefined, ClickOutsideAttributes> => {
+  const onClick = (event: Event): void => {
+    if (event.target && !node.contains(event.target as HTMLElement)) {
       node.dispatchEvent(new CustomEvent("outClick"))
     }
   }
   document.addEventListener("click", onClick)
   return {
-    destroy() {
+    destroy(): void {
       document.removeEventListener("click", onClick)
     },
   }

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Client, gql } from "@urql/svelte"
+  import { gql } from "@urql/svelte"
   import { _ } from "svelte-i18n"
   import type { ChangeEventHandler } from "svelte/elements"
 
@@ -31,7 +31,7 @@
 
     let fr = new FileReader()
     fr.onload = async () => {
-      const { error, data } = await ($page.data.urqlClient as Client)
+      const { error, data } = await $page.data.urqlClient
         .mutation<{ upload_datasource_file: string }>(
           gql`
             mutation ($filename: String!, $payload: String!) {

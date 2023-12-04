@@ -45,7 +45,7 @@
   {/if}
 
   <div slot="ContextBar">
-    <h2>{title}</h2>
+    <h2 class="heading4 text-lm-dark">{title}</h2>
     <div>{@html $chartDescriptions?.produce_info_map ?? ""}</div>
   </div>
 </ChartsContainer>

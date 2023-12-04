@@ -101,76 +101,89 @@
     flyToCountryOrRegion($filters.country_id, $filters.region_id)
   }
 
-  function refreshMap() {
-    if (
-      !bigmap ||
-      $deals?.data?.deals?.length === 0 ||
-      markers.length === 0 ||
-      skipMapRefresh
-    ) {
-      return
-    }
+  const refreshMap = (): void => {
+    if (!bigmap || !$deals.data) return
+
+    const dealData = $deals.data.deals
+    if (dealData.length === 0 || skipMapRefresh) return
+
     markersFeatureGroup?.clearLayers()
     current_zoom = bigmap.getZoom()
 
+    const regionIdAsKey: (deal: Deal) => string = R.pipe(
+      R.path(["country", "region", "id"]),
+      R.toString,
+    )
+    const countryIdAsKey: (deal: Deal) => string = R.pipe(
+      R.path(["country", "id"]),
+      R.toString,
+    )
+    const totalDealSize = R.reduce<Deal, number>(
+      (acc, deal) => acc + (deal.deal_size ?? 0),
+      0,
+    )
+
     if (current_zoom < ZOOM_LEVEL.COUNTRY_CLUSTERS && !$filters.country_id) {
-      // cluster by Region
-      Object.entries(
-        R.groupBy(R.pipe(R.prop("region_id"), R.toString), markers),
-      ).forEach(([key, val]) => {
-        if (key === "undefined") return
-        let circle = marker(REGION_COORDINATES[+key], {
-          icon: divIcon({ className: LMCircleClass }),
-        })
-        circle.on("click", () => ($filters.region_id = +key))
+      // cluster by LM region
+      R.pipe(
+        R.groupBy(regionIdAsKey),
+        R.forEachObjIndexed((deals, regionId) => {
+          if (regionId === "undefined" || !deals) return
 
-        markersFeatureGroup.addLayer(circle)
+          const circle = marker(REGION_COORDINATES[+regionId], {
+            icon: divIcon({ className: LMCircleClass }),
+          })
+          circle.on("click", () => ($filters.region_id = +regionId))
+          markersFeatureGroup.addLayer(circle)
 
-        styleCircle(
-          circle,
-          $displayDealsCount
-            ? val.length
-            : val.map(m => m.deal_size ?? 0).reduce((x, y) => x + y, 0),
-          $regions.find(r => r.id === +key)?.name ?? "",
-          $displayDealsCount,
-        )
-      })
+          styleCircle(
+            circle,
+            $displayDealsCount ? deals.length : totalDealSize(deals),
+            $regions.find(r => r.id === +regionId)?.name ?? "",
+            $displayDealsCount,
+          )
+        }),
+      )(dealData)
     } else if (
       current_zoom < ZOOM_LEVEL.DEAL_CLUSTERS &&
       Object.keys(country_coords).length
     ) {
       // cluster by country
-      Object.entries(
-        R.groupBy(R.pipe(R.prop("country_id"), R.toString), markers),
-      ).forEach(([key, val]) => {
-        if (key === "undefined") return
-        let circle = marker(country_coords[+key], {
-          icon: divIcon({ className: LMCircleClass }),
-        })
-        circle.on("click", () => ($filters.country_id = +key))
-        markersFeatureGroup.addLayer(circle)
+      R.pipe(
+        R.groupBy(countryIdAsKey),
+        R.forEachObjIndexed((deals, countryId) => {
+          if (countryId === "undefined" || !deals) return
 
-        styleCircle(
-          circle,
-          $displayDealsCount
-            ? val.length
-            : val.map(m => m.deal_size ?? 0).reduce((x, y) => x + y, 0),
-          $countries.find(c => c.id === +key)?.name ?? "",
-          $displayDealsCount,
-        )
-      })
+          const circle = marker(country_coords[+countryId], {
+            icon: divIcon({ className: LMCircleClass }),
+          })
+          circle.on("click", () => ($filters.country_id = +countryId))
+          markersFeatureGroup.addLayer(circle)
+
+          styleCircle(
+            circle,
+            $displayDealsCount ? deals.length : totalDealSize(deals),
+            $countries.find(c => c.id === +countryId)?.name ?? "",
+            $displayDealsCount,
+          )
+        }),
+      )(dealData)
     } else {
-      // show all deals
+      // show all deals / markers
       const mapBounds = bigmap.getBounds()
-      Object.entries(
-        R.groupBy(R.pipe(R.prop("country_id"), R.toString), markers),
-      ).forEach(([key, val]) => {
-        if (key === "undefined") return
-        val.forEach(mark => {
-          if (mapBounds.contains(mark.getLatLng())) markersFeatureGroup.addLayer(mark)
-          else markersFeatureGroup.removeLayer(mark)
-        })
-      })
+      R.pipe(
+        R.groupBy(R.pipe(R.prop("country_id"), R.toString)),
+        R.forEachObjIndexed((cMarkers, countryId) => {
+          if (countryId === "undefined" || !cMarkers) return
+          cMarkers.forEach(mark => {
+            if (mapBounds.contains(mark.getLatLng())) {
+              markersFeatureGroup.addLayer(mark)
+            } else {
+              markersFeatureGroup.removeLayer(mark)
+            }
+          })
+        }),
+      )(markers)
     }
   }
 

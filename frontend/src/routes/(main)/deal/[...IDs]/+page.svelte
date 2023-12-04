@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Client, gql } from "@urql/svelte"
+  import { gql } from "@urql/svelte"
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
@@ -62,7 +62,7 @@
   async function fetchInvestor() {
     if (!deal.operating_company?.id) return
 
-    const ret = await ($page.data.urqlClient as Client)
+    const ret = await $page.data.urqlClient
       .query<{ investor: Investor }>(
         gql`
           query ($id: Int!) {

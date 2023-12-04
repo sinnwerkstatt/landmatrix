@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Client, gql } from "@urql/svelte"
+  import { gql } from "@urql/svelte"
   import dayjs from "dayjs"
   import { onMount } from "svelte"
 
@@ -19,7 +19,7 @@
 
   let deal: Deal
   async function queryDeal() {
-    const { error, data } = await ($page.data.urqlClient as Client)
+    const { error, data } = await $page.data.urqlClient
       .query(
         gql`
           query ($id: Int!) {

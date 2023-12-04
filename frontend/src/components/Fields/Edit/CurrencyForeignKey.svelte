@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Client, gql } from "@urql/svelte"
+  import { gql } from "@urql/svelte"
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
@@ -20,7 +20,7 @@
   let currencies: Currency[] = []
 
   async function getCurrencies() {
-    const { error, data } = await ($page.data.urqlClient as Client)
+    const { error, data } = await $page.data.urqlClient
       .query<{ currencies: Currency[] }>(
         gql`
           query {
