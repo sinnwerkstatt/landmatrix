@@ -875,9 +875,44 @@ class DataDownload:
                 )
 
         if (eg := data.get("electricity_generation")) is not None:
-            data["electricity_generation"] = json.dumps(eg)
+            data["electricity_generation"] = "|".join(
+                [
+                    "#".join(
+                        [
+                            dat.get("date") or "",
+                            "current" if dat.get("current") else "",
+                            str(dat.get("area", "")),
+                            ", ".join(str(x) for x in [dat.get("choices", [])]),
+                            str(dat.get("export", "")),
+                            str(dat.get("windfarm_count", "")),
+                            str(dat.get("current_capacity", "")),
+                            str(dat.get("intended_capacity", "")),
+                        ]
+                    )
+                    for dat in eg
+                ]
+            )
+
         if (cs := data.get("carbon_sequestration")) is not None:
-            data["carbon_sequestration"] = json.dumps(cs)
+            data["carbon_sequestration"] = "|".join(
+                [
+                    "#".join(
+                        [
+                            dat.get("date") or "",
+                            "current" if dat.get("current") else "",
+                            str(dat.get("area", "")),
+                            ", ".join(str(x) for x in [dat.get("choices", [])]),
+                            str(dat.get("projected_lifetime_sequestration", "")),
+                            str(dat.get("projected_annual_sequestration", "")),
+                            str(dat.get("certification_standard", "")),
+                            str(dat.get("certification_standard_name", "")),
+                            str(dat.get("certification_standard_comment", "")),
+                        ]
+                    )
+                    for dat in cs
+                ]
+            )
+
 
         flatten_array_choices(
             data, "source_of_water_extraction", dict(choices.WATER_SOURCE_CHOICES)
