@@ -1,6 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
+  import { fieldChoices } from "$lib/stores"
   import type { DealVersion2 } from "$lib/types/newtypes"
 
   import DecimalField from "$components/Fields/Display2/DecimalField.svelte"
@@ -36,6 +37,7 @@
       fieldname="intention_of_investment"
       value={version.intention_of_investment}
       label={$_("Intention of investment")}
+      choices={$fieldChoices.deal.intention_of_investment}
     />
     <TextField
       fieldname="intention_of_investment_comment"

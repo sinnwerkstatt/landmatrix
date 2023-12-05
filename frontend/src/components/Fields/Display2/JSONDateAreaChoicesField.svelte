@@ -15,6 +15,8 @@
   export let labelClass = "md:w-5/12 lg:w-4/12"
   export let valueClass = "text-lm-dark dark:text-white md:w-7/12 lg:w-8/12"
 
+  export let choices: { value: string; label: string }[]
+
   // $: flat_choices = formfield.choices
   //   ? Object.fromEntries(formfield.choices.map(c => [c.value, c.label]))
   //   : {}
@@ -30,11 +32,12 @@
         {#each value ?? [] as val}
           <li class:font-bold={val.current}>
             <span>{dateCurrentFormat(val)}</span>
-            {#if val.choices}
-              CHOICES {val.choices}
-              <!-- The literal translation strings are defined in apps/landmatrix/models/choices.py -->
-              <!--{val.choices.map(v => $_(flat_choices[v])).join(", ")}-->
-            {/if}
+
+            {#each val.choices ?? [] as v}
+              {choices.find(c => c.value === v)?.label ?? ""}
+            {/each}
+            <!-- The literal translation strings are defined in apps/landmatrix/models/choices.py -->
+            <!--{val.choices.map(v => $_(flat_choices[v])).join(", ")}-->
             {#if val.area}
               (
               <CircleNotchIcon />
