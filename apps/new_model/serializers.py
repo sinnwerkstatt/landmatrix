@@ -2,6 +2,7 @@ from django.db.models import Q, QuerySet
 from rest_framework import serializers
 
 from apps.landmatrix.models.country import Country
+from apps.landmatrix.models.deal import DealWorkflowInfo
 from apps.landmatrix.models.investor import InvestorWorkflowInfo
 from apps.new_model.models import (
     DealVersion2,
@@ -86,8 +87,17 @@ class DealVersionSerializer(serializers.ModelSerializer):
 
 class Deal2Serializer(serializers.ModelSerializer):
     country = CountrySerializer()
+
     versions = DealVersionVersionsListSerializer(many=True)
     selected_version = DealVersionSerializer()
+    workflowinfos = serializers.SerializerMethodField()
+
+    @staticmethod
+    def get_workflowinfos(obj: InvestorHull):
+        return [
+            x.to_new_dict()
+            for x in DealWorkflowInfo.objects.filter(deal_id=obj.id).order_by("-id")
+        ]
 
     class Meta:
         model = DealHull
@@ -167,14 +177,11 @@ class InvestorVersionSerializer(serializers.ModelSerializer):
 
 class Investor2Serializer(serializers.ModelSerializer):
     versions = InvestorVersionVersionsListSerializer(many=True)
+
     selected_version = InvestorVersionSerializer()
     # involvements = InvolvementSerializer(many=True)
     involvements = serializers.SerializerMethodField()
     workflowinfos = serializers.SerializerMethodField()
-
-    class Meta:
-        model = InvestorHull
-        fields = "__all__"
 
     @staticmethod
     def get_involvements(obj: InvestorHull):
@@ -200,3 +207,7 @@ class Investor2Serializer(serializers.ModelSerializer):
                 "-id"
             )
         ]
+
+    class Meta:
+        model = InvestorHull
+        fields = "__all__"

@@ -3,9 +3,11 @@
 
   import type { DealHull } from "$lib/types/newtypes"
 
+  import CheckCircleIcon from "$components/icons/CheckCircleIcon.svelte"
   import CheckIcon from "$components/icons/CheckIcon.svelte"
   import EyeIcon from "$components/icons/EyeIcon.svelte"
   import EyeSlashIcon from "$components/icons/EyeSlashIcon.svelte"
+  import MinusCircleIcon from "$components/icons/MinusCircleIcon.svelte"
   import XIcon from "$components/icons/XIcon.svelte"
   import ManageHeader from "$components/New/ManageHeader.svelte"
 
@@ -20,6 +22,15 @@
   </svelte:fragment>
 
   <svelte:fragment slot="visibility">
+    <div class="mt-2 flex items-center gap-1 font-bold">
+      {#if deal.selected_version.fully_updated}
+        <CheckCircleIcon class="h-6 w-6 text-orange" />
+        <span>{$_("Fully updated")}</span>
+      {:else}
+        <MinusCircleIcon class="h-6 w-6 text-gray-dark" />
+        <span class="text-gray-dark dark:text-white">{$_("Not fully updated")}</span>
+      {/if}
+    </div>
     <div class="flex items-center gap-4 bg-gray-dark px-2 py-1 text-white">
       <div class="flex items-center gap-1 text-lg">
         {#if deal.selected_version.is_public}

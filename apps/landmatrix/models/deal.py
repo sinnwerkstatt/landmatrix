@@ -1176,6 +1176,16 @@ class DealWorkflowInfo(WorkflowInfo):
         d.update({"deal": self.deal, "deal_version": self.deal_version})
         return d
 
+    def to_new_dict(self) -> dict:
+        d = super().to_new_dict()
+        d.update(
+            {
+                "deal_id": self.deal_id,
+                "deal_version_id": self.deal_version_id,
+            }
+        )
+        return d
+
 
 class DealParentCompanies(models.Model):
     """A view on deal.parent_companies M2M relation table."""

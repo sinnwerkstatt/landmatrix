@@ -254,6 +254,15 @@
     @apply active:bg-pelorous active:text-white;
   }
 
+  .btn-purple {
+    @apply border-lm-purple-500 bg-lm-purple-300 text-white;
+    @apply hover:bg-lm-purple-500 active:bg-lm-purple-500;
+  }
+  .btn-violet {
+    @apply border-lm-violet-500 bg-lm-violet-300 text-white;
+    @apply hover:bg-lm-violet-500 active:bg-lm-violet-500;
+  }
+
   .btn-pelorous-secondary {
     @apply button1 rounded border-pelorous bg-white text-pelorous;
     @apply hover:bg-pelorous-200 hover:text-white;

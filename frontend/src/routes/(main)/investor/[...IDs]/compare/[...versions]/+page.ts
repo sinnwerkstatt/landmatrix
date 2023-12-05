@@ -1,13 +1,11 @@
 import { error } from "@sveltejs/kit"
 import { diff } from "deep-object-diff"
 
-import { investorQuery } from "$lib/investorQueries"
-import type { Investor } from "$lib/types/investor"
+import type { InvestorHull } from "$lib/types/newtypes"
 
 import type { PageLoad } from "./$types"
 
-export const load: PageLoad = async ({ params, parent }) => {
-  const { urqlClient } = await parent()
+export const load: PageLoad = async ({ params, fetch }) => {
   const [investorID] = params.IDs.split("/").map(x => (x ? +x : undefined))
   if (!investorID) throw error(404, "Investor not found")
 
@@ -17,26 +15,24 @@ export const load: PageLoad = async ({ params, parent }) => {
 
   if (!versionFrom || !versionTo) throw error(500, "insufficient parameters")
 
-  const vFrom = await urqlClient
-    .query(
-      investorQuery,
-      { id: investorID, version: versionFrom, includeDeals: false },
-      { requestPolicy: "network-only" },
-    )
-    .toPromise()
-  const investorFrom: Investor = vFrom.data.investor
-  const vTo = await urqlClient
-    .query(
-      investorQuery,
-      { id: investorID, version: versionTo, includeDeals: false },
-      { requestPolicy: "network-only" },
-    )
-    .toPromise()
-  const investorTo: Investor = vTo.data.investor
+  const resFrom = await fetch(`/api/investors/${investorID}/${versionFrom}/`)
+  const investorFrom: InvestorHull = await resFrom.json()
 
-  const investordiffy = Object.keys(diff(investorFrom, investorTo))
-  const dsdiffy = Object.keys(diff(investorFrom.datasources, investorTo.datasources))
-  const idiffy = Object.keys(diff(investorFrom.investors, investorTo.investors))
+  const resTo = await fetch(`/api/investors/${investorID}/${versionTo}/`)
+  const investorTo: InvestorHull = await resTo.json()
+  // const investorTo: Investor = vTo.data.investor
+
+  const investordiffy = Object.keys(
+    diff(investorFrom.selected_version, investorTo.selected_version),
+  )
+  const dsdiffy = Object.keys(
+    diff(
+      investorFrom.selected_version.datasources,
+      investorTo.selected_version.datasources,
+    ),
+  )
+  // const idiffy = Object.keys(diff(investorFrom.investors, investorTo.investors))
+  const idiffy = []
 
   return {
     investorID,

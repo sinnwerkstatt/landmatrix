@@ -3,6 +3,7 @@ import re
 
 from django.conf import settings
 from django.contrib.gis.db import models as gis_models
+from django.contrib.gis.geos import GEOSGeometry
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models, transaction
@@ -44,6 +45,7 @@ from apps.landmatrix.models.fields import (
 )
 from apps.landmatrix.models.investor import Investor
 from apps.new_model.utils import InvolvementNetwork
+from django.contrib.gis.geos.prototypes.io import wkt_w
 
 DRAFT_STATUS = {
     "DRAFT": 1,
@@ -989,7 +991,7 @@ class DealVersion2(DealVersionBaseFields, VersionTimestampsMixins):
             # self.not_public_reason = self._calculate_public_state()
             # self.is_public = self.not_public_reason == ""
 
-            # this might error because it's m2m and we need the
+            # this might error because it's m2m, and we need the
             # Deal to have an ID first before we can save the investors. 🙄
             self._calculate_parent_companies()
             self.transnational = self._calculate_transnational()
@@ -1004,7 +1006,7 @@ class DealVersion2(DealVersionBaseFields, VersionTimestampsMixins):
 
 class Location(models.Model):
     dealversion = models.ForeignKey(
-        DealVersion2, on_delete=models.PROTECT, related_name="locations"
+        DealVersion2, on_delete=models.CASCADE, related_name="locations"
     )
     nid = NanoIDField("ID", max_length=15, db_index=True)
     name = models.CharField(_("Location"), blank=True)
@@ -1040,7 +1042,7 @@ class Location(models.Model):
 
 class Area(models.Model):
     location = models.ForeignKey(
-        Location, on_delete=models.PROTECT, related_name="areas"
+        Location, on_delete=models.CASCADE, related_name="areas"
     )
     AREA_TYPE_CHOICES = (
         ("production_area", _("Production area")),
@@ -1063,13 +1065,26 @@ class Area(models.Model):
             "area": json.loads(self.area.geojson) if self.area else None,
         }
 
+    @staticmethod
+    def _remove_third_dimension_on_gis(gis_obj: GEOSGeometry):
+        if not gis_obj:
+            return gis_obj
+        if gis_obj.hasz:
+            wkt = wkt_w(dim=2).write(gis_obj).decode()
+            gis_obj = GEOSGeometry(wkt, srid=4674)
+        return gis_obj
+
+    def save(self, *args, **kwargs):
+        self.area = self._remove_third_dimension_on_gis(self.area)
+        super().save(*args, **kwargs)
+
     # class Meta:
     #     unique_together = ["location", "type", "current"]
 
 
 class Contract(models.Model):
     dealversion = models.ForeignKey(
-        DealVersion2, on_delete=models.PROTECT, related_name="contracts"
+        DealVersion2, on_delete=models.CASCADE, related_name="contracts"
     )
     nid = NanoIDField("ID", max_length=15, db_index=True)
     number = models.CharField(_("Contract number"), blank=True)
@@ -1098,8 +1113,9 @@ class Contract(models.Model):
 class BaseDataSource(models.Model):
     nid = NanoIDField("ID", max_length=15, db_index=True)
     type = models.CharField(_("Type"), choices=DATASOURCE_TYPE_CHOICES, blank=True)
-    url = models.URLField(_("Url"), blank=True, max_length=1000)
-    file = models.FileField(_("File"), blank=True, null=True, max_length=1000)
+    # NOTE hit a URL > 1000 chars... so going with 2000 for now. TODO this is just ridiculous
+    url = models.URLField(_("Url"), blank=True, max_length=5000)
+    file = models.FileField(_("File"), blank=True, null=True, max_length=3000)
     file_not_public = models.BooleanField(_("Keep PDF not public"), default=False)
     publication_title = models.CharField(_("Publication title"), blank=True)
     date = LooseDateField(_("Date"), blank=True, null=True)
@@ -1139,7 +1155,7 @@ class BaseDataSource(models.Model):
 
 class DealDataSource(BaseDataSource):
     dealversion = models.ForeignKey(
-        DealVersion2, on_delete=models.PROTECT, related_name="datasources"
+        DealVersion2, on_delete=models.CASCADE, related_name="datasources"
     )
 
     class Meta:

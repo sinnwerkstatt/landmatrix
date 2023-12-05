@@ -26,14 +26,7 @@ status_map_dings = {
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        investors: QuerySet[Investor] = (
-            Investor.objects.all()
-            .order_by("id")
-            .all()
-            # .filter(id__gte=35659)
-            .filter(id__in=[2])
-            # [:2000]
-        )
+        investors: QuerySet[Investor] = Investor.objects.all().order_by("id").all()
         for old_investor in investors:
             investor_hull: InvestorHull
             investor_hull, _ = InvestorHull.objects.get_or_create(
@@ -116,7 +109,7 @@ def _map_status(investor_hull, new_version, old_version: InvestorVersion):
             new_version.status = "TO_DELETE"
             investor_hull.active_version_id = old_version.id
         else:
-            print("TODO DELETE else?!")
+            ic("TODO DELETE else?!")
             ...  # TODO !!
     else:
         print("VERSION OHO", old_version.object_id, old_version_dict["status"])

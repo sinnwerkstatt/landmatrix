@@ -97,7 +97,10 @@ class JSONSchemaField(JSONField):
         try:
             self.schema_definition(value)
         except JsonSchemaException as e:
-            raise ValidationError(e, code="invalid")
+            raise ValidationError(
+                message=f"{self.__class__.__name__} '{self.name}': {e}\n{value}",
+                code="invalid",
+            )
 
     def formfield(self, **kwargs):
         current_self = self

@@ -4,6 +4,7 @@
   import { investorSections, subsections } from "$lib/sections"
   import { formfields } from "$lib/stores"
 
+  import TextField from "$components/Fields/Display2/TextField.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"
 
   export let data
@@ -55,51 +56,66 @@
       </th>
     </tr>
   </thead>
-
+  <!--  "name", "country", "classification", "homepage", "opencorporates", "comment",-->
   <tbody>
-    {#each Object.entries($investorSections) as [label, section]}
-      {#if anyFieldFromSection(section)}
-        <tr>
-          <th colspan="3" class="bg-lm-dark py-4">
-            <h2 class="my-0 pl-2 text-white">{labels[label]}</h2>
-          </th>
-        </tr>
-        {#each section as subsec}
-          {#if anyFieldFromSubSection(subsec)}
-            <tr>
-              <th colspan="3" class="bg-lm-darkgray py-2 dark:bg-gray-600">
-                <h3 class="m-0 pl-5 text-lg">{subsec.name}</h3>
-              </th>
-            </tr>
-            {#each subsec.fields as field}
-              {#if data.investordiff.has(field)}
-                <tr class="odd:bg-lm-lightgray dark:odd:bg-gray-700">
-                  <th class="whitespace-nowrap py-2 pl-8">
-                    {$formfields.investor[field].label}
-                  </th>
-                  <td>
-                    <DisplayField
-                      wrapperClasses="px-4 py-2"
-                      fieldname={field}
-                      value={data.investorFrom[field]}
-                      model="investor"
-                    />
-                  </td>
-                  <td>
-                    <DisplayField
-                      wrapperClasses="py-2"
-                      fieldname={field}
-                      value={data.investorTo[field]}
-                      model="investor"
-                    />
-                  </td>
-                </tr>
-              {/if}
-            {/each}
-          {/if}
-        {/each}
-      {/if}
-    {/each}
+    <tr>
+      <td>Name</td>
+      <td>
+        <TextField
+          fieldname="investor.name"
+          value={data.investorFrom.selected_version.name}
+        />
+      </td>
+      <td>
+        <TextField
+          fieldname="investor.name"
+          value={data.investorTo.selected_version.name}
+        />
+      </td>
+    </tr>
+    <!--{#each Object.entries($investorSections) as [label, section]}-->
+    <!--  {#if anyFieldFromSection(section)}-->
+    <!--    <tr>-->
+    <!--      <th colspan="3" class="bg-lm-dark py-4">-->
+    <!--        <h2 class="my-0 pl-2 text-white">{labels[label]}</h2>-->
+    <!--      </th>-->
+    <!--    </tr>-->
+    <!--    {#each section as subsec}-->
+    <!--      {#if anyFieldFromSubSection(subsec)}-->
+    <!--        <tr>-->
+    <!--          <th colspan="3" class="bg-lm-darkgray py-2 dark:bg-gray-600">-->
+    <!--            <h3 class="m-0 pl-5 text-lg">{subsec.name}</h3>-->
+    <!--          </th>-->
+    <!--        </tr>-->
+    <!--        {#each subsec.fields as field}-->
+    <!--          {#if data.investordiff.has(field)}-->
+    <!--            <tr class="odd:bg-lm-lightgray dark:odd:bg-gray-700">-->
+    <!--              <th class="whitespace-nowrap py-2 pl-8">-->
+    <!--                {$formfields.investor[field].label}-->
+    <!--              </th>-->
+    <!--              <td>-->
+    <!--                <DisplayField-->
+    <!--                  wrapperClasses="px-4 py-2"-->
+    <!--                  fieldname={field}-->
+    <!--                  value={data.investorFrom[field]}-->
+    <!--                  model="investor"-->
+    <!--                />-->
+    <!--              </td>-->
+    <!--              <td>-->
+    <!--                <DisplayField-->
+    <!--                  wrapperClasses="py-2"-->
+    <!--                  fieldname={field}-->
+    <!--                  value={data.investorTo[field]}-->
+    <!--                  model="investor"-->
+    <!--                />-->
+    <!--              </td>-->
+    <!--            </tr>-->
+    <!--          {/if}-->
+    <!--        {/each}-->
+    <!--      {/if}-->
+    <!--    {/each}-->
+    <!--  {/if}-->
+    <!--{/each}-->
 
     {#if data.involvementsdiff}
       <tr class="border-t-[3rem] border-white dark:border-gray-800">

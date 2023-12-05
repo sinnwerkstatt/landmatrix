@@ -66,6 +66,19 @@ export interface InvestorHull extends Hull {
 
 interface DataSource {
   nid: string
+  type: string
+  url: string
+  file: string
+  file_not_public: boolean
+  publication_title: string
+  date: string
+  name: string
+  company: string
+  email: string
+  phone: string
+  includes_in_country_verified_information: boolean | null
+  open_land_contracts_id: string
+  comment: string
 }
 
 interface DealVersionBase {
@@ -106,6 +119,7 @@ export interface DealVersion2 extends DealVersionBase, VersionTimestampMixins {
   current_negotiation_status: string
   current_implementation_status: string
   deal_size: number
+  fully_updated: boolean
 
   status: Version2Status
 }
@@ -150,6 +164,7 @@ export interface InvestorVersion2 extends VersionTimestampMixins {
   homepage: string
   opencorporates: string
   comment: string
+  datasources: DataSource[]
 
   status: Version2Status
   deals: DealHull[]

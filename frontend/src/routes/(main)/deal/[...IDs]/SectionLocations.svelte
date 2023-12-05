@@ -9,6 +9,7 @@
   import { createLegend } from "$lib/utils/location"
 
   import NanoIDField from "$components/Fields/Display2/NanoIDField.svelte"
+  import PointField from "$components/Fields/Display2/PointField.svelte"
   import TextField from "$components/Fields/Display2/TextField.svelte"
   import BigMap from "$components/Map/BigMap.svelte"
 
@@ -123,6 +124,12 @@
               value={location.name}
               fieldname="location.name"
             />
+            <PointField
+              label={$_("Point")}
+              value={location.point}
+              fieldname="location.point"
+            />
+
             <TextField
               label={$_("Description")}
               value={location.description}
