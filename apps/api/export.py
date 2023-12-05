@@ -913,7 +913,6 @@ class DataDownload:
                 ]
             )
 
-
         flatten_array_choices(
             data, "source_of_water_extraction", dict(choices.WATER_SOURCE_CHOICES)
         )
