@@ -1,3 +1,5 @@
+import sys
+
 from django.core.management.base import BaseCommand
 from icecream import ic
 
@@ -10,58 +12,77 @@ from apps.new_model.models import (
     Area,
     Contract,
     DealDataSource,
-    InvestorHull,
 )
 
 from django.contrib.gis.geos import Point, GEOSGeometry
 
+status_map_dings = {
+    1: "DRAFT",
+    2: "REVIEW",
+    3: "ACTIVATION",
+    4: "REJECTED",
+    5: "TO_DELETE",
+}
+
 
 class Command(BaseCommand):
+    def add_arguments(self, parser):
+        parser.add_argument("start_id", nargs="?", type=int)
+
     def handle(self, *args, **options):
         # TODO HANDLE THESE
         exclude_ids = [
-            3523,
-            3536,
-            4862,
-            4863,
-            4864,
-            4865,
-            4866,
-            4867,
-            4868,
-            4869,
-            4882,
-            4883,
-            5400,  # datasources[4] has `type=None` instead of `type=''`
-            5410,  # datasources[2] has `type=None` instead of `type=''`
-            5415,  # datasources[2] has `type=None` instead of `type=''`
-            5416,  # datasources[3] has `type=None` instead of `type=''`
-            5871,  # weird
-            6174,  # "LAFP"?
-            6177,  # "LAFP"?
-            6178,  # "LAFP"?
-            6179,  # "LAFP"?
-            6181,  # "LAFP"?
-            6182,  # "LAFP"?
-            6183,  # "LAFP"?
-            6184,  # "LAFP"?
-            6192,  # broken investor link
-            # TODO
-            6237,  # broken investor link
-            6243,  # broken investor link
-            9422,  # broken investor link
-            9646,  # broken investor link
+            # 450,  # Area geometry has Z axis
+            # 1056,  # Area geometry has Z axis
+            # 1059,  # Area geometry has Z axis
+            # 1061,  # Area geometry has Z axis
+            # 1098,  # Area geometry has Z axis
+            # 3523,
+            # 3536,
+            # 4862,
+            # 4863,
+            # 4864,
+            # 4865,
+            # 4866,
+            # 4867,
+            # 4868,
+            # 4869,
+            # 4882,
+            # 4883,
+            # 5400,  # datasources[4] has `type=None` instead of `type=''`
+            # 5410,  # datasources[2] has `type=None` instead of `type=''`
+            # 5415,  # datasources[2] has `type=None` instead of `type=''`
+            # 5416,  # datasources[3] has `type=None` instead of `type=''`
+            # 5871,  # weird
+            # 6174,  # "LAFP"?
+            # 6177,  # "LAFP"?
+            # 6178,  # "LAFP"?
+            # 6179,  # "LAFP"?
+            # 6181,  # "LAFP"?
+            # 6182,  # "LAFP"?
+            # 6183,  # "LAFP"?
+            # 6184,  # "LAFP"?
+            # 6192,  # broken investor link
+            # # TODO
+            # 6237,  # broken investor link
+            # 6243,  # broken investor link
+            # 9422,  # broken investor link
+            # 9646,  # broken investor link
         ]
         deals = (
             Deal.objects.all()
             .order_by("id")
             .exclude(id__in=exclude_ids)
             # .prefetch_related("versions")
-            # .all()[:1000]
-            .filter(id__in=[3, 23, 4747])
-            # .filter(id=2)
+            # .filter(id__gte=3721)
         )
+        if options["start_id"]:
+            deals = deals.filter(id__gte=options["start_id"])
+
         for old_deal in deals:  # type: Deal
+            url = f"https://landmatrix.org/deal/{old_deal.id}/"
+            ic(old_deal.id, old_deal.status, url)
+
             ## WIP:
             # version_dings = [
             #     [x.serialized_data["status"], x.serialized_data["draft_status"]]
@@ -79,17 +100,23 @@ class Command(BaseCommand):
             #     print("UNKNOWN", version_dings)
             #     return
 
+            created_by_id = old_deal.created_by_id
+            if not created_by_id:
+                created_by_id = (
+                    old_deal.versions.all().order_by("id").first().created_by_id
+                ) or 1
+
             deal_hull: DealHull
             deal_hull, _ = DealHull.objects.get_or_create(
                 id=old_deal.id,
-                created_by=old_deal.created_by,
+                created_by_id=created_by_id,
                 created_at=old_deal.created_at,
             )
 
             deal_hull.fully_updated_at = old_deal.fully_updated_at
 
-            print(old_deal.id, "status:", old_deal.status)
             for old_version in old_deal.versions.all().order_by("id"):
+                # ic(old_version.id)
                 new_version: DealVersion2
                 base_payload = {
                     "deal_id": old_deal.id,
@@ -111,14 +138,9 @@ class Command(BaseCommand):
                 deal_hull.country_id = old_version_dict["country"]
 
                 if old_version_dict["status"] == 1:
-                    map_dings = {
-                        1: "DRAFT",
-                        2: "REVIEW",
-                        3: "ACTIVATION",
-                        4: "REJECTED",
-                        5: "TO_DELETE",
-                    }
-                    new_version.status = map_dings[old_version_dict["draft_status"]]
+                    new_version.status = status_map_dings[
+                        old_version_dict["draft_status"]
+                    ]
                     deal_hull.draft_version_id = old_version.id
                 elif old_version_dict["status"] in [2, 3]:
                     if old_version_dict["draft_status"] is None:
@@ -138,6 +160,7 @@ class Command(BaseCommand):
                         new_version.status = "REJECTED"
                         # deal_hull.active_version_id = deal_version.id
                     else:
+                        ic("OH OH OH\nOH OH OH")
                         # print("TODO?!", old_version_dict["draft_status"])
                         new_version.status = "DELETED"
                 elif old_version_dict["status"] == 4:
@@ -158,7 +181,7 @@ class Command(BaseCommand):
             # deal_hull.draft_version_id = old_deal.current_draft_id
             deal_hull.deleted = old_deal.status == 4
             deal_hull.confidential = old_deal.confidential
-            deal_hull.confidential_comment = old_deal.confidential_comment
+            deal_hull.confidential_comment = old_deal.confidential_comment or ""
 
             do_workflows(old_deal.id)
 
@@ -168,31 +191,30 @@ class Command(BaseCommand):
 def map_locations(nv: DealVersion2, locations: list[dict]):
     for loc in locations:
         l1, _ = Location.objects.get_or_create(dealversion_id=nv.id, nid=loc["id"])
-        l1.name = loc["name"]
-        l1.description = loc["description"]
-        if p := loc["point"]:
+        l1.name = loc.get("name", "")
+        l1.description = loc.get("description", "")
+        if p := loc.get("point"):
             l1.point = Point(p["lng"], p["lat"])
-        l1.facility_name = loc["facility_name"]
-        l1.level_of_accuracy = loc["level_of_accuracy"]
-        l1.comment = loc["comment"]
+        l1.facility_name = loc.get("facility_name", "")
+        l1.level_of_accuracy = loc.get("level_of_accuracy", "")
+        l1.comment = loc.get("comment", "")
         l1.save()
-        if area := loc["areas"]:
+        if area := loc.get("areas"):
+            Area.objects.filter(location=l1).delete()
             for feat in area["features"]:
-                a1, _ = Area.objects.update_or_create(
+                Area.objects.create(
                     location=l1,
                     area=GEOSGeometry(str(feat["geometry"])),
-                    defaults={
-                        "type": feat["properties"]["type"],
-                        "current": feat["properties"].get("current", False),
-                        "date": feat["properties"].get("date"),
-                    },
+                    type=feat["properties"]["type"],
+                    current=feat["properties"].get("current", False),
+                    date=feat["properties"].get("date"),
                 )
 
 
 def map_contracts(nv: DealVersion2, contracts: list[dict]):
     for con in contracts:
         c1, _ = Contract.objects.get_or_create(dealversion_id=nv.id, nid=con["id"])
-        c1.number = con["number"]
+        c1.number = con.get("number", "")
         c1.date = con.get("date", None)
         c1.expiration_date = con.get("expiration_date", None)
         c1.agreement_duration = con.get("agreement_duration", None)
@@ -205,7 +227,7 @@ def map_datasources(nv: DealVersion2, datasources: list[dict]):
         ds1, _ = DealDataSource.objects.get_or_create(
             dealversion_id=nv.id, nid=dats["id"]
         )
-        ds1.type = dats.get("type", "")
+        ds1.type = dats.get("type", "") or ""
         ds1.url = dats.get("url", "")
         if dats.get("file"):
             ds1.file.name = dats["file"]
@@ -228,15 +250,69 @@ def map_version_payload(ov: dict, nv: DealVersion2):
     # nv.country_id = ov["country"]
     nv.intended_size = ov["intended_size"]
     nv.contract_size = ov["contract_size"] or []
+    for x in nv.contract_size:
+        if x.get("date"):
+            x["date"] = x["date"].strip()
+        if x.get("date") == "11996":
+            x["date"] = "1996"
+        if x.get("date") == "2020-04-00":
+            x["date"] = "2020-04"
+        if x.get("date") == "12017":
+            x["date"] = "2017"
+        if x.get("date") == "6":
+            del x["date"]
+        if nv.deal_id == 5177 and x.get("date") == "7":
+            x["date"] = "2016"
+        if nv.deal_id == 5483 and x.get("date") == "1":
+            del x["date"]
+        if x.get("date") == "11993":
+            x["date"] = "1993"
+        if x.get("date") == "3":
+            x["date"] = "2030"
+        if x.get("date") == "2007-31-03":
+            x["date"] = "2007-03-31"
+        if x.get("date") == "201133912":
+            x["date"] = "2011-01-12"
     nv.production_size = ov["production_size"] or []
+    for x in nv.production_size:
+        if x.get("date"):
+            x["date"] = x["date"].strip()
+        if x.get("date") == "20111":
+            x["date"] = "2011"
+        if x.get("date") == "6":
+            del x["date"]
+        if nv.deal_id == 5483 and x.get("date") == "12":
+            del x["date"]
+        if x.get("date") == "2007-31-03":
+            x["date"] = "2007-03-31"
     nv.land_area_comment = ov["land_area_comment"]
-    nv.intention_of_investment = ov["intention_of_investment"]
+    nv.intention_of_investment = ov["intention_of_investment"] or []
+    for x in nv.intention_of_investment:
+        if x.get("date"):
+            x["date"] = x["date"].strip()
     nv.intention_of_investment_comment = ov["intention_of_investment_comment"]
     nv.nature_of_deal = ov["nature_of_deal"] or []
     nv.nature_of_deal_comment = ov["nature_of_deal_comment"]
     nv.negotiation_status = ov["negotiation_status"] or []
+    for neg in nv.negotiation_status:
+        if nv.deal_id == 4009 and neg.get("date") == "201":
+            neg["date"] = "2012"
+        elif nv.deal_id == 5173 and neg.get("date") == "1":
+            neg["date"] = "2016"
+        elif "date" in neg.keys():
+            if neg["date"] is None:
+                del neg["date"]
+            else:
+                neg["date"] = neg["date"].strip()
+        if "choice" in neg.keys() and neg["choice"] is None:
+            del neg["choice"]
     nv.negotiation_status_comment = ov["negotiation_status_comment"]
     nv.implementation_status = ov["implementation_status"] or []
+    for x in nv.implementation_status:
+        if x.get("date") == "6":
+            del x["date"]
+        if nv.deal_id == 6012 and x.get("date") == "30":
+            del x["date"]
     nv.implementation_status_comment = ov["implementation_status_comment"]
     nv.purchase_price = ov["purchase_price"]
     nv.purchase_price_currency_id = ov["purchase_price_currency"]
@@ -251,38 +327,90 @@ def map_version_payload(ov: dict, nv: DealVersion2):
     nv.contract_farming = ov["contract_farming"]
     nv.on_the_lease_state = ov["on_the_lease_state"]
     nv.on_the_lease = ov["on_the_lease"] or []
+    for x in nv.on_the_lease:
+        if "farmers" in x.keys() and x["farmers"] is None:
+            del x["farmers"]
+        elif "farmers" in x.keys():
+            x["farmers"] = int(x["farmers"])
     nv.off_the_lease_state = ov["off_the_lease_state"]
     nv.off_the_lease = ov["off_the_lease"] or []
+    for x in nv.off_the_lease:
+        if "farmers" in x.keys():
+            x["farmers"] = int(x["farmers"])
+        if "area" in x.keys() and x["area"] is None:
+            del x["area"]
+
     nv.contract_farming_comment = ov["contract_farming_comment"]
     nv.total_jobs_created = ov["total_jobs_created"]
     nv.total_jobs_planned = ov["total_jobs_planned"]
     nv.total_jobs_planned_employees = ov["total_jobs_planned_employees"]
     nv.total_jobs_planned_daily_workers = ov["total_jobs_planned_daily_workers"]
     nv.total_jobs_current = ov["total_jobs_current"] or []
+    for jbs in nv.total_jobs_current:
+        if "date" in jbs.keys() and jbs["date"]:
+            jbs["date"] = jbs["date"].strip()
+        if "jobs" in jbs.keys() and (jbs["jobs"] is None or jbs["jobs"] == ""):
+            del jbs["jobs"]
+        elif "jobs" in jbs.keys():
+            jbs["jobs"] = int(float(jbs["jobs"]))
+        if "workers" in jbs.keys() and (jbs["workers"] is None or jbs["workers"] == ""):
+            del jbs["workers"]
+        elif "workers" in jbs.keys() and jbs["workers"]:
+            jbs["workers"] = int(float(jbs["workers"]))
+        if "employees" in jbs.keys() and jbs["employees"] is None:
+            del jbs["employees"]
+        elif "employees" in jbs.keys() and jbs["employees"]:
+            jbs["employees"] = int(float(jbs["employees"]))
     nv.total_jobs_created_comment = ov["total_jobs_created_comment"]
     nv.foreign_jobs_created = ov["foreign_jobs_created"]
     nv.foreign_jobs_planned = ov["foreign_jobs_planned"]
     nv.foreign_jobs_planned_employees = ov["foreign_jobs_planned_employees"]
     nv.foreign_jobs_planned_daily_workers = ov["foreign_jobs_planned_daily_workers"]
     nv.foreign_jobs_current = ov["foreign_jobs_current"] or []
+    for jbs in nv.foreign_jobs_current:
+        if "jobs" in jbs.keys() and jbs["jobs"] is None:
+            del jbs["jobs"]
+        # if "workers" in jbs.keys() and jbs["workers"] is None:
+        #     del jbs["workers"]
+        if "employees" in jbs.keys() and jbs["employees"] is None:
+            del jbs["employees"]
+        if "employees" in jbs.keys() and jbs["employees"]:
+            jbs["employees"] = int(jbs["employees"])
+
     nv.foreign_jobs_created_comment = ov["foreign_jobs_created_comment"]
     nv.domestic_jobs_created = ov["domestic_jobs_created"]
     nv.domestic_jobs_planned = ov["domestic_jobs_planned"]
     nv.domestic_jobs_planned_employees = ov["domestic_jobs_planned_employees"]
     nv.domestic_jobs_planned_daily_workers = ov["domestic_jobs_planned_daily_workers"]
     nv.domestic_jobs_current = ov["domestic_jobs_current"] or []
+    for jbs in nv.domestic_jobs_current:
+        if "jobs" in jbs.keys() and jbs["jobs"] is None:
+            del jbs["jobs"]
+        if "jobs" in jbs.keys():
+            jbs["jobs"] = int(float(jbs["jobs"]))
+        if "workers" in jbs.keys() and jbs["workers"] is None:
+            del jbs["workers"]
+        if "workers" in jbs.keys():
+            jbs["workers"] = int(float(jbs["workers"]))
+        if "employees" in jbs.keys():
+            jbs["employees"] = int(float(jbs["employees"]))
     nv.domestic_jobs_created_comment = ov["domestic_jobs_created_comment"]
-    if oid := ov["operating_company"]:
-        all_versions = InvestorHull.objects.get(id=oid).versions.all()
-        versions = all_versions.order_by("-created_at").filter(
-            created_at__lte=ov["modified_at"]
-        )
-        if versions:
-            nv.operating_company_id = versions.first().id
-        else:
-            nv.operating_company_id = all_versions.last().id
+    # TODO reenable this
+    # if oid := ov["operating_company"]:
+    #     all_versions = InvestorHull.objects.get(id=oid).versions.all()
+    #     versions = all_versions.order_by("-created_at").filter(
+    #         created_at__lte=ov["modified_at"]
+    #     )
+    #     if versions:
+    #         nv.operating_company_id = versions.first().id
+    #     else:
+    #         nv.operating_company_id = all_versions.last().id
 
     nv.involved_actors = ov["involved_actors"] or []
+    for act in nv.involved_actors:
+        if "name" in act.keys():
+            act["name"] = act["name"] or ""
+
     nv.project_name = ov["project_name"]
     nv.investment_chain_comment = ov["investment_chain_comment"]
     nv.name_of_community = ov["name_of_community"] or []
@@ -322,12 +450,27 @@ def map_version_payload(ov: dict, nv: DealVersion2):
     nv.former_land_cover = ov["former_land_cover"] or []
     nv.former_land_cover_comment = ov["former_land_cover_comment"]
     nv.crops = ov["crops"] or []
+    for crop in nv.crops:
+        if crop.get("date"):
+            crop["date"] = crop["date"].strip()
+        if crop.get("choices"):
+            crop["choices"] = [x for x in crop["choices"] if x not in ["35", "67"]]
     nv.crops_comment = ov["crops_comment"]
     nv.animals = ov["animals"] or []
+    for animal in nv.animals:
+        if animal.get("choices"):
+            animal["choices"] = [x for x in animal["choices"] if x != "1"]
+
     nv.animals_comment = ov["animals_comment"]
     nv.mineral_resources = ov["mineral_resources"] or []
+    for mr in nv.mineral_resources:
+        if mr.get("choices"):
+            mr["choices"] = [x for x in mr["choices"] if x not in ["PYN", "33"]]
     nv.mineral_resources_comment = ov["mineral_resources_comment"]
     nv.contract_farming_crops = ov["contract_farming_crops"] or []
+    for cfc in nv.contract_farming_crops:
+        if cfc.get("date"):
+            cfc["date"] = cfc["date"].strip()
     nv.contract_farming_crops_comment = ov["contract_farming_crops_comment"]
     nv.contract_farming_animals = ov["contract_farming_animals"] or []
     nv.contract_farming_animals_comment = ov["contract_farming_animals_comment"]
@@ -365,6 +508,7 @@ def map_version_payload(ov: dict, nv: DealVersion2):
     nv.gender_related_information = ov["gender_related_information"]
     nv.overall_comment = ov["overall_comment"]
 
+    # ic(ov)
     nv.save(recalculate_dependent=False, recalculate_independent=False)
 
     map_locations(nv, ov["locations"])
@@ -410,41 +554,77 @@ def map_version_payload(ov: dict, nv: DealVersion2):
 
 
 def do_workflows(deal_id):
-    for dwi in DealWorkflowInfo.objects.filter(deal_id=deal_id):
-        if not dwi.deal_version_id:
+    for wfi in DealWorkflowInfo.objects.filter(deal_id=deal_id):
+        if not wfi.deal_version_id:
             continue
         # if dwi.deal_version_id in [43461, 43462]:
         #     print(dwi, dwi.draft_status_before, dwi.draft_status_after, dwi.comment)
-        dv: DealVersion2 = DealVersion2.objects.get(id=dwi.deal_version_id)
-        if dwi.draft_status_before is None and dwi.draft_status_after == 1:
-            ...  # TODO new draft.. what to do?
-        elif dwi.draft_status_before in [2, 3] and dwi.draft_status_after == 1:
-            ...  # TODO new draft.. what to do?
-        elif (dwi.draft_status_before is None and dwi.draft_status_after is None) or (
-            dwi.draft_status_before == dwi.draft_status_after
+        dv: DealVersion2 = DealVersion2.objects.get(id=wfi.deal_version_id)
+        if wfi.draft_status_before is None and wfi.draft_status_after == 1:
+            ...  # TODO I think we're good here. Don't see anything that we ought to be doing.
+        elif wfi.draft_status_before in [2, 3] and wfi.draft_status_after == 1:
+            # ic(
+            #     "new draft... what to do?",
+            #     wfi.timestamp,
+            #     wfi.from_user,
+            #     wfi.draft_status_before,
+            #     wfi.draft_status_after
+            # )
+            ...  # TODO I think we're good here. Don't see anything that we ought to be doing.
+
+        elif (wfi.draft_status_before is None and wfi.draft_status_after is None) or (
+            wfi.draft_status_before == wfi.draft_status_after
         ):
             ...  # nothing?
-        elif dwi.draft_status_before in [None, 1] and dwi.draft_status_after == 2:
-            dv.sent_to_review_at = dwi.timestamp
-            dv.sent_to_review_by = dwi.from_user
+        elif wfi.draft_status_before in [None, 1, 5] and wfi.draft_status_after == 2:
+            dv.sent_to_review_at = wfi.timestamp
+            dv.sent_to_review_by = wfi.from_user
             dv.save(recalculate_independent=False, recalculate_dependent=False)
-        elif dwi.draft_status_before == 2 and dwi.draft_status_after == 3:
-            dv.reviewed_at = dwi.timestamp
-            dv.reviewed_by = dwi.from_user
+        elif wfi.draft_status_before in [None, 1, 2, 5] and wfi.draft_status_after == 3:
+            dv.reviewed_at = wfi.timestamp
+            dv.reviewed_by = wfi.from_user
             dv.save(recalculate_independent=False, recalculate_dependent=False)
             # dv.status
-        elif dwi.draft_status_before in [2, 3] and dwi.draft_status_after is None:
-            dv.activated_at = dwi.timestamp
-            dv.activated_by = dwi.from_user
+        elif wfi.draft_status_before in [2, 3] and wfi.draft_status_after is None:
+            dv.activated_at = wfi.timestamp
+            dv.activated_by = wfi.from_user
             dv.save(recalculate_independent=False, recalculate_dependent=False)
-        elif dwi.draft_status_before == 4 or dwi.draft_status_after == 4:
-            ...  # deleted status change
+        elif wfi.draft_status_before == 3 and wfi.draft_status_after == 2:
+            pass  # ignoring this case because it's not changing anything on the deal
+        elif wfi.draft_status_before == 4 or wfi.draft_status_after == 4:
+            ...  # TODO REJECTED status change
+            # ic(
+            #     "DWI OHO",
+            #     wfi.id,
+            #     wfi.timestamp,
+            #     wfi.from_user,
+            #     wfi.investor_id,
+            #     wfi.draft_status_before,
+            #     wfi.draft_status_after,z
+            #     wfi.comment,
+            # )
+            # sys.exit(1)
+        elif wfi.draft_status_after == 5:
+            dv.status = "TO_DELETE"
+            dv.save(recalculate_independent=False, recalculate_dependent=False)
+        elif wfi.draft_status_before == 5 and wfi.draft_status_after != 5:
+            if not wfi.draft_status_after:
+                # TODO What is going on here?
+                ...
+            else:
+                dv.status = status_map_dings[wfi.draft_status_after]
+                dv.save(recalculate_independent=False, recalculate_dependent=False)
         else:
             ...
-            print(
+            ic(
                 "DWI OHO",
-                dwi.deal_id,
-                dwi.draft_status_before,
-                dwi.draft_status_after,
-                dwi.comment,
+                wfi.id,
+                wfi.timestamp,
+                wfi.from_user,
+                wfi.to_user,
+                wfi.deal_id,
+                wfi.draft_status_before,
+                wfi.draft_status_after,
+                wfi.comment,
             )
+            sys.exit(1)
