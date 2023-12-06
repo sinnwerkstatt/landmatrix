@@ -10,7 +10,7 @@ from django.db import models, transaction
 from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import gettext as _
-from icecream import ic
+from nanoid import generate
 
 from apps.landmatrix.models import choices
 from apps.landmatrix.models.choices import (
@@ -690,6 +690,11 @@ class VersionTimestampsMixins(models.Model):
         related_name="+",
     )
 
+    def save(self, *args, **kwargs):
+        if self._state.adding and not self.created_at:
+            self.created_at = timezone.now()
+        super().save(*args, **kwargs)
+
     class Meta:
         abstract = True
 
@@ -1032,6 +1037,11 @@ class Location(models.Model):
             "areas": [area.to_dict() for area in self.areas.all()],
         }
 
+    def save(self, *args, **kwargs):
+        if self._state.adding and not self.nid:
+            self.nid = generate(size=8)
+        super().save(*args, **kwargs)
+
     class Meta:
         unique_together = ["dealversion", "nid"]
         indexes = [models.Index(fields=["dealversion", "nid"])]
@@ -1104,7 +1114,10 @@ class Contract(models.Model):
             "agreement_duration": self.agreement_duration,
             "comment": self.comment,
         }
-
+    def save(self, *args, **kwargs):
+        if self._state.adding and not self.nid:
+            self.nid = generate(size=8)
+        super().save(*args, **kwargs)
     class Meta:
         unique_together = ["dealversion", "nid"]
         indexes = [models.Index(fields=["dealversion", "nid"])]
@@ -1147,6 +1160,10 @@ class BaseDataSource(models.Model):
             "comment": self.comment,
         }
 
+    def save(self, *args, **kwargs):
+        if self._state.adding and not self.nid:
+            self.nid = generate(size=8)
+        super().save(*args, **kwargs)
     class Meta:
         abstract = True
         unique_together = ["dealversion", "nid"]

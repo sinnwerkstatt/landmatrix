@@ -11,6 +11,7 @@ from apps.landmatrix.models.choices import (
     IMPLEMENTATION_STATUS_ITEMS,
     LOCATION_ACCURACY_ITEMS,
     INVESTMENT_TYPE_ITEMS,
+    NATURE_OF_DEAL_ITEMS,
 )
 from apps.new_model.models import DealHull, InvestorHull, DealVersion2, InvestorVersion2
 from apps.new_model.serializers import Deal2Serializer, Investor2Serializer
@@ -71,6 +72,7 @@ def field_choices(request):
                 "negotiation_status": NEGOTIATION_STATUS_ITEMS,
                 "implementation_status": IMPLEMENTATION_STATUS_ITEMS,
                 "level_of_accuracy": LOCATION_ACCURACY_ITEMS,
+                "nature_of_deal": NATURE_OF_DEAL_ITEMS,
             },
             "investor": {"classification": INVESTOR_CLASSIFICATION_ITEMS},
             "involvement": {"investment_type": INVESTMENT_TYPE_ITEMS},

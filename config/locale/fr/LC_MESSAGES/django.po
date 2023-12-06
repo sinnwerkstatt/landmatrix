@@ -60,10 +60,10 @@ msgstr "{from_user.full_name} a mis à jour {obj_desc} :"
 msgid "Please review at {url}"
 msgstr "A examiner sur {url}"
 
-msgid "Size under contract (leased or purchased area, in ha)"
+msgid "Size under contract (leased or purchased area)"
 msgstr "Superficie sous contrat (superficie louée ou achetée, en ha)"
 
-msgid "Size in operation (production, in ha)"
+msgid "Size in operation (production)"
 msgstr "Superficie en cours d’exploitation (production, en ha)"
 
 msgid "Intention of investment"

@@ -13,6 +13,7 @@
 
   import DealManageHeader from "./DealManageHeader.svelte"
   import SectionDataSources from "./SectionDataSources.svelte"
+  import SectionEmployment from "./SectionEmployment.svelte"
   import SectionGeneralInfo from "./SectionGeneralInfo.svelte"
   import SectionHistory from "./SectionHistory.svelte"
   import SectionLocations from "./SectionLocations.svelte"
@@ -156,9 +157,9 @@
       <!--          entries={deal.contracts}-->
       <!--        />-->
       <!--      {/if}-->
-      <!--      {#if activeTab === "#employment"}-->
-      <!--        <DealSection {deal} sections={$dealSections.employment} />-->
-      <!--      {/if}-->
+      {#if activeTab === "#employment"}
+        <SectionEmployment version={data.deal.selected_version} />
+      {/if}
       <!--      {#if activeTab === "#investor_info"}-->
       <!--        <DealSection {deal} sections={$dealSections.investor_info}>-->
       <!--          {#if investor}-->

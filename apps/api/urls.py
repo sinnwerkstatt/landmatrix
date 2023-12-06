@@ -1,7 +1,7 @@
 from django.urls import include, path
 from rest_framework import routers
 
-from apps.landmatrix.views import FieldDefinitionViewSet
+from apps.landmatrix.views import FieldDefinitionViewSet, CurrencyViewSet
 
 from .export import DataDownload
 from .gis_export import gis_export
@@ -15,6 +15,7 @@ def data_download(request):
 
 router = routers.DefaultRouter()
 router.register(r"field_definitions", FieldDefinitionViewSet)
+router.register(r"currencies", CurrencyViewSet)
 router.register(r"users", UserViewSet)
 
 urlpatterns = [

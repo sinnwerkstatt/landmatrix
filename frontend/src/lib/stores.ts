@@ -3,8 +3,7 @@ import { error } from "@sveltejs/kit"
 import type { Client } from "@urql/core"
 import { gql } from "@urql/svelte"
 import { _ } from "svelte-i18n"
-import { derived, get, writable } from "svelte/store"
-import type { Writable } from "svelte/store"
+import { derived, get, readable, writable } from "svelte/store"
 
 import { browser } from "$app/environment"
 
@@ -20,6 +19,7 @@ import {
   NegotiationStatusGroup,
 } from "$lib/types/deal"
 import type { DraftStatus, FieldDefinition, Status } from "$lib/types/generics"
+import type { Currency } from "$lib/types/newtypes"
 import type { User } from "$lib/types/user"
 import type {
   BlogCategory,
@@ -59,6 +59,7 @@ interface FieldChoicesType {
     negotiation_status: ValueLabelEntry[]
     implementation_status: ValueLabelEntry[]
     level_of_accuracy: ValueLabelEntry[]
+    nature_of_deal: ValueLabelEntry[]
   }
   investor: {
     classification: ValueLabelEntry[]
@@ -73,6 +74,7 @@ export const fieldChoices = writable<FieldChoicesType>({
     negotiation_status: [],
     implementation_status: [],
     level_of_accuracy: [],
+    nature_of_deal: [],
   },
   investor: { classification: [] },
   involvement: { investment_type: [] },
@@ -355,7 +357,7 @@ const bindIsDarkModeToPreferredColorScheme = () => {
   }
 }
 
-export const isMobile: Writable<boolean | null> = writable(null)
+export const isMobile = writable<boolean | null>(null)
 
 const TAILWIND_SM_BREAKPOINT_IN_PX = 640
 
@@ -372,10 +374,18 @@ if (browser) {
   bindIsMobileToScreenInnerWidth()
 }
 
-export const fieldDefinitions: Writable<FieldDefinition[]> = writable([])
+// export const fieldDefinitions = readable<FieldDefinition[]>([], set=>{
+//   fetch("/api/field_definitions/").then(ret=>ret.json()).then(set)
+// })
+export const fieldDefinitions = writable<FieldDefinition[]>([])
 export async function fetchFieldDefinitions(fetch: LoadEvent["fetch"]) {
   const res = await fetch("/api/field_definitions/")
   fieldDefinitions.set(await res.json())
 }
+export const currencies = readable<Currency[]>([], set => {
+  fetch("/api/currencies/")
+    .then(ret => ret.json())
+    .then(set)
+})
 
-export const contentRootElement: Writable<HTMLElement> = writable()
+export const contentRootElement = writable<HTMLElement>()

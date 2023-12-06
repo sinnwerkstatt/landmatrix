@@ -65,10 +65,10 @@ msgstr "{from_user.full_name} обновил {obj_desc}:"
 msgid "Please review at {url}"
 msgstr "Пожалуйста, просмотрите на {url}"
 
-msgid "Size under contract (leased or purchased area, in ha)"
+msgid "Size under contract (leased or purchased area)"
 msgstr "Площадь законтрактованных (приобретенных в аренду или собственность) земель в га"
 
-msgid "Size in operation (production, in ha)"
+msgid "Size in operation (production)"
 msgstr "Площадь земель в обработке / в производстве (в га.)"
 
 msgid "Intention of investment"

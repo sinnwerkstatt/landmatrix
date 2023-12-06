@@ -31,50 +31,21 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         # TODO HANDLE THESE
-        exclude_ids = [
-            # 450,  # Area geometry has Z axis
-            # 1056,  # Area geometry has Z axis
-            # 1059,  # Area geometry has Z axis
-            # 1061,  # Area geometry has Z axis
-            # 1098,  # Area geometry has Z axis
-            # 3523,
-            # 3536,
-            # 4862,
-            # 4863,
-            # 4864,
-            # 4865,
-            # 4866,
-            # 4867,
-            # 4868,
-            # 4869,
-            # 4882,
-            # 4883,
-            # 5400,  # datasources[4] has `type=None` instead of `type=''`
-            # 5410,  # datasources[2] has `type=None` instead of `type=''`
-            # 5415,  # datasources[2] has `type=None` instead of `type=''`
-            # 5416,  # datasources[3] has `type=None` instead of `type=''`
-            # 5871,  # weird
-            # 6174,  # "LAFP"?
-            # 6177,  # "LAFP"?
-            # 6178,  # "LAFP"?
-            # 6179,  # "LAFP"?
-            # 6181,  # "LAFP"?
-            # 6182,  # "LAFP"?
-            # 6183,  # "LAFP"?
-            # 6184,  # "LAFP"?
-            # 6192,  # broken investor link
-            # # TODO
-            # 6237,  # broken investor link
-            # 6243,  # broken investor link
-            # 9422,  # broken investor link
-            # 9646,  # broken investor link
-        ]
+        exclude_ids = []
         deals = (
             Deal.objects.all()
             .order_by("id")
             .exclude(id__in=exclude_ids)
             # .prefetch_related("versions")
-            # .filter(id__gte=3721)
+            .filter(
+                id__in=[
+                    5871,
+                    7245,
+                    7646,
+                    8827,
+                    8879,
+                ]
+            )
         )
         if options["start_id"]:
             deals = deals.filter(id__gte=options["start_id"])
@@ -160,8 +131,7 @@ class Command(BaseCommand):
                         new_version.status = "REJECTED"
                         # deal_hull.active_version_id = deal_version.id
                     else:
-                        ic("OH OH OH\nOH OH OH")
-                        # print("TODO?!", old_version_dict["draft_status"])
+                        # TODO shall we finally just delete these?
                         new_version.status = "DELETED"
                 elif old_version_dict["status"] == 4:
                     if old_version_dict["draft_status"] is None:

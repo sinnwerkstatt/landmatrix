@@ -130,17 +130,22 @@ INTENTION_CHOICES_GROUPED = [
 
 INTENTION_CHOICES = [(x["value"], x["label"]) for x in INTENTION_OF_INVESTMENT_ITEMS]
 
-NATURE_OF_DEAL_CHOICES = [
-    ("OUTRIGHT_PURCHASE", _("Outright purchase")),
-    ("LEASE", _("Lease")),
-    ("CONCESSION", _("Concession")),
-    (
-        "EXPLOITATION_PERMIT",
-        _("Exploitation permit / license / concession (for mineral resources)"),
-    ),
-    ("PURE_CONTRACT_FARMING", _("Pure contract farming")),
-    ("OTHER", _("Other")),
+NATURE_OF_DEAL_ITEMS = [
+    {"value": "OUTRIGHT_PURCHASE", "label": _("Outright purchase")},
+    {"value": "LEASE", "label": _("Lease")},
+    {"value": "CONCESSION", "label": _("Concession")},
+    {
+        "value": "EXPLOITATION_PERMIT",
+        "label": _(
+            "Exploitation permit / license / concession (for mineral resources)"
+        ),
+    },
+    {"value": "PURE_CONTRACT_FARMING", "label": _("Pure contract farming")},
+    {"value": "OTHER", "label": _("Other")},
 ]
+
+NATURE_OF_DEAL_CHOICES = [(x["value"], x["label"]) for x in NATURE_OF_DEAL_ITEMS]
+
 
 NEGOTIATION_STATUS_ITEMS = [
     {

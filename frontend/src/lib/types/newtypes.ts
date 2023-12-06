@@ -12,6 +12,13 @@ export enum Version2Status {
   TO_DELETE = "TO_DELETE",
 }
 
+export interface Currency {
+  id: number
+  code: string
+  name: string
+  symbol: string
+}
+
 interface Hull {
   id: number
   // watch out: DRF does not append _id to Foreignkeys, but means _id.
@@ -86,7 +93,7 @@ interface DealVersionBase {
 
   locations: Location2[]
 
-  intended_size: number
+  intended_size: number | null
   contract_size: JSONCurrentDateAreaFieldType
   production_size: JSONCurrentDateAreaFieldType
   land_area_comment: string
@@ -96,6 +103,53 @@ interface DealVersionBase {
 
   nature_of_deal: string[]
   nature_of_deal_comment: string
+
+  negotiation_status: JSONCurrentDateChoiceFieldType
+  negotiation_status_comment: string
+
+  implementation_status: JSONCurrentDateChoiceFieldType
+  implementation_status_comment: string
+
+  purchase_price: number | null
+  purchase_price_currency: number | null
+  purchase_price_type: "PER_HA" | "PER_AREA" | null
+  purchase_price_area: number | null
+  purchase_price_comment: string
+
+  annual_leasing_fee: number | null
+  annual_leasing_fee_currency: number | null
+  annual_leasing_fee_type: "PER_HA" | "PER_AREA" | null
+  annual_leasing_fee_area: number | null
+  annual_leasing_fee_comment: string
+
+  contract_farming: boolean | null
+  on_the_lease_state: boolean | null
+  on_the_lease: JSONLeaseFieldType
+  off_the_lease_state: boolean | null
+  off_the_lease: JSONLeaseFieldType
+  contract_farming_comment: string
+
+  // employment
+  total_jobs_created: boolean | null
+  total_jobs_planned: number | null
+  total_jobs_planned_employees: number | null
+  total_jobs_planned_daily_workers: number | null
+  total_jobs_current: JSONJobsFieldType
+  total_jobs_created_comment: string
+
+  foreign_jobs_created: boolean | null
+  foreign_jobs_planned: number | null
+  foreign_jobs_planned_employees: number | null
+  foreign_jobs_planned_daily_workers: number | null
+  foreign_jobs_current: JSONJobsFieldType
+  foreign_jobs_created_comment: string
+
+  domestic_jobs_created: boolean | null
+  domestic_jobs_planned: number | null
+  domestic_jobs_planned_employees: number | null
+  domestic_jobs_planned_daily_workers: number | null
+  domestic_jobs_current: JSONJobsFieldType
+  domestic_jobs_created_comment: string
 
   datasources: DataSource[]
 }
@@ -124,10 +178,16 @@ export interface DealVersion2 extends DealVersionBase, VersionTimestampMixins {
   status: Version2Status
 }
 
-type JSONCurrentDateAreaFieldType = Array<{
+export type JSONCurrentDateAreaFieldType = Array<{
   current: boolean
   date: string
   area: number
+}>
+
+export type JSONCurrentDateChoiceFieldType = Array<{
+  current: boolean
+  date: string
+  choice: string
 }>
 
 export type JSONCurrentDateAreaChoicesFieldType = Array<{
@@ -135,6 +195,22 @@ export type JSONCurrentDateAreaChoicesFieldType = Array<{
   date: string
   area: number
   choices: string[]
+}>
+
+export type JSONLeaseFieldType = Array<{
+  current: boolean
+  date: string
+  area?: number
+  farmers?: number
+  households?: number
+}>
+
+export type JSONJobsFieldType = Array<{
+  current: boolean
+  date: string
+  jobs?: number
+  employees?: number
+  workers?: number
 }>
 
 interface Area {

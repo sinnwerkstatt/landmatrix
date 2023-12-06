@@ -63,11 +63,11 @@ msgstr "{from_user.full_name} ha actualizado {obj_desc}:"
 msgid "Please review at {url}"
 msgstr "Por favor, revise en {url}"
 
-msgid "Size under contract (leased or purchased area, in ha)"
-msgstr "Tamaño bajo contrato (área arrendada o comprada, en ha)"
+msgid "Size under contract (leased or purchased area)"
+msgstr "Tamaño bajo contrato (área arrendada o comprada)"
 
-msgid "Size in operation (production, in ha)"
-msgstr "Tamaño en operación (producción, en ha)"
+msgid "Size in operation (production)"
+msgstr "Tamaño en operación (producción)"
 
 msgid "Intention of investment"
 msgstr "Intención de la inversión"
