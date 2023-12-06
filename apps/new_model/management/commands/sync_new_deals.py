@@ -12,6 +12,7 @@ from apps.new_model.models import (
     Area,
     Contract,
     DealDataSource,
+    InvestorHull,
 )
 
 from django.contrib.gis.geos import Point, GEOSGeometry
@@ -37,15 +38,7 @@ class Command(BaseCommand):
             .order_by("id")
             .exclude(id__in=exclude_ids)
             # .prefetch_related("versions")
-            .filter(
-                id__in=[
-                    5871,
-                    7245,
-                    7646,
-                    8827,
-                    8879,
-                ]
-            )
+            # .filter(id__in=[5871, 7245, 7646, 8827, 8879])
         )
         if options["start_id"]:
             deals = deals.filter(id__gte=options["start_id"])
@@ -366,15 +359,15 @@ def map_version_payload(ov: dict, nv: DealVersion2):
             jbs["employees"] = int(float(jbs["employees"]))
     nv.domestic_jobs_created_comment = ov["domestic_jobs_created_comment"]
     # TODO reenable this
-    # if oid := ov["operating_company"]:
-    #     all_versions = InvestorHull.objects.get(id=oid).versions.all()
-    #     versions = all_versions.order_by("-created_at").filter(
-    #         created_at__lte=ov["modified_at"]
-    #     )
-    #     if versions:
-    #         nv.operating_company_id = versions.first().id
-    #     else:
-    #         nv.operating_company_id = all_versions.last().id
+    if oid := ov["operating_company"]:
+        all_versions = InvestorHull.objects.get(id=oid).versions.all()
+        versions = all_versions.order_by("-created_at").filter(
+            created_at__lte=ov["modified_at"]
+        )
+        if versions:
+            nv.operating_company_id = versions.first().id
+        else:
+            nv.operating_company_id = all_versions.last().id
 
     nv.involved_actors = ov["involved_actors"] or []
     for act in nv.involved_actors:
@@ -508,8 +501,8 @@ def map_version_payload(ov: dict, nv: DealVersion2):
     nv.current_production_size = ov["current_production_size"]
     nv.current_intention_of_investment = ov["current_intention_of_investment"] or []
 
-    nv.current_negotiation_status = ov["current_negotiation_status"] or []
-    nv.current_implementation_status = ov["current_implementation_status"] or []
+    nv.current_negotiation_status = ov["current_negotiation_status"]
+    nv.current_implementation_status = ov["current_implementation_status"]
     nv.current_crops = ov["current_crops"] or []
     nv.current_animals = ov["current_animals"] or []
     nv.current_mineral_resources = ov["current_mineral_resources"] or []

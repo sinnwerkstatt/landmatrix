@@ -57,15 +57,16 @@
   $: labels = activeColumns.map(col => $formfields.deal[col].label)
   $: spans = activeColumns.map(col => columnSpanMap[col])
 
-  $: deals = queryStore({
-    client: $page.data.urqlClient,
-    query: dealsQuery,
-    variables: {
-      filters: $filters.toGQLFilterArray(),
-      subset: $publicOnly ? "PUBLIC" : "ACTIVE",
-    },
-  })
-  $: loading.set($deals?.fetching ?? false)
+  let deals = []
+  async function fetchDeals(filters: string, subset: string) {
+    console.log(filters)
+    loading.set(true)
+    const ret = await fetch(`/api/deals/?subset=${subset}&${filters}`)
+    deals = await ret.json()
+    loading.set(false)
+  }
+
+  $: fetchDeals($filters.toRESTFilterArray(), $publicOnly ? "PUBLIC" : "ACTIVE")
 
   onMount(() => {
     showContextBar.set(false)
@@ -83,13 +84,13 @@
 
     <div class="flex h-full w-1 grow flex-col px-6 pb-6">
       <div class="flex h-20 items-center text-lg">
-        {$deals?.data?.deals?.length ?? "—"}
-        {$deals?.data?.deals?.length === 1 ? $_("Deal") : $_("Deals")}
+        {deals?.length ?? "—"}
+        {deals?.length === 1 ? $_("Deal") : $_("Deals")}
       </div>
 
       <Table
         sortBy="-fully_updated_at"
-        items={$deals?.data?.deals ?? []}
+        items={deals}
         columns={activeColumns}
         {spans}
         {labels}

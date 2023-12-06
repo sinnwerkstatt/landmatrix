@@ -1114,10 +1114,12 @@ class Contract(models.Model):
             "agreement_duration": self.agreement_duration,
             "comment": self.comment,
         }
+
     def save(self, *args, **kwargs):
         if self._state.adding and not self.nid:
             self.nid = generate(size=8)
         super().save(*args, **kwargs)
+
     class Meta:
         unique_together = ["dealversion", "nid"]
         indexes = [models.Index(fields=["dealversion", "nid"])]
@@ -1164,6 +1166,7 @@ class BaseDataSource(models.Model):
         if self._state.adding and not self.nid:
             self.nid = generate(size=8)
         super().save(*args, **kwargs)
+
     class Meta:
         abstract = True
         unique_together = ["dealversion", "nid"]

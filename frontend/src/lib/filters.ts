@@ -164,6 +164,93 @@ export class FilterValues {
       this.forest_concession === false,
     ].every(Boolean)
   }
+  public toRESTFilterArray() {
+    const searchParams = new URLSearchParams()
+
+    if (this.region_id) searchParams.append("r_id", this.region_id.toString())
+
+    if (this.country_id) searchParams.append("c_id", this.country_id.toString())
+
+    if (this.deal_size_min) searchParams.append("ds_min", this.deal_size_min.toString())
+
+    if (this.deal_size_max) searchParams.append("ds_max", this.deal_size_max.toString())
+
+    this.negotiation_status.forEach(x =>
+      searchParams.append("cur_neg_stat", x.toString()),
+    )
+    this.implementation_status.forEach(x =>
+      searchParams.append("cur_imp_stat", x.toString()),
+    )
+
+    if (this.investor) searchParams.append("parents", this.investor.id.toString())
+
+    if (this.investor_country_id)
+      searchParams.append("parents_c_id", this.investor_country_id.toString())
+
+    // if (this.nature_of_deal.length > 0) {
+    //   const allValues = Object.values(NatureOfDeal)
+    //   const diffValues = allValues.filter(x => !this.nature_of_deal.includes(x))
+    //
+    //   if (diffValues.length > 0)
+    //     filterArray.push({
+    //       field: "nature_of_deal",
+    //       operation: "CONTAINED_BY",
+    //       value: diffValues,
+    //       exclusion: true,
+    //     })
+    // }
+
+    if (this.initiation_year_min && this.initiation_year_min > 1970)
+      searchParams.append("iy_min", this.initiation_year_min.toString())
+    if (this.initiation_year_max)
+      searchParams.append("iy_max", this.initiation_year_max.toString())
+    if (this.initiation_year_unknown) searchParams.append("iy_null", "t")
+
+    this.intention_of_investment.forEach(x =>
+      searchParams.append("cur_ioi", x.toString()),
+    )
+
+    // if (this.produce && this.produce.length > 0) {
+    //   const crops = []
+    //   const animals = []
+    //   const minerals = []
+    //   for (const prod of this.produce) {
+    //     if (prod.groupID === ProduceGroup.CROPS) crops.push(prod.value)
+    //     else if (prod.groupID === ProduceGroup.ANIMALS) animals.push(prod.value)
+    //     else if (prod.groupID === ProduceGroup.MINERAL_RESOURCES)
+    //       minerals.push(prod.value)
+    //   }
+    //   if (crops.length > 0) {
+    //     filterArray.push({
+    //       field: "current_crops",
+    //       operation: "CONTAINS",
+    //       value: crops,
+    //     })
+    //   }
+    //   if (animals.length > 0) {
+    //     filterArray.push({
+    //       field: "current_animals",
+    //       operation: "CONTAINS",
+    //       value: animals,
+    //     })
+    //   }
+    //   if (minerals.length > 0) {
+    //     filterArray.push({
+    //       field: "current_mineral_resources",
+    //       operation: "CONTAINS",
+    //       value: minerals,
+    //     })
+    //   }
+    // }
+    //
+    if (this.transnational !== null)
+      searchParams.append("trans", this.transnational.toString())
+
+    if (this.forest_concession !== null)
+      searchParams.append("for_con", this.forest_concession.toString())
+
+    return searchParams.toString()
+  }
 
   public toGQLFilterArray(): GQLFilter[] {
     const filterArray: GQLFilter[] = []
