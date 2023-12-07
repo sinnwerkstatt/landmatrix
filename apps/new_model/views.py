@@ -4,6 +4,7 @@ from django.db.models import Prefetch, Q
 from django.http import JsonResponse
 from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
 
@@ -23,11 +24,84 @@ from apps.new_model.serializers import (
 )
 
 
+def _parse_filter(request: Request):
+    ret = Q()
+
+    # print(request.GET)
+    if subset := request.GET.get("subset"):
+        # TODO
+        ret &= Q(active_version__is_public=True)
+
+    if region_id := request.GET.get("region_id"):
+        ret &= Q(country__region_id=region_id)
+    if country_id := request.GET.get("country_id"):
+        ret &= Q(country_id=country_id)
+
+    if area_min := request.GET.get("area_min"):
+        ret &= Q(active_version__deal_size__gte=area_min)
+    if area_max := request.GET.get("area_max"):
+        ret &= Q(active_version__deal_size__lte=area_max)
+
+    if neg_list := request.GET.getlist("negotiation_status"):
+        ret &= Q(active_version__current_negotiation_status__in=neg_list)
+
+    if imp_list := request.GET.getlist("implementation_status"):
+        unknown = (
+            Q(active_version__current_implementation_status=None)
+            if "UNKNOWN" in imp_list
+            else Q()
+        )
+        ret &= Q(active_version__current_implementation_status__in=imp_list) | unknown
+
+    if parents := request.GET.get("parent_company"):
+        ret &= Q(active_version__parent_companies__id=parents)
+    if parents_c_id := request.GET.get("parent_company_country_id"):
+        ret &= Q(active_version__parent_companies__country_id=parents_c_id)
+
+    # TODO left off here. Talk to Kurt
+    # if nature := request.GET.get("nature"):
+    #     all_nature = set([x['value'] for x in NATURE_OF_DEAL_ITEMS])
+    #
+    #     print(nature)
+
+    iy_null = (
+        Q(active_version__initiation_year=None) if request.GET.get("iy_null") else Q()
+    )
+    if iy_min := request.GET.get("iy_min"):
+        ret &= Q(active_version__initiation_year__gte=iy_min) | iy_null
+    if iy_max := request.GET.get("iy_max"):
+        ret &= Q(active_version__initiation_year__lte=iy_max) | iy_null
+
+    if ioi_list := request.GET.getlist("cur_ioi"):
+        unknown = (
+            Q(active_version__current_intention_of_investment=[])
+            if "UNKNOWN" in ioi_list
+            else Q()
+        )
+        ret &= (
+            Q(active_version__current_intention_of_investment__overlap=ioi_list)
+            | unknown
+        )
+
+    if trans := request.GET.get("trans"):
+        ret &= Q(active_version__transnational=trans == "true")
+
+    if for_con := request.GET.get("for_con"):
+        ret &= Q(active_version__forest_concession=for_con == "true")
+
+    return ret
+
+
 class Deal2ViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = DealHull.objects.all().prefetch_related(
         Prefetch("versions", queryset=DealVersion2.objects.order_by("-id"))
     )
     serializer_class = Deal2Serializer
+
+    def get_permissions(self):
+        if self.action == "create":
+            return [IsAuthenticated()]
+        return [AllowAny()]
 
     @action(
         name="Deal Instance",
@@ -42,74 +116,8 @@ class Deal2ViewSet(viewsets.ReadOnlyModelViewSet):
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
-    @staticmethod
-    def _parse_filter(request: Request):
-        ret = Q()
-
-        # print(request.GET)
-        if subset := request.GET.get("subset"):
-            # TODO
-            ret &= Q(active_version__is_public=True)
-
-        if r_id := request.GET.get("r_id"):
-            ret &= Q(country__region_id=r_id)
-        if c_id := request.GET.get("c_id"):
-            ret &= Q(country_id=c_id)
-
-        if ds_min := request.GET.get("ds_min"):
-            ret &= Q(active_version__deal_size__gte=ds_min)
-        if ds_max := request.GET.get("ds_max"):
-            ret &= Q(active_version__deal_size__lte=ds_max)
-
-        if neg_list := request.GET.getlist("cur_neg_stat"):
-            ret &= Q(active_version__current_negotiation_status__in=neg_list)
-
-        if imp_list := request.GET.getlist("cur_imp_stat"):
-            unknown = (
-                Q(active_version__current_implementation_status__isnull=True)
-                if "UNKNOWN" in imp_list
-                else Q()
-            )
-            ret &= (
-                Q(active_version__current_implementation_status__in=imp_list) | unknown
-            )
-
-        if parents := request.GET.get("parents"):
-            ret &= Q(active_version__parent_companies__id=parents)
-        if parents_c_id := request.GET.get("parents_c_id"):
-            ret &= Q(active_version__parent_companies__country_id=parents_c_id)
-
-        iy_null = (
-            Q(active_version__initiation_year__isnull=True)
-            if request.GET.get("iy_null")
-            else Q()
-        )
-        if iy_min := request.GET.get("iy_min"):
-            ret &= Q(active_version__initiation_year__gte=iy_min) | iy_null
-        if iy_max := request.GET.get("iy_max"):
-            ret &= Q(active_version__initiation_year__lte=iy_max) | iy_null
-
-        if ioi_list := request.GET.getlist("cur_ioi"):
-            unknown = (
-                Q(active_version__current_intention_of_investment=[])
-                if "UNKNOWN" in ioi_list
-                else Q()
-            )
-            ret &= (
-                Q(active_version__current_intention_of_investment__overlap=ioi_list)
-                | unknown
-            )
-
-        if trans := request.GET.get("trans"):
-            ret &= Q(active_version__transnational=trans == "true")
-
-        if for_con := request.GET.get("for_con"):
-            ret &= Q(active_version__forest_concession=for_con == "true")
-
-        return ret
-
     def list(self, request: Request, *args, **kwargs):
-        filters = self._parse_filter(request)
+        filters = _parse_filter(request)
         deals = (
             DealHull.objects.exclude(active_version=None)
             .filter(deleted=False, confidential=False)
@@ -172,6 +180,14 @@ class Deal2ViewSet(viewsets.ReadOnlyModelViewSet):
                 for d in deals
             ]
         )
+
+    def create(self, request, *args, **kwargs):
+        country_id = request.data["country_id"]
+        d1 = DealHull.objects.create(country_id=country_id, created_by=request.user)
+        dv1 = DealVersion2.objects.create(deal_id=d1.id, created_by=request.user)
+        d1.draft_version = dv1
+        d1.save()
+        return Response({"dealID": d1.id, "versionID": dv1.id})
 
 
 class Investor2ViewSet(viewsets.ReadOnlyModelViewSet):

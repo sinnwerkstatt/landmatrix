@@ -6,7 +6,7 @@
 
   import { afterNavigate } from "$app/navigation"
 
-  import { contentRootElement, getAllUsers } from "$lib/stores"
+  import { contentRootElement } from "$lib/stores"
   import type { User } from "$lib/types/user"
   import { UserRole } from "$lib/types/user"
 
@@ -35,7 +35,7 @@
 
   onMount(async () => {
     if ((data.user?.role || -1) >= UserRole.EDITOR) {
-      await getAllUsers(fetch)
+      // await getAllUsers(fetch)
     }
   })
 

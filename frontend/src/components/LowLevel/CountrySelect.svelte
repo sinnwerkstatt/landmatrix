@@ -14,8 +14,10 @@
   bind:value
   items={countries}
   label="name"
+  itemId="id"
   {name}
   {disabled}
   {required}
   on:input
+  placeholder="Select a country"
 />

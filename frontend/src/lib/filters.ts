@@ -167,26 +167,33 @@ export class FilterValues {
   public toRESTFilterArray() {
     const searchParams = new URLSearchParams()
 
-    if (this.region_id) searchParams.append("r_id", this.region_id.toString())
+    if (this.region_id) searchParams.append("region_id", this.region_id.toString())
 
-    if (this.country_id) searchParams.append("c_id", this.country_id.toString())
+    if (this.country_id) searchParams.append("country_id", this.country_id.toString())
 
-    if (this.deal_size_min) searchParams.append("ds_min", this.deal_size_min.toString())
+    if (this.deal_size_min)
+      searchParams.append("area_min", this.deal_size_min.toString())
 
-    if (this.deal_size_max) searchParams.append("ds_max", this.deal_size_max.toString())
+    if (this.deal_size_max)
+      searchParams.append("area_max", this.deal_size_max.toString())
 
     this.negotiation_status.forEach(x =>
-      searchParams.append("cur_neg_stat", x.toString()),
+      searchParams.append("negotiation_status", x.toString()),
     )
     this.implementation_status.forEach(x =>
-      searchParams.append("cur_imp_stat", x.toString()),
+      searchParams.append("implementation_status", x.toString()),
     )
 
-    if (this.investor) searchParams.append("parents", this.investor.id.toString())
+    if (this.investor)
+      searchParams.append("parent_company", this.investor.id.toString())
 
     if (this.investor_country_id)
-      searchParams.append("parents_c_id", this.investor_country_id.toString())
+      searchParams.append(
+        "parent_company_country_id",
+        this.investor_country_id.toString(),
+      )
 
+    // this.nature_of_deal.forEach(x => searchParams.append("nature", x.toString()))
     // if (this.nature_of_deal.length > 0) {
     //   const allValues = Object.values(NatureOfDeal)
     //   const diffValues = allValues.filter(x => !this.nature_of_deal.includes(x))

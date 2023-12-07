@@ -66,3 +66,7 @@ export function slugify(str: string) {
     .replace(/[^@_+.a-zA-Z0-9 -]/g, "") // remove all chars not letters, numbers and spaces (to be replaced)
     .trim()
 }
+
+export async function getCsrfToken() {
+  return (await (await fetch(`/api/csrf_token/`)).json()).token
+}

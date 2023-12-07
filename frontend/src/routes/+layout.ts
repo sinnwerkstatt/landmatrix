@@ -1,6 +1,5 @@
-import { cacheExchange, Client, fetchExchange, gql } from "@urql/core"
-
-// import { devtoolsExchange } from "@urql/devtools"
+import type { LoadEvent } from "@sveltejs/kit"
+import { cacheExchange, Client, fetchExchange } from "@urql/core"
 
 import { i18nload } from "$lib/i18n/i18n"
 import { fetchBasis } from "$lib/stores"
@@ -11,38 +10,13 @@ import type { LayoutLoad } from "./$types"
 // ssr turned on by default
 // https://kit.svelte.dev/docs/page-options#ssr
 
-async function fetchMe(urqlClient: Client) {
-  const { data } = await urqlClient
-    .query<{ me: User }>(
-      gql`
-        query {
-          me {
-            id
-            username
-            full_name
-            is_authenticated
-            is_impersonate
-            is_superuser
-            role
-            country {
-              id
-              name
-            }
-            region {
-              id
-              name
-            }
-            groups {
-              id
-              name
-            }
-          }
-        }
-      `,
-      {},
-    )
-    .toPromise()
-  if (data) return data.me
+async function fetchMe(fetch: LoadEvent["fetch"]) {
+  const ret = await fetch("/api/users/me/", {
+    credentials: "include",
+  })
+  if (ret.ok) return (await ret.json()) as User
+
+  return null
 }
 
 export const load: LayoutLoad = async ({ fetch, data }) => {
@@ -53,7 +27,8 @@ export const load: LayoutLoad = async ({ fetch, data }) => {
     fetchOptions: () => ({ credentials: "include" }),
   })
 
-  const user: User | undefined = await fetchMe(urqlClient)
+  // fetch("adsf", {})
+  const user: User | null = await fetchMe(fetch)
   const lang = data?.locale ?? "en"
   await Promise.all([fetchBasis(lang, fetch, urqlClient), i18nload(lang)])
 

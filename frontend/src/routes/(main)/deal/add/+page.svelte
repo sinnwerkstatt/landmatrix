@@ -1,11 +1,44 @@
 <script lang="ts">
-  import type { Deal } from "$lib/types/deal"
+  import { goto } from "$app/navigation"
 
-  import DealEditForm from "$components/Deal/DealEditForm.svelte"
+  import { countries } from "$lib/stores"
+  import type { Country } from "$lib/types/wagtail"
+  import { getCsrfToken } from "$lib/utils"
 
-  let deal: Deal = { id: -1, contracts: [], datasources: [], locations: [] } as Deal
-  let dealID: number
-  let dealVersion: number
+  import CountrySelect from "$components/LowLevel/CountrySelect.svelte"
+
+  let country: Country
+
+  async function createDraft() {
+    const ret = await fetch("/api/deals/", {
+      method: "POST",
+      credentials: "include",
+      body: JSON.stringify({ country_id: country.id }),
+      headers: {
+        "X-CSRFToken": await getCsrfToken(),
+        "Content-Type": "application/json",
+      },
+    })
+    if (ret.ok) {
+      const retJson = await ret.json()
+      await goto(`/deal/edit/${retJson.dealID}/${retJson.versionID}/`)
+    }
+  }
 </script>
 
-<DealEditForm bind:deal bind:dealID bind:dealVersion />
+<form class="container mx-auto py-8" on:submit|preventDefault={createDraft}>
+  <h1 class="heading1 my-8">Adding a new deal</h1>
+
+  <div class="mt-16 flex flex-wrap gap-4">
+    <p class="heading5">First, choose the country where the deal is located.</p>
+    <CountrySelect
+      bind:value={country}
+      countries={$countries.filter(c => !c.high_income)}
+    />
+  </div>
+  <div class="my-6">
+    <button class="btn btn-primary w-full" disabled={!country} type="submit">
+      Add a new deal
+    </button>
+  </div>
+</form>

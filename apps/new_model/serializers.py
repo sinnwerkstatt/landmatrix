@@ -1,7 +1,7 @@
 from django.db.models import Q, QuerySet
 from rest_framework import serializers
 
-from apps.landmatrix.models.country import Country
+from apps.landmatrix.models.country import Country, Region
 from apps.landmatrix.models.deal import DealWorkflowInfo
 from apps.landmatrix.models.investor import InvestorWorkflowInfo
 from apps.new_model.models import (
@@ -39,6 +39,12 @@ class DealVersionVersionsListSerializer(serializers.ModelSerializer):
 class CountrySerializer(serializers.ModelSerializer):
     class Meta:
         model = Country
+        fields = ["id", "name"]
+
+
+class RegionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Region
         fields = ["id", "name"]
 
 

@@ -9,7 +9,7 @@ from django.http import (
     HttpResponseServerError,
     JsonResponse,
 )
-from django.utils import timezone
+from django.utils import timezone, translation
 from django.utils.timezone import make_aware
 from django.views import View
 from rest_framework.decorators import api_view
@@ -26,6 +26,8 @@ from apps.landmatrix.models.investor import (
 from apps.message.models import Message
 
 from .utils.to_dict import create_lookups, deal_to_dict, investor_to_dict
+from ..blog.models import BlogCategory
+from ..wagtailcms.models import ChartDescriptionsSettings
 
 
 @api_view()
@@ -403,3 +405,25 @@ def investor_search(request):
         .values("id", "name", "country__name", "status")
     )
     return JsonResponse({"investors": list(investors)})
+
+
+def chart_descriptions(request):
+    language = request.GET.get("lang", "en")
+    with translation.override(language):
+        return JsonResponse(
+            ChartDescriptionsSettings.load(request_or_site=request).to_dict()
+        )
+
+
+def blog_categories(request):
+    language = request.GET.get("lang", "en")
+    with translation.override(language):
+        return JsonResponse(
+            [
+                x
+                for x in BlogCategory.objects.all().values(
+                    "id", "name", "slug", "description"
+                )
+            ],
+            safe=False,
+        )

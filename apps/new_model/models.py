@@ -8,6 +8,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models, transaction
 from django.db.models import Q
+from django.http import Http404
 from django.utils import timezone
 from django.utils.translation import gettext as _
 from nanoid import generate
@@ -1249,7 +1250,10 @@ class DealHull(models.Model):
 
     def selected_version(self):
         if hasattr(self, "_selected_version_id"):
-            return self.versions.get(id=self._selected_version_id)
+            try:
+                return self.versions.get(id=self._selected_version_id)
+            except DealVersion2.DoesNotExist:
+                raise Http404
         return self.active_version or self.draft_version
 
 
@@ -1343,7 +1347,10 @@ class InvestorHull(models.Model):
     # This method is used by DRF.
     def selected_version(self):
         if hasattr(self, "_selected_version_id"):
-            return self.versions.get(id=self._selected_version_id)
+            try:
+                return self.versions.get(id=self._selected_version_id)
+            except InvestorVersion2.DoesNotExist:
+                raise Http404
         return self.active_version or self.draft_version
 
     # This method is used by DRF.

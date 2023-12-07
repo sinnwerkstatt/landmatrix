@@ -1,10 +1,8 @@
 import type { LoadEvent } from "@sveltejs/kit"
 import { error } from "@sveltejs/kit"
 import type { Client } from "@urql/core"
-import { gql } from "@urql/svelte"
-import { _ } from "svelte-i18n"
-import { derived, get, readable, writable } from "svelte/store"
-import type { Readable } from "svelte/store"
+import { _, locale } from "svelte-i18n"
+import { derived, readable, writable } from "svelte/store"
 
 import { browser } from "$app/environment"
 
@@ -118,25 +116,37 @@ async function getObservatoryPages(fetch: LoadEvent["fetch"]) {
   observatoryPages.set([...groups.global, ...groups.regions, ...groups.countries])
 }
 
-export const blogCategories = writable<BlogCategory[]>([])
+// export const blogCategories = writable<BlogCategory[]>([])
+//
+// async function getBlogCategories(language = "en", urqlClient: Client) {
+//   const { data } = await urqlClient
+//     .query<{ blogcategories: BlogCategory[] }>(
+//       gql`
+//         query ($language: String) {
+//           blogcategories(language: $language) {
+//             id
+//             name
+//             slug
+//           }
+//         }
+//       `,
+//       { language },
+//     )
+//     .toPromise()
+//   if (data?.blogcategories) await blogCategories.set(data.blogcategories)
+// }
 
-async function getBlogCategories(language = "en", urqlClient: Client) {
-  const { data } = await urqlClient
-    .query<{ blogcategories: BlogCategory[] }>(
-      gql`
-        query ($language: String) {
-          blogcategories(language: $language) {
-            id
-            name
-            slug
-          }
-        }
-      `,
-      { language },
-    )
-    .toPromise()
-  if (data?.blogcategories) await blogCategories.set(data.blogcategories)
-}
+export const blogCategories = derived(
+  [locale],
+  ([$locale], set) => {
+    if (browser) {
+      fetch(`/api/blog_categories/?lang=${$locale}`)
+        .then(ret => ret.json() as Promise<BlogCategory[]>)
+        .then(set)
+    }
+  },
+  [] as BlogCategory[],
+)
 
 export type FormFields = {
   deal: { [key: string]: FormField }
@@ -151,83 +161,78 @@ export const countries = writable<Country[]>([])
 export const regions = writable<Region[]>([])
 export const formfields = writable<FormFields>(undefined)
 
-async function getCountriesRegionsFormfields(language = "en", urqlClient: Client) {
-  const { data } = await urqlClient
-    .query(
-      gql`
-        query ($language: String!) {
-          countries {
-            id
-            name
-            code_alpha2
-            slug
-            point_lat
-            point_lon
-            point_lat_min
-            point_lon_min
-            point_lat_max
-            point_lon_max
-            observatory_page_id
-            high_income
-            deals {
-              id
-            }
-          }
-          regions {
-            id
-            name
-            slug
-            point_lat_min
-            point_lon_min
-            point_lat_max
-            point_lon_max
-            observatory_page_id
-          }
-          formfields(language: $language) {
-            deal
-            location
-            contract
-            datasource
-            investor
-            involvement
-          }
-        }
-      `,
-      { language },
-    )
-    .toPromise()
+async function getCountriesRegionsFormfields(
+  language = "en",
+  fetch: LoadEvent["fetch"],
+) {
+  const ret = await fetch("/api/countries/")
+  countries.set(await ret.json())
+  // countries.set(data.countries)
+  // regions.set(data.regions)
+  // formfields.set(data.formfields)
 
-  countries.set(data.countries)
-  regions.set(data.regions)
-  formfields.set(data.formfields)
+  // const { data } = await urqlClient
+  //   .query(
+  //     gql`
+  //       query ($language: String!) {
+  //         countries {
+  //           id
+  //           name
+  //           code_alpha2
+  //           slug
+  //           point_lat
+  //           point_lon
+  //           point_lat_min
+  //           point_lon_min
+  //           point_lat_max
+  //           point_lon_max
+  //           observatory_page_id
+  //           high_income
+  //           deals {
+  //             id
+  //           }
+  //         }
+  //         regions {
+  //           id
+  //           name
+  //           slug
+  //           point_lat_min
+  //           point_lon_min
+  //           point_lat_max
+  //           point_lon_max
+  //           observatory_page_id
+  //         }
+  //         formfields(language: $language) {
+  //           deal
+  //           location
+  //           contract
+  //           datasource
+  //           investor
+  //           involvement
+  //         }
+  //       }
+  //     `,
+  //     { language },
+  //   )
+  //   .toPromise()
 }
 
-export const chartDescriptions = writable<{
+interface ChartDesc {
   web_of_transnational_deals: string
   dynamics_overview: string
   produce_info_map: string
   global_web_of_investments: string
   [key: string]: string
-}>(undefined)
-
-async function getChartDescriptions(language = "en", urqlClient: Client) {
-  const { data } = await urqlClient
-    .query(
-      gql`
-        query chart_descriptions($language: String) {
-          chart_descriptions(language: $language) {
-            web_of_transnational_deals
-            dynamics_overview
-            produce_info_map
-            global_web_of_investments
-          }
-        }
-      `,
-      { language },
-    )
-    .toPromise()
-  chartDescriptions.set(data.chart_descriptions)
 }
+export const chartDescriptions = derived(
+  [locale],
+  ([$locale], set) => {
+    fetch(`/api/chart_descriptions/?lang=${$locale}`)
+      .then(ret => ret.json() as Promise<ChartDesc>)
+      .then(set)
+  },
+  {} as ChartDesc,
+)
 
 export async function fetchBasis(
   lang = "en",
@@ -239,27 +244,32 @@ export async function fetchBasis(
       getAboutPages(fetch),
       getObservatoryPages(fetch),
       getFieldChoices(fetch),
-      getBlogCategories(lang, urqlClient),
-      getCountriesRegionsFormfields(lang, urqlClient),
-      getChartDescriptions(lang, urqlClient),
+      // getBlogCategories(lang, urqlClient),
+      getCountriesRegionsFormfields(lang, fetch),
     ])
   } catch (e) {
     throw error(500, `Backend server problems ${e}`)
   }
 }
 
-export const allUsers = writable<User[]>([])
-let fetchingAllUsers = false
-export async function getAllUsers(fetch: LoadEvent["fetch"]) {
-  if (get(allUsers).length > 0 || fetchingAllUsers) return
-  fetchingAllUsers = true
-  const ret = await fetch("/api/users/")
-  const users = await ret.json()
-  if (!users) throw error(500, "could not fetch users from database")
+// export const allUsers = writable<User[]>([])
+// let fetchingAllUsers = false
+// export async function getAllUsers(fetch: LoadEvent["fetch"]) {
+//   if (get(allUsers).length > 0 || fetchingAllUsers) return
+//   fetchingAllUsers = true
+//   const ret = await fetch("/api/users/")
+//   const users = await ret.json()
+//   if (!users) throw error(500, "could not fetch users from database")
+//
+//   allUsers.set(users)
+//   fetchingAllUsers = false
+// }
 
-  allUsers.set(users)
-  fetchingAllUsers = false
-}
+export const allUsers = readable([] as User[], set => {
+  fetch(`/api/users/`)
+    .then(ret => ret.json() as Promise<User[]>)
+    .then(set)
+})
 
 export const loading = writable(false)
 
@@ -392,7 +402,7 @@ export const currencies = readable<Currency[]>([], set => {
 
 export const contentRootElement = writable<HTMLElement>()
 
-export const dealsNG: Readable<DealHull[]> = derived(
+export const dealsNG = derived(
   [filters, publicOnly],
   ([$filters, $publicOnly], set) => {
     const subset = $publicOnly ? "PUBLIC" : "ACTIVE"
@@ -400,5 +410,5 @@ export const dealsNG: Readable<DealHull[]> = derived(
       .then(ret => ret.json() as Promise<DealHull[]>)
       .then(set)
   },
-  [],
+  [] as DealHull[],
 )

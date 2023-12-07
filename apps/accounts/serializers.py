@@ -1,9 +1,10 @@
 from rest_framework import serializers
 
 from apps.accounts.models import User
+from apps.new_model.serializers import CountrySerializer, RegionSerializer
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserListSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
@@ -12,3 +13,12 @@ class UserSerializer(serializers.ModelSerializer):
             "username",
             "role",
         ]
+
+
+class UserSerializer(serializers.ModelSerializer):
+    country = CountrySerializer()
+    region = RegionSerializer()
+
+    class Meta:
+        model = User
+        fields = "__all__"

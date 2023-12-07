@@ -149,6 +149,13 @@ class Command(BaseCommand):
             do_workflows(old_deal.id)
 
             deal_hull.save()
+        print(
+            """dont forget:
+             SELECT setval('new_model_dealhull_id_seq', (SELECT MAX(id) from new_model_dealhull));
+SELECT setval('new_model_dealversion2_id_seq', (SELECT MAX(id) from new_model_dealversion2));
+
+             """
+        )
 
 
 def map_locations(nv: DealVersion2, locations: list[dict]):
