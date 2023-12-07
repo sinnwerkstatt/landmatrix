@@ -1,27 +1,13 @@
 <script lang="ts">
-  import { queryStore } from "@urql/svelte"
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
-  import { page } from "$app/stores"
-
-  import { dealsQuery } from "$lib/dealQueries"
-  import { filters, publicOnly } from "$lib/filters"
-  import { chartDescriptions, isMobile } from "$lib/stores"
+  import { chartDescriptions, dealsNG, isMobile } from "$lib/stores"
 
   import ChartsContainer from "$components/Data/Charts/ChartsContainer.svelte"
   import ProduceInfoMap from "$components/Data/Charts/ProduceInfoMap.svelte"
   import { showContextBar, showFilterBar } from "$components/Data/stores"
   import LoadingPulse from "$components/LoadingPulse.svelte"
-
-  $: deals = queryStore({
-    client: $page.data.urqlClient,
-    query: dealsQuery,
-    variables: {
-      filters: $filters.toGQLFilterArray(),
-      subset: $publicOnly ? "PUBLIC" : "ACTIVE",
-    },
-  })
 
   $: title = $_("Produce info map")
 
@@ -36,12 +22,10 @@
 </svelte:head>
 
 <ChartsContainer>
-  {#if $deals.fetching}
+  {#if $dealsNG.length === 0}
     <LoadingPulse />
-  {:else if $deals.error}
-    <p>Error...{$deals.error.message}</p>
   {:else}
-    <ProduceInfoMap deals={$deals.data.deals} {title} />
+    <ProduceInfoMap deals={$dealsNG} {title} />
   {/if}
 
   <div slot="ContextBar">

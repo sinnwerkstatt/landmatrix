@@ -1,16 +1,12 @@
 <script lang="ts">
-  import { queryStore } from "@urql/svelte"
   import { _ } from "svelte-i18n"
-
-  import { page } from "$app/stores"
 
   import type { SortBy } from "$lib/data/buckets"
   import { createImplementationStatusChartData } from "$lib/data/charts/implementationStatus"
   import { createNegotiationStatusChartData } from "$lib/data/charts/negotiationStatusGroup"
   import { createProduceGroupChartData } from "$lib/data/charts/produceGroup"
-  import { dealsQuery } from "$lib/dealQueries"
-  import { filters, publicOnly } from "$lib/filters"
-  import { countries, loading, observatoryPages, regions } from "$lib/stores"
+  import { filters } from "$lib/filters"
+  import { countries, dealsNG, observatoryPages, regions } from "$lib/stores"
   import type { CountryOrRegion } from "$lib/types/wagtail"
   import { sum } from "$lib/utils/data_processing"
 
@@ -19,16 +15,6 @@
   import StatusPieChart from "$components/StatusPieChart.svelte"
 
   import ContextBarContainer from "./ContextBarContainer.svelte"
-
-  $: deals = queryStore({
-    client: $page.data.urqlClient,
-    query: dealsQuery,
-    variables: {
-      filters: $filters.toGQLFilterArray(),
-      subset: $publicOnly ? "PUBLIC" : "ACTIVE",
-    },
-  })
-  $: loading.set($deals?.fetching ?? false)
 
   let currentItem: CountryOrRegion
   $: if (!$filters.region_id && !$filters.country_id) {
@@ -51,15 +37,14 @@
   let sortBy: SortBy
   $: unit = $displayDealsCount ? "deals" : "ha"
   $: sortBy = $displayDealsCount ? "count" : "size"
-  $: dealsArray = $deals?.data?.deals ?? []
 
-  $: chartNegStat = createNegotiationStatusChartData(dealsArray, sortBy)
-  $: chartImpStat = createImplementationStatusChartData(dealsArray, sortBy)
-  $: chartProd = createProduceGroupChartData(dealsArray, sortBy)
+  $: chartNegStat = createNegotiationStatusChartData($dealsNG, sortBy)
+  $: chartImpStat = createImplementationStatusChartData($dealsNG, sortBy)
+  $: chartProd = createProduceGroupChartData($dealsNG, sortBy)
 
   $: totalCount = $displayDealsCount
-    ? `${Math.round(dealsArray.length).toLocaleString("fr")}`
-    : `${Math.round(sum(dealsArray, "deal_size")).toLocaleString("fr")} ha`
+    ? `${Math.round($dealsNG.length).toLocaleString("fr")}`
+    : `${Math.round(sum($dealsNG, "deal_size")).toLocaleString("fr")} ha`
 </script>
 
 <ContextBarContainer>
@@ -75,7 +60,7 @@
       </p>
     {/if}
   {/if}
-  {#if dealsArray.length > 0}
+  {#if $dealsNG.length}
     <div>
       <DealDisplayToggle />
       <div class="my-3 w-full text-center font-bold">

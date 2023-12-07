@@ -1,13 +1,8 @@
 <script lang="ts">
-  import { queryStore } from "@urql/svelte"
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
-  import { page } from "$app/stores"
-
-  import { dealsQuery } from "$lib/dealQueries"
-  import { filters, publicOnly } from "$lib/filters"
-  import { chartDescriptions, isMobile, loading } from "$lib/stores"
+  import { chartDescriptions, dealsNG, isMobile } from "$lib/stores"
 
   import ChartsContainer from "$components/Data/Charts/ChartsContainer.svelte"
   import { showContextBar, showFilterBar } from "$components/Data/stores"
@@ -15,16 +10,6 @@
   import LoadingPulse from "$components/LoadingPulse.svelte"
 
   export let data
-
-  $: deals = queryStore({
-    client: $page.data.urqlClient,
-    query: dealsQuery,
-    variables: {
-      filters: $filters.toGQLFilterArray(),
-      subset: $publicOnly ? "PUBLIC" : "ACTIVE",
-    },
-  })
-  $: loading.set($deals?.fetching ?? false)
 
   onMount(() => {
     showContextBar.set(!$isMobile)
@@ -38,12 +23,10 @@
 
 <ChartsContainer>
   <div class="h-full w-full overflow-visible">
-    {#if $deals.fetching}
+    {#if $dealsNG.length === 0}
       <LoadingPulse />
-    {:else if $deals.error}
-      <p>Error...{$deals.error.message}</p>
     {:else}
-      <svelte:component this={data.profile.component} deals={$deals.data.deals} />
+      <svelte:component this={data.profile.component} deals={$dealsNG} />
     {/if}
   </div>
 

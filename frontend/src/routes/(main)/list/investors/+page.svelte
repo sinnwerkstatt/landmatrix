@@ -1,13 +1,12 @@
 <script lang="ts">
-  import { gql, queryStore } from "@urql/svelte"
+  import { gql } from "@urql/svelte"
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
   import { page } from "$app/stores"
 
-  import { dealsQuery } from "$lib/dealQueries"
-  import { filters, FilterValues, publicOnly } from "$lib/filters"
-  import { formfields, isMobile, loading } from "$lib/stores"
+  import { filters, FilterValues } from "$lib/filters"
+  import { dealsNG, formfields, isMobile } from "$lib/stores"
   import type { Deal } from "$lib/types/deal"
   import type { GQLFilter } from "$lib/types/filters"
   import type { Investor } from "$lib/types/investor"
@@ -41,20 +40,10 @@
   $: labels = COLUMNS.map(col => $formfields.investor[col].label)
   $: spans = COLUMNS.map(col => columnSpanMap[col])
 
-  $: deals = queryStore({
-    client: $page.data.urqlClient,
-    query: dealsQuery,
-    variables: {
-      filters: $filters.toGQLFilterArray(),
-      subset: $publicOnly ? "PUBLIC" : "ACTIVE",
-    },
-  })
-  $: loading.set($deals?.fetching ?? false)
-
   let investors: Investor[] = []
 
   async function getInvestors(s_deals: Deal[], s_filters: FilterValues) {
-    if (!$deals) {
+    if ($dealsNG.length === 0) {
       investors = []
       return
     }
@@ -114,7 +103,7 @@
     })
   }
 
-  $: getInvestors($deals?.data?.deals ?? [], $filters)
+  $: getInvestors($dealsNG, $filters)
 
   onMount(() => {
     showContextBar.set(false)
@@ -136,15 +125,15 @@
         {investors?.length === 1 ? $_("Investor") : $_("Investors")}
       </div>
 
-      <Table sortBy="-modified_at" items={investors} {columns} {spans} {labels}>
+      <Table {columns} items={investors} {labels} sortBy="-modified_at" {spans}>
         <DisplayField
-          slot="field"
+          fieldname={fieldName}
           let:fieldName
           let:obj
           model="investor"
-          wrapperClasses="p-1"
-          fieldname={fieldName}
+          slot="field"
           value={obj[fieldName]}
+          wrapperClasses="p-1"
         />
       </Table>
     </div>

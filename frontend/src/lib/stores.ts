@@ -4,6 +4,7 @@ import type { Client } from "@urql/core"
 import { gql } from "@urql/svelte"
 import { _ } from "svelte-i18n"
 import { derived, get, readable, writable } from "svelte/store"
+import type { Readable } from "svelte/store"
 
 import { browser } from "$app/environment"
 
@@ -11,6 +12,7 @@ import {
   flat_intention_of_investment_map,
   intention_of_investment_group_choices,
 } from "$lib/choices"
+import { filters, publicOnly } from "$lib/filters"
 import type { BlockImage } from "$lib/types/custom"
 import type { AreaType, IntentionOfInvestment } from "$lib/types/deal"
 import {
@@ -19,7 +21,7 @@ import {
   NegotiationStatusGroup,
 } from "$lib/types/deal"
 import type { DraftStatus, FieldDefinition, Status } from "$lib/types/generics"
-import type { Currency } from "$lib/types/newtypes"
+import type { Currency, DealHull } from "$lib/types/newtypes"
 import type { User } from "$lib/types/user"
 import type {
   BlogCategory,
@@ -389,3 +391,14 @@ export const currencies = readable<Currency[]>([], set => {
 })
 
 export const contentRootElement = writable<HTMLElement>()
+
+export const dealsNG: Readable<DealHull[]> = derived(
+  [filters, publicOnly],
+  ([$filters, $publicOnly], set) => {
+    const subset = $publicOnly ? "PUBLIC" : "ACTIVE"
+    fetch(`/api/deals/?subset=${subset}&${$filters.toRESTFilterArray()}`)
+      .then(ret => ret.json() as Promise<DealHull[]>)
+      .then(set)
+  },
+  [],
+)

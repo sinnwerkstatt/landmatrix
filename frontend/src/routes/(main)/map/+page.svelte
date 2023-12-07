@@ -1,18 +1,13 @@
 <script lang="ts">
-  import { queryStore } from "@urql/svelte"
   import type { FeatureGroup, LeafletEvent, Map, Marker } from "leaflet"
   import { divIcon, featureGroup, marker, popup } from "leaflet?client"
   import * as R from "ramda"
   import { onDestroy, onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
-  import { page } from "$app/stores"
-
-  import { dealsQuery } from "$lib/dealQueries"
-  import { filters, publicOnly } from "$lib/filters"
-  import { countries, isMobile, loading, regions } from "$lib/stores"
+  import { filters } from "$lib/filters"
+  import { countries, dealsNG, isMobile, loading, regions } from "$lib/stores"
   import type { Deal, Location } from "$lib/types/deal"
-  import type { GQLFilter } from "$lib/types/filters"
   import type { Country } from "$lib/types/wagtail"
 
   import DataContainer from "$components/Data/DataContainer.svelte"
@@ -40,6 +35,7 @@
     loc: Location
     deal_id: number
   }
+
   interface CountryWCoords extends Country {
     point_lat: number
     point_lon: number
@@ -68,18 +64,6 @@
   let markersFeatureGroup: FeatureGroup
   let skipMapRefresh = false
 
-  type Subset = "UNFILTERED" | "ACTIVE" | "PUBLIC"
-
-  $: deals = queryStore<{ deals: Deal[] }, { filters: GQLFilter[]; subset: Subset }>({
-    client: $page.data.urqlClient,
-    query: dealsQuery,
-    variables: {
-      filters: $filters.toGQLFilterArray(),
-      subset: $publicOnly ? "PUBLIC" : "ACTIVE",
-    },
-  })
-  $: loading.set($deals?.fetching ?? false)
-
   function generateCountryCoords(countries: CountryWCoords[]): {
     [key: number]: [number, number]
   } {
@@ -102,11 +86,9 @@
   }
 
   const refreshMap = (): void => {
-    if (!bigmap || !$deals.data) return
-
-    const dealData = $deals.data.deals
-    if (dealData.length === 0 || skipMapRefresh) return
-
+    if (!bigmap || $dealsNG.length === 0 || markers.length === 0 || skipMapRefresh) {
+      return
+    }
     markersFeatureGroup?.clearLayers()
     current_zoom = bigmap.getZoom()
 
@@ -198,8 +180,9 @@
 
   async function refreshMarkers() {
     if (import.meta.env.SSR) return
+    loading.set(true)
     markers = []
-    for (let deal of $deals?.data?.deals ?? []) {
+    for (let deal of $dealsNG) {
       if (!(deal.id in _dealLocationMarkersCache))
         _dealLocationMarkersCache[deal.id] = deal.locations
           .filter(
@@ -223,6 +206,7 @@
       markers.push(..._dealLocationMarkersCache[deal.id])
     }
     refreshMap()
+    loading.set(false)
   }
 
   async function createMarkerPopup(event: LeafletEvent) {
@@ -266,7 +250,7 @@
   }
 
   const displayDealsCountUnsubscribe = displayDealsCount.subscribe(() => refreshMap())
-  $: deals && $deals.data?.deals && refreshMarkers()
+  $: $dealsNG && refreshMarkers()
   $: flyToCountryOrRegion($filters.country_id, $filters.region_id)
 
   onMount(() => {

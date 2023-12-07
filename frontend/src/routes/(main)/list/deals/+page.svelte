@@ -1,13 +1,8 @@
 <script lang="ts">
-  import { queryStore } from "@urql/svelte"
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
-  import { page } from "$app/stores"
-
-  import { dealsQuery } from "$lib/dealQueries"
-  import { filters, publicOnly } from "$lib/filters"
-  import { formfields, isMobile, loading } from "$lib/stores"
+  import { dealsNG, formfields, isMobile } from "$lib/stores"
 
   import DataContainer from "$components/Data/DataContainer.svelte"
   import FilterCollapse from "$components/Data/FilterCollapse.svelte"
@@ -57,17 +52,6 @@
   $: labels = activeColumns.map(col => $formfields.deal[col].label)
   $: spans = activeColumns.map(col => columnSpanMap[col])
 
-  let deals = []
-  async function fetchDeals(filters: string, subset: string) {
-    console.log(filters)
-    loading.set(true)
-    const ret = await fetch(`/api/deals/?subset=${subset}&${filters}`)
-    deals = await ret.json()
-    loading.set(false)
-  }
-
-  $: fetchDeals($filters.toRESTFilterArray(), $publicOnly ? "PUBLIC" : "ACTIVE")
-
   onMount(() => {
     showContextBar.set(false)
     showFilterBar.set(!$isMobile)
@@ -84,24 +68,23 @@
 
     <div class="flex h-full w-1 grow flex-col px-6 pb-6">
       <div class="flex h-20 items-center text-lg">
-        {deals?.length ?? "—"}
-        {deals?.length === 1 ? $_("Deal") : $_("Deals")}
+        {$dealsNG.length === 0 ? "—" : $dealsNG.length === 1 ? $_("Deal") : $_("Deals")}
       </div>
 
       <Table
-        sortBy="-fully_updated_at"
-        items={deals}
         columns={activeColumns}
-        {spans}
+        items={$dealsNG}
         {labels}
+        sortBy="-fully_updated_at"
+        {spans}
       >
         <DisplayField
-          slot="field"
+          fieldname={fieldName}
           let:fieldName
           let:obj
-          wrapperClasses="p-1"
-          fieldname={fieldName}
+          slot="field"
           value={obj[fieldName]}
+          wrapperClasses="p-1"
         />
       </Table>
     </div>

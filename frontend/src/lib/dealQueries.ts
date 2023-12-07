@@ -1,46 +1,5 @@
 import { gql } from "@urql/svelte"
 
-export const dealsQuery = gql`
-  query ($subset: Subset, $filters: [Filter]) {
-    deals(limit: 0, subset: $subset, filters: $filters) {
-      id
-      deal_size
-      country {
-        id
-        name
-        region {
-          id
-        }
-      }
-      current_intention_of_investment
-      current_negotiation_status
-      current_contract_size
-      current_implementation_status
-      current_crops
-      current_animals
-      current_mineral_resources
-      current_electricity_generation
-      current_carbon_sequestration
-      intended_size
-      locations # for map
-      fully_updated_at # for listing
-      negotiation_status
-      contract_size
-      operating_company {
-        # for map pin popover & listing
-        id
-        name
-      }
-      top_investors {
-        # for listing
-        id
-        name
-        classification
-      }
-    }
-  }
-`
-
 export const dealQuery = gql`
   query Deal($id: Int!, $version: Int) {
     deal(id: $id, version: $version, subset: UNFILTERED) {

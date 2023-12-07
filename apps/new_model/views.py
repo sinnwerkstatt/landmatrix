@@ -1,3 +1,5 @@
+import json
+
 from django.db.models import Prefetch, Q
 from django.http import JsonResponse
 from rest_framework import viewsets
@@ -44,7 +46,7 @@ class Deal2ViewSet(viewsets.ReadOnlyModelViewSet):
     def _parse_filter(request: Request):
         ret = Q()
 
-        print(request.GET)
+        # print(request.GET)
         if subset := request.GET.get("subset"):
             # TODO
             ret &= Q(active_version__is_public=True)
@@ -110,15 +112,15 @@ class Deal2ViewSet(viewsets.ReadOnlyModelViewSet):
         filters = self._parse_filter(request)
         deals = (
             DealHull.objects.exclude(active_version=None)
+            .filter(deleted=False, confidential=False)
             .filter(filters)
             .prefetch_related("active_version")
             .prefetch_related("active_version__operating_company")
+            .prefetch_related("active_version__locations")
             .prefetch_related("country")
             .order_by("id")
         )
-        print(deals.count())
 
-        deals = deals[:10]
         return Response(
             [
                 {
@@ -157,7 +159,14 @@ class Deal2ViewSet(viewsets.ReadOnlyModelViewSet):
                             "classification": ti.classification,
                         }  # for listing
                         for ti in d.active_version.top_investors.all()
-                        # TODO Filter deleted!
+                        # TODO Investors are not filtered (e.g. "deleted")
+                    ],
+                    "locations": [
+                        {
+                            "nid": x.nid,
+                            "point": json.loads(x.point.geojson) if x.point else None,
+                        }
+                        for x in d.active_version.locations.all()
                     ],
                 }
                 for d in deals

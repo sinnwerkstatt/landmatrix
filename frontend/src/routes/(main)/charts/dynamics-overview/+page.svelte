@@ -1,13 +1,8 @@
 <script lang="ts">
-  import { queryStore } from "@urql/svelte"
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
-  import { page } from "$app/stores"
-
-  import { dealsQuery } from "$lib/dealQueries"
-  import { filters, publicOnly } from "$lib/filters"
-  import { chartDescriptions, isMobile } from "$lib/stores"
+  import { chartDescriptions, dealsNG, isMobile } from "$lib/stores"
 
   import ChartsContainer from "$components/Data/Charts/ChartsContainer.svelte"
   import { showContextBar, showFilterBar } from "$components/Data/stores"
@@ -19,15 +14,6 @@
   import ImplementationStatusChart from "./ImplementationStatusChart.svelte"
   import IoIGroupChart from "./IoIGroupChart.svelte"
   import NegotiationStatusGroupChart from "./NegotiationStatusGroupChart.svelte"
-
-  $: deals = queryStore({
-    client: $page.data.urqlClient,
-    query: dealsQuery,
-    variables: {
-      filters: $filters.toGQLFilterArray(),
-      subset: $publicOnly ? "PUBLIC" : "ACTIVE",
-    },
-  })
 
   onMount(() => {
     showContextBar.set(!$isMobile)
@@ -46,23 +32,21 @@
     <DealDisplayToggle />
   </div>
 
-  {#if $deals.fetching}
+  {#if $dealsNG.length === 0}
     <LoadingPulse />
-  {:else if $deals.error}
-    <p>Error...{$deals.error.message}</p>
   {:else}
     <div class="mx-8 grid grid-rows-1 gap-8 md:mx-32 md:grid-cols-2 md:gap-x-32">
-      <IoIGroupChart deals={$deals.data.deals} displayDealsCount={$displayDealsCount} />
+      <IoIGroupChart deals={$dealsNG} displayDealsCount={$displayDealsCount} />
       <AgricultureIntentionChart
-        deals={$deals.data.deals}
+        deals={$dealsNG}
         displayDealsCount={$displayDealsCount}
       />
       <NegotiationStatusGroupChart
-        deals={$deals.data.deals}
+        deals={$dealsNG}
         displayDealsCount={$displayDealsCount}
       />
       <ImplementationStatusChart
-        deals={$deals.data.deals}
+        deals={$dealsNG}
         displayDealsCount={$displayDealsCount}
       />
     </div>
