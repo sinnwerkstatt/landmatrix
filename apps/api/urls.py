@@ -8,6 +8,7 @@ from apps.landmatrix.views import (
     FieldDefinitionViewSet,
     CurrencyViewSet,
     CountryViewSet,
+    RegionViewSet,
 )
 
 from .export import DataDownload
@@ -19,6 +20,7 @@ from .views import (
     messages_json,
     chart_descriptions,
     blog_categories,
+    legacy_formfields,
 )
 from apps.accounts.views import UserViewSet
 
@@ -36,6 +38,7 @@ router = routers.DefaultRouter()
 router.register(r"field_definitions", FieldDefinitionViewSet)
 router.register(r"currencies", CurrencyViewSet)
 router.register(r"countries", CountryViewSet)
+router.register(r"regions", RegionViewSet)
 router.register(r"users", UserViewSet)
 
 urlpatterns = [
@@ -47,6 +50,7 @@ urlpatterns = [
     path("investor_search/", investor_search),
     path("chart_descriptions/", chart_descriptions),
     path("blog_categories/", blog_categories),
+    path("legacy_formfields/", legacy_formfields),
     path("csrf_token/", get_csrf),
     path("", include("apps.new_model.urls")),
     path("", include(router.urls)),

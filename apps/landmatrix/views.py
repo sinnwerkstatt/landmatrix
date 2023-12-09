@@ -6,13 +6,14 @@ from django.views.generic.base import RedirectView
 from rest_framework import permissions, viewsets
 
 from apps.landmatrix.models import FieldDefinition
-from apps.landmatrix.models.country import Country
+from apps.landmatrix.models.country import Country, Region
 from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.serializers import (
     FieldDefinitionSerializer,
     CurrencySerializer,
     CountrySerializer,
 )
+from apps.new_model.serializers import RegionSerializer
 
 
 class SwitchLanguageView(RedirectView):
@@ -51,6 +52,12 @@ class CurrencyViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class CountryViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Country.objects.all()
+    queryset = Country.objects.all().prefetch_related("deals")
     permission_classes = [permissions.AllowAny]
     serializer_class = CountrySerializer
+
+
+class RegionViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Region.objects.all()
+    permission_classes = [permissions.AllowAny]
+    serializer_class = RegionSerializer

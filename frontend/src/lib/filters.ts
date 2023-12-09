@@ -193,63 +193,34 @@ export class FilterValues {
         this.investor_country_id.toString(),
       )
 
-    // this.nature_of_deal.forEach(x => searchParams.append("nature", x.toString()))
-    // if (this.nature_of_deal.length > 0) {
-    //   const allValues = Object.values(NatureOfDeal)
-    //   const diffValues = allValues.filter(x => !this.nature_of_deal.includes(x))
-    //
-    //   if (diffValues.length > 0)
-    //     filterArray.push({
-    //       field: "nature_of_deal",
-    //       operation: "CONTAINED_BY",
-    //       value: diffValues,
-    //       exclusion: true,
-    //     })
-    // }
+    this.nature_of_deal.forEach(x => searchParams.append("nature", x.toString()))
 
     if (this.initiation_year_min && this.initiation_year_min > 1970)
-      searchParams.append("iy_min", this.initiation_year_min.toString())
+      searchParams.append("initiation_year_min", this.initiation_year_min.toString())
     if (this.initiation_year_max)
-      searchParams.append("iy_max", this.initiation_year_max.toString())
-    if (this.initiation_year_unknown) searchParams.append("iy_null", "t")
+      searchParams.append("initiation_year_max", this.initiation_year_max.toString())
+    if (this.initiation_year_min || this.initiation_year_max)
+      if (this.initiation_year_unknown) searchParams.append("initiation_year_null", "t")
 
     this.intention_of_investment.forEach(x =>
-      searchParams.append("cur_ioi", x.toString()),
+      searchParams.append("intention_of_investment", x.toString()),
     )
 
-    // if (this.produce && this.produce.length > 0) {
-    //   const crops = []
-    //   const animals = []
-    //   const minerals = []
-    //   for (const prod of this.produce) {
-    //     if (prod.groupID === ProduceGroup.CROPS) crops.push(prod.value)
-    //     else if (prod.groupID === ProduceGroup.ANIMALS) animals.push(prod.value)
-    //     else if (prod.groupID === ProduceGroup.MINERAL_RESOURCES)
-    //       minerals.push(prod.value)
-    //   }
-    //   if (crops.length > 0) {
-    //     filterArray.push({
-    //       field: "current_crops",
-    //       operation: "CONTAINS",
-    //       value: crops,
-    //     })
-    //   }
-    //   if (animals.length > 0) {
-    //     filterArray.push({
-    //       field: "current_animals",
-    //       operation: "CONTAINS",
-    //       value: animals,
-    //     })
-    //   }
-    //   if (minerals.length > 0) {
-    //     filterArray.push({
-    //       field: "current_mineral_resources",
-    //       operation: "CONTAINS",
-    //       value: minerals,
-    //     })
-    //   }
-    // }
-    //
+    if (this.produce && this.produce.length > 0) {
+      const crops: string[] = []
+      const animals: string[] = []
+      const minerals: string[] = []
+      for (const prod of this.produce) {
+        if (prod.groupID === ProduceGroup.CROPS) crops.push(prod.value)
+        else if (prod.groupID === ProduceGroup.ANIMALS) animals.push(prod.value)
+        else if (prod.groupID === ProduceGroup.MINERAL_RESOURCES)
+          minerals.push(prod.value)
+      }
+      crops.forEach(c => searchParams.append("crops", c))
+      animals.forEach(c => searchParams.append("animals", c))
+      minerals.forEach(c => searchParams.append("minerals", c))
+    }
+
     if (this.transnational !== null)
       searchParams.append("trans", this.transnational.toString())
 

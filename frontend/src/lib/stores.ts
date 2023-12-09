@@ -165,56 +165,12 @@ async function getCountriesRegionsFormfields(
   language = "en",
   fetch: LoadEvent["fetch"],
 ) {
-  const ret = await fetch("/api/countries/")
-  countries.set(await ret.json())
-  // countries.set(data.countries)
-  // regions.set(data.regions)
-  // formfields.set(data.formfields)
-
-  // const { data } = await urqlClient
-  //   .query(
-  //     gql`
-  //       query ($language: String!) {
-  //         countries {
-  //           id
-  //           name
-  //           code_alpha2
-  //           slug
-  //           point_lat
-  //           point_lon
-  //           point_lat_min
-  //           point_lon_min
-  //           point_lat_max
-  //           point_lon_max
-  //           observatory_page_id
-  //           high_income
-  //           deals {
-  //             id
-  //           }
-  //         }
-  //         regions {
-  //           id
-  //           name
-  //           slug
-  //           point_lat_min
-  //           point_lon_min
-  //           point_lat_max
-  //           point_lon_max
-  //           observatory_page_id
-  //         }
-  //         formfields(language: $language) {
-  //           deal
-  //           location
-  //           contract
-  //           datasource
-  //           investor
-  //           involvement
-  //         }
-  //       }
-  //     `,
-  //     { language },
-  //   )
-  //   .toPromise()
+  const retC = await fetch(`/api/countries/`)
+  countries.set(await retC.json())
+  const retR = await fetch("/api/regions/")
+  regions.set(await retR.json())
+  const retFf = await fetch(`/api/legacy_formfields/?lang=${language}`)
+  formfields.set(await retFf.json())
 }
 
 interface ChartDesc {
@@ -405,10 +361,14 @@ export const contentRootElement = writable<HTMLElement>()
 export const dealsNG = derived(
   [filters, publicOnly],
   ([$filters, $publicOnly], set) => {
+    loading.set(true)
     const subset = $publicOnly ? "PUBLIC" : "ACTIVE"
     fetch(`/api/deals/?subset=${subset}&${$filters.toRESTFilterArray()}`)
       .then(ret => ret.json() as Promise<DealHull[]>)
-      .then(set)
+      .then(ret => {
+        loading.set(false)
+        set(ret)
+      })
   },
   [] as DealHull[],
 )

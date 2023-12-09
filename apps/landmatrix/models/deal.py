@@ -136,7 +136,7 @@ class AbstractDealBase(models.Model):
         on_delete=models.PROTECT,
         blank=True,
         null=True,
-        related_name="deals",
+        related_name="oldmodel_deals",
     )
     intended_size = models.DecimalField(
         _("Intended size (in ha)"),
@@ -341,7 +341,7 @@ class AbstractDealBase(models.Model):
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
-        related_name="deals",
+        related_name="oldmodel_deals",
     )
     involved_actors = models.JSONField(blank=True, null=True)
     project_name = models.CharField(_("Name of investment project"), blank=True)

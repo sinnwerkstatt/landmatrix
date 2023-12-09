@@ -16,7 +16,11 @@ from rest_framework.decorators import api_view
 from rest_framework.exceptions import NotAuthenticated
 
 from apps.accounts.models import UserRole
+from apps.blog.models import BlogCategory
 from apps.graphql.resolvers.charts import create_statistics
+from apps.landmatrix.forms.deal import DealForm
+from apps.landmatrix.forms.deal_submodels import get_submodels_fields
+from apps.landmatrix.forms.investor import InvestorForm, InvestorVentureInvolvementForm
 from apps.landmatrix.models.deal import Deal, DealVersion, DealWorkflowInfo
 from apps.landmatrix.models.investor import (
     Investor,
@@ -24,10 +28,8 @@ from apps.landmatrix.models.investor import (
     InvestorWorkflowInfo,
 )
 from apps.message.models import Message
-
+from apps.wagtailcms.models import ChartDescriptionsSettings
 from .utils.to_dict import create_lookups, deal_to_dict, investor_to_dict
-from ..blog.models import BlogCategory
-from ..wagtailcms.models import ChartDescriptionsSettings
 
 
 @api_view()
@@ -426,4 +428,17 @@ def blog_categories(request):
                 )
             ],
             safe=False,
+        )
+
+
+def legacy_formfields(request):
+    language = request.GET.get("lang", "en")
+    with translation.override(language):
+        return JsonResponse(
+            {
+                "deal": DealForm().as_json(),
+                **get_submodels_fields(),
+                "investor": InvestorForm().as_json(),
+                "involvement": InvestorVentureInvolvementForm().as_json(),
+            }
         )

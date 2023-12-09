@@ -68,7 +68,8 @@
 
     <div class="flex h-full w-1 grow flex-col px-6 pb-6">
       <div class="flex h-20 items-center text-lg">
-        {$dealsNG.length === 0 ? "—" : $dealsNG.length === 1 ? $_("Deal") : $_("Deals")}
+        {$dealsNG?.length ?? "—"}
+        {$dealsNG?.length === 1 ? $_("Deal") : $_("Deals")}
       </div>
 
       <Table

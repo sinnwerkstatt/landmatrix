@@ -1212,7 +1212,7 @@ class DealHull(models.Model):
         on_delete=models.PROTECT,
         blank=True,
         null=True,
-        related_name="newModel_dealHulls",
+        related_name="deals",
     )
 
     active_version = models.ForeignKey(

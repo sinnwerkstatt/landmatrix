@@ -27,11 +27,6 @@ from apps.new_model.serializers import (
 def _parse_filter(request: Request):
     ret = Q()
 
-    # print(request.GET)
-    if subset := request.GET.get("subset"):
-        # TODO
-        ret &= Q(active_version__is_public=True)
-
     if region_id := request.GET.get("region_id"):
         ret &= Q(country__region_id=region_id)
     if country_id := request.GET.get("country_id"):
@@ -58,21 +53,24 @@ def _parse_filter(request: Request):
     if parents_c_id := request.GET.get("parent_company_country_id"):
         ret &= Q(active_version__parent_companies__country_id=parents_c_id)
 
-    # TODO left off here. Talk to Kurt
-    # if nature := request.GET.get("nature"):
-    #     all_nature = set([x['value'] for x in NATURE_OF_DEAL_ITEMS])
-    #
-    #     print(nature)
+    # TODO This might not be working correctly yet. it does not include "no nature of deal", but the original filter did
+    if nature := request.GET.getlist("nature"):
+        all_nature = set([x["value"] for x in NATURE_OF_DEAL_ITEMS])
+        ret &= ~Q(
+            active_version__nature_of_deal__contained_by=list(all_nature - set(nature))
+        )
 
     iy_null = (
-        Q(active_version__initiation_year=None) if request.GET.get("iy_null") else Q()
+        Q(active_version__initiation_year=None)
+        if request.GET.get("initiation_year_null")
+        else Q()
     )
-    if iy_min := request.GET.get("iy_min"):
+    if iy_min := request.GET.get("initiation_year_min"):
         ret &= Q(active_version__initiation_year__gte=iy_min) | iy_null
-    if iy_max := request.GET.get("iy_max"):
+    if iy_max := request.GET.get("initiation_year_max"):
         ret &= Q(active_version__initiation_year__lte=iy_max) | iy_null
 
-    if ioi_list := request.GET.getlist("cur_ioi"):
+    if ioi_list := request.GET.getlist("intention_of_investment"):
         unknown = (
             Q(active_version__current_intention_of_investment=[])
             if "UNKNOWN" in ioi_list
@@ -82,6 +80,13 @@ def _parse_filter(request: Request):
             Q(active_version__current_intention_of_investment__overlap=ioi_list)
             | unknown
         )
+
+    if crops := request.GET.getlist("crops"):
+        ret &= Q(active_version__current_crops__overlap=crops)
+    if animals := request.GET.getlist("animals"):
+        ret &= Q(active_version__current_animals__overlap=animals)
+    if minerals := request.GET.getlist("minerals"):
+        ret &= Q(active_version__current_minerals__overlap=minerals)
 
     if trans := request.GET.get("trans"):
         ret &= Q(active_version__transnational=trans == "true")
@@ -117,9 +122,12 @@ class Deal2ViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(serializer.data)
 
     def list(self, request: Request, *args, **kwargs):
+        deals = DealHull.objects.visible(
+            request.user, request.GET.get("subset", "PUBLIC")
+        )
         filters = _parse_filter(request)
         deals = (
-            DealHull.objects.exclude(active_version=None)
+            deals.exclude(active_version=None)
             .filter(deleted=False, confidential=False)
             .filter(filters)
             .prefetch_related("active_version")
