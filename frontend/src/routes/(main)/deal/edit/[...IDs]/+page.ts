@@ -1,8 +1,5 @@
 import { error, redirect } from "@sveltejs/kit"
 
-import { dealQuery } from "$lib/dealQueries"
-import { findActiveVersion } from "$lib/helpers"
-import type { Deal } from "$lib/types/deal"
 import type { DealHull } from "$lib/types/newtypes"
 
 import type { PageLoad } from "./$types"
