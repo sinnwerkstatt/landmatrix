@@ -16,7 +16,7 @@
 
   const onInput = (event: InputEvent) => {
     const targetValue = (event.target as HTMLInputElement).value
-    value = targetValue === "" ? undefined : parseFloat(targetValue)
+    value = targetValue === "" ? null : parseFloat(targetValue)
   }
 </script>
 

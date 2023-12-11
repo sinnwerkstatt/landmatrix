@@ -180,26 +180,26 @@ export interface DealVersion2 extends DealVersionBase, VersionTimestampMixins {
 
 export type JSONCurrentDateAreaFieldType = Array<{
   current: boolean
-  date: string
+  date: string | null
   area: number
 }>
 
 export type JSONCurrentDateChoiceFieldType = Array<{
   current: boolean
-  date: string
+  date: string | null
   choice: string
 }>
 
 export type JSONCurrentDateAreaChoicesFieldType = Array<{
   current: boolean
-  date: string
+  date: string | null
   area: number
   choices: string[]
 }>
 
 export type JSONLeaseFieldType = Array<{
   current: boolean
-  date: string
+  date: string | null
   area?: number
   farmers?: number
   households?: number
@@ -207,7 +207,7 @@ export type JSONLeaseFieldType = Array<{
 
 export type JSONJobsFieldType = Array<{
   current: boolean
-  date: string
+  date: string | null
   jobs?: number
   employees?: number
   workers?: number

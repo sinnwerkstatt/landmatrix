@@ -4,6 +4,7 @@
   import type { DealHull } from "$lib/types/newtypes"
 
   import DecimalField from "$components/Fields/Edit2/DecimalField.svelte"
+  import JSONCurrentDateAreaField from "$components/Fields/Edit2/JSONCurrentDateAreaField.svelte"
   import TextField from "$components/Fields/Edit2/TextField.svelte"
 
   import EditSubsection from "./EditSubsection.svelte"
@@ -13,7 +14,7 @@
   // export let version: DealVersion2
 </script>
 
-{JSON.stringify(version)}
+<!--{JSON.stringify(version)}-->
 <form>
   <EditSubsection title={$_("Land area")}>
     <DecimalField
@@ -22,11 +23,11 @@
       label={$_("Intended size")}
       unit={$_("ha")}
     />
-    <!--    <JSONCurrentDateAreaField-->
-    <!--      fieldname="contract_size"-->
-    <!--      value={version.contract_size}-->
-    <!--      label={$_("Size under contract (leased or purchased area)")}-->
-    <!--    />-->
+    <JSONCurrentDateAreaField
+      fieldname="contract_size"
+      value={version.contract_size}
+      label={$_("Size under contract (leased or purchased area)")}
+    />
     <!--    <JSONCurrentDateAreaField-->
     <!--      fieldname="production_size"-->
     <!--      value={version.production_size}-->

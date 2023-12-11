@@ -3,6 +3,7 @@
   import customParseFormat from "dayjs/plugin/customParseFormat"
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
+  import type { FormEventHandler } from "svelte/elements"
 
   dayjs.extend(customParseFormat)
 
@@ -12,8 +13,9 @@
 
   let inputField: HTMLInputElement
 
+  let isValid: boolean
   const checkValidity = () => {
-    const isValid =
+    isValid =
       !value ||
       dayjs(
         value,
@@ -38,7 +40,7 @@
     }
   }
 
-  const onInput = (event: InputEvent) => {
+  const onInput = (event: Event) => {
     const targetValue = (event.target as HTMLInputElement).value
 
     value =
@@ -56,13 +58,21 @@
   onMount(checkValidity)
 </script>
 
-<input
-  bind:this={inputField}
-  value={value ?? ""}
-  type="text"
-  class="inpt {$$props.class ?? ''}"
-  placeholder={$_("YYYY-MM-DD")}
-  {required}
-  {name}
-  on:input|preventDefault={onInput}
-/>
+<div class="relative">
+  <input
+    bind:this={inputField}
+    value={value ?? ""}
+    type="text"
+    class="inpt w-28 {$$props.class ?? ''}"
+    placeholder={$_("YYYY-MM-DD")}
+    {required}
+    {name}
+    on:input|preventDefault={onInput}
+    maxlength="10"
+  />
+  {#if !isValid}
+    <span class="absolute right-0 top-full whitespace-nowrap text-xs text-red-700">
+      YYYY, YYYY-MM or YYYY-MM-DD
+    </span>
+  {/if}
+</div>
