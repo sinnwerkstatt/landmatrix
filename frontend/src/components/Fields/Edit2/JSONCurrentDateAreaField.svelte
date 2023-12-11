@@ -9,7 +9,7 @@
   import MinusIcon from "$components/icons/MinusIcon.svelte"
   import PlusIcon from "$components/icons/PlusIcon.svelte"
 
-  type AreaOptionalType = {
+  type EntryType = {
     current: boolean
     date: string | null
     area?: number
@@ -22,30 +22,19 @@
   export let labelClass = "md:w-5/12 lg:w-4/12"
   export let valueClass = "text-lm-dark dark:text-white md:w-7/12 lg:w-8/12"
 
-  let valueCopy: AreaOptionalType[] = structuredClone(
-    value.length > 0 ? value : [{ current: false, date: null }],
+  let valueCopy: EntryType[] = structuredClone(
+    value.length ? value : [{ current: false, date: null }],
   )
 
   $: value = valueCopy.filter(val => !!val.area) as JSONCurrentDateAreaFieldType
 
-  function addEntry() {
-    valueCopy = [...valueCopy, { current: false, date: null }]
-  }
-  function removeEntry(index: number) {
-    // if (current === index) {
-    //   current = -1
-    // } else if (current > index) {
-    //   current--
-    // }
-    valueCopy = valueCopy.filter((val, i) => i !== index)
-  }
-  const isCurrentRequired = (v: JSONCurrentDateAreaFieldType) => {
-    if (!v.length) return false
-    return !v.some(val => val.current)
-  }
-</script>
+  const addEntry = () => (valueCopy = [...valueCopy, { current: false, date: null }])
+  const removeEntry = (index: number) =>
+    (valueCopy = valueCopy.filter((val, i) => i !== index))
 
-{JSON.stringify(value)}
+  const isCurrentRequired = (v: JSONCurrentDateAreaFieldType) =>
+    v.length ? !v.some(val => val.current) : false
+</script>
 
 <div class={wrapperClass} data-fieldname={fieldname}>
   {#if label}

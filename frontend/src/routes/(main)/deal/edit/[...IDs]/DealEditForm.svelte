@@ -6,6 +6,7 @@
   import { page } from "$app/stores"
 
   import type { DealHull } from "$lib/types/newtypes"
+  import { getCsrfToken } from "$lib/utils"
 
   import LoadingSpinner from "$components/icons/LoadingSpinner.svelte"
   import ManageOverlay from "$components/Management/ManageOverlay.svelte"
@@ -14,7 +15,7 @@
 
   export let deal: DealHull
   export let dealID: number
-  export let versionID: number
+  export let versionID: number | undefined
 
   let originalDeal = JSON.stringify(deal)
   let savingInProgress = false
@@ -62,56 +63,48 @@
     return currentForm.reportValidity()
   }
 
-  // const saveDeal = async (): Promise<void> => {
-  //   savingInProgress = true
-  //
-  //   deal.locations = removeEmptyEntries(deal.locations ?? [])
-  //   deal.contracts = removeEmptyEntries(deal.contracts ?? [])
-  //   deal.datasources = removeEmptyEntries(deal.datasources ?? [])
-  //
-  //   const { data, error } = await ($page.data.urqlClient as Client)
-  //     .mutation<{
-  //       deal_edit: {
-  //         dealId: number
-  //         dealVersion?: number
-  //       }
-  //     }>(
-  //       gql`
-  //         mutation ($id: Int!, $version: Int, $payload: Payload) {
-  //           deal_edit(id: $id, version: $version, payload: $payload) {
-  //             dealId
-  //             dealVersion
-  //           }
-  //         }
-  //       `,
-  //       {
-  //         id: dealID ? +dealID : -1,
-  //         version: dealVersion ? +dealVersion : null,
-  //         payload: { ...deal, versions: null, comments: null, workflowinfos: null },
-  //       },
-  //     )
-  //     .toPromise()
-  //
-  //   if (error) {
-  //     const message = error.networkError
-  //       ? "Network Error: Please check your internet connection."
-  //       : error.graphQLErrors.map(e => e.message).includes("EDITING_OLD_VERSION")
-  //         ? "You are trying to edit an old version!"
-  //         : `GraphQLError: ${error.message}`
-  //
-  //     toast.push(message, { classes: ["error"] })
-  //   } else if (!data) {
-  //     toast.push("Unknown Problem: Please contact support.", { classes: ["error"] })
-  //   } else {
-  //     await goto(
-  //       `/deal/edit/${data.deal_edit.dealId}/${data.deal_edit.dealVersion}${location.hash}`,
-  //     )
-  //     // update original deal only after route change
-  //     originalDeal = JSON.stringify(discardEmptyFields(deal))
-  //   }
-  //
-  //   savingInProgress = false
-  // }
+  const saveDeal = async (): Promise<void> => {
+    savingInProgress = true
+
+    //  TODO
+    //   deal.locations = removeEmptyEntries(deal.locations ?? [])
+    //   deal.contracts = removeEmptyEntries(deal.contracts ?? [])
+    //   deal.datasources = removeEmptyEntries(deal.datasources ?? [])
+
+    const ret = await fetch(
+      versionID ? `/api/deals/${dealID}/${versionID}/` : `/api/deals/${dealID}/`,
+      {
+        method: "PUT",
+        credentials: "include",
+        body: JSON.stringify(deal),
+        // body: JSON.stringify({deal: { ...deal, versions: null, comments: null, workflowinfos: null }}),
+        headers: {
+          "X-CSRFToken": await getCsrfToken(),
+          "Content-Type": "application/json",
+        },
+      },
+    )
+
+    //   if (error) {
+    //     const message = error.networkError
+    //       ? "Network Error: Please check your internet connection."
+    //       : error.graphQLErrors.map(e => e.message).includes("EDITING_OLD_VERSION")
+    //         ? "You are trying to edit an old version!"
+    //         : `GraphQLError: ${error.message}`
+    //
+    //     toast.push(message, { classes: ["error"] })
+    //   } else if (!data) {
+    //     toast.push("Unknown Problem: Please contact support.", { classes: ["error"] })
+    //   } else {
+    //     await goto(
+    //       `/deal/edit/${data.deal_edit.dealId}/${data.deal_edit.dealVersion}${location.hash}`,
+    //     )
+    //     // update original deal only after route change
+    //     originalDeal = JSON.stringify(discardEmptyFields(deal))
+    //   }
+    //
+    savingInProgress = false
+  }
 
   const onClickClose = async (force = false): Promise<void> => {
     // if (formChanged && !force) {
@@ -129,11 +122,8 @@
   }
 
   const onClickSave = async (): Promise<void> => {
-    // if (savingInProgress || !isFormValid()) {
-    //   return
-    // }
-    //
-    // if (formChanged) await saveDeal()
+    if (savingInProgress || !isFormValid()) return
+    if (formChanged) await saveDeal()
   }
 
   const onClickTab = async (

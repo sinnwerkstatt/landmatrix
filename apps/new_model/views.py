@@ -97,7 +97,7 @@ def _parse_filter(request: Request):
     return ret
 
 
-class Deal2ViewSet(viewsets.ReadOnlyModelViewSet):
+class Deal2ViewSet(viewsets.ModelViewSet):
     queryset = DealHull.objects.all().prefetch_related(
         Prefetch("versions", queryset=DealVersion2.objects.order_by("-id"))
     )
@@ -108,13 +108,19 @@ class Deal2ViewSet(viewsets.ReadOnlyModelViewSet):
             return [IsAuthenticated()]
         return [AllowAny()]
 
+    def _update_version(self, request, pk=None, version_id=None):
+        return Response({})
+
     @action(
         name="Deal Instance",
-        methods=["get"],
+        methods=["get", "put"],
         url_path="(?P<version_id>\d+)",
         detail=True,
     )
-    def retrieve_version(self, request, pk=None, version_id=None):
+    def handle_version(self, request, pk=None, version_id=None):
+        if request.stream and request.stream.method == "PUT":
+            return self._update_version(request, pk, version_id)
+
         instance = self.get_object()
         if version_id:
             instance._selected_version_id = version_id
@@ -196,6 +202,9 @@ class Deal2ViewSet(viewsets.ReadOnlyModelViewSet):
         d1.draft_version = dv1
         d1.save()
         return Response({"dealID": d1.id, "versionID": dv1.id})
+
+    def update(self, request, *args, **kwargs):
+        return Response({})
 
 
 class Investor2ViewSet(viewsets.ReadOnlyModelViewSet):
