@@ -29,6 +29,7 @@ status_map_dings = {
 class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument("start_id", nargs="?", type=int)
+        parser.add_argument("end_id", nargs="?", type=int)
 
     def handle(self, *args, **options):
         # TODO HANDLE THESE
@@ -42,7 +43,8 @@ class Command(BaseCommand):
         )
         if options["start_id"]:
             deals = deals.filter(id__gte=options["start_id"])
-
+        if options["end_id"]:
+            deals = deals.filter(id__lte=options["end_id"])
         for old_deal in deals:  # type: Deal
             url = f"https://landmatrix.org/deal/{old_deal.id}/"
             ic(old_deal.id, old_deal.status, url)
@@ -219,8 +221,10 @@ def map_datasources(nv: DealVersion2, datasources: list[dict]):
 def map_version_payload(ov: dict, nv: DealVersion2):
     # nv.country_id = ov["country"]
     nv.intended_size = ov["intended_size"]
-    nv.contract_size = ov["contract_size"] or []
-    for x in nv.contract_size:
+    nv.contract_size = []
+    for x in ov["contract_size"] or []:
+        if not x.get("area"):
+            continue
         if x.get("date"):
             x["date"] = x["date"].strip()
         if x.get("date") == "11996":
@@ -243,8 +247,12 @@ def map_version_payload(ov: dict, nv: DealVersion2):
             x["date"] = "2007-03-31"
         if x.get("date") == "201133912":
             x["date"] = "2011-01-12"
-    nv.production_size = ov["production_size"] or []
-    for x in nv.production_size:
+        nv.contract_size += [x]
+
+    nv.production_size = []
+    for x in ov["production_size"] or []:
+        if not x.get("area"):
+            continue
         if x.get("date"):
             x["date"] = x["date"].strip()
         if x.get("date") == "20111":
@@ -255,6 +263,8 @@ def map_version_payload(ov: dict, nv: DealVersion2):
             del x["date"]
         if x.get("date") == "2007-31-03":
             x["date"] = "2007-03-31"
+        nv.production_size += [x]
+
     nv.land_area_comment = ov["land_area_comment"]
     nv.intention_of_investment = ov["intention_of_investment"] or []
     for x in nv.intention_of_investment:
@@ -277,12 +287,17 @@ def map_version_payload(ov: dict, nv: DealVersion2):
         if "choice" in neg.keys() and neg["choice"] is None:
             del neg["choice"]
     nv.negotiation_status_comment = ov["negotiation_status_comment"]
-    nv.implementation_status = ov["implementation_status"] or []
-    for x in nv.implementation_status:
+
+    nv.implementation_status = []
+    for x in ov["implementation_status"] or []:
+        if not x.get("choice"):
+            continue
         if x.get("date") == "6":
             del x["date"]
         if nv.deal_id == 6012 and x.get("date") == "30":
             del x["date"]
+        nv.implementation_status += [x]
+
     nv.implementation_status_comment = ov["implementation_status_comment"]
     nv.purchase_price = ov["purchase_price"]
     nv.purchase_price_currency_id = ov["purchase_price_currency"]
