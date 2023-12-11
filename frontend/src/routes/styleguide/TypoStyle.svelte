@@ -1,6 +1,7 @@
 <script lang="ts">
   export let val: {
     title: string
+    tw: string
     desktop: string
     mobile: string
     specs: { name: string; value: string; tw: string | undefined }[]
@@ -11,6 +12,9 @@
   <div class="flex flex-col">
     <h4 class={val.desktop}>{val.title}</h4>
     <h4 class={val.mobile}>{val.title}</h4>
+    <div class="my-4">
+      <code class="code">{val.tw}</code>
+    </div>
   </div>
   <div class="grid grid-cols-2">
     {#each val.specs as x}

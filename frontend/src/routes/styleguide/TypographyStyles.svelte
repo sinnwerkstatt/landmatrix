@@ -3,6 +3,7 @@
 
   const display1 = {
     title: "Display 1",
+    tw: "display1",
     mobile: "display1 text-[72px]",
     desktop: "display1 text-[120px]",
     specs: [
@@ -19,6 +20,7 @@
 
   const heading1 = {
     title: "Heading 1",
+    tw: "heading1",
     mobile: "heading1 text-[48px]]",
     desktop: "heading1 text-[60px]",
     specs: [
@@ -35,6 +37,7 @@
 
   const heading2 = {
     title: "Heading 2",
+    tw: "heading2",
     mobile: "heading2 text-[40px]",
     desktop: "heading2 text-[48px]",
     specs: [
@@ -51,6 +54,7 @@
 
   const heading3 = {
     title: "Heading 3",
+    tw: "heading3",
     mobile: "heading3 text-[32px]",
     desktop: "heading3 text-[40px]",
     specs: [
@@ -67,6 +71,7 @@
 
   const heading4 = {
     title: "Heading 4",
+    tw: "heading4",
     mobile: "heading4 text-[28px]",
     desktop: "heading4 text-[32px]",
     specs: [
@@ -83,6 +88,7 @@
 
   const heading5 = {
     title: "Heading 5",
+    tw: "heading5",
     mobile: "heading5 text-[24px]",
     desktop: "heading5 text-[28px]",
     specs: [
@@ -99,6 +105,7 @@
 
   const subtitle1 = {
     title: "Subtitle 1",
+    tw: "subtitle1",
     mobile: "subtitle1 text-[16px]",
     desktop: "subtitle1 text-[18px]",
     specs: [
@@ -115,6 +122,7 @@
 
   const subtitle2 = {
     title: "Subtitle 2",
+    tw: "subtitle2",
     mobile: "subtitle2 text-[14px]",
     desktop: "subtitle2 text-[16px]",
     specs: [
@@ -131,6 +139,7 @@
 
   const body1 = {
     title: "Body 1",
+    tw: "body1",
     mobile: "body1 text-[16px]",
     desktop: "body1 text-[18px]",
     specs: [
@@ -147,6 +156,7 @@
 
   const body2 = {
     title: "Body 2",
+    tw: "body2",
     mobile: "body2 text-[14px]",
     desktop: "body2 text-[16px]",
     specs: [
@@ -162,7 +172,8 @@
   }
 
   const caption = {
-    title: "The quick brown fox jumps over the lazy dog",
+    title: "Caption",
+    tw: "caption",
     mobile: "caption text-[12px]",
     desktop: "caption text-[14px]",
     specs: [
