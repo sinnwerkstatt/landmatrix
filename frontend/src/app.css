@@ -154,12 +154,56 @@
     @apply text-xs font-bold uppercase leading-tight tracking-widest text-lm-black md:text-sm;
   }
 
-  .button1 {
+  .buttonBase {
     @apply text-base font-bold leading-tight tracking-widest md:text-lg;
+    @apply inline-block cursor-pointer whitespace-nowrap rounded border-2 px-4 py-2 shadow transition;
   }
 
-  .button-active {
-    @apply text-base font-bold leading-tight tracking-widest md:text-lg;
+  .butn {
+    --color1: white;
+    --color2: black;
+    --color3: lightgray;
+    @apply buttonBase;
+    color: var(--color2);
+    background: var(--color1);
+    border-color: var(--color1);
+    /*@apply hover:brightness-75;*/
+  }
+  .butn:hover {
+    background: var(--color3);
+    border-color: var(--color3);
+  }
+
+  .butn-outline {
+    @apply buttonBase;
+    --color1: black;
+    color: var(--color1);
+    background: var(--color2);
+    border-color: var(--color1);
+    /*@apply hover:brightness-75;*/
+  }
+  .butn-outline:hover {
+    color: var(--color3);
+    border-color: var(--color3);
+  }
+
+  .butn-primary {
+    --color1: rgba(252, 148, 30, 1);
+    --color2: white;
+    --color3: rgb(202, 118, 24);
+  }
+
+    .butn-secondary {
+    --color1: rgba(68,183,181,1);
+    --color2: white;
+    --color3: rgb(54, 146, 145);
+  }
+
+  .butn.disabled,
+  .butn:disabled,
+  .butn-outline.disabled,
+  .butn-outline:disabled {
+    @apply pointer-events-none cursor-not-allowed opacity-60;
   }
 
   .btn {
@@ -174,6 +218,10 @@
 
   .btn-slim {
     @apply px-3 py-1;
+  }
+
+  .button1 {
+    @apply text-base font-bold leading-tight tracking-widest md:text-lg;
   }
 
   .btn-primary {

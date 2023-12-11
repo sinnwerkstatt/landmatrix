@@ -1,4 +1,5 @@
 <script>
+  import ButtonStyles from "./ButtonStyles.svelte"
   import ColorStyles from "./ColorStyles.svelte"
   import TypographyStyles from "./TypographyStyles.svelte"
 </script>
@@ -8,5 +9,9 @@
 
   <ColorStyles />
   <div class="p-28" />
+
   <TypographyStyles />
+  <div class="p-28" />
+
+  <ButtonStyles />
 </div>
