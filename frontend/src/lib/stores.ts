@@ -1,6 +1,5 @@
 import type { LoadEvent } from "@sveltejs/kit"
 import { error } from "@sveltejs/kit"
-import type { Client } from "@urql/core"
 import { _, locale } from "svelte-i18n"
 import { derived, readable, writable } from "svelte/store"
 
@@ -190,11 +189,7 @@ export const chartDescriptions = derived(
   {} as ChartDesc,
 )
 
-export async function fetchBasis(
-  lang = "en",
-  fetch: LoadEvent["fetch"],
-  urqlClient: Client,
-) {
+export async function fetchBasis(lang = "en", fetch: LoadEvent["fetch"]) {
   try {
     await Promise.all([
       getAboutPages(fetch),
