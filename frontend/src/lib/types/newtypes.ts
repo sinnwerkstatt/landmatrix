@@ -151,6 +151,7 @@ interface DealVersionBase {
   domestic_jobs_current: JSONJobsFieldType
   domestic_jobs_created_comment: string
 
+  overall_comment: string
   datasources: DataSource[]
 }
 

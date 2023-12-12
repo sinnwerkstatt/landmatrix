@@ -1,9 +1,10 @@
 import json
 
 from django.db.models import Prefetch, Q
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -21,6 +22,7 @@ from apps.new_model.models import DealHull, InvestorHull, DealVersion2, Investor
 from apps.new_model.serializers import (
     Deal2Serializer,
     Investor2Serializer,
+    DealVersionSerializer,
 )
 
 
@@ -108,7 +110,20 @@ class Deal2ViewSet(viewsets.ModelViewSet):
             return [IsAuthenticated()]
         return [AllowAny()]
 
-    def _update_version(self, request, pk=None, version_id=None):
+    @staticmethod
+    def _update_version(request, pk=None, version_id=None):
+        if not request.user.is_authenticated or not request.user.role:
+            raise PermissionDenied
+        try:
+            dv1: DealVersion2 = DealVersion2.objects.get(id=version_id, deal_id=pk)
+        except DealVersion2.DoesNotExist:
+            raise Http404
+        # TODO check all the permissions! (Creator, or different role or whatnot)
+        serializer = DealVersionSerializer(
+            dv1, data=request.data["version"], partial=True
+        )
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
         return Response({})
 
     @action(

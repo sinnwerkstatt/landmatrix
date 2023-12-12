@@ -97,13 +97,11 @@
   </EditSubsection>
 
   <EditSubsection title={$_("Purchase price")}>
-    <!--    <DecimalField-->
-    <!--      fieldname="purchase_price"-->
-    <!--      bind:value={version.purchase_price}-->
-    <!--      label={$_("Purchase price")}-->
-    <!--      currency={version.purchase_price_currency}-->
-    <!--      perType={version.purchase_price_type}-->
-    <!--    />-->
+    <DecimalField
+      fieldname="purchase_price"
+      bind:value={version.purchase_price}
+      label={$_("Purchase price")}
+    />
     <!--    <DecimalField-->
     <!--      fieldname="purchase_price_area"-->
     <!--      bind:value={version.purchase_price_area}-->

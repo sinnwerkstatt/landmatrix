@@ -84,7 +84,7 @@ class DealVersionSerializer(serializers.ModelSerializer):
     locations = LocationSerializer(many=True, read_only=True)
     contracts = ContractSerializer(many=True, read_only=True)
     datasources = DealDataSourceSerializer(many=True, read_only=True)
-    operating_company = OperatingCompanySerializer()
+    operating_company = OperatingCompanySerializer(allow_null=True)
 
     class Meta:
         model = DealVersion2

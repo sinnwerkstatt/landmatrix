@@ -6,11 +6,14 @@ import type { PageLoad } from "./$types"
 
 export const ssr = false
 
-export const load: PageLoad = async ({ params, fetch, parent }) => {
+export const load: PageLoad = async ({ params, fetch, parent, depends }) => {
+  depends("deal:edit")
+
   const { user } = await parent()
   if (!user) throw error(403, "Permission denied")
 
   const [dealID, versionID] = params.IDs.split("/").map(x => (x ? +x : undefined))
+  if (!dealID) throw redirect(301, "/list/deals/")
   const ret = await fetch(
     versionID ? `/api/deals/${dealID}/${versionID}/` : `/api/deals/${dealID}/`,
   )
@@ -39,5 +42,7 @@ export const load: PageLoad = async ({ params, fetch, parent }) => {
     console.warn("redirecting to draft version")
     throw redirect(301, `/deal/edit/${dealID}/${deal.draft_version}/`)
   }
-  return { deal, dealID, versionID }
+
+  const originalDeal = JSON.stringify(deal)
+  return { deal, dealID, versionID, originalDeal }
 }
