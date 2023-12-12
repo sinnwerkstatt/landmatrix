@@ -1129,7 +1129,7 @@ class Contract(models.Model):
 class BaseDataSource(models.Model):
     nid = NanoIDField("ID", max_length=15, db_index=True)
     type = models.CharField(_("Type"), choices=DATASOURCE_TYPE_CHOICES, blank=True)
-    # NOTE hit a URL > 1000 chars... so going with 2000 for now. TODO this is just ridiculous
+    # NOTE hit a URL > 1000 chars... so going with 5000 for now. TODO this is just ridiculous
     url = models.URLField(_("Url"), blank=True, max_length=5000)
     file = models.FileField(_("File"), blank=True, null=True, max_length=3000)
     file_not_public = models.BooleanField(_("Keep PDF not public"), default=False)

@@ -37,7 +37,7 @@
     { target: "#contracts", name: $_("Contracts") },
     { target: "#employment", name: $_("Employment") },
     { target: "#investor_info", name: $_("Investor info") },
-    { target: "#data_sources", name: $_("Data sources") },
+    { target: "#datasources", name: $_("Data sources") },
     {
       target: "#local_communities",
       name: $_("Local communities / indigenous peoples"),
@@ -211,7 +211,7 @@
         <EditSectionGeneralInfo bind:deal />
       {/if}
       {#if activeTab === "#contracts"}
-        <EditSectionContracts bind:deal />
+        <EditSectionContracts bind:contracts={deal.selected_version.contracts} />
       {/if}
       {#if activeTab === "#employment"}
         <EditSectionEmployment bind:deal />
@@ -219,8 +219,8 @@
       {#if activeTab === "#investor_info"}
         <EditSectionInvestorInfo bind:deal />
       {/if}
-      {#if activeTab === "#data_sources"}
-        <EditSectionDataSources bind:deal />
+      {#if activeTab === "#datasources"}
+        <EditSectionDataSources bind:datasources={deal.selected_version.datasources} />
       {/if}
       {#if activeTab === "#local_communities"}
         <EditSectionLocalCommunities bind:deal />

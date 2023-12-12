@@ -18,7 +18,13 @@ from apps.landmatrix.models.choices import (
     INVESTMENT_TYPE_ITEMS,
     NATURE_OF_DEAL_ITEMS,
 )
-from apps.new_model.models import DealHull, InvestorHull, DealVersion2, InvestorVersion2
+from apps.new_model.models import (
+    DealHull,
+    InvestorHull,
+    DealVersion2,
+    InvestorVersion2,
+    Contract,
+)
 from apps.new_model.serializers import (
     Deal2Serializer,
     Investor2Serializer,
@@ -119,17 +125,40 @@ class Deal2ViewSet(viewsets.ModelViewSet):
         except DealVersion2.DoesNotExist:
             raise Http404
         # TODO check all the permissions! (Creator, or different role or whatnot)
+
         serializer = DealVersionSerializer(
             dv1, data=request.data["version"], partial=True
         )
+
         if serializer.is_valid(raise_exception=True):
             serializer.save()
+            # FIXME right now we're handling contracts, locations and datasources after the serializer. not very pretty
+            # maybe drf-writable-nested would be an alternative
+
+            contract_nids = set()
+            for contract in request.data["version"].get("contracts"):
+                contract_nids.add(contract["nid"])
+                Contract.objects.update_or_create(
+                    nid=contract["nid"],
+                    dealversion_id=dv1.id,
+                    defaults={
+                        "number": contract["number"],
+                        "date": contract["date"],
+                        "expiration_date": contract["expiration_date"],
+                        "agreement_duration": contract["agreement_duration"],
+                        "comment": contract["comment"],
+                    },
+                )
+            Contract.objects.filter(dealversion_id=dv1.id).exclude(
+                nid__in=contract_nids
+            ).delete()
+
         return Response({})
 
     @action(
         name="Deal Instance",
         methods=["get", "put"],
-        url_path="(?P<version_id>\d+)",
+        url_path=r"(?P<version_id>\d+)",
         detail=True,
     )
     def handle_version(self, request, pk=None, version_id=None):

@@ -62,7 +62,7 @@
   </section>
 {/if}
 
-<style lang="css">
+<style lang="postcss">
   .selected {
     @apply animate-fadeToWhite dark:animate-fadeToGray;
   }

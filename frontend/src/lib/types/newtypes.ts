@@ -71,14 +71,14 @@ export interface InvestorHull extends Hull {
   }[]
 }
 
-interface DataSource {
+export class DataSource {
   nid: string
   type: string
   url: string
-  file: string
+  file: string | null
   file_not_public: boolean
   publication_title: string
-  date: string
+  date: string | null
   name: string
   company: string
   email: string
@@ -86,6 +86,39 @@ interface DataSource {
   includes_in_country_verified_information: boolean | null
   open_land_contracts_id: string
   comment: string
+  constructor(nid: string) {
+    this.nid = nid
+    this.type = ""
+    this.url = ""
+    this.file = null
+    this.file_not_public = false
+    this.publication_title = ""
+    this.date = null
+    this.name = ""
+    this.company = ""
+    this.email = ""
+    this.phone = ""
+    this.includes_in_country_verified_information = null
+    this.open_land_contracts_id = ""
+    this.comment = ""
+  }
+}
+
+export class Contract {
+  nid: string
+  number: string
+  date: string | null
+  expiration_date: string | null
+  agreement_duration: number | null
+  comment: string
+  constructor(nid: string) {
+    this.nid = nid
+    this.number = ""
+    this.date = null
+    this.expiration_date = null
+    this.agreement_duration = null
+    this.comment = ""
+  }
 }
 
 interface DealVersionBase {
@@ -128,6 +161,8 @@ interface DealVersionBase {
   off_the_lease_state: boolean | null
   off_the_lease: JSONLeaseFieldType
   contract_farming_comment: string
+
+  contracts: Contract[]
 
   // employment
   total_jobs_created: boolean | null
