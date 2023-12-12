@@ -4,7 +4,15 @@
   import "@splidejs/svelte-splide/css/core"
 
   export let countSlides: number
-  export let partners: Partner[]
+  export let partners: [
+    {
+      id: string
+      name: string
+      logo: string
+      category: string
+      homepage: string
+    },
+  ]
   export let bw = true
 
   const options = {
