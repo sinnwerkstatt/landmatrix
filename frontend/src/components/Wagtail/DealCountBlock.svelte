@@ -47,10 +47,10 @@
   bind:this={element}
 >
   <h3 class="heading1 dark:text-white">{value.text}</h3>
-  <p class="display1 text-pelorous" bind:this={countElement}>{Math.round($progress)}</p>
+  <p class="display1 text-pelorous" bind:this={countElement}>{Math.round($progress).toLocaleString("en")}</p>
   <p class="heading2 text-pelorous-300">
     {$_("Equals")}
-    {value.sum_ha.toLocaleString("fr") ?? "—"}
+    {value.sum_ha.toLocaleString("en") ?? "—"}
     {$_("ha")}
   </p>
 </div>
