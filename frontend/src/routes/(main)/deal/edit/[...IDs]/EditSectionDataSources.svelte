@@ -34,7 +34,7 @@
 
 {JSON.stringify(datasources)}
 <section class="flex flex-wrap">
-  <form class="w-full" id="data_sources">
+  <form class="w-full" id="datasources">
     {#each datasources as datasource, index}
       <div class="datasource-entry">
         <div

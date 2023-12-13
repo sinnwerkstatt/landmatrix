@@ -24,7 +24,7 @@ export function custom_is_null(field: unknown): boolean {
 export const discardEmptyFields = (deal: Deal) =>
   Object.fromEntries(Object.entries(deal).filter(([, value]) => !custom_is_null(value)))
 
-function sieveSubmodel(entry: SubmodelEntry, ignoreKeys = ["id", "role"]) {
+function sieveSubmodel(entry: SubmodelEntry, ignoreKeys = ["id", "nid", "role"]) {
   return Object.entries(entry).filter(([k, v]) =>
     ignoreKeys.includes(k) ? false : !custom_is_null(v),
   )

@@ -205,7 +205,7 @@
     </nav>
     <div class="w-full flex-auto overflow-y-auto pb-16 pl-4 pr-2">
       {#if activeTab === "#locations"}
-        <EditSectionLocations bind:deal />
+        <EditSectionLocations bind:locations={deal.selected_version.locations} />
       {/if}
       {#if activeTab === "#general"}
         <EditSectionGeneralInfo bind:deal />

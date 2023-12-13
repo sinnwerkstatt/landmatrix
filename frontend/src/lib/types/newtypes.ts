@@ -256,15 +256,25 @@ interface Area {
   date: string
   area: GeoJsonObject
 }
-interface Location2 {
+export class Location2 {
   nid: string
   name: string
   description: string
-  point: Point
+  point: Point | null
   facility_name: string
   level_of_accuracy: string
   comment: string
   areas: Area[]
+  constructor(nid: string) {
+    this.nid = nid
+    this.name = ""
+    this.description = ""
+    this.point = null
+    this.facility_name = ""
+    this.level_of_accuracy = ""
+    this.comment = ""
+    this.areas = []
+  }
 }
 
 export interface InvestorVersion2 extends VersionTimestampMixins {

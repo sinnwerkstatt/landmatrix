@@ -1015,15 +1015,15 @@ class Location(models.Model):
         DealVersion2, on_delete=models.CASCADE, related_name="locations"
     )
     nid = NanoIDField("ID", max_length=15, db_index=True)
-    name = models.CharField(_("Location"), blank=True)
-    description = models.TextField(_("Description"), blank=True)
-    point = gis_models.PointField(_("Point"), blank=True, null=True)
-    facility_name = models.CharField(_("Facility name"), blank=True)
     level_of_accuracy = models.CharField(
         _("Spatial accuracy level"),
         blank=True,
         choices=LEVEL_OF_ACCURACY_CHOICES,
     )
+    name = models.CharField(_("Location"), blank=True)
+    point = gis_models.PointField(_("Point"), blank=True, null=True)
+    description = models.TextField(_("Description"), blank=True)
+    facility_name = models.CharField(_("Facility name"), blank=True)
     comment = models.TextField(_("Comment"), blank=True)
 
     def to_dict(self):

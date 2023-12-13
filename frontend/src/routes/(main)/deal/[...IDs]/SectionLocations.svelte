@@ -111,7 +111,7 @@
             <NanoIDField
               label={$_("ID")}
               value={location.nid}
-              fieldname="location.id"
+              fieldname="location.nid"
             />
             <TextField
               label={$_("Spatial accuracy level")}
@@ -140,12 +140,11 @@
               value={location.facility_name}
               fieldname="location.facility_name"
             />
-            <!--        <TextField-->
-            <!--          value={location.url}-->
-            <!--          label={$_("Url")}-->
-            <!--          fieldname="location.url"-->
-            <!--          url-->
-            <!--        />-->
+            <TextField
+              label={$_("Comment")}
+              value={location.comment}
+              fieldname="location.comment"
+            />
           </div>
         {/each}
       </section>
