@@ -193,8 +193,8 @@
     --color3: rgb(202, 118, 24);
   }
 
-    .butn-secondary {
-    --color1: rgba(68,183,181,1);
+  .butn-secondary {
+    --color1: rgba(68, 183, 181, 1);
     --color2: white;
     --color3: rgb(54, 146, 145);
   }
