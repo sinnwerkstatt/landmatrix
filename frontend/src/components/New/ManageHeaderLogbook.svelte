@@ -37,7 +37,9 @@
   }
 </script>
 
-<div class="flex flex-col bg-lm-darkgray px-3 dark:bg-gray-700">
+<div
+  class="col-span-2 flex flex-col rounded-tr bg-lm-darkgray px-3 dark:bg-gray-700 lg:col-span-1"
+>
   <h3 class="my-1 ml-1 font-medium">{$_("Logbook")}</h3>
 
   <div

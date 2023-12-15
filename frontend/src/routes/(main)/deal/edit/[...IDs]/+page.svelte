@@ -1,14 +1,16 @@
 <script lang="ts">
   import { toast } from "@zerodevx/svelte-toast"
   import { _ } from "svelte-i18n"
+  import type { MouseEventHandler } from "svelte/elements"
 
   import { beforeNavigate, goto, invalidate } from "$app/navigation"
   import { page } from "$app/stores"
 
   import { getCsrfToken } from "$lib/utils"
+  import { removeEmptyEntries } from "$lib/utils/data_processing"
 
   import LoadingSpinner from "$components/icons/LoadingSpinner.svelte"
-  import ManageOverlay from "$components/Management/ManageOverlay.svelte"
+  import Modal from "$components/Modal.svelte"
 
   import EditSectionContracts from "./EditSectionContracts.svelte"
   import EditSectionDataSources from "./EditSectionDataSources.svelte"
@@ -75,10 +77,15 @@
   const saveDeal = async (): Promise<boolean> => {
     savingInProgress = true
 
-    //  TODO
-    //   deal.locations = removeEmptyEntries(deal.locations ?? [])
-    //   deal.contracts = removeEmptyEntries(deal.contracts ?? [])
-    //   deal.datasources = removeEmptyEntries(deal.datasources ?? [])
+    deal.selected_version.locations = removeEmptyEntries(
+      deal.selected_version.locations ?? [],
+    )
+    deal.selected_version.contracts = removeEmptyEntries(
+      deal.selected_version.contracts ?? [],
+    )
+    deal.selected_version.datasources = removeEmptyEntries(
+      deal.selected_version.datasources ?? [],
+    )
 
     const ret = await fetch(
       data.versionID
@@ -114,25 +121,22 @@
       return false
     } else {
       toast.push("Saved data", { classes: ["success"] })
-      await invalidate("deal:edit")
+      await invalidate("deal:detail")
       savingInProgress = false
       return true
     }
   }
 
   const onClickClose = async (force = false): Promise<void> => {
-    // if (formChanged && !force) {
-    //   showReallyQuitOverlay = true
-    //   return
-    // }
-    //
-    // await invalidateAll() // discard changes
-    //
-    // if (!data.dealID) {
-    //   await goto("/")
-    // } else {
-    //   await goto(`/deal/${data.dealID}/${dealVersion ?? ""}`)
-    // }
+    if (formChanged && !force) {
+      showReallyQuitOverlay = true
+      return
+    }
+
+    await invalidate("deal:detail") // discard changes
+
+    if (!data.dealID) await goto("/")
+    else await goto(`/deal/${data.dealID}/${data.versionID ?? ""}`)
   }
 
   const onClickSave = async (): Promise<void> => {
@@ -140,9 +144,8 @@
     if (formChanged) await saveDeal()
   }
 
-  const onClickTab = async (
-    e: MouseEvent & { currentTarget: EventTarget & HTMLAnchorElement },
-  ): Promise<void> => {
+  const onClickTab: MouseEventHandler<HTMLAnchorElement> = async (e): Promise<void> => {
+    console.log(e)
     if (savingInProgress || !isFormValid()) {
       return
     }
@@ -159,8 +162,9 @@
 
 <div class="container mx-auto flex h-full min-h-full flex-col">
   <div class="border-b border-orange md:flex md:flex-row md:justify-between">
-    <h1 class="heading4 mt-3">
+    <h1 class="heading4 mt-3 flex flex-col gap-2">
       {data.dealID ? $_("Editing deal #") + data.dealID : $_("Adding new deal")}
+      <span style="font-size: 0.8em;">{data.deal.country.name}</span>
     </h1>
     <div class="my-5 flex items-center">
       <button
@@ -244,12 +248,24 @@
   </div>
 </div>
 
-{#if showReallyQuitOverlay}
-  <ManageOverlay
-    bind:visible={showReallyQuitOverlay}
-    title={$_("Quit without saving?")}
-    on:submit={() => onClickClose(true)}
-  >
-    <div class="font-medium">{$_("Do you really want to close the editor?")}</div>
-  </ManageOverlay>
-{/if}
+<Modal bind:open={showReallyQuitOverlay} dismissible>
+  <h2 class="heading4">{$_("Quit without saving?")}</h2>
+  <hr />
+  <div class="mb-12 mt-6 text-lg">
+    {$_("Do you really want to close the editor?")}
+    <br />
+    {$_("All unsaved changes will be lost.")}
+  </div>
+  <div class="flex justify-end gap-4">
+    <button
+      class="butn-outline"
+      on:click={() => (showReallyQuitOverlay = false)}
+      autofocus
+    >
+      Continue editing
+    </button>
+    <button class="butn butn-yellow" on:click={() => onClickClose(true)}>
+      Quit without saving
+    </button>
+  </div>
+</Modal>

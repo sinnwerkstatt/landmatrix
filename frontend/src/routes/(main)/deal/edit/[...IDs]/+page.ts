@@ -7,22 +7,23 @@ import type { PageLoad } from "./$types"
 export const ssr = false
 
 export const load: PageLoad = async ({ params, fetch, parent, depends }) => {
-  depends("deal:edit")
+  depends("deal:detail")
 
   const { user } = await parent()
   if (!user) throw error(403, "Permission denied")
 
   const [dealID, versionID] = params.IDs.split("/").map(x => (x ? +x : undefined))
+
   if (!dealID) throw redirect(301, "/list/deals/")
   const ret = await fetch(
     versionID ? `/api/deals/${dealID}/${versionID}/` : `/api/deals/${dealID}/`,
   )
-  if (ret.status === 404) {
+
+  if (ret.status === 404)
     throw error(404, versionID ? "Deal version not found" : "Deal not found")
-  }
-  if (!ret.ok) {
-    throw error(ret.status, versionID ? "Deal version not found" : "Deal not found")
-  }
+
+  if (!ret.ok) throw error(ret.status, (await ret.json()).detail)
+
   const deal: DealHull = await ret.json()
 
   console.log()

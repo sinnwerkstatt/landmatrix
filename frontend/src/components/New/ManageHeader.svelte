@@ -9,13 +9,13 @@
   import HeaderDates from "$components/HeaderDates.svelte"
   import Cog6ToothIcon from "$components/icons/Cog6ToothIcon.svelte"
   import ManageHeaderLogbook from "$components/New/ManageHeaderLogbook.svelte"
+  import ManageHeaderVersionFlow from "$components/New/ManageHeaderVersionFlow.svelte"
 
   export let object: DealHull | InvestorHull
-  export let objectVersion: number | undefined
 </script>
 
-<div class="my-4 grid grid-cols-3">
-  <div class="col-span-2 bg-gray-light">
+<div class="my-4 grid grid-cols-2 lg:grid-cols-3">
+  <div class="col-span-2 rounded-tl bg-gray-light">
     <div class="flex items-center justify-between gap-4 p-2">
       <div>
         <h1 class="heading4 my-0 text-[1.875rem]">
@@ -62,14 +62,16 @@
           class="absolute z-50 border border-black bg-white p-2 shadow-2xl"
           slot="details"
         >
-          <li>
-            <div class="flex items-center gap-2">
-              <a class="btn" href="/deal/{object.id}/{object.active_version}/">
-                active version
-              </a>
-              go to current active version
-            </div>
-          </li>
+          {#if object.active_version}
+            <li>
+              <div class="flex items-center gap-2">
+                <a class="btn" href="/deal/{object.id}/{object.active_version}/">
+                  active version
+                </a>
+                go to current active version
+              </div>
+            </li>
+          {/if}
           {#if object.draft_version}
             <li>
               <div class="flex items-center gap-2">
@@ -115,6 +117,8 @@
               {dayjs(object.selected_version.activated_at).format("YYYY-MM-DD")}
             </div>
           </div>
+        {:else}
+          <ManageHeaderVersionFlow {object} />
         {/if}
       {/if}
     </div>
@@ -128,5 +132,3 @@
   <!--    <h3 class="heading">{$_("Logbook")}</h3>-->
   <!--  </div>-->
 </div>
-<!--{JSON.stringify(object)}-->
-<!--{JSON.stringify(objectVersion)}-->

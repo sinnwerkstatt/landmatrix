@@ -9,7 +9,7 @@
   export let investorVersion: number | undefined
 </script>
 
-<ManageHeader object={investor} objectVersion={investorVersion}>
+<ManageHeader object={investor}>
   <svelte:fragment slot="heading">
     {#if investor.selected_version.name_unknown}
       <span class="italic text-gray-dark">[{$_("unknown investor")}]</span>

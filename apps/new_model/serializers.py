@@ -86,6 +86,76 @@ class DealVersionSerializer(serializers.ModelSerializer):
     datasources = DealDataSourceSerializer(many=True, read_only=True)
     operating_company = OperatingCompanySerializer(allow_null=True)
 
+    @staticmethod
+    def save_submodels(request, dv1: DealVersion2):
+        # FIXME right now we're handling contracts, locations and datasources in the serializer. not very pretty
+        # maybe drf-writable-nested would be an alternative
+
+        location_nids = set()
+        for location in request.data["version"].get("locations"):
+            location_nids.add(location["nid"])
+            Location.objects.update_or_create(
+                nid=location["nid"],
+                dealversion_id=dv1.id,
+                defaults={
+                    "name": location["name"],
+                    "description": location["description"],
+                    "point": location["point"],
+                    "facility_name": location["facility_name"],
+                    "level_of_accuracy": location["level_of_accuracy"],
+                    "comment": location["comment"],
+                },
+            )
+        Location.objects.filter(dealversion_id=dv1.id).exclude(
+            nid__in=location_nids
+        ).delete()
+
+        contract_nids = set()
+        for contract in request.data["version"].get("contracts"):
+            contract_nids.add(contract["nid"])
+            Contract.objects.update_or_create(
+                nid=contract["nid"],
+                dealversion_id=dv1.id,
+                defaults={
+                    "number": contract["number"],
+                    "date": contract["date"],
+                    "expiration_date": contract["expiration_date"],
+                    "agreement_duration": contract["agreement_duration"],
+                    "comment": contract["comment"],
+                },
+            )
+        Contract.objects.filter(dealversion_id=dv1.id).exclude(
+            nid__in=contract_nids
+        ).delete()
+
+        datasource_nids = set()
+        for datasource in request.data["version"].get("datasources"):
+            datasource_nids.add(datasource["nid"])
+            DealDataSource.objects.update_or_create(
+                nid=datasource["nid"],
+                dealversion_id=dv1.id,
+                defaults={
+                    "type": datasource["type"],
+                    "url": datasource["url"],
+                    "file": datasource["file"],
+                    "file_not_public": datasource["file_not_public"],
+                    "publication_title": datasource["publication_title"],
+                    "date": datasource["date"],
+                    "name": datasource["name"],
+                    "company": datasource["company"],
+                    "email": datasource["email"],
+                    "phone": datasource["phone"],
+                    "includes_in_country_verified_information": datasource[
+                        "includes_in_country_verified_information"
+                    ],
+                    "open_land_contracts_id": datasource["open_land_contracts_id"],
+                    "comment": datasource["comment"],
+                },
+            )
+        DealDataSource.objects.filter(dealversion_id=dv1.id).exclude(
+            nid__in=datasource_nids
+        ).delete()
+
     class Meta:
         model = DealVersion2
         fields = "__all__"

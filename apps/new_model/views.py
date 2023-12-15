@@ -10,6 +10,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from apps.accounts.models import UserRole
 from apps.landmatrix.models.choices import (
     INVESTOR_CLASSIFICATION_ITEMS,
     INTENTION_OF_INVESTMENT_ITEMS,
@@ -19,14 +20,12 @@ from apps.landmatrix.models.choices import (
     INVESTMENT_TYPE_ITEMS,
     NATURE_OF_DEAL_ITEMS,
 )
+from apps.landmatrix.models.deal import DealWorkflowInfo
 from apps.new_model.models import (
     DealHull,
     InvestorHull,
     DealVersion2,
     InvestorVersion2,
-    Contract,
-    Location,
-    DealDataSource,
 )
 from apps.new_model.serializers import (
     Deal2Serializer,
@@ -119,8 +118,35 @@ class Deal2ViewSet(viewsets.ModelViewSet):
             return [IsAuthenticated()]
         return [AllowAny()]
 
+    @action(
+        name="Deal Instance",
+        methods=["get", "put", "delete"],
+        url_path=r"(?P<version_id>\d+)",
+        detail=True,
+    )
+    def handle_version(self, request, pk: int, version_id: int):
+        if not request.stream:  # this is apparently "GET"
+            return self._retrieve_version(request, pk, version_id)
+        if request.stream and request.stream.method == "PUT":
+            return self._update_version(request, pk, version_id)
+        if request.stream and request.stream.method == "DELETE":
+            return self._delete_version(request, pk, version_id)
+
+    def _retrieve_version(self, request, pk: int, version_id: int):
+        instance = self.get_object()
+        if version_id:
+            instance._selected_version_id = version_id
+        serializer = self.get_serializer(instance)
+        dv1 = serializer.data
+        # TODO check for permissions when viewing a draft
+        if request.user.role > UserRole.EDITOR:
+            ...
+            # dv1.created_by_id
+
+        return Response(dv1)
+
     @staticmethod
-    def _update_version(request, pk=None, version_id=None):
+    def _update_version(request, pk: int, version_id: int):
         if not request.user.is_authenticated or not request.user.role:
             raise PermissionDenied
         try:
@@ -135,91 +161,39 @@ class Deal2ViewSet(viewsets.ModelViewSet):
 
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-            # FIXME right now we're handling contracts, locations and datasources after the serializer. not very pretty
-            # maybe drf-writable-nested would be an alternative
-
-            location_nids = set()
-            for location in request.data["version"].get("locations"):
-                location_nids.add(location["nid"])
-                Location.objects.update_or_create(
-                    nid=location["nid"],
-                    dealversion_id=dv1.id,
-                    defaults={
-                        "name": location["name"],
-                        "description": location["description"],
-                        "point": location["point"],
-                        "facility_name": location["facility_name"],
-                        "level_of_accuracy": location["level_of_accuracy"],
-                        "comment": location["comment"],
-                    },
-                )
-            Location.objects.filter(dealversion_id=dv1.id).exclude(
-                nid__in=location_nids
-            ).delete()
-
-            contract_nids = set()
-            for contract in request.data["version"].get("contracts"):
-                contract_nids.add(contract["nid"])
-                Contract.objects.update_or_create(
-                    nid=contract["nid"],
-                    dealversion_id=dv1.id,
-                    defaults={
-                        "number": contract["number"],
-                        "date": contract["date"],
-                        "expiration_date": contract["expiration_date"],
-                        "agreement_duration": contract["agreement_duration"],
-                        "comment": contract["comment"],
-                    },
-                )
-            Contract.objects.filter(dealversion_id=dv1.id).exclude(
-                nid__in=contract_nids
-            ).delete()
-
-            datasource_nids = set()
-            for datasource in request.data["version"].get("datasources"):
-                datasource_nids.add(datasource["nid"])
-                DealDataSource.objects.update_or_create(
-                    nid=datasource["nid"],
-                    dealversion_id=dv1.id,
-                    defaults={
-                        "type": datasource["type"],
-                        "url": datasource["url"],
-                        "file": datasource["file"],
-                        "file_not_public": datasource["file_not_public"],
-                        "publication_title": datasource["publication_title"],
-                        "date": datasource["date"],
-                        "name": datasource["name"],
-                        "company": datasource["company"],
-                        "email": datasource["email"],
-                        "phone": datasource["phone"],
-                        "includes_in_country_verified_information": datasource[
-                            "includes_in_country_verified_information"
-                        ],
-                        "open_land_contracts_id": datasource["open_land_contracts_id"],
-                        "comment": datasource["comment"],
-                    },
-                )
-            DealDataSource.objects.filter(dealversion_id=dv1.id).exclude(
-                nid__in=datasource_nids
-            ).delete()
+            serializer.save_submodels(request, dv1)
 
         return Response({})
 
-    @action(
-        name="Deal Instance",
-        methods=["get", "put"],
-        url_path=r"(?P<version_id>\d+)",
-        detail=True,
-    )
-    def handle_version(self, request, pk=None, version_id=None):
-        if request.stream and request.stream.method == "PUT":
-            return self._update_version(request, pk, version_id)
+    @staticmethod
+    def _delete_version(request: Request, pk: int, version_id: int):
+        if not request.user.is_authenticated or not request.user.role:
+            raise PermissionDenied()
+        try:
+            dv1: DealVersion2 = DealVersion2.objects.get(id=version_id, deal_id=pk)
+            d1: DealHull = DealHull.objects.get(pk=pk)
+        except (DealVersion2.DoesNotExist, DealHull.DoesNotExist):
+            raise Http404
+        if dv1.created_by_id != request.user.id and request.user.role < UserRole.EDITOR:
+            raise PermissionDenied()
+        # TODO check all the permissions! (Creator, or different role or whatnot)
 
-        instance = self.get_object()
-        if version_id:
-            instance._selected_version_id = version_id
-        serializer = self.get_serializer(instance)
-        return Response(serializer.data)
+        old_draft_status = dv1.status
+        dv1.delete()
+
+        if d1.versions.count() == 0:
+            d1.delete()
+        else:
+            d1.draft_version = None
+            d1.save()
+            DealWorkflowInfo.objects.create(
+                deal=d1,
+                from_user=request.user,
+                draft_status_before=old_draft_status,
+                draft_status_after="DELETED",
+                comment=request.data["comment"],
+            )
+        return Response({})
 
     def list(self, request: Request, *args, **kwargs):
         deals = DealHull.objects.visible(

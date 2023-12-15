@@ -47,11 +47,7 @@
 
 <div class="container mx-auto min-h-full px-2 pb-12">
   {#if $page.data.user?.role > UserRole.ANYBODY}
-    <InvestorManageHeader
-      investor={data.investor}
-      investorVersion={data.investorVersion}
-      on:reload={reloadInvestor}
-    />
+    <InvestorManageHeader investor={data.investor} on:reload={reloadInvestor} />
   {:else}
     <div class="md:flex md:flex-row md:justify-between">
       <h1 class="heading3 mt-3">

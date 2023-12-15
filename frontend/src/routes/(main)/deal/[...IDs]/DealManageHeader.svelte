@@ -15,7 +15,7 @@
   export let dealVersion: number | undefined
 </script>
 
-<ManageHeader object={deal} objectVersion={dealVersion}>
+<ManageHeader object={deal}>
   <svelte:fragment slot="heading">
     <h1 class="heading3 my-0">Deal #{deal.id}</h1>
     <div class="heading4 my-0">{deal.country.name}</div>

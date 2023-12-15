@@ -3,6 +3,7 @@ import type { ActionReturn } from "svelte/action"
 
 import type { Obj, ObjVersion } from "$lib/types/generics"
 import { DraftStatus, Status } from "$lib/types/generics"
+import { Version2Status, type DealHull, type InvestorHull } from "$lib/types/newtypes"
 import type { User } from "$lib/types/user"
 import { UserRole } from "$lib/types/user"
 
@@ -52,6 +53,24 @@ export function isAuthorized(user: User, obj: Obj): boolean {
     case DraftStatus.REJECTED: // only Admins
       return role === UserRole.ADMINISTRATOR
     case DraftStatus.ACTIVATION: // only Admins
+      return role === UserRole.ADMINISTRATOR
+    default:
+      return false
+  }
+}
+
+export function newIsAuthorized(user: User, obj: DealHull | InvestorHull): boolean {
+  const { role } = user
+  switch (obj.selected_version.status) {
+    case null: // anybody who has a relevant role (Reporter, Editor, Admin)
+      return role >= UserRole.REPORTER
+    case Version2Status.DRAFT: // the Reporter of the Object or Editor,Administrator
+      return role >= UserRole.EDITOR || user.id === obj.selected_version.created_by_id
+    case Version2Status.REVIEW: // at least Editor
+      return role >= UserRole.EDITOR
+    case Version2Status.REJECTED: // only Admins
+      return role === UserRole.ADMINISTRATOR
+    case Version2Status.ACTIVATION: // only Admins
       return role === UserRole.ADMINISTRATOR
     default:
       return false
