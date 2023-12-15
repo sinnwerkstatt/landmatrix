@@ -18,7 +18,8 @@ class InvolvementNetwork:
 
         min_depth = depth
         with connection.cursor() as cursor:
-            cursor.execute(GRAPH_QUERY, [depth, investor_id])
+            # depth-1 to fix off-by-one issue where "1" is giving two edges depth
+            cursor.execute(GRAPH_QUERY, [depth - 1, investor_id])
             rows = cursor.fetchall()
 
         investor_ids = set()
@@ -34,7 +35,7 @@ class InvolvementNetwork:
                 investor_ids.add(up_edge)
                 edges.add((up_edge, row_investor_id))
             min_depth = min(min_depth, row_depth)
-
+        # ic(depth, min_depth)
         all_involvements = Involvement.objects.filter(
             Q(parent_investor_id__in=investor_ids)
             | Q(child_investor_id__in=investor_ids)
@@ -59,6 +60,7 @@ class InvolvementNetwork:
                 "active_version__comment",
             )
         )
+        all_investor_ids = set(x["id"] for x in all_investors)
 
         rich_nodes = []
         for node in all_investors:
@@ -80,7 +82,8 @@ class InvolvementNetwork:
                     and invo["child_investor_id"] == edge[1]
                 )
             )
-
+            if edge[0] not in all_investor_ids or edge[1] not in all_investor_ids:
+                continue
             edge_color = (
                 "rgba(234,128,121,1)"
                 if involvement["role"] == "PARENT"

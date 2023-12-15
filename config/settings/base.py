@@ -31,6 +31,7 @@ SERVER_EMAIL = EMAIL_CONFIG["EMAIL_HOST_USER"]
 DEFAULT_FROM_EMAIL = SERVER_EMAIL
 
 DATABASES = {"default": env.db("DATABASE_URL")}
+DATABASES["default"]["OPTIONS"] = {"options": "-c statement_timeout=10000"}
 
 INSTALLED_APPS = [
     # this must come first (before django.contrib.auth)

@@ -68,7 +68,7 @@ with recursive
          from new_model_investorhull i
                   full outer join new_model_involvement a on i.id = a.parent_investor_id
                   full outer join new_model_involvement b on i.id = b.child_investor_id
-                  where i.active_version_id is not null
+                  where i.active_version_id is not null and i.deleted is false
          group by (i.id))
 select depth, id, down_edges, up_edges
 from search_involvements

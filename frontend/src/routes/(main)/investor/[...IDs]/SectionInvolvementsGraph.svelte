@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { toast } from "@zerodevx/svelte-toast"
   import type { ElementDefinition, EventHandler, Core as Graph } from "cytoscape"
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
@@ -9,8 +10,6 @@
   import DealDetailModal from "./DealDetailModal.svelte"
   import InvestorDetailModal from "./InvestorDetailModal.svelte"
   import { createGraph, LAYOUT_OPTIONS, registerTippy } from "./investorGraphNew"
-
-  // import { createGraph, registerTippy } from "$components/Investor/investorGraph"
 
   export let investor: InvestorHull
 
@@ -34,6 +33,16 @@
     const ret = await fetch(
       `/api/investors/${investor.id}/involvements_graph/?depth=${depth}&include_deals=${showDeals}`,
     )
+    // using 418-Teapot, because fetch goes into auto-retry mode
+    // on 408 (request timeout), which ought to be the correct response here 🙄
+    if (ret.status === 418) {
+      loading.set(false)
+      toast.push("We timed out on this request. Try a smaller graph", {
+        classes: ["error"],
+      })
+      return
+    }
+
     const retJson = await ret.json()
 
     elements = retJson.elements
@@ -90,12 +99,15 @@
   />
 </div>
 
-<div class="flex flex-row bg-white dark:bg-gray-700">
+<div class="flex bg-white py-3 dark:bg-gray-700">
   {#if !hideControls}
-    <div class="basis-1/2 p-2">
+    <div class="basis-1/2">
       <div class="pb-3">
         <label for="investor-level">
-          <strong>{$_("Involvements graph depth")}</strong>
+          <strong>
+            {$_("Involvements graph depth")}:
+            <span class="text-lg">{depth}</span>
+          </strong>
         </label>
         <div class="w-1/2">
           <input
@@ -106,8 +118,8 @@
             max={max_depth}
             on:change={fetchInvolvments}
             disabled={$loading}
+            class="w-full"
           />
-          {depth}
         </div>
         {#if reachedMaxDepth && depth === max_depth}
           You've reached max depth, the graph is not going to get any bigger

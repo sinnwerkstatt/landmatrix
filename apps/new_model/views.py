@@ -1,8 +1,9 @@
 import json
 
+from django.db import OperationalError
 from django.db.models import Prefetch, Q
 from django.http import JsonResponse, Http404
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -324,7 +325,10 @@ class Investor2ViewSet(viewsets.ReadOnlyModelViewSet):
         depth = int(request.GET.get("depth", 5))
         include_deals = request.GET.get("include_deals", "") == "true"
         instance: InvestorHull = self.get_object()
-        return Response(instance.involvements_graph(depth, include_deals))
+        try:
+            return Response(instance.involvements_graph(depth, include_deals))
+        except OperationalError:
+            return Response(status=status.HTTP_418_IM_A_TEAPOT)
 
 
 def field_choices(request):
