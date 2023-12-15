@@ -1,73 +1,11 @@
+@import "_fonts.css";
+@import "_toast.css";
+@import "_svelte_select.css";
+
 :root {
-  --color-lm-orange: hsl(32, 97%, 55%); /*#fc941f  // tree poppy */
-  --color-lm-investor: hsl(179, 46%, 49%); /* #44b7b6 // pelorous */
+  --color-lm-orange: hsl(32, 97%, 55%);
+  --color-lm-investor: hsl(179, 46%, 49%);
   accent-color: var(--color-lm-orange);
-}
-
-@font-face {
-  font-family: "Open Sans";
-  src:
-    url("/fonts/OpenSans-VariableFont_wdth,wght.ttf")
-      format("truetype supports variations"),
-    url("/fonts/OpenSans-VariableFont_wdth,wght.ttf") format("truetype-variations");
-  font-style: normal;
-  font-weight: 300 800;
-  font-stretch: 100%;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Oswald";
-  font-style: normal;
-  font-weight: 200;
-  src:
-    local(""),
-    url("/fonts/Oswald-ExtraLight.ttf") format("truetype-variations");
-}
-
-@font-face {
-  font-family: "Oswald";
-  font-style: normal;
-  font-weight: 300;
-  src:
-    local(""),
-    url("/fonts/Oswald-Light.ttf") format("truetype-variations");
-}
-
-@font-face {
-  font-family: "Oswald";
-  font-style: normal;
-  font-weight: 400;
-  src:
-    local(""),
-    url("/fonts/Oswald-Regular.ttf") format("truetype-variations");
-}
-
-@font-face {
-  font-family: "Oswald";
-  font-style: normal;
-  font-weight: 500;
-  src:
-    local(""),
-    url("/fonts/Oswald-Regular.ttf") format("truetype-variations");
-}
-
-@font-face {
-  font-family: "Oswald";
-  font-style: normal;
-  font-weight: 600;
-  src:
-    local(""),
-    url("/fonts/Oswald-SemiBold.ttf") format("truetype-variations");
-}
-
-@font-face {
-  font-family: "Oswald";
-  font-style: normal;
-  font-weight: 700;
-  src:
-    local(""),
-    url("/fonts/Oswald-Bold.ttf") format("truetype-variations");
 }
 
 @tailwind base;
@@ -86,6 +24,14 @@
 
   p {
     @apply mb-4;
+  }
+
+  th {
+    text-align: left;
+  }
+
+  .code {
+    @apply rounded bg-gray-light px-2 py-1;
   }
 
   /*ToDo: get rid of h-styles*/
@@ -187,16 +133,38 @@
     border-color: var(--color3);
   }
 
-  .butn-primary {
-    --color1: rgba(252, 148, 30, 1);
-    --color2: white;
-    --color3: rgb(202, 118, 24);
+  .butn-flat {
+    @apply px-2 py-1;
   }
 
-    .butn-secondary {
-    --color1: rgba(68,183,181,1);
+  .butn-primary {
+    --color1: hsl(32, 97%, 55%);
     --color2: white;
-    --color3: rgb(54, 146, 145);
+    --color3: hsl(32, 79%, 44%);
+  }
+
+  .butn-secondary {
+    --color1: hsl(179, 46%, 49%);
+    --color2: white;
+    --color3: hsl(179, 46%, 39%);
+  }
+
+  .butn-cancel {
+    --color1: hsl(0, 0%, 60%);
+    --color2: white;
+    --color3: hsl(0, 0%, 40%);
+  }
+
+  .butn-yellow {
+    --color1: hsl(50, 78%, 58%);
+    --color2: hsl(0, 0%, 20%);
+    --color3: hsl(50, 78%, 38%);
+  }
+
+  .butn-red {
+    --color1: hsl(0, 73%, 66%);
+    --color2: white;
+    --color3: hsl(0, 73%, 56%);
   }
 
   .butn.disabled,
@@ -336,71 +304,3 @@
 
 /*form-check-input*/
 
-.svelte-select,
-.svelte-select + .list {
-  --height: 38px;
-  --font-size: 1rem;
-  /*noinspection CssUnresolvedCustomProperty*/
-  --border: 1px solid var(--color-gray-300);
-  /*noinspection CssUnresolvedCustomProperty*/
-  --border-hover: 1px solid var(--color-gray-300);
-  --border-radius: 0px;
-  --border-focused: 2px solid black;
-  --border-radius-focused: 6px;
-  --clear-select-focus-outline: 2px solid black;
-  /*noinspection CssUnresolvedCustomProperty*/
-  --item-hover-bg: var(--color-orange-100);
-  --item-is-active-color: black;
-  --item-color: black;
-  --selected-item-color: black;
-  /*noinspection CssUnresolvedCustomProperty*/
-  --item-is-active-bg: var(--color-orange-400);
-  --list-max-height: 400px;
-  --list-border: 1px solid black;
-  /*noinspection CssUnresolvedCustomProperty*/
-  --error-border: 2px solid var(--color-red-600);
-}
-
-th {
-  text-align: left;
-}
-
-/* toasts */
-/* colors taken from https://getbootstrap.com/docs/5.1/components/alerts/ */
-.toast {
-  --toastBorderRadius: 0;
-  --toastContainerTop: 5.5rem;
-  --toastContainerRight: 1rem;
-  --toastPadding: 0 0 0 0.5em;
-  --toastWidth: 20rem;
-}
-
-.toast.info {
-  --toastColor: #084298;
-  --toastBackground: #cfe2ff;
-  --toastBarBackground: #b6d4fe;
-}
-
-.toast.success {
-  --toastColor: #0f5132;
-  --toastBackground: #d1e7dd;
-  --toastBarBackground: #badbcc;
-}
-
-.toast.warning {
-  --toastColor: #664d03;
-  --toastBackground: #fff3cd;
-  --toastBarBackground: #ffecb5;
-}
-
-.toast.error {
-  --toastColor: #842029;
-  --toastBackground: #f8d7da;
-  --toastBarBackground: #f5c2c7;
-}
-
-/* toasts end */
-
-.code {
-  @apply rounded bg-gray-light px-2 py-1;
-}

@@ -16,7 +16,7 @@
   import Navbar from "$components/Navbar/Navbar.svelte"
   import NavigationLoader from "$components/NavigationLoader.svelte"
 
-  import "../app.css"
+  import "$lib/css/app.css"
 
   import NewFooter from "$components/NewFooter.svelte"
 
