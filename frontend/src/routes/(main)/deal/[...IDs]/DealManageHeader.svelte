@@ -12,7 +12,6 @@
   import ManageHeader from "$components/New/ManageHeader.svelte"
 
   export let deal: DealHull
-  export let dealVersion: number | undefined
 </script>
 
 <ManageHeader object={deal}>

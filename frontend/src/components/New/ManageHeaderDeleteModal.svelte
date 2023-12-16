@@ -10,29 +10,26 @@
   import Modal from "$components/Modal.svelte"
 
   export let object: DealHull | InvestorHull
-  export let showDeleteOverlay = false
+  export let open = false
 
-  let modalComment = ""
+  let comment = ""
 
   const isDeal = (obj: DealHull | InvestorHull): obj is DealHull =>
     "fully_updated_at" in obj
 
   $: i18nValues = { values: { object: isDeal(object) ? "deal" : "investor" } }
 
-  async function deleteDeal() {
-    const objType = isDeal(object) ? "deals" : "investors"
-    const ret = await fetch(
-      `/api/${objType}/${object.id}/${object.selected_version.id}/`,
-      {
-        method: "DELETE",
-        credentials: "include",
-        body: JSON.stringify({ comment: modalComment }),
-        headers: {
-          "X-CSRFToken": await getCsrfToken(),
-          "Content-Type": "application/json",
-        },
+  async function deleteObject() {
+    const objType = isDeal(object) ? "dealversions" : "investorversions"
+    const ret = await fetch(`/api/${objType}/${object.selected_version.id}/`, {
+      method: "DELETE",
+      credentials: "include",
+      body: JSON.stringify({ comment }),
+      headers: {
+        "X-CSRFToken": await getCsrfToken(),
+        "Content-Type": "application/json",
       },
-    )
+    })
     if (!ret.ok) {
       const retJson = await ret.json()
       toast.push(`${ret.status}: ${retJson.detail}`, { classes: ["error"] })
@@ -42,29 +39,31 @@
   }
 </script>
 
-<Modal bind:open={showDeleteOverlay} dismissible>
+<Modal bind:open dismissible>
   <h2 class="heading4">
     {$_("Remove this {object} version?", i18nValues)}
   </h2>
   <hr />
-  <form on:submit={deleteDeal}>
+  <form on:submit={deleteObject}>
     <p class="mb-12 mt-6 text-lg">
       {$_(
         "Completely removes this version of the {object}. This action cannot be undone.",
         i18nValues,
       )}
     </p>
-    <p>
-      <label class="mb-6 block underline">
-        {$_("Please provide a comment explaining your request")}
-        <textarea bind:value={modalComment} class="inpt mt-1" required />
-      </label>
-    </p>
+    {#if object.active_version}
+      <p>
+        <label class="mb-6 block font-semibold">
+          {$_("Please provide a comment explaining your request")}
+          <textarea bind:value={comment} class="inpt mt-1" required />
+        </label>
+      </p>
+    {/if}
     <div class="flex justify-end gap-4">
       <button
         autofocus
         class="butn-outline"
-        on:click={() => (showDeleteOverlay = false)}
+        on:click={() => (open = false)}
         type="button"
       >
         {$_("Cancel")}

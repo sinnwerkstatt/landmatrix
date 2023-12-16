@@ -106,11 +106,7 @@
 
 <div class="container mx-auto min-h-full">
   {#if $page.data.user?.role > UserRole.ANYBODY}
-    <DealManageHeader
-      deal={data.deal}
-      dealVersion={data.dealVersion}
-      on:reload={reloadDeal}
-    />
+    <DealManageHeader deal={data.deal} on:reload={reloadDeal} />
   {:else}
     <div class="md:flex md:flex-row md:justify-between">
       <h1 class="heading3 mt-3">

@@ -2,8 +2,7 @@ from django.db.models import Q, QuerySet
 from rest_framework import serializers
 
 from apps.landmatrix.models.country import Country, Region
-from apps.landmatrix.models.deal import DealWorkflowInfo
-from apps.landmatrix.models.investor import InvestorWorkflowInfo
+
 from apps.new_model.models import (
     DealVersion2,
     DealHull,
@@ -15,6 +14,8 @@ from apps.new_model.models import (
     InvestorVersion2,
     InvestorDataSource,
     Involvement,
+    DealWorkflowInfo2,
+    InvestorWorkflowInfo2,
 )
 
 
@@ -169,10 +170,10 @@ class Deal2Serializer(serializers.ModelSerializer):
     workflowinfos = serializers.SerializerMethodField()
 
     @staticmethod
-    def get_workflowinfos(obj: InvestorHull):
+    def get_workflowinfos(obj: DealHull):
         return [
-            x.to_new_dict()
-            for x in DealWorkflowInfo.objects.filter(deal_id=obj.id).order_by("-id")
+            x.to_dict()
+            for x in DealWorkflowInfo2.objects.filter(deal_id=obj.id).order_by("-id")
         ]
 
     class Meta:
@@ -279,7 +280,7 @@ class Investor2Serializer(serializers.ModelSerializer):
     def get_workflowinfos(obj: InvestorHull):
         return [
             x.to_new_dict()
-            for x in InvestorWorkflowInfo.objects.filter(investor_id=obj.id).order_by(
+            for x in InvestorWorkflowInfo2.objects.filter(investor_id=obj.id).order_by(
                 "-id"
             )
         ]

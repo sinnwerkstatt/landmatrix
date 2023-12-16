@@ -3,7 +3,7 @@ import sys
 from django.core.management.base import BaseCommand
 from icecream import ic
 
-from apps.landmatrix.models.deal import Deal, DealWorkflowInfo, DealVersion
+from apps.landmatrix.models.deal import Deal
 from apps.landmatrix.models.investor import Investor
 from apps.new_model.models import (
     DealHull,
@@ -13,6 +13,7 @@ from apps.new_model.models import (
     Contract,
     DealDataSource,
     InvestorHull,
+    DealWorkflowInfo2,
 )
 
 from django.contrib.gis.geos import Point, GEOSGeometry
@@ -539,44 +540,44 @@ def map_version_payload(ov: dict, nv: DealVersion2):
 
 
 def do_workflows(deal_id):
-    for wfi in DealWorkflowInfo.objects.filter(deal_id=deal_id):
+    for wfi in DealWorkflowInfo2.objects.filter(deal_id=deal_id):
         if not wfi.deal_version_id:
             continue
         # if dwi.deal_version_id in [43461, 43462]:
-        #     print(dwi, dwi.draft_status_before, dwi.draft_status_after, dwi.comment)
+        #     print(dwi, dwi.status_before, dwi.status_after, dwi.comment)
         dv: DealVersion2 = DealVersion2.objects.get(id=wfi.deal_version_id)
-        if wfi.draft_status_before is None and wfi.draft_status_after == 1:
+        if wfi.status_before is None and wfi.status_after == 1:
             ...  # TODO I think we're good here. Don't see anything that we ought to be doing.
-        elif wfi.draft_status_before in [2, 3] and wfi.draft_status_after == 1:
+        elif wfi.status_before in [2, 3] and wfi.status_after == 1:
             # ic(
             #     "new draft... what to do?",
             #     wfi.timestamp,
             #     wfi.from_user,
-            #     wfi.draft_status_before,
-            #     wfi.draft_status_after
+            #     wfi.status_before,
+            #     wfi.status_after
             # )
             ...  # TODO I think we're good here. Don't see anything that we ought to be doing.
 
-        elif (wfi.draft_status_before is None and wfi.draft_status_after is None) or (
-            wfi.draft_status_before == wfi.draft_status_after
+        elif (wfi.status_before is None and wfi.status_after is None) or (
+            wfi.status_before == wfi.status_after
         ):
             ...  # nothing?
-        elif wfi.draft_status_before in [None, 1, 5] and wfi.draft_status_after == 2:
+        elif wfi.status_before in [None, 1, 5] and wfi.status_after == 2:
             dv.sent_to_review_at = wfi.timestamp
             dv.sent_to_review_by = wfi.from_user
             dv.save(recalculate_independent=False, recalculate_dependent=False)
-        elif wfi.draft_status_before in [None, 1, 2, 5] and wfi.draft_status_after == 3:
+        elif wfi.status_before in [None, 1, 2, 5] and wfi.status_after == 3:
             dv.reviewed_at = wfi.timestamp
             dv.reviewed_by = wfi.from_user
             dv.save(recalculate_independent=False, recalculate_dependent=False)
             # dv.status
-        elif wfi.draft_status_before in [2, 3] and wfi.draft_status_after is None:
+        elif wfi.status_before in [2, 3] and wfi.status_after is None:
             dv.activated_at = wfi.timestamp
             dv.activated_by = wfi.from_user
             dv.save(recalculate_independent=False, recalculate_dependent=False)
-        elif wfi.draft_status_before == 3 and wfi.draft_status_after == 2:
+        elif wfi.status_before == 3 and wfi.status_after == 2:
             pass  # ignoring this case because it's not changing anything on the deal
-        elif wfi.draft_status_before == 4 or wfi.draft_status_after == 4:
+        elif wfi.status_before == 4 or wfi.status_after == 4:
             ...  # TODO REJECTED status change
             # ic(
             #     "DWI OHO",
@@ -584,20 +585,20 @@ def do_workflows(deal_id):
             #     wfi.timestamp,
             #     wfi.from_user,
             #     wfi.investor_id,
-            #     wfi.draft_status_before,
-            #     wfi.draft_status_after,z
+            #     wfi.status_before,
+            #     wfi.status_after,z
             #     wfi.comment,
             # )
             # sys.exit(1)
-        elif wfi.draft_status_after == 5:
+        elif wfi.status_after == 5:
             dv.status = "TO_DELETE"
             dv.save(recalculate_independent=False, recalculate_dependent=False)
-        elif wfi.draft_status_before == 5 and wfi.draft_status_after != 5:
-            if not wfi.draft_status_after:
+        elif wfi.status_before == 5 and wfi.status_after != 5:
+            if not wfi.status_after:
                 # TODO What is going on here?
                 ...
             else:
-                dv.status = status_map_dings[wfi.draft_status_after]
+                dv.status = status_map_dings[wfi.status_after]
                 dv.save(recalculate_independent=False, recalculate_dependent=False)
         else:
             ...
@@ -608,8 +609,8 @@ def do_workflows(deal_id):
                 wfi.from_user,
                 wfi.to_user,
                 wfi.deal_id,
-                wfi.draft_status_before,
-                wfi.draft_status_after,
+                wfi.status_before,
+                wfi.status_after,
                 wfi.comment,
             )
             sys.exit(1)

@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte"
   import { _ } from "svelte-i18n"
 
   import { navigating, page } from "$app/stores"
@@ -10,12 +9,13 @@
   import { Version2Status } from "$lib/types/newtypes.js"
 
   import ManageHeaderDeleteModal from "$components/New/ManageHeaderDeleteModal.svelte"
-
-  const dispatch = createEventDispatcher()
+  import ManageHeaderSendToActivationModal from "$components/New/ManageHeaderSendToActivationModal.svelte"
+  import ManageHeaderSendToReviewModal from "$components/New/ManageHeaderSendToReviewModal.svelte"
 
   export let object: DealHull | InvestorHull
 
   let showToDraftOverlay = false
+  let showSendToReviewOverlay = false
   let showSendToActivationOverlay = false
   let showActivateOverlay = false
   let showNewDraftOverlay = false
@@ -62,7 +62,7 @@
         class:disabled={!isCurrentDraft || $loading || $navigating}
         title={$_("Submit the {object} for review", i18nValues)}
         class="butn butn-primary"
-        on:click={() => dispatch("sendToReview")}
+        on:click={() => (showSendToReviewOverlay = true)}
       >
         {$_("Submit for review")}
       </button>
@@ -129,7 +129,12 @@
   </div>
 </div>
 
-<ManageHeaderDeleteModal bind:object bind:showDeleteOverlay />
+<ManageHeaderSendToReviewModal bind:object bind:open={showSendToReviewOverlay} />
+<ManageHeaderSendToActivationModal
+  bind:object
+  bind:open={showSendToActivationOverlay}
+/>
+<ManageHeaderDeleteModal bind:object bind:open={showDeleteOverlay} />
 
 <style lang="postcss">
   .status-field {

@@ -2,10 +2,11 @@ import json
 
 from django.db import OperationalError
 from django.db.models import Prefetch, Q
-from django.http import JsonResponse, Http404
+from django.http import JsonResponse
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import PermissionDenied, ParseError
+from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -20,12 +21,12 @@ from apps.landmatrix.models.choices import (
     INVESTMENT_TYPE_ITEMS,
     NATURE_OF_DEAL_ITEMS,
 )
-from apps.landmatrix.models.deal import DealWorkflowInfo
 from apps.new_model.models import (
     DealHull,
     InvestorHull,
     DealVersion2,
     InvestorVersion2,
+    DealWorkflowInfo2,
 )
 from apps.new_model.serializers import (
     Deal2Serializer,
@@ -107,6 +108,133 @@ def _parse_filter(request: Request):
     return ret
 
 
+class DealVersionViewSet(viewsets.ModelViewSet):
+    queryset = DealVersion2.objects.all()
+    serializer_class = DealVersionSerializer
+
+    def update(self, request, pk: int):
+        if not request.user.is_authenticated or not request.user.role:
+            raise PermissionDenied("MISSING_AUTHORIZATION")
+        dv1: DealVersion2 = get_object_or_404(self.queryset, pk=pk)
+
+        # TODO check all the permissions! (Creator, or different role or whatnot)
+
+        serializer = self.serializer_class(
+            dv1, data=request.data["version"], partial=True
+        )
+
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            serializer.save_submodels(request, dv1)
+
+        return Response({})
+
+    def destroy(self, request, pk: int):
+        if not request.user.is_authenticated or not request.user.role:
+            raise PermissionDenied("MISSING_AUTHORIZATION")
+        dv1: DealVersion2 = get_object_or_404(self.queryset, pk=pk)
+
+        if dv1.created_by_id != request.user.id and request.user.role < UserRole.EDITOR:
+            raise PermissionDenied("MISSING_AUTHORIZATION")
+        # TODO check all the permissions! (Creator, or different role or whatnot)
+
+        old_draft_status = dv1.status
+        dv1.delete()
+
+        d1: DealHull = dv1.deal
+        if d1.versions.count() == 0:
+            d1.delete()
+        else:
+            d1.draft_version = None
+            d1.save()
+            DealWorkflowInfo2.objects.create(
+                deal=d1,
+                from_user=request.user,
+                status_before=old_draft_status,
+                status_after="DELETED",
+                comment=request.data["comment"],
+            )
+        return Response({})
+
+    @action(detail=True, methods=["put"])
+    def change_status(self, request, pk: int):
+        if not request.user.is_authenticated or not request.user.role:
+            raise PermissionDenied("MISSING_AUTHORIZATION")
+        dv1: DealVersion2 = get_object_or_404(self.queryset, pk=pk)
+
+        if dv1.deal.draft_version_id != dv1.id:
+            raise PermissionDenied("EDITING_OLD_VERSION")
+
+        old_draft_status = dv1.status
+
+        if request.data["transition"] == "TO_REVIEW":
+            if not (
+                dv1.created_by == request.user or request.user.role >= UserRole.EDITOR
+            ):
+                raise PermissionDenied("MISSING_AUTHORIZATION")
+            draft_status = "REVIEW"
+            dv1.status = "REVIEW"
+            if request.data.get("fullyUpdated"):
+                dv1.fully_updated = True
+            dv1.save()
+        elif request.data["transition"] == "TO_ACTIVATION":
+            if request.user.role < UserRole.EDITOR:
+                raise PermissionDenied("MISSING_AUTHORIZATION")
+            draft_status = "ACTIVATION"
+            dv1.status = "ACTIVATION"
+            dv1.save()
+        elif request.data["transition"] == "ACTIVATE":
+            if request.user.role < UserRole.ADMINISTRATOR:
+                raise PermissionDenied("MISSING_AUTHORIZATION")
+            draft_status = "ACTIVATED"
+            dv1.status = "ACTIVATED"
+            dv1.save()
+            # TODO
+            # # close unresolved workflowinfos
+            # obj.workflowinfos.all().update(resolved=True)
+        elif request.data["transition"] == "TO_DRAFT":
+            if request.user.role < UserRole.EDITOR:
+                raise PermissionDenied("MISSING_AUTHORIZATION")
+            draft_status = "DRAFT"
+            dv1.status = "DRAFT"
+            dv1.id = None
+            # TODO!
+            # dv1.created_by_id = to_user_id
+            dv1.save()
+            d1 = dv1.deal
+            d1.draft_version = dv1
+            d1.save()
+            # TODO
+            #         # close remaining open feedback requests
+            #         obj.workflowinfos.filter(
+            #             Q(draft_status_before__in=[2, 3])
+            #             & Q(draft_status_after=1)
+            #             # TODO: https://git.sinntern.de/landmatrix/landmatrix/-/issues/404
+            #             & (Q(from_user=user) | Q(to_user=user))
+            #         ).update(resolved=True)
+        else:
+            raise ParseError("Invalid transition")
+
+        # TODO do all the dealworkflowinfos
+        DealWorkflowInfo2.objects.create(
+            deal_id=dv1.deal_id,
+            deal_version_id=dv1.id,
+            from_user=request.user,
+            # TODO
+            #         to_user_id=to_user_id,
+            status_before=old_draft_status,
+            status_after=draft_status,
+            comment=request.data["comment"],
+        )
+
+        # TODO
+        #     if to_user_id:
+        #         send_comment_to_user(obj, comment, user, to_user_id, obj_version_id)
+        #
+
+        return Response({"dealID": dv1.deal.id, "versionID": dv1.id})
+
+
 class Deal2ViewSet(viewsets.ModelViewSet):
     queryset = DealHull.objects.all().prefetch_related(
         Prefetch("versions", queryset=DealVersion2.objects.order_by("-id"))
@@ -120,19 +248,11 @@ class Deal2ViewSet(viewsets.ModelViewSet):
 
     @action(
         name="Deal Instance",
-        methods=["get", "put", "delete"],
+        methods=["get"],
         url_path=r"(?P<version_id>\d+)",
         detail=True,
     )
-    def handle_version(self, request, pk: int, version_id: int):
-        if not request.stream:  # this is apparently "GET"
-            return self._retrieve_version(request, pk, version_id)
-        if request.stream and request.stream.method == "PUT":
-            return self._update_version(request, pk, version_id)
-        if request.stream and request.stream.method == "DELETE":
-            return self._delete_version(request, pk, version_id)
-
-    def _retrieve_version(self, request, pk: int, version_id: int):
+    def retrieve_version(self, request, pk: int, version_id: int):
         instance = self.get_object()
         if version_id:
             instance._selected_version_id = version_id
@@ -144,56 +264,6 @@ class Deal2ViewSet(viewsets.ModelViewSet):
             # dv1.created_by_id
 
         return Response(dv1)
-
-    @staticmethod
-    def _update_version(request, pk: int, version_id: int):
-        if not request.user.is_authenticated or not request.user.role:
-            raise PermissionDenied
-        try:
-            dv1: DealVersion2 = DealVersion2.objects.get(id=version_id, deal_id=pk)
-        except DealVersion2.DoesNotExist:
-            raise Http404
-        # TODO check all the permissions! (Creator, or different role or whatnot)
-
-        serializer = DealVersionSerializer(
-            dv1, data=request.data["version"], partial=True
-        )
-
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            serializer.save_submodels(request, dv1)
-
-        return Response({})
-
-    @staticmethod
-    def _delete_version(request: Request, pk: int, version_id: int):
-        if not request.user.is_authenticated or not request.user.role:
-            raise PermissionDenied()
-        try:
-            dv1: DealVersion2 = DealVersion2.objects.get(id=version_id, deal_id=pk)
-            d1: DealHull = DealHull.objects.get(pk=pk)
-        except (DealVersion2.DoesNotExist, DealHull.DoesNotExist):
-            raise Http404
-        if dv1.created_by_id != request.user.id and request.user.role < UserRole.EDITOR:
-            raise PermissionDenied()
-        # TODO check all the permissions! (Creator, or different role or whatnot)
-
-        old_draft_status = dv1.status
-        dv1.delete()
-
-        if d1.versions.count() == 0:
-            d1.delete()
-        else:
-            d1.draft_version = None
-            d1.save()
-            DealWorkflowInfo.objects.create(
-                deal=d1,
-                from_user=request.user,
-                draft_status_before=old_draft_status,
-                draft_status_after="DELETED",
-                comment=request.data["comment"],
-            )
-        return Response({})
 
     def list(self, request: Request, *args, **kwargs):
         deals = DealHull.objects.visible(

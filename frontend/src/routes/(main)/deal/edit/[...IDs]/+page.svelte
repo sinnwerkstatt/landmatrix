@@ -89,7 +89,7 @@
 
     const ret = await fetch(
       data.versionID
-        ? `/api/deals/${data.dealID}/${data.versionID}/`
+        ? `/api/dealversions/${data.versionID}/`
         : `/api/deals/${data.dealID}/`,
       {
         method: "PUT",

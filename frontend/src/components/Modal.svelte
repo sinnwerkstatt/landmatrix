@@ -21,6 +21,7 @@
           dialog.close()
         }
       })
+    if (open) dialog.showModal()
   })
 
   function modalState(o: boolean) {
