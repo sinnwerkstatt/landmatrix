@@ -46,8 +46,8 @@
           <td>
             {dayjs(version.created_at).format("YYYY-MM-DD HH:mm")}
             <br />
-            {#if version.created_by_id}
-              {@const user = $allUsers.find(u => u.id === version.created_by_id)}
+            {#if version.created_by}
+              {@const user = $allUsers.find(u => u.id === version.created_by.id)}
 
               {user?.full_name ?? user?.username ?? "-"}
             {/if}
@@ -58,18 +58,19 @@
               ? dayjs(version.sent_to_review_at).format("YYYY-MM-DD HH:mm")
               : ""}
             <br />
-            {#if version.sent_to_review_by_id}
-              {$allUsers.find(u => u.id === version.sent_to_review_by_id)?.full_name ??
+            {#if version.sent_to_review_by}
+              {$allUsers.find(u => u.id === version.sent_to_review_by.id)?.full_name ??
                 "-"}
             {/if}
           </td>
           <td>
-            {version.reviewed_at
-              ? dayjs(version.reviewed_at).format("YYYY-MM-DD HH:mm")
+            {version.sent_to_activation_at
+              ? dayjs(version.sent_to_activation_at).format("YYYY-MM-DD HH:mm")
               : ""}
             <br />
-            {#if version.reviewed_by_id}
-              {$allUsers.find(u => u.id === version.reviewed_by_id)?.full_name ?? "-"}
+            {#if version.sent_to_activation_by}
+              {$allUsers.find(u => u.id === version.sent_to_activation_by.id)
+                ?.full_name ?? "-"}
             {/if}
           </td>
           <td>
@@ -77,8 +78,8 @@
               ? dayjs(version.activated_at).format("YYYY-MM-DD HH:mm")
               : ""}
             <br />
-            {#if version.activated_by_id}
-              {$allUsers.find(u => u.id === version.activated_by_id)?.full_name ?? "-"}
+            {#if version.activated_by}
+              {$allUsers.find(u => u.id === version.activated_by.id)?.full_name ?? "-"}
             {/if}
           </td>
           <td class="px-4">

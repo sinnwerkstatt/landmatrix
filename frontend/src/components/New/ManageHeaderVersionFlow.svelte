@@ -8,17 +8,19 @@
   import type { DealHull, InvestorHull } from "$lib/types/newtypes.js"
   import { Version2Status } from "$lib/types/newtypes.js"
 
+  import ManageHeaderActivateModal from "$components/New/ManageHeaderActivateModal.svelte"
   import ManageHeaderDeleteModal from "$components/New/ManageHeaderDeleteModal.svelte"
+  import ManageHeaderRequestImprovementModal from "$components/New/ManageHeaderRequestImprovementModal.svelte"
   import ManageHeaderSendToActivationModal from "$components/New/ManageHeaderSendToActivationModal.svelte"
   import ManageHeaderSendToReviewModal from "$components/New/ManageHeaderSendToReviewModal.svelte"
 
   export let object: DealHull | InvestorHull
 
-  let showToDraftOverlay = false
+  let showRequestImprovementOverlay = false
   let showSendToReviewOverlay = false
   let showSendToActivationOverlay = false
   let showActivateOverlay = false
-  let showNewDraftOverlay = false
+
   let showDeleteOverlay = false
 
   let hasActiveVersion = false // TODO
@@ -76,7 +78,7 @@
           i18nValues,
         )}
         class="btn btn-primary"
-        on:click={() => (showToDraftOverlay = true)}
+        on:click={() => (showRequestImprovementOverlay = true)}
       >
         {$_("Request improvement")}
       </button>
@@ -133,6 +135,11 @@
 <ManageHeaderSendToActivationModal
   bind:object
   bind:open={showSendToActivationOverlay}
+/>
+<ManageHeaderActivateModal bind:object bind:open={showActivateOverlay} />
+<ManageHeaderRequestImprovementModal
+  bind:object
+  bind:open={showRequestImprovementOverlay}
 />
 <ManageHeaderDeleteModal bind:object bind:open={showDeleteOverlay} />
 

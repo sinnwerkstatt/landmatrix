@@ -2,7 +2,7 @@
   import { toast } from "@zerodevx/svelte-toast"
   import { _ } from "svelte-i18n"
 
-  import { goto } from "$app/navigation"
+  import { invalidate } from "$app/navigation"
 
   import type { DealHull, InvestorHull } from "$lib/types/newtypes.js"
   import { getCsrfToken } from "$lib/utils"
@@ -19,7 +19,7 @@
   const isDeal = (obj: DealHull | InvestorHull): obj is DealHull =>
     "fully_updated_at" in obj
 
-  async function submitToReview() {
+  async function submit() {
     const objType = isDeal(object) ? "dealversions" : "investors"
     const ret = await fetch(
       `/api/${objType}/${object.selected_version.id}/change_status/`,
@@ -37,7 +37,7 @@
       const retJson = await ret.json()
       toast.push(`${ret.status}: ${retJson.detail}`, { classes: ["error"] })
     } else {
-      await goto(`/deal/${object.id}/`, { invalidateAll: true })
+      invalidate("deal:detail").then()
       open = false
     }
   }
@@ -48,7 +48,7 @@
     {$_("Submit for review")}
   </h2>
   <hr />
-  <form on:submit={submitToReview} class="mt-6 text-lg">
+  <form class="mt-6 text-lg" on:submit={submit}>
     <div>
       <div class="mb-2 font-semibold">Fully updated</div>
       <p>
@@ -71,9 +71,9 @@
 
     <label class="mt-1 font-bold">
       <input
+        bind:checked={dataPolicyChecked}
         id="data-policy-checkbox"
         required
-        bind:checked={dataPolicyChecked}
         type="checkbox"
       />
       {$_("I've read and agree to the")}
@@ -85,7 +85,7 @@
       <button class="butn-outline" on:click={() => (open = false)} type="button">
         {$_("Cancel")}
       </button>
-      <button class="butn butn-primary" type="submit" disabled={!dataPolicyChecked}>
+      <button class="butn butn-primary" disabled={!dataPolicyChecked} type="submit">
         {$_("Submit")}
       </button>
     </div>

@@ -3,6 +3,7 @@ import json
 from django.db import OperationalError
 from django.db.models import Prefetch, Q
 from django.http import JsonResponse
+from django.utils import timezone
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied, ParseError
@@ -124,7 +125,11 @@ class DealVersionViewSet(viewsets.ModelViewSet):
         )
 
         if serializer.is_valid(raise_exception=True):
-            serializer.save()
+            # this is untidy
+            dv1 = serializer.save()
+            dv1.modified_by = request.user
+            dv1.modified_at = timezone.now()
+            dv1.save()
             serializer.save_submodels(request, dv1)
 
         return Response({})
@@ -174,6 +179,8 @@ class DealVersionViewSet(viewsets.ModelViewSet):
                 raise PermissionDenied("MISSING_AUTHORIZATION")
             draft_status = "REVIEW"
             dv1.status = "REVIEW"
+            dv1.sent_to_review_at = timezone.now()
+            dv1.sent_to_review_by = request.user
             if request.data.get("fullyUpdated"):
                 dv1.fully_updated = True
             dv1.save()
@@ -182,36 +189,43 @@ class DealVersionViewSet(viewsets.ModelViewSet):
                 raise PermissionDenied("MISSING_AUTHORIZATION")
             draft_status = "ACTIVATION"
             dv1.status = "ACTIVATION"
+            dv1.sent_to_activation_at = timezone.now()
+            dv1.sent_to_review_by = request.user
             dv1.save()
         elif request.data["transition"] == "ACTIVATE":
             if request.user.role < UserRole.ADMINISTRATOR:
                 raise PermissionDenied("MISSING_AUTHORIZATION")
             draft_status = "ACTIVATED"
             dv1.status = "ACTIVATED"
+            dv1.activated_at = timezone.now()
+            dv1.activated_by = request.user
             dv1.save()
-            # TODO
-            # # close unresolved workflowinfos
-            # obj.workflowinfos.all().update(resolved=True)
+            d1: DealHull = dv1.deal
+            d1.draft_version = None
+            d1.active_version = dv1
+            d1.save()
+
+            dv1.workflowinfos.all().update(resolved=True)
         elif request.data["transition"] == "TO_DRAFT":
             if request.user.role < UserRole.EDITOR:
                 raise PermissionDenied("MISSING_AUTHORIZATION")
             draft_status = "DRAFT"
             dv1.status = "DRAFT"
             dv1.id = None
-            # TODO!
-            # dv1.created_by_id = to_user_id
+            dv1.created_at = timezone.now()
+            dv1.created_by_id = request.data["toUser"]
             dv1.save()
+
             d1 = dv1.deal
             d1.draft_version = dv1
             d1.save()
-            # TODO
-            #         # close remaining open feedback requests
-            #         obj.workflowinfos.filter(
-            #             Q(draft_status_before__in=[2, 3])
-            #             & Q(draft_status_after=1)
-            #             # TODO: https://git.sinntern.de/landmatrix/landmatrix/-/issues/404
-            #             & (Q(from_user=user) | Q(to_user=user))
-            #         ).update(resolved=True)
+            # close remaining open feedback requests
+            dv1.workflowinfos.filter(
+                Q(status_before__in=["REVIEW", "ACTIVATION"])
+                & Q(status_after="DRAFT")
+                # TODO: https://git.sinntern.de/landmatrix/landmatrix/-/issues/404
+                & (Q(from_user=request.user) | Q(to_user=request.user))
+            ).update(resolved=True)
         else:
             raise ParseError("Invalid transition")
 
@@ -220,17 +234,15 @@ class DealVersionViewSet(viewsets.ModelViewSet):
             deal_id=dv1.deal_id,
             deal_version_id=dv1.id,
             from_user=request.user,
-            # TODO
-            #         to_user_id=to_user_id,
+            to_user_id=request.data.get("toUser"),
             status_before=old_draft_status,
             status_after=draft_status,
             comment=request.data["comment"],
         )
 
-        # TODO
-        #     if to_user_id:
-        #         send_comment_to_user(obj, comment, user, to_user_id, obj_version_id)
-        #
+        if to_user := request.data.get("toUser"):
+            pass  # TODO
+            # send_comment_to_user(obj, request.data["comment"], request.user, to_user, obj_version_id)
 
         return Response({"dealID": dv1.deal.id, "versionID": dv1.id})
 

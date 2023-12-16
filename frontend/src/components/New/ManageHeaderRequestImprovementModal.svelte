@@ -1,21 +1,33 @@
 <script lang="ts">
   import { toast } from "@zerodevx/svelte-toast"
+  import { onDestroy, onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
-  import { invalidate } from "$app/navigation"
+  import { goto } from "$app/navigation"
 
+  import { allUsers } from "$lib/stores"
   import type { DealHull, InvestorHull } from "$lib/types/newtypes.js"
+  import { UserRole, type User } from "$lib/types/user"
   import { getCsrfToken } from "$lib/utils"
 
+  import UserSelect from "$components/LowLevel/UserSelect.svelte"
   import Modal from "$components/Modal.svelte"
 
   export let object: DealHull | InvestorHull
   export let open = false
 
   let comment = ""
+  let toUser: User | null = null
+
+  $: users = $allUsers.filter(u => u.role > UserRole.REPORTER)
 
   const isDeal = (obj: DealHull | InvestorHull): obj is DealHull =>
     "fully_updated_at" in obj
+
+  onMount(() => {
+    toUser = $allUsers.find(u => u.id === object.selected_version.created_by.id) ?? null
+  })
+  onDestroy(() => (comment = ""))
 
   async function submit() {
     const objType = isDeal(object) ? "dealversions" : "investors"
@@ -24,7 +36,11 @@
       {
         method: "PUT",
         credentials: "include",
-        body: JSON.stringify({ comment, transition: "TO_ACTIVATION" }),
+        body: JSON.stringify({
+          comment,
+          toUser: toUser?.id,
+          transition: "TO_DRAFT",
+        }),
         headers: {
           "X-CSRFToken": await getCsrfToken(),
           "Content-Type": "application/json",
@@ -35,7 +51,11 @@
       const retJson = await ret.json()
       toast.push(`${ret.status}: ${retJson.detail}`, { classes: ["error"] })
     } else {
-      invalidate("deal:detail").then()
+      const retJson = await ret.json()
+      await goto(`/deal/${retJson.dealID}/${retJson.versionID}/`, {
+        invalidateAll: true,
+      })
+
       open = false
     }
   }
@@ -43,17 +63,26 @@
 
 <Modal bind:open dismissible>
   <h2 class="heading4">
-    {$_("Submit for activation")}
+    {$_("Request improvement")}
   </h2>
   <hr />
   <form class="mt-6 text-lg" on:submit={submit}>
-    <div class="my-6">
+    <div class="mb-6">
       <label>
-        <span class="font-semibold">{$_("Additional comment")}</span>
-        <textarea autofocus bind:value={comment} class="inpt mt-1" />
+        <span class="font-semibold">
+          {$_("Please provide a comment explaining your request")}
+        </span>
+        <textarea bind:value={comment} class="inpt mt-1" required />
       </label>
     </div>
-
+    <div class="mb-6">
+      <label>
+        <span class="font-semibold">
+          {$_("Assign to user")}
+        </span>
+        <UserSelect bind:value={toUser} required {users} />
+      </label>
+    </div>
     <div class="mt-14 flex justify-end gap-4">
       <button class="butn-outline" on:click={() => (open = false)} type="button">
         {$_("Cancel")}

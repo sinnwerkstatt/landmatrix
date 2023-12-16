@@ -674,8 +674,10 @@ class VersionTimestampsMixins(models.Model):
         on_delete=models.PROTECT,
         related_name="+",
     )
-    reviewed_at = models.DateTimeField(_("Reviewed at"), null=True, blank=True)
-    reviewed_by = models.ForeignKey(
+    sent_to_activation_at = models.DateTimeField(
+        _("Reviewed at"), null=True, blank=True
+    )
+    sent_to_activation_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         blank=True,
         null=True,

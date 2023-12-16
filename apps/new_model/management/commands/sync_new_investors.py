@@ -188,8 +188,8 @@ def do_workflows(investor_id):
             dv.sent_to_review_by = wfi.from_user
             dv.save()
         elif wfi.draft_status_before in [None, 2, 5] and wfi.draft_status_after == 3:
-            dv.reviewed_at = wfi.timestamp
-            dv.reviewed_by = wfi.from_user
+            dv.sent_to_activation_at = wfi.timestamp
+            dv.sent_to_activation_by = wfi.from_user
             dv.save()
             # dv.status
         elif wfi.draft_status_before in [2, 3] and wfi.draft_status_after is None:

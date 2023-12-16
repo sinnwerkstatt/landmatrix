@@ -567,8 +567,8 @@ def do_workflows(deal_id):
             dv.sent_to_review_by = wfi.from_user
             dv.save(recalculate_independent=False, recalculate_dependent=False)
         elif wfi.status_before in [None, 1, 2, 5] and wfi.status_after == 3:
-            dv.reviewed_at = wfi.timestamp
-            dv.reviewed_by = wfi.from_user
+            dv.sent_to_activation_at = wfi.timestamp
+            dv.sent_to_activation_by = wfi.from_user
             dv.save(recalculate_independent=False, recalculate_dependent=False)
             # dv.status
         elif wfi.status_before in [2, 3] and wfi.status_after is None:

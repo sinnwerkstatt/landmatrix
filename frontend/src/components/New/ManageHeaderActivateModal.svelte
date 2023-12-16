@@ -24,7 +24,7 @@
       {
         method: "PUT",
         credentials: "include",
-        body: JSON.stringify({ comment, transition: "TO_ACTIVATION" }),
+        body: JSON.stringify({ comment, transition: "ACTIVATE" }),
         headers: {
           "X-CSRFToken": await getCsrfToken(),
           "Content-Type": "application/json",
@@ -43,7 +43,7 @@
 
 <Modal bind:open dismissible>
   <h2 class="heading4">
-    {$_("Submit for activation")}
+    {$_("Activate")}
   </h2>
   <hr />
   <form class="mt-6 text-lg" on:submit={submit}>

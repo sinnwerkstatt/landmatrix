@@ -1,31 +1,29 @@
 <script lang="ts">
-  import { Client, gql } from "@urql/svelte"
-  import { toast } from "@zerodevx/svelte-toast"
   import dayjs from "dayjs"
   import { _ } from "svelte-i18n"
   import { slide } from "svelte/transition"
 
-  import { invalidateAll } from "$app/navigation"
   import { page } from "$app/stores"
 
-  import { allUsers, draftStatusMap, statusMap } from "$lib/stores"
-  import { DraftStatus, Status } from "$lib/types/generics"
+  import { allUsers } from "$lib/stores"
+  import type { Version2Status } from "$lib/types/newtypes"
 
   import ArrowLongRightIcon from "$components/icons/ArrowLongRightIcon.svelte"
   import ChatBubbleLeftIcon from "$components/icons/ChatBubbleLeftIcon.svelte"
   import CheckCircleIcon from "$components/icons/CheckCircleIcon.svelte"
 
-  export interface WFInfo {
+  interface WFInfo {
     id: number
     from_user_id: number
     to_user_id?: number
-    draft_status_before: DraftStatus | null
-    draft_status_after: DraftStatus | null
+    status_before: Version2Status | null
+    status_after: Version2Status | null
     timestamp: string
     comment: string
     resolved: boolean
     // replies: WFReply[]
   }
+
   export let info: WFInfo
 
   $: confidentialStatusChange = info.comment?.startsWith("[SET_CONFIDENTIAL]")
@@ -39,7 +37,7 @@
     .replace("[UNSET_CONFIDENTIAL] ", "")
 
   $: openThread =
-    info.draft_status_after === info.draft_status_before &&
+    info.status_after === info.status_before &&
     info.to_user_id &&
     [info.to_user_id, info.from_user_id].includes($page.data.user.id) &&
     !info.resolved
@@ -47,71 +45,71 @@
   let reply = ""
 
   async function sendReply() {
-    const { data, error } = await ($page.data.urqlClient as Client)
-      .mutation<{ add_workflow_info_reply: boolean }>(
-        gql`
-          mutation ($id: Int!, $type: String!, $from_user_id: Int!, $comment: String!) {
-            add_workflow_info_reply(
-              id: $id
-              type: $type
-              from_user_id: $from_user_id
-              comment: $comment
-            )
-          }
-        `,
-        {
-          id: info.id,
-          type: info.__typename,
-          from_user_id: $page.data.user.id,
-          comment: reply,
-        },
-      )
-      .toPromise()
-    if (error) {
-      toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
-      return
-    }
-    if (!data) {
-      toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
-      return
-    }
-    if (data.add_workflow_info_reply) {
-      info.replies = [
-        ...info.replies,
-        {
-          timestamp: new Date().toISOString(),
-          user_id: $page.data.user.id,
-          comment: reply,
-        },
-      ]
-      reply = ""
-    }
-    await invalidateAll()
+    // const { data, error } = await ($page.data.urqlClient as Client)
+    //   .mutation<{ add_workflow_info_reply: boolean }>(
+    //     gql`
+    //       mutation ($id: Int!, $type: String!, $from_user_id: Int!, $comment: String!) {
+    //         add_workflow_info_reply(
+    //           id: $id
+    //           type: $type
+    //           from_user_id: $from_user_id
+    //           comment: $comment
+    //         )
+    //       }
+    //     `,
+    //     {
+    //       id: info.id,
+    //       type: info.__typename,
+    //       from_user_id: $page.data.user.id,
+    //       comment: reply,
+    //     },
+    //   )
+    //   .toPromise()
+    // if (error) {
+    //   toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
+    //   return
+    // }
+    // if (!data) {
+    //   toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
+    //   return
+    // }
+    // if (data.add_workflow_info_reply) {
+    //   info.replies = [
+    //     ...info.replies,
+    //     {
+    //       timestamp: new Date().toISOString(),
+    //       user_id: $page.data.user.id,
+    //       comment: reply,
+    //     },
+    //   ]
+    //   reply = ""
+    // }
+    // await invalidateAll()
   }
 
   async function resolveThread() {
-    const { data, error } = await ($page.data.urqlClient as Client)
-      .mutation<{ resolve_workflow_info: boolean }>(
-        gql`
-          mutation ($id: Int!, $type: String!) {
-            resolve_workflow_info(id: $id, type: $type)
-          }
-        `,
-        { id: info.id, type: info.__typename },
-      )
-      .toPromise()
-    if (error) {
-      toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
-      return
-    }
-    if (!data) {
-      toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
-      return
-    }
-    if (data.resolve_workflow_info) {
-      info = { ...info, resolved: true }
-    }
-    await invalidateAll()
+    // const { data, error } = await ($page.data.urqlClient as Client)
+    //   .mutation<{ resolve_workflow_info: boolean }>(
+    //     gql`
+    //       mutation ($id: Int!, $type: String!) {
+    //         resolve_workflow_info(id: $id, type: $type)
+    //       }
+    //     `,
+    //     { id: info.id, type: info.__typename },
+    //   )
+    //   .toPromise()
+    // if (error) {
+    //   toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
+    //   return
+    // }
+    // if (!data) {
+    //   toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
+    //   return
+    // }
+    // if (data.resolve_workflow_info) {
+    //   info = { ...info, resolved: true }
+    // }
+    // await invalidateAll()
   }
 </script>
 
@@ -134,15 +132,15 @@
   </div>
 
   <div class="flex items-center gap-1" class:my-1={!cleanedComment}>
-    {#if info.draft_status_before !== info.draft_status_after}
-      {#if info.draft_status_before}
+    {#if info.status_before !== info.status_after}
+      {#if info.status_before}
         <div class="inline-block bg-gray-500 px-1.5 text-[13px] text-white">
-          {$draftStatusMap[info.draft_status_before]}
+          {info.status_before}
         </div>
         <ArrowLongRightIcon class="inline-block h-4 w-4" />
       {/if}
       <div class="inline-block bg-pelorous px-1.5 text-[13px] text-white">
-        {$draftStatusMap[info.draft_status_after] || $statusMap[Status.LIVE]}
+        {info.status_after}
       </div>
     {/if}
     {#if confidentialStatusChange}

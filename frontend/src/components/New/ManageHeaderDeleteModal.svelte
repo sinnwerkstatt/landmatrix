@@ -34,7 +34,9 @@
       const retJson = await ret.json()
       toast.push(`${ret.status}: ${retJson.detail}`, { classes: ["error"] })
     } else {
-      await goto(`/deal/${object.id}/`, { invalidateAll: true })
+      if (object.active_version)
+        await goto(`/deal/${object.id}/`, { invalidateAll: true })
+      else await goto(`/list/deals/`, { invalidateAll: true })
     }
   }
 </script>
@@ -52,9 +54,11 @@
       )}
     </p>
     {#if object.active_version}
-      <p>
-        <label class="mb-6 block font-semibold">
-          {$_("Please provide a comment explaining your request")}
+      <p class="mb-6">
+        <label>
+          <span class="font-semibold">
+            {$_("Please provide a comment explaining your request")}
+          </span>
           <textarea bind:value={comment} class="inpt mt-1" required />
         </label>
       </p>

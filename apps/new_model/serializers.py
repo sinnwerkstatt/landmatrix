@@ -1,6 +1,7 @@
 from django.db.models import Q, QuerySet
 from rest_framework import serializers
 
+from apps.accounts.models import User
 from apps.landmatrix.models.country import Country, Region
 
 from apps.new_model.models import (
@@ -19,19 +20,30 @@ from apps.new_model.models import (
 )
 
 
+class UserIdUsernameSerialiser(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "username"]
+
+
 class DealVersionVersionsListSerializer(serializers.ModelSerializer):
+    created_by = UserIdUsernameSerialiser()
+    sent_to_review_by = UserIdUsernameSerialiser()
+    sent_to_activation_by = UserIdUsernameSerialiser()
+    activated_by = UserIdUsernameSerialiser()
+
     class Meta:
         model = DealVersion2
         fields = [
             "id",
             "created_at",
-            "created_by_id",
+            "created_by",
             "sent_to_review_at",
-            "sent_to_review_by_id",
-            "reviewed_at",
-            "reviewed_by_id",
+            "sent_to_review_by",
+            "sent_to_activation_at",
+            "sent_to_activation_by",
             "activated_at",
-            "activated_by_id",
+            "activated_by",
             "fully_updated",
             "status",
         ]
@@ -86,6 +98,11 @@ class DealVersionSerializer(serializers.ModelSerializer):
     contracts = ContractSerializer(many=True, read_only=True)
     datasources = DealDataSourceSerializer(many=True, read_only=True)
     operating_company = OperatingCompanySerializer(allow_null=True)
+
+    created_by = UserIdUsernameSerialiser()
+    sent_to_review_by = UserIdUsernameSerialiser()
+    sent_to_activation_by = UserIdUsernameSerialiser()
+    activated_by = UserIdUsernameSerialiser()
 
     @staticmethod
     def save_submodels(request, dv1: DealVersion2):
@@ -168,6 +185,7 @@ class Deal2Serializer(serializers.ModelSerializer):
     versions = DealVersionVersionsListSerializer(many=True)
     selected_version = DealVersionSerializer()
     workflowinfos = serializers.SerializerMethodField()
+    created_by = UserIdUsernameSerialiser()
 
     @staticmethod
     def get_workflowinfos(obj: DealHull):
@@ -182,18 +200,23 @@ class Deal2Serializer(serializers.ModelSerializer):
 
 
 class InvestorVersionVersionsListSerializer(serializers.ModelSerializer):
+    created_by = UserIdUsernameSerialiser()
+    sent_to_review_by = UserIdUsernameSerialiser()
+    sent_to_activation_by = UserIdUsernameSerialiser()
+    activated_by = UserIdUsernameSerialiser()
+
     class Meta:
         model = InvestorVersion2
         fields = [
             "id",
             "created_at",
-            "created_by_id",
+            "created_by",
             "sent_to_review_at",
-            "sent_to_review_by_id",
-            "reviewed_at",
-            "reviewed_by_id",
+            "sent_to_review_by",
+            "sent_to_activation_at",
+            "sent_to_activation_by",
             "activated_at",
-            "activated_by_id",
+            "activated_by",
             "status",
         ]
 

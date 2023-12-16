@@ -4,7 +4,7 @@
   import VirtualListSelect from "./VirtualListSelect.svelte"
 
   export let users: User[] = []
-  export let value: User | undefined = undefined
+  export let value: User | null = null
   export let required = false
 
   const itemFilter = (label: string, filterText: string, user: User) => {
