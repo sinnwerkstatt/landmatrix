@@ -58,7 +58,7 @@
     {#each filteredBlogpages as blogpage}
       <div class="col-md-6 col-lg-4 mb-3">
         <div
-          class="h-full rounded border border-lm-black bg-lm-lightgray dark:border-white dark:bg-gray-800"
+          class="h-full rounded border border-gray-900 bg-gray-50 dark:border-white dark:bg-gray-800"
         >
           {#if blogpage.header_image}
             <img src={blogpage.header_image} class="rounded-t" alt="" loading="lazy" />
@@ -67,7 +67,7 @@
             <h5 class="heading5 mb-4">
               <a
                 href={blogpage.url}
-                class=" text-lm-black hover:text-orange dark:text-white"
+                class=" text-gray-900 hover:text-orange dark:text-white"
               >
                 {blogpage.title}
               </a>

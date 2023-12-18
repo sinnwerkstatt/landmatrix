@@ -15,7 +15,7 @@
 </script>
 
 <div class="my-4 grid grid-cols-2 lg:grid-cols-3">
-  <div class="col-span-2 rounded-tl bg-gray-light">
+  <div class="col-span-2 rounded-tl bg-gray-100">
     <div class="flex items-center justify-between gap-4 p-2">
       <div>
         <h1 class="heading4 my-0 text-[1.875rem]">
@@ -40,14 +40,14 @@
           </li>
           <li>
             <div class="flex items-center gap-2">
-              <a class="btn bg-lm-red-500" href="">delete</a>
+              <a class="btn bg-red-500" href="">delete</a>
               this will mark the deal as deleted. only admins will be able to see it, it
               wont count towards any metrics
             </div>
           </li>
           <li>
             <div class="flex items-center gap-2">
-              <a class="btn bg-lm-red-700" href="">set confidential</a>
+              <a class="btn bg-red-700" href="">set confidential</a>
               this will copy the current deal and create blablabla...
             </div>
           </li>
@@ -91,14 +91,14 @@
     <div class="p-2 py-4">
       {#if object.deleted}
         <div
-          class="flex flex-col items-center justify-center gap-1 bg-lm-red-500 py-2 text-white"
+          class="flex flex-col items-center justify-center gap-1 bg-red-500 py-2 text-white"
         >
           <div class="heading4 mb-0">{$_("Deleted")}</div>
           <span>{object.deleted_comment}</span>
         </div>
       {:else if object.confidential}
         <div
-          class="flex flex-col items-center justify-center gap-1 bg-lm-red-700 py-2 text-white"
+          class="flex flex-col items-center justify-center gap-1 bg-red-700 py-2 text-white"
         >
           <div class="heading4 mb-0">{$_("Confidential")}</div>
           <span>{object.confidential_comment}</span>
@@ -110,7 +110,7 @@
         </div>
         {#if object.selected_version.status === Version2Status.ACTIVATED}
           <div
-            class="flex flex-col items-center justify-center gap-1 bg-lm-green-700 py-2 text-white"
+            class="flex flex-col items-center justify-center gap-1 bg-green-700 py-2 text-white"
           >
             <div class="heading4 mb-0">{$_("Activated")}</div>
             <div class="">
@@ -128,7 +128,7 @@
     extraUserIDs={[]}
     on:addComment
   />
-  <!--  <div class="col-span-1 h-24 bg-gray-medium p-2">-->
+  <!--  <div class="col-span-1 h-24 bg-gray-300 p-2">-->
   <!--    <h3 class="heading">{$_("Logbook")}</h3>-->
   <!--  </div>-->
 </div>

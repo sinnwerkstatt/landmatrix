@@ -56,7 +56,7 @@
         </div>
       </svelte:fragment>
 
-      <div class="divide-y divide-solid bg-white shadow-lg dark:bg-lm-black">
+      <div class="divide-y divide-solid bg-white shadow-lg dark:bg-gray-900">
         <p class="m-0 whitespace-nowrap p-2 leading-5 text-gray-400">
           {user.full_name}
           <br />
@@ -110,7 +110,7 @@
     </NavDropDown>
     <button
       type="button"
-      class="button1 hidden w-full text-left text-lm-black transition hover:text-orange dark:text-white sm:mx-3 xl:block"
+      class="button1 hidden w-full text-left text-gray-900 transition hover:text-orange dark:text-white sm:mx-3 xl:block"
       on:click|preventDefault={logout}
     >
       {$_("Logout")}

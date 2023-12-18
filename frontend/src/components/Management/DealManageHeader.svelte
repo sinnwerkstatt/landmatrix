@@ -241,8 +241,8 @@
       {#if deal.is_public}
         <EyeIcon class="h-6 w-6 text-orange" /> {$_("Publicly visible")}
       {:else}
-        <EyeSlashIcon class="h-6 w-6 text-lm-darkgray" />
-        <span class="text-lm-darkgray dark:text-white">
+        <EyeSlashIcon class="h-6 w-6 text-gray-100" />
+        <span class="text-gray-100 dark:text-white">
           {$_("Not publicly visible")}
         </span>
       {/if}
@@ -299,8 +299,8 @@
         <CheckCircleIcon class="h-6 w-6 text-orange" />
         <span>{$_("Fully updated")}</span>
       {:else}
-        <MinusIcon class="h-6 w-6 text-lm-darkgray" />
-        <span class="text-lm-darkgray dark:text-white">{$_("Not fully updated")}</span>
+        <MinusIcon class="h-6 w-6 text-gray-100" />
+        <span class="text-gray-100 dark:text-white">{$_("Not fully updated")}</span>
       {/if}
     </div>
   </div>

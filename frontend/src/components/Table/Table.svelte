@@ -37,7 +37,7 @@
   onMount(() => virtualList.recomputeSizes(0))
 </script>
 
-<div class="h-full w-full border border-lm-dark">
+<div class="h-full w-full border border-gray-700">
   <div
     bind:clientWidth={width}
     bind:clientHeight={height}
@@ -58,7 +58,7 @@
       <div
         slot="item"
         class="row {index === 0
-          ? 'items-center bg-lm-dark font-medium text-white'
+          ? 'items-center bg-gray-700 font-medium text-white'
           : 'odd:bg-white even:bg-gray-100 hover:bg-gray-200 dark:odd:bg-gray-600 dark:even:bg-gray-700 dark:hover:bg-gray-500'} {rowClasses}"
         let:index
         let:style

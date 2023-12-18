@@ -122,7 +122,7 @@
 
 <ChartWrapper {title} on:download={handleDownload}>
   <svg
-    class="stroke-lm-dark stroke-[0.2]"
+    class="stroke-gray-700 stroke-[0.2]"
     id="lsla-by-negotiation-chart"
     bind:this={svgComp}
   />

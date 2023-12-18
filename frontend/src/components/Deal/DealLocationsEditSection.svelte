@@ -268,12 +268,12 @@
       <div class="pr-3 lg:w-1/3">
         {#each locations as loc, index}
           <div
-            class="mt-4 border-4 bg-lm-lightgray p-2 dark:bg-gray-800 {hoverLocationID ===
+            class="mt-4 border-4 bg-gray-50 p-2 dark:bg-gray-800 {hoverLocationID ===
             loc.id
               ? 'border-orange-400'
               : activeLocationID === loc.id
-                ? 'border-lm-dark dark:border-gray-600'
-                : 'border-lm-darkgray dark:border-gray-700'}"
+                ? 'border-gray-700 dark:border-gray-600'
+                : 'border-gray-100 dark:border-gray-700'}"
           >
             <div class="flex flex-row items-center justify-between">
               <button

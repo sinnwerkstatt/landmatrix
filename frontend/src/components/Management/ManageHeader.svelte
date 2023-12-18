@@ -93,7 +93,7 @@
 
 <div class="my-6">
   <div class="flex flex-col p-0 lg:flex-row">
-    <div class="grow-[2] bg-lm-lightgray dark:bg-gray-600">
+    <div class="grow-[2] bg-gray-50 dark:bg-gray-600">
       <div class="-mt-5 flex justify-center gap-4">
         {#if hasActiveVersion && !isActiveVersion}
           <a
@@ -124,7 +124,7 @@
           </h1>
         </div>
         <div
-          class="my-2 flex w-auto items-center rounded bg-lm-lightgray p-3 text-lm-dark dark:bg-gray-700 dark:text-white"
+          class="my-2 flex w-auto items-center rounded bg-gray-50 p-3 text-gray-700 dark:bg-gray-700 dark:text-white"
         >
           <div class="mr-10 text-xs md:mx-5 md:text-sm">
             {$_("Created")}
@@ -151,7 +151,7 @@
           class={cn(
             "flex h-16 w-full items-center justify-center border-2",
             "text-lg font-medium text-white",
-            isActive ? "bg-pelorous-300" : "bg-lm-red-deleted",
+            isActive ? "bg-pelorous-300" : "bg-red-deleted",
           )}
         >
           {isActive ? $_("Activated") : $_("Deleted")}
@@ -296,7 +296,7 @@
                       {$_("Edit")}
                     </a>
                   </div>
-                  <div class="italic text-lm-dark dark:text-white">
+                  <div class="italic text-gray-700 dark:text-white">
                     {$_("Edit this version")}
                   </div>
                 {:else}
@@ -307,7 +307,7 @@
                   >
                     {$_("Edit")}
                   </button>
-                  <div class="italic text-lm-dark dark:text-white">
+                  <div class="italic text-gray-700 dark:text-white">
                     {otype === "deal"
                       ? $_("Create a new draft version of this deal")
                       : $_("Create a new draft version of this investor")}
@@ -326,7 +326,7 @@
                     {isDeleted ? $_("Undelete") : $_("Delete")}
                   </button>
                 </div>
-                <div class="italic text-lm-dark dark:text-white">
+                <div class="italic text-gray-700 dark:text-white">
                   {#if isDeleted}
                     {otype === "deal"
                       ? $_("Reactivate this deal")
@@ -349,7 +349,7 @@
                     {$_("Remove")}
                   </button>
                 </div>
-                <div class="italic text-lm-dark dark:text-white">
+                <div class="italic text-gray-700 dark:text-white">
                   {otype === "deal"
                     ? $_("Completely removes this version of the deal")
                     : $_("Completely removes this version of the investor")}
@@ -367,7 +367,7 @@
                     {$_("Copy deal")}
                   </button>
                 </div>
-                <div class="italic text-lm-dark dark:text-white">
+                <div class="italic text-gray-700 dark:text-white">
                   {$_("Copy this deal")}
                 </div>
               </div>
@@ -450,7 +450,7 @@
 
 <style>
   .status-field {
-    @apply relative flex h-16 w-1/4 items-center justify-center border-2 bg-lm-darkgray pl-5 text-lm-dark;
+    @apply relative flex h-16 w-1/4 items-center justify-center border-2 bg-gray-100 pl-5 text-gray-700;
   }
   .status-field:before {
     @apply content-[""];
@@ -461,7 +461,7 @@
   .status-field:after {
     @apply content-[""];
     @apply border-y-[31px] border-y-transparent;
-    @apply border-l-[18px] border-l-lm-darkgray;
+    @apply border-l-[18px] border-l-gray-100;
     @apply absolute inset-y-0 right-[-17px];
   }
   .status-field:first-child:before {

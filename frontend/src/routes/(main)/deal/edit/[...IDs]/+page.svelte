@@ -198,7 +198,7 @@
           >
             <a
               href={target}
-              class={activeTab === target ? "text-lm-dark dark:text-white" : ""}
+              class={activeTab === target ? "text-gray-700 dark:text-white" : ""}
               on:click|preventDefault={onClickTab}
             >
               {name}

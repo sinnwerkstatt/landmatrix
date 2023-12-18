@@ -33,7 +33,7 @@
 {#if limit && limit < articles.length}
   <button
     type="button"
-    class="button1 rounded bg-lm-orange p-2 px-4 text-white transition hover:bg-orange-600"
+    class="button1 rounded bg-orange p-2 px-4 text-white transition hover:bg-orange-600"
     on:click={() => (limit = 0)}
   >
     {$_("Show all")}

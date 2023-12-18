@@ -35,7 +35,7 @@
   export let showLabel = true
   export let wrapperClasses = "mb-3 leading-5 flex flex-col"
   export let labelClasses = "font-semibold mb-4 w-full"
-  export let valueClasses = "text-lm-dark dark:text-white px-3 mb-10 w-full"
+  export let valueClasses = "text-gray-700 dark:text-white px-3 mb-10 w-full"
   export let disabled = false
 
   let formfield: FormField

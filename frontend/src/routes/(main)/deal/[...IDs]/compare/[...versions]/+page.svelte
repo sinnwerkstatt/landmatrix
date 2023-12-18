@@ -72,21 +72,21 @@
     <tbody>
       {#each Object.entries($dealSections) as [label, section]}
         {#if anyFieldFromSection(section)}
-          <tr class="bg-lm-dark">
+          <tr class="bg-gray-700">
             <th colspan="3">
               <h2 class="text-white">{labels[label]}</h2>
             </th>
           </tr>
           {#each section as subsec}
             {#if anyFieldFromSubSection(subsec)}
-              <tr class="bg-lm-darkgray dark:bg-gray-600">
+              <tr class="bg-gray-100 dark:bg-gray-600">
                 <th colspan="3">
                   <h3>{subsec.name}</h3>
                 </th>
               </tr>
               {#each subsec.fields as field}
                 {#if data.dealdiff.has(field)}
-                  <tr class="odd:bg-lm-lightgray dark:odd:bg-gray-700">
+                  <tr class="odd:bg-gray-50 dark:odd:bg-gray-700">
                     <th>
                       {$formfields.deal[field].label}
                     </th>
@@ -113,20 +113,20 @@
       {/each}
 
       {#if data.locationsdiff}
-        <tr class="bg-lm-dark">
+        <tr class="bg-gray-700">
           <th colspan="3">
             <h2 class="text-white">{$_("Locations")}</h2>
           </th>
         </tr>
         {#each [...data.locationsdiff] as field}
-          <tr class="bg-lm-darkgray dark:bg-gray-600">
+          <tr class="bg-gray-100 dark:bg-gray-600">
             <th colspan="3">
               <h3>{$_("Location")} #{+field + 1}</h3>
             </th>
           </tr>
           {#each subsections.location as jfield}
             {#if hasDifference(data.dealFrom.locations, data.dealTo.locations, field, jfield)}
-              <tr class="odd:bg-lm-lightgray dark:odd:bg-gray-700">
+              <tr class="odd:bg-gray-50 dark:odd:bg-gray-700">
                 <th>
                   {$formfields.location[jfield].label}
                 </th>
@@ -157,20 +157,20 @@
       {/if}
 
       {#if data.datasourcesdiff}
-        <tr class="bg-lm-dark">
+        <tr class="bg-gray-700">
           <th colspan="3">
             <h2 class="text-white">{$_("Data sources")}</h2>
           </th>
         </tr>
         {#each [...data.datasourcesdiff] as field}
-          <tr class="bg-lm-darkgray dark:bg-gray-600">
+          <tr class="bg-gray-100 dark:bg-gray-600">
             <th colspan="3">
               <h3>{$_("Data source")} #{+field + 1}</h3>
             </th>
           </tr>
           {#each subsections.datasource as jfield}
             {#if hasDifference(data.dealFrom.datasources, data.dealTo.datasources, field, jfield)}
-              <tr class="odd:bg-lm-lightgray dark:odd:bg-gray-700">
+              <tr class="odd:bg-gray-50 dark:odd:bg-gray-700">
                 <th>
                   {$formfields.datasource[jfield].label}
                 </th>
@@ -201,20 +201,20 @@
       {/if}
 
       {#if data.contractsdiff}
-        <tr class="bg-lm-dark">
+        <tr class="bg-gray-700">
           <th colspan="3">
             <h2 class="text-white">{$_("Contracts")}</h2>
           </th>
         </tr>
         {#each [...data.contractsdiff] as field}
-          <tr class="bg-lm-darkgray dark:bg-gray-600">
+          <tr class="bg-gray-100 dark:bg-gray-600">
             <th colspan="3">
               <h3>{$_("Contract")} #{+field + 1}</h3>
             </th>
           </tr>
           {#each subsections.contract as jfield}
             {#if hasDifference(data.dealFrom.contracts, data.dealTo.contracts, field, jfield)}
-              <tr class="odd:bg-lm-lightgray dark:odd:bg-gray-700">
+              <tr class="odd:bg-gray-50 dark:odd:bg-gray-700">
                 <th>
                   {$formfields.contract[jfield].label}
                 </th>
@@ -251,11 +251,11 @@
 <style lang="css">
   table td,
   table th {
-    @apply border-b border-r p-2 dark:border-lm-darkgray;
+    @apply border-b border-r p-2 dark:border-gray-100;
   }
 
   table th:first-child {
-    @apply border-l dark:border-lm-darkgray;
+    @apply border-l dark:border-gray-100;
   }
 
   h2 {

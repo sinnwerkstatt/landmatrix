@@ -30,7 +30,7 @@
     </span>
   </svelte:fragment>
 
-  <ul class="bg-white shadow-lg dark:bg-lm-black">
+  <ul class="bg-white shadow-lg dark:bg-gray-900">
     {#each Object.entries(languages) as [lcode, lingo]}
       <li>
         <button

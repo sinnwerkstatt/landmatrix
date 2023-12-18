@@ -16,9 +16,9 @@
 </script>
 
 <div
-  class="border-b border-gray-300 bg-lm-lightgray text-lm-dark dark:bg-gray-800 dark:text-white"
+  class="border-b border-gray-300 bg-gray-50 text-gray-700 dark:bg-gray-800 dark:text-white"
 >
-  <div class="flex w-full" class:text-lm-orange={clearable}>
+  <div class="flex w-full" class:text-orange={clearable}>
     <button
       class="m-0.5 flex-grow p-1 text-left"
       on:click={() => (expanded = !expanded)}

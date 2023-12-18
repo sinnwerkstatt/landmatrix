@@ -5,7 +5,7 @@
   import { AREA_TYPE_COLOR_MAP, AREA_TYPES } from "$lib/utils/location"
 </script>
 
-<div class="border border-black bg-white p-3 font-sans text-lm-dark">
+<div class="border border-black bg-white p-3 font-sans text-gray-700">
   <div class="mb-1 text-center text-sm">
     <strong>{$_("Legend")}</strong>
   </div>

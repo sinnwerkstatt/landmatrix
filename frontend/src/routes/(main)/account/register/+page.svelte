@@ -75,7 +75,7 @@
 
 {#if registration_successful}
   <div
-    class="mb-4 flex h-full w-full items-center justify-center text-lm-dark dark:text-white"
+    class="mb-4 flex h-full w-full items-center justify-center text-gray-700 dark:text-white"
   >
     {$_(
       "Registration successful. You can now close this window and check your emails.",
@@ -83,7 +83,7 @@
   </div>
 {:else}
   <div
-    class="mb-4 flex h-full w-full items-center justify-center text-lm-dark dark:text-white"
+    class="mb-4 flex h-full w-full items-center justify-center text-gray-700 dark:text-white"
   >
     {$_(
       "Your contact information will help our researchers get in touch with you for additional information. We respect and protect your privacy and anonymity, and will never share or publish your personal information. You can also write us directly at data@landmatrix.org.",
@@ -91,7 +91,7 @@
   </div>
 
   <form
-    class="my-6 grid gap-4 text-lm-dark dark:text-white md:grid-cols-2"
+    class="my-6 grid gap-4 text-gray-700 dark:text-white md:grid-cols-2"
     on:submit|preventDefault={register}
   >
     <label>

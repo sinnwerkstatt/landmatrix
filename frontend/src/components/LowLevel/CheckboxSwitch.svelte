@@ -5,7 +5,7 @@
 
 <label class="mb-1 flex cursor-pointer items-center gap-1 {$$props.class}" {title}>
   <input type="checkbox" bind:checked on:change|preventDefault />
-  <span class={checked ? "text-orange" : "text-lm-dark dark:text-white"}>
+  <span class={checked ? "text-orange" : "text-gray-700 dark:text-white"}>
     <slot />
   </span>
 </label>
@@ -23,7 +23,7 @@
     cursor: pointer;
   }
   input:checked {
-    background-color: var(--color-lm-orange);
+    background-color: var(--color-orange);
   }
 
   input::before {

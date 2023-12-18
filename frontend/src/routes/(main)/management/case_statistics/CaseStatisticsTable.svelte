@@ -42,7 +42,7 @@
     objectVersion={obj.current_draft_id}
     slot="field"
     value={obj[fieldName]}
-    valueClasses="text-lm-dark dark:text-white"
+    valueClasses="text-gray-700 dark:text-white"
     wrapperClasses=""
   />
 </Table>

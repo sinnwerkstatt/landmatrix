@@ -49,50 +49,50 @@
 
 <style lang="css">
   :global(svg #incoming-marker) {
-    @apply fill-lm-purple;
+    @apply fill-purple;
   }
 
   :global(svg #outgoing-marker) {
-    @apply fill-lm-red;
+    @apply fill-red;
   }
 
   :global(svg path.incoming-highlighted) {
-    @apply stroke-lm-purple stroke-2;
+    @apply stroke-purple stroke-2;
     marker-start: url(#incoming-marker);
   }
 
   :global(svg path.outgoing-highlighted) {
-    @apply stroke-lm-red stroke-2;
+    @apply stroke-red stroke-2;
     marker-start: url(#outgoing-marker);
   }
 
   :global(svg path.incoming-permahighlight) {
-    @apply stroke-lm-purple stroke-[3];
+    @apply stroke-purple stroke-[3];
     marker-start: url(#incoming-marker);
   }
 
   :global(svg path.outgoing-permahighlight) {
-    @apply stroke-lm-red stroke-2;
+    @apply stroke-red stroke-2;
     marker-start: url(#outgoing-marker);
   }
 
   :global(svg text.incoming-highlighted) {
-    @apply cursor-pointer fill-lm-purple font-bold;
+    @apply cursor-pointer fill-purple font-bold;
   }
 
   :global(svg text.outgoing-highlighted) {
-    @apply cursor-pointer fill-lm-red font-bold;
+    @apply cursor-pointer fill-red font-bold;
   }
 
   :global(svg text.incoming-permahighlight) {
-    @apply cursor-pointer fill-lm-purple font-bold;
+    @apply cursor-pointer fill-purple font-bold;
   }
 
   :global(svg text.outgoing-permahighlight) {
-    @apply cursor-pointer fill-lm-red font-bold;
+    @apply cursor-pointer fill-red font-bold;
   }
 
   :global(svg text.incoming-permahighlight.outgoing-permahighlight) {
-    @apply cursor-pointer fill-lm-dark font-bold;
+    @apply cursor-pointer fill-gray-700 font-bold;
   }
 </style>

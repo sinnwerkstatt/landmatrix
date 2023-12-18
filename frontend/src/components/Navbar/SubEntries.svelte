@@ -41,7 +41,7 @@
         on:click={() => (isOpen = !isOpen)}
       >
         {#if title === "Resources"}<a
-            class="text-lm-black hover:text-orange"
+            class="text-gray-900 hover:text-orange"
             href="/resources/"
           >
             {title}
@@ -53,7 +53,7 @@
           transition:slide={{ duration: 200 }}
           class={cn(
             "hidden flex-wrap justify-around",
-            "bg-lm-lightgray dark:bg-lm-black lg:bg-white dark:lg:bg-lm-black",
+            "bg-gray-50 dark:bg-gray-900 lg:bg-white dark:lg:bg-gray-900",
             "lg:absolute lg:z-50 lg:whitespace-nowrap",
             "border-t py-3 lg:border-none lg:shadow-2xl",
             "group-focus-within:flex lg:group-focus-within:hidden lg:group-hover:block",
@@ -76,7 +76,7 @@
     </div>
   {:else}
     <a
-      class="nav-link button1 truncate text-center hover:bg-white hover:text-orange dark:hover:bg-lm-black xl:max-w-[120px]"
+      class="nav-link button1 truncate text-center hover:bg-white hover:text-orange dark:hover:bg-gray-900 xl:max-w-[120px]"
       {title}
       href={title === "Resources" ? "/resources/" : href}
       on:click={resetMenu}

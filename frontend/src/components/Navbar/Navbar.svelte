@@ -70,7 +70,7 @@
   class={cn(
     "h-full w-full p-1",
     "text-lg text-gray-700 dark:text-white",
-    "bg-white dark:bg-lm-black",
+    "bg-white dark:bg-gray-900",
     "py-1 shadow-lg",
   )}
 >
@@ -111,9 +111,7 @@
             menuHidden = !menuHidden
           }}
         >
-          <BurgerMenuIcon
-            class="mx-3 inline h-7 w-7 text-black dark:text-lm-lightgray"
-          />
+          <BurgerMenuIcon class="mx-3 inline h-7 w-7 text-black dark:text-gray-50" />
         </button>
       </li>
     </ul>
@@ -134,7 +132,7 @@
       <ul
         class={cn(
           "divide-y divide-solid px-4",
-          "gap-y-6 p-6 dark:bg-lm-black lg:flex lg:flex-wrap lg:items-center lg:justify-center lg:gap-x-12 lg:gap-y-0 lg:divide-transparent lg:p-0 xl:justify-between xl:gap-x-0",
+          "gap-y-6 p-6 dark:bg-gray-900 lg:flex lg:flex-wrap lg:items-center lg:justify-center lg:gap-x-12 lg:gap-y-0 lg:divide-transparent lg:p-0 xl:justify-between xl:gap-x-0",
         )}
       >
         {#each menuEntries as entry}

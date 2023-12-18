@@ -20,7 +20,7 @@
 <div id="${title}_wrapper" class="flex flex-col flex-nowrap {wrapperClasses}">
   <slot name="heading">
     {#if title}
-      <h2 class="heading3 mt-0 text-lm-dark">{title}</h2>
+      <h2 class="heading3 mt-0 text-gray-700">{title}</h2>
     {/if}
   </slot>
   <div class="svg-wrapper flex items-center justify-center">
@@ -30,7 +30,7 @@
     <slot name="legend" />
   </div>
   <ul
-    class="mx-auto my-2 flex w-fit bg-white p-1 text-sm text-lm-dark dark:bg-gray-800 dark:text-white"
+    class="mx-auto my-2 flex w-fit bg-white p-1 text-sm text-gray-700 dark:bg-gray-800 dark:text-white"
   >
     <li id="download-svg">
       <button

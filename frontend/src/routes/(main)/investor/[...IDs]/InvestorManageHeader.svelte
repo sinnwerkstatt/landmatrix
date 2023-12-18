@@ -12,7 +12,7 @@
 <ManageHeader object={investor}>
   <svelte:fragment slot="heading">
     {#if investor.selected_version.name_unknown}
-      <span class="italic text-gray-dark">[{$_("unknown investor")}]</span>
+      <span class="italic text-gray-600">[{$_("unknown investor")}]</span>
     {:else}
       {investor.selected_version.name}
     {/if}

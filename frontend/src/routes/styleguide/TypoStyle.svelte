@@ -20,7 +20,7 @@
     {#each val.specs as x}
       <div>
         <div class="grid grid-cols-2">
-          <div class="italic text-gray-dark">{x.name}</div>
+          <div class="italic text-gray-600">{x.name}</div>
           <div class="flex gap-3">
             {#if Array.isArray(x.value)}
               <div class="font-bold">{x.value[0]}</div>

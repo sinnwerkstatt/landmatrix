@@ -38,12 +38,12 @@
 </script>
 
 <div
-  class="col-span-2 flex flex-col rounded-tr bg-lm-darkgray px-3 dark:bg-gray-700 lg:col-span-1"
+  class="col-span-2 flex flex-col rounded-tr bg-gray-100 px-3 dark:bg-gray-700 lg:col-span-1"
 >
   <h3 class="my-1 ml-1 font-medium">{$_("Logbook")}</h3>
 
   <div
-    class="h-0 flex-grow cursor-default overflow-y-scroll border-lm-dark px-[2px] pb-4 pt-1 shadow-inner"
+    class="h-0 flex-grow cursor-default overflow-y-scroll border-gray-700 px-[2px] pb-4 pt-1 shadow-inner"
   >
     {#each workflowInfos as info}
       <WorkflowInfoNew {info} />

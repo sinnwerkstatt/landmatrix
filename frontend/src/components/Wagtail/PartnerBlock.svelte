@@ -11,11 +11,11 @@
 
 <div class="mx-auto bg-white py-6 text-center">
   {#if donors}
-    <h2 class="heading3 text-lm-black">Donors</h2>
+    <h2 class="heading3 text-gray-900">Donors</h2>
     <PartnerSlider partners={donors} countSlides={3} />
   {/if}
   {#if partners}
-    <h2 class="heading3 text-lm-black">Partners</h2>
+    <h2 class="heading3 text-gray-900">Partners</h2>
     <PartnerSlider {partners} countSlides={4} />
   {/if}
 </div>

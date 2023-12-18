@@ -214,9 +214,9 @@
 
   /*No space when all classes apply to same element*/
   :global(.g-tooltip.deal) {
-    background-color: var(--color-lm-orange);
+    background-color: var(--color-orange);
   }
   :global(.g-tooltip.investor) {
-    background-color: var(--color-lm-investor);
+    background-color: var(--color-pelorous);
   }
 </style>

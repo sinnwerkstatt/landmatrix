@@ -328,7 +328,7 @@
                         ? model === "deal"
                           ? "font-bold text-orange"
                           : "font-bold text-pelorous"
-                        : "text-lm-dark dark:text-white",
+                        : "text-gray-700 dark:text-white",
                     )}
                     href="#{item.id}"
                   >
@@ -383,7 +383,7 @@
           {:else}
             <DisplayField
               wrapperClasses="p-1"
-              valueClasses="text-lm-dark dark:text-white"
+              valueClasses="text-gray-700 dark:text-white"
               fieldname={fieldName}
               value={obj[fieldName]}
               objectVersion={obj.current_draft_id}

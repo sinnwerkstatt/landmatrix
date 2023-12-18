@@ -33,7 +33,7 @@
   ]
 </script>
 
-<div class="bg-lm-dark px-10 py-12 text-white lg:px-20">
+<div class="bg-gray-700 px-10 py-12 text-white lg:px-20">
   <div class="container mx-auto">
     <!--    Newsletter-->
     <div class="items-end gap-6 lg:flex">

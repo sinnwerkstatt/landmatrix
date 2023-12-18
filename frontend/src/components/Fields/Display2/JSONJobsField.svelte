@@ -12,7 +12,7 @@
   export let label = ""
   export let wrapperClass = "mb-3 flex flex-wrap leading-5"
   export let labelClass = "md:w-5/12 lg:w-4/12"
-  export let valueClass = "text-lm-dark dark:text-white md:w-7/12 lg:w-8/12"
+  export let valueClass = "text-gray-700 dark:text-white md:w-7/12 lg:w-8/12"
 </script>
 
 {#if value?.length > 0}

@@ -89,7 +89,7 @@
             {#if name}
               <a
                 href={target}
-                class={activeTab === target ? "text-lm-dark dark:text-white" : ""}
+                class={activeTab === target ? "text-gray-700 dark:text-white" : ""}
               >
                 {name}
               </a>
@@ -158,7 +158,7 @@
               target="_blank"
               href={downloadLink("xlsx")}
               rel="noreferrer"
-              class="bg-gray-lighter rounded border border-gray-medium px-4 py-2"
+              class="rounded border border-gray-300 bg-gray-50 px-4 py-2"
               data-sveltekit-reload
             >
               <DownloadIcon />
@@ -169,7 +169,7 @@
               target="_blank"
               href={downloadLink("csv")}
               rel="noreferrer"
-              class="bg-gray-lighter rounded border border-gray-medium px-4 py-2"
+              class="rounded border border-gray-300 bg-gray-50 px-4 py-2"
               data-sveltekit-reload
             >
               <DownloadIcon />

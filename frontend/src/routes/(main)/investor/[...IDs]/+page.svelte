@@ -52,7 +52,7 @@
     <div class="md:flex md:flex-row md:justify-between">
       <h1 class="heading3 mt-3">
         {#if data.investor.selected_version.name_unknown}
-          <span class="italic text-gray-dark">[{$_("unknown investor")}]</span>
+          <span class="italic text-gray-600">[{$_("unknown investor")}]</span>
         {:else}
           {data.investor.selected_version.name}
         {/if}
@@ -74,7 +74,7 @@
             {#if name}
               <a
                 href={target}
-                class={activeTab === target ? "text-lm-dark dark:text-white" : ""}
+                class={activeTab === target ? "text-gray-700 dark:text-white" : ""}
               >
                 {name}
               </a>

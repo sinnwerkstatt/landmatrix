@@ -51,7 +51,7 @@
 
 <div
   bind:this={$contentRootElement}
-  class="h-[calc(100vh-71px)] overflow-x-auto dark:bg-lm-black"
+  class="h-[calc(100vh-71px)] overflow-x-auto dark:bg-gray-900"
 >
   <slot />
   <NewFooter />

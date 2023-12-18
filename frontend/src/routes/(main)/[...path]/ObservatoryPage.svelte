@@ -188,7 +188,7 @@
   {/if}
 </div>
 
-<div class="mb-8 mt-2 bg-lm-lightgray py-6 dark:bg-gray-700">
+<div class="mb-8 mt-2 bg-gray-50 py-6 dark:bg-gray-700">
   <div class="mx-auto min-h-[300px] w-[clamp(20rem,75%,56rem)]">
     {#if totalSize === ""}
       <LoadingPulse class="h-[300px]" />

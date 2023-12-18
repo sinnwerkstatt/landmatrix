@@ -34,7 +34,7 @@
     on:input|preventDefault={onInput}
   />
   {#if unit}
-    <div class="flex items-center bg-lm-dark px-3 font-bold text-white">
+    <div class="flex items-center bg-gray-700 px-3 font-bold text-white">
       {$_(unit)}
     </div>
   {/if}

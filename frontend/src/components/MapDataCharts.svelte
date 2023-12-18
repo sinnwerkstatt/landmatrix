@@ -51,7 +51,7 @@
     <a
       href={card.href}
       class={cn(
-        "block bg-lm-lightgray p-4 dark:bg-gray-700",
+        "block bg-gray-50 p-4 dark:bg-gray-700",
         "text-center text-black hover:text-inherit dark:text-white",
         "rounded hover:shadow-[1px_1px_4px_4px] hover:shadow-black/30 dark:hover:shadow-white/40",
       )}

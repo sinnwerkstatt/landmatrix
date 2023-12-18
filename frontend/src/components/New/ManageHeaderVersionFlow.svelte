@@ -123,7 +123,7 @@
       {$_("Remove")}
     </button>
   </div>
-  <div class="italic text-lm-dark dark:text-white">
+  <div class="italic text-gray-700 dark:text-white">
     {$_(
       "Completely removes this version of the {object}. This action cannot be undone.",
       i18nValues,
@@ -145,7 +145,7 @@
 
 <style lang="postcss">
   .status-field {
-    @apply relative flex h-16 w-1/4 items-center justify-center border-2 pl-5 text-lm-dark;
+    @apply relative flex h-16 w-1/4 items-center justify-center border-2 pl-5 text-gray-700;
   }
 
   .status-field:before {
@@ -171,6 +171,6 @@
   }
 
   .status-field.inactive {
-    @apply bg-lm-darkgray after:border-l-lm-darkgray;
+    @apply bg-gray-100 after:border-l-gray-100;
   }
 </style>

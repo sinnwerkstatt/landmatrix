@@ -9,7 +9,7 @@
 </script>
 
 <div
-  class="my-2 flex w-auto items-center whitespace-nowrap bg-lm-lightgray p-3 text-center text-lm-dark dark:bg-gray-700 dark:text-white"
+  class="my-2 flex w-auto items-center whitespace-nowrap bg-gray-50 p-3 text-center text-gray-700 dark:bg-gray-700 dark:text-white"
 >
   <div class="mr-10 text-xs md:mx-5 md:text-sm">
     {$_("Created")}

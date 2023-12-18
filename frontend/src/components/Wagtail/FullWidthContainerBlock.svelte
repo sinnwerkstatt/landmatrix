@@ -10,8 +10,8 @@
 
   const colorMap = {
     white: "bg-white dark:bg-gray-800",
-    lightgrey: "bg-lm-lightgray dark:bg-gray-600",
-    darkgrey: "bg-lm-darkgray dark:bg-gray-700",
+    lightgrey: "bg-gray-50 dark:bg-gray-600",
+    darkgrey: "bg-gray-100 dark:bg-gray-700",
   }
 </script>
 

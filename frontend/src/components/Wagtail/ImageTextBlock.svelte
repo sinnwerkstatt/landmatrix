@@ -22,9 +22,9 @@
 >
   <div class="container mx-auto px-10 py-20 lg:grid lg:grid-cols-2 lg:gap-[120px]">
     <div class="flex flex-col justify-center text-center lg:text-left">
-      <h2 class="caption text-lm-black">{value.title}</h2>
-      <h3 class="heading3 xl:heading1 text-lm-black">{value.subtitle}</h3>
-      <p class="body1 dark:text-lm-black lg:pb-8">{@html value.text}</p>
+      <h2 class="caption text-gray-900">{value.title}</h2>
+      <h3 class="heading3 xl:heading1 text-gray-900">{value.subtitle}</h3>
+      <p class="body1 dark:text-gray-900 lg:pb-8">{@html value.text}</p>
       <a
         class="hidden lg:block"
         href={value.link.href}
@@ -48,7 +48,7 @@
       target={value.link.rel_external ? "_blank" : ""}
     >
       <div
-        class="button1 mx-auto w-fit rounded bg-black px-5 py-[10px] text-white transition hover:bg-lm-dark"
+        class="button1 mx-auto w-fit rounded bg-black px-5 py-[10px] text-white transition hover:bg-gray-700"
       >
         {value.link.text}
       </div>

@@ -3,9 +3,9 @@
 @import "_svelte_select.css";
 
 :root {
-  --color-lm-orange: hsl(32, 97%, 55%);
-  --color-lm-investor: hsl(179, 46%, 49%);
-  accent-color: var(--color-lm-orange);
+  --color-orange: hsl(32, 97%, 55%);
+  --color-pelorous: hsl(179, 46%, 49%);
+  accent-color: var(--color-orange);
 }
 
 @tailwind base;
@@ -31,28 +31,28 @@
   }
 
   .code {
-    @apply rounded bg-gray-light px-2 py-1;
+    @apply rounded bg-gray-100 px-2 py-1;
   }
 
   /*ToDo: get rid of h-styles*/
   /*h1 {*/
-  /*  @apply my-5 text-3xl font-bold text-lm-black dark:text-gray-200;*/
+  /*  @apply my-5 text-3xl font-bold text-gray-900 dark:text-gray-200;*/
   /*}*/
 
   /*h2 {*/
-  /*  @apply my-5  font-bold text-lm-black dark:text-gray-200;*/
+  /*  @apply my-5  font-bold text-gray-900 dark:text-gray-200;*/
   /*}*/
 
   /*h3 {*/
-  /*  @apply my-5 font-bold text-lm-black dark:text-gray-200;*/
+  /*  @apply my-5 font-bold text-gray-900 dark:text-gray-200;*/
   /*}*/
 
   /*h3 a {*/
-  /*  @apply text-lm-dark dark:text-gray-200;*/
+  /*  @apply text-gray-700 dark:text-gray-200;*/
   /*}*/
 
   /*h4 {*/
-  /*  @apply my-5 text-lg font-bold text-lm-dark dark:text-gray-200;*/
+  /*  @apply my-5 text-lg font-bold text-gray-700 dark:text-gray-200;*/
   /*}*/
 
   .display1 {
@@ -97,7 +97,7 @@
   }
 
   .caption {
-    @apply text-xs font-bold uppercase leading-tight tracking-widest text-lm-black md:text-sm;
+    @apply text-xs font-bold uppercase leading-tight tracking-widest text-gray-900 md:text-sm;
   }
 
   .buttonBase {
@@ -127,14 +127,14 @@
     background: var(--color2);
     border-color: var(--color1);
     /*@apply hover:brightness-75;*/
-    @apply dark:border-lm-dark dark:text-lm-lightgray;
+    @apply dark:border-gray-700 dark:text-gray-50;
   }
   .butn-outline:hover {
     color: var(--color3);
     border-color: var(--color3);
   }
   .butn-outline:focus {
-    /*@apply border-lm-orange;*/
+    /*@apply border-orange;*/
     color: var(--color1);
   }
 
@@ -213,11 +213,11 @@
 
   .btn-white {
     @apply border-black bg-white text-black;
-    @apply hover:bg-lm-lightgray;
+    @apply hover:bg-gray-50;
   }
 
   .btn-gray {
-    @apply button1 rounded border-lm-dark bg-gray-300 text-gray-600;
+    @apply button1 rounded border-gray-700 bg-gray-300 text-gray-600;
     @apply hover:bg-gray-400 hover:text-white;
   }
 
@@ -228,12 +228,12 @@
   }
 
   .btn-purple {
-    @apply border-lm-purple-500 bg-lm-purple-300 text-white;
-    @apply hover:bg-lm-purple-500 active:bg-lm-purple-500;
+    @apply border-purple-500 bg-purple-300 text-white;
+    @apply hover:bg-purple-500 active:bg-purple-500;
   }
   .btn-violet {
-    @apply border-lm-violet-500 bg-lm-violet-300 text-white;
-    @apply hover:bg-lm-violet-500 active:bg-lm-violet-500;
+    @apply border-violet-500 bg-violet-300 text-white;
+    @apply hover:bg-violet-500 active:bg-violet-500;
   }
 
   .btn-pelorous-secondary {

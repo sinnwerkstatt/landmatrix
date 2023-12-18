@@ -42,7 +42,7 @@
   export let showLabel = false
   export let wrapperClasses = "mb-3 leading-5 flex flex-wrap"
   export let labelClasses = "font-medium md:w-5/12 lg:w-4/12"
-  export let valueClasses = "text-lm-dark dark:text-white md:w-7/12 lg:w-8/12"
+  export let valueClasses = "text-gray-700 dark:text-white md:w-7/12 lg:w-8/12"
 
   export let fileNotPublic = false
   export let targetBlank = false

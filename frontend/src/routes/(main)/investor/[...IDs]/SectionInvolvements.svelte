@@ -23,13 +23,13 @@
     <h3 class="heading3 my-0">{$_("Involvements")} ({filteredInvolvements.length})</h3>
     <div class="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
       {#each filteredInvolvements as involvement}
-        <div class="flex flex-col gap-1 border border-lm-pelorous p-2">
+        <div class="flex flex-col gap-1 border border-pelorous p-2">
           <IDField
             label={$_("ID")}
             value={involvement.other_investor.id}
             fieldname="investor.id"
             wrapperClass="flex flex-wrap gap-2 justify-between"
-            labelClass="whitespace-nowrap text-gray-dark"
+            labelClass="whitespace-nowrap text-gray-600"
             valueClass=""
           />
           <TextField
@@ -37,7 +37,7 @@
             value={involvement.other_investor.name}
             fieldname="investor.name"
             wrapperClass="flex flex-wrap gap-2 justify-between"
-            labelClass="whitespace-nowrap text-gray-dark"
+            labelClass="whitespace-nowrap text-gray-600"
             valueClass=""
           />
           <CountryField
@@ -45,7 +45,7 @@
             value={involvement.other_investor.country}
             fieldname="country"
             wrapperClass="flex flex-wrap gap-2 justify-between"
-            labelClass="whitespace-nowrap text-gray-dark"
+            labelClass="whitespace-nowrap text-gray-600"
             valueClass=""
           />
           <TextField
@@ -54,7 +54,7 @@
             fieldname="investor.classification"
             choices={$fieldChoices.investor.classification}
             wrapperClass="flex flex-wrap gap-2 justify-between"
-            labelClass="whitespace-nowrap text-gray-dark"
+            labelClass="whitespace-nowrap text-gray-600"
             valueClass=""
           />
           ---
@@ -63,7 +63,7 @@
             value={involvement.relationship}
             fieldname="investor.relationship"
             wrapperClass="flex flex-wrap gap-2 justify-between"
-            labelClass="whitespace-nowrap text-gray-dark"
+            labelClass="whitespace-nowrap text-gray-600"
             valueClass=""
           />
           <TextField
@@ -72,12 +72,12 @@
             fieldname="investor.investment_type"
             choices={$fieldChoices.investor.investment_type}
             wrapperClass="flex flex-wrap gap-2 justify-between"
-            labelClass="whitespace-nowrap text-gray-dark"
+            labelClass="whitespace-nowrap text-gray-600"
             valueClass=""
           />
           <!--{#if involvement.loans_amount}-->
           <!--  <div class="flex flex-wrap justify-between gap-4">-->
-          <!--    <div class="whitespace-nowrap text-gray-dark">{$_("Loan")}</div>-->
+          <!--    <div class="whitespace-nowrap text-gray-600">{$_("Loan")}</div>-->
           <!--    <div>{involvement.loans_amount} {involvement.loans_currency}</div>-->
           <!--  </div>-->
           <!--{/if}-->
@@ -87,7 +87,7 @@
             value={involvement.percentage}
             fieldname="involvement.percentage"
             wrapperClass="flex flex-wrap gap-2 justify-between"
-            labelClass="whitespace-nowrap text-gray-dark"
+            labelClass="whitespace-nowrap text-gray-600"
             valueClass=""
             unit="%"
           />
@@ -96,7 +96,7 @@
             value={involvement.comment}
             fieldname="investor.comment"
             wrapperClass="flex flex-wrap gap-2 justify-between"
-            labelClass="whitespace-nowrap text-gray-dark"
+            labelClass="whitespace-nowrap text-gray-600"
             valueClass=""
           />
         </div>

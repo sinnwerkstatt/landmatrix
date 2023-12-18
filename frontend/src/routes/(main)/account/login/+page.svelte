@@ -72,7 +72,7 @@
 <PageTitle class="">{$_("Login")}</PageTitle>
 
 {#if logged_in}
-  <p class="mt-3 text-lm-green-dark">
+  <p class="mt-3 text-green-700">
     {$_("Login successful.")}
   </p>
 {:else}
@@ -81,7 +81,7 @@
   </p>
 {/if}
 
-<form class="text-lm-dark dark:text-white" on:submit|preventDefault={login}>
+<form class="text-gray-700 dark:text-white" on:submit|preventDefault={login}>
   <label class="mb-6 block">
     {$_("Username")}
     <input

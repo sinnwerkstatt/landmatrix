@@ -16,7 +16,7 @@
 <div id="country-tooltip" class="absolute z-10">
   {#if hoverCountryId && hoverCountry}
     <div
-      class="max-w-[250px] rounded border border-lm-dark bg-white p-2 text-left dark:bg-lm-dark"
+      class="max-w-[250px] rounded border border-gray-700 bg-white p-2 text-left dark:bg-gray-700"
     >
       <h4 class="my-0 dark:text-white">{hoverCountry.name}</h4>
       <div class="flex flex-col">
@@ -25,7 +25,7 @@
             investments["incoming"][hoverCountryId] ?? {},
           ).length}
           {#if nInvestingCountries > 0}
-            <span class="pt-2 text-sm font-bold text-lm-red">
+            <span class="pt-2 text-sm font-bold text-red">
               {$_(
                 "Investors from {nCountries} countries are involved in {countryName}",
                 {
@@ -42,7 +42,7 @@
             investments["outgoing"][hoverCountryId] ?? {},
           ).length}
           {#if nTargetedCountries > 0}
-            <span class="pt-2 text-sm font-bold text-lm-purple">
+            <span class="pt-2 text-sm font-bold text-purple">
               {$_(
                 "Investors from {countryName} are involved in {nCountries} countries",
                 {
@@ -59,7 +59,7 @@
             selectedCountryId
           ]}
           {#if outgoingInvestments}
-            <span class="pt-2 text-sm font-bold text-lm-red">
+            <span class="pt-2 text-sm font-bold text-red">
               {$_(
                 "Investors from {investingCountryName} are involved in {nDeals} deals ({totalDealSize} ha) in {targetCountryName}",
                 {
@@ -78,7 +78,7 @@
             selectedCountryId
           ]}
           {#if incomingInvestments}
-            <span class="pt-2 text-sm font-bold text-lm-purple">
+            <span class="pt-2 text-sm font-bold text-purple">
               {$_(
                 "Investors from {investingCountryName} are involved in {nDeals} deals ({totalDealSize} ha) in {targetCountryName}",
                 {

@@ -122,7 +122,7 @@
           </svelte:fragment>
           <ul class="border-2 border-orange bg-white dark:bg-gray-800">
             <li
-              class="whitespace-nowrap border-b border-b-orange bg-lm-dark px-4 py-1 font-bold text-white"
+              class="whitespace-nowrap border-b border-b-orange bg-gray-700 px-4 py-1 font-bold text-white"
             >
               {$_("Charts")}
             </li>
@@ -138,7 +138,7 @@
               </li>
             {/each}
             <li
-              class="whitespace-nowrap border-y border-y-orange bg-lm-dark px-4 py-1 font-bold text-white"
+              class="whitespace-nowrap border-y border-y-orange bg-gray-700 px-4 py-1 font-bold text-white"
             >
               {$_("Country profile charts")}
             </li>

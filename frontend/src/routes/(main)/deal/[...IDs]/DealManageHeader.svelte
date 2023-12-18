@@ -26,17 +26,17 @@
         <CheckCircleIcon class="h-6 w-6 text-orange" />
         <span>{$_("Fully updated")}</span>
       {:else}
-        <MinusCircleIcon class="h-6 w-6 text-gray-dark" />
-        <span class="text-gray-dark dark:text-white">{$_("Not fully updated")}</span>
+        <MinusCircleIcon class="h-6 w-6 text-gray-600" />
+        <span class="text-gray-600 dark:text-white">{$_("Not fully updated")}</span>
       {/if}
     </div>
-    <div class="flex items-center gap-4 bg-gray-dark px-2 py-1 text-white">
+    <div class="flex items-center gap-4 bg-gray-600 px-2 py-1 text-white">
       <div class="flex items-center gap-1 text-lg">
         {#if deal.selected_version.is_public}
           <EyeIcon class="h-6 w-6 text-orange" /> {$_("Publicly visible")}
         {:else}
-          <EyeSlashIcon class="h-6 w-6 text-lm-darkgray" />
-          <span class="text-lm-darkgray dark:text-white">
+          <EyeSlashIcon class="h-6 w-6 text-gray-100" />
+          <span class="text-gray-100 dark:text-white">
             {$_("Not publicly visible")}
           </span>
         {/if}

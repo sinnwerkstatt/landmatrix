@@ -20,7 +20,7 @@
   export let label = ""
   export let wrapperClass = "mb-3 flex flex-wrap leading-5 items-start"
   export let labelClass = "md:w-5/12 lg:w-4/12"
-  export let valueClass = "text-lm-dark dark:text-white md:w-7/12 lg:w-8/12"
+  export let valueClass = "text-gray-700 dark:text-white md:w-7/12 lg:w-8/12"
 
   let valueCopy: EntryType[] = structuredClone(
     value.length ? value : [{ current: false, date: null }],
@@ -44,7 +44,7 @@
     <div class="grid gap-2 xl:grid-cols-2">
       {#each valueCopy as val, i}
         <div
-          class:border-lm-violet-400={val.current}
+          class:border-violet-400={val.current}
           class="flex flex-col gap-4 border p-3"
         >
           <label
@@ -79,7 +79,7 @@
               bind:checked={val.current}
               name="{fieldname}_{i}_current"
               required={isCurrentRequired(value)}
-              class="accent-lm-violet-400"
+              class="accent-violet-400"
             />
           </label>
 

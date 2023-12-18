@@ -5,7 +5,7 @@
   import TwitterIcon from "$components/icons/TwitterIcon.svelte"
 </script>
 
-<footer class="sticky bg-lm-dark px-2 py-1.5 text-sm text-white">
+<footer class="sticky bg-gray-700 px-2 py-1.5 text-sm text-white">
   <div class="text-left md:text-center">
     <p class="mb-0 w-5/6 truncate md:w-full">
       &copy; {new Date().getFullYear()} The Land Matrix |

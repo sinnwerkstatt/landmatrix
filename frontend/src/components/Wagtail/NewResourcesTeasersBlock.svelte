@@ -17,7 +17,7 @@
   <div class="lg:grid lg:grid-cols-10">
     <div class="mb-12 lg:col-span-5">
       <img
-        class="min-h-[500px] bg-lm-lightgray"
+        class="min-h-[500px] bg-gray-50"
         src={value.image}
         alt="Featured resource thumbnail"
       />

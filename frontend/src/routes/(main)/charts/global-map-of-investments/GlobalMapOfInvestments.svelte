@@ -81,9 +81,9 @@
   <svg bind:this={svgElement} class="rounded">
     <defs>
       <pattern id="diagonalHatch" patternUnits="userSpaceOnUse" width="10" height="10">
-        <rect width="10" height="10" class="fill-lm-purple" />
+        <rect width="10" height="10" class="fill-purple" />
         <path
-          class="stroke-lm-red stroke-[3]"
+          class="stroke-red stroke-[3]"
           d="
             M -2 2 L 2 -2
             M 0 10 L 10 0
@@ -98,16 +98,16 @@
 
 <style lang="css">
   :global(svg .country) {
-    @apply cursor-pointer fill-white stroke-black stroke-[0.3] hover:fill-gray-light;
+    @apply cursor-pointer fill-white stroke-black stroke-[0.3] hover:fill-gray-100;
   }
   :global(svg .selected-country) {
-    @apply fill-gray-dark hover:fill-gray-medium;
+    @apply fill-gray-600 hover:fill-gray-300;
   }
   :global(svg .target-country) {
-    @apply fill-lm-purple hover:fill-lm-purple-300;
+    @apply fill-purple hover:fill-purple-300;
   }
   :global(svg .investor-country) {
-    @apply fill-lm-red hover:fill-lm-red-300;
+    @apply fill-red hover:fill-red-300;
   }
   :global(svg .investor-country.target-country) {
     @apply fill-[url(#diagonalHatch)] hover:opacity-70;
