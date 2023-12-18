@@ -186,7 +186,7 @@ interface DealVersionBase {
   domestic_jobs_current: JSONJobsFieldType
   domestic_jobs_created_comment: string
 
-  operating_company: InvestorHull |null
+  operating_company: InvestorHull | null
   involved_actors?: InvestorHull // TODO incorrect
   project_name: string
   investment_chain_comment: string
@@ -238,8 +238,7 @@ interface DealVersionBase {
 
   gender_related_information: string
 
-
-    overall_comment: string
+  overall_comment: string
   datasources: DataSource[]
 }
 
@@ -263,7 +262,6 @@ export interface DealVersion2 extends DealVersionBase, VersionTimestampMixins {
   current_implementation_status: string
   deal_size: number
   fully_updated: boolean
-
 
   status: Version2Status
 }

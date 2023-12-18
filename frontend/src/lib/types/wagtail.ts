@@ -98,3 +98,11 @@ export interface BlogTag {
   name: string
   slug: string | null
 }
+
+export interface Partner {
+  id: string
+  name: string
+  logo: string
+  category: string
+  homepage: string
+}

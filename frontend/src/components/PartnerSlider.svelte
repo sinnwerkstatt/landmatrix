@@ -3,14 +3,10 @@
 
   import "@splidejs/svelte-splide/css/core"
 
+  import type { Partner } from "$lib/types/wagtail"
+
   export let countSlides: number
-  export let partners: {
-    id: string
-    name: string
-    logo: string
-    category: string
-    homepage: string
-  }[]
+  export let partners: Partner[]
   export let bw = true
 
   const options = {
@@ -33,7 +29,7 @@
         <SplideSlide>
           <div class="mx-auto max-w-[360px] px-6">
             <a href={partner.homepage} target="_blank">
-              <img src={partner.logo} alt={partners.name} class="mx-auto" />
+              <img src={partner.logo} alt={partner.name} class="mx-auto" />
             </a>
           </div>
         </SplideSlide>
