@@ -3,38 +3,38 @@
 
   import { browser } from "$app/environment"
 
-  export let value
+  interface FAQ {
+    slug: string
+    question: string
+    answer: string
+  }
+
+  export let value: { faqs: FAQ[] }
 
   let locationHash = browser ? location.hash : undefined
 
-  function updateHash(slug) {
+  const updateHash = (slug: string) => {
     if (!browser) return
-    let newslug
-    if (location.hash === slug) newslug = ""
-    else newslug = slug
-    locationHash = newslug
-    location.hash = newslug
+    location.hash = location.hash === slug ? "" : slug
+    locationHash = location.hash
   }
 </script>
 
-<div data-block="faqs_block" class="border border-gray-400">
-  {#each value.faqs as faq}
-    <div>
+<div data-block="faqs_block" class="flex flex-col gap-2">
+  {#each value.faqs as faq, index}
+    <article id="faq-{index}-{faq.slug}">
       <button
-        class="button1 w-full cursor-pointer border-b border-gray-400 bg-lm-dark px-6 py-4 text-left text-orange"
+        class="butn-outline w-full py-4 text-left"
+        id="faq-{index}-question"
         on:click={() => updateHash(`#${faq.slug}`)}
       >
         {faq.question}
       </button>
       {#if locationHash === `#${faq.slug}`}
-        <div
-          transition:slide
-          id="collapse-{faq.slug}"
-          class="border-t border-gray-400 bg-white p-4 dark:bg-gray-600"
-        >
-          <div class="card-body">{@html faq.answer}</div>
+        <div transition:slide id="faq-{index}-answer" class="p-4">
+          {@html faq.answer}
         </div>
       {/if}
-    </div>
+    </article>
   {/each}
 </div>

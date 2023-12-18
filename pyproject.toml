@@ -3,11 +3,11 @@ name = "landmatrix"
 version = "0.1.0"
 license = "AGPL-3.0+"
 authors = ["sinnwerkstatt Medienagentur GmbH <support@sinnwerkstatt.com>"]
-readme = 'README.md'
+readme = "README.md"
 description = "Land Matrix"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.10"
 Django = "*"
 wagtail = "<5.3"
 psycopg2-binary = "*"
@@ -54,19 +54,19 @@ django-livereload = "*"
 django-extensions = "*"
 pytest-django = "*"
 pytest-cov = "*"
-pytest-watch = "^4.2.0"
+pytest-watch = "*"
 pylint = "*"
 pylint-django = "*"
 pygments = "*"
 mkdocs = "*"
-pydot = "^1.4.1"
-tqdm = "^4.64.0"
-isort = "^5.12.0"
-termtables = "^0.2.4"
+pydot = "*"
+tqdm = "*"
+isort = "*"
+termtables = "*"
 
 # stubs
-django-stubs = {extras = ["compatible-mypy"], version = "^1.14.0"}
-djangorestframework-stubs = {extras = ["compatible-mypy"], version = "^1.8.0"}
+django-stubs = { extras = ["compatible-mypy"], version = "^1.14.0" }
+djangorestframework-stubs = { extras = ["compatible-mypy"], version = "^1.8.0" }
 
 # types
 types-pytz = "^2022.7.1.0"
@@ -82,7 +82,7 @@ types-tqdm = "^4.65.0.0"
 
 [tool.black]
 line-length = 88
-target-version = ['py38', 'py39', 'py310']
+target-version = ["py38", "py39", "py310", "py311", "py312"]
 include = '\.pyi?$'
 exclude = '''
 /(
@@ -116,16 +116,16 @@ sections = ["FUTURE", "STDLIB", "THIRDPARTY", "DJANGO", "FIRSTPARTY", "LOCALFOLD
 # https://mypy.readthedocs.io/en/latest/config_file.html#using-a-pyproject-toml-file
 [tool.mypy]
 plugins = ["mypy_django_plugin.main"]
-exclude = ['migrations']
+exclude = ["migrations"]
 strict_equality = true
 check_untyped_defs = true
 
 [[tool.mypy.overrides]]
 module = [
-  "wagtail.*",
-  "wagtail_headless_preview.*",
-  "modelcluster.*",
-  "modeltranslation.*"
+    "wagtail.*",
+    "wagtail_headless_preview.*",
+    "modelcluster.*",
+    "modeltranslation.*"
 ]
 ignore_missing_imports = true
 

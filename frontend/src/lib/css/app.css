@@ -127,10 +127,15 @@
     background: var(--color2);
     border-color: var(--color1);
     /*@apply hover:brightness-75;*/
+    @apply dark:border-lm-dark dark:text-lm-lightgray;
   }
   .butn-outline:hover {
     color: var(--color3);
     border-color: var(--color3);
+  }
+  .butn-outline:focus {
+    /*@apply border-lm-orange;*/
+    color: var(--color1);
   }
 
   .butn-flat {
