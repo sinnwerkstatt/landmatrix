@@ -31,6 +31,7 @@
   let deals: Deal[] = []
   let investors: Investor[] = []
 
+  //  TODO do this with async typeahead to save on bandwidth
   async function getDeals() {
     const { error, data } = await $page.data.urqlClient
       .query<{ deals: Deal[] }>(

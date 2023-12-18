@@ -186,7 +186,7 @@ interface DealVersionBase {
   domestic_jobs_current: JSONJobsFieldType
   domestic_jobs_created_comment: string
 
-  operating_company: InvestorHull | null
+  operating_company: InvestorVersion2 | null
   involved_actors?: InvestorHull // TODO incorrect
   project_name: string
   investment_chain_comment: string

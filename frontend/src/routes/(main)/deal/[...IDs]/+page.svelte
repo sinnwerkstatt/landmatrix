@@ -8,6 +8,7 @@
   import { UserRole } from "$lib/types/user"
 
   import HeaderDates from "$components/HeaderDates.svelte"
+  import DownloadIcon from "$components/icons/DownloadIcon.svelte"
 
   import DealManageHeader from "./DealManageHeader.svelte"
   import SectionDataSources from "./SectionDataSources.svelte"
@@ -54,53 +55,8 @@
     loading.set(false)
   }
 
-  // const downloadLink = (format: string): string =>
-  //   `/api/legacy_export/?deal_id=${data.dealID}&subset=UNFILTERED&format=${format}`
-
-  // let investor: Investor
-  // async function fetchInvestor() {
-  //   if (!deal.operating_company?.id) return
-  //
-  //   const ret = await $page.data.urqlClient
-  //     .query<{ investor: Investor }>(
-  //       gql`
-  //         query ($id: Int!) {
-  //           investor(id: $id) {
-  //             id
-  //             name
-  //             classification
-  //             country {
-  //               id
-  //               name
-  //             }
-  //             homepage
-  //             comment
-  //             deals {
-  //               id
-  //               country {
-  //                 id
-  //                 name
-  //               }
-  //               intention_of_investment
-  //               implementation_status
-  //               negotiation_status
-  //               intended_size
-  //               contract_size
-  //             }
-  //           }
-  //         }
-  //       `,
-  //       { id: deal?.operating_company?.id },
-  //     )
-  //     .toPromise()
-  //
-  //   if (ret.error || !ret.data) {
-  //     console.error(ret.error)
-  //   } else {
-  //     investor = ret.data.investor
-  //   }
-  // }
-  // onMount(fetchInvestor)
+  const downloadLink = (format: string): string =>
+    `/api/legacy_export/?deal_id=${data.dealID}&subset=UNFILTERED&format=${format}`
 </script>
 
 <svelte:head>
@@ -194,31 +150,34 @@
           dealVersion={data.dealVersion}
         />
       {/if}
-      <!--      {#if activeTab === "#actions"}-->
-      <!--        <section>-->
-      <!--          <h3>{$_("Download")}</h3>-->
+      {#if activeTab === "#actions"}
+        <section>
+          <h3 class="heading3 mb-12">{$_("Download")}</h3>
+          <div class="flex flex-col gap-8 text-lg font-semibold md:flex-row">
+            <a
+              target="_blank"
+              href={downloadLink("xlsx")}
+              rel="noreferrer"
+              class="bg-gray-lighter rounded border border-gray-medium px-4 py-2"
+              data-sveltekit-reload
+            >
+              <DownloadIcon />
+              {$_("Excel document")}
+            </a>
 
-      <!--          <a-->
-      <!--            target="_blank"-->
-      <!--            href={downloadLink("xlsx")}-->
-      <!--            rel="noreferrer"-->
-      <!--            data-sveltekit-reload-->
-      <!--          >-->
-      <!--            <DownloadIcon />-->
-      <!--            {$_("Excel document")}-->
-      <!--          </a>-->
-      <!--          <br />-->
-      <!--          <a-->
-      <!--            target="_blank"-->
-      <!--            href={downloadLink("csv")}-->
-      <!--            rel="noreferrer"-->
-      <!--            data-sveltekit-reload-->
-      <!--          >-->
-      <!--            <DownloadIcon />-->
-      <!--            {$_("CSV file")}-->
-      <!--          </a>-->
-      <!--        </section>-->
-      <!--      {/if}-->
+            <a
+              target="_blank"
+              href={downloadLink("csv")}
+              rel="noreferrer"
+              class="bg-gray-lighter rounded border border-gray-medium px-4 py-2"
+              data-sveltekit-reload
+            >
+              <DownloadIcon />
+              {$_("CSV file")}
+            </a>
+          </div>
+        </section>
+      {/if}
     </div>
   </div>
 </div>

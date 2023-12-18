@@ -1,7 +1,7 @@
 import json
 
 from django.db import OperationalError
-from django.db.models import Prefetch, Q
+from django.db.models import Prefetch, Q, F
 from django.http import JsonResponse
 from django.utils import timezone
 from rest_framework import viewsets, status
@@ -59,7 +59,7 @@ def _parse_filter(request: Request):
 
     # TODO This might not be working correctly yet. it does not include "no nature of deal", but the original filter did
     if nature := request.GET.getlist("nature"):
-        all_nature = set([x["value"] for x in NATURE_OF_DEAL_ITEMS])
+        all_nature = set([x["value"] for x in choices.NATURE_OF_DEAL_ITEMS])
         ret &= ~Q(
             active_version__nature_of_deal__contained_by=list(all_nature - set(nature))
         )
@@ -239,7 +239,7 @@ class DealVersionViewSet(viewsets.ModelViewSet):
         return Response({"dealID": dv1.deal.id, "versionID": dv1.id})
 
 
-class Deal2ViewSet(viewsets.ModelViewSet):
+class Deal2ViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = DealHull.objects.all().prefetch_related(
         Prefetch("versions", queryset=DealVersion2.objects.order_by("-id"))
     )
@@ -354,6 +354,18 @@ class Investor2ViewSet(viewsets.ReadOnlyModelViewSet):
         Prefetch("versions", queryset=InvestorVersion2.objects.order_by("-id"))
     )
     serializer_class = Investor2Serializer
+
+    @action(methods=["get"], detail=False)
+    def simple(self, request):
+        # TODO this might need an "also search for drafts option"
+        return Response(
+            list(
+                InvestorHull.objects.exclude(deleted=True)
+                .exclude(active_version=None)
+                .annotate(name=F("active_version__name"))
+                .values("id", "name")
+            )
+        )
 
     @action(
         name="Investor Instance",

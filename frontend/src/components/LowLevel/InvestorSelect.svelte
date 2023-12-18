@@ -39,8 +39,7 @@
       {$_("Create")}{":"}
       {item.name}
     {:else}
-      {item.name}
-      (#{item.id})
+      #{item.id}: {item.name}
     {/if}
   </svelte:fragment>
 </VirtualListSelect>

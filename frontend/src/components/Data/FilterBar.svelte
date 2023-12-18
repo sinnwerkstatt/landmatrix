@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { gql } from "@urql/svelte"
-  import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
   import Select from "svelte-select"
 
@@ -13,10 +11,9 @@
   } from "$lib/choices"
   import { filters, isDefaultFilter, publicOnly } from "$lib/filters"
   import type { Produce } from "$lib/filters"
-  import { countries, formfields, regions } from "$lib/stores"
+  import { countries, formfields, regions, simpleInvestors } from "$lib/stores"
   import { tracker } from "$lib/stores/tracker"
   import { ProduceGroup } from "$lib/types/deal"
-  import type { Investor } from "$lib/types/investor"
   import { UserRole } from "$lib/types/user"
   import type { Country, Region } from "$lib/types/wagtail"
 
@@ -29,8 +26,6 @@
   import FilterBarNegotiationStatusToggle from "./FilterBarNegotiationStatusToggle.svelte"
   import FilterCollapse from "./FilterCollapse.svelte"
   import Wimpel from "./Wimpel.svelte"
-
-  $: user = $page.data.user
 
   let produceChoices: Produce[]
   $: produceChoices = $formfields
@@ -57,38 +52,6 @@
     : []
 
   $: regionsWithGlobal = [{ id: undefined, name: $_("Global") }, ...$regions]
-
-  let investors: Investor[] = []
-
-  async function getInvestors() {
-    const { error, data } = await $page.data.urqlClient
-      .query<{ investors: Investor[] }>(
-        gql`
-          query SInvestors($subset: Subset) {
-            investors(
-              limit: 0
-              subset: $subset
-              filters: [{ field: "status", value: 4, exclusion: true }]
-            ) {
-              id
-              name
-            }
-          }
-        `,
-        { subset: user?.is_authenticated ? "UNFILTERED" : "PUBLIC" },
-      )
-      .toPromise()
-
-    if (error || !data) {
-      console.error(error)
-      return
-    }
-    investors = data.investors
-  }
-
-  onMount(() => {
-    getInvestors()
-  })
 
   $: jsonFilters = JSON.stringify($filters.toGQLFilterArray())
   $: dataDownloadURL = `/api/legacy_export/?filters=${jsonFilters}&subset=${
@@ -242,7 +205,7 @@
         {$_("Investor name")}
         <InvestorSelect
           value={$filters.investor}
-          {investors}
+          investors={$simpleInvestors}
           on:input={e => ($filters.investor = e.detail)}
         />
         {$_("Country of registration")}

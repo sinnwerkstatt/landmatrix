@@ -30,7 +30,7 @@ export const load: LayoutLoad = async ({ fetch, data }) => {
   // fetch("adsf", {})
   const user: User | null = await fetchMe(fetch)
   const lang = data?.locale ?? "en"
-  await Promise.all([fetchBasis(lang, fetch, urqlClient), i18nload(lang)])
+  await Promise.all([fetchBasis(lang, fetch), i18nload(lang)])
 
   return { urqlClient, user }
 }

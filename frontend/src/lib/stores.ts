@@ -147,26 +147,6 @@ async function getObservatoryPages(fetch: LoadEvent["fetch"]) {
   observatoryPages.set([...groups.global, ...groups.regions, ...groups.countries])
 }
 
-// export const blogCategories = writable<BlogCategory[]>([])
-//
-// async function getBlogCategories(language = "en", urqlClient: Client) {
-//   const { data } = await urqlClient
-//     .query<{ blogcategories: BlogCategory[] }>(
-//       gql`
-//         query ($language: String) {
-//           blogcategories(language: $language) {
-//             id
-//             name
-//             slug
-//           }
-//         }
-//       `,
-//       { language },
-//     )
-//     .toPromise()
-//   if (data?.blogcategories) await blogCategories.set(data.blogcategories)
-// }
-
 export const blogCategories = derived(
   [locale],
   ([$locale], set) => {
@@ -227,7 +207,6 @@ export async function fetchBasis(lang = "en", fetch: LoadEvent["fetch"]) {
       getAboutPages(fetch),
       getObservatoryPages(fetch),
       getFieldChoices(fetch),
-      // getBlogCategories(lang, urqlClient),
       getCountriesRegionsFormfields(lang, fetch),
     ])
   } catch (e) {
@@ -404,3 +383,13 @@ export const dealsNG = derived(
   },
   [] as DealHull[],
 )
+
+export interface SimpleInvestor {
+  id: number
+  name: string
+}
+export const simpleInvestors = readable<SimpleInvestor[]>([], set => {
+  fetch("/api/investors/simple")
+    .then(ret => ret.json())
+    .then(set)
+})
