@@ -45,27 +45,9 @@ from apps.landmatrix.models.fields import (
     DecimalIntField,
 )
 from apps.landmatrix.models.investor import Investor
-from apps.new_model.utils import InvolvementNetwork
+from apps.landmatrix.utils import InvolvementNetwork2
 from django.contrib.gis.geos.prototypes.io import wkt_w
 
-DRAFT_STATUS = {
-    "DRAFT": 1,
-    "REVIEW": 2,
-    "ACTIVATION": 3,
-    "ACTIVATED": 4,
-    # TODO: old, can probably remove?
-    "REJECTED": -1,
-    "TO_DELETE": -2,
-}
-DRAFT_STATUS_CHOICES = (
-    ("DRAFT", _("Draft")),
-    ("REVIEW", _("Review")),
-    ("ACTIVATION", _("Activation")),
-    ("ACTIVATED", _("Activated")),
-    # TODO: old, can probably remove?
-    ("REJECTED", _("OLD: Rejected")),
-    ("TO_DELETE", _("OLD: To Delete")),
-)
 VERSION_STATUS_CHOICES = (
     ("DRAFT", _("Draft")),
     ("REVIEW", _("Review")),
@@ -79,7 +61,7 @@ VERSION_STATUS_CHOICES = (
 
 class DealVersionBaseFields(models.Model):
     deal = models.ForeignKey(
-        "new_model.DealHull", on_delete=models.PROTECT, related_name="versions"
+        "landmatrix.DealHull", on_delete=models.PROTECT, related_name="versions"
     )
 
     # """ Locations """
@@ -273,7 +255,7 @@ class DealVersionBaseFields(models.Model):
 
     """ Investor info """
     operating_company = models.ForeignKey(
-        "new_model.InvestorVersion2",
+        "landmatrix.InvestorVersion2",
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
@@ -1261,7 +1243,7 @@ class DealHull(models.Model):
 
 class InvestorVersion2(VersionTimestampsMixins, models.Model):
     investor = models.ForeignKey(
-        "new_model.InvestorHull", on_delete=models.PROTECT, related_name="versions"
+        "landmatrix.InvestorHull", on_delete=models.PROTECT, related_name="versions"
     )
 
     name = models.CharField(_("Name"), blank=True)
@@ -1364,14 +1346,12 @@ class InvestorHull(models.Model):
         return
 
     def involvements_graph(self, depth, include_deals):
-        return InvolvementNetwork().get_network(
+        return InvolvementNetwork2().get_network(
             self.id, depth, include_deals=include_deals
         )
 
 
 class Involvement(models.Model):
-    # parent_investor_id = models.IntegerField()
-    # child_investor_id = models.IntegerField()
     parent_investor = models.ForeignKey(
         InvestorHull,
         verbose_name=_("Investor"),
@@ -1497,7 +1477,7 @@ class Involvement(models.Model):
         }
 
 
-class WorkflowInfo(models.Model):
+class WorkflowInfo2(models.Model):
     from_user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="+"
     )
@@ -1540,7 +1520,7 @@ class WorkflowInfo(models.Model):
         abstract = True
 
 
-class DealWorkflowInfo2(WorkflowInfo):
+class DealWorkflowInfo2(WorkflowInfo2):
     deal = models.ForeignKey(
         DealHull, on_delete=models.CASCADE, related_name="workflowinfos"
     )
@@ -1567,7 +1547,7 @@ class DealWorkflowInfo2(WorkflowInfo):
         return d
 
 
-class InvestorWorkflowInfo2(WorkflowInfo):
+class InvestorWorkflowInfo2(WorkflowInfo2):
     investor = models.ForeignKey(
         InvestorHull, on_delete=models.CASCADE, related_name="workflowinfos"
     )

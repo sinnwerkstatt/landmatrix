@@ -9,7 +9,7 @@ from apps.landmatrix.models.investor import (
     InvestorVersion,
     InvestorWorkflowInfo,
 )
-from apps.new_model.models import (
+from apps.landmatrix.models.new import (
     InvestorHull,
     InvestorVersion2,
     InvestorDataSource,

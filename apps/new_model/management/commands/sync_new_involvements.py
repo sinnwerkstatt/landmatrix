@@ -3,9 +3,7 @@ from django.core.management.base import BaseCommand
 from apps.landmatrix.models.investor import (
     InvestorVentureInvolvement,
 )
-from apps.new_model.models import (
-    Involvement,
-)
+from apps.landmatrix.models.new import Involvement
 
 
 class Command(BaseCommand):

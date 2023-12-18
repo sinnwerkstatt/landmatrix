@@ -12,8 +12,8 @@ from apps.landmatrix.serializers import (
     FieldDefinitionSerializer,
     CurrencySerializer,
     CountrySerializer,
+    RegionSerializer,
 )
-from apps.new_model.serializers import RegionSerializer
 
 
 class SwitchLanguageView(RedirectView):

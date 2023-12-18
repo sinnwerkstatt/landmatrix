@@ -5,7 +5,7 @@ from icecream import ic
 
 from apps.landmatrix.models.deal import Deal
 from apps.landmatrix.models.investor import Investor
-from apps.new_model.models import (
+from apps.landmatrix.models.new import (
     DealHull,
     DealVersion2,
     Location,

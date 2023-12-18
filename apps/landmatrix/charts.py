@@ -4,7 +4,7 @@ from django.db.models import QuerySet
 
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.deal import DealTopInvestors
-from apps.new_model.models import DealHull
+from apps.landmatrix.models.new import DealHull
 
 LONG_COUNTRIES = {
     "United States of America": "USA*",

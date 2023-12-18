@@ -14,14 +14,14 @@ from rest_framework.response import Response
 
 from apps.accounts.models import UserRole
 from apps.landmatrix.models import choices
-from apps.new_model.models import (
+from apps.landmatrix.models.new import (
     DealHull,
     InvestorHull,
     DealVersion2,
     InvestorVersion2,
     DealWorkflowInfo2,
 )
-from apps.new_model.serializers import (
+from apps.landmatrix.serializers import (
     Deal2Serializer,
     Investor2Serializer,
     DealVersionSerializer,

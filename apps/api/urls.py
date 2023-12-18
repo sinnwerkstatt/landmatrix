@@ -1,57 +1,39 @@
-from django.http import JsonResponse
-from django.middleware.csrf import get_token
 from django.urls import include, path
-from django.views.decorators.http import require_GET
 from rest_framework import routers
 
-from apps.landmatrix.views import (
-    FieldDefinitionViewSet,
-    CurrencyViewSet,
-    CountryViewSet,
-    RegionViewSet,
-)
-
+from apps.accounts.views import UserViewSet
+from apps.api import views as api_views
+from apps.landmatrix import newviews
+from apps.landmatrix import views as oldviews
 from .export import DataDownload
 from .gis_export import gis_export
-from .views import (
-    CaseStatistics,
-    Management,
-    investor_search,
-    messages_json,
-    chart_descriptions,
-    blog_categories,
-    legacy_formfields,
-)
-from apps.accounts.views import UserViewSet
 
 
 def data_download(request):
     return DataDownload(request).get_response()
 
 
-@require_GET
-def get_csrf(request):
-    return JsonResponse({"token": get_token(request)})
-
-
 router = routers.DefaultRouter()
-router.register(r"field_definitions", FieldDefinitionViewSet)
-router.register(r"currencies", CurrencyViewSet)
-router.register(r"countries", CountryViewSet)
-router.register(r"regions", RegionViewSet)
 router.register(r"users", UserViewSet)
+router.register(r"currencies", oldviews.CurrencyViewSet)
+router.register(r"countries", oldviews.CountryViewSet)
+router.register(r"regions", oldviews.RegionViewSet)
+router.register(r"field_definitions", oldviews.FieldDefinitionViewSet)
+router.register(r"deals", newviews.Deal2ViewSet)
+router.register(r"dealversions", newviews.DealVersionViewSet)
+router.register(r"investors", newviews.Investor2ViewSet)
 
 urlpatterns = [
     path("legacy_export/", data_download),
-    path("newdeal_legacy/messages/", messages_json),
+    path("newdeal_legacy/messages/", api_views.messages_json),
     path("gis_export/", gis_export),
-    path("management/", Management.as_view()),
-    path("case_statistics/", CaseStatistics.as_view()),
-    path("investor_search/", investor_search),
-    path("chart_descriptions/", chart_descriptions),
-    path("blog_categories/", blog_categories),
-    path("legacy_formfields/", legacy_formfields),
-    path("csrf_token/", get_csrf),
-    path("", include("apps.new_model.urls")),
+    path("management/", api_views.Management.as_view()),
+    path("case_statistics/", api_views.CaseStatistics.as_view()),
+    path("investor_search/", api_views.investor_search),
+    path("chart_descriptions/", api_views.chart_descriptions),
+    path("blog_categories/", api_views.blog_categories),
+    path("legacy_formfields/", api_views.legacy_formfields),
+    path("csrf_token/", api_views.get_csrf),
+    path("field_choices/", newviews.field_choices),
     path("", include(router.urls)),
 ]

@@ -1,16 +1,8 @@
 from django.core.management.base import BaseCommand
 
 from apps.landmatrix.models.deal import DealWorkflowInfo
-from apps.landmatrix.models.investor import (
-    InvestorVentureInvolvement,
-    InvestorWorkflowInfo,
-)
-from apps.new_model.models import (
-    Involvement,
-    DealWorkflowInfo2,
-    InvestorWorkflowInfo2,
-)
-
+from apps.landmatrix.models.investor import InvestorWorkflowInfo
+from apps.landmatrix.models.new import DealWorkflowInfo2, InvestorWorkflowInfo2
 
 status_map_dings = {
     1: "DRAFT",

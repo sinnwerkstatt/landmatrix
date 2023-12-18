@@ -3,8 +3,6 @@ import json
 import requests
 from django.core.management.base import BaseCommand
 
-from apps.new_model.models import DealHull
-
 deal_detail_query = """query Deal($id: Int!, $version: Int)
  { deal(id: $id, version: $version, subset: UNFILTERED) {
     id

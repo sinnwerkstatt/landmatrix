@@ -7,11 +7,13 @@ from django.http import (
     HttpResponse,
     HttpResponseBadRequest,
     HttpResponseServerError,
-    JsonResponse,
 )
+from django.http import JsonResponse
+from django.middleware.csrf import get_token
 from django.utils import timezone, translation
 from django.utils.timezone import make_aware
 from django.views import View
+from django.views.decorators.http import require_GET
 from rest_framework.decorators import api_view
 from rest_framework.exceptions import NotAuthenticated
 
@@ -442,3 +444,8 @@ def legacy_formfields(request):
                 "involvement": InvestorVentureInvolvementForm().as_json(),
             }
         )
+
+
+@require_GET
+def get_csrf(request):
+    return JsonResponse({"token": get_token(request)})
