@@ -186,9 +186,60 @@ interface DealVersionBase {
   domestic_jobs_current: JSONJobsFieldType
   domestic_jobs_created_comment: string
 
-  operating_company?: InvestorHull
+  operating_company: InvestorHull |null
+  involved_actors?: InvestorHull // TODO incorrect
+  project_name: string
+  investment_chain_comment: string
 
-  overall_comment: string
+  name_of_community: []
+  name_of_indigenous_people: []
+  people_affected_comment: string
+  recognition_status: []
+  recognition_status_comment: string
+  community_consultation: string
+  community_consultation_comment: string
+  community_reaction: string
+  community_reaction_comment: string
+  land_conflicts: boolean
+  land_conflicts_comment: string
+  displaced_people: boolean
+  displaced_households: number
+  displaced_people_from_community_land: number
+  displaced_people_within_community_land: number
+  displaced_households_from_fields: number
+  displaced_people_on_completion: number
+  displacement_of_people_comment: string
+  negative_impacts: []
+  negative_impacts_comment: string
+  promised_compensation: string
+  received_compensation: string
+  promised_benefits: []
+  promised_benefits_comment: string
+  materialized_benefits: []
+  materialized_benefits_comment: string
+  presence_of_organizations: string
+  former_land_owner: []
+  former_land_owner_comment: string
+  former_land_use: []
+  former_land_use_comment: string
+  former_land_cover: []
+  former_land_cover_comment: string
+
+  water_extraction_envisaged: boolean
+  water_extraction_envisaged_comment: string
+  source_of_water_extraction: []
+  source_of_water_extraction_comment: string
+  how_much_do_investors_pay_comment: string
+  water_extraction_amount: number
+  water_extraction_amount_comment: string
+  use_of_irrigation_infrastructure: boolean
+  use_of_irrigation_infrastructure_comment: string
+  water_footprint: string
+
+  gender_related_information: string
+
+
+    overall_comment: string
   datasources: DataSource[]
 }
 
@@ -212,6 +263,7 @@ export interface DealVersion2 extends DealVersionBase, VersionTimestampMixins {
   current_implementation_status: string
   deal_size: number
   fully_updated: boolean
+
 
   status: Version2Status
 }
