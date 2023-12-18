@@ -13,15 +13,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from apps.accounts.models import UserRole
-from apps.landmatrix.models.choices import (
-    INVESTOR_CLASSIFICATION_ITEMS,
-    INTENTION_OF_INVESTMENT_ITEMS,
-    NEGOTIATION_STATUS_ITEMS,
-    IMPLEMENTATION_STATUS_ITEMS,
-    LOCATION_ACCURACY_ITEMS,
-    INVESTMENT_TYPE_ITEMS,
-    NATURE_OF_DEAL_ITEMS,
-)
+from apps.landmatrix.models import choices
 from apps.new_model.models import (
     DealHull,
     InvestorHull,
@@ -391,13 +383,29 @@ def field_choices(request):
     return JsonResponse(
         {
             "deal": {
-                "intention_of_investment": INTENTION_OF_INVESTMENT_ITEMS,
-                "negotiation_status": NEGOTIATION_STATUS_ITEMS,
-                "implementation_status": IMPLEMENTATION_STATUS_ITEMS,
-                "level_of_accuracy": LOCATION_ACCURACY_ITEMS,
-                "nature_of_deal": NATURE_OF_DEAL_ITEMS,
+                "intention_of_investment": choices.INTENTION_OF_INVESTMENT_ITEMS,
+                "negotiation_status": choices.NEGOTIATION_STATUS_ITEMS,
+                "implementation_status": choices.IMPLEMENTATION_STATUS_ITEMS,
+                "level_of_accuracy": choices.LOCATION_ACCURACY_ITEMS,
+                "nature_of_deal": choices.NATURE_OF_DEAL_ITEMS,
+                "recognition_status": choices.RECOGNITION_STATUS_ITEMS,
+                "negative_impacts": choices.NEGATIVE_IMPACTS_ITEMS,
+                "benefits": choices.BENEFITS_ITEMS,
+                "former_land_owner": choices.FORMER_LAND_OWNER_ITEMS,
+                "former_land_use": choices.FORMER_LAND_USE_ITEMS,
+                "ha_area": choices.HA_AREA_ITEMS,
+                "community_consultation": choices.COMMUNITY_CONSULTATION_ITEMS,
+                "community_reaction": choices.COMMUNITY_REACTION_ITEMS,
+                "former_land_cover": choices.FORMER_LAND_COVER_ITEMS,
+                "crops": choices.CROPS_ITEMS,
+                "animals": choices.ANIMALS_ITEMS,
+                "electricity_generation": choices.ELECTRICITY_GENERATION_ITEMS,
+                "carbon_sequestration": choices.CARBON_SEQUESTRATION_ITEMS,
+                "minerals": choices.MINERALS_ITEMS,
+                "water_source": choices.WATER_SOURCE_ITEMS,
+                "not_public_reason": choices.NOT_PUBLIC_REASON_ITEMS,
             },
-            "investor": {"classification": INVESTOR_CLASSIFICATION_ITEMS},
-            "involvement": {"investment_type": INVESTMENT_TYPE_ITEMS},
+            "investor": {"classification": choices.INVESTOR_CLASSIFICATION_ITEMS},
+            "involvement": {"investment_type": choices.INVESTMENT_TYPE_ITEMS},
         }
     )

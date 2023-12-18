@@ -186,6 +186,8 @@ interface DealVersionBase {
   domestic_jobs_current: JSONJobsFieldType
   domestic_jobs_created_comment: string
 
+  operating_company?: InvestorHull
+
   overall_comment: string
   datasources: DataSource[]
 }

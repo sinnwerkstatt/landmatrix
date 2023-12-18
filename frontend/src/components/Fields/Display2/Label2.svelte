@@ -16,7 +16,7 @@
 </script>
 
 <div
-  class="flex items-center gap-2  font-medium {$$props.class ?? ''}"
+  class="flex items-center gap-2 font-medium {$$props.class ?? ''}"
   on:outClick={() => (showDefinition = false)}
   use:clickOutside
 >

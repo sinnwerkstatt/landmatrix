@@ -226,99 +226,137 @@ ACTOR_ITEMS = [
 ACTOR_MAP = [(x["value"], x["label"]) for x in ACTOR_ITEMS]
 
 
-RECOGNITION_STATUS_CHOICES = (
-    (
-        "INDIGENOUS_RIGHTS_RECOGNIZED",
-        _(
+RECOGNITION_STATUS_ITEMS = [
+    {
+        "value": "INDIGENOUS_RIGHTS_RECOGNIZED",
+        "label": _(
             "Indigenous Peoples traditional or customary rights recognized by government"
         ),
-    ),
-    (
-        "INDIGENOUS_RIGHTS_NOT_RECOGNIZED",
-        _(
+    },
+    {
+        "value": "INDIGENOUS_RIGHTS_NOT_RECOGNIZED",
+        "label": _(
             "Indigenous Peoples traditional or customary rights not recognized by government"
         ),
-    ),
-    (
-        "COMMUNITY_RIGHTS_RECOGNIZED",
-        _("Community traditional or customary rights recognized by government"),
-    ),
-    (
-        "COMMUNITY_RIGHTS_NOT_RECOGNIZED",
-        _("Community traditional or customary rights not recognized by government"),
-    ),
+    },
+    {
+        "value": "COMMUNITY_RIGHTS_RECOGNIZED",
+        "label": _(
+            "Community traditional or customary rights recognized by government"
+        ),
+    },
+    {
+        "value": "COMMUNITY_RIGHTS_NOT_RECOGNIZED",
+        "label": _(
+            "Community traditional or customary rights not recognized by government"
+        ),
+    },
+]
+
+RECOGNITION_STATUS_CHOICES = [
+    (x["value"], x["label"]) for x in RECOGNITION_STATUS_ITEMS
+]
+
+NEGATIVE_IMPACTS_ITEMS = (
+    {"value": "ENVIRONMENTAL_DEGRADATION", "label": _("Environmental degradation")},
+    {"value": "SOCIO_ECONOMIC", "label": _("Socio-economic")},
+    {"value": "CULTURAL_LOSS", "label": _("Cultural loss")},
+    {"value": "EVICTION", "label": _("Eviction")},
+    {"value": "DISPLACEMENT", "label": _("Displacement")},
+    {"value": "VIOLENCE", "label": _("Violence")},
+    {"value": "OTHER", "label": _("Other")},
 )
 
-NEGATIVE_IMPACTS_CHOICES = (
-    ("ENVIRONMENTAL_DEGRADATION", _("Environmental degradation")),
-    ("SOCIO_ECONOMIC", _("Socio-economic")),
-    ("CULTURAL_LOSS", _("Cultural loss")),
-    ("EVICTION", _("Eviction")),
-    ("DISPLACEMENT", _("Displacement")),
-    ("VIOLENCE", _("Violence")),
-    ("OTHER", _("Other")),
-)
+NEGATIVE_IMPACTS_CHOICES = [(x["value"], x["label"]) for x in NEGATIVE_IMPACTS_ITEMS]
 
-BENEFITS_CHOICES = (
-    ("HEALTH", _("Health")),
-    ("EDUCATION", _("Education")),
-    (
-        "PRODUCTIVE_INFRASTRUCTURE",
-        _("Productive infrastructure (e.g. irrigation, tractors, machinery...)"),
-    ),
-    ("ROADS", _("Roads")),
-    ("CAPACITY_BUILDING", _("Capacity building")),
-    ("FINANCIAL_SUPPORT", _("Financial support")),
-    ("COMMUNITY_SHARES", _("Community shares in the investment project")),
-    ("OTHER", _("Other")),
-)
 
-FORMER_LAND_OWNER_CHOICES = (
-    ("STATE", _("State")),
-    ("PRIVATE_SMALLHOLDERS", _("Private (smallholders)")),
-    ("PRIVATE_LARGE_SCALE", _("Private (large-scale farm)")),
-    ("COMMUNITY", _("Community")),
-    ("INDIGENOUS_PEOPLE", _("Indigenous people")),
-    ("OTHER", _("Other")),
-)
+BENEFITS_ITEMS = [
+    {"value": "HEALTH", "label": _("Health")},
+    {"value": "EDUCATION", "label": _("Education")},
+    {
+        "value": "PRODUCTIVE_INFRASTRUCTURE",
+        "label": _(
+            "Productive infrastructure }e.g. irrigation, tractors, machinery...)"
+        ),
+    },
+    {"value": "ROADS", "label": _("Roads")},
+    {"value": "CAPACITY_BUILDING", "label": _("Capacity building")},
+    {"value": "FINANCIAL_SUPPORT", "label": _("Financial support")},
+    {
+        "value": "COMMUNITY_SHARES",
+        "label": _("Community shares in the investment project"),
+    },
+    {"value": "OTHER", "label": _("Other")},
+]
+BENEFITS_CHOICES = [(x["value"], x["label"]) for x in BENEFITS_ITEMS]
 
-FORMER_LAND_USE_CHOICES = (
-    ("COMMERCIAL_AGRICULTURE", _("Commercial (large-scale) agriculture")),
-    ("SMALLHOLDER_AGRICULTURE", _("Smallholder agriculture")),
-    ("SHIFTING_CULTIVATION", _("Shifting cultivation")),
-    ("PASTORALISM", _("Pastoralism")),
-    ("HUNTING_GATHERING", _("Hunting/Gathering")),
-    ("FORESTRY", _("Forestry")),
-    ("CONSERVATION", _("Conservation")),
-    ("OTHER", _("Other")),
-)
+FORMER_LAND_OWNER_ITEMS = [
+    {"value": "STATE", "label": _("State")},
+    {"value": "PRIVATE_SMALLHOLDERS", "label": _("Private (smallholder)")},
+    {"value": "PRIVATE_LARGE_SCALE", "label": _("Private (larg}-scale farm)")},
+    {"value": "COMMUNITY", "label": _("Community")},
+    {"value": "INDIGENOUS_PEOPLE", "label": _("Indigenous people")},
+    {"value": "OTHER", "label": _("Other")},
+]
+FORMER_LAND_OWNER_CHOICES = [(x["value"], x["label"]) for x in FORMER_LAND_OWNER_ITEMS]
 
-HA_AREA_CHOICES = (("PER_HA", _("per ha")), ("PER_AREA", _("for specified area")))
+FORMER_LAND_USE_ITEMS = [
+    {
+        "value": "COMMERCIAL_AGRICULTURE",
+        "label": _("Commercial (large-scale) agriculture"),
+    },
+    {"value": "SMALLHOLDER_AGRICULTURE", "label": _("Smallholder agriculture")},
+    {"value": "SHIFTING_CULTIVATION", "label": _("Shifting cultivation")},
+    {"value": "PASTORALISM", "label": _("Pastoralism")},
+    {"value": "HUNTING_GATHERING", "label": _("Hunting/Gathering")},
+    {"value": "FORESTRY", "label": _("Forestry")},
+    {"value": "CONSERVATION", "label": _("Conservation")},
+    {"value": "OTHER", "label": _("Other")},
+]
+FORMER_LAND_USE_CHOICES = [(x["value"], x["label"]) for x in FORMER_LAND_USE_ITEMS]
 
-COMMUNITY_CONSULTATION_CHOICES = (
-    ("NOT_CONSULTED", _("Not consulted")),
-    ("LIMITED_CONSULTATION", _("Limited consultation")),
-    ("FPIC", _("Free, Prior and Informed Consent (FPIC)")),
-    ("OTHER", _("Other")),
-)
-COMMUNITY_REACTION_CHOICES = (
-    ("CONSENT", _("Consent")),
-    ("MIXED_REACTION", _("Mixed reaction")),
-    ("REJECTION", _("Rejection")),
-)
+HA_AREA_ITEMS = [
+    {"value": "PER_HA", "label": _("per ha")},
+    {"value": "PER_AREA", "label": _("for specified area")},
+]
+HA_AREA_CHOICES = [(x["value"], x["label"]) for x in HA_AREA_ITEMS]
+COMMUNITY_CONSULTATION_ITEMS = [
+    {"value": "NOT_CONSULTED", "label": _("Not consulted")},
+    {"value": "LIMITED_CONSULTATION", "label": _("Limited consultation")},
+    {"value": "FPIC", "label": _("Free, Prior and Informed Consent (FPIC)")},
+    {"value": "OTHER", "label": _("Other")},
+]
+COMMUNITY_CONSULTATION_CHOICES = [
+    (x["value"], x["label"]) for x in COMMUNITY_CONSULTATION_ITEMS
+]
 
-FORMER_LAND_COVER_CHOICES = (
-    ("CROPLAND", _("Cropland")),
-    ("FOREST_LAND", _("Forest land")),
-    ("PASTURE", _("Pasture")),
-    ("RANGELAND", _("Shrub land/Grassland (Rangeland)")),
-    ("MARGINAL_LAND", _("Marginal land")),
-    ("WETLAND", _("Wetland")),
-    (
-        "OTHER_LAND",
-        _("Other land (e.g. developed land – specify in comment field)"),
-    ),
-)
+COMMUNITY_REACTION_ITEMS = [
+    {"value": "CONSENT", "label": _("Consent")},
+    {"value": "MIXED_REACTION", "label": _("Mixed reaction")},
+    {"value": "REJECTION", "label": _("Rejection")},
+]
+
+COMMUNITY_REACTION_CHOICES = [
+    (x["value"], x["label"]) for x in COMMUNITY_REACTION_ITEMS
+]
+
+FORMER_LAND_COVER_ITEMS = [
+    {
+        "value": "CROPLAND",
+        "label": _("Cropland"),
+    },
+    {"value": "FOREST_LAND", "label": _("Forest land")},
+    {"value": "PASTURE", "label": _("Pasture")},
+    {"value": "RANGELAND", "label": _("Shrub land/Grassland (Rangeland)")},
+    {"value": "MARGINAL_LAND", "label": _("Marginal land")},
+    {"value": "WETLAND", "label": _("Wetland")},
+    {
+        "value": "OTHER_LAND",
+        "label": _("Other land (e.g. developed land – specify in comment field)"),
+    },
+]
+FORMER_LAND_COVER_CHOICES = [(x["value"], x["label"]) for x in FORMER_LAND_COVER_ITEMS]
+
 
 CROPS_ITEMS = [
     {"value": "ACC", "label": _("Accacia"), "produce": "NON_FOOD"},
@@ -540,21 +578,25 @@ MINERALS_ITEMS = [
 MINERALS = {x["value"]: {"name": x["label"]} for x in MINERALS_ITEMS}
 MINERALS_CHOICES = [(x["value"], x["label"]) for x in MINERALS_ITEMS]
 
-WATER_SOURCE_CHOICES = (
-    ("GROUNDWATER", _("Groundwater")),
-    ("SURFACE_WATER", _("Surface water")),
-    ("RIVER", _("River")),
-    ("LAKE", _("Lake")),
-)
+WATER_SOURCE_ITEMS = [
+    {"value": "GROUNDWATER", "label": _("Groundwater")},
+    {"value": "SURFACE_WATER", "label": _("Surface water")},
+    {"value": "RIVER", "label": _("River")},
+    {"value": "LAKE", "label": _("Lake")},
+]
 
-NOT_PUBLIC_REASON_CHOICES = (
-    ("CONFIDENTIAL", _("Confidential flag")),
-    ("NO_COUNTRY", _("No country")),
-    ("HIGH_INCOME_COUNTRY", _("High-income country")),
-    ("NO_DATASOURCES", _("No datasources")),
-    ("NO_OPERATING_COMPANY", _("No operating company")),
-    ("NO_KNOWN_INVESTOR", _("No known investor")),
-)
+WATER_SOURCE_CHOICES = [(x["value"], x["label"]) for x in WATER_SOURCE_ITEMS]
+
+NOT_PUBLIC_REASON_ITEMS = [
+    {"value": "CONFIDENTIAL", "label": _("Confidential flag")},
+    {"value": "NO_COUNTRY", "label": _("No country")},
+    {"value": "HIGH_INCOME_COUNTRY", "label": _("High-income country")},
+    {"value": "NO_DATASOURCES", "label": _("No datasources")},
+    {"value": "NO_OPERATING_COMPANY", "label": _("No operating company")},
+    {"value": "NO_KNOWN_INVESTOR", "label": _("No known investor")},
+]
+
+NOT_PUBLIC_REASON_CHOICES = [(x["value"], x["label"]) for x in NOT_PUBLIC_REASON_ITEMS]
 
 DATASOURCE_TYPE_MAP = {
     "MEDIA_REPORT": _("Media report"),

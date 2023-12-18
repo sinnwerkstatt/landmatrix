@@ -59,6 +59,22 @@ interface FieldChoicesType {
     implementation_status: ValueLabelEntry[]
     level_of_accuracy: ValueLabelEntry[]
     nature_of_deal: ValueLabelEntry[]
+    recognition_status: ValueLabelEntry[]
+    negative_impacts: ValueLabelEntry[]
+    benefits: ValueLabelEntry[]
+    former_land_owner: ValueLabelEntry[]
+    former_land_use: ValueLabelEntry[]
+    ha_area: ValueLabelEntry[]
+    community_consultation: ValueLabelEntry[]
+    community_reaction: ValueLabelEntry[]
+    former_land_cover: ValueLabelEntry[]
+    crops: ValueLabelEntry[]
+    animals: ValueLabelEntry[]
+    electricity_generation: ValueLabelEntry[]
+    carbon_sequestration: ValueLabelEntry[]
+    minerals: ValueLabelEntry[]
+    water_source: ValueLabelEntry[]
+    not_public_reason: ValueLabelEntry[]
   }
   investor: {
     classification: ValueLabelEntry[]
@@ -74,6 +90,22 @@ export const fieldChoices = writable<FieldChoicesType>({
     implementation_status: [],
     level_of_accuracy: [],
     nature_of_deal: [],
+    recognition_status: [],
+    negative_impacts: [],
+    benefits: [],
+    former_land_owner: [],
+    former_land_use: [],
+    ha_area: [],
+    community_consultation: [],
+    community_reaction: [],
+    former_land_cover: [],
+    crops: [],
+    animals: [],
+    electricity_generation: [],
+    carbon_sequestration: [],
+    minerals: [],
+    water_source: [],
+    not_public_reason: [],
   },
   investor: { classification: [] },
   involvement: { investment_type: [] },

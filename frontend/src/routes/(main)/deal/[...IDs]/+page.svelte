@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { gql } from "@urql/svelte"
-  import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
   import { invalidate } from "$app/navigation"
@@ -14,9 +12,16 @@
   import DealManageHeader from "./DealManageHeader.svelte"
   import SectionDataSources from "./SectionDataSources.svelte"
   import SectionEmployment from "./SectionEmployment.svelte"
+  import SectionFormerUse from "./SectionFormerUse.svelte"
+  import SectionGender from "./SectionGender.svelte"
   import SectionGeneralInfo from "./SectionGeneralInfo.svelte"
   import SectionHistory from "./SectionHistory.svelte"
+  import SectionInvestorInfo from "./SectionInvestorInfo.svelte"
+  import SectionLocalCommunities from "./SectionLocalCommunities.svelte"
   import SectionLocations from "./SectionLocations.svelte"
+  import SectionOverallComment from "./SectionOverallComment.svelte"
+  import SectionProduceInfo from "./SectionProduceInfo.svelte"
+  import SectionWater from "./SectionWater.svelte"
 
   export let data
 
@@ -156,37 +161,32 @@
       {#if activeTab === "#employment"}
         <SectionEmployment version={data.deal.selected_version} />
       {/if}
-      <!--      {#if activeTab === "#investor_info"}-->
-      <!--        <DealSection {deal} sections={$dealSections.investor_info}>-->
-      <!--          {#if investor}-->
-      <!--            <h4 class="mb-2">-->
-      <!--              Network of parent companies and tertiary investors/lenders-->
-      <!--            </h4>-->
-      <!--            <InvestorGraph {investor} initDepth={5} />-->
-      <!--          {/if}-->
-      <!--        </DealSection>-->
-      <!--      {/if}-->
+      {#if activeTab === "#investor_info"}
+        <SectionInvestorInfo version={data.deal.selected_version} />
+      {/if}
       {#if activeTab === "#data_sources"}
         <SectionDataSources version={data.deal.selected_version} />
       {/if}
-      <!--      {#if activeTab === "#local_communities"}-->
-      <!--        <DealSection {deal} sections={$dealSections.local_communities} />-->
-      <!--      {/if}-->
-      <!--      {#if activeTab === "#former_use"}-->
-      <!--        <DealSection {deal} sections={$dealSections.former_use} />-->
-      <!--      {/if}-->
-      <!--      {#if activeTab === "#produce_info"}-->
-      <!--        <DealSection {deal} sections={$dealSections.produce_info} />-->
-      <!--      {/if}-->
-      <!--      {#if activeTab === "#water"}-->
-      <!--        <DealSection {deal} sections={$dealSections.water} />-->
-      <!--      {/if}-->
-      <!--      {#if activeTab === "#gender_related_info"}-->
-      <!--        <DealSection {deal} sections={$dealSections.gender_related_info} />-->
-      <!--      {/if}-->
-      <!--      {#if activeTab === "#overall_comment"}-->
-      <!--        <DealSection {deal} sections={$dealSections.overall_comment} />-->
-      <!--      {/if}-->
+      {#if activeTab === "#local_communities"}
+        <SectionLocalCommunities version={data.deal.selected_version} />
+      {/if}
+      {#if activeTab === "#former_use"}
+        <SectionFormerUse version={data.deal.selected_version} />
+      {/if}
+      {#if activeTab === "#produce_info"}
+        <SectionProduceInfo version={data.deal.selected_version} />
+      {/if}
+      {#if activeTab === "#water"}
+        <SectionWater version={data.deal.selected_version} />
+      {/if}
+
+      {#if activeTab === "#gender_related_info"}
+        <SectionGender version={data.deal.selected_version} />
+      {/if}
+      {#if activeTab === "#overall_comment"}
+        <SectionOverallComment version={data.deal.selected_version} />
+      {/if}
+
       {#if activeTab === "#history"}
         <SectionHistory
           deal={data.deal}
