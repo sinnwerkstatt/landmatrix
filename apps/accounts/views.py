@@ -1,5 +1,5 @@
 from django.db.models.functions import Lower
-from rest_framework import permissions, viewsets
+from rest_framework import viewsets
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny
@@ -21,7 +21,6 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     def get_permissions(self):
         if self.action == "retrieve":
             return [AllowAny()]
-
         return [IsReporterOrHigher()]
 
     def retrieve(self, request, pk=None, *args, **kwargs):
