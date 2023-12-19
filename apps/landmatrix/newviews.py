@@ -195,6 +195,9 @@ class DealVersionViewSet(viewsets.ReadOnlyModelViewSet):
             d1: DealHull = dv1.deal
             d1.draft_version = None
             d1.active_version = dv1
+            # using "last modified" timestamp for "last fully updated" #681
+            if dv1.fully_updated:
+                d1.fully_updated_at = dv1.modified_at
             d1.save()
 
             dv1.workflowinfos.all().update(resolved=True)
