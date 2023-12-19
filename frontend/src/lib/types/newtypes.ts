@@ -244,15 +244,15 @@ interface DealVersionBase {
 
 interface VersionTimestampMixins {
   created_at: string
-  created_by: { id: number; username: string }
+  created_by_id: number
   modified_at: string
-  modified_by: { id: number; username: string }
+  modified_by_id: number
   sent_to_review_at: string
-  sent_to_review_by: { id: number; username: string }
+  sent_to_review_by_id: number
   sent_to_activation_at: string
-  sent_to_activation_by: { id: number; username: string }
+  sent_to_activation_by_id: number
   activated_at: string
-  activated_by: { id: number; username: string }
+  activated_by_id: number
 }
 export interface DealVersion2 extends DealVersionBase, VersionTimestampMixins {
   is_public: boolean
@@ -299,6 +299,15 @@ export type JSONJobsFieldType = Array<{
   jobs?: number
   employees?: number
   workers?: number
+}>
+
+export type JSONExportsFieldType = Array<{
+  current: boolean
+  date: string | null
+  choices: string[]
+  area: number | null
+  yield: number | null
+  export: number | null
 }>
 
 interface Area {

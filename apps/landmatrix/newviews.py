@@ -203,9 +203,19 @@ class DealVersionViewSet(viewsets.ReadOnlyModelViewSet):
                 raise PermissionDenied("MISSING_AUTHORIZATION")
             draft_status = "DRAFT"
             dv1.status = "DRAFT"
+
+            # resetting META fields
             dv1.id = None
             dv1.created_at = timezone.now()
             dv1.created_by_id = request.data["toUser"]
+            dv1.sent_to_review_at = None
+            dv1.sent_to_review_by = None
+            dv1.sent_to_activation_at = None
+            dv1.sent_to_activation_by = None
+            dv1.activated_at = None
+            dv1.activated_by = None
+            dv1.fully_updated = False
+
             dv1.save()
 
             d1 = dv1.deal

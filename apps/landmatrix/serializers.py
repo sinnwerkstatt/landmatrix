@@ -71,10 +71,10 @@ class RegionSerializer(serializers.ModelSerializer):
 
 
 # ########## NEW MODEL
-class UserIdUsernameSerialiser(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ["id", "username"]
+# class UserIdUsernameSerialiser(serializers.ModelSerializer):
+#     class Meta:
+#         model = User
+#         fields = ["id", "username"]
 
 
 class DealVersionVersionsListSerializer(serializers.ModelSerializer):
@@ -134,6 +134,13 @@ class DealVersionSerializer(serializers.ModelSerializer):
     contracts = ContractSerializer(many=True, read_only=True)
     datasources = DealDataSourceSerializer(many=True, read_only=True)
     operating_company = OperatingCompanySerializer(allow_null=True, read_only=True)
+
+    # creating these because DRF shows these fields as "created_by", instead of "~_id"
+    created_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
+    modified_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
+    sent_to_review_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
+    sent_to_activation_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
+    activated_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = DealVersion2
@@ -222,7 +229,7 @@ class Deal2Serializer(serializers.ModelSerializer):
     versions = DealVersionVersionsListSerializer(many=True)
     selected_version = DealVersionSerializer()
     workflowinfos = serializers.SerializerMethodField()
-    created_by = UserIdUsernameSerialiser()
+    created_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
 
     @staticmethod
     def get_workflowinfos(obj: DealHull):

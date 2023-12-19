@@ -34,15 +34,12 @@
 {JSON.stringify(object.selected_version.status)}
 
 <div class="flex w-full flex-wrap justify-between text-center">
-  <div
-    class="status-field z-[3] bg-green-300 after:border-l-green-300"
-    class:active={object.selected_version.status === Version2Status.DRAFT}
-  >
+  <div class="status-field z-[3] bg-green-300 after:border-l-green-300">
     <span class="font-bold">{$_("Draft")}</span>
   </div>
   <div
     class="status-field z-[2] bg-green-400 after:border-l-green-400"
-    class:inactive={object.selected_version.status !== Version2Status.REVIEW}
+    class:inactive={object.selected_version.status === Version2Status.DRAFT}
   >
     <span class="font-bold">{$_("Submitted for review")}</span>
   </div>

@@ -5,7 +5,6 @@
 
   import { goto } from "$app/navigation"
 
-  import { allUsers } from "$lib/stores"
   import type { DealHull, InvestorHull } from "$lib/types/newtypes.js"
   import { UserRole, type User } from "$lib/types/user"
   import { getCsrfToken } from "$lib/utils"
@@ -17,15 +16,13 @@
   export let open = false
 
   let comment = ""
-  let toUser: User | null = null
-
-  $: users = $allUsers.filter(u => u.role > UserRole.REPORTER)
+  let toUser: User | number | null = null
 
   const isDeal = (obj: DealHull | InvestorHull): obj is DealHull =>
     "fully_updated_at" in obj
 
   onMount(() => {
-    toUser = $allUsers.find(u => u.id === object.selected_version.created_by.id) ?? null
+    toUser = object.selected_version.created_by_id
   })
   onDestroy(() => (comment = ""))
 
@@ -76,11 +73,11 @@
       </label>
     </div>
     <div class="mb-6">
-      <label>
+      <label for="">
         <span class="font-semibold">
           {$_("Assign to user")}
         </span>
-        <UserSelect bind:value={toUser} required {users} />
+        <UserSelect bind:value={toUser} minimumRole={UserRole.EDITOR} required />
       </label>
     </div>
     <div class="mt-14 flex justify-end gap-4">
