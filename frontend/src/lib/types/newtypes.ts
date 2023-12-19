@@ -31,13 +31,13 @@ interface Hull {
   versions: {
     id: number
     created_at: string
-    created_by: { id: number; username: string }
+    created_by_id: number
     sent_to_review_at: string
-    sent_to_review_by: { id: number; username: string }
+    sent_to_review_by_id: number
     sent_to_activation_at: string
-    sent_to_activation_by: { id: number; username: string }
+    sent_to_activation_by_id: number
     activated_at: string
-    activated_by: { id: number; username: string }
+    activated_by_id: number
     fully_updated: boolean
     status: Version2Status
   }[] // this can probably be merged with VersionTimestampMixins

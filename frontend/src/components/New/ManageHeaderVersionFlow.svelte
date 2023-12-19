@@ -35,19 +35,19 @@
 
 <div class="flex w-full flex-wrap justify-between text-center">
   <div
-    class="status-field z-[3] bg-green-200 after:border-l-green-200"
+    class="status-field z-[3] bg-green-300 after:border-l-green-300"
     class:active={object.selected_version.status === Version2Status.DRAFT}
   >
     <span class="font-bold">{$_("Draft")}</span>
   </div>
   <div
-    class="status-field z-[2] bg-green-300 after:border-l-green-300"
+    class="status-field z-[2] bg-green-400 after:border-l-green-400"
     class:inactive={object.selected_version.status !== Version2Status.REVIEW}
   >
     <span class="font-bold">{$_("Submitted for review")}</span>
   </div>
   <div
-    class="status-field z-[1] bg-green-400 after:border-l-green-400"
+    class="status-field z-[1] bg-green-500 after:border-l-green-500"
     class:inactive={object.selected_version.status !== Version2Status.ACTIVATION}
   >
     <span class="font-bold">{$_("Submitted for activation")}</span>

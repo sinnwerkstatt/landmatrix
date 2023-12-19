@@ -33,8 +33,27 @@ class Command(BaseCommand):
         parser.add_argument("end_id", nargs="?", type=int)
 
     def handle(self, *args, **options):
-        # TODO HANDLE THESE
-        exclude_ids = []
+        exclude_ids = [
+            # these dealversions have inexistent investorversion-links
+            # 6154,
+            # 6160,
+            # 6169,
+            # 6192,
+            # 6237,
+            # 6243,
+            # 6338,
+            # 6341,
+            # 6511,
+            # 6531,
+            # 6549,
+            # 6559,
+            # 6562,
+            # 6919,
+            # 7435,
+            # 7722,
+            # 7723,
+            # 7725,
+        ]
         deals = (
             Deal.objects.all()
             .order_by("id")
@@ -154,9 +173,10 @@ class Command(BaseCommand):
             deal_hull.save()
         print(
             """dont forget:
-             SELECT setval('new_model_dealhull_id_seq', (SELECT MAX(id) from new_model_dealhull));
-SELECT setval('new_model_dealversion2_id_seq', (SELECT MAX(id) from new_model_dealversion2));
-
+    SELECT setval('landmatrix_dealhull_id_seq', (SELECT MAX(id) from landmatrix_dealhull));
+    SELECT setval('landmatrix_dealversion2_id_seq', (SELECT MAX(id) from landmatrix_dealversion2));
+    SELECT setval('landmatrix_investorhull_id_seq', (SELECT MAX(id) from landmatrix_investorhull));
+    SELECT setval('landmatrix_investorversion2_id_seq', (SELECT MAX(id) from landmatrix_investorversion2));
              """
         )
 
@@ -381,16 +401,18 @@ def map_version_payload(ov: dict, nv: DealVersion2):
         if "employees" in jbs.keys():
             jbs["employees"] = int(float(jbs["employees"]))
     nv.domestic_jobs_created_comment = ov["domestic_jobs_created_comment"]
-    # TODO reenable this
     if oid := ov["operating_company"]:
-        all_versions = InvestorHull.objects.get(id=oid).versions.all()
-        versions = all_versions.order_by("-created_at").filter(
-            created_at__lte=ov["modified_at"]
-        )
-        if versions:
-            nv.operating_company_id = versions.first().id
-        else:
-            nv.operating_company_id = all_versions.last().id
+        try:
+            all_versions = InvestorHull.objects.get(id=oid).versions.all()
+            versions = all_versions.order_by("-created_at").filter(
+                created_at__lte=ov["modified_at"]
+            )
+            if versions:
+                nv.operating_company_id = versions.first().id
+            else:
+                nv.operating_company_id = all_versions.last().id
+        except InvestorHull.DoesNotExist:
+            pass
 
     nv.involved_actors = ov["involved_actors"] or []
     for act in nv.involved_actors:

@@ -82,23 +82,20 @@ class UserIdUsernameSerialiser(serializers.ModelSerializer):
 
 
 class DealVersionVersionsListSerializer(serializers.ModelSerializer):
-    created_by = UserIdUsernameSerialiser()
-    sent_to_review_by = UserIdUsernameSerialiser()
-    sent_to_activation_by = UserIdUsernameSerialiser()
-    activated_by = UserIdUsernameSerialiser()
-
     class Meta:
         model = DealVersion2
         fields = [
             "id",
             "created_at",
-            "created_by",
+            "created_by_id",
+            "modified_at",
+            "modified_by_id",
             "sent_to_review_at",
-            "sent_to_review_by",
+            "sent_to_review_by_id",
             "sent_to_activation_at",
-            "sent_to_activation_by",
+            "sent_to_activation_by_id",
             "activated_at",
-            "activated_by",
+            "activated_by_id",
             "fully_updated",
             "status",
         ]
@@ -259,13 +256,13 @@ class InvestorVersionVersionsListSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "created_at",
-            "created_by",
+            "created_by_id",
             "sent_to_review_at",
-            "sent_to_review_by",
+            "sent_to_review_by_id",
             "sent_to_activation_at",
-            "sent_to_activation_by",
+            "sent_to_activation_by_id",
             "activated_at",
-            "activated_by",
+            "activated_by_id",
             "status",
         ]
 
