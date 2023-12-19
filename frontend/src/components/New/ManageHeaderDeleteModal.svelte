@@ -54,14 +54,14 @@
       )}
     </p>
     {#if object.active_version}
-      <p class="mb-6">
+      <div class="mb-6">
         <label>
           <span class="font-semibold">
             {$_("Please provide a comment explaining your request")}
           </span>
           <textarea bind:value={comment} class="inpt mt-1" required />
         </label>
-      </p>
+      </div>
     {/if}
     <div class="flex justify-end gap-4">
       <button

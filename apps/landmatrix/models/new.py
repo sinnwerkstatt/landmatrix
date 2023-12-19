@@ -27,7 +27,6 @@ from apps.landmatrix.models.choices import (
 )
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.currency import Currency
-from apps.landmatrix.models.deal import AbstractDealBase
 from apps.landmatrix.models.fields import (
     JSONCurrentDateAreaField,
     JSONCurrentDateChoiceField,

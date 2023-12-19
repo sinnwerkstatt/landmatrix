@@ -160,6 +160,17 @@
     --color3: hsl(0, 0%, 40%);
   }
 
+    .butn-purple {
+    --color1: hsl(233, 75%, 70%);
+    --color2: white;
+    --color3: hsl(233, 75%, 50%);
+  }
+  .butn-violet {
+    --color1: hsl(272, 62%, 65%);
+    --color2: white;
+    --color3: hsl(272, 62%, 35%);
+  }
+
   .butn-yellow {
     --color1: hsl(50, 78%, 58%);
     --color2: hsl(0, 0%, 20%);

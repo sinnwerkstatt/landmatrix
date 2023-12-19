@@ -6,25 +6,13 @@
   import { page } from "$app/stores"
 
   import { allUsers } from "$lib/stores"
-  import type { Version2Status } from "$lib/types/newtypes"
+  import type { WorkflowInfoType } from "$lib/types/newtypes"
 
   import ArrowLongRightIcon from "$components/icons/ArrowLongRightIcon.svelte"
   import ChatBubbleLeftIcon from "$components/icons/ChatBubbleLeftIcon.svelte"
   import CheckCircleIcon from "$components/icons/CheckCircleIcon.svelte"
 
-  interface WFInfo {
-    id: number
-    from_user_id: number
-    to_user_id?: number
-    status_before: Version2Status | null
-    status_after: Version2Status | null
-    timestamp: string
-    comment: string
-    resolved: boolean
-    // replies: WFReply[]
-  }
-
-  export let info: WFInfo
+  export let info: WorkflowInfoType
 
   $: confidentialStatusChange = info.comment?.startsWith("[SET_CONFIDENTIAL]")
     ? "bg-red-400"
@@ -126,7 +114,7 @@
       {$allUsers.find(u => u.id === info.from_user_id)?.username ?? ""}
       {#if info.to_user_id}
         <ArrowLongRightIcon class="mx-0.5 h-4 w-4" />
-        {info.to_user_id}
+        {$allUsers.find(u => u.id === info.to_user_id)?.username ?? ""}
       {/if}
     </span>
   </div>

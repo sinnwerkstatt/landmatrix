@@ -260,6 +260,27 @@ class Deal2ViewSet(viewsets.ModelViewSet):
             return [IsAuthenticated()]
         return [AllowAny()]
 
+    @action(detail=True, methods=["put"])
+    def add_comment(self, request, pk: int):
+        if not request.user.is_authenticated or not request.user.role:
+            raise PermissionDenied("MISSING_AUTHORIZATION")
+        instance = self.get_object()
+
+        # TODO unclear which version to grab. active or draft?
+        DealWorkflowInfo2.objects.create(
+            deal_id=instance.id,
+            # deal_version_id=dv1.id,
+            from_user=request.user,
+            to_user_id=request.data.get("toUser"),
+            comment=request.data["comment"],
+        )
+
+        # TODO
+        # if to_user_id:
+        #     send_comment_to_user(obj, comment, user, to_user_id, obj_version_id)
+
+        return Response({})
+
     @action(
         name="Deal Instance",
         methods=["get"],

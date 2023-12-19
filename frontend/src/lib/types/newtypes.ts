@@ -12,6 +12,24 @@ export enum Version2Status {
   TO_DELETE = "TO_DELETE",
 }
 
+type WFReply = {
+  timestamp: string
+  user_id: number
+  comment: string
+}
+
+export interface WorkflowInfoType {
+  id: number
+  from_user_id: number
+  to_user_id: number | null
+  status_before: Version2Status | null
+  status_after: Version2Status | null
+  timestamp: string
+  comment: string
+  resolved: boolean
+  replies: WFReply[]
+}
+
 export interface Currency {
   id: number
   code: string
@@ -41,7 +59,9 @@ interface Hull {
     fully_updated: boolean
     status: Version2Status
   }[] // this can probably be merged with VersionTimestampMixins
+  workflowinfos: WorkflowInfoType[]
 }
+
 export interface DealHull extends Hull {
   selected_version: DealVersion2
   country: Country
@@ -49,6 +69,7 @@ export interface DealHull extends Hull {
   confidential_comment: string
   fully_updated_at: string
 }
+
 export interface InvestorHull extends Hull {
   selected_version: InvestorVersion2
   confidential: never
@@ -86,6 +107,7 @@ export class DataSource {
   includes_in_country_verified_information: boolean | null
   open_land_contracts_id: string
   comment: string
+
   constructor(nid: string) {
     this.nid = nid
     this.type = ""
@@ -111,6 +133,7 @@ export class Contract {
   expiration_date: string | null
   agreement_duration: number | null
   comment: string
+
   constructor(nid: string) {
     this.nid = nid
     this.number = ""
@@ -254,6 +277,7 @@ interface VersionTimestampMixins {
   activated_at: string
   activated_by_id: number
 }
+
 export interface DealVersion2 extends DealVersionBase, VersionTimestampMixins {
   is_public: boolean
   has_known_investor: boolean
@@ -317,6 +341,7 @@ interface Area {
   date: string
   area: GeoJsonObject
 }
+
 export class Location2 {
   nid: string
   name: string
@@ -326,6 +351,7 @@ export class Location2 {
   level_of_accuracy: string
   comment: string
   areas: Area[]
+
   constructor(nid: string) {
     this.nid = nid
     this.name = ""

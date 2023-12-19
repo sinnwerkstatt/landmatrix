@@ -123,12 +123,5 @@
       {/if}
     </div>
   </div>
-  <ManageHeaderLogbook
-    workflowInfos={object.workflowinfos}
-    extraUserIDs={[]}
-    on:addComment
-  />
-  <!--  <div class="col-span-1 h-24 bg-gray-300 p-2">-->
-  <!--    <h3 class="heading">{$_("Logbook")}</h3>-->
-  <!--  </div>-->
+  <ManageHeaderLogbook {object} extraUserIDs={[]} />
 </div>

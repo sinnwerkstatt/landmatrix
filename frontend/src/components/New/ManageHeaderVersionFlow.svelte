@@ -31,8 +31,6 @@
   $: i18nValues = { values: { object: isDeal(object) ? "deal" : "investor" } }
 </script>
 
-{JSON.stringify(object.selected_version.status)}
-
 <div class="flex w-full flex-wrap justify-between text-center">
   <div class="status-field z-[3] bg-green-300 after:border-l-green-300">
     <span class="font-bold">{$_("Draft")}</span>

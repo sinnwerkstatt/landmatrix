@@ -1,40 +1,21 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte"
   import { _ } from "svelte-i18n"
 
   import { page } from "$app/stores"
 
-  import type { User } from "$lib/types/user"
+  import type { DealHull, InvestorHull } from "$lib/types/newtypes"
   import { UserRole } from "$lib/types/user"
 
   import ChatBubbleLeftIcon from "$components/icons/ChatBubbleLeftIcon.svelte"
   import ChatBubbleLeftRightIcon from "$components/icons/ChatBubbleLeftRightIcon.svelte"
-  import ManageOverlay from "$components/Management/ManageOverlay.svelte"
-  import WorkflowInfo from "$components/Management/WorkflowInfo.svelte"
+  import ManageFeedbackCommentModal from "$components/New/ManageFeedbackCommentModal.svelte"
   import WorkflowInfoNew from "$components/New/WorkflowInfoNew.svelte"
 
-  export let workflowInfos: WorkflowInfo[] = []
+  export let object: DealHull | InvestorHull
   export let extraUserIDs: number[] = []
 
-  const dispatch = createEventDispatcher()
-
   let showCommentOverlay = false
-  let commentOverlayComment = ""
-
-  function addComment(e: CustomEvent<{ comment: string; toUser: User }>) {
-    dispatch("addComment", { comment: e.detail.comment })
-    commentOverlayComment = ""
-    showCommentOverlay = false
-  }
-
   let showFeedbackOverlay = false
-  let feedbackOverlayComment = ""
-
-  function addFeedback(e: CustomEvent<{ comment: string; toUser: User }>) {
-    dispatch("addComment", e.detail)
-    feedbackOverlayComment = ""
-    showFeedbackOverlay = false
-  }
 </script>
 
 <div
@@ -45,7 +26,7 @@
   <div
     class="h-0 flex-grow cursor-default overflow-y-scroll border-gray-700 px-[2px] pb-4 pt-1 shadow-inner"
   >
-    {#each workflowInfos as info}
+    {#each object.workflowinfos as info}
       <WorkflowInfoNew {info} />
     {/each}
   </div>
@@ -53,7 +34,7 @@
   <div class="my-2 text-right">
     {#if $page.data.user.role > UserRole.REPORTER}
       <button
-        class="btn btn-violet btn-slim inline-flex items-center gap-2 px-2"
+        class="butn butn-violet butn-flat inline-flex items-center gap-2 px-2"
         on:click={() => (showFeedbackOverlay = true)}
         type="button"
       >
@@ -62,7 +43,7 @@
       </button>
     {/if}
     <button
-      class="btn btn-purple btn-slim inline-flex items-center gap-2 px-2"
+      class="butn butn-purple butn-flat inline-flex items-center gap-2 px-2"
       on:click={() => (showCommentOverlay = true)}
       type="submit"
     >
@@ -72,27 +53,5 @@
   </div>
 </div>
 
-{#if showFeedbackOverlay}
-  <ManageOverlay
-    assignToUserInput
-    bind:comment={feedbackOverlayComment}
-    bind:visible={showFeedbackOverlay}
-    commentRequired
-    on:submit={addFeedback}
-    title={$_("Send feedback")}
-    submitTitle={$_("Send")}
-    {extraUserIDs}
-    toUserRequired
-  />
-{/if}
-
-{#if showCommentOverlay}
-  <ManageOverlay
-    bind:comment={commentOverlayComment}
-    bind:visible={showCommentOverlay}
-    commentRequired
-    on:submit={addComment}
-    submitTitle={$_("Save")}
-    title={$_("Add comment")}
-  />
-{/if}
+<ManageFeedbackCommentModal bind:open={showFeedbackOverlay} feedbackForm {object} />
+<ManageFeedbackCommentModal bind:open={showCommentOverlay} {object} />
