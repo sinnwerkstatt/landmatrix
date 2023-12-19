@@ -148,6 +148,7 @@ class JSONCurrentDateAreaField(JSONSchemaField):
                 "items": {
                     "type": "object",
                     "additionalProperties": False,
+                    "minProperties": 3,
                     "properties": {
                         "current": {"type": ["boolean"]},
                         "date": {
@@ -172,6 +173,7 @@ class JSONCurrentDateAreaChoicesField(JSONSchemaField):
                 "items": {
                     "type": "object",
                     "additionalProperties": False,
+                    "minProperties": 4,
                     "properties": {
                         "current": {"type": ["boolean"]},
                         "date": {
@@ -200,6 +202,7 @@ class JSONCurrentDateChoiceField(JSONSchemaField):
                 "items": {
                     "type": "object",
                     "additionalProperties": False,
+                    "minProperties": 3,
                     "properties": {
                         "current": {"type": ["boolean"]},
                         "date": {
@@ -224,15 +227,16 @@ class JSONLeaseField(JSONSchemaField):
                 "items": {
                     "type": "object",
                     "additionalProperties": False,
+                    "minProperties": 5,
                     "properties": {
                         "current": {"type": ["boolean"]},
                         "date": {
                             "type": ["string", "null"],
                             "pattern": r"^\d{4}(-(0?[1-9]|1[012])(-(0?[1-9]|[12][0-9]|3[01]))?)?$",
                         },
-                        "area": {"type": ["number"]},
-                        "farmers": {"type": ["number"]},
-                        "households": {"type": ["number"]},
+                        "area": {"type": ["number", "null"]},
+                        "farmers": {"type": ["number", "null"]},
+                        "households": {"type": ["number", "null"]},
                     },
                 },
             }
@@ -250,15 +254,16 @@ class JSONJobsField(JSONSchemaField):
                 "items": {
                     "type": "object",
                     "additionalProperties": False,
+                    "minProperties": 5,
                     "properties": {
                         "current": {"type": ["boolean"]},
                         "date": {
                             "type": ["string", "null"],
                             "pattern": r"^\d{4}(-(0?[1-9]|1[012])(-(0?[1-9]|[12][0-9]|3[01]))?)?$",
                         },
-                        "jobs": {"type": ["number"]},
-                        "employees": {"type": ["number"]},
-                        "workers": {"type": ["number"]},
+                        "jobs": {"type": ["number", "null"]},
+                        "employees": {"type": ["number", "null"]},
+                        "workers": {"type": ["number", "null"]},
                     },
                 },
             }
@@ -299,6 +304,7 @@ class JSONExportsField(JSONSchemaField):
                 "items": {
                     "type": "object",
                     "additionalProperties": False,
+                    "minProperties": 6,
                     "properties": {
                         "current": {"type": ["boolean"]},
                         "date": {
@@ -329,6 +335,7 @@ class JSONElectricityGenerationField(JSONSchemaField):
                 "items": {
                     "type": "object",
                     "additionalProperties": False,
+                    "minProperties": 8,
                     "properties": {
                         "current": {"type": ["boolean"]},
                         "date": {
@@ -361,6 +368,7 @@ class JSONCarbonSequestrationField(JSONSchemaField):
                 "items": {
                     "type": "object",
                     "additionalProperties": False,
+                    "minProperties": 9,
                     "properties": {
                         "current": {"type": ["boolean"]},
                         "date": {

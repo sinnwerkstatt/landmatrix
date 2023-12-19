@@ -1,4 +1,4 @@
-<script lang="ts" xmlns:svelte="http://www.w3.org/1999/html">
+<script lang="ts">
   import { _ } from "svelte-i18n"
 
   import type { InvestorHull } from "$lib/types/newtypes.js"
@@ -6,7 +6,6 @@
   import ManageHeader from "$components/New/ManageHeader.svelte"
 
   export let investor: InvestorHull
-  export let investorVersion: number | undefined
 </script>
 
 <ManageHeader object={investor}>

@@ -234,6 +234,7 @@ export const allUsers = readable([] as User[], set => {
       return ret.json() as Promise<User[]>
     })
     .then(set)
+    .catch(() => set([]))
 })
 
 export const loading = writable(false)

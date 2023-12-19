@@ -305,24 +305,24 @@ export type JSONCurrentDateChoiceFieldType = Array<{
 export type JSONCurrentDateAreaChoicesFieldType = Array<{
   current: boolean
   date: string | null
-  area: number
+  area: number | null
   choices: string[]
 }>
 
 export type JSONLeaseFieldType = Array<{
   current: boolean
   date: string | null
-  area?: number
-  farmers?: number
-  households?: number
+  area: number | null
+  farmers: number | null
+  households: number | null
 }>
 
 export type JSONJobsFieldType = Array<{
   current: boolean
   date: string | null
-  jobs?: number
-  employees?: number
-  workers?: number
+  jobs: number | null
+  employees: number | null
+  workers: number | null
 }>
 
 export type JSONExportsFieldType = Array<{
