@@ -64,6 +64,8 @@ INSTALLED_APPS = [
     "wagtail.api.v2",
     "rest_framework",
     "rest_framework_gis",
+    "drf_spectacular",
+    "drf_spectacular_sidecar",
     "wagtailfontawesomesvg",
     "wagtailorderable",
     "modelcluster",
@@ -173,7 +175,17 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         # "rest_framework.authentication.BasicAuthentication",
         "rest_framework.authentication.SessionAuthentication",
-    )
+    ),
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Land Matrix API",
+    "DESCRIPTION": "The Land Matrix is an independent land monitoring initiative that promotes transparency and accountability.",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "SWAGGER_UI_DIST": "SIDECAR",  # shorthand to use the sidecar instead
+    "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
+    "REDOC_DIST": "SIDECAR",
 }
 
 IMPERSONATE = {
