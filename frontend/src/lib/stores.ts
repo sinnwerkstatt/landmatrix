@@ -229,13 +229,11 @@ export async function fetchBasis(lang = "en", fetch: LoadEvent["fetch"]) {
 
 export const allUsers = readable([] as User[], set => {
   fetch(`/api/users/`)
-    .then(ret => ret.json() as Promise<User[]>)
     .then(ret => {
       if (!ret.ok) throw new Error(`HTTP status code: ${ret.status}\n\n${ret}`)
       return ret.json() as Promise<User[]>
     })
     .then(set)
-    .catch(() => set([]))
 })
 
 export const loading = writable(false)

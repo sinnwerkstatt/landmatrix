@@ -1,14 +1,10 @@
-from rest_framework import serializers
-
-from apps.landmatrix.models import FieldDefinition
-from apps.landmatrix.models.country import Country, Region
-from apps.landmatrix.models.currency import Currency
 from django.db.models import Q, QuerySet
 from rest_framework import serializers
 
 from apps.accounts.models import User
+from apps.landmatrix.models import FieldDefinition
 from apps.landmatrix.models.country import Country, Region
-
+from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.new import (
     DealVersion2,
     DealHull,
@@ -137,12 +133,11 @@ class DealVersionSerializer(serializers.ModelSerializer):
     locations = LocationSerializer(many=True, read_only=True)
     contracts = ContractSerializer(many=True, read_only=True)
     datasources = DealDataSourceSerializer(many=True, read_only=True)
-    operating_company = OperatingCompanySerializer(allow_null=True)
+    operating_company = OperatingCompanySerializer(allow_null=True, read_only=True)
 
-    created_by = UserIdUsernameSerialiser()
-    sent_to_review_by = UserIdUsernameSerialiser()
-    sent_to_activation_by = UserIdUsernameSerialiser()
-    activated_by = UserIdUsernameSerialiser()
+    class Meta:
+        model = DealVersion2
+        fields = "__all__"
 
     @staticmethod
     def save_submodels(request, dv1: DealVersion2):
@@ -214,10 +209,6 @@ class DealVersionSerializer(serializers.ModelSerializer):
             nid__in=datasource_nids
         ).delete()
 
-    class Meta:
-        model = DealVersion2
-        fields = "__all__"
-
 
 class CountryIDNameSerializer(serializers.ModelSerializer):
     class Meta:
@@ -246,11 +237,6 @@ class Deal2Serializer(serializers.ModelSerializer):
 
 
 class InvestorVersionVersionsListSerializer(serializers.ModelSerializer):
-    created_by = UserIdUsernameSerialiser()
-    sent_to_review_by = UserIdUsernameSerialiser()
-    sent_to_activation_by = UserIdUsernameSerialiser()
-    activated_by = UserIdUsernameSerialiser()
-
     class Meta:
         model = InvestorVersion2
         fields = [

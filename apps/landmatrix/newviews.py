@@ -101,7 +101,7 @@ def _parse_filter(request: Request):
     return ret
 
 
-class DealVersionViewSet(viewsets.ModelViewSet):
+class DealVersionViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = DealVersion2.objects.all()
     serializer_class = DealVersionSerializer
 
@@ -182,7 +182,7 @@ class DealVersionViewSet(viewsets.ModelViewSet):
             draft_status = "ACTIVATION"
             dv1.status = "ACTIVATION"
             dv1.sent_to_activation_at = timezone.now()
-            dv1.sent_to_review_by = request.user
+            dv1.sent_to_activation_by = request.user
             dv1.save()
         elif request.data["transition"] == "ACTIVATE":
             if request.user.role < UserRole.ADMINISTRATOR:
@@ -239,7 +239,7 @@ class DealVersionViewSet(viewsets.ModelViewSet):
         return Response({"dealID": dv1.deal.id, "versionID": dv1.id})
 
 
-class Deal2ViewSet(viewsets.ReadOnlyModelViewSet):
+class Deal2ViewSet(viewsets.ModelViewSet):
     queryset = DealHull.objects.all().prefetch_related(
         Prefetch("versions", queryset=DealVersion2.objects.order_by("-id"))
     )
@@ -263,9 +263,9 @@ class Deal2ViewSet(viewsets.ReadOnlyModelViewSet):
         serializer = self.get_serializer(instance)
         dv1 = serializer.data
         # TODO check for permissions when viewing a draft
-        if request.user.role > UserRole.EDITOR:
-            ...
-            # dv1.created_by_id
+        # if request.user.role > UserRole.EDITOR:
+        #     ...
+        #     # dv1.created_by_id
 
         return Response(dv1)
 
@@ -343,6 +343,12 @@ class Deal2ViewSet(viewsets.ReadOnlyModelViewSet):
         dv1 = DealVersion2.objects.create(deal_id=d1.id, created_by=request.user)
         d1.draft_version = dv1
         d1.save()
+        DealWorkflowInfo2.objects.create(
+            deal_id=dv1.deal_id,
+            deal_version_id=dv1.id,
+            from_user=request.user,
+            status_after="DRAFT",
+        )
         return Response({"dealID": d1.id, "versionID": dv1.id})
 
     def update(self, request, *args, **kwargs):
