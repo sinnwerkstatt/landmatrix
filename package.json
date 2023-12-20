@@ -1,4 +1,6 @@
 {
+  "name": "landmatrix",
+  "version": "0.0.1",
   "scripts": {
     "dev": "concurrently npm:backend npm:frontend npm:caddy",
     "dev:test": "DATABASE_URL=postgis://landmatrix:landmatrix@localhost/playwright_test npm run dev",
