@@ -1,5 +1,6 @@
 import sys
 
+from django.contrib.gis.geos import Point, GEOSGeometry
 from django.core.management.base import BaseCommand
 from icecream import ic
 
@@ -15,8 +16,6 @@ from apps.landmatrix.models.new import (
     InvestorHull,
     DealWorkflowInfo2,
 )
-
-from django.contrib.gis.geos import Point, GEOSGeometry
 
 status_map_dings = {
     1: "DRAFT",
@@ -245,8 +244,12 @@ def map_version_payload(ov: dict, nv: DealVersion2):
     nv.contract_size = []
     for x in ov["contract_size"] or []:
         if not x.get("area"):
-            continue
-        if x.get("date"):
+            x["area"] = 0
+        if not x.get("current"):
+            x["current"] = False
+        if not x.get("date"):
+            x["date"] = None
+        else:
             x["date"] = x["date"].strip()
         if x.get("date") == "11996":
             x["date"] = "1996"
@@ -273,8 +276,12 @@ def map_version_payload(ov: dict, nv: DealVersion2):
     nv.production_size = []
     for x in ov["production_size"] or []:
         if not x.get("area"):
-            continue
-        if x.get("date"):
+            x["area"] = 0
+        if not x.get("current"):
+            x["current"] = False
+        if not x.get("date"):
+            x["date"] = None
+        else:
             x["date"] = x["date"].strip()
         if x.get("date") == "20111":
             x["date"] = "2011"
@@ -289,30 +296,46 @@ def map_version_payload(ov: dict, nv: DealVersion2):
     nv.land_area_comment = ov["land_area_comment"]
     nv.intention_of_investment = ov["intention_of_investment"] or []
     for x in nv.intention_of_investment:
-        if x.get("date"):
+        if not x.get("current"):
+            x["current"] = False
+        if not x.get("date"):
+            x["date"] = None
+        else:
             x["date"] = x["date"].strip()
+        if not x.get("area"):
+            x["area"] = None
     nv.intention_of_investment_comment = ov["intention_of_investment_comment"]
     nv.nature_of_deal = ov["nature_of_deal"] or []
     nv.nature_of_deal_comment = ov["nature_of_deal_comment"]
     nv.negotiation_status = ov["negotiation_status"] or []
     for neg in nv.negotiation_status:
+        if not neg.get("date"):
+            neg["date"] = None
         if nv.deal_id == 4009 and neg.get("date") == "201":
             neg["date"] = "2012"
         elif nv.deal_id == 5173 and neg.get("date") == "1":
             neg["date"] = "2016"
         elif "date" in neg.keys():
             if neg["date"] is None:
-                del neg["date"]
+                continue
             else:
                 neg["date"] = neg["date"].strip()
-        if "choice" in neg.keys() and neg["choice"] is None:
-            del neg["choice"]
+        if not neg.get("current"):
+            neg["current"] = False
+        if not neg.get("choice"):
+            neg["choice"] = []
+        # if "choice" in neg.keys() and neg["choice"] is None:
+        #     del neg["choice"]
     nv.negotiation_status_comment = ov["negotiation_status_comment"]
 
     nv.implementation_status = []
     for x in ov["implementation_status"] or []:
+        if not x.get("current"):
+            x["current"] = False
         if not x.get("choice"):
             continue
+        if not x.get("date"):
+            x["date"] = None
         if x.get("date") == "6":
             del x["date"]
         if nv.deal_id == 6012 and x.get("date") == "30":
@@ -334,9 +357,17 @@ def map_version_payload(ov: dict, nv: DealVersion2):
     nv.on_the_lease_state = ov["on_the_lease_state"]
     nv.on_the_lease = ov["on_the_lease"] or []
     for x in nv.on_the_lease:
-        if "farmers" in x.keys() and x["farmers"] is None:
-            del x["farmers"]
-        elif "farmers" in x.keys():
+        if not x.get("current"):
+            x["current"] = False
+        if not x.get("date"):
+            x["date"] = None
+        add_properties = ["area", "households"]
+        for p in add_properties:
+            if not x.get(p):
+                x[p] = None
+        if not x.get("farmers"):
+            x["farmers"] = None
+        else:
             x["farmers"] = int(x["farmers"])
     nv.off_the_lease_state = ov["off_the_lease_state"]
     nv.off_the_lease = ov["off_the_lease"] or []
@@ -459,16 +490,30 @@ def map_version_payload(ov: dict, nv: DealVersion2):
     nv.former_land_cover_comment = ov["former_land_cover_comment"]
     nv.crops = ov["crops"] or []
     for crop in nv.crops:
-        if crop.get("date"):
+        if not crop.get("current"):
+            crop["current"] = False
+        if not crop.get("date"):
+            crop["date"] = None
+        else:
             crop["date"] = crop["date"].strip()
         if crop.get("choices"):
             crop["choices"] = [x for x in crop["choices"] if x not in ["35", "67"]]
+        add_properties = ["area", "yield", "export"]
+        for p in add_properties:
+            if not crop.get(p):
+                crop[p] = None
+
     nv.crops_comment = ov["crops_comment"]
     nv.animals = ov["animals"] or []
     for animal in nv.animals:
+        if not animal.get("date"):
+            animal["date"] = None
         if animal.get("choices"):
             animal["choices"] = [x for x in animal["choices"] if x != "1"]
-
+        add_properties = ["area", "yield", "export"]
+        for p in add_properties:
+            if not animal.get(p):
+                animal[p] = None
     nv.animals_comment = ov["animals_comment"]
     nv.mineral_resources = ov["mineral_resources"] or []
     for mr in nv.mineral_resources:
