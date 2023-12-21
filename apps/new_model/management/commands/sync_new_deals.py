@@ -414,7 +414,7 @@ def map_version_payload(ov: dict, nv: DealVersion2):
             jbs["workers"] = int(float(jbs["workers"]))
         else:
             jbs["workers"] = None
-        if "employees" in jbs.keys():
+        if "employees" in jbs.keys() and jbs["employees"] is not None:
             jbs["employees"] = int(float(jbs["employees"]))
         else:
             jbs["employees"] = None
@@ -445,7 +445,7 @@ def map_version_payload(ov: dict, nv: DealVersion2):
             jbs["workers"] = int(float(jbs["workers"]))
         else:
             jbs["workers"] = None
-        if "employees" in jbs.keys() and jbs["employees"]:
+        if "employees" in jbs.keys() and jbs["employees"] is not None:
             jbs["employees"] = int(jbs["employees"])
         else:
             jbs["employees"] = None
