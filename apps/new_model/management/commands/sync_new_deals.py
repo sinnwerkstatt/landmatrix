@@ -294,8 +294,10 @@ def map_version_payload(ov: dict, nv: DealVersion2):
         nv.production_size += [x]
 
     nv.land_area_comment = ov["land_area_comment"]
-    nv.intention_of_investment = ov["intention_of_investment"] or []
-    for x in nv.intention_of_investment:
+    nv.intention_of_investment = []
+    for x in ov["intention_of_investment"] or []:
+        if not x.get("choices"):
+            continue
         if not x.get("current"):
             x["current"] = False
         if not x.get("date"):
@@ -304,15 +306,17 @@ def map_version_payload(ov: dict, nv: DealVersion2):
             x["date"] = x["date"].strip()
         if not x.get("area"):
             x["area"] = None
+        nv.intention_of_investment += [x]
+
     nv.intention_of_investment_comment = ov["intention_of_investment_comment"]
     nv.nature_of_deal = ov["nature_of_deal"] or []
     nv.nature_of_deal_comment = ov["nature_of_deal_comment"]
-    nv.negotiation_status = ov["negotiation_status"] or []
-    for neg in nv.negotiation_status:
+    nv.negotiation_status = []
+    for neg in ov["negotiation_status"] or []:
+        if not neg.get("choice"):
+            continue
         if not neg.get("current"):
             neg["current"] = False
-        if not neg.get("choice"):
-            neg["choice"] = []
         if not neg.get("date"):
             neg["date"] = None
         if nv.deal_id == 4009 and neg.get("date") == "201":
@@ -324,6 +328,7 @@ def map_version_payload(ov: dict, nv: DealVersion2):
                 continue
             else:
                 neg["date"] = neg["date"].strip()
+        nv.negotiation_status += [neg]
 
         # if "choice" in neg.keys() and neg["choice"] is None:
         #     del neg["choice"]
@@ -525,32 +530,40 @@ def map_version_payload(ov: dict, nv: DealVersion2):
     nv.former_land_use_comment = ov["former_land_use_comment"]
     nv.former_land_cover = ov["former_land_cover"] or []
     nv.former_land_cover_comment = ov["former_land_cover_comment"]
-    nv.crops = ov["crops"] or []
-    for crop in nv.crops:
+    nv.crops = []
+    for crop in ov["crops"] or []:
         if not crop.get("current"):
             crop["current"] = False
         if not crop.get("date"):
             crop["date"] = None
         else:
             crop["date"] = crop["date"].strip()
-        if crop.get("choices"):
+        if not crop.get("choices"):
+            continue
+        else:
             crop["choices"] = [x for x in crop["choices"] if x not in ["35", "67"]]
         add_properties = ["area", "yield", "export"]
         for p in add_properties:
             if not crop.get(p):
                 crop[p] = None
-
+        nv.crops += [crop]
     nv.crops_comment = ov["crops_comment"]
-    nv.animals = ov["animals"] or []
-    for animal in nv.animals:
+    nv.animals = []
+    for animal in ov["animals"] or []:
+        if not animal.get("current"):
+            animal["current"] = False
         if not animal.get("date"):
             animal["date"] = None
-        if animal.get("choices"):
+        if not animal.get("choices"):
+            continue
+        else:
             animal["choices"] = [x for x in animal["choices"] if x != "1"]
         add_properties = ["area", "yield", "export"]
         for p in add_properties:
             if not animal.get(p):
                 animal[p] = None
+
+        nv.animals += [animal]
     nv.animals_comment = ov["animals_comment"]
     nv.mineral_resources = ov["mineral_resources"] or []
     for mr in nv.mineral_resources:
@@ -565,20 +578,32 @@ def map_version_payload(ov: dict, nv: DealVersion2):
         else:
             mr["choices"] = []
     nv.mineral_resources_comment = ov["mineral_resources_comment"]
-    nv.contract_farming_crops = ov["contract_farming_crops"] or []
-    for cfc in nv.contract_farming_crops:
+    nv.contract_farming_crops = []
+    for cfc in ov["contract_farming_crops"] or []:
         if not cfc.get("current"):
             cfc["current"] = False
         if not cfc.get("area"):
             cfc["area"] = None
         if not cfc.get("choices"):
-            cfc["choices"] = []
+            continue
         if cfc.get("date"):
             cfc["date"] = cfc["date"].strip()
         else:
             cfc["date"] = None
+        nv.contract_farming_crops += [cfc]
     nv.contract_farming_crops_comment = ov["contract_farming_crops_comment"]
-    nv.contract_farming_animals = ov["contract_farming_animals"] or []
+    nv.contract_farming_animals = []
+    for cfa in ov["contract_farming_animals"] or []:
+        if not cfa.get("choices"):
+            continue
+        if not cfa.get("current"):
+            cfa["current"] = False
+        if not cfa.get("date"):
+            cfa["date"] = None
+        if not cfa.get("area"):
+            cfa["area"] = None
+        nv.contract_farming_animals += [cfa]
+
     nv.contract_farming_animals_comment = ov["contract_farming_animals_comment"]
     nv.electricity_generation = ov.get("electricity_generation") or []
     nv.electricity_generation_comment = ov.get("electricity_generation_comment") or ""
