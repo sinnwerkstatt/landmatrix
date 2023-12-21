@@ -309,6 +309,10 @@ def map_version_payload(ov: dict, nv: DealVersion2):
     nv.nature_of_deal_comment = ov["nature_of_deal_comment"]
     nv.negotiation_status = ov["negotiation_status"] or []
     for neg in nv.negotiation_status:
+        if not neg.get("current"):
+            neg["current"] = False
+        if not neg.get("choice"):
+            neg["choice"] = []
         if not neg.get("date"):
             neg["date"] = None
         if nv.deal_id == 4009 and neg.get("date") == "201":
@@ -320,10 +324,7 @@ def map_version_payload(ov: dict, nv: DealVersion2):
                 continue
             else:
                 neg["date"] = neg["date"].strip()
-        if not neg.get("current"):
-            neg["current"] = False
-        if not neg.get("choice"):
-            neg["choice"] = []
+
         # if "choice" in neg.keys() and neg["choice"] is None:
         #     del neg["choice"]
     nv.negotiation_status_comment = ov["negotiation_status_comment"]
@@ -340,6 +341,8 @@ def map_version_payload(ov: dict, nv: DealVersion2):
             del x["date"]
         if nv.deal_id == 6012 and x.get("date") == "30":
             del x["date"]
+        if not x.get("choice"):
+            x["choice"] = []
         nv.implementation_status += [x]
 
     nv.implementation_status_comment = ov["implementation_status_comment"]
@@ -372,10 +375,18 @@ def map_version_payload(ov: dict, nv: DealVersion2):
     nv.off_the_lease_state = ov["off_the_lease_state"]
     nv.off_the_lease = ov["off_the_lease"] or []
     for x in nv.off_the_lease:
+        if not x.get("current"):
+            x["current"] = False
+        if not x.get("date"):
+            x["date"] = None
+        if not x.get("area"):
+            x["area"] = None
         if "farmers" in x.keys():
             x["farmers"] = int(x["farmers"])
-        if "area" in x.keys() and x["area"] is None:
-            del x["area"]
+        else:
+            x["farmers"] = None
+        if not x.get("households"):
+            x["households"] = None
 
     nv.contract_farming_comment = ov["contract_farming_comment"]
     nv.total_jobs_created = ov["total_jobs_created"]
@@ -384,20 +395,24 @@ def map_version_payload(ov: dict, nv: DealVersion2):
     nv.total_jobs_planned_daily_workers = ov["total_jobs_planned_daily_workers"]
     nv.total_jobs_current = ov["total_jobs_current"] or []
     for jbs in nv.total_jobs_current:
-        if "date" in jbs.keys() and jbs["date"]:
+        if not jbs.get("current"):
+            jbs["current"] = False
+        if not jbs.get("date"):
+            jbs["date"] = None
+        else:
             jbs["date"] = jbs["date"].strip()
-        if "jobs" in jbs.keys() and (jbs["jobs"] is None or jbs["jobs"] == ""):
-            del jbs["jobs"]
-        elif "jobs" in jbs.keys():
+        if "jobs" in jbs.keys() and jbs["jobs"] is not None:
             jbs["jobs"] = int(float(jbs["jobs"]))
-        if "workers" in jbs.keys() and (jbs["workers"] is None or jbs["workers"] == ""):
-            del jbs["workers"]
-        elif "workers" in jbs.keys() and jbs["workers"]:
+        else:
+            jbs["jobs"] = None
+        if "workers" in jbs.keys() and jbs["workers"] is not None:
             jbs["workers"] = int(float(jbs["workers"]))
-        if "employees" in jbs.keys() and jbs["employees"] is None:
-            del jbs["employees"]
-        elif "employees" in jbs.keys() and jbs["employees"]:
+        else:
+            jbs["workers"] = None
+        if "employees" in jbs.keys():
             jbs["employees"] = int(float(jbs["employees"]))
+        else:
+            jbs["employees"] = None
     nv.total_jobs_created_comment = ov["total_jobs_created_comment"]
     nv.foreign_jobs_created = ov["foreign_jobs_created"]
     nv.foreign_jobs_planned = ov["foreign_jobs_planned"]
@@ -405,14 +420,30 @@ def map_version_payload(ov: dict, nv: DealVersion2):
     nv.foreign_jobs_planned_daily_workers = ov["foreign_jobs_planned_daily_workers"]
     nv.foreign_jobs_current = ov["foreign_jobs_current"] or []
     for jbs in nv.foreign_jobs_current:
-        if "jobs" in jbs.keys() and jbs["jobs"] is None:
-            del jbs["jobs"]
+        # if "jobs" in jbs.keys() and jbs["jobs"] is None:
+        #     del jbs["jobs"]
         # if "workers" in jbs.keys() and jbs["workers"] is None:
         #     del jbs["workers"]
-        if "employees" in jbs.keys() and jbs["employees"] is None:
-            del jbs["employees"]
+        # if "employees" in jbs.keys() and jbs["employees"] is None:
+        #     del jbs["employees"]
+        if not jbs.get("current"):
+            jbs["current"] = False
+        if not jbs.get("date"):
+            jbs["date"] = None
+        else:
+            jbs["date"] = jbs["date"].strip()
+        if "jobs" in jbs.keys() and jbs["jobs"] is not None:
+            jbs["jobs"] = int(float(jbs["jobs"]))
+        else:
+            jbs["jobs"] = None
+        if "workers" in jbs.keys() and jbs["workers"] is not None:
+            jbs["workers"] = int(float(jbs["workers"]))
+        else:
+            jbs["workers"] = None
         if "employees" in jbs.keys() and jbs["employees"]:
             jbs["employees"] = int(jbs["employees"])
+        else:
+            jbs["employees"] = None
 
     nv.foreign_jobs_created_comment = ov["foreign_jobs_created_comment"]
     nv.domestic_jobs_created = ov["domestic_jobs_created"]
@@ -421,16 +452,22 @@ def map_version_payload(ov: dict, nv: DealVersion2):
     nv.domestic_jobs_planned_daily_workers = ov["domestic_jobs_planned_daily_workers"]
     nv.domestic_jobs_current = ov["domestic_jobs_current"] or []
     for jbs in nv.domestic_jobs_current:
-        if "jobs" in jbs.keys() and jbs["jobs"] is None:
-            del jbs["jobs"]
-        if "jobs" in jbs.keys():
+        if not jbs.get("current"):
+            jbs["current"] = False
+        if not jbs.get("date"):
+            jbs["date"] = None
+        if "jobs" in jbs.keys() and jbs["jobs"] is not None:
             jbs["jobs"] = int(float(jbs["jobs"]))
-        if "workers" in jbs.keys() and jbs["workers"] is None:
-            del jbs["workers"]
-        if "workers" in jbs.keys():
+        else:
+            jbs["jobs"] = None
+        if "workers" in jbs.keys() and jbs["workers"] is not None:
             jbs["workers"] = int(float(jbs["workers"]))
+        else:
+            jbs["workers"] = None
         if "employees" in jbs.keys():
             jbs["employees"] = int(float(jbs["employees"]))
+        else:
+            jbs["employees"] = None
     nv.domestic_jobs_created_comment = ov["domestic_jobs_created_comment"]
     if oid := ov["operating_company"]:
         try:
@@ -517,13 +554,29 @@ def map_version_payload(ov: dict, nv: DealVersion2):
     nv.animals_comment = ov["animals_comment"]
     nv.mineral_resources = ov["mineral_resources"] or []
     for mr in nv.mineral_resources:
+        if not mr.get("current"):
+            mr["current"] = False
+        add_properties = ["date", "area", "yield", "export"]
+        for p in add_properties:
+            if not mr.get(p):
+                mr[p] = None
         if mr.get("choices"):
             mr["choices"] = [x for x in mr["choices"] if x not in ["PYN", "33"]]
+        else:
+            mr["choices"] = []
     nv.mineral_resources_comment = ov["mineral_resources_comment"]
     nv.contract_farming_crops = ov["contract_farming_crops"] or []
     for cfc in nv.contract_farming_crops:
+        if not cfc.get("current"):
+            cfc["current"] = False
+        if not cfc.get("area"):
+            cfc["area"] = None
+        if not cfc.get("choices"):
+            cfc["choices"] = []
         if cfc.get("date"):
             cfc["date"] = cfc["date"].strip()
+        else:
+            cfc["date"] = None
     nv.contract_farming_crops_comment = ov["contract_farming_crops_comment"]
     nv.contract_farming_animals = ov["contract_farming_animals"] or []
     nv.contract_farming_animals_comment = ov["contract_farming_animals_comment"]
