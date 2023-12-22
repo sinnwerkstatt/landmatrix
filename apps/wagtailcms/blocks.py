@@ -666,34 +666,6 @@ class MapDataChartsBlock(StructBlock):
 #     }
 
 
-class LinkMapBlock(StructBlock):
-    pass
-    # TODO this seems to be unused, it's not even implemented in the svelte frontend
-    #
-    # class Meta:
-    #     icon = "location-dot"
-    #     label = "Map"
-    #
-    # def get_context(self, value, parent_context=None):
-    #     context = super().get_context(value, parent_context=parent_context)
-    #     context.update(
-    #         get_country_or_region(
-    #             parent_context.get("request"), parent_context.get("page")
-    #         )
-    #     )
-    #
-    #     legend = get_legend()
-    #     context.update(
-    #         {
-    #             "legend": legend,
-    #             "legend_json": json.dumps(legend),
-    #             "map_object": context.get("region") or context.get("country"),
-    #             "is_country": bool(context.get("country")),
-    #         }
-    #     )
-    #     return context
-
-
 class LatestDatabaseModificationsBlock(StructBlock):
     limit = blocks.CharBlock()
 
@@ -751,7 +723,6 @@ class CountriesBlock(StructBlock):
 DATA_BLOCKS = [
     ("latest_news", LatestNewsBlock()),
     ("resources_teasers", ResourcesTeasersBlock()),
-    ("link_map", LinkMapBlock()),
     ("statistics", StatisticsBlock()),
     ("map_data_charts", MapDataChartsBlock()),
     ("latest_database_modifications", LatestDatabaseModificationsBlock()),

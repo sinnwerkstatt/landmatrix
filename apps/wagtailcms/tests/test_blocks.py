@@ -87,17 +87,6 @@ class TwitterBlockTestCase(TestCase):
 #         )
 
 
-# TODO dont run this test. probably dont need it anymore anyways
-# class NoWrapsStreamFieldTestCase(TestCase):
-#     def test_init(self):
-#         block = NoWrapsStreamField(Block())
-#         self.assertIsInstance(block.stream_block, Block)
-#         block = NoWrapsStreamField(Block)
-#         self.assertIsInstance(block.stream_block, Block)
-#         block = NoWrapsStreamField([])
-#         self.assertIsInstance(block.stream_block, NoWrapsStreamBlock)
-
-
 class ImageBlockTestCase(TestCase):
     def test_get_context(self):
         block = ImageBlock()
@@ -229,24 +218,6 @@ class MapDataChartsBlockTestCase(TestCase):
         request.resolver_match = AttrDict(kwargs={"country_slug": "myanmar"})
         context = block.get_context({}, {"request": request})
         self.assertEqual(104, context.get("country").id)
-
-
-# TODO probably unneeded
-# class LinkMapBlockTestCase(TestCase):
-#     fixtures = ["countries_and_regions"]
-#
-#     def test_get_context(self):
-#         block = LinkMapBlock()
-#         request = RequestFactory()
-#         request.resolver_match = AttrDict(kwargs={"country_slug": "myanmar"})
-#         context = block.get_context({}, {"request": request})
-#         self.assertEqual(
-#             {"implementation", "intention", "level_of_accuracy"},
-#             set(context.get("legend").keys()),
-#         )
-#         self.assertGreater(len(context.get("legend_json")), 0)
-#         self.assertEqual(104, context.get("map_object").id)
-#         self.assertEqual(True, context.get("is_country"))
 
 
 class LatestDatabaseModificationsBlockTestCase(TestCase):
