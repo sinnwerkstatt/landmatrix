@@ -568,7 +568,27 @@ def map_version_payload(ov: dict, nv: DealVersion2):
                 cfa[p] = None
         nv.electricity_generation += [cfa]
     nv.electricity_generation_comment = ov.get("electricity_generation_comment") or ""
-    nv.carbon_sequestration = ov.get("carbon_sequestration") or []
+    nv.carbon_sequestration = []
+    for cfa in ov.get("carbon_sequestration") or []:
+        if not cfa.get("current"):
+            cfa["current"] = False
+
+        if not cfa.get("certification_standard_name"):
+            cfa["certification_standard_name"] = ""
+        if not cfa.get("certification_standard_comment"):
+            cfa["certification_standard_comment"] = ""
+
+        for p in [
+            "date",
+            "area",
+            "projected_lifetime_sequestration",
+            "projected_annual_sequestration",
+            "certification_standard",
+        ]:
+            if cfa.get(p) is None:
+                cfa[p] = None
+        nv.carbon_sequestration += [cfa]
+
     nv.carbon_sequestration_comment = ov.get("carbon_sequestration_comment") or ""
     nv.has_domestic_use = ov["has_domestic_use"]
     nv.domestic_use = ov["domestic_use"]
