@@ -129,5 +129,6 @@
 
 <style>
   .investor-table {
+    grid-template-columns: 100px 56px 2fr 1fr 1fr 80px;
   }
 </style>
