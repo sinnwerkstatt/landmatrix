@@ -98,7 +98,7 @@
             {$stateMap[version.status]}
           </td>
           <td class="whitespace-nowrap text-right">
-            {#if dealVersion ? dealVersion === version.id : deal.active_version === version.id}
+            {#if dealVersion ? dealVersion === version.id : deal.active_version_id === version.id}
               {$_("Current")}
             {:else}
               <a href="/deal/{dealID}/{version.id}/">{$_("Show")}</a>

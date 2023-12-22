@@ -676,3 +676,11 @@ INVESTMENT_TYPE_ITEMS = [
     {"value": "EQUITY", "label": _("Shares/Equity")},
     {"value": "DEBT_FINANCING", "label": _("Debt financing")},
 ]
+
+
+PARENT_RELATION_ITEMS = [
+    {"value": "SUBSIDIARY", "label": _("Subsidiary of parent company")},
+    {"value": "LOCAL_BRANCH", "label": _("Local branch of parent company")},
+    {"value": "JOINT_VENTURE", "label": _("Joint venture of parent companies")},
+]
+PARENT_RELATION_CHOICES = [(x["value"], x["label"]) for x in PARENT_RELATION_ITEMS]

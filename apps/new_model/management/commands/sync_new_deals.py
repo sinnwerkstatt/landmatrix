@@ -32,34 +32,8 @@ class Command(BaseCommand):
         parser.add_argument("end_id", nargs="?", type=int)
 
     def handle(self, *args, **options):
-        exclude_ids = [
-            # these dealversions have inexistent investorversion-links
-            # 6154,
-            # 6160,
-            # 6169,
-            # 6192,
-            # 6237,
-            # 6243,
-            # 6338,
-            # 6341,
-            # 6511,
-            # 6531,
-            # 6549,
-            # 6559,
-            # 6562,
-            # 6919,
-            # 7435,
-            # 7722,
-            # 7723,
-            # 7725,
-        ]
-        deals = (
-            Deal.objects.all()
-            .order_by("id")
-            .exclude(id__in=exclude_ids)
-            # .prefetch_related("versions")
-            # .filter(id__in=[5871, 7245, 7646, 8827, 8879])
-        )
+        exclude_ids = []
+        deals = Deal.objects.all().order_by("id").exclude(id__in=exclude_ids)
         if options["start_id"]:
             deals = deals.filter(id__gte=options["start_id"])
         if options["end_id"]:
@@ -68,35 +42,8 @@ class Command(BaseCommand):
             url = f"https://landmatrix.org/deal/{old_deal.id}/"
             ic(old_deal.id, old_deal.status, url)
 
-            ## WIP:
-            # version_dings = [
-            #     [x.serialized_data["status"], x.serialized_data["draft_status"]]
-            #     for x in old_deal.versions.all().order_by("id")
-            # ]
-            # match version_dings:
-            #     case [[1, other_v]]:
-            #         print(old_deal.id, "ohoa", other_v)
-            #     case _:
-            #         continue
-
-            # if version_dings == [[2, None], [3, None], [3, 4], [4, None]]:
-            #     pass
-            # else:
-            #     print("UNKNOWN", version_dings)
-            #     return
-
-            created_by_id = old_deal.created_by_id
-            if not created_by_id:
-                created_by_id = (
-                    old_deal.versions.all().order_by("id").first().created_by_id
-                ) or 1
-
             deal_hull: DealHull
-            deal_hull, _ = DealHull.objects.get_or_create(
-                id=old_deal.id,
-                created_by_id=created_by_id,
-                created_at=old_deal.created_at,
-            )
+            deal_hull, _ = DealHull.objects.get_or_create(id=old_deal.id)
 
             deal_hull.fully_updated_at = old_deal.fully_updated_at
 
@@ -157,12 +104,11 @@ class Command(BaseCommand):
                 else:
                     print("VERSION OHO", old_deal.id, old_version_dict["status"])
                     # return
-                # print(old_version.workflowinfos.all())
+
                 new_version.save(
                     recalculate_dependent=False, recalculate_independent=False
                 )
 
-            # deal_hull.draft_version_id = old_deal.current_draft_id
             deal_hull.deleted = old_deal.status == 4
             deal_hull.confidential = old_deal.confidential
             deal_hull.confidential_comment = old_deal.confidential_comment or ""
@@ -239,58 +185,63 @@ def map_datasources(nv: DealVersion2, datasources: list[dict]):
 
 
 def map_version_payload(ov: dict, nv: DealVersion2):
-    # nv.country_id = ov["country"]
     nv.intended_size = ov["intended_size"]
     nv.contract_size = []
     for x in ov["contract_size"] or []:
-        if not x.get("area"):
-            x["area"] = 0
+        if x.get("area") is None:
+            continue
         if not x.get("current"):
             x["current"] = False
         if not x.get("date"):
             x["date"] = None
         else:
             x["date"] = x["date"].strip()
-        if x.get("date") == "11996":
-            x["date"] = "1996"
-        if x.get("date") == "2020-04-00":
-            x["date"] = "2020-04"
-        if x.get("date") == "12017":
-            x["date"] = "2017"
-        if x.get("date") == "6":
-            del x["date"]
+            match x["date"]:
+                case "6":
+                    x["date"] = None
+                case "11996":
+                    x["date"] = "1996"
+                case "2020-04-00":
+                    x["date"] = "2020-04"
+                case "12017":
+                    x["date"] = "2017"
+                case "11993":
+                    x["date"] = "1993"
+                case "3":
+                    x["date"] = "2030"
+                case "2007-31-03":
+                    x["date"] = "2007-03-31"
+                case "201133912":
+                    x["date"] = "2011-01-12"
+
         if nv.deal_id == 5177 and x.get("date") == "7":
             x["date"] = "2016"
         if nv.deal_id == 5483 and x.get("date") == "1":
-            del x["date"]
-        if x.get("date") == "11993":
-            x["date"] = "1993"
-        if x.get("date") == "3":
-            x["date"] = "2030"
-        if x.get("date") == "2007-31-03":
-            x["date"] = "2007-03-31"
-        if x.get("date") == "201133912":
-            x["date"] = "2011-01-12"
+            x["date"] = None
+
         nv.contract_size += [x]
 
     nv.production_size = []
     for x in ov["production_size"] or []:
-        if not x.get("area"):
-            x["area"] = 0
+        if x.get("area") is None:
+            continue
         if not x.get("current"):
             x["current"] = False
         if not x.get("date"):
             x["date"] = None
         else:
             x["date"] = x["date"].strip()
-        if x.get("date") == "20111":
-            x["date"] = "2011"
-        if x.get("date") == "6":
-            del x["date"]
+            match x["date"]:
+                case "20111":
+                    x["date"] = "2011"
+                case "2007-31-03":
+                    x["date"] = "2007-03-31"
+                case "6":
+                    x["date"] = None
+
         if nv.deal_id == 5483 and x.get("date") == "12":
-            del x["date"]
-        if x.get("date") == "2007-31-03":
-            x["date"] = "2007-03-31"
+            x["date"] = None
+
         nv.production_size += [x]
 
     nv.land_area_comment = ov["land_area_comment"]
@@ -336,18 +287,17 @@ def map_version_payload(ov: dict, nv: DealVersion2):
 
     nv.implementation_status = []
     for x in ov["implementation_status"] or []:
-        if not x.get("current"):
-            x["current"] = False
         if not x.get("choice"):
             continue
+        if not x.get("current"):
+            x["current"] = False
         if not x.get("date"):
             x["date"] = None
         if x.get("date") == "6":
-            del x["date"]
+            x["date"] = None
         if nv.deal_id == 6012 and x.get("date") == "30":
-            del x["date"]
-        if not x.get("choice"):
-            x["choice"] = []
+            x["date"] = None
+
         nv.implementation_status += [x]
 
     nv.implementation_status_comment = ov["implementation_status_comment"]
@@ -369,14 +319,12 @@ def map_version_payload(ov: dict, nv: DealVersion2):
             x["current"] = False
         if not x.get("date"):
             x["date"] = None
-        add_properties = ["area", "households"]
-        for p in add_properties:
+        for p in ["area", "farmers", "households"]:
             if not x.get(p):
                 x[p] = None
-        if not x.get("farmers"):
-            x["farmers"] = None
-        else:
+        if x.get("farmers"):
             x["farmers"] = int(x["farmers"])
+
     nv.off_the_lease_state = ov["off_the_lease_state"]
     nv.off_the_lease = ov["off_the_lease"] or []
     for x in nv.off_the_lease:
@@ -406,14 +354,15 @@ def map_version_payload(ov: dict, nv: DealVersion2):
             jbs["date"] = None
         else:
             jbs["date"] = jbs["date"].strip()
-        if "jobs" in jbs.keys() and jbs["jobs"] is not None:
-            jbs["jobs"] = int(float(jbs["jobs"]))
-        else:
+        if not jbs.get("jobs"):
             jbs["jobs"] = None
-        if "workers" in jbs.keys() and jbs["workers"] is not None:
-            jbs["workers"] = int(float(jbs["workers"]))
         else:
+            jbs["jobs"] = int(float(jbs["jobs"]))
+        if jbs.get("workers") in ["", None]:
             jbs["workers"] = None
+        else:
+            jbs["workers"] = int(float(jbs["workers"]))
+
         if "employees" in jbs.keys() and jbs["employees"] is not None:
             jbs["employees"] = int(float(jbs["employees"]))
         else:
@@ -425,12 +374,6 @@ def map_version_payload(ov: dict, nv: DealVersion2):
     nv.foreign_jobs_planned_daily_workers = ov["foreign_jobs_planned_daily_workers"]
     nv.foreign_jobs_current = ov["foreign_jobs_current"] or []
     for jbs in nv.foreign_jobs_current:
-        # if "jobs" in jbs.keys() and jbs["jobs"] is None:
-        #     del jbs["jobs"]
-        # if "workers" in jbs.keys() and jbs["workers"] is None:
-        #     del jbs["workers"]
-        # if "employees" in jbs.keys() and jbs["employees"] is None:
-        #     del jbs["employees"]
         if not jbs.get("current"):
             jbs["current"] = False
         if not jbs.get("date"):
@@ -446,7 +389,7 @@ def map_version_payload(ov: dict, nv: DealVersion2):
         else:
             jbs["workers"] = None
         if "employees" in jbs.keys() and jbs["employees"] is not None:
-            jbs["employees"] = int(jbs["employees"])
+            jbs["employees"] = int(float(jbs["employees"]))
         else:
             jbs["employees"] = None
 
@@ -461,6 +404,8 @@ def map_version_payload(ov: dict, nv: DealVersion2):
             jbs["current"] = False
         if not jbs.get("date"):
             jbs["date"] = None
+        else:
+            jbs["date"] = jbs["date"].strip()
         if "jobs" in jbs.keys() and jbs["jobs"] is not None:
             jbs["jobs"] = int(float(jbs["jobs"]))
         else:
@@ -469,21 +414,15 @@ def map_version_payload(ov: dict, nv: DealVersion2):
             jbs["workers"] = int(float(jbs["workers"]))
         else:
             jbs["workers"] = None
-        if "employees" in jbs.keys():
+        if "employees" in jbs.keys() and jbs["employees"] is not None:
             jbs["employees"] = int(float(jbs["employees"]))
         else:
             jbs["employees"] = None
+
     nv.domestic_jobs_created_comment = ov["domestic_jobs_created_comment"]
     if oid := ov["operating_company"]:
         try:
-            all_versions = InvestorHull.objects.get(id=oid).versions.all()
-            versions = all_versions.order_by("-created_at").filter(
-                created_at__lte=ov["modified_at"]
-            )
-            if versions:
-                nv.operating_company_id = versions.first().id
-            else:
-                nv.operating_company_id = all_versions.last().id
+            nv.operating_company_id = InvestorHull.objects.get(id=oid).id
         except InvestorHull.DoesNotExist:
             pass
 
@@ -532,65 +471,72 @@ def map_version_payload(ov: dict, nv: DealVersion2):
     nv.former_land_cover_comment = ov["former_land_cover_comment"]
     nv.crops = []
     for crop in ov["crops"] or []:
+        if not crop.get("choices"):
+            continue
         if not crop.get("current"):
             crop["current"] = False
         if not crop.get("date"):
             crop["date"] = None
         else:
             crop["date"] = crop["date"].strip()
-        if not crop.get("choices"):
-            continue
-        else:
-            crop["choices"] = [x for x in crop["choices"] if x not in ["35", "67"]]
-        add_properties = ["area", "yield", "export"]
-        for p in add_properties:
+
+        crop["choices"] = [x for x in crop["choices"] if x not in ["35", "67"]]
+
+        for p in ["area", "yield", "export"]:
             if not crop.get(p):
                 crop[p] = None
         nv.crops += [crop]
+
     nv.crops_comment = ov["crops_comment"]
+
     nv.animals = []
     for animal in ov["animals"] or []:
+        if not animal.get("choices"):
+            continue
         if not animal.get("current"):
             animal["current"] = False
         if not animal.get("date"):
             animal["date"] = None
-        if not animal.get("choices"):
-            continue
-        else:
-            animal["choices"] = [x for x in animal["choices"] if x != "1"]
-        add_properties = ["area", "yield", "export"]
-        for p in add_properties:
+
+        animal["choices"] = [x for x in animal["choices"] if x != "1"]
+        for p in ["area", "yield", "export"]:
             if not animal.get(p):
                 animal[p] = None
-
         nv.animals += [animal]
+
     nv.animals_comment = ov["animals_comment"]
-    nv.mineral_resources = ov["mineral_resources"] or []
-    for mr in nv.mineral_resources:
+
+    nv.mineral_resources = []
+    for mr in ov["mineral_resources"] or []:
+        if not mr.get("choices"):
+            continue
         if not mr.get("current"):
             mr["current"] = False
+        if not mr.get("date"):
+            mr["date"] = None
         add_properties = ["date", "area", "yield", "export"]
         for p in add_properties:
             if not mr.get(p):
                 mr[p] = None
-        if mr.get("choices"):
-            mr["choices"] = [x for x in mr["choices"] if x not in ["PYN", "33"]]
-        else:
-            mr["choices"] = []
+        mr["choices"] = [x for x in mr["choices"] if x not in ["PYN", "33"]]
+        nv.mineral_resources += [mr]
+
     nv.mineral_resources_comment = ov["mineral_resources_comment"]
+
     nv.contract_farming_crops = []
     for cfc in ov["contract_farming_crops"] or []:
+        if not cfc.get("choices"):
+            continue
         if not cfc.get("current"):
             cfc["current"] = False
         if not cfc.get("area"):
             cfc["area"] = None
-        if not cfc.get("choices"):
-            continue
         if cfc.get("date"):
             cfc["date"] = cfc["date"].strip()
         else:
             cfc["date"] = None
         nv.contract_farming_crops += [cfc]
+
     nv.contract_farming_crops_comment = ov["contract_farming_crops_comment"]
     nv.contract_farming_animals = []
     for cfa in ov["contract_farming_animals"] or []:
@@ -605,7 +551,22 @@ def map_version_payload(ov: dict, nv: DealVersion2):
         nv.contract_farming_animals += [cfa]
 
     nv.contract_farming_animals_comment = ov["contract_farming_animals_comment"]
-    nv.electricity_generation = ov.get("electricity_generation") or []
+    nv.electricity_generation = []
+    for cfa in ov.get("electricity_generation") or []:
+        if not cfa.get("current"):
+            cfa["current"] = False
+
+        for p in [
+            "date",
+            "area",
+            "export",
+            "windfarm_count",
+            "current_capacity",
+            "intended_capacity",
+        ]:
+            if not cfa.get(p):
+                cfa[p] = None
+        nv.electricity_generation += [cfa]
     nv.electricity_generation_comment = ov.get("electricity_generation_comment") or ""
     nv.carbon_sequestration = ov.get("carbon_sequestration") or []
     nv.carbon_sequestration_comment = ov.get("carbon_sequestration_comment") or ""
@@ -652,7 +613,7 @@ def map_version_payload(ov: dict, nv: DealVersion2):
     parent_companies = []
     for pid in ov["parent_companies"]:
         try:
-            parent_companies += [Investor.objects.get(id=pid)]
+            parent_companies += [InvestorHull.objects.get(id=pid)]
         except Investor.DoesNotExist:
             pass
     # noinspection PyUnresolvedReferences
@@ -660,7 +621,7 @@ def map_version_payload(ov: dict, nv: DealVersion2):
     top_investors = []
     for pid in ov["top_investors"]:
         try:
-            top_investors += [Investor.objects.get(id=pid)]
+            top_investors += [InvestorHull.objects.get(id=pid)]
         except Investor.DoesNotExist:
             pass
     # noinspection PyUnresolvedReferences

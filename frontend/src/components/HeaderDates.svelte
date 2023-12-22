@@ -14,7 +14,7 @@
   <div class="mr-10 text-xs md:mx-5 md:text-sm">
     {$_("Created")}
     <br />
-    <DateTimeField value={obj.created_at} />
+    <DateTimeField value={obj.selected_version.created_at} />
   </div>
   <div class="mr-10 text-xs md:mx-5 md:text-sm">
     {$_("Last update")}

@@ -28,20 +28,20 @@ export const load: PageLoad = async ({ params, fetch, parent, depends }) => {
 
   console.log()
   // don't allow editing of older versions
-  if (versionID && versionID !== deal.draft_version) {
+  if (versionID && versionID !== deal.draft_version_id) {
     console.warn("redirecting to draft version")
-    throw redirect(301, `/deal/edit/${dealID}/${deal.draft_version}/`)
+    throw redirect(301, `/deal/edit/${dealID}/${deal.draft_version_id}/`)
   }
 
   // don't allow editing version of active deal
-  if (versionID && versionID === deal.active_version) {
+  if (versionID && versionID === deal.active_version_id) {
     console.warn("redirecting to active version")
     throw redirect(301, `/deal/edit/${dealID}/`)
   }
   // don't allow editing active deal if there are newer version
-  if (!versionID && deal.draft_version) {
+  if (!versionID && deal.draft_version_id) {
     console.warn("redirecting to draft version")
-    throw redirect(301, `/deal/edit/${dealID}/${deal.draft_version}/`)
+    throw redirect(301, `/deal/edit/${dealID}/${deal.draft_version_id}/`)
   }
 
   const originalDeal = JSON.stringify(deal)

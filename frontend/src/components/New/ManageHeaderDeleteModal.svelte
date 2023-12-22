@@ -34,7 +34,7 @@
       const retJson = await ret.json()
       toast.push(`${ret.status}: ${retJson.detail}`, { classes: ["error"] })
     } else {
-      if (object.active_version)
+      if (object.active_version_id)
         await goto(`/deal/${object.id}/`, { invalidateAll: true })
       else await goto(`/list/deals/`, { invalidateAll: true })
     }
@@ -53,7 +53,7 @@
         i18nValues,
       )}
     </p>
-    {#if object.active_version}
+    {#if object.active_version_id}
       <div class="mb-6">
         <label>
           <span class="font-semibold">

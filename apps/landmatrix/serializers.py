@@ -123,17 +123,18 @@ class ContractSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class OperatingCompanySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = InvestorVersion2
-        fields = "__all__"
+# class OperatingCompanySerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = InvestorHull
+#         fields = "__all__"
 
 
 class DealVersionSerializer(serializers.ModelSerializer):
     locations = LocationSerializer(many=True, read_only=True)
     contracts = ContractSerializer(many=True, read_only=True)
     datasources = DealDataSourceSerializer(many=True, read_only=True)
-    operating_company = OperatingCompanySerializer(allow_null=True, read_only=True)
+    # operating_company = OperatingCompanySerializer(allow_null=True, read_only=True)
+    operating_company_id = serializers.PrimaryKeyRelatedField(read_only=True)
 
     # creating these because DRF shows these fields as "created_by", instead of "~_id"
     created_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
@@ -148,8 +149,9 @@ class DealVersionSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def save_submodels(request, dv1: DealVersion2):
-        # FIXME right now we're handling contracts, locations and datasources in the serializer. not very pretty
-        # maybe drf-writable-nested would be an alternative
+        # FIXME right now we're handling contracts, locations and datasources here
+        #  in the serializer. not very pretty. maybe drf-writable-nested
+        #  would be an alternative
 
         location_nids = set()
         for location in request.data["version"].get("locations"):
@@ -224,12 +226,14 @@ class CountryIDNameSerializer(serializers.ModelSerializer):
 
 
 class Deal2Serializer(serializers.ModelSerializer):
-    country = CountryIDNameSerializer()
+    active_version_id = serializers.PrimaryKeyRelatedField(read_only=True)
+    draft_version_id = serializers.PrimaryKeyRelatedField(read_only=True)
+    created_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
 
+    country = CountryIDNameSerializer()
     versions = DealVersionVersionsListSerializer(many=True)
     selected_version = DealVersionSerializer()
     workflowinfos = serializers.SerializerMethodField()
-    created_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
 
     @staticmethod
     def get_workflowinfos(obj: DealHull):
@@ -280,9 +284,10 @@ class InvestorVersionSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_deals(obj: InvestorVersion2):
+        return []
         target_deals = (
             DealHull.objects.filter(
-                id__in=obj.dealversions.all().values_list("deal_id", flat=True)
+                id__in=obj.investor.dealversions.all().values_list("deal_id", flat=True)
             )
             .exclude(active_version=None)
             .prefetch_related("active_version")
@@ -315,6 +320,9 @@ class InvestorVersionSerializer(serializers.ModelSerializer):
 
 
 class Investor2Serializer(serializers.ModelSerializer):
+    active_version_id = serializers.PrimaryKeyRelatedField(read_only=True)
+    draft_version_id = serializers.PrimaryKeyRelatedField(read_only=True)
+
     versions = InvestorVersionVersionsListSerializer(many=True)
 
     selected_version = InvestorVersionSerializer()

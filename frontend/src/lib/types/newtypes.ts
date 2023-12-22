@@ -39,9 +39,8 @@ export interface Currency {
 
 interface Hull {
   id: number
-  // watch out: DRF does not append _id to Foreignkeys, but means _id.
-  active_version: number | null
-  draft_version: number | null
+  active_version_id: number | null
+  draft_version_id: number | null
   deleted: boolean
   deleted_comment: string
   created_at: string
@@ -143,7 +142,19 @@ export class Contract {
     this.comment = ""
   }
 }
+enum ActorRole {
+  TRADITIONAL_LAND_OWNERS_OR_COMMUNITIES = "TRADITIONAL_LAND_OWNERS_OR_COMMUNITIES",
+  GOVERNMENT_OR_STATE_INSTITUTIONS = "GOVERNMENT_OR_STATE_INSTITUTIONS",
+  TRADITIONAL_LOCAL_AUTHORITY = "TRADITIONAL_LOCAL_AUTHORITY",
+  BROKER = "BROKER",
+  INTERMEDIARY = "INTERMEDIARY",
+  OTHER = "OTHER",
+}
 
+export interface InvolvedActor {
+  name: string
+  role: ActorRole
+}
 interface DealVersionBase {
   id: number
 
@@ -209,8 +220,9 @@ interface DealVersionBase {
   domestic_jobs_current: JSONJobsFieldType
   domestic_jobs_created_comment: string
 
-  operating_company: InvestorVersion2 | null
-  involved_actors?: InvestorHull // TODO incorrect
+  // operating_company: InvestorHull | null
+  operating_company_id: number | null
+  involved_actors: InvolvedActor[]
   project_name: string
   investment_chain_comment: string
 
@@ -368,7 +380,7 @@ export interface InvestorVersion2 extends VersionTimestampMixins {
   id: number
   name: string
   name_unknown: boolean
-  country: Country
+  country: Country | null
   classification: string
   homepage: string
   opencorporates: string
@@ -376,5 +388,5 @@ export interface InvestorVersion2 extends VersionTimestampMixins {
   datasources: DataSource[]
 
   status: Version2Status
-  deals: DealHull[]
+  deals: number[]
 }

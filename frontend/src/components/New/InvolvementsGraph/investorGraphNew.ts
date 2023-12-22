@@ -26,7 +26,7 @@ export const LAYOUT_OPTIONS = {
 export const CY_OPTIONS: CytoscapeOptions = {
   minZoom: 0.3,
   maxZoom: 5,
-  wheelSensitivity: 0.2,
+  // wheelSensitivity: 0.2,
   layout: LAYOUT_OPTIONS,
   style: [
     {

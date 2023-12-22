@@ -14,7 +14,8 @@
   export let investor: InvestorHull
 
   export let hideControls = false
-  export let showDeals = true
+  export let skipVentures = false
+  let showDeals = true
 
   let cyGraph: Graph
   let graphContainer: HTMLDivElement
@@ -31,7 +32,9 @@
   async function fetchInvolvments() {
     loading.set(true)
     const ret = await fetch(
-      `/api/investors/${investor.id}/involvements_graph/?depth=${depth}&include_deals=${showDeals}`,
+      `/api/investors/${
+        investor.id
+      }/involvements_graph/?depth=${depth}&include_deals=${showDeals}&show_ventures=${!skipVentures}`,
     )
     // using 418-Teapot, because fetch goes into auto-retry mode
     // on 408 (request timeout), which ought to be the correct response here 🙄
@@ -91,8 +94,7 @@
   }
 </script>
 
-<!--{JSON.stringify(elements)}-->
-<div class="h-[800px]">
+<div class={skipVentures ? "h-[400px]" : "h-[800px]"}>
   <div
     bind:this={graphContainer}
     class="min-h-full w-full cursor-all-scroll border-2 border-solid"

@@ -31,8 +31,8 @@ class Command(BaseCommand):
             investor_hull: InvestorHull
             investor_hull, _ = InvestorHull.objects.get_or_create(
                 id=old_investor.id,
-                created_by_id=old_investor.created_by_id or 1,
-                created_at=old_investor.created_at,
+                # created_by_id=old_investor.created_by_id or 1,
+                # created_at=old_investor.created_at,
             )
 
             ic(old_investor.id, old_investor.status)

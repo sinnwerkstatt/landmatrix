@@ -232,12 +232,10 @@ class InvolvementNetwork2:
 
         if include_deals:
             deals = DealHull.objects.filter(
-                active_version__operating_company__investor_id__in=[
+                active_version__operating_company_id__in=[
                     x["id"] for x in all_investors
                 ]
-            ).values(
-                "id", "country_id", "active_version__operating_company__investor_id"
-            )
+            ).values("id", "country_id", "active_version__operating_company_id")
 
             for deal in deals:
                 rich_nodes += [
@@ -255,10 +253,8 @@ class InvolvementNetwork2:
                 rich_edges += [
                     {
                         "data": {
-                            "id": f"{deal['active_version__operating_company__investor_id']}_D{deal['id']}",
-                            "source": deal[
-                                "active_version__operating_company__investor_id"
-                            ],
+                            "id": f"{deal['active_version__operating_company_id']}_D{deal['id']}",
+                            "source": deal["active_version__operating_company_id"],
                             "target": f"D{deal['id']}",
                             "edge_color": "rgba(252,148,30,1)",
                         }

@@ -7,7 +7,7 @@ from django.contrib.gis.geos import GEOSGeometry
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models, transaction
-from django.db.models import Q
+from django.db.models import Q, QuerySet
 from django.http import Http404
 from django.utils import timezone
 from django.utils.translation import gettext as _
@@ -254,7 +254,7 @@ class DealVersionBaseFields(models.Model):
 
     """ Investor info """
     operating_company = models.ForeignKey(
-        "landmatrix.InvestorVersion2",
+        "landmatrix.InvestorHull",
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
@@ -609,27 +609,8 @@ class DealVersionBaseFields(models.Model):
         abstract = True
 
 
-# class DealVersionQuerySet(models.QuerySet):
-#     def active(self):
-#         return self.filter(deal__in=DealHull.objects.active())
-#
-#     def public(self):
-#         return self.active().filter(is_public=True)
-#
-#     def visible(self, user=None, subset="PUBLIC"):
-#         # TODO: welche user duerfen unfiltered bekommen?
-#         if not user or not user.is_authenticated:
-#             return self.public()
-#
-#         if subset == "PUBLIC":
-#             return self.public()
-#         elif subset == "ACTIVE":
-#             return self.active()
-#         return self
-
-
 class VersionTimestampsMixins(models.Model):
-    created_at = models.DateTimeField(_("Created at"), blank=True)
+    created_at = models.DateTimeField(_("Created at"))
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         blank=True,
@@ -691,13 +672,13 @@ class DealVersion2(DealVersionBaseFields, VersionTimestampsMixins):
     is_public = models.BooleanField(default=False)
     has_known_investor = models.BooleanField(default=False)
     parent_companies = models.ManyToManyField(
-        Investor,
+        "landmatrix.InvestorHull",
         verbose_name=_("Parent companies"),
-        related_name="newModel_child_deals",
+        related_name="child_deals",
         blank=True,
     )
     top_investors = models.ManyToManyField(
-        Investor,
+        "landmatrix.InvestorHull",
         verbose_name=_("Top parent companies"),
         related_name="+",
         blank=True,
@@ -740,12 +721,7 @@ class DealVersion2(DealVersionBaseFields, VersionTimestampsMixins):
         models.CharField(), blank=True, default=list
     )
 
-    deal_size = DecimalIntField(
-        max_digits=18,
-        decimal_places=2,
-        blank=True,
-        null=True,
-    )
+    deal_size = DecimalIntField(max_digits=18, decimal_places=2, blank=True, null=True)
     initiation_year = models.IntegerField(
         blank=True, null=True, validators=[MinValueValidator(1970)]
     )
@@ -820,15 +796,26 @@ class DealVersion2(DealVersionBaseFields, VersionTimestampsMixins):
     #         # 4. Unknown operating company AND no known operating company parents
     #         return "NO_KNOWN_INVESTOR"
     #     return ""
-    def _has_no_known_investor(self) -> bool:
+    def _has_known_investor(self) -> bool:
         if not self.operating_company_id:
-            return True
-        oc = InvestorVersion2.objects.get(id=self.operating_company_id)
-        # if the Operating Company is known, we have a known investor and exit.
-        if not oc.is_actually_unknown:
             return False
-        # only if no known Investor exists, we return True
-        return not oc.investors.filter(investor__is_actually_unknown=False).exists()
+        try:
+            oc = InvestorHull.objects.exclude(active_version=None).get(
+                id=self.operating_company_id
+            )
+        except InvestorHull.DoesNotExist:
+            return False
+
+        if not oc.active_version.name_unknown:
+            return True
+
+        # see if one of the parents of the investor exists
+        if oc.investors.filter(
+            parent_investor__active_version__name_unknown=False
+        ).exists():
+            return True
+
+        return False
 
     def _calculate_deal_size(self):
         negotiation_status = self.current_negotiation_status
@@ -975,7 +962,7 @@ class DealVersion2(DealVersionBaseFields, VersionTimestampsMixins):
         if dependent:
             # With the help of signals these fields are recalculated on changes to:
             # Investor and InvestorVentureInvolvement
-            self.has_known_investor = not self._has_no_known_investor()
+            self.has_known_investor = self._has_known_investor()
             # TODO public state for version. to be discussed
             # self.not_public_reason = self._calculate_public_state()
             # self.is_public = self.not_public_reason == ""
@@ -1215,14 +1202,16 @@ class DealHull(models.Model):
     )
 
     # ## calculated
-    # this just mirrors the created_at/by from the first version.
-    created_at = models.DateTimeField(_("Created"), default=timezone.now, blank=True)
-    created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="+"
-    )
     fully_updated_at = models.DateTimeField(
         _("Last full update"), null=True, blank=True
     )
+
+    # we don't seem to need them
+    # this just mirrors the created_at/by from the first version.
+    # created_at = models.DateTimeField(_("Created"), default=timezone.now, blank=True)
+    # created_by = models.ForeignKey(
+    #     settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="+"
+    # )
 
     objects = DealHullQuerySet.as_manager()
 
@@ -1272,6 +1261,7 @@ class InvestorVersion2(VersionTimestampsMixins, models.Model):
     status = models.CharField(choices=VERSION_STATUS_CHOICES, default="DRAFT")
 
     """ calculated properties """
+    # TODO need to fill this.
     involvements_snapshot = models.JSONField(blank=True, null=True)
 
     def recalculate_fields(self):
@@ -1318,11 +1308,12 @@ class InvestorHull(models.Model):
     )
 
     # ## calculated
+    # we don't seem to need them
     # this just mirrors the created_at/by from the first version.
-    created_at = models.DateTimeField(_("Created"), default=timezone.now, blank=True)
-    created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="+"
-    )
+    # created_at = models.DateTimeField(_("Created"), default=timezone.now, blank=True)
+    # created_by = models.ForeignKey(
+    #     settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="+"
+    # )
 
     def __str__(self):
         return f"Investor #{self.id}"
@@ -1344,10 +1335,58 @@ class InvestorHull(models.Model):
             )
         return
 
-    def involvements_graph(self, depth, include_deals):
+    def involvements_graph(self, depth, include_deals, show_ventures):
+        # TODO beachte show_ventures
         return InvolvementNetwork2().get_network(
             self.id, depth, include_deals=include_deals
         )
+
+    def to_list_dict(self):
+        """
+        should only be called on InvestorHulls filtered by having active_versions
+        """
+        return {
+            "id": self.id,
+            "selected_version": {
+                "id": self.active_version.id,
+                "name": self.active_version.name,
+                "modified_at": self.active_version.modified_at,
+                "classification": self.active_version.classification,
+                "country": {"id": self.active_version.country_id},
+            },
+        }
+
+    @staticmethod
+    def to_investor_list(qs: QuerySet):
+        deals = DealHull.objects.filter(
+            active_version__operating_company_id__in=qs.values_list("id", flat=True)
+        ).values("id", "active_version__operating_company_id")
+
+        return [
+            {
+                "id": inv["id"],
+                "selected_version": {
+                    "id": inv["active_version__id"],
+                    "name": inv["active_version__name"],
+                    "modified_at": inv["active_version__modified_at"],
+                    "classification": inv["active_version__classification"],
+                    "country": {"id": inv["active_version__country_id"]},
+                    "deals": [
+                        x["id"]
+                        for x in deals
+                        if x["active_version__operating_company_id"] == inv["id"]
+                    ],
+                },
+            }
+            for inv in qs.values(
+                "id",
+                "active_version__id",
+                "active_version__name",
+                "active_version__modified_at",
+                "active_version__classification",
+                "active_version__country_id",
+            )
+        ]
 
 
 class Involvement(models.Model):
@@ -1383,10 +1422,12 @@ class Involvement(models.Model):
         default=list,
     )
 
-    percentage = models.FloatField(
+    percentage = models.DecimalField(
         _("Ownership share"),
         blank=True,
         null=True,
+        max_digits=5,
+        decimal_places=2,
         validators=[MinValueValidator(0), MaxValueValidator(100)],
     )
     loans_amount = models.FloatField(_("Loan amount"), blank=True, null=True)
@@ -1397,16 +1438,11 @@ class Involvement(models.Model):
         null=True,
         on_delete=models.PROTECT,
     )
-    loans_date = LooseDateField(_("Loan date"), blank=True)
+    loans_date = LooseDateField(_("Loan date"), blank=True, null=True)
 
-    PARENT_RELATION_CHOICES = (
-        ("SUBSIDIARY", _("Subsidiary of parent company")),
-        ("LOCAL_BRANCH", _("Local branch of parent company")),
-        ("JOINT_VENTURE", _("Joint venture of parent companies")),
-    )
     parent_relation = models.CharField(
         verbose_name=_("Parent relation"),
-        choices=PARENT_RELATION_CHOICES,
+        choices=choices.PARENT_RELATION_CHOICES,
         blank=True,
         null=True,
     )

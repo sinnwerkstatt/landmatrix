@@ -95,8 +95,8 @@ class DealHullAdmin(admin.ModelAdmin):
         "confidential_comment",
         "deleted",
         "deleted_comment",
-        "created_at",
-        "created_by",
+        # "created_at",
+        # "created_by",
         "fully_updated_at",
         "country",
     ]

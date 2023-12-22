@@ -55,7 +55,9 @@ def _parse_filter(request: Request):
     if parents := request.GET.get("parent_company"):
         ret &= Q(active_version__parent_companies__id=parents)
     if parents_c_id := request.GET.get("parent_company_country_id"):
-        ret &= Q(active_version__parent_companies__country_id=parents_c_id)
+        ret &= Q(
+            active_version__parent_companies__active_version__country_id=parents_c_id
+        )
 
     # TODO This might not be working correctly yet. it does not include "no nature of deal", but the original filter did
     if nature := request.GET.getlist("nature"):
@@ -304,16 +306,14 @@ class Deal2ViewSet(viewsets.ModelViewSet):
         return Response(dv1)
 
     def list(self, request: Request, *args, **kwargs):
-        deals = DealHull.objects.visible(
-            request.user, request.GET.get("subset", "PUBLIC")
-        )
-        filters = _parse_filter(request)
         deals = (
-            deals.exclude(active_version=None)
+            DealHull.objects.visible(request.user, request.GET.get("subset", "PUBLIC"))
+            .exclude(active_version=None)
             .filter(deleted=False, confidential=False)
-            .filter(filters)
+            .filter(_parse_filter(request))
             .prefetch_related("active_version")
             .prefetch_related("active_version__operating_company")
+            .prefetch_related("active_version__operating_company__active_version")
             .prefetch_related("active_version__locations")
             .prefetch_related("country")
             .order_by("id")
@@ -346,19 +346,19 @@ class Deal2ViewSet(viewsets.ModelViewSet):
                     "contract_size": d.active_version.contract_size,
                     "operating_company": {
                         "id": d.active_version.operating_company.id,
-                        "name": d.active_version.operating_company.name,
+                        "name": d.active_version.operating_company.active_version.name,
                     }  # for map pin popover & listing
                     if d.active_version.operating_company_id
                     else None,
-                    "top_investors": [
-                        {
-                            "id": ti.id,
-                            "name": ti.name,
-                            "classification": ti.classification,
-                        }  # for listing
-                        for ti in d.active_version.top_investors.all()
-                        # TODO Investors are not filtered (e.g. "deleted")
-                    ],
+                    "top_investors": list(
+                        d.active_version.top_investors.annotate(
+                            name=F("active_version__name")
+                        )
+                        .annotate(classification=F("active_version__classification"))
+                        .values("id", "name", "classification")
+                    )
+                    # TODO Investors are not filtered (e.g. "deleted")
+                    ,
                     "locations": [
                         {
                             "nid": x.nid,
@@ -399,18 +399,37 @@ class Investor2ViewSet(viewsets.ReadOnlyModelViewSet):
     def simple(self, request):
         # TODO this might need an "also search for drafts option"
         return Response(
-            list(
-                InvestorHull.objects.exclude(deleted=True)
-                .exclude(active_version=None)
-                .annotate(name=F("active_version__name"))
-                .values("id", "name")
-            )
+            InvestorHull.objects.exclude(deleted=True)
+            .exclude(active_version=None)
+            .annotate(name=F("active_version__name"))
+            .values("id", "name")
         )
+
+    @action(methods=["get"], detail=False)
+    def deal_filtered(self, request):
+        deals = (
+            DealHull.objects.visible(request.user, request.GET.get("subset", "PUBLIC"))
+            .exclude(active_version=None)
+            .filter(deleted=False, confidential=False)
+            .filter(_parse_filter(request))
+            .values_list("active_version_id", flat=True)
+        )
+
+        ret = InvestorHull.objects.exclude(active_version=None).filter(
+            child_deals__in=deals
+        )
+
+        if investor_id := request.GET.get("parent_company"):
+            ret = ret.filter(id=investor_id)
+        if country_id := request.GET.get("parent_company_country_id"):
+            ret = ret.filter(active_version__country_id=country_id)
+
+        return Response(InvestorHull.to_investor_list(ret))
 
     @action(
         name="Investor Instance",
         methods=["get"],
-        url_path="(?P<version_id>\d+)",
+        url_path=r"(?P<version_id>\d+)",
         detail=True,
     )
     def retrieve_version(self, request, pk=None, version_id=None):
@@ -424,9 +443,12 @@ class Investor2ViewSet(viewsets.ReadOnlyModelViewSet):
     def involvements_graph(self, request, pk=None, version_id=None):
         depth = int(request.GET.get("depth", 5))
         include_deals = request.GET.get("include_deals", "") == "true"
-        instance: InvestorHull = self.get_object()
+        show_ventures = request.GET.get("show_ventures", "") == "true"
+        investor: InvestorHull = self.get_object()
         try:
-            return Response(instance.involvements_graph(depth, include_deals))
+            return Response(
+                investor.involvements_graph(depth, include_deals, show_ventures)
+            )
         except OperationalError:
             return Response(status=status.HTTP_418_IM_A_TEAPOT)
 
@@ -456,6 +478,7 @@ def field_choices(request):
                 "minerals": choices.MINERALS_ITEMS,
                 "water_source": choices.WATER_SOURCE_ITEMS,
                 "not_public_reason": choices.NOT_PUBLIC_REASON_ITEMS,
+                "actors": choices.ACTOR_ITEMS,
             },
             "investor": {"classification": choices.INVESTOR_CLASSIFICATION_ITEMS},
             "involvement": {"investment_type": choices.INVESTMENT_TYPE_ITEMS},

@@ -12,6 +12,8 @@
   import ManageHeaderVersionFlow from "$components/New/ManageHeaderVersionFlow.svelte"
 
   export let object: DealHull | InvestorHull
+
+  const objType = "fully_updated_at" in object ? "deal" : "investor"
 </script>
 
 <div class="my-4 grid grid-cols-2 lg:grid-cols-3">
@@ -34,7 +36,7 @@
         >
           <li>
             <div class="flex items-center gap-2">
-              <a class="btn" href="">copy deal</a>
+              <a class="btn" href="">copy {objType}</a>
               this will copy the current deal and create blablabla...
             </div>
           </li>
@@ -62,20 +64,23 @@
           class="absolute z-50 border border-black bg-white p-2 shadow-2xl"
           slot="details"
         >
-          {#if object.active_version}
+          {#if object.active_version_id}
             <li>
               <div class="flex items-center gap-2">
-                <a class="btn" href="/deal/{object.id}/{object.active_version}/">
+                <a
+                  class="btn"
+                  href="/{objType}/{object.id}/{object.active_version_id}/"
+                >
                   active version
                 </a>
                 go to current active version
               </div>
             </li>
           {/if}
-          {#if object.draft_version}
+          {#if object.draft_version_id}
             <li>
               <div class="flex items-center gap-2">
-                <a class="btn" href="/deal/{object.id}/{object.draft_version}/">
+                <a class="btn" href="/{objType}/{object.id}/{object.draft_version_id}/">
                   draft version
                 </a>
                 go to current draft version

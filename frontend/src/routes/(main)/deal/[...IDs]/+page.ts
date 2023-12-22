@@ -21,14 +21,11 @@ export const load: PageLoad = async ({ fetch, params, depends }) => {
 
   const deal: DealHull = await ret.json()
 
-  if (deal.active_version === dealVersion) throw redirect(301, `/deal/${dealID}/`)
+  if (deal.active_version_id === dealVersion) throw redirect(301, `/deal/${dealID}/`)
 
-  //  TODO this block
-  // if (res.data.deal.status === Status.DRAFT && !dealVersion) {
-  //   const dealV = res.data.deal.versions?.[0]?.id
-  //   throw redirect(301, `/deal/${dealID}/${dealV}`)
-  // }
-  // // redirect if version is active version
+  if (!deal.active_version_id && !dealVersion) {
+    throw redirect(301, `/deal/${dealID}/${deal.draft_version_id}/`)
+  }
 
   return { deal, dealID, dealVersion }
 }

@@ -27,7 +27,7 @@
   const isDeal = (obj: DealHull | InvestorHull): obj is DealHull =>
     "fully_updated_at" in obj
 
-  $: isCurrentDraft = object.selected_version.id === object.draft_version
+  $: isCurrentDraft = object.selected_version.id === object.draft_version_id
   $: i18nValues = { values: { object: isDeal(object) ? "deal" : "investor" } }
 </script>
 

@@ -4,7 +4,6 @@
   import type { Deal } from "$lib/types/deal"
 
   import CountryField from "$components/Fields/Display2/CountryField.svelte"
-  import DisplayField from "$components/Fields/DisplayField.svelte"
   import Overlay from "$components/Overlay.svelte"
 
   export let visible: boolean

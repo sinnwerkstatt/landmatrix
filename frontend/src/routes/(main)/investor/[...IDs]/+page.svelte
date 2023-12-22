@@ -8,12 +8,12 @@
   import { UserRole } from "$lib/types/user"
 
   import HeaderDates from "$components/HeaderDates.svelte"
+  import InvolvementsGraph from "$components/New/InvolvementsGraph/InvolvementsGraph.svelte"
 
   import InvestorManageHeader from "./InvestorManageHeader.svelte"
   import SectionGeneralInfo from "./SectionGeneralInfo.svelte"
   import SectionHistory from "./SectionHistory.svelte"
   import SectionInvolvements from "./SectionInvolvements.svelte"
-  import SectionInvolvementsGraph from "./SectionInvolvementsGraph.svelte"
 
   export let data
 
@@ -28,7 +28,7 @@
   ]
 
   $: tabs =
-    data.investor.datasources && data.investor.datasources.length > 0
+    data.investor.selected_version.datasources.length > 0
       ? allTabs
       : allTabs.filter(tab => tab.target !== "#data_sources")
 
@@ -109,7 +109,7 @@
       {/if}
 
       {#if activeTab === "#network_graph"}
-        <SectionInvolvementsGraph investor={data.investor} />
+        <InvolvementsGraph investor={data.investor} />
         <!--{#if !data.investorVersion}-->
         <!--  <InvestorGraph {investor} showControls includeVentures />-->
         <!--{:else}-->

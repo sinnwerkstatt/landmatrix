@@ -18,7 +18,7 @@ import {
   NegotiationStatusGroup,
 } from "$lib/types/deal"
 import type { DraftStatus, FieldDefinition, Status } from "$lib/types/generics"
-import type { Currency, DealHull } from "$lib/types/newtypes"
+import type { Currency, DealHull, InvestorHull } from "$lib/types/newtypes"
 import type { User } from "$lib/types/user"
 import type {
   BlogCategory,
@@ -75,6 +75,7 @@ interface FieldChoicesType {
     minerals: ValueLabelEntry[]
     water_source: ValueLabelEntry[]
     not_public_reason: ValueLabelEntry[]
+    actors: ValueLabelEntry[]
   }
   investor: {
     classification: ValueLabelEntry[]
@@ -83,6 +84,7 @@ interface FieldChoicesType {
     investment_type: ValueLabelEntry[]
   }
 }
+
 export const fieldChoices = writable<FieldChoicesType>({
   deal: {
     intention_of_investment: [],
@@ -106,6 +108,7 @@ export const fieldChoices = writable<FieldChoicesType>({
     minerals: [],
     water_source: [],
     not_public_reason: [],
+    actors: [],
   },
   investor: { classification: [] },
   involvement: { investment_type: [] },
@@ -189,8 +192,10 @@ interface ChartDesc {
   dynamics_overview: string
   produce_info_map: string
   global_web_of_investments: string
+
   [key: string]: string
 }
+
 export const chartDescriptions = derived(
   [locale],
   ([$locale], set) => {
@@ -356,10 +361,12 @@ if (browser) {
 //   fetch("/api/field_definitions/").then(ret=>ret.json()).then(set)
 // })
 export const fieldDefinitions = writable<FieldDefinition[]>([])
+
 export async function fetchFieldDefinitions(fetch: LoadEvent["fetch"]) {
   const res = await fetch("/api/field_definitions/")
   fieldDefinitions.set(await res.json())
 }
+
 export const currencies = readable<Currency[]>([], set => {
   fetch("/api/currencies/")
     .then(ret => ret.json())
@@ -383,10 +390,28 @@ export const dealsNG = derived(
   [] as DealHull[],
 )
 
+export const investorsNG = derived(
+  [filters, publicOnly],
+  ([$filters, $publicOnly], set) => {
+    loading.set(true)
+    const subset = $publicOnly ? "PUBLIC" : "ACTIVE"
+    fetch(
+      `/api/investors/deal_filtered/?subset=${subset}&${$filters.toRESTFilterArray()}`,
+    )
+      .then(ret => ret.json() as Promise<InvestorHull[]>)
+      .then(ret => {
+        loading.set(false)
+        set(ret)
+      })
+  },
+  [] as InvestorHull[],
+)
+
 export interface SimpleInvestor {
   id: number
   name: string
 }
+
 export const simpleInvestors = readable<SimpleInvestor[]>([], set => {
   fetch("/api/investors/simple")
     .then(ret => ret.json())
