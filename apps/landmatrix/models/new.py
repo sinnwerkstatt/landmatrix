@@ -1336,9 +1336,8 @@ class InvestorHull(models.Model):
         return
 
     def involvements_graph(self, depth, include_deals, show_ventures):
-        # TODO beachte show_ventures
         return InvolvementNetwork2().get_network(
-            self.id, depth, include_deals=include_deals
+            self.id, depth, include_deals=include_deals, show_ventures=show_ventures
         )
 
     def to_list_dict(self):

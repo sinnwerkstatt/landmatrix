@@ -4,7 +4,7 @@ from .models.investor import Investor, InvestorVentureInvolvement
 from django.db import connection
 from django.db.models import Q
 
-from .involvement_sql import GRAPH_QUERY
+from .involvement_sql import GRAPH_QUERY, UNIDIRECTIONAL_GRAPH_QUERY
 
 
 class InvolvementNetwork:
@@ -140,30 +140,47 @@ class InvolvementNetwork2:
         self.include_ventures = include_ventures
         self.MAX_DEPTH = 30
 
-    def get_network(self, investor_id, depth, include_deals=False) -> dict:
+    def get_network(
+        self, investor_id, depth, include_deals=False, show_ventures=True
+    ) -> dict:
         from apps.landmatrix.models.new import Involvement, InvestorHull, DealHull
 
         depth = min(depth, self.MAX_DEPTH)
 
         min_depth = depth
-        with connection.cursor() as cursor:
-            # depth-1 to fix off-by-one issue where "1" is giving two edges depth
-            cursor.execute(GRAPH_QUERY, [depth - 1, investor_id])
-            rows = cursor.fetchall()
+        if show_ventures:
+            with connection.cursor() as cursor:
+                # depth-1 to fix off-by-one issue where "1" is giving two edges depth
+                cursor.execute(GRAPH_QUERY, [depth - 1, investor_id])
+                rows = cursor.fetchall()
 
-        investor_ids = set()
-        edges = set()
-        for row in rows:
-            # print(row)
-            row_depth, row_investor_id, down_edges, up_edges = row
-            investor_ids.add(row_investor_id)
-            for down_edge in down_edges:
-                investor_ids.add(down_edge)
-                edges.add((row_investor_id, down_edge))
-            for up_edge in up_edges:
-                investor_ids.add(up_edge)
-                edges.add((up_edge, row_investor_id))
-            min_depth = min(min_depth, row_depth)
+            investor_ids = set()
+            edges = set()
+            for row in rows:
+                # print(row)
+                row_depth, row_investor_id, down_edges, up_edges = row
+                investor_ids.add(row_investor_id)
+                for down_edge in down_edges:
+                    investor_ids.add(down_edge)
+                    edges.add((row_investor_id, down_edge))
+                for up_edge in up_edges:
+                    investor_ids.add(up_edge)
+                    edges.add((up_edge, row_investor_id))
+                min_depth = min(min_depth, row_depth)
+        else:
+            with connection.cursor() as cursor:
+                # depth-1 to fix off-by-one issue where "1" is giving two edges depth
+                cursor.execute(UNIDIRECTIONAL_GRAPH_QUERY, [depth - 1, investor_id])
+                rows = cursor.fetchall()
+            investor_ids = set()
+            edges = set()
+            for row in rows:
+                row_depth, row_investor_id, up_edges = row
+                investor_ids.add(row_investor_id)
+                for up_edge in up_edges:
+                    investor_ids.add(up_edge)
+                    edges.add((up_edge, row_investor_id))
+                min_depth = min(min_depth, row_depth)
         # ic(depth, min_depth)
         all_involvements = Involvement.objects.filter(
             Q(parent_investor_id__in=investor_ids)
