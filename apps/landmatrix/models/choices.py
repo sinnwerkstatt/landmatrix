@@ -666,7 +666,7 @@ INVESTOR_CLASSIFICATION_ITEMS = [
         "value": "NON_PROFIT",
         "label": _("Non - Profit organization (e.g. Church, University etc.)"),
     },
-    {"value": "OTHER", "label": _("Other (please specify in comment field)")},
+    {"value": "OTHER", "label": _("Other")},
 ]
 INVESTOR_CLASSIFICATION_CHOICES = [
     (x["value"], x["label"]) for x in INVESTOR_CLASSIFICATION_ITEMS
