@@ -634,7 +634,7 @@ def map_version_payload(ov: dict, nv: DealVersion2):
     for pid in ov["parent_companies"]:
         try:
             parent_companies += [InvestorHull.objects.get(id=pid)]
-        except Investor.DoesNotExist:
+        except InvestorHull.DoesNotExist:
             pass
     # noinspection PyUnresolvedReferences
     nv.parent_companies.set(parent_companies)
@@ -642,7 +642,7 @@ def map_version_payload(ov: dict, nv: DealVersion2):
     for pid in ov["top_investors"]:
         try:
             top_investors += [InvestorHull.objects.get(id=pid)]
-        except Investor.DoesNotExist:
+        except InvestorHull.DoesNotExist:
             pass
     # noinspection PyUnresolvedReferences
     nv.top_investors.set(top_investors)
