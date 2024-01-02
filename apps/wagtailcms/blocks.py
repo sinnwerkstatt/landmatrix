@@ -152,7 +152,10 @@ class ImageBlock(ImageChooserBlock):
         return context
 
     def get_api_representation(self, value, context=None):
-        url = value.get_rendition("max-1200x1200").url
+        try:
+            url = value.get_rendition("max-1200x1200").url
+        except AttributeError:
+            url = ""
         prep_val = self.get_prep_value(value)
         ret = {"id": prep_val, "url": url}
         return ret
