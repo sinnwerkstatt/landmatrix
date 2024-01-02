@@ -2,18 +2,18 @@
 .svelte-select + .list {
   --height: 38px;
   --font-size: 1rem;
-  --border: 1px solid #d1d5db;
-  --border-hover: 1px solid #d1d5db;
+  --border: 1px solid theme("colors.gray.100");
+  --border-hover: 1px solid theme("colors.gray.100");
   --border-radius: 0px;
   --border-focused: 2px solid black;
   --border-radius-focused: 6px;
   --clear-select-focus-outline: 2px solid black;
-  --item-hover-bg: #fee7cd;
+  --item-hover-bg: theme("colors.orange.100");
   --item-is-active-color: black;
   --item-color: black;
   --selected-item-color: black;
-  --item-is-active-bg: #fca036;
+  --item-is-active-bg: theme("colors.orange.400");
   --list-max-height: 400px;
   --list-border: 1px solid black;
-  --error-border: 2px solid #b11b1b;
+  --error-border: 2px solid theme("colors.red.700");
 }

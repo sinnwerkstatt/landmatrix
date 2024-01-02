@@ -1,0 +1,22 @@
+:root {
+  accent-color: hsl(32, 97%, 55%);
+}
+
+@layer base {
+  a {
+    @apply cursor-pointer text-orange hover:text-orange-200;
+    /*@apply hover:underline*/
+  }
+
+  a.investor {
+    @apply text-pelorous;
+  }
+
+  p {
+    @apply mb-4;
+  }
+
+  th {
+    text-align: left;
+  }
+}

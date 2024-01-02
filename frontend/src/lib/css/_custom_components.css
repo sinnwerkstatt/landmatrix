@@ -1,0 +1,90 @@
+@layer components {
+  .heading1,
+  .heading2,
+  .heading3 {
+    @apply mb-5 font-oswald font-bold leading-tight tracking-normal;
+  }
+  .heading1 {
+    @apply text-[48px] md:text-[60px];
+  }
+  .heading2 {
+    @apply text-[40px] md:text-[48px];
+  }
+  .heading3 {
+    @apply text-[32px] md:text-[40px];
+  }
+  .heading4 {
+    @apply mb-5 font-oswald text-[28px] font-semibold leading-tight md:text-[32px];
+  }
+  .heading5 {
+    @apply mb-3 font-oswald text-2xl leading-tight md:text-[28px];
+  }
+  .body1 {
+    @apply text-base leading-tight md:text-lg;
+  }
+  .body2 {
+    @apply text-sm leading-tight md:text-base;
+  }
+
+  .display1 {
+    @apply font-oswald text-[72px] font-bold leading-tight tracking-normal md:text-[120px];
+  }
+
+  .subtitle1 {
+    @apply text-base font-bold leading-tight md:text-lg;
+  }
+  .subtitle2 {
+    @apply text-sm font-bold leading-tight md:text-base;
+  }
+  .caption {
+    @apply text-xs font-bold uppercase leading-tight tracking-widest text-gray-900 md:text-sm;
+  }
+
+  .code {
+    @apply rounded bg-gray-100 px-2 py-1;
+  }
+
+  .inpt {
+    @apply w-full border border-gray-300 bg-white px-3 py-1.5 text-black;
+    @apply dark:border-gray-500 dark:bg-gray-600 dark:text-white;
+  }
+
+  textarea.inpt,
+  select[multiple].inpt {
+    height: unset;
+  }
+
+  .inpt:not(:placeholder-shown):not(:focus):invalid {
+    @apply border-2 border-red-600 text-red-700;
+  }
+
+  .inpt:placeholder-shown:required {
+    @apply border-2 border-red-600 text-red-700;
+  }
+
+  .inpt[readonly] {
+    @apply cursor-not-allowed bg-gray-100 text-gray-500 focus:outline-none;
+  }
+
+  .field-has-appendix {
+    @apply flex;
+  }
+
+  .field-has-appendix > input:not([type="checkbox"]):not([type="radio"]) {
+    @apply border-r-0;
+  }
+
+  .field-has-appendix > :not(input) {
+    height: calc(1.5em + 0.75rem + 2px);
+    @apply flex items-center justify-center border border-gray-300 bg-gray-200 px-3 py-1.5 text-gray-600;
+  }
+
+
+  .radio-btn {
+    @apply h-4 w-4 appearance-none rounded-full border border-gray-400 bg-white transition duration-200 checked:border-2 checked:border-orange-200 checked:bg-orange;
+  }
+
+  .checkbox-btn {
+    @apply h-4 w-4 appearance-none border border-gray-400 transition duration-200 checked:border-2 checked:border-orange-200 checked:bg-orange;
+  }
+}

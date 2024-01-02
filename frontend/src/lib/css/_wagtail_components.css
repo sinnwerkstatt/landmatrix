@@ -1,0 +1,39 @@
+@layer components {
+  .richtext-image {
+    @apply h-auto w-auto max-w-[40%];
+  }
+
+  .richtext-image.left {
+    @apply float-left mr-12;
+  }
+
+  .richtext-image.right {
+    @apply float-right ml-12;
+  }
+
+  .richtext-image.fullwidth {
+    @apply mx-auto block max-h-[700px] w-auto max-w-full text-center;
+  }
+
+  .paragraph ol {
+    @apply list-decimal pl-4;
+  }
+  .paragraph ul {
+    @apply mb-4 list-disc pl-4;
+  }
+  .paragraph h2 {
+    @apply heading3 mb-3;
+  }
+  .paragraph h3 {
+    @apply heading4 mb-2;
+  }
+  .paragraph h4 {
+    @apply heading5 mb-2;
+  }
+  .paragraph p {
+    @apply mb-4;
+  }
+  .paragraph a {
+    @apply text-orange transition hover:text-orange-700;
+  }
+}

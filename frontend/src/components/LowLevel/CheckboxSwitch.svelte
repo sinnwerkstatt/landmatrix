@@ -10,11 +10,11 @@
   </span>
 </label>
 
-<style>
+<style lang="postcss">
   input {
+    @apply bg-gray-100;
     appearance: none;
     margin: 0;
-    background-color: #c9c9c9;
     display: grid;
     place-content: center;
     width: 2.25em;
@@ -23,7 +23,7 @@
     cursor: pointer;
   }
   input:checked {
-    background-color: var(--color-orange);
+    @apply bg-orange;
   }
 
   input::before {

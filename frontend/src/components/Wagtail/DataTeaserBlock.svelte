@@ -25,45 +25,30 @@
     {value.subtitle}
   </h3>
 
-  <div
-    data-block="data_teaser"
-    class="  md:grid md:grid-cols-3 lg:grid-cols-3 lg:gap-24"
-  >
-    <div class="card-container">
+  <div data-block="data_teaser" class="md:grid md:grid-cols-3 lg:grid-cols-3 lg:gap-24">
+    <div class="mx-auto mb-20 text-center md:mb-0">
       <MapTeaser />
       <h3 class="heading2 dark:text-white">{value.cards[0].title}</h3>
-      <p class="card-text">{value.cards[0].teaser}</p>
-      <a class="link-button" href={value.cards[0].link.href}>
+      <p class="body1 mx-auto">{value.cards[0].teaser}</p>
+      <a class="butn-link butn-secondary" href={value.cards[0].link.href}>
         {value.cards[0].link.text}
       </a>
     </div>
-    <div class="card-container">
+    <div class="mx-auto mb-20 text-center md:mb-0">
       <CakeTeaser />
       <h3 class="heading2 dark:text-white">{value.cards[1].title}</h3>
-      <p class="card-text">{value.cards[1].teaser}</p>
-      <a class="link-button" href={value.cards[1].link.href}>
+      <p class="body1 mx-auto">{value.cards[1].teaser}</p>
+      <a class="butn-link butn-secondary" href={value.cards[1].link.href}>
         {value.cards[1].link.text}
       </a>
     </div>
-    <div class="card-container">
+    <div class="mx-auto mb-20 text-center md:mb-0">
       <TableTeaser />
       <h3 class="heading2 dark:text-white">{value.cards[2].title}</h3>
-      <p class="card-text">{value.cards[2].teaser}</p>
-      <a class="link-button" href={value.cards[2].link.href}>
+      <p class="body1 mx-auto">{value.cards[2].teaser}</p>
+      <a class="butn-link butn-secondary" href={value.cards[2].link.href}>
         {value.cards[2].link.text}
       </a>
     </div>
   </div>
 </div>
-
-<style lang="postcss">
-  .card-text {
-    @apply body1 mx-auto w-2/3 lg:w-full;
-  }
-  .link-button {
-    @apply button1 text-pelorous transition hover:text-pelorous-600;
-  }
-  .card-container {
-    @apply mx-auto mb-20 text-center md:mb-0;
-  }
-</style>
