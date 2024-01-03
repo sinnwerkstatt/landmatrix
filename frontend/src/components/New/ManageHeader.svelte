@@ -13,7 +13,7 @@
 
   export let object: DealHull | InvestorHull
 
-  const objType = "fully_updated_at" in object ? "deal" : "investor"
+  $: objType = "fully_updated_at" in object ? "deal" : "investor"
 </script>
 
 <div class="my-4 grid grid-cols-2 lg:grid-cols-3">
@@ -34,6 +34,12 @@
           class="absolute z-50 border border-black bg-white p-2 shadow-2xl"
           slot="details"
         >
+          <li>
+            <div class="flex items-center gap-2">
+              <a class="btn" href="/{objType}/edit/{object.id}/">edit {objType}</a>
+              this will edit the current deal and create blablabla...
+            </div>
+          </li>
           <li>
             <div class="flex items-center gap-2">
               <a class="btn" href="">copy {objType}</a>

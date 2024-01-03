@@ -199,7 +199,9 @@ class DealVersionSerializer(serializers.ModelSerializer):
                 defaults={
                     "name": location["name"],
                     "description": location["description"],
-                    "point": location["point"],
+                    "point": GEOSGeometry(str(location["point"]))
+                    if location["point"]
+                    else None,
                     "facility_name": location["facility_name"],
                     "level_of_accuracy": location["level_of_accuracy"],
                     "comment": location["comment"],
@@ -210,7 +212,7 @@ class DealVersionSerializer(serializers.ModelSerializer):
         ).delete()
 
         contract_nids = set()
-        for contract in request.data["version"].get("contracts"):
+        for contract in data.get("contracts"):
             contract_nids.add(contract["nid"])
             Contract.objects.update_or_create(
                 nid=contract["nid"],
@@ -228,7 +230,7 @@ class DealVersionSerializer(serializers.ModelSerializer):
         ).delete()
 
         datasource_nids = set()
-        for datasource in request.data["version"].get("datasources"):
+        for datasource in data.get("datasources"):
             datasource_nids.add(datasource["nid"])
             DealDataSource.objects.update_or_create(
                 nid=datasource["nid"],
