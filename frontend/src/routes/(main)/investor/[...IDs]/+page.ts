@@ -4,7 +4,9 @@ import type { InvestorHull } from "$lib/types/newtypes"
 
 import type { PageLoad } from "./$types"
 
-export const load: PageLoad = async ({ params, fetch }) => {
+export const load: PageLoad = async ({ depends, params, fetch }) => {
+  depends("investor:detail")
+
   const [investorID, investorVersion] = params.IDs.split("/").map(x =>
     x ? +x : undefined,
   )

@@ -9,11 +9,11 @@
   import { getCsrfToken } from "$lib/utils"
   import { removeEmptyEntries } from "$lib/utils/data_processing"
 
+  import EditSectionDataSources from "$components/EditSectionDataSources.svelte"
   import LoadingSpinner from "$components/icons/LoadingSpinner.svelte"
   import Modal from "$components/Modal.svelte"
 
   import EditSectionContracts from "./EditSectionContracts.svelte"
-  import EditSectionDataSources from "./EditSectionDataSources.svelte"
   import EditSectionEmployment from "./EditSectionEmployment.svelte"
   import EditSectionFormerUse from "./EditSectionFormerUse.svelte"
   import EditSectionGenderRelatedInfo from "./EditSectionGenderRelatedInfo.svelte"
@@ -115,16 +115,17 @@
       )
       savingInProgress = false
       return false
-    } else if (!ret.ok) {
+    }
+    if (!ret.ok) {
       toast.push(`Unexpected error: ${JSON.stringify(retJson)}`, { classes: ["error"] })
       savingInProgress = false
       return false
-    } else {
-      toast.push("Saved data", { classes: ["success"] })
-      await invalidate("deal:detail")
-      savingInProgress = false
-      return true
     }
+
+    toast.push("Saved data", { classes: ["success"] })
+    await invalidate("deal:detail")
+    savingInProgress = false
+    return true
   }
 
   const onClickClose = async (force = false): Promise<void> => {
@@ -144,11 +145,8 @@
     if (formChanged) await saveDeal()
   }
 
-  const onClickTab: MouseEventHandler<HTMLAnchorElement> = async (e): Promise<void> => {
-    console.log(e)
-    if (savingInProgress || !isFormValid()) {
-      return
-    }
+  const onClickTab: MouseEventHandler<HTMLAnchorElement> = async e => {
+    if (savingInProgress || !isFormValid()) return
 
     if (formChanged) {
       const success = await saveDeal()
@@ -170,7 +168,7 @@
       <button
         class="btn btn-primary mx-2 flex items-center gap-2"
         class:disabled={!formChanged || savingInProgress}
-        on:click|preventDefault={() => onClickSave()}
+        on:click|preventDefault={onClickSave}
       >
         {#if savingInProgress}
           <LoadingSpinner /> {$_("Saving...")}

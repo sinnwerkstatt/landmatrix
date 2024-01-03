@@ -26,7 +26,6 @@ export const load: PageLoad = async ({ params, fetch, parent, depends }) => {
 
   const deal: DealHull = await ret.json()
 
-  console.log()
   // don't allow editing of older versions
   if (versionID && versionID !== deal.draft_version_id) {
     console.warn("redirecting to draft version")

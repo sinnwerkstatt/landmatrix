@@ -262,7 +262,7 @@ class CountryIDNameSerializer(serializers.ModelSerializer):
         fields = ["id", "name"]
 
 
-class Deal2Serializer(serializers.ModelSerializer):
+class DealSerializer(serializers.ModelSerializer):
     active_version_id = serializers.PrimaryKeyRelatedField(read_only=True)
     draft_version_id = serializers.PrimaryKeyRelatedField(read_only=True)
     created_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
@@ -316,8 +316,13 @@ class Investor2DealSerializer(serializers.ModelSerializer):
 class InvestorVersionSerializer(serializers.ModelSerializer):
     datasources = InvestorDataSourceSerializer(many=True, read_only=True)
     country = CountryIDNameSerializer()
+    country_id = serializers.IntegerField()
     # deals = Investor2DealSerializer(many=True)
     deals = serializers.SerializerMethodField()
+
+    class Meta:
+        model = InvestorVersion2
+        fields = "__all__"
 
     @staticmethod
     def get_deals(obj: InvestorVersion2):
@@ -378,10 +383,6 @@ class InvestorVersionSerializer(serializers.ModelSerializer):
             nid__in=datasource_nids
         ).delete()
 
-    class Meta:
-        model = InvestorVersion2
-        fields = "__all__"
-
 
 # class InvolvementSerializer(serializers.ModelSerializer):
 #     class Meta:
@@ -389,7 +390,7 @@ class InvestorVersionSerializer(serializers.ModelSerializer):
 #         fields = "__all__"
 
 
-class Investor2Serializer(serializers.ModelSerializer):
+class InvestorSerializer(serializers.ModelSerializer):
     active_version_id = serializers.PrimaryKeyRelatedField(read_only=True)
     draft_version_id = serializers.PrimaryKeyRelatedField(read_only=True)
 

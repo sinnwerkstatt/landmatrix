@@ -68,6 +68,7 @@
               fieldname="datasource.url"
               bind:value={datasource.url}
               label={$_("URL")}
+              isURL
             />
             <TextField
               fieldname="datasource.comment"

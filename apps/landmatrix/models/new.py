@@ -1335,7 +1335,7 @@ class InvestorHull(models.Model):
         return self.active_version or self.draft_version
 
     def add_draft(self, created_by: User = None) -> InvestorVersion2:
-        dv = InvestorVersion2.objects.create(deal=self, created_by=created_by)
+        dv = InvestorVersion2.objects.create(investor=self, created_by=created_by)
         self.draft_version = dv
         self.save()
         return dv

@@ -23,8 +23,8 @@ from apps.landmatrix.models.new import (
     InvestorWorkflowInfo2,
 )
 from apps.landmatrix.serializers import (
-    Deal2Serializer,
-    Investor2Serializer,
+    DealSerializer,
+    InvestorSerializer,
     DealVersionSerializer,
     InvestorVersionSerializer,
 )
@@ -259,7 +259,7 @@ class Deal2ViewSet(viewsets.ModelViewSet):
     queryset = DealHull.objects.all().prefetch_related(
         Prefetch("versions", queryset=DealVersion2.objects.order_by("-id"))
     )
-    serializer_class = Deal2Serializer
+    serializer_class = DealSerializer
 
     def get_permissions(self):
         if self.action == "create":
@@ -412,7 +412,7 @@ class Investor2ViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = InvestorHull.objects.all().prefetch_related(
         Prefetch("versions", queryset=InvestorVersion2.objects.order_by("-id"))
     )
-    serializer_class = Investor2Serializer
+    serializer_class = InvestorSerializer
 
     @action(methods=["get"], detail=False)
     def simple(self, request):
@@ -467,7 +467,7 @@ class Investor2ViewSet(viewsets.ReadOnlyModelViewSet):
             data["country_id"] = data.get("country", {}).get("id", None)
             del data["country"]
 
-        serializer = InvestorVersionSerializer(iv1, data=(data), partial=True)
+        serializer = InvestorVersionSerializer(iv1, data=data, partial=True)
         if serializer.is_valid(raise_exception=True):
             # this is untidy
             dv1 = serializer.save()

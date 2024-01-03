@@ -24,6 +24,7 @@
   let showDeleteOverlay = false
 
   let hasActiveVersion = false // TODO
+
   const isDeal = (obj: DealHull | InvestorHull): obj is DealHull =>
     "fully_updated_at" in obj
 
@@ -108,21 +109,39 @@
     {/if}
   </div>
 </div>
-<div class="mt-10 flex items-center gap-4">
-  <div>
-    <button
-      class="butn-outline butn-flat butn-red min-w-[8rem]"
-      class:disabled={$loading || $navigating}
-      on:click|preventDefault={() => (showDeleteOverlay = true)}
-    >
-      {$_("Remove")}
-    </button>
+<div class="mt-10 flex flex-col gap-2">
+  <div class=" flex items-center gap-4">
+    <div>
+      <a
+        href="/{isDeal(object) ? 'deal' : 'investor'}/edit/{object.id}/{object
+          .selected_version.id}/"
+        class="butn-outline butn-flat butn-primary min-w-[8rem]"
+        class:disabled={$loading || $navigating}
+      >
+        {$_("Edit")}
+      </a>
+    </div>
+    <div class="italic text-gray-700 dark:text-white">
+      {$_("Edit this version.")}
+    </div>
   </div>
-  <div class="italic text-gray-700 dark:text-white">
-    {$_(
-      "Completely removes this version of the {object}. This action cannot be undone.",
-      i18nValues,
-    )}
+
+  <div class="flex items-center gap-4">
+    <div>
+      <button
+        class="butn-outline butn-flat butn-red min-w-[8rem]"
+        class:disabled={$loading || $navigating}
+        on:click|preventDefault={() => (showDeleteOverlay = true)}
+      >
+        {$_("Remove")}
+      </button>
+    </div>
+    <div class="italic text-gray-700 dark:text-white">
+      {$_(
+        "Completely removes this version of the {object}. This action cannot be undone.",
+        i18nValues,
+      )}
+    </div>
   </div>
 </div>
 

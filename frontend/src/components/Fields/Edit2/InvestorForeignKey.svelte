@@ -1,12 +1,13 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import { simpleInvestors } from "$lib/stores"
+  import { fieldChoices, simpleInvestors } from "$lib/stores"
   import type { Country } from "$lib/types/wagtail"
   import { getCsrfToken } from "$lib/utils"
 
   import { LABEL_CLASS, VALUE_CLASS, WRAPPER_CLASS } from "$components/Fields/consts"
   import Label2 from "$components/Fields/Display2/Label2.svelte"
+  import ChoicesField from "$components/Fields/Edit2/ChoicesField.svelte"
   import CountryField from "$components/Fields/Edit2/CountryField.svelte"
   import TextField from "$components/Fields/Edit2/TextField.svelte"
   import InvestorSelect from "$components/LowLevel/InvestorSelect.svelte"
@@ -52,7 +53,6 @@
       newInvestorForm.reportValidity()
       return
     }
-    console.log(newInvestor)
     const ret = await fetch(`/api/investors/`, {
       method: "POST",
       credentials: "include",
@@ -116,7 +116,13 @@
             label={$_("Country of registration/origin")}
             required
           />
-          <!--          <TextField bind:value={newInvestor.classification} fieldname="investor.classification" label={$_("Classification")} />-->
+          <ChoicesField
+            bind:value={newInvestor.classification}
+            choices={$fieldChoices.investor.classification}
+            fieldname="investor.classification"
+            label={$_("Classification")}
+          />
+
           <TextField
             bind:value={newInvestor.homepage}
             fieldname="investor.homepage"
@@ -135,10 +141,6 @@
             label={$_("Comment")}
             multiline
           />
-
-          <!--     wrapperClasses="flex justify-center items-center my-2"-->
-          <!--    labelClasses="font-bold w-5/12"-->
-          <!--    valueClasses="w-7/12 mb-1"-->
         </div>
         <button type="submit" class="butn butn-flat butn-primary">{$_("Save")}</button>
         <button

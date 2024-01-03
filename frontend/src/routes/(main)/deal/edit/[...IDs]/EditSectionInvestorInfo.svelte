@@ -3,11 +3,10 @@
 
   import type { DealHull } from "$lib/types/newtypes"
 
+  import EditSubsection from "$components/EditSubsection.svelte"
   import InvestorForeignKey from "$components/Fields/Edit2/InvestorForeignKey.svelte"
   import JSONActorsField from "$components/Fields/Edit2/JSONActorsField.svelte"
   import TextField from "$components/Fields/Edit2/TextField.svelte"
-
-  import EditSubsection from "./EditSubsection.svelte"
 
   export let deal: DealHull
   $: version = deal.selected_version

@@ -3,11 +3,10 @@
 
   import type { DealHull } from "$lib/types/newtypes"
 
+  import EditSubsection from "$components/EditSubsection.svelte"
   import DecimalField from "$components/Fields/Edit2/DecimalField.svelte"
   import JSONCurrentDateAreaField from "$components/Fields/Edit2/JSONCurrentDateAreaField.svelte"
   import TextField from "$components/Fields/Edit2/TextField.svelte"
-
-  import EditSubsection from "./EditSubsection.svelte"
 
   export let deal: DealHull
   $: version = deal.selected_version
