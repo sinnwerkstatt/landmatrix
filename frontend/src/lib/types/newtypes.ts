@@ -220,7 +220,7 @@ interface DealVersionBase {
   domestic_jobs_current: JSONJobsFieldType
   domestic_jobs_created_comment: string
 
-  // operating_company: InvestorHull | null
+  operating_company: { id: number; name: string } | null
   operating_company_id: number | null
   involved_actors: InvolvedActor[]
   project_name: string

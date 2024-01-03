@@ -3,11 +3,6 @@ import { derived } from "svelte/store"
 
 export type Field = string | { name: string; fields: Field[] }
 
-export type Section = {
-  name: string
-  fields: Field[]
-}
-
 export const dealSections = derived(_, $_ => ({
   general_info: [
     {
@@ -367,25 +362,3 @@ export const investorSections = derived(_, $_ => ({
     },
   ],
 }))
-
-// export const investorSubsections = {
-//   parent_companies: [
-//     "investor",
-//     "investment_type",
-//     "percentage",
-//     "loans_amount",
-//     "loans_currency",
-//     "loans_date",
-//     "comment",
-//   ],
-//   tertiary_investors: [
-//     "investor",
-//     "investment_type",
-//     "ownership_share",
-//     "loan_amount",
-//     "loan_currency",
-//     "loan_date",
-//     "parent_relation",
-//     "comment",
-//   ],
-// };

@@ -1,12 +1,13 @@
 <script lang="ts">
+  import { LABEL_CLASS, VALUE_CLASS, WRAPPER_CLASS } from "$components/Fields/consts"
   import Label2 from "$components/Fields/Display2/Label2.svelte"
 
   export let value: string | string[]
   export let fieldname: string
   export let label = ""
-  export let wrapperClass = "mb-3 flex flex-wrap leading-5"
-  export let labelClass = "md:w-5/12 lg:w-4/12"
-  export let valueClass = "text-gray-700 dark:text-white md:w-7/12 lg:w-8/12"
+  export let wrapperClass = WRAPPER_CLASS
+  export let labelClass = LABEL_CLASS
+  export let valueClass = VALUE_CLASS
 
   export let url = false
   export let multipleChoices = false

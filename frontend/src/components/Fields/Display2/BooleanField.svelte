@@ -1,14 +1,15 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
+  import { LABEL_CLASS, VALUE_CLASS, WRAPPER_CLASS } from "$components/Fields/consts"
   import Label2 from "$components/Fields/Display2/Label2.svelte"
 
   export let value: boolean | null
   export let fieldname: string
   export let label = ""
-  export let wrapperClass = "mb-3 flex flex-wrap leading-5"
-  export let labelClass = "md:w-5/12 lg:w-4/12"
-  export let valueClass = "text-gray-700 dark:text-white md:w-7/12 lg:w-8/12"
+  export let wrapperClass = WRAPPER_CLASS
+  export let labelClass = LABEL_CLASS
+  export let valueClass = VALUE_CLASS
 </script>
 
 {#if value !== null}

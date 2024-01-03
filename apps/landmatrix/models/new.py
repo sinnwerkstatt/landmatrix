@@ -13,6 +13,7 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 from nanoid import generate
 
+from apps.accounts.models import User
 from apps.landmatrix.models import choices
 from apps.landmatrix.models.choices import (
     DATASOURCE_TYPE_CHOICES,
@@ -911,8 +912,8 @@ class DealVersion2(DealVersionBaseFields, VersionTimestampsMixins):
         #     return True
 
         investors_countries = self.parent_companies.exclude(
-            country_id=None
-        ).values_list("country_id", flat=True)
+            active_version__country_id=None
+        ).values_list("active_version__country_id", flat=True)
 
         if not len(investors_countries):
             # treat deals without investors as transnational
@@ -1221,12 +1222,18 @@ class DealHull(models.Model):
         return f"#{self.id}"
 
     def selected_version(self):
-        if hasattr(self, "_selected_version_id"):
+        if hasattr(self, "_selected_version_id") and self._selected_version_id:
             try:
                 return self.versions.get(id=self._selected_version_id)
             except DealVersion2.DoesNotExist:
                 raise Http404
         return self.active_version or self.draft_version
+
+    def add_draft(self, created_by: User = None) -> DealVersion2:
+        dv = DealVersion2.objects.create(deal=self, created_by=created_by)
+        self.draft_version = dv
+        self.save()
+        return dv
 
 
 class InvestorVersion2(VersionTimestampsMixins, models.Model):
@@ -1320,12 +1327,18 @@ class InvestorHull(models.Model):
 
     # This method is used by DRF.
     def selected_version(self):
-        if hasattr(self, "_selected_version_id"):
+        if hasattr(self, "_selected_version_id") and self._selected_version_id:
             try:
                 return self.versions.get(id=self._selected_version_id)
             except InvestorVersion2.DoesNotExist:
                 raise Http404
         return self.active_version or self.draft_version
+
+    def add_draft(self, created_by: User = None) -> InvestorVersion2:
+        dv = InvestorVersion2.objects.create(deal=self, created_by=created_by)
+        self.draft_version = dv
+        self.save()
+        return dv
 
     # This method is used by DRF.
     def involvements(self):

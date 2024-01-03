@@ -37,6 +37,7 @@
       bind:value={version.land_area_comment}
       fieldname="land_area_comment"
       label={$_("Comment on land area")}
+      multiline
     />
   </EditSubsection>
   <EditSubsection title={$_("Intention of investment")}>
@@ -50,6 +51,7 @@
       fieldname="intention_of_investment_comment"
       bind:value={version.intention_of_investment_comment}
       label={$_("Comment on intention of investment")}
+      multiline
     />
   </EditSubsection>
 
@@ -65,6 +67,7 @@
       fieldname="nature_of_deal_comment"
       bind:value={version.nature_of_deal_comment}
       label={$_("Comment on nature of the deal")}
+      multiline
     />
   </EditSubsection>
 
@@ -79,6 +82,7 @@
       fieldname="negotiation_status_comment"
       bind:value={version.negotiation_status_comment}
       label={$_("Comment on negotiation status")}
+      multiline
     />
   </EditSubsection>
 
@@ -93,6 +97,7 @@
       fieldname="implementation_status_comment"
       bind:value={version.implementation_status_comment}
       label={$_("Comment on implementation status")}
+      multiline
     />
   </EditSubsection>
 
@@ -112,6 +117,7 @@
       fieldname="purchase_price_comment"
       bind:value={version.purchase_price_comment}
       label={$_("Comment on purchase price")}
+      multiline
     />
   </EditSubsection>
 
@@ -133,6 +139,7 @@
       fieldname="annual_leasing_fee_comment"
       bind:value={version.annual_leasing_fee_comment}
       label={$_("Comment on leasing fee")}
+      multiline
     />
   </EditSubsection>
   <EditSubsection title={$_("Contract farming")}>
@@ -165,6 +172,7 @@
       fieldname="contract_farming_comment"
       bind:value={version.contract_farming_comment}
       label={$_("Comment on contract farming")}
+      multiline
     />
   </EditSubsection>
 </form>

@@ -16,6 +16,7 @@
       bind:value={deal.selected_version.overall_comment}
       fieldname="overall_comment"
       label={$_("Overall comment")}
+      multiline
     />
   </EditSubsection>
 </form>

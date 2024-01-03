@@ -6,6 +6,7 @@
 @import "tailwindcss/components";
 @import "_custom_components.css";
 @import "_buttons.css";
+@import "_wagtail_components.css";
 
 @import "tailwindcss/utilities";
 /*@import "./custom-utilities.css";*/

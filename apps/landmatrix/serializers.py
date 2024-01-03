@@ -123,17 +123,11 @@ class ContractSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-# class OperatingCompanySerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = InvestorHull
-#         fields = "__all__"
-
-
 class DealVersionSerializer(serializers.ModelSerializer):
     locations = LocationSerializer(many=True, read_only=True)
     contracts = ContractSerializer(many=True, read_only=True)
     datasources = DealDataSourceSerializer(many=True, read_only=True)
-    # operating_company = OperatingCompanySerializer(allow_null=True, read_only=True)
+    operating_company = serializers.SerializerMethodField()
     operating_company_id = serializers.PrimaryKeyRelatedField(read_only=True)
 
     # creating these because DRF shows these fields as "created_by", instead of "~_id"
@@ -143,18 +137,61 @@ class DealVersionSerializer(serializers.ModelSerializer):
     sent_to_activation_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
     activated_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
 
+    @staticmethod
+    def get_operating_company(obj: DealVersion2):
+        if obj.operating_company and obj.operating_company.active_version:
+            return {
+                "id": obj.operating_company.id,
+                "name": obj.operating_company.active_version.name,
+            }
+        return None
+
     class Meta:
         model = DealVersion2
+        read_only_fields = (
+            "id",
+            "status",
+            # calculated
+            "is_public",
+            "has_known_investor",
+            "parent_companies",
+            "top_investors",
+            "current_contract_size",
+            "current_production_size",
+            "current_intention_of_investment",
+            "current_negotiation_status",
+            "current_implementation_status",
+            "current_crops",
+            "current_animals",
+            "current_mineral_resources",
+            "current_electricity_generation",
+            "current_carbon_sequestration",
+            "deal_size",
+            "initiation_year",
+            "forest_concession",
+            "transnational",
+            # version timestamps
+            "created_at",
+            "created_by",
+            "modified_at",
+            "modified_by",
+            "sent_to_review_at",
+            "sent_to_review_by",
+            "sent_to_activation_at",
+            "sent_to_activation_by",
+            "activated_at",
+            "activated_by",
+        )
         fields = "__all__"
 
     @staticmethod
-    def save_submodels(request, dv1: DealVersion2):
+    def save_submodels(data, dv1: DealVersion2):
         # FIXME right now we're handling contracts, locations and datasources here
         #  in the serializer. not very pretty. maybe drf-writable-nested
         #  would be an alternative
 
         location_nids = set()
-        for location in request.data["version"].get("locations"):
+        for location in data.get("locations"):
             location_nids.add(location["nid"])
             Location.objects.update_or_create(
                 nid=location["nid"],
@@ -308,6 +345,39 @@ class InvestorVersionSerializer(serializers.ModelSerializer):
             for d in target_deals
         ]
 
+    @staticmethod
+    def save_submodels(data, dv1: DealVersion2):
+        # FIXME right now we're handling datasources here
+        #  in the serializer. not very pretty. maybe drf-writable-nested
+        #  would be an alternative
+        datasource_nids = set()
+        for datasource in data.get("datasources"):
+            datasource_nids.add(datasource["nid"])
+            InvestorDataSource.objects.update_or_create(
+                nid=datasource["nid"],
+                investorversion_id=dv1.id,
+                defaults={
+                    "type": datasource["type"],
+                    "url": datasource["url"],
+                    "file": datasource["file"],
+                    "file_not_public": datasource["file_not_public"],
+                    "publication_title": datasource["publication_title"],
+                    "date": datasource["date"],
+                    "name": datasource["name"],
+                    "company": datasource["company"],
+                    "email": datasource["email"],
+                    "phone": datasource["phone"],
+                    "includes_in_country_verified_information": datasource[
+                        "includes_in_country_verified_information"
+                    ],
+                    "open_land_contracts_id": datasource["open_land_contracts_id"],
+                    "comment": datasource["comment"],
+                },
+            )
+        InvestorDataSource.objects.filter(investorversion_id=dv1.id).exclude(
+            nid__in=datasource_nids
+        ).delete()
+
     class Meta:
         model = InvestorVersion2
         fields = "__all__"
@@ -332,7 +402,7 @@ class Investor2Serializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_involvements(obj: InvestorHull):
-        if hasattr(obj, "_selected_version_id"):
+        if hasattr(obj, "_selected_version_id") and obj._selected_version_id:
             return obj.versions.get(id=obj._selected_version_id).involvements_snapshot
         if obj.active_version:
             involvements: QuerySet[Involvement] = Involvement.objects.filter(
@@ -349,7 +419,7 @@ class Investor2Serializer(serializers.ModelSerializer):
     @staticmethod
     def get_workflowinfos(obj: InvestorHull):
         return [
-            x.to_new_dict()
+            x.to_dict()
             for x in InvestorWorkflowInfo2.objects.filter(investor_id=obj.id).order_by(
                 "-id"
             )

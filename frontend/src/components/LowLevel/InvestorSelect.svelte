@@ -4,13 +4,14 @@
   import VirtualListSelect from "./VirtualListSelect.svelte"
 
   interface InvestorItem {
-    id: number | null
+    id?: number
     name: string
     created?: boolean
   }
   export let investors: InvestorItem[] = []
-  export let value: InvestorItem | undefined = undefined
+  export let value: InvestorItem | null | undefined = undefined
   export let required = false
+  export let disabled = false
   export let creatable = false
   export let name: string | undefined = undefined
 
@@ -29,15 +30,18 @@
   {name}
   {itemFilter}
   on:input
+  {disabled}
 >
   <svelte:fragment slot="selection" let:selection>
-    {selection.name}
-    (#{selection.id})
+    {#if selection.created}
+      <div class="font-semibold italic">[new investor]</div>
+    {:else}
+      {selection.name} (#{selection.id})
+    {/if}
   </svelte:fragment>
   <svelte:fragment slot="item" let:item>
     {#if item.created}
-      {$_("Create")}{":"}
-      {item.name}
+      {$_("Create")}: {item.name}
     {:else}
       #{item.id}: {item.name}
     {/if}

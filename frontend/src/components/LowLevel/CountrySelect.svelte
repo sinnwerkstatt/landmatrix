@@ -4,7 +4,7 @@
   import VirtualListSelect from "./VirtualListSelect.svelte"
 
   export let countries: Country[] = []
-  export let value: Country | undefined = undefined
+  export let value: Country | null = null
   export let name: string | undefined = undefined
   export let disabled = false
   export let required = false

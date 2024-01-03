@@ -7,6 +7,7 @@
   interface Item {
     id: number | string | null
     created?: boolean
+    name?: string
   }
 
   type FilterFn<T> = (label: string, filterText: string, option: T) => boolean
@@ -14,7 +15,7 @@
   export const itemId = "id"
 
   export let items: Item[] = []
-  export let value: Item | undefined = undefined
+  export let value: Item | null = null
   export let label = "label"
   export let required = false
   export let disabled = false

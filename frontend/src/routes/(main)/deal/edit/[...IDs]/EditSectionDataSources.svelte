@@ -73,6 +73,7 @@
               fieldname="datasource.comment"
               bind:value={datasource.comment}
               label={$_("Comment")}
+              multiline
             />
           </div>
         {/if}

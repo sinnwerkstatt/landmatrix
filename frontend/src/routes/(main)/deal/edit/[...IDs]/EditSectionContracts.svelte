@@ -73,6 +73,7 @@
               fieldname="contract.comment"
               bind:value={contract.comment}
               label={$_("Comment")}
+              multiline
             />
           </div>
         {/if}
