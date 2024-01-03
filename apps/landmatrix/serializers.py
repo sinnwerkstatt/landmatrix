@@ -1,3 +1,4 @@
+from django.contrib.gis.geos import GEOSGeometry
 from django.db.models import Q, QuerySet
 from rest_framework import serializers
 
