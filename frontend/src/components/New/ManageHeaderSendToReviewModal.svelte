@@ -20,7 +20,7 @@
     "fully_updated_at" in obj
 
   async function submit() {
-    const objType = isDeal(object) ? "dealversions" : "investors"
+    const objType = isDeal(object) ? "dealversions" : "investorversions"
     const ret = await fetch(
       `/api/${objType}/${object.selected_version.id}/change_status/`,
       {
@@ -37,7 +37,8 @@
       const retJson = await ret.json()
       toast.push(`${ret.status}: ${retJson.detail}`, { classes: ["error"] })
     } else {
-      invalidate("deal:detail").then()
+      if (isDeal(object)) invalidate("deal:detail").then()
+      else invalidate("investor:detail").then()
       open = false
     }
   }
@@ -49,18 +50,20 @@
   </h2>
   <hr />
   <form class="mt-6 text-lg" on:submit={submit}>
-    <div>
-      <div class="mb-2 font-semibold">Fully updated</div>
-      <p>
-        {$_(
-          'If you have checked the information entered for every single variable, please tick the box beside "I fully updated this deal" - even if no additional information was found, but a complete search through the deal was conducted.',
-        )}
-      </p>
-      <label>
-        <input bind:checked={fullyUpdated} type="checkbox" />
-        {$_("I fully updated this deal.")}
-      </label>
-    </div>
+    {#if isDeal(object)}
+      <div>
+        <div class="mb-2 font-semibold">Fully updated</div>
+        <p>
+          {$_(
+            'If you have checked the information entered for every single variable, please tick the box beside "I fully updated this deal" - even if no additional information was found, but a complete search through the deal was conducted.',
+          )}
+        </p>
+        <label>
+          <input bind:checked={fullyUpdated} type="checkbox" />
+          {$_("I fully updated this deal.")}
+        </label>
+      </div>
+    {/if}
 
     <div class="my-6">
       <label>

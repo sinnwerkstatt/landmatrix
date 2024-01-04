@@ -36,7 +36,8 @@
       const retJson = await ret.json()
       toast.push(`${ret.status}: ${retJson.detail}`, { classes: ["error"] })
     } else {
-      invalidate("deal:detail").then()
+      if (isDeal(object)) invalidate("deal:detail").then()
+      else invalidate("investor:detail").then()
       open = false
     }
   }

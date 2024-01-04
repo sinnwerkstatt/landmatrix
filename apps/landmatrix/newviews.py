@@ -383,25 +383,25 @@ class InvestorVersionViewSet(viewsets.ReadOnlyModelViewSet):
             )
         return Response({})
 
-    # @action(detail=True, methods=["put"])
-    # def change_status(self, request, pk: int):
-    #     iv1: InvestorVersion2 = get_object_or_404(self.queryset, pk=pk)
-    #
-    #     if iv1.investor.draft_version_id != iv1.id:
-    #         raise PermissionDenied("EDITING_OLD_VERSION")
-    #
-    #     iv1.change_status(
-    #         new_status=request.data["transition"],
-    #         user=request.user,
-    #         to_user_id=request.data.get("toUser"),
-    #         comment=request.data.get("comment", ""),
-    #     )
-    #
-    #     if to_user := request.data.get("toUser"):
-    #         pass  # TODO
-    #         # send_comment_to_user(obj, request.data["comment"], request.user, to_user, obj_version_id)
-    #
-    #     return Response({"investorID": iv1.investor.id, "versionID": iv1.id})
+    @action(detail=True, methods=["put"])
+    def change_status(self, request, pk: int):
+        iv1: InvestorVersion2 = get_object_or_404(self.queryset, pk=pk)
+
+        if iv1.investor.draft_version_id != iv1.id:
+            raise PermissionDenied("EDITING_OLD_VERSION")
+
+        iv1.change_status(
+            new_status=request.data["transition"],
+            user=request.user,
+            to_user_id=request.data.get("toUser"),
+            comment=request.data.get("comment", ""),
+        )
+
+        if to_user := request.data.get("toUser"):
+            pass  # TODO
+            # send_comment_to_user(obj, request.data["comment"], request.user, to_user, obj_version_id)
+
+        return Response({"investorID": iv1.investor.id, "versionID": iv1.id})
 
 
 class Investor2ViewSet(viewsets.ReadOnlyModelViewSet):

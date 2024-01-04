@@ -27,7 +27,7 @@
   onDestroy(() => (comment = ""))
 
   async function submit() {
-    const objType = isDeal(object) ? "dealversions" : "investors"
+    const objType = isDeal(object) ? "dealversions" : "investorversions"
     const ret = await fetch(
       `/api/${objType}/${object.selected_version.id}/change_status/`,
       {

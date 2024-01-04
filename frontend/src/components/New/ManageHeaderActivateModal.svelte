@@ -18,7 +18,7 @@
     "fully_updated_at" in obj
 
   async function submit() {
-    const objType = isDeal(object) ? "dealversions" : "investors"
+    const objType = isDeal(object) ? "dealversions" : "investorversions"
     const ret = await fetch(
       `/api/${objType}/${object.selected_version.id}/change_status/`,
       {
@@ -35,7 +35,8 @@
       const retJson = await ret.json()
       toast.push(`${ret.status}: ${retJson.detail}`, { classes: ["error"] })
     } else {
-      invalidate("deal:detail").then()
+      if (isDeal(object)) invalidate("deal:detail").then()
+      else invalidate("investor:detail").then()
       open = false
     }
   }
