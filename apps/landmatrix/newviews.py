@@ -340,23 +340,23 @@ class InvestorVersionViewSet(viewsets.ReadOnlyModelViewSet):
             return [IsReporterOrHigher()]
         return [IsAdminUser()]
 
-    # def update(self, request, pk: int):
-    #     dv1: InvestorVersion2 = get_object_or_404(self.queryset, pk=pk)
-    #
-    #     # TODO check all the permissions! (Creator, or different role or whatnot)
-    #
-    #     data = request.data["version"]
-    #     serializer = self.serializer_class(dv1, data=data, partial=True)
-    #
-    #     if serializer.is_valid(raise_exception=True):
-    #         # this is untidy
-    #         dv1 = serializer.save()
-    #         dv1.modified_by = request.user
-    #         dv1.modified_at = timezone.now()
-    #         dv1.save()
-    #         serializer.save_submodels(data, dv1)
-    #
-    #     return Response({})
+    def update(self, request, pk: int):
+        iv1: InvestorVersion2 = get_object_or_404(self.queryset, pk=pk)
+
+        # TODO check all the permissions! (Creator, or different role or whatnot)
+
+        data = request.data["version"]
+        serializer = self.serializer_class(iv1, data=data, partial=True)
+
+        if serializer.is_valid(raise_exception=True):
+            # this is untidy
+            iv1 = serializer.save()
+            iv1.modified_by = request.user
+            iv1.modified_at = timezone.now()
+            iv1.save()
+            serializer.save_submodels(data, iv1)
+
+        return Response({})
 
     def destroy(self, request, pk: int):
         iv1: InvestorVersion2 = get_object_or_404(self.queryset, pk=pk)

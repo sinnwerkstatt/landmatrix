@@ -45,19 +45,7 @@ interface Hull {
   deleted_comment: string
   created_at: string
   created_by_id: number
-  versions: {
-    id: number
-    created_at: string
-    created_by_id: number
-    sent_to_review_at: string
-    sent_to_review_by_id: number
-    sent_to_activation_at: string
-    sent_to_activation_by_id: number
-    activated_at: string
-    activated_by_id: number
-    fully_updated: boolean
-    status: Version2Status
-  }[] // this can probably be merged with VersionTimestampMixins
+  versions: BaseVersionMixin[]
   workflowinfos: WorkflowInfoType[]
 }
 
@@ -278,7 +266,8 @@ interface DealVersionBase {
   datasources: DataSource[]
 }
 
-interface VersionTimestampMixins {
+interface BaseVersionMixin {
+  id: number
   created_at: string
   created_by_id: number
   modified_at: string
@@ -289,9 +278,13 @@ interface VersionTimestampMixins {
   sent_to_activation_by_id: number
   activated_at: string
   activated_by_id: number
+
+  status: Version2Status
+
+  fully_updated?: boolean
 }
 
-export interface DealVersion2 extends DealVersionBase, VersionTimestampMixins {
+export interface DealVersion2 extends DealVersionBase, BaseVersionMixin {
   is_public: boolean
   has_known_investor: boolean
 
@@ -300,8 +293,6 @@ export interface DealVersion2 extends DealVersionBase, VersionTimestampMixins {
   current_intention_of_investment: string[]
   deal_size: number
   fully_updated: boolean
-
-  status: Version2Status
 }
 
 export type JSONCurrentDateAreaFieldType = Array<{
@@ -378,8 +369,7 @@ export class Location2 {
   }
 }
 
-export interface InvestorVersion2 extends VersionTimestampMixins {
-  id: number
+export interface InvestorVersion2 extends BaseVersionMixin {
   name: string
   name_unknown: boolean
   country: Country | null
@@ -388,6 +378,4 @@ export interface InvestorVersion2 extends VersionTimestampMixins {
   opencorporates: string
   comment: string
   datasources: DataSource[]
-
-  status: Version2Status
 }

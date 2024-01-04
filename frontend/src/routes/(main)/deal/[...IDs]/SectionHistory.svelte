@@ -23,6 +23,8 @@
       <tr>
         <th>{$_("ID")}</th>
         <th>{$_("Created")}</th>
+        <th>{$_("Modified")}</th>
+
         <th>{$_("Sent to review")}</th>
         <th>{$_("Reviewed")}</th>
         <th>{$_("Activated")}</th>
@@ -48,11 +50,17 @@
             <br />
             {#if version.created_by_id}
               {@const user = $allUsers.find(u => u.id === version.created_by_id)}
-
               {user?.full_name ?? user?.username ?? "-"}
             {/if}
           </td>
-
+          <td>
+            {dayjs(version.modified_at).format("YYYY-MM-DD HH:mm")}
+            <br />
+            {#if version.modified_by_id}
+              {@const user = $allUsers.find(u => u.id === version.modified_by_id)}
+              {user?.full_name ?? user?.username ?? "-"}
+            {/if}
+          </td>
           <td>
             {version.sent_to_review_at
               ? dayjs(version.sent_to_review_at).format("YYYY-MM-DD HH:mm")

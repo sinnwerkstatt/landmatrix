@@ -191,12 +191,12 @@ class DealVersionSerializer(serializers.ModelSerializer):
         #  in the serializer. not very pretty. maybe drf-writable-nested
         #  would be an alternative
 
-        location_nids = set()
+        l_nids = set()
         for location in data.get("locations"):
-            location_nids.add(location["nid"])
+            l_nids.add(location["nid"])
             Location.objects.update_or_create(
                 nid=location["nid"],
-                dealversion_id=dv1.id,
+                dealversion=dv1,
                 defaults={
                     "name": location["name"],
                     "description": location["description"],
@@ -208,16 +208,14 @@ class DealVersionSerializer(serializers.ModelSerializer):
                     "comment": location["comment"],
                 },
             )
-        Location.objects.filter(dealversion_id=dv1.id).exclude(
-            nid__in=location_nids
-        ).delete()
+        Location.objects.filter(dealversion=dv1).exclude(nid__in=l_nids).delete()
 
-        contract_nids = set()
+        c_nids = set()
         for contract in data.get("contracts"):
-            contract_nids.add(contract["nid"])
+            c_nids.add(contract["nid"])
             Contract.objects.update_or_create(
                 nid=contract["nid"],
-                dealversion_id=dv1.id,
+                dealversion=dv1,
                 defaults={
                     "number": contract["number"],
                     "date": contract["date"],
@@ -226,16 +224,14 @@ class DealVersionSerializer(serializers.ModelSerializer):
                     "comment": contract["comment"],
                 },
             )
-        Contract.objects.filter(dealversion_id=dv1.id).exclude(
-            nid__in=contract_nids
-        ).delete()
+        Contract.objects.filter(dealversion=dv1).exclude(nid__in=c_nids).delete()
 
-        datasource_nids = set()
+        ds_nids = set()
         for datasource in data.get("datasources"):
-            datasource_nids.add(datasource["nid"])
+            ds_nids.add(datasource["nid"])
             DealDataSource.objects.update_or_create(
                 nid=datasource["nid"],
-                dealversion_id=dv1.id,
+                dealversion=dv1,
                 defaults={
                     "type": datasource["type"],
                     "url": datasource["url"],
@@ -254,9 +250,7 @@ class DealVersionSerializer(serializers.ModelSerializer):
                     "comment": datasource["comment"],
                 },
             )
-        DealDataSource.objects.filter(dealversion_id=dv1.id).exclude(
-            nid__in=datasource_nids
-        ).delete()
+        DealDataSource.objects.filter(dealversion=dv1).exclude(nid__in=ds_nids).delete()
 
 
 class CountryIDNameSerializer(serializers.ModelSerializer):
@@ -294,6 +288,8 @@ class InvestorVersionVersionsListSerializer(serializers.ModelSerializer):
             "id",
             "created_at",
             "created_by_id",
+            "modified_at",
+            "modified_by_id",
             "sent_to_review_at",
             "sent_to_review_by_id",
             "sent_to_activation_at",
@@ -348,16 +344,16 @@ class InvestorVersionSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     @staticmethod
-    def save_submodels(data, dv1: DealVersion2):
+    def save_submodels(data, iv1: InvestorVersion2):
         # FIXME right now we're handling datasources here
         #  in the serializer. not very pretty. maybe drf-writable-nested
         #  would be an alternative
-        datasource_nids = set()
+        ds_nids = set()
         for datasource in data.get("datasources"):
-            datasource_nids.add(datasource["nid"])
+            ds_nids.add(datasource["nid"])
             InvestorDataSource.objects.update_or_create(
                 nid=datasource["nid"],
-                investorversion_id=dv1.id,
+                investorversion=iv1,
                 defaults={
                     "type": datasource["type"],
                     "url": datasource["url"],
@@ -376,8 +372,8 @@ class InvestorVersionSerializer(serializers.ModelSerializer):
                     "comment": datasource["comment"],
                 },
             )
-        InvestorDataSource.objects.filter(investorversion_id=dv1.id).exclude(
-            nid__in=datasource_nids
+        InvestorDataSource.objects.filter(investorversion=iv1).exclude(
+            nid__in=ds_nids
         ).delete()
 
 
