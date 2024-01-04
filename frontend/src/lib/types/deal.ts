@@ -166,8 +166,8 @@ export enum OtherIoI {
 // merge intention of investment enums
 // 1. merge objects
 export const IntentionOfInvestment = {
-  ...ForestryIoI,
   ...AgricultureIoI,
+  ...ForestryIoI,
   ...RenewableEnergyIoI,
   ...OtherIoI,
 }

@@ -320,38 +320,10 @@ class InvestorVersionSerializer(serializers.ModelSerializer):
     datasources = InvestorDataSourceSerializer(many=True, read_only=True)
     country = CountryIDNameSerializer()
     country_id = serializers.IntegerField()
-    # deals = Investor2DealSerializer(many=True)
-    deals = serializers.SerializerMethodField()
 
     class Meta:
         model = InvestorVersion2
         fields = "__all__"
-
-    @staticmethod
-    def get_deals(obj: InvestorVersion2):
-        return []
-        target_deals = (
-            DealHull.objects.filter(
-                id__in=obj.investor.dealversions.all().values_list("deal_id", flat=True)
-            )
-            .exclude(active_version=None)
-            .prefetch_related("active_version")
-        )
-
-        return [
-            {
-                "id": d.id,
-                "country": {"id": d.country_id} if d.country else None,
-                "selected_version": {
-                    "id": d.active_version.id,
-                    "current_intention_of_investment": d.active_version.current_intention_of_investment,
-                    "current_negotiation_status": d.active_version.current_negotiation_status,
-                    "current_implementation_status": d.active_version.current_implementation_status,
-                    "deal_size": d.active_version.deal_size,
-                },
-            }
-            for d in target_deals
-        ]
 
     @staticmethod
     def save_submodels(data, dv1: DealVersion2):
@@ -387,12 +359,6 @@ class InvestorVersionSerializer(serializers.ModelSerializer):
         ).delete()
 
 
-# class InvolvementSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Involvement
-#         fields = "__all__"
-
-
 class InvestorSerializer(serializers.ModelSerializer):
     active_version_id = serializers.PrimaryKeyRelatedField(read_only=True)
     draft_version_id = serializers.PrimaryKeyRelatedField(read_only=True)
@@ -400,9 +366,40 @@ class InvestorSerializer(serializers.ModelSerializer):
     versions = InvestorVersionVersionsListSerializer(many=True)
 
     selected_version = InvestorVersionSerializer()
+    deals = serializers.SerializerMethodField()
+
     # involvements = InvolvementSerializer(many=True)
     involvements = serializers.SerializerMethodField()
     workflowinfos = serializers.SerializerMethodField()
+
+    class Meta:
+        model = InvestorHull
+        fields = "__all__"
+
+    @staticmethod
+    def get_deals(obj: InvestorVersion2):
+        target_deals = (
+            DealHull.objects.filter(
+                id__in=obj.dealversions.all().values_list("deal_id", flat=True)
+            )
+            .exclude(active_version=None)
+            .prefetch_related("active_version")
+        )
+
+        return [
+            {
+                "id": d.id,
+                "country": {"id": d.country_id} if d.country else None,
+                "selected_version": {
+                    "id": d.active_version.id,
+                    "current_intention_of_investment": d.active_version.current_intention_of_investment,
+                    "current_negotiation_status": d.active_version.current_negotiation_status,
+                    "current_implementation_status": d.active_version.current_implementation_status,
+                    "deal_size": d.active_version.deal_size,
+                },
+            }
+            for d in target_deals
+        ]
 
     @staticmethod
     def get_involvements(obj: InvestorHull):
@@ -428,7 +425,3 @@ class InvestorSerializer(serializers.ModelSerializer):
                 "-id"
             )
         ]
-
-    class Meta:
-        model = InvestorHull
-        fields = "__all__"

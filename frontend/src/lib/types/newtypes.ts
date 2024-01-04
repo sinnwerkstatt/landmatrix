@@ -69,26 +69,27 @@ export interface DealHull extends Hull {
   fully_updated_at: string
 }
 
+export interface Involvement {
+  id: number
+  other_investor: {
+    id: number
+    name: string
+    country?: Country
+    classification: string
+
+    deleted: boolean
+  }
+  relationship: string
+  percentage: number
+  investment_type: string
+}
+
 export interface InvestorHull extends Hull {
   selected_version: InvestorVersion2
-  confidential: never
-  confidential_comment: never
-  fully_updated_at: never
 
-  involvements: {
-    id: number
-    other_investor: {
-      id: number
-      name: string
-      country?: Country
-      classification: string
-
-      deleted: boolean
-    }
-    relationship: string
-    percentage: number
-    investment_type: string
-  }[]
+  deals: DealHull[]
+  involvements: Involvement[]
+  workflowinfos: WorkflowInfoType[]
 }
 
 export class DataSource {
@@ -296,6 +297,7 @@ export interface DealVersion2 extends DealVersionBase, VersionTimestampMixins {
 
   current_negotiation_status: string
   current_implementation_status: string
+  current_intention_of_investment: string[]
   deal_size: number
   fully_updated: boolean
 
@@ -388,5 +390,4 @@ export interface InvestorVersion2 extends VersionTimestampMixins {
   datasources: DataSource[]
 
   status: Version2Status
-  deals: number[]
 }

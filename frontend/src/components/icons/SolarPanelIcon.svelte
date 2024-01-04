@@ -1,6 +1,5 @@
 <svg
   xmlns="http://www.w3.org/2000/svg"
-  height="1em"
   viewBox="0 0 640 512"
   class={$$props.class ?? "inline h-4 w-4"}
   fill="currentColor"

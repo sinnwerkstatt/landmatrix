@@ -17,7 +17,7 @@
 </script>
 
 <div class="my-4 grid grid-cols-2 lg:grid-cols-3">
-  <div class="col-span-2 rounded-tl bg-gray-100">
+  <div class="col-span-2 rounded-tl bg-gray-100 dark:bg-gray-600">
     <div class="flex items-center justify-between gap-4 p-2">
       <div>
         <h1 class="heading4 my-0 text-[1.875rem]">
