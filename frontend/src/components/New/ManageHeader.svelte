@@ -125,7 +125,9 @@
           >
             <div class="heading4 mb-0">{$_("Activated")}</div>
             <div class="">
-              {dayjs(object.selected_version.activated_at).format("YYYY-MM-DD")}
+              {#if object.selected_version.activated_at}
+                {dayjs(object.selected_version.activated_at).format("YYYY-MM-DD")}
+              {/if}
             </div>
           </div>
         {:else}

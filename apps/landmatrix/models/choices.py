@@ -459,9 +459,7 @@ CROPS_ITEMS = [
     {"value": "WHT", "label": _("Wheat"), "produce": "FOOD_CROP"},
     {"value": "YAM", "label": _("Yam"), "produce": "FOOD_CROP"},
 ]
-CROPS = {
-    x["value"]: {"name": x["label"], "produce": x.get("produce")} for x in CROPS_ITEMS
-}
+
 CROPS_CHOICES = [(x["value"], x["label"]) for x in CROPS_ITEMS]
 
 ANIMALS_ITEMS = [
@@ -477,7 +475,6 @@ ANIMALS_ITEMS = [
     {"value": "SHP", "label": _("Sheep")},
     {"value": "SHR", "label": _("Shrimp")},
 ]
-ANIMALS = {x["value"]: {"name": x["label"]} for x in ANIMALS_ITEMS}
 ANIMALS_CHOICES = [(x["value"], x["label"]) for x in ANIMALS_ITEMS]
 
 ELECTRICITY_GENERATION_ITEMS = [
@@ -575,7 +572,6 @@ MINERALS_ITEMS = [
     {"value": "URM", "label": _("Uranium")},
     {"value": "ZNC", "label": _("Zinc")},
 ]
-MINERALS = {x["value"]: {"name": x["label"]} for x in MINERALS_ITEMS}
 MINERALS_CHOICES = [(x["value"], x["label"]) for x in MINERALS_ITEMS]
 
 WATER_SOURCE_ITEMS = [

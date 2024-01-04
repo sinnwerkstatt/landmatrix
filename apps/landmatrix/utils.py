@@ -2,9 +2,10 @@ from apps.utils import arrayfield_choices_display
 
 from .models.investor import Investor, InvestorVentureInvolvement
 from django.db import connection
-from django.db.models import Q
+from django.db.models import Q, QuerySet
 
 from .involvement_sql import GRAPH_QUERY, UNIDIRECTIONAL_GRAPH_QUERY
+from .models.new import InvestorHull, Involvement, DealHull
 
 
 class InvolvementNetwork:
@@ -134,17 +135,12 @@ class InvolvementNetwork:
 
 
 class InvolvementNetwork2:
-    def __init__(self, include_ventures=False):
-        self.traveled_edges = []
-        self.seen_investors = set()
-        self.include_ventures = include_ventures
+    def __init__(self):
         self.MAX_DEPTH = 30
 
     def get_network(
-        self, investor_id, depth, include_deals=False, show_ventures=True
-    ) -> dict:
-        from apps.landmatrix.models.new import Involvement, InvestorHull, DealHull
-
+        self, investor_id, depth=1, show_ventures=True
+    ) -> tuple[QuerySet[InvestorHull], QuerySet[Involvement], set[tuple], int]:
         depth = min(depth, self.MAX_DEPTH)
 
         min_depth = depth
@@ -182,10 +178,36 @@ class InvolvementNetwork2:
                     edges.add((up_edge, row_investor_id))
                 min_depth = min(min_depth, row_depth)
         # ic(depth, min_depth)
-        all_involvements = Involvement.objects.filter(
+        all_involvements: QuerySet[Involvement] = Involvement.objects.filter(
             Q(parent_investor_id__in=investor_ids)
             | Q(child_investor_id__in=investor_ids)
-        ).values(
+        )
+
+        all_investors: QuerySet[InvestorHull] = InvestorHull.objects.filter(
+            id__in=investor_ids
+        ).exclude(active_version=None)
+        return all_investors, all_involvements, edges, min_depth
+
+    def get_network_x(
+        self, investor_id, depth=1, include_deals=False, show_ventures=True
+    ) -> dict:
+        all_investors, all_involvements, edges, min_depth = self.get_network(
+            investor_id,
+            depth=depth,
+            show_ventures=show_ventures,
+        )
+
+        all_investor_ids = set(all_investors.values_list("id", flat=True))
+        all_investors_values = all_investors.values(
+            "id",
+            "active_version_id",
+            "active_version__name",
+            "active_version__country_id",
+            "active_version__homepage",
+            "active_version__classification",
+            "active_version__comment",
+        )
+        all_involvements_values = all_involvements.values(
             "id",
             "parent_investor_id",
             "child_investor_id",
@@ -193,23 +215,8 @@ class InvolvementNetwork2:
             "investment_type",
         )
 
-        all_investors = (
-            InvestorHull.objects.filter(id__in=investor_ids)
-            .exclude(active_version=None)
-            .values(
-                "id",
-                "active_version_id",
-                "active_version__name",
-                "active_version__country_id",
-                "active_version__homepage",
-                "active_version__classification",
-                "active_version__comment",
-            )
-        )
-        all_investor_ids = set(x["id"] for x in all_investors)
-
         rich_nodes = []
-        for node in all_investors:
+        for node in all_investors_values:
             if node["id"] == investor_id:
                 node["bgColor"] = "rgba(68,183,181,1)"
                 node["rootNode"] = True
@@ -223,7 +230,7 @@ class InvolvementNetwork2:
             involvement = next(
                 (
                     invo
-                    for invo in all_involvements
+                    for invo in all_involvements_values
                     if invo["parent_investor_id"] == edge[0]
                     and invo["child_investor_id"] == edge[1]
                 )
@@ -249,9 +256,7 @@ class InvolvementNetwork2:
 
         if include_deals:
             deals = DealHull.objects.filter(
-                active_version__operating_company_id__in=[
-                    x["id"] for x in all_investors
-                ]
+                active_version__operating_company_id__in=all_investor_ids
             ).values("id", "country_id", "active_version__operating_company_id")
 
             for deal in deals:
@@ -279,11 +284,8 @@ class InvolvementNetwork2:
                 ]
 
         return {
-            "elements": {
-                "nodes": rich_nodes,
-                "edges": rich_edges,
-            },
-            "involvements": all_involvements,
+            "elements": {"nodes": rich_nodes, "edges": rich_edges},
+            "involvements": all_involvements_values,
             "more_exist": min_depth == 0,
             "full_depth": None if min_depth == 0 else (depth - min_depth + 1),
         }

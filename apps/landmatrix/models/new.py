@@ -45,7 +45,7 @@ from apps.landmatrix.models.fields import (
     DecimalIntField,
 )
 from apps.landmatrix.models.investor import Investor
-from apps.landmatrix.utils import InvolvementNetwork2
+
 from django.contrib.gis.geos.prototypes.io import wkt_w
 
 VERSION_STATUS_CHOICES = (
@@ -1488,7 +1488,9 @@ class InvestorHull(models.Model):
         return
 
     def involvements_graph(self, depth, include_deals, show_ventures):
-        return InvolvementNetwork2().get_network(
+        from apps.landmatrix.utils import InvolvementNetwork2
+
+        return InvolvementNetwork2().get_network_x(
             self.id, depth, include_deals=include_deals, show_ventures=show_ventures
         )
 

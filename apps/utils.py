@@ -2,11 +2,12 @@ import datetime
 import itertools
 from typing import Any
 
+from django.db.models import QuerySet
 from django.utils.duration import duration_iso_string
 from django.utils.timezone import is_aware
 
 
-def qs_values_to_dict(qs, fields, many_to_many_relations=None):
+def qs_values_to_dict(qs: QuerySet, fields, many_to_many_relations=None):
     if not many_to_many_relations:
         many_to_many_relations = []
 
@@ -48,7 +49,7 @@ def qs_values_to_dict(qs, fields, many_to_many_relations=None):
             manytomany_combine = {mtm: {} for mtm in many_to_many_relations}
             for key, val in group.items():
                 if val is None:
-                    continue
+                    richdeal[key] = None
                 if "__" in key:
                     keyprefix, restkey = key.split("__", 1)
                     # many2many / foreign key related
