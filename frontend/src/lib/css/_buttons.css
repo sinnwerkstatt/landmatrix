@@ -3,7 +3,7 @@
     --color1: white;
     --color2: black;
     --color3: lightgray;
-    @apply text-base text-center font-bold leading-tight tracking-widest md:text-lg;
+    @apply text-center text-base font-bold leading-tight tracking-widest md:text-lg;
     @apply inline-block cursor-pointer whitespace-nowrap rounded px-4 py-2 transition;
   }
 

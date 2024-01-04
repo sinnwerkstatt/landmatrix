@@ -2,6 +2,8 @@
   import { _ } from "svelte-i18n"
   import Select from "svelte-select"
 
+  import type { ValueLabelEntry } from "$lib/stores"
+
   import { LABEL_CLASS, VALUE_CLASS, WRAPPER_CLASS } from "$components/Fields/consts"
   import Label2 from "$components/Fields/Display2/Label2.svelte"
 
@@ -13,7 +15,7 @@
   export let valueClass = VALUE_CLASS
 
   export let multiple = false
-  export let choices: unknown[]
+  export let choices: ValueLabelEntry[]
 
   let focused: boolean
 </script>
@@ -24,7 +26,8 @@
   {/if}
   <div class={valueClass}>
     <Select
-      bind:value
+      value={choices.find(c => c.value === value)}
+      bind:justValue={value}
       bind:focused
       items={choices}
       {multiple}

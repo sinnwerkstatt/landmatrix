@@ -79,7 +79,6 @@
     @apply flex items-center justify-center border border-gray-300 bg-gray-200 px-3 py-1.5 text-gray-600;
   }
 
-
   .radio-btn {
     @apply h-4 w-4 appearance-none rounded-full border border-gray-400 bg-white transition duration-200 checked:border-2 checked:border-orange-200 checked:bg-orange;
   }

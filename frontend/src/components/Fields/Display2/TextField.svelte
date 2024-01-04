@@ -1,4 +1,6 @@
 <script lang="ts">
+  import type { ValueLabelEntry } from "$lib/stores"
+
   import { LABEL_CLASS, VALUE_CLASS, WRAPPER_CLASS } from "$components/Fields/consts"
   import Label2 from "$components/Fields/Display2/Label2.svelte"
 
@@ -11,7 +13,7 @@
 
   export let url = false
   export let multipleChoices = false
-  export let choices: { value: string; label: string }[] = []
+  export let choices: ValueLabelEntry[] = []
 
   const isMulti = (value: string | string[]): value is string[] => multipleChoices
   const isUrl = (value: string | string[]): value is string => url

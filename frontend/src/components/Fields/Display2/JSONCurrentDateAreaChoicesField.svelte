@@ -1,6 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
+  import type { ValueLabelEntry } from "$lib/stores"
   import type { JSONCurrentDateAreaChoicesFieldType } from "$lib/types/newtypes"
 
   import { LABEL_CLASS, VALUE_CLASS, WRAPPER_CLASS } from "$components/Fields/consts"
@@ -16,7 +17,7 @@
   export let labelClass = LABEL_CLASS
   export let valueClass = VALUE_CLASS
 
-  export let choices: { value: string; label: string }[]
+  export let choices: ValueLabelEntry[]
 
   // $: flat_choices = formfield.choices
   //   ? Object.fromEntries(formfield.choices.map(c => [c.value, c.label]))
