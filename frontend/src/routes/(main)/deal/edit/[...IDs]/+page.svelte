@@ -95,9 +95,6 @@
         method: "PUT",
         credentials: "include",
         body: JSON.stringify({ version: deal.selected_version }),
-        // body: JSON.stringify({
-        //   deal: { ...deal, versions: null, comments: null, workflowinfos: null },
-        // }),
         headers: {
           "X-CSRFToken": await getCsrfToken(),
           "Content-Type": "application/json",

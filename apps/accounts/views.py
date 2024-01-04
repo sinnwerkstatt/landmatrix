@@ -6,7 +6,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from apps.accounts.models import User
-from apps.accounts.permissions import IsReporterOrHigher
+from apps.landmatrix.permissions import IsReporterOrHigher
 from apps.accounts.serializers import UserSerializer, UserListSerializer
 
 

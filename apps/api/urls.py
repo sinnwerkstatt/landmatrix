@@ -22,6 +22,7 @@ router.register(r"field_definitions", oldviews.FieldDefinitionViewSet)
 router.register(r"deals", newviews.Deal2ViewSet)
 router.register(r"dealversions", newviews.DealVersionViewSet)
 router.register(r"investors", newviews.Investor2ViewSet)
+router.register(r"investorversions", newviews.InvestorVersionViewSet)
 
 urlpatterns = [
     path("legacy_export/", data_download),

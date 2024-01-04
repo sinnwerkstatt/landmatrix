@@ -6,9 +6,9 @@ from django.http import JsonResponse
 from django.utils import timezone
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
-from rest_framework.exceptions import PermissionDenied, ParseError
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.request import Request
 from rest_framework.response import Response
 
@@ -22,6 +22,7 @@ from apps.landmatrix.models.new import (
     DealWorkflowInfo2,
     InvestorWorkflowInfo2,
 )
+from apps.landmatrix.permissions import IsReporterOrHigher
 from apps.landmatrix.serializers import (
     DealSerializer,
     InvestorSerializer,
@@ -109,9 +110,12 @@ class DealVersionViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = DealVersion2.objects.all()
     serializer_class = DealVersionSerializer
 
+    def get_permissions(self):
+        if self.action in ["update", "destroy", "change_status"]:
+            return [IsReporterOrHigher()]
+        return [IsAdminUser()]
+
     def update(self, request, pk: int):
-        if not request.user.is_authenticated or not request.user.role:
-            raise PermissionDenied("MISSING_AUTHORIZATION")
         dv1: DealVersion2 = get_object_or_404(self.queryset, pk=pk)
 
         # TODO check all the permissions! (Creator, or different role or whatnot)
@@ -130,8 +134,6 @@ class DealVersionViewSet(viewsets.ReadOnlyModelViewSet):
         return Response({})
 
     def destroy(self, request, pk: int):
-        if not request.user.is_authenticated or not request.user.role:
-            raise PermissionDenied("MISSING_AUTHORIZATION")
         dv1: DealVersion2 = get_object_or_404(self.queryset, pk=pk)
 
         if dv1.created_by_id != request.user.id and request.user.role < UserRole.EDITOR:
@@ -152,100 +154,23 @@ class DealVersionViewSet(viewsets.ReadOnlyModelViewSet):
                 from_user=request.user,
                 status_before=old_draft_status,
                 status_after="DELETED",
-                comment=request.data["comment"],
+                comment=request.data.get("comment", ""),
             )
         return Response({})
 
     @action(detail=True, methods=["put"])
     def change_status(self, request, pk: int):
-        if not request.user.is_authenticated or not request.user.role:
-            raise PermissionDenied("MISSING_AUTHORIZATION")
         dv1: DealVersion2 = get_object_or_404(self.queryset, pk=pk)
 
         if dv1.deal.draft_version_id != dv1.id:
             raise PermissionDenied("EDITING_OLD_VERSION")
 
-        old_draft_status = dv1.status
-
-        if request.data["transition"] == "TO_REVIEW":
-            if not (
-                dv1.created_by == request.user or request.user.role >= UserRole.EDITOR
-            ):
-                raise PermissionDenied("MISSING_AUTHORIZATION")
-            draft_status = "REVIEW"
-            dv1.status = "REVIEW"
-            dv1.sent_to_review_at = timezone.now()
-            dv1.sent_to_review_by = request.user
-            if request.data.get("fullyUpdated"):
-                dv1.fully_updated = True
-            dv1.save()
-        elif request.data["transition"] == "TO_ACTIVATION":
-            if request.user.role < UserRole.EDITOR:
-                raise PermissionDenied("MISSING_AUTHORIZATION")
-            draft_status = "ACTIVATION"
-            dv1.status = "ACTIVATION"
-            dv1.sent_to_activation_at = timezone.now()
-            dv1.sent_to_activation_by = request.user
-            dv1.save()
-        elif request.data["transition"] == "ACTIVATE":
-            if request.user.role < UserRole.ADMINISTRATOR:
-                raise PermissionDenied("MISSING_AUTHORIZATION")
-            draft_status = "ACTIVATED"
-            dv1.status = "ACTIVATED"
-            dv1.activated_at = timezone.now()
-            dv1.activated_by = request.user
-            dv1.save()
-            d1: DealHull = dv1.deal
-            d1.draft_version = None
-            d1.active_version = dv1
-            # using "last modified" timestamp for "last fully updated" #681
-            if dv1.fully_updated:
-                d1.fully_updated_at = dv1.modified_at
-            d1.save()
-
-            dv1.workflowinfos.all().update(resolved=True)
-        elif request.data["transition"] == "TO_DRAFT":
-            if request.user.role < UserRole.EDITOR:
-                raise PermissionDenied("MISSING_AUTHORIZATION")
-            draft_status = "DRAFT"
-            dv1.status = "DRAFT"
-
-            # resetting META fields
-            dv1.id = None
-            dv1.created_at = timezone.now()
-            dv1.created_by_id = request.data["toUser"]
-            dv1.sent_to_review_at = None
-            dv1.sent_to_review_by = None
-            dv1.sent_to_activation_at = None
-            dv1.sent_to_activation_by = None
-            dv1.activated_at = None
-            dv1.activated_by = None
-            dv1.fully_updated = False
-
-            dv1.save()
-
-            d1 = dv1.deal
-            d1.draft_version = dv1
-            d1.save()
-            # close remaining open feedback requests
-            dv1.workflowinfos.filter(
-                Q(status_before__in=["REVIEW", "ACTIVATION"])
-                & Q(status_after="DRAFT")
-                # TODO: https://git.sinntern.de/landmatrix/landmatrix/-/issues/404
-                & (Q(from_user=request.user) | Q(to_user=request.user))
-            ).update(resolved=True)
-        else:
-            raise ParseError("Invalid transition")
-
-        # TODO do all the dealworkflowinfos
-        DealWorkflowInfo2.objects.create(
-            deal_id=dv1.deal_id,
-            deal_version=dv1,
-            from_user=request.user,
+        dv1.change_status(
+            new_status=request.data["transition"],
+            user=request.user,
+            fully_updated=request.data.get("fullyUpdated"),
             to_user_id=request.data.get("toUser"),
-            status_before=old_draft_status,
-            status_after=draft_status,
-            comment=request.data["comment"],
+            comment=request.data.get("comment", ""),
         )
 
         if to_user := request.data.get("toUser"):
@@ -262,48 +187,11 @@ class Deal2ViewSet(viewsets.ModelViewSet):
     serializer_class = DealSerializer
 
     def get_permissions(self):
-        if self.action == "create":
-            return [IsAuthenticated()]
-        return [AllowAny()]
-
-    @action(detail=True, methods=["put"])
-    def add_comment(self, request, pk: int):
-        if not request.user.is_authenticated or not request.user.role:
-            raise PermissionDenied("MISSING_AUTHORIZATION")
-        d1: DealHull = self.get_object()
-
-        # TODO unclear which version to grab. active or draft?
-        DealWorkflowInfo2.objects.create(
-            deal=d1,
-            # deal_version_id=dv1.id,
-            from_user=request.user,
-            to_user_id=request.data.get("toUser"),
-            comment=request.data["comment"],
-        )
-
-        # TODO
-        # if to_user_id:
-        #     send_comment_to_user(obj, comment, user, to_user_id, obj_version_id)
-
-        return Response({})
-
-    @action(
-        name="Deal Instance",
-        methods=["get"],
-        url_path=r"(?P<version_id>\d+)",
-        detail=True,
-    )
-    def retrieve_version(self, request, pk: int, version_id: int):
-        d1: DealHull = self.get_object()
-        d1._selected_version_id = version_id
-        serializer = self.get_serializer(d1)
-        dv1 = serializer.data
-        # TODO check for permissions when viewing a draft
-        # if request.user.role > UserRole.EDITOR:
-        #     ...
-        #     # dv1.created_by_id
-
-        return Response(dv1)
+        if self.action in ["retrieve_version", "list"]:
+            return [AllowAny()]
+        if self.action in ["add_comment", "create", "update", "destroy"]:
+            return [IsReporterOrHigher()]
+        return [IsAdminUser()]
 
     def list(self, request: Request, *args, **kwargs):
         deals = (
@@ -390,16 +278,11 @@ class Deal2ViewSet(viewsets.ModelViewSet):
         creating a new DealVersion when calling "save" on an existing Deal
         """
 
-        if not request.user.is_authenticated or not request.user.role:
-            raise PermissionDenied("MISSING_AUTHORIZATION")
-
         d1: DealHull = self.get_object()
         dv1 = d1.add_draft(created_by=request.user)
 
         data = request.data["version"]
-
         serializer = DealVersionSerializer(dv1, data=data, partial=True)
-
         if serializer.is_valid(raise_exception=True):
             # this is untidy
             dv1 = serializer.save()
@@ -407,12 +290,175 @@ class Deal2ViewSet(viewsets.ModelViewSet):
 
         return Response({})
 
+    def destroy(self, request, pk: int):
+        ...  # TODO implement setting deal to deleted.
+
+    @action(detail=True, methods=["put"])
+    def add_comment(self, request):
+        d1: DealHull = self.get_object()
+
+        # TODO unclear which version to grab. active or draft?
+        DealWorkflowInfo2.objects.create(
+            deal=d1,
+            # deal_version_id=dv1.id,
+            from_user=request.user,
+            to_user_id=request.data.get("toUser"),
+            comment=request.data["comment"],
+        )
+
+        # TODO
+        # if to_user_id:
+        #     send_comment_to_user(obj, comment, user, to_user_id, obj_version_id)
+
+        return Response({})
+
+    @action(
+        name="Deal Instance",
+        methods=["get"],
+        url_path=r"(?P<version_id>\d+)",
+        detail=True,
+    )
+    def retrieve_version(self, request, pk: int, version_id: int):
+        d1: DealHull = self.get_object()
+        d1._selected_version_id = int(version_id)
+        serializer = self.get_serializer(d1)
+        dv1 = serializer.data
+        # TODO check for permissions when viewing a draft
+        # if request.user.role > UserRole.EDITOR:
+        #     ...
+        #     # dv1.created_by_id
+
+        return Response(dv1)
+
+
+class InvestorVersionViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = InvestorVersion2.objects.all()
+    serializer_class = InvestorVersionSerializer
+
+    def get_permissions(self):
+        if self.action in ["update", "destroy", "change_status"]:
+            return [IsReporterOrHigher()]
+        return [IsAdminUser()]
+
+    # def update(self, request, pk: int):
+    #     dv1: InvestorVersion2 = get_object_or_404(self.queryset, pk=pk)
+    #
+    #     # TODO check all the permissions! (Creator, or different role or whatnot)
+    #
+    #     data = request.data["version"]
+    #     serializer = self.serializer_class(dv1, data=data, partial=True)
+    #
+    #     if serializer.is_valid(raise_exception=True):
+    #         # this is untidy
+    #         dv1 = serializer.save()
+    #         dv1.modified_by = request.user
+    #         dv1.modified_at = timezone.now()
+    #         dv1.save()
+    #         serializer.save_submodels(data, dv1)
+    #
+    #     return Response({})
+
+    def destroy(self, request, pk: int):
+        iv1: InvestorVersion2 = get_object_or_404(self.queryset, pk=pk)
+
+        if iv1.created_by_id != request.user.id and request.user.role < UserRole.EDITOR:
+            raise PermissionDenied("MISSING_AUTHORIZATION")
+        # TODO check all the permissions! (Creator, or different role or whatnot)
+
+        old_draft_status = iv1.status
+        iv1.delete()
+
+        i1: InvestorHull = iv1.investor
+        if i1.versions.count() == 0:
+            i1.delete()
+        else:
+            i1.draft_version = None
+            i1.save()
+            InvestorWorkflowInfo2.objects.create(
+                investor=i1,
+                from_user=request.user,
+                status_before=old_draft_status,
+                status_after="DELETED",
+                comment=request.data.get("comment", ""),
+            )
+        return Response({})
+
+    # @action(detail=True, methods=["put"])
+    # def change_status(self, request, pk: int):
+    #     iv1: InvestorVersion2 = get_object_or_404(self.queryset, pk=pk)
+    #
+    #     if iv1.investor.draft_version_id != iv1.id:
+    #         raise PermissionDenied("EDITING_OLD_VERSION")
+    #
+    #     iv1.change_status(
+    #         new_status=request.data["transition"],
+    #         user=request.user,
+    #         to_user_id=request.data.get("toUser"),
+    #         comment=request.data.get("comment", ""),
+    #     )
+    #
+    #     if to_user := request.data.get("toUser"):
+    #         pass  # TODO
+    #         # send_comment_to_user(obj, request.data["comment"], request.user, to_user, obj_version_id)
+    #
+    #     return Response({"investorID": iv1.investor.id, "versionID": iv1.id})
+
 
 class Investor2ViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = InvestorHull.objects.all().prefetch_related(
         Prefetch("versions", queryset=InvestorVersion2.objects.order_by("-id"))
     )
     serializer_class = InvestorSerializer
+
+    def get_permissions(self):
+        if self.action in ["retrieve_version", "list", "simple"]:
+            return [AllowAny()]
+        if self.action in ["add_comment", "create", "update", "destroy"]:
+            return [IsReporterOrHigher()]
+        return [IsAdminUser()]
+
+    @staticmethod
+    def create(request, *args, **kwargs):
+        i1: InvestorHull = InvestorHull.objects.create()
+        iv1 = i1.add_draft(created_by=request.user)
+
+        # there is more logic here, compared to "new deal" because new deal only ever gets a country
+        data = request.data["version"]
+        if data.get("country"):
+            data["country_id"] = data.get("country", {}).get("id", None)
+            del data["country"]
+
+        serializer = InvestorVersionSerializer(iv1, data=data, partial=True)
+        if serializer.is_valid(raise_exception=True):
+            dv1 = serializer.save()
+            dv1.save()
+            # no need to save submodels in this step. there are definitely no datasources defined here yet
+            # serializer.save_submodels(data, dv1)
+
+        InvestorWorkflowInfo2.objects.create(
+            investor=i1,
+            investor_version=iv1,
+            from_user=request.user,
+            status_after="DRAFT",
+        )
+        return Response({"investorID": i1.id, "versionID": iv1.id})
+
+    def update(self, request, *args, **kwargs):
+        """
+        creating a new InvestorVersion when calling "save" on an existing Investor
+        """
+
+        i1: InvestorHull = self.get_object()
+        iv1 = i1.add_draft(created_by=request.user)
+
+        data = request.data["version"]
+        serializer = InvestorVersionSerializer(iv1, data=data, partial=True)
+        if serializer.is_valid(raise_exception=True):
+            # this is untidy
+            iv1 = serializer.save()
+            serializer.save_submodels(data, iv1)
+
+        return Response({})
 
     @action(methods=["get"], detail=False)
     def simple(self, request):
@@ -451,57 +497,11 @@ class Investor2ViewSet(viewsets.ReadOnlyModelViewSet):
         url_path=r"(?P<version_id>\d+)",
         detail=True,
     )
-    def retrieve_version(self, request, pk=None, version_id=None):
+    def retrieve_version(self, request, pk: int, version_id: int):
         i1: InvestorHull = self.get_object()
-        i1._selected_version_id = version_id
+        i1._selected_version_id = int(version_id)
         serializer = self.get_serializer(i1)
         return Response(serializer.data)
-
-    @staticmethod
-    def create(request, *args, **kwargs):
-        i1: InvestorHull = InvestorHull.objects.create()
-        iv1 = i1.add_draft(created_by=request.user)
-
-        data = request.data["version"]
-        if data.get("country"):
-            data["country_id"] = data.get("country", {}).get("id", None)
-            del data["country"]
-
-        serializer = InvestorVersionSerializer(iv1, data=data, partial=True)
-        if serializer.is_valid(raise_exception=True):
-            # this is untidy
-            dv1 = serializer.save()
-            dv1.save()
-            # no need to save submodels in this step. there are definitely no datasources defined here yet
-            # serializer.save_submodels(data, dv1)
-
-        InvestorWorkflowInfo2.objects.create(
-            investor=i1,
-            investor_version=iv1,
-            from_user=request.user,
-            status_after="DRAFT",
-        )
-        return Response({"investorID": i1.id, "versionID": iv1.id})
-
-    # def update(self, request, *args, **kwargs):
-    #     if not request.user.is_authenticated or not request.user.role:
-    #         raise PermissionDenied("MISSING_AUTHORIZATION")
-    #
-    #     i1: InvestorHull = self.get_object()
-    #
-    #     iv1 = i1.add_draft(created_by=request.user)
-    #
-    #     serializer = InvestorVersionSerializer(
-    #         iv1, data=(request.data["version"]), partial=True
-    #     )
-    #
-    #     if serializer.is_valid(raise_exception=True):
-    #         # this is untidy
-    #         iv1 = serializer.save()
-    #         iv1.save()
-    #         serializer.save_submodels(request, iv1)
-    #
-    #     return Response({})
 
     @action(methods=["get"], detail=True)
     def involvements_graph(self, request, pk=None, version_id=None):

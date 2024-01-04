@@ -138,20 +138,10 @@ class DealVersionSerializer(serializers.ModelSerializer):
     sent_to_activation_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
     activated_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
 
-    @staticmethod
-    def get_operating_company(obj: DealVersion2):
-        if obj.operating_company and obj.operating_company.active_version:
-            return {
-                "id": obj.operating_company.id,
-                "name": obj.operating_company.active_version.name,
-            }
-        return None
-
     class Meta:
         model = DealVersion2
         read_only_fields = (
             "id",
-            "status",
             # calculated
             "is_public",
             "has_known_investor",
@@ -171,7 +161,7 @@ class DealVersionSerializer(serializers.ModelSerializer):
             "initiation_year",
             "forest_concession",
             "transnational",
-            # version timestamps
+            # base version mixin
             "created_at",
             "created_by",
             "modified_at",
@@ -182,8 +172,18 @@ class DealVersionSerializer(serializers.ModelSerializer):
             "sent_to_activation_by",
             "activated_at",
             "activated_by",
+            "status",
         )
         fields = "__all__"
+
+    @staticmethod
+    def get_operating_company(obj: DealVersion2):
+        if obj.operating_company and obj.operating_company.active_version:
+            return {
+                "id": obj.operating_company.id,
+                "name": obj.operating_company.active_version.name,
+            }
+        return None
 
     @staticmethod
     def save_submodels(data, dv1: DealVersion2):
@@ -318,11 +318,33 @@ class Investor2DealSerializer(serializers.ModelSerializer):
 
 class InvestorVersionSerializer(serializers.ModelSerializer):
     datasources = InvestorDataSourceSerializer(many=True, read_only=True)
-    country = CountryIDNameSerializer()
+    country = CountryIDNameSerializer(read_only=True)
     country_id = serializers.IntegerField()
+
+    # creating these because DRF shows these fields as "created_by", instead of "~_id"
+    created_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
+    modified_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
+    sent_to_review_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
+    sent_to_activation_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
+    activated_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = InvestorVersion2
+        read_only_fields = (
+            "id",
+            # base version mixin
+            "created_at",
+            "created_by",
+            "modified_at",
+            "modified_by",
+            "sent_to_review_at",
+            "sent_to_review_by",
+            "sent_to_activation_at",
+            "sent_to_activation_by",
+            "activated_at",
+            "activated_by",
+            "status",
+        )
         fields = "__all__"
 
     @staticmethod
@@ -403,8 +425,13 @@ class InvestorSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_involvements(obj: InvestorHull):
-        if hasattr(obj, "_selected_version_id") and obj._selected_version_id:
-            return obj.versions.get(id=obj._selected_version_id).involvements_snapshot
+        if hasattr(obj, "_selected_version_id"):
+            selected_version_id = obj._selected_version_id
+        else:
+            selected_version_id = None
+
+        if selected_version_id and selected_version_id != obj.active_version_id:
+            return obj.versions.get(id=selected_version_id).involvements_snapshot
         if obj.active_version:
             involvements: QuerySet[Involvement] = Involvement.objects.filter(
                 Q(parent_investor_id=obj.id) | Q(child_investor_id=obj.id)

@@ -17,7 +17,9 @@
   const isDeal = (obj: DealHull | InvestorHull): obj is DealHull =>
     "fully_updated_at" in obj
 
-  $: i18nValues = { values: { object: isDeal(object) ? "deal" : "investor" } }
+  $: objectType = isDeal(object) ? "deal" : "investor"
+
+  $: i18nValues = { values: { object: objectType } }
 
   async function deleteObject() {
     const objType = isDeal(object) ? "dealversions" : "investorversions"
@@ -35,8 +37,8 @@
       toast.push(`${ret.status}: ${retJson.detail}`, { classes: ["error"] })
     } else {
       if (object.active_version_id)
-        await goto(`/deal/${object.id}/`, { invalidateAll: true })
-      else await goto(`/list/deals/`, { invalidateAll: true })
+        await goto(`/${objectType}/${object.id}/`, { invalidateAll: true })
+      else await goto(`/list/${objectType}s/`, { invalidateAll: true })
     }
   }
 </script>

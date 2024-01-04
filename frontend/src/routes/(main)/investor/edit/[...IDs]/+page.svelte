@@ -58,14 +58,6 @@
         method: "PUT",
         credentials: "include",
         body: JSON.stringify({ version: investor.selected_version }),
-        // body: JSON.stringify({
-        //   investor: { ...investor, versions: null, comments: null, workflowinfos: null,
-        //       //           versions: undefined,
-        //           comments: undefined,
-        //           workflowinfos: undefined,
-        //           ventures: undefined,
-        //           involvements: undefined,},
-        // }),
         headers: {
           "X-CSRFToken": await getCsrfToken(),
           "Content-Type": "application/json",

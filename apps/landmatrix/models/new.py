@@ -1,5 +1,4 @@
 import json
-import re
 
 from django.conf import settings
 from django.contrib.gis.db import models as gis_models
@@ -12,8 +11,9 @@ from django.http import Http404
 from django.utils import timezone
 from django.utils.translation import gettext as _
 from nanoid import generate
+from rest_framework.exceptions import PermissionDenied, ParseError
 
-from apps.accounts.models import User
+from apps.accounts.models import User, UserRole
 from apps.landmatrix.models import choices
 from apps.landmatrix.models.choices import (
     DATASOURCE_TYPE_CHOICES,
@@ -610,7 +610,7 @@ class DealVersionBaseFields(models.Model):
         abstract = True
 
 
-class VersionTimestampsMixins(models.Model):
+class BaseVersionMixin(models.Model):
     created_at = models.DateTimeField(_("Created at"))
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -656,16 +656,65 @@ class VersionTimestampsMixins(models.Model):
         related_name="+",
     )
 
+    status = models.CharField(choices=VERSION_STATUS_CHOICES, default="DRAFT")
+
     def save(self, *args, **kwargs):
         if self._state.adding and not self.created_at:
             self.created_at = timezone.now()
         super().save(*args, **kwargs)
 
+    def change_status(
+        self,
+        new_status: str,
+        user: User,
+        to_user_id: int = None,
+    ):
+        if new_status == "TO_REVIEW":
+            if not (self.created_by == user or user.role >= UserRole.EDITOR):
+                raise PermissionDenied("MISSING_AUTHORIZATION")
+            self.status = "REVIEW"
+            self.sent_to_review_at = timezone.now()
+            self.sent_to_review_by = user
+            self.save()
+        elif new_status == "TO_ACTIVATION":
+            if user.role < UserRole.EDITOR:
+                raise PermissionDenied("MISSING_AUTHORIZATION")
+            self.status = "ACTIVATION"
+            self.sent_to_activation_at = timezone.now()
+            self.sent_to_activation_by = user
+            self.save()
+        elif new_status == "ACTIVATE":
+            if user.role < UserRole.ADMINISTRATOR:
+                raise PermissionDenied("MISSING_AUTHORIZATION")
+            self.status = "ACTIVATED"
+            self.activated_at = timezone.now()
+            self.activated_by = user
+            self.save()
+        elif new_status == "TO_DRAFT":
+            if user.role < UserRole.EDITOR:
+                raise PermissionDenied("MISSING_AUTHORIZATION")
+            self.status = "DRAFT"
+
+            # resetting META fields
+            self.id = None
+            self.created_at = timezone.now()
+            self.created_by_id = to_user_id
+            self.sent_to_review_at = None
+            self.sent_to_review_by = None
+            self.sent_to_activation_at = None
+            self.sent_to_activation_by = None
+            self.activated_at = None
+            self.activated_by = None
+            self.save()
+
+        else:
+            raise ParseError("Invalid transition")
+
     class Meta:
         abstract = True
 
 
-class DealVersion2(DealVersionBaseFields, VersionTimestampsMixins):
+class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
 
     """# CALCULATED FIELDS #"""
 
@@ -731,10 +780,61 @@ class DealVersion2(DealVersionBaseFields, VersionTimestampsMixins):
 
     # META
     fully_updated = models.BooleanField(default=False)
-    status = models.CharField(choices=VERSION_STATUS_CHOICES, default="DRAFT")
 
     def __str__(self):
         return f"v{self.id} for #{self.deal_id}"
+
+    def change_status(
+        self,
+        new_status: str,
+        user: User,
+        fully_updated=False,
+        to_user_id: int = None,
+        comment="",
+    ):
+        old_draft_status = self.status
+
+        super().change_status(new_status=new_status, user=user, to_user_id=to_user_id)
+
+        if new_status == "TO_REVIEW":
+            if fully_updated:
+                self.fully_updated = True
+            self.save()
+        elif new_status == "ACTIVATE":
+            deal: DealHull = self.deal
+            deal.draft_version = None
+            deal.active_version = self
+            # using "last modified" timestamp for "last fully updated" #681
+            if self.fully_updated:
+                deal.fully_updated_at = self.modified_at
+            deal.save()
+
+            self.workflowinfos.all().update(resolved=True)
+        elif new_status == "TO_DRAFT":
+            self.fully_updated = False  # TODO: reset this? maybe better not.
+            self.save()
+
+            deal = self.deal
+            deal.draft_version = self
+            deal.save()
+
+            # close remaining open feedback requests
+            self.workflowinfos.filter(
+                Q(status_before__in=["REVIEW", "ACTIVATION"])
+                & Q(status_after="DRAFT")
+                # TODO: https://git.sinntern.de/landmatrix/landmatrix/-/issues/404
+                & (Q(from_user=user) | Q(to_user=user))
+            ).update(resolved=True)
+
+        DealWorkflowInfo2.objects.create(
+            deal_id=self.deal_id,
+            deal_version=self,
+            from_user=user,
+            to_user_id=to_user_id,
+            status_before=old_draft_status,
+            status_after=self.status,
+            comment=comment,
+        )
 
     def _get_current(self, attributes, field, multi=False):
         if not attributes:
@@ -1236,7 +1336,7 @@ class DealHull(models.Model):
         return dv
 
 
-class InvestorVersion2(VersionTimestampsMixins, models.Model):
+class InvestorVersion2(BaseVersionMixin, models.Model):
     investor = models.ForeignKey(
         "landmatrix.InvestorHull", on_delete=models.PROTECT, related_name="versions"
     )
@@ -1265,8 +1365,6 @@ class InvestorVersion2(VersionTimestampsMixins, models.Model):
 
     # """ Data sources """  via Foreignkey
 
-    status = models.CharField(choices=VERSION_STATUS_CHOICES, default="DRAFT")
-
     """ calculated properties """
     # TODO need to fill this.
     involvements_snapshot = models.JSONField(blank=True, null=True)
@@ -1281,6 +1379,47 @@ class InvestorVersion2(VersionTimestampsMixins, models.Model):
 
     def __str__(self):
         return f"{self.name} (#{self.id})"
+
+    def change_status(
+        self,
+        new_status: str,
+        user: User,
+        to_user_id: int = None,
+        comment="",
+    ):
+        old_draft_status = self.status
+
+        super().change_status(new_status=new_status, user=user, to_user_id=to_user_id)
+
+        if new_status == "ACTIVATE":
+            investor: InvestorHull = self.investor
+            investor.draft_version = None
+            investor.active_version = self
+            investor.save()
+
+            self.workflowinfos.all().update(resolved=True)
+        elif new_status == "TO_DRAFT":
+            investor = self.investor
+            investor.draft_version = self
+            investor.save()
+
+            # close remaining open feedback requests
+            self.workflowinfos.filter(
+                Q(status_before__in=["REVIEW", "ACTIVATION"])
+                & Q(status_after="DRAFT")
+                # TODO: https://git.sinntern.de/landmatrix/landmatrix/-/issues/404
+                & (Q(from_user=user) | Q(to_user=user))
+            ).update(resolved=True)
+
+        InvestorWorkflowInfo2.objects.create(
+            investor_id=self.investor_id,
+            investor_version=self,
+            from_user=user,
+            to_user_id=to_user_id,
+            status_before=old_draft_status,
+            status_after=self.status,
+            comment=comment,
+        )
 
 
 class InvestorDataSource(BaseDataSource):
