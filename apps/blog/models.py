@@ -318,18 +318,17 @@ class BlogPage(HeadlessPreviewMixin, Page):
             "url": self.get_url(),
         }
 
-    def get_dict(self, rendition_str):
+    def get_dict(self, rendition_str, verbose=False):
         try:
             header_image = self.header_image.get_rendition(rendition_str).url
         except (AttributeError, SourceImageIOError):
             header_image = None
 
         body = str(self.body)
-        return {
+
+        ret = {
             "id": self.id,
             "title": self.title,
-            "slug": self.slug,
-            "body": body,
             "excerpt": Truncator(body).words(50, html=True, truncate=" …"),
             "date": self.date,
             "header_image": header_image,
@@ -340,6 +339,10 @@ class BlogPage(HeadlessPreviewMixin, Page):
             "categories": list(self.blog_categories.all().values()),
             "url": self.get_url(),
         }
+        if verbose:
+            ret.update({"slug": self.slug, "body": body})
+
+        return ret
 
     parent_page_types = ["blog.BlogIndexPage"]
     subpage_types = []

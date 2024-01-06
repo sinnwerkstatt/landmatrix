@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from typing import TypedDict
 
 from django.core.handlers.wsgi import WSGIRequest
-from django.db.models import F, Prefetch, Q
+from django.db.models import F, Prefetch, Q, QuerySet
 from django.http import (
     HttpResponse,
     HttpResponseBadRequest,
@@ -18,7 +18,7 @@ from rest_framework.decorators import api_view
 from rest_framework.exceptions import NotAuthenticated
 
 from apps.accounts.models import UserRole
-from apps.blog.models import BlogCategory
+from apps.blog.models import BlogCategory, BlogPage
 from apps.graphql.resolvers.charts import create_statistics
 from apps.landmatrix.forms.deal import DealForm
 from apps.landmatrix.forms.deal_submodels import get_submodels_fields
@@ -35,7 +35,7 @@ from .utils.to_dict import create_lookups, deal_to_dict, investor_to_dict
 
 
 @api_view()
-def messages_json(request) -> HttpResponse:
+def messages_json(request) -> JsonResponse:
     msgs = []
     for msg in Message.objects.filter(is_active=True).exclude(
         expires_at__lte=timezone.localdate()
@@ -428,6 +428,27 @@ def blog_categories(request):
                 for x in BlogCategory.objects.all().values(
                     "id", "name", "slug", "description"
                 )
+            ],
+            safe=False,
+        )
+
+
+def blog_pages(request):
+    language = request.GET.get("lang", "en")
+    category = request.GET.get("category")
+    qs: QuerySet[BlogPage] = (
+        BlogPage.objects.live()
+        .prefetch_related("tags")
+        .prefetch_related("blog_categories")
+    )
+    if category:
+        qs = qs.filter(blog_categories__slug=category)
+
+    with translation.override(language):
+        return JsonResponse(
+            [
+                x.get_dict("fill-500x500|jpegquality-60")
+                for x in qs.order_by("-date", "-id")
             ],
             safe=False,
         )

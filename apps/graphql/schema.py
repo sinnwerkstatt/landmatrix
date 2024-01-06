@@ -3,7 +3,7 @@ import pathlib
 from ariadne import ObjectType, load_schema_from_path, make_executable_schema
 from ariadne_django.scalars import date_scalar
 
-from .resolvers.blog import resolve_blogcategories, resolve_blogpage, resolve_blogpages
+
 from .resolvers.charts import (
     country_investments_and_rankings,
     global_rankings,
@@ -74,9 +74,6 @@ query.set_field("regions", resolve_regions)
 query.set_field("currencies", resolve_currencies)
 query.set_field("formfields", resolve_formfields)
 query.set_field("statistics", resolve_statistics)
-query.set_field("blogpages", resolve_blogpages)
-query.set_field("blogpage", resolve_blogpage)
-query.set_field("blogcategories", resolve_blogcategories)
 query.set_field("transnational_deals", resolve_web_of_transnational_deals)
 query.set_field("global_map_of_investments", resolve_global_map_of_investments)
 query.set_field("country_investments_and_rankings", country_investments_and_rankings)

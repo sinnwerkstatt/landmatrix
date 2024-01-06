@@ -48,10 +48,6 @@ type Query {
   ): CountryInvestmentsAndRankings
   global_rankings(count: Int = 10, filters: [Filter]): Rankings
 
-  blogpage(id: Int!): BlogPage!
-  blogpages(category: String): [BlogPage]
-  blogcategories(language: String = "en"): [BlogCategory]
-
   chart_descriptions(language: String = "en"): ChartDescriptions
 
   markers(region_id: Int, country_id: Int): [Marker]

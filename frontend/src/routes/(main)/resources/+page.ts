@@ -1,39 +1,14 @@
-import { gql } from "@urql/svelte"
-
 import { pageQuery } from "$lib/queries"
 import type { BlogPage, WagtailPage } from "$lib/types/wagtail"
 
 import type { PageLoad } from "./$types"
 
-export const load: PageLoad = async ({ url, fetch, parent }) => {
-  const { urqlClient } = await parent()
+export const load: PageLoad = async ({ url, fetch }) => {
   const page: WagtailPage = await pageQuery(url, fetch)
-  const returql = await urqlClient
-    .query<{ blogpages: BlogPage[] }>(
-      gql`
-        query {
-          blogpages {
-            id
-            title
-            slug
-            date
-            header_image
-            excerpt
-            categories {
-              slug
-            }
-            tags {
-              slug
-            }
-            url
-          }
-        }
-      `,
-      {},
-    )
-    .toPromise()
+  const retPages = await fetch(`/api/blog_pages/`)
+  const blogpages: BlogPage[] = await retPages.json()
+
   const category = url.searchParams.get("category")
   const tag = url.searchParams.get("tag")
-  const blogpages: BlogPage[] = returql?.data?.blogpages ?? []
   return { page, blogpages, category, tag }
 }

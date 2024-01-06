@@ -34,6 +34,19 @@ def create_storage_layout(s: FileSystemStorage) -> None:
 create_storage_layout(storage)
 
 
+def resolve_upload_datasource_file(_obj, info, filename, payload) -> str:
+    user = info.context["request"].user
+    if not user.is_authenticated:
+        raise GraphQLError("MISSING_AUTHORIZATION")
+
+    _, data = payload.split(",")
+    dec = base64.b64decode(data)
+    fname = storage.get_available_name(f"uploads/{filename}")
+    with open(os.path.join(storage.base_location, fname), "wb+") as f:
+        f.write(dec)
+    return fname
+
+
 # noinspection PyShadowingBuiltins
 def resolve_deal(_obj, info, id, version=None, subset="PUBLIC"):
     user = info.context["request"].user
@@ -135,19 +148,6 @@ def resolve_deals(
         set_sensible_fields_to_null(results)
 
     return results
-
-
-def resolve_upload_datasource_file(_obj, info, filename, payload) -> str:
-    user = info.context["request"].user
-    if not user.is_authenticated:
-        raise GraphQLError("MISSING_AUTHORIZATION")
-
-    _, data = payload.split(",")
-    dec = base64.b64decode(data)
-    fname = storage.get_available_name(f"uploads/{filename}")
-    with open(os.path.join(storage.base_location, fname), "wb+") as f:
-        f.write(dec)
-    return fname
 
 
 # noinspection PyShadowingBuiltins
