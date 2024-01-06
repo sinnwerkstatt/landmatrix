@@ -1,11 +1,8 @@
 <script lang="ts">
-  import { gql } from "@urql/svelte"
-  import { toast } from "@zerodevx/svelte-toast"
   import dayjs from "dayjs"
   import { _ } from "svelte-i18n"
   import { slide } from "svelte/transition"
 
-  import { invalidateAll } from "$app/navigation"
   import { page } from "$app/stores"
 
   import { allUsers, draftStatusMap, statusMap } from "$lib/stores"
@@ -37,71 +34,71 @@
   let reply = ""
 
   async function sendReply() {
-    const { data, error } = await $page.data.urqlClient
-      .mutation<{ add_workflow_info_reply: boolean }>(
-        gql`
-          mutation ($id: Int!, $type: String!, $from_user_id: Int!, $comment: String!) {
-            add_workflow_info_reply(
-              id: $id
-              type: $type
-              from_user_id: $from_user_id
-              comment: $comment
-            )
-          }
-        `,
-        {
-          id: info.id,
-          type: info.__typename,
-          from_user_id: $page.data.user.id,
-          comment: reply,
-        },
-      )
-      .toPromise()
-    if (error) {
-      toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
-      return
-    }
-    if (!data) {
-      toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
-      return
-    }
-    if (data.add_workflow_info_reply) {
-      info.replies = [
-        ...info.replies,
-        {
-          timestamp: new Date().toISOString(),
-          user_id: $page.data.user.id,
-          comment: reply,
-        },
-      ]
-      reply = ""
-    }
-    await invalidateAll()
+    // const { data, error } = await $page.data.urqlClient
+    //   .mutation<{ add_workflow_info_reply: boolean }>(
+    //     gql`
+    //       mutation ($id: Int!, $type: String!, $from_user_id: Int!, $comment: String!) {
+    //         add_workflow_info_reply(
+    //           id: $id
+    //           type: $type
+    //           from_user_id: $from_user_id
+    //           comment: $comment
+    //         )
+    //       }
+    //     `,
+    //     {
+    //       id: info.id,
+    //       type: info.__typename,
+    //       from_user_id: $page.data.user.id,
+    //       comment: reply,
+    //     },
+    //   )
+    //   .toPromise()
+    // if (error) {
+    //   toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
+    //   return
+    // }
+    // if (!data) {
+    //   toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
+    //   return
+    // }
+    // if (data.add_workflow_info_reply) {
+    //   info.replies = [
+    //     ...info.replies,
+    //     {
+    //       timestamp: new Date().toISOString(),
+    //       user_id: $page.data.user.id,
+    //       comment: reply,
+    //     },
+    //   ]
+    //   reply = ""
+    // }
+    // await invalidateAll()
   }
 
   async function resolveThread() {
-    const { data, error } = await $page.data.urqlClient
-      .mutation<{ resolve_workflow_info: boolean }>(
-        gql`
-          mutation ($id: Int!, $type: String!) {
-            resolve_workflow_info(id: $id, type: $type)
-          }
-        `,
-        { id: info.id, type: info.__typename },
-      )
-      .toPromise()
-    if (error) {
-      toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
-      return
-    }
-    if (!data) {
-      toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
-      return
-    }
-    if (data.resolve_workflow_info) {
-      info = { ...info, resolved: true }
-    }
-    await invalidateAll()
+    // const { data, error } = await $page.data.urqlClient
+    //   .mutation<{ resolve_workflow_info: boolean }>(
+    //     gql`
+    //       mutation ($id: Int!, $type: String!) {
+    //         resolve_workflow_info(id: $id, type: $type)
+    //       }
+    //     `,
+    //     { id: info.id, type: info.__typename },
+    //   )
+    //   .toPromise()
+    // if (error) {
+    //   toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
+    //   return
+    // }
+    // if (!data) {
+    //   toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
+    //   return
+    // }
+    // if (data.resolve_workflow_info) {
+    //   info = { ...info, resolved: true }
+    // }
+    // await invalidateAll()
   }
 </script>
 

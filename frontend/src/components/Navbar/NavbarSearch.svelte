@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { gql } from "@urql/svelte"
   import cn from "classnames"
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
@@ -33,59 +32,59 @@
 
   //  TODO do this with async typeahead to save on bandwidth
   async function getDeals() {
-    const { error, data } = await $page.data.urqlClient
-      .query<{ deals: Deal[] }>(
-        gql`
-          query SDeals($subset: Subset) {
-            deals(limit: 0, subset: $subset) {
-              id
-              country {
-                id
-                name
-              }
-              is_public
-            }
-          }
-        `,
-        {
-          subset: user?.is_authenticated ? "UNFILTERED" : "PUBLIC",
-        },
-      )
-      .toPromise()
-
-    if (error || !data) {
-      console.error(error)
-      return
-    }
-
-    deals = data.deals
+    // const { error, data } = await $page.data.urqlClient
+    //   .query<{ deals: Deal[] }>(
+    //     gql`
+    //       query SDeals($subset: Subset) {
+    //         deals(limit: 0, subset: $subset) {
+    //           id
+    //           country {
+    //             id
+    //             name
+    //           }
+    //           is_public
+    //         }
+    //       }
+    //     `,
+    //     {
+    //       subset: user?.is_authenticated ? "UNFILTERED" : "PUBLIC",
+    //     },
+    //   )
+    //   .toPromise()
+    //
+    // if (error || !data) {
+    //   console.error(error)
+    //   return
+    // }
+    //
+    // deals = data.deals
   }
 
   async function getInvestors() {
-    const { error, data } = await $page.data.urqlClient
-      .query<{ investors: Investor[] }>(
-        gql`
-          query SInvestors($subset: Subset) {
-            investors(
-              limit: 0
-              subset: $subset
-              filters: [{ field: "status", value: 4, exclusion: true }]
-            ) {
-              id
-              name
-            }
-          }
-        `,
-        { subset: user?.is_authenticated ? "UNFILTERED" : "PUBLIC" },
-      )
-      .toPromise()
-
-    if (error || !data) {
-      console.error(error)
-      return
-    }
-
-    investors = data.investors
+    // const { error, data } = await $page.data.urqlClient
+    //   .query<{ investors: Investor[] }>(
+    //     gql`
+    //       query SInvestors($subset: Subset) {
+    //         investors(
+    //           limit: 0
+    //           subset: $subset
+    //           filters: [{ field: "status", value: 4, exclusion: true }]
+    //         ) {
+    //           id
+    //           name
+    //         }
+    //       }
+    //     `,
+    //     { subset: user?.is_authenticated ? "UNFILTERED" : "PUBLIC" },
+    //   )
+    //   .toPromise()
+    //
+    // if (error || !data) {
+    //   console.error(error)
+    //   return
+    // }
+    //
+    // investors = data.investors
   }
 
   $: {
@@ -165,12 +164,12 @@
       class="flex items-center justify-end bg-white px-2 lg:w-[250px] dark:bg-gray-900"
     >
       <input
-        id="search"
+        autocomplete="off"
         bind:value={searchString}
         class="inpt mr-3 hidden rounded xl:block"
-        placeholder={$_("Search for...")}
-        autocomplete="off"
+        id="search"
         on:keydown={searchKeyboardEvent}
+        placeholder={$_("Search for...")}
       />
       <SearchIcon class="h-6" />
     </div>
@@ -179,12 +178,12 @@
     class="relative w-[300px] rounded bg-white p-2 shadow-lg xl:hidden dark:bg-gray-900"
   >
     <input
-      id="search"
+      autocomplete="off"
       bind:value={searchString}
       class="inpt"
-      placeholder={$_("Search")}
-      autocomplete="off"
+      id="search"
       on:keydown={searchKeyboardEvent}
+      placeholder={$_("Search")}
     />
   </div>
   {#if searchResult.length}

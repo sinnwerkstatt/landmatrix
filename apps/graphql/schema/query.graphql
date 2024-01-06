@@ -10,11 +10,6 @@ type Query {
     subset: Subset = PUBLIC
     filters: [Filter]
   ): [Deal]
-  deal_aggregations(
-    fields: [String]!
-    filters: [Filter]
-    subset: Subset = PUBLIC
-  ): DealAggregations
 
   investor(
     id: Int!
@@ -39,16 +34,6 @@ type Query {
 
   formfields(language: String = "en"): FormFieldSet
 
-  statistics(country_id: Int, region_id: Int): Statistics
-  transnational_deals(filters: [Filter]): WebOfTransnationalDeals
-  global_map_of_investments(filters: [Filter]): GlobalInvestmentMap
-  country_investments_and_rankings(
-    id: Int!
-    filters: [Filter]
-  ): CountryInvestmentsAndRankings
-  global_rankings(count: Int = 10, filters: [Filter]): Rankings
-
-  chart_descriptions(language: String = "en"): ChartDescriptions
 
   markers(region_id: Int, country_id: Int): [Marker]
 }

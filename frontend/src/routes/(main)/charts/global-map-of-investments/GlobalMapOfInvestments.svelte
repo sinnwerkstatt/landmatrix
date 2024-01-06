@@ -1,10 +1,7 @@
 <script lang="ts">
-  import { gql } from "@urql/svelte"
-
   import { browser } from "$app/environment"
-  import { page } from "$app/stores"
 
-  import { filters } from "$lib/filters"
+  import { filters, FilterValues } from "$lib/filters"
 
   import LoadingPulse from "$components/LoadingPulse.svelte"
 
@@ -28,36 +25,14 @@
     hoverCountryId = id
   }
 
-  const grabInvestments = async () => {
-    const { error, data } = await $page.data.urqlClient
-      .query<{
-        global_map_of_investments: Investments
-      }>(
-        gql`
-          query GlobalMapOfInvestments($filters: [Filter]) {
-            global_map_of_investments(filters: $filters)
-          }
-        `,
-        {
-          filters: $filters
-            .toGQLFilterArray()
-            .filter(
-              f => f.field !== "country_id" && f.field !== "country.fk_region_id",
-            ),
-        },
-      )
-      .toPromise()
-
-    if (error || !data) {
-      console.error(error)
-    } else {
-      investments = data.global_map_of_investments
-    }
+  const grabInvestments = async (fltrs: FilterValues) => {
+    const f1 = new FilterValues().copyNoCountry(fltrs)
+    const ret = await fetch(
+      `/api/charts/global_map_of_investments/?${f1.toRESTFilterArray()}`,
+    )
+    investments = await ret.json()
   }
-
-  $: if ($filters) {
-    grabInvestments()
-  }
+  $: grabInvestments($filters)
 
   $: if (investments) {
     globalMap = createGlobalMapOfInvestments(
@@ -96,7 +71,7 @@
   <CountryTooltip {investments} {selectedCountryId} {hoverCountryId} />
 {/if}
 
-<style lang="css">
+<style lang="postcss">
   :global(svg .country) {
     @apply cursor-pointer fill-white stroke-black stroke-[0.3] hover:fill-gray-100;
   }

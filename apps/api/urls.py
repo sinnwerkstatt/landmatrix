@@ -43,6 +43,16 @@ urlpatterns = [
     path("blog_categories/", api_views.blog_categories),
     path("blog_pages/", api_views.blog_pages),
     path("legacy_formfields/", api_views.legacy_formfields),
+    # charts
+    path(
+        "charts/country_investments_and_rankings/",
+        api_views.country_investments_and_rankings,
+    ),
+    path("charts/deal_aggregations/", api_views.deal_aggregations),
+    path(
+        "charts/web_of_transnational_deals/", api_views.get_web_of_transnational_deals
+    ),
+    path("charts/global_map_of_investments/", api_views.global_map_of_investments),
     path("csrf_token/", api_views.get_csrf),
     path("field_choices/", newviews.field_choices),
     path("", include(router.urls)),

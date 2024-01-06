@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { gql } from "@urql/svelte"
   import dayjs from "dayjs"
   import { onMount } from "svelte"
 
@@ -18,41 +17,42 @@
   }
 
   let deal: Deal
-  async function queryDeal() {
-    const { error, data } = await $page.data.urqlClient
-      .query(
-        gql`
-          query ($id: Int!) {
-            deal(id: $id, subset: UNFILTERED) {
-              id
-              versions {
-                id
-                deal {
-                  fully_updated
-                  status
-                  draft_status
-                  datasources
-                }
-                created_at
-                created_by {
-                  id
-                  full_name
-                }
-                object_id
-              }
-            }
-          }
-        `,
-        { id: dealID },
-        { requestPolicy: "network-only" },
-      )
-      .toPromise()
 
-    if (error || !data) {
-      console.error(error)
-      return
-    }
-    deal = data.deal
+  async function queryDeal() {
+    // const { error, data } = await $page.data.urqlClient
+    //   .query(
+    //     gql`
+    //       query ($id: Int!) {
+    //         deal(id: $id, subset: UNFILTERED) {
+    //           id
+    //           versions {
+    //             id
+    //             deal {
+    //               fully_updated
+    //               status
+    //               draft_status
+    //               datasources
+    //             }
+    //             created_at
+    //             created_by {
+    //               id
+    //               full_name
+    //             }
+    //             object_id
+    //           }
+    //         }
+    //       }
+    //     `,
+    //     { id: dealID },
+    //     { requestPolicy: "network-only" },
+    //   )
+    //   .toPromise()
+    //
+    // if (error || !data) {
+    //   console.error(error)
+    //   return
+    // }
+    // deal = data.deal
   }
 
   onMount(() => queryDeal())
@@ -173,9 +173,11 @@
   .probably_broken {
     @apply font-bold text-red-600;
   }
+
   .flopmenu {
     @apply invisible;
   }
+
   .flopmenu ~ div {
     @apply w-4;
     transition: width 50ms ease;
@@ -184,6 +186,7 @@
   .flopmenu:checked ~ div {
     width: 100%;
   }
+
   .flopmenu + label::before {
     content: "SHOW";
     border-radius: 5px;

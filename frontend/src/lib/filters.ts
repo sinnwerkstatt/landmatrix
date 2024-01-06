@@ -115,6 +115,26 @@ export class FilterValues {
     return this
   }
 
+  public copyNoCountry(other: FilterValues) {
+    this.region_id = undefined
+    this.country_id = undefined
+    this.deal_size_min = other.deal_size_min
+    this.deal_size_max = other.deal_size_max
+    this.negotiation_status = other.negotiation_status
+    this.nature_of_deal = other.nature_of_deal
+    this.investor = other.investor
+    this.investor_country_id = other.investor_country_id
+    this.initiation_year_min = other.initiation_year_min
+    this.initiation_year_max = other.initiation_year_max
+    this.initiation_year_unknown = other.initiation_year_unknown
+    this.implementation_status = other.implementation_status
+    this.intention_of_investment = other.intention_of_investment
+    this.produce = other.produce
+    this.transnational = other.transnational
+    this.forest_concession = other.forest_concession
+    return this
+  }
+
   public isDefault() {
     function _equal<T>(a: Array<T>, b: Array<T>) {
       return a.length === b.length && [...a].every(value => b.includes(value))
@@ -211,9 +231,9 @@ export class FilterValues {
       const animals: string[] = []
       const minerals: string[] = []
       for (const prod of this.produce) {
-        if (prod.groupID === ProduceGroup.CROPS) crops.push(prod.value)
-        else if (prod.groupID === ProduceGroup.ANIMALS) animals.push(prod.value)
-        else if (prod.groupID === ProduceGroup.MINERAL_RESOURCES)
+        if (prod.groupId === ProduceGroup.CROPS) crops.push(prod.value)
+        else if (prod.groupId === ProduceGroup.ANIMALS) animals.push(prod.value)
+        else if (prod.groupId === ProduceGroup.MINERAL_RESOURCES)
           minerals.push(prod.value)
       }
       crops.forEach(c => searchParams.append("crops", c))

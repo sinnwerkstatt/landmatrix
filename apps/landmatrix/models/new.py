@@ -1772,3 +1772,21 @@ class InvestorWorkflowInfo2(WorkflowInfo2):
             }
         )
         return d
+
+
+class DealTopInvestors2(models.Model):
+    """A view on dealversion2.top_investors M2M relation table."""
+
+    dealversion2 = models.ForeignKey(
+        DealVersion2, on_delete=models.CASCADE, related_name="+"
+    )
+    investorhull = models.ForeignKey(
+        InvestorHull, on_delete=models.CASCADE, related_name="+"
+    )
+
+    class Meta:
+        managed = False
+        db_table = "landmatrix_dealversion2_top_investors"
+
+    def __str__(self):
+        return f"#{self.dealversion2.deal_id} - {self.investorhull.active_version.name}"

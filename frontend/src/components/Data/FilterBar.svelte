@@ -54,9 +54,9 @@
   $: regionsWithGlobal = [{ id: undefined, name: $_("Global") }, ...$regions]
 
   $: jsonFilters = JSON.stringify($filters.toGQLFilterArray())
-  $: dataDownloadURL = `/api/legacy_export/?filters=${jsonFilters}&subset=${
+  $: dataDownloadURL = `/api/legacy_export/?subset=${
     $publicOnly ? "PUBLIC" : "ACTIVE"
-  }&format=`
+  }&${$filters.toRESTFilterArray()}&format=`
 
   function trackDownload(format: string) {
     let name = "Global"

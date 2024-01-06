@@ -1,8 +1,5 @@
 <script lang="ts">
-  import { gql } from "@urql/svelte"
   import { _ } from "svelte-i18n"
-
-  import { page } from "$app/stores"
 
   import { filters, FilterValues } from "$lib/filters"
   import { countries } from "$lib/stores"
@@ -27,32 +24,14 @@
   ) {
     if (!country) return
 
-    const ret = await $page.data.urqlClient
-      .query<{
-        country_investments_and_rankings: {
-          investing: CountryStat[]
-          invested: CountryStat[]
-        }
-      }>(
-        gql`
-          query InvestmentsAndRankings($id: Int!, $filters: [Filter]) {
-            country_investments_and_rankings(id: $id, filters: $filters)
-          }
-        `,
-        {
-          id: country.id,
-          filters: fltrs
-            .toGQLFilterArray()
-            .filter(f => f.field !== "country_id" && f.field !== "country.region_id"),
-        },
-      )
-      .toPromise()
+    const f1 = new FilterValues().copyNoCountry(fltrs)
 
-    if (ret.error || !ret.data) {
-      console.error(ret.error)
-      return
-    }
-    const rankings = ret.data.country_investments_and_rankings
+    const ret = await fetch(
+      `/api/charts/country_investments_and_rankings/?CID=${
+        country.id
+      }&${f1.toRESTFilterArray()}`,
+    )
+    const rankings = await ret.json()
 
     investingCountries = rankings.investing.map(x => ({
       name: $countries.find(c => c.id === x.country_id)?.name,

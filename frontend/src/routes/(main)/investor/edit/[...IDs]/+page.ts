@@ -22,7 +22,7 @@ export const load: PageLoad = async ({ depends, params, parent }) => {
       : `/api/investors/${investorID}/`,
   )
 
-  // const { data } = await urqlClient
+  // TODO should we also includeDeals=false, depth=0 here?
   //   .query<{ investor: Investor }>(investorQuery, {
   //     id: investorID,
   //     version: versionID,

@@ -2,7 +2,8 @@ from datetime import datetime, timedelta
 from typing import TypedDict
 
 from django.core.handlers.wsgi import WSGIRequest
-from django.db.models import F, Prefetch, Q, QuerySet
+from django.db import connection
+from django.db.models import F, Prefetch, Q, QuerySet, Count, Sum
 from django.http import (
     HttpResponse,
     HttpResponseBadRequest,
@@ -19,7 +20,7 @@ from rest_framework.exceptions import NotAuthenticated
 
 from apps.accounts.models import UserRole
 from apps.blog.models import BlogCategory, BlogPage
-from apps.graphql.resolvers.charts import create_statistics
+from apps.landmatrix.charts import get_deal_top_investments, web_of_transnational_deals
 from apps.landmatrix.forms.deal import DealForm
 from apps.landmatrix.forms.deal_submodels import get_submodels_fields
 from apps.landmatrix.forms.investor import InvestorForm, InvestorVentureInvolvementForm
@@ -29,6 +30,8 @@ from apps.landmatrix.models.investor import (
     InvestorVersion,
     InvestorWorkflowInfo,
 )
+from apps.landmatrix.models.new import DealHull
+from apps.landmatrix.newviews import _parse_filter
 from apps.message.models import Message
 from apps.wagtailcms.models import ChartDescriptionsSettings
 from .utils.to_dict import create_lookups, deal_to_dict, investor_to_dict
@@ -212,6 +215,63 @@ class Management(View):
             return JsonResponse({"objects": ret})
         else:
             return HttpResponseBadRequest("unknown request")
+
+
+def create_statistics(country_id=None, region_id=None):
+    select_clause = "SELECT count(distinct(d.id))"
+    from_clause = "FROM landmatrix_deal AS d"
+    where_clause = "WHERE d.status IN (2,3) AND d.is_public=True"
+
+    if country_id:
+        where_clause += f" AND d.country_id={country_id}"
+    if region_id:
+        from_clause += " INNER JOIN landmatrix_country AS c ON (d.country_id = c.id)"
+        where_clause += f" AND c.region_id={region_id}"
+
+    cursor = connection.cursor()
+
+    cursor.execute(f"{select_clause} {from_clause} {where_clause}")
+    deals_public_count = cursor.fetchone()[0]
+
+    cursor.execute(
+        f"""
+            {select_clause}
+            {from_clause}
+            {where_clause}
+            AND jsonb_array_length(d.datasources) > 1
+        """
+    )
+    deals_public_multi_ds_count = cursor.fetchone()[0]
+
+    cursor.execute(
+        f"""
+            {select_clause}
+            {from_clause}, jsonb_array_elements(d.locations) AS l
+            {where_clause}
+            AND (
+              l->>'level_of_accuracy' in ('EXACT_LOCATION','COORDINATES')
+              OR l->>'areas' IS NOT NULL
+            )
+        """
+    )
+    deals_public_high_geo_accuracy = cursor.fetchone()[0]
+
+    cursor.execute(
+        f"""
+            {select_clause}
+            {from_clause}, jsonb_array_elements(d.locations) AS l
+            {where_clause}
+            AND l->>'areas' IS NOT NULL
+        """
+    )
+    deals_public_polygons = cursor.fetchone()[0]
+
+    return {
+        "deals_public_count": deals_public_count,
+        "deals_public_multi_ds_count": deals_public_multi_ds_count,
+        "deals_public_high_geo_accuracy": deals_public_high_geo_accuracy,
+        "deals_public_polygons": deals_public_polygons,
+    }
 
 
 class CaseStatistics(View):
@@ -470,3 +530,68 @@ def legacy_formfields(request):
 @require_GET
 def get_csrf(request):
     return JsonResponse({"token": get_token(request)})
+
+
+@require_GET
+def country_investments_and_rankings(request):
+    country_id = request.GET.get("CID")
+    investments = get_deal_top_investments(request)
+    return JsonResponse(
+        {
+            "investing": [
+                {
+                    "country_id": country_id,
+                    "size": bucket["size"],
+                    "count": bucket["count"],
+                }
+                for country_id, bucket in investments["incoming"][
+                    int(country_id)
+                ].items()
+            ],
+            "invested": [
+                {
+                    "country_id": country_id,
+                    "size": bucket["size"],
+                    "count": bucket["count"],
+                }
+                for country_id, bucket in investments["outgoing"][
+                    int(country_id)
+                ].items()
+            ],
+        }
+    )
+
+
+@require_GET
+def deal_aggregations(request):
+    deals = DealHull.objects.public().filter(_parse_filter(request))
+    return JsonResponse(
+        {
+            "current_negotiation_status": list(
+                deals.order_by("active_version__current_negotiation_status", "id")
+                .values(value=F("active_version__current_negotiation_status"))
+                .annotate(count=Count("pk"))
+                .annotate(size=Sum("active_version__deal_size"))
+            )
+        }
+    )
+
+
+def get_web_of_transnational_deals(request):
+    return JsonResponse(web_of_transnational_deals(request))
+
+
+def global_map_of_investments(request):
+    return JsonResponse(get_deal_top_investments(request))
+
+
+# def global_rankings(_obj, _info, count=10, filters=None):
+#     qs = Deal.objects.active()
+#
+#     if filters:
+#         qs = qs.filter(parse_filters(filters))
+#
+#     return {
+#         "ranking_deal": list(qs.get_deal_country_rankings())[:count],
+#         "ranking_investor": list(qs.get_investor_country_rankings())[:count],
+#     }

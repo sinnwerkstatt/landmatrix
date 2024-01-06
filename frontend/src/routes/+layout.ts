@@ -1,5 +1,4 @@
 import type { LoadEvent } from "@sveltejs/kit"
-import { cacheExchange, Client, fetchExchange } from "@urql/core"
 
 import { i18nload } from "$lib/i18n/i18n"
 import { fetchBasis } from "$lib/stores"
@@ -21,17 +20,9 @@ async function fetchMe(fetch: LoadEvent["fetch"]) {
 
 export const load: LayoutLoad = async ({ fetch, data, depends }) => {
   depends("user:auth")
-  const urqlClient = new Client({
-    url: "/graphql/",
-    exchanges: [cacheExchange, fetchExchange],
-    fetch,
-    fetchOptions: () => ({ credentials: "include" }),
-  })
-
-  // fetch("adsf", {})
   const user: User | null = await fetchMe(fetch)
   const lang = data?.locale ?? "en"
   await Promise.all([fetchBasis(lang, fetch), i18nload(lang)])
 
-  return { urqlClient, user }
+  return { user }
 }

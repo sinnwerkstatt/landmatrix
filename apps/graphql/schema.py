@@ -4,14 +4,6 @@ from ariadne import ObjectType, load_schema_from_path, make_executable_schema
 from ariadne_django.scalars import date_scalar
 
 
-from .resolvers.charts import (
-    country_investments_and_rankings,
-    global_rankings,
-    resolve_deal_aggregations,
-    resolve_global_map_of_investments,
-    resolve_statistics,
-    resolve_web_of_transnational_deals,
-)
 from .resolvers.deal import (
     resolve_add_deal_comment,
     resolve_change_deal_status,
@@ -21,7 +13,6 @@ from .resolvers.deal import (
     resolve_deals,
     resolve_set_confidential,
 )
-from .resolvers.formfields import resolve_formfields
 from .resolvers.generics import (
     resolve_add_workflow_info_reply,
     resolve_object_copy,
@@ -36,13 +27,7 @@ from .resolvers.investor import (
     resolve_investors,
     resolve_involvement_network,
 )
-from .resolvers.misc import (
-    resolve_chart_descriptions,
-    resolve_countries,
-    resolve_currencies,
-    resolve_markers,
-    resolve_regions,
-)
+
 from .resolvers.user import resolve_user, resolve_users, user_type
 from .scalars import datetime_scalar, geopoint_scalar
 
@@ -55,22 +40,10 @@ query.set_field("user", resolve_user)
 query.set_field("users", resolve_users)
 query.set_field("deal", resolve_deal)
 query.set_field("deals", resolve_deals)
-query.set_field("deal_aggregations", resolve_deal_aggregations)
 query.set_field("investor", resolve_investor)
 query.set_field("involvement_network", resolve_involvement_network)
 query.set_field("investors", resolve_investors)
 # query.set_field("involvements", resolve_involvements)
-query.set_field("countries", resolve_countries)
-query.set_field("regions", resolve_regions)
-query.set_field("currencies", resolve_currencies)
-query.set_field("formfields", resolve_formfields)
-query.set_field("statistics", resolve_statistics)
-query.set_field("transnational_deals", resolve_web_of_transnational_deals)
-query.set_field("global_map_of_investments", resolve_global_map_of_investments)
-query.set_field("country_investments_and_rankings", country_investments_and_rankings)
-query.set_field("global_rankings", global_rankings)
-query.set_field("chart_descriptions", resolve_chart_descriptions)
-query.set_field("markers", resolve_markers)
 
 mutation = ObjectType("Mutation")
 # deal

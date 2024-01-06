@@ -1,10 +1,8 @@
 <script lang="ts">
-  import { gql } from "@urql/svelte"
   import { _ } from "svelte-i18n"
   import { slide } from "svelte/transition"
 
   import { afterNavigate } from "$app/navigation"
-  import { page as storePage } from "$app/stores"
 
   import { filters, FilterValues } from "$lib/filters"
   import { NegotiationStatus } from "$lib/types/deal"
@@ -38,44 +36,11 @@
     filters.region_id = regionID
     filters.country_id = countryID
 
-    const { error, data } = await $storePage.data.urqlClient
-      .query<{
-        deal_aggregations: {
-          current_negotiation_status: {
-            value: NegotiationStatus
-            size: number
-            count: number
-          }[]
-        }
-      }>(
-        gql`
-          query DealAggregations(
-            $fields: [String]!
-            $subset: Subset
-            $filters: [Filter]
-          ) {
-            deal_aggregations(fields: $fields, subset: $subset, filters: $filters) {
-              current_negotiation_status {
-                value
-                size
-                count
-              }
-            }
-          }
-        `,
-        {
-          fields: ["current_negotiation_status"],
-          filters: filters.toGQLFilterArray(),
-          subset: "PUBLIC",
-        },
-      )
-      .toPromise()
-
-    if (error || !data) {
-      console.error(error)
-    }
-
-    const curNegStat = data?.deal_aggregations.current_negotiation_status ?? []
+    const ret = await fetch(
+      `/api/charts/deal_aggregations/?${filters.toRESTFilterArray()}`,
+    )
+    const retJson = await ret.json()
+    const curNegStat = retJson.current_negotiation_status
 
     totalCount = curNegStat
       .map(ns => ns.count)
@@ -166,7 +131,7 @@
 <PageTitle>{$_(page.title)}</PageTitle>
 
 <div class="mx-auto w-[clamp(20rem,75%,56rem)]">
-  <QuasiStaticMap {countryID} {regionID} markers={page.markers} />
+  <QuasiStaticMap {countryID} markers={page.markers} {regionID} />
 
   {#if page.introduction_text}
     <div class="pb-3 pt-6">

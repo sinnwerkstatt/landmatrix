@@ -24,7 +24,7 @@
 
     if (!ret.ok) {
       // graphql error
-      toast.push(`GraphQL Error: ${retJson}`)
+      toast.push(`Error: ${retJson}`)
     } else if (retJson.ok) {
       form_submitted = true
     } else {

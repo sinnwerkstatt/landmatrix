@@ -1,13 +1,11 @@
 import { error } from "@sveltejs/kit"
 import { diff } from "deep-object-diff"
 
-import { dealQuery } from "$lib/dealQueries"
-import type { Deal } from "$lib/types/deal"
+import type { DealHull } from "$lib/types/newtypes"
 
 import type { PageLoad } from "./$types"
 
-export const load: PageLoad = async ({ params, parent }) => {
-  const { urqlClient } = await parent()
+export const load: PageLoad = async ({ params, fetch }) => {
   const [dealID] = params.IDs.split("/").map(x => (x ? +x : undefined))
   if (!dealID) error(404, `Deal not found`)
 
@@ -17,29 +15,25 @@ export const load: PageLoad = async ({ params, parent }) => {
 
   if (!versionFrom || !versionTo) error(500, "insufficient parameters")
 
-  const vFrom = await urqlClient
-    .query<{ deal: Deal }>(
-      dealQuery,
-      { id: dealID, version: versionFrom },
-      { requestPolicy: "network-only" },
-    )
-    .toPromise()
-  const dealFrom = vFrom.data?.deal
-  const vTo = await urqlClient
-    .query<{ deal: Deal }>(
-      dealQuery,
-      { id: dealID, version: versionTo },
-      { requestPolicy: "network-only" },
-    )
-    .toPromise()
-  const dealTo = vTo.data?.deal
+  const resFrom = await fetch(`/api/deals/${dealID}/${versionFrom}/`)
+  const dealFrom: DealHull = await resFrom.json()
+  const resTo = await fetch(`/api/deals/${dealID}/${versionTo}/`)
+  const dealTo: DealHull = await resTo.json()
 
   if (!dealFrom || !dealTo) error(500, "problem")
 
-  const dealdiffy = Object.keys(diff(dealFrom, dealTo))
-  const locdiffy = Object.keys(diff(dealFrom.locations, dealTo.locations))
-  const dsdiffy = Object.keys(diff(dealFrom.datasources, dealTo.datasources))
-  const condiffy = Object.keys(diff(dealFrom.contracts, dealTo.contracts))
+  const dealdiffy = Object.keys(
+    diff(dealFrom.selected_version, dealTo.selected_version),
+  )
+  const locdiffy = Object.keys(
+    diff(dealFrom.selected_version.locations, dealTo.selected_version.locations),
+  )
+  const dsdiffy = Object.keys(
+    diff(dealFrom.selected_version.locations, dealTo.selected_version.locations),
+  )
+  const condiffy = Object.keys(
+    diff(dealFrom.selected_version.datasources, dealTo.selected_version.datasources),
+  )
 
   return {
     dealID,

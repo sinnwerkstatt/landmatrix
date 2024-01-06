@@ -1,11 +1,9 @@
 <script lang="ts">
-  import { gql, queryStore } from "@urql/svelte"
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
-  import { page } from "$app/stores"
-
-  import { filters } from "$lib/filters"
+  import type { EdgeBundlingData } from "$lib/data/charts/webOfTransnationalDeals"
+  import { filters, FilterValues } from "$lib/filters"
   import { chartDescriptions, isMobile } from "$lib/stores"
 
   import ChartsContainer from "$components/Data/Charts/ChartsContainer.svelte"
@@ -16,21 +14,18 @@
 
   $: title = $_("Web of transnational deals")
 
-  const transnationalDealsQuery = gql`
-    query ($filters: [Filter]) {
-      transnational_deals(filters: $filters)
-    }
-  `
+  let transnationalDeals: EdgeBundlingData | undefined
 
-  $: deals = queryStore({
-    client: $page.data.urqlClient,
-    query: transnationalDealsQuery,
-    variables: {
-      filters: $filters
-        .toGQLFilterArray()
-        .filter(f => f.field !== "country_id" && f.field !== "country.region_id"),
-    },
-  })
+  const fetchTransnationalDeals = async (fltrs: FilterValues) => {
+    const f1 = new FilterValues().copyNoCountry(fltrs)
+
+    const ret = await fetch(
+      `/api/charts/web_of_transnational_deals/?${f1.toRESTFilterArray()}`,
+    )
+    transnationalDeals = await ret.json()
+  }
+
+  $: fetchTransnationalDeals($filters)
 
   onMount(() => {
     showContextBar.set(!$isMobile)
@@ -43,14 +38,11 @@
 </svelte:head>
 
 <ChartsContainer>
-  {#if $deals.fetching}
+  {#if transnationalDeals === undefined}
     <LoadingPulse />
-  {:else if $deals.error}
-    <p>Error...{$deals.error.message}</p>
   {:else}
-    <WebOfTransnationalDeals {title} deals={$deals.data.transnational_deals} />
+    <WebOfTransnationalDeals {title} deals={transnationalDeals} />
   {/if}
-
   <div slot="ContextBar">
     <h2 class="heading4 text-gray-700">{title}</h2>
     <div>{@html $chartDescriptions?.web_of_transnational_deals ?? ""}</div>

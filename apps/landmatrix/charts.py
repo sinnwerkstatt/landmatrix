@@ -1,10 +1,13 @@
 from collections import defaultdict
 
-from django.db.models import QuerySet
-
 from apps.landmatrix.models.country import Country
-from apps.landmatrix.models.deal import DealTopInvestors
-from apps.landmatrix.models.new import DealHull
+from apps.landmatrix.models.new import (
+    DealHull,
+    DealTopInvestors2,
+    InvestorHull,
+    DealVersion2,
+)
+from apps.landmatrix.newviews import _parse_filter
 
 LONG_COUNTRIES = {
     "United States of America": "USA*",
@@ -49,18 +52,27 @@ def investmentsdict():
     )
 
 
-def get_deal_top_investments(deals: QuerySet[DealHull]):
-    # deals = Deal.objects.active()
-    # if filters:
-    #     deals = deals.filter(parse_filters(filters))
+def get_deal_top_investments(request):
+    dh = DealHull.objects.active().filter(_parse_filter(request))
+    deals = DealVersion2.objects.filter(id__in=dh.values_list("active_version_id"))
+
+    investors = InvestorHull.objects.exclude(active_version_id=None).filter(
+        deleted=False
+    )
 
     incoming = investmentsdict()
     outgoing = investmentsdict()
 
     for deal_country_id, investor_country_id, size in (
-        DealTopInvestors.objects.filter(investor__status__in=(2, 3), deal__in=deals)
-        .values_list("deal__country_id", "investor__country_id", "deal__deal_size")
-        .order_by("deal__country_id")
+        DealTopInvestors2.objects.filter(
+            investorhull__in=investors, dealversion2__in=deals
+        )
+        .values_list(
+            "dealversion2__deal__country_id",
+            "investorhull__active_version__country_id",
+            "dealversion2__deal_size",
+        )
+        .order_by("dealversion2__deal__country_id")
     ):
         # Ignore deals and investors without country association.
         if deal_country_id is None or investor_country_id is None:
@@ -82,8 +94,8 @@ def get_deal_top_investments(deals: QuerySet[DealHull]):
     }
 
 
-def web_of_transnational_deals(deals: QuerySet[DealHull]):
-    investments = get_deal_top_investments(deals)
+def web_of_transnational_deals(request):
+    investments = get_deal_top_investments(request)
     countries = investments["incoming"].keys() | investments["outgoing"].keys()
 
     country_dict = {c.id: c for c in Country.objects.filter(id__in=countries)}

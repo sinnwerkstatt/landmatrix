@@ -79,18 +79,6 @@ enum Subset {
   PUBLIC
 }
 
-scalar WebOfTransnationalDeals
-scalar GlobalInvestmentMap
-scalar CountryInvestmentsAndRankings
-scalar Rankings
-
-type ChartDescriptions {
-  web_of_transnational_deals: String
-  dynamics_overview: String
-  produce_info_map: String
-  global_web_of_investments: String
-}
-
 type DealAggregation {
   value: String
   count: Int
