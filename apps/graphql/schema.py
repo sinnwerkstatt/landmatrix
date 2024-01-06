@@ -20,7 +20,6 @@ from .resolvers.deal import (
     resolve_deal_edit,
     resolve_deals,
     resolve_set_confidential,
-    resolve_upload_datasource_file,
 )
 from .resolvers.formfields import resolve_formfields
 from .resolvers.generics import (
@@ -93,7 +92,6 @@ mutation.set_field("add_deal_comment", resolve_add_deal_comment)
 mutation.set_field("change_deal_status", resolve_change_deal_status)
 mutation.set_field("deal_edit", resolve_deal_edit)
 mutation.set_field("deal_delete", resolve_deal_delete)
-mutation.set_field("upload_datasource_file", resolve_upload_datasource_file)
 mutation.set_field("deal_set_confidential", resolve_set_confidential)
 
 # investor

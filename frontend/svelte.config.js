@@ -7,6 +7,7 @@ const config = {
   // for more information about preprocessors
   preprocess: [vitePreprocess({ postcss: true })],
   kit: {
+    env: { dir: ".." },
     adapter: adapter(),
     alias: {
       $components: "src/components",

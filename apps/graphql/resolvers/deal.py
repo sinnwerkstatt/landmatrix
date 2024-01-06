@@ -1,17 +1,10 @@
-import base64
-import os
-
 from ariadne.graphql import GraphQLError
 
 from django.contrib.gis.geos import Point
-from django.core.files.storage import DefaultStorage, FileSystemStorage
 
 from apps.accounts.models import UserRole
-from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.deal import Deal, DealVersion, DealWorkflowInfo
 from apps.utils import qs_values_to_dict, set_sensible_fields_to_null
-
-from ..tools import get_fields, parse_filters
 from .generics import (
     add_object_comment,
     change_object_status,
@@ -19,32 +12,7 @@ from .generics import (
     object_delete,
     object_edit,
 )
-
-storage: FileSystemStorage = DefaultStorage()  # type: ignore
-
-
-def create_storage_layout(s: FileSystemStorage) -> None:
-    for dir_name in ["uploads"]:
-        dir_path = os.path.join(s.base_location, dir_name)
-        if not os.path.isdir(dir_path):
-            print(f"Creating storage folder '/{dir_name}'.")
-            os.makedirs(dir_path)
-
-
-create_storage_layout(storage)
-
-
-def resolve_upload_datasource_file(_obj, info, filename, payload) -> str:
-    user = info.context["request"].user
-    if not user.is_authenticated:
-        raise GraphQLError("MISSING_AUTHORIZATION")
-
-    _, data = payload.split(",")
-    dec = base64.b64decode(data)
-    fname = storage.get_available_name(f"uploads/{filename}")
-    with open(os.path.join(storage.base_location, fname), "wb+") as f:
-        f.write(dec)
-    return fname
+from ..tools import get_fields, parse_filters
 
 
 # noinspection PyShadowingBuiltins

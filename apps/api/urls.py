@@ -7,6 +7,7 @@ from apps.landmatrix import newviews
 from apps.landmatrix import views as oldviews
 from .export import DataDownload
 from .gis_export import gis_export
+from .upload_view import upload_datasource_file
 
 
 def data_download(request):
@@ -32,6 +33,7 @@ urlpatterns = [
     path("case_statistics/", api_views.CaseStatistics.as_view()),
     path("investor_search/", api_views.investor_search),
     path("chart_descriptions/", api_views.chart_descriptions),
+    path("upload_datasource_file/", upload_datasource_file),
     path("blog_categories/", api_views.blog_categories),
     path("blog_pages/", api_views.blog_pages),
     path("legacy_formfields/", api_views.legacy_formfields),

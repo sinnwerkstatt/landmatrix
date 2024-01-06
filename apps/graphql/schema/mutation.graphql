@@ -46,7 +46,6 @@ type Mutation {
   ): DealEditReturn
   deal_edit(id: Int!, version: Int, payload: Payload): DealEditReturn
   deal_delete(id: Int!, version: Int, comment: String): Boolean
-  upload_datasource_file(filename: String!, payload: String!): String
   deal_set_confidential(
     id: Int!
     confidential: Boolean!
