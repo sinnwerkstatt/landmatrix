@@ -6,5 +6,5 @@ export const ssr = false
 
 export const load: PageLoad = async ({ parent }) => {
   const { user } = await parent()
-  if (!user) throw error(403, "Permission denied")
+  if (!user) error(403, "Permission denied")
 }

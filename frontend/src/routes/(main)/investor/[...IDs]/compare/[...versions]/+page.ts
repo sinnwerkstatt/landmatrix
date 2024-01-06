@@ -7,13 +7,13 @@ import type { PageLoad } from "./$types"
 
 export const load: PageLoad = async ({ params, fetch }) => {
   const [investorID] = params.IDs.split("/").map(x => (x ? +x : undefined))
-  if (!investorID) throw error(404, "Investor not found")
+  if (!investorID) error(404, "Investor not found")
 
   const [versionFrom, versionTo] = params.versions
     .split("/")
     .map(x => (x ? +x : undefined))
 
-  if (!versionFrom || !versionTo) throw error(500, "insufficient parameters")
+  if (!versionFrom || !versionTo) error(500, "insufficient parameters")
 
   const resFrom = await fetch(`/api/investors/${investorID}/${versionFrom}/`)
   const investorFrom: InvestorHull = await resFrom.json()

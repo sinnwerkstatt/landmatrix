@@ -36,7 +36,7 @@
       }}
     >
       <button
-        class="button1 w-full truncate py-2 text-center text-black dark:text-white xl:p-2"
+        class="button1 w-full truncate py-2 text-center text-black xl:p-2 dark:text-white"
         {title}
         on:click={() => (isOpen = !isOpen)}
       >
@@ -53,7 +53,7 @@
           transition:slide={{ duration: 200 }}
           class={cn(
             "hidden flex-wrap justify-around",
-            "bg-gray-50 dark:bg-gray-900 lg:bg-white dark:lg:bg-gray-900",
+            "bg-gray-50 lg:bg-white dark:bg-gray-900 dark:lg:bg-gray-900",
             "lg:absolute lg:z-50 lg:whitespace-nowrap",
             "border-t py-3 lg:border-none lg:shadow-2xl",
             "group-focus-within:flex lg:group-focus-within:hidden lg:group-hover:block",
@@ -76,7 +76,7 @@
     </div>
   {:else}
     <a
-      class="nav-link button1 truncate text-center hover:bg-white hover:text-orange dark:hover:bg-gray-900 xl:max-w-[120px]"
+      class="nav-link button1 truncate text-center hover:bg-white hover:text-orange xl:max-w-[120px] dark:hover:bg-gray-900"
       {title}
       href={title === "Resources" ? "/resources/" : href}
       on:click={resetMenu}

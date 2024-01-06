@@ -110,7 +110,7 @@
     </NavDropDown>
     <button
       type="button"
-      class="button1 hidden w-full text-left text-gray-900 transition hover:text-orange dark:text-white sm:mx-3 xl:block"
+      class="button1 hidden w-full text-left text-gray-900 transition hover:text-orange sm:mx-3 xl:block dark:text-white"
       on:click|preventDefault={logout}
     >
       {$_("Logout")}

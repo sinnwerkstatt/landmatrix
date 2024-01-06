@@ -10,11 +10,11 @@ export const load: PageLoad = async ({ depends, params, parent }) => {
   depends("investor:detail")
 
   const { user } = await parent()
-  if (!user) throw error(403, "Permission denied")
+  if (!user) error(403, "Permission denied")
 
   const [investorID, versionID] = params.IDs.split("/").map(x => (x ? +x : undefined))
 
-  if (!investorID) throw redirect(301, "/list/investors/")
+  if (!investorID) redirect(301, "/list/investors/")
 
   const ret = await fetch(
     versionID
@@ -32,28 +32,28 @@ export const load: PageLoad = async ({ depends, params, parent }) => {
   //   .toPromise()
 
   if (ret.status === 404)
-    throw error(404, versionID ? "Investor version not found" : "Investor not found")
+    error(404, versionID ? "Investor version not found" : "Investor not found")
 
-  if (!ret.ok) throw error(ret.status, (await ret.json()).detail)
+  if (!ret.ok) error(ret.status, (await ret.json()).detail)
 
   const investor: InvestorHull = await ret.json()
 
   // don't allow editing of older versions
   if (versionID && versionID !== investor.draft_version_id) {
     console.warn("redirecting to draft version")
-    throw redirect(301, `/investor/edit/${investorID}/${investor.draft_version_id}/`)
+    redirect(301, `/investor/edit/${investorID}/${investor.draft_version_id}/`)
   }
 
   // don't allow editing version of active investor
   if (versionID && versionID === investor.active_version_id) {
     console.warn("redirecting to active version")
-    throw redirect(301, `/investor/edit/${investorID}/`)
+    redirect(301, `/investor/edit/${investorID}/`)
   }
 
   // don't allow editing active investor if there are newer version
   if (!versionID && investor.draft_version_id) {
     console.warn("redirecting to draft version")
-    throw redirect(301, `/investor/edit/${investorID}/${investor.draft_version_id}/`)
+    redirect(301, `/investor/edit/${investorID}/${investor.draft_version_id}/`)
   }
 
   const originalInvestor = JSON.stringify(investor)

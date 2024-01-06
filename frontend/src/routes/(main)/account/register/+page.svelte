@@ -91,7 +91,7 @@
   </div>
 
   <form
-    class="my-6 grid gap-4 text-gray-700 dark:text-white md:grid-cols-2"
+    class="my-6 grid gap-4 text-gray-700 md:grid-cols-2 dark:text-white"
     on:submit|preventDefault={register}
   >
     <label>

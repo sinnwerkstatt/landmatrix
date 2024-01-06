@@ -9,6 +9,7 @@
   "trailingComma": "all",
   "arrowParens": "avoid",
   "htmlWhitespaceSensitivity": "ignore",
+  "overrides": [{ "files": "*.svelte", "options": { "parser": "svelte" } }],
   "svelteStrictMode": false,
   "svelteAllowShorthand": true,
   "svelteIndentScriptAndStyle": true,

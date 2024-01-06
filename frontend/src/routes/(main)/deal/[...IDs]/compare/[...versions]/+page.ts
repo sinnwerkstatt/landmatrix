@@ -9,13 +9,13 @@ import type { PageLoad } from "./$types"
 export const load: PageLoad = async ({ params, parent }) => {
   const { urqlClient } = await parent()
   const [dealID] = params.IDs.split("/").map(x => (x ? +x : undefined))
-  if (!dealID) throw error(404, `Deal not found`)
+  if (!dealID) error(404, `Deal not found`)
 
   const [versionFrom, versionTo] = params.versions
     .split("/")
     .map(x => (x ? +x : undefined))
 
-  if (!versionFrom || !versionTo) throw error(500, "insufficient parameters")
+  if (!versionFrom || !versionTo) error(500, "insufficient parameters")
 
   const vFrom = await urqlClient
     .query<{ deal: Deal }>(
@@ -34,7 +34,7 @@ export const load: PageLoad = async ({ params, parent }) => {
     .toPromise()
   const dealTo = vTo.data?.deal
 
-  if (!dealFrom || !dealTo) throw error(500, "problem")
+  if (!dealFrom || !dealTo) error(500, "problem")
 
   const dealdiffy = Object.keys(diff(dealFrom, dealTo))
   const locdiffy = Object.keys(diff(dealFrom.locations, dealTo.locations))

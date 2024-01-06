@@ -11,7 +11,7 @@ export const load: PageLoad = async ({ depends, params, fetch }) => {
     x ? +x : undefined,
   )
 
-  if (!investorID) throw error(404, "Investor not found")
+  if (!investorID) error(404, "Investor not found")
 
   const url = investorVersion
     ? `/api/investors/${investorID}/${investorVersion}/`

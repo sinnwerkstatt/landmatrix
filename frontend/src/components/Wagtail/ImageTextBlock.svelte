@@ -24,7 +24,7 @@
     <div class="flex flex-col justify-center text-center lg:text-left">
       <h2 class="caption text-gray-900">{value.title}</h2>
       <h3 class="heading3 xl:heading1 text-gray-900">{value.subtitle}</h3>
-      <p class="body1 dark:text-gray-900 lg:pb-8">{@html value.text}</p>
+      <p class="body1 lg:pb-8 dark:text-gray-900">{@html value.text}</p>
       <a
         class="hidden lg:block"
         href={value.link.href}

@@ -18,9 +18,9 @@
 </script>
 
 <div class="container mx-auto my-20 px-10 py-6">
-  <h2 class="caption text-center dark:text-white lg:text-left">{value.title}</h2>
+  <h2 class="caption text-center lg:text-left dark:text-white">{value.title}</h2>
   <h3
-    class="heading2 mb-10 text-center underline dark:text-white lg:w-1/2 lg:text-left"
+    class="heading2 mb-10 text-center underline lg:w-1/2 lg:text-left dark:text-white"
   >
     {value.subtitle}
   </h3>

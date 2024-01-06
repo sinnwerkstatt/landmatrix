@@ -19,7 +19,7 @@
 </script>
 
 <div
-  class="col-span-2 flex flex-col rounded-tr bg-gray-100 px-3 dark:bg-gray-700 lg:col-span-1"
+  class="col-span-2 flex flex-col rounded-tr bg-gray-100 px-3 lg:col-span-1 dark:bg-gray-700"
 >
   <h3 class="my-1 ml-1 font-medium">{$_("Logbook")}</h3>
 

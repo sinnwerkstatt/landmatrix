@@ -215,7 +215,7 @@ export async function fetchBasis(lang = "en", fetch: LoadEvent["fetch"]) {
       getCountriesRegionsFormfields(lang, fetch),
     ])
   } catch (e) {
-    throw error(500, `Backend server problems ${e}`)
+    error(500, `Backend server problems ${e}`)
   }
 }
 

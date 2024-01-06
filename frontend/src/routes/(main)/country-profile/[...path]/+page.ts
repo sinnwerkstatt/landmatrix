@@ -44,7 +44,7 @@ export const load: PageLoad = async ({ params }) => {
   const stripped = stripTrailingSlash(params.path)
   const profile = countryProfiles.find(profile => profile.key === stripped)
   if (!profile) {
-    throw error(404, "Page not found")
+    error(404, "Page not found")
   }
   return { profile }
 }

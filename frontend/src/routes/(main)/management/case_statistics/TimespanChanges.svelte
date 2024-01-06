@@ -132,7 +132,7 @@
 
 <div class="relative flex h-[400px] w-full border">
   <nav
-    class="h-full shrink-0 basis-1/4 border-r bg-gray-50 p-2 drop-shadow-[2px_0px_1px_rgba(0,0,0,0.3)] dark:bg-gray-700 xl:basis-1/5"
+    class="h-full shrink-0 basis-1/4 border-r bg-gray-50 p-2 drop-shadow-[2px_0px_1px_rgba(0,0,0,0.3)] xl:basis-1/5 dark:bg-gray-700"
   >
     <div
       class="flex justify-center gap-4 border-b border-gray-200 pb-6 pt-1 text-lg font-bold"

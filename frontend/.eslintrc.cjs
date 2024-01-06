@@ -1,20 +1,24 @@
 module.exports = {
   root: true,
-  parser: "@typescript-eslint/parser",
-  parserOptions: {
-    sourceType: "module",
-    ecmaVersion: 2020,
-    project: ["./tsconfig.json"],
-    extraFileExtensions: [".svelte"], // This is a required setting in `@typescript-eslint/parser` v4.24.0.
-  },
   extends: [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:svelte/recommended",
     "prettier", // should be last
   ],
+  parser: "@typescript-eslint/parser",
   plugins: ["@typescript-eslint", "testing-library", "jest-dom"],
-  ignorePatterns: ["node_modules/**", "*.cjs", "svelte.config.js"],
+  parserOptions: {
+    sourceType: "module",
+    ecmaVersion: 2020,
+    // project: ["./tsconfig.json"],
+    extraFileExtensions: [".svelte"], // This is a required setting in `@typescript-eslint/parser` v4.24.0.
+  },
+  env: {
+    browser: true,
+    es2017: true,
+    node: true,
+  },
   overrides: [
     {
       files: ["*.svelte"],
@@ -28,12 +32,8 @@ module.exports = {
     "svelte/no-at-html-tags": "off",
     "svelte/valid-compile": "off",
   },
+  // ignorePatterns: ["node_modules/**", "*.cjs", "svelte.config.js"],
   globals: {
     google: "readonly",
-  },
-  env: {
-    browser: true,
-    es2017: true,
-    node: true,
   },
 }

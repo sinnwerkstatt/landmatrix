@@ -132,7 +132,7 @@
       <ul
         class={cn(
           "divide-y divide-solid px-4",
-          "gap-y-6 p-6 dark:bg-gray-900 lg:flex lg:flex-wrap lg:items-center lg:justify-center lg:gap-x-12 lg:gap-y-0 lg:divide-transparent lg:p-0 xl:justify-between xl:gap-x-0",
+          "gap-y-6 p-6 lg:flex lg:flex-wrap lg:items-center lg:justify-center lg:gap-x-12 lg:gap-y-0 lg:divide-transparent lg:p-0 xl:justify-between xl:gap-x-0 dark:bg-gray-900",
         )}
       >
         {#each menuEntries as entry}

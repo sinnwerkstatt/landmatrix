@@ -10,7 +10,7 @@ export async function pageQuery(url: URL, fetch: LoadEvent["fetch"]) {
       : `/api/wagtail/v2/pages/find/?html_path=${url.pathname}`
 
   const res = await fetch(page_url, { headers: { Accept: "application/json" } })
-  if (!res.ok) throw error(res.status, (await res.json()).message)
+  if (!res.ok) error(res.status, (await res.json()).message)
 
   return await res.json()
 }
