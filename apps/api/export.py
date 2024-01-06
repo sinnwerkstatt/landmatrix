@@ -599,37 +599,24 @@ class DataDownload:
             ]
         )
         # map operating company fields
-        if "operating_company" in data:
-            data["operating_company__active_version__investor_id"] = data[
-                "operating_company"
-            ]["active_version"]["investor_id"]
-            data["operating_company__active_version__name"] = data["operating_company"][
-                "active_version"
-            ]["name"]
+        if oc := data["operating_company"]:
+            av = oc["active_version"]
+            data["operating_company__active_version__investor_id"] = av["investor_id"]
+            data["operating_company__active_version__name"] = av["name"]
 
-            # data[""]=
-            # data["operating_company__active_version__classification"]=
-
-            if "country" in data["operating_company"]["active_version"]:
-                data["operating_company__active_version__country__name"] = data[
-                    "operating_company"
-                ]["active_version"]["country"]["name"]
+            data["operating_company__active_version__country__name"] = av["country"][
+                "name"
+            ]
 
             data[
                 "operating_company__active_version__classification"
-            ] = classification_choices.get(
-                data["operating_company"]["active_version"]["classification"], ""
-            )
+            ] = classification_choices.get(av["classification"], "")
 
-            data["operating_company__active_version__homepage"] = data[
-                "operating_company"
-            ]["active_version"]["homepage"]
-            data["operating_company__active_version__opencorporates"] = data[
-                "operating_company"
-            ]["active_version"]["opencorporates"]
-            data["operating_company__active_version__comment"] = data[
-                "operating_company"
-            ]["active_version"]["comment"]
+            data["operating_company__active_version__homepage"] = av["homepage"]
+            data["operating_company__active_version__opencorporates"] = av[
+                "opencorporates"
+            ]
+            data["operating_company__active_version__comment"] = av["comment"]
 
         data["deal_size"] = data["deal_size"] or 0.0
         data["current_contract_size"] = data["current_contract_size"] or 0.0

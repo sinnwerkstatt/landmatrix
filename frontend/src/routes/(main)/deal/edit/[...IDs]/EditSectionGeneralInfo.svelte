@@ -105,13 +105,15 @@
       fieldname="purchase_price"
       bind:value={version.purchase_price}
       label={$_("Purchase price")}
+      bind:currency={version.purchase_price_currency}
+      bind:perType={version.purchase_price_type}
     />
-    <!--    <DecimalField-->
-    <!--      fieldname="purchase_price_area"-->
-    <!--      bind:value={version.purchase_price_area}-->
-    <!--      label={$_("Purchase price area")}-->
-    <!--      unit={$_("ha")}-->
-    <!--    />-->
+    <DecimalField
+      fieldname="purchase_price_area"
+      bind:value={version.purchase_price_area}
+      label={$_("Purchase price area")}
+      unit={$_("ha")}
+    />
     <TextField
       fieldname="purchase_price_comment"
       bind:value={version.purchase_price_comment}
