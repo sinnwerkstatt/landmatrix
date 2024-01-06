@@ -6,6 +6,7 @@
   import { DataSource } from "$lib/types/newtypes"
   import { isEmptySubmodel } from "$lib/utils/data_processing"
 
+  import FileField from "$components/Fields/Edit2/FileField.svelte"
   import TextField from "$components/Fields/Edit2/TextField.svelte"
   import PlusIcon from "$components/icons/PlusIcon.svelte"
   import TrashIcon from "$components/icons/TrashIcon.svelte"
@@ -69,6 +70,11 @@
               bind:value={datasource.url}
               label={$_("URL")}
               isURL
+            />
+            <FileField
+              fieldname="datasource.file"
+              bind:value={datasource.file}
+              label={$_("File")}
             />
             <TextField
               fieldname="datasource.comment"

@@ -49,9 +49,14 @@
       toast.push(`${ret.status}: ${retJson.detail}`, { classes: ["error"] })
     } else {
       const retJson = await ret.json()
-      await goto(`/deal/${retJson.dealID}/${retJson.versionID}/`, {
-        invalidateAll: true,
-      })
+      if (isDeal(object))
+        await goto(`/deal/${retJson.dealID}/${retJson.versionID}/`, {
+          invalidateAll: true,
+        })
+      else
+        await goto(`/investor/${retJson.investorID}/${retJson.versionID}/`, {
+          invalidateAll: true,
+        })
 
       open = false
     }
