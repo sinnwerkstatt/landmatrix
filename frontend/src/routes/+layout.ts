@@ -19,7 +19,8 @@ async function fetchMe(fetch: LoadEvent["fetch"]) {
   return null
 }
 
-export const load: LayoutLoad = async ({ fetch, data }) => {
+export const load: LayoutLoad = async ({ fetch, data, depends }) => {
+  depends("user:auth")
   const urqlClient = new Client({
     url: "/graphql/",
     exchanges: [cacheExchange, fetchExchange],

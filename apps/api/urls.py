@@ -1,7 +1,7 @@
 from django.urls import include, path
 from rest_framework import routers
 
-from apps.accounts.views import UserViewSet
+from apps.accounts import views as user_views
 from apps.api import views as api_views
 from apps.landmatrix import newviews
 from apps.landmatrix import views as oldviews
@@ -15,7 +15,7 @@ def data_download(request):
 
 
 router = routers.DefaultRouter()
-router.register(r"users", UserViewSet)
+router.register(r"users", user_views.UserViewSet)
 router.register(r"currencies", oldviews.CurrencyViewSet)
 router.register(r"countries", oldviews.CountryViewSet)
 router.register(r"regions", oldviews.RegionViewSet)
@@ -26,6 +26,12 @@ router.register(r"investors", newviews.Investor2ViewSet)
 router.register(r"investorversions", newviews.InvestorVersionViewSet)
 
 urlpatterns = [
+    path("user/register/", user_views.register),
+    path("user/register_confirm/", user_views.register_confirm),
+    path("user/login/", user_views.login),
+    path("user/logout/", user_views.logout),
+    path("user/password_reset/", user_views.password_reset),
+    path("user/password_reset_confirm/", user_views.password_reset_confirm),
     path("legacy_export/", data_download),
     path("newdeal_legacy/messages/", api_views.messages_json),
     path("gis_export/", gis_export),

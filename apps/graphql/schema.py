@@ -44,14 +44,6 @@ from .resolvers.misc import (
     resolve_regions,
 )
 from .resolvers.user import resolve_user, resolve_users, user_type
-from .resolvers.user_auth import (
-    resolve_login,
-    resolve_logout,
-    resolve_password_reset,
-    resolve_password_reset_confirm,
-    resolve_register,
-    resolve_register_confirm,
-)
 from .scalars import datetime_scalar, geopoint_scalar
 
 schema_folder = str(pathlib.Path(__file__).parent.joinpath("schema"))
@@ -81,12 +73,6 @@ query.set_field("chart_descriptions", resolve_chart_descriptions)
 query.set_field("markers", resolve_markers)
 
 mutation = ObjectType("Mutation")
-mutation.set_field("register", resolve_register)
-mutation.set_field("register_confirm", resolve_register_confirm)
-mutation.set_field("login", resolve_login)
-mutation.set_field("logout", resolve_logout)
-mutation.set_field("password_reset", resolve_password_reset)
-mutation.set_field("password_reset_confirm", resolve_password_reset_confirm)
 # deal
 mutation.set_field("add_deal_comment", resolve_add_deal_comment)
 mutation.set_field("change_deal_status", resolve_change_deal_status)

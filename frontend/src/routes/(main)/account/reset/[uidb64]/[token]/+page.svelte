@@ -1,8 +1,9 @@
 <script lang="ts">
-  import { gql } from "@urql/svelte"
   import { _ } from "svelte-i18n"
 
   import { page } from "$app/stores"
+
+  import { getCsrfToken } from "$lib/utils"
 
   import PageTitle from "$components/PageTitle.svelte"
 
@@ -10,30 +11,23 @@
   let new_password2 = ""
   let form_submitted = false
 
-  function submit() {
-    $page.data.urqlClient
-      .mutation<{ password_reset_confirm: boolean }>(
-        gql`
-          mutation ($uidb64: String!, $token: String!, $np1: String!, $np2: String!) {
-            password_reset_confirm(
-              uidb64: $uidb64
-              token: $token
-              new_password1: $np1
-              new_password2: $np2
-            )
-          }
-        `,
-        {
-          uidb64: $page.params.uidb64,
-          token: $page.params.token,
-          np1: new_password1,
-          np2: new_password2,
-        },
-      )
-      .toPromise()
-      .then(({ data }) => {
-        if (data?.password_reset_confirm) form_submitted = true
-      })
+  async function submit() {
+    await fetch("/api/user/password_reset_confirm/", {
+      method: "POST",
+      credentials: "include",
+      body: JSON.stringify({
+        uidb64: $page.params.uidb64,
+        token: $page.params.token,
+        new_password1: new_password1,
+        new_password2: new_password2,
+      }),
+      headers: {
+        "X-CSRFToken": await getCsrfToken(),
+        "Content-Type": "application/json",
+      },
+    })
+    // const retJson = await ret.json()
+    form_submitted = true
   }
 </script>
 

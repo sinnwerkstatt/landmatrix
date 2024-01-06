@@ -1,25 +1,4 @@
 type Mutation {
-  register(
-    username: String!
-    first_name: String!
-    last_name: String!
-    email: String!
-    phone: String
-    information: String!
-    password: String!
-    token: String!
-  ): RegisterPayload
-  register_confirm(activation_key: String!): RegisterPayload
-  login(username: String!, password: String!): LoginPayload
-  logout: Boolean!
-  password_reset(email: String!, token: String!): RegisterPayload
-  password_reset_confirm(
-    uidb64: String!
-    token: String!
-    new_password1: String
-    new_password2: String!
-  ): Boolean!
-
   add_public_deal_comment(
     id: Int!
     title: String
@@ -101,13 +80,3 @@ type InvestorEditReturn {
   investorVersion: Int
 }
 
-type LoginPayload {
-  status: Boolean!
-  error: String
-  user: User
-}
-
-type RegisterPayload {
-  ok: Boolean!
-  code: String
-}

@@ -1,9 +1,8 @@
 <script lang="ts">
-  import { Client, gql } from "@urql/svelte"
   import { toast } from "@zerodevx/svelte-toast"
   import { _ } from "svelte-i18n"
 
-  import { page } from "$app/stores"
+  import { getCsrfToken } from "$lib/utils"
 
   import HCaptcha from "$components/HCaptcha.svelte"
   import PageTitle from "$components/PageTitle.svelte"
@@ -12,32 +11,29 @@
   let form_submitted = false
 
   const submit = async () => {
-    const urql: Client = $page.data.urqlClient
-    const res = await urql
-      .mutation<{ password_reset: { ok: boolean; code: string } }>(
-        gql`
-          mutation ($email: String!, $token: String!) {
-            password_reset(email: $email, token: $token) {
-              ok
-              code
-            }
-          }
-        `,
-        { email, token },
-      )
-      .toPromise()
+    const ret = await fetch("/api/user/password_reset/", {
+      method: "POST",
+      credentials: "include",
+      body: JSON.stringify({ email, token }),
+      headers: {
+        "X-CSRFToken": await getCsrfToken(),
+        "Content-Type": "application/json",
+      },
+    })
+    const retJson = await ret.json()
 
-    if (res.error) {
+    if (!ret.ok) {
       // graphql error
-      toast.push(`GraphQL Error: ${res.error.message}`)
-    } else if (res.data?.password_reset.ok) {
+      toast.push(`GraphQL Error: ${retJson}`)
+    } else if (retJson.ok) {
       form_submitted = true
     } else {
-      toast.push(`Server Error: ${res.data?.password_reset.code}`)
+      toast.push(`Server Error: ${retJson.code}`)
     }
   }
   let token: string
   let disabled = true
+
   function captchaVerified(e: CustomEvent<{ token: string }>) {
     token = e.detail.token
     disabled = false

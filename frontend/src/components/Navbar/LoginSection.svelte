@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { gql } from "@urql/svelte"
   import { _ } from "svelte-i18n"
 
   import { page } from "$app/stores"
 
   import type { User } from "$lib/types/user.js"
+  import { getCsrfToken } from "$lib/utils"
 
   import NavDropDown from "$components/Navbar/NavDropDown.svelte"
 
@@ -19,24 +19,16 @@
   }
 
   const logout = async () => {
-    const { error, data } = await $page.data.urqlClient
-      .mutation<{ logout: boolean }>(
-        gql`
-          mutation {
-            logout
-          }
-        `,
-        {},
-      )
-      .toPromise()
-
-    if (error || !data) {
-      console.error(error)
-      return
-    }
-    if (data.logout) {
-      location.reload()
-    }
+    const ret = await fetch("/api/user/logout/", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "X-CSRFToken": await getCsrfToken(),
+        "Content-Type": "application/json",
+      },
+    })
+    if (ret.ok) location.reload()
+    else console.log(await ret.json())
   }
 </script>
 

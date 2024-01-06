@@ -1,42 +1,43 @@
 <script lang="ts">
-  import { gql } from "@urql/svelte"
+  import { toast } from "@zerodevx/svelte-toast"
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
   import { page } from "$app/stores"
 
+  import { getCsrfToken } from "$lib/utils"
+
   import PageTitle from "$components/PageTitle.svelte"
 
-  let ret = undefined
+  let retJson: { ok: boolean; code?: string } | undefined
   async function register_confirm() {
-    ret = await $page.data.urqlClient
-      .mutation<{ register_confirm: { ok: boolean; code: string } }>(
-        gql`
-          mutation Register($activation_key: String!) {
-            register_confirm(activation_key: $activation_key) {
-              ok
-              code
-            }
-          }
-        `,
-        { activation_key: $page.params.activation_key },
-      )
-      .toPromise()
+    const ret = await fetch("/api/user/register_confirm/", {
+      method: "POST",
+      credentials: "include",
+      body: JSON.stringify({ activation_key: $page.params.activation_key }),
+      headers: {
+        "X-CSRFToken": await getCsrfToken(),
+        "Content-Type": "application/json",
+      },
+    })
+    retJson = await ret.json()
+
+    if (!ret.ok) {
+      return toast.push(`Unknown Problem: ${retJson}`, { classes: ["error"] })
+    }
   }
 
-  onMount(() => {
-    register_confirm()
-  })
+  onMount(register_confirm)
 </script>
 
-{#if ret}
-  {#if ret.data.register_confirm.ok}
+{#if retJson}
+  {#if retJson.ok}
     <PageTitle>{$_("Account confirmed")}</PageTitle>
     {$_(
       "Your email address is confirmed. Your account awaits activation by an admin. If this does not happen within the next 24 hours, please contact the following address:",
     )}
     <a href="mailto:data@landmatrix.org">data@landmatrix.org</a>
-  {:else if ret.data.register_confirm.code === "already_activated"}
+  {:else if retJson.code === "already_activated"}
     <PageTitle>{$_("Account activated")}</PageTitle>
     {$_("Your account has been activated. You can log in now.")}
     <div class="text-right">
@@ -44,6 +45,6 @@
     </div>
   {:else}
     <PageTitle>{$_("Error")}</PageTitle>
-    {ret.data.register_confirm.code}
+    {retJson.code}
   {/if}
 {/if}

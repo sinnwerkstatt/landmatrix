@@ -1,7 +1,4 @@
-from typing import Type
-
 import requests
-
 from django.conf import settings
 from django.contrib import auth
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
@@ -15,8 +12,6 @@ from django.utils.http import urlsafe_base64_decode
 from django.utils.translation import gettext_lazy as _
 
 from apps.accounts.models import User
-
-UserModel: Type[User] = auth.get_user_model()
 
 REGISTRATION_SALT = settings.SECRET_KEY
 
@@ -39,7 +34,7 @@ info: {{ user.information }}
 """
 
 
-def request_email_confirmation(user: User, request):
+def _request_email_confirmation(user: User, request):
     """Ask for email confirmation from user."""
     activation_key = signing.dumps(obj=user.get_username(), salt=REGISTRATION_SALT)
     site = get_current_site(request)
@@ -57,7 +52,7 @@ def request_email_confirmation(user: User, request):
     user.email_user(subject, message, settings.DEFAULT_FROM_EMAIL)
 
 
-def request_activation_from_user_admins(user: User, request):
+def _request_activation_from_user_admins(user: User, request):
     """Send mail to request account activation from user admins."""
     site = get_current_site(request)
 
@@ -70,15 +65,14 @@ def request_activation_from_user_admins(user: User, request):
     tmpl = Template(activate_email_body_admin)
     message = tmpl.render(Context(context))
 
-    for user_admin in UserModel.objects.filter(
+    for user_admin in User.objects.filter(
         groups=Group.objects.get(name="User Management")
     ):
         user_admin.email_user(subject, message, settings.DEFAULT_FROM_EMAIL)
 
 
-def resolve_register(
-    _obj,
-    info,
+def register(
+    request,
     username,
     first_name,
     last_name,
@@ -99,7 +93,7 @@ def resolve_register(
     if not hcaptcha_verify["success"]:
         return {"ok": False, "code": "captcha_problems"}
 
-    new_user = UserModel.objects.create(
+    new_user = User.objects.create(
         username=username,
         first_name=first_name,
         last_name=last_name,
@@ -114,11 +108,11 @@ def resolve_register(
     group, created = Group.objects.get_or_create(name="Reporters")
     new_user.groups.add(group)
 
-    request_email_confirmation(new_user, info.context["request"])
+    _request_email_confirmation(new_user, request)
     return {"ok": True}
 
 
-def resolve_register_confirm(_obj, _info, activation_key):
+def register_confirm(request, activation_key):
     try:
         username = signing.loads(
             activation_key,
@@ -130,7 +124,7 @@ def resolve_register_confirm(_obj, _info, activation_key):
     except signing.BadSignature:
         return {"ok": False, "code": "invalid_key"}
 
-    user = UserModel.objects.get(username=username)
+    user = User.objects.get(username=username)
     if user.is_active:
         return {"ok": False, "code": "already_activated"}
 
@@ -138,36 +132,33 @@ def resolve_register_confirm(_obj, _info, activation_key):
         user.email_confirmed = True
         user.save()
 
-        request_activation_from_user_admins(user, _info.context["request"])
+        _request_activation_from_user_admins(user, request)
 
-    return {"ok": True, "user": user}
+    return {"ok": True}
 
 
-def resolve_login(_obj, info, username, password) -> dict:
-    request = info.context["request"]
-
-    if not UserModel.objects.filter(username=username).exists():
-        return {"status": False, "error": _("Invalid username or password.")}
-    if not UserModel.objects.get(username=username).is_active:
-        return {"status": False, "error": _("Account not yet activated.")}
+def login(request, username, password) -> dict:
+    if not User.objects.filter(username=username).exists():
+        return {"ok": False, "error": _("Invalid username or password.")}
+    if not User.objects.get(username=username).is_active:
+        return {"ok": False, "error": _("Account not yet activated.")}
 
     user = auth.authenticate(request, username=username, password=password)
     if not user:
-        return {"status": False, "error": _("Invalid username or password.")}
+        return {"ok": False, "error": _("Invalid username or password.")}
 
     auth.login(request, user)
-    return {"status": True, "user": user}
+    return {"ok": True}
 
 
-def resolve_logout(_obj, info) -> bool:
-    request = info.context["request"]
+def logout(request):
     if request.user.is_authenticated:
         auth.logout(request)
         return True
     return False
 
 
-def resolve_password_reset(_obj, _info, email, token) -> dict:
+def password_reset(email, token) -> dict:
     hcaptcha_verify = requests.post(
         "https://hcaptcha.com/siteverify",
         data={
@@ -191,19 +182,18 @@ def resolve_password_reset(_obj, _info, email, token) -> dict:
     return {"ok": True}
 
 
-def resolve_password_reset_confirm(
-    _obj, _info, uidb64, token, new_password1, new_password2
-) -> bool:
+def password_reset_confirm(uidb64, token, new_password1, new_password2) -> bool:
     try:
         uid = urlsafe_base64_decode(uidb64).decode()
-        user = UserModel.objects.get(pk=uid)
+        user = User.objects.get(pk=uid)
     except (
         TypeError,
         ValueError,
         OverflowError,
-        UserModel.DoesNotExist,
+        User.DoesNotExist,
         ValidationError,
-    ):
+    ) as e:
+        print(e)
         return False
 
     if user and default_token_generator.check_token(user, token):

@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { gql } from "@urql/svelte"
   import { toast } from "@zerodevx/svelte-toast"
   import { _ } from "svelte-i18n"
 
+  import { goto, invalidate } from "$app/navigation"
   import { page } from "$app/stores"
 
-  import type { User } from "$lib/types/user"
+  import { getCsrfToken } from "$lib/utils"
 
   import PageTitle from "$components/PageTitle.svelte"
 
@@ -17,55 +17,30 @@
   let next = $page.url.searchParams.get("next") || "/"
 
   async function login() {
-    const ret = await $page.data.urqlClient
-      .mutation<{ login: { status: string; error: string; user: User } }>(
-        gql`
-          mutation Login($username: String!, $password: String!) {
-            login(username: $username, password: $password) {
-              status
-              error
-              user {
-                id
-                username
-                full_name
-                is_authenticated
-                is_impersonate
-                role
-                country {
-                  id
-                  name
-                }
-                region {
-                  id
-                  name
-                }
-                groups {
-                  id
-                  name
-                }
-              }
-            }
-          }
-        `,
-        { username, password },
-      )
-      .toPromise()
-    if (ret.error) {
-      return toast.push(`Unknown Problem: ${ret.error}`, { classes: ["error"] })
+    const ret = await fetch("/api/user/login/", {
+      method: "POST",
+      credentials: "include",
+      body: JSON.stringify({ username, password }),
+      headers: {
+        "X-CSRFToken": await getCsrfToken(),
+        "Content-Type": "application/json",
+      },
+    })
+    const retJson = await ret.json()
+    console.log(retJson)
+    if (!ret.ok) {
+      return toast.push(`Unknown Problem: ${retJson}`, { classes: ["error"] })
     }
-    if (!ret.data) {
-      return toast.push(`Unknown Problem: ${ret.error}`, { classes: ["error"] })
+    if (!retJson.ok) {
+      login_failed_message = retJson.error
+      return
     }
 
-    if (ret.data.login.status) {
-      login_failed_message = ""
-      logged_in = true
-      setTimeout(() => (window.location.href = next), 100)
-      // can't do this, because it's hard to populate "user" back to layout:
-      // setTimeout(() => goto(next), 100);
-    } else {
-      login_failed_message = ret.data.login.error
-    }
+    login_failed_message = ""
+    logged_in = true
+    // setTimeout(() => (window.location.href = next), 100)
+    await invalidate("user:auth")
+    await goto(next)
   }
 </script>
 

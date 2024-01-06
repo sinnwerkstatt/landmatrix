@@ -1,10 +1,8 @@
 <script lang="ts">
-  import { gql } from "@urql/svelte"
+  import { toast } from "@zerodevx/svelte-toast"
   import { _ } from "svelte-i18n"
 
-  import { page } from "$app/stores"
-
-  import { slugify } from "$lib/utils"
+  import { getCsrfToken, slugify } from "$lib/utils"
 
   import HCaptcha from "$components/HCaptcha.svelte"
   import PageTitle from "$components/PageTitle.svelte"
@@ -28,46 +26,31 @@
     token = e.detail.token
     disabled = false
   }
+
   function usernameChange() {
     user = { ...user, username: slugify(user.username) }
   }
+
   async function register() {
-    const ret = await $page.data.urqlClient
-      .mutation<{ register: { ok: boolean; code: string } }>(
-        gql`
-          mutation Register(
-            $username: String!
-            $first_name: String!
-            $last_name: String!
-            $email: String!
-            $phone: String
-            $information: String!
-            $password: String!
-            $token: String!
-          ) {
-            register(
-              username: $username
-              first_name: $first_name
-              last_name: $last_name
-              email: $email
-              phone: $phone
-              information: $information
-              password: $password
-              token: $token
-            ) {
-              ok
-              code
-            }
-          }
-        `,
-        { ...user, token },
-      )
-      .toPromise()
-    if (ret.data?.register?.ok) {
-      registration_successful = true
-    } else {
-      register_failed_message = ret.data?.register?.code || ret.error.toString()
+    const ret = await fetch("/api/user/register/", {
+      method: "POST",
+      credentials: "include",
+      body: JSON.stringify({ ...user, token }),
+      headers: {
+        "X-CSRFToken": await getCsrfToken(),
+        "Content-Type": "application/json",
+      },
+    })
+    const retJson = await ret.json()
+    console.log(retJson)
+    if (!ret.ok) {
+      return toast.push(`Unknown Problem: ${retJson}`, { classes: ["error"] })
     }
+    if (!retJson.ok) {
+      register_failed_message = retJson.error
+      return
+    }
+    registration_successful = true
   }
 </script>
 
