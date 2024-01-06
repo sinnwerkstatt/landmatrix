@@ -15,110 +15,20 @@ from .generics import (
 from ..tools import get_fields, parse_filters
 
 
-# noinspection PyShadowingBuiltins
 def resolve_deal(_obj, info, id, version=None, subset="PUBLIC"):
-    user = info.context["request"].user
-    fields = get_fields(info, recursive=True, exclude=["__typename"])
-
-    add_versions = False
-    add_workflowinfos = False
-    filtered_fields = []
-    for field in fields:
-        if "versions" in field:
-            add_versions = True
-        elif "workflowinfos" in field:
-            add_workflowinfos = True
-        else:
-            filtered_fields += [field]
-
-    if version:
-        try:
-            deal_version = DealVersion.objects.get(id=version, object_id=id)
-            deal = deal_version.enriched_dict()
-        except DealVersion.DoesNotExist:
-            return
-
-        if not any(
-            [
-                user.is_authenticated and user.role >= UserRole.EDITOR,
-                deal_version.created_by == user,
-                deal_version.serialized_data["is_public"]
-                and deal_version.serialized_data["draft_status"] is None
-                and deal_version.serialized_data["status"] in [2, 3],
-            ]
-        ):
-            raise GraphQLError("MISSING_AUTHORIZATION")
-    else:
-        visible_deals = Deal.objects.visible(user, subset).filter(id=id)
-        if not visible_deals:
-            raise GraphQLError("DEAL_NOT_FOUND")
-
-        deal = qs_values_to_dict(
-            visible_deals,
-            filtered_fields,
-            ["top_investors", "parent_companies", "workflowinfos"],
-        )[0]
-
-    if add_versions:
-        deal["versions"] = [
-            dv.to_dict() for dv in DealVersion.objects.filter(object_id=id)
-        ]
-    if add_workflowinfos:
-        deal["workflowinfos"] = [
-            dwi.to_dict()
-            for dwi in DealWorkflowInfo.objects.filter(deal_id=id).order_by(
-                "-timestamp"
-            )
-        ]
-
-    if deal.get("locations") is None:
-        deal["locations"] = []
-    if deal.get("contracts") is None:
-        deal["contracts"] = []
-    if deal.get("datasources") is None:
-        deal["datasources"] = []
-
     if not user.is_authenticated:
         set_sensible_fields_to_null(deal)
 
     return deal
 
 
-def resolve_deals(
-    _obj,
-    info,
-    sort="id",
-    limit=20,
-    subset="PUBLIC",
-    filters=None,
-):
-    user = info.context["request"].user
-    qs = Deal.objects.visible(user=user, subset=subset).order_by(sort)
-
-    fields = get_fields(info, recursive=True, exclude=["__typename"])
-    if any(["involvements" in field for field in fields]):
-        raise GraphQLError(
-            "Querying involvements via multiple operating companies is too"
-            " resource intensive. Please use single investor queries for this."
-        )
-
-    qs = qs.filter(parse_filters(filters)) if filters else qs
-
-    qs = qs.filter(id__in=qs[:limit].values("id")) if limit > 0 else qs
-
-    results = qs_values_to_dict(
-        qs,
-        fields,
-        ["top_investors", "parent_companies", "workflowinfos", "versions"],
-    )
-
+def resolve_deals(_obj, info):
     if not user.is_authenticated:
         set_sensible_fields_to_null(results)
 
     return results
 
 
-# noinspection PyShadowingBuiltins
 def resolve_add_deal_comment(
     _obj, info, id: int, version: int, comment: str, to_user_id=None
 ) -> dict:
@@ -210,42 +120,3 @@ def resolve_deal_delete(
         obj_version_id=version,
         comment=comment,
     )
-
-
-# noinspection PyShadowingBuiltins
-def resolve_set_confidential(
-    _obj, info, id, confidential, version=None, comment=""
-) -> bool:
-    user = info.context["request"].user
-    if not (user.is_authenticated and user.role):
-        raise GraphQLError("MISSING_AUTHORIZATION")
-
-    confidential_str = "SET_CONFIDENTIAL" if confidential else "UNSET_CONFIDENTIAL"
-    obj_comment = f"[{confidential_str}] {comment}"
-
-    if version:
-        deal_version = DealVersion.objects.get(id=version)
-        if not (deal_version.created_by == user or user.role >= UserRole.EDITOR):
-            raise GraphQLError("MISSING_AUTHORIZATION")
-        deal_version.serialized_data["confidential"] = confidential
-        deal_version.serialized_data["confidential_comment"] = comment
-        deal_version.save()
-
-        add_object_comment("deal", user, id, version, obj_comment)
-
-    else:
-        if user.role < UserRole.ADMINISTRATOR:
-            raise GraphQLError("MISSING_AUTHORIZATION")
-        deal = Deal.objects.get(id=id)
-        deal.confidential = confidential
-        deal.confidential_comment = comment
-        deal.save()
-
-        if deal.current_draft:
-            deal.current_draft.serialized_data["confidential"] = confidential
-            deal.current_draft.serialized_data["confidential"] = confidential
-            deal.current_draft.serialized_data["confidential_comment"] = comment
-            deal.current_draft.save()
-
-        add_object_comment("deal", user, id, deal.current_draft_id, obj_comment)
-    return True

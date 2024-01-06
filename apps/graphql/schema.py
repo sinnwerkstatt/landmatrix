@@ -11,7 +11,6 @@ from .resolvers.deal import (
     resolve_deal_delete,
     resolve_deal_edit,
     resolve_deals,
-    resolve_set_confidential,
 )
 from .resolvers.generics import (
     resolve_add_workflow_info_reply,
@@ -28,16 +27,12 @@ from .resolvers.investor import (
     resolve_involvement_network,
 )
 
-from .resolvers.user import resolve_user, resolve_users, user_type
 from .scalars import datetime_scalar, geopoint_scalar
 
 schema_folder = str(pathlib.Path(__file__).parent.joinpath("schema"))
 type_defs = load_schema_from_path(schema_folder)
 
 query = ObjectType("Query")
-query.set_field("me", resolve_user)
-query.set_field("user", resolve_user)
-query.set_field("users", resolve_users)
 query.set_field("deal", resolve_deal)
 query.set_field("deals", resolve_deals)
 query.set_field("investor", resolve_investor)
@@ -51,7 +46,6 @@ mutation.set_field("add_deal_comment", resolve_add_deal_comment)
 mutation.set_field("change_deal_status", resolve_change_deal_status)
 mutation.set_field("deal_edit", resolve_deal_edit)
 mutation.set_field("deal_delete", resolve_deal_delete)
-mutation.set_field("deal_set_confidential", resolve_set_confidential)
 
 # investor
 mutation.set_field("add_investor_comment", resolve_add_investor_comment)
@@ -69,5 +63,4 @@ schema = make_executable_schema(
     [datetime_scalar, date_scalar, geopoint_scalar],
     query,
     mutation,
-    user_type,
 )

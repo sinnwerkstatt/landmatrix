@@ -34,7 +34,7 @@
 
 <dialog
   bind:this={dialog}
-  class="rounded border border-gray-300 bg-white p-4 drop-shadow-lg"
+  class="rounded border border-gray-300 bg-white p-4 drop-shadow-lg dark:border-gray-800 dark:bg-gray-500 dark:text-white"
   on:close={() => (open = false)}
 >
   <slot />

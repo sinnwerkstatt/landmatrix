@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from rest_framework import viewsets
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.generics import get_object_or_404
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from apps.accounts import auth_flow
@@ -14,23 +14,38 @@ from apps.accounts.serializers import UserSerializer, UserListSerializer
 from apps.landmatrix.permissions import IsReporterOrHigher
 
 
-class UserViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = User.objects.all().order_by(Lower("full_name"))
+# TODO unused, but maybe helpful
+# def has_authorization_for_country(user: User, country: Country | int) -> bool:
+#     if isinstance(country, int):
+#         country = Country.objects.get(id=country)
+#
+#     if user.role == UserRole.ADMINISTRATOR:
+#         return True
+#
+#     if user.role >= UserRole.EDITOR:
+#         if country == user.country:
+#             return True
+#         if user.region.country == country:
+#             return True
+#
+#     return False
 
-    def get_serializer_class(self):
-        if self.action == "retrieve":
-            return UserSerializer
-        return UserListSerializer
+
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = User.objects.filter(is_active=True)
+    serializer_class = UserListSerializer
+
+    def get_queryset(self):
+        if self.action == "list":
+            return self.queryset.filter(role__gt=0).order_by(Lower("full_name"))
+        return self.queryset
 
     def get_permissions(self):
         if self.action == "retrieve":
-            return [AllowAny()]
+            return [IsAuthenticated()]
         return [IsReporterOrHigher()]
 
     def retrieve(self, request, pk=None, *args, **kwargs):
-        if request.user.is_anonymous:
-            raise PermissionDenied()
-
         if request.user.is_staff and not pk == "me":
             user = get_object_or_404(self.queryset, pk=pk)
         else:

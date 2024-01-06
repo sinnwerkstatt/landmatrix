@@ -8,6 +8,7 @@
   import DetailsSummary from "$components/DetailsSummary.svelte"
   import HeaderDates from "$components/HeaderDates.svelte"
   import Cog6ToothIcon from "$components/icons/Cog6ToothIcon.svelte"
+  import ManageHeaderConfidentialModal from "$components/New/ManageHeaderConfidentialModal.svelte"
   import ManageHeaderLogbook from "$components/New/ManageHeaderLogbook.svelte"
   import ManageHeaderVersionFlow from "$components/New/ManageHeaderVersionFlow.svelte"
 
@@ -17,6 +18,8 @@
     "fully_updated_at" in obj
 
   $: objType = isDeal(object) ? "deal" : "investor"
+
+  let showConfidentialOverlay = false
 </script>
 
 <div class="my-4 grid grid-cols-2 lg:grid-cols-3">
@@ -29,55 +32,71 @@
       </div>
 
       <DetailsSummary>
-        <div class="btn flex items-center gap-1" slot="summary">
+        <div class="butn flex items-center gap-1" slot="summary">
           <Cog6ToothIcon />
           actions
         </div>
         <ul
-          class="absolute z-50 border border-black bg-white p-2 shadow-2xl"
+          class="absolute z-50 border border-black bg-white p-2 shadow-2xl dark:bg-gray-700"
           slot="details"
         >
-          <li>
+          <li class="my-2">
             <div class="flex items-center gap-2">
-              <a class="btn" href="/{objType}/edit/{object.id}/">edit {objType}</a>
+              <a class="butn" href="/{objType}/edit/{object.id}/">edit {objType}</a>
               this will edit the current deal and create blablabla...
             </div>
           </li>
-          <li>
+          <li class="my-2">
             <div class="flex items-center gap-2">
-              <a class="btn" href="">copy {objType}</a>
+              <a class="butn" href="">copy {objType}</a>
               this will copy the current deal and create blablabla...
             </div>
           </li>
-          <li>
+          <li class="my-2">
             <div class="flex items-center gap-2">
-              <a class="btn bg-red-500" href="">delete</a>
+              <a class="butn butn-red" href="">delete</a>
               this will mark the deal as deleted. only admins will be able to see it, it
               wont count towards any metrics
             </div>
           </li>
-          <li>
-            <div class="flex items-center gap-2">
-              <a class="btn bg-red-700" href="">set confidential</a>
-              this will copy the current deal and create blablabla...
-            </div>
-          </li>
+          {#if isDeal(object)}
+            <li class="my-2">
+              <div class="flex items-center gap-2">
+                <button
+                  type="button"
+                  class="butn butn-red"
+                  on:click={() => (showConfidentialOverlay = true)}
+                >
+                  {#if object.confidential}
+                    unset confidential
+                  {:else}
+                    set confidential
+                  {/if}
+                </button>
+                {#if object.confidential}
+                  this will unsset confidential
+                {:else}
+                  this will set confidential
+                {/if}
+              </div>
+            </li>
+          {/if}
         </ul>
       </DetailsSummary>
       <DetailsSummary>
-        <div class="btn flex items-center gap-1" slot="summary">
+        <div class="butn butn-primary flex items-center gap-1" slot="summary">
           <Cog6ToothIcon />
           versions
         </div>
         <ul
-          class="absolute z-50 border border-black bg-white p-2 shadow-2xl"
+          class="absolute z-50 border border-black bg-white p-2 shadow-2xl dark:bg-gray-700"
           slot="details"
         >
           {#if object.active_version_id}
-            <li>
+            <li class="my-2">
               <div class="flex items-center gap-2">
                 <a
-                  class="btn"
+                  class="butn"
                   href="/{objType}/{object.id}/{object.active_version_id}/"
                 >
                   active version
@@ -87,9 +106,12 @@
             </li>
           {/if}
           {#if object.draft_version_id}
-            <li>
+            <li class="my-2">
               <div class="flex items-center gap-2">
-                <a class="btn" href="/{objType}/{object.id}/{object.draft_version_id}/">
+                <a
+                  class="butn"
+                  href="/{objType}/{object.id}/{object.draft_version_id}/"
+                >
                   draft version
                 </a>
                 go to current draft version
@@ -141,3 +163,7 @@
   </div>
   <ManageHeaderLogbook {object} extraUserIDs={[]} />
 </div>
+
+{#if isDeal(object)}
+  <ManageHeaderConfidentialModal bind:object bind:open={showConfidentialOverlay} />
+{/if}

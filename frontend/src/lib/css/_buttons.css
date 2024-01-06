@@ -23,7 +23,7 @@
     color: var(--color1);
     background: var(--color2);
     border-color: var(--color1);
-    @apply dark:border-gray-700 dark:text-gray-50;
+    /*@apply dark:border-gray-700 dark:text-gray-50;*/
   }
   .butn-outline:hover {
     color: var(--color3);

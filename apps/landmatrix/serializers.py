@@ -264,16 +264,18 @@ class DealSerializer(serializers.ModelSerializer):
     draft_version_id = serializers.PrimaryKeyRelatedField(read_only=True)
     created_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
 
-    country = CountryIDNameSerializer()
-    versions = DealVersionVersionsListSerializer(many=True)
-    selected_version = DealVersionSerializer()
-    workflowinfos = serializers.SerializerMethodField()
+    country = CountryIDNameSerializer(read_only=True)
+    versions = DealVersionVersionsListSerializer(many=True, read_only=True)
+    selected_version = DealVersionSerializer(read_only=True)
+    workflowinfos = serializers.SerializerMethodField(read_only=True)
 
     @staticmethod
     def get_workflowinfos(obj: DealHull):
         return [
-            x.to_dict()
-            for x in DealWorkflowInfo2.objects.filter(deal_id=obj.id).order_by("-id")
+            dwi.to_dict()
+            for dwi in DealWorkflowInfo2.objects.filter(deal_id=obj.id).order_by(
+                "-timestamp"
+            )
         ]
 
     class Meta:

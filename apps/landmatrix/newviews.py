@@ -22,7 +22,7 @@ from apps.landmatrix.models.new import (
     DealWorkflowInfo2,
     InvestorWorkflowInfo2,
 )
-from apps.landmatrix.permissions import IsReporterOrHigher
+from apps.landmatrix.permissions import IsReporterOrHigher, IsAdministrator
 from apps.landmatrix.serializers import (
     DealSerializer,
     InvestorSerializer,
@@ -186,18 +186,24 @@ class Deal2ViewSet(viewsets.ModelViewSet):
     )
     serializer_class = DealSerializer
 
+    def get_queryset(self):
+        if self.action in ["retrieve", "retrieve_version"]:
+            return self.queryset.visible(self.request.user, "UNFILTERED")
+        return self.queryset
+
     def get_permissions(self):
         if self.action in ["retrieve", "list", "retrieve_version"]:
             return [AllowAny()]
         if self.action in ["add_comment", "create", "update", "destroy"]:
             return [IsReporterOrHigher()]
+        if self.action == "toggle_confidential":
+            return [IsAdministrator()]
         return [IsAdminUser()]
 
     def list(self, request: Request, *args, **kwargs):
         deals = (
-            DealHull.objects.visible(request.user, request.GET.get("subset", "PUBLIC"))
-            .exclude(active_version=None)
-            .filter(deleted=False, confidential=False)
+            DealHull.objects.active()
+            .visible(request.user, request.GET.get("subset", "PUBLIC"))
             .filter(_parse_filter(request))
             .prefetch_related("active_version")
             .prefetch_related("active_version__operating_company")
@@ -312,23 +318,40 @@ class Deal2ViewSet(viewsets.ModelViewSet):
 
         return Response({})
 
-    @action(
-        name="Deal Instance",
-        methods=["get"],
-        url_path=r"(?P<version_id>\d+)",
-        detail=True,
-    )
+    @action(methods=["get"], url_path=r"(?P<version_id>\d+)", detail=True)
     def retrieve_version(self, request, pk: int, version_id: int):
         d1: DealHull = self.get_object()
         d1._selected_version_id = int(version_id)
-        serializer = self.get_serializer(d1)
-        dv1 = serializer.data
-        # TODO check for permissions when viewing a draft
-        # if request.user.role > UserRole.EDITOR:
-        #     ...
-        #     # dv1.created_by_id
+        d1_serial: dict = self.get_serializer(d1).data
 
-        return Response(dv1)
+        if (
+            (request.user.is_authenticated and request.user.role >= UserRole.EDITOR)
+            or d1_serial["selected_version"]["created_by"] == request.user.id
+            or (
+                d1_serial["selected_version"]["is_public"]
+                and d1_serial["selected_version"]["status"] == "ACTIVATED",
+            )
+        ):
+            return Response(d1_serial)
+        raise PermissionDenied("MISSING_AUTHORIZATION")
+
+    @action(methods=["put"], detail=True)
+    def toggle_confidential(self, request, *args, **kwargs):
+        d1: DealHull = self.get_object()
+        d1.confidential = request.data["confidential"]
+        d1.confidential_comment = request.data["comment"]
+        d1.save()
+
+        confidential_str = (
+            "SET_CONFIDENTIAL" if d1.confidential else "UNSET_CONFIDENTIAL"
+        )
+        DealWorkflowInfo2.objects.create(
+            deal=d1,
+            from_user=request.user,
+            comment=f"[{confidential_str}] {request.data['comment']}",
+        )
+
+        return Response({})
 
 
 class InvestorVersionViewSet(viewsets.ReadOnlyModelViewSet):
