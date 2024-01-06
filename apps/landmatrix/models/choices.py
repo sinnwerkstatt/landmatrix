@@ -276,7 +276,7 @@ BENEFITS_ITEMS = [
     {
         "value": "PRODUCTIVE_INFRASTRUCTURE",
         "label": _(
-            "Productive infrastructure }e.g. irrigation, tractors, machinery...)"
+            "Productive infrastructure (e.g. irrigation, tractors, machinery...)"
         ),
     },
     {"value": "ROADS", "label": _("Roads")},
@@ -292,8 +292,8 @@ BENEFITS_CHOICES = [(x["value"], x["label"]) for x in BENEFITS_ITEMS]
 
 FORMER_LAND_OWNER_ITEMS = [
     {"value": "STATE", "label": _("State")},
-    {"value": "PRIVATE_SMALLHOLDERS", "label": _("Private (smallholder)")},
-    {"value": "PRIVATE_LARGE_SCALE", "label": _("Private (larg}-scale farm)")},
+    {"value": "PRIVATE_SMALLHOLDERS", "label": _("Private (smallholders)")},
+    {"value": "PRIVATE_LARGE_SCALE", "label": _("Private (large-scale farm)")},
     {"value": "COMMUNITY", "label": _("Community")},
     {"value": "INDIGENOUS_PEOPLE", "label": _("Indigenous people")},
     {"value": "OTHER", "label": _("Other")},
