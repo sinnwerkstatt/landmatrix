@@ -672,6 +672,14 @@ INVESTMENT_TYPE_ITEMS = [
     {"value": "EQUITY", "label": _("Shares/Equity")},
     {"value": "DEBT_FINANCING", "label": _("Debt financing")},
 ]
+INVESTMENT_TYPE_CHOICES = [(x["value"], x["label"]) for x in INVESTMENT_TYPE_ITEMS]
+
+INVOLVEMENT_ROLE_ITEMS = [
+    {"value": "PARENT", "label": _("Parent company")},
+    {"value": "LENDER", "label": _("Tertiary investor/lender")},
+]
+INVOLVEMENT_ROLE_CHOICES = [(x["value"], x["label"]) for x in INVOLVEMENT_ROLE_ITEMS]
+INVOLVEMENT_ROLE_DICT = {x["value"]: x["label"] for x in INVOLVEMENT_ROLE_ITEMS}
 
 
 PARENT_RELATION_ITEMS = [

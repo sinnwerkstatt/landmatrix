@@ -13,7 +13,10 @@
 
   export let object: DealHull | InvestorHull
 
-  $: objType = "fully_updated_at" in object ? "deal" : "investor"
+  const isDeal = (obj: DealHull | InvestorHull): obj is DealHull =>
+    "fully_updated_at" in obj
+
+  $: objType = isDeal(object) ? "deal" : "investor"
 </script>
 
 <div class="my-4 grid grid-cols-2 lg:grid-cols-3">
@@ -107,7 +110,7 @@
           <div class="heading4 mb-0">{$_("Deleted")}</div>
           <span>{object.deleted_comment}</span>
         </div>
-      {:else if object.confidential}
+      {:else if isDeal(object) && object.confidential}
         <div
           class="flex flex-col items-center justify-center gap-1 bg-red-700 py-2 text-white"
         >

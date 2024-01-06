@@ -15,17 +15,6 @@ from rest_framework.exceptions import PermissionDenied, ParseError
 
 from apps.accounts.models import User, UserRole
 from apps.landmatrix.models import choices
-from apps.landmatrix.models.choices import (
-    DATASOURCE_TYPE_CHOICES,
-    LEVEL_OF_ACCURACY_CHOICES,
-    NEGOTIATION_STATUS_ITEMS,
-    IMPLEMENTATION_STATUS_ITEMS,
-    INTENTION_OF_INVESTMENT_ITEMS,
-    CROPS_ITEMS,
-    ANIMALS_ITEMS,
-    MINERALS_ITEMS,
-    INVESTMENT_TYPE_ITEMS,
-)
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.fields import (
@@ -84,7 +73,7 @@ class DealVersionBaseFields(models.Model):
     intention_of_investment = JSONCurrentDateAreaChoicesField(
         blank=True,
         default=list,
-        choices=[x["value"] for x in INTENTION_OF_INVESTMENT_ITEMS],
+        choices=[x["value"] for x in choices.INTENTION_OF_INVESTMENT_ITEMS],
     )
     intention_of_investment_comment = models.TextField(
         _("Comment on intention of investment"), blank=True
@@ -106,7 +95,7 @@ class DealVersionBaseFields(models.Model):
         verbose_name=_("Negotiation status"),
         blank=True,
         default=list,
-        choices=[x["value"] for x in NEGOTIATION_STATUS_ITEMS],
+        choices=[x["value"] for x in choices.NEGOTIATION_STATUS_ITEMS],
     )
     negotiation_status_comment = models.TextField(
         _("Comment on negotiation status"), blank=True
@@ -117,7 +106,7 @@ class DealVersionBaseFields(models.Model):
         verbose_name=_("Implementation status"),
         blank=True,
         default=list,
-        choices=[x["value"] for x in IMPLEMENTATION_STATUS_ITEMS],
+        choices=[x["value"] for x in choices.IMPLEMENTATION_STATUS_ITEMS],
     )
     implementation_status_comment = models.TextField(
         _("Comment on implementation status"), blank=True
@@ -430,7 +419,7 @@ class DealVersionBaseFields(models.Model):
         verbose_name=_("Crops area/yield/export"),
         blank=True,
         default=list,
-        choices=[x["value"] for x in CROPS_ITEMS],
+        choices=[x["value"] for x in choices.CROPS_ITEMS],
     )
     crops_comment = models.TextField(_("Comment on crops"), blank=True)
 
@@ -438,7 +427,7 @@ class DealVersionBaseFields(models.Model):
         verbose_name=_("Livestock area/yield/export"),
         blank=True,
         default=list,
-        choices=[x["value"] for x in ANIMALS_ITEMS],
+        choices=[x["value"] for x in choices.ANIMALS_ITEMS],
     )
     animals_comment = models.TextField(_("Comment on livestock"), blank=True)
 
@@ -446,7 +435,7 @@ class DealVersionBaseFields(models.Model):
         verbose_name=_("Mineral resources area/yield/export"),
         blank=True,
         default=list,
-        choices=[x["value"] for x in MINERALS_ITEMS],
+        choices=[x["value"] for x in choices.MINERALS_ITEMS],
     )
     mineral_resources_comment = models.TextField(
         _("Comment on mineral resources"), blank=True
@@ -455,7 +444,7 @@ class DealVersionBaseFields(models.Model):
     contract_farming_crops = JSONCurrentDateAreaChoicesField(
         blank=True,
         default=list,
-        choices=[x["value"] for x in CROPS_ITEMS],
+        choices=[x["value"] for x in choices.CROPS_ITEMS],
     )
     contract_farming_crops_comment = models.TextField(
         _("Comment on contract farming crops"), blank=True
@@ -463,7 +452,7 @@ class DealVersionBaseFields(models.Model):
     contract_farming_animals = JSONCurrentDateAreaChoicesField(
         blank=True,
         default=list,
-        choices=[x["value"] for x in ANIMALS_ITEMS],
+        choices=[x["value"] for x in choices.ANIMALS_ITEMS],
     )
     contract_farming_animals_comment = models.TextField(
         _("Comment on contract farming livestock"), blank=True
@@ -1089,7 +1078,7 @@ class Location(models.Model):
     level_of_accuracy = models.CharField(
         _("Spatial accuracy level"),
         blank=True,
-        choices=LEVEL_OF_ACCURACY_CHOICES,
+        choices=choices.LEVEL_OF_ACCURACY_CHOICES,
     )
     name = models.CharField(_("Location"), blank=True)
     point = gis_models.PointField(_("Point"), blank=True, null=True)
@@ -1199,7 +1188,9 @@ class Contract(models.Model):
 
 class BaseDataSource(models.Model):
     nid = NanoIDField("ID", max_length=15, db_index=True)
-    type = models.CharField(_("Type"), choices=DATASOURCE_TYPE_CHOICES, blank=True)
+    type = models.CharField(
+        _("Type"), choices=choices.DATASOURCE_TYPE_CHOICES, blank=True
+    )
     # NOTE hit a URL > 1000 chars... so going with 5000 for now. TODO this is just ridiculous
     url = models.URLField(_("Url"), blank=True, max_length=5000)
     file = models.FileField(_("File"), blank=True, null=True, max_length=3000)
@@ -1306,13 +1297,6 @@ class DealHull(models.Model):
     fully_updated_at = models.DateTimeField(
         _("Last full update"), null=True, blank=True
     )
-
-    # we don't seem to need them
-    # this just mirrors the created_at/by from the first version.
-    # created_at = models.DateTimeField(_("Created"), default=timezone.now, blank=True)
-    # created_by = models.ForeignKey(
-    #     settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="+"
-    # )
 
     objects = DealHullQuerySet.as_manager()
 
@@ -1432,6 +1416,21 @@ class InvestorDataSource(BaseDataSource):
         indexes = [models.Index(fields=["investorversion", "nid"])]
 
 
+class InvestorHullQuerySet(models.QuerySet):
+    def active(self):
+        return self.filter(active_version__isnull=False, deleted=False)
+
+    def visible(self, user=None, subset="PUBLIC"):
+        if subset in ["ACTIVE", "PUBLIC"]:
+            return self.active()
+
+        if not user or not user.is_authenticated:
+            return self.active()
+
+        # hand it out unfiltered.
+        return self
+
+
 class InvestorHull(models.Model):
     active_version = models.ForeignKey(
         InvestorVersion2,
@@ -1453,13 +1452,7 @@ class InvestorHull(models.Model):
         _("Comment why this investor is deleted"), blank=True
     )
 
-    # ## calculated
-    # we don't seem to need them
-    # this just mirrors the created_at/by from the first version.
-    # created_at = models.DateTimeField(_("Created"), default=timezone.now, blank=True)
-    # created_by = models.ForeignKey(
-    #     settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="+"
-    # )
+    objects = InvestorHullQuerySet.as_manager()
 
     def __str__(self):
         return f"Investor #{self.id}"
@@ -1542,6 +1535,33 @@ class InvestorHull(models.Model):
         ]
 
 
+class InvolvementQuerySet(models.QuerySet):
+    def active(self):
+        return self.filter(
+            parent_investor__active_version__isnull=False,
+            parent_investor__deleted=False,
+            child_investor__active_version__isnull=False,
+            child_investor__deleted=False,
+        )
+
+    # this is just an idea at this point
+    # def public(self):
+    #     return self.active().filter(
+    #         investor__is_actually_unknown=False,
+    #         venture__is_actually_unknown=False,
+    #     )
+
+    def visible(self, user=None, subset="PUBLIC"):
+        if subset in ["ACTIVE", "PUBLIC"]:
+            return self.active()
+
+        if not user or not (user.is_staff or user.is_superuser):
+            return self.active()
+
+        # hand it out unfiltered.
+        return self
+
+
 class Involvement(models.Model):
     parent_investor = models.ForeignKey(
         InvestorHull,
@@ -1559,17 +1579,11 @@ class Involvement(models.Model):
     )
 
     role = models.CharField(
-        verbose_name=_("Relation type"),
-        choices=(
-            ("PARENT", _("Parent company")),
-            ("LENDER", _("Tertiary investor/lender")),
-        ),
+        verbose_name=_("Relation type"), choices=choices.INVOLVEMENT_ROLE_CHOICES
     )
 
     investment_type = ChoiceArrayField(
-        models.CharField(
-            choices=[(x["value"], x["label"]) for x in INVESTMENT_TYPE_ITEMS]
-        ),
+        models.CharField(choices=choices.INVESTMENT_TYPE_CHOICES),
         verbose_name=_("Investment type"),
         blank=True,
         default=list,
@@ -1600,6 +1614,8 @@ class Involvement(models.Model):
         null=True,
     )
     comment = models.TextField(_("Comment"), blank=True)
+
+    objects = InvolvementQuerySet.as_manager()
 
     class Meta:
         verbose_name = _("Investor Venture Involvement")

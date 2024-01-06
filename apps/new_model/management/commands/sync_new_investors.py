@@ -1,6 +1,7 @@
 import sys
 
 from django.core.management.base import BaseCommand
+from django.db import connection
 from django.db.models import QuerySet
 from icecream import ic
 
@@ -76,6 +77,14 @@ class Command(BaseCommand):
             do_workflows(old_investor.id)
 
             investor_hull.save()
+
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT setval('landmatrix_investorhull_id_seq', (SELECT MAX(id) from landmatrix_investorhull))"
+            )
+            cursor.execute(
+                "SELECT setval('landmatrix_investorversion2_id_seq', (SELECT MAX(id) from landmatrix_investorversion2))"
+            )
 
 
 def _map_status(investor_hull, new_version, old_version: InvestorVersion):

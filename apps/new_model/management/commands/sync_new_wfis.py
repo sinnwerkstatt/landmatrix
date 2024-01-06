@@ -3,6 +3,7 @@ from django.core.management.base import BaseCommand
 from apps.landmatrix.models.deal import DealWorkflowInfo
 from apps.landmatrix.models.investor import InvestorWorkflowInfo
 from apps.landmatrix.models.new import DealWorkflowInfo2, InvestorWorkflowInfo2
+from django.db import connection
 
 status_map_dings = {
     1: "DRAFT",
@@ -25,6 +26,7 @@ class Command(BaseCommand):
                 status_after = "ACTIVATED"
 
             DealWorkflowInfo2.objects.create(
+                id=wfi_old.id,
                 from_user_id=wfi_old.from_user_id,
                 to_user_id=wfi_old.to_user_id,
                 status_before=status_before,
@@ -46,6 +48,7 @@ class Command(BaseCommand):
                 status_after = "ACTIVATED"
 
             InvestorWorkflowInfo2.objects.create(
+                id=wfi_old.id,
                 from_user_id=wfi_old.from_user_id,
                 to_user_id=wfi_old.to_user_id,
                 status_before=status_before,
@@ -56,4 +59,12 @@ class Command(BaseCommand):
                 resolved=wfi_old.resolved,
                 investor_id=wfi_old.investor_id,
                 investor_version_id=wfi_old.investor_version_id,
+            )
+
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT setval('landmatrix_dealworkflowinfo2_id_seq', (SELECT MAX(id) from landmatrix_dealworkflowinfo2))"
+            )
+            cursor.execute(
+                "SELECT setval('landmatrix_investorworkflowinfo2_id_seq', (SELECT MAX(id) from landmatrix_investorworkflowinfo2))"
             )

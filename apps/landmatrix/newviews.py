@@ -187,7 +187,7 @@ class Deal2ViewSet(viewsets.ModelViewSet):
     serializer_class = DealSerializer
 
     def get_permissions(self):
-        if self.action in ["retrieve_version", "list"]:
+        if self.action in ["retrieve", "list", "retrieve_version"]:
             return [AllowAny()]
         if self.action in ["add_comment", "create", "update", "destroy"]:
             return [IsReporterOrHigher()]
@@ -411,7 +411,7 @@ class Investor2ViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = InvestorSerializer
 
     def get_permissions(self):
-        if self.action in ["retrieve_version", "list", "simple"]:
+        if self.action in ["retrieve", "list", "retrieve_version", "simple"]:
             return [AllowAny()]
         if self.action in ["add_comment", "create", "update", "destroy"]:
             return [IsReporterOrHigher()]
@@ -460,6 +460,18 @@ class Investor2ViewSet(viewsets.ReadOnlyModelViewSet):
 
         return Response({})
 
+    @action(
+        name="Investor Instance",
+        methods=["get"],
+        url_path=r"(?P<version_id>\d+)",
+        detail=True,
+    )
+    def retrieve_version(self, request, pk: int, version_id: int):
+        i1: InvestorHull = self.get_object()
+        i1._selected_version_id = int(version_id)
+        serializer = self.get_serializer(i1)
+        return Response(serializer.data)
+
     @action(methods=["get"], detail=False)
     def simple(self, request):
         # TODO this might need an "also search for drafts option"
@@ -490,18 +502,6 @@ class Investor2ViewSet(viewsets.ReadOnlyModelViewSet):
             ret = ret.filter(active_version__country_id=country_id)
 
         return Response(InvestorHull.to_investor_list(ret))
-
-    @action(
-        name="Investor Instance",
-        methods=["get"],
-        url_path=r"(?P<version_id>\d+)",
-        detail=True,
-    )
-    def retrieve_version(self, request, pk: int, version_id: int):
-        i1: InvestorHull = self.get_object()
-        i1._selected_version_id = int(version_id)
-        serializer = self.get_serializer(i1)
-        return Response(serializer.data)
 
     @action(methods=["get"], detail=True)
     def involvements_graph(self, request, pk=None, version_id=None):

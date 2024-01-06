@@ -2,10 +2,10 @@ import sys
 
 from django.contrib.gis.geos import Point, GEOSGeometry
 from django.core.management.base import BaseCommand
+from django.db import connection
 from icecream import ic
 
 from apps.landmatrix.models.deal import Deal
-from apps.landmatrix.models.investor import Investor
 from apps.landmatrix.models.new import (
     DealHull,
     DealVersion2,
@@ -116,14 +116,13 @@ class Command(BaseCommand):
             do_workflows(old_deal.id)
 
             deal_hull.save()
-        print(
-            """dont forget:
-    SELECT setval('landmatrix_dealhull_id_seq', (SELECT MAX(id) from landmatrix_dealhull));
-    SELECT setval('landmatrix_dealversion2_id_seq', (SELECT MAX(id) from landmatrix_dealversion2));
-    SELECT setval('landmatrix_investorhull_id_seq', (SELECT MAX(id) from landmatrix_investorhull));
-    SELECT setval('landmatrix_investorversion2_id_seq', (SELECT MAX(id) from landmatrix_investorversion2));
-             """
-        )
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT setval('landmatrix_dealhull_id_seq', (SELECT MAX(id) from landmatrix_dealhull))"
+            )
+            cursor.execute(
+                "SELECT setval('landmatrix_dealversion2_id_seq', (SELECT MAX(id) from landmatrix_dealversion2))"
+            )
 
 
 def map_locations(nv: DealVersion2, locations: list[dict]):

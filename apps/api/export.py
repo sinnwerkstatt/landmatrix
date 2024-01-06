@@ -1,4 +1,3 @@
-import json
 import zipfile
 from io import BytesIO
 
@@ -10,7 +9,6 @@ from django.shortcuts import render
 from openpyxl import Workbook
 from openpyxl.utils.exceptions import IllegalCharacterError
 
-from apps.graphql.tools import parse_filters
 from apps.landmatrix.models import choices
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.currency import Currency
@@ -20,7 +18,10 @@ from apps.landmatrix.models.new import (
     Contract,
     DealDataSource,
     DealVersion2,
+    InvestorHull,
+    Involvement,
 )
+from apps.landmatrix.newviews import _parse_filter
 from apps.landmatrix.utils import InvolvementNetwork2
 from apps.utils import arrayfield_choices_display, qs_values_to_dict
 
@@ -210,6 +211,7 @@ implementation_status_choices = dict(choices.IMPLEMENTATION_STATUS_CHOICES) | {
     None: "None"
 }
 intention_of_investment_choices = dict(choices.INTENTION_CHOICES) | {None: "None"}
+classification_choices = dict(choices.INVESTOR_CLASSIFICATION_CHOICES)
 produce_choices = {
     "crops": {item["value"]: item["label"] for item in choices.CROPS_ITEMS},
     "contract_farming_crops": {
@@ -291,10 +293,10 @@ involvement_headers = [
 ]
 involvement_fields = [
     "id",
-    "venture_id",
-    "venture__name",
-    "investor_id",
-    "investor__name",
+    "child_investor_id",
+    "child_investor__active_version__name",
+    "parent_investor_id",
+    "parent_investor__active_version__name",
     "role",
     "investment_type",
     "percentage",
@@ -313,7 +315,7 @@ def flatten_date_current_value(data, field, fieldname) -> None:
         [
             "#".join(
                 [
-                    str(x.get("date", "")),
+                    x["date"] or "",
                     "current" if x.get("current") else "",
                     x[fieldname]
                     if isinstance(x[fieldname], str)
@@ -362,7 +364,7 @@ class DataDownload:
         if deal_id:
             self._single_deal(deal_id)
         else:
-            self._multiple_deals(filters)
+            self._multiple_deals(self.request)
 
     def _single_deal(self, deal_id):
         dealhull = DealHull.objects.visible(self.user, self.subset).get(id=deal_id)
@@ -395,79 +397,51 @@ class DataDownload:
                 show_ventures=False,
             )
 
-            self.investors = list(
-                all_investors.annotate(
-                    classification_or_empty=Case(
-                        When(active_version__classification=None, then=Value("")),
-                        default="active_version__classification",
-                        output_field=CharField(),
-                    )
-                ).values_list(
-                    "id",
-                    "active_version__name",
-                    "active_version__country__name",
-                    "classification_or_empty",
-                    "active_version__homepage",
-                    "active_version__opencorporates",
-                    "active_version__comment",
-                )
-            )
-            self.involvements = list(
-                all_involvements.values_list(
-                    "id",
-                    "child_investor_id",
-                    "child_investor__active_version__name",
-                    "parent_investor_id",
-                    "parent_investor__active_version__name",
-                    "role",
-                    "investment_type",
-                    "percentage",
-                    "loans_amount",
-                    "loans_currency",
-                    "loans_date",
-                    "comment",
-                )
-            )
+            self.investors = self.investor_download_format(all_investors)
+            self.involvements = self.involvement_download_format(all_involvements)
 
         self.filename = f"deal_{deal_id}"
 
-    def _multiple_deals(self, filters):
-        qs = Deal.objects.visible(self.user, subset=self.subset).order_by("id")
-        if filters:
-            qs = qs.filter(parse_filters(json.loads(filters)))
+    def _multiple_deals(self, filtersx):
+        dealhulls = DealHull.objects.visible(self.user, subset=self.subset)
+        if filtersx:
+            dealhulls = dealhulls.filter(_parse_filter(filtersx))
+
+        qs: QuerySet[DealVersion2] = DealVersion2.objects.filter(
+            id__in=dealhulls.values_list("active_version_id", flat=True)
+        ).order_by("deal_id")
 
         # deal_ids = qs.values_list("id", flat=True)
 
-        self.deals = [
-            self.deal_download_format(qs_dict)
-            for qs_dict in qs_values_to_dict(
-                qs, deal_fields_top_investor, ["top_investors"]
-            )
-        ]
+        self.deals = sorted(
+            [
+                self.deal_download_format(qs_dict)
+                for qs_dict in qs_values_to_dict(
+                    qs, deal_fields_top_investor, ["top_investors"]
+                )
+            ],
+            key=lambda x: x[0],
+        )
 
         self.locations = []
         for d in qs:
-            self.locations += [self.location_download_format(d.locations.all())]
+            self.locations += self.location_download_format(d.locations.all())
 
         self.contracts = []
         for d in qs:
-            self.contracts += [self.contracts_download_format(d.contracts.all())]
+            self.contracts += self.contracts_download_format(d.contracts.all())
 
         self.datasources = []
         for d in qs:
-            self.datasources += [self.datasource_download_format(d.datasources.all())]
+            self.datasources += self.datasource_download_format(d.datasources.all())
 
-        qs = Investor.objects.visible(self.user).order_by("id")
-        self.investors = [
-            self.investor_download_format(qs_dict)
-            for qs_dict in qs_values_to_dict(qs, investor_fields, [])
-        ]
+        self.investors = self.investor_download_format(
+            InvestorHull.objects.visible(self.user).order_by("id")
+        )
 
-        qs = InvestorVentureInvolvement.objects.visible(self.user).order_by("id")
-        self.involvements = [
-            self.involvement_download_format(qs_dict)
-            for qs_dict in qs_values_to_dict(qs, involvement_fields, [])
-        ]
+        involvements = Involvement.objects.visible(self.user).order_by("id")
+        self.involvements = self.involvement_download_format(involvements)
+
         self.filename = "export"
 
     def get_response(self):
@@ -621,6 +595,7 @@ class DataDownload:
                     ]
                 )
                 for ti in sorted(data["top_investors"], key=lambda x: x["id"])
+                if ti["id"]
             ]
         )
         # map operating company fields
@@ -640,12 +615,11 @@ class DataDownload:
                     "operating_company"
                 ]["active_version"]["country"]["name"]
 
-        data["deal_size"] = data.get("deal_size", 0.0)
-        data["current_contract_size"] = data.get("current_contract_size", 0.0)
-        data["current_production_size"] = data.get("current_production_size", 0.0)
-            data["operating_company__active_version__classification"] = data[
-                "operating_company"
-            ]["active_version"]["classification"]
+            data[
+                "operating_company__active_version__classification"
+            ] = classification_choices.get(
+                data["operating_company"]["active_version"]["classification"], ""
+            )
 
             data["operating_company__active_version__homepage"] = data[
                 "operating_company"
@@ -682,7 +656,7 @@ class DataDownload:
             [
                 "#".join(
                     [
-                        str(x.get("date", "")),
+                        x["date"] or "",
                         "current" if x.get("current") else "",
                         str(x.get("area", "")),
                         ", ".join(
@@ -704,7 +678,7 @@ class DataDownload:
             [
                 "#".join(
                     [
-                        str(x.get("date", "")),
+                        x["date"] or "",
                         "current" if x.get("current") else "",
                         str(negotiation_status_choices[x.get("choice")]),
                     ]
@@ -717,7 +691,7 @@ class DataDownload:
             [
                 "#".join(
                     [
-                        str(x.get("date", "")),
+                        x["date"] or "",
                         "current" if x.get("current") else "",
                         str(implementation_status_choices[x.get("choice")]),
                     ]
@@ -792,8 +766,10 @@ class DataDownload:
                 [
                     "#".join(
                         [
-                            x.get("name", "") or "",
-                            dict(choices.ACTOR_MAP)[x["role"]] if x.get("role") else "",
+                            x["name"] or "",
+                            str(dict(choices.ACTOR_MAP)[x["role"]])
+                            if x.get("role")
+                            else "",
                         ]
                     )
                     for x in data["involved_actors"]
@@ -889,7 +865,7 @@ class DataDownload:
                                 str(dat.get("export") or ""),
                                 ", ".join(
                                     [
-                                        produce_choices.get(produce_type).get(x, x)
+                                        str(produce_choices.get(produce_type).get(x, x))
                                         for x in dat.get("choices", [])
                                     ]
                                 ),
@@ -910,7 +886,7 @@ class DataDownload:
                                 str(dat.get("area", "")),
                                 ", ".join(
                                     [
-                                        produce_choices.get(produce_type).get(x, x)
+                                        str(produce_choices.get(produce_type).get(x, x))
                                         for x in dat.get("choices", [])
                                     ]
                                 ),
@@ -1059,43 +1035,76 @@ class DataDownload:
         )
 
     @staticmethod
-    def investor_download_format(data):
-        if "country" in data:
-            data["country__name"] = data["country"]["name"]
-
-        row = []
-        for field in investor_fields:
-            if field not in data:
-                # empty fields
-                data[field] = ""
-            elif field == "classification":
-                data[field] = str(
-                    dict(choices.INVESTOR_CLASSIFICATION_CHOICES).get(data[field], "")
-                )
-
-            row.append(data[field])
-        return row
-
-    @staticmethod
-    def involvement_download_format(data):
-        data["venture__name"] = data["venture"]["name"]
-        data["investor__name"] = data["investor"]["name"]
-
-        if "investment_type" in data:
-            data["investment_type"] = "|".join(
-                arrayfield_choices_display(
-                    data["investment_type"],
-                    InvestorVentureInvolvement.INVESTMENT_TYPE_CHOICES,
+    def investor_download_format(investors: QuerySet[InvestorHull]):
+        ret = []
+        for x in (
+            investors.annotate(
+                classification_or_empty=Case(
+                    When(active_version__classification=None, then=Value("")),
+                    default="active_version__classification",
+                    output_field=CharField(),
                 )
             )
-        row = []
-        for field in involvement_fields:
-            if field not in data:
-                # empty fields
-                data[field] = ""
-            elif field == "role":
-                data[field] = str(
-                    dict(InvestorVentureInvolvement.ROLE_CHOICES).get(data[field], "")
+            .annotate(
+                country_or_empty=Case(
+                    When(active_version__country__name=None, then=Value("")),
+                    default="active_version__country__name",
+                    output_field=CharField(),
                 )
-            row.append(data[field])
-        return row
+            )
+            .values_list(
+                "id",
+                "active_version__name",
+                "country_or_empty",
+                "classification_or_empty",
+                "active_version__homepage",
+                "active_version__opencorporates",
+                "active_version__comment",
+            )
+        ):
+            x = list(x)
+            x[3] = classification_choices.get(x[3], "")
+            ret += [x]
+        return ret
+
+    @staticmethod
+    def involvement_download_format(involvements: QuerySet[Involvement]):
+        ret = []
+        for x in involvements.annotate(
+            role_display=Case(
+                When(role="PARENT", then=Value("Parent company")),
+                When(role="LENDER", then=Value("Tertiary investor/lender")),
+                default=Value(""),
+                output_field=CharField(),
+            ),
+            # investment_type_flat=StringAgg(
+            #     "investment_type",
+            #     delimiter=", ",
+            #     output_field=CharField(),
+            # ),
+            # percentage_or_empty=Case(
+            #     When(percentage=None, then=Value("")),
+            #     default="percentage",
+            #     output_field=CharField(),
+            # ),
+            # loans_amount_or_empty=Case(
+            #     When(loans_amount=None, then=Value("")),
+            #     default="loans_amount",
+            #     output_field=CharField(),
+            # ),
+        ).values_list(
+            "id",
+            "child_investor_id",
+            "child_investor__active_version__name",
+            "parent_investor_id",
+            "parent_investor__active_version__name",
+            "role_display",
+            "investment_type",
+            "percentage",
+            "loans_amount",
+            "loans_currency",
+            "loans_date",
+            "comment",
+        ):
+            ret += [["" if y is None else y for y in x]]
+        return ret

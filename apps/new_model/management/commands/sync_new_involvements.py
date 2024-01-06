@@ -4,6 +4,7 @@ from apps.landmatrix.models.investor import (
     InvestorVentureInvolvement,
 )
 from apps.landmatrix.models.new import Involvement
+from django.db import connection
 
 
 class Command(BaseCommand):
@@ -11,6 +12,7 @@ class Command(BaseCommand):
         for inv_old in InvestorVentureInvolvement.objects.all():
             inv_old: InvestorVentureInvolvement
             Involvement.objects.create(
+                id=inv_old.id,
                 parent_investor_id=inv_old.investor_id,
                 child_investor_id=inv_old.venture_id,
                 role=inv_old.role,
@@ -21,4 +23,8 @@ class Command(BaseCommand):
                 loans_date=inv_old.loans_date,
                 parent_relation=inv_old.parent_relation,
                 comment=inv_old.comment,
+            )
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT setval('landmatrix_involvement_id_seq', (SELECT MAX(id) from landmatrix_involvement))"
             )
