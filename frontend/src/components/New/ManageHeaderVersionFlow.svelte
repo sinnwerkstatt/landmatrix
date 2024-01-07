@@ -7,12 +7,13 @@
   import { loading } from "$lib/stores"
   import type { DealHull, InvestorHull } from "$lib/types/newtypes.js"
   import { Version2Status } from "$lib/types/newtypes.js"
+  import { UserRole } from "$lib/types/user"
 
   import ManageHeaderActivateModal from "$components/New/ManageHeaderActivateModal.svelte"
-  import ManageHeaderDeleteModal from "$components/New/ManageHeaderDeleteModal.svelte"
   import ManageHeaderRequestImprovementModal from "$components/New/ManageHeaderRequestImprovementModal.svelte"
   import ManageHeaderSendToActivationModal from "$components/New/ManageHeaderSendToActivationModal.svelte"
   import ManageHeaderSendToReviewModal from "$components/New/ManageHeaderSendToReviewModal.svelte"
+  import ManageHeaderVersionRemoveModal from "$components/New/ManageHeaderVersionRemoveModal.svelte"
 
   export let object: DealHull | InvestorHull
 
@@ -126,23 +127,25 @@
     </div>
   </div>
 
-  <div class="flex items-center gap-4">
-    <div>
-      <button
-        class="butn-outline butn-flat butn-red min-w-[8rem]"
-        class:disabled={$loading || $navigating}
-        on:click|preventDefault={() => (showDeleteOverlay = true)}
-      >
-        {$_("Remove")}
-      </button>
+  {#if $page.data.user?.role >= UserRole.EDITOR}
+    <div class="flex items-center gap-4">
+      <div>
+        <button
+          class="butn-outline butn-flat butn-red min-w-[8rem]"
+          class:disabled={$loading || $navigating}
+          on:click|preventDefault={() => (showDeleteOverlay = true)}
+        >
+          {$_("Remove")}
+        </button>
+      </div>
+      <div class="italic text-gray-700 dark:text-white">
+        {$_(
+          "Completely removes this version of the {object}. This action cannot be undone.",
+          i18nValues,
+        )}
+      </div>
     </div>
-    <div class="italic text-gray-700 dark:text-white">
-      {$_(
-        "Completely removes this version of the {object}. This action cannot be undone.",
-        i18nValues,
-      )}
-    </div>
-  </div>
+  {/if}
 </div>
 
 <ManageHeaderSendToReviewModal bind:object bind:open={showSendToReviewOverlay} />
@@ -155,7 +158,7 @@
   bind:object
   bind:open={showRequestImprovementOverlay}
 />
-<ManageHeaderDeleteModal bind:object bind:open={showDeleteOverlay} />
+<ManageHeaderVersionRemoveModal bind:object bind:open={showDeleteOverlay} />
 
 <style lang="postcss">
   .status-field {

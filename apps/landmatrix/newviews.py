@@ -353,6 +353,20 @@ class Deal2ViewSet(viewsets.ModelViewSet):
 
         return Response({})
 
+    @action(methods=["put"], detail=True)
+    def toggle_deleted(self, request, *args, **kwargs):
+        d1: DealHull = self.get_object()
+        d1.deleted = request.data["deleted"]
+        d1.deleted_comment = request.data["comment"]
+        # TODO we used to set modified by/at here too. but on the dealhull object doesnt make sense
+        d1.save()
+
+        DealWorkflowInfo2.objects.create(
+            deal=d1,
+            from_user=request.user,
+            status_after="DELETED" if d1.deleted else "REACTIVATED",
+            comment=request.data["comment"],
+        )
 
 class InvestorVersionViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = InvestorVersion2.objects.all()

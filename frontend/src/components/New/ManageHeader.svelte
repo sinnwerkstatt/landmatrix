@@ -9,6 +9,7 @@
   import HeaderDates from "$components/HeaderDates.svelte"
   import Cog6ToothIcon from "$components/icons/Cog6ToothIcon.svelte"
   import ManageHeaderConfidentialModal from "$components/New/ManageHeaderConfidentialModal.svelte"
+  import ManageHeaderDeletionModal from "$components/New/ManageHeaderDeletionModal.svelte"
   import ManageHeaderLogbook from "$components/New/ManageHeaderLogbook.svelte"
   import ManageHeaderVersionFlow from "$components/New/ManageHeaderVersionFlow.svelte"
 
@@ -19,6 +20,7 @@
 
   $: objType = isDeal(object) ? "deal" : "investor"
 
+  let showDeletionOverlay = false
   let showConfidentialOverlay = false
 </script>
 
@@ -54,9 +56,24 @@
           </li>
           <li class="my-2">
             <div class="flex items-center gap-2">
-              <a class="butn butn-red" href="">delete</a>
-              this will mark the deal as deleted. only admins will be able to see it, it
-              wont count towards any metrics
+              <button
+                type="button"
+                class="butn butn-red"
+                on:click={() => (showDeletionOverlay = true)}
+              >
+                {#if object.deleted}
+                  undelete
+                {:else}
+                  delete
+                {/if}
+              </button>
+              {#if object.deleted}
+                {isDeal(object)
+                  ? $_("Reactivate this deal")
+                  : $_("Reactivate this investor")}
+              {:else}
+                {isDeal(object) ? $_("Delete this deal") : $_("Delete this investor")}
+              {/if}
             </div>
           </li>
           {#if isDeal(object)}
@@ -167,3 +184,4 @@
 {#if isDeal(object)}
   <ManageHeaderConfidentialModal bind:object bind:open={showConfidentialOverlay} />
 {/if}
+<ManageHeaderDeletionModal bind:object bind:open={showDeletionOverlay} />

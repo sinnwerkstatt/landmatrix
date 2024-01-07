@@ -8,7 +8,6 @@ from .resolvers.deal import (
     resolve_add_deal_comment,
     resolve_change_deal_status,
     resolve_deal,
-    resolve_deal_delete,
     resolve_deal_edit,
     resolve_deals,
 )
@@ -21,7 +20,6 @@ from .resolvers.investor import (
     resolve_add_investor_comment,
     resolve_change_investor_status,
     resolve_investor,
-    resolve_investor_delete,
     resolve_investor_edit,
     resolve_investors,
     resolve_involvement_network,
@@ -45,13 +43,11 @@ mutation = ObjectType("Mutation")
 mutation.set_field("add_deal_comment", resolve_add_deal_comment)
 mutation.set_field("change_deal_status", resolve_change_deal_status)
 mutation.set_field("deal_edit", resolve_deal_edit)
-mutation.set_field("deal_delete", resolve_deal_delete)
 
 # investor
 mutation.set_field("add_investor_comment", resolve_add_investor_comment)
 mutation.set_field("change_investor_status", resolve_change_investor_status)
 mutation.set_field("investor_edit", resolve_investor_edit)
-mutation.set_field("investor_delete", resolve_investor_delete)
 
 mutation.set_field("object_copy", resolve_object_copy)
 

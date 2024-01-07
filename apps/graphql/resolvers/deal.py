@@ -9,7 +9,6 @@ from .generics import (
     add_object_comment,
     change_object_status,
     get_foreign_keys,
-    object_delete,
     object_edit,
 )
 from ..tools import get_fields, parse_filters
@@ -103,20 +102,3 @@ def resolve_deal_edit(
         payload=_clean_payload(payload),
     )
     return {"dealId": deal_id, "dealVersion": deal_version}
-
-
-# noinspection PyShadowingBuiltins
-def resolve_deal_delete(
-    _obj,
-    info,
-    id: int,
-    version: int | None = None,
-    comment: str | None = None,
-) -> bool:
-    return object_delete(
-        otype="deal",
-        user=info.context["request"].user,
-        obj_id=id,
-        obj_version_id=version,
-        comment=comment,
-    )

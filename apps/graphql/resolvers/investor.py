@@ -16,7 +16,6 @@ from .generics import (
     add_object_comment,
     change_object_status,
     get_foreign_keys,
-    object_delete,
     object_edit,
 )
 
@@ -246,20 +245,3 @@ def resolve_investor_edit(
         payload=_clean_payload(payload, investor_id=id),
     )
     return {"investorId": investor_id, "investorVersion": investor_version}
-
-
-# noinspection PyShadowingBuiltins
-def resolve_investor_delete(
-    _obj,
-    info,
-    id: int,
-    version: int | None = None,
-    comment: str | None = None,
-) -> bool:
-    return object_delete(
-        otype="investor",
-        user=info.context["request"].user,
-        obj_id=id,
-        obj_version_id=version,
-        comment=comment,
-    )
