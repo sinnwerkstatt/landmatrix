@@ -104,127 +104,6 @@ def add_object_comment(
         send_comment_to_user(obj, comment, user, to_user_id, obj_version_id)
 
 
-def change_object_status(
-    otype: OType,
-    user: User,
-    obj_id: int,
-    obj_version_id: int,
-    transition: str,
-    comment: str | None = None,
-    to_user_id: int | None = None,
-    fully_updated: bool = False,  # only relevant on "TO_REVIEW"
-) -> list[int]:
-    if not (user.is_authenticated and user.role):
-        raise GraphQLError("MISSING_AUTHORIZATION")
-    Object: Type[Deal | Investor] = Deal if otype == "deal" else Investor
-    ObjectVersion: Type[DealVersion | InvestorVersion] = (
-        DealVersion if otype == "deal" else InvestorVersion
-    )
-    obj: Deal | Investor = Object.objects.get(id=obj_id)
-    obj_version: DealVersion | InvestorVersion = ObjectVersion.objects.get(
-        id=obj_version_id
-    )
-
-    old_draft_status = obj_version.serialized_data["draft_status"]
-
-    if obj.versions.first() != obj_version:
-        raise GraphQLError("EDITING_OLD_VERSION")
-
-    if transition == "TO_REVIEW":
-        if not (obj_version.created_by == user or user.role >= UserRole.EDITOR):
-            raise GraphQLError("MISSING_AUTHORIZATION")
-
-        draft_status = DRAFT_STATUS["REVIEW"]
-        obj_version.serialized_data["draft_status"] = draft_status
-        if otype == "deal":
-            obj_version.serialized_data["fully_updated"] = fully_updated
-            if fully_updated:
-                obj_version.serialized_data["fully_updated_at"] = ecma262(
-                    obj_version.created_at
-                )
-        obj_version.save()
-        Object.objects.filter(id=obj_id).update(draft_status=draft_status)
-
-        # if there was a request for improvement workflowinfo, email the requester
-        old_wfi: WorkflowInfo | None = obj.workflowinfos.last()
-        if (
-            old_wfi
-            and old_wfi.draft_status_before in [2, 3]
-            and old_wfi.draft_status_after == 1
-            and old_wfi.to_user == user
-        ):
-            old_wfi.resolved = True
-            old_wfi.save()
-            send_comment_to_user(obj, "", user, old_wfi.from_user.id, obj_version_id)
-
-    elif transition == "TO_ACTIVATION":
-        if user.role < UserRole.EDITOR:
-            raise GraphQLError("MISSING_AUTHORIZATION")
-        draft_status = DRAFT_STATUS["ACTIVATION"]
-        obj_version.serialized_data["draft_status"] = draft_status
-        obj_version.save()
-        Object.objects.filter(id=obj_id).update(draft_status=draft_status)
-    elif transition == "ACTIVATE":
-        if user.role < UserRole.ADMINISTRATOR:
-            raise GraphQLError("MISSING_AUTHORIZATION")
-        draft_status = None
-        obj_version.serialized_data["status"] = (
-            STATUS["LIVE"] if obj.status == STATUS["DRAFT"] else STATUS["UPDATED"]
-        )
-        obj_version.serialized_data["draft_status"] = draft_status
-        obj_version.serialized_data["current_draft"] = None
-
-        # dirty hack for some investors with datasources == None
-        if (
-            "datasources" in obj_version.serialized_data
-            and obj_version.serialized_data["datasources"] is None
-        ):
-            obj_version.serialized_data["datasources"] = []
-
-        obj = Object.deserialize_from_version(obj_version)
-        obj_version.save()
-        # close unresolved workflowinfos
-        obj.workflowinfos.all().update(resolved=True)
-    elif transition == "TO_DRAFT":
-        if user.role < UserRole.EDITOR:
-            raise GraphQLError("MISSING_AUTHORIZATION")
-        draft_status = DRAFT_STATUS["DRAFT"]
-
-        obj_version.serialized_data["draft_status"] = draft_status
-        obj_version.id = None
-        obj_version.created_by_id = to_user_id
-        obj_version.save()
-
-        Object.objects.filter(id=obj_id).update(
-            draft_status=draft_status, current_draft=obj_version
-        )
-        # close remaining open feedback requests
-        obj.workflowinfos.filter(
-            Q(draft_status_before__in=[2, 3])
-            & Q(draft_status_after=1)
-            # TODO: https://git.sinntern.de/landmatrix/landmatrix/-/issues/404
-            & (Q(from_user=user) | Q(to_user=user))
-        ).update(resolved=True)
-
-    else:
-        raise GraphQLError(f"unknown transition {transition}")
-
-    add_workflow_info(
-        otype=otype,
-        obj=obj,
-        obj_version=obj_version,
-        from_user=user,
-        to_user_id=to_user_id,
-        draft_status_before=old_draft_status,
-        draft_status_after=draft_status,
-        comment=comment,
-    )
-    if to_user_id:
-        send_comment_to_user(obj, comment, user, to_user_id, obj_version_id)
-
-    return [obj.id, obj_version.id]
-
-
 def object_edit(
     otype: OType,
     user: User,
@@ -263,6 +142,7 @@ def object_edit(
         obj.status = obj.draft_status = DRAFT_STATUS["DRAFT"]
         obj.save()
 
+        # TODO
         obj_version = ObjectVersion.from_object(obj, created_by=user)
         Object.objects.filter(id=obj.id).update(current_draft=obj_version)
         add_workflow_info(

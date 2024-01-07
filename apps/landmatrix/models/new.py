@@ -798,6 +798,7 @@ class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
                 deal.fully_updated_at = self.modified_at
             deal.save()
 
+            # close unresolved workflowinfos
             self.workflowinfos.all().update(resolved=True)
         elif new_status == "TO_DRAFT":
             self.fully_updated = False  # TODO: reset this? maybe better not.
@@ -1381,6 +1382,7 @@ class InvestorVersion2(BaseVersionMixin, models.Model):
             investor.active_version = self
             investor.save()
 
+            # close unresolved workflowinfos
             self.workflowinfos.all().update(resolved=True)
         elif new_status == "TO_DRAFT":
             investor = self.investor

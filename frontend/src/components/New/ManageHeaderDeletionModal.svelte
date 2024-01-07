@@ -22,7 +22,7 @@
   $: i18nValues = { values: { object: objectType } }
 
   async function submit() {
-    const ret = await fetch(`/api/deals/${object.id}/toggle_deleted/`, {
+    const ret = await fetch(`/api/${objectType}s/${object.id}/toggle_deleted/`, {
       method: "PUT",
       credentials: "include",
       body: JSON.stringify({ deleted: !object.deleted, comment }),
@@ -35,7 +35,8 @@
       const retJson = await ret.json()
       toast.push(`${ret.status}: ${retJson.detail}`, { classes: ["error"] })
     } else {
-      invalidate("deal:detail").then()
+      if (isDeal(object)) invalidate("deal:detail").then()
+      else invalidate("investor:detail").then()
       comment = ""
       open = false
     }

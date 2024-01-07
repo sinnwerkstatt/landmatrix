@@ -154,23 +154,6 @@ class VersionViewSet(viewsets.ReadOnlyModelViewSet):
     class Meta:
         abstract = True
 
-    @staticmethod
-    def _add_wfi(request, obj: DealVersion2 | InvestorVersion2, **kwargs):
-        args = {
-            "from_user": request.user,
-            "to_user_id": request.data.get("toUser"),
-            "comment": request.data.get("comment", "") or "",
-        } | kwargs
-
-        if isinstance(obj, DealVersion2):
-            return DealWorkflowInfo2.objects.create(
-                deal=obj.deal, deal_version=obj, **args
-            )
-        else:
-            return InvestorWorkflowInfo2.objects.create(
-                investor=obj.investor, investor_version=obj, **args
-            )
-
     def get_permissions(self):
         if self.action in ["update", "destroy", "change_status"]:
             return [IsReporterOrHigher()]
@@ -221,6 +204,23 @@ class VersionViewSet(viewsets.ReadOnlyModelViewSet):
             )
 
         return Response({})
+
+    @staticmethod
+    def _add_wfi(request, obj: DealVersion2 | InvestorVersion2, **kwargs):
+        args = {
+            "from_user": request.user,
+            "to_user_id": request.data.get("toUser"),
+            "comment": request.data.get("comment", "") or "",
+        } | kwargs
+
+        if isinstance(obj, DealVersion2):
+            return DealWorkflowInfo2.objects.create(
+                deal=obj.deal, deal_version=obj, **args
+            )
+        else:
+            return InvestorWorkflowInfo2.objects.create(
+                investor=obj.investor, investor_version=obj, **args
+            )
 
 
 class DealVersionViewSet(VersionViewSet):
@@ -301,7 +301,7 @@ class HullViewSet(viewsets.ReadOnlyModelViewSet):
         return Response({})
 
     @action(detail=True, methods=["put"])
-    def add_comment(self, request):
+    def add_comment(self, request, *args, **kwargs):
         o1: DealHull | InvestorHull = self.get_object()
 
         # TODO unclear which version to grab for WFI. active or draft?
@@ -323,7 +323,7 @@ class HullViewSet(viewsets.ReadOnlyModelViewSet):
     def toggle_deleted(self, request, *args, **kwargs):
         o1: DealHull | InvestorHull = self.get_object()
         o1.deleted = request.data["deleted"]
-        o1.deleted_comment = request.data["comment"]
+        o1.deleted_comment = request.data["comment"] if o1.deleted else ""
         # TODO we used to set modified by/at here too. but on the dealhull object doesnt make sense
         o1.save()
 

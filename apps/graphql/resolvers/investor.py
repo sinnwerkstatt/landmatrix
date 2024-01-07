@@ -12,12 +12,7 @@ from apps.landmatrix.utils import InvolvementNetwork
 from apps.utils import qs_values_to_dict, set_sensible_fields_to_null
 
 from ..tools import get_fields, parse_filters
-from .generics import (
-    add_object_comment,
-    change_object_status,
-    get_foreign_keys,
-    object_edit,
-)
+from .generics import get_foreign_keys
 
 
 # noinspection PyShadowingBuiltins
@@ -106,17 +101,6 @@ def resolve_investor(
     return investor
 
 
-def resolve_involvement_network(
-    _obj,
-    info,
-    id: int,
-    depth: int = 4,
-    include_ventures: bool = True,
-):
-    user = info.context["request"].user
-    return InvolvementNetwork(include_ventures, max_depth=depth).get_network(id)
-
-
 def resolve_investors(
     _obj,
     info,
@@ -149,39 +133,6 @@ def resolve_investors(
         set_sensible_fields_to_null(results)
 
     return results
-
-
-# noinspection PyShadowingBuiltins
-def resolve_add_investor_comment(
-    _obj, info, id: int, version: int, comment: str, to_user_id=None
-) -> dict:
-    add_object_comment(
-        "investor", info.context["request"].user, id, version, comment, to_user_id
-    )
-
-    return {"investorId": id, "investorVersion": version}
-
-
-# noinspection PyShadowingBuiltins
-def resolve_change_investor_status(
-    _obj,
-    info,
-    id: int,
-    version: int,
-    transition: str,
-    comment: str | None = None,
-    to_user_id: int | None = None,
-) -> dict:
-    investor_id, investor_version = change_object_status(
-        otype="investor",
-        user=info.context["request"].user,
-        obj_id=id,
-        obj_version_id=version,
-        transition=transition,
-        comment=comment,
-        to_user_id=to_user_id,
-    )
-    return {"investorId": investor_id, "investorVersion": investor_version}
 
 
 def _clean_payload(payload: dict | None, investor_id: int) -> dict:
@@ -227,21 +178,3 @@ def _clean_payload(payload: dict | None, investor_id: int) -> dict:
         else:
             ret[key] = value
     return ret
-
-
-# noinspection PyShadowingBuiltins
-def resolve_investor_edit(
-    _obj,
-    info,
-    id: int,
-    version: int | None = None,
-    payload: dict | None = None,
-) -> dict:
-    investor_id, investor_version = object_edit(
-        otype="investor",
-        user=info.context["request"].user,
-        obj_id=id,
-        obj_version_id=version,
-        payload=_clean_payload(payload, investor_id=id),
-    )
-    return {"investorId": investor_id, "investorVersion": investor_version}
