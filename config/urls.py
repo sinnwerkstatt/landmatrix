@@ -19,7 +19,6 @@ urlpatterns = [
     path("cms/", include("wagtail.admin.urls")),
     path("documents/", include("wagtail.documents.urls")),
     # APIs
-    path("graphql/", include("apps.graphql.urls")),
     path("api/wagtail/v2/", api_router.urls),
     path("api/", include("apps.api.urls")),
 ]

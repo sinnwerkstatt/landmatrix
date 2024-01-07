@@ -45,45 +45,6 @@ DraftStatus = Literal["DRAFT", "REVIEW", "ACTIVATION", "REJECTED", "TO_DELETE"]
 #     ...
 
 
-def send_comment_to_user(
-    obj: Deal | Investor,
-    comment: str | None,
-    from_user: User,
-    to_user_id: int,
-    version_id: int | None = None,
-) -> None:
-    receiver = User.objects.get(id=to_user_id)
-    subject = "[Landmatrix] " + _("New comment")
-
-    obj_desc = (
-        f"deal {obj.id}"
-        if isinstance(obj, Deal)
-        else f"investor {obj.name} (#{obj.id})"
-    )
-
-    message = ""
-    if comment:
-        message += _(
-            f"{from_user.full_name} has addressed you in a comment on {obj_desc}:"
-        )
-        message += "\n\n" + comment
-    else:
-        message += _(f"{from_user.full_name} has updated {obj_desc}:")
-
-    site = Site.objects.get(is_default_site=True)
-
-    port = f":{site.port}" if site.port not in [80, 443] else ""
-    url = f"http{'s' if site.port == 443 else ''}://{site.hostname}{port}"
-
-    is_deal = isinstance(obj, Deal)
-    url += f"/deal/{obj.id}" if is_deal else f"/investor/{obj.id}"
-    if version_id:
-        url += f"/{version_id}"
-    message += "\n\n" + _(f"Please review at {url}")
-
-    receiver.email_user(subject, message, from_email=settings.DEFAULT_FROM_EMAIL)
-
-
 def add_workflow_info(
     otype: OType,
     obj: Deal | Investor,
@@ -454,50 +415,6 @@ def resolve_add_workflow_info_reply(
     ]
     wi.save()
     return True
-
-
-def resolve_object_copy(_obj, info, otype: OType, obj_id: int) -> dict:
-    user = info.context["request"].user
-    if not (user.is_authenticated and user.role):
-        raise GraphQLError("MISSING_AUTHORIZATION")
-
-    Object: Type[Deal | Investor] = Deal if otype == "deal" else Investor
-    ObjectVersion: Type[DealVersion | InvestorVersion] = (
-        DealVersion if otype == "deal" else InvestorVersion
-    )
-    obj: Deal | Investor = Object.objects.get(id=obj_id)
-    obj.id = None
-
-    old_comp_id = None
-    if otype == "deal":
-        old_comp_id = obj.operating_company_id
-        obj.operating_company = None
-
-    obj.current_draft = None
-    obj.recalculate_fields()
-    obj.created_by = user
-    obj.created_at = timezone.now()
-    obj.modified_by = user
-    obj.modified_at = timezone.now()
-    obj.status = obj.draft_status = DRAFT_STATUS["DRAFT"]
-
-    obj.save()
-    if otype == "deal":
-        obj.operating_company_id = old_comp_id
-        obj.save()
-
-    obj_version = ObjectVersion.from_object(obj, created_by=user)
-    Object.objects.filter(id=obj.id).update(current_draft=obj_version)
-    add_workflow_info(
-        otype=otype,
-        obj=obj,
-        obj_version=obj_version,
-        from_user=user,
-        draft_status_after=obj.draft_status,
-        comment=f"Copied from {otype} #{obj_id}",
-    )
-
-    return {"objId": obj.id, "objVersion": obj_version.id}
 
 
 def get_foreign_keys(model: Type[Model]) -> dict[str, Type[Model]]:

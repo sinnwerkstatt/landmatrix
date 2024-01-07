@@ -55,7 +55,6 @@ type Mutation {
     from_user_id: Int!
     comment: String!
   ): Boolean
-  object_copy(otype: String!, obj_id: Int!): ObjectReturn
 }
 
 scalar Payload

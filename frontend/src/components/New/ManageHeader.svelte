@@ -2,13 +2,17 @@
   import dayjs from "dayjs"
   import { _ } from "svelte-i18n"
 
+  import { page } from "$app/stores"
+
   import type { DealHull, InvestorHull } from "$lib/types/newtypes.js"
   import { Version2Status } from "$lib/types/newtypes.js"
+  import { UserRole } from "$lib/types/user"
 
   import DetailsSummary from "$components/DetailsSummary.svelte"
   import HeaderDates from "$components/HeaderDates.svelte"
   import Cog6ToothIcon from "$components/icons/Cog6ToothIcon.svelte"
   import ManageHeaderConfidentialModal from "$components/New/ManageHeaderConfidentialModal.svelte"
+  import ManageHeaderCopyModal from "$components/New/ManageHeaderCopyModal.svelte"
   import ManageHeaderDeletionModal from "$components/New/ManageHeaderDeletionModal.svelte"
   import ManageHeaderLogbook from "$components/New/ManageHeaderLogbook.svelte"
   import ManageHeaderVersionFlow from "$components/New/ManageHeaderVersionFlow.svelte"
@@ -20,6 +24,9 @@
 
   $: objType = isDeal(object) ? "deal" : "investor"
 
+  $: i18nValues = { values: { object: objType } }
+
+  let showCopyOverlay = false
   let showDeletionOverlay = false
   let showConfidentialOverlay = false
 </script>
@@ -48,12 +55,20 @@
               this will edit the current deal and create blablabla...
             </div>
           </li>
-          <li class="my-2">
-            <div class="flex items-center gap-2">
-              <a class="butn" href="">copy {objType}</a>
-              this will copy the current deal and create blablabla...
-            </div>
-          </li>
+          {#if isDeal(object) && $page.data.user?.role === UserRole.ADMINISTRATOR}
+            <li class="my-2">
+              <div class="flex items-center gap-2">
+                <button
+                  type="button"
+                  class="butn"
+                  on:click={() => (showCopyOverlay = true)}
+                >
+                  {$_("Copy deal")}
+                </button>
+                {$_("Copy this deal")}
+              </div>
+            </li>
+          {/if}
           <li class="my-2">
             <div class="flex items-center gap-2">
               <button
@@ -76,7 +91,7 @@
               {/if}
             </div>
           </li>
-          {#if isDeal(object)}
+          {#if isDeal(object) && $page.data.user?.role === UserRole.ADMINISTRATOR}
             <li class="my-2">
               <div class="flex items-center gap-2">
                 <button
@@ -181,7 +196,9 @@
   <ManageHeaderLogbook {object} extraUserIDs={[]} />
 </div>
 
+<ManageHeaderDeletionModal bind:object bind:open={showDeletionOverlay} />
+
 {#if isDeal(object)}
+  <ManageHeaderCopyModal bind:object bind:open={showCopyOverlay} />
   <ManageHeaderConfidentialModal bind:object bind:open={showConfidentialOverlay} />
 {/if}
-<ManageHeaderDeletionModal bind:object bind:open={showDeletionOverlay} />

@@ -13,7 +13,6 @@ from .resolvers.deal import (
 )
 from .resolvers.generics import (
     resolve_add_workflow_info_reply,
-    resolve_object_copy,
     resolve_resolve_workflow_info,
 )
 from .resolvers.investor import (
@@ -25,7 +24,6 @@ from .resolvers.investor import (
     resolve_involvement_network,
 )
 
-from .scalars import datetime_scalar, geopoint_scalar
 
 schema_folder = str(pathlib.Path(__file__).parent.joinpath("schema"))
 type_defs = load_schema_from_path(schema_folder)
@@ -49,14 +47,13 @@ mutation.set_field("add_investor_comment", resolve_add_investor_comment)
 mutation.set_field("change_investor_status", resolve_change_investor_status)
 mutation.set_field("investor_edit", resolve_investor_edit)
 
-mutation.set_field("object_copy", resolve_object_copy)
 
 mutation.set_field("resolve_workflow_info", resolve_resolve_workflow_info)
 mutation.set_field("add_workflow_info_reply", resolve_add_workflow_info_reply)
 
 schema = make_executable_schema(
     type_defs,
-    [datetime_scalar, date_scalar, geopoint_scalar],
+    [date_scalar],
     query,
     mutation,
 )

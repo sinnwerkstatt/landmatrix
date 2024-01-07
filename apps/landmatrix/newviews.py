@@ -1,5 +1,8 @@
 import json
 
+from django.conf import settings
+from django.utils.translation import gettext_lazy as _
+
 from django.db import OperationalError
 from django.db.models import Prefetch, Q, F
 from django.http import JsonResponse
@@ -11,8 +14,9 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.request import Request
 from rest_framework.response import Response
+from wagtail.models import Site
 
-from apps.accounts.models import UserRole
+from apps.accounts.models import UserRole, User
 from apps.landmatrix.models import choices
 from apps.landmatrix.models.new import (
     DealHull,
@@ -104,6 +108,46 @@ def _parse_filter(request: Request):
         ret &= Q(active_version__forest_concession=for_con == "true")
 
     return ret
+
+
+def _send_comment_to_user(
+    obj: DealHull | InvestorHull,
+    comment: str | None,
+    from_user: User,
+    to_user_id: int,
+    version_id: int | None = None,
+) -> None:
+    receiver = User.objects.get(id=to_user_id)
+    subject = "[Landmatrix] " + _("New comment")
+
+    is_deal = isinstance(obj, DealHull)
+
+    obj_desc = (
+        f"deal {obj.id}"
+        if is_deal
+        else f"investor {obj.active_version.name} (#{obj.id})"
+    )
+
+    if comment:
+        message = (
+            _(f"{from_user.full_name} has addressed you in a comment on {obj_desc}:")
+            + "\n\n"
+            + comment
+        )
+    else:
+        message = _(f"{from_user.full_name} has updated {obj_desc}:")
+
+    site = Site.objects.get(is_default_site=True)
+
+    port = f":{site.port}" if site.port not in [80, 443] else ""
+    url = f"http{'s' if site.port == 443 else ''}://{site.hostname}{port}"
+
+    url += f"/deal/{obj.id}/" if is_deal else f"/investor/{obj.id}/"
+    if version_id:
+        url += f"{version_id}/"
+    message += "\n\n" + _(f"Please review at {url}")
+
+    receiver.email_user(subject, message, from_email=settings.DEFAULT_FROM_EMAIL)
 
 
 class VersionViewSet(viewsets.ReadOnlyModelViewSet):
@@ -199,8 +243,9 @@ class DealVersionViewSet(VersionViewSet):
         )
 
         if to_user := request.data.get("toUser"):
-            pass  # TODO
-            # send_comment_to_user(obj, request.data["comment"], request.user, to_user, obj_version_id)
+            _send_comment_to_user(
+                dv1.deal, request.data.get("comment"), request.user, to_user, dv1.id
+            )
 
         return Response({"dealID": dv1.deal.id, "versionID": dv1.id})
 
@@ -227,7 +272,7 @@ class HullViewSet(viewsets.ReadOnlyModelViewSet):
             return [AllowAny()]
         if self.action in ["add_comment", "create", "update"]:
             return [IsReporterOrHigher()]
-        if self.action in ["toggle_confidential", "toggle_deleted"]:
+        if self.action in ["toggle_confidential", "toggle_deleted", "make_copy"]:
             return [IsAdministrator()]
         return [IsAdminUser()]
 
@@ -263,9 +308,14 @@ class HullViewSet(viewsets.ReadOnlyModelViewSet):
         #                 # deal_version_id=dv1.id,
         self._add_wfi(request, o1)
 
-        # TODO
-        # if to_user_id:
-        #     send_comment_to_user(obj, comment, user, to_user_id, obj_version_id)
+        if to_user := request.data.get("toUser"):
+            _send_comment_to_user(
+                o1,
+                request.data.get("comment"),
+                request.user,
+                to_user,
+                o1.active_version.id if o1.active_version else None,
+            )
 
         return Response({})
 
@@ -410,6 +460,31 @@ class Deal2ViewSet(HullViewSet):
 
         return Response({})
 
+    @action(methods=["put"], detail=True)
+    def make_copy(self, request, *args, **kwargs):
+        d1: DealHull = self.get_object()
+        old_id = d1.id
+        d1.id = None
+
+        # make a copy of the current active_version and set it to draft on the new thing.
+        # dont forget about locations, contracts,... foreign-keys etc...
+
+        # TODO we need to copy more things here, right?
+        # d1.created_by = request.user
+        # d1.created_at = timezone.now()
+
+        # d1.save()
+        #
+        # DealWorkflowInfo2.objects.create(
+        #     deal=d1,
+        #     # deal_version=dv1,
+        #     from_user=request.user,
+        #     status_after="DRAFT",
+        #     comment=f"Copied from deal #{old_id}",
+        # )
+
+        # return Response({"dealID": d1.id, "versionID": dv1.id})
+
 
 class InvestorVersionViewSet(VersionViewSet):
     queryset = InvestorVersion2.objects.all()
@@ -430,8 +505,9 @@ class InvestorVersionViewSet(VersionViewSet):
         )
 
         if to_user := request.data.get("toUser"):
-            pass  # TODO
-            # send_comment_to_user(obj, request.data["comment"], request.user, to_user, obj_version_id)
+            _send_comment_to_user(
+                iv1.investor, request.data.get("comment"), request.user, to_user, iv1.id
+            )
 
         return Response({"investorID": iv1.investor.id, "versionID": iv1.id})
 
