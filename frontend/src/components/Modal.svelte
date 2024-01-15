@@ -1,12 +1,19 @@
 <script lang="ts">
   // inspiration: https://svelte.dev/examples/modal
+  import { createEventDispatcher, onMount } from "svelte"
 
-  import { onMount } from "svelte"
+  const dispatch = createEventDispatcher<{ close: undefined }>()
 
   export let open = true
   export let dismissible = false
 
   let dialog: HTMLDialogElement
+
+  function close() {
+    if (!dismissible) return
+    open = false
+    dispatch("close")
+  }
 
   onMount(() => {
     if (dismissible)
@@ -18,7 +25,7 @@
           e.clientY < dims.top ||
           e.clientY > dims.bottom
         ) {
-          dialog.close()
+          dialog.close() // will call the above close() function implicitly
         }
       })
     if (open) dialog.showModal()
@@ -29,13 +36,15 @@
     if (o) dialog.showModal()
     else dialog.close()
   }
+
   $: modalState(open)
 </script>
 
 <dialog
   bind:this={dialog}
   class="rounded border border-gray-300 bg-white p-4 drop-shadow-lg dark:border-gray-800 dark:bg-gray-500 dark:text-white"
-  on:close={() => (open = false)}
+  on:close={close}
+  on:cancel|preventDefault={close}
 >
   <slot />
 </dialog>
@@ -46,7 +55,7 @@
   }
   @keyframes zoom {
     from {
-      transform: scale(0.95);
+      transform: scale(0.85);
     }
     to {
       transform: scale(1);
@@ -54,6 +63,7 @@
   }
   dialog::backdrop {
     @apply bg-black/20;
+    backdrop-filter: blur(1px);
   }
   dialog[open]::backdrop {
     animation: fade 0.2s ease-out;
