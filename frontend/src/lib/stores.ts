@@ -233,6 +233,10 @@ export async function fetchBasis(lang = "en", fetch: LoadEvent["fetch"]) {
 // }
 
 export const allUsers = readable([] as User[], set => {
+  if (!browser) {
+    set([])
+    return
+  }
   fetch(`/api/users/`)
     .then(ret => {
       if (!ret.ok) throw new Error(`HTTP status code: ${ret.status}\n\n${ret}`)
