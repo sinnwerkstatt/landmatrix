@@ -1,6 +1,0 @@
-#type Marker {
-#
-#    deal_count: Int
-#    by_negotiation_status: Dict
-#}
-scalar Marker
