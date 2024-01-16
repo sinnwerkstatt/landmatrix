@@ -54,7 +54,9 @@
             {/if}
           </td>
           <td>
-            {dayjs(version.modified_at).format("YYYY-MM-DD HH:mm")}
+            {version.modified_at
+              ? dayjs(version.modified_at).format("YYYY-MM-DD HH:mm")
+              : ""}
             <br />
             {#if version.modified_by_id}
               {@const user = $allUsers.find(u => u.id === version.modified_by_id)}

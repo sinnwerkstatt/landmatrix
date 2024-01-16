@@ -82,8 +82,13 @@
       return false
     }
 
-    toast.push("Saved data", { classes: ["success"] })
-    await invalidate("investor:detail")
+    if (retJson.versionID !== investor.selected_version.id) {
+      toast.push("Created a new draft", { classes: ["success"] })
+      await goto(`/investor/${investor.id}/${retJson.newVersionID}/`)
+    } else {
+      toast.push("Saved data", { classes: ["success"] })
+      await invalidate("investor:detail")
+    }
     savingInProgress = false
     return true
   }

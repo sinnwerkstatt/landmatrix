@@ -119,8 +119,13 @@
       return false
     }
 
-    toast.push("Saved data", { classes: ["success"] })
-    await invalidate("deal:detail")
+    if (retJson.versionID !== deal.selected_version.id) {
+      toast.push("Created a new draft", { classes: ["success"] })
+      await goto(`/deal/${deal.id}/${retJson.newVersionID}/`)
+    } else {
+      toast.push("Saved data", { classes: ["success"] })
+      await invalidate("deal:detail")
+    }
     savingInProgress = false
     return true
   }
