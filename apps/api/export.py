@@ -37,7 +37,7 @@ deal_fields = {
     "current_implementation_status": "Current implementation status",
     "deal__fully_updated_at": "Fully updated",
     "top_investors": "Top parent companies",
-    "intended_size": "Intended size (in ha)",
+    "intended_size": "Intended size",
     "contract_size": "Size under contract (leased or purchased area, in ha)",
     "production_size": "Size in operation (production, in ha)",
     "land_area_comment": "Comment on land area",

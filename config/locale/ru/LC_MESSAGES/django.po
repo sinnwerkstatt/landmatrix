@@ -1082,8 +1082,8 @@ msgstr "Является страной назначения"
 msgid "Target country"
 msgstr "Целевая страна"
 
-msgid "Intended size (in ha)"
-msgstr "Запланированная площадь (в га.)"
+msgid "Intended size"
+msgstr "Запланированная площадь"
 
 msgid "Comment on land area"
 msgstr "Примечания к площади земель"

@@ -1077,8 +1077,8 @@ msgstr "Localisation"
 msgid "Target country"
 msgstr "Pays cible"
 
-msgid "Intended size (in ha)"
-msgstr "Superficie prévue (en ha)"
+msgid "Intended size"
+msgstr "Superficie prévue"
 
 msgid "Comment on land area"
 msgstr "Commentaire sur la superficie des terres"

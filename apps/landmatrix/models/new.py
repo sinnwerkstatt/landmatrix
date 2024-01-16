@@ -59,7 +59,7 @@ class DealVersionBaseFields(models.Model):
     """ General info """
     # Land area
     intended_size = DecimalIntField(
-        _("Intended size (in ha)"),
+        _("Intended size"),
         max_digits=12,
         decimal_places=2,
         blank=True,

@@ -2,43 +2,65 @@
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
-  import { dealsNG, formfields, isMobile } from "$lib/stores"
+  import { dealsNG, fieldChoices, isMobile } from "$lib/stores"
 
   import DataContainer from "$components/Data/DataContainer.svelte"
   import FilterCollapse from "$components/Data/FilterCollapse.svelte"
   import { showContextBar, showFilterBar } from "$components/Data/stores"
-  import DisplayField from "$components/Fields/DisplayField.svelte"
+  import CountryField from "$components/Fields/Display2/CountryField.svelte"
+  import DateTimeField from "$components/Fields/Display2/DateTimeField.svelte"
+  import DecimalField from "$components/Fields/Display2/DecimalField.svelte"
+  import IDField from "$components/Fields/Display2/IDField.svelte"
+  import InvestorLinkField from "$components/Fields/Display2/InvestorLinkField.svelte"
+  import IOIField from "$components/Fields/Display2/IOIField.svelte"
+  import TextField from "$components/Fields/Display2/TextField.svelte"
   import Table from "$components/Table/Table.svelte"
 
-  const COLUMNS = [
-    "fully_updated_at",
-    "id",
-    "country",
-    "current_intention_of_investment",
-    "current_negotiation_status",
-    "current_implementation_status",
-    "current_contract_size",
-    "intended_size",
-    "deal_size",
-    "operating_company",
-  ] as const
+  let COLUMNS: {
+    key: string
+    label: string
+    colSpan: number
+  }[]
+  $: COLUMNS = [
+    { key: "fully_updated_at", label: $_("Last full update"), colSpan: 2 },
+    { key: "id", label: $_("ID"), colSpan: 1 },
+    { key: "country", label: $_("Target country"), colSpan: 3 },
+    {
+      key: "current_intention_of_investment",
+      label: $_("Current intention of investment"),
+      colSpan: 5,
+    },
+    {
+      key: "current_negotiation_status",
+      label: $_("Current negotiation status"),
 
-  type ColumnName = (typeof COLUMNS)[number]
+      colSpan: 4,
+      choices: $fieldChoices.deal.negotiation_status,
+    },
+    {
+      key: "current_implementation_status",
+      label: $_("Current implementation status"),
 
-  const columnSpanMap: { [key in ColumnName]: number } = {
-    fully_updated_at: 2,
-    id: 1,
-    country: 3,
-    current_intention_of_investment: 5,
-    current_negotiation_status: 4,
-    current_implementation_status: 4,
-    current_contract_size: 3,
-    intended_size: 3,
-    deal_size: 2,
-    operating_company: 4,
-  }
+      colSpan: 4,
+      choices: $fieldChoices.deal.implementation_status,
+    },
+    {
+      key: "current_contract_size",
+      label: $_("Current contract size"),
+      colSpan: 3,
+      unit: $_("ha"),
+    },
+    { key: "intended_size", label: $_("Intended size"), colSpan: 3, unit: $_("ha") },
+    { key: "deal_size", label: $_("Deal size"), colSpan: 2, unit: $_("ha") },
+    {
+      key: "operating_company",
+      label: $_("Operating company"),
 
-  let activeColumns: ColumnName[] = [
+      colSpan: 4,
+    },
+  ]
+
+  let activeColumns: string[] = [
     "fully_updated_at",
     "id",
     "country",
@@ -49,8 +71,10 @@
     "operating_company",
   ]
 
-  $: labels = activeColumns.map(col => $formfields.deal[col].label)
-  $: spans = activeColumns.map(col => columnSpanMap[col])
+  let labels: string[]
+  $: labels = COLUMNS.filter(c => activeColumns.includes(c.key)).map(c => c.label)
+  let spans: number[]
+  $: spans = COLUMNS.filter(c => activeColumns.includes(c.key)).map(c => c.colSpan)
 
   onMount(() => {
     showContextBar.set(false)
@@ -79,14 +103,48 @@
         sortBy="-fully_updated_at"
         {spans}
       >
-        <DisplayField
-          fieldname={fieldName}
-          let:fieldName
-          let:obj
-          slot="field"
-          value={obj[fieldName]}
-          wrapperClasses="p-1"
-        />
+        <svelte:fragment slot="field" let:obj let:fieldName>
+          {@const col = COLUMNS.find(c => c.key === fieldName)}
+          {#if col}
+            {#if fieldName === "fully_updated_at"}
+              <DateTimeField value={obj.fully_updated_at} />
+            {:else if fieldName === "id"}
+              <IDField fieldname="id" value={obj.id} wrapperClass="p-1" />
+            {:else if fieldName === "country"}
+              <CountryField
+                fieldname="country"
+                value={obj.country}
+                wrapperClass="p-1"
+              />
+            {:else if fieldName === "operating_company"}
+              <InvestorLinkField
+                fieldname="operating_company"
+                value={obj.operating_company}
+                wrapperClass="p-1"
+              />
+            {:else if fieldName === "current_intention_of_investment"}
+              <IOIField
+                fieldname="current_intention_of_investment"
+                value={obj.current_intention_of_investment}
+                wrapperClass="p-1"
+              />
+            {:else if ["current_contract_size", "intended_size", "deal_size"].includes(fieldName)}
+              <DecimalField
+                fieldname={fieldName}
+                value={obj[fieldName]}
+                unit={col?.unit}
+                wrapperClass="p-1"
+              />
+            {:else}
+              <TextField
+                fieldname={fieldName}
+                value={obj[fieldName]}
+                choices={col?.choices}
+                wrapperClass="p-1"
+              />
+            {/if}
+          {/if}
+        </svelte:fragment>
       </Table>
     </div>
     <div
@@ -102,8 +160,8 @@
       <div class="flex flex-col">
         {#each COLUMNS as opt}
           <label>
-            <input type="checkbox" bind:group={activeColumns} value={opt} />
-            {$_($formfields.deal[opt]?.label)}
+            <input type="checkbox" bind:group={activeColumns} value={opt.key} />
+            {opt.label}
           </label>
         {/each}
       </div>

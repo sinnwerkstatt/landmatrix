@@ -1080,8 +1080,8 @@ msgstr "Ubicaciones"
 msgid "Target country"
 msgstr "País objetivo"
 
-msgid "Intended size (in ha)"
-msgstr "Tamaño planeado (en ha)"
+msgid "Intended size"
+msgstr "Tamaño planeado"
 
 msgid "Comment on land area"
 msgstr "Comentario sobre área de tierra"

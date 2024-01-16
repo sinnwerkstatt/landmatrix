@@ -139,7 +139,7 @@ class AbstractDealBase(models.Model):
         related_name="oldmodel_deals",
     )
     intended_size = models.DecimalField(
-        _("Intended size (in ha)"),
+        _("Intended size"),
         max_digits=12,
         decimal_places=2,
         blank=True,
