@@ -3,7 +3,7 @@ import json
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
-from django.db import OperationalError
+from django.db import OperationalError, transaction
 from django.db.models import Prefetch, Q, F
 from django.http import JsonResponse
 from django.utils import timezone
@@ -110,6 +110,42 @@ def _parse_filter(request: Request):
     return ret
 
 
+def add_wfi(
+    obj: DealHull | InvestorHull = None,
+    obj_version: DealVersion2 | InvestorVersion2 = None,
+    from_user: User = None,
+    to_user_id: int = None,
+    status_before: str = "",
+    status_after: str = "",
+    comment: str = "",
+):
+    if obj is None and obj_version is None:
+        raise Exception
+
+    if obj is None:
+        obj = (
+            obj_version.deal
+            if isinstance(obj_version, DealVersion2)
+            else obj_version.investor
+        )
+
+    kwargs = {
+        "from_user": from_user,
+        "to_user_id": to_user_id,
+        "status_before": status_before,
+        "status_after": status_after,
+        "comment": comment or "",
+    }
+    if isinstance(obj, DealHull):
+        return DealWorkflowInfo2.objects.create(
+            deal=obj or obj_version.deal, deal_version=obj_version, **kwargs
+        )
+    else:
+        return InvestorWorkflowInfo2.objects.create(
+            investor=obj or obj_version.investor, investor_version=obj_version, **kwargs
+        )
+
+
 def _send_comment_to_user(
     obj: DealHull | InvestorHull,
     comment: str | None,
@@ -159,23 +195,36 @@ class VersionViewSet(viewsets.ReadOnlyModelViewSet):
             return [IsReporterOrHigher()]
         return [IsAdminUser()]
 
+    @transaction.atomic
     def update(self, request, pk: int):
         ov1: DealVersion2 | InvestorVersion2 = get_object_or_404(self.queryset, pk=pk)
 
-        # TODO check all the permissions! (Creator, or different role or whatnot)
+        if ov1.created_by_id != request.user.id and request.user.role < UserRole.EDITOR:
+            raise PermissionDenied("MISSING_AUTHORIZATION")
+
+        if not ov1.is_current_draft():
+            raise PermissionDenied("EDITING_OLD_VERSION")
 
         data = request.data["version"]
-        serializer = self.serializer_class(ov1, data=data, partial=True)
 
+        creating_new_version = ov1.created_by_id != request.user.id
+        if creating_new_version:
+            ov1.change_status(
+                new_status="TO_DRAFT", user=request.user, to_user_id=request.user.id
+            )
+
+        serializer = self.serializer_class(ov1, data=data, partial=True)
         if serializer.is_valid(raise_exception=True):
             # this is untidy
             ov1 = serializer.save()
-            ov1.modified_by = request.user
-            ov1.modified_at = timezone.now()
+            if not creating_new_version:
+                ov1.modified_by = request.user
+                ov1.modified_at = timezone.now()
+
             ov1.save()
             serializer.save_submodels(data, ov1)
 
-        return Response({})
+            return Response({"versionID": ov1.id})
 
     def destroy(self, request, pk: int):
         ov1: DealVersion2 | InvestorVersion2 = get_object_or_404(self.queryset, pk=pk)
@@ -199,28 +248,16 @@ class VersionViewSet(viewsets.ReadOnlyModelViewSet):
             o1.draft_version = None
             o1.save()
 
-            self._add_wfi(
-                request, ov1, status_before=old_draft_status, status_after="DELETED"
+            add_wfi(
+                obj=o1,
+                from_user=request.user,
+                to_user_id=request.data.get("toUser"),
+                status_before=old_draft_status,
+                status_after="DELETED",
+                comment=request.data.get("comment", "") or "",
             )
 
         return Response({})
-
-    @staticmethod
-    def _add_wfi(request, obj: DealVersion2 | InvestorVersion2, **kwargs):
-        args = {
-            "from_user": request.user,
-            "to_user_id": request.data.get("toUser"),
-            "comment": request.data.get("comment", "") or "",
-        } | kwargs
-
-        if isinstance(obj, DealVersion2):
-            return DealWorkflowInfo2.objects.create(
-                deal=obj.deal, deal_version=obj, **args
-            )
-        else:
-            return InvestorWorkflowInfo2.objects.create(
-                investor=obj.investor, investor_version=obj, **args
-            )
 
 
 class DealVersionViewSet(VersionViewSet):
@@ -231,7 +268,7 @@ class DealVersionViewSet(VersionViewSet):
     def change_status(self, request, pk: int):
         dv1: DealVersion2 = get_object_or_404(self.queryset, pk=pk)
 
-        if dv1.deal.draft_version_id != dv1.id:
+        if not dv1.is_current_draft():
             raise PermissionDenied("EDITING_OLD_VERSION")
 
         dv1.change_status(
@@ -251,21 +288,10 @@ class DealVersionViewSet(VersionViewSet):
 
 
 class HullViewSet(viewsets.ReadOnlyModelViewSet):
+    version_serializer_class = None
+
     class Meta:
         abstract = True
-
-    @staticmethod
-    def _add_wfi(request, obj: DealHull | InvestorHull, **kwargs):
-        args = {
-            "from_user": request.user,
-            "to_user_id": request.data.get("toUser"),
-            "comment": request.data.get("comment") or "",
-        } | kwargs
-
-        if isinstance(obj, DealHull):
-            return DealWorkflowInfo2.objects.create(deal=obj, **args)
-        else:
-            return InvestorWorkflowInfo2.objects.create(investor=obj, **args)
 
     def get_permissions(self):
         if self.action in ["retrieve", "list", "retrieve_version", "simple"]:
@@ -286,17 +312,14 @@ class HullViewSet(viewsets.ReadOnlyModelViewSet):
 
         data = request.data["version"]
 
-        Serializer = (
-            DealVersionSerializer
-            if isinstance(o1, DealHull)
-            else InvestorVersionSerializer
-        )
-
-        serializer = Serializer(ov1, data=data, partial=True)
+        serializer = self.version_serializer_class(ov1, data=data, partial=True)
         if serializer.is_valid(raise_exception=True):
             # this is untidy
-            dv1 = serializer.save()
-            serializer.save_submodels(data, dv1)
+            ov1: DealVersion2 | InvestorVersion2 = serializer.save()
+            serializer.save_submodels(data, ov1)
+            ov1.save()  # recalculating fields here.
+
+        add_wfi(obj=o1, obj_version=ov1, from_user=request.user, status_after="DRAFT")
 
         return Response({})
 
@@ -304,16 +327,22 @@ class HullViewSet(viewsets.ReadOnlyModelViewSet):
     def add_comment(self, request, *args, **kwargs):
         o1: DealHull | InvestorHull = self.get_object()
 
-        # TODO unclear which version to grab for WFI. active or draft?
-        #                 # deal_version_id=dv1.id,
-        self._add_wfi(request, o1)
+        to_user_id = request.data.get("toUser")
 
-        if to_user := request.data.get("toUser"):
+        add_wfi(
+            obj=o1,
+            obj_version=request.data.get("version"),
+            from_user=request.user,
+            to_user_id=to_user_id,
+            comment=request.data.get("comment") or "",
+        )
+
+        if to_user_id:
             _send_comment_to_user(
                 o1,
                 request.data.get("comment"),
                 request.user,
-                to_user,
+                to_user_id,
                 o1.active_version.id if o1.active_version else None,
             )
 
@@ -327,18 +356,22 @@ class HullViewSet(viewsets.ReadOnlyModelViewSet):
         # TODO we used to set modified by/at here too. but on the dealhull object doesnt make sense
         o1.save()
 
-        self._add_wfi(
-            request, o1, status_after="DELETED" if o1.deleted else "REACTIVATED"
+        add_wfi(
+            obj=o1,
+            from_user=request.user,
+            comment=request.data.get("comment") or "",
+            status_after="DELETED" if o1.deleted else "REACTIVATED",
         )
 
         return Response({})
 
 
-class Deal2ViewSet(HullViewSet):
+class DealViewSet(HullViewSet):
     queryset = DealHull.objects.all().prefetch_related(
         Prefetch("versions", queryset=DealVersion2.objects.order_by("-id"))
     )
     serializer_class = DealSerializer
+    version_serializer_class = DealVersionSerializer
 
     def get_queryset(self):
         if self.action in ["retrieve", "retrieve_version"]:
@@ -467,7 +500,7 @@ class Deal2ViewSet(HullViewSet):
         d1.id = None
 
         # make a copy of the current active_version and set it to draft on the new thing.
-        # dont forget about locations, contracts,... foreign-keys etc...
+        # don't forget about locations, contracts,... foreign-keys etc...
 
         # TODO we need to copy more things here, right?
         # d1.created_by = request.user
@@ -494,7 +527,7 @@ class InvestorVersionViewSet(VersionViewSet):
     def change_status(self, request, pk: int):
         iv1: InvestorVersion2 = get_object_or_404(self.queryset, pk=pk)
 
-        if iv1.investor.draft_version_id != iv1.id:
+        if not iv1.is_current_draft():
             raise PermissionDenied("EDITING_OLD_VERSION")
 
         iv1.change_status(
@@ -512,11 +545,12 @@ class InvestorVersionViewSet(VersionViewSet):
         return Response({"investorID": iv1.investor.id, "versionID": iv1.id})
 
 
-class Investor2ViewSet(HullViewSet):
+class InvestorViewSet(HullViewSet):
     queryset = InvestorHull.objects.all().prefetch_related(
         Prefetch("versions", queryset=InvestorVersion2.objects.order_by("-id"))
     )
     serializer_class = InvestorSerializer
+    version_serializer_class = InvestorVersionSerializer
 
     @staticmethod
     def create(request, *args, **kwargs):
@@ -590,7 +624,7 @@ class Investor2ViewSet(HullViewSet):
         return Response(InvestorHull.to_investor_list(ret))
 
     @action(methods=["get"], detail=True)
-    def involvements_graph(self, request, pk=None, version_id=None):
+    def involvements_graph(self, request):
         depth = int(request.GET.get("depth", 5))
         include_deals = request.GET.get("include_deals", "") == "true"
         show_ventures = request.GET.get("show_ventures", "") == "true"

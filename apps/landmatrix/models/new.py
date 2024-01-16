@@ -683,8 +683,6 @@ class BaseVersionMixin(models.Model):
             if user.role < UserRole.EDITOR:
                 raise PermissionDenied("MISSING_AUTHORIZATION")
             self.status = "DRAFT"
-
-            # resetting META fields
             self.id = None
             self.created_at = timezone.now()
             self.created_by_id = to_user_id
@@ -773,6 +771,9 @@ class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
     def __str__(self):
         return f"v{self.id} for #{self.deal_id}"
 
+    def is_current_draft(self):
+        return self.deal.draft_version_id == self.id
+
     def change_status(
         self,
         new_status: str,
@@ -820,7 +821,7 @@ class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
             deal_id=self.deal_id,
             deal_version=self,
             from_user=user,
-            to_user_id=to_user_id,
+            to_user_id=to_user_id if user.id != to_user_id else None,
             status_before=old_draft_status,
             status_after=self.status,
             comment=comment,
@@ -1364,6 +1365,9 @@ class InvestorVersion2(BaseVersionMixin, models.Model):
 
     def __str__(self):
         return f"{self.name} (#{self.id})"
+
+    def is_current_draft(self):
+        return self.investor.draft_version_id == self.id
 
     def change_status(
         self,
