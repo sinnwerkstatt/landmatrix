@@ -20,29 +20,44 @@ router.register(r"currencies", oldviews.CurrencyViewSet)
 router.register(r"countries", oldviews.CountryViewSet)
 router.register(r"regions", oldviews.RegionViewSet)
 router.register(r"field_definitions", oldviews.FieldDefinitionViewSet)
-router.register(r"deals", newviews.Deal2ViewSet)
+router.register(r"deals", newviews.DealViewSet)
 router.register(r"dealversions", newviews.DealVersionViewSet)
-router.register(r"investors", newviews.Investor2ViewSet)
+router.register(r"investors", newviews.InvestorViewSet)
 router.register(r"investorversions", newviews.InvestorVersionViewSet)
 
 urlpatterns = [
+    # account/user
     path("user/register/", user_views.register),
     path("user/register_confirm/", user_views.register_confirm),
     path("user/login/", user_views.login),
     path("user/logout/", user_views.logout),
     path("user/password_reset/", user_views.password_reset),
     path("user/password_reset_confirm/", user_views.password_reset_confirm),
-    path("legacy_export/", data_download),
-    path("newdeal_legacy/messages/", api_views.messages_json),
-    path("gis_export/", gis_export),
-    path("management/", api_views.Management.as_view()),
-    path("case_statistics/", api_views.CaseStatistics.as_view()),
-    path("investor_search/", api_views.investor_search),
+    # base data
     path("chart_descriptions/", api_views.chart_descriptions),
-    path("upload_datasource_file/", upload_datasource_file),
     path("blog_categories/", api_views.blog_categories),
     path("blog_pages/", api_views.blog_pages),
     path("legacy_formfields/", api_views.legacy_formfields),
+    path("field_choices/", newviews.field_choices),
+    # misc
+    path("csrf_token/", api_views.get_csrf),
+    path("upload_datasource_file/", upload_datasource_file),
+    path(
+        "workflow_info/<str:wfitype>/<int:pk>/add_reply/",
+        api_views.workflow_info_add_reply,
+    ),
+    path(
+        "workflow_info/<str:wfitype>/<int:pk>/resolve/",
+        api_views.workflow_info_resolve,
+    ),
+    path("newdeal_legacy/messages/", api_views.messages_json),
+    path("legacy_export/", data_download),
+    path("gis_export/", gis_export),
+    # management / case
+    path("management/", api_views.Management.as_view()),
+    path("case_statistics/", api_views.CaseStatistics.as_view()),
+    # special stuff
+    path("investor_search/", api_views.investor_search),
     # charts
     path(
         "charts/country_investments_and_rankings/",
@@ -53,7 +68,6 @@ urlpatterns = [
         "charts/web_of_transnational_deals/", api_views.get_web_of_transnational_deals
     ),
     path("charts/global_map_of_investments/", api_views.global_map_of_investments),
-    path("csrf_token/", api_views.get_csrf),
-    path("field_choices/", newviews.field_choices),
+    # DRF
     path("", include(router.urls)),
 ]

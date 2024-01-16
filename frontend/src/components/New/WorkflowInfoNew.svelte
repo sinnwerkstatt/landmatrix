@@ -1,18 +1,23 @@
 <script lang="ts">
+  import { toast } from "@zerodevx/svelte-toast"
   import dayjs from "dayjs"
   import { _ } from "svelte-i18n"
   import { slide } from "svelte/transition"
 
+  import { invalidate } from "$app/navigation"
   import { page } from "$app/stores"
 
   import { allUsers } from "$lib/stores"
+  import { loading } from "$lib/stores.js"
   import type { WorkflowInfoType } from "$lib/types/newtypes"
+  import { getCsrfToken } from "$lib/utils"
 
   import ArrowLongRightIcon from "$components/icons/ArrowLongRightIcon.svelte"
   import ChatBubbleLeftIcon from "$components/icons/ChatBubbleLeftIcon.svelte"
   import CheckCircleIcon from "$components/icons/CheckCircleIcon.svelte"
 
   export let info: WorkflowInfoType
+  export let isDeal: boolean
 
   $: confidentialStatusChange = info.comment?.startsWith("[SET_CONFIDENTIAL]")
     ? "bg-red-400"
@@ -33,71 +38,59 @@
   let reply = ""
 
   async function sendReply() {
-    // const { data, error } = await ($page.data.urqlClient as Client)
-    //   .mutation<{ add_workflow_info_reply: boolean }>(
-    //     gql`
-    //       mutation ($id: Int!, $type: String!, $from_user_id: Int!, $comment: String!) {
-    //         add_workflow_info_reply(
-    //           id: $id
-    //           type: $type
-    //           from_user_id: $from_user_id
-    //           comment: $comment
-    //         )
-    //       }
-    //     `,
-    //     {
-    //       id: info.id,
-    //       type: info.__typename,
-    //       from_user_id: $page.data.user.id,
-    //       comment: reply,
-    //     },
-    //   )
-    //   .toPromise()
-    // if (error) {
-    //   toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
-    //   return
-    // }
-    // if (!data) {
-    //   toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
-    //   return
-    // }
-    // if (data.add_workflow_info_reply) {
-    //   info.replies = [
-    //     ...info.replies,
-    //     {
-    //       timestamp: new Date().toISOString(),
-    //       user_id: $page.data.user.id,
-    //       comment: reply,
-    //     },
-    //   ]
-    //   reply = ""
-    // }
-    // await invalidateAll()
+    loading.set(true)
+
+    const ret = await fetch(
+      `/api/workflow_info/${isDeal ? "deal" : "investor"}/${info.id}/add_reply/`,
+      {
+        method: "POST",
+        credentials: "include",
+        body: JSON.stringify({ comment: reply }),
+        headers: {
+          "X-CSRFToken": await getCsrfToken(),
+          "Content-Type": "application/json",
+        },
+      },
+    )
+    const retJson = await ret.json()
+    if (!ret.ok || !retJson.ok) {
+      toast.push(`Unknown Problem: ${JSON.stringify(retJson)}`, { classes: ["error"] })
+      loading.set(false)
+      return
+    }
+
+    if (isDeal) await invalidate("deal:detail")
+    else await invalidate("investor:detail")
+
+    reply = ""
+    loading.set(false)
   }
 
   async function resolveThread() {
-    // const { data, error } = await ($page.data.urqlClient as Client)
-    //   .mutation<{ resolve_workflow_info: boolean }>(
-    //     gql`
-    //       mutation ($id: Int!, $type: String!) {
-    //         resolve_workflow_info(id: $id, type: $type)
-    //       }
-    //     `,
-    //     { id: info.id, type: info.__typename },
-    //   )
-    //   .toPromise()
-    // if (error) {
-    //   toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
-    //   return
-    // }
-    // if (!data) {
-    //   toast.push(`Unknown Problem: ${error}`, { classes: ["error"] })
-    //   return
-    // }
-    // if (data.resolve_workflow_info) {
-    //   info = { ...info, resolved: true }
-    // }
-    // await invalidateAll()
+    loading.set(true)
+
+    const ret = await fetch(
+      `/api/workflow_info/${isDeal ? "deal" : "investor"}/${info.id}/resolve/`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "X-CSRFToken": await getCsrfToken(),
+          "Content-Type": "application/json",
+        },
+      },
+    )
+    const retJson = await ret.json()
+    if (!ret.ok || !retJson.ok) {
+      toast.push(`Unknown Problem: ${JSON.stringify(retJson)}`, { classes: ["error"] })
+      loading.set(false)
+      return
+    }
+
+    if (isDeal) await invalidate("deal:detail")
+    else await invalidate("investor:detail")
+
+    loading.set(false)
   }
 </script>
 

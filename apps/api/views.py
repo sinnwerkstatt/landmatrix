@@ -1,3 +1,4 @@
+import json
 from datetime import datetime, timedelta
 from typing import TypedDict
 
@@ -16,7 +17,7 @@ from django.utils.timezone import make_aware
 from django.views import View
 from django.views.decorators.http import require_GET
 from rest_framework.decorators import api_view
-from rest_framework.exceptions import NotAuthenticated
+from rest_framework.exceptions import NotAuthenticated, PermissionDenied
 
 from apps.accounts.models import UserRole
 from apps.blog.models import BlogCategory, BlogPage
@@ -24,13 +25,16 @@ from apps.landmatrix.charts import get_deal_top_investments, web_of_transnationa
 from apps.landmatrix.forms.deal import DealForm
 from apps.landmatrix.forms.deal_submodels import get_submodels_fields
 from apps.landmatrix.forms.investor import InvestorForm, InvestorVentureInvolvementForm
-from apps.landmatrix.models.deal import Deal, DealVersion, DealWorkflowInfo
+from apps.landmatrix.models.deal import Deal, DealVersion
 from apps.landmatrix.models.investor import (
     Investor,
     InvestorVersion,
-    InvestorWorkflowInfo,
 )
-from apps.landmatrix.models.new import DealHull
+from apps.landmatrix.models.new import (
+    DealHull,
+    DealWorkflowInfo2,
+    InvestorWorkflowInfo2,
+)
 from apps.landmatrix.newviews import _parse_filter
 from apps.message.models import Message
 from apps.wagtailcms.models import ChartDescriptionsSettings
@@ -202,7 +206,7 @@ class Management(View):
                 Prefetch(
                     "workflowinfos",
                     queryset=(
-                        DealWorkflowInfo if is_deal else InvestorWorkflowInfo
+                        DealWorkflowInfo2 if is_deal else InvestorWorkflowInfo2
                     ).objects.order_by("-timestamp"),
                 ),
             )
@@ -583,6 +587,56 @@ def get_web_of_transnational_deals(request):
 
 def global_map_of_investments(request):
     return JsonResponse(get_deal_top_investments(request))
+
+
+def workflow_info_add_reply(
+    request,
+    wfitype: str,
+    pk: int,
+) -> JsonResponse:
+    if not (request.user.is_authenticated and request.user.role):
+        raise PermissionDenied("MISSING_AUTHORIZATION")
+
+    data = json.loads(request.body)
+
+    if wfitype == "deal":
+        wfi: DealWorkflowInfo2 = DealWorkflowInfo2.objects.get(pk=pk)
+    elif wfitype == "investor":
+        wfi: InvestorWorkflowInfo2 = InvestorWorkflowInfo2.objects.get(pk=pk)
+    else:
+        return JsonResponse({"ok": False})
+
+    if not wfi.replies:
+        wfi.replies = []
+    wfi.replies += [
+        {
+            "timestamp": timezone.now().isoformat(),
+            "user_id": request.user.id,
+            "comment": data["comment"],
+        }
+    ]
+    wfi.save()
+    return JsonResponse({"ok": True})
+
+
+def workflow_info_resolve(
+    request,
+    wfitype: str,
+    pk: int,
+) -> JsonResponse:
+    if not (request.user.is_authenticated and request.user.role):
+        raise PermissionDenied("MISSING_AUTHORIZATION")
+
+    if wfitype == "deal":
+        wfi: DealWorkflowInfo2 = DealWorkflowInfo2.objects.get(pk=pk)
+    elif wfitype == "investor":
+        wfi: InvestorWorkflowInfo2 = InvestorWorkflowInfo2.objects.get(pk=pk)
+    else:
+        return JsonResponse({"ok": False})
+
+    wfi.resolved = True
+    wfi.save()
+    return JsonResponse({"ok": True})
 
 
 # def global_rankings(_obj, _info, count=10, filters=None):
