@@ -109,7 +109,7 @@
       {/if}
 
       {#if activeTab === "#network_graph"}
-        <InvolvementsGraph investor={data.investor} />
+        <InvolvementsGraph investor_id={data.investor.id} />
         <!--{#if !data.investorVersion}-->
         <!--  <InvestorGraph {investor} showControls includeVentures />-->
         <!--{:else}-->

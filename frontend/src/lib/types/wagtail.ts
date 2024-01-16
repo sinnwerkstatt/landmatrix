@@ -22,13 +22,13 @@ export type WagtailPageMeta = {
 export interface CountryOrRegion {
   id: number
   name: string
-  slug?: string
-  observatory_page_id?: number
-  observatory_page?: ObservatoryPage
-  point_lat_min: number
-  point_lat_max: number
-  point_lon_min: number
-  point_lon_max: number
+  // slug?: string
+  observatory_page_id: number | null
+  // observatory_page?: ObservatoryPage
+  // point_lat_min: number
+  // point_lat_max: number
+  // point_lon_min: number
+  // point_lon_max: number
 }
 export interface Region extends CountryOrRegion {
   placeholder?: string
@@ -36,11 +36,11 @@ export interface Region extends CountryOrRegion {
 
 export interface Country extends CountryOrRegion {
   code_alpha2: string
-  high_income?: boolean
-  point_lat?: number
-  point_lon?: number
-  deals?: Deal[]
-  region?: Region
+  high_income: boolean
+  point_lat: number
+  point_lon: number
+  deals: Deal[]
+  region_id: number | null
 }
 
 export interface WagtailPage {

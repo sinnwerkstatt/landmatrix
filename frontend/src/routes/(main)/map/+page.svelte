@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { Point } from "geojson"
   import type { FeatureGroup, LeafletEvent, Map, Marker } from "leaflet"
   import { divIcon, featureGroup, marker, popup } from "leaflet?client"
   import * as R from "ramda"
@@ -7,7 +8,7 @@
 
   import { filters } from "$lib/filters"
   import { countries, dealsNG, isMobile, loading, regions } from "$lib/stores"
-  import type { Deal, Location } from "$lib/types/deal"
+  import { Location2, type DealHull } from "$lib/types/newtypes"
   import type { Country } from "$lib/types/wagtail"
 
   import DataContainer from "$components/Data/DataContainer.svelte"
@@ -28,17 +29,12 @@
   import MapMarkerPopup from "$components/Map/MapMarkerPopup.svelte"
 
   interface MyMarker extends Marker {
-    deal: Deal
-    region_id?: number
-    country_id?: number
-    deal_size?: number
-    loc: Location
+    deal: DealHull
+    country_id: number
+    region_id: number | null
+    deal_size: number | null
+    loc: Location2
     deal_id: number
-  }
-
-  interface CountryWCoords extends Country {
-    point_lat: number
-    point_lon: number
   }
 
   const ZOOM_LEVEL = {
@@ -64,7 +60,7 @@
   let markersFeatureGroup: FeatureGroup
   let skipMapRefresh = false
 
-  function generateCountryCoords(countries: CountryWCoords[]): {
+  function generateCountryCoords(countries: Country[]): {
     [key: number]: [number, number]
   } {
     let ret: { [p: number]: [number, number] } = {}
@@ -72,7 +68,7 @@
     return ret
   }
 
-  $: country_coords = generateCountryCoords($countries as CountryWCoords[])
+  $: country_coords = generateCountryCoords($countries as Country[])
 
   function bigMapIsReady(evt: CustomEvent<Map>) {
     if (import.meta.env.SSR) return
@@ -92,16 +88,16 @@
     markersFeatureGroup?.clearLayers()
     current_zoom = bigmap.getZoom()
 
-    const regionIdAsKey: (deal: Deal) => string = R.pipe(
+    const regionIdAsKey: (deal: DealHull) => string = R.pipe(
       R.path(["country", "region", "id"]),
       R.toString,
     )
-    const countryIdAsKey: (deal: Deal) => string = R.pipe(
+    const countryIdAsKey: (deal: DealHull) => string = R.pipe(
       R.path(["country", "id"]),
       R.toString,
     )
-    const totalDealSize = R.reduce<Deal, number>(
-      (acc, deal) => acc + (deal.deal_size ?? 0),
+    const totalDealSize = R.reduce<DealHull, number>(
+      (acc, deal) => acc + (deal.selected_version.deal_size ?? 0),
       0,
     )
 
@@ -125,7 +121,7 @@
             $displayDealsCount,
           )
         }),
-      )(dealData)
+      )($dealsNG)
     } else if (
       current_zoom < ZOOM_LEVEL.DEAL_CLUSTERS &&
       Object.keys(country_coords).length
@@ -149,7 +145,7 @@
             $displayDealsCount,
           )
         }),
-      )(dealData)
+      )($dealsNG)
     } else {
       // show all deals / markers
       const mapBounds = bigmap.getBounds()
@@ -171,11 +167,8 @@
 
   let _dealLocationMarkersCache: { [key: number]: MyMarker[] } = {}
 
-  interface LocWithPoint extends Location {
-    point: {
-      lat: number
-      lng: number
-    }
+  interface LocWithPoint extends Location2 {
+    point: Point
   }
 
   async function refreshMarkers() {
@@ -184,19 +177,19 @@
     markers = []
     for (let deal of $dealsNG) {
       if (!(deal.id in _dealLocationMarkersCache))
-        _dealLocationMarkersCache[deal.id] = deal.locations
-          .filter(
-            (loc: Location): loc is LocWithPoint =>
-              !!loc.point && !!loc.point.lng && !!loc.point.lat,
-          )
+        _dealLocationMarkersCache[deal.id] = deal.selected_version.locations
+          .filter((loc: Location2): loc is LocWithPoint => !!loc.point)
           .map((loc: LocWithPoint) => {
-            let myMarker = marker([loc.point.lat, loc.point.lng]) as MyMarker
+            let myMarker = marker([
+              loc.point.coordinates[1],
+              loc.point.coordinates[0],
+            ]) as MyMarker
             myMarker.deal = deal
             myMarker.loc = loc
             myMarker.deal_id = deal.id
-            myMarker.deal_size = deal.deal_size
+            myMarker.deal_size = deal.selected_version.deal_size
             if (deal.country) {
-              myMarker.region_id = deal.country.region?.id
+              myMarker.region_id = deal.country.region_id
               myMarker.country_id = deal.country.id
             }
             myMarker.on("click", createMarkerPopup)
@@ -205,6 +198,7 @@
 
       markers.push(..._dealLocationMarkersCache[deal.id])
     }
+
     refreshMap()
     loading.set(false)
   }
@@ -213,6 +207,8 @@
     const myMarker = event.target as MyMarker
 
     const markerContainerDiv = document.createElement("div")
+    markerContainerDiv.style.minWidth = "320px"
+
     new MapMarkerPopup({
       target: markerContainerDiv,
       props: { deal: myMarker.deal, location: myMarker.loc },

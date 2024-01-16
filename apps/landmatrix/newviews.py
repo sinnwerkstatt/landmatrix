@@ -294,7 +294,13 @@ class HullViewSet(viewsets.ReadOnlyModelViewSet):
         abstract = True
 
     def get_permissions(self):
-        if self.action in ["retrieve", "list", "retrieve_version", "simple"]:
+        if self.action in [
+            "retrieve",
+            "list",
+            "retrieve_version",
+            "simple",
+            "involvements_graph",
+        ]:
             return [AllowAny()]
         if self.action in ["add_comment", "create", "update"]:
             return [IsReporterOrHigher()]
@@ -403,45 +409,51 @@ class DealViewSet(HullViewSet):
                     if d.country_id
                     else None,
                     "fully_updated_at": d.fully_updated_at,  # for listing
-                    "deal_size": d.active_version.deal_size,
-                    "current_intention_of_investment": d.active_version.current_intention_of_investment,
-                    "current_negotiation_status": d.active_version.current_negotiation_status,
-                    "current_contract_size": d.active_version.current_contract_size,
-                    "current_implementation_status": d.active_version.current_implementation_status,
-                    "current_crops": d.active_version.current_crops,
-                    "current_animals": d.active_version.current_animals,
-                    "current_mineral_resources": d.active_version.current_mineral_resources,
-                    "current_electricity_generation": d.active_version.current_electricity_generation,
-                    "current_carbon_sequestration": d.active_version.current_carbon_sequestration,
-                    "intended_size": d.active_version.intended_size,
-                    "negotiation_status": d.active_version.negotiation_status,
-                    "contract_size": d.active_version.contract_size,
-                    "operating_company": {
-                        "id": d.active_version.operating_company.id,
-                        "selected_version": {
-                            "name": d.active_version.operating_company.active_version.name,
-                            "name_unknown": d.active_version.operating_company.active_version.name_unknown,
-                        },
-                    }
-                    if d.active_version.operating_company_id
-                    and d.active_version.operating_company.active_version
-                    else None,
-                    "top_investors": list(
-                        d.active_version.top_investors.annotate(
-                            name=F("active_version__name")
-                        )
-                        .annotate(classification=F("active_version__classification"))
-                        .values("id", "name", "classification")
-                    )
-                    # TODO Investors are not filtered (e.g. "deleted")
-                    ,
-                    "locations": [
-                        {
-                            "nid": x.nid,
-                            "point": json.loads(x.point.geojson) if x.point else None,
+                    "selected_version": {
+                        "deal_size": d.active_version.deal_size,
+                        "current_intention_of_investment": d.active_version.current_intention_of_investment,
+                        "current_negotiation_status": d.active_version.current_negotiation_status,
+                        "current_contract_size": d.active_version.current_contract_size,
+                        "current_implementation_status": d.active_version.current_implementation_status,
+                        "current_crops": d.active_version.current_crops,
+                        "current_animals": d.active_version.current_animals,
+                        "current_mineral_resources": d.active_version.current_mineral_resources,
+                        "current_electricity_generation": d.active_version.current_electricity_generation,
+                        "current_carbon_sequestration": d.active_version.current_carbon_sequestration,
+                        "intended_size": d.active_version.intended_size,
+                        "negotiation_status": d.active_version.negotiation_status,
+                        "contract_size": d.active_version.contract_size,
+                        "operating_company": {
+                            "id": d.active_version.operating_company.id,
+                            "selected_version": {
+                                "name": d.active_version.operating_company.active_version.name,
+                                "name_unknown": d.active_version.operating_company.active_version.name_unknown,
+                            },
                         }
-                        for x in d.active_version.locations.all()
-                    ],
+                        if d.active_version.operating_company_id
+                        and d.active_version.operating_company.active_version
+                        else None,
+                        "locations": [
+                            {
+                                "nid": l.nid,
+                                "point": json.loads(l.point.geojson)
+                                if l.point
+                                else None,
+                                "level_of_accuracy": l.level_of_accuracy,
+                            }
+                            for l in d.active_version.locations.all()
+                        ],
+                        # TODO Investors are not filtered (e.g. "deleted")
+                        "top_investors": list(
+                            d.active_version.top_investors.annotate(
+                                name=F("active_version__name")
+                            )
+                            .annotate(
+                                classification=F("active_version__classification")
+                            )
+                            .values("id", "name", "classification")
+                        ),
+                    },
                 }
                 for d in deals
             ]
@@ -627,7 +639,7 @@ class InvestorViewSet(HullViewSet):
         return Response(InvestorHull.to_investor_list(ret))
 
     @action(methods=["get"], detail=True)
-    def involvements_graph(self, request):
+    def involvements_graph(self, request, *args, **kwargs):
         depth = int(request.GET.get("depth", 5))
         include_deals = request.GET.get("include_deals", "") == "true"
         show_ventures = request.GET.get("show_ventures", "") == "true"

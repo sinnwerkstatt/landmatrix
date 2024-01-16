@@ -37,15 +37,24 @@ class CurrencySerializer(serializers.ModelSerializer):
 class CountrySerializer(serializers.ModelSerializer):
     class Meta:
         model = Country
-        fields = ["id", "name", "high_income", "code_alpha2", "deals"]
+        fields = [
+            "id",
+            "name",
+            "high_income",
+            "code_alpha2",
+            "point_lat",
+            "point_lon",
+            "observatory_page_id",
+            "region_id",
+            "deals",
+        ]
         # fields = ["id", "name", "region", "high_income", "slug", "code_alpha2"]
 
         #   //           id
         #   //           name
         #   //           code_alpha2
         #   //           slug
-        #   //           point_lat
-        #   //           point_lon
+        #   //
         #   //           point_lat_min
         #   //           point_lon_min
         #   //           point_lat_max

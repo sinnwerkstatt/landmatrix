@@ -1,48 +1,56 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import type { Deal, Location } from "$lib/types/deal"
+  import { fieldChoices } from "$lib/stores"
+  import type { DealHull, Location2 } from "$lib/types/newtypes"
 
-  import DisplayField from "$components/Fields/DisplayField.svelte"
+  import DecimalField from "$components/Fields/Display2/DecimalField.svelte"
+  import InvestorLinkField from "$components/Fields/Display2/InvestorLinkField.svelte"
+  import IOIField from "$components/Fields/Display2/IOIField.svelte"
+  import TextField from "$components/Fields/Display2/TextField.svelte"
 
-  export let deal: Deal
-  export let location: Location
+  export let deal: DealHull
+  export let location: Location2
+
+  const labelClass = "font-semibold"
+  const valueClass = ""
+  const wrapperClass = "mb-4"
 </script>
 
-<h3>{$_("Deal")} #{deal.id}</h3>
+<div class="heading4">{$_("Deal")} #{deal.id}</div>
 <div class="deal-summary">
-  <DisplayField
-    wrapperClasses="mb-4"
-    labelClasses="font-bold"
-    valueClasses=""
-    fieldname="level_of_accuracy"
-    model="location"
+  <TextField
+    label={$_("Spatial accuracy level")}
     value={location.level_of_accuracy}
-    showLabel
+    fieldname="location.level_of_accuracy"
+    choices={$fieldChoices.deal.level_of_accuracy}
+    {labelClass}
+    {valueClass}
+    {wrapperClass}
   />
-  <DisplayField
-    wrapperClasses="mb-4"
-    labelClasses="font-bold"
-    valueClasses=""
-    fieldname="current_intention_of_investment"
-    value={deal.current_intention_of_investment}
-    showLabel
+  <IOIField
+    value={deal.selected_version.current_intention_of_investment}
+    {labelClass}
+    {valueClass}
+    {wrapperClass}
+    label={$_("Intention of investment")}
   />
-  <DisplayField
-    wrapperClasses="mb-4"
-    labelClasses="font-bold"
-    valueClasses=""
+  <DecimalField
+    value={deal.selected_version.deal_size}
     fieldname="deal_size"
-    value={deal.deal_size}
-    showLabel
+    unit={$_("ha")}
+    label={$_("Deal size")}
+    {labelClass}
+    {valueClass}
+    {wrapperClass}
   />
-  <DisplayField
-    wrapperClasses="mb-4"
-    labelClasses="font-bold"
-    valueClasses=""
+  <InvestorLinkField
     fieldname="operating_company"
-    value={deal.operating_company}
-    showLabel
+    label={$_("Operating Company")}
+    value={deal.selected_version.operating_company}
+    {labelClass}
+    {valueClass}
+    {wrapperClass}
   />
 </div>
 <a href="/deal/{deal.id}/" class="btn btn-primary !text-white">

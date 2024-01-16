@@ -1,5 +1,6 @@
 import type { GeoJsonObject, Point } from "geojson"
 
+import type { IntentionOfInvestment } from "$lib/types/deal"
 import type { Country } from "$lib/types/wagtail"
 
 export enum Version2Status {
@@ -209,7 +210,7 @@ interface DealVersionBase {
   domestic_jobs_current: JSONJobsFieldType
   domestic_jobs_created_comment: string
 
-  operating_company: { id: number; name: string } | null
+  operating_company: InvestorHull | null
   operating_company_id: number | null
   involved_actors: InvolvedActor[]
   project_name: string
@@ -290,7 +291,7 @@ export interface DealVersion2 extends DealVersionBase, BaseVersionMixin {
 
   current_negotiation_status: string
   current_implementation_status: string
-  current_intention_of_investment: string[]
+  current_intention_of_investment: IntentionOfInvestment[]
   deal_size: number
   fully_updated: boolean
 }

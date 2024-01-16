@@ -5,13 +5,12 @@
   import { _ } from "svelte-i18n"
 
   import { loading } from "$lib/stores"
-  import type { InvestorHull } from "$lib/types/newtypes"
 
   import DealDetailModal from "./DealDetailModal.svelte"
   import InvestorDetailModal from "./InvestorDetailModal.svelte"
   import { createGraph, LAYOUT_OPTIONS, registerTippy } from "./investorGraphNew"
 
-  export let investor: InvestorHull
+  export let investor_id: number | null
 
   export let hideControls = false
   export let skipVentures = false
@@ -32,9 +31,7 @@
   async function fetchInvolvments() {
     loading.set(true)
     const ret = await fetch(
-      `/api/investors/${
-        investor.id
-      }/involvements_graph/?depth=${depth}&include_deals=${showDeals}&show_ventures=${!skipVentures}`,
+      `/api/investors/${investor_id}/involvements_graph/?depth=${depth}&include_deals=${showDeals}&show_ventures=${!skipVentures}`,
     )
     // using 418-Teapot, because fetch goes into auto-retry mode
     // on 408 (request timeout), which ought to be the correct response here 🙄
