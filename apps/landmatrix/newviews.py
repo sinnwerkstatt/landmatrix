@@ -154,36 +154,34 @@ def _send_comment_to_user(
     version_id: int | None = None,
 ) -> None:
     receiver = User.objects.get(id=to_user_id)
-    subject = "[Landmatrix] " + _("New comment")
 
     is_deal = isinstance(obj, DealHull)
+    if is_deal:
+        obj_desc = f"deal #{obj.id}"
+        obj_url = f"/deal/{obj.id}/"
+    else:
+        obj_desc = f"investor {obj.active_version.name} (#{obj.id})"
+        obj_url = f"/investor/{obj.id}/"
 
-    obj_desc = (
-        f"deal {obj.id}"
-        if is_deal
-        else f"investor {obj.active_version.name} (#{obj.id})"
-    )
+    if version_id:
+        obj_url += f"{version_id}/"
+
+    # build base_url
+    _site = Site.objects.get(is_default_site=True)
+    _port = f":{_site.port}" if _site.port not in [80, 443] else ""
+    base_url = f"http{'s' if _site.port == 443 else ''}://{_site.hostname}{_port}"
 
     if comment:
-        message = (
-            _(f"{from_user.full_name} has addressed you in a comment on {obj_desc}:")
-            + "\n\n"
-            + comment
+        message = _(
+            f"{from_user.full_name} has addressed you in a comment on {obj_desc}:"
         )
+        message += "\n\n"
+        message += comment
     else:
         message = _(f"{from_user.full_name} has updated {obj_desc}:")
+    message += "\n\n" + _(f"Please review at {base_url + obj_url}")
 
-    site = Site.objects.get(is_default_site=True)
-
-    port = f":{site.port}" if site.port not in [80, 443] else ""
-    url = f"http{'s' if site.port == 443 else ''}://{site.hostname}{port}"
-
-    url += f"/deal/{obj.id}/" if is_deal else f"/investor/{obj.id}/"
-    if version_id:
-        url += f"{version_id}/"
-    message += "\n\n" + _(f"Please review at {url}")
-
-    receiver.email_user(subject, message, from_email=settings.DEFAULT_FROM_EMAIL)
+    receiver.email_user("[Landmatrix] " + _("New comment"), message)
 
 
 class VersionViewSet(viewsets.ReadOnlyModelViewSet):
@@ -271,17 +269,42 @@ class DealVersionViewSet(VersionViewSet):
         if not dv1.is_current_draft():
             raise PermissionDenied("EDITING_OLD_VERSION")
 
+        to_user_id = request.data.get("toUser")
+
         dv1.change_status(
             new_status=request.data["transition"],
             user=request.user,
             fully_updated=request.data.get("fullyUpdated"),
-            to_user_id=request.data.get("toUser"),
+            to_user_id=to_user_id,
             comment=request.data.get("comment", ""),
         )
 
+        if request.data["transition"] == "TO_REVIEW" and request.data.get("toUser"):
+            # if there was a request for improvement workflowinfo, email the requester
+            old_wfi: DealWorkflowInfo2 | None = self.deal.workflowinfos.last()
+            if (
+                old_wfi
+                and old_wfi.status_before in ["REVIEW", "ACTIVATION"]
+                and old_wfi.status_after == "DRAFT"
+                and old_wfi.to_user == to_user_id
+            ):
+                old_wfi.resolved = True
+                old_wfi.save()
+                _send_comment_to_user(
+                    obj=dv1.deal,
+                    comment="",
+                    from_user=request.user,
+                    to_user_id=old_wfi.from_user_id,
+                    version_id=dv1.id,
+                )
+
         if to_user := request.data.get("toUser"):
             _send_comment_to_user(
-                dv1.deal, request.data.get("comment"), request.user, to_user, dv1.id
+                obj=dv1.deal,
+                comment=request.data.get("comment"),
+                from_user=request.user,
+                to_user_id=to_user,
+                version_id=dv1.id,
             )
 
         return Response({"dealID": dv1.deal.id, "versionID": dv1.id})
@@ -345,11 +368,11 @@ class HullViewSet(viewsets.ReadOnlyModelViewSet):
 
         if to_user_id:
             _send_comment_to_user(
-                o1,
-                request.data.get("comment"),
-                request.user,
-                to_user_id,
-                o1.active_version.id if o1.active_version else None,
+                obj=o1,
+                comment=request.data.get("comment"),
+                from_user=request.user,
+                to_user_id=to_user_id,
+                version_id=o1.active_version.id if o1.active_version else None,
             )
 
         return Response({})
@@ -545,16 +568,40 @@ class InvestorVersionViewSet(VersionViewSet):
         if not iv1.is_current_draft():
             raise PermissionDenied("EDITING_OLD_VERSION")
 
+        to_user_id = request.data.get("toUser")
         iv1.change_status(
             new_status=request.data["transition"],
             user=request.user,
-            to_user_id=request.data.get("toUser"),
+            to_user_id=to_user_id,
             comment=request.data.get("comment", ""),
         )
 
+        if request.data["transition"] == "TO_REVIEW" and to_user_id:
+            # if there was a request for improvement workflowinfo, email the requester
+            old_wfi: InvestorWorkflowInfo2 | None = iv1.investor.workflowinfos.last()
+            if (
+                old_wfi
+                and old_wfi.status_before in ["REVIEW", "ACTIVATION"]
+                and old_wfi.status_after == "DRAFT"
+                and old_wfi.to_user_id == to_user_id
+            ):
+                old_wfi.resolved = True
+                old_wfi.save()
+                _send_comment_to_user(
+                    obj=iv1.investor,
+                    comment="",
+                    from_user=request.user,
+                    to_user_id=old_wfi.from_user_id,
+                    version_id=iv1.id,
+                )
+
         if to_user := request.data.get("toUser"):
             _send_comment_to_user(
-                iv1.investor, request.data.get("comment"), request.user, to_user, iv1.id
+                obj=iv1.investor,
+                comment=request.data.get("comment"),
+                from_user=request.user,
+                to_user_id=to_user,
+                version_id=iv1.id,
             )
 
         return Response({"investorID": iv1.investor.id, "versionID": iv1.id})
@@ -644,6 +691,9 @@ class InvestorViewSet(HullViewSet):
         include_deals = request.GET.get("include_deals", "") == "true"
         show_ventures = request.GET.get("show_ventures", "") == "true"
         investor: InvestorHull = self.get_object()
+
+        # TODO make sure it's a live version (active version)
+
         try:
             return Response(
                 investor.involvements_graph(depth, include_deals, show_ventures)

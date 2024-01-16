@@ -17,14 +17,13 @@
 </script>
 
 <section>
-  <h3>{$_("Version history")}</h3>
+  <h3 class="heading3">{$_("Version history")}</h3>
   <table class="relative w-full table-auto border-b-2">
     <thead>
       <tr>
         <th>{$_("ID")}</th>
         <th>{$_("Created")}</th>
         <th>{$_("Modified")}</th>
-
         <th>{$_("Sent to review")}</th>
         <th>{$_("Reviewed")}</th>
         <th>{$_("Activated")}</th>

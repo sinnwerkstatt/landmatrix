@@ -17,7 +17,7 @@
 </script>
 
 <section>
-  <h3>{$_("Version history")}</h3>
+  <h3 class="heading3">{$_("Version history")}</h3>
   <table class="relative w-full table-auto border-b-2">
     <thead>
       <tr>
