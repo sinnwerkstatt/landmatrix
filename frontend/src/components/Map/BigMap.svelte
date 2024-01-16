@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { MapOptions } from "leaflet"
+  import { geoJson, type MapOptions } from "leaflet"
 
   import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css"
 
@@ -11,6 +11,9 @@
   import { nanoid } from "nanoid"
   import { createEventDispatcher, onDestroy, onMount } from "svelte"
   import { _ } from "svelte-i18n"
+
+  import { geoJsonLayerGroup } from "$lib/stores"
+  import { padBounds } from "$lib/utils/location"
 
   import LoadingPulse from "$components/LoadingPulse.svelte"
   import {
@@ -63,7 +66,20 @@
       ...options,
     })
 
-    map.whenReady(() => dispatch("ready", map))
+    if (!$geoJsonLayerGroup) {
+      $geoJsonLayerGroup = geoJson()
+      $geoJsonLayerGroup.on("layeradd layerremove", function () {
+        // console.log("add or rm")
+        const bounds = this.getBounds()
+        bounds.isValid() && map.fitBounds(padBounds(bounds), { duration: 1 })
+      })
+    }
+
+    map.addLayer($geoJsonLayerGroup)
+
+    map.whenReady(() => {
+      dispatch("ready", map)
+    })
   })
 
   // See bug ticket #668: Sometimes not called when switching views quickly.

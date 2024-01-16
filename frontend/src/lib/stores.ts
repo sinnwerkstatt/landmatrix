@@ -1,5 +1,6 @@
 import type { LoadEvent } from "@sveltejs/kit"
 import { error } from "@sveltejs/kit"
+import type { GeoJSON } from "leaflet"
 import { _, locale } from "svelte-i18n"
 import { derived, readable, writable } from "svelte/store"
 
@@ -421,3 +422,5 @@ export const simpleInvestors = readable<SimpleInvestor[]>([], set => {
     .then(ret => ret.json())
     .then(set)
 })
+
+export const geoJsonLayerGroup = writable<GeoJSON | null>(null)

@@ -1,4 +1,5 @@
-import type { GeoJsonObject, Point } from "geojson"
+import type { Feature, MultiPolygon, Point, Polygon } from "geojson"
+import type { GeoJSON } from "leaflet"
 
 import type { IntentionOfInvestment } from "$lib/types/deal"
 import type { Country } from "$lib/types/wagtail"
@@ -340,12 +341,22 @@ export type JSONExportsFieldType = Array<{
   export: number | null
 }>
 
-interface Area {
+export type AreaType = "production_area" | "contract_area" | "intended_area"
+
+export interface Area {
   id: number
-  type: string
+  type: AreaType
   current: boolean
   date: string
-  area: GeoJsonObject
+  area: Polygon | MultiPolygon // only allowed geometry types, see geojsonValidation.ts
+}
+
+export enum ACCURACY_LEVEL {
+  COUNTRY,
+  ADMINISTRATIVE_REGION,
+  APPROXIMATE_LOCATION,
+  EXACT_LOCATION,
+  COORDINATES,
 }
 
 export class Location2 {
@@ -354,7 +365,7 @@ export class Location2 {
   description: string
   point: Point | null
   facility_name: string
-  level_of_accuracy: string
+  level_of_accuracy: ACCURACY_LEVEL | null
   comment: string
   areas: Area[]
 
@@ -364,7 +375,7 @@ export class Location2 {
     this.description = ""
     this.point = null
     this.facility_name = ""
-    this.level_of_accuracy = ""
+    this.level_of_accuracy = null
     this.comment = ""
     this.areas = []
   }
@@ -380,3 +391,23 @@ export interface InvestorVersion2 extends BaseVersionMixin {
   comment: string
   datasources: DataSource[]
 }
+
+// Types for locations + areas in geojson
+export interface PointFeatureProps {
+  id: string
+  level_of_accuracy: ACCURACY_LEVEL | null
+  name?: string
+}
+
+export type PointFeature = Feature<Point, PointFeatureProps>
+
+export interface AreaFeatureProps {
+  id: number
+  type: AreaType
+  date?: string
+  current?: boolean
+  visible: boolean
+}
+
+export type AreaFeature = Feature<Polygon | MultiPolygon, AreaFeatureProps>
+export type AreaFeatureLayer = GeoJSON<AreaFeatureProps, Polygon | MultiPolygon>

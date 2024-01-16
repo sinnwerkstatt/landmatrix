@@ -1,6 +1,6 @@
-import { area } from "@turf/turf"
+import { area as turfarea } from "@turf/turf"
 import type { Feature, FeatureCollection, Geometry, Point } from "geojson"
-import * as L from "leaflet" // TODO: this breaks SSR
+import * as L from "leaflet"
 import type { GeoJSONOptions, LatLngBounds, LatLngLiteral, PathOptions } from "leaflet"
 import * as R from "ramda"
 
@@ -76,7 +76,10 @@ export const createPointFeature = (
 export const addTempProperties: (features: Feature) => AreaFeature = R.converge(
   upsertProperties,
   [
-    R.applySpec({ visible: R.pipe(R.path(["properties", "current"]), Boolean), area }),
+    R.applySpec({
+      visible: R.pipe(R.path(["properties", "current"]), Boolean),
+      turfarea,
+    }),
     R.identity,
   ],
 )

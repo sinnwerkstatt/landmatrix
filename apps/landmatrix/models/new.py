@@ -1106,6 +1106,12 @@ class Location(models.Model):
             self.nid = generate(size=8)
         super().save(*args, **kwargs)
 
+    def areas_as_feature_collection(self):
+        return {
+            "type": "FeatureCollection",
+            "features": [area.to_feature() for area in self.areas.all()],
+        }
+
     class Meta:
         unique_together = ["dealversion", "nid"]
         indexes = [models.Index(fields=["dealversion", "nid"])]
@@ -1137,6 +1143,18 @@ class Area(models.Model):
             "current": self.current,
             "date": self.date,
             "area": json.loads(self.area.geojson) if self.area else None,
+        }
+
+    def to_feature(self):
+        return {
+            "type": "Feature",
+            "geometry": json.loads(self.area.geojson) if self.area else None,
+            "properties": {
+                "id": self.id,
+                "type": self.type,
+                "current": self.current,
+                "date": self.date,
+            },
         }
 
     @staticmethod
