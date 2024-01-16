@@ -5,7 +5,7 @@
   import type { JSONCurrentDateAreaChoicesFieldType } from "$lib/types/newtypes"
 
   import { LABEL_CLASS, VALUE_CLASS, WRAPPER_CLASS } from "$components/Fields/consts"
-  import { dateCurrentFormat } from "$components/Fields/Display/jsonHelpers"
+  import { dateCurrentFormat } from "$components/Fields/Display2/jsonHelpers"
   import Label2 from "$components/Fields/Display2/Label2.svelte"
   import CircleNotchIcon from "$components/icons/CircleNotchIcon.svelte"
 

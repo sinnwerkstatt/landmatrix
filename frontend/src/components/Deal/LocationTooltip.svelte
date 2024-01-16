@@ -5,14 +5,14 @@
   import type { AreaFeature, PointFeature } from "$lib/types/deal"
   import { isPoint, isPolygon } from "$lib/utils/geojsonHelpers"
 
-  import { formatArea } from "$components/Fields/Display/jsonHelpers"
-  import NanoIDField from "$components/Fields/Display/NanoIDField.svelte"
+  import { formatArea } from "$components/Fields/Display2/jsonHelpers"
+  import NanoIDField from "$components/Fields/Display2/NanoIDField.svelte"
 
   export let feature: PointFeature | AreaFeature
 </script>
 
 <div>
-  <NanoIDField value={feature.properties.id} />
+  <NanoIDField value={feature.properties.id.toString()} />
 
   <div>{$_("Name")}: {feature.properties.name}</div>
 
