@@ -26,7 +26,11 @@
     const ret = await fetch(`/api/${objType}/${object.id}/add_comment/`, {
       method: "PUT",
       credentials: "include",
-      body: JSON.stringify({ comment, toUser: toUser?.id }),
+      body: JSON.stringify({
+        comment,
+        toUser: toUser?.id,
+        version: object.selected_version.id,
+      }),
       headers: {
         "X-CSRFToken": await getCsrfToken(),
         "Content-Type": "application/json",

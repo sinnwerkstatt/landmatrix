@@ -9,6 +9,7 @@
   import { Version2Status } from "$lib/types/newtypes.js"
   import { UserRole } from "$lib/types/user"
 
+  import Modal from "$components/Modal.svelte"
   import ManageHeaderActivateModal from "$components/New/ManageHeaderActivateModal.svelte"
   import ManageHeaderRequestImprovementModal from "$components/New/ManageHeaderRequestImprovementModal.svelte"
   import ManageHeaderSendToActivationModal from "$components/New/ManageHeaderSendToActivationModal.svelte"
@@ -28,6 +29,11 @@
 
   const isDeal = (obj: DealHull | InvestorHull): obj is DealHull =>
     "fully_updated_at" in obj
+
+  let showReallyEditModal = false
+  $: editLink = `/${isDeal(object) ? "deal" : "investor"}/edit/${object.id}/${
+    object.selected_version.id
+  }/`
 
   $: isCurrentDraft = object.selected_version.id === object.draft_version_id
   $: i18nValues = { values: { object: isDeal(object) ? "deal" : "investor" } }
@@ -112,19 +118,35 @@
 </div>
 <div class="mt-10 flex flex-col gap-2">
   <div class=" flex items-center gap-4">
-    <div>
-      <a
-        href="/{isDeal(object) ? 'deal' : 'investor'}/edit/{object.id}/{object
-          .selected_version.id}/"
-        class="butn-outline butn-flat butn-primary min-w-[8rem]"
-        class:disabled={$loading || $navigating}
-      >
-        {$_("Edit")}
-      </a>
-    </div>
-    <div class="italic text-gray-700 dark:text-white">
-      {$_("Edit this version.")}
-    </div>
+    {#if object.selected_version.created_by_id !== $page.data.user.id}
+      <div>
+        <button
+          on:click={() => (showReallyEditModal = true)}
+          class="butn-outline butn-flat butn-primary min-w-[8rem]"
+          class:disabled={$loading || $navigating}
+        >
+          {$_("Edit")}
+        </button>
+      </div>
+      <div class="italic text-gray-700 dark:text-white">
+        {$_(
+          "Edit this version. Since you are not the author of the current one, a new draft will be created.",
+        )}
+      </div>
+    {:else}
+      <div>
+        <a
+          href={editLink}
+          class="butn-outline butn-flat butn-primary min-w-[8rem]"
+          class:disabled={$loading || $navigating}
+        >
+          {$_("Edit")}
+        </a>
+      </div>
+      <div class="italic text-gray-700 dark:text-white">
+        {$_("Edit this version.")}
+      </div>
+    {/if}
   </div>
 
   {#if $page.data.user?.role >= UserRole.EDITOR}
@@ -147,6 +169,28 @@
     </div>
   {/if}
 </div>
+
+<Modal bind:open={showReallyEditModal} dismissible>
+  <h2 class="heading4">{$_("Create a new draft")}</h2>
+  <hr />
+  <form class="mt-6 text-lg">
+    You are not the author of this version. Therefore, a new version will be created if
+    you proceed.
+
+    <div class="mt-14 flex justify-end gap-4">
+      <button
+        class="butn-outline"
+        on:click={() => (showReallyEditModal = false)}
+        type="button"
+      >
+        {$_("Cancel")}
+      </button>
+      <a class="butn butn-primary" href={editLink}>
+        {$_("Create a new draft")}
+      </a>
+    </div>
+  </form>
+</Modal>
 
 <ManageHeaderSendToReviewModal bind:object bind:open={showSendToReviewOverlay} />
 <ManageHeaderSendToActivationModal

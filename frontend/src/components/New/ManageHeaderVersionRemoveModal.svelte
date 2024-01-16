@@ -44,9 +44,7 @@
 </script>
 
 <Modal bind:open dismissible>
-  <h2 class="heading4">
-    {$_("Remove this {object} version?", i18nValues)}
-  </h2>
+  <h2 class="heading4">{$_("Remove this {object} version?", i18nValues)}</h2>
   <hr />
   <form on:submit={deleteObject}>
     <p class="mb-12 mt-6 text-lg">

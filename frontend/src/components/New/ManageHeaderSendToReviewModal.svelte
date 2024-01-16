@@ -45,9 +45,7 @@
 </script>
 
 <Modal bind:open dismissible>
-  <h2 class="heading4">
-    {$_("Submit for review")}
-  </h2>
+  <h2 class="heading4">{$_("Submit for review")}</h2>
   <hr />
   <form class="mt-6 text-lg" on:submit={submit}>
     {#if isDeal(object)}

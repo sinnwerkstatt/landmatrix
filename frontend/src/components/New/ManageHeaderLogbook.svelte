@@ -14,6 +14,9 @@
   export let object: DealHull | InvestorHull
   export let extraUserIDs: number[] = []
 
+  const isDeal = (obj: DealHull | InvestorHull): obj is DealHull =>
+    "fully_updated_at" in obj
+
   let showCommentOverlay = false
   let showFeedbackOverlay = false
 </script>
@@ -27,7 +30,7 @@
     class="h-0 flex-grow cursor-default overflow-y-scroll border-gray-700 px-[2px] pb-4 pt-1 shadow-inner"
   >
     {#each object.workflowinfos as info}
-      <WorkflowInfoNew {info} />
+      <WorkflowInfoNew {info} isDeal={isDeal(object)} />
     {/each}
   </div>
 

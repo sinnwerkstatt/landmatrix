@@ -15,7 +15,7 @@
   import ManageHeaderCopyModal from "$components/New/ManageHeaderCopyModal.svelte"
   import ManageHeaderDeletionModal from "$components/New/ManageHeaderDeletionModal.svelte"
   import ManageHeaderLogbook from "$components/New/ManageHeaderLogbook.svelte"
-  import ManageHeaderVersionFlow from "$components/New/ManageHeaderVersionFlow.svelte"
+  import ManageHeaderVersionComponent from "$components/New/ManageHeaderVersionComponent.svelte"
 
   export let object: DealHull | InvestorHull
 
@@ -159,14 +159,14 @@
     <div class="p-2 py-4">
       {#if object.deleted}
         <div
-          class="flex flex-col items-center justify-center gap-1 bg-red-500 py-2 text-white"
+          class="my-6 flex flex-col items-center justify-center gap-1 bg-red-500 py-2 text-white"
         >
           <div class="heading4 mb-0">{$_("Deleted")}</div>
           <span>{object.deleted_comment}</span>
         </div>
       {:else if isDeal(object) && object.confidential}
         <div
-          class="flex flex-col items-center justify-center gap-1 bg-red-700 py-2 text-white"
+          class="my-6 flex flex-col items-center justify-center gap-1 bg-red-700 py-2 text-white"
         >
           <div class="heading4 mb-0">{$_("Confidential")}</div>
           <span>{object.confidential_comment}</span>
@@ -178,7 +178,7 @@
         </div>
         {#if object.selected_version.status === Version2Status.ACTIVATED}
           <div
-            class="flex flex-col items-center justify-center gap-1 bg-green-700 py-2 text-white"
+            class="my-6 flex flex-col items-center justify-center gap-1 bg-green-700 py-2 text-white"
           >
             <div class="heading4 mb-0">{$_("Activated")}</div>
             <div class="">
@@ -188,7 +188,7 @@
             </div>
           </div>
         {:else}
-          <ManageHeaderVersionFlow {object} />
+          <ManageHeaderVersionComponent {object} />
         {/if}
       {/if}
     </div>

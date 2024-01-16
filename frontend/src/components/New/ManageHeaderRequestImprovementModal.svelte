@@ -64,9 +64,7 @@
 </script>
 
 <Modal bind:open dismissible>
-  <h2 class="heading4">
-    {$_("Request improvement")}
-  </h2>
+  <h2 class="heading4">{$_("Request improvement")}</h2>
   <hr />
   <form class="mt-6 text-lg" on:submit={submit}>
     <div class="mb-6">
