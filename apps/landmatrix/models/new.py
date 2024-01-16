@@ -1520,6 +1520,7 @@ class InvestorHull(models.Model):
                 "selected_version": {
                     "id": inv["active_version__id"],
                     "name": inv["active_version__name"],
+                    "name_unknown": inv["active_version__name_unknown"],
                     "modified_at": inv["active_version__modified_at"],
                     "classification": inv["active_version__classification"],
                     "country": {"id": inv["active_version__country_id"]},
@@ -1534,6 +1535,7 @@ class InvestorHull(models.Model):
                 "id",
                 "active_version__id",
                 "active_version__name",
+                "active_version__name_unknown",
                 "active_version__modified_at",
                 "active_version__classification",
                 "active_version__country_id",

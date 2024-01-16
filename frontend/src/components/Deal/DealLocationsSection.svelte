@@ -15,7 +15,6 @@
     toggleFeatureVisibility,
   } from "$lib/utils/location"
 
-  import DealSubmodelSection from "$components/Deal/DealSubmodelSection.svelte"
   import BigMap from "$components/Map/BigMap.svelte"
 
   export let deal: Deal
@@ -89,13 +88,13 @@
 
 <section class="flex">
   <div class="max-h-[75vh] w-full overflow-y-auto p-2 lg:w-1/2">
-    <DealSubmodelSection
-      bind:selectedEntryId={currentLocation}
-      model="location"
-      modelName="Location"
-      entries={locationsCopy}
-      on:toggleVisibility={onToggleVisibility}
-    />
+    <!--    <DealSubmodelSection-->
+    <!--      bind:selectedEntryId={currentLocation}-->
+    <!--      model="location"-->
+    <!--      modelName="Location"-->
+    <!--      entries={locationsCopy}-->
+    <!--      on:toggleVisibility={onToggleVisibility}-->
+    <!--    />-->
   </div>
   <div class="min-h-[20rem] w-full p-2 lg:w-1/2">
     <BigMap

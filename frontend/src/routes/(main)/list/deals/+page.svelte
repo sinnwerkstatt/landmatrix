@@ -107,7 +107,11 @@
           {@const col = COLUMNS.find(c => c.key === fieldName)}
           {#if col}
             {#if fieldName === "fully_updated_at"}
-              <DateTimeField value={obj.fully_updated_at} />
+              <DateTimeField
+                value={obj.fully_updated_at}
+                fieldname="fully_updated_at"
+                wrapperClass="p-1"
+              />
             {:else if fieldName === "id"}
               <IDField fieldname="id" value={obj.id} wrapperClass="p-1" />
             {:else if fieldName === "country"}

@@ -418,8 +418,11 @@ class DealViewSet(HullViewSet):
                     "contract_size": d.active_version.contract_size,
                     "operating_company": {
                         "id": d.active_version.operating_company.id,
-                        "name": d.active_version.operating_company.active_version.name,
-                    }  # for map pin popover & listing
+                        "selected_version": {
+                            "name": d.active_version.operating_company.active_version.name,
+                            "name_unknown": d.active_version.operating_company.active_version.name_unknown,
+                        },
+                    }
                     if d.active_version.operating_company_id
                     and d.active_version.operating_company.active_version
                     else None,
