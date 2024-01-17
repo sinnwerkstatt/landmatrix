@@ -1,11 +1,14 @@
+from rest_framework import viewsets, serializers
+from wagtail.rich_text import expand_db_html
 from wagtailorderable.modeladmin.mixins import OrderableMixin
 
 from wagtail.admin.viewsets.model import ModelViewSet
 
 from apps.message.models import Message
+from django.utils import timezone
 
 
-class MessageViewSet(OrderableMixin, ModelViewSet):
+class MessageAdminViewSet(OrderableMixin, ModelViewSet):
     model = Message
     menu_label = "Messages"
     icon = "pilcrow"
@@ -26,4 +29,30 @@ class MessageViewSet(OrderableMixin, ModelViewSet):
     ordering = ["sort_order"]
 
 
-message_viewset = MessageViewSet("message")
+message_viewset = MessageAdminViewSet("message")
+
+
+class MessageSerializer(serializers.ModelSerializer):
+    text = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Message
+        fields = [
+            "id",
+            "title",
+            "text",
+            "level",
+            "is_active",
+            "allow_users_to_hide",
+        ]
+
+    @staticmethod
+    def get_text(obj):
+        return expand_db_html(obj.text)
+
+
+class MessageViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Message.objects.filter(is_active=True).exclude(
+        expires_at__lte=timezone.localdate()
+    )
+    serializer_class = MessageSerializer

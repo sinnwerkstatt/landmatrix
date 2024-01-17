@@ -22,12 +22,12 @@
       return []
     }
 
-    const res = await fetch(`/api/newdeal_legacy/messages/`)
+    const res = await fetch(`/api/messages/`)
     if (!res.ok) {
       throw new Error(await res.text())
     }
 
-    return (await res.json()).messages
+    return await res.json()
   }
 
   let storage: Storage | object = {}

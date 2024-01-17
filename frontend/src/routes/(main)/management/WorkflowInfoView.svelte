@@ -6,11 +6,9 @@
   import type { Deal } from "$lib/types/deal"
   import type { Investor } from "$lib/types/investor"
 
-  import DateTimeField from "$components/Fields/Display/DateTimeField.svelte"
-  import ForeignKeyField from "$components/Fields/Display/ForeignKeyField.svelte"
-  import StatusField from "$components/Fields/Display/StatusField.svelte"
-  import WorkflowInfosField from "$components/Fields/Display/WorkflowInfosField.svelte"
-  import DisplayField from "$components/Fields/DisplayField.svelte"
+  import CountryField from "$components/Fields/Display2/CountryField.svelte"
+  import DateTimeField from "$components/Fields/Display2/DateTimeField.svelte"
+  import IDField from "$components/Fields/Display2/IDField.svelte"
   import StarIcon from "$components/icons/StarIcon.svelte"
   import Table from "$components/Table/Table.svelte"
 
@@ -53,6 +51,8 @@
     { key: "toUser", label: $_("To user"), span: 2 },
     { key: "feedback", label: $_("Feedback"), span: 5 },
   ]
+  const wrapperClass = "p-1"
+  const valueClass = ""
 </script>
 
 <Table
@@ -69,34 +69,40 @@
         </div>
       {/if}
     {:else if fieldName === "dateOfRequest"}
-      <DateTimeField value={obj.relevantWFI?.timestamp} format="YYYY-MM-DD HH:mm" />
+      <DateTimeField
+        fieldname="dateOfRequest"
+        value={obj.relevantWFI?.timestamp}
+        format="YYYY-MM-DD HH:mm"
+      />
     {:else if fieldName === "id"}
-      <DisplayField
-        wrapperClasses="p-1"
-        valueClasses=""
+      <IDField
+        {wrapperClass}
+        {valueClass}
         fieldname="id"
         value={obj.id}
         objectVersion={obj.current_draft_id}
         {model}
       />
     {:else if fieldName === "country"}
-      <DisplayField
-        wrapperClasses="p-1"
-        valueClasses=""
+      <CountryField
+        {wrapperClass}
+        {valueClass}
         fieldname="country"
         value={obj.country}
-        {model}
       />
     {:else if fieldName === "status"}
-      <StatusField status={obj.status} draft_status={obj.draft_status} />
+      {obj.status}
+      <!--            <StatusField status={obj.status} draft_status={obj.draft_status} />-->
     {:else if fieldName === "fromUser"}
-      <ForeignKeyField value={obj.relevantWFI?.from_user} formfield={{}} />
+      {JSON.stringify(obj.relevantWFI?.from_user_id)}
+      <!--            <ForeignKeyField value={obj.relevantWFI?.from_user} formfield={{}} />-->
     {:else if fieldName === "toUser"}
-      <ForeignKeyField value={obj.relevantWFI?.to_user} formfield={{}} />
-    {:else if fieldName === "feedback"}
-      <WorkflowInfosField value={obj.workflowinfos}>
-        {obj.relevantWFI?.comment}
-      </WorkflowInfosField>
+      {JSON.stringify(obj.relevantWFI?.to_user_id)}
+      <!--            <ForeignKeyField value={obj.relevantWFI?.to_user} formfield={{}} />-->
+      <!--    {:else if fieldName === "feedback"}-->
+      <!--      <WorkflowInfosField value={obj.workflowinfos}>-->
+      <!--        {obj.relevantWFI?.comment}-->
+      <!--      </WorkflowInfosField>-->
     {/if}
   </svelte:fragment>
 </Table>

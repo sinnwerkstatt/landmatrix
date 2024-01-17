@@ -18,7 +18,11 @@
   import { UserRole } from "$lib/types/user"
 
   import FilterCollapse from "$components/Data/FilterCollapse.svelte"
-  import DisplayField from "$components/Fields/DisplayField.svelte"
+  import CountryField from "$components/Fields/Display2/CountryField.svelte"
+  import DateTimeField from "$components/Fields/Display2/DateTimeField.svelte"
+  import DecimalField from "$components/Fields/Display2/DecimalField.svelte"
+  import IDField from "$components/Fields/Display2/IDField.svelte"
+  import UserField from "$components/Fields/Display2/UserField.svelte"
   import AdjustmentsIcon from "$components/icons/AdjustmentsIcon.svelte"
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
   import Table from "$components/Table/Table.svelte"
@@ -45,7 +49,7 @@
     useWorkflowInfoView?: boolean
   }
 
-  let navTabs: { name: string; expanded?: boolean; items: Tab[] }[]
+  let navTabs: { name: string; expanded?: boolean; items: Tab[] }[] = []
   $: navTabs = [
     {
       name: $_("Todo"),
@@ -95,7 +99,7 @@
       ],
     },
   ]
-  $: flatTabs = navTabs.reduce((acc, val) => [...acc, ...val.items], [])
+  $: flatTabs = navTabs.map(x => x.items).reduce((acc, items) => [...acc, ...items], [])
   $: activeTab = flatTabs.find(item => item.id === activeTabId)
 
   const dealColumns = {
@@ -130,7 +134,7 @@
   })
   $: spans = Object.entries(columnsWithSpan).map(([, colSpan]) => colSpan)
 
-  async function getCounts(model) {
+  async function getCounts(model: "deal" | "investor") {
     if (!browser) return
     const ret = await fetch(`/api/management/?model=${model}&action=counts`)
     if (ret.ok) {
@@ -275,6 +279,9 @@
 
     return true
   })
+
+  const wrapperClass = "p-1"
+  const valueClass = "text-gray-700 dark:text-white"
 </script>
 
 <svelte:head>
@@ -378,17 +385,31 @@
     {:else}
       <Table items={filteredObjects} {columns} {spans} {labels}>
         <svelte:fragment slot="field" let:fieldName let:obj>
-          {#if fieldName === "mode"}
+          {#if fieldName === "id"}
+            <IDField fieldname="id" value={obj.id} {wrapperClass} {valueClass} />
+          {:else if fieldName === "mode"}
             {$modeMap[obj.mode]}
-          {:else}
-            <DisplayField
-              wrapperClasses="p-1"
-              valueClasses="text-gray-700 dark:text-white"
-              fieldname={fieldName}
-              value={obj[fieldName]}
-              objectVersion={obj.current_draft_id}
-              {model}
+          {:else if fieldName === "country"}
+            <CountryField
+              {wrapperClass}
+              {valueClass}
+              value={obj.country_id}
+              fieldname="country"
             />
+          {:else if fieldName === "deal_size"}
+            <DecimalField value={obj.deal_size} fieldname="deal_size" unit={$_("ha")} />
+          {:else if fieldName === "created_at"}
+            <DateTimeField fieldname="created_at" value={obj.created_at} />
+          {:else if fieldName === "created_by"}
+            <UserField fieldname="created_by" value={obj.created_by_id} />
+          {:else if fieldName === "modified_at"}
+            <DateTimeField fieldname="modified_at" value={obj.modified_at} />
+          {:else if fieldName === "modified_by"}
+            <UserField fieldname="created_by" value={obj.modified_by_id} />
+          {:else if fieldName === "fully_updated_at"}
+            <DateTimeField fieldname="fully_updated_at" value={obj.fully_updated_at} />
+          {:else}
+            {fieldName}
           {/if}
         </svelte:fragment>
       </Table>

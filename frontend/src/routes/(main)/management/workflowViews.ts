@@ -20,7 +20,7 @@ export const createTodoFeedbackView: CreateWorkflowInfoViewFn = (context, object
       const relevantWFI = wfis.find(
         wfi =>
           wfi.draft_status_before === wfi.draft_status_after &&
-          wfi.to_user?.id === context.page.data.user.id,
+          wfi.to_user_id === context.page.data.user.id,
       )
 
       const lastReply = relevantWFI?.replies.at(-1)
@@ -47,7 +47,7 @@ export const createTodoImprovementView: CreateWorkflowInfoViewFn = (context, obj
           (wfi.draft_status_before === DraftStatus.REVIEW ||
             wfi.draft_status_before === DraftStatus.ACTIVATION) &&
           wfi.draft_status_after === DraftStatus.DRAFT &&
-          wfi.to_user?.id === context.page.data.user.id,
+          wfi.to_user_id === context.page.data.user.id,
       )
 
       return { ...obj, relevantWFI } as WorkflowInfoView
@@ -72,7 +72,7 @@ export const createRequestImprovementView: CreateWorkflowInfoViewFn = (
           (wfi.draft_status_before === DraftStatus.REVIEW ||
             wfi.draft_status_before === DraftStatus.ACTIVATION) &&
           wfi.draft_status_after === DraftStatus.DRAFT &&
-          wfi.from_user?.id === context.page.data.user.id,
+          wfi.from_user_id === context.page.data.user.id,
       )
 
       return { ...obj, relevantWFI } as WorkflowInfoView
@@ -97,7 +97,7 @@ export const createRequestFeedbackView: CreateWorkflowInfoViewFn = (context, obj
       const relevantWFI = wfis.find(
         wfi =>
           wfi.draft_status_before === wfi.draft_status_after &&
-          wfi.from_user?.id === context.page.data.user.id,
+          wfi.from_user_id === context.page.data.user.id,
       )
 
       const lastReply = relevantWFI?.replies.at(-1)

@@ -30,6 +30,9 @@
     const ret = await fetch(url)
     if (ret.ok) counts = await ret.json()
 
+    loading.set(false)
+  }
+  async function getDealsInvestors() {
     let dealsUrl = `/api/case_statistics/?action=deals`
     const dealsRet = await fetch(dealsUrl)
     if (dealsRet.ok) simpleDeals = (await dealsRet.json()).deals
@@ -37,24 +40,25 @@
     let investorsUrl = `/api/case_statistics/?action=investors`
     const investorsRet = await fetch(investorsUrl)
     if (investorsRet.ok) simpleInvestors = (await investorsRet.json()).investors
-
-    loading.set(false)
   }
 
   onMount(() => {
     getCounts(selRegion, selCountry)
+    getDealsInvestors()
   })
 
   $: filteredDeals = selRegion
     ? simpleDeals.filter(d => d.country__region_id === selRegion?.id)
     : selCountry
-      ? simpleDeals.filter(d => d.country.id === selCountry?.id)
+      ? simpleDeals.filter(d => d.country_id === selCountry?.id)
       : simpleDeals
 
   $: filteredInvestors = selRegion
-    ? simpleInvestors.filter(inv => inv.country__region_id === selRegion?.id)
+    ? simpleInvestors.filter(
+        inv => inv.active_version__country__region_id === selRegion?.id,
+      )
     : selCountry
-      ? simpleInvestors.filter(inv => inv.country.id === selCountry?.id)
+      ? simpleInvestors.filter(inv => inv.active_version__country_id === selCountry?.id)
       : simpleInvestors
 </script>
 

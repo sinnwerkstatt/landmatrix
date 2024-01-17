@@ -80,6 +80,9 @@
     showContextBar.set(false)
     showFilterBar.set(!$isMobile)
   })
+
+  const wrapperClass = "p-1"
+  const valueClass = ""
 </script>
 
 <DataContainer>
@@ -110,41 +113,47 @@
               <DateTimeField
                 value={obj.fully_updated_at}
                 fieldname="fully_updated_at"
-                wrapperClass="p-1"
+                {wrapperClass}
+                {valueClass}
               />
             {:else if fieldName === "id"}
-              <IDField fieldname="id" value={obj.id} wrapperClass="p-1" />
+              <IDField fieldname="id" value={obj.id} {wrapperClass} {valueClass} />
             {:else if fieldName === "country"}
               <CountryField
                 fieldname="country"
                 value={obj.country}
-                wrapperClass="p-1"
+                {wrapperClass}
+                {valueClass}
               />
             {:else if fieldName === "operating_company"}
               <InvestorLinkField
                 fieldname="operating_company"
                 value={obj.operating_company}
-                wrapperClass="p-1"
+                {wrapperClass}
+                {valueClass}
               />
             {:else if fieldName === "current_intention_of_investment"}
               <IOIField
                 fieldname="current_intention_of_investment"
                 value={obj.current_intention_of_investment}
-                wrapperClass="p-1"
+                {wrapperClass}
+                {valueClass}
               />
             {:else if ["current_contract_size", "intended_size", "deal_size"].includes(fieldName)}
               <DecimalField
                 fieldname={fieldName}
                 value={obj[fieldName]}
                 unit={col?.unit}
-                wrapperClass="p-1"
+                {wrapperClass}
+                {valueClass}
               />
             {:else}
               <TextField
                 fieldname={fieldName}
                 value={obj[fieldName]}
                 choices={col?.choices}
-                wrapperClass="p-1"
+                {wrapperClass}
+                {valueClass}
               />
             {/if}
           {/if}

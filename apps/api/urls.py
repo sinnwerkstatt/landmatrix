@@ -1,10 +1,12 @@
 from django.urls import include, path
 from rest_framework import routers
 
+import apps.landmatrix.views.management as management_views
 from apps.accounts import views as user_views
 from apps.api import views as api_views
-from apps.landmatrix import newviews
+from apps.landmatrix.views import newviews
 from apps.landmatrix import views as oldviews
+from apps.message.views import MessageViewSet
 from .export import DataDownload
 from .gis_export import gis_export
 from .upload_view import upload_datasource_file
@@ -24,6 +26,7 @@ router.register(r"deals", newviews.DealViewSet)
 router.register(r"dealversions", newviews.DealVersionViewSet)
 router.register(r"investors", newviews.InvestorViewSet)
 router.register(r"investorversions", newviews.InvestorVersionViewSet)
+router.register(r"messages", MessageViewSet)
 
 urlpatterns = [
     # account/user
@@ -50,12 +53,11 @@ urlpatterns = [
         "workflow_info/<str:wfitype>/<int:pk>/resolve/",
         api_views.workflow_info_resolve,
     ),
-    path("newdeal_legacy/messages/", api_views.messages_json),
     path("legacy_export/", data_download),
     path("gis_export/", gis_export),
     # management / case
-    path("management/", api_views.Management.as_view()),
-    path("case_statistics/", api_views.CaseStatistics.as_view()),
+    path("management/", management_views.Management.as_view()),
+    path("case_statistics/", management_views.CaseStatistics.as_view()),
     # special stuff
     path("investor_search/", api_views.investor_search),
     # charts

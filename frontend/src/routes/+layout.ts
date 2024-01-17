@@ -18,8 +18,7 @@ async function fetchMe(fetch: LoadEvent["fetch"]) {
   return null
 }
 
-export const load: LayoutLoad = async ({ fetch, data, depends }) => {
-  depends("user:auth")
+export const load: LayoutLoad = async ({ fetch, data }) => {
   const user: User | null = await fetchMe(fetch)
   const lang = data?.locale ?? "en"
   await Promise.all([fetchBasis(lang, fetch), i18nload(lang)])

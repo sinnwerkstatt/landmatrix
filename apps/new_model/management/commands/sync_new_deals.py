@@ -5,7 +5,7 @@ from django.core.management.base import BaseCommand
 from django.db import connection
 from icecream import ic
 
-from apps.landmatrix.models.deal import Deal
+from apps.landmatrix.models.deal import Deal, DealWorkflowInfo
 from apps.landmatrix.models.new import (
     DealHull,
     DealVersion2,
@@ -23,6 +23,7 @@ status_map_dings = {
     3: "ACTIVATION",
     4: "REJECTED",
     5: "TO_DELETE",
+    None: None,
 }
 
 
@@ -43,7 +44,11 @@ class Command(BaseCommand):
             ic(old_deal.id, old_deal.status, url)
 
             deal_hull: DealHull
-            deal_hull, _ = DealHull.objects.get_or_create(id=old_deal.id)
+            deal_hull, _ = DealHull.objects.get_or_create(
+                id=old_deal.id,
+                first_created_by_id=old_deal.created_by_id or 1,
+                first_created_at=old_deal.created_at,
+            )
 
             deal_hull.fully_updated_at = old_deal.fully_updated_at
 
@@ -122,6 +127,9 @@ class Command(BaseCommand):
             )
             cursor.execute(
                 "SELECT setval('landmatrix_dealversion2_id_seq', (SELECT MAX(id) from landmatrix_dealversion2))"
+            )
+            cursor.execute(
+                "SELECT setval('landmatrix_dealworkflowinfo2_id_seq', (SELECT MAX(id) from landmatrix_dealworkflowinfo2))"
             )
 
 
@@ -665,15 +673,39 @@ def map_version_payload(ov: dict, nv: DealVersion2):
 
 
 def do_workflows(deal_id):
-    for wfi in DealWorkflowInfo2.objects.filter(deal_id=deal_id):
+    for wfi_old in DealWorkflowInfo.objects.filter(deal_id=deal_id):
+        wfi_old: DealWorkflowInfo
+
+        status_before = status_map_dings[wfi_old.draft_status_before]
+        status_after = status_map_dings[wfi_old.draft_status_after]
+        if status_before in ["REVIEW", "ACTIVATION"] and status_after is None:
+            status_after = "ACTIVATED"
+
+        wfi, _ = DealWorkflowInfo2.objects.get_or_create(
+            id=wfi_old.id,
+            from_user_id=wfi_old.from_user_id,
+            to_user_id=wfi_old.to_user_id,
+            status_before=status_before,
+            status_after=status_after,
+            timestamp=wfi_old.timestamp,
+            comment=wfi_old.comment or "",
+            replies=wfi_old.replies or [],
+            resolved=wfi_old.resolved,
+            deal_id=wfi_old.deal_id,
+            deal_version_id=wfi_old.deal_version_id,
+        )
+
         if not wfi.deal_version_id:
             continue
         # if dwi.deal_version_id in [43461, 43462]:
         #     print(dwi, dwi.status_before, dwi.status_after, dwi.comment)
         dv: DealVersion2 = DealVersion2.objects.get(id=wfi.deal_version_id)
-        if wfi.status_before is None and wfi.status_after == 1:
+        if wfi.status_before is None and wfi.status_after == "DRAFT":
             ...  # TODO I think we're good here. Don't see anything that we ought to be doing.
-        elif wfi.status_before in [2, 3] and wfi.status_after == 1:
+        elif (
+            wfi.status_before in ["REVIEW", "ACTIVATION"]
+            and wfi.status_after == "DRAFT"
+        ):
             # ic(
             #     "new draft... what to do?",
             #     wfi.timestamp,
@@ -687,22 +719,31 @@ def do_workflows(deal_id):
             wfi.status_before == wfi.status_after
         ):
             ...  # nothing?
-        elif wfi.status_before in [None, 1, 5] and wfi.status_after == 2:
+        elif (
+            wfi.status_before in [None, "DRAFT", "TO_DELETE"]
+            and wfi.status_after == "REVIEW"
+        ):
             dv.sent_to_review_at = wfi.timestamp
             dv.sent_to_review_by = wfi.from_user
             dv.save(recalculate_independent=False, recalculate_dependent=False)
-        elif wfi.status_before in [None, 1, 2, 5] and wfi.status_after == 3:
+        elif (
+            wfi.status_before in [None, "DRAFT", "REVIEW", "TO_DELETE"]
+            and wfi.status_after == "ACTIVATION"
+        ):
             dv.sent_to_activation_at = wfi.timestamp
             dv.sent_to_activation_by = wfi.from_user
             dv.save(recalculate_independent=False, recalculate_dependent=False)
             # dv.status
-        elif wfi.status_before in [2, 3] and wfi.status_after is None:
+        elif (
+            wfi.status_before in ["REVIEW", "ACTIVATION"]
+            and wfi.status_after == "ACTIVATED"
+        ):
             dv.activated_at = wfi.timestamp
             dv.activated_by = wfi.from_user
             dv.save(recalculate_independent=False, recalculate_dependent=False)
-        elif wfi.status_before == 3 and wfi.status_after == 2:
+        elif wfi.status_before == "ACTIVATION" and wfi.status_after == "REVIEW":
             pass  # ignoring this case because it's not changing anything on the deal
-        elif wfi.status_before == 4 or wfi.status_after == 4:
+        elif wfi.status_before == "REJECTED" or wfi.status_after == "REJECTED":
             ...  # TODO REJECTED status change
             # ic(
             #     "DWI OHO",
@@ -715,10 +756,10 @@ def do_workflows(deal_id):
             #     wfi.comment,
             # )
             # sys.exit(1)
-        elif wfi.status_after == 5:
+        elif wfi.status_after == "TO_DELETE":
             dv.status = "TO_DELETE"
             dv.save(recalculate_independent=False, recalculate_dependent=False)
-        elif wfi.status_before == 5 and wfi.status_after != 5:
+        elif wfi.status_before == "TO_DELETE" and wfi.status_after != "TO_DELETE":
             if not wfi.status_after:
                 # TODO What is going on here?
                 ...
@@ -738,4 +779,4 @@ def do_workflows(deal_id):
                 wfi.status_after,
                 wfi.comment,
             )
-            sys.exit(1)
+            # sys.exit(1)

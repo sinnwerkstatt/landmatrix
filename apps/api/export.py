@@ -21,7 +21,7 @@ from apps.landmatrix.models.new import (
     InvestorHull,
     Involvement,
 )
-from apps.landmatrix.newviews import _parse_filter
+from apps.landmatrix.views.newviews import _parse_filter
 from apps.landmatrix.utils import InvolvementNetwork2
 from apps.utils import arrayfield_choices_display, qs_values_to_dict
 

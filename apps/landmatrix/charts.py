@@ -7,7 +7,7 @@ from apps.landmatrix.models.new import (
     InvestorHull,
     DealVersion2,
 )
-from apps.landmatrix.newviews import _parse_filter
+from apps.landmatrix.views.newviews import _parse_filter
 
 LONG_COUNTRIES = {
     "United States of America": "USA*",

@@ -14,6 +14,7 @@ from apps.landmatrix.models.new import (
     InvestorHull,
     InvestorVersion2,
     InvestorDataSource,
+    InvestorWorkflowInfo2,
 )
 
 status_map_dings = {
@@ -22,6 +23,7 @@ status_map_dings = {
     3: "ACTIVATION",
     4: "REJECTED",
     5: "TO_DELETE",
+    None: None,
 }
 
 
@@ -32,8 +34,8 @@ class Command(BaseCommand):
             investor_hull: InvestorHull
             investor_hull, _ = InvestorHull.objects.get_or_create(
                 id=old_investor.id,
-                # created_by_id=old_investor.created_by_id or 1,
-                # created_at=old_investor.created_at,
+                first_created_by_id=old_investor.created_by_id or 1,
+                first_created_at=old_investor.created_at,
             )
 
             ic(old_investor.id, old_investor.status)
@@ -84,6 +86,9 @@ class Command(BaseCommand):
             )
             cursor.execute(
                 "SELECT setval('landmatrix_investorversion2_id_seq', (SELECT MAX(id) from landmatrix_investorversion2))"
+            )
+            cursor.execute(
+                "SELECT setval('landmatrix_investorworkflowinfo2_id_seq', (SELECT MAX(id) from landmatrix_investorworkflowinfo2))"
             )
 
 
@@ -172,40 +177,73 @@ def _map_involvements_to_new_format(invos: list) -> list:
 
 
 def do_workflows(investor_id):
-    for wfi in InvestorWorkflowInfo.objects.filter(investor_id=investor_id):
+    for wfi_old in InvestorWorkflowInfo.objects.filter(investor_id=investor_id):
+        wfi_old: InvestorWorkflowInfo
+
+        status_before = status_map_dings[wfi_old.draft_status_before]
+        status_after = status_map_dings[wfi_old.draft_status_after]
+        if status_before == "ACTIVATION" and status_after is None:
+            status_after = "ACTIVATED"
+
+        wfi, _ = InvestorWorkflowInfo2.objects.get_or_create(
+            id=wfi_old.id,
+            from_user_id=wfi_old.from_user_id,
+            to_user_id=wfi_old.to_user_id,
+            status_before=status_before,
+            status_after=status_after,
+            timestamp=wfi_old.timestamp,
+            comment=wfi_old.comment or "",
+            replies=wfi_old.replies or [],
+            resolved=wfi_old.resolved,
+            investor_id=wfi_old.investor_id,
+            investor_version_id=wfi_old.investor_version_id,
+        )
+
         if not wfi.investor_version_id:
             continue
         dv: InvestorVersion2 = InvestorVersion2.objects.get(id=wfi.investor_version_id)
-        if wfi.draft_status_before is None and wfi.draft_status_after == 1:
+        if wfi.status_before is None and wfi.status_after == "DRAFT":
             ...  # TODO I think we're good here. Don't see anything that we ought to be doing.
-        elif wfi.draft_status_before in [2, 3] and wfi.draft_status_after == 1:
+        elif (
+            wfi.status_before in ["REVIEW", "ACTIVATION"]
+            and wfi.status_after == "DRAFT"
+        ):
             # ic(
             #     "new draft... what to do?",
             #     wfi.timestamp,
             #     wfi.from_user,
-            #     wfi.draft_status_before,
-            #     wfi.draft_status_after
+            #     wfi.status_before,
+            #     wfi.status_after
             # )
             ...  # TODO I think we're good here. Don't see anything that we ought to be doing.
 
-        elif (wfi.draft_status_before is None and wfi.draft_status_after is None) or (
-            wfi.draft_status_before == wfi.draft_status_after
+        elif (wfi.status_before is None and wfi.status_after is None) or (
+            wfi.status_before == wfi.status_after
         ):
             ...  # nothing?
-        elif wfi.draft_status_before in [None, 1, 5] and wfi.draft_status_after == 2:
+        elif (
+            wfi.status_before in [None, "DRAFT", "TO_DELETE"]
+            and wfi.status_after == "REVIEW"
+        ):
             dv.sent_to_review_at = wfi.timestamp
             dv.sent_to_review_by = wfi.from_user
             dv.save()
-        elif wfi.draft_status_before in [None, 2, 5] and wfi.draft_status_after == 3:
+        elif (
+            wfi.status_before in [None, "REVIEW", "TO_DELETE"]
+            and wfi.status_after == "ACTIVATION"
+        ):
             dv.sent_to_activation_at = wfi.timestamp
             dv.sent_to_activation_by = wfi.from_user
             dv.save()
             # dv.status
-        elif wfi.draft_status_before in [2, 3] and wfi.draft_status_after is None:
+        elif (
+            wfi.status_before in ["REVIEW", "ACTIVATION"]
+            and wfi.status_after == "ACTIVATED"
+        ):
             dv.activated_at = wfi.timestamp
             dv.activated_by = wfi.from_user
             dv.save()
-        elif wfi.draft_status_before == 4 or wfi.draft_status_after == 4:
+        elif wfi.status_before == "REJECTED" or wfi.status_after == "REJECTED":
             ...  # TODO REJECTED status change
             # ic(
             #     "DWI OHO",
@@ -213,20 +251,20 @@ def do_workflows(investor_id):
             #     wfi.timestamp,
             #     wfi.from_user,
             #     wfi.investor_id,
-            #     wfi.draft_status_before,
-            #     wfi.draft_status_after,z
+            #     wfi.status_before,
+            #     wfi.status_after,z
             #     wfi.comment,
             # )
             # sys.exit(1)
-        elif wfi.draft_status_after == 5:
+        elif wfi.status_after == "TO_DELETE":
             dv.status = "TO_DELETE"
             dv.save()
-        elif wfi.draft_status_before == 5 and wfi.draft_status_after != 5:
-            if not wfi.draft_status_after:
+        elif wfi.status_before == "TO_DELETE" and wfi.status_after != "TO_DELETE":
+            if not wfi.status_after:
                 # TODO What is going on here?
                 ...
             else:
-                dv.status = status_map_dings[wfi.draft_status_after]
+                dv.status = status_map_dings[wfi.status_after]
                 dv.save()
         else:
             ...
@@ -236,8 +274,7 @@ def do_workflows(investor_id):
                 wfi.timestamp,
                 wfi.from_user,
                 wfi.investor_id,
-                wfi.draft_status_before,
-                wfi.draft_status_after,
+                wfi.status_before,
+                wfi.status_after,
                 wfi.comment,
             )
-            sys.exit(1)

@@ -3,10 +3,12 @@ import json
 from django.conf import settings
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.geos import GEOSGeometry
+from django.contrib.gis.geos.prototypes.io import wkt_w
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models, transaction
-from django.db.models import Q, QuerySet
+from django.db.models import Q, QuerySet, Case, When, Value
+from django.db.models.functions import Concat
 from django.http import Http404
 from django.utils import timezone
 from django.utils.translation import gettext as _
@@ -34,8 +36,6 @@ from apps.landmatrix.models.fields import (
     DecimalIntField,
 )
 from apps.landmatrix.models.investor import Investor
-
-from django.contrib.gis.geos.prototypes.io import wkt_w
 
 VERSION_STATUS_CHOICES = (
     ("DRAFT", _("Draft")),
@@ -692,6 +692,7 @@ class BaseVersionMixin(models.Model):
             self.sent_to_activation_by = None
             self.activated_at = None
             self.activated_by = None
+            # TODO what happens with foreignkey-models here? locations, contracts, datasources
             self.save()
 
         else:
@@ -1268,6 +1269,25 @@ class DealHullQuerySet(models.QuerySet):
             return self.active()
         return self
 
+    def with_mode(self):
+        return self.annotate(
+            mode=Case(
+                When(
+                    ~Q(active_version_id=None) & ~Q(draft_version_id=None),
+                    then=Concat(Value("ACTIVE + "), "draft_version__status"),
+                ),
+                When(
+                    ~Q(active_version_id=None) & Q(draft_version_id=None),
+                    then=Value("ACTIVE"),
+                ),
+                When(
+                    Q(active_version_id=None) & ~Q(draft_version_id=None),
+                    then="draft_version__status",
+                ),
+                default=Value(""),
+            )
+        )
+
 
 class DealHull(models.Model):
     country = models.ForeignKey(
@@ -1300,12 +1320,27 @@ class DealHull(models.Model):
         _("Last full update"), null=True, blank=True
     )
 
+    # mainly for management/case_statistics
+    first_created_at = models.DateTimeField(_("Created at"))
+    first_created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        null=True,
+        on_delete=models.PROTECT,
+        related_name="+",
+    )
+
     objects = DealHullQuerySet.as_manager()
 
     def __str__(self):
         if self.country:
             return f"#{self.id} in {self.country.name}"
         return f"#{self.id}"
+
+    def save(self, *args, **kwargs):
+        if self._state.adding and not self.first_created_at:
+            self.first_created_at = timezone.now()
+        super().save(*args, **kwargs)
 
     def selected_version(self):
         if hasattr(self, "_selected_version_id") and self._selected_version_id:
@@ -1436,6 +1471,25 @@ class InvestorHullQuerySet(models.QuerySet):
         # hand it out unfiltered.
         return self
 
+    def with_mode(self):
+        return self.annotate(
+            mode=Case(
+                When(
+                    ~Q(active_version_id=None) & ~Q(draft_version_id=None),
+                    then=Concat(Value("ACTIVE + "), "draft_version__status"),
+                ),
+                When(
+                    ~Q(active_version_id=None) & Q(draft_version_id=None),
+                    then=Value("ACTIVE"),
+                ),
+                When(
+                    Q(active_version_id=None) & ~Q(draft_version_id=None),
+                    then="draft_version__status",
+                ),
+                default=Value(""),
+            )
+        )
+
 
 class InvestorHull(models.Model):
     active_version = models.ForeignKey(
@@ -1458,10 +1512,25 @@ class InvestorHull(models.Model):
         _("Comment why this investor is deleted"), blank=True
     )
 
+    # mainly for management/case_statistics
+    first_created_at = models.DateTimeField(_("Created at"))
+    first_created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        null=True,
+        on_delete=models.PROTECT,
+        related_name="+",
+    )
+
     objects = InvestorHullQuerySet.as_manager()
 
     def __str__(self):
         return f"Investor #{self.id}"
+
+    def save(self, *args, **kwargs):
+        if self._state.adding and not self.first_created_at:
+            self.first_created_at = timezone.now()
+        super().save(*args, **kwargs)
 
     # This method is used by DRF.
     def selected_version(self):

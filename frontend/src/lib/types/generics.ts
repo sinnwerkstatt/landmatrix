@@ -56,15 +56,14 @@ type WFReply = {
 }
 export interface WorkflowInfo {
   id: number
-  from_user: User
-  to_user?: User
+  from_user_id: number
+  to_user_id: number | null
   draft_status_before: DraftStatus | null
   draft_status_after: DraftStatus | null
   timestamp: string
   comment: string
   resolved: boolean
   replies: WFReply[]
-  __typename?: string
 }
 
 export interface FieldDefinition {

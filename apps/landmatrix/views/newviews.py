@@ -185,6 +185,7 @@ def _send_comment_to_user(
 
 
 class VersionViewSet(viewsets.ReadOnlyModelViewSet):
+    # TODO  set_sensible_fields_to_null(results)
     class Meta:
         abstract = True
 
@@ -311,6 +312,7 @@ class DealVersionViewSet(VersionViewSet):
 
 
 class HullViewSet(viewsets.ReadOnlyModelViewSet):
+    # TODO  set_sensible_fields_to_null(results)
     version_serializer_class = None
 
     class Meta:
@@ -408,6 +410,7 @@ class DealViewSet(HullViewSet):
         return self.queryset
 
     def list(self, request: Request, *args, **kwargs):
+        # TODO replace this with DRF serializers?
         deals = (
             DealHull.objects.active()
             .visible(request.user, request.GET.get("subset", "PUBLIC"))
@@ -485,7 +488,9 @@ class DealViewSet(HullViewSet):
     @staticmethod
     def create(request, *args, **kwargs):
         country_id = request.data["country_id"]
-        d1: DealHull = DealHull.objects.create(country_id=country_id)
+        d1: DealHull = DealHull.objects.create(
+            country_id=country_id, first_created_by=request.user
+        )
         dv1 = d1.add_draft(created_by=request.user)
 
         DealWorkflowInfo2.objects.create(
@@ -608,6 +613,7 @@ class InvestorVersionViewSet(VersionViewSet):
 
 
 class InvestorViewSet(HullViewSet):
+    # TODO  set_sensible_fields_to_null(results)
     queryset = InvestorHull.objects.all().prefetch_related(
         Prefetch("versions", queryset=InvestorVersion2.objects.order_by("-id"))
     )
@@ -616,7 +622,7 @@ class InvestorViewSet(HullViewSet):
 
     @staticmethod
     def create(request, *args, **kwargs):
-        i1: InvestorHull = InvestorHull.objects.create()
+        i1: InvestorHull = InvestorHull.objects.create(first_created_by=request.user)
         iv1 = i1.add_draft(created_by=request.user)
 
         # there is more logic here, compared to "new deal" because new deal only ever gets a country

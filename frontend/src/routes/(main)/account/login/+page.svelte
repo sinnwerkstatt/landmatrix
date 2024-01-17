@@ -2,7 +2,7 @@
   import { toast } from "@zerodevx/svelte-toast"
   import { _ } from "svelte-i18n"
 
-  import { goto, invalidate } from "$app/navigation"
+  import { goto } from "$app/navigation"
   import { page } from "$app/stores"
 
   import { getCsrfToken } from "$lib/utils"
@@ -38,9 +38,8 @@
 
     login_failed_message = ""
     logged_in = true
-    // setTimeout(() => (window.location.href = next), 100)
-    await invalidate("user:auth")
-    await goto(next)
+
+    await goto(next, { invalidateAll: true })
   }
 </script>
 

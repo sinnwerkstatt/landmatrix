@@ -9,7 +9,7 @@ from apps.landmatrix.models.abstracts import DRAFT_STATUS, STATUS
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.deal import Deal, DealVersion, DealWorkflowInfo
 
-from .to_dict import create_lookups, deal_to_dict
+from .to_dict import deal_to_dict
 
 UserModel: Type[User] = get_user_model()
 
@@ -38,7 +38,7 @@ class ToDictTestCase(TestCase):
 
     def test_deal_to_dict(self):
         ger = Country.objects.get(name="Germany")
-        lookups = create_lookups()
+        # lookups = create_lookups()
 
         deal = Deal.objects.create(
             id=1000,
@@ -84,7 +84,7 @@ class ToDictTestCase(TestCase):
         )
 
         self.assertDictEqual(
-            deal_to_dict(deal, lookups),  # noqa
+            deal_to_dict(deal),  # noqa
             {
                 "id": 1000,
                 "country": {
