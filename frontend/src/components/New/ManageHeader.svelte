@@ -24,8 +24,6 @@
 
   $: objType = isDeal(object) ? "deal" : "investor"
 
-  $: i18nValues = { values: { object: objType } }
-
   let showCopyOverlay = false
   let showDeletionOverlay = false
   let showConfidentialOverlay = false

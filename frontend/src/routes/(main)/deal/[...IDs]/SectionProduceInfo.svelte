@@ -140,7 +140,7 @@
       version.export_country3_ratio,
     ]}
   >
-    <Textfield
+    <TextField
       fieldname="domestic_use"
       label={$_("Domestic use")}
       value={version.domestic_use}

@@ -7,7 +7,6 @@
   import { invalidate } from "$app/navigation"
   import { page } from "$app/stores"
 
-  import { allUsers } from "$lib/stores"
   import { loading } from "$lib/stores.js"
   import type { WorkflowInfoType } from "$lib/types/newtypes"
   import { getCsrfToken } from "$lib/utils"

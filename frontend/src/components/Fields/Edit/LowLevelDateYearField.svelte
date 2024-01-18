@@ -3,7 +3,6 @@
   import customParseFormat from "dayjs/plugin/customParseFormat"
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
-  import type { FormEventHandler } from "svelte/elements"
 
   dayjs.extend(customParseFormat)
 
@@ -61,14 +60,14 @@
 <div class="relative">
   <input
     bind:this={inputField}
-    value={value ?? ""}
-    type="text"
     class="inpt w-28 {$$props.class ?? ''}"
-    placeholder={$_("YYYY-MM-DD")}
-    {required}
+    maxlength="10"
     {name}
     on:input|preventDefault={onInput}
-    maxlength="10"
+    placeholder={$_("YYYY-MM-DD")}
+    {required}
+    type="text"
+    value={value ?? ""}
   />
   {#if !isValid}
     <span class="absolute right-0 top-full whitespace-nowrap text-xs text-red-700">

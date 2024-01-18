@@ -3,8 +3,6 @@
   import { _ } from "svelte-i18n"
   import type { ChangeEventHandler } from "svelte/elements"
 
-  import { goto } from "$app/navigation"
-
   import { getCsrfToken } from "$lib/utils"
 
   import { LABEL_CLASS, VALUE_CLASS, WRAPPER_CLASS } from "$components/Fields/consts"

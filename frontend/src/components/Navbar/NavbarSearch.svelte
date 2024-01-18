@@ -4,7 +4,6 @@
   import { _ } from "svelte-i18n"
 
   import { goto } from "$app/navigation"
-  import { page } from "$app/stores"
 
   import type { Deal } from "$lib/types/deal"
   import type { Investor } from "$lib/types/investor"
@@ -13,7 +12,7 @@
 
   import SearchIcon from "../icons/SearchIcon.svelte"
 
-  $: user = $page.data.user
+  // $: user = $page.data.user
 
   interface SearchResult {
     id: number
