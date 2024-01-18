@@ -1,9 +1,14 @@
-import type { Contract, DataSource, Deal } from "$lib/types/deal"
-import type { Involvement } from "$lib/types/investor"
+import type {
+  Contract,
+  DataSource,
+  DealVersion2,
+  Involvement,
+  Location2,
+} from "$lib/types/newtypes"
 
-export type SubmodelEntry = Contract | DataSource | Location | Involvement
+export type SubmodelEntry = Contract | DataSource | Location2 | Involvement
 
-export function sum(items: Deal[], prop: keyof Deal): number {
+export function sum(items: DealVersion2[], prop: keyof DealVersion2): number {
   return items.reduce(function (a, b) {
     return a + (b[prop] as number)
   }, 0)
@@ -21,7 +26,7 @@ export function custom_is_null(field: unknown): boolean {
       Object.getPrototypeOf(field) === Object.prototype)
   )
 }
-export const discardEmptyFields = (deal: Deal) =>
+export const discardEmptyFields = (deal: DealVersion2) =>
   Object.fromEntries(Object.entries(deal).filter(([, value]) => !custom_is_null(value)))
 
 function sieveSubmodel(entry: SubmodelEntry, ignoreKeys = ["id", "nid", "role"]) {
