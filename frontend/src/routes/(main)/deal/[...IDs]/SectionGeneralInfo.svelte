@@ -6,7 +6,7 @@
 
   import BooleanField from "$components/Fields/Display2/BooleanField.svelte"
   import DecimalField from "$components/Fields/Display2/DecimalField.svelte"
-  import JSONDateAreaChoicesField from "$components/Fields/Display2/JSONCurrentDateAreaChoicesField.svelte"
+  import JSONCurrentDateAreaChoicesField from "$components/Fields/Display2/JSONCurrentDateAreaChoicesField.svelte"
   import JSONCurrentDateAreaField from "$components/Fields/Display2/JSONCurrentDateAreaField.svelte"
   import JSONCurrentDateChoiceField from "$components/Fields/Display2/JSONCurrentDateChoiceField.svelte"
   import JSONLeaseField from "$components/Fields/Display2/JSONLeaseField.svelte"
@@ -53,7 +53,7 @@
     title={$_("Intention of investment")}
     fields={[version.intention_of_investment, version.intention_of_investment_comment]}
   >
-    <JSONDateAreaChoicesField
+    <JSONCurrentDateAreaChoicesField
       fieldname="intention_of_investment"
       value={version.intention_of_investment}
       label={$_("Intention of investment")}

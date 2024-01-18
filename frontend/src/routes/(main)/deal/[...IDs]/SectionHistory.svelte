@@ -12,8 +12,8 @@
   export let deal: DealHull
   export let dealID: number
   export let dealVersion: number | undefined
-  let compareFrom: number
-  let compareTo: number
+  let compareFrom: number = deal.versions[1]?.id
+  let compareTo: number = deal.versions[0]?.id
 </script>
 
 <section>
@@ -31,12 +31,16 @@
         <th>{$_("Status")}</th>
         <th class="text-right">
           {$_("Show")} /
-          <a
-            class="text-nowrap"
-            href={`/deal/${dealID}/compare/${compareFrom}/${compareTo}/`}
-          >
+          {#if compareFrom && compareTo}
+            <a
+              class="text-nowrap"
+              href={`/deal/${dealID}/compare/${compareFrom}/${compareTo}/`}
+            >
+              {$_("Compare")}
+            </a>
+          {:else}
             {$_("Compare")}
-          </a>
+          {/if}
         </th>
       </tr>
     </thead>
@@ -140,8 +144,9 @@
         <td />
         <td />
         <td />
+        <td />
         {#if compareFrom && compareTo}
-          <td>
+          <td class="text-right">
             <a
               href={`/deal/${dealID}/compare/${compareFrom}/${compareTo}/`}
               class="btn btn-primary text-nowrap"

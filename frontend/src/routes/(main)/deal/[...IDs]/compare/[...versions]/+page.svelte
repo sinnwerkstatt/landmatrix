@@ -1,10 +1,8 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
+  import { dealFields } from "$lib/fieldLookups"
   import { dealSections, subsections } from "$lib/sections"
-  import { formfields } from "$lib/stores"
-
-  import DisplayField from "$components/Fields/DisplayField.svelte"
 
   export let data
 
@@ -41,7 +39,7 @@
 <svelte:head>
   <title>
     {$_("Comparing deal #{dealID}", { values: { dealID: data.dealID } })}
-    @{data.versionFrom} - @{data.versionTo}
+    @{data.fromVersion.id} - @{data.toVersion.id}
   </title>
 </svelte:head>
 
@@ -55,15 +53,15 @@
           <a href="/deal/{data.dealID}">{$_("Deal")} #{data.dealID}</a>
         </th>
         <th class="w-2/5 border-t">
-          <a href="/deal/{data.dealID}/{data.versionFrom}">
+          <a href="/deal/{data.dealID}/{data.fromVersion.id}/">
             {$_("Version")}
-            {data.versionFrom}
+            {data.fromVersion.id}
           </a>
         </th>
         <th class="w-2/5 border-t">
-          <a href="/deal/{data.dealID}/{data.versionTo}">
+          <a href="/deal/{data.dealID}/{data.toVersion.id}/">
             {$_("Version")}
-            {data.versionTo}
+            {data.toVersion.id}
           </a>
         </th>
       </tr>
@@ -86,25 +84,30 @@
               </tr>
               {#each subsec.fields as field}
                 {#if data.dealdiff.has(field)}
-                  <tr class="odd:bg-gray-50 dark:odd:bg-gray-700">
-                    <th>
-                      {$formfields.deal[field].label}
-                    </th>
-                    <td>
-                      <DisplayField
-                        wrapperClasses="py-2"
-                        fieldname={field}
-                        value={data.dealFrom[field]}
-                      />
-                    </td>
-                    <td>
-                      <DisplayField
-                        wrapperClasses="py-2"
-                        fieldname={field}
-                        value={data.dealTo[field]}
-                      />
-                    </td>
-                  </tr>
+                  {@const dealField = $dealFields[field]}
+                  {#if dealField}
+                    <tr class="odd:bg-gray-50 dark:odd:bg-gray-700">
+                      <th>
+                        {dealField.label}
+                      </th>
+                      <td>
+                        <svelte:component
+                          this={dealField.displayField}
+                          value={data.fromVersion[field]}
+                          wrapperClass="py-2"
+                        />
+                      </td>
+                      <td>
+                        <svelte:component
+                          this={dealField.displayField}
+                          value={data.toVersion[field]}
+                          wrapperClass="py-2"
+                        />
+                      </td>
+                    </tr>
+                  {:else}
+                    {field}
+                  {/if}
                 {/if}
               {/each}
             {/if}
@@ -112,137 +115,137 @@
         {/if}
       {/each}
 
-      {#if data.locationsdiff}
-        <tr class="bg-gray-700">
-          <th colspan="3">
-            <h2 class="text-white">{$_("Locations")}</h2>
-          </th>
-        </tr>
-        {#each [...data.locationsdiff] as field}
-          <tr class="bg-gray-100 dark:bg-gray-600">
-            <th colspan="3">
-              <h3>{$_("Location")} #{+field + 1}</h3>
-            </th>
-          </tr>
-          {#each subsections.location as jfield}
-            {#if hasDifference(data.dealFrom.locations, data.dealTo.locations, field, jfield)}
-              <tr class="odd:bg-gray-50 dark:odd:bg-gray-700">
-                <th>
-                  {$formfields.location[jfield].label}
-                </th>
-                <td>
-                  {#if data.dealFrom.locations[field]}
-                    <DisplayField
-                      wrapperClasses="py-2"
-                      fieldname={jfield}
-                      value={data.dealFrom.locations[field][jfield]}
-                      model="location"
-                    />
-                  {/if}
-                </td>
-                <td>
-                  {#if data.dealTo.locations[field]}
-                    <DisplayField
-                      wrapperClasses="py-2"
-                      fieldname={jfield}
-                      value={data.dealTo.locations[field][jfield]}
-                      model="location"
-                    />
-                  {/if}
-                </td>
-              </tr>
-            {/if}
-          {/each}
-        {/each}
-      {/if}
+      <!--      {#if data.locationsdiff}-->
+      <!--        <tr class="bg-gray-700">-->
+      <!--          <th colspan="3">-->
+      <!--            <h2 class="text-white">{$_("Locations")}</h2>-->
+      <!--          </th>-->
+      <!--        </tr>-->
+      <!--        {#each [...data.locationsdiff] as field}-->
+      <!--          <tr class="bg-gray-100 dark:bg-gray-600">-->
+      <!--            <th colspan="3">-->
+      <!--              <h3>{$_("Location")} #{+field + 1}</h3>-->
+      <!--            </th>-->
+      <!--          </tr>-->
+      <!--          {#each subsections.location as jfield}-->
+      <!--            {#if hasDifference(data.dealFrom.locations, data.dealTo.locations, field, jfield)}-->
+      <!--              <tr class="odd:bg-gray-50 dark:odd:bg-gray-700">-->
+      <!--                <th>-->
+      <!--                  &lt;!&ndash;{$formfields.location[jfield].label}&ndash;&gt;-->
+      <!--                </th>-->
+      <!--                <td>-->
+      <!--                  {#if data.dealFrom.locations[field]}-->
+      <!--                    &lt;!&ndash;                    <DisplayField&ndash;&gt;-->
+      <!--                    &lt;!&ndash;                      wrapperClasses="py-2"&ndash;&gt;-->
+      <!--                    &lt;!&ndash;                      fieldname={jfield}&ndash;&gt;-->
+      <!--                    &lt;!&ndash;                      value={data.dealFrom.locations[field][jfield]}&ndash;&gt;-->
+      <!--                    &lt;!&ndash;                      model="location"&ndash;&gt;-->
+      <!--                    &lt;!&ndash;                    />&ndash;&gt;-->
+      <!--                  {/if}-->
+      <!--                </td>-->
+      <!--                <td>-->
+      <!--                  {#if data.dealTo.locations[field]}-->
+      <!--                    &lt;!&ndash;                    <DisplayField&ndash;&gt;-->
+      <!--                    &lt;!&ndash;                      wrapperClasses="py-2"&ndash;&gt;-->
+      <!--                    &lt;!&ndash;                      fieldname={jfield}&ndash;&gt;-->
+      <!--                    &lt;!&ndash;                      value={data.dealTo.locations[field][jfield]}&ndash;&gt;-->
+      <!--                    &lt;!&ndash;                      model="location"&ndash;&gt;-->
+      <!--                    &lt;!&ndash;                    />&ndash;&gt;-->
+      <!--                  {/if}-->
+      <!--                </td>-->
+      <!--              </tr>-->
+      <!--            {/if}-->
+      <!--          {/each}-->
+      <!--        {/each}-->
+      <!--      {/if}-->
 
-      {#if data.datasourcesdiff}
-        <tr class="bg-gray-700">
-          <th colspan="3">
-            <h2 class="text-white">{$_("Data sources")}</h2>
-          </th>
-        </tr>
-        {#each [...data.datasourcesdiff] as field}
-          <tr class="bg-gray-100 dark:bg-gray-600">
-            <th colspan="3">
-              <h3>{$_("Data source")} #{+field + 1}</h3>
-            </th>
-          </tr>
-          {#each subsections.datasource as jfield}
-            {#if hasDifference(data.dealFrom.datasources, data.dealTo.datasources, field, jfield)}
-              <tr class="odd:bg-gray-50 dark:odd:bg-gray-700">
-                <th>
-                  {$formfields.datasource[jfield].label}
-                </th>
-                <td>
-                  {#if data.dealFrom.datasources[field]}
-                    <DisplayField
-                      wrapperClasses="py-2"
-                      fieldname={jfield}
-                      value={data.dealFrom.datasources[field][jfield]}
-                      model="datasource"
-                    />
-                  {/if}
-                </td>
-                <td>
-                  {#if data.dealTo.datasources[field]}
-                    <DisplayField
-                      wrapperClasses="py-2"
-                      fieldname={jfield}
-                      value={data.dealTo.datasources[field][jfield]}
-                      model="datasource"
-                    />
-                  {/if}
-                </td>
-              </tr>
-            {/if}
-          {/each}
-        {/each}
-      {/if}
+      <!--      {#if data.datasourcesdiff}-->
+      <!--        <tr class="bg-gray-700">-->
+      <!--          <th colspan="3">-->
+      <!--            <h2 class="text-white">{$_("Data sources")}</h2>-->
+      <!--          </th>-->
+      <!--        </tr>-->
+      <!--        {#each [...data.datasourcesdiff] as field}-->
+      <!--          <tr class="bg-gray-100 dark:bg-gray-600">-->
+      <!--            <th colspan="3">-->
+      <!--              <h3>{$_("Data source")} #{+field + 1}</h3>-->
+      <!--            </th>-->
+      <!--          </tr>-->
+      <!--          {#each subsections.datasource as jfield}-->
+      <!--            {#if hasDifference(data.dealFrom.datasources, data.dealTo.datasources, field, jfield)}-->
+      <!--              <tr class="odd:bg-gray-50 dark:odd:bg-gray-700">-->
+      <!--                <th>-->
+      <!--                  &lt;!&ndash;{$formfields.datasource[jfield].label}&ndash;&gt;-->
+      <!--                </th>-->
+      <!--                <td>-->
+      <!--                  {#if data.dealFrom.datasources[field]}-->
+      <!--                    &lt;!&ndash;                    <DisplayField&ndash;&gt;-->
+      <!--                    &lt;!&ndash;                      wrapperClasses="py-2"&ndash;&gt;-->
+      <!--                    &lt;!&ndash;                      fieldname={jfield}&ndash;&gt;-->
+      <!--                    &lt;!&ndash;                      value={data.dealFrom.datasources[field][jfield]}&ndash;&gt;-->
+      <!--                    &lt;!&ndash;                      model="datasource"&ndash;&gt;-->
+      <!--                    &lt;!&ndash;                    />&ndash;&gt;-->
+      <!--                  {/if}-->
+      <!--                </td>-->
+      <!--                <td>-->
+      <!--                  {#if data.dealTo.datasources[field]}-->
+      <!--                    &lt;!&ndash;                    <DisplayField&ndash;&gt;-->
+      <!--                    &lt;!&ndash;                      wrapperClasses="py-2"&ndash;&gt;-->
+      <!--                    &lt;!&ndash;                      fieldname={jfield}&ndash;&gt;-->
+      <!--                    &lt;!&ndash;                      value={data.dealTo.datasources[field][jfield]}&ndash;&gt;-->
+      <!--                    &lt;!&ndash;                      model="datasource"&ndash;&gt;-->
+      <!--                    &lt;!&ndash;                    />&ndash;&gt;-->
+      <!--                  {/if}-->
+      <!--                </td>-->
+      <!--              </tr>-->
+      <!--            {/if}-->
+      <!--          {/each}-->
+      <!--        {/each}-->
+      <!--      {/if}-->
 
-      {#if data.contractsdiff}
-        <tr class="bg-gray-700">
-          <th colspan="3">
-            <h2 class="text-white">{$_("Contracts")}</h2>
-          </th>
-        </tr>
-        {#each [...data.contractsdiff] as field}
-          <tr class="bg-gray-100 dark:bg-gray-600">
-            <th colspan="3">
-              <h3>{$_("Contract")} #{+field + 1}</h3>
-            </th>
-          </tr>
-          {#each subsections.contract as jfield}
-            {#if hasDifference(data.dealFrom.contracts, data.dealTo.contracts, field, jfield)}
-              <tr class="odd:bg-gray-50 dark:odd:bg-gray-700">
-                <th>
-                  {$formfields.contract[jfield].label}
-                </th>
-                <td>
-                  {#if data.dealFrom.contracts[field]}
-                    <DisplayField
-                      wrapperClasses="py-2"
-                      fieldname={jfield}
-                      value={data.dealFrom.contracts[field][jfield]}
-                      model="contract"
-                    />
-                  {/if}
-                </td>
-                <td>
-                  {#if data.dealTo.contracts[field]}
-                    <DisplayField
-                      wrapperClasses="py-2"
-                      fieldname={jfield}
-                      value={data.dealTo.contracts[field][jfield]}
-                      model="contract"
-                    />
-                  {/if}
-                </td>
-              </tr>
-            {/if}
-          {/each}
-        {/each}
-      {/if}
+      <!--      {#if data.contractsdiff}-->
+      <!--        <tr class="bg-gray-700">-->
+      <!--          <th colspan="3">-->
+      <!--            <h2 class="text-white">{$_("Contracts")}</h2>-->
+      <!--          </th>-->
+      <!--        </tr>-->
+      <!--        {#each [...data.contractsdiff] as field}-->
+      <!--          <tr class="bg-gray-100 dark:bg-gray-600">-->
+      <!--            <th colspan="3">-->
+      <!--              <h3>{$_("Contract")} #{+field + 1}</h3>-->
+      <!--            </th>-->
+      <!--          </tr>-->
+      <!--          {#each subsections.contract as jfield}-->
+      <!--            {#if hasDifference(data.dealFrom.contracts, data.dealTo.contracts, field, jfield)}-->
+      <!--              <tr class="odd:bg-gray-50 dark:odd:bg-gray-700">-->
+      <!--                <th>-->
+      <!--                  &lt;!&ndash;{$formfields.contract[jfield].label}&ndash;&gt;-->
+      <!--                </th>-->
+      <!--                <td>-->
+      <!--                  {#if data.dealFrom.contracts[field]}-->
+      <!--                    &lt;!&ndash;                    <DisplayField&ndash;&gt;-->
+      <!--                    &lt;!&ndash;                      wrapperClasses="py-2"&ndash;&gt;-->
+      <!--                    &lt;!&ndash;                      fieldname={jfield}&ndash;&gt;-->
+      <!--                    &lt;!&ndash;                      value={data.dealFrom.contracts[field][jfield]}&ndash;&gt;-->
+      <!--                    &lt;!&ndash;                      model="contract"&ndash;&gt;-->
+      <!--                    &lt;!&ndash;                    />&ndash;&gt;-->
+      <!--                  {/if}-->
+      <!--                </td>-->
+      <!--                <td>-->
+      <!--                  {#if data.dealTo.contracts[field]}-->
+      <!--                    &lt;!&ndash;                    <DisplayField&ndash;&gt;-->
+      <!--                    &lt;!&ndash;                      wrapperClasses="py-2"&ndash;&gt;-->
+      <!--                    &lt;!&ndash;                      fieldname={jfield}&ndash;&gt;-->
+      <!--                    &lt;!&ndash;                      value={data.dealTo.contracts[field][jfield]}&ndash;&gt;-->
+      <!--                    &lt;!&ndash;                      model="contract"&ndash;&gt;-->
+      <!--                    &lt;!&ndash;                    />&ndash;&gt;-->
+      <!--                  {/if}-->
+      <!--                </td>-->
+      <!--              </tr>-->
+      <!--            {/if}-->
+      <!--          {/each}-->
+      <!--        {/each}-->
+      <!--      {/if}-->
     </tbody>
   </table>
 </div>
