@@ -683,16 +683,18 @@ def do_workflows(deal_id):
 
         wfi, _ = DealWorkflowInfo2.objects.get_or_create(
             id=wfi_old.id,
-            from_user_id=wfi_old.from_user_id,
-            to_user_id=wfi_old.to_user_id,
-            status_before=status_before,
-            status_after=status_after,
-            timestamp=wfi_old.timestamp,
-            comment=wfi_old.comment or "",
-            replies=wfi_old.replies or [],
-            resolved=wfi_old.resolved,
-            deal_id=wfi_old.deal_id,
-            deal_version_id=wfi_old.deal_version_id,
+            defaults={
+                "from_user_id": wfi_old.from_user_id,
+                "to_user_id": wfi_old.to_user_id,
+                "status_before": status_before,
+                "status_after": status_after,
+                "timestamp": wfi_old.timestamp,
+                "comment": wfi_old.comment or "",
+                "replies": wfi_old.replies or [],
+                "resolved": wfi_old.resolved,
+                "deal_id": wfi_old.deal_id,
+                "deal_version_id": wfi_old.deal_version_id,
+            },
         )
 
         if not wfi.deal_version_id:

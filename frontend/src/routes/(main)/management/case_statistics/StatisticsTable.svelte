@@ -1,41 +1,15 @@
 <script lang="ts">
   import cn from "classnames"
+  import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
+  import type { Country, Region } from "$lib/types/wagtail"
+
+  import type { CaseStatisticsDeal, CaseStatisticsInvestor } from "./caseStatistics.js"
   import CaseStatisticsTable from "./CaseStatisticsTable.svelte"
 
-  interface CaseStatisticsDeal {
-    id: number
-    mode: string
-    active_version_id: number | null
-    draft_version_id: number | null
-    draft_version__status: string
-    fully_updated_at: string | null
-    active_version__fully_updated: boolean
-    confidential: boolean
-    country_id: number | null
-    country__region_id: number | null
-    active_version__deal_size: number | null
-    active_version__is_public: boolean
-
-    first_created_at: string
-    active_version__modified_at: string | null
-  }
-  interface CaseStatisticsInvestor {
-    id: number
-    mode: string
-    active_version_id: number | null
-    draft_version_id: number | null
-    draft_version__status: string
-    active_version__name: string
-    active_version__country_id: number | null
-    active_version__country__region_id: number | null
-
-    first_created_at: string
-    active_version__modified_at: string | null
-  }
-  export let deals: CaseStatisticsDeal[] = []
-  export let investors: CaseStatisticsInvestor[] = []
+  export let selCountry: Country | undefined
+  export let selRegion: Region | undefined
 
   let model: "deal" | "investor" = "deal"
   let activeTabId: string | undefined = "pending"
@@ -57,9 +31,30 @@
           { id: "active", name: $_("Investors active") },
         ]
 
+  let simpleDeals: CaseStatisticsDeal[] = []
+  let simpleInvestors: CaseStatisticsInvestor[] = []
+
+  async function getDealsInvestors() {
+    let dealsUrl = `/api/case_statistics/?action=deals`
+    const dealsRet = await fetch(dealsUrl)
+    if (dealsRet.ok) simpleDeals = (await dealsRet.json()).deals
+
+    let investorsUrl = `/api/case_statistics/?action=investors`
+    const investorsRet = await fetch(investorsUrl)
+    if (investorsRet.ok) simpleInvestors = (await investorsRet.json()).investors
+  }
+
+  onMount(() => getDealsInvestors())
+
+  $: deals = selRegion
+    ? simpleDeals.filter(d => d.region_id === selRegion?.id)
+    : selCountry
+      ? simpleDeals.filter(d => d.country_id === selCountry?.id)
+      : simpleDeals
   let _active_deals: CaseStatisticsDeal[]
   $: _active_deals = deals.filter(deal => deal.active_version_id !== null)
-  $: deals_buckets = {
+  let dealsBuckets: { [key: string]: CaseStatisticsDeal[] }
+  $: dealsBuckets = {
     pending: deals.filter(deal =>
       ["DRAFT", "REVIEW", "ACTIVATION"].includes(deal.draft_version__status),
     ),
@@ -72,7 +67,13 @@
     active_confidential: _active_deals.filter(deal => deal.confidential),
   }
 
-  $: investors_buckets = {
+  $: investors = selRegion
+    ? simpleInvestors.filter(inv => inv.region_id === selRegion?.id)
+    : selCountry
+      ? simpleInvestors.filter(inv => inv.country_id === selCountry?.id)
+      : simpleInvestors
+  let investorsBuckets: { [key: string]: CaseStatisticsInvestor[] }
+  $: investorsBuckets = {
     pending: investors.filter(investor =>
       ["DRAFT", "REVIEW", "ACTIVATION"].includes(investor.draft_version__status),
     ),
@@ -143,11 +144,11 @@
             >
               <span class="font-bold">
                 {#if model === "deal"}
-                  {#if deals_buckets[item.id]}
-                    {deals_buckets[item.id].length}
+                  {#if dealsBuckets[item.id]}
+                    {dealsBuckets[item.id].length}
                   {/if}
-                {:else if investors_buckets[item.id]}
-                  {investors_buckets[item.id].length}
+                {:else if investorsBuckets[item.id]}
+                  {investorsBuckets[item.id].length}
                 {/if}
               </span>
               {item.name}
@@ -162,8 +163,8 @@
       <CaseStatisticsTable
         {model}
         objects={model === "deal"
-          ? deals_buckets[activeTabId]
-          : investors_buckets[activeTabId]}
+          ? dealsBuckets[activeTabId]
+          : investorsBuckets[activeTabId]}
       />
     {/if}
   </div>

@@ -1,10 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import { formfields } from "$lib/stores"
-  import type { Deal } from "$lib/types/deal"
-  import type { Investor } from "$lib/types/investor"
-
   import BooleanField from "$components/Fields/Display2/BooleanField.svelte"
   import CountryField from "$components/Fields/Display2/CountryField.svelte"
   import DateTimeField from "$components/Fields/Display2/DateTimeField.svelte"
@@ -13,7 +9,9 @@
   import TextField from "$components/Fields/Display2/TextField.svelte"
   import Table from "$components/Table/Table.svelte"
 
-  export let objects: Array<Deal | Investor> = []
+  import type { CaseStatisticsDeal, CaseStatisticsInvestor } from "./caseStatistics"
+
+  export let objects: Array<CaseStatisticsDeal | CaseStatisticsInvestor> = []
   export let model: "deal" | "investor" = "deal"
 
   interface Col {
@@ -21,22 +19,22 @@
     label: string
     colSpan: number
   }
+
   const dealColumns: Col[] = [
     { key: "id", label: $_("ID"), colSpan: 1 },
     { key: "mode", label: $_("Mode"), colSpan: 2 },
-    { key: "country", label: $_("Target country"), colSpan: 2 },
+    { key: "country_id", label: $_("Target country"), colSpan: 2 },
     { key: "deal_size", label: $_("Deal size"), colSpan: 2 },
     { key: "confidential", label: $_("Confidential"), colSpan: 2 },
     { key: "created_at", label: $_("Created at"), colSpan: 2 },
     { key: "modified_at", label: $_("Last update"), colSpan: 2 },
     { key: "fully_updated_at", label: $_("Last full update"), colSpan: 3 },
   ]
-  ;("Country of registration/origin")
   const investorColumns: Col[] = [
     { key: "id", label: $_("ID"), colSpan: 1 },
     { key: "mode", label: $_("Mode"), colSpan: 2 },
     { key: "name", label: $_("Name"), colSpan: 5 },
-    { key: "country", label: $_("Target country"), colSpan: 4 },
+    { key: "country_id", label: $_("Country of registration/origin"), colSpan: 4 },
 
     { key: "created_at", label: $_("Created at"), colSpan: 2 },
     { key: "modified_at", label: $_("Last update"), colSpan: 2 },
@@ -52,12 +50,12 @@
   const valueClass = "text-gray-700 dark:text-white"
 </script>
 
-<Table {columns} items={objects} {labels} {spans} rowHeightInPx={36}>
-  <svelte:fragment slot="field" let:fieldName let:obj>
+<Table {columns} items={objects} {labels} rowHeightInPx={36} {spans}>
+  <svelte:fragment let:fieldName let:obj slot="field">
     {#if fieldName === "id"}
       <IDField fieldname="id" value={obj.id} {wrapperClass} {valueClass} {model} />
     {:else if fieldName === "mode"}
-      {obj.mode}
+      <div class="whitespace-nowrap">{obj.mode}</div>
     {:else if fieldName === "name"}
       <TextField
         fieldname="name"
@@ -65,9 +63,9 @@
         {wrapperClass}
         {valueClass}
       />
-    {:else if fieldName === "country"}
+    {:else if fieldName === "country_id"}
       <CountryField
-        fieldname="country"
+        fieldname="country_id"
         value={obj.country_id}
         {wrapperClass}
         {valueClass}
@@ -89,14 +87,14 @@
       />
     {:else if fieldName === "created_at"}
       <DateTimeField
-        value={obj.first_created_at}
+        value={obj.created_at}
         fieldname="created_at"
         {wrapperClass}
         {valueClass}
       />
     {:else if fieldName === "modified_at"}
       <DateTimeField
-        value={obj.active_version__modified_at}
+        value={obj.modified_at}
         fieldname="modified_at"
         {wrapperClass}
         {valueClass}

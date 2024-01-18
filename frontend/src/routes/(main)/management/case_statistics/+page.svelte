@@ -3,13 +3,11 @@
   import { _ } from "svelte-i18n"
 
   import { countries, loading, regions } from "$lib/stores"
-  import type { Deal } from "$lib/types/deal"
-  import type { Investor } from "$lib/types/investor"
   import type { Country, Region } from "$lib/types/wagtail"
 
   import VirtualListSelect from "$components/LowLevel/VirtualListSelect.svelte"
 
-  import type { Counts } from "./case_statistics"
+  import type { Counts } from "./caseStatistics"
   import QualityGoals from "./QualityGoals.svelte"
   import StatisticsTable from "./StatisticsTable.svelte"
   import TimespanChanges from "./TimespanChanges.svelte"
@@ -18,8 +16,6 @@
   let selRegion: Region | undefined
 
   let counts: Counts = {}
-  let simpleDeals: Deal[] = []
-  let simpleInvestors: Investor[] = []
 
   async function getCounts(region: Region | undefined, country: Country | undefined) {
     loading.set(true)
@@ -32,34 +28,8 @@
 
     loading.set(false)
   }
-  async function getDealsInvestors() {
-    let dealsUrl = `/api/case_statistics/?action=deals`
-    const dealsRet = await fetch(dealsUrl)
-    if (dealsRet.ok) simpleDeals = (await dealsRet.json()).deals
 
-    let investorsUrl = `/api/case_statistics/?action=investors`
-    const investorsRet = await fetch(investorsUrl)
-    if (investorsRet.ok) simpleInvestors = (await investorsRet.json()).investors
-  }
-
-  onMount(() => {
-    getCounts(selRegion, selCountry)
-    getDealsInvestors()
-  })
-
-  $: filteredDeals = selRegion
-    ? simpleDeals.filter(d => d.country__region_id === selRegion?.id)
-    : selCountry
-      ? simpleDeals.filter(d => d.country_id === selCountry?.id)
-      : simpleDeals
-
-  $: filteredInvestors = selRegion
-    ? simpleInvestors.filter(
-        inv => inv.active_version__country__region_id === selRegion?.id,
-      )
-    : selCountry
-      ? simpleInvestors.filter(inv => inv.active_version__country_id === selCountry?.id)
-      : simpleInvestors
+  onMount(() => getCounts(selRegion, selCountry))
 </script>
 
 <svelte:head>
@@ -108,10 +78,10 @@
   <QualityGoals {counts} />
 
   <div class="my-10">
-    <StatisticsTable deals={filteredDeals} investors={filteredInvestors} />
+    <StatisticsTable {selCountry} {selRegion} />
   </div>
 
   <div class="my-10">
-    <TimespanChanges region={selRegion} country={selCountry} />
+    <TimespanChanges country={selCountry} region={selRegion} />
   </div>
 </div>

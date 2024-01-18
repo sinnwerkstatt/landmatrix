@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import type { Counts } from "./case_statistics"
+  import type { Counts } from "./caseStatistics"
 
   export let counts: Counts = {}
 

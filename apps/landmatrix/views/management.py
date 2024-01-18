@@ -196,6 +196,38 @@ class Management(View):
 
 
 class CaseStatistics(View):
+    def get(self, request: WSGIRequest) -> HttpResponse:
+        action = request.GET.get("action")
+
+        if action == "counts":
+            return self._counts(request)
+
+        if action == "deals":
+            return JsonResponse({"deals": list(self.__deals_query())})
+
+        if action == "investors":
+            return JsonResponse({"investors": list(self.__investors_query())})
+
+        if action in ["deal_buckets", "investor_buckets"]:
+            start = request.GET.get("start")
+            end = request.GET.get("end")
+
+            if not (start and end):
+                return JsonResponse({})
+
+            dt_start = _parse_date(start)
+            # add one day to include end day (important when end = current)
+            dt_end = _parse_date(end) + timedelta(1)
+
+            region = request.GET.get("region")
+            country = request.GET.get("country")
+
+            if action == "deal_buckets":
+                return self._deal_buckets(dt_start, dt_end, region, country)
+            return self._investor_buckets(dt_start, dt_end, region, country)
+
+        return HttpResponseBadRequest(f"Unknown action: {action}")
+
     @staticmethod
     def _create_statistics(country_id=None, region_id=None):
         qs = DealHull.objects.public()
@@ -257,45 +289,60 @@ class CaseStatistics(View):
         return JsonResponse(counts)
 
     @staticmethod
-    def _deals() -> JsonResponse:
-        deals = DealHull.objects.with_mode().values(
-            "id",
-            "mode",
-            "active_version_id",
-            "draft_version_id",
-            "draft_version__status",
-            "fully_updated_at",
-            "active_version__fully_updated",
-            "confidential",
-            "country_id",
-            "country__region_id",
-            "active_version__deal_size",
-            "active_version__is_public",
-            "first_created_at",
-            "active_version__modified_at",  # TODO sensible value?
+    def __deals_query():
+        return (
+            DealHull.objects.with_mode()
+            .annotate(
+                region_id=F("country__region_id"),
+                created_at=F("first_created_at"),
+                modified_at=F("active_version__modified_at"),  # TODO sensible value?
+            )
+            .values(
+                "id",
+                "mode",
+                "active_version_id",
+                "draft_version_id",
+                "draft_version__status",
+                "country_id",
+                "region_id",
+                "created_at",
+                "modified_at",
+                # deal specific
+                "fully_updated_at",
+                "active_version__fully_updated",
+                "confidential",
+                "active_version__deal_size",
+                "active_version__is_public",
+            )
         )
 
-        return JsonResponse({"deals": list(deals)})
-
     @staticmethod
-    def _investors() -> JsonResponse:
-        investors = InvestorHull.objects.with_mode().values(
-            "id",
-            "mode",
-            "active_version_id",
-            "draft_version_id",
-            "active_version__name",
-            "active_version__country_id",
-            "active_version__country__region_id",
-            "draft_version__status",
-            "first_created_at",
-            "active_version__modified_at",  # TODO sensible value?
+    def __investors_query():
+        return (
+            InvestorHull.objects.with_mode()
+            .annotate(
+                country_id=F("active_version__country_id"),
+                region_id=F("active_version__country__region_id"),
+                created_at=F("first_created_at"),
+                modified_at=F("active_version__modified_at"),  # TODO sensible value?
+            )
+            .values(
+                "id",
+                "mode",
+                "active_version_id",
+                "draft_version_id",
+                "draft_version__status",
+                "country_id",
+                "region_id",
+                "created_at",
+                "modified_at",
+                # investor specific
+                "active_version__name",
+            )
         )
 
-        return JsonResponse({"investors": list(investors)})
-
-    @staticmethod
     def _deal_buckets(
+        self,
         start: datetime,
         end: datetime,
         region: str | None,
@@ -303,7 +350,9 @@ class CaseStatistics(View):
     ) -> JsonResponse:
         queries = {
             "added": Q(first_created_at__range=(start, end)),
-            "updated": Q(active_version__modified_at__range=(start, end)),
+            "updated": Q(
+                active_version__modified_at__range=(start, end)
+            ),  # TODO is this okay?
             "fully_updated": Q(fully_updated_at__range=(start, end)),
             "activated": Q(active_version__activated_at__range=(start, end)),
         }
@@ -315,26 +364,12 @@ class CaseStatistics(View):
             if country:
                 query &= Q(country_id=country)
 
-            buckets[name] = list(
-                DealHull.objects.filter(query)
-                .with_mode()
-                .values(
-                    "id",
-                    "mode",
-                    "country_id",
-                    "active_version__deal_size",
-                    "confidential",
-                    "first_created_at",
-                    "active_version__modified_at",  # TODO sensible value?
-                    "active_version__fully_updated",
-                    "fully_updated_at",
-                )
-            )
+            buckets[name] = list(self.__deals_query().filter(query))
 
         return JsonResponse({"buckets": buckets})
 
-    @staticmethod
     def _investor_buckets(
+        self,
         start: datetime,
         end: datetime,
         region: str | None,
@@ -342,7 +377,9 @@ class CaseStatistics(View):
     ) -> JsonResponse:
         queries = {
             "added": Q(first_created_at__range=(start, end)),
-            "updated": Q(active_version__modified_at__range=(start, end)),
+            "updated": Q(
+                active_version__modified_at__range=(start, end)
+            ),  # TODO is this okay?
             "activated": Q(active_version__activated_at__range=(start, end)),
         }
 
@@ -353,57 +390,9 @@ class CaseStatistics(View):
             if country:
                 query &= Q(active_version__country_id=country)
 
-            buckets[name] = list(
-                InvestorHull.objects.filter(query)
-                .with_mode()
-                .annotate(country_id=F("active_version__country_id"))
-                .values(
-                    "id",
-                    "active_version__name",
-                    # "active_version_id",
-                    # "draft_version__status",
-                    "mode",
-                    # "status",
-                    # "draft_status",
-                    "country_id",
-                    "first_created_at",
-                    "active_version__modified_at",
-                )
-            )
+            buckets[name] = list(self.__investors_query().filter(query))
 
         return JsonResponse({"buckets": buckets})
-
-    def get(self, request: WSGIRequest) -> HttpResponse:
-        action = request.GET.get("action")
-
-        if action == "counts":
-            return self._counts(request)
-
-        if action == "deals":
-            return self._deals()
-
-        if action == "investors":
-            return self._investors()
-
-        if action in ["deal_buckets", "investor_buckets"]:
-            start = request.GET.get("start")
-            end = request.GET.get("end")
-
-            if not (start and end):
-                return JsonResponse({})
-
-            dt_start = _parse_date(start)
-            # add one day to include end day (important when end = current)
-            dt_end = _parse_date(end) + timedelta(1)
-
-            region = request.GET.get("region")
-            country = request.GET.get("country")
-
-            if action == "deal_buckets":
-                return self._deal_buckets(dt_start, dt_end, region, country)
-            return self._investor_buckets(dt_start, dt_end, region, country)
-
-        return HttpResponseBadRequest(f"Unknown action: {action}")
 
 
 def _parse_date(date_str: str) -> datetime:

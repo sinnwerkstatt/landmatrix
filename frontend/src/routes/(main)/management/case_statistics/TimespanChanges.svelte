@@ -7,10 +7,9 @@
   import { _ } from "svelte-i18n"
 
   import { loading } from "$lib/stores"
-  import type { Deal } from "$lib/types/deal"
-  import type { Investor } from "$lib/types/investor"
   import type { Country, Region } from "$lib/types/wagtail"
 
+  import type { CaseStatisticsDeal, CaseStatisticsInvestor } from "./caseStatistics"
   import CaseStatisticsTable from "./CaseStatisticsTable.svelte"
 
   dayjs.extend(isSameOrBefore)
@@ -54,8 +53,8 @@
     { name: "Last 365 days", value: 365 },
   ]
 
-  let dealBuckets: { [key: string]: Deal[] } = {}
-  let investorBuckets: { [key: string]: Investor[] } = {}
+  let dealBuckets: { [key: string]: CaseStatisticsDeal[] } = {}
+  let investorBuckets: { [key: string]: CaseStatisticsInvestor[] } = {}
 
   async function _fetchDeals(
     region: Region | undefined,
