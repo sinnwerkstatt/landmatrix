@@ -203,7 +203,7 @@ class DealVersionSerializer(serializers.ModelSerializer):
         l_nids = set()
         for location in data.get("locations"):
             l_nids.add(location["nid"])
-            Location.objects.update_or_create(
+            upserted_location, created = Location.objects.update_or_create(
                 nid=location["nid"],
                 dealversion=dv1,
                 defaults={
@@ -217,6 +217,40 @@ class DealVersionSerializer(serializers.ModelSerializer):
                     "comment": location["comment"],
                 },
             )
+
+            areas = location.get("areas")
+            if created:
+                Area.objects.bulk_create(
+                    [
+                        Area(
+                            location=upserted_location,
+                            type=area["type"],
+                            current=area["current"],
+                            date=area["date"],
+                            area=GEOSGeometry(str(area["area"])),
+                        )
+                        for area in areas
+                    ]
+                )
+            else:
+                a_ids = set()
+                for area in areas:
+                    upserted_area, _ = Area.objects.update_or_create(
+                        id=area["id"],
+                        location=upserted_location,
+                        defaults={
+                            "type": area["type"],
+                            "current": area["current"],
+                            "date": area["date"],
+                            "area": GEOSGeometry(str(area["area"])),
+                        },
+                    )
+                    a_ids.add(upserted_area.id)
+
+                Area.objects.filter(location=upserted_location).exclude(
+                    id__in=a_ids
+                ).delete()
+
         Location.objects.filter(dealversion=dv1).exclude(nid__in=l_nids).delete()
 
         c_nids = set()
@@ -265,7 +299,7 @@ class DealVersionSerializer(serializers.ModelSerializer):
 class CountryIDNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = Country
-        fields = ["id", "name"]
+        fields = ["id", "name", "code_alpha2"]
 
 
 class DealSerializer(serializers.ModelSerializer):
