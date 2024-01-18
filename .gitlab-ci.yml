@@ -99,6 +99,26 @@ deploy to staging:
   only:
     - main
 
+deploy to staging2:
+  stage: deploy
+  script:
+    - eval $(ssh-agent -s)
+    - echo "$STAGING_SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - |
+      ssh landmatrix2@dev.landmatrix.org << E=O=F
+      set -e
+      mv maintenance.html_ maintenance.html || echo "could not move maintenance"
+      cd ~/htdocs
+      git pull
+      git switch newModel2
+      poetry run doit update
+      sudo /bin/systemctl restart webapp-dev2.landmatrix.org.service
+      cd ~
+      mv maintenance.html maintenance.html_
+      E=O=F
+  only:
+    - newModel2
+
 deploy to production:
   stage: deploy
   script:
