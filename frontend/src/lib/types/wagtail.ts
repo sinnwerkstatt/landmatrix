@@ -25,10 +25,10 @@ export interface CountryOrRegion {
   // slug?: string
   observatory_page_id: number | null
   // observatory_page?: ObservatoryPage
-  // point_lat_min: number
-  // point_lat_max: number
-  // point_lon_min: number
-  // point_lon_max: number
+  point_lat_min: number
+  point_lat_max: number
+  point_lon_min: number
+  point_lon_max: number
 }
 export interface Region extends CountryOrRegion {
   placeholder?: string

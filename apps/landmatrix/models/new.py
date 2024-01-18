@@ -7,7 +7,7 @@ from django.contrib.gis.geos.prototypes.io import wkt_w
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models, transaction
-from django.db.models import Q, QuerySet, Case, When, Value
+from django.db.models import Q, QuerySet, Case, When, Value, Count, Func, F
 from django.db.models.functions import Concat
 from django.http import Http404
 from django.utils import timezone
@@ -1373,6 +1373,61 @@ class DealHull(models.Model):
         self.draft_version = dv
         self.save()
         return dv
+
+    @classmethod
+    def get_geo_markers(cls, region_id=None, country_id=None):
+        deals = cls.objects.public().exclude(country=None)
+        if region_id:
+            return [
+                {
+                    "country_id": x["country_id"],
+                    "count": x["count"],
+                    "coordinates": [x["country__point_lat"], x["country__point_lon"]],
+                }
+                for x in deals.filter(country__region_id=region_id)
+                .values("country_id", "country__point_lat", "country__point_lon")
+                .annotate(count=Count("pk"))
+                # .annotate(size=Sum("deal_size"))
+            ]
+        if country_id:
+            xx = [
+                {"coordinates": x}
+                for x in deals.filter(country_id=country_id)
+                .filter(active_version__locations__point__isnull=False)
+                .annotate(
+                    point_lat=Func(
+                        "active_version__locations__point",
+                        function="ST_Y",
+                        output_field=models.FloatField(),
+                    ),
+                    point_lng=Func(
+                        "active_version__locations__point",
+                        function="ST_X",
+                        output_field=models.FloatField(),
+                    ),
+                )
+                .values_list("point_lat", "point_lng")
+            ]
+            return xx
+
+        region_coordinates = {
+            2: [6.06433, 17.082249],
+            9: [-22.7359, 140.0188],
+            21: [54.526, -105.2551],
+            142: [34.0479, 100.6197],
+            150: [52.0055, 37.9587],
+            419: [-4.442, -61.3269],
+        }
+        return [
+            {
+                "region_id": x["region_id"],
+                "count": x["count"],
+                "coordinates": region_coordinates[x["region_id"]],
+            }
+            for x in deals.values(region_id=F("country__region_id")).annotate(
+                count=Count("pk")
+            )
+        ]
 
 
 class InvestorVersion2(BaseVersionMixin, models.Model):

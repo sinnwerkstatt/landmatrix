@@ -1,6 +1,6 @@
 from django import forms
 from django.db import models
-from django.db.models import QuerySet, Sum
+from django.db.models import QuerySet
 from wagtail.admin.panels import FieldPanel, FieldRowPanel
 from wagtail.api import APIField
 from wagtail.contrib.settings.models import BaseGenericSetting, register_setting
@@ -11,8 +11,7 @@ from wagtail_headless_preview.models import HeadlessPreviewMixin
 
 from apps.blog.models import BlogPage
 from apps.landmatrix.models.country import Country, Region
-from apps.landmatrix.models.deal import Deal
-
+from apps.landmatrix.models.new import DealHull
 from .blocks import (
     COLUMN_BLOCKS,
     CONTENT_BLOCKS,
@@ -161,7 +160,7 @@ class ObservatoryPage(HeadlessPreviewMixin, Page):
     #     )
 
     def markers(self):
-        return Deal.get_geo_markers(self.region_id, self.country_id)
+        return DealHull.get_geo_markers(self.region_id, self.country_id)
 
     api_fields = [
         APIField("short_description"),

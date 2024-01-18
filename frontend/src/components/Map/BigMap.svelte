@@ -1,29 +1,29 @@
 <script lang="ts">
-  import { geoJson, type MapOptions } from "leaflet"
-
+  import "leaflet/dist/leaflet.css"
   import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css"
 
+  import type { MapOptions } from "leaflet"
   import { GestureHandling } from "leaflet-gesture-handling?client"
-
-  import "leaflet/dist/leaflet.css"
-
-  import { Icon, Map } from "leaflet?client"
+  import { geoJson, Icon, Map } from "leaflet?client"
   import { nanoid } from "nanoid"
   import { createEventDispatcher, onDestroy, onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
+  import { browser } from "$app/environment"
+
   import { geoJsonLayerGroup } from "$lib/stores"
-  import { padBounds } from "$lib/utils/location"
+  import { padBounds } from "$lib/utils/locationSSRsafe"
 
   import LoadingPulse from "$components/LoadingPulse.svelte"
+
+  import BigMapStandaloneLayerSwitcher from "./BigMapStandaloneLayerSwitcher.svelte"
+  import type { BaseLayer, ContextLayer } from "./layers"
   import {
     getBaseLayers,
     getContextLayers,
     visibleContextLayers,
     visibleLayer,
-  } from "$components/Map/layers"
-
-  import BigMapStandaloneLayerSwitcher from "./BigMapStandaloneLayerSwitcher.svelte"
+  } from "./layers"
 
   export let options: MapOptions = {}
   export let containerClass = ""
@@ -32,10 +32,9 @@
   const dispatch = createEventDispatcher<{ ready: Map }>()
 
   let mapId = "bigMap-" + nanoid()
-  let map: Map
+  let map: Map | undefined
 
-  if (!import.meta.env.SSR) {
-    // noinspection TypeScriptUnresolvedVariable
+  if (browser) {
     delete Icon.Default.prototype._getIconUrl
     Icon.Default.mergeOptions({
       iconRetinaUrl: "/images/marker-icon-2x.png",
@@ -45,10 +44,14 @@
     })
   }
 
-  $: contextLayers = getContextLayers($_)
-  $: baseLayers = getBaseLayers($_)
+  let contextLayers: ContextLayer[] = []
+  let baseLayers: BaseLayer[] = []
 
   onMount(async () => {
+    if (!browser) return
+
+    contextLayers = getContextLayers($_)
+    baseLayers = getBaseLayers($_)
     // onDestroy sometimes triggers after onMount on loading a new map
     // clean up by removing layers from old map
     baseLayers.forEach(l => l.layer.remove())
@@ -69,6 +72,7 @@
     if (!$geoJsonLayerGroup) {
       $geoJsonLayerGroup = geoJson()
       $geoJsonLayerGroup.on("layeradd layerremove", function () {
+        if (!map) return
         // console.log("add or rm")
         const bounds = this.getBounds()
         bounds.isValid() && map.fitBounds(padBounds(bounds), { duration: 1 })
@@ -77,9 +81,7 @@
 
     map.addLayer($geoJsonLayerGroup)
 
-    map.whenReady(() => {
-      dispatch("ready", map)
-    })
+    map.whenReady(() => dispatch("ready", map!))
   })
 
   // See bug ticket #668: Sometimes not called when switching views quickly.
@@ -92,14 +94,14 @@
 
   $: if (map && $visibleLayer) {
     baseLayers.forEach(l => {
-      if (l.id === $visibleLayer) l.layer.addTo(map)
+      if (l.id === $visibleLayer) l.layer.addTo(map!)
       else l.layer.remove()
     })
   }
 
   $: if (map && $visibleContextLayers) {
     contextLayers.forEach(l => {
-      if ($visibleContextLayers.includes(l.id)) l.layer.addTo(map)
+      if ($visibleContextLayers.includes(l.id)) l.layer.addTo(map!)
       else l.layer.remove()
     })
   }
@@ -107,7 +109,7 @@
 
 <div class="relative mx-auto {containerClass}">
   <!-- ! isolate is important to capture and contextualize leaflet's "400" z-index -->
-  <div id={mapId} class="isolate h-full w-full">
+  <div class="isolate h-full w-full" id={mapId}>
     {#if !map}
       <LoadingPulse class="h-[300px]" />
     {/if}
@@ -118,7 +120,7 @@
   <slot />
 </div>
 
-<style>
+<style lang="postcss">
   :global(.leaflet-container a) {
     @apply text-orange;
   }

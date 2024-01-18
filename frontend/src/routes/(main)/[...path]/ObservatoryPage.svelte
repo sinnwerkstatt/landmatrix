@@ -9,7 +9,7 @@
   import type { ObservatoryPage } from "$lib/types/wagtail"
 
   import LoadingPulse from "$components/LoadingPulse.svelte"
-  // import QuasiStaticMap from "$components/Map/QuasiStaticMap.svelte"
+  import QuasiStaticMap from "$components/Map/QuasiStaticMap.svelte"
   import MapDataCharts from "$components/MapDataCharts.svelte"
   import PageTitle from "$components/PageTitle.svelte"
   import StatusPieChart from "$components/StatusPieChart.svelte"
@@ -131,7 +131,7 @@
 <PageTitle>{$_(page.title)}</PageTitle>
 
 <div class="mx-auto w-[clamp(20rem,75%,56rem)]">
-  <!--  <QuasiStaticMap {countryID} markers={page.markers} {regionID} />-->
+  <QuasiStaticMap {countryID} markers={page.markers} {regionID} />
 
   {#if page.introduction_text}
     <div class="pb-3 pt-6">

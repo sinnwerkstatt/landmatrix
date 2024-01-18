@@ -40,44 +40,36 @@ class CountrySerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "name",
+            # "slug",
             "high_income",
             "code_alpha2",
             "point_lat",
             "point_lon",
+            "point_lat_min",
+            "point_lon_min",
+            "point_lat_max",
+            "point_lon_max",
             "observatory_page_id",
             "region_id",
             "deals",
         ]
-        # fields = ["id", "name", "region", "high_income", "slug", "code_alpha2"]
 
-        #   //           id
-        #   //           name
-        #   //           code_alpha2
-        #   //           slug
-        #   //
-        #   //           point_lat_min
-        #   //           point_lon_min
-        #   //           point_lat_max
-        #   //           point_lon_max
-        #   //           observatory_page_id
-        #   //           high_income
-        #   //           deals {
-        #   //             id
-        #   //           }
+        # deals { id }
 
 
 class RegionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Region
-        fields = ["id", "name", "observatory_page_id"]
-        #   //           id
-        #   //           name
-        #   //           slug
-        #   //           point_lat_min
-        #   //           point_lon_min
-        #   //           point_lat_max
-        #   //           point_lon_max
-        #   //           observatory_page_id
+        fields = [
+            "id",
+            "name",
+            # "slug",
+            "observatory_page_id",
+            "point_lat_min",
+            "point_lon_min",
+            "point_lat_max",
+            "point_lon_max",
+        ]
 
 
 # ########## NEW MODEL

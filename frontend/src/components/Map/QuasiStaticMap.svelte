@@ -3,6 +3,8 @@
   import { DivIcon, FeatureGroup, Marker } from "leaflet?client"
   import { _ } from "svelte-i18n"
 
+  import { browser } from "$app/environment"
+
   import { filters } from "$lib/filters"
   import { countries, regions } from "$lib/stores"
   import type { Marker as MarkerType } from "$lib/types/wagtail"
@@ -20,7 +22,7 @@
 
   function focusMap() {
     if (regionID) {
-      const reg = $regions.find(r => r.id === regionID)
+      const reg = $regions.find(r => r.id === regionID)!
       map.fitBounds(
         [
           [reg.point_lat_min, reg.point_lon_min],
@@ -29,14 +31,19 @@
         { animate: false },
       )
     } else if (countryID) {
-      const country = $countries.find(c => c.id === countryID)
-      map.setView([country.point_lat, country.point_lon], 4, {
-        animate: false,
-      })
+      const country = $countries.find(c => c.id === countryID)!
+      map.fitBounds(
+        [
+          [country.point_lat_min, country.point_lon_min],
+          [country.point_lat_max, country.point_lon_max],
+        ],
+        { animate: false },
+      )
     } else map.fitWorld({ animate: false })
   }
 
-  $: if (map && markers) {
+  const drawMap = async (ma: Map, mark: MarkerType[]) => {
+    if (!ma || !mark || !browser) return
     if (!featureGroup) featureGroup = new FeatureGroup()
     else featureGroup.clearLayers()
     featureGroup.addTo(map)
@@ -47,6 +54,7 @@
 
     focusMap()
   }
+  $: drawMap(map, markers)
 
   function drawGlobalMarkers() {
     for (let mark of markers) {
@@ -55,8 +63,8 @@
         regionId: mark.region_id,
       } as MarkerOptions)
       featureGroup.addLayer(circle)
-      const country_name = $regions.find(r => r.id === mark.region_id).name
-      styleCircle(circle, mark.count / 50, country_name, true, 30)
+      const country_name = $regions.find(r => r.id === mark.region_id)!.name
+      styleCircle(circle, mark.count! / 50, country_name, true, 30)
     }
   }
 
@@ -67,7 +75,7 @@
         countryId: mark.country_id,
       } as MarkerOptions)
       featureGroup.addLayer(circle)
-      styleCircle(circle, mark.count / 20, mark.count.toString(), true, 15)
+      styleCircle(circle, mark.count! / 20, mark.count!.toString(), true, 15)
     }
   }
 
