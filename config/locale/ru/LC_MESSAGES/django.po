@@ -3151,9 +3151,6 @@ msgstr "Русский"
 #~ msgid "Size under contract"
 #~ msgstr "Площадь законтрактованных земель"
 
-#~ msgid "Intended Size"
-#~ msgstr "Предполагаемый размер"
-
 #~ msgid "Deals with contract farming schemes."
 #~ msgstr "Сделки с привлечением контрактного фермерства."
 

@@ -4651,6 +4651,3 @@ msgstr "Русский"
 
 #~ msgid "Target Country"
 #~ msgstr "Pays cible"
-
-#~ msgid "Intended size"
-#~ msgstr "Superficie prévue"
