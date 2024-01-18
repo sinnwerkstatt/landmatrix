@@ -212,7 +212,9 @@ class VersionViewSet(viewsets.ReadOnlyModelViewSet):
                 new_status="TO_DRAFT", user=request.user, to_user_id=request.user.id
             )
 
-        serializer = self.serializer_class(ov1, data=data, partial=True)
+        serializer: DealVersionSerializer | InvestorVersionSerializer = (
+            self.serializer_class(ov1, data=data, partial=True)
+        )
         if serializer.is_valid(raise_exception=True):
             # this is untidy
             ov1 = serializer.save()
@@ -333,6 +335,7 @@ class HullViewSet(viewsets.ReadOnlyModelViewSet):
             return [IsAdministrator()]
         return [IsAdminUser()]
 
+    @transaction.atomic
     def update(self, request, *args, **kwargs):
         """
         creating a new Version when calling "save" on an existing object
@@ -352,7 +355,7 @@ class HullViewSet(viewsets.ReadOnlyModelViewSet):
 
         add_wfi(obj=o1, obj_version=ov1, from_user=request.user, status_after="DRAFT")
 
-        return Response({})
+        return Response({"versionID": ov1.id})
 
     @action(detail=True, methods=["put"])
     def add_comment(self, request, *args, **kwargs):

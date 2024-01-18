@@ -121,7 +121,7 @@
 
     if (retJson.versionID !== deal.selected_version.id) {
       toast.push("Created a new draft", { classes: ["success"] })
-      await goto(`/deal/${deal.id}/${retJson.newVersionID}/`)
+      await goto(`/deal/edit/${deal.id}/${retJson.versionID}/`)
     } else {
       toast.push("Saved data", { classes: ["success"] })
       await invalidate("deal:detail")
@@ -209,7 +209,10 @@
     </nav>
     <div class="w-full flex-auto overflow-y-auto pb-16 pl-4 pr-2">
       {#if activeTab === "#locations"}
-        <EditSectionLocations bind:locations={deal.selected_version.locations} />
+        <EditSectionLocations
+          bind:locations={deal.selected_version.locations}
+          country={deal.country}
+        />
       {/if}
       {#if activeTab === "#general"}
         <EditSectionGeneralInfo bind:deal />
