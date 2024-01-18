@@ -3,9 +3,9 @@
   import { _ } from "svelte-i18n"
 
   import { stateMap } from "$lib/newUtils"
-  import { allUsers } from "$lib/stores"
   import type { InvestorHull } from "$lib/types/newtypes"
 
+  import UserField from "$components/Fields/Display2/UserField.svelte"
   import CheckCircleIcon from "$components/icons/CheckCircleIcon.svelte"
   import CircleIcon from "$components/icons/CircleIcon.svelte"
 
@@ -46,50 +46,57 @@
           <td>{version.id}</td>
           <td>
             {dayjs(version.created_at).format("YYYY-MM-DD HH:mm")}
-            <br />
-            {#if version.created_by_id}
-              {@const user = $allUsers.find(u => u.id === version.created_by_id)}
-              {user?.full_name ?? user?.username ?? "-"}
-            {/if}
+            <UserField
+              value={version.created_by_id}
+              fieldname="created_by_id"
+              wrapperClass=""
+              valueClass=""
+            />
           </td>
           <td>
             {version.modified_at
               ? dayjs(version.modified_at).format("YYYY-MM-DD HH:mm")
               : "-"}
-            <br />
-            {#if version.modified_by_id}
-              {@const user = $allUsers.find(u => u.id === version.modified_by_id)}
-              {user?.full_name ?? user?.username ?? "-"}
-            {/if}
+            <UserField
+              value={version.modified_by_id}
+              fieldname="modified_by_id"
+              wrapperClass=""
+              valueClass=""
+            />
           </td>
           <td>
             {version.sent_to_review_at
               ? dayjs(version.sent_to_review_at).format("YYYY-MM-DD HH:mm")
               : ""}
-            <br />
-            {#if version.sent_to_review_by_id}
-              {$allUsers.find(u => u.id === version.sent_to_review_by_id)?.full_name ??
-                "-"}
-            {/if}
+
+            <UserField
+              value={version.sent_to_review_by_id}
+              fieldname="sent_to_review_by_id"
+              wrapperClass=""
+              valueClass=""
+            />
           </td>
           <td>
             {version.sent_to_activation_at
               ? dayjs(version.sent_to_activation_at).format("YYYY-MM-DD HH:mm")
               : ""}
-            <br />
-            {#if version.sent_to_activation_by_id}
-              {$allUsers.find(u => u.id === version.sent_to_activation_by_id)
-                ?.full_name ?? "-"}
-            {/if}
+            <UserField
+              value={version.sent_to_activation_by_id}
+              fieldname="sent_to_activation_by_id"
+              wrapperClass=""
+              valueClass=""
+            />
           </td>
           <td>
             {version.activated_at
               ? dayjs(version.activated_at).format("YYYY-MM-DD HH:mm")
               : ""}
-            <br />
-            {#if version.activated_by_id}
-              {$allUsers.find(u => u.id === version.activated_by_id)?.full_name ?? "-"}
-            {/if}
+            <UserField
+              value={version.activated_by_id}
+              fieldname="activated_by_id"
+              wrapperClass=""
+              valueClass=""
+            />
           </td>
           <td class="px-4">
             {#if version.fully_updated}

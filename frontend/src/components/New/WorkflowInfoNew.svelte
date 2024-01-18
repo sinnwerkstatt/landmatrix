@@ -12,6 +12,7 @@
   import type { WorkflowInfoType } from "$lib/types/newtypes"
   import { getCsrfToken } from "$lib/utils"
 
+  import UserField from "$components/Fields/Display2/UserField.svelte"
   import ArrowLongRightIcon from "$components/icons/ArrowLongRightIcon.svelte"
   import ChatBubbleLeftIcon from "$components/icons/ChatBubbleLeftIcon.svelte"
   import CheckCircleIcon from "$components/icons/CheckCircleIcon.svelte"
@@ -104,10 +105,20 @@
       {dayjs(info.timestamp).format("YYYY-MM-DD HH:mm")}
     </span>
     <span class="inline-flex items-center">
-      {$allUsers.find(u => u.id === info.from_user_id)?.username ?? ""}
+      <UserField
+        value={info.from_user_id}
+        fieldname="from_user_id"
+        wrapperClass=""
+        valueClass=""
+      />
       {#if info.to_user_id}
         <ArrowLongRightIcon class="mx-0.5 h-4 w-4" />
-        {$allUsers.find(u => u.id === info.to_user_id)?.username ?? ""}
+        <UserField
+          value={info.to_user_id}
+          fieldname="to_user_id"
+          wrapperClass=""
+          valueClass=""
+        />
       {/if}
     </span>
   </div>
@@ -145,7 +156,12 @@
                 {dayjs(rep.timestamp).format("YYYY-MM-DD HH:mm")}
               </span>
               <span class="inline-flex items-center">
-                {$allUsers.find(u => u.id === rep.user_id)?.username ?? rep.user_id}
+                <UserField
+                  value={rep.user_id}
+                  fieldname="rep.user_id"
+                  wrapperClass=""
+                  valueClass=""
+                />
               </span>
             </span>
             {rep.comment}

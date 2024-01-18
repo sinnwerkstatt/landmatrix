@@ -14,13 +14,18 @@
   $: user = $allUsers.find(u => u.id === value)
 </script>
 
-{#if user}
+{#if value}
   <div class={wrapperClass} data-fieldname={fieldname}>
     {#if label}
       <Label2 value={label} class={labelClass} />
     {/if}
     <div class={valueClass}>
-      {user.username}
+      {#if user}
+        {user.full_name ?? user.username}
+      {:else}
+        <!-- can't find this user anymore... -->
+        <span class="italic">{value}</span>
+      {/if}
     </div>
   </div>
 {/if}
