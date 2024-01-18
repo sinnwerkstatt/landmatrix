@@ -5,7 +5,6 @@
   import { formfields } from "$lib/stores"
 
   import TextField from "$components/Fields/Display2/TextField.svelte"
-  import DisplayField from "$components/Fields/DisplayField.svelte"
 
   export let data
 
@@ -32,7 +31,7 @@
 <svelte:head>
   <title>
     {$_("Comparing investor #{investorID}", { value: { investorID: data.investorID } })}
-    @{data.versionFrom} - @{data.versionTo}
+    @{data.fromVersion.id} - @{data.toVersion.id}
   </title>
 </svelte:head>
 
@@ -43,15 +42,15 @@
         <a href="/investor/{data.investorID}">{$_("Investor")} #{data.investorID}</a>
       </th>
       <th class="px-4">
-        <a href="/investor/{data.investorID}/{data.versionFrom}">
+        <a href="/investor/{data.investorID}/{data.fromVersion.id}">
           {$_("Version")}
-          {data.versionFrom}
+          {data.fromVersion.id}
         </a>
       </th>
       <th>
-        <a href="/investor/{data.investorID}/{data.versionTo}">
+        <a href="/investor/{data.investorID}/{data.toVersion.id}">
           {$_("Version")}
-          {data.versionTo}
+          {data.toVersion.id}
         </a>
       </th>
     </tr>
@@ -61,16 +60,10 @@
     <tr>
       <td>Name</td>
       <td>
-        <TextField
-          fieldname="investor.name"
-          value={data.investorFrom.selected_version.name}
-        />
+        <TextField fieldname="investor.name" value={data.fromVersion.name} />
       </td>
       <td>
-        <TextField
-          fieldname="investor.name"
-          value={data.investorTo.selected_version.name}
-        />
+        <TextField fieldname="investor.name" value={data.toVersion.name} />
       </td>
     </tr>
     <!--{#each Object.entries($investorSections) as [label, section]}-->
@@ -97,7 +90,7 @@
     <!--                <DisplayField-->
     <!--                  wrapperClasses="px-4 py-2"-->
     <!--                  fieldname={field}-->
-    <!--                  value={data.investorFrom[field]}-->
+    <!--                  value={data.fromVersion[field]}-->
     <!--                  model="investor"-->
     <!--                />-->
     <!--              </td>-->
@@ -105,7 +98,7 @@
     <!--                <DisplayField-->
     <!--                  wrapperClasses="py-2"-->
     <!--                  fieldname={field}-->
-    <!--                  value={data.investorTo[field]}-->
+    <!--                  value={data.toVersion[field]}-->
     <!--                  model="investor"-->
     <!--                />-->
     <!--              </td>-->
@@ -130,30 +123,30 @@
           </th>
         </tr>
         {#each subsections.involvement as jfield}
-          {#if hasDifference(data.investorFrom.investors, data.investorTo.investors, field, jfield)}
+          {#if hasDifference(data.fromVersion.investors, data.toVersion.investors, field, jfield)}
             <tr class="odd:bg-gray-50 dark:odd:bg-gray-700">
               <th class="whitespace-nowrap py-2 pl-8">
-                {$formfields.involvement[jfield].label}
+                <!--{$formfields.involvement[jfield].label}-->
               </th>
 
               <td>
-                {#if data.investorFrom.investors?.[field]}
-                  <DisplayField
-                    wrapperClasses="px-4 py-2"
-                    fieldname={jfield}
-                    value={data.investorFrom.investors[field][jfield]}
-                    model="involvement"
-                  />
+                {#if data.fromVersion.investors?.[field]}
+                  <!--                  <DisplayField-->
+                  <!--                    wrapperClasses="px-4 py-2"-->
+                  <!--                    fieldname={jfield}-->
+                  <!--                    value={data.fromVersion.investors[field][jfield]}-->
+                  <!--                    model="involvement"-->
+                  <!--                  />-->
                 {/if}
               </td>
               <td>
-                {#if data.investorTo.investors?.[field]}
-                  <DisplayField
-                    wrapperClasses="py-2"
-                    fieldname={jfield}
-                    value={data.investorTo.investors[field][jfield]}
-                    model="involvement"
-                  />
+                {#if data.toVersion.investors?.[field]}
+                  <!--                  <DisplayField-->
+                  <!--                    wrapperClasses="py-2"-->
+                  <!--                    fieldname={jfield}-->
+                  <!--                    value={data.toVersion.investors[field][jfield]}-->
+                  <!--                    model="involvement"-->
+                  <!--                  />-->
                 {/if}
               </td>
             </tr>
@@ -175,29 +168,29 @@
           </th>
         </tr>
         {#each subsections.datasource as jfield}
-          {#if hasDifference(data.investorFrom.datasources, data.investorTo.datasources, field, jfield)}
+          {#if hasDifference(data.fromVersion.datasources, data.toVersion.datasources, field, jfield)}
             <tr class="odd:bg-gray-50 dark:odd:bg-gray-700">
               <th class="whitespace-nowrap py-2 pl-8">
                 {$formfields.datasource[jfield].label}
               </th>
               <td>
-                {#if data.investorFrom.datasources?.[field]}
-                  <DisplayField
-                    wrapperClasses="px-4 py-2"
-                    fieldname={jfield}
-                    value={data.investorFrom.datasources[field][jfield]}
-                    model="datasource"
-                  />
+                {#if data.fromVersion.datasources?.[field]}
+                  <!--                  <DisplayField-->
+                  <!--                    wrapperClasses="px-4 py-2"-->
+                  <!--                    fieldname={jfield}-->
+                  <!--                    value={data.fromVersion.datasources[field][jfield]}-->
+                  <!--                    model="datasource"-->
+                  <!--                  />-->
                 {/if}
               </td>
               <td>
-                {#if data.investorTo.datasources?.[field]}
-                  <DisplayField
-                    wrapperClasses="py-2"
-                    fieldname={jfield}
-                    value={data.investorTo.datasources[field][jfield]}
-                    model="datasource"
-                  />
+                {#if data.toVersion.datasources?.[field]}
+                  <!--                  <DisplayField-->
+                  <!--                    wrapperClasses="py-2"-->
+                  <!--                    fieldname={jfield}-->
+                  <!--                    value={data.toVersion.datasources[field][jfield]}-->
+                  <!--                    model="datasource"-->
+                  <!--                  />-->
                 {/if}
               </td>
             </tr>

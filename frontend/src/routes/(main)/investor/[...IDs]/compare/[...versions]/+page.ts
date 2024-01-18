@@ -17,29 +17,23 @@ export const load: PageLoad = async ({ params, fetch }) => {
 
   const resFrom = await fetch(`/api/investors/${investorID}/${versionFrom}/`)
   const investorFrom: InvestorHull = await resFrom.json()
+  const fromVersion = investorFrom.selected_version
 
   const resTo = await fetch(`/api/investors/${investorID}/${versionTo}/`)
   const investorTo: InvestorHull = await resTo.json()
+  const toVersion = investorTo.selected_version
+
   // const investorTo: Investor = vTo.data.investor
 
-  const investordiffy = Object.keys(
-    diff(investorFrom.selected_version, investorTo.selected_version),
-  )
-  const dsdiffy = Object.keys(
-    diff(
-      investorFrom.selected_version.datasources,
-      investorTo.selected_version.datasources,
-    ),
-  )
+  const investordiffy = Object.keys(diff(fromVersion, toVersion))
+  const dsdiffy = Object.keys(diff(fromVersion.datasources, toVersion.datasources))
   // const idiffy = Object.keys(diff(investorFrom.investors, investorTo.investors))
-  const idiffy = []
+  const idiffy: string[] = []
 
   return {
     investorID,
-    versionFrom,
-    versionTo,
-    investorFrom,
-    investorTo,
+    fromVersion,
+    toVersion,
     investordiff: investordiffy.length ? new Set(investordiffy) : new Set(),
     datasourcesdiff: dsdiffy.length ? new Set(dsdiffy) : null,
     involvementsdiff: idiffy.length ? new Set(idiffy) : null,
