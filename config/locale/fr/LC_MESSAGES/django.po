@@ -3186,9 +3186,6 @@ msgstr "Русский"
 #~ msgid "Size under contract"
 #~ msgstr "Superficie sous contrat"
 
-#~ msgid "Intended Size"
-#~ msgstr "Superficie prévue"
-
 #~ msgid "Deals with contract farming schemes."
 #~ msgstr "Transactions assorties de programmes d’agriculture sous contrat."
 

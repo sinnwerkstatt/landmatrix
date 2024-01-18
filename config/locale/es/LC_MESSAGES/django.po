@@ -4582,9 +4582,6 @@ msgstr "Русский"
 #~ msgid "Target Country"
 #~ msgstr "País objetivo"
 
-#~ msgid "Intended size"
-#~ msgstr "Tamaño planeado"
-
 #~ msgid "Activities"
 #~ msgstr "Actividades"
 
