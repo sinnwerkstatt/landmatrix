@@ -277,19 +277,15 @@ def map_version_payload(ov: dict, nv: DealVersion2):
             neg["current"] = False
         if not neg.get("date"):
             neg["date"] = None
+        else:
+            neg["date"] = neg["date"].strip()
+
         if nv.deal_id == 4009 and neg.get("date") == "201":
             neg["date"] = "2012"
         elif nv.deal_id == 5173 and neg.get("date") == "1":
             neg["date"] = "2016"
-        elif "date" in neg.keys():
-            if neg["date"] is None:
-                continue
-            else:
-                neg["date"] = neg["date"].strip()
         nv.negotiation_status += [neg]
 
-        # if "choice" in neg.keys() and neg["choice"] is None:
-        #     del neg["choice"]
     nv.negotiation_status_comment = ov["negotiation_status_comment"]
 
     nv.implementation_status = []

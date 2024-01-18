@@ -2,6 +2,7 @@ import zipfile
 from io import BytesIO
 
 import unicodecsv as csv
+from dateutil.parser import parse
 from django.db.models import QuerySet, Func, Value, CharField, Case, When
 from django.db.models.functions import Concat
 from django.http import HttpResponse
@@ -21,9 +22,9 @@ from apps.landmatrix.models.new import (
     InvestorHull,
     Involvement,
 )
-from apps.landmatrix.views.newviews import _parse_filter
 from apps.landmatrix.utils import InvolvementNetwork2
-from apps.utils import arrayfield_choices_display, qs_values_to_dict
+from apps.landmatrix.views.newviews import _parse_filter
+from apps.utils import qs_values_to_dict
 
 deal_fields = {
     "deal_id": "Deal ID",
@@ -399,7 +400,8 @@ class DataDownload:
 
             self.investors = self.investor_download_format(all_investors)
             self.involvements = self.involvement_download_format(all_involvements)
-
+            # print(all_involvements)
+            # print(self.involvements)
         self.filename = f"deal_{deal_id}"
 
     def _multiple_deals(self, filtersx):
@@ -580,6 +582,7 @@ class DataDownload:
             )
 
         # flatten top investors
+        # ic(data["top_investors"])
         data["top_investors"] = "|".join(
             [
                 "#".join(
@@ -618,9 +621,21 @@ class DataDownload:
             ]
             data["operating_company__active_version__comment"] = av["comment"]
 
-        data["deal_size"] = data["deal_size"] or 0.0
-        data["current_contract_size"] = data["current_contract_size"] or 0.0
-        data["current_production_size"] = data["current_production_size"] or 0.0
+        # TODO 100% Compat hacks
+        data["deal_size"] = f'{data["deal_size"]:.2f}' if data["deal_size"] else 0.0
+        data["current_contract_size"] = (
+            f'{data["current_contract_size"]:.2f}'
+            if data["current_contract_size"]
+            else 0.0
+        )
+        data["current_production_size"] = (
+            f'{data["current_production_size"]:.2f}'
+            if data["current_production_size"]
+            else 0.0
+        )
+        data["intended_size"] = (
+            f'{data["intended_size"]:.2f}' if data["intended_size"] else ""
+        )
 
         imp_stat = data.get("current_implementation_status")
         data["current_implementation_status"] = implementation_status_choices.get(
@@ -645,7 +660,7 @@ class DataDownload:
                     [
                         x["date"] or "",
                         "current" if x.get("current") else "",
-                        str(x.get("area", "")),
+                        str(x.get("area", "") or ""),
                         ", ".join(
                             str(intention_of_investment_choices[y])
                             for y in x.get("choices", [])
@@ -697,9 +712,8 @@ class DataDownload:
             data["purchase_price_type"] = dict(choices.HA_AREA_CHOICES)[
                 data["purchase_price_type"]
             ]
-        # if data.get("purchase_price_area"):
-        #     data["purchase_price_area"] = data["purchase_price_area"]
-
+        if data.get("purchase_price_area"):
+            data["purchase_price_area"] = f'{data["purchase_price_area"]:.2f}'
         if data.get("annual_leasing_fee"):
             data["annual_leasing_fee"] = int(data["annual_leasing_fee"])
         if data.get("annual_leasing_fee_currency"):
@@ -748,12 +762,13 @@ class DataDownload:
             data, "community_reaction", dict(choices.COMMUNITY_REACTION_CHOICES)
         )
 
+        # ic(data["involved_actors"])
         if data.get("involved_actors"):
             data["involved_actors"] = "|".join(
                 [
                     "#".join(
                         [
-                            x["name"] or "",
+                            x.get("name") or "",
                             str(dict(choices.ACTOR_MAP)[x["role"]])
                             if x.get("role")
                             else "",
@@ -942,55 +957,101 @@ class DataDownload:
         return xx
 
     @staticmethod
-    def location_download_format(locations: QuerySet[Location]) -> list[dict]:
-        return locations.annotate(
-            point_lat_lng=Case(
-                When(point=None, then=Value("")),
-                default=Concat(
-                    Func("point", function="ST_Y"),
-                    Value(","),
-                    Func("point", function="ST_X"),
-                    output_field=CharField(),
-                ),
+    def location_download_format(locations: QuerySet[Location]) -> list[list]:
+        return [
+            [
+                x["nid"],
+                x["dealversion__deal_id"],
+                choices.LOCATION_ACCURACY[x["level_of_accuracy"]]
+                if x["level_of_accuracy"]
+                else "",
+                x["name"],
+                x["point_lat_lng"],
+                x["facility_name"],
+                x["description"],
+                x["comment"],
+            ]
+            for x in locations.annotate(
+                point_lat_lng=Case(
+                    When(point=None, then=Value("")),
+                    default=Concat(
+                        Func("point", function="ST_Y"),
+                        Value(","),
+                        Func("point", function="ST_X"),
+                        output_field=CharField(),
+                    ),
+                )
+            ).values(
+                "nid",
+                "dealversion__deal_id",
+                "level_of_accuracy",
+                "name",
+                "point_lat_lng",
+                "facility_name",
+                "description",
+                "comment",
             )
-        ).values_list(
-            "nid",
-            "dealversion__deal_id",
-            "level_of_accuracy",
-            "name",
-            "point_lat_lng",
-            "facility_name",
-            "description",
-            "comment",
-        )
+        ]
 
     @staticmethod
     def contracts_download_format(contracts: QuerySet[Contract]):
-        return contracts.annotate(
-            date_or_empty=Case(
-                When(date=None, then=Value("")),
-                default="date",
-                output_field=CharField(),
-            ),
-            expiration_date_or_empty=Case(
-                When(expiration_date=None, then=Value("")),
-                default="expiration_date",
-                output_field=CharField(),
-            ),
-        ).values_list(
-            "nid",
-            "dealversion__deal_id",
-            "number",
-            "date_or_empty",
-            "expiration_date",
-            "agreement_duration",
-            "comment",
-        )
+        return [
+            [
+                x["nid"],
+                x["dealversion__deal_id"],
+                x["number"],
+                parse(x["date_or_empty"]).date()
+                if x["date_or_empty"]
+                else "",  # TODO 100% Compat hack
+                parse(x["expiration_date_or_empty"]).date()
+                if x["expiration_date_or_empty"]
+                else "",  # TODO 100% Compat hack
+                x["agreement_duration"],
+                x["comment"],
+            ]
+            for x in contracts.annotate(
+                date_or_empty=Case(
+                    When(date=None, then=Value("")),
+                    default="date",
+                    output_field=CharField(),
+                ),
+                expiration_date_or_empty=Case(
+                    When(expiration_date=None, then=Value("")),
+                    default="expiration_date",
+                    output_field=CharField(),
+                ),
+            ).values(
+                "nid",
+                "dealversion__deal_id",
+                "number",
+                "date_or_empty",
+                "expiration_date_or_empty",
+                "agreement_duration",
+                "comment",
+            )
+        ]
 
     @staticmethod
-    def datasource_download_format(datasources: QuerySet[DealDataSource]):
-        return (
-            datasources.annotate(
+    def datasource_download_format(datasources: QuerySet[DealDataSource]) -> list[list]:
+        return [
+            [
+                x["nid"],
+                x["dealversion__deal_id"],
+                choices.DATASOURCE_TYPE_MAP[x["type"]] if x["type"] else "",
+                x["url"],
+                x["public_file"],
+                x["publication_title"],
+                parse(x["date_or_empty"]).date()
+                if x["date_or_empty"]
+                else "",  # TODO 100% Compat hack
+                x["name"],
+                x["company"],
+                x["email"],
+                x["phone"],
+                x["open_land_contracts_id"],
+                x["comment"],
+            ]
+            for x in datasources.annotate(
                 date_or_empty=Case(
                     When(date=None, then=Value("")),
                     default="date",
@@ -1004,7 +1065,7 @@ class DataDownload:
                     output_field=CharField(),
                 )
             )
-            .values_list(
+            .values(
                 "nid",
                 "dealversion__deal_id",
                 "type",
@@ -1019,7 +1080,7 @@ class DataDownload:
                 "open_land_contracts_id",
                 "comment",
             )
-        )
+        ]
 
     @staticmethod
     def investor_download_format(investors: QuerySet[InvestorHull]):
@@ -1055,43 +1116,40 @@ class DataDownload:
         return ret
 
     @staticmethod
-    def involvement_download_format(involvements: QuerySet[Involvement]):
-        ret = []
-        for x in involvements.annotate(
-            role_display=Case(
-                When(role="PARENT", then=Value("Parent company")),
-                When(role="LENDER", then=Value("Tertiary investor/lender")),
-                default=Value(""),
-                output_field=CharField(),
-            ),
-            # investment_type_flat=StringAgg(
-            #     "investment_type",
-            #     delimiter=", ",
-            #     output_field=CharField(),
-            # ),
-            # percentage_or_empty=Case(
-            #     When(percentage=None, then=Value("")),
-            #     default="percentage",
-            #     output_field=CharField(),
-            # ),
-            # loans_amount_or_empty=Case(
-            #     When(loans_amount=None, then=Value("")),
-            #     default="loans_amount",
-            #     output_field=CharField(),
-            # ),
-        ).values_list(
-            "id",
-            "child_investor_id",
-            "child_investor__active_version__name",
-            "parent_investor_id",
-            "parent_investor__active_version__name",
-            "role_display",
-            "investment_type",
-            "percentage",
-            "loans_amount",
-            "loans_currency",
-            "loans_date",
-            "comment",
-        ):
-            ret += [["" if y is None else y for y in x]]
-        return ret
+    def involvement_download_format(involvements: QuerySet[Involvement]) -> list[list]:
+        return [
+            [
+                x["id"],
+                x["child_investor_id"],
+                x["child_investor__active_version__name"],
+                x["parent_investor_id"],
+                x["parent_investor__active_version__name"],
+                choices.INVOLVEMENT_ROLE_DICT[x["role"]] if x["role"] else "",
+                "|".join(
+                    [
+                        str(choices.INVESTMENT_TYPE_DICT[y])
+                        for y in x["investment_type"]
+                        if y
+                    ]
+                ),
+                float(x["percentage"]) if x["percentage"] is not None else "",
+                x["loans_amount"] if x["loans_amount"] is not None else "",
+                x["loans_currency"] if x["loans_currency"] is not None else "",
+                x["loans_date"] if x["loans_date"] is not None else "",
+                x["comment"],
+            ]
+            for x in involvements.values(
+                "id",
+                "child_investor_id",
+                "child_investor__active_version__name",
+                "parent_investor_id",
+                "parent_investor__active_version__name",
+                "role",
+                "investment_type",
+                "percentage",
+                "loans_amount",
+                "loans_currency",
+                "loans_date",
+                "comment",
+            )
+        ]

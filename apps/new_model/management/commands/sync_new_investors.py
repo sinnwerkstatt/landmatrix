@@ -28,8 +28,17 @@ status_map_dings = {
 
 
 class Command(BaseCommand):
+    def add_arguments(self, parser):
+        parser.add_argument("start_id", nargs="?", type=int)
+        parser.add_argument("end_id", nargs="?", type=int)
+
     def handle(self, *args, **options):
         investors: QuerySet[Investor] = Investor.objects.all().order_by("id").all()
+        if options["start_id"]:
+            investors = investors.filter(id__gte=options["start_id"])
+        if options["end_id"]:
+            investors = investors.filter(id__lte=options["end_id"])
+
         for old_investor in investors:
             investor_hull: InvestorHull
             investor_hull, _ = InvestorHull.objects.get_or_create(
@@ -40,6 +49,7 @@ class Command(BaseCommand):
 
             ic(old_investor.id, old_investor.status)
             for old_version in old_investor.versions.all().order_by("id"):
+                ic(old_version)
                 new_version: InvestorVersion2
                 base_payload = {
                     "investor_id": old_investor.id,
@@ -187,16 +197,18 @@ def do_workflows(investor_id):
 
         wfi, _ = InvestorWorkflowInfo2.objects.get_or_create(
             id=wfi_old.id,
-            from_user_id=wfi_old.from_user_id,
-            to_user_id=wfi_old.to_user_id,
-            status_before=status_before,
-            status_after=status_after,
-            timestamp=wfi_old.timestamp,
-            comment=wfi_old.comment or "",
-            replies=wfi_old.replies or [],
-            resolved=wfi_old.resolved,
-            investor_id=wfi_old.investor_id,
-            investor_version_id=wfi_old.investor_version_id,
+            defaults={
+                "from_user_id": wfi_old.from_user_id,
+                "to_user_id": wfi_old.to_user_id,
+                "status_before": status_before,
+                "status_after": status_after,
+                "timestamp": wfi_old.timestamp,
+                "comment": wfi_old.comment or "",
+                "replies": wfi_old.replies or [],
+                "resolved": wfi_old.resolved,
+                "investor_id": wfi_old.investor_id,
+                "investor_version_id": wfi_old.investor_version_id,
+            },
         )
 
         if not wfi.investor_version_id:

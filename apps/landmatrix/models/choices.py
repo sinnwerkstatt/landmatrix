@@ -603,7 +603,9 @@ DATASOURCE_TYPE_MAP = {
     "CONTRACT_FARMING_AGREEMENT": _("Contract (contract farming agreement)"),
     "PERSONAL_INFORMATION": _("Personal information"),
     "CROWDSOURCING": _("Crowdsourcing"),
-    "OTHER": _("Other (Please specify in comment field)"),
+    "OTHER": _(
+        "Other"
+    ),  # TODO if OTHER gets selected:  "(Please specify in comment field)"
 }
 DATASOURCE_TYPE_OPTIONS = [
     {"value": k, "label": v} for k, v in DATASOURCE_TYPE_MAP.items()
@@ -672,6 +674,7 @@ INVESTMENT_TYPE_ITEMS = [
     {"value": "EQUITY", "label": _("Shares/Equity")},
     {"value": "DEBT_FINANCING", "label": _("Debt financing")},
 ]
+INVESTMENT_TYPE_DICT = {x["value"]: x["label"] for x in INVESTMENT_TYPE_ITEMS}
 INVESTMENT_TYPE_CHOICES = [(x["value"], x["label"]) for x in INVESTMENT_TYPE_ITEMS]
 
 INVOLVEMENT_ROLE_ITEMS = [
