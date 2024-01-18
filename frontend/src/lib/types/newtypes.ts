@@ -53,7 +53,8 @@ interface Hull {
 
 export interface DealHull extends Hull {
   selected_version: DealVersion2
-  country: Country
+  // country: Country
+  country_id: number | null
   confidential: boolean
   confidential_comment: string
   fully_updated_at: string

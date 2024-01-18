@@ -33,14 +33,12 @@
     {
       key: "current_negotiation_status",
       label: $_("Current negotiation status"),
-
       colSpan: 4,
       choices: $fieldChoices.deal.negotiation_status,
     },
     {
       key: "current_implementation_status",
       label: $_("Current implementation status"),
-
       colSpan: 4,
       choices: $fieldChoices.deal.implementation_status,
     },
@@ -55,7 +53,6 @@
     {
       key: "operating_company",
       label: $_("Operating company"),
-
       colSpan: 4,
     },
   ]
@@ -121,28 +118,28 @@
             {:else if fieldName === "country"}
               <CountryField
                 fieldname="country"
-                value={obj.country}
+                value={obj.country_id}
                 {wrapperClass}
                 {valueClass}
               />
             {:else if fieldName === "operating_company"}
               <InvestorLinkField
                 fieldname="operating_company"
-                value={obj.operating_company}
+                value={obj.selected_version.operating_company}
                 {wrapperClass}
                 {valueClass}
               />
             {:else if fieldName === "current_intention_of_investment"}
               <IOIField
                 fieldname="current_intention_of_investment"
-                value={obj.current_intention_of_investment}
+                value={obj.selected_version.current_intention_of_investment}
                 {wrapperClass}
                 {valueClass}
               />
             {:else if ["current_contract_size", "intended_size", "deal_size"].includes(fieldName)}
               <DecimalField
                 fieldname={fieldName}
-                value={obj[fieldName]}
+                value={obj.selected_version[fieldName]}
                 unit={col?.unit}
                 {wrapperClass}
                 {valueClass}
@@ -150,7 +147,7 @@
             {:else}
               <TextField
                 fieldname={fieldName}
-                value={obj[fieldName]}
+                value={obj.selected_version[fieldName]}
                 choices={col?.choices}
                 {wrapperClass}
                 {valueClass}
