@@ -84,7 +84,7 @@
 
     if (retJson.versionID !== investor.selected_version.id) {
       toast.push("Created a new draft", { classes: ["success"] })
-      await goto(`/investor/${investor.id}/${retJson.newVersionID}/`)
+      await goto(`/investor/edit/${investor.id}/${retJson.versionID}/`)
     } else {
       toast.push("Saved data", { classes: ["success"] })
       await invalidate("investor:detail")
