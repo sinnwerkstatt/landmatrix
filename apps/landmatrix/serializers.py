@@ -299,12 +299,10 @@ class DealSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_workflowinfos(obj: DealHull):
-        return [
-            dwi.to_dict()
-            for dwi in DealWorkflowInfo2.objects.filter(deal_id=obj.id).order_by(
-                "-timestamp"
-            )
-        ]
+        wfis: QuerySet[DealWorkflowInfo2] = DealWorkflowInfo2.objects.filter(
+            deal_id=obj.id
+        )
+        return [dwi.to_dict() for dwi in wfis.order_by("-timestamp")]
 
     class Meta:
         model = DealHull
@@ -460,6 +458,9 @@ class InvestorSerializer(serializers.ModelSerializer):
         if obj.active_version:
             involvements: QuerySet[Involvement] = Involvement.objects.filter(
                 Q(parent_investor_id=obj.id) | Q(child_investor_id=obj.id)
+            ).filter(
+                ~Q(parent_investor__active_version=None),
+                ~Q(child_investor__active_version=None),
             )
             return [invo.to_dict(target_id=obj.id) for invo in involvements]
         else:
@@ -471,9 +472,7 @@ class InvestorSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_workflowinfos(obj: InvestorHull):
-        return [
-            x.to_dict()
-            for x in InvestorWorkflowInfo2.objects.filter(investor_id=obj.id).order_by(
-                "-id"
-            )
-        ]
+        wfis: QuerySet[InvestorWorkflowInfo2] = InvestorWorkflowInfo2.objects.filter(
+            investor_id=obj.id
+        )
+        return [x.to_dict() for x in wfis.order_by("-id")]

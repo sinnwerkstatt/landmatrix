@@ -45,9 +45,10 @@ def investor_search(request):
 def chart_descriptions(request):
     language = request.GET.get("lang", "en")
     with translation.override(language):
-        return JsonResponse(
-            ChartDescriptionsSettings.load(request_or_site=request).to_dict()
+        cds: ChartDescriptionsSettings = ChartDescriptionsSettings.load(
+            request_or_site=request
         )
+        return JsonResponse(cds.to_dict())
 
 
 def blog_categories(request):

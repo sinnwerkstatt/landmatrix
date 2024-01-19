@@ -21,7 +21,7 @@ class InvolvementNetwork:
 
         # find all involvements
         involvements = []
-        qs = (
+        qs: QuerySet[InvestorVentureInvolvement] = (
             InvestorVentureInvolvement.objects.active()
             .prefetch_related("investor")
             .prefetch_related("investor__deals")
@@ -68,11 +68,12 @@ class InvolvementNetwork:
 
         return involvements
 
-    def flat_view_for_download(self, investor):
-        network = self.get_network(investor.id, exclude=None)
-        inv1 = investor.to_dict()
-        investors, involvements = self._yield_datasets(inv1, network)
-        return [self._investor_dict_to_list(inv1)] + investors, involvements
+    # appreantly unneeded
+    # def flat_view_for_download(self, investor):
+    #     network = self.get_network(investor.id, exclude=None)
+    #     inv1 = investor.to_dict()
+    #     investors, involvements = self._yield_datasets(inv1, network)
+    #     return [self._investor_dict_to_list(inv1)] + investors, involvements
 
     @staticmethod
     def _investor_dict_to_list(investor_dict):

@@ -1086,6 +1086,7 @@ class Location(models.Model):
     comment = models.TextField(_("Comment"), blank=True)
 
     def to_dict(self):
+        areas: QuerySet[Area] = self.areas.all()
         return {
             "nid": self.nid,
             "name": self.name,
@@ -1094,7 +1095,7 @@ class Location(models.Model):
             "facility_name": self.facility_name,
             "level_of_accuracy": self.level_of_accuracy,
             "comment": self.comment,
-            "areas": [area.to_dict() for area in self.areas.all()],
+            "areas": [area.to_dict() for area in areas],
         }
 
     def save(self, *args, **kwargs):
@@ -1809,7 +1810,7 @@ class Involvement(models.Model):
                 "classification": other_investor.active_version.classification,
                 "deleted": other_investor.deleted,
             }
-            if other_investor
+            if other_investor and other_investor.active_version
             else None
         )
 

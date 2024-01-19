@@ -1,7 +1,7 @@
 import re
 
 from django.contrib.sites.models import Site
-from django.db.models import Sum
+from django.db.models import Sum, QuerySet
 from django.utils.translation import gettext as _
 from wagtail import blocks
 from wagtail.blocks import CharBlock, RawHTMLBlock, StructBlock
@@ -209,7 +209,8 @@ class ImageTextBlock(StructBlock):
 # New Screendesign
 class PartnerBlock(StructBlock):
     def get_api_representation(self, value, context=None):
-        return [p.to_dict("max-220x220") for p in Partner.objects.all()]
+        partners: QuerySet[Partner] = Partner.objects.all()
+        return [p.to_dict("max-220x220") for p in partners]
 
     class Meta:
         label = "PartnerBlock"
