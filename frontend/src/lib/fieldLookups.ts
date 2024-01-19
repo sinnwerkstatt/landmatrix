@@ -36,11 +36,6 @@ interface Sec {
 export const investorFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
   return {
     id: { displayField: IDField, label: $_("ID"), extras: { model: "investor" } },
-
-    country: {
-      displayField: CountryField,
-      label: $_("Country of registration/origin"),
-    },
     country_id: {
       displayField: CountryField,
       label: $_("Country of registration/origin"),
@@ -317,7 +312,6 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
   return {
     // // Deal Hull
     id: { displayField: IDField, label: $_("ID") },
-    country: { displayField: CountryField, label: $_("Target country") },
     country_id: { displayField: CountryField, label: $_("Target country") },
     confidential: { displayField: BooleanField, label: $_("Confidential") },
     created_at: { displayField: DateTimeField, label: $_("Created at") },

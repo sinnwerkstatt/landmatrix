@@ -13,10 +13,10 @@
     <h3 class="my-0">{$_("General info")}</h3>
     <DisplayField fieldname="name" model="investor" showLabel value={version.name} />
     <DisplayField
-      fieldname="country"
+      fieldname="country_id"
       model="investor"
       showLabel
-      value={version.country}
+      value={version.country_id}
     />
     <DisplayField
       fieldname="classification"
@@ -25,7 +25,7 @@
       value={version.classification}
     />
     <DisplayField
-      fieldname="investor.homepage"
+      fieldname="homepage"
       model="investor"
       showLabel
       value={version.homepage}

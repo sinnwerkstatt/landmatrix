@@ -4,15 +4,17 @@
   import { page } from "$app/stores"
 
   import type { InvestorHull } from "$lib/types/newtypes.js"
+  import { UserRole } from "$lib/types/user"
 
   import SectionInvolvementsDealCard from "./SectionInvolvementsDealCard.svelte"
   import SectionInvolvementsInvestorCard from "./SectionInvolvementsInvestorCard.svelte"
 
   export let investor: InvestorHull
 
-  $: filteredInvolvements = $page.data.user
-    ? investor.involvements
-    : investor.involvements.filter(i => !i.other_investor.deleted)
+  $: filteredInvolvements =
+    $page.data.user && $page.data.user.role > UserRole.ANYBODY
+      ? investor.involvements
+      : investor.involvements.filter(i => !i.other_investor.deleted)
 </script>
 
 <section>

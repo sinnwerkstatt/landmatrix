@@ -28,7 +28,7 @@
 {#if isNotEmpty(value)}
   <div class={wrapperClass} data-fieldname={fieldname}>
     {#if showLabel}
-      <Label2 value={richField.label} class={labelClass} />
+      <Label2 value={richField?.label} class={labelClass} />
     {/if}
     <div class={valueClass}>
       {#if richField}

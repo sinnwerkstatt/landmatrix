@@ -17,13 +17,15 @@
     value={deal.id}
     {valueClass}
     {wrapperClass}
+    showLabel
   />
   <DisplayField
-    fieldname="country"
+    fieldname="country_id"
     {labelClass}
     value={deal.country_id}
     {valueClass}
     {wrapperClass}
+    showLabel
   />
   <DisplayField
     fieldname="current_intention_of_investment"
@@ -31,6 +33,7 @@
     value={deal.selected_version.current_intention_of_investment}
     {valueClass}
     {wrapperClass}
+    showLabel
   />
   <DisplayField
     fieldname="current_negotiation_status"

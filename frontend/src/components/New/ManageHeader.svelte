@@ -49,8 +49,10 @@
         >
           <li class="my-2">
             <div class="flex items-center gap-2">
-              <a class="butn" href="/{objType}/edit/{object.id}/">edit {objType}</a>
-              this will edit the current deal and create blablabla...
+              <a class="butn" href="/{objType}/edit/{object.id}/">
+                {$_("Edit")}
+              </a>
+              {$_("Create a new draft version of this investor")}
             </div>
           </li>
           {#if isDeal(object) && $page.data.user?.role === UserRole.ADMINISTRATOR}
@@ -75,9 +77,9 @@
                 on:click={() => (showDeletionOverlay = true)}
               >
                 {#if object.deleted}
-                  undelete
+                  {$_("Undelete")}
                 {:else}
-                  delete
+                  {$_("Delete")}
                 {/if}
               </button>
               {#if object.deleted}

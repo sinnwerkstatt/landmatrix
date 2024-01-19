@@ -25,8 +25,10 @@ export const load: PageLoad = async ({ params, fetch }) => {
 
   const dealdiffy = Object.keys(diff(fromVersion, toVersion))
   const locdiffy = Object.keys(diff(fromVersion.locations, toVersion.locations))
-  const dsdiffy = Object.keys(diff(fromVersion.locations, toVersion.locations))
-  const condiffy = Object.keys(diff(fromVersion.datasources, toVersion.datasources))
+  const condiffy = Object.keys(diff(fromVersion.contracts, toVersion.contracts))
+  console.log(fromVersion.datasources)
+  console.log(toVersion.datasources)
+  const dsdiffy = Object.keys(diff(fromVersion.datasources, toVersion.datasources))
 
   console.log(dealdiffy)
   return {
@@ -35,7 +37,7 @@ export const load: PageLoad = async ({ params, fetch }) => {
     toVersion,
     dealdiff: dealdiffy.length ? new Set(dealdiffy) : new Set(),
     locationsdiff: locdiffy.length ? new Set(locdiffy) : null,
-    datasourcesdiff: dsdiffy.length ? new Set(dsdiffy) : null,
     contractsdiff: condiffy.length ? new Set(condiffy) : null,
+    datasourcesdiff: dsdiffy.length ? new Set(dsdiffy) : null,
   }
 }

@@ -168,7 +168,7 @@
         <td />
         <td />
         <td />
-        <td />
+        {#if isDeal}<td />{/if}
         {#if compareFrom && compareTo}
           <td class="text-right">
             <a

@@ -10,7 +10,10 @@
   const valueClass = "font-medium"
 </script>
 
-<div class="flex flex-col gap-1 border border-pelorous p-2">
+<div
+  class="flex flex-col gap-1 border border-pelorous p-2"
+  class:bg-red-200={involvement.other_investor.deleted}
+>
   <DisplayField
     fieldname="id"
     {labelClass}

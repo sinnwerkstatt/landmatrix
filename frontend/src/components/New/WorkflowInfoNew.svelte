@@ -7,6 +7,7 @@
   import { invalidate } from "$app/navigation"
   import { page } from "$app/stores"
 
+  import { stateMap } from "$lib/newUtils"
   import { loading } from "$lib/stores.js"
   import type { WorkflowInfoType } from "$lib/types/newtypes"
   import { getCsrfToken } from "$lib/utils"
@@ -116,13 +117,15 @@
     {#if info.status_before !== info.status_after}
       {#if info.status_before}
         <div class="inline-block bg-gray-500 px-1.5 text-[13px] text-white">
-          {info.status_before}
+          {$stateMap[info.status_before]}
         </div>
         <ArrowLongRightIcon class="inline-block h-4 w-4" />
       {/if}
-      <div class="inline-block bg-pelorous px-1.5 text-[13px] text-white">
-        {info.status_after}
-      </div>
+      {#if info.status_after}
+        <div class="inline-block bg-pelorous px-1.5 text-[13px] text-white">
+          {$stateMap[info.status_after]}
+        </div>
+      {/if}
     {/if}
     {#if confidentialStatusChange}
       <div
