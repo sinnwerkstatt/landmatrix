@@ -49,7 +49,7 @@ def get_submodels_fields():
                 "label": _("Type"),
                 "class": "TypedChoiceField",
                 "choices": [{"value": "", "label": "--------"}]
-                + choices.DATASOURCE_TYPE_OPTIONS,
+                + choices.DATASOURCE_TYPE_ITEMS,
             },
             "url": {"label": _("Url"), "class": "URLField", "type": "url"},
             "file": {"label": _("File"), "class": "FileField"},

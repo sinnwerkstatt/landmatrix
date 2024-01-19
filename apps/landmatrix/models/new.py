@@ -383,7 +383,6 @@ class DealVersionBaseFields(models.Model):
     )
 
     """ Former use """
-
     former_land_owner = ChoiceArrayField(
         models.CharField(choices=choices.FORMER_LAND_OWNER_CHOICES),
         verbose_name=_("Former land owner"),
@@ -393,7 +392,6 @@ class DealVersionBaseFields(models.Model):
     former_land_owner_comment = models.TextField(
         _("Comment on former land owner"), blank=True
     )
-
     former_land_use = ChoiceArrayField(
         models.CharField(choices=choices.FORMER_LAND_USE_CHOICES),
         verbose_name=_("Former land use"),
@@ -403,7 +401,6 @@ class DealVersionBaseFields(models.Model):
     former_land_use_comment = models.TextField(
         _("Comment on former land use"), blank=True
     )
-
     former_land_cover = ChoiceArrayField(
         models.CharField(choices=choices.FORMER_LAND_COVER_CHOICES),
         verbose_name=_("Former land cover"),

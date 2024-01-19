@@ -594,22 +594,25 @@ NOT_PUBLIC_REASON_ITEMS = [
 
 NOT_PUBLIC_REASON_CHOICES = [(x["value"], x["label"]) for x in NOT_PUBLIC_REASON_ITEMS]
 
-DATASOURCE_TYPE_MAP = {
-    "MEDIA_REPORT": _("Media report"),
-    "RESEARCH_PAPER_OR_POLICY_REPORT": _("Research Paper / Policy Report"),
-    "GOVERNMENT_SOURCES": _("Government sources"),
-    "COMPANY_SOURCES": _("Company sources"),
-    "CONTRACT": "Contract",
-    "CONTRACT_FARMING_AGREEMENT": _("Contract (contract farming agreement)"),
-    "PERSONAL_INFORMATION": _("Personal information"),
-    "CROWDSOURCING": _("Crowdsourcing"),
-    "OTHER": _(
-        "Other"
-    ),  # TODO if OTHER gets selected:  "(Please specify in comment field)"
-}
-DATASOURCE_TYPE_OPTIONS = [
-    {"value": k, "label": v} for k, v in DATASOURCE_TYPE_MAP.items()
+DATASOURCE_TYPE_ITEMS = [
+    {"value": "MEDIA_REPORT", "label": _("Media report")},
+    {
+        "value": "RESEARCH_PAPER_OR_POLICY_REPORT",
+        "label": _("Research Paper / Policy Report"),
+    },
+    {"value": "GOVERNMENT_SOURCES", "label": _("Government sources")},
+    {"value": "COMPANY_SOURCES", "label": _("Company sources")},
+    {"value": "CONTRACT", "label": _("Contract")},
+    {
+        "value": "CONTRACT_FARMING_AGREEMENT",
+        "label": _("Contract (contract farming agreement)"),
+    },
+    {"value": "PERSONAL_INFORMATION", "label": _("Personal information")},
+    {"value": "CROWDSOURCING", "label": _("Crowdsourcing")},
+    {"value": "OTHER", "label": _("Other")},
+    # TODO if OTHER gets selected:  "(Please specify in comment field)"
 ]
+DATASOURCE_TYPE_MAP = {x["value"]: x["label"] for x in DATASOURCE_TYPE_ITEMS}
 DATASOURCE_TYPE_CHOICES = ((k, v) for k, v in DATASOURCE_TYPE_MAP.items())
 
 

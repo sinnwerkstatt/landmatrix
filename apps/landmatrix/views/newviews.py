@@ -739,6 +739,7 @@ def field_choices(request):
                 "not_public_reason": choices.NOT_PUBLIC_REASON_ITEMS,
                 "actors": choices.ACTOR_ITEMS,
             },
+            "datasource": {"type": choices.DATASOURCE_TYPE_ITEMS},
             "investor": {"classification": choices.INVESTOR_CLASSIFICATION_ITEMS},
             "involvement": {"investment_type": choices.INVESTMENT_TYPE_ITEMS},
         }
