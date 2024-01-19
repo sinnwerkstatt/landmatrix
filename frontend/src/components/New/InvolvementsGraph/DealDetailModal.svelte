@@ -1,9 +1,9 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import { dealFields } from "$lib/fieldLookups"
   import type { DealHull } from "$lib/types/newtypes"
 
+  import DisplayField from "$components/Fields/DisplayField.svelte"
   import Overlay from "$components/Overlay.svelte"
 
   export let visible: boolean
@@ -11,10 +11,11 @@
 
   const fields = [
     "country_id",
-    "intention_of_investment",
-    "implementation_status",
-    "negotiation_status",
-    "intended_size",
+    // TODO
+    // "intention_of_investment",
+    // "implementation_status",
+    // "negotiation_status",
+    // "intended_size",
     "contract_size",
   ]
   const createTitle = (deal: DealHull) => `${deal.id}`
@@ -23,28 +24,15 @@
 <Overlay on:close title={createTitle(deal)} {visible}>
   <div>
     {JSON.stringify(deal)}
-    {#each fields as field}
-      {@const dealField = $dealFields[field]}
-      {#if dealField}
-        {#if field === "country_id"}
-          <svelte:component
-            this={dealField.displayField}
-            value={deal[field]}
-            wrapperClass=""
-            label={dealField.label}
-          />
-        {:else}
-          <svelte:component
-            this={dealField.displayField}
-            fieldname={field}
-            value={deal[field]}
-            wrapperClass=""
-            label={dealField.label}
-            extras={dealField.extras}
-          />
-        {/if}
+    {#each fields as fieldname}
+      {#if fieldname === "country_id"}
+        <DisplayField {fieldname} value={deal[fieldname]} wrapperClass="" />
       {:else}
-        unknown field {field}
+        <DisplayField
+          {fieldname}
+          value={deal.selected_version[fieldname]}
+          wrapperClass=""
+        />
       {/if}
     {/each}
 

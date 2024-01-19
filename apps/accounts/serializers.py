@@ -1,10 +1,7 @@
 from rest_framework import serializers
 
 from apps.accounts.models import User
-from apps.landmatrix.serializers import (
-    RegionSerializer,
-    CountryIDNameSerializer,
-)
+from apps.landmatrix.serializers import RegionSerializer
 
 
 class UserListSerializer(serializers.ModelSerializer):
@@ -19,7 +16,8 @@ class UserListSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    country = CountryIDNameSerializer()
+    # country = CountryIDNameSerializer()
+    country_id = serializers.PrimaryKeyRelatedField(read_only=True)
     region = RegionSerializer()
 
     class Meta:

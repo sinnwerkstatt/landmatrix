@@ -476,7 +476,6 @@ class DealVersionBaseFields(models.Model):
         validators=[MinValueValidator(0), MaxValueValidator(100)],
     )
     has_export = models.BooleanField(_("Has export"), null=True)
-
     export = models.FloatField(
         _("Export"),
         blank=True,

@@ -32,9 +32,10 @@
   </Subsection>
 
   {#if version.operating_company_id}
-    <h3 class="heading5 mb-6 mt-8">
+    <div class="heading4 mb-6 mt-8">
       {$_("Network of parent companies and tertiary investors/lenders")}
-    </h3>
+    </div>
+    <div class="heading5">{$_("Please click the nodes to get more details.")}</div>
     <InvolvementsGraph
       investor_id={version.operating_company_id}
       skipVentures

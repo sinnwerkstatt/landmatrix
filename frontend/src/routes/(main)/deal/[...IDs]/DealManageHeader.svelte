@@ -3,6 +3,7 @@
 
   import type { DealHull } from "$lib/types/newtypes"
 
+  import CountryField from "$components/Fields/Display2/CountryField.svelte"
   import CheckCircleIcon from "$components/icons/CheckCircleIcon.svelte"
   import CheckIcon from "$components/icons/CheckIcon.svelte"
   import EyeIcon from "$components/icons/EyeIcon.svelte"
@@ -17,7 +18,9 @@
 <ManageHeader object={deal}>
   <svelte:fragment slot="heading">
     <h1 class="heading3 my-0">Deal #{deal.id}</h1>
-    <div class="heading4 my-0">{deal.country.name}</div>
+    <div class="heading4 my-0">
+      <CountryField value={deal.country_id} />
+    </div>
   </svelte:fragment>
 
   <svelte:fragment slot="visibility">

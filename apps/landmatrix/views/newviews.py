@@ -422,7 +422,6 @@ class DealViewSet(HullViewSet):
             .prefetch_related("active_version__operating_company")
             .prefetch_related("active_version__operating_company__active_version")
             .prefetch_related("active_version__locations")
-            # .prefetch_related("country")
             .order_by("id")
         )
 
@@ -431,13 +430,6 @@ class DealViewSet(HullViewSet):
                 {
                     "id": d.id,
                     "country_id": d.country_id,
-                    # "country": {
-                    #     "id": d.country.id,
-                    #     "name": d.country.name,
-                    #     "region": {"id": d.country.region_id},
-                    # }
-                    # if d.country_id
-                    # else None,
                     "fully_updated_at": d.fully_updated_at,  # for listing
                     "selected_version": {
                         "deal_size": d.active_version.deal_size,

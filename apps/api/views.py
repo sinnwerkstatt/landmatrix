@@ -6,13 +6,11 @@ from django.http import JsonResponse
 from django.middleware.csrf import get_token
 from django.utils import timezone, translation
 from django.views.decorators.http import require_GET
-from rest_framework.decorators import api_view
 from rest_framework.exceptions import NotAuthenticated, PermissionDenied
 
 from apps.blog.models import BlogCategory, BlogPage
 from apps.landmatrix.charts import get_deal_top_investments, web_of_transnational_deals
 from apps.landmatrix.forms.deal import DealForm
-from apps.landmatrix.forms.deal_submodels import get_submodels_fields
 from apps.landmatrix.forms.investor import InvestorForm, InvestorVentureInvolvementForm
 from apps.landmatrix.models.investor import Investor
 from apps.landmatrix.models.new import (
@@ -93,7 +91,6 @@ def legacy_formfields(request):
         return JsonResponse(
             {
                 "deal": DealForm().as_json(),
-                **get_submodels_fields(),
                 "investor": InvestorForm().as_json(),
                 "involvement": InvestorVentureInvolvementForm().as_json(),
             }

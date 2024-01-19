@@ -4,6 +4,8 @@
 
   import type { InvestorHull } from "$lib/types/newtypes"
 
+  import CountryField from "$components/Fields/Display2/CountryField.svelte"
+
   export let value: InvestorHull | number | null
 
   let investor: InvestorHull | null
@@ -24,15 +26,15 @@
 </script>
 
 {#if investor}
-  <a href="/investor/{investor.id}/">
+  <a href="/investor/{investor.id}/" class="investor">
     {#if investor.selected_version.name_unknown}
       <span class="italic">[{$_("unknown investor")}]</span>
     {:else}
       {investor.selected_version.name}
     {/if}
     #{investor.id}
-    {#if investor.selected_version.country}
-      - {investor.selected_version.country.name}
+    {#if investor.selected_version.country_id}
+      - <CountryField value={investor.selected_version.country_id} />
     {/if}
   </a>
 {/if}

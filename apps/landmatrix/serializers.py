@@ -2,7 +2,6 @@ from django.contrib.gis.geos import GEOSGeometry
 from django.db.models import Q, QuerySet
 from rest_framework import serializers
 
-from apps.accounts.models import User
 from apps.landmatrix.models import FieldDefinition
 from apps.landmatrix.models.country import Country, Region
 from apps.landmatrix.models.currency import Currency
@@ -288,18 +287,12 @@ class DealVersionSerializer(serializers.ModelSerializer):
         DealDataSource.objects.filter(dealversion=dv1).exclude(nid__in=ds_nids).delete()
 
 
-class CountryIDNameSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Country
-        fields = ["id", "name", "code_alpha2"]
-
-
 class DealSerializer(serializers.ModelSerializer):
     active_version_id = serializers.PrimaryKeyRelatedField(read_only=True)
     draft_version_id = serializers.PrimaryKeyRelatedField(read_only=True)
     created_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
 
-    country = CountryIDNameSerializer(read_only=True)
+    country_id = serializers.PrimaryKeyRelatedField(read_only=True)
     versions = DealVersionVersionsListSerializer(many=True, read_only=True)
     selected_version = DealVersionSerializer(read_only=True)
     workflowinfos = serializers.SerializerMethodField(read_only=True)
@@ -351,8 +344,7 @@ class Investor2DealSerializer(serializers.ModelSerializer):
 
 class InvestorVersionSerializer(serializers.ModelSerializer):
     datasources = InvestorDataSourceSerializer(many=True, read_only=True)
-    country = CountryIDNameSerializer(read_only=True)
-    country_id = serializers.IntegerField()
+    country_id = serializers.PrimaryKeyRelatedField(read_only=True)
 
     # creating these because DRF shows these fields as "created_by", instead of "~_id"
     created_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
@@ -444,7 +436,7 @@ class InvestorSerializer(serializers.ModelSerializer):
         return [
             {
                 "id": d.id,
-                "country": {"id": d.country_id} if d.country else None,
+                "country_id": d.country_id,
                 "selected_version": {
                     "id": d.active_version.id,
                     "current_intention_of_investment": d.active_version.current_intention_of_investment,

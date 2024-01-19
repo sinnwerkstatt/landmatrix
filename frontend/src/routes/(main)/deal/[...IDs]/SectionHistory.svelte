@@ -1,11 +1,10 @@
 <script lang="ts">
-  import dayjs from "dayjs"
   import { _ } from "svelte-i18n"
 
   import { stateMap } from "$lib/newUtils"
   import type { DealHull } from "$lib/types/newtypes"
 
-  import UserField from "$components/Fields/Display2/UserField.svelte"
+  import DisplayField from "$components/Fields/DisplayField.svelte"
   import CheckCircleIcon from "$components/icons/CheckCircleIcon.svelte"
   import CircleIcon from "$components/icons/CircleIcon.svelte"
 
@@ -49,35 +48,74 @@
         <tr class="odd:bg-gray-100 dark:odd:bg-gray-700">
           <td>{version.id}</td>
           <td>
-            {dayjs(version.created_at).format("YYYY-MM-DD HH:mm")}
-            <br />
-            <UserField value={version.created_by_id} />
+            <DisplayField
+              fieldname="created_at"
+              value={version.created_at}
+              wrapperClass=""
+              valueClass=""
+            />
+            <DisplayField
+              fieldname="created_by_id"
+              value={version.created_by_id}
+              wrapperClass=""
+              valueClass=""
+            />
           </td>
           <td>
-            {version.modified_at
-              ? dayjs(version.modified_at).format("YYYY-MM-DD HH:mm")
-              : ""}
-            <br />
-            <UserField value={version.modified_by_id} />
+            <DisplayField
+              fieldname="modified_at"
+              value={version.modified_at}
+              wrapperClass=""
+              valueClass=""
+            />
+            <DisplayField
+              fieldname="modified_by_id"
+              value={version.modified_by_id}
+              wrapperClass=""
+              valueClass=""
+            />
           </td>
           <td>
-            {version.sent_to_review_at
-              ? dayjs(version.sent_to_review_at).format("YYYY-MM-DD HH:mm")
-              : ""}
-            <br />
-            <UserField value={version.sent_to_review_by_id} />
+            <DisplayField
+              fieldname="sent_to_review_at"
+              value={version.sent_to_review_at}
+              wrapperClass=""
+              valueClass=""
+            />
+            <DisplayField
+              fieldname="sent_to_review_by_id"
+              value={version.sent_to_review_by_id}
+              wrapperClass=""
+              valueClass=""
+            />
           </td>
           <td>
-            {version.sent_to_activation_at
-              ? dayjs(version.sent_to_activation_at).format("YYYY-MM-DD HH:mm")
-              : ""}
-            <UserField value={version.sent_to_activation_by_id} />
+            <DisplayField
+              fieldname="sent_to_activation_at"
+              value={version.sent_to_activation_at}
+              wrapperClass=""
+              valueClass=""
+            />
+            <DisplayField
+              fieldname="sent_to_activation_by_id"
+              value={version.sent_to_activation_by_id}
+              wrapperClass=""
+              valueClass=""
+            />
           </td>
           <td>
-            {version.activated_at
-              ? dayjs(version.activated_at).format("YYYY-MM-DD HH:mm")
-              : ""}
-            <UserField value={version.activated_by_id} />
+            <DisplayField
+              fieldname="activated_at"
+              value={version.activated_at}
+              wrapperClass=""
+              valueClass=""
+            />
+            <DisplayField
+              fieldname="activated_by_id"
+              value={version.activated_by_id}
+              wrapperClass=""
+              valueClass=""
+            />
           </td>
           <td class="px-4">
             {#if version.fully_updated}

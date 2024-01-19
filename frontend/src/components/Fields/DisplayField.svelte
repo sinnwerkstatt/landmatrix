@@ -38,7 +38,7 @@
           <svelte:component this={richField.displayField} {value} />
         {/if}
       {:else}
-        problem
+        <div class="italic text-red-400">unknown field</div>
       {/if}
     </div>
   </div>

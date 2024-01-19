@@ -11,6 +11,7 @@
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
 
   import DealManageHeader from "./DealManageHeader.svelte"
+  import SectionContracts from "./SectionContracts.svelte"
   import SectionDataSources from "./SectionDataSources.svelte"
   import SectionEmployment from "./SectionEmployment.svelte"
   import SectionFormerUse from "./SectionFormerUse.svelte"
@@ -107,13 +108,9 @@
       {#if activeTab === "#general"}
         <SectionGeneralInfo version={data.deal.selected_version} />
       {/if}
-      <!--      {#if activeTab === "#contracts"}-->
-      <!--        <DealSubmodelSection-->
-      <!--          model="contract"-->
-      <!--          modelName="Contract"-->
-      <!--          entries={deal.contracts}-->
-      <!--        />-->
-      <!--      {/if}-->
+      {#if activeTab === "#contracts"}
+        <SectionContracts version={data.deal.selected_version} />
+      {/if}
       {#if activeTab === "#employment"}
         <SectionEmployment version={data.deal.selected_version} />
       {/if}

@@ -80,7 +80,13 @@
   </Subsection>
 
   <Subsection id="use_of_produce" obj={version}>
+    <DisplayField
+      fieldname="has_domestic_use"
+      showLabel
+      value={version.has_domestic_use}
+    />
     <DisplayField fieldname="domestic_use" showLabel value={version.domestic_use} />
+    <DisplayField fieldname="has_export" showLabel value={version.has_export} />
     <DisplayField fieldname="export" showLabel value={version.export} />
     <DisplayField
       fieldname="export_country1"
@@ -108,9 +114,14 @@
       value={version.export_country3}
     />
     <DisplayField
-      fieldname="export_country3__ratio"
+      fieldname="export_country3_ratio"
       showLabel
       value={version.export_country3_ratio}
+    />
+    <DisplayField
+      fieldname="use_of_produce_comment"
+      showLabel
+      value={version.use_of_produce_comment}
     />
   </Subsection>
 

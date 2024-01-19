@@ -9,6 +9,7 @@ import ChoicesField from "$components/Fields/Display2/ChoicesField.svelte"
 import CountryField from "$components/Fields/Display2/CountryField.svelte"
 import DateTimeField from "$components/Fields/Display2/DateTimeField.svelte"
 import DecimalField from "$components/Fields/Display2/DecimalField.svelte"
+import FileField from "$components/Fields/Display2/FileField.svelte"
 import IDField from "$components/Fields/Display2/IDField.svelte"
 import InvestorLinkField from "$components/Fields/Display2/InvestorLinkField.svelte"
 import IOIField from "$components/Fields/Display2/IOIField.svelte"
@@ -37,6 +38,10 @@ export const investorFields = derived([_, fieldChoices], ([$_, $fieldChoices]) =
     id: { displayField: IDField, label: $_("ID"), extras: { model: "investor" } },
 
     country: {
+      displayField: CountryField,
+      label: $_("Country of registration/origin"),
+    },
+    country_id: {
       displayField: CountryField,
       label: $_("Country of registration/origin"),
     },
@@ -319,6 +324,19 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
     created_by_id: { displayField: UserField, label: $_("Created by") },
     modified_at: { displayField: DateTimeField, label: $_("Modified at") },
     modified_by_id: { displayField: UserField, label: $_("Modified by") },
+    sent_to_review_at: { displayField: DateTimeField, label: $_("Sent to review at") },
+    sent_to_review_by_id: { displayField: UserField, label: $_("Sent to review by") },
+    sent_to_activation_at: {
+      displayField: DateTimeField,
+      label: $_("Sent to activation at"),
+    },
+    sent_to_activation_by_id: {
+      displayField: UserField,
+      label: $_("Sent to activation by"),
+    },
+    activated_at: { displayField: DateTimeField, label: $_("Activated at") },
+    activated_by_id: { displayField: UserField, label: $_("Activated by") },
+
     fully_updated_at: { displayField: DateTimeField, label: $_("Last full update") },
     // General
     intended_size: {
@@ -524,22 +542,23 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
       label: $_("Name of community"),
       extras: { multiline: true },
     }, // TODO special case, where we are supposed to parse to multiple entries
+    //  see http://localhost:9000/deal/6552/#local_communities as example
     name_of_indigenous_people: {
       displayField: TextField,
       label: $_("Name of indigenous people"),
     }, // TODO special case, where we are supposed to parse to multiple entries
     people_affected_comment: {
       displayField: TextField,
-      label: $_("Comment on people affected"),
+      label: $_("Comment on communities / indigenous peoples affected"),
     },
     recognition_status: {
       displayField: ChoicesField,
-      label: $_("Recognition status"),
+      label: $_("Recognition status of community land tenure"),
       extras: { choices: $fieldChoices.deal.recognition_status, multipleChoices: true },
     },
     recognition_status_comment: {
       displayField: TextField,
-      label: $_("Comment on recognition status"),
+      label: $_("Comment on recognition status of community land tenure"),
     },
     community_consultation: {
       displayField: ChoicesField,
@@ -548,7 +567,7 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
     },
     community_consultation_comment: {
       displayField: TextField,
-      label: $_("Comment on community consultation"),
+      label: $_("Comment on consultation of local community"),
     },
     community_reaction: {
       displayField: ChoicesField,
@@ -727,9 +746,13 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
       label: $_("Comment on carbon sequestration"),
     },
     has_domestic_use: { displayField: BooleanField, label: $_("Has domestic use") },
-    domestic_use: { displayField: DecimalField, label: $_("Domestic use") },
+    domestic_use: {
+      displayField: DecimalField,
+      label: $_("Domestic use"),
+      extras: { unit: "%" },
+    },
     has_export: { displayField: BooleanField, label: $_("Has export") },
-    export: { displayField: DecimalField, label: $_("Export") },
+    export: { displayField: DecimalField, label: $_("Export"), extras: { unit: "%" } },
     export_country1: { displayField: CountryField, label: $_("Counrtry 1") },
     export_country1_ratio: {
       displayField: DecimalField,
@@ -741,7 +764,7 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
       label: $_("Counrtry 2 ratio"),
     },
     export_country3: { displayField: CountryField, label: $_("Counrtry 3") },
-    export_country3__ratio: {
+    export_country3_ratio: {
       displayField: DecimalField,
       label: $_("Counrtry 3 ratio"),
     },
@@ -844,29 +867,77 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
       label: $_("Current contract size"),
       extras: { unit: $_("ha") },
     },
-    //  DATASOURCES
+    // LOCATIONS
     "location.nid": { displayField: NanoIDField, label: $_("ID") },
     "location.name": { displayField: TextField, label: $_("Location") },
     "location.description": { displayField: TextField, label: $_("Description") },
-    "location.facility_name": { displayField: TextField, label: $_("Facility name") },
-    "location.comment": { displayField: TextField, label: $_("Comment") },
     "location.point": { displayField: PointField, label: $_("Point") },
+    "location.facility_name": { displayField: TextField, label: $_("Facility name") },
     "location.level_of_accuracy": {
       displayField: ChoicesField,
       label: $_("Spatial accuracy level"),
       extras: { choices: $fieldChoices.deal.level_of_accuracy },
     },
+    "location.comment": { displayField: TextField, label: $_("Comment") },
+    // "location.areas": { displayField: XXX, label: $_("Areas") },
+    // CONTRACTS
+    "contract.nid": { displayField: NanoIDField, label: $_("ID") },
+    "contract.number": { displayField: TextField, label: $_("Contract number") },
+    "contract.date": { displayField: TextField, label: $_("Date") }, // use DateTimeField TODO? it's loosedatefield
+    "contract.expiration_date": {
+      displayField: TextField,
+      label: $_("Expiration date"),
+    },
+    "contract.agreement_duration": {
+      displayField: DecimalField,
+      label: $_("Duration of the agreement"),
+      extras: { unit: $_("years") },
+    },
+    "contract.comment": { displayField: TextField, label: $_("Comment on contract") },
+    // DATASOURCES
     "datasource.nid": { displayField: NanoIDField, label: $_("ID") },
     "datasource.type": {
-      displayField: TextField,
+      displayField: ChoicesField,
       label: $_("Type"),
       extras: { choices: $fieldChoices.datasource.type },
     },
     "datasource.url": {
       displayField: TextField,
-      label: $_("URL"),
+      label: $_("Url"),
       extras: { url: true },
     },
+    "datasource.file": { displayField: FileField, label: $_("File") },
+    // "datasource.file_not_public": {
+    //   displayField: BooleanField,
+    //   label: $_("Keep PDF not public"),
+    // },
+    "datasource.publication_title": {
+      displayField: TextField,
+      label: $_("Publication title"),
+    },
+    "datasource.date": { displayField: TextField, label: $_("Date") },
+    "datasource.name": { displayField: TextField, label: $_("Name") },
+    "datasource.company": { displayField: TextField, label: $_("Organisation") },
+    "datasource.email": {
+      displayField: TextField,
+      label: $_("Email"),
+      extras: { email: true },
+    },
+    "datasource.phone": { displayField: TextField, label: $_("Phone") },
+    "datasource.includes_in_country_verified_information": {
+      displayField: BooleanField,
+      label: $_("Includes in-country-verified information"),
+    },
+    "datasource.open_land_contracts_id": {
+      displayField: TextField,
+      label: $_("Open Contracting ID"),
+      extras: { ocid: true },
+    },
+    "datasource.comment": {
+      label: $_("Comment on data source"),
+      displayField: TextField,
+    },
+    // INVOLVEMENTS
     "involvement.relationship": { displayField: TextField, label: $_("Relationship") },
     "involvement.percentage": {
       displayField: DecimalField,
