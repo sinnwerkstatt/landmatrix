@@ -2,15 +2,18 @@
   import { _ } from "svelte-i18n"
 
   import { stateMap } from "$lib/newUtils"
-  import type { InvestorHull } from "$lib/types/newtypes"
+  import type { DealHull, InvestorHull } from "$lib/types/newtypes"
 
   import DisplayField from "$components/Fields/DisplayField.svelte"
+  import CheckCircleIcon from "$components/icons/CheckCircleIcon.svelte"
+  import CircleIcon from "$components/icons/CircleIcon.svelte"
 
-  export let investor: InvestorHull
-  export let investorID: number
-  export let investorVersion: number | undefined
-  let compareFrom: number = investor.versions[1]?.id
-  let compareTo: number = investor.versions[0]?.id
+  export let obj: DealHull | InvestorHull
+  let compareFrom: number = obj.versions[1]?.id
+  let compareTo: number = obj.versions[0]?.id
+
+  $: isDeal = "fully_updated_at" in obj
+  $: objType = isDeal ? "deal" : "investor"
 </script>
 
 <section>
@@ -24,13 +27,14 @@
         <th>{$_("Sent to review")}</th>
         <th>{$_("Reviewed")}</th>
         <th>{$_("Activated")}</th>
+        {#if isDeal}<th>{$_("Fully updated")}</th>{/if}
         <th>{$_("Status")}</th>
         <th class="text-right">
           {$_("Show")} /
           {#if compareFrom && compareTo}
             <a
               class="text-nowrap"
-              href={`/investor/${investorID}/compare/${compareFrom}/${compareTo}/`}
+              href={`/${objType}/${obj.id}/compare/${compareFrom}/${compareTo}/`}
             >
               {$_("Compare")}
             </a>
@@ -41,7 +45,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each investor.versions as version}
+      {#each obj.versions as version}
         <tr class="odd:bg-gray-100 dark:odd:bg-gray-700">
           <td>{version.id}</td>
           <td>
@@ -114,14 +118,27 @@
               valueClass=""
             />
           </td>
+          {#if isDeal}
+            <td class="px-4">
+              {#if version.fully_updated}
+                <div title={$_("Fully updated")}>
+                  <CheckCircleIcon />
+                </div>
+              {:else}
+                <div title={$_("Updated")}>
+                  <CircleIcon />
+                </div>
+              {/if}
+            </td>
+          {/if}
           <td>
             {$stateMap[version.status]}
           </td>
           <td class="whitespace-nowrap text-right">
-            {#if investorVersion ? investorVersion === version.id : investor.active_version_id === version.id}
+            {#if obj.selected_version.id ? obj.selected_version.id === version.id : obj.active_version_id === version.id}
               {$_("Current")}
             {:else}
-              <a href="/investor/{investorID}/{version.id}/">{$_("Show")}</a>
+              <a href="/${objType}/{obj.id}/{version.id}/">{$_("Show")}</a>
             {/if}
             <span class="ml-4 whitespace-nowrap text-right">
               <input
@@ -150,10 +167,12 @@
         <td />
         <td />
         <td />
+        <td />
+        <td />
         {#if compareFrom && compareTo}
-          <td>
+          <td class="text-right">
             <a
-              href={`/investor/${investorID}/compare/${compareFrom}/${compareTo}/`}
+              href={`/${objType}/${obj.id}/compare/${compareFrom}/${compareTo}/`}
               class="btn btn-primary text-nowrap"
             >
               {$_("Compare versions")}

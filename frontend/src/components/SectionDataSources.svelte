@@ -5,12 +5,12 @@
   import { browser } from "$app/environment"
   import { page } from "$app/stores"
 
-  import type { DealVersion2 } from "$lib/types/newtypes"
+  import type { DealVersion2, InvestorVersion2 } from "$lib/types/newtypes"
   import { isElementInViewport } from "$lib/utils/domHelpers"
 
   import DisplayField from "$components/Fields/DisplayField.svelte"
 
-  export let version: DealVersion2
+  export let version: DealVersion2 | InvestorVersion2
 
   let selectedEntryId: string | undefined
   $: selectedEntryId = $page.url.hash.split("/")?.[1]

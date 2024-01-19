@@ -9,15 +9,15 @@
 
   import HeaderDates from "$components/HeaderDates.svelte"
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
+  import SectionDataSources from "$components/SectionDataSources.svelte"
+  import SectionHistory from "$components/SectionHistory.svelte"
 
   import DealManageHeader from "./DealManageHeader.svelte"
   import SectionContracts from "./SectionContracts.svelte"
-  import SectionDataSources from "./SectionDataSources.svelte"
   import SectionEmployment from "./SectionEmployment.svelte"
   import SectionFormerUse from "./SectionFormerUse.svelte"
   import SectionGender from "./SectionGender.svelte"
   import SectionGeneralInfo from "./SectionGeneralInfo.svelte"
-  import SectionHistory from "./SectionHistory.svelte"
   import SectionInvestorInfo from "./SectionInvestorInfo.svelte"
   import SectionLocalCommunities from "./SectionLocalCommunities.svelte"
   import SectionLocations from "./SectionLocations.svelte"
@@ -52,7 +52,7 @@
 
   const reloadDeal = async () => {
     loading.set(true)
-    await invalidate(`/api/deal/${data.dealID}/`)
+    await invalidate("deal:detail")
     loading.set(false)
   }
 
@@ -141,11 +141,7 @@
       {/if}
 
       {#if activeTab === "#history"}
-        <SectionHistory
-          deal={data.deal}
-          dealID={data.dealID}
-          dealVersion={data.dealVersion}
-        />
+        <SectionHistory obj={data.deal} />
       {/if}
       {#if activeTab === "#actions"}
         <section>

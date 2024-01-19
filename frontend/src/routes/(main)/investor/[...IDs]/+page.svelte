@@ -9,10 +9,11 @@
 
   import HeaderDates from "$components/HeaderDates.svelte"
   import InvolvementsGraph from "$components/New/InvolvementsGraph/InvolvementsGraph.svelte"
+  import SectionDataSources from "$components/SectionDataSources.svelte"
+  import SectionHistory from "$components/SectionHistory.svelte"
 
   import InvestorManageHeader from "./InvestorManageHeader.svelte"
   import SectionGeneralInfo from "./SectionGeneralInfo.svelte"
-  import SectionHistory from "./SectionHistory.svelte"
   import SectionInvolvements from "./SectionInvolvements.svelte"
 
   export let data
@@ -34,7 +35,7 @@
 
   const reloadInvestor = async () => {
     loading.set(true)
-    await invalidate(`/api/deal/${data.investorID}/`)
+    await invalidate("investor:detail")
     loading.set(false)
   }
 
@@ -92,20 +93,11 @@
       {#if activeTab === "#involvements"}
         <SectionInvolvements investor={data.investor} />
       {/if}
-      <!--{/if}-->
-      <!--{#if activeTab === "#data_sources"}-->
-      <!--  <DealSubmodelSection-->
-      <!--    model="datasource"-->
-      <!--    modelName="Data source"-->
-      <!--    entries={investor.datasources}-->
-      <!--  />-->
-
+      {#if activeTab === "#data_sources"}
+        <SectionDataSources version={data.investor.selected_version} />
+      {/if}
       {#if activeTab === "#history"}
-        <SectionHistory
-          investor={data.investor}
-          investorID={data.investorID}
-          investorVersion={data.investorVersion}
-        />
+        <SectionHistory obj={data.investor} />
       {/if}
 
       {#if activeTab === "#network_graph"}
