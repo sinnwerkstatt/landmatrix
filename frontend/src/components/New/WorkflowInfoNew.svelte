@@ -104,20 +104,10 @@
       {dayjs(info.timestamp).format("YYYY-MM-DD HH:mm")}
     </span>
     <span class="inline-flex items-center">
-      <UserField
-        value={info.from_user_id}
-        fieldname="from_user_id"
-        wrapperClass=""
-        valueClass=""
-      />
+      <UserField value={info.from_user_id} />
       {#if info.to_user_id}
         <ArrowLongRightIcon class="mx-0.5 h-4 w-4" />
-        <UserField
-          value={info.to_user_id}
-          fieldname="to_user_id"
-          wrapperClass=""
-          valueClass=""
-        />
+        <UserField value={info.to_user_id} />
       {/if}
     </span>
   </div>
@@ -155,12 +145,7 @@
                 {dayjs(rep.timestamp).format("YYYY-MM-DD HH:mm")}
               </span>
               <span class="inline-flex items-center">
-                <UserField
-                  value={rep.user_id}
-                  fieldname="rep.user_id"
-                  wrapperClass=""
-                  valueClass=""
-                />
+                <UserField value={rep.user_id} />
               </span>
             </span>
             {rep.comment}

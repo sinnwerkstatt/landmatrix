@@ -1,9 +1,7 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n"
-
   import type { DealVersion2 } from "$lib/types/newtypes"
 
-  import TextField from "$components/Fields/Display2/TextField.svelte"
+  import DisplayField from "$components/Fields/DisplayField.svelte"
 
   import Subsection from "./Subsection.svelte"
 
@@ -11,10 +9,10 @@
 </script>
 
 <section>
-  <Subsection title={$_("Overall comment")} fields={[version.overall_comment]}>
-    <TextField
+  <Subsection id="overall_comment" obj={version}>
+    <DisplayField
       fieldname="overall_comment"
-      label={$_("Overall comment")}
+      showLabel
       value={version.overall_comment}
     />
   </Subsection>

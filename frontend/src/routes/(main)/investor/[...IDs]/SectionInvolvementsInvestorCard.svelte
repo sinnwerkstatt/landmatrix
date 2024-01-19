@@ -1,13 +1,7 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n"
-
-  import { fieldChoices } from "$lib/stores"
   import type { Involvement } from "$lib/types/newtypes"
 
-  import CountryField from "$components/Fields/Display2/CountryField.svelte"
-  import DecimalField from "$components/Fields/Display2/DecimalField.svelte"
-  import IDField from "$components/Fields/Display2/IDField.svelte"
-  import TextField from "$components/Fields/Display2/TextField.svelte"
+  import DisplayField from "$components/Fields/DisplayField.svelte"
 
   export let involvement: Involvement
 
@@ -17,57 +11,58 @@
 </script>
 
 <div class="flex flex-col gap-1 border border-pelorous p-2">
-  <IDField
-    label={$_("ID")}
-    value={involvement.other_investor.id}
-    fieldname="investor.id"
-    {wrapperClass}
+  <DisplayField
+    fieldname="id"
     {labelClass}
-    {valueClass}
     model="investor"
+    showLabel
+    value={involvement.other_investor.id}
+    {valueClass}
+    {wrapperClass}
   />
-  <TextField
-    label={$_("Name")}
+  <DisplayField
+    fieldname="name"
+    {labelClass}
+    model="investor"
+    showLabel
     value={involvement.other_investor.name}
-    fieldname="investor.name"
-    {wrapperClass}
-    {labelClass}
     {valueClass}
+    {wrapperClass}
   />
-  <CountryField
-    label={$_("Country of registration")}
-    value={involvement.other_investor.country}
+  <DisplayField
     fieldname="country"
-    {wrapperClass}
     {labelClass}
+    model="investor"
+    showLabel
+    value={involvement.other_investor.country_id}
     {valueClass}
+    {wrapperClass}
   />
-  <TextField
-    label={$_("Classification")}
-    value={involvement.other_investor.classification}
-    fieldname="investor.classification"
-    choices={$fieldChoices.investor.classification}
-    {wrapperClass}
+  <DisplayField
+    fieldname="classification"
     {labelClass}
+    model="investor"
+    showLabel
+    value={involvement.other_investor.classification}
     {valueClass}
+    {wrapperClass}
   />
   ---
-  <TextField
-    label={$_("Relationship")}
+  <DisplayField
+    fieldname="involvement.relationship"
+    {labelClass}
+    showLabel
     value={involvement.relationship}
-    fieldname="investor.relationship"
-    {wrapperClass}
-    {labelClass}
     {valueClass}
+    {wrapperClass}
   />
-  <TextField
-    label={$_("Investment type")}
-    value={involvement.investment_type}
-    fieldname="investor.investment_type"
-    choices={$fieldChoices.involvement.investment_type}
-    {wrapperClass}
+  <DisplayField
+    fieldname="involvement.investment_type"
     {labelClass}
+    showLabel
+    value={involvement.investment_type}
     {valueClass}
+    {wrapperClass}
   />
   <!--{#if involvement.loans_amount}-->
   <!--  <div class="flex flex-wrap justify-between gap-4">-->
@@ -76,21 +71,20 @@
   <!--  </div>-->
   <!--{/if}-->
 
-  <DecimalField
-    label={$_("Ownership share")}
-    value={involvement.percentage}
+  <DisplayField
     fieldname="involvement.percentage"
-    {wrapperClass}
     {labelClass}
+    showLabel
+    value={involvement.percentage}
     {valueClass}
-    unit="%"
+    {wrapperClass}
   />
-  <TextField
-    label={$_("Comment")}
-    value={involvement.comment}
-    fieldname="investor.comment"
-    {wrapperClass}
+  <DisplayField
+    fieldname="involvement.comment"
     {labelClass}
+    showLabel
+    value={involvement.comment}
     {valueClass}
+    {wrapperClass}
   />
 </div>

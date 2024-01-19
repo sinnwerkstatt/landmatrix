@@ -18,11 +18,7 @@
   import { UserRole } from "$lib/types/user"
 
   import FilterCollapse from "$components/Data/FilterCollapse.svelte"
-  import CountryField from "$components/Fields/Display2/CountryField.svelte"
-  import DateTimeField from "$components/Fields/Display2/DateTimeField.svelte"
-  import DecimalField from "$components/Fields/Display2/DecimalField.svelte"
-  import IDField from "$components/Fields/Display2/IDField.svelte"
-  import UserField from "$components/Fields/Display2/UserField.svelte"
+  import DisplayField from "$components/Fields/DisplayField.svelte"
   import AdjustmentsIcon from "$components/icons/AdjustmentsIcon.svelte"
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
   import Table from "$components/Table/Table.svelte"
@@ -108,9 +104,9 @@
     country: 2,
     deal_size: 2,
     created_at: 2,
-    created_by: 2,
+    created_by_id: 2,
     modified_at: 2,
-    modified_by: 2,
+    modified_by_id: 2,
     fully_updated_at: 2,
     workflowinfos: 5,
   }
@@ -122,7 +118,7 @@
     country: 4,
     deals: 1,
     created_at: 2,
-    created_by: 3,
+    created_by_id: 3,
     workflowinfos: 5,
   }
 
@@ -385,31 +381,19 @@
     {:else}
       <Table items={filteredObjects} {columns} {spans} {labels}>
         <svelte:fragment slot="field" let:fieldName let:obj>
-          {#if fieldName === "id"}
-            <IDField fieldname="id" value={obj.id} {wrapperClass} {valueClass} />
-          {:else if fieldName === "mode"}
+          {#if fieldName === "mode"}
             {$modeMap[obj.mode]}
           {:else if fieldName === "country"}
-            <CountryField
+            <DisplayField fieldname="country" value={obj.country_id} />
+          {:else if fieldName === "workflowinfos"}
+            WFIs {obj.workflowinfos}
+          {:else}
+            <DisplayField
+              fieldname={fieldName}
+              value={obj[fieldName]}
               {wrapperClass}
               {valueClass}
-              value={obj.country_id}
-              fieldname="country"
             />
-          {:else if fieldName === "deal_size"}
-            <DecimalField value={obj.deal_size} fieldname="deal_size" unit={$_("ha")} />
-          {:else if fieldName === "created_at"}
-            <DateTimeField fieldname="created_at" value={obj.created_at} />
-          {:else if fieldName === "created_by"}
-            <UserField fieldname="created_by" value={obj.created_by_id} />
-          {:else if fieldName === "modified_at"}
-            <DateTimeField fieldname="modified_at" value={obj.modified_at} />
-          {:else if fieldName === "modified_by"}
-            <UserField fieldname="created_by" value={obj.modified_by_id} />
-          {:else if fieldName === "fully_updated_at"}
-            <DateTimeField fieldname="fully_updated_at" value={obj.fully_updated_at} />
-          {:else}
-            {fieldName}
           {/if}
         </svelte:fragment>
       </Table>
@@ -417,10 +401,10 @@
   </div>
 
   <RightFilterBar
-    {model}
-    {objects}
     {createdByUsers}
+    {model}
     {modifiedByUsers}
+    {objects}
     showFilters={showFilterOverlay}
   />
 

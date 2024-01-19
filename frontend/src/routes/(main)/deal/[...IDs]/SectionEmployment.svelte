@@ -1,12 +1,7 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n"
-
   import type { DealVersion2 } from "$lib/types/newtypes"
 
-  import BooleanField from "$components/Fields/Display2/BooleanField.svelte"
-  import DecimalField from "$components/Fields/Display2/DecimalField.svelte"
-  import JSONJobsField from "$components/Fields/Display2/JSONJobsField.svelte"
-  import TextField from "$components/Fields/Display2/TextField.svelte"
+  import DisplayField from "$components/Fields/DisplayField.svelte"
 
   import Subsection from "./Subsection.svelte"
 
@@ -14,131 +9,101 @@
 </script>
 
 <section>
-  <Subsection
-    title={$_("Number of total jobs created")}
-    fields={[
-      version.total_jobs_created,
-      version.total_jobs_planned,
-      version.total_jobs_planned_employees,
-      version.total_jobs_planned_daily_workers,
-      version.total_jobs_current,
-      version.total_jobs_created_comment,
-    ]}
-  >
-    <BooleanField
+  <Subsection id="total_jobs_created" obj={version}>
+    <DisplayField
       fieldname="total_jobs_created"
-      label={$_("Jobs created (total)")}
+      showLabel
       value={version.total_jobs_created}
     />
-    <DecimalField
+    <DisplayField
       fieldname="total_jobs_planned"
-      label={$_("Planned number of jobs (total)")}
+      showLabel
       value={version.total_jobs_planned}
     />
-    <DecimalField
+    <DisplayField
       fieldname="total_jobs_planned_employees"
-      label={$_("Planned employees (total)")}
+      showLabel
       value={version.total_jobs_planned_employees}
     />
-    <DecimalField
+    <DisplayField
       fieldname="total_jobs_planned_daily_workers"
-      label={$_("Planned daily/seasonal workers (total)")}
+      showLabel
       value={version.total_jobs_planned_daily_workers}
     />
-    <JSONJobsField
+    <DisplayField
       fieldname="total_jobs_current"
-      label={$_("Current total number of jobs/employees/ daily/seasonal workers")}
+      showLabel
       value={version.total_jobs_current}
     />
-    <TextField
+    <DisplayField
       fieldname="total_jobs_created_comment"
-      label={$_("Comment on jobs created (total)")}
+      showLabel
       value={version.total_jobs_created_comment}
     />
   </Subsection>
 
-  <Subsection
-    title={$_("Number of jobs for foreigners created")}
-    fields={[
-      version.foreign_jobs_created,
-      version.foreign_jobs_planned,
-      version.foreign_jobs_planned_employees,
-      version.foreign_jobs_planned_daily_workers,
-      version.foreign_jobs_current,
-      version.foreign_jobs_created_comment,
-    ]}
-  >
-    <BooleanField
+  <Subsection id="foreign_jobs_created" obj={version}>
+    <DisplayField
       fieldname="foreign_jobs_created"
-      label={$_("Jobs created (foreign)")}
+      showLabel
       value={version.foreign_jobs_created}
     />
-    <DecimalField
+    <DisplayField
       fieldname="foreign_jobs_planned"
-      label={$_("Planned number of jobs (foreign)")}
+      showLabel
       value={version.foreign_jobs_planned}
     />
-    <DecimalField
+    <DisplayField
       fieldname="foreign_jobs_planned_employees"
-      label={$_("Planned employees (foreign)")}
+      showLabel
       value={version.foreign_jobs_planned_employees}
     />
-    <DecimalField
+    <DisplayField
       fieldname="foreign_jobs_planned_daily_workers"
-      label={$_("Planned daily/seasonal workers (foreign)")}
+      showLabel
       value={version.foreign_jobs_planned_daily_workers}
     />
-    <JSONJobsField
+    <DisplayField
       fieldname="foreign_jobs_current"
-      label={$_("Current foreign number of jobs/employees/ daily/seasonal workers")}
+      showLabel
       value={version.foreign_jobs_current}
     />
-    <TextField
+    <DisplayField
       fieldname="foreign_jobs_created_comment"
-      label={$_("Comment on jobs created (foreign)")}
+      showLabel
       value={version.foreign_jobs_created_comment}
     />
   </Subsection>
 
-  <Subsection
-    title={$_("Number of domestic jobs created")}
-    fields={[
-      version.domestic_jobs_created,
-      version.domestic_jobs_planned,
-      version.domestic_jobs_planned_employees,
-      version.domestic_jobs_planned_daily_workers,
-      version.domestic_jobs_current,
-      version.domestic_jobs_created_comment,
-    ]}
-  >
-    <BooleanField
+  <Subsection id="domestic_jobs_created" obj={version}>
+    <DisplayField
       fieldname="domestic_jobs_created"
-      label={$_("Jobs created (domestic)")}
+      showLabel
       value={version.domestic_jobs_created}
     />
-    <DecimalField
+    <DisplayField
       fieldname="domestic_jobs_planned"
-      label={$_("Planned number of jobs (domestic)")}
+      showLabel
       value={version.domestic_jobs_planned}
     />
-    <DecimalField
+    <DisplayField
       fieldname="domestic_jobs_planned_employees"
-      label={$_("Planned employees (domestic)")}
+      showLabel
       value={version.domestic_jobs_planned_employees}
     />
-    <DecimalField
+    <DisplayField
       fieldname="domestic_jobs_planned_daily_workers"
-      label={$_("Planned daily/seasonal workers (domestic)")}
+      showLabel
       value={version.domestic_jobs_planned_daily_workers}
     />
-    <JSONJobsField
+    <DisplayField
       fieldname="domestic_jobs_current"
-      label={$_("Current domestic number of jobs/employees/ daily/seasonal workers")}
+      showLabel
       value={version.domestic_jobs_current}
     />
-    <TextField
+    <DisplayField
       fieldname="domestic_jobs_created_comment"
-      label={$_("Comment on jobs created (domestic)")}
+      showLabel
       value={version.domestic_jobs_created_comment}
     />
   </Subsection>

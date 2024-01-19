@@ -1,10 +1,7 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n"
-
-  import { fieldChoices } from "$lib/stores"
   import type { DealVersion2 } from "$lib/types/newtypes"
 
-  import TextField from "$components/Fields/Display2/TextField.svelte"
+  import DisplayField from "$components/Fields/DisplayField.svelte"
 
   import Subsection from "./Subsection.svelte"
 
@@ -12,220 +9,166 @@
 </script>
 
 <section>
-  <Subsection
-    title={$_("Names of communities / indigenous peoples affected")}
-    fields={[
-      version.name_of_community,
-      version.name_of_indigenous_people,
-      version.people_affected_comment,
-    ]}
-  >
-    <TextField
+  <Subsection id="name_of_community" obj={version}>
+    <DisplayField
       fieldname="name_of_community"
-      label={$_("Name of community")}
+      showLabel
       value={version.name_of_community}
     />
-    <TextField
+    <DisplayField
       fieldname="name_of_indigenous_people"
-      label={$_("Name of indigenous people")}
+      showLabel
       value={version.name_of_indigenous_people}
     />
-    <TextField
+    <DisplayField
       fieldname="people_affected_comment"
-      label={$_("Comment on people affected")}
+      showLabel
       value={version.people_affected_comment}
     />
   </Subsection>
-  <Subsection
-    title={$_("Recognition status of community land tenure")}
-    fields={[version.recognition_status, version.recognition_status_comment]}
-  >
-    <TextField
+
+  <Subsection id="recognition_status" obj={version}>
+    <DisplayField
       fieldname="recognition_status"
-      label={$_("Recognition status")}
+      showLabel
       value={version.recognition_status}
-      choices={$fieldChoices.deal.recognition_status}
-      multipleChoices
     />
-    <TextField
+    <DisplayField
       fieldname="recognition_status_comment"
-      label={$_("Comment on recognition status")}
+      showLabel
       value={version.recognition_status_comment}
     />
   </Subsection>
-  <Subsection
-    title={$_("Consultation of local community")}
-    fields={[version.community_consultation, version.community_consultation_comment]}
-  >
-    <TextField
+
+  <Subsection id="community_consultation" obj={version}>
+    <DisplayField
       fieldname="community_consultation"
-      label={$_("Community consultation")}
+      showLabel
       value={version.community_consultation}
-      choices={$fieldChoices.deal.community_consultation}
-      multipleChoices
     />
-    <TextField
+    <DisplayField
       fieldname="community_consultation_comment"
-      label={$_("Comment on community consultation")}
+      showLabel
       value={version.community_consultation_comment}
     />
   </Subsection>
-  <Subsection
-    title={$_("How did the community react?")}
-    fields={[version.community_reaction, version.community_reaction_comment]}
-  >
-    <TextField
+
+  <Subsection id="community_reaction" obj={version}>
+    <DisplayField
       fieldname="community_reaction"
-      label={$_("Community reaction")}
+      showLabel
       value={version.community_reaction}
-      choices={$fieldChoices.deal.community_reaction}
-      multipleChoices
     />
-    <TextField
+    <DisplayField
       fieldname="community_reaction_comment"
-      label={$_("Comment on community reaction")}
+      showLabel
       value={version.community_reaction_comment}
     />
   </Subsection>
-  <Subsection
-    title={$_("Presence of land conflicts")}
-    fields={[version.land_conflicts, version.land_conflicts_comment]}
-  >
-    <TextField
-      fieldname="land_conflicts"
-      label={$_("Land conflicts")}
-      value={version.land_conflicts}
-    />
-    <TextField
+
+  <Subsection id="land_conflicts" obj={version}>
+    <DisplayField fieldname="land_conflicts" showLabel value={version.land_conflicts} />
+    <DisplayField
       fieldname="land_conflicts_comment"
-      label={$_("Comment on land conflicts")}
+      showLabel
       value={version.land_conflicts_comment}
     />
   </Subsection>
 
-  <Subsection
-    title={$_("Displacement of people")}
-    fields={[
-      version.displaced_people,
-      version.displaced_households,
-      version.displaced_people_from_community_land,
-      version.displaced_people_within_community_land,
-      version.displaced_households_from_fields,
-      version.displaced_people_on_completion,
-      version.displacement_of_people_comment,
-    ]}
-  >
-    <TextField
+  <Subsection id="displaced_people" obj={version}>
+    <DisplayField
       fieldname="displaced_people"
-      label={$_("Displaced people")}
+      showLabel
       value={version.displaced_people}
     />
-    <TextField
+    <DisplayField
       fieldname="displaced_households"
-      label={$_("Displaced households")}
+      showLabel
       value={version.displaced_households}
     />
-    <TextField
+    <DisplayField
       fieldname="displaced_people_from_community_land"
-      label={$_("Displaced people from community land")}
+      showLabel
       value={version.displaced_people_from_community_land}
     />
-    <TextField
+    <DisplayField
       fieldname="displaced_people_within_community_land"
-      label={$_("Displaced people within community land")}
+      showLabel
       value={version.displaced_people_within_community_land}
     />
-    <TextField
+    <DisplayField
       fieldname="displaced_households_from_fields"
-      label={$_("Displaced households from fields")}
+      showLabel
       value={version.displaced_households_from_fields}
     />
-    <TextField
+    <DisplayField
       fieldname="displaced_people_on_completion"
-      label={$_("Displaced people on completion")}
+      showLabel
       value={version.displaced_people_on_completion}
     />
-    <TextField
+    <DisplayField
       fieldname="displacement_of_people_comment"
-      label={$_("Comment on displacement of people")}
+      showLabel
       value={version.displacement_of_people_comment}
     />
   </Subsection>
-  <Subsection
-    title={$_("Negative impacts for local communities")}
-    fields={[version.negative_impacts, version.negative_impacts_comment]}
-  >
-    <TextField
+
+  <Subsection id="negative_impacts" obj={version}>
+    <DisplayField
       fieldname="negative_impacts"
-      label={$_("Negative impacts")}
+      showLabel
       value={version.negative_impacts}
-      choices={$fieldChoices.deal.negative_impacts}
-      multipleChoices
     />
-    <TextField
+    <DisplayField
       fieldname="negative_impacts_comment"
-      label={$_("Comment on negative impacts")}
+      showLabel
       value={version.negative_impacts_comment}
     />
   </Subsection>
-  <Subsection
-    title={$_("Promised or received compensation")}
-    fields={[version.promised_compensation, version.received_compensation]}
-  >
-    <TextField
+
+  <Subsection id="promised_compensation" obj={version}>
+    <DisplayField
       fieldname="promised_compensation"
-      label={$_("Promised compensation")}
+      showLabel
       value={version.promised_compensation}
     />
-    <TextField
+    <DisplayField
       fieldname="received_compensation"
-      label={$_("Received compensation")}
+      showLabel
       value={version.received_compensation}
     />
   </Subsection>
-  <Subsection
-    title={$_("Promised benefits for local communities")}
-    fields={[version.promised_benefits, version.promised_benefits_comment]}
-  >
-    <TextField
+
+  <Subsection id="promised_benefits" obj={version}>
+    <DisplayField
       fieldname="promised_benefits"
-      label={$_("Promised benefits")}
+      showLabel
       value={version.promised_benefits}
-      choices={$fieldChoices.deal.benefits}
-      multipleChoices
     />
-    <TextField
+    <DisplayField
       fieldname="promised_benefits_comment"
-      label={$_("Comment on promised benefits")}
+      showLabel
       value={version.promised_benefits_comment}
     />
   </Subsection>
-  <Subsection
-    title={$_("Materialized benefits for local communities")}
-    fields={[version.materialized_benefits, version.materialized_benefits_comment]}
-  >
-    <TextField
+
+  <Subsection id="materialized_benefits" obj={version}>
+    <DisplayField
       fieldname="materialized_benefits"
-      label={$_("Materialized benefits")}
+      showLabel
       value={version.materialized_benefits}
-      choices={$fieldChoices.deal.benefits}
-      multipleChoices
     />
-    <TextField
+    <DisplayField
       fieldname="materialized_benefits_comment"
-      label={$_("Comment on materialized benefits")}
+      showLabel
       value={version.materialized_benefits_comment}
     />
   </Subsection>
-  <Subsection
-    title={$_(
-      "Presence of organizations and actions taken (e.g. farmer organizations, NGOs, etc.)",
-    )}
-    fields={[version.presence_of_organizations]}
-  >
-    <TextField
+
+  <Subsection id="presence_of_organizations" obj={version}>
+    <DisplayField
       fieldname="presence_of_organizations"
-      label={$_("Presence of organizations")}
+      showLabel
       value={version.presence_of_organizations}
     />
   </Subsection>

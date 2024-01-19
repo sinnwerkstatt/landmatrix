@@ -7,13 +7,11 @@ import { Version2Status, type DealHull, type InvestorHull } from "$lib/types/new
 import type { User } from "$lib/types/user"
 import { UserRole } from "$lib/types/user"
 
-export function isEmpty(field: unknown): boolean {
-  return (
-    field === undefined ||
-    field === null ||
-    field === "" ||
-    (Array.isArray(field) && field.length === 0)
-  )
+export function isNotEmpty(field: unknown): boolean {
+  // console.log(field)
+  if (field === undefined || field === null || field === "") return false
+  if (Array.isArray(field) && field.length === 0) return false
+  return true
 }
 
 export function newNanoid(existingIDs: string[] = []): string {

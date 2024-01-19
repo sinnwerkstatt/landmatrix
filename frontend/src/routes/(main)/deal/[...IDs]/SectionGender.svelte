@@ -1,9 +1,7 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n"
-
   import type { DealVersion2 } from "$lib/types/newtypes"
 
-  import TextField from "$components/Fields/Display2/TextField.svelte"
+  import DisplayField from "$components/Fields/DisplayField.svelte"
 
   import Subsection from "./Subsection.svelte"
 
@@ -11,13 +9,10 @@
 </script>
 
 <section>
-  <Subsection
-    title={$_("Any gender-specific information about the investment and its impacts")}
-    fields={[version.gender_related_information]}
-  >
-    <TextField
+  <Subsection id="gender_related_information" obj={version}>
+    <DisplayField
       fieldname="gender_related_information"
-      label={$_("Gender related information")}
+      showLabel
       value={version.gender_related_information}
     />
   </Subsection>

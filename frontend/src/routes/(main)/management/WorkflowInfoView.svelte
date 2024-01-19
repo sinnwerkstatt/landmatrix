@@ -6,19 +6,18 @@
   import type { Deal } from "$lib/types/deal"
   import type { Investor } from "$lib/types/investor"
 
-  import CountryField from "$components/Fields/Display2/CountryField.svelte"
   import DateTimeField from "$components/Fields/Display2/DateTimeField.svelte"
-  import IDField from "$components/Fields/Display2/IDField.svelte"
+  import DisplayField from "$components/Fields/DisplayField.svelte"
   import StarIcon from "$components/icons/StarIcon.svelte"
   import Table from "$components/Table/Table.svelte"
 
+  import type { CreateWorkflowInfoViewFn } from "./workflowViews"
   import {
     createRequestFeedbackView,
     createRequestImprovementView,
     createTodoFeedbackView,
     createTodoImprovementView,
   } from "./workflowViews"
-  import type { CreateWorkflowInfoViewFn } from "./workflowViews"
 
   export let objects: Array<Deal | Investor>
   export let model: "deal" | "investor" = "deal"
@@ -56,12 +55,12 @@
 </script>
 
 <Table
-  items={createObjects({ page: $page }, objects)}
   columns={columns.map(c => c.key)}
+  items={createObjects({ page: $page }, objects)}
   labels={columns.map(c => c.label)}
   spans={columns.map(c => c.span)}
 >
-  <svelte:fragment slot="field" let:obj let:fieldName>
+  <svelte:fragment let:fieldName let:obj slot="field">
     {#if fieldName === "star"}
       {#if obj.openReq}
         <div title={$_("Open request")}>
@@ -70,21 +69,20 @@
       {/if}
     {:else if fieldName === "dateOfRequest"}
       <DateTimeField
-        fieldname="dateOfRequest"
         value={obj.relevantWFI?.timestamp}
-        format="YYYY-MM-DD HH:mm"
+        extras={{ format: "YYYY-MM-DD HH:mm" }}
       />
     {:else if fieldName === "id"}
-      <IDField
+      <DisplayField
         {wrapperClass}
         {valueClass}
         fieldname="id"
         value={obj.id}
-        objectVersion={obj.current_draft_id}
+        extras={{ objectVersion: obj.current_draft_id }}
         {model}
       />
     {:else if fieldName === "country"}
-      <CountryField
+      <DisplayField
         {wrapperClass}
         {valueClass}
         fieldname="country"

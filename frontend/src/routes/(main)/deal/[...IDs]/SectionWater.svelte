@@ -1,11 +1,7 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n"
-
-  import { fieldChoices } from "$lib/stores"
   import type { DealVersion2 } from "$lib/types/newtypes"
 
-  import BooleanField from "$components/Fields/Display2/BooleanField.svelte"
-  import TextField from "$components/Fields/Display2/TextField.svelte"
+  import DisplayField from "$components/Fields/DisplayField.svelte"
 
   import Subsection from "./Subsection.svelte"
 
@@ -13,89 +9,61 @@
 </script>
 
 <section>
-  <Subsection
-    title={$_("Water extraction envisaged")}
-    fields={[
-      version.water_extraction_envisaged,
-      version.water_extraction_envisaged_comment,
-    ]}
-  >
-    <BooleanField
+  <Subsection id="water_extraction_envisaged" obj={version}>
+    <DisplayField
       fieldname="water_extraction_envisaged"
-      label={$_("Water extraction envisaged")}
+      showLabel
       value={version.water_extraction_envisaged}
     />
-    <TextField
+    <DisplayField
       fieldname="water_extraction_envisaged_comment"
-      label={$_("Comment on water extraction envisaged")}
+      showLabel
       value={version.water_extraction_envisaged_comment}
     />
   </Subsection>
-  <Subsection
-    title={$_("Source of water extraction")}
-    fields={[
-      version.source_of_water_extraction,
-      version.source_of_water_extraction_comment,
-    ]}
-  >
-    <TextField
+  <Subsection id="source_of_water_extraction" obj={version}>
+    <DisplayField
       fieldname="source_of_water_extraction"
-      label={$_("Source of water extraction")}
+      showLabel
       value={version.source_of_water_extraction}
-      choices={$fieldChoices.deal.water_source}
-      multipleChoices
     />
-    <TextField
+    <DisplayField
       fieldname="source_of_water_extraction_comment"
-      label={$_("Comment on source of water extraction")}
+      showLabel
       value={version.source_of_water_extraction_comment}
     />
   </Subsection>
-  <Subsection
-    title={$_(
-      "How much do investors pay for water and the use of water infrastructure?",
-    )}
-    fields={[version.how_much_do_investors_pay_comment]}
-  >
-    <TextField
+  <Subsection id="how_much_do_investors_pay_comment" obj={version}>
+    <DisplayField
       fieldname="how_much_do_investors_pay_comment"
-      label={$_("Comment on how much do investors pay")}
+      showLabel
       value={version.how_much_do_investors_pay_comment}
     />
   </Subsection>
-  <Subsection
-    title={$_("How much water is extracted?")}
-    fields={[
-      version.water_extraction_amount,
-      version.water_extraction_amount_comment,
-      version.use_of_irrigation_infrastructure,
-      version.use_of_irrigation_infrastructure_comment,
-      version.water_footprint,
-    ]}
-  >
-    <TextField
+  <Subsection id="water_extraction_amount" obj={version}>
+    <DisplayField
       fieldname="water_extraction_amount"
-      label={$_("Water extraction amount")}
+      showLabel
       value={version.water_extraction_amount}
     />
-    <TextField
+    <DisplayField
       fieldname="water_extraction_amount_comment"
-      label={$_("Comment on water extraction amount")}
+      showLabel
       value={version.water_extraction_amount_comment}
     />
-    <BooleanField
+    <DisplayField
       fieldname="use_of_irrigation_infrastructure"
-      label={$_("Use of irrigation infrastructure")}
+      showLabel
       value={version.use_of_irrigation_infrastructure}
     />
-    <TextField
+    <DisplayField
       fieldname="use_of_irrigation_infrastructure_comment"
-      label={$_("Comment on use of irrigation infrastructure")}
+      showLabel
       value={version.use_of_irrigation_infrastructure_comment}
     />
-    <TextField
+    <DisplayField
       fieldname="water_footprint"
-      label={$_("Water footprint")}
+      showLabel
       value={version.water_footprint}
     />
   </Subsection>

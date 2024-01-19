@@ -2,7 +2,6 @@ import type { Feature, MultiPolygon, Point, Polygon } from "geojson"
 import type { GeoJSON } from "leaflet"
 
 import type { IntentionOfInvestment } from "$lib/types/deal"
-import type { Country } from "$lib/types/wagtail"
 
 export enum Version2Status {
   DRAFT = "DRAFT",
@@ -53,7 +52,6 @@ interface Hull {
 
 export interface DealHull extends Hull {
   selected_version: DealVersion2
-  // country: Country
   country_id: number | null
   confidential: boolean
   confidential_comment: string
@@ -65,7 +63,8 @@ export interface Involvement {
   other_investor: {
     id: number
     name: string
-    country?: Country
+    // country?: Country
+    country_id: number | null
     classification: string
 
     deleted: boolean
@@ -134,6 +133,7 @@ export class Contract {
     this.comment = ""
   }
 }
+
 enum ActorRole {
   TRADITIONAL_LAND_OWNERS_OR_COMMUNITIES = "TRADITIONAL_LAND_OWNERS_OR_COMMUNITIES",
   GOVERNMENT_OR_STATE_INSTITUTIONS = "GOVERNMENT_OR_STATE_INSTITUTIONS",
@@ -147,6 +147,7 @@ export interface InvolvedActor {
   name: string
   role: ActorRole
 }
+
 interface DealVersionBase {
   id: number
 
@@ -385,7 +386,8 @@ export class Location2 {
 export interface InvestorVersion2 extends BaseVersionMixin {
   name: string
   name_unknown: boolean
-  country: Country | null
+  // country: Country | null
+  country_id: number | null
   classification: string
   homepage: string
   opencorporates: string

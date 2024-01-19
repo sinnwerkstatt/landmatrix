@@ -78,6 +78,9 @@ interface FieldChoicesType {
     not_public_reason: ValueLabelEntry[]
     actors: ValueLabelEntry[]
   }
+  datasource: {
+    type: ValueLabelEntry[]
+  }
   investor: {
     classification: ValueLabelEntry[]
   }
@@ -110,6 +113,9 @@ export const fieldChoices = writable<FieldChoicesType>({
     water_source: [],
     not_public_reason: [],
     actors: [],
+  },
+  datasource: {
+    type: [],
   },
   investor: { classification: [] },
   involvement: { investment_type: [] },

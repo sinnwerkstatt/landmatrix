@@ -1,13 +1,9 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import { fieldChoices } from "$lib/stores"
   import type { DealHull, Location2 } from "$lib/types/newtypes"
 
-  import DecimalField from "$components/Fields/Display2/DecimalField.svelte"
-  import InvestorLinkField from "$components/Fields/Display2/InvestorLinkField.svelte"
-  import IOIField from "$components/Fields/Display2/IOIField.svelte"
-  import TextField from "$components/Fields/Display2/TextField.svelte"
+  import DisplayField from "$components/Fields/DisplayField.svelte"
 
   export let deal: DealHull
   export let location: Location2
@@ -19,40 +15,39 @@
 
 <div class="heading4">{$_("Deal")} #{deal.id}</div>
 <div class="deal-summary">
-  <TextField
-    label={$_("Spatial accuracy level")}
-    value={location.level_of_accuracy}
+  <DisplayField
     fieldname="location.level_of_accuracy"
-    choices={$fieldChoices.deal.level_of_accuracy}
     {labelClass}
+    showLabel
+    value={location.level_of_accuracy}
     {valueClass}
     {wrapperClass}
   />
-  <IOIField
+  <DisplayField
+    fieldname="current_intention_of_investment"
+    {labelClass}
+    showLabel
     value={deal.selected_version.current_intention_of_investment}
-    {labelClass}
     {valueClass}
     {wrapperClass}
-    label={$_("Intention of investment")}
   />
-  <DecimalField
-    value={deal.selected_version.deal_size}
+  <DisplayField
     fieldname="deal_size"
-    unit={$_("ha")}
-    label={$_("Deal size")}
     {labelClass}
+    showLabel
+    value={deal.selected_version.deal_size}
     {valueClass}
     {wrapperClass}
   />
-  <InvestorLinkField
+  <DisplayField
     fieldname="operating_company"
-    label={$_("Operating Company")}
-    value={deal.selected_version.operating_company}
     {labelClass}
+    showLabel
+    value={deal.selected_version.operating_company}
     {valueClass}
     {wrapperClass}
   />
 </div>
-<a href="/deal/{deal.id}/" class="btn btn-primary !text-white">
+<a class="btn btn-primary !text-white" href="/deal/{deal.id}/">
   {$_("More details")}
 </a>

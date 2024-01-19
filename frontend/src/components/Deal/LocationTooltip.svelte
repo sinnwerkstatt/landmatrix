@@ -6,13 +6,13 @@
   import { isPoint, isPolygon } from "$lib/utils/geojsonHelpers"
 
   import { formatArea } from "$components/Fields/Display2/jsonHelpers"
-  import NanoIDField from "$components/Fields/Display2/NanoIDField.svelte"
+  import DisplayField from "$components/Fields/DisplayField.svelte"
 
   export let feature: PointFeature | AreaFeature
 </script>
 
 {#if isPoint(feature)}
-  <NanoIDField value={feature.properties.id} fieldname="location.nid" />
+  <DisplayField value={feature.properties.id} fieldname="location.nid" />
   <div>{$_("Name")}: {feature.properties.name}</div>
   <div>{$_("Point")}: {feature.geometry.coordinates}</div>
 {:else if isPolygon(feature)}

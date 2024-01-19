@@ -1,19 +1,20 @@
 <script lang="ts">
-  export let title = ""
+  import { dealSections } from "$lib/fieldLookups"
+  import { isNotEmpty } from "$lib/helpers"
+  import type { DealVersion2 } from "$lib/types/newtypes"
 
-  export let fields: unknown[] = []
+  // export let id: keyof typeof $dealSections
+  export let id: string
+  export let obj: DealVersion2
 
-  function isEmpty(field: unknown): boolean {
-    // console.log(field)
-    if (field === undefined || field === null || field === "") return false
-    if (Array.isArray(field) && field.length === 0) return false
-    return true
-  }
+  $: sec = $dealSections[id]
+
+  $: sectionEmpty = sec.fields.map(field => obj[field]).filter(isNotEmpty).length === 0
 </script>
 
-{#if fields.filter(isEmpty).length > 0}
+{#if !sectionEmpty}
   <div class="mt-2 space-y-4">
-    <h3 class="heading3 my-0">{title}</h3>
+    <h3 class="heading3 my-0">{sec.title}</h3>
 
     <slot />
   </div>

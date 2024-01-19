@@ -1,11 +1,9 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import { fieldChoices } from "$lib/stores"
   import type { InvestorVersion2 } from "$lib/types/newtypes"
 
-  import CountryField from "$components/Fields/Display2/CountryField.svelte"
-  import TextField from "$components/Fields/Display2/TextField.svelte"
+  import DisplayField from "$components/Fields/DisplayField.svelte"
 
   export let version: InvestorVersion2
 </script>
@@ -13,31 +11,35 @@
 <section>
   <div class="mt-2 space-y-4">
     <h3 class="my-0">{$_("General info")}</h3>
-    <TextField fieldname="investor.name" label={$_("Name")} value={version.name} />
-    <CountryField
-      fieldname="investor.country"
-      label={$_("Country of registration/origin")}
+    <DisplayField fieldname="name" model="investor" showLabel value={version.name} />
+    <DisplayField
+      fieldname="country"
+      model="investor"
+      showLabel
       value={version.country}
     />
-    <TextField
-      fieldname="investor.classification"
-      label={$_("Classification")}
+    <DisplayField
+      fieldname="classification"
+      model="investor"
+      showLabel
       value={version.classification}
-      choices={$fieldChoices.investor.classification}
     />
-    <TextField
+    <DisplayField
       fieldname="investor.homepage"
-      label={$_("Investor homepage")}
+      model="investor"
+      showLabel
       value={version.homepage}
     />
-    <TextField
-      fieldname="investor.opencorporates"
-      label={$_("Opencorporates link")}
+    <DisplayField
+      fieldname="opencorporates"
+      model="investor"
+      showLabel
       value={version.opencorporates}
     />
-    <TextField
-      fieldname="investor.comment"
-      label={$_("Comment")}
+    <DisplayField
+      fieldname="comment"
+      model="investor"
+      showLabel
       value={version.comment}
     />
   </div>

@@ -1,12 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import BooleanField from "$components/Fields/Display2/BooleanField.svelte"
-  import CountryField from "$components/Fields/Display2/CountryField.svelte"
-  import DateTimeField from "$components/Fields/Display2/DateTimeField.svelte"
-  import DecimalField from "$components/Fields/Display2/DecimalField.svelte"
-  import IDField from "$components/Fields/Display2/IDField.svelte"
-  import TextField from "$components/Fields/Display2/TextField.svelte"
+  import DisplayField from "$components/Fields/DisplayField.svelte"
   import Table from "$components/Table/Table.svelte"
 
   import type { CaseStatisticsDeal, CaseStatisticsInvestor } from "./caseStatistics"
@@ -53,54 +48,54 @@
 <Table {columns} items={objects} {labels} rowHeightInPx={36} {spans}>
   <svelte:fragment let:fieldName let:obj slot="field">
     {#if fieldName === "id"}
-      <IDField fieldname="id" value={obj.id} {wrapperClass} {valueClass} {model} />
+      <DisplayField fieldname="id" value={obj.id} {wrapperClass} {valueClass} {model} />
     {:else if fieldName === "mode"}
       <div class="whitespace-nowrap">{obj.mode}</div>
     {:else if fieldName === "name"}
-      <TextField
+      <DisplayField
         fieldname="name"
+        model="investor"
         value={obj.active_version__name}
         {wrapperClass}
         {valueClass}
       />
     {:else if fieldName === "country_id"}
-      <CountryField
-        fieldname="country_id"
+      <DisplayField
+        fieldname="country"
         value={obj.country_id}
         {wrapperClass}
         {valueClass}
       />
     {:else if fieldName === "deal_size"}
-      <DecimalField
+      <DisplayField
+        fieldname={fieldName}
         value={obj.active_version__deal_size}
-        fieldname="deal_size"
-        unit={$_("ha")}
         {wrapperClass}
         {valueClass}
       />
     {:else if fieldName === "confidential"}
-      <BooleanField
+      <DisplayField
         value={obj.confidential}
-        fieldname="confidential"
+        fieldname={fieldName}
         {wrapperClass}
         {valueClass}
       />
     {:else if fieldName === "created_at"}
-      <DateTimeField
+      <DisplayField
         value={obj.created_at}
         fieldname="created_at"
         {wrapperClass}
         {valueClass}
       />
     {:else if fieldName === "modified_at"}
-      <DateTimeField
+      <DisplayField
         value={obj.modified_at}
         fieldname="modified_at"
         {wrapperClass}
         {valueClass}
       />
     {:else if fieldName === "fully_updated_at"}
-      <DateTimeField
+      <DisplayField
         value={obj.fully_updated_at}
         fieldname="fully_updated_at"
         {wrapperClass}

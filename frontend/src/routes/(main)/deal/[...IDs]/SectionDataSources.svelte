@@ -8,8 +8,7 @@
   import type { DealVersion2 } from "$lib/types/newtypes"
   import { isElementInViewport } from "$lib/utils/domHelpers"
 
-  import NanoIDField from "$components/Fields/Display2/NanoIDField.svelte"
-  import TextField from "$components/Fields/Display2/TextField.svelte"
+  import DisplayField from "$components/Fields/DisplayField.svelte"
 
   export let version: DealVersion2
 
@@ -41,22 +40,9 @@
             {index + 1}. {$_("Data source")}
           </a>
         </h3>
-        <NanoIDField
-          value={datasource.nid}
-          label={$_("ID")}
-          fieldname="datasource.nid"
-        />
-        <TextField
-          value={datasource.type}
-          label={$_("Type")}
-          fieldname="datasource.type"
-        />
-        <TextField
-          value={datasource.url}
-          label={$_("Url")}
-          fieldname="datasource.url"
-          url
-        />
+        <DisplayField fieldname="datasource.nid" showLabel value={datasource.nid} />
+        <DisplayField fieldname="datasource.type" showLabel value={datasource.type} />
+        <DisplayField fieldname="datasource.url" showLabel value={datasource.url} />
       </div>
     {/each}
   </section>

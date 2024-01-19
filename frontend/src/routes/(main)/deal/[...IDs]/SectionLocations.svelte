@@ -7,13 +7,11 @@
   import { goto } from "$app/navigation"
   import { page } from "$app/stores"
 
-  import { fieldChoices, geoJsonLayerGroup } from "$lib/stores"
+  import { geoJsonLayerGroup } from "$lib/stores"
   import type { DealVersion2, Location2, PointFeature } from "$lib/types/newtypes"
   import { createLegend, createTooltip } from "$lib/utils/location"
 
-  import NanoIDField from "$components/Fields/Display2/NanoIDField.svelte"
-  import PointField from "$components/Fields/Display2/PointField.svelte"
-  import TextField from "$components/Fields/Display2/TextField.svelte"
+  import DisplayField from "$components/Fields/DisplayField.svelte"
   import BigMap from "$components/Map/BigMap.svelte"
 
   import LocationAreasField from "./LocationAreasField.svelte"
@@ -99,36 +97,27 @@
             </a>
           </h3>
           <!--          <NanoIDField label={$_("ID")} value={location.nid} fieldname="location.nid" />-->
-          <TextField
-            label={$_("Spatial accuracy level")}
+          <DisplayField
             value={location.level_of_accuracy}
             fieldname="location.level_of_accuracy"
-            choices={$fieldChoices.deal.level_of_accuracy}
+            showLabel
           />
-          <TextField
-            label={$_("Location")}
-            value={location.name}
-            fieldname="location.name"
-          />
-          <PointField
-            label={$_("Point")}
-            value={location.point}
-            fieldname="location.point"
-          />
-          <TextField
-            label={$_("Description")}
+          <DisplayField value={location.name} fieldname="location.name" showLabel />
+          <DisplayField value={location.point} fieldname="location.point" showLabel />
+          <DisplayField
             value={location.description}
             fieldname="location.description"
+            showLabel
           />
-          <TextField
-            label={$_("Facility name")}
+          <DisplayField
             value={location.facility_name}
             fieldname="location.facility_name"
+            showLabel
           />
-          <TextField
-            label={$_("Comment")}
+          <DisplayField
             value={location.comment}
             fieldname="location.comment"
+            showLabel
           />
           <LocationAreasField
             label={$_("Areas")}

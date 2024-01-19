@@ -2,15 +2,12 @@
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
-  import { fieldChoices, formfields, investorsNG, isMobile } from "$lib/stores"
+  import { formfields, investorsNG, isMobile } from "$lib/stores"
 
   import DataContainer from "$components/Data/DataContainer.svelte"
   import { showContextBar, showFilterBar } from "$components/Data/stores"
-  import CountryField from "$components/Fields/Display2/CountryField.svelte"
-  import DateTimeField from "$components/Fields/Display2/DateTimeField.svelte"
-  import IDField from "$components/Fields/Display2/IDField.svelte"
   import LengthField from "$components/Fields/Display2/LengthField.svelte"
-  import TextField from "$components/Fields/Display2/TextField.svelte"
+  import DisplayField from "$components/Fields/DisplayField.svelte"
   import Table from "$components/Table/Table.svelte"
 
   const COLUMNS = [
@@ -41,6 +38,8 @@
     showContextBar.set(false)
     showFilterBar.set(!$isMobile)
   })
+  const wrapperClass = "p-1"
+  const valueClass = ""
 </script>
 
 <DataContainer>
@@ -58,19 +57,21 @@
       </div>
 
       <Table {columns} items={$investorsNG} {labels} sortBy="-modified_at" {spans}>
-        <svelte:fragment slot="field" let:obj let:fieldName>
+        <svelte:fragment let:fieldName let:obj slot="field">
           {#if fieldName === "modified_at"}
-            <DateTimeField
+            <DisplayField
               fieldname="investor.modified_at"
               value={obj.selected_version.modified_at}
-              wrapperClass="p-1"
+              {wrapperClass}
+              {valueClass}
             />
           {:else if fieldName === "id"}
-            <IDField
-              fieldname="investor.id"
+            <DisplayField
+              fieldname="id"
               value={obj.id}
               model="investor"
-              wrapperClass="p-1"
+              {wrapperClass}
+              {valueClass}
             />
           {:else if fieldName === "name"}
             {#if obj.selected_version.name_unknown}
@@ -79,15 +80,20 @@
               {obj.selected_version.name}
             {/if}
           {:else if fieldName === "country"}
-            <CountryField
-              fieldname="investor.country"
-              value={obj.selected_version.country?.id}
+            <DisplayField
+              fieldname="country"
+              model="investor"
+              value={obj.selected_version.country_id}
+              {wrapperClass}
+              {valueClass}
             />
           {:else if fieldName === "classification"}
-            <TextField
-              fieldname="investor.classification"
+            <DisplayField
+              fieldname="classification"
+              model="investor"
               value={obj.selected_version.classification}
-              choices={$fieldChoices.investor.classification}
+              {wrapperClass}
+              {valueClass}
             />
           {:else}
             <LengthField

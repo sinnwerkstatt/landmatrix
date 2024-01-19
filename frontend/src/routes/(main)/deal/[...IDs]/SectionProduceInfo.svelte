@@ -1,12 +1,7 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n"
-
-  import { fieldChoices } from "$lib/stores"
   import type { DealVersion2 } from "$lib/types/newtypes"
 
-  import BooleanField from "$components/Fields/Display2/BooleanField.svelte"
-  import JSONCurrentDateChoiceField from "$components/Fields/Display2/JSONCurrentDateChoiceField.svelte"
-  import TextField from "$components/Fields/Display2/TextField.svelte"
+  import DisplayField from "$components/Fields/DisplayField.svelte"
 
   import Subsection from "./Subsection.svelte"
 
@@ -14,196 +9,130 @@
 </script>
 
 <section>
-  <Subsection
-    title={$_("Detailed crop, animal and mineral information")}
-    fields={[
-      version.crops,
-      version.crops_comment,
-      version.animals,
-      version.animals_comment,
-      version.mineral_resources,
-      version.mineral_resources_comment,
-    ]}
-  >
-    <JSONCurrentDateChoiceField
-      fieldname="crops"
-      label={$_("Crops area/yield/export")}
-      value={version.crops}
-      choices={$fieldChoices.deal.crops}
-    />
-    {JSON.stringify(version.crops)}
-
-    <TextField
-      fieldname="crops_comment"
-      label={$_("Comment on crops")}
-      value={version.crops_comment}
-    />
-    <TextField
-      fieldname="animals"
-      label={$_("Animals")}
-      value={version.animals}
-      choices={$fieldChoices.deal.animals}
-      multipleChoices
-    />
-    <TextField
+  <Subsection id="farming" obj={version}>
+    <DisplayField fieldname="crops" showLabel value={version.crops} />
+    <DisplayField fieldname="crops_comment" showLabel value={version.crops_comment} />
+    <DisplayField fieldname="animals" showLabel value={version.animals} />
+    <DisplayField
       fieldname="animals_comment"
-      label={$_("Comment on animals")}
+      showLabel
       value={version.animals_comment}
     />
-    <TextField
+    <DisplayField
       fieldname="mineral_resources"
-      label={$_("Mineral resources")}
+      showLabel
       value={version.mineral_resources}
-      choices={$fieldChoices.deal.minerals}
-      multipleChoices
     />
-    <TextField
+    <DisplayField
       fieldname="mineral_resources_comment"
-      label={$_("Comment on mineral resources")}
+      showLabel
       value={version.mineral_resources_comment}
     />
   </Subsection>
-  <Subsection
-    title={$_("Detailed contract farming crop and animal information")}
-    fields={[
-      version.contract_farming_crops,
-      version.contract_farming_crops_comment,
-      version.contract_farming_animals,
-      version.contract_farming_animals_comment,
-    ]}
-  >
-    <TextField
+
+  <Subsection id="contract_farming2" obj={version}>
+    <DisplayField
       fieldname="contract_farming_crops"
-      label={$_("Contract farming crops")}
+      showLabel
       value={version.contract_farming_crops}
     />
-    <TextField
+    <DisplayField
       fieldname="contract_farming_crops_comment"
-      label={$_("Comment on contract farming crops")}
+      showLabel
       value={version.contract_farming_crops_comment}
     />
-    <TextField
+    <DisplayField
       fieldname="contract_farming_animals"
-      label={$_("Contract farming animals")}
+      showLabel
       value={version.contract_farming_animals}
     />
-    <TextField
+    <DisplayField
       fieldname="contract_farming_animals_comment"
-      label={$_("Comment on contract farming animals")}
+      showLabel
       value={version.contract_farming_animals_comment}
     />
   </Subsection>
-  <Subsection
-    title={$_("Detailed electricity generation information")}
-    fields={[version.electricity_generation, version.electricity_generation_comment]}
-  >
-    <TextField
+
+  <Subsection id="electricity_generation" obj={version}>
+    <DisplayField
       fieldname="electricity_generation"
-      label={$_("Electricity generation")}
+      showLabel
       value={version.electricity_generation}
-      choices={$fieldChoices.deal.electricity_generation}
-      multipleChoices
     />
-    <TextField
+    <DisplayField
       fieldname="electricity_generation_comment"
-      label={$_("Comment on electricity generation")}
+      showLabel
       value={version.electricity_generation_comment}
     />
   </Subsection>
-  <Subsection
-    title={$_("Detailed carbon sequestration information")}
-    fields={[version.carbon_sequestration, version.carbon_sequestration_comment]}
-  >
-    <TextField
+
+  <Subsection id="carbon_sequestration" obj={version}>
+    <DisplayField
       fieldname="carbon_sequestration"
-      label={$_("Carbon sequestration")}
+      showLabel
       value={version.carbon_sequestration}
-      choices={$fieldChoices.deal.carbon_sequestration}
-      multipleChoices
     />
-    <TextField
+    <DisplayField
       fieldname="carbon_sequestration_comment"
-      label={$_("Comment on carbon sequestration")}
+      showLabel
       value={version.carbon_sequestration_comment}
     />
   </Subsection>
-  <Subsection
-    title={$_("Use of produce")}
-    fields={[
-      version.domestic_use,
-      version.export,
-      version.export_country1,
-      version.export_country1_ratio,
-      version.export_country2,
-      version.export_country2_ratio,
-      version.export_country3,
-      version.export_country3_ratio,
-    ]}
-  >
-    <TextField
-      fieldname="domestic_use"
-      label={$_("Domestic use")}
-      value={version.domestic_use}
-    />
-    <TextField fieldname="export" label={$_("Export")} value={version.export} />
-    <TextField
+
+  <Subsection id="use_of_produce" obj={version}>
+    <DisplayField fieldname="domestic_use" showLabel value={version.domestic_use} />
+    <DisplayField fieldname="export" showLabel value={version.export} />
+    <DisplayField
       fieldname="export_country1"
-      label={$_("Counrtry 1")}
+      showLabel
       value={version.export_country1}
     />
-    <TextField
+    <DisplayField
       fieldname="export_country1_ratio"
-      label={$_("Counrtry 1 ratio")}
+      showLabel
       value={version.export_country1_ratio}
     />
-    <TextField
+    <DisplayField
       fieldname="export_country2"
-      label={$_("Counrtry 2")}
+      showLabel
       value={version.export_country2}
     />
-    <TextField
+    <DisplayField
       fieldname="export_country2_ratio"
-      label={$_("Counrtry 2 ratio")}
+      showLabel
       value={version.export_country2_ratio}
     />
-    <TextField
+    <DisplayField
       fieldname="export_country3"
-      label={$_("Counrtry 3")}
+      showLabel
       value={version.export_country3}
     />
-    <TextField
+    <DisplayField
       fieldname="export_country3__ratio"
-      label={$_("Counrtry 3 ratio")}
+      showLabel
       value={version.export_country3_ratio}
     />
   </Subsection>
-  <Subsection
-    title={$_("In country processing of produce")}
-    fields={[
-      version.in_country_processing,
-      version.in_country_processing_comment,
-      version.in_country_processing_facilities,
-      version.in_country_end_products,
-    ]}
-  >
-    <BooleanField
+
+  <Subsection id="in_country_processing" obj={version}>
+    <DisplayField
       fieldname="in_country_processing"
-      label={$_("In country processing of produce")}
+      showLabel
       value={version.in_country_processing}
     />
-    <TextField
+    <DisplayField
       fieldname="in_country_processing_comment"
-      label={$_("Comment on in country processing of produce")}
+      showLabel
       value={version.in_country_processing_comment}
     />
-    <TextField
+    <DisplayField
       fieldname="in_country_processing_facilities"
-      label={$_("In country processing facilities")}
+      showLabel
       value={version.in_country_processing_facilities}
     />
-    <TextField
+    <DisplayField
       fieldname="in_country_end_products"
-      label={$_("In country end products")}
+      showLabel
       value={version.in_country_end_products}
     />
   </Subsection>

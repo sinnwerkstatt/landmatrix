@@ -46,57 +46,32 @@
           <td>{version.id}</td>
           <td>
             {dayjs(version.created_at).format("YYYY-MM-DD HH:mm")}
-            <UserField
-              value={version.created_by_id}
-              fieldname="created_by_id"
-              wrapperClass=""
-              valueClass=""
-            />
+            <UserField value={version.created_by_id} />
           </td>
           <td>
             {version.modified_at
               ? dayjs(version.modified_at).format("YYYY-MM-DD HH:mm")
               : "-"}
-            <UserField
-              value={version.modified_by_id}
-              fieldname="modified_by_id"
-              wrapperClass=""
-              valueClass=""
-            />
+            <UserField value={version.modified_by_id} />
           </td>
           <td>
             {version.sent_to_review_at
               ? dayjs(version.sent_to_review_at).format("YYYY-MM-DD HH:mm")
               : ""}
 
-            <UserField
-              value={version.sent_to_review_by_id}
-              fieldname="sent_to_review_by_id"
-              wrapperClass=""
-              valueClass=""
-            />
+            <UserField value={version.sent_to_review_by_id} />
           </td>
           <td>
             {version.sent_to_activation_at
               ? dayjs(version.sent_to_activation_at).format("YYYY-MM-DD HH:mm")
               : ""}
-            <UserField
-              value={version.sent_to_activation_by_id}
-              fieldname="sent_to_activation_by_id"
-              wrapperClass=""
-              valueClass=""
-            />
+            <UserField value={version.sent_to_activation_by_id} />
           </td>
           <td>
             {version.activated_at
               ? dayjs(version.activated_at).format("YYYY-MM-DD HH:mm")
               : ""}
-            <UserField
-              value={version.activated_by_id}
-              fieldname="activated_by_id"
-              wrapperClass=""
-              valueClass=""
-            />
+            <UserField value={version.activated_by_id} />
           </td>
           <td class="px-4">
             {#if version.fully_updated}

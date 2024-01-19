@@ -60,10 +60,10 @@
     <tr>
       <td>Name</td>
       <td>
-        <TextField fieldname="investor.name" value={data.fromVersion.name} />
+        <TextField value={data.fromVersion.name} />
       </td>
       <td>
-        <TextField fieldname="investor.name" value={data.toVersion.name} />
+        <TextField value={data.toVersion.name} />
       </td>
     </tr>
     <!--{#each Object.entries($investorSections) as [label, section]}-->

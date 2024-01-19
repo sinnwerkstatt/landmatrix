@@ -3,7 +3,7 @@
 
   import type { DealHull, InvestorHull } from "$lib/types/newtypes"
 
-  import DateTimeField from "$components/Fields/Display2/DateTimeField.svelte"
+  import DisplayField from "$components/Fields/DisplayField.svelte"
 
   export let obj: DealHull | InvestorHull
 </script>
@@ -13,21 +13,19 @@
 >
   <div class="mr-10 text-xs md:mx-5 md:text-sm">
     {$_("Created")}
-    <br />
-    <DateTimeField value={obj.selected_version.created_at} />
+    <DisplayField fieldname="created_at" value={obj.selected_version.created_at} />
   </div>
   <div class="mr-10 text-xs md:mx-5 md:text-sm">
     {$_("Last update")}
-    <br />
-    <DateTimeField
+    <DisplayField
+      fieldname="modified_at"
       value={obj.selected_version.modified_at ?? obj.selected_version.created_at}
     />
   </div>
   {#if obj.fully_updated_at}
     <div class="mr-10 text-xs md:mx-5 md:text-sm">
       {$_("Last full update")}
-      <br />
-      <DateTimeField value={obj.fully_updated_at} />
+      <DisplayField fieldname="fully_updated_at" value={obj.fully_updated_at} />
     </div>
   {/if}
 </div>
