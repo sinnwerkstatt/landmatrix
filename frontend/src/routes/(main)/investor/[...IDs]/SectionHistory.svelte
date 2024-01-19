@@ -1,19 +1,16 @@
 <script lang="ts">
-  import dayjs from "dayjs"
   import { _ } from "svelte-i18n"
 
   import { stateMap } from "$lib/newUtils"
   import type { InvestorHull } from "$lib/types/newtypes"
 
-  import UserField from "$components/Fields/Display2/UserField.svelte"
-  import CheckCircleIcon from "$components/icons/CheckCircleIcon.svelte"
-  import CircleIcon from "$components/icons/CircleIcon.svelte"
+  import DisplayField from "$components/Fields/DisplayField.svelte"
 
   export let investor: InvestorHull
   export let investorID: number
   export let investorVersion: number | undefined
-  let compareFrom: number
-  let compareTo: number
+  let compareFrom: number = investor.versions[1]?.id
+  let compareTo: number = investor.versions[0]?.id
 </script>
 
 <section>
@@ -27,16 +24,19 @@
         <th>{$_("Sent to review")}</th>
         <th>{$_("Reviewed")}</th>
         <th>{$_("Activated")}</th>
-        <th>{$_("Fully updated")}</th>
         <th>{$_("Status")}</th>
         <th class="text-right">
           {$_("Show")} /
-          <a
-            class="text-nowrap"
-            href={`/investor/${investorID}/compare/${compareFrom}/${compareTo}/`}
-          >
+          {#if compareFrom && compareTo}
+            <a
+              class="text-nowrap"
+              href={`/investor/${investorID}/compare/${compareFrom}/${compareTo}/`}
+            >
+              {$_("Compare")}
+            </a>
+          {:else}
             {$_("Compare")}
-          </a>
+          {/if}
         </th>
       </tr>
     </thead>
@@ -45,46 +45,75 @@
         <tr class="odd:bg-gray-100 dark:odd:bg-gray-700">
           <td>{version.id}</td>
           <td>
-            {dayjs(version.created_at).format("YYYY-MM-DD HH:mm")}
-            <UserField value={version.created_by_id} />
+            <DisplayField
+              fieldname="created_at"
+              value={version.created_at}
+              wrapperClass=""
+              valueClass=""
+            />
+            <DisplayField
+              fieldname="created_by_id"
+              value={version.created_by_id}
+              wrapperClass=""
+              valueClass=""
+            />
           </td>
           <td>
-            {version.modified_at
-              ? dayjs(version.modified_at).format("YYYY-MM-DD HH:mm")
-              : "-"}
-            <UserField value={version.modified_by_id} />
+            <DisplayField
+              fieldname="modified_at"
+              value={version.modified_at}
+              wrapperClass=""
+              valueClass=""
+            />
+            <DisplayField
+              fieldname="modified_by_id"
+              value={version.modified_by_id}
+              wrapperClass=""
+              valueClass=""
+            />
           </td>
           <td>
-            {version.sent_to_review_at
-              ? dayjs(version.sent_to_review_at).format("YYYY-MM-DD HH:mm")
-              : ""}
-
-            <UserField value={version.sent_to_review_by_id} />
+            <DisplayField
+              fieldname="sent_to_review_at"
+              value={version.sent_to_review_at}
+              wrapperClass=""
+              valueClass=""
+            />
+            <DisplayField
+              fieldname="sent_to_review_by_id"
+              value={version.sent_to_review_by_id}
+              wrapperClass=""
+              valueClass=""
+            />
           </td>
           <td>
-            {version.sent_to_activation_at
-              ? dayjs(version.sent_to_activation_at).format("YYYY-MM-DD HH:mm")
-              : ""}
-            <UserField value={version.sent_to_activation_by_id} />
+            <DisplayField
+              fieldname="sent_to_activation_at"
+              value={version.sent_to_activation_at}
+              wrapperClass=""
+              valueClass=""
+            />
+            <DisplayField
+              fieldname="sent_to_activation_by_id"
+              value={version.sent_to_activation_by_id}
+              wrapperClass=""
+              valueClass=""
+            />
           </td>
           <td>
-            {version.activated_at
-              ? dayjs(version.activated_at).format("YYYY-MM-DD HH:mm")
-              : ""}
-            <UserField value={version.activated_by_id} />
+            <DisplayField
+              fieldname="activated_at"
+              value={version.activated_at}
+              wrapperClass=""
+              valueClass=""
+            />
+            <DisplayField
+              fieldname="activated_by_id"
+              value={version.activated_by_id}
+              wrapperClass=""
+              valueClass=""
+            />
           </td>
-          <td class="px-4">
-            {#if version.fully_updated}
-              <div title={$_("Fully updated")}>
-                <CheckCircleIcon />
-              </div>
-            {:else}
-              <div title={$_("Updated")}>
-                <CircleIcon />
-              </div>
-            {/if}
-          </td>
-
           <td>
             {$stateMap[version.status]}
           </td>
@@ -115,7 +144,6 @@
     </tbody>
     <tfoot>
       <tr>
-        <td />
         <td />
         <td />
         <td />

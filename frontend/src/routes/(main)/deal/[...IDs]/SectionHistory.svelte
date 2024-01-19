@@ -128,7 +128,6 @@
               </div>
             {/if}
           </td>
-
           <td>
             {$stateMap[version.status]}
           </td>

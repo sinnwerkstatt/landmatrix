@@ -19,8 +19,8 @@
     if (!value) return "—"
     if (isMulti(value)) {
       if (choices.length > 0) {
-        console.log(choices)
-        console.log(value)
+        // console.log(choices)
+        // console.log(value)
         return value.map(x => choices.find(c => c.value === x)?.label ?? "-").join(", ")
       } else return value.join(", ")
     } else {

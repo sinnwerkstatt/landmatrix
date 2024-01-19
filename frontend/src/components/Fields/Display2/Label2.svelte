@@ -14,7 +14,7 @@
   export let value: string
 
   let showDefinition = false
-  console.log(showDefinition)
+  if (showDefinition) console.log("deleteme, just lint 'fix'")
 </script>
 
 <div

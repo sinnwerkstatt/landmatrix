@@ -128,7 +128,7 @@ class DealVersionSerializer(serializers.ModelSerializer):
     locations = LocationSerializer(many=True, read_only=True)
     contracts = ContractSerializer(many=True, read_only=True)
     datasources = DealDataSourceSerializer(many=True, read_only=True)
-    operating_company = serializers.SerializerMethodField()
+    # operating_company = serializers.SerializerMethodField()
     operating_company_id = serializers.PrimaryKeyRelatedField(read_only=True)
 
     # creating these because DRF shows these fields as "created_by", instead of "~_id"
@@ -176,14 +176,14 @@ class DealVersionSerializer(serializers.ModelSerializer):
         )
         fields = "__all__"
 
-    @staticmethod
-    def get_operating_company(obj: DealVersion2):
-        if obj.operating_company and obj.operating_company.active_version:
-            return {
-                "id": obj.operating_company.id,
-                "name": obj.operating_company.active_version.name,
-            }
-        return None
+    # @staticmethod
+    # def get_operating_company(obj: DealVersion2):
+    #     if obj.operating_company and obj.operating_company.active_version:
+    #         return {
+    #             "id": obj.operating_company.id,
+    #             "name": obj.operating_company.active_version.name,
+    #         }
+    #     return None
 
     @staticmethod
     def save_submodels(data, dv1: DealVersion2):
