@@ -66,14 +66,35 @@
   </title>
 </svelte:head>
 
-<div class="container mx-auto min-h-full">
+<div class="container mx-auto mt-8 min-h-full">
+  {#if ![data.deal.active_version_id, data.deal.draft_version_id].includes(data.deal.selected_version.id)}
+    <div
+      class="rounded border border-orange-500 bg-orange-200 px-4 py-2 text-lg dark:bg-orange-800"
+    >
+      <span class="whitespace-nowrap">
+        {$_("Please note: you are viewing an old version of this deal.")}
+      </span>
+
+      <span class="whitespace-nowrap">
+        {$_("The current version can be found here:")}
+        <a href="/deal/${data.deal.id}/" class="text-pelorous hover:text-pelorous-300">
+          {$_("Deal")} #{data.deal.id}
+        </a>
+      </span>
+    </div>
+  {/if}
   {#if $page.data.user?.role > UserRole.ANYBODY}
     <DealManageHeader deal={data.deal} on:reload={reloadDeal} />
   {:else}
-    <div class="md:flex md:flex-row md:justify-between">
+    <div class="my-4 md:flex md:flex-row md:justify-between">
       <h1 class="heading3 mt-3">
         {$_("Deal")}
         #{data.deal.id}
+        {#if data.deal.selected_version.id !== data.deal.active_version_id}
+          <span class="text-[0.9em]">
+            {$_("Version")} #{data.deal.selected_version.id}
+          </span>
+        {/if}
       </h1>
       <HeaderDates obj={data.deal} />
     </div>

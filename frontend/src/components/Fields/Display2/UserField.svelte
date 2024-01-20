@@ -10,5 +10,5 @@
   {user.full_name ?? user.username}
 {:else}
   <!-- can't find this user anymore... -->
-  <span class="italic">{value}</span>
+  <span class="italic">user #{value}</span>
 {/if}

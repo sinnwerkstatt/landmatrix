@@ -316,7 +316,7 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
     confidential: { displayField: BooleanField, label: $_("Confidential") },
     created_at: { displayField: DateTimeField, label: $_("Created at") },
     created_by_id: { displayField: UserField, label: $_("Created by") },
-    modified_at: { displayField: DateTimeField, label: $_("Modified at") },
+    modified_at: { displayField: DateTimeField, label: $_("Last update") },
     modified_by_id: { displayField: UserField, label: $_("Modified by") },
     sent_to_review_at: { displayField: DateTimeField, label: $_("Sent to review at") },
     sent_to_review_by_id: { displayField: UserField, label: $_("Sent to review by") },

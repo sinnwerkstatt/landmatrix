@@ -3,6 +3,14 @@ import type { GeoJSON } from "leaflet"
 
 import type { IntentionOfInvestment } from "$lib/types/deal"
 
+type _oneToNine = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+type _zeroToNine = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+type _YYYY = `19${_zeroToNine}${_zeroToNine}` | `20${_zeroToNine}${_zeroToNine}`
+type _MM = `0${_oneToNine}` | `1${0 | 1 | 2}`
+type _DD = `${0}${_oneToNine}` | `${1 | 2}${_zeroToNine}` | `3${0 | 1}`
+// type DateString = `${YYYY}-${MM}-${DD}`   - we would need DateTime, not just Date
+type LooseDateString = `${_YYYY}` | `${_YYYY}-${_MM}` | `${_YYYY}-${_MM}-${_DD}`
+
 export enum Version2Status {
   DRAFT = "DRAFT",
   REVIEW = "REVIEW",
@@ -44,8 +52,8 @@ interface Hull {
   draft_version_id: number | null
   deleted: boolean
   deleted_comment: string
-  created_at: string
-  created_by_id: number
+  first_created_at: string
+  first_created_by_id: number
   versions: BaseVersionMixin[]
   workflowinfos: WorkflowInfoType[]
 }
@@ -55,7 +63,7 @@ export interface DealHull extends Hull {
   country_id: number | null
   confidential: boolean
   confidential_comment: string
-  fully_updated_at: string
+  fully_updated_at: string | null
 }
 
 export interface Involvement {
@@ -89,7 +97,7 @@ export class DataSource {
   file: string | null
   file_not_public: boolean
   publication_title: string
-  date: string | null
+  date: LooseDateString | null
   name: string
   company: string
   email: string
@@ -119,8 +127,8 @@ export class DataSource {
 export class Contract {
   nid: string
   number: string
-  date: string | null
-  expiration_date: string | null
+  date: LooseDateString | null
+  expiration_date: LooseDateString | null
   agreement_duration: number | null
   comment: string
 
@@ -274,21 +282,24 @@ interface BaseVersionMixin {
   id: number
   created_at: string
   created_by_id: number
-  modified_at: string
-  modified_by_id: number
-  sent_to_review_at: string
-  sent_to_review_by_id: number
-  sent_to_activation_at: string
-  sent_to_activation_by_id: number
-  activated_at: string
-  activated_by_id: number
+  modified_at: string | null
+  modified_by_id: number | null
+  sent_to_review_at: string | null
+  sent_to_review_by_id: number | null
+  sent_to_activation_at: string | null
+  sent_to_activation_by_id: number | null
+  activated_at: string | null
+  activated_by_id: number | null
 
   status: Version2Status
 
+  // we have these fields when it's DealVersions
   fully_updated?: boolean
+  is_public?: boolean
 }
 
 export interface DealVersion2 extends DealVersionBase, BaseVersionMixin {
+  fully_updated: boolean
   is_public: boolean
   has_known_investor: boolean
 
@@ -296,7 +307,6 @@ export interface DealVersion2 extends DealVersionBase, BaseVersionMixin {
   current_implementation_status: string
   current_intention_of_investment: IntentionOfInvestment[]
   deal_size: number
-  fully_updated: boolean
 }
 
 export type JSONCurrentDateAreaFieldType = Array<{

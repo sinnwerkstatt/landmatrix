@@ -93,8 +93,9 @@ class DealVersionVersionsListSerializer(serializers.ModelSerializer):
             "sent_to_activation_by_id",
             "activated_at",
             "activated_by_id",
-            "fully_updated",
             "status",
+            "fully_updated",
+            "is_public",
         ]
 
 

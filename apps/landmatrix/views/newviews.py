@@ -9,7 +9,7 @@ from django.http import JsonResponse
 from django.utils import timezone
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
-from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import PermissionDenied, NotAuthenticated
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.request import Request
@@ -501,18 +501,17 @@ class DealViewSet(HullViewSet):
     def retrieve_version(self, request, pk: int, version_id: int):
         d1: DealHull = self.get_object()
         d1._selected_version_id = int(version_id)
-        d1_serial: dict = self.get_serializer(d1).data
+
+        dv1: DealVersion2 = d1.versions.get(id=version_id)
 
         if (
             (request.user.is_authenticated and request.user.role >= UserRole.EDITOR)
-            or d1_serial["selected_version"]["created_by"] == request.user.id
-            or (
-                d1_serial["selected_version"]["is_public"]
-                and d1_serial["selected_version"]["status"] == "ACTIVATED",
-            )
+            or dv1.created_by == request.user.id
+            or (dv1.status == "ACTIVATED" and dv1.is_public)
         ):
-            return Response(d1_serial)
-        raise PermissionDenied("MISSING_AUTHORIZATION")
+            return Response(self.get_serializer(d1).data)
+
+        raise PermissionDenied if request.user.is_authenticated else NotAuthenticated()
 
     @action(methods=["put"], detail=True)
     def toggle_confidential(self, request, *args, **kwargs):
@@ -646,15 +645,16 @@ class InvestorViewSet(HullViewSet):
     def retrieve_version(self, request, pk: int, version_id: int):
         i1: InvestorHull = self.get_object()
         i1._selected_version_id = int(version_id)
-        i1_serial: dict = self.get_serializer(i1).data
+
+        iv1: InvestorVersion2 = i1.versions.get(id=version_id)
 
         if (
             (request.user.is_authenticated and request.user.role >= UserRole.EDITOR)
-            or i1_serial["selected_version"]["created_by"] == request.user.id
-            or (i1_serial["selected_version"]["status"] == "ACTIVATED")
+            or iv1.created_by == request.user.id
+            or iv1.status == "ACTIVATED"
         ):
-            return Response(i1_serial)
-        raise PermissionDenied("MISSING_AUTHORIZATION")
+            return Response(self.get_serializer(i1).data)
+        raise PermissionDenied if request.user.is_authenticated else NotAuthenticated
 
     @action(methods=["get"], detail=False)
     def simple(self, request):
