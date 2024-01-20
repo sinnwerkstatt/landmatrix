@@ -27,7 +27,7 @@
     { target: "#general", name: $_("General info") },
     { target: "#parent_companies", name: $_("Parent companies") },
     { target: "#tertiary_investors", name: $_("Tertiary investors/lenders") },
-    { target: "#datasources", name: $_("Data sources") },
+    { target: "#data_sources", name: $_("Data sources") },
   ]
   beforeNavigate(({ type, cancel }) => {
     // browser navigation buttons
@@ -64,11 +64,24 @@
         },
       },
     )
-    const retJson = await ret.json()
+
+    let retBody
+    try {
+      retBody = await ret.clone().json()
+    } catch (e) {
+      retBody = await ret.text()
+      toast.push(
+        "We received an unexpected error from the backend. For details, check the browser console",
+        { classes: ["error"] },
+      )
+      console.error(retBody)
+      savingInProgress = false
+      return false
+    }
 
     if (ret.status === 400) {
       toast.push(
-        Object.entries(retJson)
+        Object.entries(retBody)
           .map(([k, v]) => `<p><b>${k}</b><br/>${v}<br/><p>`)
           .join(""),
         { classes: ["error"] },
@@ -77,14 +90,14 @@
       return false
     }
     if (!ret.ok) {
-      toast.push(`Unexpected error: ${JSON.stringify(retJson)}`, { classes: ["error"] })
+      toast.push(`Unexpected error: ${JSON.stringify(retBody)}`, { classes: ["error"] })
       savingInProgress = false
       return false
     }
 
-    if (retJson.versionID !== investor.selected_version.id) {
+    if (retBody.versionID !== investor.selected_version.id) {
       toast.push("Created a new draft", { classes: ["success"] })
-      await goto(`/investor/edit/${investor.id}/${retJson.versionID}/`)
+      await goto(`/investor/edit/${investor.id}/${retBody.versionID}/`)
     } else {
       toast.push("Saved data", { classes: ["success"] })
       await invalidate("investor:detail")
@@ -223,7 +236,7 @@
         <!--          ]}-->
         <!--        />-->
       {/if}
-      {#if activeTab === "#datasources"}
+      {#if activeTab === "#data_sources"}
         <EditSectionDataSources
           bind:datasources={investor.selected_version.datasources}
         />

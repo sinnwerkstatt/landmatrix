@@ -60,20 +60,6 @@
       }
   })
 
-  const isFormValid = (): boolean => {
-    const currentForm: HTMLFormElement | null =
-      document.querySelector<HTMLFormElement>(activeTab)
-
-    if (!currentForm) {
-      toast.push("Internal error. Can not grab the form. Try reloading the page.", {
-        classes: ["error"],
-      })
-      return false
-    }
-
-    return currentForm.reportValidity()
-  }
-
   const saveDeal = async (): Promise<boolean> => {
     savingInProgress = true
 
@@ -101,11 +87,24 @@
         },
       },
     )
-    const retJson = await ret.json()
+
+    let retBody
+    try {
+      retBody = await ret.clone().json()
+    } catch (e) {
+      retBody = await ret.text()
+      toast.push(
+        "We received an unexpected error from the backend. For details, check the browser console",
+        { classes: ["error"] },
+      )
+      console.error(retBody)
+      savingInProgress = false
+      return false
+    }
 
     if (ret.status === 400) {
       toast.push(
-        Object.entries(retJson)
+        Object.entries(retBody)
           .map(([k, v]) => `<p><b>${k}</b><br/>${v}<br/><p>`)
           .join(""),
         { classes: ["error"] },
@@ -114,20 +113,34 @@
       return false
     }
     if (!ret.ok) {
-      toast.push(`Unexpected error: ${JSON.stringify(retJson)}`, { classes: ["error"] })
+      toast.push(`Unexpected error: ${JSON.stringify(retBody)}`, { classes: ["error"] })
       savingInProgress = false
       return false
     }
 
-    if (retJson.versionID !== deal.selected_version.id) {
+    if (retBody.versionID !== deal.selected_version.id) {
       toast.push("Created a new draft", { classes: ["success"] })
-      await goto(`/deal/edit/${deal.id}/${retJson.versionID}/`)
+      await goto(`/deal/edit/${deal.id}/${retBody.versionID}/`)
     } else {
       toast.push("Saved data", { classes: ["success"] })
       await invalidate("deal:detail")
     }
     savingInProgress = false
     return true
+  }
+
+  const isFormValid = (): boolean => {
+    const currentForm: HTMLFormElement | null =
+      document.querySelector<HTMLFormElement>(activeTab)
+
+    if (!currentForm) {
+      toast.push("Internal error. Can not grab the form. Try reloading the page.", {
+        classes: ["error"],
+      })
+      return false
+    }
+
+    return currentForm.reportValidity()
   }
 
   const onClickClose = async (force = false): Promise<void> => {
