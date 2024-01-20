@@ -1304,7 +1304,30 @@ class DealHullQuerySet(models.QuerySet):
         )
 
 
-class DealHull(models.Model):
+class HullBase(models.Model):
+    deleted = models.BooleanField(default=False)
+    deleted_comment = models.TextField(blank=True)
+
+    # mainly for management/case_statistics
+    first_created_at = models.DateTimeField()
+    first_created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        null=True,
+        on_delete=models.PROTECT,
+        related_name="+",
+    )
+
+    class Meta:
+        abstract = True
+
+    def save(self, *args, **kwargs):
+        if self._state.adding and not self.first_created_at:
+            self.first_created_at = timezone.now()
+        super().save(*args, **kwargs)
+
+
+class DealHull(HullBase):
     country = models.ForeignKey(
         Country,
         verbose_name=_("Target country"),
@@ -1325,24 +1348,10 @@ class DealHull(models.Model):
     confidential_comment = models.TextField(
         _("Comment why this deal is private"), blank=True
     )
-    deleted = models.BooleanField(default=False)
-    deleted_comment = models.TextField(
-        _("Comment why this deal is deleted"), blank=True
-    )
 
     # ## calculated
     fully_updated_at = models.DateTimeField(
         _("Last full update"), null=True, blank=True
-    )
-
-    # mainly for management/case_statistics
-    first_created_at = models.DateTimeField(_("Created at"))
-    first_created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        blank=True,
-        null=True,
-        on_delete=models.PROTECT,
-        related_name="+",
     )
 
     objects = DealHullQuerySet.as_manager()
@@ -1351,11 +1360,6 @@ class DealHull(models.Model):
         if self.country:
             return f"#{self.id} in {self.country.name}"
         return f"#{self.id}"
-
-    def save(self, *args, **kwargs):
-        if self._state.adding and not self.first_created_at:
-            self.first_created_at = timezone.now()
-        super().save(*args, **kwargs)
 
     def selected_version(self):
         if hasattr(self, "_selected_version_id") and self._selected_version_id:
@@ -1561,7 +1565,7 @@ class InvestorHullQuerySet(models.QuerySet):
         )
 
 
-class InvestorHull(models.Model):
+class InvestorHull(HullBase):
     active_version = models.ForeignKey(
         InvestorVersion2,
         on_delete=models.SET_NULL,
@@ -1577,30 +1581,10 @@ class InvestorHull(models.Model):
         related_name="+",
     )
 
-    deleted = models.BooleanField(default=False)
-    deleted_comment = models.TextField(
-        _("Comment why this investor is deleted"), blank=True
-    )
-
-    # mainly for management/case_statistics
-    first_created_at = models.DateTimeField(_("Created at"))
-    first_created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        blank=True,
-        null=True,
-        on_delete=models.PROTECT,
-        related_name="+",
-    )
-
     objects = InvestorHullQuerySet.as_manager()
 
     def __str__(self):
         return f"Investor #{self.id}"
-
-    def save(self, *args, **kwargs):
-        if self._state.adding and not self.first_created_at:
-            self.first_created_at = timezone.now()
-        super().save(*args, **kwargs)
 
     # This method is used by DRF.
     def selected_version(self):
