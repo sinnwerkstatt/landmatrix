@@ -6,9 +6,10 @@
 
   import DataContainer from "$components/Data/DataContainer.svelte"
   import { showContextBar, showFilterBar } from "$components/Data/stores"
-  import LengthField from "$components/Fields/Display2/LengthField.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import Table from "$components/Table/Table.svelte"
+
+  import LengthField from "./LengthField.svelte"
 
   const COLUMNS = [
     "modified_at",
@@ -96,10 +97,7 @@
               {valueClass}
             />
           {:else}
-            <LengthField
-              fieldname="investor.deals"
-              value={obj.selected_version.deals}
-            />
+            <LengthField value={obj.selected_version.deals} />
           {/if}
         </svelte:fragment>
       </Table>

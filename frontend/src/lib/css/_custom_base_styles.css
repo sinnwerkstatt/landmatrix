@@ -9,7 +9,7 @@
   }
 
   a.investor {
-    @apply text-pelorous;
+    @apply text-pelorous hover:text-pelorous-200;
   }
 
   p {

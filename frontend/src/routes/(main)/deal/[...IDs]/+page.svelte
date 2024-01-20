@@ -77,7 +77,7 @@
 
       <span class="whitespace-nowrap">
         {$_("The current version can be found here:")}
-        <a href="/deal/${data.deal.id}/" class="text-pelorous hover:text-pelorous-300">
+        <a href="/deal/{data.deal.id}/" class="text-pelorous hover:text-pelorous-300">
           {$_("Deal")} #{data.deal.id}
         </a>
       </span>
