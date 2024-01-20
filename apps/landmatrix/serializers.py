@@ -1,5 +1,7 @@
 from django.contrib.gis.geos import GEOSGeometry
-from django.db.models import Q, QuerySet
+from django.db.models import Q, QuerySet, F
+from django.db.models.functions import JSONObject
+from django.utils.translation import gettext as _
 from rest_framework import serializers
 
 from apps.landmatrix.models import FieldDefinition
@@ -447,26 +449,85 @@ class InvestorSerializer(serializers.ModelSerializer):
             for d in target_deals
         ]
 
-    @staticmethod
-    def get_involvements(obj: InvestorHull):
+    def get_involvements(self, obj: InvestorHull):
         if hasattr(obj, "_selected_version_id"):
             selected_version_id = obj._selected_version_id
         else:
             selected_version_id = None
 
         if selected_version_id and selected_version_id != obj.active_version_id:
-            return obj.versions.get(id=selected_version_id).involvements_snapshot
-        if obj.active_version:
-            involvements: QuerySet[Involvement] = Involvement.objects.filter(
-                Q(parent_investor_id=obj.id) | Q(child_investor_id=obj.id)
-            ).filter(
-                ~Q(parent_investor__active_version=None),
-                ~Q(child_investor__active_version=None),
+            invos = obj.versions.get(id=selected_version_id).involvements_snapshot
+        elif obj.active_version:
+            invos = (
+                Involvement.objects.filter(
+                    Q(parent_investor_id=obj.id) | Q(child_investor_id=obj.id)
+                )
+                .filter(
+                    ~Q(parent_investor__active_version=None),
+                    ~Q(child_investor__active_version=None),
+                )
+                .values(
+                    "id",
+                    "parent_investor_id",
+                    "child_investor_id",
+                    "role",
+                    "investment_type",
+                    "percentage",
+                    "loans_amount",
+                    "loans_currency_id",
+                    "loans_date",
+                    "parent_relation",
+                    "comment",
+                )
             )
-            return [invo.to_dict(target_id=obj.id) for invo in involvements]
+
         else:
             # TODO should the draft version also have this involvements_snapshot?
-            return obj.draft_version.involvements_snapshot
+            invos = obj.draft_version.involvements_snapshot
+        self._enrich_involvements_for_viewing(invos, obj.id)
+        return invos
+
+    @staticmethod
+    def _enrich_involvements_for_viewing(
+        involvements: list[dict], target_id: int
+    ) -> None:
+        all_ids = set()
+        for involvement in involvements:
+            all_ids.add(involvement["parent_investor_id"])
+            all_ids.add(involvement["child_investor_id"])
+        investors = {
+            x["id"]: x
+            for x in InvestorHull.objects.filter(id__in=all_ids)
+            .annotate(
+                selected_version=JSONObject(
+                    name=F("active_version__name"),
+                    name_unknown=F("active_version__name_unknown"),
+                    country_id=F("active_version__country_id"),
+                    classification=F("active_version__classification"),
+                )
+            )
+            .values("id", "selected_version", "deleted")
+        }
+
+        for invo in involvements:
+            if target_id == invo["parent_investor_id"]:
+                relationship = (
+                    _("Subsidiary company")
+                    if invo["role"] == "PARENT"
+                    else _("Beneficiary company")
+                )
+                other_investor = investors[invo["child_investor_id"]]
+            elif target_id == invo["child_investor_id"]:
+                relationship = (
+                    _("Parent company")
+                    if invo["role"] == "PARENT"
+                    else _("Tertiary investor/lender")
+                )
+                other_investor = investors[invo["parent_investor_id"]]
+            else:
+                continue
+
+            invo |= {"relationship": relationship, "other_investor": other_investor}
 
     # def get_deals(self):
     #     return

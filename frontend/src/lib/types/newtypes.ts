@@ -68,18 +68,28 @@ export interface DealHull extends Hull {
 
 export interface Involvement {
   id: number
+  parent_investor_id: number
+  child_investor_id: number
+  role: string
+
+  investment_type: string[]
+  percentage: number
+  loans_amount: number
+  loans_currency_id: number | null
+  loans_date: LooseDateString
+  parent_relation: string | null
+  comment: string
+  // the following are generated on the fly in the backend
   other_investor: {
     id: number
-    name: string
-    // country?: Country
-    country_id: number | null
-    classification: string
-
+    selected_version: {
+      name: string
+      country_id: number | null
+      classification: string
+    }
     deleted: boolean
   }
   relationship: string
-  percentage: number
-  investment_type: string
 }
 
 export interface InvestorHull extends Hull {

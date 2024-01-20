@@ -28,16 +28,16 @@
     {labelClass}
     model="investor"
     showLabel
-    value={involvement.other_investor.name}
+    value={involvement.other_investor.selected_version.name}
     {valueClass}
     {wrapperClass}
   />
   <DisplayField
-    fieldname="country"
+    fieldname="country_id"
     {labelClass}
     model="investor"
     showLabel
-    value={involvement.other_investor.country_id}
+    value={involvement.other_investor.selected_version.country_id}
     {valueClass}
     {wrapperClass}
   />
@@ -46,7 +46,7 @@
     {labelClass}
     model="investor"
     showLabel
-    value={involvement.other_investor.classification}
+    value={involvement.other_investor.selected_version.classification}
     {valueClass}
     {wrapperClass}
   />

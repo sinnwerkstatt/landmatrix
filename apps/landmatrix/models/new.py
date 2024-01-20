@@ -1760,57 +1760,6 @@ class Involvement(models.Model):
     #         role = _("<is INVESTOR of>")
     #     return f"{self.investor} {role} {self.venture}"
 
-    def to_dict(self, target_id=None):
-        relationship = self.role
-        other_investor = None
-        if target_id is None:
-            pass
-        elif self.parent_investor_id == target_id:
-            relationship = (
-                _("Subsidiary company")
-                if self.role == "PARENT"
-                else _("Beneficiary company")
-            )
-            other_investor = self.child_investor
-        elif self.child_investor_id == target_id:
-            relationship = (
-                _("Parent company")
-                if self.role == "PARENT"
-                else _("Tertiary investor/lender")
-            )
-            other_investor = self.parent_investor
-        else:
-            pass
-
-        other_investor_dict = (
-            {
-                "id": other_investor.id,
-                "name": other_investor.active_version.name
-                if other_investor.active_version
-                else None,
-                "country": {"id": other_investor.active_version.country_id}
-                if other_investor.active_version
-                else None,
-                "classification": other_investor.active_version.classification,
-                "deleted": other_investor.deleted,
-            }
-            if other_investor and other_investor.active_version
-            else None
-        )
-
-        return {
-            "id": self.id,
-            "other_investor": other_investor_dict,
-            "relationship": relationship,
-            "investment_type": self.investment_type,
-            "percentage": self.percentage,
-            "loans_amount": self.loans_amount,
-            "loans_currency": self.loans_currency,
-            "loans_date": self.loans_date,
-            "parent_relation": self.parent_relation,
-            "comment": self.comment,
-        }
-
 
 class WorkflowInfo2(models.Model):
     from_user = models.ForeignKey(
