@@ -75,7 +75,12 @@
     />
   </Subsection>
 
-  <Subsection id="displaced_people" obj={version}>
+  <Subsection id="displacement_of_people" obj={version}>
+    <DisplayField
+      fieldname="displacement_of_people"
+      showLabel
+      value={version.displacement_of_people}
+    />
     <DisplayField
       fieldname="displaced_people"
       showLabel

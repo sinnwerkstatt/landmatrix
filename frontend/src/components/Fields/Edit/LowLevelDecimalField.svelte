@@ -2,7 +2,7 @@
   import { _ } from "svelte-i18n"
 
   export let name: string
-  export let value: number | undefined
+  export let value: number | null
   export let required = false
   export let unit = ""
   export let max: number | undefined = undefined
@@ -11,8 +11,8 @@
 
   let step: number
   $: step = 1 / 10 ** decimals
-  let placeholder: string
-  $: placeholder = min && max ? `${min} – ${max}` : step === 1 ? "0" : "123.45"
+  // let placeholder: string
+  // $: placeholder = min && max ? `${min} – ${max}` : step === 1 ? "0" : "123.45"
 
   const onInput = (event: InputEvent) => {
     const targetValue = (event.target as HTMLInputElement).value
@@ -25,7 +25,6 @@
     value={value ?? ""}
     type="number"
     class="inpt {$$props.class ?? ''}"
-    {placeholder}
     {required}
     {min}
     {max}

@@ -1,21 +1,18 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n"
-
-  import type { DealHull } from "$lib/types/newtypes"
+  import type { DealVersion2 } from "$lib/types/newtypes"
 
   import EditSubsection from "$components/EditSubsection.svelte"
-  import TextField from "$components/Fields/Edit2/TextField.svelte"
+  import EditField from "$components/Fields/EditField.svelte"
 
-  export let deal: DealHull
+  export let version: DealVersion2
 </script>
 
 <form id="overall_comment">
-  <EditSubsection>
-    <TextField
-      bind:value={deal.selected_version.overall_comment}
+  <EditSubsection id="overall_comment">
+    <EditField
+      bind:value={version.overall_comment}
       fieldname="overall_comment"
-      label={$_("Overall comment")}
-      multiline
+      showLabel
     />
   </EditSubsection>
 </form>

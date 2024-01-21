@@ -1,8 +1,18 @@
 <script lang="ts">
-  import type { DealHull } from "$lib/types/newtypes"
+  import type { DealVersion2 } from "$lib/types/newtypes"
 
-  export let deal: DealHull
+  import EditSubsection from "$components/EditSubsection.svelte"
+  import EditField from "$components/Fields/EditField.svelte"
+
+  export let version: DealVersion2
 </script>
 
-<!--{JSON.stringify(version)}-->
-<form id="gender_related_info">gender_related_info {deal.id}</form>
+<form id="gender_related_info">
+  <EditSubsection id="gender_related_information">
+    <EditField
+      bind:value={version.gender_related_information}
+      fieldname="gender_related_information"
+      showLabel
+    />
+  </EditSubsection>
+</form>

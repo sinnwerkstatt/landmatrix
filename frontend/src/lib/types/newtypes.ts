@@ -248,7 +248,8 @@ interface DealVersionBase {
   community_reaction_comment: string
   land_conflicts: boolean
   land_conflicts_comment: string
-  displaced_people: boolean
+  displacement_of_people: boolean | null
+  displaced_people: boolean | null
   displaced_households: number
   displaced_people_from_community_land: number
   displaced_people_within_community_land: number
@@ -270,7 +271,37 @@ interface DealVersionBase {
   former_land_use_comment: string
   former_land_cover: []
   former_land_cover_comment: string
-
+  //  produce
+  crops: JSONExportsFieldType[]
+  crops_comment: string
+  animals: JSONExportsFieldType[]
+  animals_comment: string
+  mineral_resources: JSONExportsFieldType[]
+  mineral_resources_comment: string
+  contract_farming_crops: JSONCurrentDateAreaChoicesFieldType
+  contract_farming_crops_comment: string
+  contract_farming_animals: JSONCurrentDateAreaChoicesFieldType
+  contract_farming_animals_comment: string
+  electricity_generation: JSONElectricityGenerationFieldType
+  electricity_generation_comment: string
+  carbon_sequestration: JSONCarbonSequestrationFieldType[]
+  carbon_sequestration_comment: string
+  has_domestic_use: boolean | null
+  domestic_use: number | null
+  has_export: boolean | null
+  export: number | null
+  export_country1_id: number | null
+  export_country1_ratio: number | null
+  export_country2_id: number | null
+  export_country2_ratio: number | null
+  export_country3_id: number | null
+  export_country3_ratio: number | null
+  use_of_produce_comment: string
+  in_country_processing: boolean | null
+  in_country_processing_comment: string
+  in_country_processing_facilities: string
+  in_country_end_products: string
+  // water
   water_extraction_envisaged: boolean
   water_extraction_envisaged_comment: string
   source_of_water_extraction: []
@@ -354,14 +385,36 @@ export type JSONJobsFieldType = Array<{
   workers: number | null
 }>
 
-export type JSONExportsFieldType = Array<{
+export interface JSONExportsFieldType {
   current: boolean
   date: string | null
   choices: string[]
   area: number | null
   yield: number | null
   export: number | null
-}>
+}
+
+export interface JSONElectricityGenerationFieldType {
+  current: boolean
+  date: string | null
+  area: number | null
+  choices: string[]
+  export: number | null
+  windfarm_count: number | null
+  current_capacity: number | null
+  intended_capacity: number | null
+}
+export interface JSONCarbonSequestrationFieldType {
+  current: boolean
+  date: string | null
+  area: number | null
+  choices: string[]
+  projected_lifetime_sequestration: number | null
+  projected_annual_sequestration: number | null
+  certification_standard: boolean | null
+  certification_standard_name: string
+  certification_standard_comment: string
+}
 
 export type AreaType = "production_area" | "contract_area" | "intended_area"
 

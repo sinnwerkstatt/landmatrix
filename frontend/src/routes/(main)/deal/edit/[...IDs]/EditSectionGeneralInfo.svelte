@@ -1,179 +1,176 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
+  import { slide } from "svelte/transition"
 
-  import type { DealHull } from "$lib/types/newtypes"
+  import type { DealVersion2 } from "$lib/types/newtypes"
 
   import EditSubsection from "$components/EditSubsection.svelte"
-  import DecimalField from "$components/Fields/Edit2/DecimalField.svelte"
-  import JSONCurrentDateAreaField from "$components/Fields/Edit2/JSONCurrentDateAreaField.svelte"
-  import TextField from "$components/Fields/Edit2/TextField.svelte"
+  import CurrencyField from "$components/Fields/Edit2/CurrencyField.svelte"
+  import EditField from "$components/Fields/EditField.svelte"
 
-  export let deal: DealHull
-  $: version = deal.selected_version
-  // export let version: DealVersion2
+  export let version: DealVersion2
+
+  const PERTYPES = { PER_HA: $_("per ha"), PER_AREA: $_("for specified area") }
 </script>
 
-<!--{JSON.stringify(version)}-->
 <form id="general">
-  <EditSubsection title={$_("Land area")}>
-    <DecimalField
-      bind:value={version.intended_size}
-      fieldname="intended_size"
-      label={$_("Intended size")}
-      unit={$_("ha")}
-    />
-    <JSONCurrentDateAreaField
-      fieldname="contract_size"
-      bind:value={version.contract_size}
-      label={$_("Size under contract (leased or purchased area)")}
-    />
-    <JSONCurrentDateAreaField
-      fieldname="production_size"
+  <EditSubsection id="land_area">
+    <EditField bind:value={version.intended_size} fieldname="intended_size" showLabel />
+    <EditField bind:value={version.contract_size} fieldname="contract_size" showLabel />
+    <EditField
       bind:value={version.production_size}
-      label={$_("Size in operation (production)")}
+      fieldname="production_size"
+      showLabel
     />
-    <TextField
+    <EditField
       bind:value={version.land_area_comment}
       fieldname="land_area_comment"
-      label={$_("Comment on land area")}
-      multiline
+      showLabel
     />
   </EditSubsection>
-  <EditSubsection title={$_("Intention of investment")}>
-    <!--    <JSONDateAreaChoicesField-->
-    <!--      fieldname="intention_of_investment"-->
-    <!--      bind:value={version.intention_of_investment}-->
-    <!--      label={$_("Intention of investment")}-->
-    <!--      choices={$fieldChoices.deal.intention_of_investment}-->
-    <!--    />-->
-    <TextField
-      fieldname="intention_of_investment_comment"
+
+  <EditSubsection id="intention_of_investment">
+    <EditField
+      bind:value={version.intention_of_investment}
+      fieldname="intention_of_investment"
+      showLabel
+    />
+    <EditField
       bind:value={version.intention_of_investment_comment}
-      label={$_("Comment on intention of investment")}
-      multiline
+      fieldname="intention_of_investment_comment"
+      showLabel
     />
   </EditSubsection>
 
-  <EditSubsection title={$_("Nature of the deal")}>
-    <!--      <TextField-->
-    <!--        fieldname="nature_of_deal"-->
-    <!--        bind:value={version.nature_of_deal}-->
-    <!--        label={$_("Nature of the deal")}-->
-    <!--        choices={$fieldChoices.deal.nature_of_deal}-->
-    <!--        multipleChoices-->
-    <!--      />-->
-    <TextField
-      fieldname="nature_of_deal_comment"
+  <EditSubsection id="nature_of_deal">
+    <EditField
+      bind:value={version.nature_of_deal}
+      fieldname="nature_of_deal"
+      showLabel
+    />
+    <EditField
       bind:value={version.nature_of_deal_comment}
-      label={$_("Comment on nature of the deal")}
-      multiline
+      fieldname="nature_of_deal_comment"
+      showLabel
     />
   </EditSubsection>
 
-  <EditSubsection title={$_("Negotiation status")}>
-    <!--    <JSONCurrentDateChoiceField-->
-    <!--      fieldname="negotiation_status"-->
-    <!--      bind:value={version.negotiation_status}-->
-    <!--      label={$_("Negotiation status")}-->
-    <!--      choices={$fieldChoices.deal.negotiation_status}-->
-    <!--    />-->
-    <TextField
-      fieldname="negotiation_status_comment"
+  <EditSubsection id="negotiation_status">
+    <EditField
+      bind:value={version.negotiation_status}
+      fieldname="negotiation_status"
+      showLabel
+    />
+    <EditField
       bind:value={version.negotiation_status_comment}
+      fieldname="negotiation_status_comment"
       label={$_("Comment on negotiation status")}
-      multiline
+      showLabel
     />
   </EditSubsection>
 
-  <EditSubsection title={$_("Implementation status")}>
-    <!--    <JSONCurrentDateChoiceField-->
-    <!--      fieldname="implementation_status"-->
-    <!--      bind:value={version.implementation_status}-->
-    <!--      label={$_("Implementation status")}-->
-    <!--      choices={$fieldChoices.deal.implementation_status}-->
-    <!--    />-->
-    <TextField
-      fieldname="implementation_status_comment"
+  <EditSubsection id="implementation_status">
+    <EditField
+      bind:value={version.implementation_status}
+      fieldname="implementation_status"
+      showLabel
+    />
+    <EditField
       bind:value={version.implementation_status_comment}
-      label={$_("Comment on implementation status")}
-      multiline
+      fieldname="implementation_status_comment"
+      showLabel
     />
   </EditSubsection>
 
-  <EditSubsection title={$_("Purchase price")}>
-    <DecimalField
-      fieldname="purchase_price"
-      bind:value={version.purchase_price}
-      label={$_("Purchase price")}
-      bind:currency={version.purchase_price_currency}
-      bind:perType={version.purchase_price_type}
-    />
-    <DecimalField
-      fieldname="purchase_price_area"
+  <EditSubsection id="purchase_price">
+    <EditField bind:value={version.purchase_price} fieldname="purchase_price" showLabel>
+      <CurrencyField bind:value={version.purchase_price_currency} />
+      <select bind:value={version.purchase_price_type} class="inpt">
+        <option value={null}>----</option>
+        <option value="PER_HA">{PERTYPES.PER_HA}</option>
+        <option value="PER_AREA">{PERTYPES.PER_AREA}</option>
+      </select>
+    </EditField>
+
+    <EditField
       bind:value={version.purchase_price_area}
-      label={$_("Purchase price area")}
-      unit={$_("ha")}
+      fieldname="purchase_price_area"
+      showLabel
     />
-    <TextField
-      fieldname="purchase_price_comment"
+    <EditField
       bind:value={version.purchase_price_comment}
-      label={$_("Comment on purchase price")}
-      multiline
+      fieldname="purchase_price_comment"
+      showLabel
     />
   </EditSubsection>
 
-  <EditSubsection title={$_("Leasing fees")}>
-    <!--    <DecimalField-->
-    <!--      fieldname="annual_leasing_fee"-->
-    <!--      bind:value={version.annual_leasing_fee}-->
-    <!--      label={$_("Annual leasing fee")}-->
-    <!--      currency={version.annual_leasing_fee_currency}-->
-    <!--      perType={version.annual_leasing_fee_type}-->
-    <!--    />-->
-    <!--    <DecimalField-->
-    <!--      fieldname="annual_leasing_fee_area"-->
-    <!--      bind:value={version.annual_leasing_fee_area}-->
-    <!--      label={$_("Annual leasing fee area")}-->
-    <!--      unit={$_("ha")}-->
-    <!--    />-->
-    <TextField
-      fieldname="annual_leasing_fee_comment"
+  <EditSubsection id="leasing_fee">
+    <EditField
+      bind:value={version.annual_leasing_fee}
+      fieldname="annual_leasing_fee"
+      showLabel
+    >
+      <CurrencyField bind:value={version.annual_leasing_fee_currency} />
+      <select bind:value={version.annual_leasing_fee_type} class="inpt">
+        <option value={null}>----</option>
+        <option value="PER_HA">{PERTYPES.PER_HA}</option>
+        <option value="PER_AREA">{PERTYPES.PER_AREA}</option>
+      </select>
+    </EditField>
+    <EditField
+      bind:value={version.annual_leasing_fee_area}
+      fieldname="annual_leasing_fee_area"
+      showLabel
+    />
+    <EditField
       bind:value={version.annual_leasing_fee_comment}
-      label={$_("Comment on leasing fee")}
-      multiline
+      fieldname="annual_leasing_fee_comment"
+      showLabel
     />
   </EditSubsection>
-  <EditSubsection title={$_("Contract farming")}>
-    <!--    <BooleanField-->
-    <!--      fieldname="contract_farming"-->
-    <!--      bind:value={version.contract_farming}-->
-    <!--      label={$_("Contract farming")}-->
-    <!--    />-->
-    <!--    <BooleanField-->
-    <!--      fieldname="on_the_lease_state"-->
-    <!--      bind:value={version.on_the_lease_state}-->
-    <!--      label={$_("On leased / purchased")}-->
-    <!--    />-->
-    <!--    <JSONLeaseField-->
-    <!--      fieldname="on_the_lease"-->
-    <!--      bind:value={version.on_the_lease}-->
-    <!--      label={$_("On leased area/farmers/households")}-->
-    <!--    />-->
-    <!--    <BooleanField-->
-    <!--      fieldname="off_the_lease_state"-->
-    <!--      bind:value={version.off_the_lease_state}-->
-    <!--      label={$_("Not on leased / purchased (out-grower)")}-->
-    <!--    />-->
-    <!--    <JSONLeaseField-->
-    <!--      fieldname="off_the_lease"-->
-    <!--      bind:value={version.off_the_lease}-->
-    <!--      label={$_("Not on leased area/farmers/households (out-grower)")}-->
-    <!--    />-->
-    <TextField
-      fieldname="contract_farming_comment"
+
+  <EditSubsection id="contract_farming">
+    <EditField
+      bind:value={version.contract_farming}
+      fieldname="contract_farming"
+      showLabel
+    />
+    {#if version.contract_farming === true}
+      <div class="pl-4" transition:slide={{ duration: 300 }}>
+        <EditField
+          fieldname="on_the_lease_state"
+          bind:value={version.on_the_lease_state}
+          showLabel
+        />
+        {#if version.on_the_lease_state === true}
+          <div class="pl-4" transition:slide={{ duration: 300 }}>
+            <EditField
+              fieldname="on_the_lease"
+              bind:value={version.on_the_lease}
+              showLabel
+            />
+          </div>
+        {/if}
+        <EditField
+          fieldname="off_the_lease_state"
+          bind:value={version.off_the_lease_state}
+          showLabel
+        />
+        {#if version.off_the_lease_state === true}
+          <div class="pl-4" transition:slide={{ duration: 300 }}>
+            <EditField
+              fieldname="off_the_lease"
+              bind:value={version.off_the_lease}
+              showLabel
+            />
+          </div>
+        {/if}
+      </div>
+    {/if}
+    <EditField
       bind:value={version.contract_farming_comment}
-      label={$_("Comment on contract farming")}
-      multiline
+      fieldname="contract_farming_comment"
+      showLabel
     />
   </EditSubsection>
 </form>

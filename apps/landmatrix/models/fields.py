@@ -150,7 +150,7 @@ class JSONCurrentDateAreaField(JSONSchemaField):
                     "additionalProperties": False,
                     "minProperties": 3,
                     "properties": {
-                        "current": {"type": ["boolean"]},
+                        "current": {"type": "boolean"},
                         "date": {
                             "type": ["string", "null"],
                             "pattern": r"^\d{4}(-(0?[1-9]|1[012])(-(0?[1-9]|[12][0-9]|3[01]))?)?$",
@@ -175,7 +175,7 @@ class JSONCurrentDateAreaChoicesField(JSONSchemaField):
                     "additionalProperties": False,
                     "minProperties": 4,
                     "properties": {
-                        "current": {"type": ["boolean"]},
+                        "current": {"type": "boolean"},
                         "date": {
                             "type": ["string", "null"],
                             "pattern": r"^\d{4}(-(0?[1-9]|1[012])(-(0?[1-9]|[12][0-9]|3[01]))?)?$",
@@ -204,7 +204,7 @@ class JSONCurrentDateChoiceField(JSONSchemaField):
                     "additionalProperties": False,
                     "minProperties": 3,
                     "properties": {
-                        "current": {"type": ["boolean"]},
+                        "current": {"type": "boolean"},
                         "date": {
                             "type": ["string", "null"],
                             "pattern": r"^\d{4}(-(0?[1-9]|1[012])(-(0?[1-9]|[12][0-9]|3[01]))?)?$",
@@ -229,7 +229,7 @@ class JSONLeaseField(JSONSchemaField):
                     "additionalProperties": False,
                     "minProperties": 5,
                     "properties": {
-                        "current": {"type": ["boolean"]},
+                        "current": {"type": "boolean"},
                         "date": {
                             "type": ["string", "null"],
                             "pattern": r"^\d{4}(-(0?[1-9]|1[012])(-(0?[1-9]|[12][0-9]|3[01]))?)?$",
@@ -256,7 +256,7 @@ class JSONJobsField(JSONSchemaField):
                     "additionalProperties": False,
                     "minProperties": 5,
                     "properties": {
-                        "current": {"type": ["boolean"]},
+                        "current": {"type": "boolean"},
                         "date": {
                             "type": ["string", "null"],
                             "pattern": r"^\d{4}(-(0?[1-9]|1[012])(-(0?[1-9]|[12][0-9]|3[01]))?)?$",
@@ -306,7 +306,7 @@ class JSONExportsField(JSONSchemaField):
                     "additionalProperties": False,
                     "minProperties": 6,
                     "properties": {
-                        "current": {"type": ["boolean"]},
+                        "current": {"type": "boolean"},
                         "date": {
                             "type": ["string", "null"],
                             "pattern": r"^\d{4}(-(0?[1-9]|1[012])(-(0?[1-9]|[12][0-9]|3[01]))?)?$",
@@ -337,7 +337,7 @@ class JSONElectricityGenerationField(JSONSchemaField):
                     "additionalProperties": False,
                     "minProperties": 8,
                     "properties": {
-                        "current": {"type": ["boolean"]},
+                        "current": {"type": "boolean"},
                         "date": {
                             "type": ["string", "null"],
                             "pattern": r"^\d{4}(-(0?[1-9]|1[012])(-(0?[1-9]|[12][0-9]|3[01]))?)?$",
@@ -370,7 +370,7 @@ class JSONCarbonSequestrationField(JSONSchemaField):
                     "additionalProperties": False,
                     "minProperties": 9,
                     "properties": {
-                        "current": {"type": ["boolean"]},
+                        "current": {"type": "boolean"},
                         "date": {
                             "type": ["string", "null"],
                             "pattern": r"^\d{4}(-(0?[1-9]|1[012])(-(0?[1-9]|[12][0-9]|3[01]))?)?$",

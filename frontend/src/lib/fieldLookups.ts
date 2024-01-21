@@ -26,9 +26,24 @@ import NanoIDField from "$components/Fields/Display2/NanoIDField.svelte"
 import PointField from "$components/Fields/Display2/PointField.svelte"
 import TextField from "$components/Fields/Display2/TextField.svelte"
 import UserField from "$components/Fields/Display2/UserField.svelte"
+import BooleanEditField from "$components/Fields/Edit2/BooleanEditField.svelte"
+import ChoicesEditField from "$components/Fields/Edit2/ChoicesField.svelte"
+import CountryEditField from "$components/Fields/Edit2/CountryField.svelte"
+import DecimalEditField from "$components/Fields/Edit2/DecimalField.svelte"
+import FileEditField from "$components/Fields/Edit2/FileField.svelte"
+import JSONCarbonSequestrationEditField from "$components/Fields/Edit2/JSONCarbonSequestrationEditField.svelte"
+import JSONCurrentDateAreaChoicesEditField from "$components/Fields/Edit2/JSONCurrentDateAreaChoicesEditField.svelte"
+import JSONCurrentDateAreaEditField from "$components/Fields/Edit2/JSONCurrentDateAreaField.svelte"
+import JSONCurrentDateChoiceEditField from "$components/Fields/Edit2/JSONCurrentDateChoiceEditField.svelte"
+import JSONElectricityGenerationEditField from "$components/Fields/Edit2/JSONElectricityGenerationEditField.svelte"
+import JSONExportsEditField from "$components/Fields/Edit2/JSONExportsEditField.svelte"
+import JSONJobsEditField from "$components/Fields/Edit2/JSONJobsEditField.svelte"
+import JSONLeaseEditField from "$components/Fields/Edit2/JSONLeaseEditField.svelte"
+import TextEditField from "$components/Fields/Edit2/TextField.svelte"
 
 interface Sec {
   displayField: ComponentType
+  editField?: ComponentType
   label: string
   extras?: unknown
 }
@@ -38,14 +53,35 @@ export const investorFields = derived([_, fieldChoices], ([$_, $fieldChoices]) =
     id: { displayField: IDField, label: $_("ID"), extras: { model: "investor" } },
     country_id: {
       displayField: CountryField,
+      editField: CountryEditField,
       label: $_("Country of registration/origin"),
+      extras: { required: true },
     },
-    name: { displayField: TextField, label: $_("Name") },
-    homepage: { displayField: TextField, label: $_("Investor homepage") },
-    comment: { displayField: TextField, label: $_("Comment") },
-    opencorporates: { displayField: TextField, label: $_("Opencorporates link") },
+    name: {
+      displayField: TextField,
+      editField: TextEditField,
+      label: $_("Name"),
+    },
+    homepage: {
+      displayField: TextField,
+      editField: TextEditField,
+      label: $_("Investor homepage"),
+      extras: { url: true },
+    },
+    comment: {
+      displayField: TextField,
+      editField: TextEditField,
+      label: $_("Comment"),
+      extras: { multiline: true },
+    },
+    opencorporates: {
+      displayField: TextField,
+      editField: TextEditField,
+      label: $_("Opencorporates link"),
+    },
     classification: {
       displayField: ChoicesField,
+      editField: ChoicesEditField,
       label: $_("Classification"),
       extras: { choices: $fieldChoices.investor.classification },
     },
@@ -171,9 +207,10 @@ export const dealSections = derived(_, $_ => {
       title: $_("Presence of land conflicts"),
       fields: ["land_conflicts", "land_conflicts_comment"],
     },
-    displaced_people: {
+    displacement_of_people: {
       title: $_("Displacement of people"),
       fields: [
+        "displacement_of_people",
         "displaced_people",
         "displaced_households",
         "displaced_people_from_community_land",
@@ -335,50 +372,66 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
     // General
     intended_size: {
       displayField: DecimalField,
+      editField: DecimalEditField,
       label: $_("Intended size"),
       extras: { unit: $_("ha") },
     },
     contract_size: {
       displayField: JSONCurrentDateAreaField,
+      editField: JSONCurrentDateAreaEditField,
       label: $_("Size under contract (leased or purchased area)"),
     },
     production_size: {
       displayField: JSONCurrentDateAreaField,
+      editField: JSONCurrentDateAreaEditField,
+
       label: $_("Size in operation (production)"),
     },
     land_area_comment: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Comment on land area"),
+      extras: { multiline: true },
     },
     intention_of_investment: {
       displayField: JSONCurrentDateAreaChoicesField,
+      editField: JSONCurrentDateAreaChoicesEditField,
       label: $_("Intention of investment"),
       extras: { choices: $fieldChoices.deal.intention_of_investment },
     },
     intention_of_investment_comment: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Comment on intention of investment"),
+      extras: { multiline: true },
     },
     nature_of_deal: {
       displayField: ChoicesField,
+      editField: ChoicesEditField,
       label: $_("Nature of the deal"),
       extras: { choices: $fieldChoices.deal.nature_of_deal, multipleChoices: true },
     },
     nature_of_deal_comment: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Comment on nature of the deal"),
+      extras: { multiline: true },
     },
     negotiation_status: {
       displayField: JSONCurrentDateChoiceField,
+      editField: JSONCurrentDateChoiceEditField,
       label: $_("Negotiation status"),
       extras: { choices: $fieldChoices.deal.negotiation_status },
     },
     negotiation_status_comment: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Comment on negotiation status"),
+      extras: { multiline: true },
     },
     implementation_status: {
       displayField: JSONCurrentDateChoiceField,
+      editField: JSONCurrentDateChoiceEditField,
       label: $_("Implementation status"),
       extras: {
         choices: $fieldChoices.deal.implementation_status,
@@ -386,132 +439,185 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
     },
     implementation_status_comment: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Comment on implementation status"),
+      extras: { multiline: true },
     },
     purchase_price: {
       displayField: DecimalField,
+      editField: DecimalEditField,
       label: $_("Purchase price"),
       // we use purchase_price_currency and purchase_price_type here too
     },
     purchase_price_area: {
       displayField: DecimalField,
+      editField: DecimalEditField,
       label: $_("Purchase price area"),
       extras: { unit: $_("ha") },
     },
     purchase_price_comment: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Comment on purchase price"),
+      extras: { multiline: true },
     },
     annual_leasing_fee: {
       displayField: DecimalField,
+      editField: DecimalEditField,
       label: $_("Annual leasing fee"),
       // we use annual_leasing_fee_currency and ~_type here too
     },
     annual_leasing_fee_area: {
       displayField: DecimalField,
+      editField: DecimalEditField,
       label: $_("Annual leasing fee area"),
       extras: { unit: $_("ha") },
     },
     annual_leasing_fee_comment: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Comment on leasing fee"),
+      extras: { multiline: true },
     },
     contract_farming: {
       displayField: BooleanField,
+      editField: BooleanEditField,
       label: $_("Contract farming"),
+      extras: { nullable: true },
     },
     on_the_lease_state: {
       displayField: BooleanField,
+      editField: BooleanEditField,
       label: $_("On leased / purchased"),
+      extras: { nullable: true },
     },
     on_the_lease: {
       displayField: JSONLeaseField,
+      editField: JSONLeaseEditField,
       label: $_("On leased area/farmers/households"),
     },
     off_the_lease_state: {
       displayField: BooleanField,
+      editField: BooleanEditField,
       label: $_("Not on leased / purchased (out-grower)"),
+      extras: { nullable: true },
     },
     off_the_lease: {
       displayField: JSONLeaseField,
+      editField: JSONLeaseEditField,
       label: $_("Not on leased area/farmers/households (out-grower)"),
     },
     contract_farming_comment: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Comment on contract farming"),
+      extras: { multiline: true },
     },
     // EMPLOYMENT
     total_jobs_created: {
       displayField: BooleanField,
+      editField: BooleanEditField,
       label: $_("Jobs created (total)"),
+      extras: { nullable: true },
     },
     total_jobs_planned: {
       displayField: DecimalField,
+      editField: DecimalEditField,
       label: $_("Planned number of jobs (total)"),
+      extras: { unit: $_("jobs") },
     },
     total_jobs_planned_employees: {
       displayField: DecimalField,
+      editField: DecimalEditField,
       label: $_("Planned employees (total)"),
+      extras: { unit: $_("employees") },
     },
     total_jobs_planned_daily_workers: {
       displayField: DecimalField,
+      editField: DecimalEditField,
       label: $_("Planned daily/seasonal workers (total)"),
+      extras: { unit: $_("workers") },
     },
     total_jobs_current: {
       displayField: JSONJobsField,
+      editField: JSONJobsEditField,
       label: $_("Current total number of jobs/employees/ daily/seasonal workers"),
     },
     total_jobs_created_comment: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Comment on jobs created (total)"),
+      extras: { multiline: true },
     },
     foreign_jobs_created: {
       displayField: BooleanField,
+      editField: BooleanEditField,
       label: $_("Jobs created (foreign)"),
+      extras: { nullable: true },
     },
     foreign_jobs_planned: {
       displayField: DecimalField,
+      editField: DecimalEditField,
       label: $_("Planned number of jobs (foreign)"),
+      extras: { unit: $_("jobs") },
     },
     foreign_jobs_planned_employees: {
       displayField: DecimalField,
+      editField: DecimalEditField,
       label: $_("Planned employees (foreign)"),
+      extras: { unit: $_("employees") },
     },
     foreign_jobs_planned_daily_workers: {
       displayField: DecimalField,
+      editField: DecimalEditField,
       label: $_("Planned daily/seasonal workers (foreign)"),
+      extras: { unit: $_("workers") },
     },
     foreign_jobs_current: {
       displayField: JSONJobsField,
+      editField: JSONJobsEditField,
       label: $_("Current foreign number of jobs/employees/ daily/seasonal workers"),
     },
     foreign_jobs_created_comment: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Comment on jobs created (foreign)"),
+      extras: { multiline: true },
     },
     domestic_jobs_created: {
       displayField: BooleanField,
+      editField: BooleanEditField,
       label: $_("Jobs created (domestic)"),
+      extras: { nullable: true },
     },
     domestic_jobs_planned: {
       displayField: DecimalField,
+      editField: DecimalEditField,
       label: $_("Planned number of jobs (domestic)"),
+      extras: { unit: $_("jobs") },
     },
     domestic_jobs_planned_employees: {
       displayField: DecimalField,
+      editField: DecimalEditField,
       label: $_("Planned employees (domestic)"),
+      extras: { unit: $_("employees") },
     },
     domestic_jobs_planned_daily_workers: {
       displayField: DecimalField,
+      editField: DecimalEditField,
       label: $_("Planned daily/seasonal workers (domestic)"),
+      extras: { unit: $_("workers") },
     },
     domestic_jobs_current: {
       displayField: JSONJobsField,
+      editField: JSONJobsEditField,
       label: $_("Current domestic number of jobs/employees/ daily/seasonal workers"),
     },
     domestic_jobs_created_comment: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Comment on jobs created (domestic)"),
+      extras: { multiline: true },
     },
     // Investor Info
     operating_company: {
@@ -528,273 +634,391 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
     },
     investment_chain_comment: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Comment on investment chain"),
+      extras: { multiline: true },
     },
     // Local communities
     name_of_community: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Name of community"),
       extras: { multiline: true },
     }, // TODO special case, where we are supposed to parse to multiple entries
     //  see http://localhost:9000/deal/6552/#local_communities as example
     name_of_indigenous_people: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Name of indigenous people"),
+      extras: { multiline: true },
     }, // TODO special case, where we are supposed to parse to multiple entries
     people_affected_comment: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Comment on communities / indigenous peoples affected"),
+      extras: { multiline: true },
     },
     recognition_status: {
       displayField: ChoicesField,
+      editField: ChoicesEditField,
       label: $_("Recognition status of community land tenure"),
       extras: { choices: $fieldChoices.deal.recognition_status, multipleChoices: true },
     },
     recognition_status_comment: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Comment on recognition status of community land tenure"),
+      extras: { multiline: true },
     },
     community_consultation: {
       displayField: ChoicesField,
+      editField: ChoicesEditField,
       label: $_("Community consultation"),
       extras: { choices: $fieldChoices.deal.community_consultation },
     },
     community_consultation_comment: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Comment on consultation of local community"),
+      extras: { multiline: true },
     },
     community_reaction: {
       displayField: ChoicesField,
+      editField: ChoicesEditField,
       label: $_("Community reaction"),
       extras: { choices: $fieldChoices.deal.community_reaction },
     },
     community_reaction_comment: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Comment on community reaction"),
+      extras: { multiline: true },
     },
     land_conflicts: {
       displayField: BooleanField,
+      editField: BooleanEditField,
       label: $_("Presence of land conflicts"),
+      extras: { nullable: true },
     },
     land_conflicts_comment: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Comment on presence of land conflicts"),
+      extras: { multiline: true },
     },
     displacement_of_people: {
       displayField: BooleanField,
+      editField: BooleanEditField,
       label: $_("Displacement of people"),
+      extras: { nullable: true },
     },
     displaced_people: {
       displayField: DecimalField,
+      editField: DecimalEditField,
       label: $_("Number of people actually displaced"),
     },
     displaced_households: {
       displayField: DecimalField,
+      editField: DecimalEditField,
       label: $_("Number of households actually displaced"),
     },
     displaced_people_from_community_land: {
       displayField: DecimalField,
+      editField: DecimalEditField,
       label: $_("Number of people displaced out of their community land"),
     },
     displaced_people_within_community_land: {
       displayField: DecimalField,
+      editField: DecimalEditField,
       label: $_("Number of people displaced staying on community land"),
     },
     displaced_households_from_fields: {
       displayField: DecimalField,
+      editField: DecimalEditField,
       label: $_('Number of households displaced "only" from their agricultural fields'),
     },
     displaced_people_on_completion: {
       displayField: DecimalField,
+      editField: DecimalEditField,
       label: $_(
         "Number of people facing displacement once project is fully implemented",
       ),
     },
     displacement_of_people_comment: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Comment on displacement of people"),
+      extras: { multiline: true },
     },
     negative_impacts: {
       displayField: ChoicesField,
+      editField: ChoicesEditField,
       label: $_("Negative impacts for local communities"),
       extras: { choices: $fieldChoices.deal.negative_impacts, multipleChoices: true },
     },
     negative_impacts_comment: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Comment on negative impacts for local communities"),
+      extras: { multiline: true },
     },
     promised_compensation: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Promised compensation (e.g. for damages or resettlements)"),
+      extras: { multiline: true },
     },
     received_compensation: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Received compensation (e.g. for damages or resettlements)"),
+      extras: { multiline: true },
     },
     promised_benefits: {
       displayField: ChoicesField,
+      editField: ChoicesEditField,
       label: $_("Promised benefits for local communities"),
       extras: { choices: $fieldChoices.deal.benefits, multipleChoices: true },
     },
     promised_benefits_comment: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Comment on promised benefits for local communities"),
+      extras: { multiline: true },
     },
     materialized_benefits: {
       displayField: ChoicesField,
+      editField: ChoicesEditField,
       label: $_("Materialized benefits for local communities"),
       extras: { choices: $fieldChoices.deal.benefits, multipleChoices: true },
     },
     materialized_benefits_comment: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Comment on materialized benefits for local communities"),
+      extras: { multiline: true },
     },
     presence_of_organizations: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_(
         "Presence of organizations and actions taken (e.g. farmer organizations, NGOs, etc.)",
       ),
+      extras: { multiline: true },
     },
     // Former Use
     former_land_owner: {
       displayField: ChoicesField,
+      editField: ChoicesEditField,
       label: $_("Former land owner"),
       extras: { choices: $fieldChoices.deal.former_land_owner, multipleChoices: true },
     },
     former_land_owner_comment: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Comment on former land owner"),
+      extras: { multiline: true },
     },
     former_land_use: {
       displayField: ChoicesField,
+      editField: ChoicesEditField,
       label: $_("Former land use"),
       extras: { choices: $fieldChoices.deal.former_land_use, multipleChoices: true },
     },
     former_land_use_comment: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Comment on former land use"),
+      extras: { multiline: true },
     },
     former_land_cover: {
       displayField: ChoicesField,
+      editField: ChoicesEditField,
       label: $_("Former land cover"),
       extras: { choices: $fieldChoices.deal.former_land_cover, multipleChoices: true },
     },
     former_land_cover_comment: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Comment on former land cover"),
+      extras: { multiline: true },
     },
     // // Produce Info
     crops: {
       displayField: JSONExportsField,
+      editField: JSONExportsEditField,
       label: $_("Crops area/yield/export"),
       extras: { choices: $fieldChoices.deal.crops },
     },
-    crops_comment: { displayField: TextField, label: $_("Comment on crops") },
+    crops_comment: {
+      displayField: TextField,
+      editField: TextEditField,
+      label: $_("Comment on crops"),
+      extras: { multiline: true },
+    },
     animals: {
       displayField: JSONExportsField,
+      editField: JSONExportsEditField,
       label: $_("Livestock area/yield/export"),
       extras: { choices: $fieldChoices.deal.animals },
     },
-    animals_comment: { displayField: TextField, label: $_("Comment on livestock") },
+    animals_comment: {
+      displayField: TextField,
+      editField: TextEditField,
+      label: $_("Comment on livestock"),
+      extras: { multiline: true },
+    },
     mineral_resources: {
       displayField: JSONExportsField,
+      editField: JSONExportsEditField,
       label: $_("Mineral resources area/yield/export"),
       extras: { choices: $fieldChoices.deal.minerals },
     },
     mineral_resources_comment: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Comment on mineral resources"),
+      extras: { multiline: true },
     },
     contract_farming_crops: {
       displayField: JSONCurrentDateAreaChoicesField,
+      editField: JSONCurrentDateAreaChoicesEditField,
       label: $_("Contract farming crops"),
       extras: { choices: $fieldChoices.deal.crops },
     },
     contract_farming_crops_comment: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Comment on contract farming crops"),
+      extras: { multiline: true },
     },
     contract_farming_animals: {
       displayField: JSONCurrentDateAreaChoicesField,
+      editField: JSONCurrentDateAreaChoicesEditField,
       label: $_("Contract farming animals"),
       extras: { choices: $fieldChoices.deal.animals },
     },
     contract_farming_animals_comment: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Comment on contract farming animals"),
+      extras: { multiline: true },
     },
     electricity_generation: {
       displayField: JSONElectricityGenerationField,
+      editField: JSONElectricityGenerationEditField,
       label: $_("Electricity generation"),
     },
     electricity_generation_comment: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Comment on contract farming animals"),
+      extras: { multiline: true },
     },
     carbon_sequestration: {
       displayField: JSONCarbonSequestrationField,
+      editField: JSONCarbonSequestrationEditField,
       label: $_("Carbon sequestration"),
     },
     carbon_sequestration_comment: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Comment on carbon sequestration"),
+      extras: { multiline: true },
     },
-    has_domestic_use: { displayField: BooleanField, label: $_("Has domestic use") },
+    has_domestic_use: {
+      displayField: BooleanField,
+      editField: BooleanEditField,
+      label: $_("Has domestic use"),
+      extras: { nullable: true },
+    },
     domestic_use: {
       displayField: DecimalField,
+      editField: DecimalEditField,
       label: $_("Domestic use"),
       extras: { unit: "%" },
     },
-    has_export: { displayField: BooleanField, label: $_("Has export") },
-    export: { displayField: DecimalField, label: $_("Export"), extras: { unit: "%" } },
-    export_country1: { displayField: CountryField, label: $_("Counrtry 1") },
+    has_export: {
+      displayField: BooleanField,
+      editField: BooleanEditField,
+      label: $_("Has export"),
+      extras: { nullable: true },
+    },
+    export: {
+      displayField: DecimalField,
+      editField: DecimalEditField,
+      label: $_("Export"),
+      extras: { unit: "%" },
+    },
+    export_country1_id: { displayField: CountryField, label: $_("Counrtry 1") },
     export_country1_ratio: {
       displayField: DecimalField,
+      editField: DecimalEditField,
       label: $_("Counrtry 1 ratio"),
+      extras: { unit: "%" },
     },
-    export_country2: { displayField: CountryField, label: $_("Counrtry 2") },
+    export_country2_id: { displayField: CountryField, label: $_("Counrtry 2") },
     export_country2_ratio: {
       displayField: DecimalField,
+      editField: DecimalEditField,
       label: $_("Counrtry 2 ratio"),
+      extras: { unit: "%" },
     },
-    export_country3: { displayField: CountryField, label: $_("Counrtry 3") },
+    export_country3_id: { displayField: CountryField, label: $_("Counrtry 3") },
     export_country3_ratio: {
       displayField: DecimalField,
+      editField: DecimalEditField,
       label: $_("Counrtry 3 ratio"),
+      extras: { unit: "%" },
     },
     use_of_produce_comment: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Comment on use of produce"),
+      extras: { multiline: true },
     },
     in_country_processing: {
       displayField: BooleanField,
+      editField: BooleanEditField,
       label: $_("In country processing of produce"),
+      extras: { nullable: true },
     },
     in_country_processing_comment: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Comment on in country processing of produce"),
+      extras: { multiline: true },
     },
     in_country_processing_facilities: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_(
         "Processing facilities / production infrastructure of the project (e.g. oil mill, ethanol distillery, biomass power plant etc.)",
       ),
+      extras: { multiline: true },
     },
     in_country_end_products: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("In-country end products of the project"),
+      extras: { multiline: true },
     },
     // Water
     water_extraction_envisaged: {
       displayField: BooleanField,
+      editField: BooleanEditField,
       label: $_("Water extraction envisaged"),
+      extras: { nullable: true },
     },
     water_extraction_envisaged_comment: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Comment on water extraction envisaged"),
+      extras: { multiline: true },
     },
     source_of_water_extraction: {
       displayField: ChoicesField,
+      editField: ChoicesEditField,
       label: $_("Source of water extraction"),
       extras: {
         choices: $fieldChoices.deal.water_source,
@@ -803,39 +1027,60 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
     },
     source_of_water_extraction_comment: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Comment on source of water extraction"),
+      extras: { multiline: true },
     },
     how_much_do_investors_pay_comment: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Comment on how much do investors pay for water"),
+      extras: { multiline: true },
     },
     water_extraction_amount: {
       displayField: DecimalField,
+      editField: DecimalEditField,
       label: $_("Water extraction amount"),
+      extras: { unit: $_("m3/year") },
     },
     water_extraction_amount_comment: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Comment on how much water is extracted"),
+      extras: { multiline: true },
     },
     use_of_irrigation_infrastructure: {
       displayField: BooleanField,
+      editField: BooleanEditField,
       label: $_("Use of irrigation infrastructure"),
+      extras: { nullable: true },
     },
     use_of_irrigation_infrastructure_comment: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Comment on use of irrigation infrastructure"),
+      extras: { multiline: true },
     },
     water_footprint: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Water footprint of the investment project"),
+      extras: { multiline: true },
     },
     // Gender
     gender_related_information: {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Comment on gender-related info"),
+      extras: { multiline: true },
     },
     // Overall comment
-    overall_comment: { displayField: TextField, label: $_("Overall comment") },
+    overall_comment: {
+      displayField: TextField,
+      editField: TextEditField,
+      label: $_("Overall comment"),
+      extras: { multiline: true },
+    },
     // Calc
     deal_size: {
       displayField: DecimalField,
@@ -900,7 +1145,11 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
       label: $_("Url"),
       extras: { url: true },
     },
-    "datasource.file": { displayField: FileField, label: $_("File") },
+    "datasource.file": {
+      displayField: FileField,
+      editField: FileEditField,
+      label: $_("File"),
+    },
     // "datasource.file_not_public": {
     //   displayField: BooleanField,
     //   label: $_("Keep PDF not public"),
@@ -920,7 +1169,9 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
     "datasource.phone": { displayField: TextField, label: $_("Phone") },
     "datasource.includes_in_country_verified_information": {
       displayField: BooleanField,
+      editField: BooleanEditField,
       label: $_("Includes in-country-verified information"),
+      extras: { nullable: true },
     },
     "datasource.open_land_contracts_id": {
       displayField: TextField,

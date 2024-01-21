@@ -81,9 +81,9 @@
   {/each}
 
   <button
-    class="flex w-full items-center justify-center border p-2"
-    on:click={addEntry}
     type="button"
+    on:click={addEntry}
+    class="flex w-full items-center justify-center border p-2"
   >
     <PlusIcon class="h-7 w-7 text-black" />
   </button>

@@ -10,6 +10,7 @@
   import { removeEmptyEntries } from "$lib/utils/data_processing"
 
   import EditSectionDataSources from "$components/EditSectionDataSources.svelte"
+  import CountryField from "$components/Fields/Display2/CountryField.svelte"
   import LoadingSpinner from "$components/icons/LoadingSpinner.svelte"
   import Modal from "$components/Modal.svelte"
 
@@ -177,7 +178,9 @@
   <div class="border-b border-orange md:flex md:flex-row md:justify-between">
     <h1 class="heading4 mt-3 flex flex-col gap-2">
       {data.dealID ? $_("Editing deal #") + data.dealID : $_("Adding new deal")}
-      <span style="font-size: 0.8em;">{data.deal.country.name}</span>
+      <span class="text-[0.8em]">
+        <CountryField value={data.deal.country_id} />
+      </span>
     </h1>
     <div class="my-5 flex items-center">
       <button
@@ -228,13 +231,13 @@
         />
       {/if}
       {#if activeTab === "#general"}
-        <EditSectionGeneralInfo bind:deal />
+        <EditSectionGeneralInfo bind:version={deal.selected_version} />
       {/if}
       {#if activeTab === "#contracts"}
         <EditSectionContracts bind:contracts={deal.selected_version.contracts} />
       {/if}
       {#if activeTab === "#employment"}
-        <EditSectionEmployment bind:deal />
+        <EditSectionEmployment bind:version={deal.selected_version} />
       {/if}
       {#if activeTab === "#investor_info"}
         <EditSectionInvestorInfo bind:deal />
@@ -243,22 +246,22 @@
         <EditSectionDataSources bind:datasources={deal.selected_version.datasources} />
       {/if}
       {#if activeTab === "#local_communities"}
-        <EditSectionLocalCommunities bind:deal />
+        <EditSectionLocalCommunities bind:version={deal.selected_version} />
       {/if}
       {#if activeTab === "#former_use"}
-        <EditSectionFormerUse bind:deal />
+        <EditSectionFormerUse bind:version={deal.selected_version} />
       {/if}
       {#if activeTab === "#produce_info"}
-        <EditSectionProduceInfo bind:deal />
+        <EditSectionProduceInfo bind:version={deal.selected_version} />
       {/if}
       {#if activeTab === "#water"}
-        <EditSectionWater bind:deal />
+        <EditSectionWater bind:version={deal.selected_version} />
       {/if}
       {#if activeTab === "#gender_related_info"}
-        <EditSectionGenderRelatedInfo bind:deal />
+        <EditSectionGenderRelatedInfo bind:version={deal.selected_version} />
       {/if}
       {#if activeTab === "#overall_comment"}
-        <EditSectionOverallComment bind:deal />
+        <EditSectionOverallComment bind:version={deal.selected_version} />
       {/if}
     </div>
   </div>

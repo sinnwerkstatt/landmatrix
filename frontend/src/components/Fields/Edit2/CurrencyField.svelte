@@ -5,7 +5,7 @@
 
   import VirtualListSelect from "$components/LowLevel/VirtualListSelect.svelte"
 
-  export let value: number
+  export let value: number | null
 </script>
 
 {#if $currencies}

@@ -1,13 +1,10 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import { fieldChoices } from "$lib/stores"
   import type { InvestorHull } from "$lib/types/newtypes"
 
   import EditSubsection from "$components/EditSubsection.svelte"
-  import ChoicesField from "$components/Fields/Edit2/ChoicesField.svelte"
-  import CountryField from "$components/Fields/Edit2/CountryField.svelte"
-  import TextField from "$components/Fields/Edit2/TextField.svelte"
+  import EditField from "$components/Fields/EditField.svelte"
 
   export let investor: InvestorHull
   let version = investor.selected_version
@@ -16,38 +13,36 @@
 
 <form id="general">
   <EditSubsection title={$_("General info")}>
-    <TextField bind:value={version.name} fieldname="investor.name" label={$_("Name")} />
-    <CountryField
-      bind:value={version.country}
-      fieldname="investor.country"
-      label={$_("Country of registration/origin")}
-      required
+    <EditField bind:value={version.name} fieldname="name" model="investor" showLabel />
+    <EditField
+      bind:value={version.country_id}
+      fieldname="country_id"
+      model="investor"
+      showLabel
     />
-    <ChoicesField
+    <EditField
       bind:value={version.classification}
-      choices={$fieldChoices.investor.classification}
-      fieldname="investor.classification"
-      label={$_("Classification")}
+      fieldname="classification"
+      model="investor"
+      showLabel
     />
-
-    <TextField
+    <EditField
       bind:value={version.homepage}
-      fieldname="investor.homepage"
-      label={$_("Investor homepage")}
-      isURL
+      fieldname="homepage"
+      model="investor"
+      showLabel
     />
-    <TextField
+    <EditField
       bind:value={version.opencorporates}
-      fieldname="investor.opencorporates"
-      label={$_("Opencorporates link")}
-      isURL
+      fieldname="opencorporates"
+      model="investor"
+      showLabel
     />
-
-    <TextField
+    <EditField
       bind:value={version.comment}
-      fieldname="investor.comment"
-      label={$_("Comment")}
-      multiline
+      fieldname="comment"
+      model="investor"
+      showLabel
     />
   </EditSubsection>
 </form>

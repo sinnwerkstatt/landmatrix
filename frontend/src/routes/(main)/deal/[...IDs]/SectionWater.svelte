@@ -21,6 +21,7 @@
       value={version.water_extraction_envisaged_comment}
     />
   </Subsection>
+
   <Subsection id="source_of_water_extraction" obj={version}>
     <DisplayField
       fieldname="source_of_water_extraction"
@@ -33,6 +34,7 @@
       value={version.source_of_water_extraction_comment}
     />
   </Subsection>
+
   <Subsection id="how_much_do_investors_pay_comment" obj={version}>
     <DisplayField
       fieldname="how_much_do_investors_pay_comment"
@@ -40,6 +42,7 @@
       value={version.how_much_do_investors_pay_comment}
     />
   </Subsection>
+
   <Subsection id="water_extraction_amount" obj={version}>
     <DisplayField
       fieldname="water_extraction_amount"

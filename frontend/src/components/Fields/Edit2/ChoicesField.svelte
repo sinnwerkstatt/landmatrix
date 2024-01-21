@@ -4,20 +4,20 @@
 
   import type { ValueLabelEntry } from "$lib/stores"
 
-  import { LABEL_CLASS, VALUE_CLASS, WRAPPER_CLASS } from "$components/Fields/consts"
-  import Label2 from "$components/Fields/Display2/Label2.svelte"
-
   export let value: string | string[] | null
-  export let fieldname: string
-  export let label = ""
-  export let wrapperClass = WRAPPER_CLASS
-  export let labelClass = LABEL_CLASS
-  export let valueClass = VALUE_CLASS
 
-  export let multiple = false
-  export let choices: ValueLabelEntry[]
-  export let required = false
-  export let clearable = false
+  interface Extras {
+    multipleChoices?: boolean
+    choices: ValueLabelEntry[]
+    required?: boolean
+    clearable?: boolean
+  }
+
+  export let extras: Extras = { choices: [] }
+
+  $: multiple = !!extras.multipleChoices
+  $: required = !!extras.required
+  $: clearable = !!extras.clearable
 
   let focused: boolean
 
@@ -29,24 +29,17 @@
   }
 </script>
 
-<div class={wrapperClass} data-fieldname={fieldname}>
-  {#if label}
-    <Label2 value={label} class={labelClass} />
-  {/if}
-  <div class={valueClass}>
-    <Select
-      value={multiple
-        ? choices.filter(c => (value || []).includes(c.value))
-        : choices.find(c => c.value === value)}
-      bind:focused
-      items={choices}
-      {multiple}
-      {required}
-      {clearable}
-      showChevron
-      hasError={required && !value && !focused}
-      on:input={e => (multiple ? setMultiValue : setValue)(e.detail)}
-      placeholder={$_("Please select")}
-    />
-  </div>
-</div>
+<Select
+  bind:focused
+  {clearable}
+  hasError={required && !value && !focused}
+  items={extras.choices}
+  {multiple}
+  on:input={e => (multiple ? setMultiValue : setValue)(e.detail)}
+  placeholder={$_("Please select")}
+  {required}
+  showChevron
+  value={multiple
+    ? extras.choices.filter(c => (value || []).includes(c.value))
+    : extras.choices.find(c => c.value === value)}
+/>

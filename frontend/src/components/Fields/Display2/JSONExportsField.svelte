@@ -2,19 +2,12 @@
   import { _ } from "svelte-i18n"
 
   import type { ValueLabelEntry } from "$lib/stores"
+  import type { JSONExportsFieldType } from "$lib/types/newtypes"
 
   import { dateCurrentFormat } from "$components/Fields/Display2/jsonHelpers"
   import CircleNotchIcon from "$components/icons/CircleNotchIcon.svelte"
   import PlaneIcon from "$components/icons/PlaneIcon.svelte"
   import WeightIcon from "$components/icons/WeightIcon.svelte"
-
-  type JSONExportsFieldType = {
-    current?: boolean
-    area: number | null
-    yield: number | null
-    export: number | null
-    choices: string[]
-  }
 
   export let value: JSONExportsFieldType[] = []
 
