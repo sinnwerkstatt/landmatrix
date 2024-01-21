@@ -6,7 +6,7 @@
   import { Contract } from "$lib/types/newtypes"
   import { isEmptySubmodel } from "$lib/utils/data_processing"
 
-  import TextField from "$components/Fields/Edit2/TextField.svelte"
+  import EditField from "$components/Fields/EditField.svelte"
   import PlusIcon from "$components/icons/PlusIcon.svelte"
   import TrashIcon from "$components/icons/TrashIcon.svelte"
 
@@ -32,7 +32,6 @@
   }
 </script>
 
-{JSON.stringify(contracts)}
 <section class="flex flex-wrap">
   <form class="w-full" id="contracts">
     {#each contracts as contract, index}
@@ -64,16 +63,26 @@
         </div>
         {#if activeEntryIdx === index}
           <div transition:slide={{ duration: 200 }}>
-            <TextField
+            <EditField
               fieldname="contract.number"
               bind:value={contract.number}
-              label={$_("Contract number")}
+              showLabel
             />
-            <TextField
+            <EditField fieldname="contract.date" bind:value={contract.date} showLabel />
+            <EditField
+              fieldname="contract.expiration_date"
+              bind:value={contract.expiration_date}
+              showLabel
+            />
+            <EditField
+              fieldname="contract.agreement_duration"
+              bind:value={contract.agreement_duration}
+              showLabel
+            />
+            <EditField
               fieldname="contract.comment"
               bind:value={contract.comment}
-              label={$_("Comment")}
-              multiline
+              showLabel
             />
           </div>
         {/if}

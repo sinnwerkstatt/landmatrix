@@ -1,22 +1,12 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
+  import type { JSONCarbonSequestrationFieldType } from "$lib/types/newtypes"
+
   import { dateCurrentFormat } from "$components/Fields/Display2/jsonHelpers"
   import CircleNotchIcon from "$components/icons/CircleNotchIcon.svelte"
 
-  interface JSONCarbonSequestrationField {
-    current?: boolean
-    date?: string
-    area?: number
-    choices?: string[]
-    projected_lifetime_sequestration?: number
-    projected_annual_sequestration?: number
-    certification_standard: boolean | null
-    certification_standard_name: string | null
-    certification_standard_comment: string
-  }
-
-  export let value: JSONCarbonSequestrationField[] = []
+  export let value: JSONCarbonSequestrationFieldType[] = []
 
   const CARBON_SEQUESTRATION_CERT_ITEMS = [
     { value: "REDD", label: $_("REDD+") },

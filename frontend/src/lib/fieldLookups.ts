@@ -349,7 +349,11 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
   return {
     // // Deal Hull
     id: { displayField: IDField, label: $_("ID") },
-    country_id: { displayField: CountryField, label: $_("Target country") },
+    country_id: {
+      displayField: CountryField,
+      editField: CountryEditField,
+      label: $_("Target country"),
+    },
     confidential: { displayField: BooleanField, label: $_("Confidential") },
     created_at: { displayField: DateTimeField, label: $_("Created at") },
     created_by_id: { displayField: UserField, label: $_("Created by") },
@@ -1121,27 +1125,44 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
     // "location.areas": { displayField: XXX, label: $_("Areas") },
     // CONTRACTS
     "contract.nid": { displayField: NanoIDField, label: $_("ID") },
-    "contract.number": { displayField: TextField, label: $_("Contract number") },
-    "contract.date": { displayField: TextField, label: $_("Date") }, // use DateTimeField TODO? it's loosedatefield
+    "contract.number": {
+      displayField: TextField,
+      editField: TextEditField,
+      label: $_("Contract number"),
+    },
+    "contract.date": {
+      displayField: TextField,
+      editField: TextEditField,
+      label: $_("Date"),
+    }, // use DateTimeField TODO? it's loosedatefield
     "contract.expiration_date": {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Expiration date"),
     },
     "contract.agreement_duration": {
       displayField: DecimalField,
+      editField: DecimalEditField,
       label: $_("Duration of the agreement"),
       extras: { unit: $_("years") },
     },
-    "contract.comment": { displayField: TextField, label: $_("Comment on contract") },
+    "contract.comment": {
+      displayField: TextField,
+      editField: TextEditField,
+      label: $_("Comment on contract"),
+      extras: { multiline: true },
+    },
     // DATASOURCES
     "datasource.nid": { displayField: NanoIDField, label: $_("ID") },
     "datasource.type": {
       displayField: ChoicesField,
+      editField: ChoicesEditField,
       label: $_("Type"),
       extras: { choices: $fieldChoices.datasource.type },
     },
     "datasource.url": {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Url"),
       extras: { url: true },
     },
@@ -1156,17 +1177,35 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
     // },
     "datasource.publication_title": {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Publication title"),
     },
-    "datasource.date": { displayField: TextField, label: $_("Date") },
-    "datasource.name": { displayField: TextField, label: $_("Name") },
-    "datasource.company": { displayField: TextField, label: $_("Organisation") },
+    "datasource.date": {
+      displayField: TextField,
+      editField: TextEditField,
+      label: $_("Date"),
+    },
+    "datasource.name": {
+      displayField: TextField,
+      editField: TextEditField,
+      label: $_("Name"),
+    },
+    "datasource.company": {
+      displayField: TextField,
+      editField: TextEditField,
+      label: $_("Organisation"),
+    },
     "datasource.email": {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Email"),
       extras: { email: true },
     },
-    "datasource.phone": { displayField: TextField, label: $_("Phone") },
+    "datasource.phone": {
+      displayField: TextField,
+      editField: TextEditField,
+      label: $_("Phone"),
+    },
     "datasource.includes_in_country_verified_information": {
       displayField: BooleanField,
       editField: BooleanEditField,
@@ -1175,12 +1214,15 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
     },
     "datasource.open_land_contracts_id": {
       displayField: TextField,
+      editField: TextEditField,
       label: $_("Open Contracting ID"),
       extras: { ocid: true },
     },
     "datasource.comment": {
-      label: $_("Comment on data source"),
       displayField: TextField,
+      editField: TextEditField,
+      label: $_("Comment on data source"),
+      extras: { multiline: true },
     },
     // INVOLVEMENTS
     "involvement.relationship": { displayField: TextField, label: $_("Relationship") },

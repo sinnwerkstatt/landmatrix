@@ -6,8 +6,7 @@
   import { DataSource } from "$lib/types/newtypes"
   import { isEmptySubmodel } from "$lib/utils/data_processing"
 
-  import FileField from "$components/Fields/Edit2/FileField.svelte"
-  import TextField from "$components/Fields/Edit2/TextField.svelte"
+  import EditField from "$components/Fields/EditField.svelte"
   import PlusIcon from "$components/icons/PlusIcon.svelte"
   import TrashIcon from "$components/icons/TrashIcon.svelte"
 
@@ -33,7 +32,6 @@
   }
 </script>
 
-{JSON.stringify(datasources)}
 <section class="flex flex-wrap">
   <form class="w-full" id="data_sources">
     {#each datasources as datasource, index}
@@ -65,22 +63,79 @@
         </div>
         {#if activeEntryIdx === index}
           <div transition:slide={{ duration: 200 }}>
-            <TextField
+            <EditField
+              fieldname="datasource.type"
+              bind:value={datasource.type}
+              showLabel
+            />
+            <EditField
               fieldname="datasource.url"
               bind:value={datasource.url}
-              label={$_("URL")}
-              isURL
+              showLabel
             />
-            <FileField
+            <!--TODO -->
+            <!--            <FileField-->
+            <!--              fieldname="datasource.file"-->
+            <!--              bind:value={datasource.file}-->
+            <!--              label={$_("File")}-->
+            <!--              bind:notPublic={datasource.file_not_public}-->
+            <!--            />-->
+
+            <EditField
               fieldname="datasource.file"
+              showLabel
               bind:value={datasource.file}
-              label={$_("File")}
+            >
+              <label>
+                <input type="checkbox" bind:checked={datasource.file_not_public} />
+                not public {datasource.file_not_public}
+              </label>
+            </EditField>
+
+            <EditField
+              fieldname="datasource.publication_title"
+              bind:value={datasource.publication_title}
+              showLabel
             />
-            <TextField
+            <EditField
+              fieldname="datasource.date"
+              bind:value={datasource.date}
+              showLabel
+            />
+            <EditField
+              fieldname="datasource.name"
+              bind:value={datasource.name}
+              showLabel
+            />
+            <EditField
+              fieldname="datasource.company"
+              bind:value={datasource.company}
+              showLabel
+            />
+            <EditField
+              fieldname="datasource.email"
+              bind:value={datasource.email}
+              showLabel
+            />
+            <EditField
+              fieldname="datasource.phone"
+              bind:value={datasource.phone}
+              showLabel
+            />
+            <EditField
+              fieldname="datasource.includes_in_country_verified_information"
+              bind:value={datasource.includes_in_country_verified_information}
+              showLabel
+            />
+            <EditField
+              fieldname="datasource.open_land_contracts_id"
+              bind:value={datasource.open_land_contracts_id}
+              showLabel
+            />
+            <EditField
               fieldname="datasource.comment"
               bind:value={datasource.comment}
-              label={$_("Comment")}
-              multiline
+              showLabel
             />
           </div>
         {/if}

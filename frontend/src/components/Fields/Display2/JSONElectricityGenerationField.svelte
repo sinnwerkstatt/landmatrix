@@ -1,23 +1,14 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
+  import type { JSONElectricityGenerationFieldType } from "$lib/types/newtypes"
+
   import { dateCurrentFormat } from "$components/Fields/Display2/jsonHelpers"
   import CircleNotchIcon from "$components/icons/CircleNotchIcon.svelte"
   import PlaneIcon from "$components/icons/PlaneIcon.svelte"
   import RenewableEnergyIcon from "$components/icons/RenewableEnergyIcon.svelte"
 
-  interface JSONElectricityGenerationField {
-    current?: boolean
-    date?: string
-    area?: number
-    choices?: string[]
-    export?: number
-    windfarm_count?: number
-    current_capacity?: number
-    intended_capacity?: number
-  }
-
-  export let value: JSONElectricityGenerationField[] = []
+  export let value: JSONElectricityGenerationFieldType[] = []
 </script>
 
 <ul>
