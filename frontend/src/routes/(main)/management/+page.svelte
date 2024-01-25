@@ -10,11 +10,9 @@
   import { goto } from "$app/navigation"
   import { page } from "$app/stores"
 
-  import { formfields, loading } from "$lib/stores"
-  import type { Deal } from "$lib/types/deal"
-  import { DraftStatus, Status } from "$lib/types/generics"
-  import type { Investor } from "$lib/types/investor"
-  import type { User } from "$lib/types/user"
+  import { dealFields, investorFields } from "$lib/fieldLookups"
+  import { loading } from "$lib/stores"
+  import type { DealHull, InvestorHull } from "$lib/types/newtypes"
   import { UserRole } from "$lib/types/user"
 
   import FilterCollapse from "$components/Data/FilterCollapse.svelte"
@@ -25,17 +23,17 @@
 
   import { downloadAsCSV, downloadAsXLSX } from "./downloadObjects.js"
   import RightFilterBar from "./RightFilterBar.svelte"
-  import { managementFilters, Mode, modeMap } from "./state"
+  import { managementFilters, Mode } from "./state"
   import WorkflowInfoView from "./WorkflowInfoView.svelte"
 
   dayjs.extend(isSameOrBefore)
   dayjs.extend(isSameOrAfter)
 
-  const user = $page.data.user
+  $: userIsEditorOrAbove = $page.data.user.role > UserRole.EDITOR
 
   let model: "deal" | "investor" = "deal"
   let activeTabId: string
-  let objects: Array<(Deal | Investor) & { mode?: Mode }> = []
+  let objects: Array<(DealHull | InvestorHull) & { mode?: Mode }> = []
 
   interface Tab {
     id: string
@@ -89,7 +87,7 @@
     {
       name: $_("Data overview"),
       items: [
-        { id: "all_items", name: $_("All objects"), staff: true },
+        { id: "all_active", name: $_("All active"), staff: true },
         { id: "all_drafts", name: $_("All non active"), staff: true },
         { id: "all_deleted", name: $_("All deleted"), staff: true },
       ],
@@ -101,10 +99,10 @@
   const dealColumns = {
     id: 1,
     mode: 2,
-    country: 2,
+    country_id: 2,
     deal_size: 2,
-    created_at: 2,
-    created_by_id: 2,
+    first_created_at: 2,
+    first_created_by_id: 2,
     modified_at: 2,
     modified_by_id: 2,
     fully_updated_at: 2,
@@ -115,19 +113,18 @@
     id: 1,
     mode: 2,
     name: 3,
-    country: 4,
-    deals: 1,
-    created_at: 2,
-    created_by_id: 3,
+    country_id: 4,
+    // deals: 1,
+    first_created_at: 2,
+    first_created_by_id: 3,
     workflowinfos: 5,
   }
 
   $: columnsWithSpan = model === "deal" ? dealColumns : investorColumns
   $: columns = Object.keys(columnsWithSpan)
-  $: labels = columns.map(col => {
-    if (col === "mode") return $_("Mode")
-    return $formfields?.[model]?.[col]?.label
-  })
+  $: labels = columns.map(col =>
+    model === "deal" ? $dealFields[col].label : $investorFields[col].label,
+  )
   $: spans = Object.entries(columnsWithSpan).map(([, colSpan]) => colSpan)
 
   async function getCounts(model: "deal" | "investor") {
@@ -143,8 +140,8 @@
   }
 
   let controller: AbortController
-  let createdByUsers: User[] = []
-  let modifiedByUsers: User[] = []
+  let createdByUserIDs = new Set<number>()
+  let modifiedByUserIDs = new Set<number>()
 
   async function fetchObjects(acTab: string, model: "deal" | "investor") {
     if (!acTab) return
@@ -159,29 +156,13 @@
       objects = (await ret.json()).objects
 
       // set User lists for the right filter bar
-      createdByUsers = []
-      modifiedByUsers = []
-      const createdBy = new Set<number>()
-      const modifiedBy = new Set<number>()
+      createdByUserIDs = new Set<number>()
+      modifiedByUserIDs = new Set<number>()
       objects.forEach(o => {
-        // Add mode to be able to sort objects in table
-        o.mode = computeMode(o)
-
-        if (o.created_by && !createdBy.has(o.created_by.id)) {
-          createdByUsers.push(o.created_by)
-          createdBy.add(o.created_by.id)
-        }
-        if (o.modified_by && !modifiedBy.has(o.modified_by.id)) {
-          modifiedByUsers.push(o.modified_by)
-          modifiedBy.add(o.modified_by.id)
-        }
+        if (o.first_created_by_id) createdByUserIDs.add(o.first_created_by_id)
+        if (o.selected_version.modified_by_id)
+          modifiedByUserIDs.add(o.selected_version.modified_by_id)
       })
-      createdByUsers = createdByUsers.sort((a, b) =>
-        a.full_name.localeCompare(b.full_name),
-      )
-      modifiedByUsers = modifiedByUsers.sort((a, b) =>
-        a.full_name.localeCompare(b.full_name),
-      )
 
       navTabs = navTabs.map(navTab => ({
         ...navTab,
@@ -211,47 +192,58 @@
 
   let showFilterOverlay = false
 
-  // aka combinedStatus
-  const computeMode = (obj: Deal | Investor): Mode | undefined => {
-    if (obj.status === Status.DELETED) return Mode.DELETED
-    if (obj.draft_status === DraftStatus.DRAFT) return Mode.DRAFT
-    if (obj.draft_status === DraftStatus.REVIEW) return Mode.REVIEW
-    if (obj.draft_status === DraftStatus.ACTIVATION) return Mode.ACTIVATION
-    if (obj.draft_status === DraftStatus.REJECTED) return Mode.REJECTED
-    if (obj.status === Status.LIVE || obj.status === Status.UPDATED) return Mode.ACTIVE
-  }
-
   $: getCounts(model)
   $: fetchObjects(activeTabId, model)
   $: filteredObjects = objects.filter(obj => {
     if ($managementFilters.mode) if (obj.mode !== $managementFilters.mode) return false
     if ($managementFilters.country)
-      if (obj.country?.id !== $managementFilters.country.id) return false
+      if (model === "deal") {
+        if ((obj as DealHull).country_id !== $managementFilters.country.id) return false
+      } else {
+        if (
+          (obj as InvestorHull).selected_version.country_id !==
+          $managementFilters.country.id
+        )
+          return false
+      }
     if ($managementFilters.createdAtFrom)
-      if (dayjs(obj.created_at).isBefore($managementFilters.createdAtFrom, "day"))
+      if (dayjs(obj.first_created_at).isBefore($managementFilters.createdAtFrom, "day"))
         return false
     if ($managementFilters.createdAtTo)
-      if (dayjs(obj.created_at).isAfter($managementFilters.createdAtTo, "day"))
+      if (dayjs(obj.first_created_at).isAfter($managementFilters.createdAtTo, "day"))
         return false
     if ($managementFilters.createdBy)
-      if (obj.created_by?.id !== $managementFilters.createdBy.id) return false
+      if (obj.first_created_by_id !== $managementFilters.createdBy.id) return false
 
     if ($managementFilters.modifiedAtFrom)
-      if (dayjs(obj.modified_at).isBefore($managementFilters.modifiedAtFrom, "day"))
+      if (
+        dayjs(obj.selected_version.modified_at).isBefore(
+          $managementFilters.modifiedAtFrom,
+          "day",
+        )
+      )
         return false
     if ($managementFilters.modifiedAtTo)
-      if (dayjs(obj.modified_at).isAfter($managementFilters.modifiedAtTo, "day"))
+      if (
+        dayjs(obj.selected_version.modified_at).isAfter(
+          $managementFilters.modifiedAtTo,
+          "day",
+        )
+      )
         return false
     if ($managementFilters.modifiedBy)
-      if (obj.modified_by?.id !== $managementFilters.modifiedBy.id) return false
+      if (obj.selected_version.modified_by_id !== $managementFilters.modifiedBy.id)
+        return false
 
     if (model === "deal") {
-      const deal = obj as Deal
+      const deal = obj as DealHull
 
       if ($managementFilters.dealSizeFrom)
-        if (deal.deal_size < $managementFilters.dealSizeFrom) return false
+        if (deal.selected_version.deal_size < $managementFilters.dealSizeFrom)
+          return false
       if ($managementFilters.dealSizeTo)
-        if (deal.deal_size > $managementFilters.dealSizeTo) return false
+        if (deal.selected_version.deal_size > $managementFilters.dealSizeTo)
+          return false
 
       if ($managementFilters.fullyUpdatedAtFrom)
         if (
@@ -312,10 +304,10 @@
     </div>
     <div class="w-full self-start">
       {#each navTabs as { name, items }}
-        {#if user.role > UserRole.EDITOR || !items.every(i => i.staff)}
+        {#if userIsEditorOrAbove || !items.every(i => i.staff)}
           <FilterCollapse title={name} expanded>
             <ul>
-              {#each items.filter(i => user.role > UserRole.EDITOR || !i.staff) as item}
+              {#each items.filter(i => userIsEditorOrAbove || !i.staff) as item}
                 <li
                   class={cn(
                     "py-2 pr-4",
@@ -381,12 +373,21 @@
     {:else}
       <Table items={filteredObjects} {columns} {spans} {labels}>
         <svelte:fragment slot="field" let:fieldName let:obj>
-          {#if fieldName === "mode"}
-            {$modeMap[obj.mode]}
-          {:else if fieldName === "country"}
-            <DisplayField fieldname="country" value={obj.country_id} />
-          {:else if fieldName === "workflowinfos"}
-            WFIs {obj.workflowinfos}
+          {#if fieldName === "country_id" && model === "investor"}
+            <DisplayField
+              fieldname={fieldName}
+              value={obj.selected_version[fieldName]}
+              {wrapperClass}
+              {valueClass}
+            />
+          {:else if ["modified_at", "modified_by_id", "deal_size", "name"].includes(fieldName)}
+            <DisplayField
+              fieldname={fieldName}
+              value={obj.selected_version[fieldName]}
+              {wrapperClass}
+              {valueClass}
+              {model}
+            />
           {:else}
             <DisplayField
               fieldname={fieldName}
@@ -401,9 +402,9 @@
   </div>
 
   <RightFilterBar
-    {createdByUsers}
+    {createdByUserIDs}
     {model}
-    {modifiedByUsers}
+    {modifiedByUserIDs}
     {objects}
     showFilters={showFilterOverlay}
   />

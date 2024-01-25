@@ -4,9 +4,7 @@
   import Select from "svelte-select"
 
   import { countries } from "$lib/stores"
-  import type { Deal } from "$lib/types/deal"
-  import type { Investor } from "$lib/types/investor"
-  import type { User } from "$lib/types/user"
+  import type { DealHull, InvestorHull } from "$lib/types/newtypes"
 
   import CountrySelect from "$components/LowLevel/CountrySelect.svelte"
   import UserSelect from "$components/LowLevel/UserSelect.svelte"
@@ -15,13 +13,13 @@
   import type { Mode } from "./state"
 
   export let showFilters = false
-  export let objects: Array<Deal | Investor> = []
+  export let objects: Array<DealHull | InvestorHull> = []
   export let model: "deal" | "investor" = "deal"
 
-  export let createdByUsers: User[] = []
-  export let modifiedByUsers: User[] = []
+  export let createdByUserIDs: Set<number>
+  export let modifiedByUserIDs: Set<number>
 
-  $: objectsCountryIDs = objects?.map(d => d.country?.id)
+  $: objectsCountryIDs = objects?.map(d => d.country_id)
   $: relCountries = $countries.filter(c => objectsCountryIDs.includes(c.id))
 
   let modeItems: { value: Mode; label: string }[]
@@ -84,7 +82,10 @@
     </div>
     <div>
       <div class="font-bold">{$_("Created by")}</div>
-      <UserSelect bind:value={$managementFilters.createdBy} users={createdByUsers} />
+      <UserSelect
+        bind:value={$managementFilters.createdBy}
+        userIDs={createdByUserIDs}
+      />
     </div>
     <hr />
     <div>
@@ -106,7 +107,10 @@
     </div>
     <div>
       <div class="font-bold">{$_("Modified by")}</div>
-      <UserSelect bind:value={$managementFilters.modifiedBy} users={modifiedByUsers} />
+      <UserSelect
+        bind:value={$managementFilters.modifiedBy}
+        userIDs={modifiedByUserIDs}
+      />
     </div>
     {#if model === "deal"}
       <hr />

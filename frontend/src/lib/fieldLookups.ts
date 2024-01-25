@@ -26,6 +26,7 @@ import NanoIDField from "$components/Fields/Display2/NanoIDField.svelte"
 import PointField from "$components/Fields/Display2/PointField.svelte"
 import TextField from "$components/Fields/Display2/TextField.svelte"
 import UserField from "$components/Fields/Display2/UserField.svelte"
+import WorkflowInfosField from "$components/Fields/Display2/WorkflowInfosField.svelte"
 import BooleanEditField from "$components/Fields/Edit2/BooleanEditField.svelte"
 import ChoicesEditField from "$components/Fields/Edit2/ChoicesField.svelte"
 import CountryEditField from "$components/Fields/Edit2/CountryField.svelte"
@@ -85,6 +86,15 @@ export const investorFields = derived([_, fieldChoices], ([$_, $fieldChoices]) =
       label: $_("Classification"),
       extras: { choices: $fieldChoices.investor.classification },
     },
+    //  TODO deduplicate with below's Deal-stuff
+    first_created_at: { displayField: DateTimeField, label: $_("Created at") },
+
+    first_created_by_id: { displayField: UserField, label: $_("Created by") },
+    workflowinfos: {
+      displayField: WorkflowInfosField,
+      label: $_("Comments / History"),
+    },
+    mode: { displayField: TextField, label: $_("Mode") },
   } as { [key: string]: Sec }
 })
 
@@ -356,7 +366,9 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
     },
     confidential: { displayField: BooleanField, label: $_("Confidential") },
     created_at: { displayField: DateTimeField, label: $_("Created at") },
+    first_created_at: { displayField: DateTimeField, label: $_("Created at") },
     created_by_id: { displayField: UserField, label: $_("Created by") },
+    first_created_by_id: { displayField: UserField, label: $_("Created by") },
     modified_at: { displayField: DateTimeField, label: $_("Last update") },
     modified_by_id: { displayField: UserField, label: $_("Modified by") },
     sent_to_review_at: { displayField: DateTimeField, label: $_("Sent to review at") },
@@ -373,6 +385,11 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
     activated_by_id: { displayField: UserField, label: $_("Activated by") },
 
     fully_updated_at: { displayField: DateTimeField, label: $_("Last full update") },
+    workflowinfos: {
+      displayField: WorkflowInfosField,
+      label: $_("Comments / History"),
+    },
+    mode: { displayField: TextField, label: $_("Mode") },
     // General
     intended_size: {
       displayField: DecimalField,

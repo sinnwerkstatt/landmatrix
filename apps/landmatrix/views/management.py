@@ -1,15 +1,26 @@
 from datetime import datetime, timedelta
 from typing import TypedDict
 
+from django.contrib.postgres.expressions import ArraySubquery
 from django.core.exceptions import PermissionDenied
 from django.core.handlers.wsgi import WSGIRequest
-from django.db.models import Q, F, Prefetch, Count, Case, When, BooleanField
+from django.db.models import (
+    Q,
+    F,
+    Prefetch,
+    Count,
+    Case,
+    When,
+    BooleanField,
+    QuerySet,
+    OuterRef,
+)
+from django.db.models.functions import JSONObject
 from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
 from django.utils.timezone import make_aware
 from django.views import View
 
 from apps.accounts.models import UserRole
-from apps.api.utils.to_dict import deal_to_dict, investor_to_dict
 from apps.landmatrix.models.new import (
     DealHull,
     InvestorHull,
@@ -49,14 +60,14 @@ class Management(View):
                 )
                 & Q(workflowinfos__to_user=request.user, workflowinfos__resolved=False),
             },
-            # "todo_improvement": {
-            #     "staff": False,
-            #     "q": Q(draft_status=1)
-            #     & Q(workflowinfos__draft_status_before__in=[2, 3])
-            #     & Q(workflowinfos__draft_status_after=1)
-            #     & Q(workflowinfos__to_user_id=request.user.id)
-            #     & Q(workflowinfos__resolved=False),
-            # },
+            "todo_improvement": {
+                "staff": False,
+                "q": ~Q(draft_version=None)
+                & Q(workflowinfos__status_before__in=["REVIEW", "ACTIVATION"])
+                & Q(workflowinfos__status_after="DRAFT")
+                & Q(workflowinfos__to_user_id=request.user.id)
+                & Q(workflowinfos__resolved=False),
+            },
             "todo_review": {
                 "staff": True,
                 "q": region_or_country & Q(draft_version__status="REVIEW"),
@@ -65,44 +76,42 @@ class Management(View):
                 "staff": True,
                 "q": region_or_country & Q(draft_version__status="ACTIVATION"),
             },
-            # "requested_feedback": {
-            #     "staff": False,
-            #     "q": (
-            #         Q(
-            #             workflowinfos__draft_status_before=F(
-            #                 "workflowinfos__draft_status_after"
-            #             )
-            #         )
-            #         | (
-            #             Q(workflowinfos__draft_status_before=None)
-            #             & Q(workflowinfos__draft_status_after=None)
-            #         )
-            #     )
-            #     & Q(workflowinfos__from_user_id=request.user.id)
-            #     & Q(workflowinfos__to_user_id__isnull=False)
-            #     & Q(workflowinfos__resolved=False),
-            # },
-            # "requested_improvement": {
-            #     "staff": True,
-            #     "q": ~Q(current_draft=None)
-            #     & (
-            #         Q(workflowinfos__deal_version_id=F("current_draft_id"))
-            #         if is_deal
-            #         else Q(workflowinfos__investor_version_id=F("current_draft_id"))
-            #     )
-            #     & Q(workflowinfos__draft_status_before__in=[2, 3])
-            #     & Q(workflowinfos__draft_status_after=1)
-            #     & Q(workflowinfos__from_user_id=request.user.id),
-            # },
-            # "my_drafts": {
-            #     "staff": False,
-            #     "q": Q(draft_version__created_by=request.user),
-            # },
-            # "created_by_me": {
-            #     "staff": False,
-            #     "q": Q(first_created_by=request.user),
-            # },
-            # TODO could be defined differently now
+            "requested_feedback": {
+                "staff": False,
+                "q": (
+                    Q(workflowinfos__status_before=F("workflowinfos__status_after"))
+                    | (
+                        Q(workflowinfos__status_before=None)
+                        & Q(workflowinfos__status_after=None)
+                    )
+                )
+                & Q(workflowinfos__from_user=request.user)
+                & ~Q(workflowinfos__to_user_id=None)
+                & Q(workflowinfos__resolved=False),
+            },
+            "requested_improvement": {
+                "staff": True,
+                "q": ~Q(draft_version=None)
+                & (
+                    Q(workflowinfos__deal_version_id=F("draft_version_id"))
+                    if is_deal
+                    else Q(workflowinfos__investor_version_id=F("draft_version_id"))
+                )
+                & Q(workflowinfos__status_before__in=["REVIEW", "ACTIVATION"])
+                & Q(workflowinfos__status_after="DRAFT")
+                & Q(workflowinfos__from_user=request.user),
+            },
+            "my_drafts": {
+                "staff": False,
+                "q": Q(
+                    draft_version__created_by=request.user,
+                    draft_version__status="DRAFT",
+                ),
+            },
+            "created_by_me": {
+                "staff": False,
+                "q": Q(first_created_by=request.user),
+            },
             "modified_by_me": {
                 "staff": False,
                 "q": ~Q(first_created_by=request.user)
@@ -116,22 +125,19 @@ class Management(View):
                 "staff": True,
                 "q": Q(versions__activated_by=request.user),
             },
-            "all_items": {
+            "all_active": {
                 "staff": True,
-                "q": Q(deleted=False),
+                "q": ~Q(active_version=None) & Q(deleted=False),
             },
             "all_drafts": {
                 "staff": True,
-                "q": Q(deleted=False) & ~Q(draft_version=None),
+                "q": ~Q(draft_version=None) & Q(deleted=False),
             },
-            "all_deleted": {
-                "staff": True,
-                "q": Q(deleted=True),
-            },
+            "all_deleted": {"staff": True, "q": Q(deleted=True)},
         }
 
     def get(self, request, *args, **kwargs) -> HttpResponse:
-        if not request.user.is_authenticated and not request.user.role:
+        if not request.user.is_authenticated or not request.user.role:
             raise PermissionDenied("unauthorized")
 
         is_deal = request.GET.get("model") != "investor"
@@ -149,8 +155,6 @@ class Management(View):
                 }
             )
         elif action in filters.keys():
-            obj_to_dict = deal_to_dict if is_deal else investor_to_dict
-
             qs = (DealHull if is_deal else InvestorHull).objects.prefetch_related(
                 # Prefetch(
                 #     "versions",
@@ -168,31 +172,117 @@ class Management(View):
                 ),
             )
 
-            ret = [
-                obj_to_dict(obj)
-                for obj in qs.filter(filters[action]["q"]).order_by("-id").distinct()
-            ]
-            # ret = list(
-            #     qs.filter(filters[action]["q"])
-            #     .order_by("-id")
-            #     .distinct()
-            #     .values(
-            #         "id",
-            #         "country_id",
-            #         "fully_updated_at",
-            #         "active_version__deal_size",
-            #         "first_created_at",
-            #         "first_created_by_id",
-            #         "active_version__deal_size",
-            #         "active_version__created_at",
-            #         "active_version__created_by_id",
-            #         "workflowinfos",
-            #     )[:100]
-            # )
+            qs = qs.filter(filters[action]["q"]).order_by("-id").distinct().with_mode()
+            if is_deal:
+                qs: QuerySet[DealHull]
+                wflos = ArraySubquery(
+                    DealWorkflowInfo2.objects.filter(deal_id=OuterRef("id"))
+                    .order_by("-id")
+                    .values(
+                        json=JSONObject(
+                            id="id",
+                            from_user_id="from_user_id",
+                            to_user_id="to_user_id",
+                            status_before="status_before",
+                            status_after="status_after",
+                            timestamp="timestamp",
+                            comment="comment",
+                            resolved="resolved",
+                            replies="replies",
+                        )
+                    )
+                )
+                ret = (
+                    qs.annotate(
+                        selected_version=Case(
+                            When(
+                                active_version_id__isnull=False,
+                                then=JSONObject(
+                                    id="active_version_id",
+                                    modified_at="active_version__modified_at",
+                                    modified_by_id="active_version__modified_by_id",
+                                    deal_size="active_version__deal_size",
+                                ),
+                            ),
+                            default=JSONObject(
+                                id="draft_version_id",
+                                modified_at="draft_version__modified_at",
+                                modified_by_id="draft_version__modified_by_id",
+                                deal_size="draft_version__deal_size",
+                            ),
+                        ),
+                    )
+                    .values(
+                        "id",
+                        "mode",
+                        "active_version_id",
+                        "draft_version_id",
+                        "deleted",
+                        "first_created_at",
+                        "first_created_by_id",
+                        "selected_version",
+                        "country_id",
+                        "fully_updated_at",
+                    )
+                    .annotate(workflowinfos=wflos)
+                )
+            else:
+                qs: QuerySet[InvestorHull]
+                wflos = ArraySubquery(
+                    InvestorWorkflowInfo2.objects.filter(investor_id=OuterRef("id"))
+                    .order_by("-id")
+                    .values(
+                        json=JSONObject(
+                            id="id",
+                            from_user_id="from_user_id",
+                            to_user_id="to_user_id",
+                            status_before="status_before",
+                            status_after="status_after",
+                            timestamp="timestamp",
+                            comment="comment",
+                            resolved="resolved",
+                            replies="replies",
+                        )
+                    )
+                )
+                ret = (
+                    qs.annotate(
+                        selected_version=Case(
+                            When(
+                                active_version_id__isnull=False,
+                                then=JSONObject(
+                                    id="active_version_id",
+                                    modified_at="active_version__modified_at",
+                                    name="active_version__name",
+                                    name_unknown="active_version__name_unknown",
+                                    country_id="active_version__country_id",
+                                ),
+                            ),
+                            default=JSONObject(
+                                id="draft_version_id",
+                                modified_at="draft_version__modified_at",
+                                name="draft_version__name",
+                                name_unknown="draft_version__name_unknown",
+                                country_id="draft_version__country_id",
+                            ),
+                        )
+                    )
+                    .values(
+                        "id",
+                        "mode",
+                        "active_version_id",
+                        "draft_version_id",
+                        "deleted",
+                        "first_created_at",
+                        "first_created_by_id",
+                        "selected_version",
+                    )
+                    .annotate(workflowinfos=wflos)
+                )
 
-            return JsonResponse({"objects": ret})
-        else:
-            return HttpResponseBadRequest("unknown request")
+            return JsonResponse({"objects": list(ret)})
+
+        return HttpResponseBadRequest("unknown request")
 
 
 class CaseStatistics(View):
