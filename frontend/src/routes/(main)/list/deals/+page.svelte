@@ -76,6 +76,10 @@
   const valueClass = ""
 </script>
 
+<svelte:head>
+  <title>{$_("Deals")} | {$_("Land Matrix")}</title>
+</svelte:head>
+
 <DataContainer>
   <div class="flex h-full">
     <div
