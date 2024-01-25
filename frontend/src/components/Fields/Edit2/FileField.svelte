@@ -10,13 +10,17 @@
   export let value: string | null
   export let fieldname: string
 
-  export let accept =
-    "application/msword, " +
-    "application/vnd.ms-excel, " +
-    "application/vnd.ms-powerpoint, " +
-    "text/plain, " +
-    "application/pdf, " +
-    "image/*"
+  // would be nice to sync these with MIME type
+  // https://www.npmjs.com/package/mime-db
+  const ACCEPTED_EXTENSIONS: string[] = [
+    ".pdf",
+    ".xls",
+    ".xlsx",
+    ".jpg",
+    ".png",
+    ".mp4",
+    ".mkv",
+  ]
 
   const removeFile = () => {
     if (confirm($_("Do you really want to remove this file?"))) {
@@ -29,12 +33,21 @@
   }) => {
     if (!files || !files.length) return
 
-    let fr = new FileReader()
-    fr.onload = async () => {
+    const file = files[0]
+    const extension = file.name.split(".").pop()
+
+    if (!extension || !ACCEPTED_EXTENSIONS.includes("." + extension)) {
+      alert($_("Invalid file type: Check that your file type is supported."))
+      return
+    }
+
+    const reader = new FileReader()
+
+    reader.addEventListener("load", async () => {
       const ret = await fetch("/api/upload_datasource_file/", {
         method: "POST",
         credentials: "include",
-        body: JSON.stringify({ filename: files[0].name, payload: fr.result }),
+        body: JSON.stringify({ filename: file.name, payload: reader.result }),
         headers: {
           "X-CSRFToken": await getCsrfToken(),
           "Content-Type": "application/json",
@@ -44,10 +57,11 @@
         const retJson = await ret.json()
         value = retJson.name
       } else {
-        alert(`Error uploading file: ${files[0].name}`)
+        alert(`Error uploading file: ${file.name}`)
       }
-    }
-    fr.readAsDataURL(files[0])
+    })
+
+    reader.readAsDataURL(file)
   }
 </script>
 
@@ -69,7 +83,11 @@
       </a>
       <br />
       {$_("Change")}:
-      <input type="file" on:change={uploadFile} {accept} />
+      <input
+        type="file"
+        on:change={uploadFile}
+        accept={ACCEPTED_EXTENSIONS.join(",")}
+      />
     </div>
 
     <button
@@ -80,6 +98,9 @@
     </button>
   </div>
 {:else}
-  <input type="file" name={fieldname} on:change={uploadFile} {accept} />
+  <input type="file" on:change={uploadFile} accept={ACCEPTED_EXTENSIONS.join(",")} />
 {/if}
-<small class="block pt-2 text-gray-500">{$_("Maximum file size: 10MB")}</small>
+<small class="block pt-2 text-gray-500">
+  {$_("Supported file types: ")}{ACCEPTED_EXTENSIONS.join(", ")}
+</small>
+<small class="block text-gray-500">{$_("Maximum file size: 10MB")}</small>
