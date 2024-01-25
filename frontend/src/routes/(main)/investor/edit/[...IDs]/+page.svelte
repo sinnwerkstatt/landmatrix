@@ -149,7 +149,7 @@
   }
 </script>
 
-<div class="container mx-auto flex h-full min-h-full flex-col">
+<div class="container mx-auto mb-12 mt-8 flex min-h-full flex-col">
   <div class="border-b border-orange md:flex md:flex-row md:justify-between">
     <h1 class="heading4 mt-3">
       {data.investorID
@@ -182,8 +182,8 @@
       {/if}
     </div>
   </div>
-  <div class="flex h-full overflow-y-hidden">
-    <nav class="flex-initial p-2">
+  <div class="flex min-h-full">
+    <nav class="w-1/6 p-2">
       <ul>
         {#each tabs as { target, name }}
           <li
@@ -203,7 +203,7 @@
       </ul>
     </nav>
 
-    <div class="w-full flex-auto overflow-y-auto pb-16 pl-4 pr-2">
+    <div class="w-5/6 px-4">
       {#if activeTab === "#general"}
         <EditSectionGeneralInfo bind:investor />
       {/if}

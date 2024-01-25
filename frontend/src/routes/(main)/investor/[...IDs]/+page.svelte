@@ -46,7 +46,7 @@
   <title>{data.investor.selected_version.name} #{data.investor.id}</title>
 </svelte:head>
 
-<div class="container mx-auto min-h-full px-2 pb-12">
+<div class="container mx-auto mb-12 mt-8 min-h-full">
   {#if $page.data.user?.role > UserRole.ANYBODY}
     <InvestorManageHeader investor={data.investor} on:reload={reloadInvestor} />
   {:else}
@@ -86,7 +86,7 @@
         {/each}
       </ul>
     </nav>
-    <div class="w-full flex-auto pl-4">
+    <div class="w-5/6 px-4">
       {#if activeTab === "#general"}
         <SectionGeneralInfo version={data.investor.selected_version} />
       {/if}

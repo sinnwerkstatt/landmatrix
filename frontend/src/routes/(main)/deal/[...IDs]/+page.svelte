@@ -66,7 +66,7 @@
   </title>
 </svelte:head>
 
-<div class="container mx-auto mt-8 min-h-full">
+<div class="container mx-auto mb-12 mt-8 min-h-full">
   {#if ![data.deal.active_version_id, data.deal.draft_version_id].includes(data.deal.selected_version.id)}
     <div
       class="rounded border border-orange-500 bg-orange-200 px-4 py-2 text-lg dark:bg-orange-800"
@@ -122,7 +122,7 @@
         {/each}
       </ul>
     </nav>
-    <div class="mb-12 w-5/6 pl-4">
+    <div class="w-5/6 px-4">
       {#if activeTab === "#locations"}
         <SectionLocations version={data.deal.selected_version} />
       {/if}
