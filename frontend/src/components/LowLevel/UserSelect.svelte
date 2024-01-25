@@ -8,6 +8,7 @@
   export let required = false
 
   export let minimumRole: UserRole = UserRole.ANYBODY
+  export let userIDs: Set<number> | undefined = undefined
 
   let items: User[] = []
 
@@ -15,7 +16,8 @@
     if (!users.length) return
 
     if (typeof value === "number") value = users.find(u => u.id === value) ?? null
-    items = minimumRole ? users.filter(u => u.role >= minimumRole) : users
+    if (userIDs) items = $allUsers.filter(u => userIDs!.has(u.id))
+    else items = minimumRole ? users.filter(u => u.role >= minimumRole) : users
   }
 
   $: initialize($allUsers)
