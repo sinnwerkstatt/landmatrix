@@ -1266,12 +1266,10 @@ class DealDataSource(BaseDataSource):
 
 class DealHullQuerySet(models.QuerySet):
     def active(self):
-        return self.filter(
-            active_version__isnull=False, deleted=False, confidential=False
-        )
+        return self.filter(active_version__isnull=False, deleted=False)
 
     def public(self):
-        return self.active().filter(active_version__is_public=True)
+        return self.active().filter(active_version__is_public=True, confidential=False)
 
     def visible(self, user=None, subset="PUBLIC"):
         # TODO: welche user duerfen unfiltered bekommen?
