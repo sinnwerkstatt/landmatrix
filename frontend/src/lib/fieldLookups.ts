@@ -852,7 +852,7 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
       displayField: JSONExportsField,
       editField: JSONExportsEditField,
       label: $_("Crops area/yield/export"),
-      extras: { choices: $fieldChoices.deal.crops },
+      extras: { choices: $fieldChoices.deal.crops, multipleChoices: true },
     },
     crops_comment: {
       displayField: TextField,

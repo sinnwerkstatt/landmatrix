@@ -1,7 +1,10 @@
 import { _ } from "svelte-i18n"
 import { get } from "svelte/store"
 
-export function dateCurrentFormat(value: { date?: string; current?: boolean }): string {
+export function dateCurrentFormat(value: {
+  date: string | null
+  current: boolean
+}): string {
   const $_ = get(_)
 
   if (!value.date && !value.current) return ""

@@ -16,19 +16,20 @@
   }
 
   export let extras: Extras = { choices: [] }
-  // $: flat_choices = formfield.choices
-  //   ? Object.fromEntries(formfield.choices.map(c => [c.value, c.label]))
-  //   : {}
+
+  const getLabel = (value: string) =>
+    extras.choices.find(c => value === c.value)?.label ?? value
 </script>
 
 <ul>
   {#each value ?? [] as val}
     <li class:font-bold={val.current}>
-      <span>{dateCurrentFormat(val)}</span>
       {#if val.choices}
-        <!-- The literal translation strings are defined in apps/landmatrix/models/choices.py -->
-        {val.choices.map(v => $_(flat_choices[v])).join(", ")}
+        <span>
+          {val.choices.map(getLabel).join(", ")}
+        </span>
       {/if}
+      <span>{dateCurrentFormat(val)}</span>
       {#if val.area}
         <span>
           <CircleNotchIcon />

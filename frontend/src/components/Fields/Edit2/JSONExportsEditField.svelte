@@ -2,16 +2,23 @@
   // TODO WIP
   import { _ } from "svelte-i18n"
 
+  import type { ValueLabelEntry } from "$lib/stores"
   import type { JSONExportsFieldType } from "$lib/types/newtypes"
 
   import LowLevelDateYearField from "$components/Fields/Edit/LowLevelDateYearField.svelte"
   import LowLevelDecimalField from "$components/Fields/Edit/LowLevelDecimalField.svelte"
-  import TypedChoicesField from "$components/Fields/Edit/TypedChoicesField.svelte"
+  import ChoicesField from "$components/Fields/Edit2/ChoicesField.svelte"
   import MinusIcon from "$components/icons/MinusIcon.svelte"
   import PlusIcon from "$components/icons/PlusIcon.svelte"
 
   export let fieldname: string
   export let value: JSONExportsFieldType[] = []
+
+  interface Extras {
+    choices: ValueLabelEntry[]
+  }
+
+  export let extras: Extras = { choices: [] }
 
   let valueCopy: JSONExportsFieldType[] = structuredClone(
     value.length
@@ -73,7 +80,7 @@
             bind:checked={val.current}
             name="{fieldname}_{i}_current"
             required={isCurrentRequired(valueCopy)}
-            disabled={!val.choices}
+            disabled={!val.choices || !val.choices.length}
           />
         </td>
 
@@ -88,11 +95,7 @@
           />
         </td>
         <td class="w-2/6 p-1">
-          <TypedChoicesField
-            bind:value={val.choices}
-            formfield={{ name: `${fieldname}_${i}_choices` }}
-            required={!!(val.date || val.area || val.yield || val.export)}
-          />
+          <ChoicesField {extras} bind:value={val.choices} />
         </td>
         <td class="w-1/6 p-1">
           <LowLevelDecimalField

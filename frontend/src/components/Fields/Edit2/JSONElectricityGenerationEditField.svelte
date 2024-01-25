@@ -67,7 +67,7 @@
           bind:checked={val.current}
           name="{fieldname}_{i}_current"
           required={isCurrentRequired(valueCopy)}
-          disabled={!val.choices}
+          disabled={!val.choices || !val.choices.length}
         />
       </label>
 
