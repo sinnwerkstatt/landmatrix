@@ -1,6 +1,8 @@
 import { TileLayer } from "leaflet?client"
 import { writable } from "svelte/store"
 
+import { browser } from "$app/environment"
+
 const HereApiKey = "OgyVd8v9JkEHQIjrK4Q4sEVY-a19xpJXUxWYkTdBQuo"
 
 function SDILegend(layer: string, folder = "lm"): string {
@@ -38,7 +40,7 @@ export interface ContextLayer extends BaseLayer {
 }
 
 export const getBaseLayers = ($_: (t: string) => string): BaseLayer[] => {
-  if (import.meta.env.SSR) return []
+  if (!browser) return []
   return [
     {
       id: "satellite",
@@ -67,7 +69,7 @@ export const getBaseLayers = ($_: (t: string) => string): BaseLayer[] => {
 export const visibleLayer = writable("map")
 
 export const getContextLayers = ($_: (t: string) => string): ContextLayer[] => {
-  if (import.meta.env.SSR) return []
+  if (!browser) return []
   return [
     {
       id: "land_cover",

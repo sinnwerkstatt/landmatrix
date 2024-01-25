@@ -1,11 +1,12 @@
 <script lang="ts">
+  import { env } from "$env/dynamic/public"
   import { _ } from "svelte-i18n"
 
   import { page } from "$app/stores"
 
   import NavDropDown from "$components/Navbar/NavDropDown.svelte"
 
-  const showAllCharts = !!import.meta.env.VITE_FF_DISPLAY_ALL_CHARTS
+  const showAllCharts = !!env.PUBLIC_FF_DISPLAY_ALL_CHARTS
 
   let dataViews: { title: string; route: string }[]
   $: dataViews = [

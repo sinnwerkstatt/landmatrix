@@ -10,7 +10,7 @@
 
 <!--  const [dealID] = $page.params.IDs.split("/").map(x => (x ? +x : undefined))-->
 
-<!--  const media_url = import.meta.env.VITE_MEDIA_URL-->
+<!--  const media_url = env.PUBLIC_MEDIA_URL-->
 
 <!--  interface EDealVersion extends DealVersion {-->
 <!--    showEntry?: boolean-->

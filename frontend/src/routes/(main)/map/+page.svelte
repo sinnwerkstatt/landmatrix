@@ -6,6 +6,8 @@
   import { onDestroy, onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
+  import { browser } from "$app/environment"
+
   import { filters } from "$lib/filters"
   import { countries, dealsNG, isMobile, loading, regions } from "$lib/stores"
   import { Location2, type DealHull } from "$lib/types/newtypes"
@@ -71,7 +73,7 @@
   $: country_coords = generateCountryCoords($countries as Country[])
 
   function bigMapIsReady(evt: CustomEvent<Map>) {
-    if (import.meta.env.SSR) return
+    if (!browser) return
     bigmap = evt.detail
     bigmap.on("zoomend", () => refreshMap())
     bigmap.on("moveend", () => refreshMap())
@@ -172,7 +174,7 @@
   }
 
   async function refreshMarkers() {
-    if (import.meta.env.SSR) return
+    if (!browser) return
     loading.set(true)
     markers = []
     for (let deal of $dealsNG) {
@@ -220,7 +222,7 @@
   }
 
   async function flyToCountryOrRegion(country_id?: number, region_id?: number) {
-    if (import.meta.env.SSR || !bigmap) return
+    if (!browser || !bigmap) return
     let coords: [number, number] = [0, 0]
     let zoom = ZOOM_LEVEL.REGION_CLUSTERS
     if (country_id) {

@@ -2,6 +2,7 @@
   import * as Sentry from "@sentry/svelte"
   import { BrowserTracing } from "@sentry/tracing"
   import { SvelteToast } from "@zerodevx/svelte-toast"
+  import { env } from "$env/dynamic/public"
   import { onMount } from "svelte"
 
   import { afterNavigate } from "$app/navigation"
@@ -23,7 +24,7 @@
   export let data
 
   Sentry.init({
-    dsn: import.meta.env.VITE_SENTRY_DSN,
+    dsn: env.PUBLIC_SENTRY_DSN,
     environment: "svelte frontend",
     integrations: [new BrowserTracing()],
     tracesSampleRate: 1.0,

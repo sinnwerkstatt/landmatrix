@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Loader } from "@googlemaps/js-api-loader?client"
+  import { env } from "$env/dynamic/public"
   import { createEventDispatcher, onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
@@ -11,7 +12,7 @@
 
   const dispatch = createEventDispatcher()
 
-  let apiKey = import.meta.env.VITE_GAPI_KEY
+  let apiKey = env.PUBLIC_GAPI_KEY
   let loader: Loader
 
   function locationAutocomplete() {
