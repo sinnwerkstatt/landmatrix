@@ -2,7 +2,6 @@ import re
 
 from django.contrib.sites.models import Site
 from django.db.models import Sum, QuerySet
-from django.utils.translation import gettext as _
 from wagtail import blocks
 from wagtail.blocks import CharBlock, RawHTMLBlock, StructBlock
 from wagtail.embeds.blocks import EmbedBlock
@@ -163,14 +162,18 @@ class ImageBlock(ImageChooserBlock):
 
 # New Screendesign
 class NewLinkBlock(blocks.StructBlock):
-    page = blocks.PageChooserBlock(label=_("Interne Seite"), required=False)
+    page = blocks.PageChooserBlock(label="Internal link", required=False)
     external_url = blocks.URLBlock(
-        label=_("Externe URL"),
+        label="External link",
         required=False,
-        help_text="Die externe URL wird nur verwendet, wenn keine interne Seite im vorigen Feld gesetzt ist",
+        help_text=(
+            "The external link will only be used if no internal link has been selected."
+        ),
     )
     text = blocks.CharBlock(
-        label=_("Button-Text"), required=False, default="click here"
+        label="Button text",
+        required=False,
+        default="click here",
     )
 
     def get_api_representation(self, value, context=None):
@@ -179,7 +182,7 @@ class NewLinkBlock(blocks.StructBlock):
             link["href"] = page.url
         elif href := value.get("external_url"):
             link["href"] = href
-            link["rel_external"]: True
+            link["rel_external"] = True
         return link
 
     class Meta:
@@ -508,6 +511,12 @@ class NewResourcesTeasersBlock(StructBlock):
     title = blocks.CharBlock(required=False)
     subtitle = blocks.CharBlock(required=False)
     article_highlight = blocks.PageChooserBlock(page_type="blog.BlogPage")
+    other_categories = blocks.ListBlock(
+        SnippetChooserBlock("blog.BlogCategory"),
+        min_num=3,
+        max_num=3,
+        help_text="Show latest articles of 3 different categories.",
+    )
 
     class Meta:
         icon = "list"
@@ -518,10 +527,19 @@ class NewResourcesTeasersBlock(StructBlock):
     def get_api_representation(self, value, context=None):
         from ..blog.models import BlogPage
 
-        latest_news = BlogPage.objects.filter(blog_categories=2).last()
-        latest_event = BlogPage.objects.filter(blog_categories=5).last()
-        latest_publication = BlogPage.objects.filter(blog_categories=3).last()
-        bp = [value["article_highlight"], latest_publication, latest_event, latest_news]
+        if "other_categories" in value and len(value["other_categories"]) == 3:
+            other_categories = value["other_categories"]
+        else:
+            # fallback to latest_news, events, publications
+            other_categories = [2, 5, 3]
+
+        bp = [
+            value["article_highlight"],
+            *[
+                BlogPage.objects.filter(blog_categories=cat).last()
+                for cat in other_categories
+            ],
+        ]
 
         ret = {
             "title": value.get("title"),
