@@ -359,7 +359,7 @@ export type JSONCurrentDateAreaFieldType = Array<{
 export type JSONCurrentDateChoiceFieldType = Array<{
   current: boolean
   date: string | null
-  choice: string
+  choice: string | null
 }>
 
 export type JSONCurrentDateAreaChoicesFieldType = Array<{

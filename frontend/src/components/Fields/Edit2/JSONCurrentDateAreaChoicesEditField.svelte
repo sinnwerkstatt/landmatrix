@@ -1,34 +1,44 @@
 <script lang="ts">
-  // TODO WIP
+  // TODO WIP -> Is current radio or checkbox ?
   import { _ } from "svelte-i18n"
 
-  import type { JSONCurrentDateAreaFieldType } from "$lib/types/newtypes"
+  import type { ValueLabelEntry } from "$lib/stores"
+  import type { JSONCurrentDateAreaChoicesFieldType } from "$lib/types/newtypes"
 
   import LowLevelDateYearField from "$components/Fields/Edit/LowLevelDateYearField.svelte"
   import LowLevelDecimalField from "$components/Fields/Edit/LowLevelDecimalField.svelte"
+  import ChoicesField from "$components/Fields/Edit2/ChoicesField.svelte"
   import MinusIcon from "$components/icons/MinusIcon.svelte"
   import PlusIcon from "$components/icons/PlusIcon.svelte"
 
-  type EntryType = {
-    current: boolean
-    date: string | null
-    area?: number
-  }
-
-  export let value: JSONCurrentDateAreaFieldType
+  export let value: JSONCurrentDateAreaChoicesFieldType
   export let fieldname: string
 
-  let valueCopy: EntryType[] = structuredClone(
-    value.length ? value : [{ current: false, date: null }],
+  interface Extras {
+    choices: ValueLabelEntry[]
+  }
+
+  export let extras: Extras = { choices: [] }
+
+  const createEmptyEntry = (): JSONCurrentDateAreaChoicesFieldType[number] => ({
+    choices: [],
+    date: null,
+    area: null,
+    current: false,
+  })
+
+  let valueCopy = structuredClone<JSONCurrentDateAreaChoicesFieldType>(
+    value.length ? value : [createEmptyEntry()],
   )
 
-  $: value = valueCopy.filter(val => !!val.area) as JSONCurrentDateAreaFieldType
+  $: value = valueCopy.filter(val => val.choices.length || !!val.area)
 
-  const addEntry = () => (valueCopy = [...valueCopy, { current: false, date: null }])
+  const addEntry = () => (valueCopy = [...valueCopy, createEmptyEntry()])
+
   const removeEntry = (index: number) =>
     (valueCopy = valueCopy.filter((val, i) => i !== index))
 
-  const isCurrentRequired = (v: JSONCurrentDateAreaFieldType) =>
+  const isCurrentRequired = (v: JSONCurrentDateAreaChoicesFieldType) =>
     v.length ? !v.some(val => val.current) : false
 </script>
 
@@ -36,13 +46,24 @@
   {#each valueCopy as val, i}
     <div class:border-violet-400={val.current} class="flex flex-col gap-4 border p-3">
       <label class="flex flex-wrap items-center justify-between gap-4" for={undefined}>
+        {$_("Choices")}
+        <ChoicesField
+          bind:value={val.choices}
+          extras={{
+            choices: extras.choices,
+            multipleChoices: true,
+            required: !!(val.date || val.area),
+          }}
+        />
+      </label>
+
+      <label class="flex flex-wrap items-center justify-between gap-4" for={undefined}>
         {$_("Area")}
         <LowLevelDecimalField
           bind:value={val.area}
           unit={$_("ha")}
           name="{fieldname}_{i}_area"
           class="w-24 grow"
-          required={val.current || val.date}
         />
       </label>
 
