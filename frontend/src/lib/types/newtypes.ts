@@ -419,7 +419,7 @@ export interface JSONCarbonSequestrationFieldType {
 export type AreaType = "production_area" | "contract_area" | "intended_area"
 
 export interface Area {
-  id: number
+  id: number | null // null for newly created ones
   type: AreaType
   current: boolean
   date: string

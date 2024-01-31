@@ -4,7 +4,20 @@
   export let value: string | string[]
   export let fieldname: string
   export let label = ""
-  export let extras = { url: false, ocid: false, email: false, multiline: false }
+
+  interface Extras {
+    url?: boolean
+    ocid?: boolean
+    email?: boolean
+    multiline?: boolean
+  }
+
+  export let extras: Extras = {
+    url: false,
+    ocid: false,
+    email: false,
+    multiline: false,
+  }
 </script>
 
 {#if extras.multiline}

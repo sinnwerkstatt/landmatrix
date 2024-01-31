@@ -1,6 +1,6 @@
 <script lang="ts">
   import * as turf from "@turf/turf"
-  import type { FeatureCollection, GeoJsonObject } from "geojson"
+  import type { FeatureCollection, GeoJsonObject, MultiPolygon, Polygon } from "geojson"
   import { _ } from "svelte-i18n"
 
   import { areaTypeMap } from "$lib/stores"
@@ -33,9 +33,19 @@
         return
       }
 
-      const feature = (geoJsonObject as FeatureCollection).features[0]
+      const feature = (geoJsonObject as FeatureCollection<Polygon | MultiPolygon>)
+        .features[0]
 
-      console.log("new feature", feature)
+      areas = [
+        ...areas,
+        {
+          id: null,
+          type: "production_area",
+          current: !areas.some(a => a.type === "production_area" && a.current),
+          date: "",
+          area: feature.geometry,
+        },
+      ]
 
       showAddAreaOverlay = false
     })
@@ -45,84 +55,101 @@
     }
   }
 
-  let current: { [key in AreaType]: number | null }
-  $: current = {
-    contract_area:
-      areas.filter(a => a.type === "contract_area").find(a => a.current)?.id ?? null,
-    production_area:
-      areas.filter(a => a.type === "production_area").find(a => a.current)?.id ?? null,
-    intended_area:
-      areas.filter(a => a.type === "intended_area").find(a => a.current)?.id ?? null,
+  type CurrentGroupLookup = { [key in AreaType]: number }
+  let currentGroupLookup: CurrentGroupLookup
+
+  $: currentGroupLookup = AREA_TYPES.reduce(
+    (acc, val) => ({
+      ...acc,
+      [val]: areas.filter(a => a.type === val).findIndex(a => a.current),
+    }),
+    {} as CurrentGroupLookup,
+  )
+
+  const updateCurrent = (areaType: AreaType, index: number) => {
+    areas = [
+      ...areas.filter(a => a.type !== areaType),
+      ...areas
+        .filter(a => a.type === areaType)
+        .map((a, i) => ({ ...a, current: index === i })),
+    ]
   }
 
-  const updateCurrent = (areaType: AreaType, id: number) => {
-    areas = areas.map(a => (a.type === areaType ? { ...a, current: a.id === id } : a))
-  }
-  const deleteArea = (id: number) => {
+  const deleteArea = (areaType: AreaType, index: number) => {
     if (confirm($_("Delete area?"))) {
-      areas = areas.filter(a => a.id !== id)
+      areas = [
+        ...areas.filter(a => a.type !== areaType),
+        ...areas.filter((a, i) => a.type === areaType && i !== index),
+      ]
     }
   }
 </script>
 
-<table class="w-full">
-  <thead class="font-normal">
-    <tr class="font-normal">
-      <th class="w-3/12">{$_("Info")}</th>
-      <th class="w-2/12">{$_("Current")}</th>
-      <th class="w-3/12">{$_("Date")}</th>
-      <th class="w-3/12">{$_("Type")}</th>
-      <th class="w-1/12">{$_("Delete")}</th>
-    </tr>
-  </thead>
-  <tbody>
-    {#each AREA_TYPES as areaType}
-      {@const areasOfType = areas.filter(a => a.type === areaType)}
-      {#each areasOfType as area}
-        <tr class="text-left">
-          <td class="px-1">
-            <EyeSlashIcon class="h-5 w-5" />
-            {formatArea(turf.area(area.area)) + " " + $_("ha")}
-          </td>
-          <td class="px-1" on:click={() => updateCurrent(areaType, area.id)}>
-            <input
-              type="radio"
-              bind:group={current[areaType]}
-              value={area.id}
-              name="{areaType}_current"
-              required={true}
-            />
-          </td>
-          <td class="px-1">
-            <LowLevelDateYearField bind:value={area.date} name="area_{area.id}" />
-          </td>
-          <td class="px-1">
-            <select
-              bind:value={area.type}
-              on:change
-              name="area_{area.id}_type"
-              class="inpt w-auto"
-            >
-              {#each AREA_TYPES as areaType}
-                <option value={areaType}>{$areaTypeMap[areaType]}</option>
-              {/each}
-            </select>
-          </td>
-          <td class="p-1">
-            <button type="button" on:click={() => deleteArea(area.id)}>
-              <TrashIcon class="h-5 w-5 text-red-600" />
-            </button>
-          </td>
-        </tr>
-      {/each}
-      {#if areasOfType.length > 0}
-        <tr class="border-b border-black">
-          <td colspan="5"></td>
-        </tr>
-      {/if}
-    {/each}
-  </tbody>
-</table>
+{#each AREA_TYPES as areaType}
+  {@const areasOfType = areas.filter(a => a.type === areaType)}
+
+  {#if areasOfType.length}
+    <div class="m-0.5">
+      <div class="font-bold">{$areaTypeMap[areaType] + "s:"}</div>
+      <table class="w-full">
+        <thead>
+          <tr>
+            <th class="w-1/12 font-normal">{$_("Info")}</th>
+            <th class="w-2/12 font-normal">{$_("Current")}</th>
+            <th class="w-3/12 font-normal">{$_("Date")}</th>
+            <th class="w-5/12 font-normal">{$_("Type")}</th>
+            <th class="w-1/12 font-normal">{$_("Delete")}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each areasOfType as area, i}
+            <tr class="text-left">
+              <td class="px-1">
+                <EyeSlashIcon class="h-5 w-5" />
+                <!--{formatArea(turf.area(area.area)) + " " + $_("ha")}-->
+              </td>
+              <td class="px-1" on:click={() => updateCurrent(areaType, i)}>
+                <input
+                  type="radio"
+                  bind:group={currentGroupLookup[areaType]}
+                  value={i}
+                  name="{areaType}_current"
+                  required
+                />
+              </td>
+              <td class="px-1">
+                <LowLevelDateYearField bind:value={area.date} name="area_{area.id}" />
+              </td>
+              <td class="px-1">
+                <select
+                  bind:value={area.type}
+                  on:change
+                  name="area_{area.id}_type"
+                  class="inpt w-auto"
+                >
+                  {#each AREA_TYPES as areaType}
+                    <option value={areaType}>{$areaTypeMap[areaType]}</option>
+                  {/each}
+                </select>
+              </td>
+              <td class="px-1">
+                <button type="button" on:click={() => deleteArea(areaType, i)}>
+                  <TrashIcon class="h-5 w-5 text-red-600" />
+                </button>
+              </td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
+    </div>
+  {:else}
+    <div class="m-0.5 font-bold">
+      {$_("No {areaType}s.", {
+        values: { areaType: $areaTypeMap[areaType] },
+      })}
+    </div>
+  {/if}
+{/each}
 <button
   class="btn btn-slim btn-secondary flex items-center"
   on:click={() => (showAddAreaOverlay = true)}

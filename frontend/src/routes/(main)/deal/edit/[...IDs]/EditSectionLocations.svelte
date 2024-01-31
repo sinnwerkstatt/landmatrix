@@ -84,14 +84,22 @@
           </div>
           {#if activeEntryIdx === index}
             <!--{JSON.stringify(location)}-->
-            <div transition:slide={{ duration: 200 }}>
-              <ChoicesField
-                fieldname="location.level_of_accuracy"
-                bind:value={location.level_of_accuracy}
-                label={$_("Spatial accuracy level")}
-                choices={$fieldChoices.deal.level_of_accuracy}
-                required
-              />
+            <div class="grid gap-2" transition:slide={{ duration: 200 }}>
+              <label
+                class="flex flex-wrap items-center justify-between gap-4 font-medium"
+                for={undefined}
+              >
+                {$_("Spatial accuracy level")}
+                <ChoicesField
+                  fieldname="location.level_of_accuracy"
+                  bind:value={location.level_of_accuracy}
+                  label={$_("Spatial accuracy level")}
+                  extras={{
+                    choices: $fieldChoices.deal.level_of_accuracy,
+                    required: true,
+                  }}
+                />
+              </label>
               <LocationGoogleField
                 fieldname="location.name"
                 bind:value={location.name}
@@ -108,7 +116,7 @@
                 fieldname="location.description"
                 bind:value={location.description}
                 label={$_("Description")}
-                multiline
+                extras={{ multiline: true }}
               />
               <TextField
                 fieldname="location.facility_name"
@@ -119,9 +127,8 @@
                 fieldname="location.comment"
                 bind:value={location.comment}
                 label={$_("Comment")}
-                multiline
+                extras={{ multiline: true }}
               />
-              <!--            <LocationAreasField bind:areas={locations[activeEntryIdx].areas} />-->
             </div>
           {/if}
         </div>
@@ -140,11 +147,11 @@
     </div>
     <div class="w-full p-2 lg:h-full lg:w-3/5">
       <BigMap
-        containerClass="h-[400px] lg:h-2/3"
+        containerClass="h-[400px]"
         on:ready={onMapReady}
         options={{ center: [0, 0] }}
       />
-      <div class="overflow-y-auto p-2 lg:h-1/3">
+      <div class="overflow-y-auto">
         {#if activeEntryIdx !== -1}
           <LocationAreasField bind:areas={locations[activeEntryIdx].areas} />
         {/if}
