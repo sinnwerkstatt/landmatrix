@@ -2,38 +2,26 @@
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
-  import { formfields, investorsNG, isMobile } from "$lib/stores"
+  import { investorFields } from "$lib/fieldLookups"
+  import { investorsNG, isMobile } from "$lib/stores"
 
   import DataContainer from "$components/Data/DataContainer.svelte"
   import { showContextBar, showFilterBar } from "$components/Data/stores"
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import Table from "$components/Table/Table.svelte"
 
-  import LengthField from "./LengthField.svelte"
-
   const COLUMNS = [
-    "modified_at",
-    "id",
-    "name",
-    "country",
-    "classification",
-    "deals",
-  ] as const
+    { key: "modified_at", colSpan: 2 },
+    { key: "id", colSpan: 1 },
+    { key: "name", colSpan: 5 },
+    { key: "country_id", colSpan: 5 },
+    { key: "classification", colSpan: 3 },
+    { key: "deals", colSpan: 1 },
+  ]
 
-  type ColumnName = (typeof COLUMNS)[number]
-
-  const columnSpanMap: { [key in ColumnName]: number } = {
-    modified_at: 2,
-    id: 1,
-    name: 5,
-    country: 5,
-    classification: 4,
-    deals: 1,
-  }
-
-  $: columns = COLUMNS.map(col => col)
-  $: labels = COLUMNS.map(col => $formfields.investor[col].label)
-  $: spans = COLUMNS.map(col => columnSpanMap[col])
+  $: columns = COLUMNS.map(x => x.key)
+  $: labels = COLUMNS.map(x => $investorFields[x.key].label)
+  $: spans = COLUMNS.map(x => x.colSpan)
 
   onMount(() => {
     showContextBar.set(false)
@@ -63,45 +51,22 @@
 
       <Table {columns} items={$investorsNG} {labels} sortBy="-modified_at" {spans}>
         <svelte:fragment let:fieldName let:obj slot="field">
-          {#if fieldName === "modified_at"}
+          {#if ["id", "deals"].includes(fieldName)}
             <DisplayField
-              fieldname="investor.modified_at"
-              value={obj.selected_version.modified_at}
-              {wrapperClass}
-              {valueClass}
-            />
-          {:else if fieldName === "id"}
-            <DisplayField
-              fieldname="id"
-              value={obj.id}
+              fieldname={fieldName}
+              value={obj[fieldName]}
               model="investor"
-              {wrapperClass}
-              {valueClass}
-            />
-          {:else if fieldName === "name"}
-            {#if obj.selected_version.name_unknown}
-              <span class="italic text-gray-600">[{$_("unknown investor")}]</span>
-            {:else}
-              {obj.selected_version.name}
-            {/if}
-          {:else if fieldName === "country"}
-            <DisplayField
-              fieldname="country"
-              model="investor"
-              value={obj.selected_version.country_id}
-              {wrapperClass}
-              {valueClass}
-            />
-          {:else if fieldName === "classification"}
-            <DisplayField
-              fieldname="classification"
-              model="investor"
-              value={obj.selected_version.classification}
               {wrapperClass}
               {valueClass}
             />
           {:else}
-            <LengthField value={obj.selected_version.deals} />
+            <DisplayField
+              fieldname={fieldName}
+              value={obj.selected_version[fieldName]}
+              model="investor"
+              {wrapperClass}
+              {valueClass}
+            />
           {/if}
         </svelte:fragment>
       </Table>

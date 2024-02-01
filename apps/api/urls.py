@@ -40,7 +40,6 @@ urlpatterns = [
     path("chart_descriptions/", api_views.chart_descriptions),
     path("blog_categories/", api_views.blog_categories),
     path("blog_pages/", api_views.blog_pages),
-    path("legacy_formfields/", api_views.legacy_formfields),
     path("field_choices/", newviews.field_choices),
     # misc
     path("csrf_token/", api_views.get_csrf),

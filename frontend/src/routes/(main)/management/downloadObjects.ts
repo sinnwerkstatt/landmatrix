@@ -1,8 +1,7 @@
 import { stringify } from "csv-stringify/browser/esm/sync"
 import * as xlsx from "xlsx"
 
-import type { Deal } from "$lib/types/deal"
-import type { Investor } from "$lib/types/investor"
+import type { DealHull, InvestorHull } from "$lib/types/newtypes"
 
 const COMMON_OBJ_COLUMNS = [
   "status",
@@ -28,7 +27,7 @@ const DEAL_COLUMNS = [
 ]
 
 const toCSVString = (
-  objects: (Deal | Investor)[],
+  objects: (DealHull | InvestorHull)[],
   model: "deal" | "investor",
 ): string =>
   stringify(objects, {
@@ -38,7 +37,7 @@ const toCSVString = (
   })
 
 export const downloadAsCSV = (
-  objects: (Deal | Investor)[],
+  objects: (DealHull | InvestorHull)[],
   model: "deal" | "investor",
   action: string,
 ) => {
@@ -50,7 +49,7 @@ export const downloadAsCSV = (
 }
 
 export const downloadAsXLSX = (
-  objects: (Deal | Investor)[],
+  objects: (DealHull | InvestorHull)[],
   model: "deal" | "investor",
   action: string,
 ) => {

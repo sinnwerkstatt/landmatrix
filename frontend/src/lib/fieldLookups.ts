@@ -8,6 +8,7 @@ import BooleanField from "$components/Fields/Display2/BooleanField.svelte"
 import ChoicesField from "$components/Fields/Display2/ChoicesField.svelte"
 import CountryField from "$components/Fields/Display2/CountryField.svelte"
 import DateTimeField from "$components/Fields/Display2/DateTimeField.svelte"
+import DealsLengthField from "$components/Fields/Display2/DealsLengthField.svelte"
 import DecimalField from "$components/Fields/Display2/DecimalField.svelte"
 import FileField from "$components/Fields/Display2/FileField.svelte"
 import IDField from "$components/Fields/Display2/IDField.svelte"
@@ -88,13 +89,15 @@ export const investorFields = derived([_, fieldChoices], ([$_, $fieldChoices]) =
     },
     //  TODO deduplicate with below's Deal-stuff
     first_created_at: { displayField: DateTimeField, label: $_("Created at") },
-
     first_created_by_id: { displayField: UserField, label: $_("Created by") },
+    created_at: { displayField: DateTimeField, label: $_("Created at") },
+    modified_at: { displayField: DateTimeField, label: $_("Last update") },
     workflowinfos: {
       displayField: WorkflowInfosField,
       label: $_("Comments / History"),
     },
     mode: { displayField: TextField, label: $_("Mode") },
+    deals: { displayField: DealsLengthField, label: $_("Deals") },
   } as { [key: string]: Sec }
 })
 

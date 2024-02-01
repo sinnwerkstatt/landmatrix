@@ -1,4 +1,5 @@
 <script lang="ts">
+  // TODO WIP
   import { format, hierarchy, select, treemap, treemapSquarify } from "d3"
   import type { BaseType, HierarchyNode } from "d3"
   import { afterUpdate, onMount } from "svelte"
@@ -6,15 +7,15 @@
 
   import type { BucketMap } from "$lib/data/buckets"
   import { createBucketMapReducer, sortBuckets } from "$lib/data/buckets"
-  import { formfields } from "$lib/stores"
-  import type { Deal } from "$lib/types/deal"
+  import { fieldChoices, type ValueLabelEntry } from "$lib/stores"
+  import type { DealHull } from "$lib/types/newtypes"
 
   import ChartWrapper from "$components/Data/Charts/DownloadWrapper.svelte"
   import { downloadCSV, downloadJSON, downloadSVG } from "$components/Data/Charts/utils"
   import type { DownloadEvent } from "$components/Data/Charts/utils"
   import { showContextBar, showFilterBar } from "$components/Data/stores"
 
-  export let deals: Deal[] = []
+  export let deals: DealHull[] = []
   export let title: string
 
   let svgComp: SVGElement
@@ -22,15 +23,15 @@
   const SIZE_THRESHOLD = 0.005
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const asKeyMap = (array: { value: any; label: string }[] | undefined) =>
+  const asKeyMap = (array: ValueLabelEntry[] | undefined) =>
     array
       ? array.reduce((acc, { value, label }) => ({ ...acc, [value]: label }), {})
       : {}
 
   $: keyMap = {
-    ...asKeyMap($formfields.deal["crops"].choices),
-    ...asKeyMap($formfields.deal["animals"].choices),
-    ...asKeyMap($formfields.deal["mineral_resources"].choices),
+    ...asKeyMap($fieldChoices.deal.crops),
+    ...asKeyMap($fieldChoices.deal.animals),
+    ...asKeyMap($fieldChoices.deal.minerals),
   }
 
   interface ProduceAccumulator {
@@ -49,7 +50,10 @@
   }
 
   // TODO: not correct to add full deal size for each produce
-  const produceReducer = (acc: ProduceAccumulator, deal: Deal): ProduceAccumulator => {
+  const produceReducer = (
+    acc: ProduceAccumulator,
+    deal: DealHull,
+  ): ProduceAccumulator => {
     const bucketMapReducer = createBucketMapReducer(deal.deal_size)
     return {
       crops: (deal.current_crops ?? []).reduce(bucketMapReducer, acc.crops),
@@ -61,7 +65,7 @@
     }
   }
 
-  const createTreeData = (deals: Deal[]): ProduceTreeData => {
+  const createTreeData = (deals: DealHull[]): ProduceTreeData => {
     const acc = deals.reduce(produceReducer, {} as ProduceAccumulator)
 
     const root = { name: "Produce", children: [] }

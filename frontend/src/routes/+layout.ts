@@ -21,7 +21,7 @@ async function fetchMe(fetch: LoadEvent["fetch"]) {
 export const load: LayoutLoad = async ({ fetch, data }) => {
   const user: User | null = await fetchMe(fetch)
   const lang = data?.locale ?? "en"
-  await Promise.all([fetchBasis(lang, fetch), i18nload(lang)])
+  await Promise.all([fetchBasis(fetch), i18nload(lang)])
 
   return { user }
 }

@@ -17,7 +17,7 @@
     Cookies.set("django_language", lang)
     await locale.set(lang)
     await fetchFieldDefinitions(fetch)
-    await fetchBasis(lang, fetch)
+    await fetchBasis(fetch)
   }
 </script>
 

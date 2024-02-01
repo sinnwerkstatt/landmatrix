@@ -6,10 +6,10 @@ interface Group {
 }
 
 export enum UserRole {
-  ANYBODY,
-  REPORTER,
-  EDITOR,
-  ADMINISTRATOR,
+  ANYBODY = 0,
+  REPORTER = 1,
+  EDITOR = 2,
+  ADMINISTRATOR = 3,
 }
 
 export interface User {
@@ -19,13 +19,16 @@ export interface User {
   last_name: string
   full_name: string
   email: string
-  is_active: boolean
+  phone: string
+  information: string
   is_authenticated: boolean
   is_impersonate: boolean
   is_superuser: boolean
+  is_staff: boolean
+  is_active: boolean
+  last_login: Date
   date_joined: Date
-  country: Country
-  region: Region
-  groups?: Group[]
+  country_id: number | null
+  region_id: number | null
   role: UserRole
 }

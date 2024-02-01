@@ -29,8 +29,6 @@ import type {
   WagtailPage,
 } from "$lib/types/wagtail"
 
-import type { FormField } from "$components/Fields/fields"
-
 export const aboutPages = writable<WagtailPage[]>([])
 
 async function getAboutPages(fetch: LoadEvent["fetch"]) {
@@ -89,46 +87,44 @@ interface FieldChoicesType {
   }
 }
 
-export const fieldChoices = writable<FieldChoicesType>({
-  deal: {
-    intention_of_investment: [],
-    negotiation_status: [],
-    implementation_status: [],
-    level_of_accuracy: [],
-    nature_of_deal: [],
-    recognition_status: [],
-    negative_impacts: [],
-    benefits: [],
-    former_land_owner: [],
-    former_land_use: [],
-    ha_area: [],
-    community_consultation: [],
-    community_reaction: [],
-    former_land_cover: [],
-    crops: [],
-    animals: [],
-    electricity_generation: [],
-    carbon_sequestration: [],
-    minerals: [],
-    water_source: [],
-    not_public_reason: [],
-    actors: [],
+export const fieldChoices = readable<FieldChoicesType>(
+  {
+    deal: {
+      intention_of_investment: [],
+      negotiation_status: [],
+      implementation_status: [],
+      level_of_accuracy: [],
+      nature_of_deal: [],
+      recognition_status: [],
+      negative_impacts: [],
+      benefits: [],
+      former_land_owner: [],
+      former_land_use: [],
+      ha_area: [],
+      community_consultation: [],
+      community_reaction: [],
+      former_land_cover: [],
+      crops: [],
+      animals: [],
+      electricity_generation: [],
+      carbon_sequestration: [],
+      minerals: [],
+      water_source: [],
+      not_public_reason: [],
+      actors: [],
+    },
+    datasource: {
+      type: [],
+    },
+    investor: { classification: [] },
+    involvement: { investment_type: [] },
   },
-  datasource: {
-    type: [],
+  set => {
+    fetch(`/api/field_choices/`, { headers: { Accept: "application/json" } })
+      .then(ret => ret.json())
+      .then(set)
   },
-  investor: { classification: [] },
-  involvement: { investment_type: [] },
-})
-
-async function getFieldChoices(fetch: LoadEvent["fetch"]) {
-  const url = `/api/field_choices/`
-  const res = await (
-    await fetch(url, { headers: { Accept: "application/json" } })
-  ).json()
-  fieldChoices.set(res)
-  // console.log(res)
-}
+)
 
 export const observatoryPages = writable<ObservatoryPage[]>([])
 
@@ -157,42 +153,13 @@ async function getObservatoryPages(fetch: LoadEvent["fetch"]) {
   observatoryPages.set([...groups.global, ...groups.regions, ...groups.countries])
 }
 
-export const blogCategories = derived(
-  [locale],
-  ([$locale], set) => {
-    if (browser) {
-      fetch(`/api/blog_categories/?lang=${$locale}`)
-        .then(ret => ret.json() as Promise<BlogCategory[]>)
-        .then(set)
-    }
-  },
-  [] as BlogCategory[],
-)
-
-export type FormFields = {
-  deal: { [key: string]: FormField }
-  location: { [key: string]: FormField }
-  contract: { [key: string]: FormField }
-  datasource: { [key: string]: FormField }
-  investor: { [key: string]: FormField }
-  involvement: { [key: string]: FormField }
-}
-
-export const countries = writable<Country[]>([])
-export const regions = writable<Region[]>([])
-export const formfields = writable<FormFields>(undefined)
-
-async function getCountriesRegionsFormfields(
-  language = "en",
-  fetch: LoadEvent["fetch"],
-) {
-  const retC = await fetch(`/api/countries/`)
-  countries.set(await retC.json())
-  const retR = await fetch("/api/regions/")
-  regions.set(await retR.json())
-  const retFf = await fetch(`/api/legacy_formfields/?lang=${language}`)
-  formfields.set(await retFf.json())
-}
+export const blogCategories = readable([] as BlogCategory[], set => {
+  if (browser) {
+    fetch(`/api/blog_categories/`)
+      .then(ret => ret.json() as Promise<BlogCategory[]>)
+      .then(set)
+  }
+})
 
 interface ChartDesc {
   web_of_transnational_deals: string
@@ -213,14 +180,9 @@ export const chartDescriptions = derived(
   {} as ChartDesc,
 )
 
-export async function fetchBasis(lang = "en", fetch: LoadEvent["fetch"]) {
+export async function fetchBasis(fetch: LoadEvent["fetch"]) {
   try {
-    await Promise.all([
-      getAboutPages(fetch),
-      getObservatoryPages(fetch),
-      getFieldChoices(fetch),
-      getCountriesRegionsFormfields(lang, fetch),
-    ])
+    await Promise.all([getAboutPages(fetch), getObservatoryPages(fetch)])
   } catch (e) {
     error(500, `Backend server problems ${e}`)
   }
@@ -380,6 +342,16 @@ export async function fetchFieldDefinitions(fetch: LoadEvent["fetch"]) {
 
 export const currencies = readable<Currency[]>([], set => {
   fetch("/api/currencies/")
+    .then(ret => ret.json())
+    .then(set)
+})
+export const countries = readable<Country[]>([], set => {
+  fetch("/api/countries/")
+    .then(ret => ret.json())
+    .then(set)
+})
+export const regions = readable<Region[]>([], set => {
+  fetch("/api/regions/")
     .then(ret => ret.json())
     .then(set)
 })

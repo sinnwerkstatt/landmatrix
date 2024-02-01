@@ -8,7 +8,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models, transaction
 from django.db.models import Q, QuerySet, Case, When, Value, Count, Func, F
-from django.db.models.functions import Concat
+from django.db.models.functions import Concat, JSONObject
 from django.http import Http404
 from django.utils import timezone
 from django.utils.translation import gettext as _
@@ -1630,7 +1630,7 @@ class InvestorHull(HullBase):
         }
 
     @staticmethod
-    def to_investor_list(qs: QuerySet):
+    def to_investor_list(qs: QuerySet["InvestorHull"]):
         deals = DealHull.objects.filter(
             active_version__operating_company_id__in=qs.values_list("id", flat=True)
         ).values("id", "active_version__operating_company_id")
@@ -1638,29 +1638,23 @@ class InvestorHull(HullBase):
         return [
             {
                 "id": inv["id"],
-                "selected_version": {
-                    "id": inv["active_version__id"],
-                    "name": inv["active_version__name"],
-                    "name_unknown": inv["active_version__name_unknown"],
-                    "modified_at": inv["active_version__modified_at"],
-                    "classification": inv["active_version__classification"],
-                    "country": {"id": inv["active_version__country_id"]},
-                    "deals": [
-                        x["id"]
-                        for x in deals
-                        if x["active_version__operating_company_id"] == inv["id"]
-                    ],
-                },
+                "selected_version": inv["selected_version"],
+                "deals": [
+                    x["id"]
+                    for x in deals
+                    if x["active_version__operating_company_id"] == inv["id"]
+                ],
             }
-            for inv in qs.values(
-                "id",
-                "active_version__id",
-                "active_version__name",
-                "active_version__name_unknown",
-                "active_version__modified_at",
-                "active_version__classification",
-                "active_version__country_id",
-            )
+            for inv in qs.annotate(
+                selected_version=JSONObject(
+                    id="active_version_id",
+                    name="active_version__name",
+                    name_unknown="active_version__name_unknown",
+                    modified_at="active_version__modified_at",
+                    classification="active_version__classification",
+                    country_id="active_version__country_id",
+                )
+            ).values("id", "selected_version")
         ]
 
 

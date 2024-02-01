@@ -11,7 +11,7 @@
   } from "$lib/choices"
   import { filters, isDefaultFilter, publicOnly } from "$lib/filters"
   import type { Produce } from "$lib/filters"
-  import { countries, formfields, regions, simpleInvestors } from "$lib/stores"
+  import { countries, fieldChoices, regions, simpleInvestors } from "$lib/stores"
   import { tracker } from "$lib/stores/tracker"
   import { ProduceGroup } from "$lib/types/deal"
   import { UserRole } from "$lib/types/user"
@@ -28,23 +28,23 @@
   import Wimpel from "./Wimpel.svelte"
 
   let produceChoices: Produce[]
-  $: produceChoices = $formfields
+  $: produceChoices = $fieldChoices
     ? [
-        ...($formfields.deal.crops.choices?.map(item => ({
+        ...($fieldChoices.deal.crops.map(item => ({
           value: item["value"],
           label: item["label"],
           groupId: ProduceGroup.CROPS,
           group: $_("Crops"),
         })) ?? []),
-        ...($formfields.deal.animals.choices?.map(item => ({
+        ...($fieldChoices.deal.animals.map(item => ({
           value: item["value"],
           label: item["label"],
           groupId: ProduceGroup.ANIMALS,
           group: $_("Animals"),
         })) ?? []),
-        ...($formfields.deal.mineral_resources.choices?.map(item => ({
-          value: item["value"],
-          label: item["label"],
+        ...($fieldChoices.deal.minerals.map(item => ({
+          value: item.value,
+          label: item.label,
           groupId: ProduceGroup.MINERAL_RESOURCES,
           group: $_("Mineral resources"),
         })) ?? []),

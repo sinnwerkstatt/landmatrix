@@ -41,14 +41,14 @@
     {
       title: $_("Resources"),
       subEntries: $blogCategories.map(cat => ({
-        title: $_(cat.name),
+        title: $_(cat.name), // translating them here, because the backend only gives us English
         href: `/resources/?category=${cat.slug}`,
       })),
     },
     {
       title: $_("About"),
       subEntries: $aboutPages.map(page => ({
-        title: $_(page.title),
+        title: page.title,
         href: `/about/${page.meta.slug}`,
       })),
     },

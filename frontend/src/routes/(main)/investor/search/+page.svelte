@@ -1,18 +1,22 @@
 <script lang="ts">
+  import type { InvestorHull } from "$lib/types/newtypes"
+
+  import CountryField from "$components/Fields/Display2/CountryField.svelte"
+
   let value = ""
 
-  let actives = []
-  let drafts = []
-  async function getSearchResults(v) {
-    if (value.length < 3) {
+  let actives: InvestorHull[] = []
+  let drafts: InvestorHull[] = []
+  async function getSearchResults(v: string) {
+    if (v.length < 3) {
       actives = []
       drafts = []
       return
     }
     let ret = await fetch(`/api/investor_search/?q=${v}`)
-    const retJson = await ret.json()
-    actives = retJson.investors.filter(i => i.status !== 1)
-    drafts = retJson.investors.filter(i => i.status === 1)
+    const retJson = (await ret.json()) as { investors: InvestorHull[] }
+    actives = retJson.investors.filter(i => i.active_version_id)
+    drafts = retJson.investors.filter(i => i.draft_version_id)
   }
   $: getSearchResults(value)
 </script>
@@ -27,13 +31,15 @@
   </form>
 
   <div class="mt-10">
-    <ul>
+    <ul class="mb-12">
       {#each actives as investor}
         <li class="py-0.5 odd:bg-gray-100">
           <a class="investor flex" href="/investor/{investor.id}/" target="_blank">
             <span class="w-[5rem]">[{investor.id}]</span>
-            <span class="min-w-[10rem] px-4">{investor.country__name}</span>
-            {investor.name}
+            <span class="min-w-[10rem] px-4">
+              <CountryField value={investor.selected_version.country_id} />
+            </span>
+            {investor.selected_version.name}
           </a>
         </li>
       {/each}
@@ -46,8 +52,10 @@
           <li class="py-0.5 odd:bg-gray-100">
             <a class="investor flex" href="/investor/{investor.id}/" target="_blank">
               <span class="w-[5rem]">[{investor.id}]</span>
-              <span class="min-w-[10rem] px-4">{investor.country__name}</span>
-              {investor.name}
+              <span class="min-w-[10rem] px-4">
+                <CountryField value={investor.selected_version.country_id} />
+              </span>
+              {investor.selected_version.name}
             </a>
           </li>
         {/each}
