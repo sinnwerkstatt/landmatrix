@@ -23,7 +23,6 @@
     const retJson = await ret.json()
 
     if (!ret.ok) {
-      // graphql error
       toast.push(`Error: ${retJson}`)
     } else if (retJson.ok) {
       form_submitted = true

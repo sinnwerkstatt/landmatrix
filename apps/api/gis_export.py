@@ -13,13 +13,53 @@ from apps.api.utils.geojson import (
     create_feature,
     create_feature_collection,
 )
-from apps.graphql.tools import parse_filters
 from apps.landmatrix.models.deal import Deal
 from apps.utils import qs_values_to_dict
 
 ExportType = Literal["locations", "areas"]
 
 VALID_EXPORT_TYPES: list[ExportType] = ["locations", "areas"]
+
+
+from django.db.models import Q
+
+
+filter_ops = {
+    "EQ": "",
+    "LT": "__lt",
+    "LE": "__lte",
+    "GE": "__gte",
+    "GT": "__gt",
+    "IN": "__in",
+    "CONTAINS": "__contains",
+    "CONTAINED_BY": "__contained_by",
+    "OVERLAP": "__overlap",
+}
+
+
+def parse_filters(filters):
+    ret = Q()
+    if not filters:
+        return ret
+    for filtr in filters:
+        field = filtr["field"].replace(".", "__")
+        op = filtr.get("operation") or "EQ"
+        val = filtr["value"]
+        if (
+            isinstance(val, list)
+            and len(val) == 1
+            and op in ["EQ", "LT", "LE", "GE", "GT"]
+        ):
+            val = val[0]
+        operation = filter_ops[op]
+
+        filter_operation = Q(**{f"{field}{operation}": val})
+        if filtr.get("allow_null"):
+            filter_operation |= Q(**{f"{field}": None})
+        if filtr.get("exclusion"):
+            filter_operation = ~filter_operation
+        ret &= filter_operation
+    return ret
 
 
 @api_view()

@@ -53,7 +53,6 @@
 
   $: regionsWithGlobal = [{ id: undefined, name: $_("Global") }, ...$regions]
 
-  $: jsonFilters = JSON.stringify($filters.toGQLFilterArray())
   $: dataDownloadURL = `/api/legacy_export/?subset=${
     $publicOnly ? "PUBLIC" : "ACTIVE"
   }&${$filters.toRESTFilterArray()}&format=`
@@ -419,7 +418,7 @@
           </li>
           <li>
             <a
-              href={`/api/gis_export/?type=locations&filters=${jsonFilters}&subset=${
+              href={`/api/gis_export/?type=locations&${$filters.toRESTFilterArray()}&subset=${
                 $publicOnly ? "PUBLIC" : "ACTIVE"
               }`}
               on:click={() => trackDownload("locations")}
@@ -432,7 +431,7 @@
           </li>
           <li>
             <a
-              href={`/api/gis_export/?type=areas&filters=${jsonFilters}&subset=${
+              href={`/api/gis_export/?type=areas&${$filters.toRESTFilterArray()}&subset=${
                 $publicOnly ? "PUBLIC" : "ACTIVE"
               }`}
               on:click={() => trackDownload("areas")}

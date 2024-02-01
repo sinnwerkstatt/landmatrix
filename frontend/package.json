@@ -61,7 +61,6 @@
     "eslint-plugin-svelte": "^2.35.0",
     "eslint-plugin-testing-library": "^6.1.0",
     "geojson-validation": "^1.0.2",
-    "graphql": "^16.8.1",
     "js-cookie": "^3.0.5",
     "jsdom": "^22.1.0",
     "leaflet": "^1.9.4",

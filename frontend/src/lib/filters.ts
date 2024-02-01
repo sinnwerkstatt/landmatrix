@@ -10,7 +10,6 @@ import {
   ProduceGroup,
 } from "$lib/types/deal"
 
-import type { GQLFilter } from "./types/filters"
 import type { Investor } from "./types/investor"
 
 export interface Produce {
@@ -250,136 +249,136 @@ export class FilterValues {
     return searchParams.toString()
   }
 
-  public toGQLFilterArray(): GQLFilter[] {
-    const filterArray: GQLFilter[] = []
-
-    if (this.region_id)
-      filterArray.push({ field: "country.region_id", value: this.region_id })
-
-    if (this.country_id)
-      filterArray.push({ field: "country_id", value: this.country_id })
-
-    if (this.deal_size_min)
-      filterArray.push({
-        field: "deal_size",
-        operation: "GE",
-        value: this.deal_size_min,
-      })
-
-    if (this.deal_size_max)
-      filterArray.push({
-        field: "deal_size",
-        operation: "LE",
-        value: this.deal_size_max,
-      })
-
-    if (this.negotiation_status.length > 0)
-      filterArray.push({
-        field: "current_negotiation_status",
-        operation: "IN",
-        value: this.negotiation_status,
-      })
-
-    if (this.implementation_status.length > 0)
-      filterArray.push({
-        field: "current_implementation_status",
-        operation: "IN",
-        value: this.implementation_status,
-        allow_null: this.implementation_status.includes(
-          "UNKNOWN" as ImplementationStatus,
-        ),
-      })
-
-    if (this.investor)
-      filterArray.push({ field: "parent_companies", value: this.investor.id })
-
-    if (this.investor_country_id)
-      filterArray.push({
-        field: "parent_companies.country_id",
-        value: this.investor_country_id,
-      })
-
-    if (this.nature_of_deal.length > 0) {
-      const allValues = Object.values(NatureOfDeal)
-      const diffValues = allValues.filter(x => !this.nature_of_deal.includes(x))
-
-      if (diffValues.length > 0)
-        filterArray.push({
-          field: "nature_of_deal",
-          operation: "CONTAINED_BY",
-          value: diffValues,
-          exclusion: true,
-        })
-    }
-
-    if (this.initiation_year_min && this.initiation_year_min > 1970)
-      filterArray.push({
-        field: "initiation_year",
-        operation: "GE",
-        value: this.initiation_year_min,
-        allow_null: this.initiation_year_unknown,
-      })
-
-    if (this.initiation_year_max)
-      filterArray.push({
-        field: "initiation_year",
-        operation: "LE",
-        value: this.initiation_year_max,
-        allow_null: this.initiation_year_unknown,
-      })
-
-    if (this.intention_of_investment.length > 0) {
-      filterArray.push({
-        field: "current_intention_of_investment",
-        operation: "OVERLAP",
-        value: this.intention_of_investment,
-        allow_null: this.intention_of_investment.includes(
-          "UNKNOWN" as IntentionOfInvestment,
-        ),
-      })
-    }
-
-    if (this.produce && this.produce.length > 0) {
-      const crops = []
-      const animals = []
-      const minerals = []
-      for (const prod of this.produce) {
-        if (prod.groupId === ProduceGroup.CROPS) crops.push(prod.value)
-        else if (prod.groupId === ProduceGroup.ANIMALS) animals.push(prod.value)
-        else if (prod.groupId === ProduceGroup.MINERAL_RESOURCES)
-          minerals.push(prod.value)
-      }
-      if (crops.length > 0) {
-        filterArray.push({
-          field: "current_crops",
-          operation: "CONTAINS",
-          value: crops,
-        })
-      }
-      if (animals.length > 0) {
-        filterArray.push({
-          field: "current_animals",
-          operation: "CONTAINS",
-          value: animals,
-        })
-      }
-      if (minerals.length > 0) {
-        filterArray.push({
-          field: "current_mineral_resources",
-          operation: "CONTAINS",
-          value: minerals,
-        })
-      }
-    }
-
-    if (this.transnational !== null)
-      filterArray.push({ field: "transnational", value: this.transnational })
-
-    if (this.forest_concession !== null)
-      filterArray.push({ field: "forest_concession", value: this.forest_concession })
-
-    return filterArray
-  }
+  // public toGQLFilterArray(): GQLFilter[] {
+  //   const filterArray: GQLFilter[] = []
+  //
+  //   if (this.region_id)
+  //     filterArray.push({ field: "country.region_id", value: this.region_id })
+  //
+  //   if (this.country_id)
+  //     filterArray.push({ field: "country_id", value: this.country_id })
+  //
+  //   if (this.deal_size_min)
+  //     filterArray.push({
+  //       field: "deal_size",
+  //       operation: "GE",
+  //       value: this.deal_size_min,
+  //     })
+  //
+  //   if (this.deal_size_max)
+  //     filterArray.push({
+  //       field: "deal_size",
+  //       operation: "LE",
+  //       value: this.deal_size_max,
+  //     })
+  //
+  //   if (this.negotiation_status.length > 0)
+  //     filterArray.push({
+  //       field: "current_negotiation_status",
+  //       operation: "IN",
+  //       value: this.negotiation_status,
+  //     })
+  //
+  //   if (this.implementation_status.length > 0)
+  //     filterArray.push({
+  //       field: "current_implementation_status",
+  //       operation: "IN",
+  //       value: this.implementation_status,
+  //       allow_null: this.implementation_status.includes(
+  //         "UNKNOWN" as ImplementationStatus,
+  //       ),
+  //     })
+  //
+  //   if (this.investor)
+  //     filterArray.push({ field: "parent_companies", value: this.investor.id })
+  //
+  //   if (this.investor_country_id)
+  //     filterArray.push({
+  //       field: "parent_companies.country_id",
+  //       value: this.investor_country_id,
+  //     })
+  //
+  //   if (this.nature_of_deal.length > 0) {
+  //     const allValues = Object.values(NatureOfDeal)
+  //     const diffValues = allValues.filter(x => !this.nature_of_deal.includes(x))
+  //
+  //     if (diffValues.length > 0)
+  //       filterArray.push({
+  //         field: "nature_of_deal",
+  //         operation: "CONTAINED_BY",
+  //         value: diffValues,
+  //         exclusion: true,
+  //       })
+  //   }
+  //
+  //   if (this.initiation_year_min && this.initiation_year_min > 1970)
+  //     filterArray.push({
+  //       field: "initiation_year",
+  //       operation: "GE",
+  //       value: this.initiation_year_min,
+  //       allow_null: this.initiation_year_unknown,
+  //     })
+  //
+  //   if (this.initiation_year_max)
+  //     filterArray.push({
+  //       field: "initiation_year",
+  //       operation: "LE",
+  //       value: this.initiation_year_max,
+  //       allow_null: this.initiation_year_unknown,
+  //     })
+  //
+  //   if (this.intention_of_investment.length > 0) {
+  //     filterArray.push({
+  //       field: "current_intention_of_investment",
+  //       operation: "OVERLAP",
+  //       value: this.intention_of_investment,
+  //       allow_null: this.intention_of_investment.includes(
+  //         "UNKNOWN" as IntentionOfInvestment,
+  //       ),
+  //     })
+  //   }
+  //
+  //   if (this.produce && this.produce.length > 0) {
+  //     const crops = []
+  //     const animals = []
+  //     const minerals = []
+  //     for (const prod of this.produce) {
+  //       if (prod.groupId === ProduceGroup.CROPS) crops.push(prod.value)
+  //       else if (prod.groupId === ProduceGroup.ANIMALS) animals.push(prod.value)
+  //       else if (prod.groupId === ProduceGroup.MINERAL_RESOURCES)
+  //         minerals.push(prod.value)
+  //     }
+  //     if (crops.length > 0) {
+  //       filterArray.push({
+  //         field: "current_crops",
+  //         operation: "CONTAINS",
+  //         value: crops,
+  //       })
+  //     }
+  //     if (animals.length > 0) {
+  //       filterArray.push({
+  //         field: "current_animals",
+  //         operation: "CONTAINS",
+  //         value: animals,
+  //       })
+  //     }
+  //     if (minerals.length > 0) {
+  //       filterArray.push({
+  //         field: "current_mineral_resources",
+  //         operation: "CONTAINS",
+  //         value: minerals,
+  //       })
+  //     }
+  //   }
+  //
+  //   if (this.transnational !== null)
+  //     filterArray.push({ field: "transnational", value: this.transnational })
+  //
+  //   if (this.forest_concession !== null)
+  //     filterArray.push({ field: "forest_concession", value: this.forest_concession })
+  //
+  //   return filterArray
+  // }
 }
 
 export const filters = writable<FilterValues>(new FilterValues().default())

@@ -1,10 +1,6 @@
 import datetime
-from typing import Type
-
-from taggit.models import Tag, TaggedItemBase
 
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import models
@@ -14,6 +10,7 @@ from django.utils.text import Truncator
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey, ParentalManyToManyField
 from rest_framework.fields import ListField
+from taggit.models import Tag, TaggedItemBase
 from wagtail.admin.panels import FieldPanel, FieldRowPanel, MultiFieldPanel
 from wagtail.api import APIField
 from wagtail.fields import StreamField
@@ -26,10 +23,7 @@ from wagtail_headless_preview.models import HeadlessPreviewMixin
 
 from apps.accounts.models import User
 from apps.wagtailcms.blocks import SIMPLE_CONTENT_BLOCKS
-
 from .utils import unique_slugify
-
-UserModel: Type[User] = get_user_model()
 
 
 class BlogIndexPage(HeadlessPreviewMixin, Page):
@@ -179,7 +173,7 @@ class BlogTag(Tag):
 def get_blog_context(context):
     """Get context data useful on all blog related pages"""
     context["authors"] = (
-        UserModel.objects.filter(
+        User.objects.filter(
             owned_pages__live=True, owned_pages__content_type__model="blogpage"
         )
         .annotate(Count("owned_pages"))
