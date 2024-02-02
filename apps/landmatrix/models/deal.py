@@ -5,7 +5,7 @@ from django.core import serializers
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
-from django.db.models import Count, F, Sum
+from django.db.models import F, Sum
 from django.utils import timezone
 from django.utils.translation import gettext as _
 
@@ -19,7 +19,8 @@ from .abstracts import (
 )
 from .country import Country
 from .currency import Currency
-from .fields import ArrayField, ContractsField, DatasourcesField, LocationsField
+from .fields import ArrayField
+from .oldfields import ContractsField, DatasourcesField, LocationsField
 from .investor import Investor
 
 

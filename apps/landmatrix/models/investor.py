@@ -15,7 +15,7 @@ from .abstracts import DRAFT_STATUS_CHOICES, STATUS_CHOICES, Version, WorkflowIn
 from .choices import INVESTOR_CLASSIFICATION_CHOICES
 from .country import Country
 from .currency import Currency
-from .fields import DatasourcesField
+from .oldfields import DatasourcesField
 
 
 class InvestorQuerySet(models.QuerySet):

@@ -11,8 +11,8 @@ from .choices import (
     ACTOR_ITEMS,
     ELECTRICITY_GENERATION_ITEMS,
     CARBON_SEQUESTRATION_ITEMS,
+    CARBON_SEQUESTRATION_CERT_ITEMS,
 )
-from .schemas import contracts_schema, datasources_schema, locations_schema
 
 loose_date_re_val = RegexValidator(
     regex=r"^\d{4}(-(0?[1-9]|1[012])(-(0?[1-9]|[12][0-9]|3[01]))?)?$",
@@ -118,24 +118,6 @@ class JSONSchemaField(JSONField):
     #         return value
     #     # we could do conversion to datefield here
     #     return value
-
-
-class LocationsField(JSONSchemaField):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.schema_definition = locations_schema
-
-
-class ContractsField(JSONSchemaField):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.schema_definition = contracts_schema
-
-
-class DatasourcesField(JSONSchemaField):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.schema_definition = datasources_schema
 
 
 class JSONCurrentDateAreaField(JSONSchemaField):
@@ -361,6 +343,7 @@ class JSONCarbonSequestrationField(JSONSchemaField):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         choices = [x["value"] for x in CARBON_SEQUESTRATION_ITEMS]
+        choices2 = [x["value"] for x in CARBON_SEQUESTRATION_CERT_ITEMS]
         self.schema_definition = compile(
             {
                 "$schema": "http://json-schema.org/draft-07/schema",
@@ -385,7 +368,7 @@ class JSONCarbonSequestrationField(JSONSchemaField):
                         },
                         "projected_annual_sequestration": {"type": ["number", "null"]},
                         "certification_standard": {"type": ["boolean", "null"]},
-                        "certification_standard_name": {"type": "string"},
+                        "certification_standard_name": {"enum": choices2},
                         "certification_standard_comment": {"type": "string"},
                     },
                 },

@@ -699,7 +699,6 @@ class BaseVersionMixin(models.Model):
 
 
 class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
-
     """# CALCULATED FIELDS #"""
 
     # is_public: change the logic how it's calculated a bit - confidential is dealhull stuff
@@ -1608,9 +1607,9 @@ class InvestorHull(HullBase):
         return
 
     def involvements_graph(self, depth, include_deals, show_ventures):
-        from apps.landmatrix.utils import InvolvementNetwork2
+        from apps.landmatrix.involvement_network import InvolvementNetwork
 
-        return InvolvementNetwork2().get_network_x(
+        return InvolvementNetwork().get_network_x(
             self.id, depth, include_deals=include_deals, show_ventures=show_ventures
         )
 

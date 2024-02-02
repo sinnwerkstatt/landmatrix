@@ -5,6 +5,9 @@ from django.dispatch import receiver
 from .models.investor import Investor, InvestorVentureInvolvement
 
 
+# TODO is this whole file still relevant?
+
+
 def invalidate_cache(sender, instance, **kwargs):
     # FIXME it is quite brute force to just empty the whole cache. fixme "some day"™️
     cache.clear()

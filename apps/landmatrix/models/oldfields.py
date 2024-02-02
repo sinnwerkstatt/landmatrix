@@ -1,5 +1,7 @@
 from fastjsonschema import compile
 
+from apps.landmatrix.models.fields import JSONSchemaField
+
 locations_schema_def = {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "array",
@@ -43,6 +45,13 @@ locations_schema_def = {
 }
 locations_schema = compile(locations_schema_def)
 
+
+class LocationsField(JSONSchemaField):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.schema_definition = locations_schema
+
+
 contracts_schema_def = {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "array",
@@ -74,6 +83,13 @@ contracts_schema_def = {
 }
 
 contracts_schema = compile(contracts_schema_def)
+
+
+class ContractsField(JSONSchemaField):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.schema_definition = contracts_schema
+
 
 datasources_schema_def = {
     "$schema": "http://json-schema.org/draft-07/schema#",
@@ -130,3 +146,9 @@ datasources_schema_def = {
     },
 }
 datasources_schema = compile(datasources_schema_def)
+
+
+class DatasourcesField(JSONSchemaField):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.schema_definition = datasources_schema

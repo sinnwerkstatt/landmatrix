@@ -185,7 +185,6 @@ def _send_comment_to_user(
 
 
 class VersionViewSet(viewsets.ReadOnlyModelViewSet):
-    # TODO  set_sensible_fields_to_null(results)
     class Meta:
         abstract = True
 
@@ -314,7 +313,6 @@ class DealVersionViewSet(VersionViewSet):
 
 
 class HullViewSet(viewsets.ReadOnlyModelViewSet):
-    # TODO  set_sensible_fields_to_null(results)
     version_serializer_class = None
 
     class Meta:
@@ -445,22 +443,24 @@ class DealViewSet(HullViewSet):
                         "intended_size": d.active_version.intended_size,
                         "negotiation_status": d.active_version.negotiation_status,
                         "contract_size": d.active_version.contract_size,
-                        "operating_company": {
-                            "id": d.active_version.operating_company.id,
-                            "selected_version": {
-                                "name": d.active_version.operating_company.active_version.name,
-                                "name_unknown": d.active_version.operating_company.active_version.name_unknown,
-                            },
-                        }
-                        if d.active_version.operating_company_id
-                        and d.active_version.operating_company.active_version
-                        else None,
+                        "operating_company": (
+                            {
+                                "id": d.active_version.operating_company.id,
+                                "selected_version": {
+                                    "name": d.active_version.operating_company.active_version.name,
+                                    "name_unknown": d.active_version.operating_company.active_version.name_unknown,
+                                },
+                            }
+                            if d.active_version.operating_company_id
+                            and d.active_version.operating_company.active_version
+                            else None
+                        ),
                         "locations": [
                             {
                                 "nid": l.nid,
-                                "point": json.loads(l.point.geojson)
-                                if l.point
-                                else None,
+                                "point": (
+                                    json.loads(l.point.geojson) if l.point else None
+                                ),
                                 "level_of_accuracy": l.level_of_accuracy,
                             }
                             for l in d.active_version.locations.all()
@@ -608,7 +608,6 @@ class InvestorVersionViewSet(VersionViewSet):
 
 
 class InvestorViewSet(HullViewSet):
-    # TODO  set_sensible_fields_to_null(results)
     queryset = InvestorHull.objects.all().prefetch_related(
         Prefetch("versions", queryset=InvestorVersion2.objects.order_by("-id"))
     )

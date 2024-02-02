@@ -11,8 +11,6 @@ from rest_framework.exceptions import NotAuthenticated, PermissionDenied
 
 from apps.blog.models import BlogCategory, BlogPage
 from apps.landmatrix.charts import get_deal_top_investments, web_of_transnational_deals
-from apps.landmatrix.forms.deal import DealForm
-from apps.landmatrix.forms.investor import InvestorForm, InvestorVentureInvolvementForm
 from apps.landmatrix.models.new import (
     DealHull,
     DealWorkflowInfo2,

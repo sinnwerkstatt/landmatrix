@@ -22,7 +22,7 @@ from apps.landmatrix.models.new import (
     InvestorHull,
     Involvement,
 )
-from apps.landmatrix.utils import InvolvementNetwork2
+from apps.landmatrix.involvement_network import InvolvementNetwork
 from apps.landmatrix.views.newviews import _parse_filter
 from apps.utils import qs_values_to_dict
 
@@ -318,9 +318,11 @@ def flatten_date_current_value(data, field, fieldname) -> None:
                 [
                     x["date"] or "",
                     "current" if x.get("current") else "",
-                    x[fieldname]
-                    if isinstance(x[fieldname], str)
-                    else str(round(x[fieldname], 2)),
+                    (
+                        x[fieldname]
+                        if isinstance(x[fieldname], str)
+                        else str(round(x[fieldname], 2))
+                    ),
                 ]
             )
             for x in data[field]
@@ -392,7 +394,7 @@ class DataDownload:
                 all_involvements,
                 edges,
                 min_depth,
-            ) = InvolvementNetwork2().get_network(
+            ) = InvolvementNetwork().get_network(
                 version.operating_company_id,
                 depth=1,
                 show_ventures=False,
@@ -592,9 +594,11 @@ class DataDownload:
                         .replace("\n", "")
                         .strip(),
                         str(ti["id"]),
-                        ti["active_version"]["country__name"]
-                        if "country__name" in ti["active_version"]
-                        else "",
+                        (
+                            ti["active_version"]["country__name"]
+                            if "country__name" in ti["active_version"]
+                            else ""
+                        ),
                     ]
                 )
                 for ti in sorted(data["top_investors"], key=lambda x: x["id"])
@@ -611,9 +615,9 @@ class DataDownload:
                 "name"
             ]
 
-            data[
-                "operating_company__active_version__classification"
-            ] = classification_choices.get(av["classification"], "")
+            data["operating_company__active_version__classification"] = (
+                classification_choices.get(av["classification"], "")
+            )
 
             data["operating_company__active_version__homepage"] = av["homepage"]
             data["operating_company__active_version__opencorporates"] = av[
@@ -769,9 +773,11 @@ class DataDownload:
                     "#".join(
                         [
                             x.get("name") or "",
-                            str(dict(choices.ACTOR_MAP)[x["role"]])
-                            if x.get("role")
-                            else "",
+                            (
+                                str(dict(choices.ACTOR_MAP)[x["role"]])
+                                if x.get("role")
+                                else ""
+                            ),
                         ]
                     )
                     for x in data["involved_actors"]
@@ -948,9 +954,11 @@ class DataDownload:
         # xx = [data.get(field, "") or "" for field in deal_fields.keys()]
 
         xx = [
-            ""
-            if (field not in data or data[field] is None or data[field] == [])
-            else data[field]
+            (
+                ""
+                if (field not in data or data[field] is None or data[field] == [])
+                else data[field]
+            )
             for field in deal_fields.keys()
         ]
 
@@ -962,9 +970,11 @@ class DataDownload:
             [
                 x["nid"],
                 x["dealversion__deal_id"],
-                choices.LOCATION_ACCURACY[x["level_of_accuracy"]]
-                if x["level_of_accuracy"]
-                else "",
+                (
+                    choices.LOCATION_ACCURACY[x["level_of_accuracy"]]
+                    if x["level_of_accuracy"]
+                    else ""
+                ),
                 x["name"],
                 x["point_lat_lng"],
                 x["facility_name"],
@@ -1000,12 +1010,14 @@ class DataDownload:
                 x["nid"],
                 x["dealversion__deal_id"],
                 x["number"],
-                parse(x["date_or_empty"]).date()
-                if x["date_or_empty"]
-                else "",  # TODO 100% Compat hack
-                parse(x["expiration_date_or_empty"]).date()
-                if x["expiration_date_or_empty"]
-                else "",  # TODO 100% Compat hack
+                (
+                    parse(x["date_or_empty"]).date() if x["date_or_empty"] else ""
+                ),  # TODO 100% Compat hack
+                (
+                    parse(x["expiration_date_or_empty"]).date()
+                    if x["expiration_date_or_empty"]
+                    else ""
+                ),  # TODO 100% Compat hack
                 x["agreement_duration"],
                 x["comment"],
             ]
@@ -1041,9 +1053,9 @@ class DataDownload:
                 x["url"],
                 x["public_file"],
                 x["publication_title"],
-                parse(x["date_or_empty"]).date()
-                if x["date_or_empty"]
-                else "",  # TODO 100% Compat hack
+                (
+                    parse(x["date_or_empty"]).date() if x["date_or_empty"] else ""
+                ),  # TODO 100% Compat hack
                 x["name"],
                 x["company"],
                 x["email"],
