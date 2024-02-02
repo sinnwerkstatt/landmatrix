@@ -203,9 +203,11 @@ class DealVersionSerializer(serializers.ModelSerializer):
                 defaults={
                     "name": location["name"],
                     "description": location["description"],
-                    "point": GEOSGeometry(str(location["point"]))
-                    if location["point"]
-                    else None,
+                    "point": (
+                        GEOSGeometry(str(location["point"]))
+                        if location["point"]
+                        else None
+                    ),
                     "facility_name": location["facility_name"],
                     "level_of_accuracy": location["level_of_accuracy"],
                     "comment": location["comment"],

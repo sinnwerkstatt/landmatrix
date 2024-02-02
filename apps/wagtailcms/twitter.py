@@ -89,13 +89,13 @@ class TwitterTimeline:
 
             rt = getattr(status, "retweeted_status", None)
             if rt:
-                update[
-                    "deep_link"
-                ] = f"https://twitter.com/{rt.user.screen_name}/status/{rt.id}"
+                update["deep_link"] = (
+                    f"https://twitter.com/{rt.user.screen_name}/status/{rt.id}"
+                )
             else:
-                update[
-                    "deep_link"
-                ] = f"https://twitter.com/{status.user.screen_name}/status/{status.id}"
+                update["deep_link"] = (
+                    f"https://twitter.com/{status.user.screen_name}/status/{status.id}"
+                )
 
             stati.append(update)
         return stati
