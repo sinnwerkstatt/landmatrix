@@ -34,6 +34,7 @@
   {clearable}
   hasError={required && !value && !focused}
   items={extras.choices}
+  groupBy={item => item.group}
   {multiple}
   on:input={e => (multiple ? setMultiValue : setValue)(e.detail)}
   placeholder={$_("Please select")}

@@ -4,8 +4,10 @@
 
   import LowLevelDateYearField from "$components/Fields/Edit/LowLevelDateYearField.svelte"
   import LowLevelDecimalField from "$components/Fields/Edit/LowLevelDecimalField.svelte"
+  import HomeIcon from "$components/icons/HomeIcon.svelte"
   import MinusIcon from "$components/icons/MinusIcon.svelte"
   import PlusIcon from "$components/icons/PlusIcon.svelte"
+  import UsersIcon from "$components/icons/UsersIcon.svelte"
 
   interface JSONLeaseField {
     current: boolean | null
@@ -94,6 +96,7 @@
             decimals={0}
             min={0}
             name="{fieldname}_{i}_farmers"
+            unit={UsersIcon}
           />
         </td>
         <td class="w-1/3 p-1">
@@ -103,6 +106,7 @@
             decimals={0}
             min={0}
             name="{fieldname}_{i}_households"
+            unit={HomeIcon}
           />
         </td>
 

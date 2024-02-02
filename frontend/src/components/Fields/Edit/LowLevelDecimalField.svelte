@@ -1,10 +1,11 @@
 <script lang="ts">
+  import type { ComponentType } from "svelte"
   import { _ } from "svelte-i18n"
 
   export let name: string
   export let value: number | null
   export let required = false
-  export let unit = ""
+  export let unit: string | ComponentType = ""
   export let max: number | undefined = undefined
   export let min: number | undefined = undefined
   export let decimals = 2
@@ -34,7 +35,11 @@
   />
   {#if unit}
     <div class="flex items-center bg-gray-700 px-3 font-bold text-white">
-      {$_(unit)}
+      {#if typeof unit === "string"}
+        {$_(unit)}
+      {:else}
+        <svelte:component this={unit} class="h-4 w-4" />
+      {/if}
     </div>
   {/if}
 </div>

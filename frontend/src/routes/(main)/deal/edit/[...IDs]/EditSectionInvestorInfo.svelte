@@ -14,7 +14,7 @@
 </script>
 
 <form id="investor_info">
-  <EditSubsection title={$_("Operating company")}>
+  <EditSubsection id="operating_company">
     <InvestorForeignKey
       bind:value={version.operating_company}
       label={$_("Operating company")}

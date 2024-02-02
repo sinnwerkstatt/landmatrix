@@ -49,6 +49,7 @@ async function getAboutPages(fetch: LoadEvent["fetch"]) {
 export interface ValueLabelEntry {
   value: string
   label: string
+  group?: string
 }
 
 interface FieldChoicesType {

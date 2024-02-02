@@ -59,11 +59,7 @@ export const investorFields = derived([_, fieldChoices], ([$_, $fieldChoices]) =
       label: $_("Country of registration/origin"),
       extras: { required: true },
     },
-    name: {
-      displayField: TextField,
-      editField: TextEditField,
-      label: $_("Name"),
-    },
+    name: { displayField: TextField, editField: TextEditField, label: $_("Name") },
     homepage: {
       displayField: TextField,
       editField: TextEditField,
@@ -649,6 +645,7 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
       label: $_("Operating company"),
     },
     involved_actors: {
+      // TODO fix the display, add edit
       displayField: JSONActorsField,
       label: $_("Actors involved in the negotiation / admission process"),
     },
@@ -919,13 +916,13 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
     contract_farming_animals: {
       displayField: JSONCurrentDateAreaChoicesField,
       editField: JSONCurrentDateAreaChoicesEditField,
-      label: $_("Contract farming animals"),
+      label: $_("Contract farming livestock"),
       extras: { choices: $fieldChoices.deal.animals },
     },
     contract_farming_animals_comment: {
       displayField: TextField,
       editField: TextEditField,
-      label: $_("Comment on contract farming animals"),
+      label: $_("Comment on contract farming livestock"),
       extras: { multiline: true },
     },
     electricity_generation: {
@@ -960,7 +957,7 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
       displayField: DecimalField,
       editField: DecimalEditField,
       label: $_("Domestic use"),
-      extras: { unit: "%" },
+      extras: { unit: "%", range: [0, 100] }, // TODO bring units to editfield
     },
     has_export: {
       displayField: BooleanField,
@@ -972,28 +969,28 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
       displayField: DecimalField,
       editField: DecimalEditField,
       label: $_("Export"),
-      extras: { unit: "%" },
+      extras: { unit: "%", range: [0, 100] },
     },
     export_country1_id: { displayField: CountryField, label: $_("Counrtry 1") },
     export_country1_ratio: {
       displayField: DecimalField,
       editField: DecimalEditField,
       label: $_("Counrtry 1 ratio"),
-      extras: { unit: "%" },
+      extras: { unit: "%", range: [0, 100] },
     },
     export_country2_id: { displayField: CountryField, label: $_("Counrtry 2") },
     export_country2_ratio: {
       displayField: DecimalField,
       editField: DecimalEditField,
       label: $_("Counrtry 2 ratio"),
-      extras: { unit: "%" },
+      extras: { unit: "%", range: [0, 100] },
     },
     export_country3_id: { displayField: CountryField, label: $_("Counrtry 3") },
     export_country3_ratio: {
       displayField: DecimalField,
       editField: DecimalEditField,
       label: $_("Counrtry 3 ratio"),
-      extras: { unit: "%" },
+      extras: { unit: "%", range: [0, 100] },
     },
     use_of_produce_comment: {
       displayField: TextField,
@@ -1245,11 +1242,16 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
       extras: { multiline: true },
     },
     // INVOLVEMENTS
+    //         "involvement_type": {"class": "TextField", "label": _("Involvement type")},
+    //         "investor": {"class": "InvestorForeignKey"},
+    //         "venture": {"class": "InvestorForeignKey"},
+    //         "loans_date": {"class": "DateField"},
+    //         "loans_currency": {"class": "CurrencyForeignKey"},
     "involvement.relationship": { displayField: TextField, label: $_("Relationship") },
     "involvement.percentage": {
       displayField: DecimalField,
       label: $_("Ownership share"),
-      extras: { unit: "%" },
+      extras: { unit: "%", range: [0, 100] },
     },
     "involvement.investment_type": {
       displayField: ChoicesField,
