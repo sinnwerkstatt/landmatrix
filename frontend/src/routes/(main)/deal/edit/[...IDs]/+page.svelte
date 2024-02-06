@@ -121,7 +121,7 @@
 
     if (retBody.versionID !== deal.selected_version.id) {
       toast.push("Created a new draft", { classes: ["success"] })
-      await goto(`/deal/edit/${deal.id}/${retBody.versionID}/`)
+      await goto(`/deal/edit/${deal.id}/${retBody.versionID}/${activeTab}`)
     } else {
       toast.push("Saved data", { classes: ["success"] })
       await invalidate("deal:detail")
@@ -174,8 +174,8 @@
   }
 </script>
 
-<div class="container mx-auto mb-12 mt-8 flex min-h-full flex-col">
-  <div class="border-b border-orange md:flex md:flex-row md:justify-between">
+<div class="editgrid container mx-auto h-full max-h-full">
+  <div class="flex border-b border-orange md:justify-between" style="grid-area: header">
     <h1 class="heading4 mt-3 flex flex-col gap-2">
       {data.dealID ? $_("Editing deal #") + data.dealID : $_("Adding new deal")}
       <span class="text-[0.8em]">
@@ -203,67 +203,66 @@
       </button>
     </div>
   </div>
-  <div class="flex min-h-full">
-    <nav class="w-1/6 p-2">
-      <ul>
-        {#each tabs as { target, name }}
-          <li
-            class="border-orange py-2 pr-4 {activeTab === target
-              ? 'border-r-4'
-              : 'border-r'}"
+
+  <nav class="col-span-1 p-2" style="grid-area: sidenav">
+    <ul>
+      {#each tabs as { target, name }}
+        <li
+          class="border-orange py-2 pr-4 {activeTab === target
+            ? 'border-r-4'
+            : 'border-r'}"
+        >
+          <a
+            href={target}
+            class={activeTab === target ? "text-gray-700 dark:text-white" : ""}
+            on:click|preventDefault={onClickTab}
           >
-            <a
-              href={target}
-              class={activeTab === target ? "text-gray-700 dark:text-white" : ""}
-              on:click|preventDefault={onClickTab}
-            >
-              {name}
-            </a>
-          </li>
-        {/each}
-      </ul>
-    </nav>
-    <div class="w-5/6 px-4">
-      {#if activeTab === "#locations"}
-        <EditSectionLocations
-          bind:locations={deal.selected_version.locations}
-          country={deal.country}
-        />
-      {/if}
-      {#if activeTab === "#general"}
-        <EditSectionGeneralInfo bind:version={deal.selected_version} />
-      {/if}
-      {#if activeTab === "#contracts"}
-        <EditSectionContracts bind:contracts={deal.selected_version.contracts} />
-      {/if}
-      {#if activeTab === "#employment"}
-        <EditSectionEmployment bind:version={deal.selected_version} />
-      {/if}
-      {#if activeTab === "#investor_info"}
-        <EditSectionInvestorInfo bind:deal />
-      {/if}
-      {#if activeTab === "#data_sources"}
-        <EditSectionDataSources bind:datasources={deal.selected_version.datasources} />
-      {/if}
-      {#if activeTab === "#local_communities"}
-        <EditSectionLocalCommunities bind:version={deal.selected_version} />
-      {/if}
-      {#if activeTab === "#former_use"}
-        <EditSectionFormerUse bind:version={deal.selected_version} />
-      {/if}
-      {#if activeTab === "#produce_info"}
-        <EditSectionProduceInfo bind:version={deal.selected_version} />
-      {/if}
-      {#if activeTab === "#water"}
-        <EditSectionWater bind:version={deal.selected_version} />
-      {/if}
-      {#if activeTab === "#gender_related_info"}
-        <EditSectionGenderRelatedInfo bind:version={deal.selected_version} />
-      {/if}
-      {#if activeTab === "#overall_comment"}
-        <EditSectionOverallComment bind:version={deal.selected_version} />
-      {/if}
-    </div>
+            {name}
+          </a>
+        </li>
+      {/each}
+    </ul>
+  </nav>
+  <div class="col-span-5 overflow-y-auto px-4 pb-20" style="grid-area: main">
+    {#if activeTab === "#locations"}
+      <EditSectionLocations
+        bind:locations={deal.selected_version.locations}
+        country={deal.country}
+      />
+    {/if}
+    {#if activeTab === "#general"}
+      <EditSectionGeneralInfo bind:version={deal.selected_version} />
+    {/if}
+    {#if activeTab === "#contracts"}
+      <EditSectionContracts bind:contracts={deal.selected_version.contracts} />
+    {/if}
+    {#if activeTab === "#employment"}
+      <EditSectionEmployment bind:version={deal.selected_version} />
+    {/if}
+    {#if activeTab === "#investor_info"}
+      <EditSectionInvestorInfo bind:deal />
+    {/if}
+    {#if activeTab === "#data_sources"}
+      <EditSectionDataSources bind:datasources={deal.selected_version.datasources} />
+    {/if}
+    {#if activeTab === "#local_communities"}
+      <EditSectionLocalCommunities bind:version={deal.selected_version} />
+    {/if}
+    {#if activeTab === "#former_use"}
+      <EditSectionFormerUse bind:version={deal.selected_version} />
+    {/if}
+    {#if activeTab === "#produce_info"}
+      <EditSectionProduceInfo bind:version={deal.selected_version} />
+    {/if}
+    {#if activeTab === "#water"}
+      <EditSectionWater bind:version={deal.selected_version} />
+    {/if}
+    {#if activeTab === "#gender_related_info"}
+      <EditSectionGenderRelatedInfo bind:version={deal.selected_version} />
+    {/if}
+    {#if activeTab === "#overall_comment"}
+      <EditSectionOverallComment bind:version={deal.selected_version} />
+    {/if}
   </div>
 </div>
 
@@ -288,3 +287,14 @@
     </button>
   </div>
 </Modal>
+
+<style>
+  .editgrid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      "header header header header header header"
+      "sidenav main main main main main";
+  }
+</style>
