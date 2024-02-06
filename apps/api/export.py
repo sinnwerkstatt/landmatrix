@@ -1,15 +1,17 @@
 import zipfile
+from datetime import datetime
 from io import BytesIO
 
 import unicodecsv as csv
-from dateutil.parser import parse
-from django.db.models import QuerySet, Func, Value, CharField, Case, When
-from django.db.models.functions import Concat
+from django.contrib.postgres.expressions import ArraySubquery
+from django.db.models import QuerySet, Func, Value, CharField, Case, When, OuterRef
+from django.db.models.functions import Concat, JSONObject
 from django.http import HttpResponse
 from django.shortcuts import render
 from openpyxl import Workbook
 from openpyxl.utils.exceptions import IllegalCharacterError
 
+from apps.landmatrix.involvement_network import InvolvementNetwork
 from apps.landmatrix.models import choices
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.currency import Currency
@@ -21,10 +23,9 @@ from apps.landmatrix.models.new import (
     DealVersion2,
     InvestorHull,
     Involvement,
+    DealTopInvestors2,
 )
-from apps.landmatrix.involvement_network import InvolvementNetwork
 from apps.landmatrix.views.newviews import _parse_filter
-from apps.utils import qs_values_to_dict
 
 deal_fields = {
     "deal_id": "Deal ID",
@@ -38,7 +39,7 @@ deal_fields = {
     "current_implementation_status": "Current implementation status",
     "deal__fully_updated_at": "Fully updated",
     "top_investors": "Top parent companies",
-    "intended_size": "Intended size",
+    "intended_size": "Intended size (in ha)",  # TODO LATER 100% Compat hacks
     "contract_size": "Size under contract (leased or purchased area, in ha)",
     "production_size": "Size in operation (production, in ha)",
     "land_area_comment": "Comment on land area",
@@ -172,6 +173,8 @@ deal_fields = {
     "deal__confidential": "Not public",
     "deal__confidential_comment": "Comment on not public",
 }
+
+deal_headers = deal_fields.values()
 location_headers = [
     "ID",
     "Deal ID",
@@ -246,17 +249,6 @@ class Choices:
 
 
 mchoices = Choices()
-
-deal_fields_top_investor = []
-for f in deal_fields.keys():
-    if f == "top_investors":
-        deal_fields_top_investor += [
-            "top_investors__id",
-            "top_investors__active_version__name",
-            "top_investors__active_version__country__name",
-        ]
-    else:
-        deal_fields_top_investor += [f]
 
 investor_headers = [
     "Investor ID",
@@ -355,12 +347,198 @@ def bool_cast(data, field) -> None:
     data[field] = "Yes" if data[field] else "No"
 
 
+def deal_qs_to_values(qs: QuerySet[DealVersion2]):
+    return (
+        qs.values(
+            "deal_id",
+            "is_public",
+            "transnational",
+            "deal_size",
+            "current_contract_size",
+            "current_production_size",
+            "current_negotiation_status",
+            "current_implementation_status",
+            "intended_size",
+            "contract_size",
+            "production_size",
+            "land_area_comment",
+            "intention_of_investment",
+            "intention_of_investment_comment",
+            "nature_of_deal",
+            "nature_of_deal_comment",
+            "negotiation_status",
+            "negotiation_status_comment",
+            "implementation_status",
+            "implementation_status_comment",
+            "purchase_price",
+            "purchase_price_currency",
+            "purchase_price_type",
+            "purchase_price_area",
+            "purchase_price_comment",
+            "annual_leasing_fee",
+            "annual_leasing_fee_currency",
+            "annual_leasing_fee_type",
+            "annual_leasing_fee_area",
+            "annual_leasing_fee_comment",
+            "contract_farming",
+            "on_the_lease_state",
+            "on_the_lease",
+            "off_the_lease_state",
+            "off_the_lease",
+            "contract_farming_comment",
+            "total_jobs_created",
+            "total_jobs_planned",
+            "total_jobs_planned_employees",
+            "total_jobs_planned_daily_workers",
+            "total_jobs_current",
+            "total_jobs_created_comment",
+            "foreign_jobs_created",
+            "foreign_jobs_planned",
+            "foreign_jobs_planned_employees",
+            "foreign_jobs_planned_daily_workers",
+            "foreign_jobs_current",
+            "foreign_jobs_created_comment",
+            "domestic_jobs_created",
+            "domestic_jobs_planned",
+            "domestic_jobs_planned_employees",
+            "domestic_jobs_planned_daily_workers",
+            "domestic_jobs_current",
+            "domestic_jobs_created_comment",
+            "involved_actors",
+            "project_name",
+            "investment_chain_comment",
+            "name_of_community",
+            "name_of_indigenous_people",
+            "people_affected_comment",
+            "recognition_status",
+            "recognition_status_comment",
+            "community_consultation",
+            "community_consultation_comment",
+            "community_reaction",
+            "community_reaction_comment",
+            "land_conflicts",
+            "land_conflicts_comment",
+            "displacement_of_people",
+            "displaced_people",
+            "displaced_households",
+            "displaced_people_from_community_land",
+            "displaced_people_within_community_land",
+            "displaced_households_from_fields",
+            "displaced_people_on_completion",
+            "displacement_of_people_comment",
+            "negative_impacts",
+            "negative_impacts_comment",
+            "promised_compensation",
+            "received_compensation",
+            "promised_benefits",
+            "promised_benefits_comment",
+            "materialized_benefits",
+            "materialized_benefits_comment",
+            "presence_of_organizations",
+            "former_land_owner",
+            "former_land_owner_comment",
+            "former_land_use",
+            "former_land_use_comment",
+            "former_land_cover",
+            "former_land_cover_comment",
+            "crops",
+            "crops_comment",
+            "animals",
+            "animals_comment",
+            "mineral_resources",
+            "mineral_resources_comment",
+            "contract_farming_crops",
+            "contract_farming_crops_comment",
+            "contract_farming_animals",
+            "contract_farming_animals_comment",
+            "electricity_generation",
+            "electricity_generation_comment",
+            "carbon_sequestration",
+            "carbon_sequestration_comment",
+            "has_domestic_use",
+            "domestic_use",
+            "has_export",
+            "export",
+            "export_country1",
+            "export_country1_ratio",
+            "export_country2",
+            "export_country2_ratio",
+            "export_country3",
+            "export_country3_ratio",
+            "use_of_produce_comment",
+            "in_country_processing",
+            "in_country_processing_comment",
+            "in_country_processing_facilities",
+            "in_country_end_products",
+            "water_extraction_envisaged",
+            "water_extraction_envisaged_comment",
+            "source_of_water_extraction",
+            "source_of_water_extraction_comment",
+            "how_much_do_investors_pay_comment",
+            "water_extraction_amount",
+            "water_extraction_amount_comment",
+            "use_of_irrigation_infrastructure",
+            "use_of_irrigation_infrastructure_comment",
+            "water_footprint",
+            "gender_related_information",
+            "overall_comment",
+            "deal__confidential",
+            "deal__confidential_comment",
+            "deal__country",
+            "deal__fully_updated_at",
+        )
+        .annotate(
+            operating_company=Case(
+                When(operating_company__active_version_id=None, then=None),
+                default=JSONObject(
+                    investor_id="operating_company__active_version__investor_id",
+                    name="operating_company__active_version__name",
+                    country__name="operating_company__active_version__country__name",
+                    classification="operating_company__active_version__classification",
+                    homepage="operating_company__active_version__homepage",
+                    opencorporates="operating_company__active_version__opencorporates",
+                    comment="operating_company__active_version__comment",
+                ),
+            )
+        )
+        .annotate(
+            top_investors=(
+                ArraySubquery(
+                    DealTopInvestors2.objects.exclude(investorhull__active_version=None)
+                    .filter(investorhull__deleted=False)
+                    .filter(dealversion2_id=OuterRef("id"))
+                    .order_by("-id")
+                    .annotate(
+                        active_version=JSONObject(
+                            name="investorhull__active_version__name",
+                            country_name="investorhull__active_version__country__name",
+                        )
+                    )
+                    .values(
+                        json=JSONObject(
+                            id="investorhull_id", active_version="active_version"
+                        )
+                    )
+                )
+            )
+        )
+    )
+
+
+def parse_date(d: str):
+    if not d:
+        return ""
+    try:
+        return datetime.strptime(d, "%Y-%m-%d").date()
+    except ValueError:
+        return d
+
+
 class DataDownload:
     def __init__(self, request):
         self.request = request
         self.user = request.user
         deal_id = self.request.GET.get("deal_id")
-        filters = self.request.GET.get("filters")
         self.subset = self.request.GET.get("subset", "PUBLIC")
         self.return_format = self.request.GET.get("format", "html")
 
@@ -371,15 +549,14 @@ class DataDownload:
 
     def _single_deal(self, deal_id):
         dealhull = DealHull.objects.visible(self.user, self.subset).get(id=deal_id)
-        dealversions = DealVersion2.objects.filter(id=dealhull.active_version_id)
+        dealversions: QuerySet[DealVersion2] = DealVersion2.objects.filter(
+            id=dealhull.active_version_id
+        )
 
         version = dealversions[0]
 
         self.deals = [
-            self.deal_download_format(qs_dict)
-            for qs_dict in qs_values_to_dict(
-                dealversions, deal_fields_top_investor, ["top_investors"]
-            )
+            self.deal_download_format(d) for d in deal_qs_to_values(dealversions)
         ]
 
         self.locations = self.location_download_format(version.locations.all())
@@ -402,11 +579,11 @@ class DataDownload:
 
             self.investors = self.investor_download_format(all_investors)
             self.involvements = self.involvement_download_format(all_involvements)
-            # print(all_involvements)
-            # print(self.involvements)
+
         self.filename = f"deal_{deal_id}"
 
     def _multiple_deals(self, filtersx):
+        print(filtersx)
         dealhulls = DealHull.objects.visible(self.user, subset=self.subset)
         if filtersx:
             dealhulls = dealhulls.filter(_parse_filter(filtersx))
@@ -415,17 +592,7 @@ class DataDownload:
             id__in=dealhulls.values_list("active_version_id", flat=True)
         ).order_by("deal_id")
 
-        # deal_ids = qs.values_list("id", flat=True)
-
-        self.deals = sorted(
-            [
-                self.deal_download_format(qs_dict)
-                for qs_dict in qs_values_to_dict(
-                    qs, deal_fields_top_investor, ["top_investors"]
-                )
-            ],
-            key=lambda x: x[0],
-        )
+        self.deals = [self.deal_download_format(d) for d in deal_qs_to_values(qs)]
 
         self.locations = []
         for d in qs:
@@ -457,7 +624,7 @@ class DataDownload:
 
     def html(self):
         ctx = {
-            "deal_headers": deal_fields.values(),
+            "deal_headers": deal_headers,
             "deals": self.deals,
             "location_headers": location_headers,
             "locations": self.locations,
@@ -484,7 +651,7 @@ class DataDownload:
 
         # Deals tab
         ws_deals = wb.create_sheet(title="Deals")
-        ws_deals.append(list(deal_fields.values()))
+        ws_deals.append(list(deal_headers))
         for item in self.deals:
             try:
                 ws_deals.append(item)
@@ -538,7 +705,7 @@ class DataDownload:
         zip_file = zipfile.ZipFile(result, "w")
 
         # Deals CSV
-        deals_data = [list(deal_fields.values())] + self.deals
+        deals_data = [list(deal_headers)] + self.deals
         zip_file.writestr("deals.csv", self._csv_writer(deals_data))
 
         # Locations CSV
@@ -584,48 +751,43 @@ class DataDownload:
             )
 
         # flatten top investors
-        # ic(data["top_investors"])
         data["top_investors"] = "|".join(
             [
                 "#".join(
                     [
-                        ti["active_version"]["name"]
+                        ti["active_version"]
+                        .get("name", "")
                         .replace("#", "")
                         .replace("\n", "")
                         .strip(),
                         str(ti["id"]),
-                        (
-                            ti["active_version"]["country__name"]
-                            if "country__name" in ti["active_version"]
-                            else ""
-                        ),
+                        ti["active_version"].get("country_name", "") or "",
                     ]
                 )
                 for ti in sorted(data["top_investors"], key=lambda x: x["id"])
                 if ti["id"]
             ]
         )
+
         # map operating company fields
         if oc := data["operating_company"]:
-            av = oc["active_version"]
-            data["operating_company__active_version__investor_id"] = av["investor_id"]
-            data["operating_company__active_version__name"] = av["name"]
+            data["operating_company__active_version__investor_id"] = oc["investor_id"]
+            data["operating_company__active_version__name"] = oc["name"]
 
-            data["operating_company__active_version__country__name"] = av["country"][
-                "name"
+            data["operating_company__active_version__country__name"] = oc[
+                "country__name"
             ]
-
             data["operating_company__active_version__classification"] = (
-                classification_choices.get(av["classification"], "")
+                classification_choices.get(oc["classification"], "")
             )
 
-            data["operating_company__active_version__homepage"] = av["homepage"]
-            data["operating_company__active_version__opencorporates"] = av[
+            data["operating_company__active_version__homepage"] = oc["homepage"]
+            data["operating_company__active_version__opencorporates"] = oc[
                 "opencorporates"
             ]
-            data["operating_company__active_version__comment"] = av["comment"]
+            data["operating_company__active_version__comment"] = oc["comment"]
 
-        # TODO 100% Compat hacks
+        # TODO LATER 100% Compat hacks
         data["deal_size"] = f'{data["deal_size"]:.2f}' if data["deal_size"] else 0.0
         data["current_contract_size"] = (
             f'{data["current_contract_size"]:.2f}'
@@ -651,7 +813,7 @@ class DataDownload:
             neg_stat, neg_stat
         )
 
-        fully_updated_at = data["deal"]["fully_updated_at"]
+        fully_updated_at = data["deal__fully_updated_at"]
         if fully_updated_at:
             data["deal__fully_updated_at"] = fully_updated_at.isoformat()
 
@@ -728,8 +890,13 @@ class DataDownload:
             data["annual_leasing_fee_type"] = dict(choices.HA_AREA_CHOICES)[
                 data["annual_leasing_fee_type"]
             ]
-        # if data.get("annual_leasing_fee_area"):
-        #     data["annual_leasing_fee_area"] = data["annual_leasing_fee_area"]
+        if data.get("annual_leasing_fee_area"):
+            # TODO LATER 100% Compat hacks
+            data["annual_leasing_fee_area"] = (
+                f'{data["annual_leasing_fee_area"]:.2f}'
+                if data["annual_leasing_fee_area"]
+                else 0.0
+            )
 
         bool_cast(data, "contract_farming")
 
@@ -847,7 +1014,7 @@ class DataDownload:
         bool_cast(data, "fully_updated")
         bool_cast(data, "confidential")
 
-        data["deal__country"] = mchoices.get("country")[data["deal"]["country"]]
+        data["deal__country"] = mchoices.get("country")[data["deal__country"]]
 
         for country in [
             "export_country1",
@@ -948,10 +1115,7 @@ class DataDownload:
         )
         bool_cast(data, "use_of_irrigation_infrastructure")
 
-        data["deal__confidential"] = data["deal"]["confidential"]
         bool_cast(data, "deal__confidential")
-
-        # xx = [data.get(field, "") or "" for field in deal_fields.keys()]
 
         xx = [
             (
@@ -1010,14 +1174,10 @@ class DataDownload:
                 x["nid"],
                 x["dealversion__deal_id"],
                 x["number"],
-                (
-                    parse(x["date_or_empty"]).date() if x["date_or_empty"] else ""
-                ),  # TODO 100% Compat hack
-                (
-                    parse(x["expiration_date_or_empty"]).date()
-                    if x["expiration_date_or_empty"]
-                    else ""
-                ),  # TODO 100% Compat hack
+                parse_date(x["date_or_empty"]),  # TODO LATER 100% Compat hack
+                parse_date(
+                    x["expiration_date_or_empty"]
+                ),  # TODO LATER 100% Compat hack
                 x["agreement_duration"],
                 x["comment"],
             ]
@@ -1053,9 +1213,7 @@ class DataDownload:
                 x["url"],
                 x["public_file"],
                 x["publication_title"],
-                (
-                    parse(x["date_or_empty"]).date() if x["date_or_empty"] else ""
-                ),  # TODO 100% Compat hack
+                parse_date(x["date_or_empty"]),  # TODO LATER 100% Compat hack
                 x["name"],
                 x["company"],
                 x["email"],

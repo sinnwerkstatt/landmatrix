@@ -13,7 +13,7 @@ from apps.accounts.serializers import UserSerializer, UserListSerializer
 from apps.landmatrix.permissions import IsReporterOrHigher
 
 
-# TODO unused, but maybe helpful
+# unused, but maybe helpful
 # def has_authorization_for_country(user: User, country: Country | int) -> bool:
 #     if isinstance(country, int):
 #         country = Country.objects.get(id=country)

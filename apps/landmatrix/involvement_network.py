@@ -52,11 +52,13 @@ class InvolvementNetwork:
         all_involvements: QuerySet[Involvement] = Involvement.objects.filter(
             Q(parent_investor_id__in=investor_ids)
             | Q(child_investor_id__in=investor_ids)
-        )
+        ).order_by("id")
 
-        all_investors: QuerySet[InvestorHull] = InvestorHull.objects.filter(
-            id__in=investor_ids
-        ).exclude(active_version=None)
+        all_investors: QuerySet[InvestorHull] = (
+            InvestorHull.objects.filter(id__in=investor_ids)
+            .exclude(active_version=None)
+            .order_by("id")
+        )
         return all_investors, all_involvements, edges, min_depth
 
     def get_network_x(
