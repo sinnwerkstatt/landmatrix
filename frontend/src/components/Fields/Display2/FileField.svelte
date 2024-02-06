@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { env } from "$env/dynamic/public"
+
   import EyeSlashIcon from "$components/icons/EyeSlashIcon.svelte"
   import FilePdfIcon from "$components/icons/FilePdfIcon.svelte"
 
@@ -9,7 +11,7 @@
   $: fileName = value.substring(value.lastIndexOf("/") + 1)
 </script>
 
-<a href={value} rel="noreferrer" target="_blank">
+<a href="{env.PUBLIC_MEDIA_URL}{value}" rel="noreferrer" target="_blank">
   {#if extras.notPublic}
     <EyeSlashIcon />
   {/if}

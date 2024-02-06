@@ -104,3 +104,5 @@
   {$_("Supported file types: ")}{ACCEPTED_EXTENSIONS.join(", ")}
 </small>
 <small class="block text-gray-500">{$_("Maximum file size: 10MB")}</small>
+
+<slot />

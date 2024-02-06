@@ -2,6 +2,7 @@ from django.contrib.gis.geos import GEOSGeometry
 from django.db.models import Q, QuerySet, F
 from django.db.models.functions import JSONObject
 from django.utils.translation import gettext as _
+from icecream import ic
 from rest_framework import serializers
 
 from apps.landmatrix.models import FieldDefinition
@@ -115,7 +116,16 @@ class LocationSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class DealDataSourceSerializer(serializers.ModelSerializer):
+class _BaseDataSourceSerializer(serializers.ModelSerializer):
+    file = serializers.SerializerMethodField()
+
+    @staticmethod
+    def get_file(obj: DealDataSource):
+        if obj.file:
+            return obj.file.name
+
+
+class DealDataSourceSerializer(_BaseDataSourceSerializer):
     class Meta:
         model = DealDataSource
         fields = "__all__"
@@ -333,7 +343,7 @@ class InvestorVersionVersionsListSerializer(serializers.ModelSerializer):
         ]
 
 
-class InvestorDataSourceSerializer(serializers.ModelSerializer):
+class InvestorDataSourceSerializer(_BaseDataSourceSerializer):
     class Meta:
         model = InvestorDataSource
         fields = "__all__"
