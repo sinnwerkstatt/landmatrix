@@ -1135,7 +1135,7 @@ class DataDownload:
                 x["nid"],
                 x["dealversion__deal_id"],
                 (
-                    choices.LOCATION_ACCURACY[x["level_of_accuracy"]]
+                    choices.LOCATION_ACCURACY_MAP[x["level_of_accuracy"]]
                     if x["level_of_accuracy"]
                     else ""
                 ),
@@ -1297,7 +1297,7 @@ class DataDownload:
                 choices.INVOLVEMENT_ROLE_DICT[x["role"]] if x["role"] else "",
                 "|".join(
                     [
-                        str(choices.INVESTMENT_TYPE_DICT[y])
+                        str(choices.INVESTMENT_TYPE_MAP[y])
                         for y in x["investment_type"]
                         if y
                     ]

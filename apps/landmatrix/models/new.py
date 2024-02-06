@@ -798,7 +798,7 @@ class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
             # close unresolved workflowinfos
             self.workflowinfos.all().update(resolved=True)
         elif new_status == "TO_DRAFT":
-            self.fully_updated = False  # TODO: reset this? maybe better not.
+            self.fully_updated = False  # TODO Kurt reset this? maybe better not.
             self.save()
 
             deal = self.deal
@@ -809,7 +809,7 @@ class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
             self.workflowinfos.filter(
                 Q(status_before__in=["REVIEW", "ACTIVATION"])
                 & Q(status_after="DRAFT")
-                # TODO: https://git.sinntern.de/landmatrix/landmatrix/-/issues/404
+                # TODO Marcus: https://git.sinntern.de/landmatrix/landmatrix/-/issues/404
                 & (Q(from_user=user) | Q(to_user=user))
             ).update(resolved=True)
 
@@ -843,7 +843,7 @@ class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
 
     def _calculate_parent_companies(self) -> None:
         pass
-        # TODO
+        # TODO Nuts
         # if self.operating_company_id:
         #     oc = Investor.objects.filter(
         #         id=self.operating_company_id,
@@ -993,6 +993,7 @@ class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
         # by definition True, if no operating company exists (or it is deleted)
         if not self.operating_company_id:
             return True
+        # TODO Nuts InvestorHull
         oc = Investor.objects.get(id=self.operating_company_id)
         # TODO status-deleted?
         # if oc.status == STATUS["DELETED"]:

@@ -56,7 +56,6 @@ class Version(models.Model):
     def save(self, *args, **kwargs):
         if not self.pk and not self.created_at:
             self.created_at = timezone.now()
-        # TODO: This ought to be refactored already.
         # It's not very nice to just strip the modified_at timestamp out of
         # the serialized data :S
         self.modified_at = self.serialized_data["modified_at"]

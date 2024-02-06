@@ -501,8 +501,8 @@ msgstr "Tierra marginal"
 msgid "Wetland"
 msgstr "Humedales"
 
-msgid "Other land (e.g. developed land – specify in comment field)"
-msgstr "Otras tierras (ej. terrenos urbanizados - especifíquese en el campo para comentarios)"
+msgid "Other land (e.g. developed land)"
+msgstr "Otras tierras (ej. terrenos urbanizados)"
 
 msgid "Accacia"
 msgstr "Accacia"
@@ -1020,8 +1020,8 @@ msgstr "Información personal"
 msgid "Crowdsourcing"
 msgstr "Abastecimiento colectivo"
 
-msgid "Other (Please specify in comment field)"
-msgstr "Otro (por favor, especifique en el campo para comentarios)"
+msgid "Please specify in comment field"
+msgstr "por favor, especifique en el campo para comentarios"
 
 msgid "Country"
 msgstr "País"
@@ -1473,8 +1473,8 @@ msgstr "Emprendedor individual"
 msgid "Non - Profit organization (e.g. Church, University etc.)"
 msgstr "Organización Sin Ánimo de Lucro (ej. Iglesia, Universidad etc.)"
 
-msgid "Other (please specify in comment field)"
-msgstr "Otro (por favor, especifique en el campo para comentarios)"
+msgid "please specify in comment field"
+msgstr "por favor, especifique en el campo para comentarios"
 
 msgid "Classification"
 msgstr "Clasificación"

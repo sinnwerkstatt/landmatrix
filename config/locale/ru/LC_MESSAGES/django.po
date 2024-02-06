@@ -503,8 +503,8 @@ msgstr "Малопродуктивные земли"
 msgid "Wetland"
 msgstr "Заболоченные земли"
 
-msgid "Other land (e.g. developed land – specify in comment field)"
-msgstr "Иное (например, \"район застройки\" – укажите в поле для комментариев)"
+msgid "Other land (e.g. developed land)"
+msgstr "Иное (например, \"район застройки\")"
 
 msgid "Accacia"
 msgstr "Аккация"
@@ -1022,8 +1022,8 @@ msgstr "Личные сведения"
 msgid "Crowdsourcing"
 msgstr "Краудсорсинг"
 
-msgid "Other (Please specify in comment field)"
-msgstr "Иное (пожалуйста, уточните в поле для комментирования)"
+msgid "Please specify in comment field"
+msgstr "пожалуйста, уточните в поле для комментирования"
 
 msgid "Country"
 msgstr "Страна"
@@ -1475,8 +1475,8 @@ msgstr "Частный предприниматель"
 msgid "Non - Profit organization (e.g. Church, University etc.)"
 msgstr "Неприбыльная организация (например, церковь, университет, др.)"
 
-msgid "Other (please specify in comment field)"
-msgstr "Иное (пожалуйста, уточните в поле для комментариев)"
+msgid "please specify in comment field"
+msgstr "пожалуйста, уточните в поле для комментариев"
 
 msgid "Classification"
 msgstr "Классификация"

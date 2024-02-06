@@ -77,57 +77,6 @@ INTENTION_OF_INVESTMENT_ITEMS = [
     {"value": "TOURISM", "label": _("Tourism"), "group": _("Other")},
     {"value": "OTHER", "label": _("Other"), "group": _("Other")},
 ]
-
-
-INTENTION_CHOICES_GROUPED = [
-    # agriculture
-    (
-        _("Agriculture"),
-        [
-            ("BIOFUELS", _("Biomass for biofuels")),
-            ("BIOMASS_ENERGY_GENERATION", _("Biomass for energy generation")),
-            ("FODDER", _("Fodder")),
-            ("FOOD_CROPS", _("Food crops")),
-            ("LIVESTOCK", _("Livestock")),
-            ("NON_FOOD_AGRICULTURE", _("Non-food agricultural commodities")),
-            ("AGRICULTURE_UNSPECIFIED", _("Agriculture unspecified")),
-        ],
-    ),
-    # forest
-    (
-        _("Forestry"),
-        [
-            ("BIOMASS_ENERGY_PRODUCTION", _("Biomass for energy generation")),
-            ("CARBON", _("For carbon sequestration/REDD")),
-            ("FOREST_LOGGING", _("Forest logging / management for wood and fiber")),
-            ("TIMBER_PLANTATION", _("Timber plantation for wood and fiber")),
-            ("FORESTRY_UNSPECIFIED", _("Forestry unspecified")),
-        ],
-    ),
-    # renewable
-    (
-        _("Renewable energy power plants"),
-        (
-            ("SOLAR_PARK", _("Solar park")),
-            ("WIND_FARM", _("Wind farm")),
-            ("RENEWABLE_ENERGY", _("Renewable energy unspecified")),
-        ),
-    ),
-    # other
-    (
-        _("Other"),
-        [
-            ("CONVERSATION", _("Conservation")),
-            ("INDUSTRY", _("Industry")),
-            ("LAND_SPECULATION", _("Land speculation")),
-            ("MINING", _("Mining")),
-            ("OIL_GAS_EXTRACTION", _("Oil / Gas extraction")),
-            ("TOURISM", _("Tourism")),
-            ("OTHER", _("Other")),
-        ],
-    ),
-]
-
 INTENTION_CHOICES = [(x["value"], x["label"]) for x in INTENTION_OF_INVESTMENT_ITEMS]
 
 NATURE_OF_DEAL_ITEMS = [
@@ -143,9 +92,7 @@ NATURE_OF_DEAL_ITEMS = [
     {"value": "PURE_CONTRACT_FARMING", "label": _("Pure contract farming")},
     {"value": "OTHER", "label": _("Other")},
 ]
-
 NATURE_OF_DEAL_CHOICES = [(x["value"], x["label"]) for x in NATURE_OF_DEAL_ITEMS]
-
 
 NEGOTIATION_STATUS_ITEMS = [
     {
@@ -204,27 +151,11 @@ IMPLEMENTATION_STATUS_CHOICES = [
     (x["value"], x["label"]) for x in IMPLEMENTATION_STATUS_ITEMS
 ]
 
-ACTOR_ITEMS = [
-    {
-        "value": "GOVERNMENT_OR_STATE_INSTITUTIONS",
-        "label": _(
-            "Government / state institutions (government, ministries, departments, agencies etc.)"
-        ),
-    },
-    {
-        "value": "TRADITIONAL_LAND_OWNERS_OR_COMMUNITIES",
-        "label": _("Traditional land-owners / communities"),
-    },
-    {
-        "value": "TRADITIONAL_LOCAL_AUTHORITY",
-        "label": _("Traditional local authority (e.g. Chiefdom council / Chiefs)"),
-    },
-    {"value": "BROKER", "label": _("Broker")},
-    {"value": "INTERMEDIARY", "label": _("Intermediary")},
-    {"value": "OTHER", "label": _("Other (please specify)")},
+HA_AREA_ITEMS = [
+    {"value": "PER_HA", "label": _("per ha")},
+    {"value": "PER_AREA", "label": _("for specified area")},
 ]
-ACTOR_MAP = [(x["value"], x["label"]) for x in ACTOR_ITEMS]
-
+HA_AREA_CHOICES = [(x["value"], x["label"]) for x in HA_AREA_ITEMS]
 
 RECOGNITION_STATUS_ITEMS = [
     {
@@ -252,12 +183,30 @@ RECOGNITION_STATUS_ITEMS = [
         ),
     },
 ]
-
 RECOGNITION_STATUS_CHOICES = [
     (x["value"], x["label"]) for x in RECOGNITION_STATUS_ITEMS
 ]
 
-NEGATIVE_IMPACTS_ITEMS = (
+COMMUNITY_CONSULTATION_ITEMS = [
+    {"value": "NOT_CONSULTED", "label": _("Not consulted")},
+    {"value": "LIMITED_CONSULTATION", "label": _("Limited consultation")},
+    {"value": "FPIC", "label": _("Free, Prior and Informed Consent (FPIC)")},
+    {"value": "OTHER", "label": _("Other")},
+]
+COMMUNITY_CONSULTATION_CHOICES = [
+    (x["value"], x["label"]) for x in COMMUNITY_CONSULTATION_ITEMS
+]
+
+COMMUNITY_REACTION_ITEMS = [
+    {"value": "CONSENT", "label": _("Consent")},
+    {"value": "MIXED_REACTION", "label": _("Mixed reaction")},
+    {"value": "REJECTION", "label": _("Rejection")},
+]
+COMMUNITY_REACTION_CHOICES = [
+    (x["value"], x["label"]) for x in COMMUNITY_REACTION_ITEMS
+]
+
+NEGATIVE_IMPACTS_ITEMS = [
     {"value": "ENVIRONMENTAL_DEGRADATION", "label": _("Environmental degradation")},
     {"value": "SOCIO_ECONOMIC", "label": _("Socio-economic")},
     {"value": "CULTURAL_LOSS", "label": _("Cultural loss")},
@@ -265,10 +214,8 @@ NEGATIVE_IMPACTS_ITEMS = (
     {"value": "DISPLACEMENT", "label": _("Displacement")},
     {"value": "VIOLENCE", "label": _("Violence")},
     {"value": "OTHER", "label": _("Other")},
-)
-
+]
 NEGATIVE_IMPACTS_CHOICES = [(x["value"], x["label"]) for x in NEGATIVE_IMPACTS_ITEMS]
-
 
 BENEFITS_ITEMS = [
     {"value": "HEALTH", "label": _("Health")},
@@ -315,31 +262,6 @@ FORMER_LAND_USE_ITEMS = [
 ]
 FORMER_LAND_USE_CHOICES = [(x["value"], x["label"]) for x in FORMER_LAND_USE_ITEMS]
 
-HA_AREA_ITEMS = [
-    {"value": "PER_HA", "label": _("per ha")},
-    {"value": "PER_AREA", "label": _("for specified area")},
-]
-HA_AREA_CHOICES = [(x["value"], x["label"]) for x in HA_AREA_ITEMS]
-COMMUNITY_CONSULTATION_ITEMS = [
-    {"value": "NOT_CONSULTED", "label": _("Not consulted")},
-    {"value": "LIMITED_CONSULTATION", "label": _("Limited consultation")},
-    {"value": "FPIC", "label": _("Free, Prior and Informed Consent (FPIC)")},
-    {"value": "OTHER", "label": _("Other")},
-]
-COMMUNITY_CONSULTATION_CHOICES = [
-    (x["value"], x["label"]) for x in COMMUNITY_CONSULTATION_ITEMS
-]
-
-COMMUNITY_REACTION_ITEMS = [
-    {"value": "CONSENT", "label": _("Consent")},
-    {"value": "MIXED_REACTION", "label": _("Mixed reaction")},
-    {"value": "REJECTION", "label": _("Rejection")},
-]
-
-COMMUNITY_REACTION_CHOICES = [
-    (x["value"], x["label"]) for x in COMMUNITY_REACTION_ITEMS
-]
-
 FORMER_LAND_COVER_ITEMS = [
     {
         "value": "CROPLAND",
@@ -352,11 +274,10 @@ FORMER_LAND_COVER_ITEMS = [
     {"value": "WETLAND", "label": _("Wetland")},
     {
         "value": "OTHER_LAND",
-        "label": _("Other land (e.g. developed land – specify in comment field)"),
+        "label": _("Other land (e.g. developed land)"),
     },
 ]
 FORMER_LAND_COVER_CHOICES = [(x["value"], x["label"]) for x in FORMER_LAND_COVER_ITEMS]
-
 
 CROPS_ITEMS = [
     {"value": "ACC", "label": _("Accacia"), "produce": "NON_FOOD"},
@@ -459,7 +380,6 @@ CROPS_ITEMS = [
     {"value": "WHT", "label": _("Wheat"), "produce": "FOOD_CROP"},
     {"value": "YAM", "label": _("Yam"), "produce": "FOOD_CROP"},
 ]
-
 CROPS_CHOICES = [(x["value"], x["label"]) for x in CROPS_ITEMS]
 
 ANIMALS_ITEMS = [
@@ -476,49 +396,6 @@ ANIMALS_ITEMS = [
     {"value": "SHR", "label": _("Shrimp")},
 ]
 ANIMALS_CHOICES = [(x["value"], x["label"]) for x in ANIMALS_ITEMS]
-
-ELECTRICITY_GENERATION_ITEMS = [
-    {"value": "WIND", "label": _("On-shore wind turbines")},
-    {"value": "PHOTOVOLTAIC", "label": _("Solar (Photovoltaic)")},
-    {"value": "SOLAR_HEAT", "label": _("Solar (Thermal system)")},
-]
-ELECTRICITY_GENERATIONS_CHOICES = [
-    (x["value"], x["label"]) for x in ELECTRICITY_GENERATION_ITEMS
-]
-
-CARBON_SEQUESTRATION_ITEMS = [
-    {"value": "REFORESTATION", "label": _("Reforestation & afforestation")},
-    {"value": "AVOIDED_FOREST_CONVERSION", "label": _("Avoided forest conversion")},
-    {
-        "value": "AVOIDED_GRASSLAND_CONVERSION",
-        "label": _("Avoided grassland conversion"),
-    },
-    {"value": "PEATLAND_RESTORATION", "label": _("Peatland restoration")},
-    {"value": "IMPROVED_FOREST_MANAGEMENT", "label": _("Improved forest management")},
-    {"value": "SUSTAINABLE_AGRICULTURE", "label": _("Sustainable agriculture")},
-    {
-        "value": "SUSTAINABLE_GRASSLAND_MANAGEMENT",
-        "label": _("Sustainable grassland management"),
-    },
-    {"value": "RICE_EMISSION_REDUCTIONS", "label": _("Rice emission reductions")},
-    {"value": "OTHER", "label": _("Other (please specify in a comment)")},
-]
-CARBON_SEQUESTRATION_CHOICES = [
-    (x["value"], x["label"]) for x in CARBON_SEQUESTRATION_ITEMS
-]
-
-CARBON_SEQUESTRATION_CERT_ITEMS = [
-    {"value": "REDD", "label": _("REDD+")},
-    {"value": "VCS", "label": _("Verified Carbon Standard (VCS)")},
-    {"value": "GOLD", "label": _("Gold Standard for the Global Goals (GOLD)")},
-    {"value": "CDM", "label": _("Clean Development Mechanism (CDM)")},
-    {"value": "CAR", "label": _("Climate Action Reserve (CAR)")},
-    {"value": "VIVO", "label": _("Plan Vivo")},
-    {"value": "OTHER", "label": _("Other (please specify in a comment)")},
-]
-CARBON_SEQUESTRATION_CERT_CHOICES = [
-    (x["value"], x["label"]) for x in CARBON_SEQUESTRATION_CERT_ITEMS
-]
 
 MINERALS_ITEMS = [
     {"value": "ALU", "label": _("Aluminum")},
@@ -574,13 +451,76 @@ MINERALS_ITEMS = [
 ]
 MINERALS_CHOICES = [(x["value"], x["label"]) for x in MINERALS_ITEMS]
 
+ACTOR_ITEMS = [
+    {
+        "value": "GOVERNMENT_OR_STATE_INSTITUTIONS",
+        "label": _(
+            "Government / state institutions (government, ministries, departments, agencies etc.)"
+        ),
+    },
+    {
+        "value": "TRADITIONAL_LAND_OWNERS_OR_COMMUNITIES",
+        "label": _("Traditional land-owners / communities"),
+    },
+    {
+        "value": "TRADITIONAL_LOCAL_AUTHORITY",
+        "label": _("Traditional local authority (e.g. Chiefdom council / Chiefs)"),
+    },
+    {"value": "BROKER", "label": _("Broker")},
+    {"value": "INTERMEDIARY", "label": _("Intermediary")},
+    {"value": "OTHER", "label": _("Other")},
+]
+ACTOR_MAP = [(x["value"], x["label"]) for x in ACTOR_ITEMS]
+
+ELECTRICITY_GENERATION_ITEMS = [
+    {"value": "WIND", "label": _("On-shore wind turbines")},
+    {"value": "PHOTOVOLTAIC", "label": _("Solar (Photovoltaic)")},
+    {"value": "SOLAR_HEAT", "label": _("Solar (Thermal system)")},
+]
+ELECTRICITY_GENERATIONS_CHOICES = [
+    (x["value"], x["label"]) for x in ELECTRICITY_GENERATION_ITEMS
+]
+
+CARBON_SEQUESTRATION_ITEMS = [
+    {"value": "REFORESTATION", "label": _("Reforestation & afforestation")},
+    {"value": "AVOIDED_FOREST_CONVERSION", "label": _("Avoided forest conversion")},
+    {
+        "value": "AVOIDED_GRASSLAND_CONVERSION",
+        "label": _("Avoided grassland conversion"),
+    },
+    {"value": "PEATLAND_RESTORATION", "label": _("Peatland restoration")},
+    {"value": "IMPROVED_FOREST_MANAGEMENT", "label": _("Improved forest management")},
+    {"value": "SUSTAINABLE_AGRICULTURE", "label": _("Sustainable agriculture")},
+    {
+        "value": "SUSTAINABLE_GRASSLAND_MANAGEMENT",
+        "label": _("Sustainable grassland management"),
+    },
+    {"value": "RICE_EMISSION_REDUCTIONS", "label": _("Rice emission reductions")},
+    {"value": "OTHER", "label": _("Other")},
+]
+CARBON_SEQUESTRATION_CHOICES = [
+    (x["value"], x["label"]) for x in CARBON_SEQUESTRATION_ITEMS
+]
+
+CARBON_SEQUESTRATION_CERT_ITEMS = [
+    {"value": "REDD", "label": _("REDD+")},
+    {"value": "VCS", "label": _("Verified Carbon Standard (VCS)")},
+    {"value": "GOLD", "label": _("Gold Standard for the Global Goals (GOLD)")},
+    {"value": "CDM", "label": _("Clean Development Mechanism (CDM)")},
+    {"value": "CAR", "label": _("Climate Action Reserve (CAR)")},
+    {"value": "VIVO", "label": _("Plan Vivo")},
+    {"value": "OTHER", "label": _("Other")},
+]
+CARBON_SEQUESTRATION_CERT_CHOICES = [
+    (x["value"], x["label"]) for x in CARBON_SEQUESTRATION_CERT_ITEMS
+]
+
 WATER_SOURCE_ITEMS = [
     {"value": "GROUNDWATER", "label": _("Groundwater")},
     {"value": "SURFACE_WATER", "label": _("Surface water")},
     {"value": "RIVER", "label": _("River")},
     {"value": "LAKE", "label": _("Lake")},
 ]
-
 WATER_SOURCE_CHOICES = [(x["value"], x["label"]) for x in WATER_SOURCE_ITEMS]
 
 NOT_PUBLIC_REASON_ITEMS = [
@@ -591,7 +531,6 @@ NOT_PUBLIC_REASON_ITEMS = [
     {"value": "NO_OPERATING_COMPANY", "label": _("No operating company")},
     {"value": "NO_KNOWN_INVESTOR", "label": _("No known investor")},
 ]
-
 NOT_PUBLIC_REASON_CHOICES = [(x["value"], x["label"]) for x in NOT_PUBLIC_REASON_ITEMS]
 
 DATASOURCE_TYPE_ITEMS = [
@@ -610,11 +549,9 @@ DATASOURCE_TYPE_ITEMS = [
     {"value": "PERSONAL_INFORMATION", "label": _("Personal information")},
     {"value": "CROWDSOURCING", "label": _("Crowdsourcing")},
     {"value": "OTHER", "label": _("Other")},
-    # TODO if OTHER gets selected:  "(Please specify in comment field)"
 ]
 DATASOURCE_TYPE_MAP = {x["value"]: x["label"] for x in DATASOURCE_TYPE_ITEMS}
 DATASOURCE_TYPE_CHOICES = ((k, v) for k, v in DATASOURCE_TYPE_MAP.items())
-
 
 LOCATION_ACCURACY_ITEMS = [
     {"value": "COUNTRY", "label": _("Country")},
@@ -623,20 +560,8 @@ LOCATION_ACCURACY_ITEMS = [
     {"value": "EXACT_LOCATION", "label": _("Exact location")},
     {"value": "COORDINATES", "label": _("Coordinates")},
 ]
-
-LOCATION_ACCURACY = {
-    "COUNTRY": _("Country"),
-    "ADMINISTRATIVE_REGION": _("Administrative region"),
-    "APPROXIMATE_LOCATION": _("Approximate location"),
-    "EXACT_LOCATION": _("Exact location"),
-    "COORDINATES": _("Coordinates"),
-}
-
-LOCATION_ACCURACY_OPTIONS = [
-    {"value": k, "label": v} for k, v in LOCATION_ACCURACY.items()
-]
-
-LEVEL_OF_ACCURACY_CHOICES = ((k, v) for k, v in LOCATION_ACCURACY.items())
+LOCATION_ACCURACY_MAP = {x["value"]: x["label"] for x in LOCATION_ACCURACY_ITEMS}
+LEVEL_OF_ACCURACY_CHOICES = [(x["value"], x["label"]) for x in LOCATION_ACCURACY_ITEMS]
 
 INVESTOR_CLASSIFICATION_ITEMS = [
     {"value": "GOVERNMENT", "label": _("Government")},
@@ -677,7 +602,7 @@ INVESTMENT_TYPE_ITEMS = [
     {"value": "EQUITY", "label": _("Shares/Equity")},
     {"value": "DEBT_FINANCING", "label": _("Debt financing")},
 ]
-INVESTMENT_TYPE_DICT = {x["value"]: x["label"] for x in INVESTMENT_TYPE_ITEMS}
+INVESTMENT_TYPE_MAP = {x["value"]: x["label"] for x in INVESTMENT_TYPE_ITEMS}
 INVESTMENT_TYPE_CHOICES = [(x["value"], x["label"]) for x in INVESTMENT_TYPE_ITEMS]
 
 INVOLVEMENT_ROLE_ITEMS = [
