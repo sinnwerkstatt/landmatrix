@@ -1,16 +1,14 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n"
   import { slide } from "svelte/transition"
 
   import type { DealVersion2 } from "$lib/types/newtypes"
 
   import EditSubsection from "$components/EditSubsection.svelte"
-  import CurrencyField from "$components/Fields/Edit2/CurrencyField.svelte"
   import EditField from "$components/Fields/EditField.svelte"
 
-  export let version: DealVersion2
+  import ComplexPriceEditField from "./ComplexPriceEditField.svelte"
 
-  const PERTYPES = { PER_HA: $_("per ha"), PER_AREA: $_("for specified area") }
+  export let version: DealVersion2
 </script>
 
 <form id="general">
@@ -64,7 +62,6 @@
     <EditField
       bind:value={version.negotiation_status_comment}
       fieldname="negotiation_status_comment"
-      label={$_("Comment on negotiation status")}
       showLabel
     />
   </EditSubsection>
@@ -83,20 +80,16 @@
   </EditSubsection>
 
   <EditSubsection id="purchase_price">
-    <EditField bind:value={version.purchase_price} fieldname="purchase_price" showLabel>
-      <CurrencyField bind:value={version.purchase_price_currency} />
-      <select bind:value={version.purchase_price_type} class="inpt">
-        <option value={null}>----</option>
-        <option value="PER_HA">{PERTYPES.PER_HA}</option>
-        <option value="PER_AREA">{PERTYPES.PER_AREA}</option>
-      </select>
-    </EditField>
-
-    <EditField
-      bind:value={version.purchase_price_area}
-      fieldname="purchase_price_area"
-      showLabel
+    <ComplexPriceEditField
+      bind:version
+      fields={[
+        "purchase_price",
+        "purchase_price_currency",
+        "purchase_price_type",
+        "purchase_price_area",
+      ]}
     />
+
     <EditField
       bind:value={version.purchase_price_comment}
       fieldname="purchase_price_comment"
@@ -105,23 +98,16 @@
   </EditSubsection>
 
   <EditSubsection id="leasing_fee">
-    <EditField
-      bind:value={version.annual_leasing_fee}
-      fieldname="annual_leasing_fee"
-      showLabel
-    >
-      <CurrencyField bind:value={version.annual_leasing_fee_currency} />
-      <select bind:value={version.annual_leasing_fee_type} class="inpt">
-        <option value={null}>----</option>
-        <option value="PER_HA">{PERTYPES.PER_HA}</option>
-        <option value="PER_AREA">{PERTYPES.PER_AREA}</option>
-      </select>
-    </EditField>
-    <EditField
-      bind:value={version.annual_leasing_fee_area}
-      fieldname="annual_leasing_fee_area"
-      showLabel
+    <ComplexPriceEditField
+      bind:version
+      fields={[
+        "annual_leasing_fee",
+        "annual_leasing_fee_currency",
+        "annual_leasing_fee_type",
+        "annual_leasing_fee_area",
+      ]}
     />
+
     <EditField
       bind:value={version.annual_leasing_fee_comment}
       fieldname="annual_leasing_fee_comment"
