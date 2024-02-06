@@ -7,7 +7,6 @@
 
   import { LABEL_CLASS, VALUE_CLASS, WRAPPER_CLASS } from "$components/Fields/consts"
   import Label2 from "$components/Fields/Display2/Label2.svelte"
-  import { createValueCopyNoNull } from "$components/Fields/Edit2/helpers"
   import MinusIcon from "$components/icons/MinusIcon.svelte"
   import PlusIcon from "$components/icons/PlusIcon.svelte"
 
@@ -18,11 +17,13 @@
   export let labelClass = LABEL_CLASS
   export let valueClass = VALUE_CLASS
 
-  let valueCopy = createValueCopyNoNull(value)
+  let valueCopy: InvolvedActor[] = structuredClone(
+    value.length ? value : [{ name: "", role: null }],
+  )
   $: value = valueCopy.filter(val => !!(val.name || val.role))
 
   function addEntry() {
-    valueCopy = [...valueCopy, {}]
+    valueCopy = [...valueCopy, { name: "", role: null }]
   }
   function removeEntry(index: number) {
     valueCopy = valueCopy.filter((val, i) => i !== index)
@@ -62,6 +63,7 @@
                 hasError={!!val.name && !value}
               />
             </td>
+            <!-- TODO Kurt is the role required? -->
 
             <td class="p-1">
               <button type="button" on:click={addEntry}>

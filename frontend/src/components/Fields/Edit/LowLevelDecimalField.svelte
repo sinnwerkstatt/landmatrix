@@ -7,12 +7,12 @@
   export let required = false
   export let unit: string | ComponentType = ""
   export let max: number | undefined = undefined
-  export let min: number | undefined = undefined
+  export let min: number | undefined = 0
   export let decimals = 2
 
   let step: number
   $: step = 1 / 10 ** decimals
-  // let placeholder: string
+  export let placeholder = ""
   // $: placeholder = min && max ? `${min} – ${max}` : step === 1 ? "0" : "123.45"
 
   const onInput = (event: InputEvent) => {
@@ -32,6 +32,7 @@
     {step}
     {name}
     on:input|preventDefault={onInput}
+    {placeholder}
   />
   {#if unit}
     <div class="flex items-center bg-gray-700 px-3 font-bold text-white">

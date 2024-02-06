@@ -1,4 +1,5 @@
 <script lang="ts">
+  // TODO WIP
   import { _ } from "svelte-i18n"
 
   import { fieldChoices, simpleInvestors } from "$lib/stores"
@@ -7,9 +8,9 @@
 
   import { LABEL_CLASS, VALUE_CLASS, WRAPPER_CLASS } from "$components/Fields/consts"
   import Label2 from "$components/Fields/Display2/Label2.svelte"
-  import ChoicesField from "$components/Fields/Edit2/ChoicesField.svelte"
-  import CountryField from "$components/Fields/Edit2/CountryField.svelte"
-  import TextField from "$components/Fields/Edit2/TextField.svelte"
+  import ChoicesEditField from "$components/Fields/Edit2/ChoicesEditField.svelte"
+  import CountryEditField from "$components/Fields/Edit2/CountryEditField.svelte"
+  import TextEditField from "$components/Fields/Edit2/TextEditField.svelte"
   import InvestorSelect from "$components/LowLevel/InvestorSelect.svelte"
 
   type Investor = {
@@ -105,37 +106,37 @@
         on:submit|preventDefault={addNewInvestor}
       >
         <div class="container">
-          <TextField
+          <TextEditField
             bind:value={newInvestor.name}
             fieldname="investor.name"
             label={$_("Name")}
           />
-          <CountryField
+          <CountryEditField
             bind:value={newInvestor.country}
             fieldname="investor.country"
             label={$_("Country of registration/origin")}
             required
           />
-          <ChoicesField
+          <ChoicesEditField
             bind:value={newInvestor.classification}
             choices={$fieldChoices.investor.classification}
             fieldname="investor.classification"
             label={$_("Classification")}
           />
 
-          <TextField
+          <TextEditField
             bind:value={newInvestor.homepage}
             fieldname="investor.homepage"
             label={$_("Investor homepage")}
             isURL
           />
-          <TextField
+          <TextEditField
             bind:value={newInvestor.opencorporates}
             fieldname="investor.opencorporates"
             label={$_("Opencorporates link")}
             isURL
           />
-          <TextField
+          <TextEditField
             bind:value={newInvestor.comment}
             fieldname="investor.comment"
             label={$_("Comment")}

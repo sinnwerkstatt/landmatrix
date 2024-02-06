@@ -10,7 +10,7 @@
   import LowLevelDateYearField from "$components/Fields/Edit/LowLevelDateYearField.svelte"
   import LowLevelDecimalField from "$components/Fields/Edit/LowLevelDecimalField.svelte"
   import LowLevelNullBooleanField from "$components/Fields/Edit/LowLevelNullBooleanField.svelte"
-  import ChoicesField from "$components/Fields/Edit2/ChoicesField.svelte"
+  import ChoicesEditField from "$components/Fields/Edit2/ChoicesEditField.svelte"
   import MinusIcon from "$components/icons/MinusIcon.svelte"
   import PlusIcon from "$components/icons/PlusIcon.svelte"
 
@@ -106,7 +106,7 @@
       </label>
       <label class="flex flex-wrap items-center justify-between gap-2" for={undefined}>
         {$_("Choices")}
-        <ChoicesField
+        <ChoicesEditField
           bind:value={val.choices}
           extras={{
             choices: $fieldChoices.deal.carbon_sequestration,

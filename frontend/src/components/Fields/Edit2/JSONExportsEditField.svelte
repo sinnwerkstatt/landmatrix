@@ -7,7 +7,7 @@
 
   import LowLevelDateYearField from "$components/Fields/Edit/LowLevelDateYearField.svelte"
   import LowLevelDecimalField from "$components/Fields/Edit/LowLevelDecimalField.svelte"
-  import ChoicesField from "$components/Fields/Edit2/ChoicesField.svelte"
+  import ChoicesEditField from "$components/Fields/Edit2/ChoicesEditField.svelte"
   import MinusIcon from "$components/icons/MinusIcon.svelte"
   import PlusIcon from "$components/icons/PlusIcon.svelte"
 
@@ -95,7 +95,7 @@
           />
         </td>
         <td class="w-2/6 p-1">
-          <ChoicesField {extras} bind:value={val.choices} />
+          <ChoicesEditField {extras} bind:value={val.choices} />
         </td>
         <td class="w-1/6 p-1">
           <LowLevelDecimalField

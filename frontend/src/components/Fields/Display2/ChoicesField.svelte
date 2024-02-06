@@ -13,21 +13,13 @@
   $: multipleChoices = extras.multipleChoices ?? false
   $: choices = extras.choices ?? []
 
-  const isMulti = (value: string | string[]): value is string[] => multipleChoices
-
-  function enrichValue(value: string | string[]) {
-    if (!value) return "—"
-    if (isMulti(value)) {
-      if (choices.length > 0) {
-        // console.log(choices)
-        // console.log(value)
-        return value.map(x => choices.find(c => c.value === x)?.label ?? "-").join(", ")
-      } else return value.join(", ")
-    } else {
-      if (choices.length > 0) return choices.find(c => c.value === value)?.label ?? ""
-      else return value
-    }
-  }
+  $: isMulti = (value: string | string[]): value is string[] => multipleChoices
 </script>
 
-{enrichValue(value)}
+{#if !value}
+  -
+{:else if isMulti(value)}
+  {value.map(x => choices.find(c => c.value === x)?.label ?? "-").join(", ")}
+{:else}
+  {choices.find(c => c.value === value)?.label ?? ""}
+{/if}

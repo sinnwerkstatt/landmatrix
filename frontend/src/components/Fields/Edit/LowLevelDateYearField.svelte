@@ -7,7 +7,7 @@
   dayjs.extend(customParseFormat)
 
   export let name: string
-  export let value: string | undefined
+  export let value: string | null
   export let required = false
 
   let inputField: HTMLInputElement
@@ -44,7 +44,7 @@
 
     value =
       targetValue === ""
-        ? undefined
+        ? null
         : targetValue
             .replaceAll("/", "-")
             .replaceAll(".", "-")

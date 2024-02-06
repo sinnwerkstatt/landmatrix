@@ -26,11 +26,12 @@
   let current = valueCopy.map(val => val.current).indexOf(true) ?? -1
   $: value = valueCopy.filter(val => !!(val.jobs || val.employees || val.workers))
 
-  function updateCurrent(index: number) {
+  const updateCurrent = (index: number) => {
     valueCopy = valueCopy.map(val => ({ ...val, current: null }))
     valueCopy[index].current = true
     valueCopy = valueCopy
   }
+
   function addEntry() {
     valueCopy = [
       ...valueCopy,

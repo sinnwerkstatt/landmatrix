@@ -11,17 +11,15 @@
 
 <ul>
   {#each value ?? [] as val}
-    <li class:font-bold={val.current}>
+    <li class:font-semibold={val.current}>
       <span>{dateCurrentFormat(val)}</span>
 
       <!-- The literal translation strings are defined in apps/landmatrix/models/choices.py -->
       <!--{val.choices.map(v => $_(flat_choices[v])).join(", ")}-->
-      {#if val.area}
-        (
-        <CircleNotchIcon />
+      <span class="text-[1.1em]">
         {val.area.toLocaleString("fr")}
-        {$_("ha")})
-      {/if}
+        {$_("ha")}
+      </span>
     </li>
   {/each}
 </ul>

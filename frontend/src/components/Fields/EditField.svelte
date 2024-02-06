@@ -16,6 +16,7 @@
 
   $: richField = model === "deal" ? $dealFields[fieldname] : $investorFields[fieldname]
 
+  let allExtras: unknown
   $: allExtras =
     richField?.extras && extras
       ? { ...richField.extras, ...extras }
@@ -30,24 +31,29 @@
   <div class={valueClass}>
     {#if richField}
       {#if allExtras}
-        <svelte:component
-          this={richField.editField}
-          bind:value
-          extras={allExtras}
-          label={richField?.label}
-          {fieldname}
-        >
+        {#if $$slots.default}
+          <svelte:component
+            this={richField.editField}
+            bind:value
+            extras={allExtras}
+            {fieldname}
+          >
+            <slot />
+          </svelte:component>
+        {:else}
+          <svelte:component
+            this={richField.editField}
+            bind:value
+            extras={allExtras}
+            {fieldname}
+          />
+        {/if}
+      {:else if $$slots.default}
+        <svelte:component this={richField.editField} bind:value {fieldname}>
           <slot />
         </svelte:component>
       {:else}
-        <svelte:component
-          this={richField.editField}
-          bind:value
-          label={richField?.label}
-          {fieldname}
-        >
-          <slot />
-        </svelte:component>
+        <svelte:component this={richField.editField} bind:value {fieldname} />
       {/if}
     {:else}
       <div class="italic text-red-400">unknown field</div>

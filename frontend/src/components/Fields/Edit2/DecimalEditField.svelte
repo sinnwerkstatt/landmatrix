@@ -6,12 +6,18 @@
 
   interface Extras {
     unit?: string
+    placeholder?: string
   }
 
   export let extras: Extras = {}
 </script>
 
 <div class="flex items-center gap-4">
-  <LowLevelDecimalField bind:value name={fieldname} unit={extras.unit} />
+  <LowLevelDecimalField
+    bind:value
+    name={fieldname}
+    unit={extras.unit}
+    placeholder={extras.placeholder}
+  />
   <slot />
 </div>
