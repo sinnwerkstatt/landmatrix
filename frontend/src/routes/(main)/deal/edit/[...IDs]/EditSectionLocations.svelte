@@ -10,9 +10,9 @@
   import { isEmptySubmodel } from "$lib/utils/data_processing"
   import { createLegend } from "$lib/utils/location"
 
-  import ChoicesField from "$components/Fields/Edit2/ChoicesField.svelte"
+  import ChoicesEditField from "$components/Fields/Edit2/ChoicesEditField.svelte"
   import PointField from "$components/Fields/Edit2/PointField.svelte"
-  import TextField from "$components/Fields/Edit2/TextField.svelte"
+  import TextEditField from "$components/Fields/Edit2/TextEditField.svelte"
   import PlusIcon from "$components/icons/PlusIcon.svelte"
   import TrashIcon from "$components/icons/TrashIcon.svelte"
   import BigMap from "$components/Map/BigMap.svelte"
@@ -90,7 +90,7 @@
                 for={undefined}
               >
                 {$_("Spatial accuracy level")}
-                <ChoicesField
+                <ChoicesEditField
                   fieldname="location.level_of_accuracy"
                   bind:value={location.level_of_accuracy}
                   label={$_("Spatial accuracy level")}
@@ -112,18 +112,18 @@
                 bind:value={location.point}
                 label={$_("Point")}
               />
-              <TextField
+              <TextEditField
                 fieldname="location.description"
                 bind:value={location.description}
                 label={$_("Description")}
                 extras={{ multiline: true }}
               />
-              <TextField
+              <TextEditField
                 fieldname="location.facility_name"
                 bind:value={location.facility_name}
                 label={$_("Facility name")}
               />
-              <TextField
+              <TextEditField
                 fieldname="location.comment"
                 bind:value={location.comment}
                 label={$_("Comment")}

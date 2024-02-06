@@ -5,8 +5,8 @@
 
   import EditSubsection from "$components/EditSubsection.svelte"
   import InvestorForeignKey from "$components/Fields/Edit2/InvestorForeignKey.svelte"
-  import JSONActorsField from "$components/Fields/Edit2/JSONActorsField.svelte"
-  import TextField from "$components/Fields/Edit2/TextField.svelte"
+  import JSONActorsEditField from "$components/Fields/Edit2/JSONActorsEditField.svelte"
+  import TextEditField from "$components/Fields/Edit2/TextEditField.svelte"
 
   export let deal: DealHull
   $: version = deal.selected_version
@@ -20,16 +20,16 @@
       label={$_("Operating company")}
     />
 
-    <JSONActorsField
+    <JSONActorsEditField
       bind:value={version.involved_actors}
       label={$_("Actors involved in the negotiation / admission process")}
     />
-    <TextField
+    <TextEditField
       bind:value={version.project_name}
       fieldname="project_name"
       label={$_("Name of investment project")}
     />
-    <TextField
+    <TextEditField
       bind:value={version.investment_chain_comment}
       fieldname="investment_chain_comment"
       label={$_("Comment on investment chain")}
