@@ -29,21 +29,21 @@ import TextField from "$components/Fields/Display2/TextField.svelte"
 import UserField from "$components/Fields/Display2/UserField.svelte"
 import WorkflowInfosField from "$components/Fields/Display2/WorkflowInfosField.svelte"
 import BooleanEditField from "$components/Fields/Edit2/BooleanEditField.svelte"
-import ChoicesEditField from "$components/Fields/Edit2/ChoicesField.svelte"
-import CountryEditField from "$components/Fields/Edit2/CountryField.svelte"
-import DecimalEditField from "$components/Fields/Edit2/DecimalField.svelte"
-import FileEditField from "$components/Fields/Edit2/FileField.svelte"
+import ChoicesEditField from "$components/Fields/Edit2/ChoicesEditField.svelte"
+import CountryEditField from "$components/Fields/Edit2/CountryEditField.svelte"
+import DecimalEditField from "$components/Fields/Edit2/DecimalEditField.svelte"
+import FileEditField from "$components/Fields/Edit2/FileEditField.svelte"
 import JSONCarbonSequestrationEditField from "$components/Fields/Edit2/JSONCarbonSequestrationEditField.svelte"
 import JSONCurrentDateAreaChoicesEditField from "$components/Fields/Edit2/JSONCurrentDateAreaChoicesEditField.svelte"
-import JSONCurrentDateAreaEditField from "$components/Fields/Edit2/JSONCurrentDateAreaField.svelte"
+import JSONCurrentDateAreaEditField from "$components/Fields/Edit2/JSONCurrentDateAreaEditField.svelte"
 import JSONCurrentDateChoiceEditField from "$components/Fields/Edit2/JSONCurrentDateChoiceEditField.svelte"
 import JSONElectricityGenerationEditField from "$components/Fields/Edit2/JSONElectricityGenerationEditField.svelte"
 import JSONExportsEditField from "$components/Fields/Edit2/JSONExportsEditField.svelte"
 import JSONJobsEditField from "$components/Fields/Edit2/JSONJobsEditField.svelte"
 import JSONLeaseEditField from "$components/Fields/Edit2/JSONLeaseEditField.svelte"
-import TextEditField from "$components/Fields/Edit2/TextField.svelte"
+import TextEditField from "$components/Fields/Edit2/TextEditField.svelte"
 
-interface Sec {
+interface Field {
   displayField: ComponentType
   editField?: ComponentType
   label: string
@@ -94,7 +94,7 @@ export const investorFields = derived([_, fieldChoices], ([$_, $fieldChoices]) =
     },
     mode: { displayField: TextField, label: $_("Mode") },
     deals: { displayField: DealsLengthField, label: $_("Deals") },
-  } as { [key: string]: Sec }
+  } as { [key: string]: Field }
 })
 
 export const dealSections = derived(_, $_ => {
@@ -404,7 +404,6 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
     production_size: {
       displayField: JSONCurrentDateAreaField,
       editField: JSONCurrentDateAreaEditField,
-
       label: $_("Size in operation (production)"),
     },
     land_area_comment: {
@@ -467,6 +466,7 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
       displayField: DecimalField,
       editField: DecimalEditField,
       label: $_("Purchase price"),
+      extras: { placeholder: "Amount" },
       // we use purchase_price_currency and purchase_price_type here too
     },
     purchase_price_area: {
@@ -485,6 +485,7 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
       displayField: DecimalField,
       editField: DecimalEditField,
       label: $_("Annual leasing fee"),
+      extras: { placeholder: "Amount" },
       // we use annual_leasing_fee_currency and ~_type here too
     },
     annual_leasing_fee_area: {
@@ -856,7 +857,11 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
       displayField: ChoicesField,
       editField: ChoicesEditField,
       label: $_("Former land cover"),
-      extras: { choices: $fieldChoices.deal.former_land_cover, multipleChoices: true },
+      extras: {
+        choices: $fieldChoices.deal.former_land_cover,
+        multipleChoices: true,
+        otherHint: $_("Please specify in comment field"),
+      },
     },
     former_land_cover_comment: {
       displayField: TextField,
@@ -1175,7 +1180,10 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
       displayField: ChoicesField,
       editField: ChoicesEditField,
       label: $_("Type"),
-      extras: { choices: $fieldChoices.datasource.type },
+      extras: {
+        choices: $fieldChoices.datasource.type,
+        otherHint: $_("Please specify in comment field"),
+      },
     },
     "datasource.url": {
       displayField: TextField,
@@ -1262,5 +1270,5 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
       },
     },
     "involvement.comment": { displayField: TextField, label: $_("Comment") },
-  } as { [key: string]: Sec }
+  } as { [key: string]: Field }
 })

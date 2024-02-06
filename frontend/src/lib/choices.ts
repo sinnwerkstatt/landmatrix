@@ -136,5 +136,5 @@ export const classification_choices: { [key in Classification]: string } = {
   [Classification.INDIVIDUAL_ENTREPRENEUR]: "Individual entrepreneur",
   [Classification.NON_PROFIT]:
     "Non - Profit organization (e.g. Church, University etc.)",
-  [Classification.OTHER]: "Other (please specify in comment field)",
+  [Classification.OTHER]: "Other",
 }
