@@ -46,18 +46,15 @@
 <Messages />
 <NavigationLoader />
 
-<div class="h-[71px]">
-  <Navbar />
-</div>
+<Navbar />
 
 <div
   bind:this={$contentRootElement}
-  class="h-[calc(100vh-71px)] overflow-x-auto dark:bg-gray-900"
+  class="h-[calc(100vh-71px-100px)] overflow-x-auto dark:bg-gray-900"
 >
   <slot />
-  <NewFooter />
 </div>
-
+<NewFooter />
 <Matomo />
 
 <SvelteToast
