@@ -10,8 +10,6 @@ import {
   ProduceGroup,
 } from "$lib/types/deal"
 
-import type { Investor } from "./types/investor"
-
 export interface Produce {
   // id: string
   value: string
@@ -27,7 +25,7 @@ export class FilterValues {
   deal_size_max?: number
   negotiation_status: NegotiationStatus[] = []
   nature_of_deal: NatureOfDeal[] = []
-  investor?: Investor
+  investor_id?: number
   investor_country_id?: number
   initiation_year_min?: number
   initiation_year_max?: number
@@ -47,7 +45,7 @@ export class FilterValues {
     this.deal_size_max = undefined
     this.negotiation_status = []
     this.nature_of_deal = []
-    this.investor = undefined
+    this.investor_id = undefined
     this.investor_country_id = undefined
     this.initiation_year_min = undefined
     this.initiation_year_max = undefined
@@ -121,7 +119,7 @@ export class FilterValues {
     this.deal_size_max = other.deal_size_max
     this.negotiation_status = other.negotiation_status
     this.nature_of_deal = other.nature_of_deal
-    this.investor = other.investor
+    this.investor_id = other.investor_id
     this.investor_country_id = other.investor_country_id
     this.initiation_year_min = other.initiation_year_min
     this.initiation_year_max = other.initiation_year_max
@@ -153,7 +151,7 @@ export class FilterValues {
         NatureOfDeal.CONCESSION,
         NatureOfDeal.EXPLOITATION_PERMIT,
       ]),
-      !this.investor,
+      !this.investor_id,
       !this.investor_country_id,
       this.initiation_year_min === 2000,
       !this.initiation_year_max,
@@ -203,8 +201,8 @@ export class FilterValues {
       searchParams.append("implementation_status", x.toString()),
     )
 
-    if (this.investor)
-      searchParams.append("parent_company", this.investor.id.toString())
+    if (this.investor_id)
+      searchParams.append("parent_company", this.investor_id.toString())
 
     if (this.investor_country_id)
       searchParams.append(
@@ -289,8 +287,8 @@ export class FilterValues {
   //       ),
   //     })
   //
-  //   if (this.investor)
-  //     filterArray.push({ field: "parent_companies", value: this.investor.id })
+  //   if (this.investor_id)
+  //     filterArray.push({ field: "parent_companies", value: this.investor_id })
   //
   //   if (this.investor_country_id)
   //     filterArray.push({

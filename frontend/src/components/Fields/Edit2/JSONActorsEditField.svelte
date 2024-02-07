@@ -31,7 +31,7 @@
 
 <div class="grid gap-2 lg:grid-cols-2 xl:grid-cols-3">
   {#each valueCopy as val, i}
-    <div class:border-violet-400={val.current} class={cardClass}>
+    <div class={cardClass}>
       <label class={labelClass} for={undefined}>
         {$_("Name")}
         <input
@@ -47,7 +47,7 @@
         {$_("Role")}
         <Select
           value={$fieldChoices.deal.actors.find(i => i.value === val.role)}
-          bind:justValue={val.role}
+          on:change={e => (val.role = e.detail.value)}
           required={!!val.name}
           items={$fieldChoices.deal.actors}
           showChevron
@@ -55,6 +55,7 @@
         />
         <!-- TODO Kurt is the role required? -->
       </label>
+
       <RemoveButton disabled={valueCopy.length <= 1} on:click={() => removeEntry(i)} />
     </div>
   {/each}

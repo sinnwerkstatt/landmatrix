@@ -33,6 +33,7 @@ import ChoicesEditField from "$components/Fields/Edit2/ChoicesEditField.svelte"
 import CountryEditField from "$components/Fields/Edit2/CountryEditField.svelte"
 import DecimalEditField from "$components/Fields/Edit2/DecimalEditField.svelte"
 import FileEditField from "$components/Fields/Edit2/FileEditField.svelte"
+import InvestorForeignKey from "$components/Fields/Edit2/InvestorForeignKey.svelte"
 import JSONActorsEditField from "$components/Fields/Edit2/JSONActorsEditField.svelte"
 import JSONCarbonSequestrationEditField from "$components/Fields/Edit2/JSONCarbonSequestrationEditField.svelte"
 import JSONCurrentDateAreaChoicesEditField from "$components/Fields/Edit2/JSONCurrentDateAreaChoicesEditField.svelte"
@@ -644,6 +645,7 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
     // Investor Info
     operating_company: {
       displayField: InvestorLinkField,
+      editField: InvestorForeignKey,
       label: $_("Operating company"),
     },
     involved_actors: {
