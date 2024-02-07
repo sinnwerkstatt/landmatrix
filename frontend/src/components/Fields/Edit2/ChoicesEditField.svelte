@@ -15,10 +15,10 @@
     clearable?: boolean
     otherHint?: string
     placeholder?: string
-    closeListOnChange: boolean
+    closeListOnChange?: boolean
   }
 
-  export let extras: Extras = { choices: [], closeListOnChange: false }
+  export let extras: Extras = { choices: [] }
 
   $: multiple = !!extras.multipleChoices
   $: required = !!extras.required
@@ -53,7 +53,7 @@
       ? extras.choices.filter(c => (value || []).includes(c.value))
       : extras.choices.find(c => c.value === value)}
     name={fieldname}
-    closeListOnChange={extras.closeListOnChange}
+    closeListOnChange={extras.closeListOnChange ?? !multiple}
   />
 
   {#if extras.otherHint && (value === "OTHER" || value?.includes("OTHER_LAND"))}

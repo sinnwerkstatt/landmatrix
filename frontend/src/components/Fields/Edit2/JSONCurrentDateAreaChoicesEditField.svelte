@@ -4,26 +4,27 @@
   import type { ValueLabelEntry } from "$lib/stores"
   import type { JSONCurrentDateAreaChoicesFieldType } from "$lib/types/newtypes"
 
-  import LowLevelDateYearField from "$components/Fields/Edit/LowLevelDateYearField.svelte"
-  import LowLevelDecimalField from "$components/Fields/Edit/LowLevelDecimalField.svelte"
   import ChoicesEditField from "$components/Fields/Edit2/ChoicesEditField.svelte"
   import AddButton from "$components/Fields/Edit2/JSONFieldComponents/AddButton.svelte"
+  import CurrentCheckbox from "$components/Fields/Edit2/JSONFieldComponents/CurrentCheckbox.svelte"
+  import Date from "$components/Fields/Edit2/JSONFieldComponents/Date.svelte"
   import RemoveButton from "$components/Fields/Edit2/JSONFieldComponents/RemoveButton.svelte"
+  import LowLevelDecimalField from "$components/Fields/Edit2/LowLevelDecimalField.svelte"
 
   import { cardClass, labelClass } from "./JSONFieldComponents/consts"
 
-  export let value: JSONCurrentDateAreaChoicesFieldType
+  export let value: JSONCurrentDateAreaChoicesFieldType[]
   export let fieldname: string
   export let extras: { choices: ValueLabelEntry[] } = { choices: [] }
 
-  const createEmptyEntry = (): JSONCurrentDateAreaChoicesFieldType[number] => ({
+  const createEmptyEntry = (): JSONCurrentDateAreaChoicesFieldType => ({
     choices: [],
     date: null,
     area: null,
     current: false,
   })
 
-  let valueCopy = structuredClone<JSONCurrentDateAreaChoicesFieldType>(
+  let valueCopy = structuredClone<JSONCurrentDateAreaChoicesFieldType[]>(
     value.length ? value : [createEmptyEntry()],
   )
 
@@ -63,26 +64,13 @@
         />
       </label>
 
-      <label class={labelClass} for={undefined}>
-        {$_("Date")}
-        <LowLevelDateYearField
-          bind:value={val.date}
-          name="{fieldname}_{i}_date"
-          class="w-36"
-        />
-      </label>
+      <Date bind:value={val.date} name="{fieldname}_{i}_date" />
 
-      <label class={labelClass}>
-        {$_("Current")}
-        <input
-          type="checkbox"
-          bind:checked={val.current}
-          name="{fieldname}_{i}_current"
-          required={isCurrentRequired}
-          class="h-5 w-5 accent-violet-400 ring-red-600"
-          class:ring-2={isCurrentRequired}
-        />
-      </label>
+      <CurrentCheckbox
+        bind:checked={val.current}
+        name="{fieldname}_{i}_current"
+        required={isCurrentRequired}
+      />
 
       <RemoveButton disabled={valueCopy.length <= 1} on:click={() => removeEntry(i)} />
     </div>

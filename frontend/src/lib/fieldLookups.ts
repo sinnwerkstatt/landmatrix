@@ -890,7 +890,7 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
       displayField: JSONExportsField,
       editField: JSONExportsEditField,
       label: $_("Livestock area/yield/export"),
-      extras: { choices: $fieldChoices.deal.animals },
+      extras: { choices: $fieldChoices.deal.animals, multipleChoices: true },
     },
     animals_comment: {
       displayField: TextField,
@@ -902,7 +902,7 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
       displayField: JSONExportsField,
       editField: JSONExportsEditField,
       label: $_("Mineral resources area/yield/export"),
-      extras: { choices: $fieldChoices.deal.minerals },
+      extras: { choices: $fieldChoices.deal.minerals, multipleChoices: true },
     },
     mineral_resources_comment: {
       displayField: TextField,
@@ -942,7 +942,7 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
     electricity_generation_comment: {
       displayField: TextField,
       editField: TextEditField,
-      label: $_("Comment on contract farming animals"),
+      label: $_("Comment on electricity generation"),
       extras: { multiline: true },
     },
     carbon_sequestration: {
@@ -966,7 +966,7 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
       displayField: DecimalField,
       editField: DecimalEditField,
       label: $_("Domestic use"),
-      extras: { unit: "%", range: [0, 100] }, // TODO bring units to editfield
+      extras: { unit: "%", range: [0, 100] },
     },
     has_export: {
       displayField: BooleanField,
@@ -980,25 +980,37 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
       label: $_("Export"),
       extras: { unit: "%", range: [0, 100] },
     },
-    export_country1_id: { displayField: CountryField, label: $_("Counrtry 1") },
+    export_country1: {
+      displayField: CountryField,
+      editField: CountryEditField,
+      label: $_("Country 1"),
+    },
     export_country1_ratio: {
       displayField: DecimalField,
       editField: DecimalEditField,
-      label: $_("Counrtry 1 ratio"),
+      label: $_("Country 1 ratio"),
       extras: { unit: "%", range: [0, 100] },
     },
-    export_country2_id: { displayField: CountryField, label: $_("Counrtry 2") },
+    export_country2: {
+      displayField: CountryField,
+      editField: CountryEditField,
+      label: $_("Country 2"),
+    },
     export_country2_ratio: {
       displayField: DecimalField,
       editField: DecimalEditField,
-      label: $_("Counrtry 2 ratio"),
+      label: $_("Country 2 ratio"),
       extras: { unit: "%", range: [0, 100] },
     },
-    export_country3_id: { displayField: CountryField, label: $_("Counrtry 3") },
+    export_country3: {
+      displayField: CountryField,
+      editField: CountryEditField,
+      label: $_("Country 3"),
+    },
     export_country3_ratio: {
       displayField: DecimalField,
       editField: DecimalEditField,
-      label: $_("Counrtry 3 ratio"),
+      label: $_("Country 3 ratio"),
       extras: { unit: "%", range: [0, 100] },
     },
     use_of_produce_comment: {

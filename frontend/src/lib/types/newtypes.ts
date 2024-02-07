@@ -172,8 +172,8 @@ interface DealVersionBase {
   locations: Location2[]
 
   intended_size: number | null
-  contract_size: JSONCurrentDateAreaFieldType
-  production_size: JSONCurrentDateAreaFieldType
+  contract_size: JSONCurrentDateAreaFieldType[]
+  production_size: JSONCurrentDateAreaFieldType[]
   land_area_comment: string
 
   intention_of_investment: JSONCurrentDateAreaChoicesFieldType[]
@@ -182,10 +182,10 @@ interface DealVersionBase {
   nature_of_deal: string[]
   nature_of_deal_comment: string
 
-  negotiation_status: JSONCurrentDateChoiceFieldType
+  negotiation_status: JSONCurrentDateChoiceFieldType[]
   negotiation_status_comment: string
 
-  implementation_status: JSONCurrentDateChoiceFieldType
+  implementation_status: JSONCurrentDateChoiceFieldType[]
   implementation_status_comment: string
 
   purchase_price: number | null
@@ -290,11 +290,12 @@ interface DealVersionBase {
   domestic_use: number | null
   has_export: boolean | null
   export: number | null
-  export_country1_id: number | null
+  // TODO three more cases of "no _id" because of DRF
+  export_country1: number | null
   export_country1_ratio: number | null
-  export_country2_id: number | null
+  export_country2: number | null
   export_country2_ratio: number | null
-  export_country3_id: number | null
+  export_country3: number | null
   export_country3_ratio: number | null
   use_of_produce_comment: string
   in_country_processing: boolean | null
@@ -350,17 +351,18 @@ export interface DealVersion2 extends DealVersionBase, BaseVersionMixin {
   deal_size: number
 }
 
-export type JSONCurrentDateAreaFieldType = Array<{
+export type JSONCurrentDateAreaFieldType = {
   current: boolean
   date: string | null
   area: number
 }>
+}
 
-export type JSONCurrentDateChoiceFieldType = Array<{
+export type JSONCurrentDateChoiceFieldType = {
   current: boolean
   date: string | null
   choice: string | null
-}>
+}
 
 export type JSONCurrentDateAreaChoicesFieldType = {
   current: boolean

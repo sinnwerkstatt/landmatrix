@@ -1,22 +1,19 @@
 <script lang="ts">
-  // TODO WIP
   import { _ } from "svelte-i18n"
   import { slide } from "svelte/transition"
 
   import { fieldChoices } from "$lib/stores"
   import type { JSONCarbonSequestrationFieldType } from "$lib/types/newtypes"
 
-  import LowLevelDecimalField from "$components/Fields/Edit/LowLevelDecimalField.svelte"
-  import LowLevelNullBooleanField from "$components/Fields/Edit/LowLevelNullBooleanField.svelte"
   import ChoicesEditField from "$components/Fields/Edit2/ChoicesEditField.svelte"
   import AddButton from "$components/Fields/Edit2/JSONFieldComponents/AddButton.svelte"
-  import {
-    cardClass,
-    labelClass,
-  } from "$components/Fields/Edit2/JSONFieldComponents/consts"
   import CurrentCheckbox from "$components/Fields/Edit2/JSONFieldComponents/CurrentCheckbox.svelte"
   import Date from "$components/Fields/Edit2/JSONFieldComponents/Date.svelte"
   import RemoveButton from "$components/Fields/Edit2/JSONFieldComponents/RemoveButton.svelte"
+  import LowLevelDecimalField from "$components/Fields/Edit2/LowLevelDecimalField.svelte"
+  import LowLevelNullBooleanField from "$components/Fields/Edit2/LowLevelNullBooleanField.svelte"
+
+  import { cardClass, labelClass } from "./JSONFieldComponents/consts"
 
   export let value: JSONCarbonSequestrationFieldType[]
   export let fieldname: string
@@ -47,7 +44,6 @@
   $: isCurrentRequired = value.length ? !value.some(val => val.current) : false
 </script>
 
-{JSON.stringify(value)}
 <div class="grid gap-2 xl:grid-cols-2">
   {#each valueCopy as val, i}
     <div class:border-violet-400={val.current} class={cardClass}>
@@ -104,11 +100,9 @@
           on:change={() => (val.certification_standard_name = null)}
         />
       </label>
-
       {#if val.certification_standard === true}
         <label class={labelClass} for={undefined} transition:slide>
           {$_("Name of certification standard/mechanism")}
-
           <ChoicesEditField
             bind:value={val.certification_standard_name}
             extras={{
@@ -122,6 +116,7 @@
           />
         </label>
       {/if}
+
       <label class={labelClass} for={undefined}>
         {$_("Comment on certtification standard/mechanism")}
         <input

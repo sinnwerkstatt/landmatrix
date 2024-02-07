@@ -1,82 +1,60 @@
 <script lang="ts">
-  // TODO WIP
   import { _ } from "svelte-i18n"
   import { slide } from "svelte/transition"
 
   import { fieldChoices } from "$lib/stores.js"
   import type { JSONElectricityGenerationFieldType } from "$lib/types/newtypes"
 
-  import LowLevelDateYearField from "$components/Fields/Edit/LowLevelDateYearField.svelte"
-  import LowLevelDecimalField from "$components/Fields/Edit/LowLevelDecimalField.svelte"
   import ChoicesEditField from "$components/Fields/Edit2/ChoicesEditField.svelte"
-  import MinusIcon from "$components/icons/MinusIcon.svelte"
-  import PlusIcon from "$components/icons/PlusIcon.svelte"
+  import AddButton from "$components/Fields/Edit2/JSONFieldComponents/AddButton.svelte"
+  import CurrentCheckbox from "$components/Fields/Edit2/JSONFieldComponents/CurrentCheckbox.svelte"
+  import Date from "$components/Fields/Edit2/JSONFieldComponents/Date.svelte"
+  import RemoveButton from "$components/Fields/Edit2/JSONFieldComponents/RemoveButton.svelte"
+  import LowLevelDecimalField from "$components/Fields/Edit2/LowLevelDecimalField.svelte"
 
+  import { cardClass, labelClass } from "./JSONFieldComponents/consts"
+
+  export let value: JSONElectricityGenerationFieldType[]
   export let fieldname: string
-  export let value: JSONElectricityGenerationFieldType[] = []
+
+  const createEmptyEntry = (): JSONElectricityGenerationFieldType => ({
+    current: false,
+    date: null,
+    area: null,
+    choices: [],
+    export: null,
+    windfarm_count: null,
+    current_capacity: null,
+    intended_capacity: null,
+  })
 
   let valueCopy: JSONElectricityGenerationFieldType[] = structuredClone(
-    value.length
-      ? value
-      : [
-          {
-            current: false,
-            date: null,
-            area: null,
-            choices: [],
-            export: null,
-            windfarm_count: null,
-            current_capacity: null,
-            intended_capacity: null,
-          },
-        ],
+    value.length ? value : [createEmptyEntry()],
   )
+
   $: value = valueCopy.filter(val => val.choices.length > 0)
 
-  function addEntry() {
-    valueCopy = [
-      ...valueCopy,
-      {
-        current: false,
-        date: null,
-        area: null,
-        choices: [],
-        export: null,
-        windfarm_count: null,
-        current_capacity: null,
-        intended_capacity: null,
-      },
-    ]
-  }
+  const addEntry = () => (valueCopy = [...valueCopy, createEmptyEntry()])
 
-  function removeEntry(index) {
-    valueCopy = valueCopy.filter((val, i) => i !== index)
-  }
+  const removeEntry = (index: number) =>
+    (valueCopy = valueCopy.filter((_val, i) => i !== index))
 
-  const anySelectedAsCurrent = values => values.some(val => val.current)
-  const isCurrentRequired = values => values.length > 0 && !anySelectedAsCurrent(values)
+  $: isCurrentRequired = value.length ? !value.some(val => val.current) : false
 </script>
 
 <div class="grid gap-2 xl:grid-cols-2">
   {#each valueCopy as val, i}
-    <div class:border-orange={val.current} class="flex flex-col gap-4 border p-3">
-      <label class="flex items-center justify-between gap-2">
-        {$_("Current")}
-        <input
-          type="checkbox"
-          bind:checked={val.current}
-          name="{fieldname}_{i}_current"
-          required={isCurrentRequired(valueCopy)}
-          disabled={!val.choices || !val.choices.length}
-        />
-      </label>
-
-      <label class="flex flex-wrap items-center justify-between gap-2" for={undefined}>
-        {$_("Date")}
-        <LowLevelDateYearField
-          bind:value={val.date}
-          name="{fieldname}_{i}_date"
-          class="w-36"
+    <div class:border-violet-400={val.current} class={cardClass}>
+      <label class={labelClass} for={undefined}>
+        {$_("Choices")}
+        <ChoicesEditField
+          bind:value={val.choices}
+          extras={{
+            choices: $fieldChoices.deal.electricity_generation,
+            multipleChoices: true,
+            required: !!(val.date || val.area),
+          }}
+          fieldname="{fieldname}_{i}_choices"
         />
       </label>
 
@@ -86,17 +64,7 @@
           bind:value={val.area}
           unit="ha"
           name="{fieldname}_{i}_area"
-          class="w-24 grow"
-        />
-      </label>
-      <label class="flex flex-wrap items-center justify-between gap-2" for={undefined}>
-        {$_("Choices")}
-        <ChoicesEditField
-          bind:value={val.choices}
-          extras={{
-            choices: $fieldChoices.deal.electricity_generation,
-            required: !!(val.date || val.area),
-          }}
+          class="w-24 max-w-[9rem] grow"
         />
       </label>
 
@@ -107,6 +75,7 @@
           unit="%"
           name="{fieldname}_{i}_area"
           class="w-24 max-w-[8rem] grow"
+          max={100}
         />
       </label>
       {#if val.choices?.find(v => v === "WIND")}
@@ -116,7 +85,6 @@
           transition:slide
         >
           {$_("Number of turbines")}
-
           <LowLevelDecimalField
             bind:value={val.windfarm_count}
             name="{fieldname}_{i}_windfarm_count"
@@ -146,25 +114,18 @@
         />
       </label>
 
-      <div class="text-right">
-        <button
-          type="button"
-          disabled={valueCopy.length <= 1}
-          on:click={() => removeEntry(i)}
-        >
-          <MinusIcon
-            class="h-5 w-5 {valueCopy.length > 1 ? 'text-red-600' : 'text-gray-200'}"
-          />
-        </button>
-      </div>
+      <Date bind:value={val.date} name="{fieldname}_{i}_date" />
+
+      <CurrentCheckbox
+        bind:checked={val.current}
+        name="{fieldname}_{i}_current"
+        required={isCurrentRequired}
+        disabled={!val.choices || !val.choices.length}
+      />
+
+      <RemoveButton disabled={valueCopy.length <= 1} on:click={() => removeEntry(i)} />
     </div>
   {/each}
 
-  <button
-    type="button"
-    on:click={addEntry}
-    class="flex w-full items-center justify-center border p-2"
-  >
-    <PlusIcon class="h-7 w-7 text-black" />
-  </button>
+  <AddButton on:click={addEntry} />
 </div>

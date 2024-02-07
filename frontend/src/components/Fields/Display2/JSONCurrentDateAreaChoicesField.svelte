@@ -13,6 +13,9 @@
   }
 
   export let extras: Extras = { choices: [] }
+
+  const getLabel = (value: string) =>
+    extras.choices.find(c => value === c.value)?.label ?? value
 </script>
 
 <ul>
@@ -20,11 +23,11 @@
     <li class:font-bold={val.current}>
       <span>{dateCurrentFormat(val)}</span>
 
-      {#each val.choices ?? [] as v}
-        {extras.choices.find(c => c.value === v)?.label ?? ""}
-      {/each}
-      <!-- The literal translation strings are defined in apps/landmatrix/models/choices.py -->
-      <!--{val.choices.map(v => $_(flat_choices[v])).join(", ")}-->
+      {#if val.choices && extras.choices.length}
+        <span>
+          {val.choices.map(getLabel).join(", ")}
+        </span>
+      {/if}
       {#if val.area}
         ({val.area.toLocaleString("fr")}
         {$_("ha")})

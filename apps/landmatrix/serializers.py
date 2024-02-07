@@ -141,7 +141,6 @@ class DealVersionSerializer(serializers.ModelSerializer):
     locations = LocationSerializer(many=True, read_only=True)
     contracts = ContractSerializer(many=True, read_only=True)
     datasources = DealDataSourceSerializer(many=True, read_only=True)
-    # operating_company = serializers.SerializerMethodField()
     operating_company_id = serializers.PrimaryKeyRelatedField(read_only=True)
 
     # creating these because DRF shows these fields as "created_by", instead of "~_id"

@@ -100,10 +100,11 @@
     {#if version.has_export === true}
       <div class="pl-4" transition:slide={{ duration: 300 }}>
         <EditField fieldname="export" showLabel bind:value={version.export} />
+
         <EditField
-          fieldname="export_country1_id"
+          fieldname="export_country1"
           showLabel
-          bind:value={version.export_country1_id}
+          bind:value={version.export_country1}
         />
         <EditField
           fieldname="export_country1_ratio"
@@ -111,9 +112,9 @@
           bind:value={version.export_country1_ratio}
         />
         <EditField
-          fieldname="export_country2_id"
+          fieldname="export_country2"
           showLabel
-          bind:value={version.export_country2_id}
+          bind:value={version.export_country2}
         />
         <EditField
           fieldname="export_country2_ratio"
@@ -121,9 +122,9 @@
           bind:value={version.export_country2_ratio}
         />
         <EditField
-          fieldname="export_country3_id"
+          fieldname="export_country3"
           showLabel
-          bind:value={version.export_country3_id}
+          bind:value={version.export_country3}
         />
         <EditField
           fieldname="export_country3_ratio"

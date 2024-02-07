@@ -1,6 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
+  import { fieldChoices } from "$lib/stores"
   import type { JSONElectricityGenerationFieldType } from "$lib/types/newtypes"
 
   import { dateCurrentFormat } from "$components/Fields/Display2/jsonHelpers"
@@ -9,16 +10,23 @@
   import RenewableEnergyIcon from "$components/icons/RenewableEnergyIcon.svelte"
 
   export let value: JSONElectricityGenerationFieldType[] = []
+
+  const getLabel = (value: string) =>
+    $fieldChoices.deal.electricity_generation.find(c => value === c.value)?.label ??
+    value
 </script>
 
 <ul>
   {#each value ?? [] as val}
     <li class:font-bold={val.current}>
       <span>{dateCurrentFormat(val)}</span>
-      {#if val.choices}
-        <!-- The literal translation strings are defined in apps/landmatrix/models/choices.py -->
-        {val.choices.map(v => $_(formfield.choices[v])).join(", ")}
+
+      {#if val.choices && $fieldChoices.deal.electricity_generation.length}
+        <span>
+          {val.choices.map(getLabel).join(", ")}
+        </span>
       {/if}
+
       {#if val.area}
         <span class="mx-2">
           <CircleNotchIcon />

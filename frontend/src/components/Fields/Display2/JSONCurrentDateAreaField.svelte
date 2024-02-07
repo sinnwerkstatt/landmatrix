@@ -4,9 +4,8 @@
   import type { JSONCurrentDateAreaFieldType } from "$lib/types/newtypes"
 
   import { dateCurrentFormat } from "$components/Fields/Display2/jsonHelpers"
-  import CircleNotchIcon from "$components/icons/CircleNotchIcon.svelte"
 
-  export let value: JSONCurrentDateAreaFieldType = []
+  export let value: JSONCurrentDateAreaFieldType[] = []
 </script>
 
 <ul>

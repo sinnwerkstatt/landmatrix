@@ -9,7 +9,7 @@
   import { AREA_TYPES } from "$lib/utils/location"
 
   import { formatArea } from "$components/Fields/Display2/jsonHelpers"
-  import LowLevelDateYearField from "$components/Fields/Edit/LowLevelDateYearField.svelte"
+  import LowLevelDateYearField from "$components/Fields/Edit2/LowLevelDateYearField.svelte"
   import EyeSlashIcon from "$components/icons/EyeSlashIcon.svelte"
   import PlusIcon from "$components/icons/PlusIcon.svelte"
   import TrashIcon from "$components/icons/TrashIcon.svelte"

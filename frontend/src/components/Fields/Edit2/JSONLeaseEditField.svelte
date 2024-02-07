@@ -3,10 +3,10 @@
 
   import type { JSONLeaseFieldType } from "$lib/types/newtypes"
 
-  import LowLevelDateYearField from "$components/Fields/Edit/LowLevelDateYearField.svelte"
-  import LowLevelDecimalField from "$components/Fields/Edit/LowLevelDecimalField.svelte"
   import AddButton from "$components/Fields/Edit2/JSONFieldComponents/AddButton.svelte"
   import RemoveButton from "$components/Fields/Edit2/JSONFieldComponents/RemoveButton.svelte"
+  import LowLevelDateYearField from "$components/Fields/Edit2/LowLevelDateYearField.svelte"
+  import LowLevelDecimalField from "$components/Fields/Edit2/LowLevelDecimalField.svelte"
   import HomeIcon from "$components/icons/HomeIcon.svelte"
   import UsersIcon from "$components/icons/UsersIcon.svelte"
 

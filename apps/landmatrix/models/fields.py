@@ -368,7 +368,9 @@ class JSONCarbonSequestrationField(JSONSchemaField):
                         },
                         "projected_annual_sequestration": {"type": ["number", "null"]},
                         "certification_standard": {"type": ["boolean", "null"]},
-                        "certification_standard_name": {"enum": choices2},
+                        "certification_standard_name": {
+                            "enum": choices2 + [None],
+                        },
                         "certification_standard_comment": {"type": "string"},
                     },
                 },

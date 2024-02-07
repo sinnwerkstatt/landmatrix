@@ -8,7 +8,7 @@
   import { createFeatureCollection, setProperty } from "$lib/utils/geojsonHelpers"
   import { validate } from "$lib/utils/geojsonValidation"
 
-  import LowLevelDateYearField from "$components/Fields/Edit/LowLevelDateYearField.svelte"
+  import LowLevelDateYearField from "$components/Fields/Edit2/LowLevelDateYearField.svelte"
   import EyeIcon from "$components/icons/EyeIcon.svelte"
   import EyeSlashIcon from "$components/icons/EyeSlashIcon.svelte"
   import PlusIcon from "$components/icons/PlusIcon.svelte"

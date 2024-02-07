@@ -3,17 +3,18 @@
 
   import type { JSONCurrentDateAreaFieldType } from "$lib/types/newtypes"
 
-  import LowLevelDateYearField from "$components/Fields/Edit/LowLevelDateYearField.svelte"
-  import LowLevelDecimalField from "$components/Fields/Edit/LowLevelDecimalField.svelte"
   import AddButton from "$components/Fields/Edit2/JSONFieldComponents/AddButton.svelte"
+  import CurrentRadio from "$components/Fields/Edit2/JSONFieldComponents/CurrentRadio.svelte"
+  import Date from "$components/Fields/Edit2/JSONFieldComponents/Date.svelte"
   import RemoveButton from "$components/Fields/Edit2/JSONFieldComponents/RemoveButton.svelte"
+  import LowLevelDecimalField from "$components/Fields/Edit2/LowLevelDecimalField.svelte"
 
   import { cardClass, labelClass } from "./JSONFieldComponents/consts"
 
-  export let value: JSONCurrentDateAreaFieldType
+  export let value: JSONCurrentDateAreaFieldType[]
   export let fieldname: string
 
-  let valueCopy = structuredClone<JSONCurrentDateAreaFieldType>(
+  let valueCopy = structuredClone<JSONCurrentDateAreaFieldType[]>(
     value.length ? value : [{ current: false, date: null, area: null }],
   )
   let current = valueCopy.map(val => val.current).indexOf(true) ?? -1
@@ -47,28 +48,16 @@
         />
       </label>
 
-      <label class={labelClass} for={undefined}>
-        {$_("Date")}
-        <LowLevelDateYearField
-          bind:value={val.date}
-          name="{fieldname}_{i}_date"
-          class="w-36"
-        />
-      </label>
-      <label class={labelClass}>
-        {$_("Current")}
-        <input
-          type="radio"
-          bind:group={current}
-          name="{fieldname}_current"
-          required={valueCopy.length > 0}
-          class="h-5 w-5 accent-violet-400 ring-red-600"
-          disabled={!val.area}
-          on:change={() => updateCurrent(i)}
-          class:ring-2={value.length > 0 && current < 0}
-          value={i}
-        />
-      </label>
+      <Date bind:value={val.date} name="{fieldname}_{i}_date" />
+
+      <CurrentRadio
+        bind:group={current}
+        name="{fieldname}_current"
+        required={valueCopy.length > 0 && current < 0}
+        disabled={!val.area}
+        value={i}
+        on:change={() => updateCurrent(i)}
+      />
 
       <RemoveButton disabled={valueCopy.length <= 1} on:click={() => removeEntry(i)} />
     </div>

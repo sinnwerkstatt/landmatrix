@@ -11,11 +11,7 @@
 
   export let value: JSONExportsFieldType[] = []
 
-  interface Extras {
-    choices: ValueLabelEntry[]
-  }
-
-  export let extras: Extras = { choices: [] }
+  export let extras: { choices: ValueLabelEntry[] } = { choices: [] }
 
   const getLabel = (value: string) =>
     extras.choices.find(c => value === c.value)?.label ?? value
@@ -24,7 +20,7 @@
 <ul>
   {#each value ?? [] as val}
     <li class:font-bold={val.current}>
-      {#if val.choices}
+      {#if val.choices && extras.choices.length}
         <span>
           {val.choices.map(getLabel).join(", ")}
         </span>

@@ -2,8 +2,8 @@
   // TODO WIP
   import { _ } from "svelte-i18n"
 
-  import LowLevelDateYearField from "$components/Fields/Edit/LowLevelDateYearField.svelte"
-  import LowLevelDecimalField from "$components/Fields/Edit/LowLevelDecimalField.svelte"
+  import LowLevelDateYearField from "$components/Fields/Edit2/LowLevelDateYearField.svelte"
+  import LowLevelDecimalField from "$components/Fields/Edit2/LowLevelDecimalField.svelte"
   import MinusIcon from "$components/icons/MinusIcon.svelte"
   import PlusIcon from "$components/icons/PlusIcon.svelte"
 

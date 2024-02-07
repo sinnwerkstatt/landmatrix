@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import LowLevelDecimalField from "./LowLevelDecimalField.svelte"
+  import LowLevelDecimalField from "../Edit2/LowLevelDecimalField.svelte"
 
   export let value: { lat?: number; lng?: number } | null
 

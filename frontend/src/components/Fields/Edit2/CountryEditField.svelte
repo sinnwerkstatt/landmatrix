@@ -30,7 +30,7 @@
 <Select
   items={targetCountries}
   value={targetCountries.find(c => c.id === value)}
-  bind:justValue={value}
+  on:change={e => (value = e.detail.id)}
   label="name"
   itemId="id"
   required={extras.required}

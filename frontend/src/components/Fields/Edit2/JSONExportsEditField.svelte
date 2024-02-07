@@ -1,131 +1,102 @@
 <script lang="ts">
-  // TODO WIP
   import { _ } from "svelte-i18n"
 
-  import type { ValueLabelEntry } from "$lib/stores"
+  import { type ValueLabelEntry } from "$lib/stores"
   import type { JSONExportsFieldType } from "$lib/types/newtypes"
 
-  import LowLevelDateYearField from "$components/Fields/Edit/LowLevelDateYearField.svelte"
-  import LowLevelDecimalField from "$components/Fields/Edit/LowLevelDecimalField.svelte"
   import ChoicesEditField from "$components/Fields/Edit2/ChoicesEditField.svelte"
-  import MinusIcon from "$components/icons/MinusIcon.svelte"
-  import PlusIcon from "$components/icons/PlusIcon.svelte"
+  import AddButton from "$components/Fields/Edit2/JSONFieldComponents/AddButton.svelte"
+  import CurrentCheckbox from "$components/Fields/Edit2/JSONFieldComponents/CurrentCheckbox.svelte"
+  import Date from "$components/Fields/Edit2/JSONFieldComponents/Date.svelte"
+  import RemoveButton from "$components/Fields/Edit2/JSONFieldComponents/RemoveButton.svelte"
+  import LowLevelDecimalField from "$components/Fields/Edit2/LowLevelDecimalField.svelte"
 
-  export let fieldname: string
+  import { cardClass, labelClass } from "./JSONFieldComponents/consts"
+
   export let value: JSONExportsFieldType[] = []
+  export let fieldname: string
 
-  interface Extras {
-    choices: ValueLabelEntry[]
-  }
+  export let extras: { choices: ValueLabelEntry[] } = { choices: [] }
 
-  export let extras: Extras = { choices: [] }
+  const createEmptyEntry = (): JSONExportsFieldType => ({
+    current: false,
+    date: null,
+    choices: [],
+    area: null,
+    yield: null,
+    export: null,
+  })
 
-  let valueCopy: JSONExportsFieldType[] = structuredClone(
-    value.length
-      ? value
-      : [
-          {
-            current: false,
-            date: null,
-            choices: [],
-            area: null,
-            yield: null,
-            export: null,
-          },
-        ],
+  let valueCopy = structuredClone<JSONExportsFieldType[]>(
+    value.length ? value : [createEmptyEntry()],
   )
+
   $: value = valueCopy.filter(val => val.choices.length > 0)
 
-  function addEntry() {
-    valueCopy = [
-      ...valueCopy,
-      {
-        current: false,
-        date: null,
-        choices: [],
-        area: null,
-        yield: null,
-        export: null,
-      },
-    ]
-  }
+  const addEntry = () => (valueCopy = [...valueCopy, createEmptyEntry()])
 
   function removeEntry(index: number) {
     valueCopy = valueCopy.filter((val, i) => i !== index)
   }
 
-  const anySelectedAsCurrent = values => values.some(val => val.current)
-  const isCurrentRequired = (values): boolean =>
-    values.length > 0 && !anySelectedAsCurrent(values)
+  $: isCurrentRequired = value.length ? !value.some(val => val.current) : false
 </script>
 
-<table class="w-full">
-  <thead>
-    <tr>
-      <th class="pr-2 text-center font-normal">{$_("Current")}</th>
-      <th class="font-normal">{$_("Date")}</th>
-      <th class="font-normal">{$_("Area")}</th>
-      <th class="font-normal">{$_("Choices")}</th>
-      <th class="font-normal">{$_("Yield")}</th>
-      <th class="font-normal">{$_("Export")}</th>
-      <th />
-    </tr>
-  </thead>
-  <tbody>
-    {#each valueCopy as val, i}
-      <tr class:is-current={val.current}>
-        <td class="p-1 text-center">
-          <input
-            type="checkbox"
-            bind:checked={val.current}
-            name="{fieldname}_{i}_current"
-            required={isCurrentRequired(valueCopy)}
-            disabled={!val.choices || !val.choices.length}
-          />
-        </td>
+<div class="grid gap-2 xl:grid-cols-2">
+  {#each valueCopy as val, i}
+    <div class:border-violet-400={val.current} class={cardClass}>
+      <label class={labelClass} for={undefined}>
+        {$_("Choices")}
+        <ChoicesEditField
+          bind:value={val.choices}
+          {extras}
+          fieldname="{fieldname}_{i}_choices"
+        />
+      </label>
 
-        <td class="w-1/6 p-1">
-          <LowLevelDateYearField bind:value={val.date} name="{fieldname}_{i}_date" />
-        </td>
-        <td class="w-1/6 p-1">
-          <LowLevelDecimalField
-            bind:value={val.area}
-            name="{fieldname}_{i}_area"
-            unit="ha"
-          />
-        </td>
-        <td class="w-2/6 p-1">
-          <ChoicesEditField {extras} bind:value={val.choices} />
-        </td>
-        <td class="w-1/6 p-1">
-          <LowLevelDecimalField
-            bind:value={val.yield}
-            unit="tons"
-            name="{fieldname}_{i}_yield"
-          />
-        </td>
-        <td class="w-1/6 p-1">
-          <LowLevelDecimalField
-            bind:value={val.export}
-            name="{fieldname}_{i}_export"
-            unit="%"
-            max={100}
-          />
-        </td>
+      <label class={labelClass} for={undefined}>
+        {$_("Area")}
+        <LowLevelDecimalField
+          bind:value={val.area}
+          name="{fieldname}_{i}_area"
+          unit="ha"
+          class="w-24 max-w-[8rem] grow"
+        />
+      </label>
 
-        <td class="p-1">
-          <button type="button" on:click={addEntry}>
-            <PlusIcon class="h-5 w-5 text-black" />
-          </button>
-          <button
-            type="button"
-            disabled={valueCopy.length <= 1}
-            on:click={() => removeEntry(i)}
-          >
-            <MinusIcon class="h-5 w-5 text-red-600" />
-          </button>
-        </td>
-      </tr>
-    {/each}
-  </tbody>
-</table>
+      <label class={labelClass} for={undefined}>
+        {$_("Yield")}
+        <LowLevelDecimalField
+          bind:value={val.yield}
+          unit="tons"
+          name="{fieldname}_{i}_yield"
+          class="w-24 max-w-[8rem] grow"
+        />
+      </label>
+
+      <label class={labelClass} for={undefined}>
+        {$_("Export")}
+        <LowLevelDecimalField
+          bind:value={val.export}
+          name="{fieldname}_{i}_export"
+          unit="%"
+          max={100}
+          class="w-24 max-w-[8rem] grow"
+        />
+      </label>
+
+      <Date bind:value={val.date} name="{fieldname}_{i}_date" />
+
+      <CurrentCheckbox
+        bind:checked={val.current}
+        name="{fieldname}_{i}_current"
+        required={isCurrentRequired}
+        disabled={!val.choices || !val.choices.length}
+      />
+
+      <RemoveButton disabled={valueCopy.length <= 1} on:click={() => removeEntry(i)} />
+    </div>
+  {/each}
+
+  <AddButton on:click={addEntry} />
+</div>

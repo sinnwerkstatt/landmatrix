@@ -1,17 +1,16 @@
 <script lang="ts">
-  // TODO WIP -> Is current radio or checkbox ?
   import { _ } from "svelte-i18n"
 
   import type { ValueLabelEntry } from "$lib/stores"
   import type { JSONCurrentDateChoiceFieldType } from "$lib/types/newtypes"
 
-  import LowLevelDateYearField from "$components/Fields/Edit/LowLevelDateYearField.svelte"
   import ChoicesEditField from "$components/Fields/Edit2/ChoicesEditField.svelte"
   import AddButton from "$components/Fields/Edit2/JSONFieldComponents/AddButton.svelte"
-  import { labelClass } from "$components/Fields/Edit2/JSONFieldComponents/consts"
+  import CurrentRadio from "$components/Fields/Edit2/JSONFieldComponents/CurrentRadio.svelte"
+  import Date from "$components/Fields/Edit2/JSONFieldComponents/Date.svelte"
   import RemoveButton from "$components/Fields/Edit2/JSONFieldComponents/RemoveButton.svelte"
 
-  export let value: JSONCurrentDateChoiceFieldType
+  export let value: JSONCurrentDateChoiceFieldType[]
   export let fieldname: string
 
   interface Extras {
@@ -20,13 +19,13 @@
 
   export let extras: Extras = { choices: [] }
 
-  const createEmptyEntry = (): JSONCurrentDateChoiceFieldType[number] => ({
+  const createEmptyEntry = (): JSONCurrentDateChoiceFieldType => ({
     choice: null,
     date: null,
     current: false,
   })
 
-  let valueCopy = structuredClone<JSONCurrentDateChoiceFieldType>(
+  let valueCopy = structuredClone<JSONCurrentDateChoiceFieldType[]>(
     value.length ? value : [createEmptyEntry()],
   )
   let current = valueCopy.map(val => val.current).indexOf(true) ?? -1
@@ -51,37 +50,21 @@
         {$_("Choice")}
         <ChoicesEditField
           bind:value={val.choice}
-          extras={{
-            choices: extras.choices,
-            required: !!val.date,
-          }}
+          extras={{ choices: extras.choices, required: !!val.date }}
           fieldname="{fieldname}_{i}_choice"
         />
       </label>
 
-      <label class={labelClass} for={undefined}>
-        {$_("Date")}
-        <LowLevelDateYearField
-          bind:value={val.date}
-          name="{fieldname}_{i}_date"
-          class="w-36"
-        />
-      </label>
+      <Date bind:value={val.date} name="{fieldname}_{i}_date" />
 
-      <label class={labelClass}>
-        {$_("Current")}
-        <input
-          type="radio"
-          bind:group={current}
-          name="{fieldname}_current"
-          required={valueCopy.length > 0}
-          class="h-5 w-5 accent-violet-400 ring-red-600"
-          disabled={!val.choice}
-          on:change={() => updateCurrent(i)}
-          class:ring-2={value.length > 0 && current < 0}
-          value={i}
-        />
-      </label>
+      <CurrentRadio
+        bind:group={current}
+        name="{fieldname}_current"
+        required={valueCopy.length > 0 && current < 0}
+        disabled={!val.choice}
+        value={i}
+        on:change={() => updateCurrent(i)}
+      />
 
       <RemoveButton disabled={valueCopy.length <= 1} on:click={() => removeEntry(i)} />
     </div>

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import LowLevelNullBooleanField from "$components/Fields/Edit/LowLevelNullBooleanField.svelte"
+  import LowLevelNullBooleanField from "$components/Fields/Edit2/LowLevelNullBooleanField.svelte"
 
   export let value: boolean | null
   export let fieldname: string
