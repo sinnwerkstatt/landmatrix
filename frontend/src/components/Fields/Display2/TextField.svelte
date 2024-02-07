@@ -18,5 +18,7 @@
     {$_("Access more information about this contract on OpenLandContracts.org")}
   </a>
 {:else}
-  {value ?? "—"}
+  <div class="whitespace-pre-wrap">
+    {value ?? "—"}
+  </div>
 {/if}
