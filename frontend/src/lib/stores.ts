@@ -72,6 +72,7 @@ interface FieldChoicesType {
     animals: ValueLabelEntry[]
     electricity_generation: ValueLabelEntry[]
     carbon_sequestration: ValueLabelEntry[]
+    carbon_sequestration_certs: ValueLabelEntry[]
     minerals: ValueLabelEntry[]
     water_source: ValueLabelEntry[]
     not_public_reason: ValueLabelEntry[]
@@ -109,6 +110,7 @@ export const fieldChoices = readable<FieldChoicesType>(
       animals: [],
       electricity_generation: [],
       carbon_sequestration: [],
+      carbon_sequestration_certs: [],
       minerals: [],
       water_source: [],
       not_public_reason: [],

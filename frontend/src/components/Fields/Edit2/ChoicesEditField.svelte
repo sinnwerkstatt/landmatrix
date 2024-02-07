@@ -14,9 +14,11 @@
     required?: boolean
     clearable?: boolean
     otherHint?: string
+    placeholder?: string
+    closeListOnChange: boolean
   }
 
-  export let extras: Extras = { choices: [] }
+  export let extras: Extras = { choices: [], closeListOnChange: false }
 
   $: multiple = !!extras.multipleChoices
   $: required = !!extras.required
@@ -32,7 +34,10 @@
   }
 </script>
 
-<div class="grow">
+<div
+  class="w-full ring-red-600"
+  class:ring-2={required && (value?.length === 0 || !value)}
+>
   <Select
     bind:focused
     {clearable}
@@ -41,18 +46,18 @@
     groupBy={item => item.group}
     {multiple}
     on:input={e => (multiple ? setMultiValue : setValue)(e.detail)}
-    placeholder={$_("Please select")}
+    placeholder={extras.placeholder ?? $_("Please select")}
     {required}
     showChevron
     value={multiple
       ? extras.choices.filter(c => (value || []).includes(c.value))
       : extras.choices.find(c => c.value === value)}
     name={fieldname}
-    closeListOnChange={false}
+    closeListOnChange={extras.closeListOnChange}
   />
 
-  {#if extras.otherHint && (value === "OTHER" || value.includes("OTHER_LAND"))}
-    <div class="my-1 italic text-orange-600" transition:slide>
+  {#if extras.otherHint && (value === "OTHER" || value?.includes("OTHER_LAND"))}
+    <div class="m-1 italic text-orange-600" transition:slide>
       {extras.otherHint}
     </div>
   {/if}

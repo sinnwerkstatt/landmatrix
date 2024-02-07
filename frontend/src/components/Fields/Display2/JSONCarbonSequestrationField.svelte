@@ -7,16 +7,6 @@
   import CircleNotchIcon from "$components/icons/CircleNotchIcon.svelte"
 
   export let value: JSONCarbonSequestrationFieldType[] = []
-
-  const CARBON_SEQUESTRATION_CERT_ITEMS = [
-    { value: "REDD", label: $_("REDD+") },
-    { value: "VCS", label: $_("Verified Carbon Standard (VCS)") },
-    { value: "GOLD", label: $_("Gold Standard for the Global Goals (GOLD)") },
-    { value: "CDM", label: $_("Clean Development Mechanism (CDM)") },
-    { value: "CAR", label: $_("Climate Action Reserve (CAR)") },
-    { value: "VIVO", label: $_("Plan Vivo") },
-    { value: "OTHER", label: $_("Other (see comment)") },
-  ]
 </script>
 
 <ul>

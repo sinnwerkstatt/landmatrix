@@ -5,15 +5,14 @@
   import type { JSONCurrentDateAreaChoicesFieldType } from "$lib/types/newtypes"
 
   import { dateCurrentFormat } from "$components/Fields/Display2/jsonHelpers"
-  import CircleNotchIcon from "$components/icons/CircleNotchIcon.svelte"
 
-  export let value: JSONCurrentDateAreaChoicesFieldType = []
+  export let value: JSONCurrentDateAreaChoicesFieldType[] = []
 
   interface Extras {
     choices: ValueLabelEntry[]
   }
 
-  export let extras: Extras = {}
+  export let extras: Extras = { choices: [] }
 </script>
 
 <ul>

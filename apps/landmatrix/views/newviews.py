@@ -725,6 +725,7 @@ def field_choices(request):
                 "animals": choices.ANIMALS_ITEMS,
                 "electricity_generation": choices.ELECTRICITY_GENERATION_ITEMS,
                 "carbon_sequestration": choices.CARBON_SEQUESTRATION_ITEMS,
+                "carbon_sequestration_certs": choices.CARBON_SEQUESTRATION_CERT_ITEMS,
                 "minerals": choices.MINERALS_ITEMS,
                 "water_source": choices.WATER_SOURCE_ITEMS,
                 "not_public_reason": choices.NOT_PUBLIC_REASON_ITEMS,

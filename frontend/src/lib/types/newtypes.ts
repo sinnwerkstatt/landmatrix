@@ -176,7 +176,7 @@ interface DealVersionBase {
   production_size: JSONCurrentDateAreaFieldType
   land_area_comment: string
 
-  intention_of_investment: JSONCurrentDateAreaChoicesFieldType
+  intention_of_investment: JSONCurrentDateAreaChoicesFieldType[]
   intention_of_investment_comment: string
 
   nature_of_deal: string[]
@@ -278,9 +278,9 @@ interface DealVersionBase {
   animals_comment: string
   mineral_resources: JSONExportsFieldType[]
   mineral_resources_comment: string
-  contract_farming_crops: JSONCurrentDateAreaChoicesFieldType
+  contract_farming_crops: JSONCurrentDateAreaChoicesFieldType[]
   contract_farming_crops_comment: string
-  contract_farming_animals: JSONCurrentDateAreaChoicesFieldType
+  contract_farming_animals: JSONCurrentDateAreaChoicesFieldType[]
   contract_farming_animals_comment: string
   electricity_generation: JSONElectricityGenerationFieldType
   electricity_generation_comment: string
@@ -362,12 +362,12 @@ export type JSONCurrentDateChoiceFieldType = Array<{
   choice: string | null
 }>
 
-export type JSONCurrentDateAreaChoicesFieldType = Array<{
+export type JSONCurrentDateAreaChoicesFieldType = {
   current: boolean
   date: string | null
   area: number | null
   choices: string[]
-}>
+}
 
 export type JSONLeaseFieldType = Array<{
   current: boolean
@@ -412,7 +412,7 @@ export interface JSONCarbonSequestrationFieldType {
   projected_lifetime_sequestration: number | null
   projected_annual_sequestration: number | null
   certification_standard: boolean | null
-  certification_standard_name: string
+  certification_standard_name: string | null
   certification_standard_comment: string
 }
 

@@ -1,101 +1,70 @@
 <script lang="ts">
   // TODO WIP
   import { _ } from "svelte-i18n"
-  import Select from "svelte-select"
   import { slide } from "svelte/transition"
 
   import { fieldChoices } from "$lib/stores"
   import type { JSONCarbonSequestrationFieldType } from "$lib/types/newtypes"
 
-  import LowLevelDateYearField from "$components/Fields/Edit/LowLevelDateYearField.svelte"
   import LowLevelDecimalField from "$components/Fields/Edit/LowLevelDecimalField.svelte"
   import LowLevelNullBooleanField from "$components/Fields/Edit/LowLevelNullBooleanField.svelte"
   import ChoicesEditField from "$components/Fields/Edit2/ChoicesEditField.svelte"
-  import MinusIcon from "$components/icons/MinusIcon.svelte"
-  import PlusIcon from "$components/icons/PlusIcon.svelte"
+  import AddButton from "$components/Fields/Edit2/JSONFieldComponents/AddButton.svelte"
+  import {
+    cardClass,
+    labelClass,
+  } from "$components/Fields/Edit2/JSONFieldComponents/consts"
+  import CurrentCheckbox from "$components/Fields/Edit2/JSONFieldComponents/CurrentCheckbox.svelte"
+  import Date from "$components/Fields/Edit2/JSONFieldComponents/Date.svelte"
+  import RemoveButton from "$components/Fields/Edit2/JSONFieldComponents/RemoveButton.svelte"
 
+  export let value: JSONCarbonSequestrationFieldType[]
   export let fieldname: string
-  export let value: JSONCarbonSequestrationFieldType[] = []
 
-  const CARBON_SEQUESTRATION_CERT_ITEMS = [
-    { value: "REDD", label: $_("REDD+") },
-    { value: "VCS", label: $_("Verified Carbon Standard (VCS)") },
-    { value: "GOLD", label: $_("Gold Standard for the Global Goals (GOLD)") },
-    { value: "CDM", label: $_("Clean Development Mechanism (CDM)") },
-    { value: "CAR", label: $_("Climate Action Reserve (CAR)") },
-    { value: "VIVO", label: $_("Plan Vivo") },
-    { value: "OTHER", label: $_("Other (please specify in a comment)") },
-  ]
+  const createEmptyEntry = (): JSONCarbonSequestrationFieldType => ({
+    current: false,
+    date: null,
+    area: null,
+    choices: [],
+    projected_lifetime_sequestration: null,
+    projected_annual_sequestration: null,
+    certification_standard: null,
+    certification_standard_name: null,
+    certification_standard_comment: "",
+  })
 
-  let valueCopy: JSONCarbonSequestrationFieldType[] = structuredClone(
-    value.length
-      ? value
-      : [
-          {
-            current: false,
-            date: null,
-            area: null,
-            choices: [],
-            projected_lifetime_sequestration: null,
-            projected_annual_sequestration: null,
-            certification_standard: null,
-            certification_standard_name: "",
-            certification_standard_comment: "",
-          },
-        ],
+  let valueCopy = structuredClone<JSONCarbonSequestrationFieldType[]>(
+    value.length ? value : [createEmptyEntry()],
   )
 
   $: value = valueCopy.filter(val => val.choices.length > 0)
 
-  function addEntry() {
-    valueCopy = [
-      ...valueCopy,
-      {
-        current: false,
-        date: null,
-        area: null,
-        choices: [],
-        projected_lifetime_sequestration: null,
-        projected_annual_sequestration: null,
-        certification_standard: null,
-        certification_standard_name: "",
-        certification_standard_comment: "",
-      },
-    ]
-  }
+  const addEntry = () => (valueCopy = [...valueCopy, createEmptyEntry()])
 
-  function removeEntry(index) {
-    valueCopy = valueCopy.filter((val, i) => i !== index)
-  }
+  const removeEntry = (index: number) =>
+    (valueCopy = valueCopy.filter((_val, i) => i !== index))
 
-  const anySelectedAsCurrent = values => values.some(val => val.current)
-  const isCurrentRequired = values => values.length > 0 && !anySelectedAsCurrent(values)
+  $: isCurrentRequired = value.length ? !value.some(val => val.current) : false
 </script>
 
+{JSON.stringify(value)}
 <div class="grid gap-2 xl:grid-cols-2">
   {#each valueCopy as val, i}
-    <div class:border-orange={val.current} class="flex flex-col gap-4 border p-3">
-      <label class="flex items-center justify-between gap-2">
-        {$_("Current")}
-        <input
-          type="checkbox"
-          bind:checked={val.current}
-          name="{fieldname}_{i}_current"
-          required={isCurrentRequired(valueCopy)}
-          disabled={!val.choices || !val.choices.length}
+    <div class:border-violet-400={val.current} class={cardClass}>
+      <label class={labelClass} for={undefined}>
+        {$_("Choices")}
+        <ChoicesEditField
+          bind:value={val.choices}
+          extras={{
+            choices: $fieldChoices.deal.carbon_sequestration,
+            multipleChoices: true,
+            required: !!(val.date || val.area),
+          }}
+          fieldname="{fieldname}_{i}_choices"
         />
       </label>
 
-      <label class="flex flex-wrap items-center justify-between gap-2" for={undefined}>
-        {$_("Date")}
-        <LowLevelDateYearField
-          bind:value={val.date}
-          name="{fieldname}_{i}_date"
-          class="w-36"
-        />
-      </label>
-
-      <label class="flex flex-wrap items-center justify-between gap-2" for={undefined}>
+      <label class={labelClass} for={undefined}>
         {$_("Area")}
         <LowLevelDecimalField
           bind:value={val.area}
@@ -104,18 +73,8 @@
           class="w-24 grow"
         />
       </label>
-      <label class="flex flex-wrap items-center justify-between gap-2" for={undefined}>
-        {$_("Choices")}
-        <ChoicesEditField
-          bind:value={val.choices}
-          extras={{
-            choices: $fieldChoices.deal.carbon_sequestration,
-            required: !!(val.date || val.area),
-          }}
-        />
-      </label>
 
-      <label class="flex flex-wrap items-center justify-between gap-2" for={undefined}>
+      <label class={labelClass} for={undefined}>
         {$_("Projected carbon sequestration during project lifetime")}
         <LowLevelDecimalField
           bind:value={val.projected_lifetime_sequestration}
@@ -124,7 +83,8 @@
           class="w-24 max-w-[8rem] grow"
         />
       </label>
-      <label class="flex flex-wrap items-center justify-between gap-2" for={undefined}>
+
+      <label class={labelClass} for={undefined}>
         {$_("Projected annual carbon sequestration")}
         <LowLevelDecimalField
           bind:value={val.projected_annual_sequestration}
@@ -133,35 +93,36 @@
           class="w-24 max-w-[8rem] grow"
         />
       </label>
-      <label class="flex flex-wrap items-center justify-between gap-2" for={undefined}>
+
+      <label class={labelClass} for={undefined}>
         {$_("Certification standard/mechanism")}
         <LowLevelNullBooleanField
           bind:value={val.certification_standard}
           nullable
           fieldname="certification_standard"
-          wrapperClass="space-x-3"
+          wrapperClass="flex justify-end gap-3"
+          on:change={() => (val.certification_standard_name = null)}
         />
       </label>
+
       {#if val.certification_standard === true}
-        <label
-          class="flex flex-wrap items-center justify-between gap-2"
-          for={undefined}
-          transition:slide
-        >
+        <label class={labelClass} for={undefined} transition:slide>
           {$_("Name of certification standard/mechanism")}
-          <Select
-            value={CARBON_SEQUESTRATION_CERT_ITEMS.find(
-              i => i.value === val.certification_standard_name,
-            )}
-            items={CARBON_SEQUESTRATION_CERT_ITEMS}
-            on:change={e => (val.certification_standard_name = e.detail.value)}
-            on:clear={() => (val.certification_standard_name = null)}
-            showChevron
-            placeholder={$_("Name of certification standard/mechanism")}
+
+          <ChoicesEditField
+            bind:value={val.certification_standard_name}
+            extras={{
+              choices: $fieldChoices.deal.carbon_sequestration_certs,
+              placeholder: $_("Name of certification standard/mechanism"),
+              closeListOnChange: true,
+              otherHint: $_("Please specify in comment field"),
+              required: true,
+            }}
+            fieldname="{fieldname}_{i}_certification_standard_name"
           />
         </label>
       {/if}
-      <label class="flex flex-wrap items-center justify-between gap-2" for={undefined}>
+      <label class={labelClass} for={undefined}>
         {$_("Comment on certtification standard/mechanism")}
         <input
           bind:value={val.certification_standard_comment}
@@ -171,25 +132,18 @@
         />
       </label>
 
-      <div class="text-right">
-        <button
-          type="button"
-          disabled={valueCopy.length <= 1}
-          on:click={() => removeEntry(i)}
-        >
-          <MinusIcon
-            class="h-5 w-5 {valueCopy.length > 1 ? 'text-red-600' : 'text-gray-200'}"
-          />
-        </button>
-      </div>
+      <Date bind:value={val.date} name="{fieldname}_{i}_date" />
+
+      <CurrentCheckbox
+        bind:checked={val.current}
+        name="{fieldname}_{i}_current"
+        required={isCurrentRequired}
+        disabled={!val.choices || !val.choices.length}
+      />
+
+      <RemoveButton disabled={valueCopy.length <= 1} on:click={() => removeEntry(i)} />
     </div>
   {/each}
 
-  <button
-    class="flex w-full items-center justify-center border p-2"
-    on:click={addEntry}
-    type="button"
-  >
-    <PlusIcon class="h-7 w-7 text-black" />
-  </button>
+  <AddButton on:click={addEntry} />
 </div>
