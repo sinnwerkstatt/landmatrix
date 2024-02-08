@@ -355,7 +355,6 @@ export type JSONCurrentDateAreaFieldType = {
   current: boolean
   date: string | null
   area: number
-}>
 }
 
 export type JSONCurrentDateChoiceFieldType = {
