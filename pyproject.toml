@@ -85,26 +85,8 @@ types-tqdm = "^4.65.0.0"
 line-length = 88
 target-version = ["py38", "py39", "py310", "py311", "py312"]
 include = '\.pyi?$'
-exclude = '''
-/(
-    \.eggs
-  | \.git
-  | migrations
-  | static-collected
-  | node_modules
-  | frontend
-)/
-'''
-force-exclude = '''
-/(
-    \.eggs
-  | \.git
-  | migrations
-  | static-collected
-  | node_modules
-  | frontend
-)/
-'''
+exclude = '/(\.eggs|\.git|migrations|static-collected|node_modules|frontend)/'
+force-exclude = '/(\.eggs|\.git|migrations|static-collected|node_modules|frontend)/'
 
 [tool.isort]
 profile = "black"
@@ -126,10 +108,22 @@ module = [
     "wagtail.*",
     "wagtail_headless_preview.*",
     "modelcluster.*",
-    "modeltranslation.*"
-]
+    "modeltranslation.*"]
 ignore_missing_imports = true
 
 
 [tool.django-stubs]
 django_settings_module = "config.settings.dev"
+
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings.ci"
+python_files = ["test_*.py"]
+addopts = ["--reuse-db"]
+#filterwarnings = [
+#    "ignore::django.utils.deprecation.RemovedInDjango51Warning",
+#    "ignore::django.utils.deprecation.RemovedInDjango60Warning",
+#]
+
+[tool.pytest-watch]
+nobeep = true

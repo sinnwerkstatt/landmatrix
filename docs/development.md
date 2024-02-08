@@ -52,3 +52,12 @@ Model translations are handled by `django-modeltranslation`.
 zcat landmatrix.sql.gz | psql -h localhost -U landmatrix landmatrix
 ./manage.py migrate
 ```
+
+### Testing
+
+#### Backend / Django
+
+* Run tests via: `poetry run pytest apps`
+* With coverage: `poetry run pytest apps --cov=apps`
+* To force new db creation after migrating: `poetry run pytest apps --create-db`
+* Start pytest in watch mode: `poetry run ptw apps`
