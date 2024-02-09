@@ -1,38 +1,65 @@
 <script lang="ts">
   import type { Point } from "geojson"
-  import type { Map } from "leaflet"
+  import { geoJson, type GeoJSON, type Layer, type Map } from "leaflet"
+  import { onDestroy, onMount } from "svelte"
   import { _ } from "svelte-i18n"
   import { slide } from "svelte/transition"
 
   import { newNanoid } from "$lib/helpers"
-  import { Location2 } from "$lib/types/newtypes"
+  import {
+    Location2,
+    type PointFeature,
+    type PointFeatureProps,
+  } from "$lib/types/newtypes"
   import type { Country } from "$lib/types/wagtail"
   import { isEmptySubmodel } from "$lib/utils/data_processing"
+  import {
+    createLegend,
+    createPointFeatures,
+    createTooltip,
+  } from "$lib/utils/location2"
+  import { fitBounds } from "$lib/utils/locationSSRsafe"
 
   import EditField from "$components/Fields/EditField.svelte"
   import PlusIcon from "$components/icons/PlusIcon.svelte"
   import TrashIcon from "$components/icons/TrashIcon.svelte"
   import BigMap from "$components/Map/BigMap.svelte"
 
-  import LocationAreasField from "./LocationAreasField.svelte"
+  import LocationAreasEditField from "./LocationAreasEditField.svelte"
 
   export let locations: Location2[]
-  export let country: Country
+  export let country: Country | undefined
+
   let activeEntryIdx = -1
 
   let map: Map | undefined
+  let locationsPointLayer: GeoJSON<PointFeatureProps, Point>
 
-  function addEntry() {
-    const currentIDs = locations.map(entry => entry.nid)
-    locations = [...locations, new Location2(newNanoid(currentIDs))]
-    activeEntryIdx = locations.length - 1
+  const onMapReady = (e: CustomEvent<Map>) => {
+    map = e.detail
+    map.addControl(createLegend())
+    map.addLayer(locationsPointLayer)
+    fitBounds(locationsPointLayer, map)
   }
 
-  function toggleActiveEntry(index: number): void {
+  $: if (map && locationsPointLayer) {
+    map.removeLayer(locationsPointLayer)
+    locationsPointLayer = createLayer(locations)
+    map.addLayer(locationsPointLayer)
+    fitBounds(locationsPointLayer, map)
+  }
+
+  const addEntry = () => {
+    const currentIDs = locations.map(entry => entry.nid)
+    locations = [...locations, new Location2(newNanoid(currentIDs))]
+    activeEntryIdx = -1
+  }
+
+  const toggleActiveEntry = (index: number) => {
     activeEntryIdx = activeEntryIdx === index ? -1 : index
   }
 
-  function removeEntry(c: Location2) {
+  const removeEntry = (c: Location2) => {
     if (!isEmptySubmodel(c)) {
       const areYouSure = confirm(`${$_("Remove")} ${$_("Location")} #${c.nid}?`)
       if (!areYouSure) return
@@ -40,14 +67,31 @@
     locations = locations.filter(x => x.nid !== c.nid)
   }
 
-  const onMapReady = (e: CustomEvent<Map>) => {
-    map = e.detail
-    // map.addControl(createLegend())
-  }
-
   $: onGoogleAutocomplete = (point: Point) => {
     locations[activeEntryIdx].point = point
   }
+
+  const createLayer = (locations: Location2[]) =>
+    geoJson(createPointFeatures(locations), {
+      onEachFeature: (feature: PointFeature, layer: Layer) => {
+        layer.bindPopup(createTooltip(feature), { keepInView: true })
+        layer.on("click", () =>
+          toggleActiveEntry(locations.findIndex(l => l.nid === feature.properties.id)),
+        )
+        layer.on("mouseover", () => layer.openPopup())
+        layer.on("mouseout", () => layer.closePopup())
+      },
+    })
+
+  onMount(() => {
+    locationsPointLayer = createLayer(locations)
+  })
+
+  onDestroy(() => {
+    if (map && locationsPointLayer) {
+      map.removeLayer(locationsPointLayer)
+    }
+  })
 </script>
 
 <section class="lg:h-full">
@@ -60,6 +104,7 @@
           >
             <h3 class="flex-grow">
               <button
+                type="button"
                 class="w-full p-2 text-left"
                 on:click={() => toggleActiveEntry(index)}
               >
@@ -69,12 +114,15 @@
                 </small>
               </button>
             </h3>
-            <button class="flex-initial p-2" on:click={() => removeEntry(location)}>
+            <button
+              type="button"
+              class="flex-initial p-2"
+              on:click={() => removeEntry(location)}
+            >
               <TrashIcon class="h-8 w-6 cursor-pointer text-red-600" />
             </button>
           </div>
           {#if activeEntryIdx === index}
-            <!--{JSON.stringify(location)}-->
             <div class="grid gap-2" transition:slide={{ duration: 200 }}>
               <EditField
                 fieldname="location.level_of_accuracy"
@@ -86,7 +134,7 @@
                 fieldname="location.name"
                 bind:value={location.name}
                 extras={{
-                  countryCode: country.code_alpha2,
+                  countryCode: country?.code_alpha2,
                   onGoogleAutocomplete,
                 }}
                 showLabel
@@ -135,7 +183,7 @@
       />
       <div class="overflow-y-auto">
         {#if activeEntryIdx !== -1}
-          <LocationAreasField bind:areas={locations[activeEntryIdx].areas} />
+          <LocationAreasEditField bind:areas={locations[activeEntryIdx].areas} />
         {/if}
       </div>
     </div>
