@@ -14,9 +14,6 @@
 
   import { browser } from "$app/environment"
 
-  import { geoJsonLayerGroup } from "$lib/stores"
-  import { padBounds } from "$lib/utils/locationSSRsafe"
-
   import LoadingPulse from "$components/LoadingPulse.svelte"
 
   import BigMapStandaloneLayerSwitcher from "./BigMapStandaloneLayerSwitcher.svelte"
@@ -71,18 +68,6 @@
       gestureHandling: true,
       ...options,
     })
-
-    if (!$geoJsonLayerGroup) {
-      $geoJsonLayerGroup = geoJson()
-      $geoJsonLayerGroup.on("layeradd layerremove", function () {
-        if (!map) return
-        // console.log("add or rm")
-        const bounds = this.getBounds()
-        bounds.isValid() && map.fitBounds(padBounds(bounds), { duration: 1 })
-      })
-    }
-
-    map.addLayer($geoJsonLayerGroup)
 
     map.whenReady(() => dispatch("ready", map!))
   })

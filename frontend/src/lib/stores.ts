@@ -403,5 +403,3 @@ export const simpleInvestors = readable<SimpleInvestor[]>([], set => {
     .then(ret => ret.json())
     .then(set)
 })
-
-export const geoJsonLayerGroup = writable<GeoJSON | null>(null)

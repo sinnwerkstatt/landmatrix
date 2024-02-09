@@ -2,7 +2,7 @@
   import { _ } from "svelte-i18n"
 
   import { areaTypeMap } from "$lib/stores"
-  import { AREA_TYPE_COLOR_MAP, AREA_TYPES } from "$lib/utils/location"
+  import { AREA_TYPE_COLOR_MAP, AREA_TYPES } from "$lib/utils/location2"
 </script>
 
 <div class="border border-black bg-white p-3 font-sans text-gray-700">

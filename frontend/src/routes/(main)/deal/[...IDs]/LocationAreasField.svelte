@@ -1,10 +1,10 @@
 <script lang="ts">
   import * as turf from "@turf/turf"
-  import { geoJson } from "leaflet"
+  import { geoJson, type Map } from "leaflet?client"
   import { onDestroy, onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
-  import { areaTypeMap, geoJsonLayerGroup } from "$lib/stores"
+  import { areaTypeMap } from "$lib/stores"
   import type { AreaType } from "$lib/types/deal"
   import type { Area, AreaFeature, AreaFeatureLayer } from "$lib/types/newtypes"
 
@@ -23,8 +23,8 @@
     production_area: "#ff0000",
   }
 
+  export let map: Map | undefined
   export let areas: Area[]
-  export let locationId: string
   export let fieldname: string
   export let label = ""
 
@@ -39,7 +39,7 @@
     type: "Feature",
     geometry: area.area,
     properties: {
-      id: area.id,
+      id: area.id as number,
       type: area.type,
       date: area.date,
       current: area.current,
@@ -71,19 +71,20 @@
   let features: AreaFeature[] = areas.map(areaToFeature)
   let layer: AreaFeatureLayer
 
-  // $: if ($geoJsonLayerGroup) {
-  //   // console.log("hi", locationId)
-  //   $geoJsonLayerGroup.removeLayer(layer)
-  //   layer = createLayer(features, isSelectedEntry)
-  //   $geoJsonLayerGroup.addLayer(layer)
-  // }
+  $: if (map && layer) {
+    map.removeLayer(layer)
+    layer = createLayer(features, isSelectedEntry)
+    map.addLayer(layer)
+    // fitBounds(layer, map)
+  }
 
   onMount(() => {
     layer = createLayer(features, isSelectedEntry)
   })
+
   onDestroy(() => {
-    if ($geoJsonLayerGroup) {
-      $geoJsonLayerGroup.removeLayer(layer)
+    if (map) {
+      map.removeLayer(layer)
     }
   })
 
