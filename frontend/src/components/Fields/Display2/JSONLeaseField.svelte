@@ -10,7 +10,7 @@
   import HouseholdIcon from "$components/icons/HouseholdIcon.svelte"
   import TractorIcon from "$components/icons/TractorIcon.svelte"
 
-  export let value: JSONLeaseFieldType = []
+  export let value: JSONLeaseFieldType[]
 
   export let fieldname: string
   export let label = ""

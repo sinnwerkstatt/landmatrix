@@ -6,6 +6,7 @@
   import { DataSource } from "$lib/types/newtypes"
   import { isEmptySubmodel } from "$lib/utils/data_processing"
 
+  import LowLevelNullBooleanField from "$components/Fields/Edit2/LowLevelNullBooleanField.svelte"
   import EditField from "$components/Fields/EditField.svelte"
   import PlusIcon from "$components/icons/PlusIcon.svelte"
   import TrashIcon from "$components/icons/TrashIcon.svelte"
@@ -68,27 +69,24 @@
               bind:value={datasource.type}
               showLabel
             />
+
             <EditField
               fieldname="datasource.url"
               bind:value={datasource.url}
               showLabel
             />
-            <!--TODO -->
-            <!--            <FileField-->
-            <!--              fieldname="datasource.file"-->
-            <!--              bind:value={datasource.file}-->
-            <!--              label={$_("File")}-->
-            <!--              bind:notPublic={datasource.file_not_public}-->
-            <!--            />-->
 
             <EditField
               fieldname="datasource.file"
               showLabel
               bind:value={datasource.file}
             >
-              <label>
-                <input type="checkbox" bind:checked={datasource.file_not_public} />
-                not public {datasource.file_not_public}
+              <label for={undefined} class="my-2 flex items-center gap-2">
+                <LowLevelNullBooleanField
+                  bind:value={datasource.file_not_public}
+                  fieldname="datasource.file_not_public"
+                />
+                {$_("Keep PDF not public")}
               </label>
             </EditField>
 

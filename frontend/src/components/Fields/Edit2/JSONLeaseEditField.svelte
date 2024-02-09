@@ -12,10 +12,10 @@
 
   import { cardClass, labelClass } from "./JSONFieldComponents/consts"
 
-  export let value: JSONLeaseFieldType
+  export let value: JSONLeaseFieldType[]
   export let fieldname: string
 
-  let valueCopy = structuredClone<JSONLeaseFieldType>(
+  let valueCopy = structuredClone<JSONLeaseFieldType[]>(
     value.length
       ? value
       : [{ current: false, date: null, area: null, farmers: null, households: null }],

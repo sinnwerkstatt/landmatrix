@@ -202,9 +202,9 @@ interface DealVersionBase {
 
   contract_farming: boolean | null
   on_the_lease_state: boolean | null
-  on_the_lease: JSONLeaseFieldType
+  on_the_lease: JSONLeaseFieldType[]
   off_the_lease_state: boolean | null
-  off_the_lease: JSONLeaseFieldType
+  off_the_lease: JSONLeaseFieldType[]
   contract_farming_comment: string
 
   contracts: Contract[]
@@ -214,21 +214,21 @@ interface DealVersionBase {
   total_jobs_planned: number | null
   total_jobs_planned_employees: number | null
   total_jobs_planned_daily_workers: number | null
-  total_jobs_current: JSONJobsFieldType
+  total_jobs_current: JSONJobsFieldType[]
   total_jobs_created_comment: string
 
   foreign_jobs_created: boolean | null
   foreign_jobs_planned: number | null
   foreign_jobs_planned_employees: number | null
   foreign_jobs_planned_daily_workers: number | null
-  foreign_jobs_current: JSONJobsFieldType
+  foreign_jobs_current: JSONJobsFieldType[]
   foreign_jobs_created_comment: string
 
   domestic_jobs_created: boolean | null
   domestic_jobs_planned: number | null
   domestic_jobs_planned_employees: number | null
   domestic_jobs_planned_daily_workers: number | null
-  domestic_jobs_current: JSONJobsFieldType
+  domestic_jobs_current: JSONJobsFieldType[]
   domestic_jobs_created_comment: string
 
   operating_company: InvestorHull | null
@@ -351,40 +351,40 @@ export interface DealVersion2 extends DealVersionBase, BaseVersionMixin {
   deal_size: number
 }
 
-export type JSONCurrentDateAreaFieldType = {
+export interface JSONCurrentDateAreaFieldType {
   current: boolean
   date: string | null
   area: number
 }
 
-export type JSONCurrentDateChoiceFieldType = {
+export interface JSONCurrentDateChoiceFieldType {
   current: boolean
   date: string | null
   choice: string | null
 }
 
-export type JSONCurrentDateAreaChoicesFieldType = {
+export interface JSONCurrentDateAreaChoicesFieldType {
   current: boolean
   date: string | null
   area: number | null
   choices: string[]
 }
 
-export type JSONLeaseFieldType = Array<{
+export interface JSONLeaseFieldType {
   current: boolean
   date: string | null
   area: number | null
   farmers: number | null
   households: number | null
-}>
+}
 
-export type JSONJobsFieldType = Array<{
+export interface JSONJobsFieldType {
   current: boolean
   date: string | null
   jobs: number | null
   employees: number | null
   workers: number | null
-}>
+}
 
 export interface JSONExportsFieldType {
   current: boolean

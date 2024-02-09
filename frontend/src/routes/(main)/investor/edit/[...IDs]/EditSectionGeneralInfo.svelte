@@ -12,7 +12,7 @@
 </script>
 
 <form id="general">
-  <EditSubsection title={$_("General info")}>
+  <EditSubsection id="investor.general_info">
     <EditField bind:value={version.name} fieldname="name" model="investor" showLabel />
     <EditField
       bind:value={version.country_id}

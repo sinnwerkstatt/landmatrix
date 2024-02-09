@@ -2,8 +2,7 @@
   import type { DealVersion2 } from "$lib/types/newtypes"
 
   import DisplayField from "$components/Fields/DisplayField.svelte"
-
-  import Subsection from "./Subsection.svelte"
+  import Subsection from "$components/Subsection.svelte"
 
   export let version: DealVersion2
 </script>

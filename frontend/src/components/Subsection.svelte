@@ -1,11 +1,11 @@
 <script lang="ts">
   import { dealSections } from "$lib/fieldLookups"
   import { isNotEmpty } from "$lib/helpers"
-  import type { DealVersion2 } from "$lib/types/newtypes"
+  import type { DealVersion2, InvestorVersion2 } from "$lib/types/newtypes"
 
   // export let id: keyof typeof $dealSections
   export let id: string
-  export let obj: DealVersion2
+  export let obj: DealVersion2 | InvestorVersion2
 
   $: sec = $dealSections[id]
 

@@ -58,7 +58,7 @@
         />
       </label>
 
-      <label class="flex flex-wrap items-center justify-between gap-2" for={undefined}>
+      <label class={labelClass} for={undefined}>
         {$_("Area covered by installations")}
         <LowLevelDecimalField
           bind:value={val.area}
@@ -68,7 +68,7 @@
         />
       </label>
 
-      <label class="flex flex-wrap items-center justify-between gap-2" for={undefined}>
+      <label class={labelClass} for={undefined}>
         {$_("Export")}
         <LowLevelDecimalField
           bind:value={val.export}
@@ -79,11 +79,7 @@
         />
       </label>
       {#if val.choices?.find(v => v === "WIND")}
-        <label
-          class="flex flex-wrap items-center justify-between gap-2"
-          for={undefined}
-          transition:slide
-        >
+        <label class={labelClass} for={undefined} transition:slide>
           {$_("Number of turbines")}
           <LowLevelDecimalField
             bind:value={val.windfarm_count}
@@ -94,7 +90,7 @@
         </label>
       {/if}
 
-      <label class="flex flex-wrap items-center justify-between gap-2" for={undefined}>
+      <label class={labelClass} for={undefined}>
         {$_("Currently installed capacity")}
         <LowLevelDecimalField
           bind:value={val.current_capacity}
@@ -104,7 +100,7 @@
         />
       </label>
 
-      <label class="flex flex-wrap items-center justify-between gap-2" for={undefined}>
+      <label class={labelClass} for={undefined}>
         {$_("Intended capacity")}
         <LowLevelDecimalField
           bind:value={val.intended_capacity}

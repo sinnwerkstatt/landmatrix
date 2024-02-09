@@ -6,6 +6,10 @@
 
   import ChoicesEditField from "$components/Fields/Edit2/ChoicesEditField.svelte"
   import AddButton from "$components/Fields/Edit2/JSONFieldComponents/AddButton.svelte"
+  import {
+    cardClass,
+    labelClass,
+  } from "$components/Fields/Edit2/JSONFieldComponents/consts"
   import CurrentRadio from "$components/Fields/Edit2/JSONFieldComponents/CurrentRadio.svelte"
   import Date from "$components/Fields/Edit2/JSONFieldComponents/Date.svelte"
   import RemoveButton from "$components/Fields/Edit2/JSONFieldComponents/RemoveButton.svelte"
@@ -45,8 +49,8 @@
 
 <div class="grid gap-2 xl:grid-cols-2">
   {#each valueCopy as val, i}
-    <div class:border-violet-400={val.current} class="flex flex-col gap-4 border p-3">
-      <label class="flex flex-wrap items-center justify-between gap-4" for={undefined}>
+    <div class:border-violet-400={val.current} class={cardClass}>
+      <label class={labelClass} for={undefined}>
         {$_("Choice")}
         <ChoicesEditField
           bind:value={val.choice}
@@ -60,7 +64,7 @@
       <CurrentRadio
         bind:group={current}
         name="{fieldname}_current"
-        required={valueCopy.length > 0 && current < 0}
+        required={value.length > 0 && current < 0}
         disabled={!val.choice}
         value={i}
         on:change={() => updateCurrent(i)}

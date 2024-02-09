@@ -5,8 +5,7 @@
 
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import InvolvementsGraph from "$components/New/InvolvementsGraph/InvolvementsGraph.svelte"
-
-  import Subsection from "./Subsection.svelte"
+  import Subsection from "$components/Subsection.svelte"
 
   export let version: DealVersion2
 </script>

@@ -5,11 +5,11 @@
 
   import { dateCurrentFormat } from "$components/Fields/Display2/jsonHelpers"
 
-  export let value: JSONJobsFieldType = []
+  export let value: JSONJobsFieldType[]
 </script>
 
 <ul>
-  {#each value ?? [] as val}
+  {#each value as val}
     <li class:font-bold={val.current}>
       {dateCurrentFormat(val)}
       {#if val.jobs}

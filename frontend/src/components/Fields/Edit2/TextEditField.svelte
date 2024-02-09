@@ -1,4 +1,5 @@
 <script lang="ts">
+  import AtIcon from "$components/icons/AtIcon.svelte"
   import LinkIcon from "$components/icons/LinkIcon.svelte"
 
   export let value: string | string[]
@@ -28,7 +29,16 @@
     <div
       class="flex items-center justify-center border border-l-0 border-gray-300 bg-gray-200 px-3 py-1.5 text-gray-600"
     >
-      <LinkIcon class="h-4 w-4" />
+      <LinkIcon />
+    </div>
+  </div>
+{:else if extras.email}
+  <div class="flex">
+    <input type="email" bind:value class="inpt" name={fieldname} placeholder={label} />
+    <div
+      class="flex items-center justify-center border border-l-0 border-gray-300 bg-gray-200 px-3 py-1.5 text-gray-600"
+    >
+      <AtIcon />
     </div>
   </div>
 {:else}

@@ -52,5 +52,5 @@
     </label>
   </div>
 {:else}
-  <input bind:checked={value} type="checkbox" name={fieldname} />
+  <input bind:checked={value} type="checkbox" name={fieldname} class={inptClass} />
 {/if}

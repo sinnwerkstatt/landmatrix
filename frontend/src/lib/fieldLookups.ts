@@ -31,6 +31,7 @@ import WorkflowInfosField from "$components/Fields/Display2/WorkflowInfosField.s
 import BooleanEditField from "$components/Fields/Edit2/BooleanEditField.svelte"
 import ChoicesEditField from "$components/Fields/Edit2/ChoicesEditField.svelte"
 import CountryEditField from "$components/Fields/Edit2/CountryEditField.svelte"
+import DateEditField from "$components/Fields/Edit2/DateEditField.svelte"
 import DecimalEditField from "$components/Fields/Edit2/DecimalEditField.svelte"
 import FileEditField from "$components/Fields/Edit2/FileEditField.svelte"
 import InvestorForeignKey from "$components/Fields/Edit2/InvestorForeignKey.svelte"
@@ -354,6 +355,10 @@ export const dealSections = derived(_, $_ => {
     overall_comment: {
       title: $_("Overall comment"),
       fields: ["overall_comment"],
+    },
+    "investor.general_info": {
+      title: $_("General info"),
+      fields: ["country_id", "classification", "homepage", "opencorporates", "comment"],
     },
   } as { [key: string]: { title: string; fields: string[] } }
 })
@@ -702,7 +707,7 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
       displayField: ChoicesField,
       editField: ChoicesEditField,
       label: $_("Community consultation"),
-      extras: { choices: $fieldChoices.deal.community_consultation },
+      extras: { choices: $fieldChoices.deal.community_consultation, clearable: true },
     },
     community_consultation_comment: {
       displayField: TextField,
@@ -714,7 +719,7 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
       displayField: ChoicesField,
       editField: ChoicesEditField,
       label: $_("Community reaction"),
-      extras: { choices: $fieldChoices.deal.community_reaction },
+      extras: { choices: $fieldChoices.deal.community_reaction, clearable: true },
     },
     community_reaction_comment: {
       displayField: TextField,
@@ -1195,12 +1200,12 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
     },
     "contract.date": {
       displayField: TextField,
-      editField: TextEditField,
+      editField: DateEditField,
       label: $_("Date"),
     }, // use DateTimeField TODO? it's loosedatefield
     "contract.expiration_date": {
       displayField: TextField,
-      editField: TextEditField,
+      editField: DateEditField,
       label: $_("Expiration date"),
     },
     "contract.agreement_duration": {
@@ -1237,10 +1242,11 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
       editField: FileEditField,
       label: $_("File"),
     },
-    // "datasource.file_not_public": {
-    //   displayField: BooleanField,
-    //   label: $_("Keep PDF not public"),
-    // },
+    "datasource.file_not_public": {
+      displayField: BooleanField,
+      editField: BooleanEditField,
+      label: $_("Keep PDF not public"),
+    },
     "datasource.publication_title": {
       displayField: TextField,
       editField: TextEditField,
