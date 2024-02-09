@@ -4,15 +4,12 @@
   import { slide } from "svelte/transition"
 
   import { newNanoid } from "$lib/helpers"
-  import { fieldChoices } from "$lib/stores"
   import { Location2 } from "$lib/types/newtypes"
   import type { Country } from "$lib/types/wagtail"
   import { isEmptySubmodel } from "$lib/utils/data_processing"
-  import { createLegend } from "$lib/utils/location"
 
-  import ChoicesEditField from "$components/Fields/Edit2/ChoicesEditField.svelte"
   import PointField from "$components/Fields/Edit2/PointField.svelte"
-  import TextEditField from "$components/Fields/Edit2/TextEditField.svelte"
+  import EditField from "$components/Fields/EditField.svelte"
   import PlusIcon from "$components/icons/PlusIcon.svelte"
   import TrashIcon from "$components/icons/TrashIcon.svelte"
   import BigMap from "$components/Map/BigMap.svelte"
@@ -85,21 +82,12 @@
           {#if activeEntryIdx === index}
             <!--{JSON.stringify(location)}-->
             <div class="grid gap-2" transition:slide={{ duration: 200 }}>
-              <label
-                class="flex flex-wrap items-center justify-between gap-4 font-medium"
-                for={undefined}
-              >
-                {$_("Spatial accuracy level")}
-                <ChoicesEditField
-                  fieldname="location.level_of_accuracy"
-                  bind:value={location.level_of_accuracy}
-                  label={$_("Spatial accuracy level")}
-                  extras={{
-                    choices: $fieldChoices.deal.level_of_accuracy,
-                    required: true,
-                  }}
-                />
-              </label>
+              <EditField
+                fieldname="location.level_of_accuracy"
+                bind:value={location.level_of_accuracy}
+                extras={{ required: true }}
+                showLabel
+              />
               <LocationGoogleField
                 fieldname="location.name"
                 bind:value={location.name}
@@ -112,22 +100,20 @@
                 bind:value={location.point}
                 label={$_("Point")}
               />
-              <TextEditField
+              <EditField
                 fieldname="location.description"
                 bind:value={location.description}
-                label={$_("Description")}
-                extras={{ multiline: true }}
+                showLabel
               />
-              <TextEditField
+              <EditField
                 fieldname="location.facility_name"
                 bind:value={location.facility_name}
-                label={$_("Facility name")}
+                showLabel
               />
-              <TextEditField
+              <EditField
                 fieldname="location.comment"
                 bind:value={location.comment}
-                label={$_("Comment")}
-                extras={{ multiline: true }}
+                showLabel
               />
             </div>
           {/if}

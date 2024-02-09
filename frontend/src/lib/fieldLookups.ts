@@ -1151,15 +1151,30 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
     // LOCATIONS
     "location.nid": { displayField: NanoIDField, label: $_("ID") },
     "location.name": { displayField: TextField, label: $_("Location") },
-    "location.description": { displayField: TextField, label: $_("Description") },
+    "location.description": {
+      displayField: TextField,
+      editField: TextEditField,
+      label: $_("Description"),
+      extras: { multiline: true },
+    },
     "location.point": { displayField: PointField, label: $_("Point") },
-    "location.facility_name": { displayField: TextField, label: $_("Facility name") },
+    "location.facility_name": {
+      displayField: TextField,
+      editField: TextEditField,
+      label: $_("Facility name"),
+    },
     "location.level_of_accuracy": {
       displayField: ChoicesField,
+      editField: ChoicesEditField,
       label: $_("Spatial accuracy level"),
       extras: { choices: $fieldChoices.deal.level_of_accuracy },
     },
-    "location.comment": { displayField: TextField, label: $_("Comment") },
+    "location.comment": {
+      displayField: TextField,
+      editField: TextEditField,
+      label: $_("Comment"),
+      extras: { multiline: true },
+    },
     // "location.areas": { displayField: XXX, label: $_("Areas") },
     // CONTRACTS
     "contract.nid": { displayField: NanoIDField, label: $_("ID") },

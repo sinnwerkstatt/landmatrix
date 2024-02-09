@@ -29,7 +29,7 @@
     <Label2 value={richField?.label} class={labelClass} />
   {/if}
   <div class={valueClass}>
-    {#if richField}
+    {#if richField && richField.editField}
       {#if allExtras}
         {#if $$slots.default}
           <svelte:component

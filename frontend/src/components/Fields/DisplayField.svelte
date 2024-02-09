@@ -31,7 +31,7 @@
       <Label2 value={richField?.label} class={labelClass} />
     {/if}
     <div class={valueClass}>
-      {#if richField}
+      {#if richField && richField.displayField}
         {#if allExtras}
           <svelte:component this={richField.displayField} {value} extras={allExtras} />
         {:else}
