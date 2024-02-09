@@ -27,7 +27,7 @@
 
   export let data
 
-  $: activeTab = $page.url.hash.split("/")[0] || "#locations"
+  $: activeTab = $page.url.hash.split("-")[0] || "#locations"
 
   $: tabs = [
     { target: "#locations", name: $_("Locations") },

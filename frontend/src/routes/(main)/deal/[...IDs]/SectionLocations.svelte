@@ -1,15 +1,24 @@
 <script lang="ts">
   import type { Point } from "geojson"
-  import { geoJson, type Layer, type Map } from "leaflet"
+  import { geoJson, type GeoJSON, type Layer, type Map } from "leaflet"
   import { onDestroy, onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
   import { goto } from "$app/navigation"
   import { page } from "$app/stores"
 
-  import { geoJsonLayerGroup } from "$lib/stores"
-  import type { DealVersion2, Location2, PointFeature } from "$lib/types/newtypes"
-  import { createLegend, createTooltip } from "$lib/utils/location"
+  import type {
+    DealVersion2,
+    Location2,
+    PointFeature,
+    PointFeatureProps,
+  } from "$lib/types/newtypes"
+  import {
+    createLegend,
+    createPointFeatures,
+    createTooltip,
+  } from "$lib/utils/location2"
+  import { fitBounds } from "$lib/utils/locationSSRsafe"
 
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import BigMap from "$components/Map/BigMap.svelte"
@@ -19,34 +28,26 @@
   export let version: DealVersion2
 
   let map: Map | undefined
+  let locationsPointLayer: GeoJSON<PointFeatureProps, Point>
 
-  let selectedEntryId: string | undefined
-  $: selectedEntryId = $page.url.hash.split("/")?.[1]
+  let selectedLocationId: string | null = null
+  $: selectedLocationId = $page.url.hash.split("-")[1] ?? null
 
   const onMapReady = (e: CustomEvent<Map>) => {
     map = e.detail
     map.addControl(createLegend())
+    map.addLayer(locationsPointLayer)
+    fitBounds(locationsPointLayer, map)
   }
 
-  $: setCurrentLocation = (locationId: string) =>
-    selectedEntryId === locationId
-      ? goto(`#locations`)
-      : goto(`#locations/${locationId}`)
+  $: isSelectedLocation = (locationId: string): boolean =>
+    selectedLocationId === locationId
 
-  $: isSelectedLocation = (location: Location2) => selectedEntryId === location.nid
+  $: getLocationRedirect = (locationId: string): string =>
+    `#locations` + (isSelectedLocation(locationId) ? "" : `-${locationId}`)
 
-  const createPointFeature = (location: Location2): PointFeature => ({
-    type: "Feature",
-    geometry: location.point as Point,
-    properties: {
-      id: location.nid,
-      level_of_accuracy: location.level_of_accuracy,
-      name: location.name,
-    },
-  })
-
-  const createPointFeatures = (locations: Location2[]): PointFeature[] =>
-    locations.filter(l => l.point !== null).map(l => createPointFeature(l))
+  $: setCurrentLocation = (locationId: string): Promise<void> =>
+    goto(getLocationRedirect(locationId))
 
   const createLayer = (locations: Location2[]) =>
     geoJson(createPointFeatures(locations), {
@@ -58,22 +59,13 @@
       },
     })
 
-  let layer
-
-  $: if ($geoJsonLayerGroup && layer) {
-    // console.log("hi locations")
-    $geoJsonLayerGroup.removeLayer(layer)
-    layer = createLayer(version.locations)
-    $geoJsonLayerGroup.addLayer(layer)
-  }
-
   onMount(() => {
-    layer = createLayer(version.locations)
+    locationsPointLayer = createLayer(version.locations)
   })
 
   onDestroy(() => {
-    if ($geoJsonLayerGroup && layer) {
-      $geoJsonLayerGroup.removeLayer(layer)
+    if (map && locationsPointLayer) {
+      map.removeLayer(locationsPointLayer)
     }
   })
 </script>
@@ -83,20 +75,22 @@
     {#if version.locations.length > 0}
       {#each version.locations as location, index}
         <article
-          id={location.nid}
+          id="locations-{location.nid}"
           class="p-2"
-          class:animate-fadeToWhite={isSelectedLocation(location)}
-          class:dark:animate-fadeToGray={isSelectedLocation(location)}
+          class:animate-fadeToWhite={isSelectedLocation(location.nid)}
+          class:dark:animate-fadeToGray={isSelectedLocation(location.nid)}
         >
           <h3 class="heading4">
-            <a href={`#locations/${location.nid}`}>
+            <a
+              href={getLocationRedirect(location.nid)}
+              on:click|preventDefault={() => setCurrentLocation(location.nid)}
+            >
               {index + 1}. {$_("Location")}
               <small class="text-sm text-gray-500">
                 #{location.nid}
               </small>
             </a>
           </h3>
-          <!--          <NanoIDField label={$_("ID")} value={location.nid} fieldname="location.nid" />-->
           <DisplayField
             value={location.level_of_accuracy}
             fieldname="location.level_of_accuracy"
@@ -120,11 +114,12 @@
             showLabel
           />
           <LocationAreasField
+            {map}
             label={$_("Areas")}
             areas={location.areas}
             locationId={location.nid}
             fieldname="location.areas"
-            isSelectedEntry={isSelectedLocation(location)}
+            isSelectedEntry={isSelectedLocation(location.nid)}
           />
         </article>
       {/each}

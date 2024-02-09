@@ -1,4 +1,4 @@
-import type { LatLngLiteral } from "leaflet"
+import type { GeoJSON, LatLngLiteral, Map } from "leaflet"
 import { LatLngBounds } from "leaflet?client"
 
 export const padBounds = (bounds: LatLngBounds): LatLngBounds => {
@@ -15,4 +15,9 @@ export const padBounds = (bounds: LatLngBounds): LatLngBounds => {
   }
 
   return bounds.pad(0.8)
+}
+
+export const fitBounds = (geoJson: GeoJSON, map: Map): void => {
+  const bounds = geoJson.getBounds()
+  bounds.isValid() && map.fitBounds(padBounds(bounds), { duration: 1 })
 }
