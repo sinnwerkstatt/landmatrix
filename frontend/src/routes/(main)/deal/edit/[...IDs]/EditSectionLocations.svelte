@@ -8,7 +8,6 @@
   import type { Country } from "$lib/types/wagtail"
   import { isEmptySubmodel } from "$lib/utils/data_processing"
 
-  import PointField from "$components/Fields/Edit2/PointField.svelte"
   import EditField from "$components/Fields/EditField.svelte"
   import PlusIcon from "$components/icons/PlusIcon.svelte"
   import TrashIcon from "$components/icons/TrashIcon.svelte"
@@ -95,10 +94,10 @@
                 on:change={onGoogleLocationAutocomplete}
                 label={$_("Location")}
               />
-              <PointField
+              <EditField
                 fieldname="location.point"
                 bind:value={location.point}
-                label={$_("Point")}
+                showLabel
               />
               <EditField
                 fieldname="location.description"

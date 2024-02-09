@@ -43,6 +43,7 @@ import JSONElectricityGenerationEditField from "$components/Fields/Edit2/JSONEle
 import JSONExportsEditField from "$components/Fields/Edit2/JSONExportsEditField.svelte"
 import JSONJobsEditField from "$components/Fields/Edit2/JSONJobsEditField.svelte"
 import JSONLeaseEditField from "$components/Fields/Edit2/JSONLeaseEditField.svelte"
+import PointEditField from "$components/Fields/Edit2/PointEditField.svelte"
 import TextEditField from "$components/Fields/Edit2/TextEditField.svelte"
 
 interface Field {
@@ -1157,7 +1158,11 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
       label: $_("Description"),
       extras: { multiline: true },
     },
-    "location.point": { displayField: PointField, label: $_("Point") },
+    "location.point": {
+      displayField: PointField,
+      editField: PointEditField,
+      label: $_("Point"),
+    },
     "location.facility_name": {
       displayField: TextField,
       editField: TextEditField,
