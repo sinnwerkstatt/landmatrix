@@ -1,10 +1,13 @@
 <script lang="ts">
   import "leaflet/dist/leaflet.css"
+
+  import * as L from "leaflet?client"
+  import { geoJson, Map } from "leaflet?client"
+
   import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css"
 
   import type { MapOptions } from "leaflet"
   import { GestureHandling } from "leaflet-gesture-handling?client"
-  import { geoJson, Icon, Map } from "leaflet?client"
   import { nanoid } from "nanoid"
   import { createEventDispatcher, onDestroy, onMount } from "svelte"
   import { _ } from "svelte-i18n"
@@ -35,8 +38,8 @@
   let map: Map | undefined
 
   if (browser) {
-    delete Icon.Default.prototype._getIconUrl
-    Icon.Default.mergeOptions({
+    delete L.Icon.Default.prototype._getIconUrl
+    L.Icon.Default.mergeOptions({
       iconRetinaUrl: "/images/marker-icon-2x.png",
       iconUrl: "/images/marker-icon.png",
       shadowUrl: "/images/marker-shadow.png",
