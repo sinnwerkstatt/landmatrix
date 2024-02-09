@@ -4,6 +4,7 @@
   import { _ } from "svelte-i18n"
 
   export let value: Point = turf.geometry("Point", [0, 0])
+  export let fieldname: string
 
   export const extras = {}
 </script>
@@ -13,6 +14,7 @@
     <small class="-mb-0.5">{$_("Longitude")}</small>
     <input
       class="inpt"
+      name="{fieldname}_longitude"
       type="number"
       bind:value={value.coordinates[0]}
       required={!!value.coordinates[1]}
@@ -26,6 +28,7 @@
     <small class="-mb-0.5">{$_("Latitude")}</small>
     <input
       class="inpt"
+      name="{fieldname}_latitude"
       type="number"
       bind:value={value.coordinates[1]}
       required={!!value.coordinates[0]}

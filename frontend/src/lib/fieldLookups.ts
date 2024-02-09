@@ -43,6 +43,7 @@ import JSONElectricityGenerationEditField from "$components/Fields/Edit2/JSONEle
 import JSONExportsEditField from "$components/Fields/Edit2/JSONExportsEditField.svelte"
 import JSONJobsEditField from "$components/Fields/Edit2/JSONJobsEditField.svelte"
 import JSONLeaseEditField from "$components/Fields/Edit2/JSONLeaseEditField.svelte"
+import LocationGoogleEditField from "$components/Fields/Edit2/LocationGoogleEditField.svelte"
 import PointEditField from "$components/Fields/Edit2/PointEditField.svelte"
 import TextEditField from "$components/Fields/Edit2/TextEditField.svelte"
 
@@ -1151,7 +1152,11 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
     },
     // LOCATIONS
     "location.nid": { displayField: NanoIDField, label: $_("ID") },
-    "location.name": { displayField: TextField, label: $_("Location") },
+    "location.name": {
+      displayField: TextField,
+      editField: LocationGoogleEditField,
+      label: $_("Location"),
+    },
     "location.description": {
       displayField: TextField,
       editField: TextEditField,

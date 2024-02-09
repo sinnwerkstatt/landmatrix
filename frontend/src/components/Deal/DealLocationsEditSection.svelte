@@ -13,7 +13,7 @@
   import { AREA_TYPE_COLOR_MAP, AREA_TYPES, padBounds } from "$lib/utils/location"
 
   import PointField from "$components/Fields/Edit/PointField.svelte"
-  import LocationGoogleField from "$components/Fields/Edit2/LocationGoogleField.svelte"
+  import LocationGoogleField from "$components/Fields/Edit2/LocationGoogleEditField.svelte"
   import EditField from "$components/Fields/EditField.svelte"
   import LocationDot from "$components/icons/LocationDot.svelte"
   import PlusIcon from "$components/icons/PlusIcon.svelte"

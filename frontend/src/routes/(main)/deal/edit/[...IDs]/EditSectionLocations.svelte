@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { Point } from "geojson"
   import type { Map } from "leaflet"
   import { _ } from "svelte-i18n"
   import { slide } from "svelte/transition"
@@ -14,7 +15,6 @@
   import BigMap from "$components/Map/BigMap.svelte"
 
   import LocationAreasField from "./LocationAreasField.svelte"
-  import LocationGoogleField from "./LocationGoogleField.svelte"
 
   export let locations: Location2[]
   export let country: Country
@@ -44,9 +44,10 @@
     map = e.detail
     // map.addControl(createLegend())
   }
-  const onGoogleLocationAutocomplete = (
-    event: CustomEvent<{ latLng: [number, number]; viewport: unknown }>,
-  ) => {}
+
+  $: onGoogleAutocomplete = (point: Point) => {
+    locations[activeEntryIdx].point = point
+  }
 </script>
 
 <section class="lg:h-full">
@@ -57,24 +58,18 @@
           <div
             class="my-2 flex flex-row items-center justify-between bg-gray-200 dark:bg-gray-700"
           >
-            <div
-              role="button"
-              class="flex-grow p-2"
-              on:click={() => toggleActiveEntry(index)}
-              on:keydown={e => e.code === "Enter" && toggleActiveEntry(index)}
-              tabindex="0"
-            >
-              <h3 class="m-0">
+            <h3 class="flex-grow">
+              <button
+                class="w-full p-2 text-left"
+                on:click={() => toggleActiveEntry(index)}
+              >
                 {index + 1}. {$_("Location")}
                 <small class="text-sm text-gray-500">
                   #{location.nid}
                 </small>
-              </h3>
-            </div>
-            <button
-              class="flex-initial p-2"
-              on:click|stopPropagation={() => removeEntry(location)}
-            >
+              </button>
+            </h3>
+            <button class="flex-initial p-2" on:click={() => removeEntry(location)}>
               <TrashIcon class="h-8 w-6 cursor-pointer text-red-600" />
             </button>
           </div>
@@ -87,12 +82,14 @@
                 extras={{ required: true }}
                 showLabel
               />
-              <LocationGoogleField
+              <EditField
                 fieldname="location.name"
                 bind:value={location.name}
-                countryCode={country.code_alpha2}
-                on:change={onGoogleLocationAutocomplete}
-                label={$_("Location")}
+                extras={{
+                  countryCode: country.code_alpha2,
+                  onGoogleAutocomplete,
+                }}
+                showLabel
               />
               <EditField
                 fieldname="location.point"
