@@ -176,16 +176,19 @@
 </script>
 
 <div class="editgrid container mx-auto h-full max-h-full">
-  <div class="flex border-b border-orange md:justify-between" style="grid-area: header">
-    <h1 class="heading4 mt-3 flex flex-col gap-2">
+  <div
+    class="mx-2 flex items-center justify-between border-b border-orange"
+    style="grid-area: header"
+  >
+    <h1 class="heading4 my-2 mt-3 flex items-baseline gap-2">
       {data.dealID ? $_("Editing deal #") + data.dealID : $_("Adding new deal")}
       <span class="text-[0.8em]">
         <CountryField value={data.deal.country_id} />
       </span>
     </h1>
-    <div class="my-5 flex items-center">
+    <div class="my-2 flex items-center gap-2 lg:my-5">
       <button
-        class="btn btn-primary mx-2 flex items-center gap-2"
+        class="butn butn-primary flex items-center gap-2"
         class:disabled={!formChanged || savingInProgress}
         on:click|preventDefault={onClickSave}
       >
@@ -196,7 +199,7 @@
         {/if}
       </button>
       <button
-        class="btn btn-gray mx-2"
+        class="butn butn-cancel"
         class:disabled={savingInProgress}
         on:click|preventDefault={() => onClickClose()}
       >
@@ -205,13 +208,16 @@
     </div>
   </div>
 
-  <nav class="col-span-1 p-2" style="grid-area: sidenav">
-    <ul>
+  <nav
+    class="col-span-1 overflow-x-auto whitespace-nowrap p-2 lg:whitespace-normal"
+    style="grid-area: sidenav"
+  >
+    <ul class="flex lg:flex-col">
       {#each tabs as { target, name }}
         <li
-          class="border-orange py-2 pr-4 {activeTab === target
-            ? 'border-r-4'
-            : 'border-r'}"
+          class="border-orange py-3 pr-4 leading-tight {activeTab === target
+            ? 'font-semibold lg:border-r-4'
+            : 'lg:border-r'}"
         >
           <a
             href={target}
@@ -297,5 +303,13 @@
     grid-template-areas:
       "header header header header header header"
       "sidenav main main main main main";
+
+    @media (width <= 1024px) {
+      grid-template-rows: auto auto 1fr;
+      grid-template-areas:
+        "header header header header header header"
+        "sidenav sidenav sidenav sidenav sidenav sidenav"
+        "main main main main main main";
+    }
   }
 </style>

@@ -47,11 +47,7 @@
     <option class="not-italic" value="PER_AREA">{PERTYPES.PER_AREA}</option>
   </select>
 </EditField>
-<EditField
-  bind:value={version[fields[3]]}
-  fieldname="annual_leasing_fee_area"
-  showLabel
-/>
+<EditField bind:value={version[fields[3]]} fieldname={version[fields[3]]} showLabel />
 {#if version[fields[0]] && version[fields[3]]}
   <div class="mx-4 mb-6 text-lg italic text-violet-600">
     {#if !version[fields[1]]}
