@@ -58,6 +58,7 @@ urlpatterns = [
     path("management/", management_views.Management.as_view()),
     path("case_statistics/", management_views.CaseStatistics.as_view()),
     # special stuff
+    path("quick_search/", api_views.quick_search),
     path("investor_search/", api_views.investor_search),
     # charts
     path(

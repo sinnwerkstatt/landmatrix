@@ -1,9 +1,9 @@
 import json
 
 from django.core.exceptions import PermissionDenied
-from django.db.models import F, Q, QuerySet, Count, Sum, Case, When
-from django.db.models.functions import JSONObject
-from django.http import JsonResponse
+from django.db.models import F, Q, QuerySet, Count, Sum, Case, When, Value, CharField
+from django.db.models.functions import JSONObject, Concat
+from django.http import JsonResponse, HttpRequest
 from django.middleware.csrf import get_token
 from django.utils import timezone, translation
 from django.views.decorators.http import require_GET
@@ -21,7 +21,41 @@ from apps.landmatrix.views.newviews import _parse_filter
 from apps.wagtailcms.models import ChartDescriptionsSettings
 
 
-def investor_search(request):
+def quick_search(request: HttpRequest) -> JsonResponse:
+    q = request.GET.get("q")
+
+    items = list(
+        DealHull.objects.filter(id__contains=q)
+        .visible(request.user, "ACTIVE")
+        .annotate(
+            is_public=Case(
+                When(active_version_id__isnull=False, then="active_version__is_public"),
+                default="draft_version__is_public",
+            )
+        )
+        .values("id", "is_public")
+        .annotate(
+            country_name=F("country__name"),
+            type=Value("deal"),
+            href=Concat(Value("/deal/"), "id", output_field=CharField()),
+        )
+    ) + list(
+        InvestorHull.objects.filter(
+            Q(id__icontains=q) | Q(active_version__name__icontains=q)
+        )
+        .visible(request.user, "ACTIVE")
+        .values("id")
+        .annotate(
+            name=F("active_version__name"),
+            name_unknown=F("active_version__name_unknown"),
+            type=Value("investor"),
+            href=Concat(Value("/investor/"), "id", output_field=CharField()),
+        )
+    )
+    return JsonResponse({"items": items})
+
+
+def investor_search(request: HttpRequest) -> JsonResponse:
     if not request.user.is_authenticated:
         raise NotAuthenticated
     q = request.GET.get("q")

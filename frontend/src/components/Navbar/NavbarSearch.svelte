@@ -1,219 +1,78 @@
 <script lang="ts">
   import cn from "classnames"
-  import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
+  import Select from "svelte-select"
 
   import { goto } from "$app/navigation"
 
-  import type { Deal } from "$lib/types/deal"
-  import type { Investor } from "$lib/types/investor"
-
-  import NavDropDown from "$components/Navbar/NavDropDown.svelte"
-
-  import SearchIcon from "../icons/SearchIcon.svelte"
-
-  // $: user = $page.data.user
-
-  interface SearchResult {
+  interface SearchResultEntry {
     id: number
+    href: string
+    country_name: string | null
+    type: "deal" | "investor"
     name: string
-    url: string
-    is_public?: boolean
-    investor?: boolean
+    name_unknown: boolean
   }
 
-  let searchString = ""
-  let selectedSearchIndex = 0
-  let searchResult: SearchResult[] = []
-  let searchResultContainer: HTMLUListElement
-  let deals: Deal[] = []
-  let investors: Investor[] = []
+  const loadOptions = async (filterText: string) => {
+    if (filterText.length < 2) return []
 
-  //  TODO do this with async typeahead to save on bandwidth
-  async function getDeals() {
-    // const { error, data } = await $page.data.urqlClient
-    //   .query<{ deals: Deal[] }>(
-    //     gql`
-    //       query SDeals($subset: Subset) {
-    //         deals(limit: 0, subset: $subset) {
-    //           id
-    //           country {
-    //             id
-    //             name
-    //           }
-    //           is_public
-    //         }
-    //       }
-    //     `,
-    //     {
-    //       subset: user?.is_authenticated ? "UNFILTERED" : "PUBLIC",
-    //     },
-    //   )
-    //   .toPromise()
-    //
-    // if (error || !data) {
-    //   console.error(error)
-    //   return
-    // }
-    //
-    // deals = data.deals
+    const ret = await fetch(`/api/quick_search/?q=${filterText}`)
+    const retJson = await ret.json()
+    return retJson.items
   }
 
-  async function getInvestors() {
-    // const { error, data } = await $page.data.urqlClient
-    //   .query<{ investors: Investor[] }>(
-    //     gql`
-    //       query SInvestors($subset: Subset) {
-    //         investors(
-    //           limit: 0
-    //           subset: $subset
-    //           filters: [{ field: "status", value: 4, exclusion: true }]
-    //         ) {
-    //           id
-    //           name
-    //         }
-    //       }
-    //     `,
-    //     { subset: user?.is_authenticated ? "UNFILTERED" : "PUBLIC" },
-    //   )
-    //   .toPromise()
-    //
-    // if (error || !data) {
-    //   console.error(error)
-    //   return
-    // }
-    //
-    // investors = data.investors
+  let filterText = ""
+
+  const onSelect = (e: CustomEvent<SearchResultEntry>) => {
+    console.log(e.detail)
+    goto(e.detail.href)
+    // filterText = ""
   }
 
-  $: {
-    // on search change
-    selectedSearchIndex = 0
-    searchResult =
-      searchString.length >= 2
-        ? [
-            ...deals
-              .filter(d => d.id.toString().includes(searchString))
-              .map<SearchResult>(d => {
-                let name = `#${d.id}`
-                if (d.country) name += ` in ${d.country?.name}`
-                return {
-                  id: d.id,
-                  name,
-                  is_public: d.is_public,
-                  url: `/deal/${d.id}/`,
-                }
-              }),
-            ...investors
-              .filter(
-                i =>
-                  i.id.toString().includes(searchString) ||
-                  i.name.toLowerCase().includes(searchString.toLowerCase()),
-              )
-              .map<SearchResult>(i => {
-                return {
-                  id: i.id,
-                  name: `${i.name} #${i.id}`,
-                  url: `/investor/${i.id}/`,
-                  investor: true,
-                }
-              }),
-          ]
-        : []
-  }
-
-  function searchKeyboardEvent(e) {
-    if (["ArrowDown", "ArrowUp", "Enter"].includes(e.code)) {
-      e.preventDefault()
-
-      if (!searchResult.length) {
-        return
-      }
-
-      switch (e.code) {
-        case "ArrowDown":
-          selectedSearchIndex = (selectedSearchIndex + 1) % searchResult.length
-          searchResultContainer.children[selectedSearchIndex].scrollIntoView(false)
-          return
-        case "ArrowUp":
-          selectedSearchIndex =
-            selectedSearchIndex === 0
-              ? searchResult.length - 1
-              : selectedSearchIndex - 1
-          searchResultContainer.children[selectedSearchIndex].scrollIntoView(false)
-          return
-        case "Enter":
-          goto(searchResult[selectedSearchIndex].url)
-          return
-        default:
-          return
-      }
+  const makeName = (itm: SearchResultEntry) => {
+    if (itm.type === "deal") {
+      if (itm.country_name) return `#${itm.id} ${$_("in")} ${itm.country_name}`
+      return `#${itm.id}`
+    } else if (itm.type === "investor") {
+      if (itm.name_unknown)
+        return `<span class="italic">[${$_("unknown investor")}]</span> #${itm.id}`
+      return `${itm.name} #${itm.id}`
     }
+    return "PROBLEMS!"
   }
-
-  onMount(() => {
-    getDeals()
-    getInvestors()
-  })
 </script>
 
-<NavDropDown>
-  <svelte:fragment slot="title">
-    <div
-      class="flex items-center justify-end bg-white px-2 lg:w-[250px] dark:bg-gray-900"
-    >
-      <input
-        autocomplete="off"
-        bind:value={searchString}
-        class="inpt mr-3 hidden rounded xl:block"
-        id="search"
-        on:keydown={searchKeyboardEvent}
-        placeholder={$_("Search for...")}
-      />
-      <SearchIcon class="h-6" />
-    </div>
-  </svelte:fragment>
-  <div
-    class="relative w-[300px] rounded bg-white p-2 shadow-lg xl:hidden dark:bg-gray-900"
+<div class="navbar-search w-48">
+  <Select
+    {loadOptions}
+    itemId="id"
+    clearFilterTextOnBlur={false}
+    placeholder="Deals and Investors"
+    listAutoWidth={false}
+    on:select={onSelect}
+    bind:filterText
   >
-    <input
-      autocomplete="off"
-      bind:value={searchString}
-      class="inpt"
-      id="search"
-      on:keydown={searchKeyboardEvent}
-      placeholder={$_("Search")}
-    />
-  </div>
-  {#if searchResult.length}
-    <ul
-      bind:this={searchResultContainer}
-      id="search-result"
-      class="w-full overflow-y-auto border-t-orange bg-white xl:absolute xl:z-50 xl:max-h-[55vh] xl:w-[300px] xl:shadow-xl dark:bg-gray-800"
+    <div slot="empty" class="min-w-[20rem] px-2 py-1">
+      This search is matching on deal IDs, investor IDs and investor names.
+    </div>
+    <!--    <div slot="list" let:filteredItems>asdf</div>-->
+    <div
+      slot="item"
+      let:item
+      class={item.type === "deal" ? "navbar-item deal" : "navbar-item investor"}
     >
-      {#each searchResult.filter((item, index) => index < 10) as item, index}
-        <li>
-          <a
-            href={item.url}
-            class={cn(
-              "block border-2 px-1.5 py-1 transition duration-100 hover:text-white",
-              selectedSearchIndex === index ? "border-gray-200" : "border-transparent",
-              item.investor
-                ? "text-pelorous hover:bg-pelorous"
-                : "text-orange hover:bg-orange",
-            )}
-            class:opacity-40={!item.investor && !item.is_public}
-          >
-            {item.name}
-          </a>
-        </li>
-      {/each}
-    </ul>
-  {/if}
-</NavDropDown>
+      <a
+        href={item.href}
+        class:opacity-40={item.type === "deal" && !item.is_public}
+        class:investor={item.type === "investor"}
+      >
+        {@html makeName(item)}
+      </a>
+    </div>
 
-<style>
-  :global(#search + button) {
-    margin-left: -30px;
-  }
-</style>
+    <div slot="selection" let:selection>
+      {@html makeName(selection)}
+    </div>
+  </Select>
+</div>

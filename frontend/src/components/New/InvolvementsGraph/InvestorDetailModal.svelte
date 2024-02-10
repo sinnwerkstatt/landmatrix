@@ -1,13 +1,18 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import type { Investor } from "$lib/types/investor"
-
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import Overlay from "$components/Overlay.svelte"
 
   export let visible: boolean
-  export let investor: Investor
+  export let investor: {
+    id: number
+    name: string
+    active_version__classification: string
+    active_version__country_id: number | null
+    active_version__homepage: string
+    active_version__comment: string
+  }
 </script>
 
 <Overlay
