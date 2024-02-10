@@ -5,4 +5,4 @@
   export let fieldname: string
 </script>
 
-<LowLevelDateYearField bind:value name={fieldname} class="w-32" />
+<LowLevelDateYearField bind:value name={fieldname} />

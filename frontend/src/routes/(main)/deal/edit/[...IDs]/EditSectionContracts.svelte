@@ -13,23 +13,22 @@
   export let contracts: Contract[]
   let activeEntryIdx = -1
 
-  function addEntry() {
+  const addEntry = () => {
     const currentIDs = contracts.map(entry => entry.nid)
     contracts = [...contracts, new Contract(newNanoid(currentIDs))]
     activeEntryIdx = contracts.length - 1
   }
 
-  function toggleActiveEntry(index: number): void {
-    activeEntryIdx = activeEntryIdx === index ? -1 : index
-  }
-
-  function removeEntry(c: Contract) {
+  const removeEntry = (c: Contract) => {
     if (!isEmptySubmodel(c)) {
       const areYouSure = confirm(`${$_("Remove")} ${$_("Contract")} #${c.nid}}?`)
       if (!areYouSure) return
     }
     contracts = contracts.filter(x => x.nid !== c.nid)
   }
+
+  const toggleActiveEntry = (index: number) =>
+    (activeEntryIdx = activeEntryIdx === index ? -1 : index)
 </script>
 
 <section class="flex flex-wrap">

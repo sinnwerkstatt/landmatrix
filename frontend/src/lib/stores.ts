@@ -86,6 +86,7 @@ interface FieldChoicesType {
   }
   involvement: {
     investment_type: ValueLabelEntry[]
+    parent_relation: ValueLabelEntry[]
   }
 }
 
@@ -120,7 +121,7 @@ export const fieldChoices = readable<FieldChoicesType>(
       type: [],
     },
     investor: { classification: [] },
-    involvement: { investment_type: [] },
+    involvement: { investment_type: [], parent_relation: [] },
   },
   set => {
     fetch(`/api/field_choices/`, { headers: { Accept: "application/json" } })

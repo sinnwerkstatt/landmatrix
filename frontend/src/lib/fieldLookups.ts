@@ -1297,25 +1297,49 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
       extras: { multiline: true },
     },
     // INVOLVEMENTS
-    //         "involvement_type": {"class": "TextField", "label": _("Involvement type")},
-    //         "investor": {"class": "InvestorForeignKey"},
-    //         "venture": {"class": "InvestorForeignKey"},
-    //         "loans_date": {"class": "DateField"},
-    //         "loans_currency": {"class": "CurrencyForeignKey"},
+    "involvement.parent_investor_id": {
+      displayField: InvestorLinkField,
+      editField: InvestorForeignKey,
+      label: $_("Investor"),
+      extras: { required: true },
+    },
+    "involvement.loans_amount": {
+      displayField: DecimalField,
+      editField: DecimalEditField,
+      label: $_("Loan amount"),
+    },
+    "involvement.loans_date": {
+      displayField: TextField,
+      editField: DateEditField,
+      label: $_("Loan date"),
+    },
     "involvement.relationship": { displayField: TextField, label: $_("Relationship") },
     "involvement.percentage": {
       displayField: DecimalField,
+      editField: DecimalEditField,
       label: $_("Ownership share"),
       extras: { unit: "%", range: [0, 100] },
     },
     "involvement.investment_type": {
       displayField: ChoicesField,
+      editField: ChoicesEditField,
       label: $_("Investment type"),
       extras: {
         choices: $fieldChoices.involvement.investment_type,
         multipleChoices: true,
       },
     },
-    "involvement.comment": { displayField: TextField, label: $_("Comment") },
+    "involvement.parent_relation": {
+      displayField: ChoicesField,
+      editField: ChoicesEditField,
+      label: $_("Parent relation"),
+      extras: { choices: $fieldChoices.involvement.parent_relation, clearable: true },
+    },
+    "involvement.comment": {
+      displayField: TextField,
+      editField: TextEditField,
+      label: $_("Comment"),
+      extras: { multiline: true },
+    },
   } as { [key: string]: Field }
 })

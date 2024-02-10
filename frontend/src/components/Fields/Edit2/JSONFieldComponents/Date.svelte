@@ -10,5 +10,5 @@
 
 <label class={labelClass} for={undefined}>
   {$_("Date")}
-  <LowLevelDateYearField bind:value {name} class="w-36" />
+  <LowLevelDateYearField bind:value {name} />
 </label>

@@ -5,9 +5,9 @@
 
   export let value: unknown | null
   export let fieldname: string
-  export let wrapperClass = "mb-3 leading-5 flex flex-col"
+  export let wrapperClass = "mb-10 leading-5 flex flex-col"
   export let labelClass = "font-semibold mb-4 w-full"
-  export let valueClass = "text-lm-dark dark:text-white px-3 mb-10 w-full"
+  export let valueClass = "text-lm-dark dark:text-white w-full"
 
   export let showLabel = false
   export let model: "deal" | "investor" = "deal"

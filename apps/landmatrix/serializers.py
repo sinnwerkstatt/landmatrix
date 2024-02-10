@@ -386,6 +386,8 @@ class InvestorVersionSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def save_submodels(data, iv1: InvestorVersion2):
+        iv1.involvements_snapshot = data["involvements"]
+
         # FIXME right now we're handling datasources here
         #  in the serializer. not very pretty. maybe drf-writable-nested
         #  would be an alternative
@@ -538,7 +540,10 @@ class InvestorSerializer(serializers.ModelSerializer):
             else:
                 continue
 
-            invo |= {"relationship": relationship, "other_investor": other_investor}
+            invo |= {
+                "relationship": relationship,
+                "other_investor": other_investor,  # this exists for detail view
+            }
 
     # def get_deals(self):
     #     return

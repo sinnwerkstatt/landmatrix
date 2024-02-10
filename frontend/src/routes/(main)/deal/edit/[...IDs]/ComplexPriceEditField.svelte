@@ -4,8 +4,8 @@
   import { currencies } from "$lib/stores"
   import type { DealVersion2 } from "$lib/types/newtypes"
 
+  import CurrencySelect from "$components/Fields/Edit2/CurrencySelect.svelte"
   import EditField from "$components/Fields/EditField.svelte"
-  import VirtualListSelect from "$components/LowLevel/VirtualListSelect.svelte"
 
   export let fields: [
     "purchase_price" | "annual_leasing_fee",
@@ -20,22 +20,7 @@
 
 <EditField bind:value={version[fields[0]]} fieldname={fields[0]} showLabel>
   <div class="w-1/3">
-    {#if $currencies}
-      <VirtualListSelect
-        value={$currencies.find(c => c.id === version[fields[1]])}
-        items={$currencies}
-        placeholder={$_("Currency")}
-        label="name"
-        on:input={e => (version[fields[1]] = e?.detail?.id ?? null)}
-      >
-        <svelte:fragment slot="selection" let:selection>
-          {selection.name} ({selection.code})
-        </svelte:fragment>
-        <svelte:fragment slot="item" let:item>
-          {item.name} ({item.code})
-        </svelte:fragment>
-      </VirtualListSelect>
-    {/if}
+    <CurrencySelect bind:value={version[fields[1]]} />
   </div>
   <select
     bind:value={version[fields[2]]}
@@ -47,7 +32,9 @@
     <option class="not-italic" value="PER_AREA">{PERTYPES.PER_AREA}</option>
   </select>
 </EditField>
-<EditField bind:value={version[fields[3]]} fieldname={version[fields[3]]} showLabel />
+
+<EditField bind:value={version[fields[3]]} fieldname={fields[3]} showLabel />
+
 {#if version[fields[0]] && version[fields[3]]}
   <div class="mx-4 mb-6 text-lg italic text-violet-600">
     {#if !version[fields[1]]}

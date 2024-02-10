@@ -76,7 +76,7 @@
 
 {#if !showNewInvestorForm && value}
   <div class="container p-2">
-    <a href="/investor/{value.id}" rel="noreferrer" target="_blank">
+    <a href="/investor/{value.id}" rel="noreferrer" target="_blank" class="investor">
       {$_("Show details for investor")}
     </a>
   </div>
