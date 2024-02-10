@@ -11,9 +11,10 @@
 
   import EditSectionDataSources from "$components/EditSectionDataSources.svelte"
   import LoadingSpinner from "$components/icons/LoadingSpinner.svelte"
-  import Modal from "$components/Modal.svelte"
+  import ModalReallyQuit from "$components/ModalReallyQuit.svelte"
 
   import EditSectionGeneralInfo from "./EditSectionGeneralInfo.svelte"
+  import EditSectionInvolvements from "./EditSectionInvolvements.svelte"
 
   export let data
   let investor = data.investor
@@ -57,7 +58,12 @@
       {
         method: "PUT",
         credentials: "include",
-        body: JSON.stringify({ version: investor.selected_version }),
+        body: JSON.stringify({
+          version: {
+            ...investor.selected_version,
+            involvements: investor.involvements,
+          },
+        }),
         headers: {
           "X-CSRFToken": await getCsrfToken(),
           "Content-Type": "application/json",
@@ -97,7 +103,7 @@
 
     if (retBody.versionID !== investor.selected_version.id) {
       toast.push("Created a new draft", { classes: ["success"] })
-      await goto(`/investor/edit/${investor.id}/${retBody.versionID}/`)
+      await goto(`/investor/edit/${investor.id}/${retBody.versionID}/${activeTab}`)
     } else {
       toast.push("Saved data", { classes: ["success"] })
       await invalidate("investor:detail")
@@ -149,16 +155,19 @@
   }
 </script>
 
-<div class="container mx-auto mb-12 mt-8 flex min-h-full flex-col">
-  <div class="border-b border-orange md:flex md:flex-row md:justify-between">
-    <h1 class="heading4 mt-3">
+<div class="editgrid container mx-auto h-full max-h-full">
+  <div
+    class="mx-2 flex items-center justify-between border-b border-pelorous"
+    style="grid-area: header"
+  >
+    <h1 class="heading4 my-2 mt-3">
       {data.investorID
         ? $_("Editing Investor #") + data.investorID
         : $_("Adding new investor")}
     </h1>
-    <div class="my-5 flex items-center">
+    <div class="my-2 flex items-center gap-2 lg:my-5">
       <button
-        class="btn btn-primary mx-2 flex items-center gap-2"
+        class="butn butn-primary flex items-center gap-2"
         class:disabled={!formChanged || savingInProgress}
         on:click|preventDefault={onClickSave}
       >
@@ -169,7 +178,7 @@
         {/if}
       </button>
       {#if data.investorID}
-        <button class="btn btn-secondary mx-2" on:click={() => onClickClose(false)}>
+        <button class="butn butn-cancel" on:click={() => onClickClose(false)}>
           {$_("Close")}
         </button>
       {:else}
@@ -182,87 +191,75 @@
       {/if}
     </div>
   </div>
-  <div class="flex min-h-full">
-    <nav class="w-1/6 p-2">
-      <ul>
-        {#each tabs as { target, name }}
-          <li
-            class="border-orange py-2 pr-4 {activeTab === target
-              ? 'border-r-4'
-              : 'border-r'}"
-          >
-            <a
-              href={target}
-              class={activeTab === target ? "text-gray-700 dark:text-white" : ""}
-              on:click|preventDefault={onClickTab}
-            >
-              {name}
-            </a>
-          </li>
-        {/each}
-      </ul>
-    </nav>
 
-    <div class="w-5/6 px-4">
-      {#if activeTab === "#general"}
-        <EditSectionGeneralInfo bind:investor />
-      {/if}
-      {#if activeTab === "#parent_companies"}
-        <!--        <SubmodelEditSection-->
-        <!--          id="parent_companies"-->
-        <!--          model="involvement"-->
-        <!--          modelName={$_("Parent company")}-->
-        <!--          bind:entries={investor.investors}-->
-        <!--          entriesFilter={i => i.role === Role.PARENT}-->
-        <!--          newEntryExtras={{ role: Role.PARENT }}-->
-        <!--        />-->
-      {/if}
-      {#if activeTab === "#tertiary_investors"}
-        <!--        <SubmodelEditSection-->
-        <!--          id="tertiary_investors"-->
-        <!--          model="involvement"-->
-        <!--          modelName={$_("Tertiary investor/lender")}-->
-        <!--          bind:entries={investor.investors}-->
-        <!--          entriesFilter={i => i.role === "LENDER"}-->
-        <!--          newEntryExtras={{ role: "LENDER" }}-->
-        <!--          fields={[-->
-        <!--            "investor",-->
-        <!--            "investment_type",-->
-        <!--            "percentage",-->
-        <!--            "loans_amount",-->
-        <!--            "loans_currency",-->
-        <!--            "loans_date",-->
-        <!--            "comment",-->
-        <!--          ]}-->
-        <!--        />-->
-      {/if}
-      {#if activeTab === "#data_sources"}
-        <EditSectionDataSources
-          bind:datasources={investor.selected_version.datasources}
-        />
-      {/if}
-    </div>
+  <nav
+    class="col-span-1 overflow-x-auto whitespace-nowrap p-2 lg:whitespace-normal"
+    style="grid-area: sidenav"
+  >
+    <ul>
+      {#each tabs as { target, name }}
+        <li
+          class="border-pelorous py-2 pr-4 {activeTab === target
+            ? 'border-r-4'
+            : 'border-r'}"
+        >
+          <a
+            href={target}
+            class={activeTab === target ? "text-gray-700 dark:text-white" : "investor"}
+            on:click|preventDefault={onClickTab}
+          >
+            {name}
+          </a>
+        </li>
+      {/each}
+    </ul>
+  </nav>
+
+  <div class="col-span-5 overflow-y-auto px-4 pb-20" style="grid-area: main">
+    {#if activeTab === "#general"}
+      <EditSectionGeneralInfo bind:investor />
+    {/if}
+    {#if activeTab === "#parent_companies"}
+      <EditSectionInvolvements
+        bind:involvements={investor.involvements}
+        investorID={investor.id}
+      />
+    {/if}
+    {#if activeTab === "#tertiary_investors"}
+      <EditSectionInvolvements
+        bind:involvements={investor.involvements}
+        tertiary
+        investorID={investor.id}
+      />
+    {/if}
+    {#if activeTab === "#data_sources"}
+      <EditSectionDataSources
+        bind:datasources={investor.selected_version.datasources}
+      />
+    {/if}
   </div>
 </div>
 
-<Modal bind:open={showReallyQuitOverlay} dismissible>
-  <h2 class="heading4">{$_("Quit without saving?")}</h2>
-  <hr />
-  <div class="mb-12 mt-6 text-lg">
-    {$_("Do you really want to close the editor?")}
-    <br />
-    {$_("All unsaved changes will be lost.")}
-  </div>
-  <div class="flex justify-end gap-4">
-    <button
-      class="butn-outline"
-      on:click={() => (showReallyQuitOverlay = false)}
-      autofocus
-    >
-      Continue editing
-    </button>
-    <button class="butn butn-yellow" on:click={() => onClickClose(true)}>
-      Quit without saving
-    </button>
-  </div>
-</Modal>
+<ModalReallyQuit
+  bind:open={showReallyQuitOverlay}
+  on:click={() => onClickClose(true)}
+/>
+
+<style>
+  .editgrid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      "header header header header header header"
+      "sidenav main main main main main";
+
+    @media (width <= 1024px) {
+      grid-template-rows: auto auto 1fr;
+      grid-template-areas:
+        "header header header header header header"
+        "sidenav sidenav sidenav sidenav sidenav sidenav"
+        "main main main main main main";
+    }
+  }
+</style>

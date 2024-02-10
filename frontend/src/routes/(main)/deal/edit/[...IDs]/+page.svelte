@@ -13,7 +13,7 @@
   import EditSectionDataSources from "$components/EditSectionDataSources.svelte"
   import CountryField from "$components/Fields/Display2/CountryField.svelte"
   import LoadingSpinner from "$components/icons/LoadingSpinner.svelte"
-  import Modal from "$components/Modal.svelte"
+  import ModalReallyQuit from "$components/ModalReallyQuit.svelte"
 
   import EditSectionContracts from "./EditSectionContracts.svelte"
   import EditSectionEmployment from "./EditSectionEmployment.svelte"
@@ -273,27 +273,10 @@
   </div>
 </div>
 
-<Modal bind:open={showReallyQuitOverlay} dismissible>
-  <h2 class="heading4">{$_("Quit without saving?")}</h2>
-  <hr />
-  <div class="mb-12 mt-6 text-lg">
-    {$_("Do you really want to close the editor?")}
-    <br />
-    {$_("All unsaved changes will be lost.")}
-  </div>
-  <div class="flex justify-end gap-4">
-    <button
-      class="butn-outline"
-      on:click={() => (showReallyQuitOverlay = false)}
-      autofocus
-    >
-      Continue editing
-    </button>
-    <button class="butn butn-yellow" on:click={() => onClickClose(true)}>
-      Quit without saving
-    </button>
-  </div>
-</Modal>
+<ModalReallyQuit
+  bind:open={showReallyQuitOverlay}
+  on:click={() => onClickClose(true)}
+/>
 
 <style>
   .editgrid {

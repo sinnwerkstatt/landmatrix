@@ -14,26 +14,25 @@
   export let datasources: DataSource[]
   let activeEntryIdx = -1
 
-  function addEntry() {
+  const addEntry = () => {
     const currentIDs = datasources.map(entry => entry.nid)
     datasources = [...datasources, new DataSource(newNanoid(currentIDs))]
     activeEntryIdx = datasources.length - 1
   }
 
-  function toggleActiveEntry(index: number): void {
-    activeEntryIdx = activeEntryIdx === index ? -1 : index
-  }
-
-  function removeEntry(c: DataSource) {
+  const removeEntry = (c: DataSource) => {
     if (!isEmptySubmodel(c)) {
       const areYouSure = confirm(`${$_("Remove")} ${$_("Data source")} #${c.nid}}?`)
       if (!areYouSure) return
     }
     datasources = datasources.filter(x => x.nid !== c.nid)
   }
+
+  const toggleActiveEntry = (index: number) =>
+    (activeEntryIdx = activeEntryIdx === index ? -1 : index)
 </script>
 
-<section class="flex flex-wrap">
+<section class="my-6 flex flex-wrap">
   <form class="w-full" id="data_sources">
     {#each datasources as datasource, index}
       <div class="datasource-entry">
@@ -141,7 +140,7 @@
     {/each}
     <div class="mt-6">
       <button
-        class="btn btn-primary flex items-center"
+        class="butn butn-primary flex items-center"
         on:click={addEntry}
         type="button"
       >

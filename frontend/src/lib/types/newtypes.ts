@@ -73,10 +73,10 @@ export interface Involvement {
   role: string
 
   investment_type: string[]
-  percentage: number
-  loans_amount: number
+  percentage: number | null
+  loans_amount: number | null
   loans_currency_id: number | null
-  loans_date: LooseDateString
+  loans_date: LooseDateString | null
   parent_relation: string | null
   comment: string
   // the following are generated on the fly in the backend

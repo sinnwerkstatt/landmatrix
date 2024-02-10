@@ -60,7 +60,7 @@
 <div class="relative">
   <input
     bind:this={inputField}
-    class="inpt w-28 {$$props.class ?? ''}"
+    class="inpt w-36 {$$props.class ?? ''}"
     maxlength="10"
     {name}
     on:input|preventDefault={onInput}

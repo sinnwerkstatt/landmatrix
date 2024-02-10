@@ -60,6 +60,14 @@
     {wrapperClass}
   />
   <DisplayField
+    fieldname="involvement.parent_relation"
+    {labelClass}
+    showLabel
+    value={involvement.parent_relation}
+    {valueClass}
+    {wrapperClass}
+  />
+  <DisplayField
     fieldname="involvement.investment_type"
     {labelClass}
     showLabel
@@ -67,18 +75,30 @@
     {valueClass}
     {wrapperClass}
   />
-  <!--{#if involvement.loans_amount}-->
-  <!--  <div class="flex flex-wrap justify-between gap-4">-->
-  <!--    <div class=LABEL_CLASS>{$_("Loan")}</div>-->
-  <!--    <div>{involvement.loans_amount} {involvement.loans_currency}</div>-->
-  <!--  </div>-->
-  <!--{/if}-->
-
   <DisplayField
     fieldname="involvement.percentage"
     {labelClass}
     showLabel
     value={involvement.percentage}
+    {valueClass}
+    {wrapperClass}
+  />
+
+  <DisplayField
+    fieldname="involvement.loans_amount"
+    {labelClass}
+    showLabel
+    value={involvement.loans_amount}
+    {valueClass}
+    {wrapperClass}
+    extras={{ currency: involvement.loans_currency_id }}
+  />
+
+  <DisplayField
+    fieldname="involvement.loans_date"
+    {labelClass}
+    showLabel
+    value={involvement.loans_date}
     {valueClass}
     {wrapperClass}
   />

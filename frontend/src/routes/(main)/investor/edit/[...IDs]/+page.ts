@@ -22,15 +22,6 @@ export const load: PageLoad = async ({ depends, params, parent }) => {
       : `/api/investors/${investorID}/`,
   )
 
-  // TODO should we also includeDeals=false, depth=0 here?
-  //   .query<{ investor: Investor }>(investorQuery, {
-  //     id: investorID,
-  //     version: versionID,
-  //     depth: 0,
-  //     includeDeals: false,
-  //   })
-  //   .toPromise()
-
   if (ret.status === 404)
     error(404, versionID ? "Investor version not found" : "Investor not found")
 
