@@ -3,8 +3,7 @@
 
   import { page } from "$app/stores"
 
-  import type { Deal } from "$lib/types/deal"
-  import type { Investor } from "$lib/types/investor"
+  import type { DealHull, InvestorHull } from "$lib/types/newtypes"
 
   import DateTimeField from "$components/Fields/Display2/DateTimeField.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"
@@ -19,7 +18,7 @@
     createTodoImprovementView,
   } from "./workflowViews"
 
-  export let objects: Array<Deal | Investor>
+  export let objects: Array<DealHull | InvestorHull>
   export let model: "deal" | "investor" = "deal"
 
   type TabID =

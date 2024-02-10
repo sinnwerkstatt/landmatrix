@@ -4,7 +4,6 @@
   import { slide } from "svelte/transition"
 
   import { newNanoid } from "$lib/helpers"
-  import { Role } from "$lib/types/investor"
   import { type Involvement } from "$lib/types/newtypes"
   import { isEmptySubmodel } from "$lib/utils/data_processing"
 
@@ -21,6 +20,10 @@
 
   let activeEntryIdx: number
 
+  enum Role {
+    PARENT = "PARENT",
+    LENDER = "LENDER",
+  }
   const createEmptyEntry = (id: string): Involvement => ({
     id: id,
     parent_investor_id: null,

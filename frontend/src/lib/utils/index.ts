@@ -1,18 +1,6 @@
 import type { DealHull, InvestorHull } from "$lib/types/newtypes"
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type TableObj = DealHull | InvestorHull | { [key: string]: any }
-
-function dotResolve(path: string, obj: TableObj) {
-  if (!path.includes(".")) return obj[path]
-  return path.split(".").reduce((prev, curr) => {
-    return prev ? prev[curr] : null
-  }, obj)
-}
-
-function _strCmp(a: string, b: string) {
-  return a.toLocaleLowerCase().trim().localeCompare(b.toLocaleLowerCase().trim())
-}
+type TableObj = DealHull | InvestorHull | { [key: string]: unknown }
 
 export const sortFn =
   (sortKey: string) =>
@@ -22,11 +10,11 @@ export const sortFn =
     // debugger;
 
     if (descending) {
-      y = dotResolve(sortKey.substring(1), a)
-      x = dotResolve(sortKey.substring(1), b)
+      y = _dotResolve(sortKey.substring(1), a)
+      x = _dotResolve(sortKey.substring(1), b)
     } else {
-      x = dotResolve(sortKey, a)
-      y = dotResolve(sortKey, b)
+      x = _dotResolve(sortKey, a)
+      y = _dotResolve(sortKey, b)
     }
 
     if (sortKey.includes("workflowinfos")) {
@@ -52,6 +40,17 @@ export const sortFn =
 
     return 0
   }
+
+function _dotResolve(path: string, obj: TableObj) {
+  if (!path.includes(".")) return obj[path]
+  return path.split(".").reduce((prev, curr) => {
+    return prev ? prev[curr] : null
+  }, obj)
+}
+
+function _strCmp(a: string, b: string) {
+  return a.toLocaleLowerCase().trim().localeCompare(b.toLocaleLowerCase().trim())
+}
 
 export function slugify(str: string) {
   return str

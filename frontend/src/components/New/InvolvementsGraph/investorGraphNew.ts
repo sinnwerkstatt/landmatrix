@@ -11,8 +11,7 @@ import cyPopper from "cytoscape-popper"
 import type { Instance as TippyInstance } from "tippy.js"
 import tippy from "tippy.js"
 
-import { classification_choices } from "$lib/choices"
-import type { Classification } from "$lib/types/investor"
+import { Classification, classification_choices } from "$lib/choices"
 
 cytoscape.use(cyCoseBilkent)
 cytoscape.use(cyPopper)

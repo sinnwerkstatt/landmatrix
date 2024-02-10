@@ -3,11 +3,10 @@
 
   import { navigating, page } from "$app/stores"
 
-  import { newIsAuthorized } from "$lib/helpers"
   import { loading } from "$lib/stores"
   import type { DealHull, InvestorHull } from "$lib/types/newtypes.js"
   import { Version2Status } from "$lib/types/newtypes.js"
-  import { UserRole } from "$lib/types/user"
+  import { UserRole, type User } from "$lib/types/user"
 
   import Modal from "$components/Modal.svelte"
   import ManageHeaderActivateModal from "$components/New/ManageHeaderActivateModal.svelte"
@@ -37,6 +36,24 @@
 
   $: isCurrentDraft = object.selected_version.id === object.draft_version_id
   $: i18nValues = { values: { object: isDeal(object) ? "deal" : "investor" } }
+
+  function isAuthorized(user: User, obj: DealHull | InvestorHull): boolean {
+    const { role } = user
+    switch (obj.selected_version.status) {
+      case null: // anybody who has a relevant role (Reporter, Editor, Admin)
+        return role >= UserRole.REPORTER
+      case Version2Status.DRAFT: // the Reporter of the Object or Editor,Administrator
+        return role >= UserRole.EDITOR || user.id === obj.selected_version.created_by_id
+      case Version2Status.REVIEW: // at least Editor
+        return role >= UserRole.EDITOR
+      case Version2Status.REJECTED: // only Admins
+        return role === UserRole.ADMINISTRATOR
+      case Version2Status.ACTIVATION: // only Admins
+        return role === UserRole.ADMINISTRATOR
+      default:
+        return false
+    }
+  }
 </script>
 
 <div class="flex w-full flex-wrap justify-between text-center">
@@ -61,7 +78,7 @@
 </div>
 <div class="workflow-buttons my-2 flex">
   <div class="flex-1 text-right">
-    {#if object.selected_version.status === Version2Status.DRAFT && newIsAuthorized($page.data.user, object)}
+    {#if object.selected_version.status === Version2Status.DRAFT && isAuthorized($page.data.user, object)}
       <button
         type="button"
         class:disabled={!isCurrentDraft || $loading || $navigating}
@@ -72,7 +89,7 @@
         {$_("Submit for review")}
       </button>
     {/if}
-    {#if [Version2Status.REVIEW, Version2Status.ACTIVATION].includes(object.selected_version.status) && newIsAuthorized($page.data.user, object)}
+    {#if [Version2Status.REVIEW, Version2Status.ACTIVATION].includes(object.selected_version.status) && isAuthorized($page.data.user, object)}
       <button
         type="button"
         class:disabled={!isCurrentDraft || $loading || $navigating}
@@ -88,7 +105,7 @@
     {/if}
   </div>
   <div class="flex-1 text-center">
-    {#if object.selected_version.status === Version2Status.REVIEW && newIsAuthorized($page.data.user, object)}
+    {#if object.selected_version.status === Version2Status.REVIEW && isAuthorized($page.data.user, object)}
       <button
         type="button"
         class:disabled={!isCurrentDraft || $loading || $navigating}
@@ -101,7 +118,7 @@
     {/if}
   </div>
   <div class="flex-1 text-left">
-    {#if object.selected_version.status === Version2Status.ACTIVATION && newIsAuthorized($page.data.user, object)}
+    {#if object.selected_version.status === Version2Status.ACTIVATION && isAuthorized($page.data.user, object)}
       <button
         type="button"
         class:disabled={!isCurrentDraft || $loading || $navigating}

@@ -9,8 +9,8 @@ import type {
   Polygon,
 } from "geojson"
 
-import type { Obj, ObjVersion, WorkflowInfo } from "$lib/types/generics"
-import type { Investor } from "$lib/types/investor"
+import type { User } from "$lib/types/user"
+import type { Country } from "$lib/types/wagtail"
 
 export enum ACCURACY_LEVEL {
   "",
@@ -55,49 +55,6 @@ export type AreaFeatureCollection = FeatureCollection<
   Polygon | MultiPolygon,
   AreaFeatureProps
 >
-
-export interface Location {
-  id: string
-  name?: string
-  description?: string
-  point?: {
-    lat: number
-    lng: number
-  }
-  facility_name?: string
-  level_of_accuracy?: ACCURACY_LEVEL
-  comment?: string
-  areas?: FeatureCollection
-}
-export interface LocationWithCoordinates extends Location {
-  point: {
-    lat: number
-    lng: number
-  }
-  level_of_accuracy: ACCURACY_LEVEL
-}
-
-export interface Contract {
-  id: string
-}
-
-export interface DataSource {
-  id: string
-  type: string
-  url: string
-  file: string
-  file_not_public: string
-  publication_title: string
-  date: string
-  name: string
-  company: string
-  email: string
-  phone: string
-  includes_in_country_verified_information: string
-  open_land_contracts_id: string
-  comment: string
-  old_group_id: number
-}
 
 export enum ProduceGroup {
   CROPS = "CROPS",
@@ -260,13 +217,24 @@ export interface ContractSizeItem extends BaseItem {
   area: number
 }
 
-export interface Deal extends Obj {
+export interface Deal {
   id: number
-  locations: Location[]
-  contracts: Contract[]
-  datasources: DataSource[]
-  versions: DealVersion[]
-  workflowinfos?: DealWorkflowInfo[]
+  // status: Status
+  // draft_status: DraftStatus | null
+  // versions: ObjVersion[]
+  // workflowinfos?: WorkflowInfo[]
+  created_at: Date
+  created_by?: User
+  modified_at: Date
+  modified_by?: User
+  country?: Country
+  country_id?: number
+  current_draft_id?: number
+  // locations: Location[]
+  // contracts: Contract[]
+  // datasources: DataSource[]
+  // versions: DealVersion[]
+  // workflowinfos?: DealWorkflowInfo[]
   negotiation_status?: NegotiationStatusItem[]
   contract_size?: ContractSizeItem[]
   current_intention_of_investment?: IntentionOfInvestment[]
@@ -279,31 +247,13 @@ export interface Deal extends Obj {
   current_carbon_sequestration?: string[]
   fully_updated_at?: Date
   fully_updated?: boolean
-  top_investors?: Investor[]
+  // top_investors?: Investor[]
   deal_size?: number
   current_contract_size?: number
   intended_size?: number
-  operating_company?: Investor
+  // operating_company?: Investor
   confidential?: boolean
   is_public?: boolean
   geojson?: GeoJsonObject
   [key: string]: unknown
 }
-
-export interface DealVersion extends ObjVersion {
-  deal: Deal
-}
-
-export interface DealWorkflowInfo extends WorkflowInfo {
-  deal: Deal
-  deal_version_id: number
-}
-//
-// interface DealAggregation {
-//   value: string;
-//   count: number;
-//   size: number;
-// }
-// interface DealAggregations {
-//   [key: string]: DealAggregation[];
-// }
