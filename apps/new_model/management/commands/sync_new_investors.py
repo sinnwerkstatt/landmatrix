@@ -168,6 +168,10 @@ def _map_involvements_to_new_format(invos: list) -> list:
         return []
     ret = []
     for invo in invos:
+        if invo["loans_currency"]:
+            loan_curr = invo["loans_currency"]["id"]
+        else:
+            loan_curr = None
         ret += [
             {
                 "id": invo["id"],
@@ -177,7 +181,7 @@ def _map_involvements_to_new_format(invos: list) -> list:
                 "investment_type": invo["investment_type"] or [],
                 "percentage": invo["percentage"],
                 "loans_amount": invo["loans_amount"],
-                "loans_currency": invo["loans_currency"],
+                "loans_currency_id": loan_curr,
                 "loans_date": invo["loans_date"],
                 "parent_relation": invo["parent_relation"] or None,
                 "comment": invo["comment"],

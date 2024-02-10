@@ -1491,6 +1491,31 @@ class InvestorVersion2(BaseVersionMixin, models.Model):
             investor: InvestorHull = self.investor
             investor.draft_version = None
             investor.active_version = self
+
+            # upon activation, map the involvements_snapshot into the Involvements table
+            seen_involvements = set()
+            for invo in self.involvements_snapshot:
+                try:
+                    assert invo["id"].isnumeric()
+                    i1 = Involvement.objects.get(
+                        id=invo["id"], child_investor_id=self.id
+                    )
+                except (Involvement.DoesNotExist, AssertionError):
+                    i1 = Involvement(child_investor_id=self.id)
+                i1.parent_investor_id = invo["parent_investor_id"]
+                i1.role = invo["role"]
+                i1.investment_type = invo["investment_type"]
+                i1.percentage = invo["percentage"]
+                i1.loans_amount = invo["loans_amount"]
+                i1.loans_currency_id = invo["loans_currency_id"]
+                i1.loans_date = invo["loans_date"]
+                i1.parent_relation = invo["parent_relation"]
+                i1.comment = invo["comment"]
+                seen_involvements.add(i1.id)
+            Involvement.objects.filter(child_investor=self.investor).exclude(
+                id__in=seen_involvements
+            ).delete()
+
             investor.save()
 
             # close unresolved workflowinfos
@@ -1521,7 +1546,7 @@ class InvestorVersion2(BaseVersionMixin, models.Model):
 
 class InvestorDataSource(BaseDataSource):
     investorversion = models.ForeignKey(
-        InvestorVersion2, on_delete=models.PROTECT, related_name="datasources"
+        InvestorVersion2, on_delete=models.CASCADE, related_name="datasources"
     )
 
     class Meta:

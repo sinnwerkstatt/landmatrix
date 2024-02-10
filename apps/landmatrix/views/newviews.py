@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 
 from django.db import OperationalError, transaction
 from django.db.models import Prefetch, Q, F
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.utils import timezone
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
@@ -221,8 +221,8 @@ class VersionViewSet(viewsets.ReadOnlyModelViewSet):
                 ov1.modified_by = request.user
                 ov1.modified_at = timezone.now()
 
-            ov1.save()
             serializer.save_submodels(data, ov1)
+            ov1.save()
 
             return Response({"versionID": ov1.id})
 
@@ -344,7 +344,9 @@ class HullViewSet(viewsets.ReadOnlyModelViewSet):
 
         data = request.data["version"]
 
-        serializer = self.version_serializer_class(ov1, data=data, partial=True)
+        serializer: DealVersionSerializer | InvestorVersionSerializer = (
+            self.version_serializer_class(ov1, data=data, partial=True)
+        )
         if serializer.is_valid(raise_exception=True):
             # this is untidy
             ov1: DealVersion2 | InvestorVersion2 = serializer.save()
@@ -562,6 +564,7 @@ class InvestorVersionViewSet(VersionViewSet):
     serializer_class = InvestorVersionSerializer
 
     @action(detail=True, methods=["put"])
+    @transaction.atomic
     def change_status(self, request, pk: int):
         iv1: InvestorVersion2 = get_object_or_404(self.queryset, pk=pk)
 
@@ -645,7 +648,10 @@ class InvestorViewSet(HullViewSet):
         i1: InvestorHull = self.get_object()
         i1._selected_version_id = int(version_id)
 
-        iv1: InvestorVersion2 = i1.versions.get(id=version_id)
+        try:
+            iv1: InvestorVersion2 = i1.versions.get(id=version_id)
+        except InvestorVersion2.DoesNotExist:
+            raise Http404
 
         if (
             (request.user.is_authenticated and request.user.role >= UserRole.EDITOR)
@@ -733,6 +739,9 @@ def field_choices(request):
             },
             "datasource": {"type": choices.DATASOURCE_TYPE_ITEMS},
             "investor": {"classification": choices.INVESTOR_CLASSIFICATION_ITEMS},
-            "involvement": {"investment_type": choices.INVESTMENT_TYPE_ITEMS},
+            "involvement": {
+                "investment_type": choices.INVESTMENT_TYPE_ITEMS,
+                "parent_relation": choices.PARENT_RELATION_ITEMS,
+            },
         }
     )
