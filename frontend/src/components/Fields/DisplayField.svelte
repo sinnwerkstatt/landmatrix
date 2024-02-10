@@ -24,7 +24,6 @@
       : richField?.extras ?? extras
 </script>
 
-<!-- TODO probably need to handle booleanfield (when the field is !== null, we show it. also when it's `false` -->
 {#if isNotEmpty(value)}
   <div class={wrapperClass} data-fieldname={fieldname}>
     {#if showLabel}

@@ -39,14 +39,8 @@
       }
   })
   const saveInvestor = async (): Promise<boolean> => {
-    // TODO do we need this? should happen automatically
-    //   if (!currentForm.checkValidity()) return currentForm.reportValidity()
     savingInProgress = true
 
-    // TODO
-    // investor.selected_version.investors = removeEmptyEntries(
-    //   investor.selected_version.investors ?? [],
-    // )
     investor.selected_version.datasources = removeEmptyEntries(
       investor.selected_version.datasources ?? [],
     )

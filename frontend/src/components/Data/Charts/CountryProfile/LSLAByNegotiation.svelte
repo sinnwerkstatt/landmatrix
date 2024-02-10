@@ -126,6 +126,6 @@
     id="lsla-by-negotiation-chart"
     bind:this={svgComp}
   />
-  <!--  TODO:-->
+  <!-- TODO Marcus -->
   <!--  <div slot="legend" />-->
 </ChartWrapper>

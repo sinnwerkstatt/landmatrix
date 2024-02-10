@@ -414,7 +414,7 @@ class CaseStatistics(View):
                 country_id=F("active_version__country_id"),
                 region_id=F("active_version__country__region_id"),
                 created_at=F("first_created_at"),
-                modified_at=F("active_version__modified_at"),  # TODO sensible value?
+                modified_at=F("active_version__modified_at"),
             )
             .values(
                 "id",

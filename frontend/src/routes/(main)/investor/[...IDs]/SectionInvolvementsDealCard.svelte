@@ -8,56 +8,37 @@
   const wrapperClass = "my-1 flex flex-wrap justify-between"
   const labelClass = "whitespace-nowrap font-light text-gray-400 pr-2 italic"
   const valueClass = "font-medium"
+
+  const fields = [
+    "id",
+    "country_id",
+    "current_intention_of_investment",
+    "current_negotiation_status",
+    "current_implementation_status",
+    "deal_size",
+  ]
 </script>
 
 <div class="flex flex-col gap-1 border border-orange p-2">
-  <DisplayField
-    fieldname="id"
-    {labelClass}
-    value={deal.id}
-    {valueClass}
-    {wrapperClass}
-    showLabel
-  />
-  <DisplayField
-    fieldname="country_id"
-    {labelClass}
-    value={deal.country_id}
-    {valueClass}
-    {wrapperClass}
-    showLabel
-  />
-  <DisplayField
-    fieldname="current_intention_of_investment"
-    {labelClass}
-    value={deal.selected_version.current_intention_of_investment}
-    {valueClass}
-    {wrapperClass}
-    showLabel
-  />
-  <DisplayField
-    fieldname="current_negotiation_status"
-    {labelClass}
-    showLabel
-    value={deal.selected_version.current_negotiation_status}
-    {valueClass}
-    {wrapperClass}
-  />
-  <DisplayField
-    fieldname="current_implementation_status"
-    {labelClass}
-    showLabel
-    value={deal.selected_version.current_implementation_status}
-    {valueClass}
-    {wrapperClass}
-  />
-
-  <DisplayField
-    fieldname="deal_size"
-    {labelClass}
-    showLabel
-    value={deal.selected_version.deal_size}
-    {valueClass}
-    {wrapperClass}
-  />
+  {#each fields as fieldname}
+    {#if ["id", "country_id"].includes(fieldname)}
+      <DisplayField
+        {fieldname}
+        {labelClass}
+        value={deal[fieldname]}
+        {valueClass}
+        {wrapperClass}
+        showLabel
+      />
+    {:else}
+      <DisplayField
+        {fieldname}
+        {labelClass}
+        value={deal.selected_version[fieldname]}
+        {valueClass}
+        {wrapperClass}
+        showLabel
+      />
+    {/if}
+  {/each}
 </div>

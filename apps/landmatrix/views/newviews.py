@@ -536,7 +536,7 @@ class DealViewSet(HullViewSet):
         # make a copy of the current active_version and set it to draft on the new thing.
         # don't forget about locations, contracts,... foreign-keys etc...
 
-        # TODO we need to copy more things here, right?
+        # TODO Nuts we need to copy more things here, right?
         # d1.created_by = request.user
         # d1.created_at = timezone.now()
 
@@ -657,7 +657,7 @@ class InvestorViewSet(HullViewSet):
 
     @action(methods=["get"], detail=False)
     def simple(self, request):
-        # TODO this might need an "also search for drafts option"
+        # TODO Later this might need an "also search for drafts option"
         return Response(
             InvestorHull.objects.exclude(deleted=True)
             .exclude(active_version=None)
@@ -693,7 +693,7 @@ class InvestorViewSet(HullViewSet):
         show_ventures = request.GET.get("show_ventures", "") == "true"
         investor: InvestorHull = self.get_object()
 
-        # TODO make sure it's a live version (active version)
+        # TODO Nuts make sure it's a live version (active version)
 
         try:
             return Response(

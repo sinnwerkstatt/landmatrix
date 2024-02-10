@@ -31,7 +31,7 @@
     />
   </EditSubsection>
 
-  <EditSubsection id="contract_farming2">
+  <EditSubsection id="detailed_contract_farming">
     <EditField
       fieldname="contract_farming_crops"
       showLabel

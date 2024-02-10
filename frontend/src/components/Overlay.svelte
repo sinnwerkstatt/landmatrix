@@ -12,6 +12,7 @@
   export let title: string | null = null
 
   export let showSubmit = false
+  export let gotoLink: { href: string; title: string; className?: string } | null = null
   export let submitTitle: string | null = null
   export let submitDisabled = false
 
@@ -58,13 +59,22 @@
         </div>
 
         <div class="border-t px-7 py-5 text-right">
-          <button type="button" class="btn btn-gray mx-2" on:click={close}>
+          <button type="button" class="butn butn-cancel mx-2" on:click={close}>
             {closeButtonText}
           </button>
           {#if showSubmit}
-            <button disabled={submitDisabled} type="submit" class="btn btn-primary">
+            <button disabled={submitDisabled} type="submit" class="butn butn-primary">
               {submitTitle ?? title}
             </button>
+          {/if}
+          {#if gotoLink}
+            <a
+              href={gotoLink.href}
+              target="_blank"
+              class="butn butn-primary {gotoLink.className}"
+            >
+              {gotoLink.title}
+            </a>
           {/if}
         </div>
       </form>

@@ -84,6 +84,7 @@ export interface Involvement {
     id: number
     selected_version: {
       name: string
+      name_unknown: boolean
       country_id: number | null
       classification: string
     }

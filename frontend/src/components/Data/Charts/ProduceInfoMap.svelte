@@ -1,5 +1,5 @@
 <script lang="ts">
-  // TODO WIP
+  // TODO Marcus WIP
   import { format, hierarchy, select, treemap, treemapSquarify } from "d3"
   import type { BaseType, HierarchyNode } from "d3"
   import { afterUpdate, onMount } from "svelte"
@@ -49,7 +49,7 @@
     }[]
   }
 
-  // TODO: not correct to add full deal size for each produce
+  // TODO Later not correct to add full deal size for each produce
   const produceReducer = (
     acc: ProduceAccumulator,
     deal: DealHull,

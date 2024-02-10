@@ -34,7 +34,7 @@
 
   export let isSelectedEntry: boolean
 
-  // TODO: refactor since pure
+  // TODO Marcus refactor since pure
   const areaToFeature = (area: Area): AreaFeature => ({
     type: "Feature",
     geometry: area.area,
@@ -47,7 +47,7 @@
     },
   })
 
-  // TODO: refactor since pure
+  // TODO Marcus refactor since pure
   const createLayer = (
     features: AreaFeature[],
     isSelectedEntry: boolean,

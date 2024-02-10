@@ -29,7 +29,7 @@
     />
   </Subsection>
 
-  <Subsection id="contract_farming2" obj={version}>
+  <Subsection id="detailed_contract_farming" obj={version}>
     <DisplayField
       fieldname="contract_farming_crops"
       showLabel

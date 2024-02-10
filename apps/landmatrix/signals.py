@@ -5,7 +5,7 @@ from django.dispatch import receiver
 from .models.investor import Investor, InvestorVentureInvolvement
 
 
-# TODO is this whole file still relevant?
+# TODO Nuts is this whole file still relevant?
 
 
 def invalidate_cache(sender, instance, **kwargs):

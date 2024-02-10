@@ -31,6 +31,9 @@
     value={involvement.other_investor.selected_version.name}
     {valueClass}
     {wrapperClass}
+    extras={{
+      investorNameUnknown: involvement.other_investor.selected_version.name_unknown,
+    }}
   />
   <DisplayField
     fieldname="country_id"
@@ -50,7 +53,9 @@
     {valueClass}
     {wrapperClass}
   />
-  ---
+
+  <hr class="my-2 w-1/2" />
+
   <DisplayField
     fieldname="involvement.relationship"
     {labelClass}

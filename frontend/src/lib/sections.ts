@@ -524,8 +524,7 @@ export const dealSections = derived(_, $_ => {
         "mineral_resources_comment",
       ],
     },
-    //  TODO doulbe contract farming?!
-    contract_farming2: {
+    detailed_contract_farming: {
       title: $_("Detailed contract farming crop and animal information"),
       fields: [
         "contract_farming_crops",

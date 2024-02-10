@@ -10,41 +10,39 @@
   export let investor: Investor
 </script>
 
-<Overlay on:close title="{investor.name} ({investor.id})" {visible}>
-  <div>
-    <DisplayField
-      fieldname="classification"
-      model="investor"
-      showLabel
-      value={investor.active_version__classification}
-    />
-    <DisplayField
-      fieldname="country"
-      model="investor"
-      showLabel
-      value={investor.active_version__country_id}
-    />
-    <DisplayField
-      fieldname="homepage"
-      model="investor"
-      showLabel
-      value={investor.active_version__homepage}
-    />
-    <DisplayField
-      fieldname="comment"
-      model="investor"
-      showLabel
-      value={investor.active_version__comment}
-    />
-    <div class="w-100 mt-8">
-      <a
-        class="investor"
-        href="/investor/{investor.id}"
-        rel="noreferrer"
-        target="_blank"
-      >
-        {$_("More details about this investor")}
-      </a>
-    </div>
-  </div>
+<Overlay
+  on:close
+  title="{investor.name} ({investor.id})"
+  {visible}
+  closeButtonText={$_("Close")}
+  gotoLink={{
+    href: `/investor/${investor.id}/`,
+    title: $_("More details about this investor"),
+    className: "butn-secondary",
+  }}
+>
+  <DisplayField
+    fieldname="classification"
+    model="investor"
+    showLabel
+    value={investor.active_version__classification}
+  />
+  <DisplayField
+    fieldname="country_id"
+    model="investor"
+    showLabel
+    value={investor.active_version__country_id}
+  />
+  <DisplayField
+    fieldname="homepage"
+    model="investor"
+    showLabel
+    value={investor.active_version__homepage}
+  />
+  <DisplayField
+    fieldname="comment"
+    model="investor"
+    showLabel
+    value={investor.active_version__comment}
+  />
 </Overlay>

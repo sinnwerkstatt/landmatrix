@@ -65,7 +65,7 @@ from search_involvements
 order by (depth, id) desc;
 """
 
-# TODO faster version requires a VIEW.
+# TODO Later faster version requires a VIEW.
 #  but how would we migrate it and keep it up2date? (when the model changes, not when the data changes)
 
 CREATE_VIEW = """

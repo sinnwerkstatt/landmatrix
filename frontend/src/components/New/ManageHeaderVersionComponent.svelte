@@ -25,7 +25,7 @@
 
   let showDeleteOverlay = false
 
-  let hasActiveVersion = false // TODO
+  let hasActiveVersion = false // TODO Nuts
 
   const isDeal = (obj: DealHull | InvestorHull): obj is DealHull =>
     "fully_updated_at" in obj

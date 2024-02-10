@@ -24,7 +24,7 @@
 </script>
 
 <div class={wrapperClass} data-fieldname={fieldname}>
-  <!-- TODO wrap content into label -->
+  <!-- TODO Nuts wrap content into label -->
   {#if showLabel}
     <Label2 value={richField?.label} class={labelClass} />
   {/if}

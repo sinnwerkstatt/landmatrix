@@ -199,7 +199,7 @@ class DealVersionSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def save_submodels(data, dv1: DealVersion2):
-        # FIXME right now we're handling contracts, locations and datasources here
+        # TODO Later right now we're handling contracts, locations and datasources here
         #  in the serializer. not very pretty. maybe drf-writable-nested
         #  would be an alternative
 
@@ -388,7 +388,7 @@ class InvestorVersionSerializer(serializers.ModelSerializer):
     def save_submodels(data, iv1: InvestorVersion2):
         iv1.involvements_snapshot = data["involvements"]
 
-        # FIXME right now we're handling datasources here
+        # TODO Later right now we're handling datasources here
         #  in the serializer. not very pretty. maybe drf-writable-nested
         #  would be an alternative
         ds_nids = set()
@@ -495,7 +495,6 @@ class InvestorSerializer(serializers.ModelSerializer):
             )
 
         else:
-            # TODO should the draft version also have this involvements_snapshot?
             invos = obj.draft_version.involvements_snapshot
         self._enrich_involvements_for_viewing(invos, obj.id)
         return invos

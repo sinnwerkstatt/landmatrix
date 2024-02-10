@@ -130,7 +130,16 @@ class InvolvementNetwork:
         if include_deals:
             deals = DealHull.objects.filter(
                 active_version__operating_company_id__in=all_investor_ids
-            ).values("id", "country_id", "active_version__operating_company_id")
+            ).values(
+                "id",
+                "country_id",
+                "active_version__operating_company_id",
+                "active_version__intention_of_investment",
+                "active_version__implementation_status",
+                "active_version__negotiation_status",
+                "active_version__intended_size",
+                "active_version__contract_size",
+            )
 
             for deal in deals:
                 rich_nodes += [
@@ -140,6 +149,17 @@ class InvolvementNetwork:
                             "id": f"D{deal['id']}",
                             "name": f"#{deal['id']}",
                             "country_id": deal["country_id"],
+                            "intention_of_investment": deal[
+                                "active_version__intention_of_investment"
+                            ],
+                            "implementation_status": deal[
+                                "active_version__implementation_status"
+                            ],
+                            "negotiation_status": deal[
+                                "active_version__negotiation_status"
+                            ],
+                            "intended_size": deal["active_version__intended_size"],
+                            "contract_size": deal["active_version__contract_size"],
                             "bgColor": "rgba(252,148,30,1)",
                             "dealNode": True,
                         }

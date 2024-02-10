@@ -10,7 +10,7 @@
 
 <form id="investor_info">
   <EditSubsection id="operating_company">
-    <!-- TODO we're using operating_company instead of operating_company_id because of some DRF shit. IF you want, try and fix it.  -->
+    <!-- TODO Later we're using operating_company instead of operating_company_id because of some DRF shit. IF you want, try and fix it.  -->
     <EditField
       bind:value={version.operating_company}
       fieldname="operating_company"
