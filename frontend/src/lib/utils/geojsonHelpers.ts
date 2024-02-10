@@ -1,13 +1,4 @@
-import type {
-  Feature,
-  FeatureCollection,
-  GeoJsonProperties,
-  Geometry,
-  MultiPoint,
-  MultiPolygon,
-  Point,
-  Polygon,
-} from "geojson"
+import type { Feature, MultiPoint, MultiPolygon, Point, Polygon } from "geojson"
 import * as R from "ramda"
 
 import { newNanoid } from "$lib/helpers"
@@ -38,16 +29,6 @@ export const addTempIds = <T extends Feature>(features: T[]): (T & { id: string 
     const existingIds: string[] = acc.map(feature => feature.id as string)
     return [...acc, { ...val, id: newNanoid(existingIds) }]
   }, [])
-
-export const createFeatureCollection = <
-  G extends Geometry | null = Geometry,
-  P = GeoJsonProperties,
->(
-  features: Feature<G, P>[],
-): FeatureCollection<G, P> => ({
-  type: "FeatureCollection",
-  features,
-})
 
 export const isPoint = (feature: Feature): feature is Feature<Point | MultiPoint> =>
   feature.geometry.type === "Point"

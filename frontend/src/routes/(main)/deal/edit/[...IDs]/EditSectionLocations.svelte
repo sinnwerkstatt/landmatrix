@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Point } from "geojson"
-  import { geoJson, type GeoJSON, type Layer, type Map } from "leaflet"
+  import type { GeoJSON, Layer, Map } from "leaflet"
+  import { Control, geoJson } from "leaflet"
   import { onDestroy, onMount } from "svelte"
   import { _ } from "svelte-i18n"
   import { slide } from "svelte/transition"
@@ -13,13 +14,11 @@
   } from "$lib/types/newtypes"
   import type { Country } from "$lib/types/wagtail"
   import { isEmptySubmodel } from "$lib/utils/data_processing"
-  import {
-    createLegend,
-    createPointFeatures,
-    createTooltip,
-  } from "$lib/utils/location2"
-  import { fitBounds } from "$lib/utils/locationSSRsafe"
+  import { createComponentAsDiv } from "$lib/utils/domHelpers"
+  import { createPointFeatures, fitBounds } from "$lib/utils/location"
 
+  import LocationLegend from "$components/Deal/LocationLegend.svelte"
+  import LocationTooltip from "$components/Deal/LocationTooltip.svelte"
   import EditField from "$components/Fields/EditField.svelte"
   import PlusIcon from "$components/icons/PlusIcon.svelte"
   import TrashIcon from "$components/icons/TrashIcon.svelte"
@@ -37,7 +36,11 @@
 
   const onMapReady = (e: CustomEvent<Map>) => {
     map = e.detail
-    map.addControl(createLegend())
+
+    const legend = new Control({ position: "bottomleft" })
+    legend.onAdd = () => createComponentAsDiv(LocationLegend)
+    map.addControl(legend)
+
     map.addLayer(locationsPointLayer)
     fitBounds(locationsPointLayer, map)
   }
@@ -74,7 +77,8 @@
   const createLayer = (locations: Location2[]) =>
     geoJson(createPointFeatures(locations), {
       onEachFeature: (feature: PointFeature, layer: Layer) => {
-        layer.bindPopup(createTooltip(feature), { keepInView: true })
+        const tooltipElement = createComponentAsDiv(LocationTooltip, { feature })
+        layer.bindPopup(tooltipElement, { keepInView: true })
         layer.on("click", () =>
           toggleActiveEntry(locations.findIndex(l => l.nid === feature.properties.id)),
         )
