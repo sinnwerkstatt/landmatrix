@@ -62,7 +62,7 @@
 
 <!--https://blog.logrocket.com/building-responsive-navbar-tailwind-css/-->
 <nav
-  class="shadow-nav mb-4 h-[71px] w-full bg-white p-1 py-1 text-lg text-gray-700 dark:bg-gray-900 dark:text-white"
+  class="mb-4 h-[71px] w-full bg-white p-1 py-1 text-lg text-gray-700 shadow-nav dark:bg-gray-900 dark:text-white"
 >
   <div
     class="container mx-auto flex h-full w-full flex-wrap items-center justify-between align-middle"
@@ -109,7 +109,7 @@
       id="menu"
       class={cn(
         menuHidden ? "hidden xl:block" : "",
-        "shadow-nav absolute left-0 top-[54px] z-50 w-full bg-white xl:static xl:w-auto xl:shadow-none dark:bg-gray-800",
+        "absolute left-0 top-[54px] z-50 w-full bg-white shadow-nav xl:static xl:w-auto xl:shadow-none dark:bg-gray-800",
       )}
       use:clickOutside
       on:outClick={closeMenu}

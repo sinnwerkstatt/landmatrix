@@ -54,7 +54,7 @@
       {#if isOpen || isHover}
         <ul
           transition:slide={{ duration: 200 }}
-          class="lg:shadow-nav hidden flex-wrap justify-around border-t bg-gray-50 py-3 group-focus-within:flex lg:absolute lg:z-50 lg:whitespace-nowrap lg:border-none lg:bg-white lg:group-focus-within:hidden lg:group-hover:block dark:bg-gray-900 dark:lg:bg-gray-900"
+          class="hidden flex-wrap justify-around border-t bg-gray-50 py-3 group-focus-within:flex lg:absolute lg:z-50 lg:whitespace-nowrap lg:border-none lg:bg-white lg:shadow-nav lg:group-focus-within:hidden lg:group-hover:block dark:bg-gray-900 dark:lg:bg-gray-900"
         >
           {#each subEntries as subEntry}
             <li class="mx-7 lg:mx-0 lg:px-6 lg:hover:bg-orange-100">
