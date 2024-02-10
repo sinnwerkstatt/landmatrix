@@ -1,4 +1,4 @@
-import { error, redirect } from "@sveltejs/kit"
+import { error, redirect, type NumericRange } from "@sveltejs/kit"
 
 import type { InvestorHull } from "$lib/types/newtypes"
 
@@ -18,7 +18,7 @@ export const load: PageLoad = async ({ depends, params, fetch }) => {
     : `/api/investors/${investorID}/`
   const ret = await fetch(url)
 
-  if (!ret.ok) error(ret.status, (await ret.json()).detail)
+  if (!ret.ok) error(ret.status as NumericRange<400, 599>, (await ret.json()).detail)
 
   const investor: InvestorHull = await ret.json()
 

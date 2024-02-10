@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { dealSections } from "$lib/fieldLookups"
+  import { dealSections } from "$lib/sections"
 
   export let id: string
 

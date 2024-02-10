@@ -44,11 +44,7 @@
     },
     { key: "intended_size", label: $_("Intended size"), colSpan: 3, unit: $_("ha") },
     { key: "deal_size", label: $_("Deal size"), colSpan: 2, unit: $_("ha") },
-    {
-      key: "operating_company",
-      label: $_("Operating company"),
-      colSpan: 4,
-    },
+    { key: "operating_company", label: $_("Operating company"), colSpan: 4 },
   ]
 
   let activeColumns: string[] = [
@@ -74,6 +70,8 @@
 
   const wrapperClass = "p-1"
   const valueClass = ""
+
+  const hullFields = ["fully_updated_at", "id", "country_id"]
 </script>
 
 <svelte:head>
@@ -104,17 +102,17 @@
         <svelte:fragment let:fieldName let:obj slot="field">
           {@const col = COLUMNS.find(c => c.key === fieldName)}
           {#if col}
-            {#if ["operating_company", "current_intention_of_investment", "current_contract_size", "intended_size", "deal_size"].includes(fieldName)}
+            {#if hullFields.includes(fieldName)}
               <DisplayField
                 fieldname={fieldName}
-                value={obj.selected_version[fieldName]}
+                value={obj[fieldName]}
                 {wrapperClass}
                 {valueClass}
               />
             {:else}
               <DisplayField
                 fieldname={fieldName}
-                value={obj[fieldName]}
+                value={obj.selected_version[fieldName]}
                 {wrapperClass}
                 {valueClass}
               />

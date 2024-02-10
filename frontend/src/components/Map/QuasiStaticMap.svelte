@@ -20,43 +20,45 @@
   let map: Map
   let featureGroup: FeatureGroup
 
-  function focusMap() {
-    if (regionID) {
-      const reg = $regions.find(r => r.id === regionID)!
-      map.fitBounds(
-        [
-          [reg.point_lat_min, reg.point_lon_min],
-          [reg.point_lat_max, reg.point_lon_max],
-        ],
-        { animate: false },
-      )
-    } else if (countryID) {
-      const country = $countries.find(c => c.id === countryID)!
-      map.fitBounds(
-        [
-          [country.point_lat_min, country.point_lon_min],
-          [country.point_lat_max, country.point_lon_max],
-        ],
-        { animate: false },
-      )
-    } else map.fitWorld({ animate: false })
+  $: {
+    if (map) {
+      if (regionID && $regions.length) {
+        const reg = $regions.find(r => r.id === regionID)!
+        map.fitBounds(
+          [
+            [reg.point_lat_min, reg.point_lon_min],
+            [reg.point_lat_max, reg.point_lon_max],
+          ],
+          { animate: false },
+        )
+      } else if (countryID && $countries.length) {
+        const country = $countries.find(c => c.id === countryID)!
+        map.fitBounds(
+          [
+            [country.point_lat_min, country.point_lon_min],
+            [country.point_lat_max, country.point_lon_max],
+          ],
+          { animate: false },
+        )
+      } else {
+        map.fitWorld({ animate: false })
+      }
+    }
   }
 
-  const drawMap = async (ma: Map, mark: MarkerType[]) => {
-    if (!ma || !mark || !browser) return
-    if (!featureGroup) featureGroup = new FeatureGroup()
-    else featureGroup.clearLayers()
-    featureGroup.addTo(map)
+  $: {
+    if (map && markers && browser) {
+      if (!featureGroup) featureGroup = new FeatureGroup()
+      else featureGroup.clearLayers()
+      featureGroup.addTo(map)
 
-    if (regionID) drawRegionMarkers()
-    else if (countryID) drawCountryMarkers()
-    else drawGlobalMarkers()
-
-    focusMap()
+      if (regionID) _drawRegionMarkers()
+      else if (countryID) _drawCountryMarkers()
+      else _drawGlobalMarkers()
+    }
   }
-  $: drawMap(map, markers)
 
-  function drawGlobalMarkers() {
+  function _drawGlobalMarkers() {
     for (let mark of markers) {
       let circle = new Marker(mark.coordinates, {
         icon: new DivIcon({ className: LMCircleClass }),
@@ -68,7 +70,7 @@
     }
   }
 
-  function drawRegionMarkers() {
+  function _drawRegionMarkers() {
     for (let mark of markers) {
       let circle = new Marker(mark.coordinates, {
         icon: new DivIcon({ className: LMCircleClass }),
@@ -79,7 +81,7 @@
     }
   }
 
-  function drawCountryMarkers() {
+  function _drawCountryMarkers() {
     for (let mark of markers) featureGroup.addLayer(new Marker(mark.coordinates))
   }
 
@@ -99,7 +101,7 @@
 >
   <a
     class="group absolute z-20 flex h-full w-full bg-transparent transition duration-300 hover:bg-orange/20"
-    href="/map"
+    href="/map/"
     on:click={onClickMap}
   >
     <span

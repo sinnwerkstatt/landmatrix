@@ -27,7 +27,7 @@
 
   <div slot="ContextBar">
     <h2 class="heading4 text-gray-700">{title}</h2>
-    <div>{@html $chartDescriptions?.global_web_of_investments ?? ""}</div>
+    <div>{@html $chartDescriptions.global_web_of_investments}</div>
     <CountryInvestorInfo />
   </div>
 </ChartsContainer>

@@ -2,7 +2,7 @@
   import { _ } from "svelte-i18n"
 
   import { dealFields } from "$lib/fieldLookups"
-  import { dealSections } from "$lib/sections"
+  import { dealSectionsLG } from "$lib/sections"
 
   import DisplayField from "$components/Fields/DisplayField.svelte"
 
@@ -70,7 +70,7 @@
     </thead>
 
     <tbody>
-      {#each Object.entries($dealSections) as [label, section]}
+      {#each Object.entries($dealSectionsLG) as [label, section]}
         {#if anyFieldFromSection(section)}
           <tr class="bg-gray-700">
             <th colspan="3">

@@ -19,6 +19,7 @@
       fieldname="country_id"
       model="investor"
       showLabel
+      extras={{ required: true }}
     />
     <EditField
       bind:value={version.classification}

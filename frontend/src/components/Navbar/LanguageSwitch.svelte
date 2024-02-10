@@ -2,8 +2,6 @@
   import Cookies from "js-cookie"
   import { locale } from "svelte-i18n"
 
-  import { fetchBasis, fetchFieldDefinitions } from "$lib/stores"
-
   import NavDropDown from "$components/Navbar/NavDropDown.svelte"
 
   const languages = {
@@ -16,8 +14,6 @@
   const switchLanguage = async (lang: string) => {
     Cookies.set("django_language", lang)
     await locale.set(lang)
-    await fetchFieldDefinitions(fetch)
-    await fetchBasis(fetch)
   }
 </script>
 

@@ -1,6 +1,4 @@
-import type { LoadEvent } from "@sveltejs/kit"
-import { error } from "@sveltejs/kit"
-import type { GeoJSON } from "leaflet"
+import { PUBLIC_BASE_URL } from "$env/static/public"
 import { _, locale } from "svelte-i18n"
 import { derived, readable, writable } from "svelte/store"
 
@@ -28,23 +26,6 @@ import type {
   Region,
   WagtailPage,
 } from "$lib/types/wagtail"
-
-export const aboutPages = writable<WagtailPage[]>([])
-
-async function getAboutPages(fetch: LoadEvent["fetch"]) {
-  const url = `/api/wagtail/v2/pages/?order=title&type=wagtailcms.AboutIndexPage`
-  const res = await (
-    await fetch(url, { headers: { Accept: "application/json" } })
-  ).json()
-  if (res.items && res.items.length) {
-    const indexPageId = res.items[0].id
-    const pagesUrl = `/api/wagtail/v2/pages/?child_of=${indexPageId}`
-    const res_children = await (
-      await fetch(pagesUrl, { headers: { Accept: "application/json" } })
-    ).json()
-    aboutPages.set(res_children.items)
-  }
-}
 
 export interface ValueLabelEntry {
   value: string
@@ -124,45 +105,72 @@ export const fieldChoices = readable<FieldChoicesType>(
     involvement: { investment_type: [], parent_relation: [] },
   },
   set => {
-    fetch(`/api/field_choices/`, { headers: { Accept: "application/json" } })
+    fetch(PUBLIC_BASE_URL + `/api/field_choices/`, {
+      headers: { Accept: "application/json" },
+    })
       .then(ret => ret.json())
       .then(set)
   },
 )
 
-export const observatoryPages = writable<ObservatoryPage[]>([])
+export const aboutPages = derived(
+  [locale],
+  ([$locale], set) => {
+    // beware, the $locale doesn't really seem to matter. django is apparently using the cookie anyways.
+    fetch(
+      PUBLIC_BASE_URL +
+        `/api/wagtail/v2/pages/?order=title&type=wagtailcms.AboutIndexPage`,
+      { headers: { "Accept-Language": $locale ?? "en" } },
+    )
+      .then(ret => ret.json() as Promise<{ items: WagtailPage[] }>)
+      .then(res => {
+        if (res.items && res.items.length) {
+          const indexPageId = res.items[0].id
+          fetch(PUBLIC_BASE_URL + `/api/wagtail/v2/pages/?child_of=${indexPageId}`)
+            .then(ret => ret.json() as Promise<{ items: WagtailPage[] }>)
+            .then(res => set(res.items))
+        }
+      })
+  },
+  [] as WagtailPage[],
+)
 
 type ObservatoryGroups = {
   [key in "global" | "regions" | "countries"]: ObservatoryPage[]
 }
-
-async function getObservatoryPages(fetch: LoadEvent["fetch"]) {
-  const url = `/api/wagtail/v2/pages/?order=title&type=wagtailcms.ObservatoryPage&fields=region,country,short_description`
-  const res = await (
-    await fetch(url, { headers: { Accept: "application/json" } })
-  ).json()
-  const pages: ObservatoryPage[] = res.items
-  const groups: ObservatoryGroups = pages.reduce(
-    (acc: ObservatoryGroups, value) => {
-      if (value.country) {
-        return { ...acc, countries: [...acc.countries, value] }
-      }
-      if (value.region) {
-        return { ...acc, regions: [...acc.regions, value] }
-      }
-      return { ...acc, global: [...acc.global, value] }
-    },
-    { global: [], regions: [], countries: [] },
-  )
-  observatoryPages.set([...groups.global, ...groups.regions, ...groups.countries])
-}
+export const observatoryPages = derived(
+  [locale],
+  ([$locale], set) => {
+    fetch(
+      PUBLIC_BASE_URL +
+        `/api/wagtail/v2/pages/?order=title&type=wagtailcms.ObservatoryPage&fields=region,country,short_description`,
+      { headers: { "Accept-Language": $locale ?? "en" } },
+    )
+      .then(ret => ret.json() as Promise<{ items: ObservatoryPage[] }>)
+      .then(res => {
+        const pages: ObservatoryPage[] = res.items
+        const groups: ObservatoryGroups = pages.reduce(
+          (acc: ObservatoryGroups, value) => {
+            if (value.country) {
+              return { ...acc, countries: [...acc.countries, value] }
+            }
+            if (value.region) {
+              return { ...acc, regions: [...acc.regions, value] }
+            }
+            return { ...acc, global: [...acc.global, value] }
+          },
+          { global: [], regions: [], countries: [] },
+        )
+        set([...groups.global, ...groups.regions, ...groups.countries])
+      })
+  },
+  [] as ObservatoryPage[],
+)
 
 export const blogCategories = readable([] as BlogCategory[], set => {
-  if (browser) {
-    fetch(`/api/blog_categories/`)
-      .then(ret => ret.json() as Promise<BlogCategory[]>)
-      .then(set)
-  }
+  fetch(PUBLIC_BASE_URL + `/api/blog_categories/`)
+    .then(ret => ret.json() as Promise<BlogCategory[]>)
+    .then(set)
 })
 
 interface ChartDesc {
@@ -181,29 +189,13 @@ export const chartDescriptions = derived(
       .then(ret => ret.json() as Promise<ChartDesc>)
       .then(set)
   },
-  {} as ChartDesc,
+  {
+    web_of_transnational_deals: "",
+    dynamics_overview: "",
+    produce_info_map: "",
+    global_web_of_investments: "",
+  } as ChartDesc,
 )
-
-export async function fetchBasis(fetch: LoadEvent["fetch"]) {
-  try {
-    await Promise.all([getAboutPages(fetch), getObservatoryPages(fetch)])
-  } catch (e) {
-    error(500, `Backend server problems ${e}`)
-  }
-}
-
-// export const allUsers = writable<User[]>([])
-// let fetchingAllUsers = false
-// export async function getAllUsers(fetch: LoadEvent["fetch"]) {
-//   if (get(allUsers).length > 0 || fetchingAllUsers) return
-//   fetchingAllUsers = true
-//   const ret = await fetch("/api/users/")
-//   const users = await ret.json()
-//   if (!users) throw error(500, "could not fetch users from database")
-//
-//   allUsers.set(users)
-//   fetchingAllUsers = false
-// }
 
 export const allUsers = readable([] as User[], set => {
   if (!browser) {
@@ -334,15 +326,17 @@ if (browser) {
   bindIsMobileToScreenInnerWidth()
 }
 
-// export const fieldDefinitions = readable<FieldDefinition[]>([], set=>{
-//   fetch("/api/field_definitions/").then(ret=>ret.json()).then(set)
-// })
-export const fieldDefinitions = writable<FieldDefinition[]>([])
-
-export async function fetchFieldDefinitions(fetch: LoadEvent["fetch"]) {
-  const res = await fetch("/api/field_definitions/")
-  fieldDefinitions.set(await res.json())
-}
+export const fieldDefinitions = derived(
+  [locale],
+  ([$locale], set) => {
+    fetch(PUBLIC_BASE_URL + "/api/field_definitions/", {
+      headers: { "Accept-Language": $locale ?? "en" },
+    })
+      .then(ret => ret.json() as Promise<FieldDefinition[]>)
+      .then(set)
+  },
+  [] as FieldDefinition[],
+)
 
 export const currencies = readable<Currency[]>([], set => {
   fetch("/api/currencies/")
@@ -350,12 +344,12 @@ export const currencies = readable<Currency[]>([], set => {
     .then(set)
 })
 export const countries = readable<Country[]>([], set => {
-  fetch("/api/countries/")
+  fetch(PUBLIC_BASE_URL + "/api/countries/")
     .then(ret => ret.json())
     .then(set)
 })
 export const regions = readable<Region[]>([], set => {
-  fetch("/api/regions/")
+  fetch(PUBLIC_BASE_URL + "/api/regions/")
     .then(ret => ret.json())
     .then(set)
 })

@@ -45,7 +45,7 @@
   {/if}
   <div slot="ContextBar">
     <h2 class="heading4 text-gray-700">{title}</h2>
-    <div>{@html $chartDescriptions?.web_of_transnational_deals ?? ""}</div>
+    <div>{@html $chartDescriptions.web_of_transnational_deals}</div>
     <CountryInvestorInfo />
   </div>
 </ChartsContainer>

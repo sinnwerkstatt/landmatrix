@@ -2,7 +2,6 @@
   import { _ } from "svelte-i18n"
 
   import { investorFields } from "$lib/fieldLookups"
-  import { investorSections } from "$lib/sections"
 
   import TextField from "$components/Fields/Display2/TextField.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"
@@ -26,6 +25,22 @@
       return JSON.stringify(dFrom[field][jfield]) !== JSON.stringify(dTo[field][jfield])
     }
     return dFrom[field][jfield] !== dTo[field][jfield]
+  }
+
+  $: investorSections = {
+    general_info: [
+      {
+        name: $_("General info"),
+        fields: [
+          "name",
+          "country",
+          "classification",
+          "homepage",
+          "opencorporates",
+          "comment",
+        ],
+      },
+    ],
   }
 </script>
 
@@ -69,7 +84,7 @@
         <TextField value={data.toVersion.name} />
       </td>
     </tr>
-    {#each Object.entries($investorSections) as [label, section]}
+    {#each Object.entries(investorSections) as [label, section]}
       {#if anyFieldFromSection(section)}
         <tr>
           <th colspan="3" class="bg-gray-700 py-4">

@@ -2,7 +2,7 @@
   import "leaflet/dist/leaflet.css"
 
   import * as L from "leaflet?client"
-  import { geoJson, Map } from "leaflet?client"
+  import { Map } from "leaflet?client"
 
   import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css"
 

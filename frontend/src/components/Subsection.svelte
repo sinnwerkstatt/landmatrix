@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { dealSections } from "$lib/fieldLookups"
   import { isNotEmpty } from "$lib/helpers"
+  import { dealSections } from "$lib/sections"
   import type { DealVersion2, InvestorVersion2 } from "$lib/types/newtypes"
 
   // export let id: keyof typeof $dealSections
