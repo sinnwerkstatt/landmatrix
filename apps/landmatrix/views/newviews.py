@@ -1,12 +1,10 @@
-import json
-
-from django.conf import settings
-from django.utils.translation import gettext_lazy as _
-
+from django.contrib.postgres.expressions import ArraySubquery
 from django.db import OperationalError, transaction
-from django.db.models import Prefetch, Q, F
+from django.db.models import Prefetch, Q, F, Case, When, OuterRef
+from django.db.models.functions import JSONObject
 from django.http import JsonResponse, Http404
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied, NotAuthenticated
@@ -25,6 +23,8 @@ from apps.landmatrix.models.new import (
     InvestorVersion2,
     DealWorkflowInfo2,
     InvestorWorkflowInfo2,
+    DealTopInvestors2,
+    Location,
 )
 from apps.landmatrix.permissions import IsReporterOrHigher, IsAdministrator
 from apps.landmatrix.serializers import (
@@ -66,7 +66,7 @@ def _parse_filter(request: Request):
             active_version__parent_companies__active_version__country_id=parents_c_id
         )
 
-    # TODO This might not be working correctly yet. it does not include "no nature of deal", but the original filter did
+    # TODO Nuts This might not be working correctly yet. it does not include "no nature of deal", but the original filter did
     if nature := request.GET.getlist("nature"):
         all_nature = set([x["value"] for x in choices.NATURE_OF_DEAL_ITEMS])
         ret &= ~Q(
@@ -231,7 +231,6 @@ class VersionViewSet(viewsets.ReadOnlyModelViewSet):
 
         if ov1.created_by_id != request.user.id and request.user.role < UserRole.EDITOR:
             raise PermissionDenied("MISSING_AUTHORIZATION")
-        # TODO check all the permissions! (Creator, or different role or whatnot)
 
         old_draft_status = ov1.status
 
@@ -387,7 +386,7 @@ class HullViewSet(viewsets.ReadOnlyModelViewSet):
         o1: DealHull | InvestorHull = self.get_object()
         o1.deleted = request.data["deleted"]
         o1.deleted_comment = request.data["comment"] if o1.deleted else ""
-        # TODO we used to set modified by/at here too. but on the dealhull object doesnt make sense
+        # TODO Kurt we used to set modified by/at here too. but on the dealhull object doesnt make sense
         o1.save()
 
         add_wfi(
@@ -413,74 +412,69 @@ class DealViewSet(HullViewSet):
         return self.queryset
 
     def list(self, request: Request, *args, **kwargs):
-        # TODO replace this with DRF serializers?
-        deals = (
+        return Response(
             DealHull.objects.active()
+            .order_by("id")
             .visible(request.user, request.GET.get("subset", "PUBLIC"))
             .filter(_parse_filter(request))
-            .prefetch_related("active_version")
-            .prefetch_related("active_version__operating_company")
-            .prefetch_related("active_version__operating_company__active_version")
-            .prefetch_related("active_version__locations")
-            .order_by("id")
-        )
-
-        return Response(
-            [
-                {
-                    "id": d.id,
-                    "country_id": d.country_id,
-                    "fully_updated_at": d.fully_updated_at,  # for listing
-                    "selected_version": {
-                        "deal_size": d.active_version.deal_size,
-                        "current_intention_of_investment": d.active_version.current_intention_of_investment,
-                        "current_negotiation_status": d.active_version.current_negotiation_status,
-                        "current_contract_size": d.active_version.current_contract_size,
-                        "current_implementation_status": d.active_version.current_implementation_status,
-                        "current_crops": d.active_version.current_crops,
-                        "current_animals": d.active_version.current_animals,
-                        "current_mineral_resources": d.active_version.current_mineral_resources,
-                        "current_electricity_generation": d.active_version.current_electricity_generation,
-                        "current_carbon_sequestration": d.active_version.current_carbon_sequestration,
-                        "intended_size": d.active_version.intended_size,
-                        "negotiation_status": d.active_version.negotiation_status,
-                        "contract_size": d.active_version.contract_size,
-                        "operating_company": (
-                            {
-                                "id": d.active_version.operating_company.id,
-                                "selected_version": {
-                                    "name": d.active_version.operating_company.active_version.name,
-                                    "name_unknown": d.active_version.operating_company.active_version.name_unknown,
-                                },
-                            }
-                            if d.active_version.operating_company_id
-                            and d.active_version.operating_company.active_version
-                            else None
+            .annotate(
+                selected_version=JSONObject(
+                    deal_size="active_version__deal_size",
+                    current_intention_of_investment="active_version__current_intention_of_investment",
+                    current_negotiation_status="active_version__current_negotiation_status",
+                    current_contract_size="active_version__current_contract_size",
+                    current_implementation_status="active_version__current_implementation_status",
+                    current_crops="active_version__current_crops",
+                    current_animals="active_version__current_animals",
+                    current_mineral_resources="active_version__current_mineral_resources",
+                    current_electricity_generation="active_version__current_electricity_generation",
+                    current_carbon_sequestration="active_version__current_carbon_sequestration",
+                    intended_size="active_version__intended_size",
+                    negotiation_status="active_version__negotiation_status",
+                    contract_size="active_version__contract_size",
+                    operating_company=Case(
+                        When(
+                            active_version__operating_company__active_version=None,
+                            then=None,
                         ),
-                        "locations": [
-                            {
-                                "nid": l.nid,
-                                "point": (
-                                    json.loads(l.point.geojson) if l.point else None
-                                ),
-                                "level_of_accuracy": l.level_of_accuracy,
-                            }
-                            for l in d.active_version.locations.all()
-                        ],
-                        # TODO Investors are not filtered (e.g. "deleted")
-                        "top_investors": list(
-                            d.active_version.top_investors.annotate(
-                                name=F("active_version__name")
-                            )
-                            .annotate(
-                                classification=F("active_version__classification")
-                            )
-                            .values("id", "name", "classification")
+                        default=JSONObject(
+                            id="active_version__operating_company_id",
+                            selected_version=JSONObject(
+                                name="active_version__operating_company__active_version__name",
+                                name_unknown="active_version__operating_company__active_version__name_unknown",
+                            ),
                         ),
-                    },
-                }
-                for d in deals
-            ]
+                    ),
+                    locations=ArraySubquery(
+                        Location.objects.filter(
+                            dealversion_id=OuterRef("active_version_id")
+                        ).values(
+                            json=JSONObject(
+                                nid="nid",
+                                point="point",
+                                level_of_accuracy="level_of_accuracy",
+                            )
+                        )
+                    ),
+                    top_investors=(
+                        ArraySubquery(
+                            DealTopInvestors2.objects.exclude(
+                                investorhull__active_version=None
+                            )
+                            .filter(investorhull__deleted=False)
+                            .filter(dealversion2_id=OuterRef("active_version_id"))
+                            .values(
+                                json=JSONObject(
+                                    id="investorhull_id",
+                                    name="investorhull__active_version__name",
+                                    classification="investorhull__active_version__classification",
+                                )
+                            )
+                        )
+                    ),
+                )
+            )
+            .values("id", "country_id", "fully_updated_at", "selected_version")
         )
 
     @staticmethod
