@@ -16,7 +16,6 @@ import {
   IntentionOfInvestmentGroup,
   NegotiationStatusGroup,
 } from "$lib/types/deal"
-import type { DraftStatus, FieldDefinition, Status } from "$lib/types/generics"
 import type { Currency, DealHull, InvestorHull } from "$lib/types/newtypes"
 import type { User } from "$lib/types/user"
 import type {
@@ -213,31 +212,6 @@ export const allUsers = readable([] as User[], set => {
 
 export const loading = writable(false)
 
-type StatusMap = { [key in Status]: string }
-export const statusMap = derived(
-  _,
-  ($_): StatusMap => ({
-    1: $_("Draft"),
-    2: $_("Active"), //"Live",
-    3: $_("Active"), // "Updated",
-    4: $_("Deleted"),
-    5: $_("Rejected"), // legacy
-    6: $_("To Delete"), // legacy
-  }),
-)
-
-type DraftStatusMap = { [key in DraftStatus]: string }
-export const draftStatusMap = derived(
-  _,
-  ($_): DraftStatusMap => ({
-    1: $_("Draft"),
-    2: $_("Review"),
-    3: $_("Activation"),
-    4: $_("Rejected"), // legacy
-    5: $_("Deleted"),
-  }),
-)
-
 type ImplementationStatusMap = { [key in ImplementationStatus]: string }
 export const implementationStatusMap = derived(
   _,
@@ -324,6 +298,15 @@ const bindIsMobileToScreenInnerWidth = () => {
 if (browser) {
   bindIsDarkModeToPreferredColorScheme()
   bindIsMobileToScreenInnerWidth()
+}
+
+interface FieldDefinition {
+  id: number
+  model: "deal" | "investor"
+  field: string
+  short_description: string
+  long_description: string
+  editor_description: string
 }
 
 export const fieldDefinitions = derived(

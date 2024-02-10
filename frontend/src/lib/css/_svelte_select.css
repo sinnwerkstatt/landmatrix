@@ -19,7 +19,6 @@
   /*--error-background: theme("colors.red.100");*/
 }
 
-
 .navbar-search .svelte-select-list {
   /*width: 60vw;*/
   max-width: 80vw;
@@ -35,9 +34,7 @@
 }
 .navbar-search .svelte-select-list .item.hover .deal {
   background: theme("colors.orange.100");
-
 }
 .navbar-search .svelte-select-list .item.hover .investor {
-  background: theme("colors.pelorous.100");;
-
+  background: theme("colors.pelorous.100");
 }
