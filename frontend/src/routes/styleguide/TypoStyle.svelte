@@ -2,9 +2,9 @@
   export let val: {
     title: string
     tw: string
-    desktop: string
     mobile: string
-    specs: { name: string; value: string; tw: string | undefined }[]
+    desktop: string
+    specs: { name: string; value: string | string[]; tw?: string }[]
   }
 </script>
 

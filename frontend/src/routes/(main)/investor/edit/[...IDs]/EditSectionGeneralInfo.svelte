@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n"
-
   import type { InvestorHull } from "$lib/types/newtypes"
 
   import EditSubsection from "$components/EditSubsection.svelte"
@@ -16,10 +14,10 @@
     <EditField bind:value={version.name} fieldname="name" model="investor" showLabel />
     <EditField
       bind:value={version.country_id}
+      extras={{ required: true }}
       fieldname="country_id"
       model="investor"
       showLabel
-      extras={{ required: true }}
     />
     <EditField
       bind:value={version.classification}

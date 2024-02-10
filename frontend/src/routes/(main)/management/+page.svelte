@@ -94,7 +94,9 @@
     },
   ]
   $: flatTabs = navTabs.map(x => x.items).reduce((acc, items) => [...acc, ...items], [])
-  $: activeTab = flatTabs.find(item => item.id === activeTabId)
+
+  let activeTab: Tab
+  $: activeTab = flatTabs.find(item => item.id === activeTabId)!
 
   const dealColumns = {
     id: 1,

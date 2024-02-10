@@ -1,7 +1,4 @@
 <script lang="ts">
-  import { slide } from "svelte/transition"
-
-  import { clickOutside } from "$lib/helpers"
   import type { WorkflowInfoType } from "$lib/types/newtypes"
 
   import WorkflowInfoNew from "$components/New/WorkflowInfoNew.svelte"
@@ -11,15 +8,16 @@
   let showMoreInfos = false
 </script>
 
+<!-- TODO Nuts -->
 <!--{JSON.stringify(value)}-->
-<div
+<button
   class="cursor-pointer"
   on:click|stopPropagation={() => {
     if (!showMoreInfos) showMoreInfos = true
   }}
 >
   <slot>
-    <WorkflowInfoNew isDeal info={value[0]} />
+    <WorkflowInfoNew info={value[0]} isDeal />
   </slot>
   <!--{#if showMoreInfos}-->
   <!--  <div-->
@@ -37,4 +35,4 @@
   <!--    </div>-->
   <!--  </div>-->
   <!--{/if}-->
-</div>
+</button>

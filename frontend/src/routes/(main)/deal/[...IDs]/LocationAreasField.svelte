@@ -1,5 +1,5 @@
 <script lang="ts">
-  import * as turf from "@turf/turf"
+  import { area } from "@turf/turf"
   import { geoJson, type Map } from "leaflet?client"
   import { onDestroy, onMount } from "svelte"
   import { _ } from "svelte-i18n"
@@ -93,7 +93,7 @@
 
   $: createAreaDisplay = (feature: AreaFeature): string => {
     const typeDisplay = $areaTypeMap[feature.properties.type]
-    const areaDisplay = formatArea(turf.area(feature)) + " " + $_("ha")
+    const areaDisplay = formatArea(area(feature)) + " " + $_("ha")
     const dateCurrentDisplay = dateCurrentFormat(feature.properties)
     return `${typeDisplay} (${areaDisplay}) ${dateCurrentDisplay}`
   }

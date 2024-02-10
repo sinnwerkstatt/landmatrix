@@ -1,5 +1,4 @@
 <script lang="ts">
-  import cn from "classnames"
   import { createEventDispatcher } from "svelte"
   import { slide } from "svelte/transition"
 
@@ -20,9 +19,7 @@
   let isHover = false
   afterNavigate(() => (isOpen = false))
 
-  function resetMenu() {
-    dispatch("close")
-  }
+  const resetMenu = () => dispatch("close")
 </script>
 
 <li class="group xl:relative">

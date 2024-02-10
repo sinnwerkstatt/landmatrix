@@ -1,9 +1,9 @@
 <script lang="ts">
-  import * as turf from "@turf/turf"
+  import { geometry as turfGeometry } from "@turf/turf"
   import type { Point } from "geojson"
   import { _ } from "svelte-i18n"
 
-  export let value: Point = turf.geometry("Point", [0, 0])
+  export let value: Point = turfGeometry("Point", [0, 0])
   export let fieldname: string
 
   export const extras = {}

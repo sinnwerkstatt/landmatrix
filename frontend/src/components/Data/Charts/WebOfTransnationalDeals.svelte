@@ -47,7 +47,7 @@
   <svg id="web-of-transnational-deals" bind:this={svgComp} />
 </ChartWrapper>
 
-<style lang="css">
+<style lang="postcss">
   :global(svg #incoming-marker) {
     @apply fill-purple;
   }

@@ -16,10 +16,14 @@
   export let objects: Array<DealHull | InvestorHull> = []
   export let model: "deal" | "investor" = "deal"
 
+  const checkType = (o: DealHull | InvestorHull): o is DealHull => model === "deal"
+
   export let createdByUserIDs: Set<number>
   export let modifiedByUserIDs: Set<number>
 
-  $: objectsCountryIDs = objects?.map(d => d.country_id)
+  $: objectsCountryIDs = objects?.map(d =>
+    checkType(d) ? d.country_id : d.selected_version.country_id,
+  )
   $: relCountries = $countries.filter(c => objectsCountryIDs.includes(c.id))
 
   let modeItems: { value: Mode; label: string }[]

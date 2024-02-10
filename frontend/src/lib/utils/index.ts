@@ -1,8 +1,7 @@
-import type { Deal } from "$lib/types/deal"
-import type { Investor } from "$lib/types/investor"
+import type { DealHull, InvestorHull } from "$lib/types/newtypes"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type TableObj = Deal | Investor | { [key: string]: any }
+type TableObj = DealHull | InvestorHull | { [key: string]: any }
 
 function dotResolve(path: string, obj: TableObj) {
   if (!path.includes(".")) return obj[path]

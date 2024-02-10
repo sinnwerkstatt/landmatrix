@@ -5,7 +5,8 @@
 
   export let counts: Counts = {}
 
-  function getRatio(n: number, model = "deal") {
+  function getRatio(n: number | null | undefined, model = "deal") {
+    if (n === null || n === undefined) return ""
     if (model !== "deal") {
       if (!counts.investors_public_count) return " "
       return ((n / counts.investors_public_count ?? 1) * 100).toFixed(1) + " %"

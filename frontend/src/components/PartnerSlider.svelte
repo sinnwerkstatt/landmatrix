@@ -7,7 +7,6 @@
 
   export let countSlides: number
   export let partners: Partner[]
-  export let bw = true
 
   const options = {
     autoplay: true,

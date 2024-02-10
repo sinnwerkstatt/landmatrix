@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Loader } from "@googlemaps/js-api-loader?client"
-  import * as turf from "@turf/turf"
+  import { geometry as turfGeometry } from "@turf/turf"
   import { env } from "$env/dynamic/public"
   import type { Point } from "geojson"
   import { onMount } from "svelte"
@@ -44,7 +44,7 @@
 
         const geometry = autocomplete.getPlace().geometry
         if (geometry && geometry.location) {
-          const point: Point = turf.geometry("Point", [
+          const point: Point = turfGeometry("Point", [
             parseFloat(geometry.location.lng().toFixed(5)),
             parseFloat(geometry.location.lat().toFixed(5)),
           ]) as Point

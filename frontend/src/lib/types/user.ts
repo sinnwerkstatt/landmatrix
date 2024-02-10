@@ -1,10 +1,3 @@
-import type { Country, Region } from "$lib/types/wagtail"
-
-interface Group {
-  id: number
-  name: string
-}
-
 export enum UserRole {
   ANYBODY = 0,
   REPORTER = 1,
