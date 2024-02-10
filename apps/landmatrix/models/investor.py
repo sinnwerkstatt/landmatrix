@@ -291,68 +291,6 @@ class Investor(models.Model):
             deals.update(involvements.venture.get_affected_deals(seen_investors))
         return deals
 
-    # TODO This is not working yet.
-    def update_from_dict(self, payload: dict):
-        for key, value in payload.items():
-            if key in [
-                "id",
-                "created_at",
-                "created_by",
-                "modified_at",
-                "modified_by",
-                "versions",
-                "comments",
-                "status",
-                "draft_status",
-                "workflowinfos",
-                "__typename",
-            ]:
-                continue  # ignore these fields
-            self.__setattr__(key, value)
-
-    def to_dict(self):
-        country = (
-            {"name": self.country.name, "code": self.country.code_alpha2}
-            if self.country
-            else None
-        )
-        return {
-            "id": self.id,
-            "name": self.name,
-            "country": country,
-            "classification": self.classification,
-            "homepage": self.homepage,
-            "opencorporates": self.opencorporates,
-            "datasources": self.datasources,
-            "comment": self.comment,
-            "status": self.status,
-            "draft_status": self.draft_status,
-            "deals": list(
-                map(
-                    lambda d: {
-                        **d,
-                        "country": {
-                            "id": d["country__id"],
-                            "name": d["country__name"],
-                        },
-                    },
-                    self.deals.public().values(
-                        "id",
-                        "recognition_status",
-                        "country__id",
-                        "country__name",
-                        "nature_of_deal",
-                        "intention_of_investment",
-                        "intended_size",
-                        "contract_size",
-                        "negotiation_status",
-                        "implementation_status",
-                        "deal_size",
-                    ),
-                )
-            ),
-        }
-
 
 class InvestorWorkflowInfo(WorkflowInfo):
     investor = models.ForeignKey(

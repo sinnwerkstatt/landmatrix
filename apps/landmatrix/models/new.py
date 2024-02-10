@@ -688,7 +688,7 @@ class BaseVersionMixin(models.Model):
             self.sent_to_activation_by = None
             self.activated_at = None
             self.activated_by = None
-            # TODO what happens with foreignkey-models here? locations, contracts, datasources
+            # TODO Nuts what happens with foreignkey-models here? locations, contracts, datasources
             self.save()
 
         else:
@@ -995,7 +995,7 @@ class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
             return True
         # TODO Nuts InvestorHull
         oc = Investor.objects.get(id=self.operating_company_id)
-        # TODO status-deleted?
+        # TODO Nuts status-deleted?
         # if oc.status == STATUS["DELETED"]:
         #     return True
 
@@ -1052,7 +1052,7 @@ class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
             # With the help of signals these fields are recalculated on changes to:
             # Investor and InvestorVentureInvolvement
             self.has_known_investor = self._has_known_investor()
-            # TODO public state for version. to be discussed
+            # TODO Kurt public state for version. to be discussed
             # self.not_public_reason = self._calculate_public_state()
             # self.is_public = self.not_public_reason == ""
 
@@ -1272,7 +1272,7 @@ class DealHullQuerySet(models.QuerySet):
         return self.active().filter(active_version__is_public=True, confidential=False)
 
     def visible(self, user=None, subset="PUBLIC"):
-        # TODO: welche user duerfen unfiltered bekommen?
+        # TODO Later: welche user duerfen unfiltered bekommen?
         if not user or not user.is_authenticated:
             return self.public()
 
@@ -1459,16 +1459,7 @@ class InvestorVersion2(BaseVersionMixin, models.Model):
     # """ Data sources """  via Foreignkey
 
     """ calculated properties """
-    # TODO need to fill this.
     involvements_snapshot = models.JSONField(blank=True, null=True)
-
-    def recalculate_fields(self):
-        # TODO create involvements_snapshot
-        pass
-
-    def save(self, *args, **kwargs):
-        self.recalculate_fields()
-        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.name} (#{self.id})"
@@ -1529,7 +1520,7 @@ class InvestorVersion2(BaseVersionMixin, models.Model):
             self.workflowinfos.filter(
                 Q(status_before__in=["REVIEW", "ACTIVATION"])
                 & Q(status_after="DRAFT")
-                # TODO: https://git.sinntern.de/landmatrix/landmatrix/-/issues/404
+                # TODO Marcus https://git.sinntern.de/landmatrix/landmatrix/-/issues/404
                 & (Q(from_user=user) | Q(to_user=user))
             ).update(resolved=True)
 
@@ -1800,7 +1791,7 @@ class WorkflowInfo2(models.Model):
     replies = models.JSONField(null=True, default=list)
     resolved = models.BooleanField(default=False)
 
-    # TODO whatsthis
+    # TODO Marcus: nuts asks: "whatsthis?"
     # watch out: ignore the draft_status within this DealVersion object, it will change
     # when the workflow moves along. the payload will remain consistent though.
 

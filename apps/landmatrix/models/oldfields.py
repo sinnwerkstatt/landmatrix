@@ -120,11 +120,6 @@ datasources_schema_def = {
                     "OTHER",
                 ],
             },
-            # TODO Note: data quality too bad at the moment
-            # "url": {
-            #     "type": "string",
-            #     "oneOf": [{"enum": [""]}, {"format": "iri-reference"}],
-            # },
             "url": {"type": "string"},
             "file": {"type": ["string", "null"]},
             "file_not_public": {"type": "boolean"},

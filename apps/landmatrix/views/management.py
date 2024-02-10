@@ -40,7 +40,7 @@ class Management(View):
 
     @staticmethod
     def filters(request, is_deal=True) -> dict[str, Filter]:
-        # TODO should admins see all?
+        # TODO Later should admins see all?
         # user_groups = list(request.user.groups.values_list("name", flat=True))
         region_or_country = Q()
         if country_id := request.user.country_id:
@@ -385,7 +385,7 @@ class CaseStatistics(View):
             .annotate(
                 region_id=F("country__region_id"),
                 created_at=F("first_created_at"),
-                modified_at=F("active_version__modified_at"),  # TODO sensible value?
+                modified_at=F("active_version__modified_at"),
             )
             .values(
                 "id",
@@ -440,9 +440,7 @@ class CaseStatistics(View):
     ) -> JsonResponse:
         queries = {
             "added": Q(first_created_at__range=(start, end)),
-            "updated": Q(
-                active_version__modified_at__range=(start, end)
-            ),  # TODO is this okay?
+            "updated": Q(active_version__modified_at__range=(start, end)),
             "fully_updated": Q(fully_updated_at__range=(start, end)),
             "activated": Q(active_version__activated_at__range=(start, end)),
         }
@@ -467,9 +465,7 @@ class CaseStatistics(View):
     ) -> JsonResponse:
         queries = {
             "added": Q(first_created_at__range=(start, end)),
-            "updated": Q(
-                active_version__modified_at__range=(start, end)
-            ),  # TODO is this okay?
+            "updated": Q(active_version__modified_at__range=(start, end)),
             "activated": Q(active_version__activated_at__range=(start, end)),
         }
 
