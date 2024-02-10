@@ -5,7 +5,7 @@
   import { areaTypeMap } from "$lib/stores"
   import type { Area, AreaType } from "$lib/types/newtypes"
   import { validate } from "$lib/utils/geojsonValidation"
-  import { AREA_TYPE_COLOR_MAP, AREA_TYPES } from "$lib/utils/location2"
+  import { AREA_TYPE_COLOR_MAP, AREA_TYPES } from "$lib/utils/location"
 
   import LowLevelDateYearField from "$components/Fields/Edit2/LowLevelDateYearField.svelte"
   import EyeSlashIcon from "$components/icons/EyeSlashIcon.svelte"
