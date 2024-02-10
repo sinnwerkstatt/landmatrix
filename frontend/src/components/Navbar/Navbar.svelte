@@ -57,28 +57,18 @@
   ]
   let menuHidden = true
 
-  const resetMenu = () => {
-    menuHidden = true
-  }
-  function closeMenu() {
-    menuHidden = true
-  }
+  const closeMenu = () => (menuHidden = true)
 </script>
 
 <!--https://blog.logrocket.com/building-responsive-navbar-tailwind-css/-->
 <nav
-  class={cn(
-    "h-full w-full p-1",
-    "text-lg text-gray-700 dark:text-white",
-    "bg-white dark:bg-gray-900",
-    "py-1 shadow-lg",
-  )}
+  class="shadow-nav mb-4 h-[71px] w-full bg-white p-1 py-1 text-lg text-gray-700 dark:bg-gray-900 dark:text-white"
 >
   <div
     class="container mx-auto flex h-full w-full flex-wrap items-center justify-between align-middle"
   >
     <!--   LOGO   -->
-    <a class="order-first mr-3 self-center xl:mr-10" href="/" on:click={resetMenu}>
+    <a class="order-first mr-3 self-center xl:mr-10" href="/" on:click={closeMenu}>
       <img
         alt="Land Matrix"
         class="hidden h-[36px] w-[144px] min-w-[144px] max-w-[144px] md:block"
@@ -107,9 +97,7 @@
       <li class="xl:hidden">
         <button
           class="h-full p-2"
-          on:click|stopPropagation={() => {
-            menuHidden = !menuHidden
-          }}
+          on:click|stopPropagation={() => (menuHidden = !menuHidden)}
         >
           <BurgerMenuIcon class="mx-3 inline h-7 w-7 text-black dark:text-gray-50" />
         </button>
@@ -121,25 +109,19 @@
       id="menu"
       class={cn(
         menuHidden ? "hidden xl:block" : "",
-        "absolute xl:static",
-        "left-0 top-[54px] z-50 w-full xl:w-auto",
-        "bg-white dark:bg-gray-800",
-        "shadow-lg xl:shadow-none",
+        "shadow-nav absolute left-0 top-[54px] z-50 w-full bg-white xl:static xl:w-auto xl:shadow-none dark:bg-gray-800",
       )}
       use:clickOutside
-      on:outClick={resetMenu}
+      on:outClick={closeMenu}
     >
       <ul
-        class={cn(
-          "divide-y divide-solid px-4",
-          "gap-y-6 p-6 lg:flex lg:flex-wrap lg:items-center lg:justify-center lg:gap-x-12 lg:gap-y-0 lg:divide-transparent lg:p-0 xl:justify-between xl:gap-x-0 dark:bg-gray-900",
-        )}
+        class="gap-y-6 divide-y divide-solid p-6 px-4 lg:flex lg:flex-wrap lg:items-center lg:justify-center lg:gap-x-12 lg:gap-y-0 lg:divide-transparent lg:p-0 xl:justify-between xl:gap-x-0 dark:bg-gray-900"
       >
         {#each menuEntries as entry}
           <SubEntries
             title={entry.title}
             subEntries={entry.subEntries}
-            href={entry.href}
+            href={entry.href ?? ""}
             on:close={closeMenu}
           />
         {/each}

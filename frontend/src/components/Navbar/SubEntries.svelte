@@ -9,10 +9,12 @@
   import { clickOutside } from "$lib/helpers"
 
   const dispatch = createEventDispatcher()
-  export let subEntries
+  export let subEntries: {
+    title: string
+    href: string
+  }[]
   export let title: string
   export let href: string
-  export let placement = "left-0"
 
   let isOpen = false
   let isHover = false
@@ -34,6 +36,7 @@
         isHover = false
         isOpen = false
       }}
+      role="navigation"
     >
       <button
         class="button1 w-full truncate py-2 text-center text-black xl:p-2 dark:text-white"
@@ -51,13 +54,7 @@
       {#if isOpen || isHover}
         <ul
           transition:slide={{ duration: 200 }}
-          class={cn(
-            "hidden flex-wrap justify-around",
-            "bg-gray-50 lg:bg-white dark:bg-gray-900 dark:lg:bg-gray-900",
-            "lg:absolute lg:z-50 lg:whitespace-nowrap",
-            "border-t py-3 lg:border-none lg:shadow-2xl",
-            "group-focus-within:flex lg:group-focus-within:hidden lg:group-hover:block",
-          )}
+          class="lg:shadow-nav hidden flex-wrap justify-around border-t bg-gray-50 py-3 group-focus-within:flex lg:absolute lg:z-50 lg:whitespace-nowrap lg:border-none lg:bg-white lg:group-focus-within:hidden lg:group-hover:block dark:bg-gray-900 dark:lg:bg-gray-900"
         >
           {#each subEntries as subEntry}
             <li class="mx-7 lg:mx-0 lg:px-6 lg:hover:bg-orange-100">

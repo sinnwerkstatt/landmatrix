@@ -100,6 +100,9 @@ const config = {
       dropShadow: {
         marker: "3.5px 2.5px 0px rgba(0, 0, 0, 0.35)",
       },
+      boxShadow: {
+        nav: "0px 4px 4px rgba(0, 0, 0, 0.25)",
+      },
       animation: {
         fadeToWhite: "fadeToWhite 1s ease-in-out normal forwards",
         fadeToGray: "fadeToGray 1s ease-in-out normal forwards",

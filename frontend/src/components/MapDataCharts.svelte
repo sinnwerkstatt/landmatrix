@@ -50,11 +50,7 @@
   {#each cards as card}
     <a
       href={card.href}
-      class={cn(
-        "block bg-gray-50 p-4 dark:bg-gray-700",
-        "text-center text-black hover:text-inherit dark:text-white",
-        "rounded hover:shadow-[1px_1px_4px_4px] hover:shadow-black/30 dark:hover:shadow-white/40",
-      )}
+      class="block rounded bg-gray-50 p-4 text-center text-black hover:text-inherit hover:shadow-[1px_1px_4px_4px] hover:shadow-black/30 dark:bg-gray-700 dark:text-white dark:hover:shadow-white/40"
       on:click
     >
       <h3 class="heading4">{card.title}</h3>

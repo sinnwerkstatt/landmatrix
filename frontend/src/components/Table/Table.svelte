@@ -76,16 +76,13 @@
               <span class="relative pl-1">
                 <ChevronDownIcon
                   class={cn(
-                    "absolute top-0 inline",
-                    "rotate-180",
-                    "h-4 w-4 rounded",
+                    "absolute top-0 inline h-4 w-4 rotate-180 rounded",
                     sortBy === `-${col}` ? "text-orange" : "text-gray-400",
                   )}
                 />
                 <ChevronDownIcon
                   class={cn(
-                    "absolute top-2 inline",
-                    "h-4 w-4 rounded",
+                    "absolute top-2 inline h-4 w-4 rounded",
                     sortBy === col ? "text-orange" : "text-gray-400",
                   )}
                 />

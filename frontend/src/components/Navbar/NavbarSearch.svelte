@@ -189,12 +189,7 @@
     <ul
       bind:this={searchResultContainer}
       id="search-result"
-      class={cn(
-        "w-full overflow-y-auto border-t-orange",
-        "bg-white dark:bg-gray-800",
-        "xl:absolute xl:z-50 xl:max-h-[55vh] xl:w-[300px]",
-        "xl:shadow-xl",
-      )}
+      class="w-full overflow-y-auto border-t-orange bg-white xl:absolute xl:z-50 xl:max-h-[55vh] xl:w-[300px] xl:shadow-xl dark:bg-gray-800"
     >
       {#each searchResult.filter((item, index) => index < 10) as item, index}
         <li>
