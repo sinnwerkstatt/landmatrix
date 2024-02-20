@@ -7,7 +7,7 @@ from apps.landmatrix.models.new import (
     InvestorHull,
     DealVersion2,
 )
-from apps.landmatrix.views.newviews import _parse_filter
+from apps.landmatrix.utils import parse_filters
 
 LONG_COUNTRIES = {
     "United States of America": "USA*",
@@ -53,7 +53,7 @@ def investmentsdict():
 
 
 def get_deal_top_investments(request):
-    dh = DealHull.objects.active().filter(_parse_filter(request))
+    dh = DealHull.objects.active().filter(parse_filters(request))
     deals = DealVersion2.objects.filter(id__in=dh.values_list("active_version_id"))
 
     investors = InvestorHull.objects.exclude(active_version_id=None).filter(

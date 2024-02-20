@@ -1,13 +1,16 @@
 from django.conf import settings
 from django.contrib import messages
+from django.db.models import Prefetch
 from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
 from django.views.generic.base import RedirectView
 from rest_framework import permissions, viewsets
+from rest_framework.mixins import ListModelMixin
 
 from apps.landmatrix.models import FieldDefinition
 from apps.landmatrix.models.country import Country, Region
 from apps.landmatrix.models.currency import Currency
+from apps.landmatrix.models.new import DealHull
 from apps.landmatrix.serializers import (
     FieldDefinitionSerializer,
     CurrencySerializer,
@@ -45,19 +48,21 @@ class FieldDefinitionViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = FieldDefinitionSerializer
 
 
-class CurrencyViewSet(viewsets.ReadOnlyModelViewSet):
+class CurrencyViewSet(ListModelMixin, viewsets.GenericViewSet):
     queryset = Currency.objects.all()
     permission_classes = [permissions.AllowAny]
     serializer_class = CurrencySerializer
 
 
-class CountryViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Country.objects.all().prefetch_related("deals")
+class CountryViewSet(ListModelMixin, viewsets.GenericViewSet):
+    queryset = Country.objects.all().prefetch_related(
+        Prefetch("deals", queryset=DealHull.objects.public().order_by("id"))
+    )
     permission_classes = [permissions.AllowAny]
     serializer_class = CountrySerializer
 
 
-class RegionViewSet(viewsets.ReadOnlyModelViewSet):
+class RegionViewSet(ListModelMixin, viewsets.GenericViewSet):
     queryset = Region.objects.all()
     permission_classes = [permissions.AllowAny]
     serializer_class = RegionSerializer

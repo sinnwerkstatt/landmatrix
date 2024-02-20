@@ -1,4 +1,11 @@
 from django.urls import include, path
+from django.views.generic import RedirectView
+from drf_spectacular.views import (
+    SpectacularSwaggerView,
+    SpectacularRedocView,
+    SpectacularJSONAPIView,
+    SpectacularYAMLAPIView,
+)
 from rest_framework import routers
 
 import apps.landmatrix.views.management as management_views
@@ -29,18 +36,26 @@ router.register(r"investorversions", newviews.InvestorVersionViewSet)
 router.register(r"messages", MessageViewSet)
 
 urlpatterns = [
+    path("schema.yaml", SpectacularYAMLAPIView.as_view(), name="schema.yaml"),
+    path("schema.json", SpectacularJSONAPIView.as_view(), name="schema.json"),
+    path("schema/", RedirectView.as_view(url="/api/schema.yaml")),
+    path(
+        "schema/swagger-ui/",
+        SpectacularSwaggerView.as_view(url_name="schema.yaml"),
+        name="swagger-ui",
+    ),
+    path(
+        "schema/redoc/",
+        SpectacularRedocView.as_view(url_name="schema.yaml"),
+        name="redoc",
+    ),
     # account/user
-    path("user/register/", user_views.register),
-    path("user/register_confirm/", user_views.register_confirm),
-    path("user/login/", user_views.login),
-    path("user/logout/", user_views.logout),
-    path("user/password_reset/", user_views.password_reset),
-    path("user/password_reset_confirm/", user_views.password_reset_confirm),
+    path("user/", include("apps.accounts.urls")),
     # base data
     path("chart_descriptions/", api_views.chart_descriptions),
     path("blog_categories/", api_views.blog_categories),
     path("blog_pages/", api_views.blog_pages),
-    path("field_choices/", newviews.field_choices),
+    path("field_choices/", newviews.FieldChoicesView.as_view()),
     # misc
     path("csrf_token/", api_views.get_csrf),
     path("upload_datasource_file/", upload_datasource_file),

@@ -239,10 +239,10 @@ export class FilterValues {
     }
 
     if (this.transnational !== null)
-      searchParams.append("trans", this.transnational.toString())
+      searchParams.append("transnational", this.transnational.toString())
 
     if (this.forest_concession !== null)
-      searchParams.append("for_con", this.forest_concession.toString())
+      searchParams.append("forest_concession", this.forest_concession.toString())
 
     return searchParams.toString()
   }

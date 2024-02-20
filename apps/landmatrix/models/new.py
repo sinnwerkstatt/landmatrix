@@ -730,7 +730,7 @@ class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
         null=True,
     )
     current_intention_of_investment = ChoiceArrayField(
-        models.CharField(choices=choices.INTENTION_CHOICES),
+        models.CharField(choices=choices.INTENTION_OF_INVESTMENT_CHOICES),
         blank=True,
         default=list,
     )

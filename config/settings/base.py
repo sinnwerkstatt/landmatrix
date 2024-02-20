@@ -79,7 +79,6 @@ INSTALLED_APPS = [
     "apps.new_model",
     # plumbing
     "impersonate",
-    "ariadne_django",
     "corsheaders",
 ]
 
@@ -191,10 +190,13 @@ SPECTACULAR_SETTINGS = {
     "TITLE": "Land Matrix API",
     "DESCRIPTION": "The Land Matrix is an independent land monitoring initiative that promotes transparency and accountability.",
     "VERSION": "1.0.0",
-    "SERVE_INCLUDE_SCHEMA": False,
-    "SWAGGER_UI_DIST": "SIDECAR",  # shorthand to use the sidecar instead
+    "SERVE_INCLUDE_SCHEMA": True,
+    "SWAGGER_UI_DIST": "SIDECAR",
     "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
     "REDOC_DIST": "SIDECAR",
+    # "SERVE_URLCONF": "apps.api.urls", # TODO Kurt another option
+    # "PREPROCESSING_HOOKS": ["apps.api.spectacular.preprocessing_filter_spec"],
+    "SERVE_PUBLIC": False,
 }
 
 IMPERSONATE = {

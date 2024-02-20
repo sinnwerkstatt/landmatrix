@@ -25,7 +25,7 @@ from apps.landmatrix.models.new import (
     Involvement,
     DealTopInvestors2,
 )
-from apps.landmatrix.views.newviews import _parse_filter
+from apps.landmatrix.utils import parse_filters
 
 deal_fields = {
     "deal_id": "Deal ID",
@@ -214,7 +214,9 @@ negotiation_status_choices = dict(choices.NEGOTIATION_STATUS_CHOICES) | {None: "
 implementation_status_choices = dict(choices.IMPLEMENTATION_STATUS_CHOICES) | {
     None: "None"
 }
-intention_of_investment_choices = dict(choices.INTENTION_CHOICES) | {None: "None"}
+intention_of_investment_choices = dict(choices.INTENTION_OF_INVESTMENT_CHOICES) | {
+    None: "None"
+}
 classification_choices = dict(choices.INVESTOR_CLASSIFICATION_CHOICES)
 produce_choices = {
     "crops": {item["value"]: item["label"] for item in choices.CROPS_ITEMS},
@@ -586,7 +588,7 @@ class DataDownload:
         print(filtersx)
         dealhulls = DealHull.objects.visible(self.user, subset=self.subset)
         if filtersx:
-            dealhulls = dealhulls.filter(_parse_filter(filtersx))
+            dealhulls = dealhulls.filter(parse_filters(filtersx))
 
         qs: QuerySet[DealVersion2] = DealVersion2.objects.filter(
             id__in=dealhulls.values_list("active_version_id", flat=True)

@@ -722,7 +722,7 @@ class Deal(AbstractDealBase):
         null=True,
     )
     current_intention_of_investment = ArrayField(
-        models.CharField(choices=choices.INTENTION_CHOICES),
+        models.CharField(choices=choices.INTENTION_OF_INVESTMENT_CHOICES),
         blank=True,
         null=True,
     )

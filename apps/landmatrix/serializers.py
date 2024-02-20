@@ -56,8 +56,6 @@ class CountrySerializer(serializers.ModelSerializer):
             "deals",
         ]
 
-        # deals { id }
-
 
 class RegionSerializer(serializers.ModelSerializer):
     class Meta:

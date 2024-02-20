@@ -17,7 +17,7 @@ from apps.landmatrix.models.new import (
     InvestorWorkflowInfo2,
     InvestorHull,
 )
-from apps.landmatrix.views.newviews import _parse_filter
+from apps.landmatrix.utils import parse_filters
 from apps.wagtailcms.models import ChartDescriptionsSettings
 
 
@@ -186,7 +186,7 @@ def country_investments_and_rankings(request):
 
 @require_GET
 def deal_aggregations(request):
-    deals = DealHull.objects.public().filter(_parse_filter(request))
+    deals = DealHull.objects.public().filter(parse_filters(request))
     return JsonResponse(
         {
             "current_negotiation_status": list(

@@ -1,17 +1,19 @@
 from django.contrib.postgres.expressions import ArraySubquery
 from django.db import OperationalError, transaction
-from django.db.models import Prefetch, Q, F, Case, When, OuterRef
+from django.db.models import Prefetch, F, Case, When, OuterRef
 from django.db.models.functions import JSONObject
-from django.http import JsonResponse, Http404
+from django.http import Http404
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from rest_framework import viewsets, status
+from drf_spectacular.utils import extend_schema
+from rest_framework import viewsets, status, serializers
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied, NotAuthenticated
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from wagtail.models import Site
 
 from apps.accounts.models import UserRole, User
@@ -33,81 +35,7 @@ from apps.landmatrix.serializers import (
     DealVersionSerializer,
     InvestorVersionSerializer,
 )
-
-
-def _parse_filter(request: Request):
-    ret = Q()
-
-    if region_id := request.GET.get("region_id"):
-        ret &= Q(country__region_id=region_id)
-    if country_id := request.GET.get("country_id"):
-        ret &= Q(country_id=country_id)
-
-    if area_min := request.GET.get("area_min"):
-        ret &= Q(active_version__deal_size__gte=area_min)
-    if area_max := request.GET.get("area_max"):
-        ret &= Q(active_version__deal_size__lte=area_max)
-
-    if neg_list := request.GET.getlist("negotiation_status"):
-        ret &= Q(active_version__current_negotiation_status__in=neg_list)
-
-    if imp_list := request.GET.getlist("implementation_status"):
-        unknown = (
-            Q(active_version__current_implementation_status=None)
-            if "UNKNOWN" in imp_list
-            else Q()
-        )
-        ret &= Q(active_version__current_implementation_status__in=imp_list) | unknown
-
-    if parents := request.GET.get("parent_company"):
-        ret &= Q(active_version__parent_companies__id=parents)
-    if parents_c_id := request.GET.get("parent_company_country_id"):
-        ret &= Q(
-            active_version__parent_companies__active_version__country_id=parents_c_id
-        )
-
-    # TODO Nuts This might not be working correctly yet. it does not include "no nature of deal", but the original filter did
-    if nature := request.GET.getlist("nature"):
-        all_nature = set([x["value"] for x in choices.NATURE_OF_DEAL_ITEMS])
-        ret &= ~Q(
-            active_version__nature_of_deal__contained_by=list(all_nature - set(nature))
-        )
-
-    iy_null = (
-        Q(active_version__initiation_year=None)
-        if request.GET.get("initiation_year_null")
-        else Q()
-    )
-    if iy_min := request.GET.get("initiation_year_min"):
-        ret &= Q(active_version__initiation_year__gte=iy_min) | iy_null
-    if iy_max := request.GET.get("initiation_year_max"):
-        ret &= Q(active_version__initiation_year__lte=iy_max) | iy_null
-
-    if ioi_list := request.GET.getlist("intention_of_investment"):
-        unknown = (
-            Q(active_version__current_intention_of_investment=[])
-            if "UNKNOWN" in ioi_list
-            else Q()
-        )
-        ret &= (
-            Q(active_version__current_intention_of_investment__overlap=ioi_list)
-            | unknown
-        )
-
-    if crops := request.GET.getlist("crops"):
-        ret &= Q(active_version__current_crops__overlap=crops)
-    if animals := request.GET.getlist("animals"):
-        ret &= Q(active_version__current_animals__overlap=animals)
-    if minerals := request.GET.getlist("minerals"):
-        ret &= Q(active_version__current_minerals__overlap=minerals)
-
-    if trans := request.GET.get("trans"):
-        ret &= Q(active_version__transnational=trans == "true")
-
-    if for_con := request.GET.get("for_con"):
-        ret &= Q(active_version__forest_concession=for_con == "true")
-
-    return ret
+from apps.landmatrix.utils import parse_filters, openapi_filters_parameters
 
 
 def add_wfi(
@@ -324,6 +252,7 @@ class HullViewSet(viewsets.ReadOnlyModelViewSet):
             "retrieve_version",
             "simple",
             "involvements_graph",
+            "deal_filtered",
         ]:
             return [AllowAny()]
         if self.action in ["add_comment", "create", "update"]:
@@ -386,7 +315,6 @@ class HullViewSet(viewsets.ReadOnlyModelViewSet):
         o1: DealHull | InvestorHull = self.get_object()
         o1.deleted = request.data["deleted"]
         o1.deleted_comment = request.data["comment"] if o1.deleted else ""
-        # TODO Kurt we used to set modified by/at here too. but on the dealhull object doesnt make sense
         o1.save()
 
         add_wfi(
@@ -411,12 +339,13 @@ class DealViewSet(HullViewSet):
             return self.queryset.visible(self.request.user, "UNFILTERED")
         return self.queryset
 
+    @extend_schema(parameters=openapi_filters_parameters)
     def list(self, request: Request, *args, **kwargs):
         return Response(
             DealHull.objects.active()
             .order_by("id")
             .visible(request.user, request.GET.get("subset", "PUBLIC"))
-            .filter(_parse_filter(request))
+            .filter(parse_filters(request))
             .annotate(
                 selected_version=JSONObject(
                     deal_size="active_version__deal_size",
@@ -665,13 +594,14 @@ class InvestorViewSet(HullViewSet):
             .values("id", "name")
         )
 
+    @extend_schema(parameters=openapi_filters_parameters)
     @action(methods=["get"], detail=False)
     def deal_filtered(self, request):
         deals = (
             DealHull.objects.visible(request.user, request.GET.get("subset", "PUBLIC"))
             .exclude(active_version=None)
             .filter(deleted=False, confidential=False)
-            .filter(_parse_filter(request))
+            .filter(parse_filters(request))
             .values_list("active_version_id", flat=True)
         )
 
@@ -703,39 +633,89 @@ class InvestorViewSet(HullViewSet):
             return Response(status=status.HTTP_418_IM_A_TEAPOT)
 
 
-def field_choices(request):
-    return JsonResponse(
-        {
-            "deal": {
-                "intention_of_investment": choices.INTENTION_OF_INVESTMENT_ITEMS,
-                "negotiation_status": choices.NEGOTIATION_STATUS_ITEMS,
-                "implementation_status": choices.IMPLEMENTATION_STATUS_ITEMS,
-                "level_of_accuracy": choices.LOCATION_ACCURACY_ITEMS,
-                "nature_of_deal": choices.NATURE_OF_DEAL_ITEMS,
-                "recognition_status": choices.RECOGNITION_STATUS_ITEMS,
-                "negative_impacts": choices.NEGATIVE_IMPACTS_ITEMS,
-                "benefits": choices.BENEFITS_ITEMS,
-                "former_land_owner": choices.FORMER_LAND_OWNER_ITEMS,
-                "former_land_use": choices.FORMER_LAND_USE_ITEMS,
-                "ha_area": choices.HA_AREA_ITEMS,
-                "community_consultation": choices.COMMUNITY_CONSULTATION_ITEMS,
-                "community_reaction": choices.COMMUNITY_REACTION_ITEMS,
-                "former_land_cover": choices.FORMER_LAND_COVER_ITEMS,
-                "crops": choices.CROPS_ITEMS,
-                "animals": choices.ANIMALS_ITEMS,
-                "electricity_generation": choices.ELECTRICITY_GENERATION_ITEMS,
-                "carbon_sequestration": choices.CARBON_SEQUESTRATION_ITEMS,
-                "carbon_sequestration_certs": choices.CARBON_SEQUESTRATION_CERT_ITEMS,
-                "minerals": choices.MINERALS_ITEMS,
-                "water_source": choices.WATER_SOURCE_ITEMS,
-                "not_public_reason": choices.NOT_PUBLIC_REASON_ITEMS,
-                "actors": choices.ACTOR_ITEMS,
-            },
-            "datasource": {"type": choices.DATASOURCE_TYPE_ITEMS},
-            "investor": {"classification": choices.INVESTOR_CLASSIFICATION_ITEMS},
-            "involvement": {
-                "investment_type": choices.INVESTMENT_TYPE_ITEMS,
-                "parent_relation": choices.PARENT_RELATION_ITEMS,
-            },
-        }
-    )
+class ValueLabelSerializer(serializers.Serializer):
+    value = serializers.CharField(required=True)
+    label = serializers.CharField(required=True)
+    group = serializers.CharField(required=False)
+
+
+class FieldChoicesView(APIView):
+
+    class FieldChoicesSerializer(serializers.Serializer):
+        class DealFields(serializers.Serializer):
+            intention_of_investment = ValueLabelSerializer(many=True)
+            negotiation_status = ValueLabelSerializer(many=True)
+            implementation_status = ValueLabelSerializer(many=True)
+            level_of_accuracy = ValueLabelSerializer(many=True)
+            nature_of_deal = ValueLabelSerializer(many=True)
+            recognition_status = ValueLabelSerializer(many=True)
+            negative_impacts = ValueLabelSerializer(many=True)
+            benefits = ValueLabelSerializer(many=True)
+            former_land_owner = ValueLabelSerializer(many=True)
+            former_land_use = ValueLabelSerializer(many=True)
+            ha_area = ValueLabelSerializer(many=True)
+            community_consultation = ValueLabelSerializer(many=True)
+            community_reaction = ValueLabelSerializer(many=True)
+            former_land_cover = ValueLabelSerializer(many=True)
+            crops = ValueLabelSerializer(many=True)
+            animals = ValueLabelSerializer(many=True)
+            electricity_generation = ValueLabelSerializer(many=True)
+            carbon_sequestration = ValueLabelSerializer(many=True)
+            carbon_sequestration_certs = ValueLabelSerializer(many=True)
+            minerals = ValueLabelSerializer(many=True)
+            water_source = ValueLabelSerializer(many=True)
+            not_public_reason = ValueLabelSerializer(many=True)
+            actors = ValueLabelSerializer(many=True)
+
+        class DataSourceFields(serializers.Serializer):
+            type = ValueLabelSerializer(many=True)
+
+        class InvestorFields(serializers.Serializer):
+            classification = ValueLabelSerializer(many=True)
+
+        class InvolvementFields(serializers.Serializer):
+            investment_type = ValueLabelSerializer(many=True)
+            parent_relations = ValueLabelSerializer(many=True)
+
+        deal = DealFields()
+        datasource = DataSourceFields()
+        investor = InvestorFields()
+        involvement = InvolvementFields()
+
+    @extend_schema(responses={200: FieldChoicesSerializer()})
+    def get(self, request):
+        return Response(
+            {
+                "deal": {
+                    "intention_of_investment": choices.INTENTION_OF_INVESTMENT_ITEMS,
+                    "negotiation_status": choices.NEGOTIATION_STATUS_ITEMS,
+                    "implementation_status": choices.IMPLEMENTATION_STATUS_ITEMS,
+                    "level_of_accuracy": choices.LOCATION_ACCURACY_ITEMS,
+                    "nature_of_deal": choices.NATURE_OF_DEAL_ITEMS,
+                    "recognition_status": choices.RECOGNITION_STATUS_ITEMS,
+                    "negative_impacts": choices.NEGATIVE_IMPACTS_ITEMS,
+                    "benefits": choices.BENEFITS_ITEMS,
+                    "former_land_owner": choices.FORMER_LAND_OWNER_ITEMS,
+                    "former_land_use": choices.FORMER_LAND_USE_ITEMS,
+                    "ha_area": choices.HA_AREA_ITEMS,
+                    "community_consultation": choices.COMMUNITY_CONSULTATION_ITEMS,
+                    "community_reaction": choices.COMMUNITY_REACTION_ITEMS,
+                    "former_land_cover": choices.FORMER_LAND_COVER_ITEMS,
+                    "crops": choices.CROPS_ITEMS,
+                    "animals": choices.ANIMALS_ITEMS,
+                    "electricity_generation": choices.ELECTRICITY_GENERATION_ITEMS,
+                    "carbon_sequestration": choices.CARBON_SEQUESTRATION_ITEMS,
+                    "carbon_sequestration_certs": choices.CARBON_SEQUESTRATION_CERT_ITEMS,
+                    "minerals": choices.MINERALS_ITEMS,
+                    "water_source": choices.WATER_SOURCE_ITEMS,
+                    "not_public_reason": choices.NOT_PUBLIC_REASON_ITEMS,
+                    "actors": choices.ACTOR_ITEMS,
+                },
+                "datasource": {"type": choices.DATASOURCE_TYPE_ITEMS},
+                "investor": {"classification": choices.INVESTOR_CLASSIFICATION_ITEMS},
+                "involvement": {
+                    "investment_type": choices.INVESTMENT_TYPE_ITEMS,
+                    "parent_relation": choices.PARENT_RELATION_ITEMS,
+                },
+            }
+        )

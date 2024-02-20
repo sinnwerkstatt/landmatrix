@@ -77,7 +77,9 @@ INTENTION_OF_INVESTMENT_ITEMS = [
     {"value": "TOURISM", "label": _("Tourism"), "group": _("Other")},
     {"value": "OTHER", "label": _("Other"), "group": _("Other")},
 ]
-INTENTION_CHOICES = [(x["value"], x["label"]) for x in INTENTION_OF_INVESTMENT_ITEMS]
+INTENTION_OF_INVESTMENT_CHOICES = [
+    (x["value"], x["label"]) for x in INTENTION_OF_INVESTMENT_ITEMS
+]
 
 NATURE_OF_DEAL_ITEMS = [
     {"value": "OUTRIGHT_PURCHASE", "label": _("Outright purchase")},

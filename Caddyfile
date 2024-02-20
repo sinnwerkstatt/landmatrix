@@ -1,7 +1,7 @@
 :9000
 
 @backend {
-	path_regexp ^/(admin|impersonate|language|cms|documents|graphql|api|media|static)
+	path_regexp ^/(admin|impersonate|language|cms|documents|api|media|static)
 }
 
 reverse_proxy @backend localhost:8000
