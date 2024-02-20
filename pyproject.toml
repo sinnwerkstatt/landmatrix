@@ -26,8 +26,6 @@ wagtail-modeltranslation = "*"
 wagtail-orderable = "*"
 wagtail-headless-preview = "*"
 
-ariadne = "*"
-ariadne_django = "*"
 fastjsonschema = "*"
 nanoid = "*"
 openpyxl = "*"
