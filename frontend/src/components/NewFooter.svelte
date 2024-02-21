@@ -1,109 +1,90 @@
 <script lang="ts">
+  import type { ComponentType } from "svelte"
   import { _ } from "svelte-i18n"
 
   import FacebookIcon from "$components/icons/FacebookIcon.svelte"
+  import LinkedInIcon from "$components/icons/LinkedInIcon.svelte"
   import TwitterIcon from "$components/icons/TwitterIcon.svelte"
+  import YoutubeIcon from "$components/icons/YoutubeIcon.svelte"
 
-  interface MenuEntry {
+  let menuEntries: {
     title: string
-    href?: string
-  }
-  let menuEntries: MenuEntry[]
+    href: string
+  }[]
+
   $: menuEntries = [
+    { title: $_("Data policy"), href: "/data-policy/" },
+    { title: $_("Privacy policy"), href: "/privacy-policy/" },
+    { title: $_("Impressum / Legal notice"), href: "/impressum-legal-notice/" },
+    { title: $_("Disclaimer"), href: "/disclaimer/" },
+  ]
+
+  let socialEntries: {
+    title: string
+    href: string
+    icon: ComponentType
+  }[]
+
+  $: socialEntries = [
     {
-      title: $_("Data"),
-      href: "/map/",
+      title: "Facebook",
+      href: "https://www.facebook.com/LandMatrix",
+      icon: FacebookIcon,
     },
     {
-      title: $_("Observatories"),
-      href: "/observatory/global/",
+      title: "Twitter",
+      href: "https://twitter.com/Land_Matrix",
+      icon: TwitterIcon,
     },
     {
-      title: $_("Resources"),
-      href: "/resources/",
+      title: "Youtube",
+      href: "https://www.youtube.com/@landmatrixinitiativelmi6450",
+      icon: YoutubeIcon,
     },
     {
-      title: $_("About"),
-      href: "/about/the-land-matrix-initiative/",
+      title: "LinkedIn",
+      href: "https://www.linkedin.com/company/land-matrix-initiative/",
+      icon: LinkedInIcon,
     },
-    { title: $_("FAQ"), href: "/faq/" },
-    { title: $_("Contribute"), href: "/contribute/" },
-    { title: $_("Data policy"), href: "/about/data-policy/" },
-    { title: $_("Impressum"), href: "/about/impressum-legal-notice/" },
   ]
 </script>
 
-<div class="bg-gray-700 px-10 py-12 text-white lg:px-20">
-  <div class="container mx-auto">
-    <!--    Newsletter-->
-    <div class="items-end gap-6 lg:flex">
-      <div class="max-w-[200px]">
-        <img src="/images/lm-logo-dark.png" />
-      </div>
-      <div class="w-full grow sm:flex sm:items-end sm:gap-6">
-        <div class="grow">
-          <h3 class="heading3 text-white">Sign up for our eBulletin</h3>
-          <input type="text" class="my-3 h-12 w-full rounded px-3 text-black sm:my-0" />
-        </div>
-        <div class="sm:w-1/3 lg:w-1/4 xl:w-1/6">
-          <button
-            class="button1 h-12 w-full rounded bg-orange px-5 py-[10px] text-white transition hover:bg-orange-600"
-          >
-            Sign up
-          </button>
-        </div>
-      </div>
-    </div>
+<div class="bg-gray-700 text-white lg:text-center">
+  <div class="container mx-auto p-10 pt-5 lg:p-4">
     <hr class="my-10 text-white lg:hidden" />
-    <!--    Menu-->
-    <div class="w-full lg:mt-6 lg:grid lg:grid-cols-3">
-      <div class="my-6">
-        {#each menuEntries.slice(0, 4) as entry}
-          <div class="entry">
-            <a href={entry.href}>{entry.title}</a>
-          </div>
-        {/each}
-      </div>
 
-      <div class="mt-6">
-        {#each menuEntries.slice(4) as entry}
-          <div class="entry">
-            <a href={entry.href}>{entry.title}</a>
-          </div>
+    <div class="flex flex-col gap-2 lg:flex-row lg:justify-center lg:gap-8">
+      {#each menuEntries as entry}
+        <a class="text-white hover:text-orange" href={entry.href}>
+          {entry.title}
+        </a>
+      {/each}
+    </div>
+
+    <div class="mt-10 lg:mt-2 lg:flex lg:justify-center lg:gap-4">
+      <span class="subtitle1 after:content-[':']">
+        {$_("Follow us")}
+      </span>
+      <div class="mt-3 flex gap-3 lg:mt-0 lg:inline-flex lg:align-bottom">
+        {#each socialEntries as entry}
+          <a
+            class="text-white hover:text-orange"
+            target="_blank"
+            rel="noreferrer noopener"
+            title={entry.title}
+            href={entry.href}
+          >
+            <svelte:component this={entry.icon} />
+          </a>
         {/each}
-      </div>
-      <div class="subtitle1 mt-6">
-        <p>Join us</p>
-        <a
-          class="text-white hover:text-orange"
-          target="_blank"
-          rel="noreferrer"
-          href="https://twitter.com/Land_Matrix"
-        >
-          <TwitterIcon />
-        </a>
-        <a
-          class="ml-2 text-white hover:text-orange"
-          target="_blank"
-          rel="noreferrer"
-          href="https://www.facebook.com/LandMatrix"
-        >
-          <FacebookIcon />
-        </a>
       </div>
     </div>
-    <p class="container mt-12">
-      &copy; {new Date().getFullYear()} The Land Matrix |
-      {$_("All rights reserved")}
-    </p>
+
+    <div class="mt-10 lg:mt-3">
+      <span>
+        &copy; {new Date().getFullYear()} The Land Matrix |
+        {$_("All rights reserved")}
+      </span>
+    </div>
   </div>
 </div>
-
-<style lang="postcss">
-  .entry a {
-    @apply mb-3 text-white hover:text-orange;
-  }
-  .entry {
-    @apply mb-3;
-  }
-</style>

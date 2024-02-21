@@ -19,8 +19,6 @@
 
   import "$lib/css/app.css"
 
-  import NewFooter from "$components/NewFooter.svelte"
-
   export let data
 
   Sentry.init({
@@ -46,15 +44,17 @@
 <Messages />
 <NavigationLoader />
 
-<Navbar />
+<div class="h-[71px]">
+  <Navbar />
+</div>
 
 <div
   bind:this={$contentRootElement}
-  class="h-[calc(100vh-71px-100px)] overflow-x-auto dark:bg-gray-900"
+  class="h-[calc(100vh-71px)] overflow-x-auto dark:bg-gray-900"
 >
   <slot />
 </div>
-<NewFooter />
+
 <Matomo />
 
 <SvelteToast

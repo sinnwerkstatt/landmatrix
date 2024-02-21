@@ -11,6 +11,7 @@
   import LoadingPulse from "$components/LoadingPulse.svelte"
   import QuasiStaticMap from "$components/Map/QuasiStaticMap.svelte"
   import MapDataCharts from "$components/MapDataCharts.svelte"
+  import NewFooter from "$components/NewFooter.svelte"
   import PageTitle from "$components/PageTitle.svelte"
   import StatusPieChart from "$components/StatusPieChart.svelte"
   import Streamfield from "$components/Streamfield.svelte"
@@ -214,3 +215,5 @@
     <Twitter twitterFeed={page.twitter_feed} />
   </div>
 {/if}
+
+<NewFooter />
