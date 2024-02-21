@@ -392,6 +392,7 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
       displayField: InvestorLinkField,
       editField: InvestorForeignKey,
       label: $_("Operating company"),
+      extras: { creatable: true },
     },
     involved_actors: {
       displayField: JSONActorsField,

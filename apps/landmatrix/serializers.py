@@ -494,6 +494,9 @@ class InvestorSerializer(serializers.ModelSerializer):
 
         else:
             invos = obj.draft_version.involvements_snapshot
+
+        if invos is None:
+            return []
         self._enrich_involvements_for_viewing(invos, obj.id)
         return invos
 

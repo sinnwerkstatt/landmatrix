@@ -994,7 +994,7 @@ class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
         if not self.operating_company_id:
             return True
         # TODO Nuts InvestorHull
-        oc = Investor.objects.get(id=self.operating_company_id)
+        oc = InvestorHull.objects.get(id=self.operating_company_id)
         # TODO Nuts status-deleted?
         # if oc.status == STATUS["DELETED"]:
         #     return True
@@ -1459,7 +1459,7 @@ class InvestorVersion2(BaseVersionMixin, models.Model):
     # """ Data sources """  via Foreignkey
 
     """ calculated properties """
-    involvements_snapshot = models.JSONField(blank=True, null=True)
+    involvements_snapshot = models.JSONField(blank=True, default=list)
 
     def __str__(self):
         return f"{self.name} (#{self.id})"

@@ -42,7 +42,7 @@
 
 <dialog
   bind:this={dialog}
-  class="rounded border border-gray-300 bg-white p-4 drop-shadow-lg dark:border-gray-800 dark:bg-gray-500 dark:text-white"
+  class="rounded border border-gray-300 bg-white p-4 drop-shadow-lg dark:border-gray-800 dark:bg-gray-500 dark:text-white {$$props.class}"
   on:close={close}
   on:cancel|preventDefault={close}
 >

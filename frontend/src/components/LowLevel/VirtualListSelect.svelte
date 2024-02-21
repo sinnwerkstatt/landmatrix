@@ -85,6 +85,7 @@
   showChevron
   hasError={required && !value && !focused}
   on:input
+  on:clear
   on:filter={e => onFilter(e.detail)}
 >
   <svelte:fragment slot="selection" let:selection>
