@@ -345,7 +345,7 @@ export const subsections = {
   ],
 }
 
-export const dealSections = derived(_, $_ => {
+export const objectSections = derived(_, $_ => {
   return {
     land_area: {
       title: $_("Land area"),
@@ -600,7 +600,14 @@ export const dealSections = derived(_, $_ => {
     },
     "investor.general_info": {
       title: $_("General info"),
-      fields: ["country_id", "classification", "homepage", "opencorporates", "comment"],
+      fields: [
+        "name",
+        "country_id",
+        "classification",
+        "homepage",
+        "opencorporates",
+        "comment",
+      ],
     },
   } as { [key: string]: { title: string; fields: string[] } }
 })

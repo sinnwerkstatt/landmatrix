@@ -1,13 +1,13 @@
 <script lang="ts">
   import { isNotEmpty } from "$lib/helpers"
-  import { dealSections } from "$lib/sections"
+  import { objectSections } from "$lib/sections"
   import type { DealVersion2, InvestorVersion2 } from "$lib/types/newtypes"
 
   // export let id: keyof typeof $dealSections
   export let id: string
   export let obj: DealVersion2 | InvestorVersion2
 
-  $: sec = $dealSections[id]
+  $: sec = $objectSections[id]
 
   $: sectionEmpty = sec.fields.map(field => obj[field]).filter(isNotEmpty).length === 0
 </script>

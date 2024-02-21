@@ -842,36 +842,49 @@ class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
             raise ValidationError('At least one value needs to be "current".')
 
     def _calculate_parent_companies(self) -> None:
-        pass
-        # TODO Nuts
-        # if self.operating_company_id:
-        #     oc = Investor.objects.filter(
-        #         id=self.operating_company_id,
-        #         status__in=[STATUS["LIVE"], STATUS["UPDATED"]],
-        #     ).first()
-        #     if oc:
-        #         parent_companies = oc.get_parent_companies()
-        #         self.parent_companies.set(parent_companies)
-        #         top_inv = [x for x in parent_companies if x.is_top_investor]
-        #         self.top_investors.set(top_inv)
-        #         return
-        # if self.id:
-        #     self.parent_companies.set([])
-        #     self.top_investors.set([])
+        if self.operating_company_id:
+            oc: InvestorHull | None = (
+                InvestorHull.objects.active()
+                .filter(id=self.operating_company_id)
+                .first()
+            )
+            if oc:
+                parent_companies = oc.get_parent_companies()
+                self.parent_companies.set(parent_companies)
+                top_inv = [x for x in parent_companies if x.is_top_investor]
+                self.top_investors.set(top_inv)
+                return
+        if self.id:
+            self.parent_companies.set([])
+            self.top_investors.set([])
+
+    def _calculate_is_public(self) -> bool:
+        # TODO Kurt deal country here?
+        if not self.deal.country_id:
+            # No Country
+            return False
+        if self.deal.country.high_income:
+            # High Income Country
+            return False
+        if not self.datasources.count():
+            # No DataSource
+            return False
+        if not self.operating_company_id:
+            # 3. No operating company
+            return False
+        if not self.has_known_investor:
+            # 4. Unknown operating company AND no known operating company parents
+            return False
+        return True
 
     # def _calculate_public_state(self) -> str:
     #     """
     #     :return: A string with a value if not public, or empty if public
     #     """
-    #     if self.confidential:
-    #         # 1. Flag "confidential"
-    #         return "CONFIDENTIAL"
-    #     if not self.country_id:
+    #     if not self.deal.country_id:
     #         # No Country
     #         return "NO_COUNTRY"
-    #     # the following Country query is intentional. it has to do with country not
-    #     # neccessarily being set, when country_id is set.
-    #     if Country.objects.get(id=self.country_id).high_income:
+    #     if self.deal.country.high_income:
     #         # High Income Country
     #         return "HIGH_INCOME_COUNTRY"
     #     if not self.datasources:
@@ -884,13 +897,12 @@ class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
     #         # 4. Unknown operating company AND no known operating company parents
     #         return "NO_KNOWN_INVESTOR"
     #     return ""
+
     def _has_known_investor(self) -> bool:
         if not self.operating_company_id:
             return False
         try:
-            oc = InvestorHull.objects.exclude(active_version=None).get(
-                id=self.operating_company_id
-            )
+            oc = InvestorHull.objects.active().get(id=self.operating_company_id)
         except InvestorHull.DoesNotExist:
             return False
 
@@ -993,11 +1005,8 @@ class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
         # by definition True, if no operating company exists (or it is deleted)
         if not self.operating_company_id:
             return True
-        # TODO Nuts InvestorHull
-        oc = InvestorHull.objects.get(id=self.operating_company_id)
-        # TODO Nuts status-deleted?
-        # if oc.status == STATUS["DELETED"]:
-        #     return True
+        if self.operating_company.deleted:
+            return True
 
         investors_countries = self.parent_companies.exclude(
             active_version__country_id=None
@@ -1053,8 +1062,8 @@ class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
             # Investor and InvestorVentureInvolvement
             self.has_known_investor = self._has_known_investor()
             # TODO Kurt public state for version. to be discussed
-            # self.not_public_reason = self._calculate_public_state()
-            # self.is_public = self.not_public_reason == ""
+            # not_public_reason = self._calculate_public_state()
+            self.is_public = self._calculate_is_public()
 
             # this might error because it's m2m, and we need the
             # Deal to have an ID first before we can save the investors. 🙄
@@ -1598,7 +1607,7 @@ class InvestorHull(HullBase):
     objects = InvestorHullQuerySet.as_manager()
 
     def __str__(self):
-        return f"Investor #{self.id}"
+        return f"#{self.id}"
 
     # This method is used by DRF.
     def selected_version(self):
@@ -1672,6 +1681,37 @@ class InvestorHull(HullBase):
                 )
             ).values("id", "selected_version")
         ]
+
+    def get_parent_companies(
+        self, top_investors_only=False, _seen_investors: set["InvestorHull"] = None
+    ) -> set["InvestorHull"]:
+        """
+        Get list of the highest parent companies
+        (all right-hand side parent companies of the network visualisation)
+        """
+        if _seen_investors is None:
+            _seen_investors = {self}
+
+        investor_involvements = (
+            Involvement.objects.filter(child_investor=self)
+            .filter(
+                parent_investor__active_version__isnull=False,
+                parent_investor__deleted=False,
+            )
+            .filter(role="PARENT")
+            .exclude(parent_investor__in=_seen_investors)
+        )
+
+        self.is_top_investor = not investor_involvements
+
+        for involvement in investor_involvements:
+            if involvement.parent_investor in _seen_investors:
+                continue
+            _seen_investors.add(involvement.parent_investor)
+            involvement.parent_investor.get_parent_companies(
+                top_investors_only, _seen_investors
+            )
+        return _seen_investors
 
 
 class InvolvementQuerySet(models.QuerySet):
@@ -1761,12 +1801,12 @@ class Involvement(models.Model):
         verbose_name_plural = _("Investor Venture Involvements")
         ordering = ["-id"]
 
-    # def __str__(self):
-    #     if self.role == "PARENT":
-    #         role = _("<is PARENT of>")
-    #     else:
-    #         role = _("<is INVESTOR of>")
-    #     return f"{self.investor} {role} {self.venture}"
+    def __str__(self):
+        if self.role == "PARENT":
+            role = _("<is PARENT of>")
+        else:
+            role = _("<is INVESTOR of>")
+        return f"{self.parent_investor} {role} {self.child_investor}"
 
 
 class WorkflowInfo2(models.Model):

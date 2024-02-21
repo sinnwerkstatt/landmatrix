@@ -1,14 +1,10 @@
 <script lang="ts">
-  // TODO WIP
+  import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
-  import { fieldChoices, simpleInvestors } from "$lib/stores"
-  import type { Country } from "$lib/types/wagtail"
+  import { simpleInvestors } from "$lib/stores"
   import { getCsrfToken } from "$lib/utils"
 
-  import ChoicesEditField from "$components/Fields/Edit2/ChoicesEditField.svelte"
-  import CountryEditField from "$components/Fields/Edit2/CountryEditField.svelte"
-  import TextEditField from "$components/Fields/Edit2/TextEditField.svelte"
   import EditField from "$components/Fields/EditField.svelte"
   import VirtualListSelect from "$components/LowLevel/VirtualListSelect.svelte"
   import Modal from "$components/Modal.svelte"
@@ -16,8 +12,6 @@
   export let value: number | null
 
   export let extras: { required?: boolean; creatable?: boolean } = {}
-
-  console.log({ extras })
 
   interface InvestorItem {
     id: number | null
@@ -34,17 +28,25 @@
     comment: string = ""
   }
 
-  let newInvestor: NewInvestor | undefined = new NewInvestor()
+  let newInvestor: NewInvestor | undefined
   let showNewInvestorForm = false
+
+  let mountFinished = false
+  onMount(async () => {
+    if (!$simpleInvestors.find(i => i.id === value)) {
+      const ret = await fetch(`/api/investors/simple/?investor_id=${value}`)
+      const retJson = await ret.json()
+      $simpleInvestors.push(retJson)
+    }
+    mountFinished = true
+  })
 
   const onInvestorInput = (e: CustomEvent<InvestorItem | null>) => {
     const investorItem = e.detail
-    console.log(e.type, investorItem)
 
     if (investorItem && investorItem.created) {
       newInvestor = new NewInvestor()
       newInvestor.name = investorItem.name
-
       showNewInvestorForm = true
       return
     }
@@ -52,18 +54,10 @@
     newInvestor = undefined
     showNewInvestorForm = false
 
-    if (!investorItem) {
-      value = null
-      return
-    }
-
-    value = investorItem.id
+    value = investorItem ? investorItem.id : null
   }
 
-  const addNewInvestor = async (e: SubmitEvent) => {
-    const form = e.target as HTMLFormElement
-    console.log(form)
-
+  const addNewInvestor = async () => {
     const ret = await fetch(`/api/investors/`, {
       method: "POST",
       credentials: "include",
@@ -86,36 +80,41 @@
 
   const itemFilter = (label: string, filterText: string, option: InvestorItem) => {
     const filterTextLower = filterText.toLowerCase()
-    return option.name.toLowerCase().includes(filterTextLower)
+    return (
+      option.name?.toLowerCase().includes(filterTextLower) ||
+      (option.id && option.id.toString().includes(filterTextLower))
+    )
   }
 </script>
 
-<VirtualListSelect
-  creatable={extras.creatable}
-  disabled={showNewInvestorForm}
-  {itemFilter}
-  items={$simpleInvestors}
-  label="name"
-  on:input={onInvestorInput}
-  placeholder={$_("Select investor")}
-  required={extras.required}
-  value={$simpleInvestors.find(i => i.id === value)}
->
-  <svelte:fragment let:selection slot="selection">
-    {#if selection.created}
-      <div class="font-semibold italic">[new investor]</div>
-    {:else}
-      {selection.name} (#{selection.id})
-    {/if}
-  </svelte:fragment>
-  <svelte:fragment let:item slot="item">
-    {#if item.created}
-      {$_("Create")}: {item.name}
-    {:else}
-      #{item.id}: {item.name}
-    {/if}
-  </svelte:fragment>
-</VirtualListSelect>
+{#if mountFinished}
+  <VirtualListSelect
+    creatable={extras.creatable}
+    disabled={showNewInvestorForm}
+    {itemFilter}
+    items={$simpleInvestors}
+    label="name"
+    on:input={onInvestorInput}
+    placeholder={$_("Select investor")}
+    required={extras.required}
+    value={$simpleInvestors.find(i => i.id === value)}
+  >
+    <svelte:fragment let:selection slot="selection">
+      {#if selection.created}
+        <div class="font-semibold italic">[new investor]</div>
+      {:else}
+        {selection.name} (#{selection.id})
+      {/if}
+    </svelte:fragment>
+    <svelte:fragment let:item slot="item">
+      {#if item.created}
+        {$_("Create")}: {item.name}
+      {:else}
+        #{item.id}: {item.name}
+      {/if}
+    </svelte:fragment>
+  </VirtualListSelect>
+{/if}
 
 {#if !showNewInvestorForm && value}
   <div class="container p-2">

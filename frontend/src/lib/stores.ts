@@ -377,7 +377,7 @@ export interface SimpleInvestor {
 }
 
 export const simpleInvestors = readable<SimpleInvestor[]>([], set => {
-  fetch("/api/investors/simple")
+  fetch("/api/investors/simple/")
     .then(ret => ret.json())
     .then(set)
 })

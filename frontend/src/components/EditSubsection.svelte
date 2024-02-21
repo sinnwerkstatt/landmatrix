@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { dealSections } from "$lib/sections"
+  import { objectSections } from "$lib/sections"
 
   export let id: string
 
-  $: sec = $dealSections[id]
+  $: sec = $objectSections[id]
 </script>
 
 <div class="mt-2 space-y-4 pt-6">

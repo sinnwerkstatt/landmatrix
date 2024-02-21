@@ -26,6 +26,9 @@
 </script>
 
 {#if investor}
+  {#if !investor.active_version_id}
+    {$_("Draft")}:
+  {/if}
   <a href="/investor/{investor.id}/" class="investor">
     {#if investor.selected_version.name_unknown}
       <span class="italic">[{$_("unknown investor")}]</span>

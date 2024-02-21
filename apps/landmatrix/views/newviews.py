@@ -585,7 +585,18 @@ class InvestorViewSet(HullViewSet):
         raise PermissionDenied if request.user.is_authenticated else NotAuthenticated
 
     @action(methods=["get"], detail=False)
-    def simple(self, request):
+    def simple(self, request: Request):
+        if investor_id := request.query_params.get("investor_id"):
+            if not request.user.is_authenticated:
+                raise NotAuthenticated
+            if request.user.role < UserRole.REPORTER:
+                raise NotAuthenticated
+            return Response(
+                InvestorHull.objects.exclude(deleted=True)
+                .annotate(name=F("draft_version__name"))
+                .filter(id=investor_id)
+                .values("id", "name")[0]
+            )
         # TODO Later this might need an "also search for drafts option"
         return Response(
             InvestorHull.objects.exclude(deleted=True)
