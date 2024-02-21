@@ -870,7 +870,7 @@ class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
         if self.deal.country.high_income:
             # High Income Country
             return False
-        if not self.datasources.count():
+        if not self.id or not self.datasources.count():
             # No DataSource
             return False
         if not self.operating_company_id:
