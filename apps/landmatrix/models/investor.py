@@ -22,11 +22,6 @@ class InvestorQuerySet(models.QuerySet):
     def active(self):
         return self.filter(status__in=(2, 3))
 
-    # NOTE at the moment the only thing we filter on is the "status".
-    # the following is an idea:
-    # def public(self):
-    #     return self.active().filter(is_actually_unknown=False)
-
     def visible(self, user=None, subset="PUBLIC"):
         if subset in ["ACTIVE", "PUBLIC"]:
             return self.active()
@@ -34,7 +29,6 @@ class InvestorQuerySet(models.QuerySet):
         if not user or not user.is_authenticated:
             return self.active()
 
-        # hand it out unfiltered.
         return self
 
 
@@ -46,41 +40,6 @@ class InvestorVersion(Version):
         on_delete=models.SET_NULL,
         related_name="versions",
     )
-
-    def enriched_dict(self) -> dict:
-        edict = super().enriched_dict()
-        if investors := edict.get("investors"):
-            imap = {
-                i["id"]: i
-                for i in Investor.objects.filter(
-                    id__in=[ivs["investor"] for ivs in edict["investors"]]
-                ).values("id", "name", "country_id")
-            }
-            for inv in investors:
-                iid = inv["investor"]
-                try:
-                    inv["investor"] = {
-                        "id": iid,
-                        "name": imap[iid]["name"],
-                        "country": {"id": imap[iid]["country_id"]},
-                    }
-                except KeyError:
-                    inv["investor"] = {
-                        "id": iid,
-                        "name": "DELETED INVESTOR",
-                        "country": None,
-                    }
-        return edict
-
-    def to_dict(self):
-        self.serialized_data["id"] = self.object_id
-        return {
-            "id": self.id,
-            "object_id": self.object_id,
-            "created_at": self.created_at,
-            "created_by": self.created_by,
-            "investor": self.serialized_data,
-        }
 
 
 class Investor(models.Model):
@@ -161,108 +120,10 @@ class Investor(models.Model):
         self.recalculate_fields()
         super().save(*args, **kwargs)
 
-    def serialize_for_version(self) -> dict:
-        investors = self._investors if hasattr(self, "_investors") else []
-
-        return {
-            "name": self.name,
-            "country": self.country_id,
-            "classification": self.classification,
-            "homepage": self.homepage,
-            "opencorporates": self.opencorporates,
-            "datasources": self.datasources,
-            "comment": self.comment,
-            "investors": [ivi.serialize() for ivi in investors],
-            "status": self.status,
-            "draft_status": self.draft_status,
-            "created_at": ecma262(self.created_at),
-            "created_by": self.created_by_id,
-            "modified_at": ecma262(self.modified_at),
-            "modified_by": self.modified_by_id,
-            "is_actually_unknown": self.is_actually_unknown,
-        }
-
-    @classmethod
-    def deserialize_from_version(cls, version: InvestorVersion):
-        inv = cls(
-            id=version.object_id,
-            name=version.serialized_data["name"],
-            country_id=version.serialized_data["country"],
-            classification=version.serialized_data["classification"],
-            homepage=version.serialized_data["homepage"],
-            opencorporates=version.serialized_data["opencorporates"],
-            datasources=version.serialized_data.get("datasources", []),
-            comment=version.serialized_data["comment"],
-            status=version.serialized_data["status"],
-            draft_status=version.serialized_data["draft_status"],
-            created_at=version.serialized_data["created_at"],
-            created_by_id=version.serialized_data["created_by"],
-            modified_at=version.serialized_data["modified_at"],
-            modified_by_id=version.serialized_data["modified_by"],
-            is_actually_unknown=version.serialized_data["is_actually_unknown"],
-        )
-        inv.save()
-
-        current_invs = set(
-            InvestorVentureInvolvement.objects.filter(venture_id=inv.id).values_list(
-                "id", flat=True
-            )
-        )
-        for ivi in version.serialized_data["investors"]:
-            ix, created = InvestorVentureInvolvement.objects.get_or_create(
-                id=ivi["id"],
-                investor_id=ivi["investor"],
-                venture_id=ivi["venture"],
-            )
-            ix.role = ivi["role"]
-            ix.investment_type = ivi["investment_type"]
-            ix.percentage = ivi["percentage"]
-            ix.loans_amount = ivi["loans_amount"]
-            if x := ivi["loans_currency"]:
-                if isinstance(x, dict):
-                    ix.loans_currency_id = ivi["loans_currency"]["id"]
-                else:
-                    ix.loans_currency_id = ivi["loans_currency"]
-            ix.loans_date = ivi["loans_date"]
-            ix.parent_relation = ivi["parent_relation"]
-            ix.comment = ivi["comment"]
-            ix.save()
-            current_invs.discard(ix.id)
-
-        InvestorVentureInvolvement.objects.filter(id__in=current_invs).delete()
-        return inv
-
     def __str__(self):
         if self.name:
             return f"{self.name} (#{self.id})"
         return f"s#{self.id}"
-
-    def get_parent_companies(
-        self, top_investors_only=False, _seen_investors=None
-    ) -> set["Investor"]:
-        """
-        Get list of the highest parent companies
-        (all right-hand side parent companies of the network visualisation)
-        """
-        if _seen_investors is None:
-            _seen_investors = {self}
-
-        investor_involvements = (
-            self.investors.active()
-            .filter(role="PARENT")
-            .exclude(investor__in=_seen_investors)
-        )
-
-        self.is_top_investor = not investor_involvements
-
-        for involvement in investor_involvements:
-            if involvement.investor in _seen_investors:
-                continue
-            _seen_investors.add(involvement.investor)
-            involvement.investor.get_parent_companies(
-                top_investors_only, _seen_investors
-            )
-        return _seen_investors
 
     def get_affected_deals(self, seen_investors=None):
         """
@@ -303,21 +164,6 @@ class InvestorWorkflowInfo(WorkflowInfo):
         null=True,
         blank=True,
     )
-
-    def to_dict(self) -> dict:
-        d = super().to_dict()
-        d.update({"investor": self.investor, "investor_version": self.investor_version})
-        return d
-
-    def to_new_dict(self) -> dict:
-        d = super().to_new_dict()
-        d.update(
-            {
-                "investor_id": self.investor_id,
-                "investor_version_id": self.investor_version_id,
-            }
-        )
-        return d
 
 
 class InvestorVentureInvolvementQuerySet(models.QuerySet):
@@ -419,36 +265,3 @@ class InvestorVentureInvolvement(models.Model):
         else:
             role = _("<is INVESTOR of>")
         return f"{self.investor} {role} {self.venture}"
-
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "role": self.role,
-            "investment_type": self.investment_type,
-            "percentage": self.percentage,
-            "loans_amount": self.loans_amount,
-            "loans_currency": self.loans_currency,
-            "loans_date": self.loans_date,
-            "parent_relation": self.parent_relation,
-            "comment": self.comment,
-        }
-
-    def serialize(self) -> dict:
-        if self.loans_currency_id:
-            cur: Currency = Currency.objects.get(id=self.loans_currency_id)
-            loans_currency = cur.to_dict()
-        else:
-            loans_currency = None
-        return {
-            "id": self.id,
-            "investor": self.investor_id,
-            "venture": self.venture_id,
-            "role": self.role,
-            "investment_type": self.investment_type,
-            "percentage": self.percentage,
-            "loans_amount": self.loans_amount,
-            "loans_currency": loans_currency,
-            "loans_date": self.loans_date,
-            "parent_relation": self.parent_relation,
-            "comment": self.comment,
-        }

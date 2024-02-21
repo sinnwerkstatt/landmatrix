@@ -62,30 +62,6 @@ class Version(models.Model):
         self.modified_by_id = self.serialized_data["modified_by"]
         super().save(*args, **kwargs)
 
-    @classmethod
-    def from_object(cls, obj, created_at=None, created_by=None):
-        version, _ = cls.objects.get_or_create(
-            created_at=created_at,
-            created_by=created_by,
-            object_id=obj.pk,
-            serialized_data=obj.serialize_for_version(),
-        )
-        return version
-
-    def enriched_dict(self) -> dict:
-        edict = self.serialized_data
-        edict["id"] = self.object_id
-        for x in self.object._meta.fields:
-            if x.__class__.__name__ == "ForeignKey":
-                if edict.get(x.name):
-                    try:
-                        edict[x.name] = x.related_model.objects.get(pk=edict[x.name])
-                    except x.related_model.DoesNotExist:
-                        edict[x.name] = {"id": -1, "name": "~Unknown Entry~"}
-        edict["created_at"] = self.created_at
-        edict["created_by"] = self.created_by
-        return edict
-
 
 class WorkflowInfo(models.Model):
     from_user = models.ForeignKey(
@@ -111,32 +87,6 @@ class WorkflowInfo(models.Model):
 
     # watch out: ignore the draft_status within this DealVersion object, it will change
     # when the workflow moves along. the payload will remain consistent though.
-
-    def to_dict(self) -> dict:
-        return {
-            "id": self.id,
-            "from_user": self.from_user,
-            "to_user": self.to_user,
-            "draft_status_before": self.draft_status_before,
-            "draft_status_after": self.draft_status_after,
-            "timestamp": self.timestamp,
-            "comment": self.comment,
-            "resolved": self.resolved,
-            "replies": self.replies or [],
-        }
-
-    def to_new_dict(self) -> dict:
-        return {
-            "id": self.id,
-            "from_user_id": self.from_user_id,
-            "to_user_id": self.to_user_id,
-            "draft_status_before": self.draft_status_before,
-            "draft_status_after": self.draft_status_after,
-            "timestamp": self.timestamp,
-            "comment": self.comment,
-            "resolved": self.resolved,
-            "replies": self.replies or [],
-        }
 
     class Meta:
         abstract = True

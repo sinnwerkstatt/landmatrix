@@ -1,4 +1,5 @@
 import json
+import re
 
 from django.conf import settings
 from django.contrib.gis.db import models as gis_models
@@ -704,12 +705,15 @@ class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
     # is_public: change the logic how it's calculated a bit - confidential is dealhull stuff
     is_public = models.BooleanField(default=False)
     has_known_investor = models.BooleanField(default=False)
+
+    # NOTE: Next two fields should have used through keyword.
     parent_companies = models.ManyToManyField(
         "landmatrix.InvestorHull",
         verbose_name=_("Parent companies"),
         related_name="child_deals",
         blank=True,
     )
+    # Can be queried via DealTopInvestors2 view model:
     top_investors = models.ManyToManyField(
         "landmatrix.InvestorHull",
         verbose_name=_("Top parent companies"),
@@ -1470,6 +1474,15 @@ class InvestorVersion2(BaseVersionMixin, models.Model):
     """ calculated properties """
     involvements_snapshot = models.JSONField(blank=True, default=list)
 
+    def recalculate_fields(self):
+        self.name_unknown = bool(
+            re.search(r"(unknown|unnamed)", self.name, re.IGNORECASE)
+        )
+
+    def save(self, *args, **kwargs):
+        self.recalculate_fields()
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"{self.name} (#{self.id})"
 
@@ -1557,6 +1570,11 @@ class InvestorDataSource(BaseDataSource):
 class InvestorHullQuerySet(models.QuerySet):
     def active(self):
         return self.filter(active_version__isnull=False, deleted=False)
+
+    # NOTE at the moment the only thing we filter on is the "status".
+    # the following is an idea:
+    # def public(self):
+    #     return self.active().filter(is_actually_unknown=False)
 
     def visible(self, user=None, subset="PUBLIC"):
         if subset in ["ACTIVE", "PUBLIC"]:

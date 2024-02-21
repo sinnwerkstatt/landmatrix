@@ -148,17 +148,6 @@ class ObservatoryPage(HeadlessPreviewMixin, Page):
             qs = qs.filter(tags__slug=slug)
         return [article.get_dict("fill-500x500|jpegquality-60") for article in qs]
 
-    # @staticmethod
-    # def current_negotiation_status_metrics():
-    #     deals = Deal.objects.visible(subset="PUBLIC").default_filtered(
-    #         unset_filters=["current_negotiation_status"]
-    #     )
-    #     return (
-    #         deals.values(value=F("current_negotiation_status"))
-    #         .annotate(count=Count("pk"))
-    #         .annotate(size=Sum("deal_size"))
-    #     )
-
     def markers(self):
         return DealHull.get_geo_markers(self.region_id, self.country_id)
 
