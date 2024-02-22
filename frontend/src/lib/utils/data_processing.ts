@@ -35,8 +35,11 @@ function sieveSubmodel(entry: SubmodelEntry, ignoreKeys = ["id", "nid", "role"])
   )
 }
 
-export function isEmptySubmodel(entry: SubmodelEntry): boolean {
-  const fieldsWithValues = sieveSubmodel(entry)
+export function isEmptySubmodel(
+  entry: SubmodelEntry,
+  keys = ["id", "nid", "role"],
+): boolean {
+  const fieldsWithValues = sieveSubmodel(entry, keys)
   return fieldsWithValues.length === 0
 }
 export function removeEmptyEntries<T extends SubmodelEntry>(objectlist: T[]): T[] {

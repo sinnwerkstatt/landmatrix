@@ -12,6 +12,9 @@
   import TrashIcon from "$components/icons/TrashIcon.svelte"
 
   export let datasources: DataSource[]
+
+  export let investorModel = false
+
   let activeEntryIdx = -1
 
   const addEntry = () => {
@@ -140,7 +143,9 @@
     {/each}
     <div class="mt-6">
       <button
-        class="butn butn-primary flex items-center"
+        class="butn {investorModel
+          ? 'butn-secondary'
+          : 'butn-primary'} flex items-center"
         on:click={addEntry}
         type="button"
       >

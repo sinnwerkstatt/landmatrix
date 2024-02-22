@@ -19,6 +19,7 @@ export enum Version2Status {
   //  OLD
   REJECTED = "REJECTED",
   TO_DELETE = "TO_DELETE",
+  DELETED = "DELETED",
 }
 
 type WFReply = {

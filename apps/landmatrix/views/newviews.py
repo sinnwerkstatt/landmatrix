@@ -169,10 +169,19 @@ class VersionViewSet(viewsets.ReadOnlyModelViewSet):
 
         ov1.delete()
 
-        if o1.versions.count() == 0:
+        all_versions = o1.versions.order_by("-id")
+        if not all_versions:
             o1.delete()
         else:
-            o1.draft_version = None
+            # if we have another draft version, newer than the current active version, fall back to that one
+            last_version = all_versions[0]
+            if o1.active_version_id:
+                if last_version.id > o1.active_version_id:
+                    o1.draft_version = last_version
+                else:
+                    o1.draft_version = None
+            else:
+                o1.draft_version = last_version
             o1.save()
 
             add_wfi(

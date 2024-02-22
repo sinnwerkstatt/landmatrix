@@ -116,14 +116,16 @@
   <div class="flex items-center gap-1" class:my-1={!cleanedComment}>
     {#if info.status_before !== info.status_after}
       {#if info.status_before}
-        <div class="inline-block bg-gray-500 px-1.5 text-[13px] text-white">
-          {$stateMap[info.status_before]}
+        {@const before = $stateMap[info.status_before]}
+        <div class="inline-block px-1.5 text-[13px] {before.classes}">
+          {before.title}
         </div>
         <ArrowLongRightIcon class="inline-block h-4 w-4" />
       {/if}
       {#if info.status_after}
-        <div class="inline-block bg-pelorous px-1.5 text-[13px] text-white">
-          {$stateMap[info.status_after]}
+        {@const after = $stateMap[info.status_after]}
+        <div class="inline-block px-1.5 text-[13px] {after.classes}">
+          {after.title}
         </div>
       {/if}
     {/if}

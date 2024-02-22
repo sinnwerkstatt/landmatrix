@@ -24,7 +24,7 @@
 <div
   class="col-span-2 flex flex-col rounded-tr bg-gray-100 px-3 lg:col-span-1 dark:bg-gray-700"
 >
-  <h3 class="my-1 ml-1 font-medium">{$_("Logbook")}</h3>
+  <h3 class="mb-2 ml-1 mt-3 font-medium">{$_("Logbook")}</h3>
 
   <div
     class="h-0 flex-grow cursor-default overflow-y-scroll border-gray-700 px-[2px] pb-4 pt-1 shadow-inner"

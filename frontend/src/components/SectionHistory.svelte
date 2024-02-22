@@ -154,7 +154,7 @@
             </td>
           {/if}
           {#if reporterOrHigher}<td>
-              {$stateMap[version.status]}
+              {$stateMap[version.status].title}
             </td>
           {/if}
           <td class="whitespace-nowrap text-right">

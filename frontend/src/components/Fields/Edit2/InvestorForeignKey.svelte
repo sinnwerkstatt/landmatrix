@@ -33,7 +33,7 @@
 
   let mountFinished = false
   onMount(async () => {
-    if (!$simpleInvestors.find(i => i.id === value)) {
+    if (value && !$simpleInvestors.find(i => i.id === value)) {
       const ret = await fetch(`/api/investors/simple/?investor_id=${value}`)
       const retJson = await ret.json()
       $simpleInvestors.push(retJson)

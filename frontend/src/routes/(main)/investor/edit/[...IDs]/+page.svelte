@@ -229,6 +229,7 @@
     {#if activeTab === "#data_sources"}
       <EditSectionDataSources
         bind:datasources={investor.selected_version.datasources}
+        investorModel
       />
     {/if}
   </div>

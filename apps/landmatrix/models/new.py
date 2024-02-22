@@ -679,24 +679,25 @@ class BaseVersionMixin(models.Model):
         elif new_status == "TO_DRAFT":
             if user.role < UserRole.EDITOR:
                 raise PermissionDenied("MISSING_AUTHORIZATION")
-            self.status = "DRAFT"
-            self.id = None
-            self.created_at = timezone.now()
-            self.created_by_id = to_user_id
-            self.sent_to_review_at = None
-            self.sent_to_review_by = None
-            self.sent_to_activation_at = None
-            self.sent_to_activation_by = None
-            self.activated_at = None
-            self.activated_by = None
-            # TODO Nuts what happens with foreignkey-models here? locations, contracts, datasources
-            self.save()
+            self.copy_to_new_draft(to_user_id)
 
         else:
             raise ParseError("Invalid transition")
 
     class Meta:
         abstract = True
+
+    def copy_to_new_draft(self, created_by_id):
+        self.id = None
+        self.status = "DRAFT"
+        self.created_at = timezone.now()
+        self.created_by_id = created_by_id
+        self.sent_to_review_at = None
+        self.sent_to_review_by = None
+        self.sent_to_activation_at = None
+        self.sent_to_activation_by = None
+        self.activated_at = None
+        self.activated_by = None
 
 
 class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
@@ -774,6 +775,65 @@ class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
     def is_current_draft(self):
         return self.deal.draft_version_id == self.id
 
+    @transaction.atomic
+    def save(
+        self, recalculate_independent=True, recalculate_dependent=True, *args, **kwargs
+    ):
+        self._recalculate_fields(recalculate_independent, recalculate_dependent)
+        super().save(*args, **kwargs)
+
+    def _recalculate_fields(self, independent=True, dependent=True):
+        if independent:
+            self.current_contract_size = self.__get_current(self.contract_size, "area")
+            self.current_production_size = self.__get_current(
+                self.production_size, "area"
+            )
+            self.current_intention_of_investment = (
+                self.__get_current(self.intention_of_investment, "choices", multi=True)
+                or []
+            )
+            self.current_negotiation_status = self.__get_current(
+                self.negotiation_status, "choice"
+            )
+            self.current_implementation_status = self.__get_current(
+                self.implementation_status, "choice"
+            )
+            self.current_crops = (
+                self.__get_current(self.crops, "choices", multi=True) or []
+            )
+            self.current_animals = (
+                self.__get_current(self.animals, "choices", multi=True) or []
+            )
+            self.current_mineral_resources = (
+                self.__get_current(self.mineral_resources, "choices", multi=True) or []
+            )
+            self.current_electricity_generation = (
+                self.__get_current(self.electricity_generation, "choices", multi=True)
+                or []
+            )
+            self.current_carbon_sequestration = (
+                self.__get_current(self.carbon_sequestration, "choices", multi=True)
+                or []
+            )
+
+            # these only depend on the __get_current calls right above.
+            self.deal_size = self.__calculate_deal_size()
+            self.initiation_year = self.__calculate_initiation_year()
+            self.forest_concession = self.__calculate_forest_concession()
+        if dependent:
+            # TODO Nuts are we using the signals?
+            # With the help of signals these fields are recalculated on changes to:
+            # Investor and InvestorVentureInvolvement
+            self.has_known_investor = self.__has_known_investor()
+            # TODO Kurt public state for version. to be discussed
+            # not_public_reason = self._calculate_public_state()
+            self.is_public = self.__calculate_is_public()
+
+            # this might error because it's m2m, and we need the
+            # Deal to have an ID first before we can save the investors. 🙄
+            self.__calculate_parent_companies()
+            self.transnational = self.__calculate_transnational()
+
     def change_status(
         self,
         new_status: str,
@@ -827,7 +887,35 @@ class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
             comment=comment,
         )
 
-    def _get_current(self, attributes, field, multi=False):
+    def copy_to_new_draft(self, created_by_id: int):
+        old_self = DealVersion2.objects.get(pk=self.pk)
+        super().copy_to_new_draft(created_by_id)
+        self.save(recalculate_dependent=False)
+        self.save()
+
+        # copy foreignkey-relations
+        l1: Location
+        for l1 in old_self.locations.all():
+            areas: list[Area] = list(l1.areas.all())
+            l1.id = None
+            l1.dealversion = self
+            l1.save()
+            for a1 in areas:
+                a1.id = None
+                a1.location = l1
+                a1.save()
+        d1: DealDataSource
+        for d1 in old_self.datasources.all():
+            d1.id = None
+            d1.dealversion = self
+            d1.save()
+        c1: Contract
+        for c1 in old_self.contracts.all():
+            c1.id = None
+            c1.dealversion = self
+            c1.save()
+
+    def __get_current(self, attributes, field, multi=False):
         if not attributes:
             return None
         if multi:
@@ -845,7 +933,7 @@ class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
             print(attributes)
             raise ValidationError('At least one value needs to be "current".')
 
-    def _calculate_parent_companies(self) -> None:
+    def __calculate_parent_companies(self) -> None:
         if self.operating_company_id:
             oc: InvestorHull | None = (
                 InvestorHull.objects.active()
@@ -862,7 +950,7 @@ class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
             self.parent_companies.set([])
             self.top_investors.set([])
 
-    def _calculate_is_public(self) -> bool:
+    def __calculate_is_public(self) -> bool:
         # TODO Kurt deal country here?
         if not self.deal.country_id:
             # No Country
@@ -902,7 +990,7 @@ class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
     #         return "NO_KNOWN_INVESTOR"
     #     return ""
 
-    def _has_known_investor(self) -> bool:
+    def __has_known_investor(self) -> bool:
         if not self.operating_company_id:
             return False
         try:
@@ -921,7 +1009,7 @@ class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
 
         return False
 
-    def _calculate_deal_size(self):
+    def __calculate_deal_size(self):
         negotiation_status = self.current_negotiation_status
         if not negotiation_status:
             return 0
@@ -955,7 +1043,7 @@ class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
             value = 0.0
         return value
 
-    def _calculate_initiation_year(self):
+    def __calculate_initiation_year(self):
         self.negotiation_status: list
         valid_negotation_status = (
             [
@@ -993,7 +1081,7 @@ class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
         dates = valid_implementation_status + valid_negotation_status
         return min(dates) if dates else None
 
-    def _calculate_forest_concession(self) -> bool:
+    def __calculate_forest_concession(self) -> bool:
         return bool(
             self.nature_of_deal
             and "CONCESSION" in self.nature_of_deal
@@ -1001,7 +1089,7 @@ class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
             and "FOREST_LOGGING" in self.current_intention_of_investment
         )
 
-    def _calculate_transnational(self) -> bool | None:
+    def __calculate_transnational(self) -> bool | None:
         if not self.deal.country_id:
             # unknown if we have no target country
             return None
@@ -1022,64 +1110,6 @@ class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
             return True
         # `True` if we have investors in other countries else `False`
         return bool(set(investors_countries) - {self.deal.country_id})
-
-    def recalculate_fields(self, independent=True, dependent=True):
-        if independent:
-            self.current_contract_size = self._get_current(self.contract_size, "area")
-            self.current_production_size = self._get_current(
-                self.production_size, "area"
-            )
-            self.current_intention_of_investment = (
-                self._get_current(self.intention_of_investment, "choices", multi=True)
-                or []
-            )
-            self.current_negotiation_status = self._get_current(
-                self.negotiation_status, "choice"
-            )
-            self.current_implementation_status = self._get_current(
-                self.implementation_status, "choice"
-            )
-            self.current_crops = (
-                self._get_current(self.crops, "choices", multi=True) or []
-            )
-            self.current_animals = (
-                self._get_current(self.animals, "choices", multi=True) or []
-            )
-            self.current_mineral_resources = (
-                self._get_current(self.mineral_resources, "choices", multi=True) or []
-            )
-            self.current_electricity_generation = (
-                self._get_current(self.electricity_generation, "choices", multi=True)
-                or []
-            )
-            self.current_carbon_sequestration = (
-                self._get_current(self.carbon_sequestration, "choices", multi=True)
-                or []
-            )
-
-            # these only depend on the _get_current calls right above.
-            self.deal_size = self._calculate_deal_size()
-            self.initiation_year = self._calculate_initiation_year()
-            self.forest_concession = self._calculate_forest_concession()
-        if dependent:
-            # With the help of signals these fields are recalculated on changes to:
-            # Investor and InvestorVentureInvolvement
-            self.has_known_investor = self._has_known_investor()
-            # TODO Kurt public state for version. to be discussed
-            # not_public_reason = self._calculate_public_state()
-            self.is_public = self._calculate_is_public()
-
-            # this might error because it's m2m, and we need the
-            # Deal to have an ID first before we can save the investors. 🙄
-            self._calculate_parent_companies()
-            self.transnational = self._calculate_transnational()
-
-    @transaction.atomic
-    def save(
-        self, recalculate_independent=True, recalculate_dependent=True, *args, **kwargs
-    ):
-        self.recalculate_fields(recalculate_independent, recalculate_dependent)
-        super().save(*args, **kwargs)
 
 
 class Location(models.Model):
@@ -1474,20 +1504,20 @@ class InvestorVersion2(BaseVersionMixin, models.Model):
     """ calculated properties """
     involvements_snapshot = models.JSONField(blank=True, default=list)
 
-    def recalculate_fields(self):
-        self.name_unknown = bool(
-            re.search(r"(unknown|unnamed)", self.name, re.IGNORECASE)
-        )
-
-    def save(self, *args, **kwargs):
-        self.recalculate_fields()
-        super().save(*args, **kwargs)
-
     def __str__(self):
         return f"{self.name} (#{self.id})"
 
     def is_current_draft(self):
         return self.investor.draft_version_id == self.id
+
+    def save(self, *args, **kwargs):
+        self._recalculate_fields()
+        super().save(*args, **kwargs)
+
+    def _recalculate_fields(self):
+        self.name_unknown = bool(
+            re.search(r"(unknown|unnamed)", self.name, re.IGNORECASE)
+        )
 
     def change_status(
         self,
@@ -1524,6 +1554,7 @@ class InvestorVersion2(BaseVersionMixin, models.Model):
                 i1.loans_date = invo["loans_date"]
                 i1.parent_relation = invo["parent_relation"]
                 i1.comment = invo["comment"]
+                i1.save()
                 seen_involvements.add(i1.id)
             Involvement.objects.filter(child_investor=self.investor).exclude(
                 id__in=seen_involvements
@@ -1555,6 +1586,19 @@ class InvestorVersion2(BaseVersionMixin, models.Model):
             status_after=self.status,
             comment=comment,
         )
+
+    def copy_to_new_draft(self, created_by_id: int):
+        old_self = InvestorVersion2.objects.get(pk=self.pk)
+
+        super().copy_to_new_draft(created_by_id)
+        self.save()
+
+        # copy foreignkey-relations
+        d1: InvestorDataSource
+        for d1 in old_self.datasources.all():
+            d1.id = None
+            d1.investorversion = self
+            d1.save()
 
 
 class InvestorDataSource(BaseDataSource):
