@@ -1172,7 +1172,7 @@ class Area(models.Model):
     type = models.CharField(choices=AREA_TYPE_CHOICES)
     current = models.BooleanField(default=False)
     date = LooseDateField(_("Date"), blank=True, null=True)
-    area = gis_models.GeometryField()
+    area = gis_models.MultiPolygonField()
 
     def __str__(self):
         return f"{self.location} >> {self.type}"
@@ -1864,6 +1864,8 @@ class Involvement(models.Model):
         verbose_name = _("Investor Venture Involvement")
         verbose_name_plural = _("Investor Venture Involvements")
         ordering = ["-id"]
+        # TODO Kurt
+        # unique_together = [["parent_investor", "child_investor"]]
 
     def __str__(self):
         if self.role == "PARENT":

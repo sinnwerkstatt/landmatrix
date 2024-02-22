@@ -12,6 +12,8 @@ from .models.new import Involvement, InvestorHull
 def investor_change_trigger_refresh_calculated_deal_fields(
     sender, instance: InvestorHull, **kwargs
 ):
+    # TODO operating company blabla
+
     for deal in instance.get_affected_deals():
         deal.save(recalculate_independent=False)
 
