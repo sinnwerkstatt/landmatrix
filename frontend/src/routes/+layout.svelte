@@ -2,7 +2,7 @@
   import * as Sentry from "@sentry/svelte"
   import { BrowserTracing } from "@sentry/tracing"
   import { SvelteToast } from "@zerodevx/svelte-toast"
-  import staticEnv from "$env/static/public"
+  import * as staticEnv from "$env/static/public"
   import { onMount } from "svelte"
 
   import { afterNavigate } from "$app/navigation"
