@@ -18,7 +18,7 @@
   import CheckCircleIcon from "$components/icons/CheckCircleIcon.svelte"
 
   export let info: WorkflowInfoType
-  export let isDeal: boolean
+  export let isDeal = true
 
   $: confidentialStatusChange = info.comment?.startsWith("[SET_CONFIDENTIAL]")
     ? "bg-red-400"
@@ -96,9 +96,8 @@
 </script>
 
 <div
-  class="mx-1 mb-2 bg-neutral-200 p-1 text-sm text-gray-800 shadow-md {openThread
-    ? 'border-2'
-    : ''}  border-yellow-200"
+  class="mx-1 mb-2 border-yellow-200 bg-neutral-200 p-1 text-sm text-gray-800 shadow-md"
+  class:border-2={openThread}
 >
   <div class="flex justify-between">
     <span class="font-semibold">

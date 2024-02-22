@@ -43,6 +43,7 @@
 <dialog
   bind:this={dialog}
   class="rounded border border-gray-300 bg-white p-4 drop-shadow-lg dark:border-gray-800 dark:bg-gray-500 dark:text-white {$$props.class}"
+  style={$$props.style ?? ""}
   on:close={close}
   on:cancel|preventDefault={close}
 >
@@ -50,8 +51,11 @@
 </dialog>
 
 <style lang="postcss">
+  dialog {
+    --open-speed: 300ms;
+  }
   dialog[open] {
-    animation: zoom 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    animation: zoom var(--open-speed) cubic-bezier(0.34, 1.56, 0.64, 1);
   }
   @keyframes zoom {
     from {
