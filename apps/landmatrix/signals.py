@@ -8,14 +8,6 @@ from .models.investor import Investor, InvestorVentureInvolvement
 # TODO Nuts is this whole file still relevant?
 
 
-def invalidate_cache(sender, instance, **kwargs):
-    # FIXME it is quite brute force to just empty the whole cache. fixme "some day"™️
-    cache.clear()
-
-
-post_save.connect(invalidate_cache)
-
-
 @receiver(post_save, sender=Investor)
 @receiver(post_delete, sender=Investor)
 def investor_change_trigger_refresh_calculated_deal_fields(
