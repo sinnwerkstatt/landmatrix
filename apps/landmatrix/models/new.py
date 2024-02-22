@@ -1538,13 +1538,15 @@ class InvestorVersion2(BaseVersionMixin, models.Model):
             # upon activation, map the involvements_snapshot into the Involvements table
             seen_involvements = set()
             for invo in self.involvements_snapshot:
+                # involvements include bidirectional relations. we filter out only parent relations that we save.
+                if invo["child_investor_id"] != investor.id:
+                    continue
+
                 try:
-                    assert invo["id"].isnumeric()
-                    i1 = Involvement.objects.get(
-                        id=invo["id"], child_investor_id=self.id
-                    )
+                    assert isinstance(invo["id"], int)
+                    i1 = Involvement.objects.get(id=invo["id"], child_investor=investor)
                 except (Involvement.DoesNotExist, AssertionError):
-                    i1 = Involvement(child_investor_id=self.id)
+                    i1 = Involvement(child_investor=investor)
                 i1.parent_investor_id = invo["parent_investor_id"]
                 i1.role = invo["role"]
                 i1.investment_type = invo["investment_type"]
@@ -1556,7 +1558,7 @@ class InvestorVersion2(BaseVersionMixin, models.Model):
                 i1.comment = invo["comment"]
                 i1.save()
                 seen_involvements.add(i1.id)
-            Involvement.objects.filter(child_investor=self.investor).exclude(
+            Involvement.objects.filter(child_investor=investor).exclude(
                 id__in=seen_involvements
             ).delete()
 

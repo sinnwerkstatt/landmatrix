@@ -39,7 +39,7 @@
     loading.set(false)
   }
 
-  // $: liveLink = `<a href="/investor/${data.investorID}/#network_graph">https://landmatrix.org/investor/${data.investorID}/</a>`
+  $: liveLink = `<a href="/investor/${data.investorID}/#network_graph">https://landmatrix.org/investor/${data.investorID}/</a>`
 </script>
 
 <svelte:head>
@@ -101,17 +101,20 @@
       {/if}
 
       {#if activeTab === "#network_graph"}
-        <InvolvementsGraph investor_id={data.investor.id} />
-        <!--{#if !data.investorVersion}-->
-        <!--  <InvestorGraph {investor} showControls includeVentures />-->
-        <!--{:else}-->
-        <!--  <div class="m-10 bg-neutral-200 px-12 py-24 text-center text-zinc-700">-->
-        <!--    {@html $_(-->
-        <!--      "The investor network diagram is not visible in draft mode. Go to {liveLink} to see it.",-->
-        <!--      { values: { liveLink } },-->
-        <!--    )}-->
-        <!--  </div>-->
-        <!--{/if}-->
+        {#if data.investor.selected_version.status === "ACTIVATED"}
+          <InvolvementsGraph investor_id={data.investor.id} />
+        {:else}
+          <div class="m-10 bg-neutral-200 px-12 py-24 text-center text-zinc-700">
+            {@html $_(
+              "The investor network diagram is not visible in draft mode. Go to {liveLink} to see it.",
+              {
+                values: {
+                  liveLink: `<a href="/investor/${data.investorID}/#network_graph">/investor/${data.investorID}/</a>`,
+                },
+              },
+            )}
+          </div>
+        {/if}
       {/if}
     </div>
   </div>

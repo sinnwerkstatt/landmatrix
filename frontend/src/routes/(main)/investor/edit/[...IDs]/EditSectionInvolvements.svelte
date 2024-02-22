@@ -43,37 +43,39 @@
   )
   $: involvements = involvementsCopy.filter(val => !!val.parent_investor_id)
 
+  $: filteredInvolvements = involvementsCopy.filter(
+    i =>
+      i.child_investor_id === investorID &&
+      i.role === (tertiary ? Role.LENDER : Role.PARENT),
+  )
+
   const addEntry = () => {
     const currentIDs = involvementsCopy.map(entry => entry.id.toString())
     involvementsCopy = [...involvementsCopy, createEmptyEntry(newNanoid(currentIDs))]
-    activeEntryIdx = involvementsCopy.length - 1
+    activeEntryIdx = filteredInvolvements.length
   }
 
   const removeEntry = (c: Involvement) => {
-    if (!isEmptySubmodel(c)) {
-      const areYouSure = confirm(`${$_("Remove")} ${model} #${c.id}}?`)
+    if (!isEmptySubmodel(c, ["id", "child_investor_id", "role"])) {
+      const areYouSure = confirm(`${$_("Remove")} ${model} #${c.id}?`)
       if (!areYouSure) return
     }
     involvementsCopy = involvementsCopy.filter(x => x.id !== c.id)
-    activeEntryIdx = involvementsCopy.length - 1
+    activeEntryIdx = filteredInvolvements.length - 1
   }
 
   const toggleActiveEntry = (index: number) =>
     (activeEntryIdx = activeEntryIdx === index ? -1 : index)
 
-  $: filteredInvolvements = involvementsCopy.filter(
-    i => i.role === (tertiary ? Role.LENDER : Role.PARENT),
-  )
-
   onMount(() => {
-    activeEntryIdx = involvementsCopy.length - 1
+    activeEntryIdx = filteredInvolvements.length - 1
   })
 </script>
 
 <section class="my-6 flex flex-wrap">
   <form class="w-full" id={tertiary ? "tertiary_investors" : "parent_companies"}>
     {#each filteredInvolvements as involvement, index}
-      <div class="datasource-entry">
+      <div>
         <div
           class="my-2 flex flex-row items-center justify-between bg-gray-200 dark:bg-gray-700"
         >
@@ -87,8 +89,9 @@
             <h3 class="m-0">
               {index + 1}. {model}
               <small class="text-sm text-gray-500">
-                #{involvement.id}
-                <!--{getDisplayLabel(entry)}-->
+                {#if involvement.parent_investor_id}
+                  #{involvement.parent_investor_id}
+                {/if}
               </small>
             </h3>
           </div>

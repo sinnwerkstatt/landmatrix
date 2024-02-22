@@ -97,7 +97,7 @@
 
     if (retBody.versionID !== investor.selected_version.id) {
       toast.push("Created a new draft", { classes: ["success"] })
-      await goto(`/investor/edit/${investor.id}/${retBody.versionID}/${activeTab}`)
+      await goto(`/investor/edit/${data.investorID}/${retBody.versionID}/${activeTab}`)
     } else {
       toast.push("Saved data", { classes: ["success"] })
       await invalidate("investor:detail")
@@ -216,14 +216,14 @@
     {#if activeTab === "#parent_companies"}
       <EditSectionInvolvements
         bind:involvements={investor.involvements}
-        investorID={investor.id}
+        investorID={data.investorID}
       />
     {/if}
     {#if activeTab === "#tertiary_investors"}
       <EditSectionInvolvements
         bind:involvements={investor.involvements}
         tertiary
-        investorID={investor.id}
+        investorID={data.investorID}
       />
     {/if}
     {#if activeTab === "#data_sources"}

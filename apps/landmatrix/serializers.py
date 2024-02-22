@@ -490,6 +490,7 @@ class InvestorSerializer(serializers.ModelSerializer):
                     "parent_relation",
                     "comment",
                 )
+                .order_by("id")
             )
 
         else:
