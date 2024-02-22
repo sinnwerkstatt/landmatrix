@@ -2,7 +2,7 @@
   import * as Sentry from "@sentry/svelte"
   import { BrowserTracing } from "@sentry/tracing"
   import { SvelteToast } from "@zerodevx/svelte-toast"
-  import { env } from "$env/dynamic/public"
+  import staticEnv from "$env/static/public"
   import { onMount } from "svelte"
 
   import { afterNavigate } from "$app/navigation"
@@ -12,26 +12,30 @@
   import { UserRole } from "$lib/types/user"
 
   import LightboxImage from "$components/LightboxImage.svelte"
-  import Matomo from "$components/Matomo.svelte"
   import Messages from "$components/Messages.svelte"
   import Navbar from "$components/Navbar/Navbar.svelte"
   import NavigationLoader from "$components/NavigationLoader.svelte"
 
   import "$lib/css/app.css"
 
+  import { Matomo } from "@sinnwerkstatt/sveltekit-matomo"
+
   export let data
 
-  Sentry.init({
-    dsn: env.PUBLIC_SENTRY_DSN,
-    environment: "svelte frontend",
-    integrations: [new BrowserTracing()],
-    tracesSampleRate: 1.0,
-    // initialScope: { tags: { mode: "svelte frontend" } },
-  })
+  if (staticEnv.PUBLIC_SENTRY_DSN) {
+    Sentry.init({
+      dsn: staticEnv.PUBLIC_SENTRY_DSN,
+      environment: "svelte frontend",
+      integrations: [new BrowserTracing()],
+      tracesSampleRate: 1.0,
+      // initialScope: { tags: { mode: "svelte frontend" } },
+    })
 
-  if (data.user)
-    Sentry.configureScope(scope => scope.setUser({ id: (data.user as User).username }))
-
+    if (data.user)
+      Sentry.configureScope(scope =>
+        scope.setUser({ id: (data.user as User).username }),
+      )
+  }
   onMount(async () => {
     if ((data.user?.role || -1) >= UserRole.EDITOR) {
       // await getAllUsers(fetch)
@@ -55,7 +59,9 @@
   <slot />
 </div>
 
-<Matomo />
+{#if staticEnv.PUBLIC_MATOMO_URL && staticEnv.PUBLIC_MATOMO_SITE_ID}
+  <Matomo url={staticEnv.PUBLIC_MATOMO_URL} siteId={+staticEnv.PUBLIC_MATOMO_SITE_ID} />
+{/if}
 
 <SvelteToast
   options={{ reversed: true, classes: ["toast"], duration: 8000, pausable: true }}

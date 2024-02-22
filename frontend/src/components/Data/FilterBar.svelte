@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { tracker } from "@sinnwerkstatt/sveltekit-matomo"
   import { _ } from "svelte-i18n"
   import Select from "svelte-select"
 
@@ -12,7 +13,6 @@
   import type { Produce } from "$lib/filters"
   import { filters, isDefaultFilter, publicOnly } from "$lib/filters"
   import { countries, fieldChoices, regions, simpleInvestors } from "$lib/stores"
-  import { tracker } from "$lib/stores/tracker"
   import { ProduceGroup } from "$lib/types/deal"
   import { UserRole } from "$lib/types/user"
   import type { Country, Region } from "$lib/types/wagtail"
@@ -66,9 +66,7 @@
       name = ($regions.find(r => r.id === $filters.region_id) as Region).name
     }
 
-    if ($tracker) {
-      $tracker.trackEvent("Downloads", format, name)
-    }
+    if ($tracker) $tracker.trackEvent("Downloads", format, name)
   }
 
   const toggleDefaultFilter = (e: Event) => {
