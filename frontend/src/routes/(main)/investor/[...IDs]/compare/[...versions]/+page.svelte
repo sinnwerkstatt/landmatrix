@@ -18,14 +18,14 @@
 
   $: labels = { general_info: $_("General info") }
 
-  function hasDifference(dFrom, dTo, field, jfield) {
-    if (!dFrom || !dTo) return true
-    if (!dFrom[field] || !dTo[field]) return true
-    if (typeof dFrom[field][jfield] == "object") {
-      return JSON.stringify(dFrom[field][jfield]) !== JSON.stringify(dTo[field][jfield])
-    }
-    return dFrom[field][jfield] !== dTo[field][jfield]
-  }
+  // function hasDifference(dFrom, dTo, field, jfield) {
+  //   if (!dFrom || !dTo) return true
+  //   if (!dFrom[field] || !dTo[field]) return true
+  //   if (typeof dFrom[field][jfield] == "object") {
+  //     return JSON.stringify(dFrom[field][jfield]) !== JSON.stringify(dTo[field][jfield])
+  //   }
+  //   return dFrom[field][jfield] !== dTo[field][jfield]
+  // }
 
   $: investorSections = {
     general_info: [

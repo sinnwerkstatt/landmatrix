@@ -1,4 +1,4 @@
-<script lang="ts" generics="T">
+<script lang="ts">
   import cn from "classnames"
   import { onMount } from "svelte"
   import VirtualList from "svelte-tiny-virtual-list"
@@ -7,16 +7,16 @@
 
   import ChevronDownIcon from "$components/icons/ChevronDownIcon.svelte"
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  interface $$Slots {
-    default: { prop: boolean }
-    // eslint-disable-next-line no-undef
-    field: { obj: T; fieldName: keyof T }
-  }
+  // // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // interface $$Slots {
+  //   default: { prop: boolean }
+  //   // eslint-disable-next-line no-undef
+  //   field: { obj: T; fieldName: keyof T }
+  // }
   export let columns: string[]
   export let labels: string[] = []
   export let spans: number[] = []
-  export let items: T[] = []
+  export let items: unknown[] = []
   export let sortBy: string | null = null
 
   export let rowHeightInPx = 90

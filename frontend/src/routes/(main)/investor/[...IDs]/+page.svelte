@@ -38,8 +38,6 @@
     await invalidate("investor:detail")
     loading.set(false)
   }
-
-  $: liveLink = `<a href="/investor/${data.investorID}/#network_graph">https://landmatrix.org/investor/${data.investorID}/</a>`
 </script>
 
 <svelte:head>

@@ -1,5 +1,4 @@
 <script lang="ts">
-  import cn from "classnames"
   import { _ } from "svelte-i18n"
   import Select from "svelte-select"
 
