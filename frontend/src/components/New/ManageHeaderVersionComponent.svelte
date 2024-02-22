@@ -24,8 +24,6 @@
 
   let showDeleteOverlay = false
 
-  let hasActiveVersion = false // TODO Nuts
-
   const isDeal = (obj: DealHull | InvestorHull): obj is DealHull =>
     "fully_updated_at" in obj
 
@@ -122,7 +120,7 @@
       <button
         type="button"
         class:disabled={!isCurrentDraft || $loading || $navigating}
-        title={hasActiveVersion
+        title={object.active_version_id
           ? $_("Activate submitted version replacing currently active version")
           : $_("Set the {object} active", i18nValues)}
         class="btn btn-pelorous"

@@ -36,7 +36,6 @@ from apps.landmatrix.models.fields import (
     JSONElectricityGenerationField,
     DecimalIntField,
 )
-from apps.landmatrix.models.investor import Investor
 
 VERSION_STATUS_CHOICES = (
     ("DRAFT", _("Draft")),
@@ -821,7 +820,6 @@ class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
             self.initiation_year = self.__calculate_initiation_year()
             self.forest_concession = self.__calculate_forest_concession()
         if dependent:
-            # TODO Nuts are we using the signals?
             # With the help of signals these fields are recalculated on changes to:
             # Investor and InvestorVentureInvolvement
             self.has_known_investor = self.__has_known_investor()
@@ -887,11 +885,11 @@ class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
             comment=comment,
         )
 
-    def copy_to_new_draft(self, created_by_id: int):
+    def copy_to_new_draft(self, created_by_id: int, new_nids=False):
+        # TODO Kurt new_nids for clones? maybe not 🤔
         old_self = DealVersion2.objects.get(pk=self.pk)
         super().copy_to_new_draft(created_by_id)
         self.save(recalculate_dependent=False)
-        self.save()
 
         # copy foreignkey-relations
         l1: Location
@@ -914,6 +912,8 @@ class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
             c1.id = None
             c1.dealversion = self
             c1.save()
+
+        self.save()
 
     def __get_current(self, attributes, field, multi=False):
         if not attributes:

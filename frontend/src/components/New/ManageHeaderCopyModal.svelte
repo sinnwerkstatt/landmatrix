@@ -2,7 +2,7 @@
   import { toast } from "@zerodevx/svelte-toast"
   import { _ } from "svelte-i18n"
 
-  import { invalidate } from "$app/navigation"
+  import { goto } from "$app/navigation"
 
   import type { DealHull } from "$lib/types/newtypes.js"
   import { getCsrfToken } from "$lib/utils"
@@ -21,11 +21,11 @@
         "Content-Type": "application/json",
       },
     })
+    const retJson = await ret.json()
     if (!ret.ok) {
-      const retJson = await ret.json()
       toast.push(`${ret.status}: ${retJson.detail}`, { classes: ["error"] })
     } else {
-      invalidate("deal:detail").then()
+      await goto(`/deal/${retJson.dealID}/${retJson.versionID}/`)
       open = false
     }
   }

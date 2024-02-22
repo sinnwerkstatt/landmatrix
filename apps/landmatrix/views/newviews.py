@@ -470,25 +470,28 @@ class DealViewSet(HullViewSet):
         d1: DealHull = self.get_object()
         old_id = d1.id
         d1.id = None
+        d1.active_version = None
+        d1.draft_version = None
+        d1.fully_updated_at = None
+        d1.save()
 
-        # make a copy of the current active_version and set it to draft on the new thing.
-        # don't forget about locations, contracts,... foreign-keys etc...
+        old_deal = DealHull.objects.get(id=old_id)
+        dv1: DealVersion2 = old_deal.active_version or old_deal.draft_version
+        dv1.deal_id = d1.id
+        dv1.copy_to_new_draft(request.user.id, new_nids=True)
 
-        # TODO Nuts we need to copy more things here, right?
-        # d1.created_by = request.user
-        # d1.created_at = timezone.now()
+        d1.draft_version = dv1
+        d1.save()
 
-        # d1.save()
-        #
-        # DealWorkflowInfo2.objects.create(
-        #     deal=d1,
-        #     # deal_version=dv1,
-        #     from_user=request.user,
-        #     status_after="DRAFT",
-        #     comment=f"Copied from deal #{old_id}",
-        # )
+        DealWorkflowInfo2.objects.create(
+            deal=d1,
+            deal_version=dv1,
+            from_user=request.user,
+            status_after="DRAFT",
+            comment=f"Copied from deal #{old_id}",
+        )
 
-        # return Response({"dealID": d1.id, "versionID": dv1.id})
+        return Response({"dealID": d1.id, "versionID": dv1.id})
 
 
 class InvestorVersionViewSet(VersionViewSet):
