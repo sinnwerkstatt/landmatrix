@@ -43,13 +43,13 @@
     { key: "star", label: "", span: 1 },
     { key: "dateOfRequest", label: $_("Date of request"), span: 3 },
     { key: "id", label: $_("ID"), span: 1 },
-    { key: "country", label: $_("Country"), span: 3 },
-    { key: "status", label: $_("Status"), span: 2 },
+    { key: "country_id", label: $_("Country"), span: 3 },
+    { key: "status", label: $_("Status"), span: 2 }, // TODO Kurt sometimes Mode sometimes Status
     { key: "fromUser", label: $_("From user"), span: 2 },
     { key: "toUser", label: $_("To user"), span: 2 },
     { key: "feedback", label: $_("Feedback"), span: 5 },
   ]
-  const wrapperClass = "p-1"
+  const wrapperClass = ""
   const valueClass = ""
 </script>
 
@@ -77,26 +77,35 @@
         {valueClass}
         fieldname="id"
         value={obj.id}
-        extras={{ objectVersion: obj.current_draft_id }}
+        extras={{ objectVersion: obj.draft_version_id }}
         {model}
       />
-    {:else if fieldName === "country"}
+    {:else if fieldName === "country_id"}
       <DisplayField
         {wrapperClass}
         {valueClass}
-        fieldname="country"
-        value={obj.country}
+        fieldname="country_id"
+        value={obj.country_id}
       />
     {:else if fieldName === "status"}
-      {obj.status}
+      {obj.mode}
       <!--            <StatusField status={obj.status} draft_status={obj.draft_status} />-->
     {:else if fieldName === "fromUser"}
-      {JSON.stringify(obj.relevantWFI?.from_user_id)}
-      <!--            <ForeignKeyField value={obj.relevantWFI?.from_user} formfield={{}} />-->
+      <DisplayField
+        fieldname="created_by_id"
+        value={obj.relevantWFI?.from_user_id}
+        {wrapperClass}
+        {valueClass}
+      />
     {:else if fieldName === "toUser"}
-      {JSON.stringify(obj.relevantWFI?.to_user_id)}
-      <!--            <ForeignKeyField value={obj.relevantWFI?.to_user} formfield={{}} />-->
-      <!--    {:else if fieldName === "feedback"}-->
+      <DisplayField
+        fieldname="created_by_id"
+        value={obj.relevantWFI?.to_user_id}
+        {wrapperClass}
+        {valueClass}
+      />
+    {:else if fieldName === "feedback"}
+      {obj.relevantWFI?.comment}
       <!--      <WorkflowInfosField value={obj.workflowinfos}>-->
       <!--        {obj.relevantWFI?.comment}-->
       <!--      </WorkflowInfosField>-->

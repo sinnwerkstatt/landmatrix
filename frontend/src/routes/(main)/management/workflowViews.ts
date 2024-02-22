@@ -1,25 +1,27 @@
-import type { Deal, DealWorkflowInfo } from "$lib/types/deal"
-import type { WorkflowInfo } from "$lib/types/generics"
-import { DraftStatus } from "$lib/types/generics"
-import type { Investor } from "$lib/types/investor"
+import {
+  Version2Status,
+  type DealHull,
+  type InvestorHull,
+  type WorkflowInfoType,
+} from "$lib/types/newtypes"
 
-export type WorkflowInfoView = (Deal | Investor) & {
-  relevantWFI: WorkflowInfo
+export type WorkflowInfoView = (DealHull | InvestorHull) & {
+  relevantWFI: WorkflowInfoType
   openReq?: boolean
 }
 
 export type CreateWorkflowInfoViewFn = (
   context: { page: { data: { user: { id: number } } } },
-  objects: (Deal | Investor)[],
+  objects: (DealHull | InvestorHull)[],
 ) => WorkflowInfoView[]
 
 export const createTodoFeedbackView: CreateWorkflowInfoViewFn = (context, objects) =>
   objects
     .map(obj => {
-      const wfis = obj.workflowinfos as WorkflowInfo[]
+      const wfis = obj.workflowinfos
       const relevantWFI = wfis.find(
         wfi =>
-          wfi.draft_status_before === wfi.draft_status_after &&
+          wfi.status_before === wfi.status_after &&
           wfi.to_user_id === context.page.data.user.id,
       )
 
@@ -41,12 +43,12 @@ export const createTodoFeedbackView: CreateWorkflowInfoViewFn = (context, object
 export const createTodoImprovementView: CreateWorkflowInfoViewFn = (context, objects) =>
   objects
     .map(obj => {
-      const wfis = obj.workflowinfos as WorkflowInfo[]
+      const wfis = obj.workflowinfos
       const relevantWFI = wfis.find(
         wfi =>
-          (wfi.draft_status_before === DraftStatus.REVIEW ||
-            wfi.draft_status_before === DraftStatus.ACTIVATION) &&
-          wfi.draft_status_after === DraftStatus.DRAFT &&
+          (wfi.status_before === Version2Status.REVIEW ||
+            wfi.status_before === Version2Status.ACTIVATION) &&
+          wfi.status_after === Version2Status.DRAFT &&
           wfi.to_user_id === context.page.data.user.id,
       )
 
@@ -66,12 +68,12 @@ export const createRequestImprovementView: CreateWorkflowInfoViewFn = (
 ) =>
   objects
     .map(obj => {
-      const wfis = obj.workflowinfos as DealWorkflowInfo[]
+      const wfis = obj.workflowinfos
       const relevantWFI = wfis.find(
         wfi =>
-          (wfi.draft_status_before === DraftStatus.REVIEW ||
-            wfi.draft_status_before === DraftStatus.ACTIVATION) &&
-          wfi.draft_status_after === DraftStatus.DRAFT &&
+          (wfi.status_before === Version2Status.REVIEW ||
+            wfi.status_before === Version2Status.ACTIVATION) &&
+          wfi.status_after === Version2Status.DRAFT &&
           wfi.from_user_id === context.page.data.user.id,
       )
 
@@ -88,15 +90,15 @@ export const createRequestImprovementView: CreateWorkflowInfoViewFn = (
 export const createRequestFeedbackView: CreateWorkflowInfoViewFn = (context, objects) =>
   objects
     .filter(obj =>
-      (obj.workflowinfos as DealWorkflowInfo[]).some(
-        wfi => wfi.draft_status_before === wfi.draft_status_after && !wfi.resolved,
+      obj.workflowinfos.some(
+        wfi => wfi.status_before === wfi.status_after && !wfi.resolved,
       ),
     )
     .map(obj => {
-      const wfis = obj.workflowinfos as DealWorkflowInfo[]
+      const wfis = obj.workflowinfos
       const relevantWFI = wfis.find(
         wfi =>
-          wfi.draft_status_before === wfi.draft_status_after &&
+          wfi.status_before === wfi.status_after &&
           wfi.from_user_id === context.page.data.user.id,
       )
 
