@@ -4,6 +4,7 @@ import { derived } from "svelte/store"
 
 import { fieldChoices } from "$lib/stores"
 
+import ArrayTextField from "$components/Fields/Display2/ArrayTextField.svelte"
 import BooleanField from "$components/Fields/Display2/BooleanField.svelte"
 import ChoicesField from "$components/Fields/Display2/ChoicesField.svelte"
 import CountryField from "$components/Fields/Display2/CountryField.svelte"
@@ -28,6 +29,7 @@ import PointField from "$components/Fields/Display2/PointField.svelte"
 import TextField from "$components/Fields/Display2/TextField.svelte"
 import UserField from "$components/Fields/Display2/UserField.svelte"
 import WorkflowInfosField from "$components/Fields/Display2/WorkflowInfosField.svelte"
+import ArrayTextEditField from "$components/Fields/Edit2/ArrayTextEditField.svelte"
 import BooleanEditField from "$components/Fields/Edit2/BooleanEditField.svelte"
 import ChoicesEditField from "$components/Fields/Edit2/ChoicesEditField.svelte"
 import CountryEditField from "$components/Fields/Edit2/CountryEditField.svelte"
@@ -412,18 +414,16 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
     },
     // Local communities
     name_of_community: {
-      displayField: TextField,
-      editField: TextEditField,
+      displayField: ArrayTextField,
+      editField: ArrayTextEditField,
       label: $_("Name of community"),
-      extras: { multiline: true },
-    }, // TODO special case, where we are supposed to parse to multiple entries
+    },
     //  see http://localhost:9000/deal/6552/#local_communities as example
     name_of_indigenous_people: {
-      displayField: TextField,
-      editField: TextEditField,
+      displayField: ArrayTextField,
+      editField: ArrayTextEditField,
       label: $_("Name of indigenous people"),
-      extras: { multiline: true },
-    }, // TODO special case, where we are supposed to parse to multiple entries
+    },
     people_affected_comment: {
       displayField: TextField,
       editField: TextEditField,
@@ -610,7 +610,7 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
       extras: {
         choices: $fieldChoices.deal.former_land_cover,
         multipleChoices: true,
-        otherHint: $_("Please specify in comment field"),
+        otherHint: $_("Other: please specify in comment field"),
       },
     },
     former_land_cover_comment: {
