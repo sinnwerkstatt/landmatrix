@@ -9,7 +9,7 @@ from django.forms import model_to_dict
 from apps.landmatrix.models.deal import DealOld, DealVersionOld, DealWorkflowInfoOld
 from apps.landmatrix.models.investor import (
     InvestorOld,
-    InvestorVersion,
+    InvestorVersionOld,
     InvestorWorkflowInfoOld,
 )
 
@@ -42,7 +42,7 @@ MODELS: list[Type[Model]] = [
     DealVersionOld,
     DealWorkflowInfoOld,
     InvestorOld,
-    InvestorVersion,
+    InvestorVersionOld,
     InvestorWorkflowInfoOld,
 ]
 

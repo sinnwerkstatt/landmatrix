@@ -32,7 +32,7 @@ class InvestorQuerySet(models.QuerySet):
         return self
 
 
-class InvestorVersion(Version):
+class InvestorVersionOld(Version):
     object = models.ForeignKey(
         "InvestorOld",
         null=True,
@@ -82,7 +82,7 @@ class InvestorOld(models.Model):
         choices=DRAFT_STATUS_CHOICES, null=True, blank=True
     )
     current_draft = models.ForeignKey(
-        InvestorVersion, null=True, blank=True, on_delete=models.SET_NULL
+        InvestorVersionOld, null=True, blank=True, on_delete=models.SET_NULL
     )
 
     created_at = models.DateTimeField(_("Created"), default=timezone.now)
@@ -158,7 +158,7 @@ class InvestorWorkflowInfoOld(WorkflowInfo):
         InvestorOld, on_delete=models.CASCADE, related_name="workflowinfos"
     )
     investor_version = models.ForeignKey(
-        InvestorVersion,
+        InvestorVersionOld,
         on_delete=models.SET_NULL,
         related_name="workflowinfos",
         null=True,

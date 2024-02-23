@@ -32,6 +32,10 @@ class Migration(migrations.Migration):
             old_name='Investor',
             new_name='InvestorOld',
         ),
+        migrations.RenameModel(
+            old_name='InvestorVersion',
+            new_name='InvestorVersionOld',
+        ),
         migrations.CreateModel(
             name='DealOldParentCompanies',
             fields=[

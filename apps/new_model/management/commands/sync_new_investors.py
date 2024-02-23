@@ -7,7 +7,7 @@ from icecream import ic
 
 from apps.landmatrix.models.investor import (
     InvestorOld,
-    InvestorVersion,
+    InvestorVersionOld,
     InvestorWorkflowInfoOld,
 )
 from apps.landmatrix.models.new import (
@@ -104,7 +104,7 @@ class Command(BaseCommand):
             )
 
 
-def _map_status(investor_hull, new_version, old_version: InvestorVersion):
+def _map_status(investor_hull, new_version, old_version: InvestorVersionOld):
     old_version_dict = old_version.serialized_data
 
     if old_version_dict["status"] == 1:
