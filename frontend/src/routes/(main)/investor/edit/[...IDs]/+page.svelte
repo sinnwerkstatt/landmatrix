@@ -187,7 +187,7 @@
   </div>
 
   <nav
-    class="col-span-1 overflow-x-auto whitespace-nowrap p-2 lg:whitespace-normal"
+    class="overflow-x-auto whitespace-nowrap p-2 lg:whitespace-normal"
     style="grid-area: sidenav"
   >
     <ul>
@@ -209,7 +209,7 @@
     </ul>
   </nav>
 
-  <div class="col-span-5 overflow-y-auto px-4 pb-20" style="grid-area: main">
+  <div class="overflow-y-auto px-4 pb-20" style="grid-area: main">
     {#if activeTab === "#general"}
       <EditSectionGeneralInfo bind:investor />
     {/if}
@@ -243,18 +243,19 @@
 <style>
   .editgrid {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
     grid-template-rows: auto 1fr;
+    grid-template-columns: repeat(6, 1fr);
     grid-template-areas:
       "header header header header header header"
       "sidenav main main main main main";
 
     @media (width <= 1024px) {
       grid-template-rows: auto auto 1fr;
+      grid-template-columns: 1fr;
       grid-template-areas:
-        "header header header header header header"
-        "sidenav sidenav sidenav sidenav sidenav sidenav"
-        "main main main main main main";
+        "header"
+        "sidenav"
+        "main";
     }
   }
 </style>
