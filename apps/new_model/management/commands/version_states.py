@@ -1,12 +1,12 @@
 from django.core.management.base import BaseCommand
 
-from apps.landmatrix.models.deal import Deal, DealVersion
+from apps.landmatrix.models.deal import DealOld, DealVersion
 
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
         just_a_draft = []
-        for deal in Deal.objects.all().order_by("id"):  # type: Deal
+        for deal in DealOld.objects.all().order_by("id"):  # type: DealOld
             print(deal.id)
             if deal.versions.count() == 1:
                 dv: DealVersion = deal.versions.get()

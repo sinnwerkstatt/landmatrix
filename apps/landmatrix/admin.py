@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from apps.landmatrix.models.country import Country, Region
 from apps.landmatrix.models.currency import Currency
-from apps.landmatrix.models.deal import Deal
+from apps.landmatrix.models.deal import DealOld
 from apps.landmatrix.models.investor import Investor, InvestorVentureInvolvement
 
 from apps.landmatrix.models.new import (
@@ -25,7 +25,7 @@ admin.site.register(Region)
 admin.site.register(Currency)
 
 
-@admin.register(Deal)
+@admin.register(DealOld)
 class DealAdmin(admin.ModelAdmin):
     pass
 

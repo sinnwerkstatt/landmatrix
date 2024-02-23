@@ -4,7 +4,7 @@ from tqdm import tqdm
 
 from django.core.management import BaseCommand
 
-from apps.landmatrix.models.deal import Deal, DealVersion
+from apps.landmatrix.models.deal import DealOld, DealVersion
 
 JSON_fields = [
     "contract_size",
@@ -40,8 +40,8 @@ class Command(BaseCommand):
             return
 
         print("Iterating Deals.")
-        n_deals = Deal.objects.count()
-        deal_iterator = Deal.objects.iterator()
+        n_deals = DealOld.objects.count()
+        deal_iterator = DealOld.objects.iterator()
         for _ in tqdm(range(n_deals)):
             deal = next(deal_iterator)
             forward_deal(deal)

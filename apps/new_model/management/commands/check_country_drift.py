@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 
 from apps.landmatrix.models.country import Country
-from apps.landmatrix.models.deal import Deal
+from apps.landmatrix.models.deal import DealOld
 
 
 class Command(BaseCommand):
@@ -9,7 +9,7 @@ class Command(BaseCommand):
         countries = {
             x["id"]: x["name"] for x in Country.objects.all().values("id", "name")
         }
-        for deal in Deal.objects.all().order_by("id"):
+        for deal in DealOld.objects.all().order_by("id"):
             cntrs = set()
             for deal_version in deal.versions.all().order_by("id"):
                 payload = deal_version.serialized_data

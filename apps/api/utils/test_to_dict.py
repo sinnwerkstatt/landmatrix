@@ -7,7 +7,7 @@
 # from apps.accounts.models import User
 # from apps.landmatrix.models.abstracts import DRAFT_STATUS, STATUS
 # from apps.landmatrix.models.country import Country
-# from apps.landmatrix.models.deal import Deal, DealVersion, DealWorkflowInfoOld
+# from apps.landmatrix.models.deal import DealOld, DealVersion, DealWorkflowInfoOld
 #
 # from .to_dict import deal_to_dict
 #
@@ -40,7 +40,7 @@
 #         ger = Country.objects.get(name="Germany")
 #         # lookups = create_lookups()
 #
-#         deal = Deal.objects.create(
+#         deal = DealOld.objects.create(
 #             id=1000,
 #             country=ger,
 #             created_at=FIRST_OF_JANUARY_2022,

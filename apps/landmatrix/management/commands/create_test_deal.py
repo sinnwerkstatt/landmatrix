@@ -1,16 +1,16 @@
 from django.core.management.base import BaseCommand
 
 from apps.landmatrix.models.country import Country
-from apps.landmatrix.models.deal import Deal
+from apps.landmatrix.models.deal import DealOld
 from apps.landmatrix.models.investor import Investor, InvestorVentureInvolvement
 
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        Deal.objects.filter(id=9999).delete()
+        DealOld.objects.filter(id=9999).delete()
         countries = Country.objects.all()[:4]
 
-        deal = Deal.objects.create(
+        deal = DealOld.objects.create(
             id=9999,
             country=Country.objects.get(name="Uganda"),
             intended_size=123.45,

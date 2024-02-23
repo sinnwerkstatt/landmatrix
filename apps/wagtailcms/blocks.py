@@ -12,7 +12,7 @@ from wagtail.snippets.blocks import SnippetChooserBlock
 
 from apps.landmatrix.models.country import Country as DataCountry
 from apps.landmatrix.models.country import Region as DataRegion
-from apps.landmatrix.models.deal import Deal
+from apps.landmatrix.models.deal import DealOld
 
 from .partners import Partner
 from .twitter import TwitterTimeline
@@ -225,7 +225,7 @@ class DealCountBlock(StructBlock):
     text = CharBlock(default="It's a big deal")
 
     def get_api_representation(self, value, context=None):
-        deals = Deal.objects.public()
+        deals = DealOld.objects.public()
         count_deals = deals.count()
 
         x = deals.aggregate(sum_ha=Sum("current_contract_size"))

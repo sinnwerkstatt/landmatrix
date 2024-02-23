@@ -5,14 +5,14 @@ from sys import getsizeof, stderr
 
 from django.core.management import BaseCommand
 
-from apps.landmatrix.models.deal import Deal
+from apps.landmatrix.models.deal import DealOld
 
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
         """Find large deals in db."""
 
-        deals = list(Deal.objects.values())
+        deals = list(DealOld.objects.values())
 
         sizes = sorted(
             [

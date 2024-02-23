@@ -13,7 +13,7 @@ from apps.api.utils.geojson import (
     create_feature,
     create_feature_collection,
 )
-from apps.landmatrix.models.deal import Deal
+from apps.landmatrix.models.deal import DealOld
 from apps.utils import qs_values_to_dict
 
 ExportType = Literal["locations", "areas"]
@@ -126,7 +126,7 @@ class DealValues(TypedDict):
 
 
 def get_deal_values(request: WSGIRequest) -> list[DealValues]:
-    qs_deals = Deal.objects.visible(
+    qs_deals = DealOld.objects.visible(
         user=request.user, subset=request.GET.get("subset", "PUBLIC")
     ).exclude(geojson=None)
 

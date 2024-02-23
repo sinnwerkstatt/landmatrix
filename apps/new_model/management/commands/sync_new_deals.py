@@ -5,7 +5,7 @@ from django.core.management.base import BaseCommand
 from django.db import connection
 from icecream import ic
 
-from apps.landmatrix.models.deal import Deal, DealWorkflowInfoOld
+from apps.landmatrix.models.deal import DealOld, DealWorkflowInfoOld
 from apps.landmatrix.models.new import (
     DealHull,
     DealVersion2,
@@ -34,12 +34,12 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         exclude_ids = []
-        deals = Deal.objects.all().order_by("id").exclude(id__in=exclude_ids)
+        deals = DealOld.objects.all().order_by("id").exclude(id__in=exclude_ids)
         if options["start_id"]:
             deals = deals.filter(id__gte=options["start_id"])
         if options["end_id"]:
             deals = deals.filter(id__lte=options["end_id"])
-        for old_deal in deals:  # type: Deal
+        for old_deal in deals:  # type: DealOld
             url = f"https://landmatrix.org/deal/{old_deal.id}/"
             ic(old_deal.id, old_deal.status, url)
 

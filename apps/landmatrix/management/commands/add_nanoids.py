@@ -2,14 +2,14 @@ from nanoid import generate
 
 from django.core.management.base import BaseCommand
 
-from apps.landmatrix.models.deal import Deal
+from apps.landmatrix.models.deal import DealOld
 from apps.landmatrix.models.investor import Investor
 
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
         print("Deals and deal versions.")
-        for deal in Deal.objects.all().order_by("id"):
+        for deal in DealOld.objects.all().order_by("id"):
             updated = False
 
             for x in deal.datasources:

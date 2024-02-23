@@ -8,7 +8,7 @@ from apps.api.utils.geojson import (
     is_geometry_type,
 )
 
-from ...models.deal import Deal, DealVersion
+from ...models.deal import DealOld, DealVersion
 
 
 class Command(BaseCommand):
@@ -16,8 +16,8 @@ class Command(BaseCommand):
         """Set current on area feature if not ambiguous."""
         print("Iterating Deals")
         for d in tqdm(
-            Deal.objects.iterator(),
-            total=Deal.objects.count(),
+            DealOld.objects.iterator(),
+            total=DealOld.objects.count(),
         ):
             d.locations = [fix_current(location) for location in d.locations]
             d.save()

@@ -6,7 +6,7 @@ import termtables as tt
 
 from django.core.management.base import BaseCommand
 
-from apps.landmatrix.models.deal import Deal
+from apps.landmatrix.models.deal import DealOld
 
 
 @dataclass
@@ -105,7 +105,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         global_count = 0
         global_multi_delete = 0
-        deals = Deal.objects.active().order_by("id")
+        deals = DealOld.objects.active().order_by("id")
         deal_count = deals.count()
 
         cutoff = datetime(2018, 10, 1, tzinfo=pytz.UTC)

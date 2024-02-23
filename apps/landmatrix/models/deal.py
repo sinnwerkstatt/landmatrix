@@ -73,7 +73,7 @@ class DealQuerySet(models.QuerySet):
 
 class DealVersion(Version):
     object = models.ForeignKey(
-        "Deal",
+        "DealOld",
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
@@ -638,7 +638,7 @@ class AbstractDealBase(models.Model):
         abstract = True
 
 
-class Deal(AbstractDealBase):
+class DealOld(AbstractDealBase):
     """Meta Info"""
 
     fully_updated = models.BooleanField(default=False)
@@ -756,7 +756,7 @@ class Deal(AbstractDealBase):
 
 class DealWorkflowInfoOld(WorkflowInfo):
     deal = models.ForeignKey(
-        Deal, on_delete=models.CASCADE, related_name="workflowinfos"
+        DealOld, on_delete=models.CASCADE, related_name="workflowinfos"
     )
     deal_version = models.ForeignKey(
         DealVersion,
@@ -767,10 +767,10 @@ class DealWorkflowInfoOld(WorkflowInfo):
     )
 
 
-class DealParentCompanies(models.Model):
+class DealOldParentCompanies(models.Model):
     """A view on deal.parent_companies M2M relation table."""
 
-    deal = models.ForeignKey(Deal, on_delete=models.CASCADE, related_name="+")
+    deal = models.ForeignKey(DealOld, on_delete=models.CASCADE, related_name="+")
     investor = models.ForeignKey(Investor, on_delete=models.CASCADE, related_name="+")
 
     class Meta:
@@ -784,7 +784,7 @@ class DealParentCompanies(models.Model):
 class DealTopInvestors(models.Model):
     """A view on deal.top_investors M2M relation table."""
 
-    deal = models.ForeignKey(Deal, on_delete=models.CASCADE, related_name="+")
+    deal = models.ForeignKey(DealOld, on_delete=models.CASCADE, related_name="+")
     investor = models.ForeignKey(Investor, on_delete=models.CASCADE, related_name="+")
 
     class Meta:

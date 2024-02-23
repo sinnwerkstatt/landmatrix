@@ -19,5 +19,9 @@ class Migration(migrations.Migration):
         migrations.RenameModel(
             old_name='InvestorWorkflowInfo',
             new_name='InvestorWorkflowInfoOld',
-        )
+        ),
+        migrations.RenameModel(
+            old_name='Deal',
+            new_name='DealOld',
+        ),
     ]

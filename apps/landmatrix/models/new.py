@@ -1097,6 +1097,7 @@ class Location(models.Model):
     comment = models.TextField(_("Comment"), blank=True)
 
     def to_dict(self):
+        # TODO Marcus, nuts: i feel like this is obsolete.
         areas: QuerySet[Area] = self.areas.all()
         return {
             "nid": self.nid,

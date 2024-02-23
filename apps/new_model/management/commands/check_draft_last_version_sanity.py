@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from apps.landmatrix.models.deal import Deal
+from apps.landmatrix.models.deal import DealOld
 
 
 class Command(BaseCommand):
@@ -37,7 +37,7 @@ class Command(BaseCommand):
         ]
 
         for deal in (
-            Deal.objects.prefetch_related("country")
+            DealOld.objects.prefetch_related("country")
             .exclude(id__in=error_deals)
             .filter(status=1)
             .order_by("id")

@@ -258,7 +258,7 @@ def workflow_info_resolve(
 
 
 # def global_rankings(_obj, _info, count=10, filters=None):
-#     qs = Deal.objects.active()
+#     qs = DealOld.objects.active()
 #
 #     if filters:
 #         qs = qs.filter(parse_filters(filters))

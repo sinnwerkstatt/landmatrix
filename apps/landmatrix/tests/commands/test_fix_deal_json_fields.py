@@ -11,16 +11,16 @@ from ...management.commands.fix_deal_json_fields import (
     forward_deal,
     forward_version,
 )
-from ...models.deal import Deal, DealVersion
+from ...models.deal import DealOld, DealVersion
 
 UserModel: Type[User] = get_user_model()
 
 
 @pytest.mark.django_db
 def test_fix_json_fields_deal():
-    d1 = Deal.objects.create(**{field: None for field in JSON_fields})
-    d2 = Deal.objects.create(**{field: [] for field in JSON_fields})
-    d3 = Deal.objects.create(**{field: [{"current": True}] for field in JSON_fields})
+    d1 = DealOld.objects.create(**{field: None for field in JSON_fields})
+    d2 = DealOld.objects.create(**{field: [] for field in JSON_fields})
+    d3 = DealOld.objects.create(**{field: [{"current": True}] for field in JSON_fields})
 
     for deal in [d1, d2, d3]:
         forward_deal(deal)
