@@ -49,9 +49,7 @@ class Command(BaseCommand):
                 first_created_at=old_investor.created_at,
             )
 
-            ic(old_investor.id, old_investor.status)
             for old_version in old_investor.versions.all().order_by("id"):
-                ic(old_version)
                 new_version: InvestorVersion
                 base_payload = {
                     "investor_id": old_investor.id,

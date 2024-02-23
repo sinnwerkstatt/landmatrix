@@ -435,7 +435,7 @@ def map_version_payload(ov: dict, nv: DealVersion):
     nv.involved_actors = ov["involved_actors"] or []
     for act in nv.involved_actors:
         if "name" in act.keys():
-            act["name"] = act.get("name", "").strip()
+            act["name"] = (act.get("name") or "").strip()
         if "role" not in act.keys():
             act["role"] = "OTHER"
 
