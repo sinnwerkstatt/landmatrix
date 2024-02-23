@@ -27,7 +27,7 @@ DRAFT_STATUS_CHOICES = (
 )
 
 
-class Version(models.Model):
+class VersionOld(models.Model):
     created_at = models.DateTimeField(db_index=True)
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -63,7 +63,7 @@ class Version(models.Model):
         super().save(*args, **kwargs)
 
 
-class WorkflowInfo(models.Model):
+class WorkflowInfoOld(models.Model):
     from_user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="+"
     )

@@ -1,10 +1,6 @@
-import json
-
 from django.conf import settings
-from django.core import serializers
-from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
-from django.db import models, transaction
+from django.db import models
 from django.db.models import F, Sum
 from django.utils import timezone
 from django.utils.translation import gettext as _
@@ -12,16 +8,15 @@ from django.utils.translation import gettext as _
 from . import choices
 from .abstracts import (
     DRAFT_STATUS_CHOICES,
-    STATUS,
     STATUS_CHOICES,
-    Version,
-    WorkflowInfo,
+    VersionOld,
+    WorkflowInfoOld,
 )
 from .country import Country
 from .currency import Currency
 from .fields import ArrayField
-from .oldfields import ContractsField, DatasourcesField, LocationsField
 from .investor import InvestorOld
+from .oldfields import ContractsField, DatasourcesField, LocationsField
 
 
 class DealQuerySet(models.QuerySet):
@@ -57,7 +52,7 @@ class DealQuerySet(models.QuerySet):
 
     def get_investor_country_rankings(self, country_id: int = None):
         rankings = (
-            DealTopInvestors.objects.filter(deal__in=self)
+            DealOldTopInvestors.objects.filter(deal__in=self)
             .values(country_id=F("investor__country__id"))
             .annotate(deal_size__sum=Sum("deal__deal_size"))
             .order_by("-deal_size__sum")
@@ -71,7 +66,7 @@ class DealQuerySet(models.QuerySet):
         return rankings
 
 
-class DealVersionOld(Version):
+class DealVersionOld(VersionOld):
     object = models.ForeignKey(
         "DealOld",
         null=True,
@@ -754,7 +749,7 @@ class DealOld(AbstractDealBase):
         return f"#{self.id}"
 
 
-class DealWorkflowInfoOld(WorkflowInfo):
+class DealWorkflowInfoOld(WorkflowInfoOld):
     deal = models.ForeignKey(
         DealOld, on_delete=models.CASCADE, related_name="workflowinfos"
     )

@@ -9,9 +9,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from apps.utils import ecma262
-
-from .abstracts import DRAFT_STATUS_CHOICES, STATUS_CHOICES, Version, WorkflowInfo
+from .abstracts import DRAFT_STATUS_CHOICES, STATUS_CHOICES, VersionOld, WorkflowInfoOld
 from .choices import INVESTOR_CLASSIFICATION_CHOICES
 from .country import Country
 from .currency import Currency
@@ -32,7 +30,7 @@ class InvestorQuerySet(models.QuerySet):
         return self
 
 
-class InvestorVersionOld(Version):
+class InvestorVersionOld(VersionOld):
     object = models.ForeignKey(
         "InvestorOld",
         null=True,
@@ -153,7 +151,7 @@ class InvestorOld(models.Model):
         return deals
 
 
-class InvestorWorkflowInfoOld(WorkflowInfo):
+class InvestorWorkflowInfoOld(WorkflowInfoOld):
     investor = models.ForeignKey(
         InvestorOld, on_delete=models.CASCADE, related_name="workflowinfos"
     )
