@@ -50,7 +50,7 @@ VERSION_STATUS_CHOICES = (
 
 class DealVersionBaseFields(models.Model):
     deal = models.ForeignKey(
-        "landmatrix.DealHull", on_delete=models.PROTECT, related_name="versions"
+        "DealHull", on_delete=models.PROTECT, related_name="versions"
     )
 
     # """ Locations """
@@ -244,7 +244,7 @@ class DealVersionBaseFields(models.Model):
 
     """ Investor info """
     operating_company = models.ForeignKey(
-        "landmatrix.InvestorHull",
+        "InvestorHull",
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
@@ -708,14 +708,14 @@ class DealVersion(DealVersionBaseFields, BaseVersionMixin):
 
     # NOTE: Next two fields should have used through keyword.
     parent_companies = models.ManyToManyField(
-        "landmatrix.InvestorHull",
+        "InvestorHull",
         verbose_name=_("Parent companies"),
         related_name="child_deals",
         blank=True,
     )
     # Can be queried via DealTopInvestors2 view model:
     top_investors = models.ManyToManyField(
-        "landmatrix.InvestorHull",
+        "InvestorHull",
         verbose_name=_("Top parent companies"),
         related_name="+",
         blank=True,
@@ -1444,7 +1444,7 @@ class DealHull(HullBase):
 
 class InvestorVersion(BaseVersionMixin, models.Model):
     investor = models.ForeignKey(
-        "landmatrix.InvestorHull", on_delete=models.PROTECT, related_name="versions"
+        "InvestorHull", on_delete=models.PROTECT, related_name="versions"
     )
 
     name = models.CharField(_("Name"), blank=True)
