@@ -190,9 +190,10 @@
             myMarker.loc = loc
             myMarker.deal_id = deal.id
             myMarker.deal_size = deal.selected_version.deal_size
-            if (deal.country) {
-              myMarker.region_id = deal.country.region_id
-              myMarker.country_id = deal.country.id
+            if (deal.country_id) {
+              // TODO there's no region right now
+              // myMarker.region_id = deal.country.region_id
+              myMarker.country_id = deal.country_id
             }
             myMarker.on("click", createMarkerPopup)
             return myMarker

@@ -44,7 +44,7 @@
     { key: "dateOfRequest", label: $_("Date of request"), span: 3 },
     { key: "id", label: $_("ID"), span: 1 },
     { key: "country_id", label: $_("Country"), span: 3 },
-    { key: "status", label: $_("Status"), span: 2 }, // TODO Kurt sometimes Mode sometimes Status
+    { key: "status", label: $_("Status"), span: 2 }, // TODO nuts name it "status" and only show "status"
     { key: "fromUser", label: $_("From user"), span: 2 },
     { key: "toUser", label: $_("To user"), span: 2 },
     { key: "feedback", label: $_("Feedback"), span: 5 },

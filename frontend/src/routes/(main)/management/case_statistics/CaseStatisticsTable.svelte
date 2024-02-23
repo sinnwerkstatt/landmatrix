@@ -48,7 +48,15 @@
 <Table {columns} items={objects} {labels} rowHeightInPx={36} {spans}>
   <svelte:fragment let:fieldName let:obj slot="field">
     {#if fieldName === "id"}
-      <DisplayField fieldname="id" value={obj.id} {wrapperClass} {valueClass} {model} />
+      <!-- TODO nuts: add objectVersion under certain conditions -->
+      <DisplayField
+        fieldname="id"
+        value={obj.id}
+        {wrapperClass}
+        {valueClass}
+        {model}
+        extras={{ objectVersion: obj.draft_version_id }}
+      />
     {:else if fieldName === "mode"}
       <div class="whitespace-nowrap">{obj.mode}</div>
     {:else if fieldName === "name"}
@@ -61,7 +69,7 @@
       />
     {:else if fieldName === "country_id"}
       <DisplayField
-        fieldname="country"
+        fieldname="country_id"
         value={obj.country_id}
         {wrapperClass}
         {valueClass}
