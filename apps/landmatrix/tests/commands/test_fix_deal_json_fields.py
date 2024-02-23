@@ -11,7 +11,7 @@ from ...management.commands.fix_deal_json_fields import (
     forward_deal,
     forward_version,
 )
-from ...models.deal import DealOld, DealVersion
+from ...models.deal import DealOld, DealVersionOld
 
 UserModel: Type[User] = get_user_model()
 
@@ -36,13 +36,13 @@ def test_fix_json_fields_version():
     user = UserModel.objects.create()
     modifier_fields = {"modified_at": "2000-01-01", "modified_by": user.id}
 
-    v1 = DealVersion.objects.create(
+    v1 = DealVersionOld.objects.create(
         serialized_data={**{field: None for field in JSON_fields}, **modifier_fields},
     )
-    v2 = DealVersion.objects.create(
+    v2 = DealVersionOld.objects.create(
         serialized_data={**{field: [] for field in JSON_fields}, **modifier_fields},
     )
-    v3 = DealVersion.objects.create(
+    v3 = DealVersionOld.objects.create(
         serialized_data={
             **{field: [{"current": True}] for field in JSON_fields},
             **modifier_fields,

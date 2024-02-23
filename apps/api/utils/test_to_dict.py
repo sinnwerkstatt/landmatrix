@@ -7,7 +7,7 @@
 # from apps.accounts.models import User
 # from apps.landmatrix.models.abstracts import DRAFT_STATUS, STATUS
 # from apps.landmatrix.models.country import Country
-# from apps.landmatrix.models.deal import DealOld, DealVersion, DealWorkflowInfoOld
+# from apps.landmatrix.models.deal import DealOld, DealVersionOld, DealWorkflowInfoOld
 #
 # from .to_dict import deal_to_dict
 #
@@ -48,14 +48,14 @@
 #             status=STATUS["DRAFT"],
 #             draft_status=DRAFT_STATUS["DRAFT"],
 #         )
-#         version1 = DealVersion.objects.create(
+#         version1 = DealVersionOld.objects.create(
 #             id=2000,
 #             created_at=FIRST_OF_JANUARY_2022,
 #             created_by=self.AGATHA,
 #             object=deal,
 #             serialized_data=deal.serialize_for_version(),
 #         )
-#         version2 = DealVersion.objects.create(
+#         version2 = DealVersionOld.objects.create(
 #             id=2001,
 #             created_at=SECOND_OF_JANUARY_2022,
 #             created_by=self.WILLIAM,

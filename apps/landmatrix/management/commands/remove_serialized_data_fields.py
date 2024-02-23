@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 from django.core.management import BaseCommand
 
-from ...models.deal import DealVersion
+from ...models.deal import DealVersionOld
 
 DEAL_FIELDS_TO_BE_DELETED = [
     "confidential_reason",
@@ -23,8 +23,8 @@ class Command(BaseCommand):
 
         print("Iterating DealVersions")
         for v in tqdm(
-            DealVersion.objects.iterator(),
-            total=DealVersion.objects.count(),
+            DealVersionOld.objects.iterator(),
+            total=DealVersionOld.objects.count(),
         ):
             for field_name in DEAL_FIELDS_TO_BE_DELETED:
                 try:

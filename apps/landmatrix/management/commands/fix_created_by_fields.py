@@ -5,7 +5,7 @@ from django.db.models import QuerySet
 
 from apps.accounts.models import User
 
-from ...models.deal import DealOld, DealVersion
+from ...models.deal import DealOld, DealVersionOld
 from ...models.investor import Investor, InvestorVersion
 
 
@@ -40,7 +40,7 @@ def fix_creator(obj: DealOld | Investor) -> bool:
         obj.save()
         fixed = True
 
-    versions_qs: QuerySet[DealVersion | InvestorVersion] = obj.versions.all()
+    versions_qs: QuerySet[DealVersionOld | InvestorVersion] = obj.versions.all()
 
     for version in versions_qs:
         serialized_creator = creator.id if creator else None

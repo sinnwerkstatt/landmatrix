@@ -71,7 +71,7 @@ class DealQuerySet(models.QuerySet):
         return rankings
 
 
-class DealVersion(Version):
+class DealVersionOld(Version):
     object = models.ForeignKey(
         "DealOld",
         null=True,
@@ -722,7 +722,7 @@ class DealOld(AbstractDealBase):
         choices=DRAFT_STATUS_CHOICES, null=True, blank=True
     )
     current_draft = models.ForeignKey(
-        DealVersion, null=True, blank=True, on_delete=models.SET_NULL
+        DealVersionOld, null=True, blank=True, on_delete=models.SET_NULL
     )
 
     """ # Timestamps """
@@ -759,7 +759,7 @@ class DealWorkflowInfoOld(WorkflowInfo):
         DealOld, on_delete=models.CASCADE, related_name="workflowinfos"
     )
     deal_version = models.ForeignKey(
-        DealVersion,
+        DealVersionOld,
         on_delete=models.SET_NULL,
         related_name="workflowinfos",
         null=True,
@@ -775,13 +775,13 @@ class DealOldParentCompanies(models.Model):
 
     class Meta:
         managed = False
-        db_table = "landmatrix_deal_parent_companies"
+        db_table = "landmatrix_dealold_parent_companies"
 
     def __str__(self):
         return f"#{self.deal_id} - {self.investor.name}"
 
 
-class DealTopInvestors(models.Model):
+class DealOldTopInvestors(models.Model):
     """A view on deal.top_investors M2M relation table."""
 
     deal = models.ForeignKey(DealOld, on_delete=models.CASCADE, related_name="+")
@@ -789,7 +789,7 @@ class DealTopInvestors(models.Model):
 
     class Meta:
         managed = False
-        db_table = "landmatrix_deal_top_investors"
+        db_table = "landmatrix_dealold_top_investors"
 
     def __str__(self):
         return f"#{self.deal_id} - {self.investor.name}"

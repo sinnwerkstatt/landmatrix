@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from apps.landmatrix.models.deal import DealOld, DealVersion
+from apps.landmatrix.models.deal import DealOld, DealVersionOld
 
 
 class Command(BaseCommand):
@@ -9,7 +9,7 @@ class Command(BaseCommand):
         for deal in DealOld.objects.all().order_by("id"):  # type: DealOld
             print(deal.id)
             if deal.versions.count() == 1:
-                dv: DealVersion = deal.versions.get()
+                dv: DealVersionOld = deal.versions.get()
                 assert dv.serialized_data["status"] == 1
                 assert dv.serialized_data["draft_status"] is not None
                 just_a_draft += [deal.id]

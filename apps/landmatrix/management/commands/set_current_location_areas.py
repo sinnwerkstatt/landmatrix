@@ -8,7 +8,7 @@ from apps.api.utils.geojson import (
     is_geometry_type,
 )
 
-from ...models.deal import DealOld, DealVersion
+from ...models.deal import DealOld, DealVersionOld
 
 
 class Command(BaseCommand):
@@ -24,8 +24,8 @@ class Command(BaseCommand):
 
         print("Iterating DealVersions")
         for v in tqdm(
-            DealVersion.objects.iterator(),
-            total=DealVersion.objects.count(),
+            DealVersionOld.objects.iterator(),
+            total=DealVersionOld.objects.count(),
         ):
             v.serialized_data["locations"] = [
                 fix_current(location) for location in v.serialized_data["locations"]

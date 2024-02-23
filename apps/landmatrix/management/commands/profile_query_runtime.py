@@ -6,7 +6,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import ForeignKey, Model
 from django.forms import model_to_dict
 
-from apps.landmatrix.models.deal import DealOld, DealVersion, DealWorkflowInfoOld
+from apps.landmatrix.models.deal import DealOld, DealVersionOld, DealWorkflowInfoOld
 from apps.landmatrix.models.investor import (
     Investor,
     InvestorVersion,
@@ -39,7 +39,7 @@ class Timer:
 
 MODELS: list[Type[Model]] = [
     DealOld,
-    DealVersion,
+    DealVersionOld,
     DealWorkflowInfoOld,
     Investor,
     InvestorVersion,
