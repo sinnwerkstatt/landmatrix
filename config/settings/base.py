@@ -194,9 +194,9 @@ SPECTACULAR_SETTINGS = {
     "SWAGGER_UI_DIST": "SIDECAR",
     "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
     "REDOC_DIST": "SIDECAR",
-    # "SERVE_URLCONF": "apps.api.urls", # TODO Kurt another option
-    # "PREPROCESSING_HOOKS": ["apps.api.spectacular.preprocessing_filter_spec"],
-    "SERVE_PUBLIC": False,
+    # "SERVE_URLCONF": "apps.api.urls",
+    "PREPROCESSING_HOOKS": ["apps.api.spectacular.preprocessing_filter_spec"],
+    # "SERVE_PUBLIC": False,
 }
 
 IMPERSONATE = {
