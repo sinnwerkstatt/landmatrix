@@ -16,7 +16,7 @@
 
   const dealColumns: Col[] = [
     { key: "id", colSpan: 1 },
-    { key: "mode", colSpan: 2 },
+    { key: "status", colSpan: 2 },
     { key: "country_id", colSpan: 2 },
     { key: "deal_size", colSpan: 2 },
     { key: "confidential", colSpan: 2 },
@@ -26,7 +26,7 @@
   ]
   const investorColumns: Col[] = [
     { key: "id", colSpan: 1 },
-    { key: "mode", colSpan: 2 },
+    { key: "status", colSpan: 2 },
     { key: "name", colSpan: 5 },
     { key: "country_id", colSpan: 4 },
     { key: "created_at", colSpan: 2 },
@@ -57,55 +57,18 @@
         {model}
         extras={{ objectVersion: obj.draft_version_id }}
       />
-    {:else if fieldName === "mode"}
-      <div class="whitespace-nowrap">{obj.mode}</div>
     {:else if fieldName === "name"}
       <DisplayField
-        fieldname="name"
+        fieldname={fieldName}
         model="investor"
-        value={obj.active_version__name}
+        value={obj.name}
         {wrapperClass}
         {valueClass}
       />
-    {:else if fieldName === "country_id"}
+    {:else if ["status", "country_id", "deal_size", "confidential", "created_at", "modified_at", "fully_updated_at"].includes(fieldName)}
       <DisplayField
-        fieldname="country_id"
-        value={obj.country_id}
-        {wrapperClass}
-        {valueClass}
-      />
-    {:else if fieldName === "deal_size"}
-      <DisplayField
+        value={obj[fieldName]}
         fieldname={fieldName}
-        value={obj.active_version__deal_size}
-        {wrapperClass}
-        {valueClass}
-      />
-    {:else if fieldName === "confidential"}
-      <DisplayField
-        value={obj.confidential}
-        fieldname={fieldName}
-        {wrapperClass}
-        {valueClass}
-      />
-    {:else if fieldName === "created_at"}
-      <DisplayField
-        value={obj.created_at}
-        fieldname="created_at"
-        {wrapperClass}
-        {valueClass}
-      />
-    {:else if fieldName === "modified_at"}
-      <DisplayField
-        value={obj.modified_at}
-        fieldname="modified_at"
-        {wrapperClass}
-        {valueClass}
-      />
-    {:else if fieldName === "fully_updated_at"}
-      <DisplayField
-        value={obj.fully_updated_at}
-        fieldname="fully_updated_at"
         {wrapperClass}
         {valueClass}
       />

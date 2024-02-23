@@ -172,7 +172,7 @@ class Management(View):
                 ),
             )
 
-            qs = qs.filter(filters[action]["q"]).order_by("-id").distinct().with_mode()
+            qs = qs.filter(filters[action]["q"]).order_by("-id").distinct()
             if is_deal:
                 qs: QuerySet[DealHull]
                 wflos = ArraySubquery(
@@ -214,7 +214,6 @@ class Management(View):
                     )
                     .values(
                         "id",
-                        "mode",
                         "active_version_id",
                         "draft_version_id",
                         "deleted",
@@ -224,7 +223,7 @@ class Management(View):
                         "country_id",
                         "fully_updated_at",
                     )
-                    .annotate(workflowinfos=wflos)
+                    .annotate(workflowinfos=wflos, status=F("draft_version__status"))
                 )
             else:
                 qs: QuerySet[InvestorHull]
@@ -269,7 +268,6 @@ class Management(View):
                     )
                     .values(
                         "id",
-                        "mode",
                         "active_version_id",
                         "draft_version_id",
                         "deleted",
@@ -277,7 +275,7 @@ class Management(View):
                         "first_created_by_id",
                         "selected_version",
                     )
-                    .annotate(workflowinfos=wflos)
+                    .annotate(workflowinfos=wflos, status=F("draft_version__status"))
                 )
 
             return JsonResponse({"objects": list(ret)})
@@ -380,55 +378,51 @@ class CaseStatistics(View):
 
     @staticmethod
     def __deals_query():
-        return (
-            DealHull.objects.with_mode()
-            .annotate(
-                region_id=F("country__region_id"),
-                created_at=F("first_created_at"),
-                modified_at=F("active_version__modified_at"),
-            )
-            .values(
-                "id",
-                "mode",
-                "active_version_id",
-                "draft_version_id",
-                "draft_version__status",
-                "country_id",
-                "region_id",
-                "created_at",
-                "modified_at",
-                # deal specific
-                "fully_updated_at",
-                "active_version__fully_updated",
-                "confidential",
-                "active_version__deal_size",
-                "active_version__is_public",
-            )
+        return DealHull.objects.annotate(
+            region_id=F("country__region_id"),
+            created_at=F("first_created_at"),
+            modified_at=F("active_version__modified_at"),
+            status=F("draft_version__status"),
+            deal_size=F("active_version__deal_size"),
+        ).values(
+            "id",
+            "active_version_id",
+            "draft_version_id",
+            "draft_version__status",
+            "status",
+            "country_id",
+            "region_id",
+            "created_at",
+            "modified_at",
+            # deal specific
+            "fully_updated_at",
+            "active_version__fully_updated",
+            "confidential",
+            "deal_size",
+            "active_version__is_public",
         )
 
     @staticmethod
     def __investors_query():
-        return (
-            InvestorHull.objects.with_mode()
-            .annotate(
-                country_id=F("active_version__country_id"),
-                region_id=F("active_version__country__region_id"),
-                created_at=F("first_created_at"),
-                modified_at=F("active_version__modified_at"),
-            )
-            .values(
-                "id",
-                "mode",
-                "active_version_id",
-                "draft_version_id",
-                "draft_version__status",
-                "country_id",
-                "region_id",
-                "created_at",
-                "modified_at",
-                # investor specific
-                "active_version__name",
-            )
+        return InvestorHull.objects.annotate(
+            country_id=F("active_version__country_id"),
+            region_id=F("active_version__country__region_id"),
+            created_at=F("first_created_at"),
+            modified_at=F("active_version__modified_at"),
+            status=F("draft_version__status"),
+            name=F("active_version__name"),
+        ).values(
+            "id",
+            "active_version_id",
+            "draft_version_id",
+            "draft_version__status",
+            "status",
+            "country_id",
+            "region_id",
+            "created_at",
+            "modified_at",
+            # investor specific
+            "name",
         )
 
     def _deal_buckets(

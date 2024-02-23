@@ -71,11 +71,11 @@ def add_wfi(
     }
     if isinstance(obj, DealHull):
         return DealWorkflowInfo.objects.create(
-            deal=obj or obj_version.deal, deal_version=obj_version, **kwargs
+            deal=obj, deal_version=obj_version, **kwargs
         )
     else:
         return InvestorWorkflowInfo.objects.create(
-            investor=obj or obj_version.investor, investor_version=obj_version, **kwargs
+            investor=obj, investor_version=obj_version, **kwargs
         )
 
 
@@ -305,9 +305,15 @@ class HullViewSet(viewsets.ReadOnlyModelViewSet):
 
         to_user_id = request.data.get("toUser")
 
+        obj_version = None
+        if version_id := request.data.get("version"):
+            if isinstance(o1, DealHull):
+                obj_version = DealVersion.objects.get(id=version_id)
+            else:
+                obj_version = InvestorVersion.objects.get(id=version_id)
         add_wfi(
             obj=o1,
-            obj_version=request.data.get("version"),
+            obj_version=obj_version,
             from_user=request.user,
             to_user_id=to_user_id,
             comment=request.data.get("comment") or "",

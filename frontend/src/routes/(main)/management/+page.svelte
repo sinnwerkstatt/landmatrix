@@ -23,7 +23,7 @@
 
   import { downloadAsCSV, downloadAsXLSX } from "./downloadObjects.js"
   import RightFilterBar from "./RightFilterBar.svelte"
-  import { managementFilters, Mode } from "./state"
+  import { managementFilters } from "./state"
   import WorkflowInfoView from "./WorkflowInfoView.svelte"
 
   dayjs.extend(isSameOrBefore)
@@ -33,7 +33,7 @@
 
   let model: "deal" | "investor" = "deal"
   let activeTabId: string
-  let objects: Array<(DealHull | InvestorHull) & { mode?: Mode }> = []
+  let objects: Array<DealHull | InvestorHull> = []
 
   interface Tab {
     id: string
@@ -100,7 +100,7 @@
 
   const dealColumns = {
     id: 1,
-    mode: 2,
+    status: 2,
     country_id: 2,
     deal_size: 2,
     first_created_at: 2,
@@ -113,7 +113,7 @@
 
   const investorColumns = {
     id: 1,
-    mode: 2,
+    status: 2,
     name: 3,
     country_id: 4,
     // deals: 1,
@@ -197,7 +197,8 @@
   $: getCounts(model)
   $: fetchObjects(activeTabId, model)
   $: filteredObjects = objects.filter(obj => {
-    if ($managementFilters.mode) if (obj.mode !== $managementFilters.mode) return false
+    if ($managementFilters.status)
+      if (obj.status !== $managementFilters.status) return false
     if ($managementFilters.country)
       if (model === "deal") {
         if ((obj as DealHull).country_id !== $managementFilters.country.id) return false

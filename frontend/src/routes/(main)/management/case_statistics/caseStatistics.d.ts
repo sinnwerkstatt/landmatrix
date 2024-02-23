@@ -9,7 +9,7 @@ export interface Counts {
 
 interface CaseStatisticsObj {
   id: number
-  mode: string
+  status: string | null
   active_version_id: number | null
   draft_version_id: number | null
   draft_version__status: string
@@ -24,10 +24,10 @@ interface CaseStatisticsObj {
 export interface CaseStatisticsDeal extends CaseStatisticsObj {
   fully_updated_at: string | null
   confidential: boolean
-  active_version__deal_size: number | null
+  deal_size: number | null
   active_version__is_public: boolean
   active_version__fully_updated: boolean
 }
 export interface CaseStatisticsInvestor extends CaseStatisticsObj {
-  active_version__name: string
+  name: string
 }

@@ -168,11 +168,11 @@
             type="text"
             class="inpt"
             placeholder={$_("Reply")}
-            required
           />
           <button
             class="btn btn-pelorous -ml-0.5 inline-flex h-[34px] items-center gap-2 px-2"
             type="submit"
+            disabled={!reply}
           >
             <ChatBubbleLeftIcon class="h-5 w-5" />
           </button>

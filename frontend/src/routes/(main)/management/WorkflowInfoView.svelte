@@ -88,8 +88,7 @@
         value={obj.country_id}
       />
     {:else if fieldName === "status"}
-      {obj.mode}
-      <!--            <StatusField status={obj.status} draft_status={obj.draft_status} />-->
+      <DisplayField {wrapperClass} {valueClass} fieldname="status" value={obj.status} />
     {:else if fieldName === "fromUser"}
       <DisplayField
         fieldname="created_by_id"

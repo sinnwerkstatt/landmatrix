@@ -11,6 +11,7 @@ import CountryField from "$components/Fields/Display2/CountryField.svelte"
 import DateTimeField from "$components/Fields/Display2/DateTimeField.svelte"
 import DealsLengthField from "$components/Fields/Display2/DealsLengthField.svelte"
 import DecimalField from "$components/Fields/Display2/DecimalField.svelte"
+import DraftVersionStatusField from "$components/Fields/Display2/DraftVersionStatusField.svelte"
 import FileField from "$components/Fields/Display2/FileField.svelte"
 import IDField from "$components/Fields/Display2/IDField.svelte"
 import InvestorLinkField from "$components/Fields/Display2/InvestorLinkField.svelte"
@@ -98,7 +99,7 @@ export const investorFields = derived([_, fieldChoices], ([$_, $fieldChoices]) =
       displayField: WorkflowInfosField,
       label: $_("Comments / History"),
     },
-    mode: { displayField: TextField, label: $_("Mode") },
+    status: { displayField: DraftVersionStatusField, label: $_("Status") },
     deals: { displayField: DealsLengthField, label: $_("Deals") },
   } as { [key: string]: Field }
 })
@@ -137,7 +138,7 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
       displayField: WorkflowInfosField,
       label: $_("Comments / History"),
     },
-    mode: { displayField: TextField, label: $_("Mode") },
+    status: { displayField: DraftVersionStatusField, label: $_("Status") },
     // General
     intended_size: {
       displayField: DecimalField,
