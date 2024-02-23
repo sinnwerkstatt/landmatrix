@@ -6,14 +6,14 @@ from django.db.models import QuerySet
 from apps.accounts.models import User
 
 from ...models.deal import DealOld, DealVersionOld
-from ...models.investor import Investor, InvestorVersion
+from ...models.investor import InvestorOld, InvestorVersion
 
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
         """Fix created_by object field."""
 
-        for model in [DealOld, Investor]:
+        for model in [DealOld, InvestorOld]:
             print(f"Fixing {model.__name__} objects...")
 
             fixed_obj_ids: list[int] = []
@@ -29,7 +29,7 @@ class Command(BaseCommand):
             print("Fixed object ids:", {*fixed_obj_ids})
 
 
-def fix_creator(obj: DealOld | Investor) -> bool:
+def fix_creator(obj: DealOld | InvestorOld) -> bool:
     assert obj.versions.count() > 0
 
     creator: User | None = obj.versions.last().created_by

@@ -339,16 +339,16 @@ class Command(BaseCommand):
             # parent_companies = []
             # for pid in ov["parent_companies"]:
             #     try:
-            #         parent_companies += [Investor.objects.get(id=pid)]
-            #     except Investor.DoesNotExist:
+            #         parent_companies += [InvestorOld.objects.get(id=pid)]
+            #     except InvestorOld.DoesNotExist:
             #         pass
             # # noinspection PyUnresolvedReferences
             # nv.parent_companies.set(parent_companies)
             # top_investors = []
             # for pid in ov["top_investors"]:
             #     try:
-            #         top_investors += [Investor.objects.get(id=pid)]
-            #     except Investor.DoesNotExist:
+            #         top_investors += [InvestorOld.objects.get(id=pid)]
+            #     except InvestorOld.DoesNotExist:
             #         pass
             # # noinspection PyUnresolvedReferences
             # nv.top_investors.set(top_investors)

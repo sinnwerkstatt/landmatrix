@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.deal import DealOld
-from apps.landmatrix.models.investor import Investor, InvestorVentureInvolvement
+from apps.landmatrix.models.investor import InvestorOld, InvestorVentureInvolvement
 
 
 class Command(BaseCommand):
@@ -255,7 +255,7 @@ class Command(BaseCommand):
         # )
         deal.save()
         print("Adding investor")
-        i1 = Investor.objects.create(
+        i1 = InvestorOld.objects.create(
             id=666666,
             name="E-Corp.",
             country=countries[3],
@@ -266,7 +266,7 @@ class Command(BaseCommand):
             status=2,
         )
 
-        pi = Investor.objects.create(
+        pi = InvestorOld.objects.create(
             id=777777,
             name="Mom-Corp.",
             country=countries[3],

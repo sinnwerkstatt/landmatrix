@@ -6,7 +6,7 @@ from django.db.models import QuerySet
 from icecream import ic
 
 from apps.landmatrix.models.investor import (
-    Investor,
+    InvestorOld,
     InvestorVersion,
     InvestorWorkflowInfoOld,
 )
@@ -33,7 +33,9 @@ class Command(BaseCommand):
         parser.add_argument("end_id", nargs="?", type=int)
 
     def handle(self, *args, **options):
-        investors: QuerySet[Investor] = Investor.objects.all().order_by("id").all()
+        investors: QuerySet[InvestorOld] = (
+            InvestorOld.objects.all().order_by("id").all()
+        )
         if options["start_id"]:
             investors = investors.filter(id__gte=options["start_id"])
         if options["end_id"]:

@@ -21,7 +21,7 @@ from .country import Country
 from .currency import Currency
 from .fields import ArrayField
 from .oldfields import ContractsField, DatasourcesField, LocationsField
-from .investor import Investor
+from .investor import InvestorOld
 
 
 class DealQuerySet(models.QuerySet):
@@ -296,7 +296,7 @@ class AbstractDealBase(models.Model):
 
     """ Investor info """
     operating_company = models.ForeignKey(
-        Investor,
+        InvestorOld,
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
@@ -656,13 +656,13 @@ class DealOld(AbstractDealBase):
     # NOTE: Next two fields should have used through keyword.
     # Can be queried via DealParentCompanies view model.
     parent_companies = models.ManyToManyField(
-        Investor,
+        InvestorOld,
         verbose_name=_("Parent companies"),
         related_name="child_deals",
     )
     # Can be queried via DealTopInvestors view model.
     top_investors = models.ManyToManyField(
-        Investor,
+        InvestorOld,
         verbose_name=_("Top parent companies"),
         related_name="+",
     )
@@ -771,7 +771,9 @@ class DealOldParentCompanies(models.Model):
     """A view on deal.parent_companies M2M relation table."""
 
     deal = models.ForeignKey(DealOld, on_delete=models.CASCADE, related_name="+")
-    investor = models.ForeignKey(Investor, on_delete=models.CASCADE, related_name="+")
+    investor = models.ForeignKey(
+        InvestorOld, on_delete=models.CASCADE, related_name="+"
+    )
 
     class Meta:
         managed = False
@@ -785,7 +787,9 @@ class DealOldTopInvestors(models.Model):
     """A view on deal.top_investors M2M relation table."""
 
     deal = models.ForeignKey(DealOld, on_delete=models.CASCADE, related_name="+")
-    investor = models.ForeignKey(Investor, on_delete=models.CASCADE, related_name="+")
+    investor = models.ForeignKey(
+        InvestorOld, on_delete=models.CASCADE, related_name="+"
+    )
 
     class Meta:
         managed = False

@@ -3,7 +3,7 @@ from nanoid import generate
 from django.core.management.base import BaseCommand
 
 from apps.landmatrix.models.deal import DealOld
-from apps.landmatrix.models.investor import Investor
+from apps.landmatrix.models.investor import InvestorOld
 
 
 class Command(BaseCommand):
@@ -99,7 +99,7 @@ class Command(BaseCommand):
                     deal_version.save()
 
         print("Investors and investor versions.")
-        for investor in Investor.objects.all().order_by("id"):
+        for investor in InvestorOld.objects.all().order_by("id"):
             updated = False
 
             for x in investor.datasources:

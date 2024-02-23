@@ -34,7 +34,7 @@ class InvestorQuerySet(models.QuerySet):
 
 class InvestorVersion(Version):
     object = models.ForeignKey(
-        "Investor",
+        "InvestorOld",
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
@@ -42,7 +42,7 @@ class InvestorVersion(Version):
     )
 
 
-class Investor(models.Model):
+class InvestorOld(models.Model):
     name = models.CharField(_("Name"))
     country = models.ForeignKey(
         Country,
@@ -155,7 +155,7 @@ class Investor(models.Model):
 
 class InvestorWorkflowInfoOld(WorkflowInfo):
     investor = models.ForeignKey(
-        Investor, on_delete=models.CASCADE, related_name="workflowinfos"
+        InvestorOld, on_delete=models.CASCADE, related_name="workflowinfos"
     )
     investor_version = models.ForeignKey(
         InvestorVersion,
@@ -190,14 +190,14 @@ class InvestorVentureInvolvementQuerySet(models.QuerySet):
 
 class InvestorVentureInvolvement(models.Model):
     investor = models.ForeignKey(
-        Investor,
+        InvestorOld,
         verbose_name=_("Investor"),
         db_index=True,
         related_name="ventures",
         on_delete=models.PROTECT,
     )
     venture = models.ForeignKey(
-        Investor,
+        InvestorOld,
         verbose_name=_("Venture Company"),
         db_index=True,
         related_name="investors",

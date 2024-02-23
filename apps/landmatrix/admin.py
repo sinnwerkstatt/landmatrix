@@ -3,7 +3,7 @@ from django.contrib import admin
 from apps.landmatrix.models.country import Country, Region
 from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.deal import DealOld
-from apps.landmatrix.models.investor import Investor, InvestorVentureInvolvement
+from apps.landmatrix.models.investor import InvestorOld, InvestorVentureInvolvement
 
 from apps.landmatrix.models.new import (
     DealHull,
@@ -30,7 +30,7 @@ class DealAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(Investor)
+@admin.register(InvestorOld)
 class InvestorAdmin(admin.ModelAdmin):
     list_display = ["pk", "__str__", "created_at"]
 
