@@ -1,7 +1,6 @@
 {
   "{from_user.full_name} has addressed you in a comment on {obj_desc}:": "{from_user.full_name} has addressed you in a comment on {obj_desc}:",
   "{from_user.full_name} has updated {obj_desc}:": "{from_user.full_name} has updated {obj_desc}:",
-  "Please review at {url}": "Please review at {url}",
   "Comparing deal #{dealID}": "Comparing deal #{dealID}",
   "Comparing investor #{investorID}": "Comparing investor #{investorID}",
   "Concluded deals over time since the year {year}": "Concluded deals over time since the year {year}",

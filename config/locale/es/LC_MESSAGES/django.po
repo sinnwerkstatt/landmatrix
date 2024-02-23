@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-09 17:58+0100\n"
+"POT-Creation-Date: 2024-02-23 13:49+0100\n"
 "PO-Revision-Date: 2023-11-09 16:50+0000\n"
 "Last-Translator: Marie Gradeler <accountability@landmatrix.org>\n"
 "Language-Team: Spanish <http://translate.landmatrix.org/projects/landmatrix/landmatrix/es/>\n"
@@ -18,6 +18,15 @@ msgstr ""
 
 msgid "Data"
 msgstr "Datos"
+
+msgid "Account activation on"
+msgstr "Activación de la cuenta el"
+
+msgid "Invalid username or password."
+msgstr "Nombre de usuario o contraseña no válidos."
+
+msgid "Account not yet activated."
+msgstr "Cuenta aún no activada."
 
 msgid "Role"
 msgstr "Rol"
@@ -38,189 +47,6 @@ msgstr "¡Gracias por utilizar nuestro sitio!"
 #, python-format
 msgid "The %(site_name)s team"
 msgstr "El equipo de %(site_name)s"
-
-msgid "Account activation on"
-msgstr "Activación de la cuenta el"
-
-msgid "Invalid username or password."
-msgstr "Nombre de usuario o contraseña no válidos."
-
-msgid "Account not yet activated."
-msgstr "Cuenta aún no activada."
-
-msgid "New comment"
-msgstr "Nuevo comentario"
-
-#, python-brace-format
-msgid "{from_user.full_name} has addressed you in a comment on {obj_desc}:"
-msgstr "{from_user.full_name} se ha dirigido a usted en un comentario sobre {obj_desc}:"
-
-#, python-brace-format
-msgid "{from_user.full_name} has updated {obj_desc}:"
-msgstr "{from_user.full_name} ha actualizado {obj_desc}:"
-
-#, python-brace-format
-msgid "Please review at {url}"
-msgstr "Por favor, revise en {url}"
-
-msgid "Size under contract (leased or purchased area)"
-msgstr "Tamaño bajo contrato (área arrendada o comprada)"
-
-msgid "Size in operation (production)"
-msgstr "Tamaño en operación (producción)"
-
-msgid "Intention of investment"
-msgstr "Intención de la inversión"
-
-msgid "Negotiation status"
-msgstr "Estado de la negociación"
-
-msgid "Implementation status"
-msgstr "Estado de la implementación"
-
-msgid "On leased area/farmers/households"
-msgstr "En área arrendada/agricultores/hogares"
-
-msgid "Not on leased area/farmers/households (out-grower)"
-msgstr "No en la superficie arrendada/agricultores/hogares (cultivador externo)"
-
-msgid "Current total number of jobs/employees/ daily/seasonal workers"
-msgstr "Número total actual de puestos de trabajo/empleados/trabajadores diarios/trabajadores temporales"
-
-msgid "Current foreign number of jobs/employees/ daily/seasonal workers"
-msgstr "Número actual de puestos de trabajo extranjeros/empleados/trabajadores diarios/trabajadores temporales"
-
-msgid "Current domestic number of jobs/employees/ daily/seasonal workers"
-msgstr "Número actual de puestos de trabajo domésticos/empleados/trabajadores diarios/trabajadores temporales"
-
-msgid "Actors involved in the negotiation / admission process"
-msgstr "Actores involucrados en la negociación/proceso de admisión"
-
-msgid "Crops area/yield/export"
-msgstr "Exportación de cultivos"
-
-msgid "Livestock area/yield/export"
-msgstr "Exportación de animales de granja"
-
-msgid "Mineral resources area/yield/export"
-msgstr "Exportación de recursos naturales"
-
-msgid "Contract farming crops"
-msgstr "Cultivos de agricultura contractual"
-
-msgid "ha"
-msgstr "ha"
-
-msgid "Contract farming livestock"
-msgstr "Animales de granja de agricultura contractual"
-
-msgid "Electricity generation"
-msgstr "Producción de electricidad"
-
-msgid "Carbon Sequestration"
-msgstr "Retención de carbono"
-
-msgid "Comments / History"
-msgstr "Comentarios / Historia"
-
-msgid "jobs"
-msgstr "puestos de trabajo"
-
-msgid "employees"
-msgstr "personas empleadas"
-
-msgid "workers"
-msgstr "personas trabajadoras"
-
-msgid "m3/year"
-msgstr "m3/año"
-
-msgid "Location"
-msgstr "Ubicación"
-
-msgid "Description"
-msgstr "Descripción"
-
-msgid "Point"
-msgstr "Punto"
-
-msgid "Facility name"
-msgstr "Nombre de la instalación"
-
-msgid "Spatial accuracy level"
-msgstr "Nivel de precisión espacial"
-
-msgid "Comment"
-msgstr "Comentario"
-
-msgid "Areas"
-msgstr "Áreas"
-
-msgid "Deal"
-msgstr "Transacción"
-
-msgid "Contract number"
-msgstr "Número de Contrato"
-
-msgid "Date"
-msgstr "Fecha"
-
-msgid "Expiration date"
-msgstr "Fecha de caducidad"
-
-msgid "Duration of the agreement"
-msgstr "Duración del acuerdo"
-
-msgid "years"
-msgstr "años"
-
-msgid "Comment on contract"
-msgstr "Comentario sobre contrato"
-
-msgid "Type"
-msgstr "Tipo"
-
-msgid "Url"
-msgstr "Url"
-
-msgid "File"
-msgstr "Archivo"
-
-msgid "Keep PDF not public"
-msgstr "Mantener el PDF no público"
-
-msgid "Publication title"
-msgstr "Título de publicación"
-
-msgid "Name"
-msgstr "Nombre"
-
-msgid "Organisation"
-msgstr "Organización"
-
-msgid "Email"
-msgstr "Correo Electrónico"
-
-msgid "Phone"
-msgstr "Teléfono"
-
-msgid "Includes in-country-verified information"
-msgstr "Incluye información verificada internamente en el país"
-
-msgid "Open Contracting ID"
-msgstr "ID Contratación Abierta"
-
-msgid "Comment on data source"
-msgstr "Comentario sobre fuente de datos"
-
-msgid "Deals"
-msgstr "Transacciones"
-
-msgid "Created at"
-msgstr "Creado el"
-
-msgid "Involvement type"
-msgstr "Fondo de inversión"
 
 msgid "Draft"
 msgstr "Borrador"
@@ -246,11 +72,11 @@ msgstr "Rechazada"
 msgid "To Delete"
 msgstr "Para eliminar"
 
-msgid "Agriculture"
-msgstr "Agricultura"
-
 msgid "Biomass for biofuels"
 msgstr "Biomasa para biocarburantes"
+
+msgid "Agriculture"
+msgstr "Agricultura"
 
 msgid "Biomass for energy generation"
 msgstr "Biomasa para generación de energía"
@@ -285,11 +111,11 @@ msgstr "Plantaciones madereras para madera y fibra"
 msgid "Forestry unspecified"
 msgstr "Silvicultura sin especificar"
 
-msgid "Renewable energy power plants"
-msgstr "Centrales de energía renovable"
-
 msgid "Solar park"
 msgstr "Parque solar"
+
+msgid "Renewable energy power plants"
+msgstr "Centrales de energía renovable"
 
 msgid "Wind farm"
 msgstr "Parque eólico"
@@ -297,11 +123,11 @@ msgstr "Parque eólico"
 msgid "Renewable energy unspecified"
 msgstr "Energía renovable sin especificar"
 
-msgid "Other"
-msgstr "Otro"
-
 msgid "Conservation"
 msgstr "Conservación"
+
+msgid "Other"
+msgstr "Otro"
 
 msgid "Industry"
 msgstr "Industria"
@@ -336,6 +162,9 @@ msgstr "Agricultura contractual pura"
 msgid "Intended (Expression of interest)"
 msgstr "Planeado (Expresión de interés)"
 
+msgid "Intended"
+msgstr "Planeado"
+
 msgid "Intended (Under negotiation)"
 msgstr "Planeado (Bajo negociación)"
 
@@ -344,6 +173,9 @@ msgstr "Planeado (Memorando de Entendimiento)"
 
 msgid "Concluded (Oral Agreement)"
 msgstr "Concluído (Acuerdo Verbal)"
+
+msgid "Concluded"
+msgstr "Concluído"
 
 msgid "Concluded (Contract signed)"
 msgstr "Concluído (Contrato firmado)"
@@ -354,29 +186,32 @@ msgstr "Concluido (Cambio de propiedad)"
 msgid "Failed (Negotiations failed)"
 msgstr "Fallido (Negociaciones fallidas)"
 
+msgid "Failed"
+msgstr "Fallido"
+
 msgid "Failed (Contract cancelled)"
 msgstr "Fallido (Contrato cancelado)"
 
 msgid "Contract expired"
 msgstr "Contrato caducado"
 
-msgid "Government / state institutions (government, ministries, departments, agencies etc.)"
-msgstr "Gobierno/instituciones estatales (gobierno, ministerios, departamentos, agencias, etc.)"
+msgid "Project not started"
+msgstr "Proyecto sin empezar"
 
-msgid "Traditional land-owners / communities"
-msgstr "Propietarios/comunidades tradicionales"
+msgid "Startup phase (no production)"
+msgstr "Etapa sin producción"
 
-msgid "Traditional local authority (e.g. Chiefdom council / Chiefs)"
-msgstr "Autoridad local tradicional (ej. Consejo de Jefaturas Tribales/Jefes)"
+msgid "In operation (production)"
+msgstr "En operación (producción)"
 
-msgid "Broker"
-msgstr "Corredor de Bolsa"
+msgid "Project abandoned"
+msgstr "Proyecto abandonado"
 
-msgid "Intermediary"
-msgstr "Intermediario"
+msgid "per ha"
+msgstr "por ha"
 
-msgid "Other (please specify)"
-msgstr "Otro (por favor, especificar)"
+msgid "for specified area"
+msgstr "por área específica"
 
 msgid "Indigenous Peoples traditional or customary rights recognized by government"
 msgstr "Derechos consuetudinarios o tradicionales de Pueblos Indígenas reconocidos por el gobierno"
@@ -389,6 +224,24 @@ msgstr "Derechos consuetudinarios o tradicionales de comunidad reconocidos por e
 
 msgid "Community traditional or customary rights not recognized by government"
 msgstr "Derechos consuetudinarios o tradicionales de comunidad no reconocidos por el gobierno"
+
+msgid "Not consulted"
+msgstr "Sin consultar"
+
+msgid "Limited consultation"
+msgstr "Consulta limitada"
+
+msgid "Free, Prior and Informed Consent (FPIC)"
+msgstr "Consentimiento Libre, Previo e Informado (CLPI)"
+
+msgid "Consent"
+msgstr "Consentimiento"
+
+msgid "Mixed reaction"
+msgstr "Reacción mixta"
+
+msgid "Rejection"
+msgstr "Rechazo"
 
 msgid "Environmental degradation"
 msgstr "Degradación ambiental"
@@ -458,30 +311,6 @@ msgstr "Pastoralismo"
 
 msgid "Hunting/Gathering"
 msgstr "Caza/Recolección"
-
-msgid "per ha"
-msgstr "por ha"
-
-msgid "for specified area"
-msgstr "por área específica"
-
-msgid "Not consulted"
-msgstr "Sin consultar"
-
-msgid "Limited consultation"
-msgstr "Consulta limitada"
-
-msgid "Free, Prior and Informed Consent (FPIC)"
-msgstr "Consentimiento Libre, Previo e Informado (CLPI)"
-
-msgid "Consent"
-msgstr "Consentimiento"
-
-msgid "Mixed reaction"
-msgstr "Reacción mixta"
-
-msgid "Rejection"
-msgstr "Rechazo"
 
 msgid "Cropland"
 msgstr "Tierra de cultivo"
@@ -645,8 +474,8 @@ msgstr "Cebolla"
 msgid "Oil Palm"
 msgstr "Palma de aceite"
 
-msgid "Other crops (please specify)"
-msgstr "Otros cultivos (por favor, especifique)"
+msgid "Other crops"
+msgstr "Otros cultivos"
 
 msgid "Palms"
 msgstr "Palmas"
@@ -783,8 +612,8 @@ msgstr "Pescado"
 msgid "Goats"
 msgstr "Cabras"
 
-msgid "Other livestock (please specify)"
-msgstr "Otro ganado (por favor, especifique)"
+msgid "Other livestock"
+msgstr "Otro ganado"
 
 msgid "Pork"
 msgstr "Cerdo"
@@ -797,27 +626,6 @@ msgstr "Ovejas"
 
 msgid "Shrimp"
 msgstr "Gambas"
-
-msgid "On-shore wind turbines"
-msgstr "Turbinas eólicas en tierra"
-
-msgid "Solar (Photovoltaic)"
-msgstr "Solar (fotovoltaica)"
-
-msgid "Solar (Thermal system)"
-msgstr "Solar (sistema térmico)"
-
-msgid "Reforestation & afforestation"
-msgstr "Reforestación y forestación"
-
-msgid "Forest protection"
-msgstr "Protección forestal"
-
-msgid "Peatland restoration"
-msgstr "Restauración de turberas"
-
-msgid "Other (please specify in a comment)"
-msgstr "Otros (especifique en un comentario)"
 
 msgid "Aluminum"
 msgstr "Aluminio"
@@ -921,8 +729,8 @@ msgstr "Mármol"
 msgid "Nickel"
 msgstr "Níquel"
 
-msgid "Other minerals (please specify)"
-msgstr "Otros minerales (por favor, especifique)"
+msgid "Other minerals"
+msgstr "Otros minerales"
 
 msgid "Petroleum"
 msgstr "Petróleo"
@@ -969,6 +777,72 @@ msgstr "Uranio"
 msgid "Zinc"
 msgstr "Zinc"
 
+msgid "Government / state institutions (government, ministries, departments, agencies etc.)"
+msgstr "Gobierno/instituciones estatales (gobierno, ministerios, departamentos, agencias, etc.)"
+
+msgid "Traditional land-owners / communities"
+msgstr "Propietarios/comunidades tradicionales"
+
+msgid "Traditional local authority (e.g. Chiefdom council / Chiefs)"
+msgstr "Autoridad local tradicional (ej. Consejo de Jefaturas Tribales/Jefes)"
+
+msgid "Broker"
+msgstr "Corredor de Bolsa"
+
+msgid "Intermediary"
+msgstr "Intermediario"
+
+msgid "On-shore wind turbines"
+msgstr "Turbinas eólicas en tierra"
+
+msgid "Solar (Photovoltaic)"
+msgstr "Solar (fotovoltaica)"
+
+msgid "Solar (Thermal system)"
+msgstr "Solar (sistema térmico)"
+
+msgid "Reforestation & afforestation"
+msgstr "Reforestación y forestación"
+
+msgid "Avoided forest conversion"
+msgstr ""
+
+msgid "Avoided grassland conversion"
+msgstr ""
+
+msgid "Peatland restoration"
+msgstr "Restauración de turberas"
+
+msgid "Improved forest management"
+msgstr ""
+
+msgid "Sustainable agriculture"
+msgstr ""
+
+msgid "Sustainable grassland management"
+msgstr ""
+
+msgid "Rice emission reductions"
+msgstr ""
+
+msgid "REDD+"
+msgstr ""
+
+msgid "Verified Carbon Standard (VCS)"
+msgstr ""
+
+msgid "Gold Standard for the Global Goals (GOLD)"
+msgstr ""
+
+msgid "Clean Development Mechanism (CDM)"
+msgstr ""
+
+msgid "Climate Action Reserve (CAR)"
+msgstr ""
+
+msgid "Plan Vivo"
+msgstr ""
+
 msgid "Groundwater"
 msgstr "Aguas subterráneas"
 
@@ -1011,6 +885,9 @@ msgstr "Fuentes gubernamentales"
 msgid "Company sources"
 msgstr "Fuentes empresariales"
 
+msgid "Contract"
+msgstr "Contrato"
+
 msgid "Contract (contract farming agreement)"
 msgstr "Contrato (acuerdo de agricultura contractual)"
 
@@ -1019,9 +896,6 @@ msgstr "Información personal"
 
 msgid "Crowdsourcing"
 msgstr "Abastecimiento colectivo"
-
-msgid "Please specify in comment field"
-msgstr "por favor, especifique en el campo para comentarios"
 
 msgid "Country"
 msgstr "País"
@@ -1037,6 +911,75 @@ msgstr "Ubicación exacta"
 
 msgid "Coordinates"
 msgstr "Coordenadas"
+
+msgid "Government"
+msgstr "Gobierno"
+
+msgid "Government institution"
+msgstr "Institución gubernamental"
+
+msgid "State-/government (owned) company"
+msgstr "Empresa (de propiedad) estatal/gubernamental"
+
+msgid "Semi state-owned company"
+msgstr "Empresa de propiedad semi-estatal"
+
+msgid "Asset management firm"
+msgstr "Empresa de gestión de activos"
+
+msgid "Bilateral Development Bank / Development Finance Institution"
+msgstr "Banco de Desarrollo Bilateral / Institución Financiera de Desarrollo"
+
+msgid "Stock-exchange listed company"
+msgstr "Empresa listada en la Bolsa"
+
+msgid "Commercial Bank"
+msgstr "Banco Comercial"
+
+msgid "Insurance firm"
+msgstr "Empresa de seguros"
+
+msgid "Investment Bank"
+msgstr "Banco de Inversión"
+
+msgid "Investment fund"
+msgstr "Fondo de inversión"
+
+msgid "Multilateral Development Bank (MDB)"
+msgstr "Banco Multilateral de Desarrollo (BMD)"
+
+msgid "Private company"
+msgstr "Empresa privada"
+
+msgid "Private equity firm"
+msgstr "Empresa de capital privado"
+
+msgid "Individual entrepreneur"
+msgstr "Emprendedor individual"
+
+msgid "Non - Profit organization (e.g. Church, University etc.)"
+msgstr "Organización Sin Ánimo de Lucro (ej. Iglesia, Universidad etc.)"
+
+msgid "Shares/Equity"
+msgstr "Participaciones/Capital"
+
+msgid "Debt financing"
+msgstr "Financiamiento de deuda"
+
+msgid "Parent company"
+msgstr "Empresa matriz"
+
+msgid "Tertiary investor/lender"
+msgstr "Inversor/prestamista terciario"
+
+msgid "Subsidiary of parent company"
+msgstr "Filial de empresa matriz"
+
+msgid "Local branch of parent company"
+msgstr "Sucursal local de empresa matriz"
+
+msgid "Joint venture of parent companies"
+msgstr "Negocio conjunto de empresas matriz"
 
 msgid "Region"
 msgstr "Región"
@@ -1422,59 +1365,11 @@ msgstr "Última actualización"
 msgid "Last full update"
 msgstr "Última actualización completa"
 
+msgid "Name"
+msgstr "Nombre"
+
 msgid "Country of registration/origin"
 msgstr "País de registro/origen"
-
-msgid "Government"
-msgstr "Gobierno"
-
-msgid "Government institution"
-msgstr "Institución gubernamental"
-
-msgid "State-/government (owned) company"
-msgstr "Empresa (de propiedad) estatal/gubernamental"
-
-msgid "Semi state-owned company"
-msgstr "Empresa de propiedad semi-estatal"
-
-msgid "Asset management firm"
-msgstr "Empresa de gestión de activos"
-
-msgid "Bilateral Development Bank / Development Finance Institution"
-msgstr "Banco de Desarrollo Bilateral / Institución Financiera de Desarrollo"
-
-msgid "Stock-exchange listed company"
-msgstr "Empresa listada en la Bolsa"
-
-msgid "Commercial Bank"
-msgstr "Banco Comercial"
-
-msgid "Insurance firm"
-msgstr "Empresa de seguros"
-
-msgid "Investment Bank"
-msgstr "Banco de Inversión"
-
-msgid "Investment fund"
-msgstr "Fondo de inversión"
-
-msgid "Multilateral Development Bank (MDB)"
-msgstr "Banco Multilateral de Desarrollo (BMD)"
-
-msgid "Private company"
-msgstr "Empresa privada"
-
-msgid "Private equity firm"
-msgstr "Empresa de capital privado"
-
-msgid "Individual entrepreneur"
-msgstr "Emprendedor individual"
-
-msgid "Non - Profit organization (e.g. Church, University etc.)"
-msgstr "Organización Sin Ánimo de Lucro (ej. Iglesia, Universidad etc.)"
-
-msgid "please specify in comment field"
-msgstr "por favor, especifique en el campo para comentarios"
 
 msgid "Classification"
 msgstr "Clasificación"
@@ -1485,26 +1380,17 @@ msgstr "Página principal del inversor"
 msgid "Opencorporates link"
 msgstr "Enlace a Opencorporates"
 
+msgid "Comment"
+msgstr "Comentario"
+
 msgid "Investor"
 msgstr "Inversor"
 
 msgid "Venture Company"
 msgstr "Empresa de participación"
 
-msgid "Parent company"
-msgstr "Empresa matriz"
-
-msgid "Tertiary investor/lender"
-msgstr "Inversor/prestamista terciario"
-
 msgid "Relation type"
 msgstr "Tipo de relación"
-
-msgid "Shares/Equity"
-msgstr "Participaciones/Capital"
-
-msgid "Debt financing"
-msgstr "Financiamiento de deuda"
 
 msgid "Investment type"
 msgstr "Fondo de inversión"
@@ -1521,15 +1407,6 @@ msgstr "Moneda del préstamo"
 msgid "Loan date"
 msgstr "Fecha del préstamo"
 
-msgid "Subsidiary of parent company"
-msgstr "Filial de empresa matriz"
-
-msgid "Local branch of parent company"
-msgstr "Sucursal local de empresa matriz"
-
-msgid "Joint venture of parent companies"
-msgstr "Negocio conjunto de empresas matriz"
-
 msgid "Parent relation"
 msgstr "Relación matriz"
 
@@ -1545,6 +1422,123 @@ msgstr "<es MATRIZ de>"
 msgid "<is INVESTOR of>"
 msgstr "<es INVERSOR de>"
 
+msgid "Activated"
+msgstr "Activado"
+
+msgid "OLD: Rejected"
+msgstr ""
+
+msgid "OLD: To Delete"
+msgstr ""
+
+msgid "Negotiation status"
+msgstr "Estado de la negociación"
+
+msgid "Implementation status"
+msgstr "Estado de la implementación"
+
+msgid "Crops area/yield/export"
+msgstr "Exportación de cultivos"
+
+msgid "Livestock area/yield/export"
+msgstr "Exportación de animales de granja"
+
+msgid "Mineral resources area/yield/export"
+msgstr "Exportación de recursos naturales"
+
+msgid "Electricity generation"
+msgstr "Producción de electricidad"
+
+msgid "Carbon Sequestration"
+msgstr "Retención de carbono"
+
+msgid "Created at"
+msgstr "Creado el"
+
+msgid "Modified at"
+msgstr "Modificado en"
+
+msgid "Sent to review at"
+msgstr ""
+
+msgid "Reviewed at"
+msgstr ""
+
+msgid "Activated at"
+msgstr ""
+
+msgid "Spatial accuracy level"
+msgstr "Nivel de precisión espacial"
+
+msgid "Location"
+msgstr "Ubicación"
+
+msgid "Point"
+msgstr "Punto"
+
+msgid "Description"
+msgstr "Descripción"
+
+msgid "Facility name"
+msgstr "Nombre de la instalación"
+
+msgid "Production area"
+msgstr "Área de producción"
+
+msgid "Contract area"
+msgstr "Área de contrato"
+
+msgid "Intended area"
+msgstr "Área planeada"
+
+msgid "Date"
+msgstr "Fecha"
+
+msgid "Contract number"
+msgstr "Número de Contrato"
+
+msgid "Expiration date"
+msgstr "Fecha de caducidad"
+
+msgid "Duration of the agreement"
+msgstr "Duración del acuerdo"
+
+msgid "Type"
+msgstr "Tipo"
+
+msgid "Url"
+msgstr "Url"
+
+msgid "File"
+msgstr "Archivo"
+
+msgid "Keep PDF not public"
+msgstr "Mantener el PDF no público"
+
+msgid "Publication title"
+msgstr "Título de publicación"
+
+msgid "Organisation"
+msgstr "Organización"
+
+msgid "Email"
+msgstr "Correo Electrónico"
+
+msgid "Phone"
+msgstr "Teléfono"
+
+msgid "Includes in-country-verified information"
+msgstr "Incluye información verificada internamente en el país"
+
+msgid "Open Contracting ID"
+msgstr "ID Contratación Abierta"
+
+msgid "Subsidiary company"
+msgstr "Empresa filial"
+
+msgid "Beneficiary company"
+msgstr "Empresa beneficiaria"
+
 msgid "Server Error"
 msgstr "Error del Servidor"
 
@@ -1557,6 +1551,20 @@ msgstr "Rastreamos estos errores de forma automática pero, si el problema persi
 #, python-format
 msgid "The language \"%s\" is not supported"
 msgstr "El idioma \"%s\" no está configurado"
+
+#, python-brace-format
+msgid "{from_user.full_name} has addressed you in a comment on {obj_desc}:"
+msgstr "{from_user.full_name} se ha dirigido a usted en un comentario sobre {obj_desc}:"
+
+#, python-brace-format
+msgid "{from_user.full_name} has updated {obj_desc}:"
+msgstr "{from_user.full_name} ha actualizado {obj_desc}:"
+
+msgid "Please review at {base_url + obj_url}"
+msgstr ""
+
+msgid "New comment"
+msgstr "Nuevo comentario"
 
 msgid "Debug"
 msgstr "Depurar"
@@ -1600,15 +1608,6 @@ msgstr "Mensaje"
 msgid "Messages"
 msgstr "Mensajes"
 
-msgid "Interne Seite"
-msgstr ""
-
-msgid "Externe URL"
-msgstr ""
-
-msgid "Button-Text"
-msgstr ""
-
 msgid "About"
 msgstr "Sobre"
 
@@ -1629,9 +1628,6 @@ msgstr "Activar"
 
 msgid "Activate submitted version replacing currently active version"
 msgstr "Activar la versión enviada sustituyendo a la versión actualmente activa"
-
-msgid "Activated"
-msgstr "Activado"
 
 msgid "Activated by me"
 msgstr "Activado por mí"
@@ -1714,9 +1710,6 @@ msgstr "Al menos un inversor"
 msgid "Base layer"
 msgstr "Capa base"
 
-msgid "Beneficiary company"
-msgstr "Empresa beneficiaria"
-
 msgid "by"
 msgstr "por"
 
@@ -1782,9 +1775,6 @@ msgstr "Elimina completamente esta versión de la transacción"
 msgid "Completely removes this version of the investor"
 msgstr "Elimina por completo esta versión del inversor"
 
-msgid "Concluded"
-msgstr "Concluído"
-
 msgid "Concluded deals over time"
 msgstr ""
 
@@ -1800,12 +1790,6 @@ msgstr "Consulta de la comunidad local"
 
 msgid "Context layers"
 msgstr "Capas de contexto"
-
-msgid "Contract"
-msgstr "Contrato"
-
-msgid "Contract area"
-msgstr "Área de contrato"
 
 msgid "Contract areas"
 msgstr "Áreas contractuales"
@@ -1901,6 +1885,9 @@ msgstr "Fuente de datos"
 msgid "Date of request"
 msgstr "Fecha de solicitud"
 
+msgid "Deal"
+msgstr "Transacción"
+
 msgid "Deal history"
 msgstr "Historial de transacción"
 
@@ -1912,6 +1899,9 @@ msgstr "Tamaño de transacción"
 
 msgid "Deal size (ha)"
 msgstr "Tamaño de la operación (ha)"
+
+msgid "Deals"
+msgstr "Transacciones"
 
 msgid "Deals (Involvements as Operating company)"
 msgstr "Transacciones (Involucramientos como Empresa Operadora)"
@@ -2039,6 +2029,9 @@ msgstr "Edición del inversor #"
 msgid "Editor"
 msgstr "Editor"
 
+msgid "employees"
+msgstr "personas empleadas"
+
 msgid "Employees"
 msgstr "Empleados"
 
@@ -2059,9 +2052,6 @@ msgstr "Explore el mapa para obtener información sobre transacciones de tierras
 
 msgid "Expression of interest"
 msgstr "Expresión de interés"
-
-msgid "Failed"
-msgstr "Fallido"
 
 msgid "FAQ"
 msgstr "Preguntas Frecuentes"
@@ -2141,6 +2131,9 @@ msgstr "Ir al borrador actual"
 msgid "Go to map"
 msgstr "Ir al mapa"
 
+msgid "ha"
+msgstr "ha"
+
 msgid "here"
 msgstr "aquí"
 
@@ -2186,9 +2179,6 @@ msgstr "Solicitudes de mejora para mí"
 msgid "Improvements requested by me"
 msgstr "Mejoras solicitadas por mí"
 
-msgid "In operation (production)"
-msgstr "En operación (producción)"
-
 msgid "Include unknown years"
 msgstr "Incluir años desconocidos"
 
@@ -2204,17 +2194,14 @@ msgstr "Área conservada por indígenas y comunidades, Filipinas"
 msgid "Indigenous lands acknowledged by government (documented)"
 msgstr "Tierras indígenas reconocidas por el gobierno (documentadas)"
 
-msgid "Intended"
-msgstr "Planeado"
-
-msgid "Intended area"
-msgstr "Área planeada"
-
 msgid "Intended areas"
 msgstr "Áreas previstas"
 
 msgid "Intended capacity"
 msgstr "Capacidad prevista"
+
+msgid "Intention of investment"
+msgstr "Intención de la inversión"
 
 msgid "Intention unknown"
 msgstr "Intención desconocida"
@@ -2293,6 +2280,9 @@ msgstr "Es empresa matriz de"
 
 msgid "Is tertiary investor/lender of"
 msgstr "Es inversor/prestamista terciario de"
+
+msgid "jobs"
+msgstr "puestos de trabajo"
 
 msgid "Jobs"
 msgstr "Empleo"
@@ -2392,9 +2382,6 @@ msgstr "Recursos minerales"
 
 msgid "Mode"
 msgstr "Modo"
-
-msgid "Modified at"
-msgstr "Modificado en"
 
 msgid "Modified by"
 msgstr "Modificado por"
@@ -2548,17 +2535,8 @@ msgstr "Información de Producto"
 msgid "Produce info map"
 msgstr "Producir mapa informativo"
 
-msgid "Production area"
-msgstr "Área de producción"
-
 msgid "Production areas"
 msgstr "Áreas de producción"
-
-msgid "Project abandoned"
-msgstr "Proyecto abandonado"
-
-msgid "Project not started"
-msgstr "Proyecto sin empezar"
 
 msgid "Projected annual carbon sequestration"
 msgstr "Secuestro anual de carbono previsto"
@@ -2719,9 +2697,6 @@ msgstr "Mostrar los últimos cambios"
 msgid "Size"
 msgstr "Tamaño"
 
-msgid "Startup phase (no production)"
-msgstr "Etapa sin producción"
-
 msgid "Status"
 msgstr "Estado"
 
@@ -2757,9 +2732,6 @@ msgstr "Enviado para activación"
 
 msgid "Submitted for review"
 msgstr "Enviado para revisión"
-
-msgid "Subsidiary company"
-msgstr "Empresa filial"
 
 msgid "Table columns"
 msgstr "Columnas de la tabla"
@@ -2840,6 +2812,9 @@ msgstr "Actualmente tenemos información sobre:"
 msgid "Web of transnational deals"
 msgstr "Red de transacciones transnacionales"
 
+msgid "workers"
+msgstr "personas trabajadoras"
+
 msgid "Workers"
 msgstr "Trabajadores"
 
@@ -2888,6 +2863,70 @@ msgstr "Français"
 
 msgid "Русский"
 msgstr "Русский"
+
+#, python-brace-format
+#~ msgid "Please review at {url}"
+#~ msgstr "Por favor, revise en {url}"
+
+#~ msgid "Size under contract (leased or purchased area)"
+#~ msgstr "Tamaño bajo contrato (área arrendada o comprada)"
+
+#~ msgid "Size in operation (production)"
+#~ msgstr "Tamaño en operación (producción)"
+
+#~ msgid "On leased area/farmers/households"
+#~ msgstr "En área arrendada/agricultores/hogares"
+
+#~ msgid "Not on leased area/farmers/households (out-grower)"
+#~ msgstr "No en la superficie arrendada/agricultores/hogares (cultivador externo)"
+
+#~ msgid "Current total number of jobs/employees/ daily/seasonal workers"
+#~ msgstr "Número total actual de puestos de trabajo/empleados/trabajadores diarios/trabajadores temporales"
+
+#~ msgid "Current foreign number of jobs/employees/ daily/seasonal workers"
+#~ msgstr "Número actual de puestos de trabajo extranjeros/empleados/trabajadores diarios/trabajadores temporales"
+
+#~ msgid "Current domestic number of jobs/employees/ daily/seasonal workers"
+#~ msgstr "Número actual de puestos de trabajo domésticos/empleados/trabajadores diarios/trabajadores temporales"
+
+#~ msgid "Actors involved in the negotiation / admission process"
+#~ msgstr "Actores involucrados en la negociación/proceso de admisión"
+
+#~ msgid "Contract farming crops"
+#~ msgstr "Cultivos de agricultura contractual"
+
+#~ msgid "Contract farming livestock"
+#~ msgstr "Animales de granja de agricultura contractual"
+
+#~ msgid "Comments / History"
+#~ msgstr "Comentarios / Historia"
+
+#~ msgid "m3/year"
+#~ msgstr "m3/año"
+
+#~ msgid "Areas"
+#~ msgstr "Áreas"
+
+#~ msgid "years"
+#~ msgstr "años"
+
+#~ msgid "Comment on contract"
+#~ msgstr "Comentario sobre contrato"
+
+#~ msgid "Comment on data source"
+#~ msgstr "Comentario sobre fuente de datos"
+
+#~ msgid "Involvement type"
+#~ msgstr "Fondo de inversión"
+
+#~ msgid "Forest protection"
+#~ msgstr "Protección forestal"
+
+#~ msgid "Please specify in comment field"
+#~ msgstr "por favor, especifique en el campo para comentarios"
+
+#~ msgid "please specify in comment field"
+#~ msgstr "por favor, especifique en el campo para comentarios"
 
 #~ msgid "deals"
 #~ msgstr "transacciones"
