@@ -94,14 +94,14 @@ class Command(BaseCommand):
                         new_version.status = "ACTIVATION"
                         deal_hull.draft_version_id = old_version.id
                     elif old_version_dict["draft_status"] == 4:
-                        new_version.status = "REJECTED"
+                        new_version.status = "REVIEW"
                         # deal_hull.active_version_id = deal_version.id
                     else:
                         # TODO shall we finally just delete these?
                         new_version.status = "DELETED"
                 elif old_version_dict["status"] == 4:
                     if old_version_dict["draft_status"] is None:
-                        new_version.status = "TO_DELETE"
+                        new_version.status = "DRAFT"
                         deal_hull.active_version_id = old_version.id
                     else:
                         print("TODO DELETE else?!")
@@ -432,7 +432,9 @@ def map_version_payload(ov: dict, nv: DealVersion2):
     nv.involved_actors = ov["involved_actors"] or []
     for act in nv.involved_actors:
         if "name" in act.keys():
-            act["name"] = act["name"] or ""
+            act["name"] = act.get("name", "").strip()
+        if "role" not in act.keys():
+            act["role"] = "OTHER"
 
     nv.project_name = ov["project_name"]
     nv.investment_chain_comment = ov["investment_chain_comment"]
@@ -577,7 +579,7 @@ def map_version_payload(ov: dict, nv: DealVersion2):
             cfa["current"] = False
 
         if not cfa.get("certification_standard_name"):
-            cfa["certification_standard_name"] = ""
+            cfa["certification_standard_name"] = None
         if not cfa.get("certification_standard_comment"):
             cfa["certification_standard_comment"] = ""
 
@@ -742,20 +744,19 @@ def do_workflows(deal_id):
         elif wfi.status_before == "ACTIVATION" and wfi.status_after == "REVIEW":
             pass  # ignoring this case because it's not changing anything on the deal
         elif wfi.status_before == "REJECTED" or wfi.status_after == "REJECTED":
-            ...  # TODO REJECTED status change
-            # ic(
-            #     "DWI OHO",
-            #     wfi.id,
-            #     wfi.timestamp,
-            #     wfi.from_user,
-            #     wfi.investor_id,
-            #     wfi.status_before,
-            #     wfi.status_after,z
-            #     wfi.comment,
-            # )
-            # sys.exit(1)
+            ic(
+                "DWI OHO",
+                wfi.id,
+                wfi.timestamp,
+                wfi.from_user,
+                wfi.investor_id,
+                wfi.status_before,
+                wfi.status_after,
+                wfi.comment,
+            )
+            sys.exit(1)
         elif wfi.status_after == "TO_DELETE":
-            dv.status = "TO_DELETE"
+            dv.status = "DRAFT"
             dv.save(recalculate_independent=False, recalculate_dependent=False)
         elif wfi.status_before == "TO_DELETE" and wfi.status_after != "TO_DELETE":
             if not wfi.status_after:

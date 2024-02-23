@@ -169,7 +169,10 @@ def _map_involvements_to_new_format(invos: list) -> list:
     ret = []
     for invo in invos:
         if invo["loans_currency"]:
-            loan_curr = invo["loans_currency"]["id"]
+            if isinstance(invo["loans_currency"], int):
+                loan_curr = invo["loans_currency"]
+            else:
+                loan_curr = invo["loans_currency"]["id"]
         else:
             loan_curr = None
         ret += [

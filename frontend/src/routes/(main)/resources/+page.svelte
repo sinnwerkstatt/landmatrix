@@ -47,7 +47,6 @@
               ? 'bg-orange font-bold text-white hover:bg-orange-700 hover:text-white'
               : 'hover:text-orange-700 '}"
           >
-            <!-- TODO Kurt discuss replacing this somehow? comes from DB though -->
             {$_(cat.name)}
           </a>
         </li>

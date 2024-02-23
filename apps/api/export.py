@@ -527,15 +527,6 @@ def deal_qs_to_values(qs: QuerySet[DealVersion2]):
     )
 
 
-def parse_date(d: str):
-    if not d:
-        return ""
-    try:
-        return datetime.strptime(d, "%Y-%m-%d").date()
-    except ValueError:
-        return d
-
-
 class DataDownload:
     def __init__(self, request):
         self.request = request
@@ -1176,10 +1167,8 @@ class DataDownload:
                 x["nid"],
                 x["dealversion__deal_id"],
                 x["number"],
-                parse_date(x["date_or_empty"]),  # TODO LATER 100% Compat hack
-                parse_date(
-                    x["expiration_date_or_empty"]
-                ),  # TODO LATER 100% Compat hack
+                x["date_or_empty"],
+                x["expiration_date_or_empty"],
                 x["agreement_duration"],
                 x["comment"],
             ]
@@ -1215,7 +1204,7 @@ class DataDownload:
                 x["url"],
                 x["public_file"],
                 x["publication_title"],
-                parse_date(x["date_or_empty"]),  # TODO LATER 100% Compat hack
+                x["date_or_empty"],
                 x["name"],
                 x["company"],
                 x["email"],

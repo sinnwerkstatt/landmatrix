@@ -52,8 +52,8 @@
           items={$fieldChoices.deal.actors}
           showChevron
           hasError={!!val.name && !value}
+          class={!!val.name && !val.role ? "!border-red-600" : ""}
         />
-        <!-- TODO Kurt is the role required? -->
       </label>
 
       <RemoveButton disabled={valueCopy.length <= 1} on:click={() => removeEntry(i)} />

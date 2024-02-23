@@ -8,7 +8,11 @@ from django.utils.translation import gettext_lazy as _
 from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets, status, serializers
 from rest_framework.decorators import action
-from rest_framework.exceptions import PermissionDenied, NotAuthenticated
+from rest_framework.exceptions import (
+    PermissionDenied,
+    NotAuthenticated,
+    ValidationError,
+)
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.request import Request
@@ -18,6 +22,7 @@ from wagtail.models import Site
 
 from apps.accounts.models import UserRole, User
 from apps.landmatrix.models import choices
+from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.new import (
     DealHull,
     InvestorHull,
@@ -418,6 +423,11 @@ class DealViewSet(HullViewSet):
     @staticmethod
     def create(request, *args, **kwargs):
         country_id = request.data["country_id"]
+        try:
+            Country.objects.get(id=country_id, high_income=False)
+        except Country.DoesNotExist:
+            raise ValidationError()
+
         d1: DealHull = DealHull.objects.create(
             country_id=country_id, first_created_by=request.user
         )
@@ -478,7 +488,7 @@ class DealViewSet(HullViewSet):
         old_deal = DealHull.objects.get(id=old_id)
         dv1: DealVersion2 = old_deal.active_version or old_deal.draft_version
         dv1.deal_id = d1.id
-        dv1.copy_to_new_draft(request.user.id, new_nids=True)
+        dv1.copy_to_new_draft(request.user.id)
 
         d1.draft_version = dv1
         d1.save()

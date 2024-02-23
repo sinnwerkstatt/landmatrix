@@ -117,7 +117,6 @@ def parse_filters(request: Request):
             active_version__parent_companies__active_version__country_id=parents_c_id
         )
 
-    # TODO Kurt This might not be working correctly yet. it does not include "no nature of deal", but the original filter did
     if nature := request.GET.getlist("nature"):
         all_nature = set([x["value"] for x in choices.NATURE_OF_DEAL_ITEMS])
         ret &= ~Q(

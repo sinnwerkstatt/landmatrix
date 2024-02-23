@@ -823,8 +823,6 @@ class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
             # With the help of signals these fields are recalculated on changes to:
             # Investor and InvestorVentureInvolvement
             self.has_known_investor = self.__has_known_investor()
-            # TODO Kurt public state for version. to be discussed
-            # not_public_reason = self._calculate_public_state()
             self.is_public = self.__calculate_is_public()
 
             # this might error because it's m2m, and we need the
@@ -860,7 +858,6 @@ class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
             # close unresolved workflowinfos
             self.workflowinfos.all().update(resolved=True)
         elif new_status == "TO_DRAFT":
-            self.fully_updated = False  # TODO Kurt reset this? maybe better not.
             self.save()
 
             deal = self.deal
@@ -885,8 +882,7 @@ class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
             comment=comment,
         )
 
-    def copy_to_new_draft(self, created_by_id: int, new_nids=False):
-        # TODO Kurt new_nids for clones? maybe not 🤔
+    def copy_to_new_draft(self, created_by_id: int):
         old_self = DealVersion2.objects.get(pk=self.pk)
         super().copy_to_new_draft(created_by_id)
         self.save(recalculate_dependent=False)
@@ -951,13 +947,6 @@ class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
             self.top_investors.set([])
 
     def __calculate_is_public(self) -> bool:
-        # TODO Kurt deal country here?
-        if not self.deal.country_id:
-            # No Country
-            return False
-        if self.deal.country.high_income:
-            # High Income Country
-            return False
         if not self.id or not self.datasources.count():
             # No DataSource
             return False
@@ -968,27 +957,6 @@ class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
             # 4. Unknown operating company AND no known operating company parents
             return False
         return True
-
-    # def _calculate_public_state(self) -> str:
-    #     """
-    #     :return: A string with a value if not public, or empty if public
-    #     """
-    #     if not self.deal.country_id:
-    #         # No Country
-    #         return "NO_COUNTRY"
-    #     if self.deal.country.high_income:
-    #         # High Income Country
-    #         return "HIGH_INCOME_COUNTRY"
-    #     if not self.datasources:
-    #         # No DataSource
-    #         return "NO_DATASOURCES"
-    #     if not self.operating_company_id:
-    #         # 3. No operating company
-    #         return "NO_OPERATING_COMPANY"
-    #     if not self.has_known_investor:
-    #         # 4. Unknown operating company AND no known operating company parents
-    #         return "NO_KNOWN_INVESTOR"
-    #     return ""
 
     def __has_known_investor(self) -> bool:
         if not self.operating_company_id:
@@ -1252,7 +1220,7 @@ class BaseDataSource(models.Model):
     type = models.CharField(
         _("Type"), choices=choices.DATASOURCE_TYPE_CHOICES, blank=True
     )
-    # NOTE hit a URL > 1000 chars... so going with 5000 for now. TODO this is just ridiculous
+    # NOTE hit a URL > 1000 chars... so going with 5000 for now.
     url = models.URLField(_("Url"), blank=True, max_length=5000)
     file = models.FileField(_("File"), blank=True, null=True, max_length=3000)
     file_not_public = models.BooleanField(_("Keep PDF not public"), default=False)
@@ -1864,7 +1832,7 @@ class Involvement(models.Model):
         verbose_name = _("Investor Venture Involvement")
         verbose_name_plural = _("Investor Venture Involvements")
         ordering = ["-id"]
-        # TODO Kurt
+        # would be nice to have but not today
         # unique_together = [["parent_investor", "child_investor"]]
 
     def __str__(self):

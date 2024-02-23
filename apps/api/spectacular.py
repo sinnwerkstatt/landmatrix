@@ -1,5 +1,3 @@
-# TODO Kurt should we whitelist a few options?
-
 public_paths = [
     "/api/countries/",
     "/api/regions/",
