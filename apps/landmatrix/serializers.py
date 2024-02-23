@@ -8,7 +8,7 @@ from apps.landmatrix.models import FieldDefinition
 from apps.landmatrix.models.country import Country, Region
 from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.new import (
-    DealVersion2,
+    DealVersion,
     DealHull,
     Location,
     DealDataSource,
@@ -80,7 +80,7 @@ class RegionSerializer(serializers.ModelSerializer):
 
 class DealVersionVersionsListSerializer(serializers.ModelSerializer):
     class Meta:
-        model = DealVersion2
+        model = DealVersion
         fields = [
             "id",
             "created_at",
@@ -148,7 +148,7 @@ class DealVersionSerializer(serializers.ModelSerializer):
     activated_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
-        model = DealVersion2
+        model = DealVersion
         read_only_fields = (
             "id",
             # calculated
@@ -186,7 +186,7 @@ class DealVersionSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     # @staticmethod
-    # def get_operating_company(obj: DealVersion2):
+    # def get_operating_company(obj: DealVersion):
     #     if obj.operating_company and obj.operating_company.active_version:
     #         return {
     #             "id": obj.operating_company.id,
@@ -195,7 +195,7 @@ class DealVersionSerializer(serializers.ModelSerializer):
     #     return None
 
     @staticmethod
-    def save_submodels(data, dv1: DealVersion2):
+    def save_submodels(data, dv1: DealVersion):
         # TODO Later right now we're handling contracts, locations and datasources here
         #  in the serializer. not very pretty. maybe drf-writable-nested
         #  would be an alternative
@@ -345,7 +345,7 @@ class InvestorDataSourceSerializer(_BaseDataSourceSerializer):
 
 class Investor2DealSerializer(serializers.ModelSerializer):
     class Meta:
-        model = DealVersion2
+        model = DealVersion
         fields = ["id", "deal_id"]
 
 

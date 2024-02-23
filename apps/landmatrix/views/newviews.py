@@ -26,7 +26,7 @@ from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.new import (
     DealHull,
     InvestorHull,
-    DealVersion2,
+    DealVersion,
     InvestorVersion2,
     DealWorkflowInfo2,
     InvestorWorkflowInfo2,
@@ -45,7 +45,7 @@ from apps.landmatrix.utils import parse_filters, openapi_filters_parameters
 
 def add_wfi(
     obj: DealHull | InvestorHull = None,
-    obj_version: DealVersion2 | InvestorVersion2 = None,
+    obj_version: DealVersion | InvestorVersion2 = None,
     from_user: User = None,
     to_user_id: int = None,
     status_before: str = "",
@@ -58,7 +58,7 @@ def add_wfi(
     if obj is None:
         obj = (
             obj_version.deal
-            if isinstance(obj_version, DealVersion2)
+            if isinstance(obj_version, DealVersion)
             else obj_version.investor
         )
 
@@ -128,7 +128,7 @@ class VersionViewSet(viewsets.ReadOnlyModelViewSet):
 
     @transaction.atomic
     def update(self, request, pk: int):
-        ov1: DealVersion2 | InvestorVersion2 = get_object_or_404(self.queryset, pk=pk)
+        ov1: DealVersion | InvestorVersion2 = get_object_or_404(self.queryset, pk=pk)
 
         if ov1.created_by_id != request.user.id and request.user.role < UserRole.EDITOR:
             raise PermissionDenied("MISSING_AUTHORIZATION")
@@ -160,14 +160,14 @@ class VersionViewSet(viewsets.ReadOnlyModelViewSet):
             return Response({"versionID": ov1.id})
 
     def destroy(self, request, pk: int):
-        ov1: DealVersion2 | InvestorVersion2 = get_object_or_404(self.queryset, pk=pk)
+        ov1: DealVersion | InvestorVersion2 = get_object_or_404(self.queryset, pk=pk)
 
         if ov1.created_by_id != request.user.id and request.user.role < UserRole.EDITOR:
             raise PermissionDenied("MISSING_AUTHORIZATION")
 
         old_draft_status = ov1.status
 
-        if isinstance(ov1, DealVersion2):
+        if isinstance(ov1, DealVersion):
             o1: DealHull = ov1.deal
         else:
             o1: InvestorHull = ov1.investor
@@ -202,12 +202,12 @@ class VersionViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class DealVersionViewSet(VersionViewSet):
-    queryset = DealVersion2.objects.all()
+    queryset = DealVersion.objects.all()
     serializer_class = DealVersionSerializer
 
     @action(detail=True, methods=["put"])
     def change_status(self, request, pk: int):
-        dv1: DealVersion2 = get_object_or_404(self.queryset, pk=pk)
+        dv1: DealVersion = get_object_or_404(self.queryset, pk=pk)
 
         if not dv1.is_current_draft():
             raise PermissionDenied("EDITING_OLD_VERSION")
@@ -291,7 +291,7 @@ class HullViewSet(viewsets.ReadOnlyModelViewSet):
         )
         if serializer.is_valid(raise_exception=True):
             # this is untidy
-            ov1: DealVersion2 | InvestorVersion2 = serializer.save()
+            ov1: DealVersion | InvestorVersion2 = serializer.save()
             serializer.save_submodels(data, ov1)
             ov1.save()  # recalculating fields here.
 
@@ -343,7 +343,7 @@ class HullViewSet(viewsets.ReadOnlyModelViewSet):
 
 class DealViewSet(HullViewSet):
     queryset = DealHull.objects.all().prefetch_related(
-        Prefetch("versions", queryset=DealVersion2.objects.order_by("-id"))
+        Prefetch("versions", queryset=DealVersion.objects.order_by("-id"))
     )
     serializer_class = DealSerializer
     version_serializer_class = DealVersionSerializer
@@ -446,7 +446,7 @@ class DealViewSet(HullViewSet):
         d1: DealHull = self.get_object()
         d1._selected_version_id = int(version_id)
 
-        dv1: DealVersion2 = d1.versions.get(id=version_id)
+        dv1: DealVersion = d1.versions.get(id=version_id)
 
         if (
             (request.user.is_authenticated and request.user.role >= UserRole.EDITOR)
@@ -486,7 +486,7 @@ class DealViewSet(HullViewSet):
         d1.save()
 
         old_deal = DealHull.objects.get(id=old_id)
-        dv1: DealVersion2 = old_deal.active_version or old_deal.draft_version
+        dv1: DealVersion = old_deal.active_version or old_deal.draft_version
         dv1.deal_id = d1.id
         dv1.copy_to_new_draft(request.user.id)
 

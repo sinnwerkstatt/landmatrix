@@ -7,7 +7,7 @@ from apps.landmatrix.models.investor import InvestorOld, InvestorVentureInvolvem
 
 from apps.landmatrix.models.new import (
     DealHull,
-    DealVersion2,
+    DealVersion,
     Location,
     Area,
     DealDataSource,
@@ -56,9 +56,9 @@ class ReadonlyInline(admin.TabularInline):
         return False
 
 
-@admin.register(DealVersion2)
+@admin.register(DealVersion)
 class DealVersion2Admin(admin.ModelAdmin):
-    model = DealVersion2
+    model = DealVersion
     readonly_fields = [
         "operating_company",
         "parent_companies",
@@ -69,7 +69,7 @@ class DealVersion2Admin(admin.ModelAdmin):
 @admin.register(DealHull)
 class DealHullAdmin(admin.ModelAdmin):
     class DealVersionInline(ReadonlyInline):
-        model = DealVersion2
+        model = DealVersion
         fields = [
             "id",
             "status",

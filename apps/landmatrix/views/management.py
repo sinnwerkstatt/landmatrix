@@ -159,7 +159,7 @@ class Management(View):
                 # Prefetch(
                 #     "versions",
                 #     queryset=(
-                #         DealVersion2 if is_deal else InvestorVersion2
+                #         DealVersion if is_deal else InvestorVersion2
                 #     ).objects.order_by("created_at"),
                 # ),
                 Prefetch("active_version"),

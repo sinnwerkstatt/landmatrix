@@ -699,7 +699,7 @@ class BaseVersionMixin(models.Model):
         self.activated_by = None
 
 
-class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
+class DealVersion(DealVersionBaseFields, BaseVersionMixin):
     """# CALCULATED FIELDS #"""
 
     # is_public: change the logic how it's calculated a bit - confidential is dealhull stuff
@@ -883,7 +883,7 @@ class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
         )
 
     def copy_to_new_draft(self, created_by_id: int):
-        old_self = DealVersion2.objects.get(pk=self.pk)
+        old_self = DealVersion.objects.get(pk=self.pk)
         super().copy_to_new_draft(created_by_id)
         self.save(recalculate_dependent=False)
 
@@ -1082,7 +1082,7 @@ class DealVersion2(DealVersionBaseFields, BaseVersionMixin):
 
 class Location(models.Model):
     dealversion = models.ForeignKey(
-        DealVersion2, on_delete=models.CASCADE, related_name="locations"
+        DealVersion, on_delete=models.CASCADE, related_name="locations"
     )
     nid = NanoIDField("ID", max_length=15, db_index=True)
     level_of_accuracy = models.CharField(
@@ -1188,7 +1188,7 @@ class Area(models.Model):
 
 class Contract(models.Model):
     dealversion = models.ForeignKey(
-        DealVersion2, on_delete=models.CASCADE, related_name="contracts"
+        DealVersion, on_delete=models.CASCADE, related_name="contracts"
     )
     nid = NanoIDField("ID", max_length=15, db_index=True)
     number = models.CharField(_("Contract number"), blank=True)
@@ -1269,7 +1269,7 @@ class BaseDataSource(models.Model):
 
 class DealDataSource(BaseDataSource):
     dealversion = models.ForeignKey(
-        DealVersion2, on_delete=models.CASCADE, related_name="datasources"
+        DealVersion, on_delete=models.CASCADE, related_name="datasources"
     )
 
     class Meta:
@@ -1349,10 +1349,10 @@ class DealHull(HullBase):
     )
 
     active_version = models.ForeignKey(
-        DealVersion2, on_delete=models.SET_NULL, blank=True, null=True, related_name="+"
+        DealVersion, on_delete=models.SET_NULL, blank=True, null=True, related_name="+"
     )
     draft_version = models.ForeignKey(
-        DealVersion2, on_delete=models.SET_NULL, blank=True, null=True, related_name="+"
+        DealVersion, on_delete=models.SET_NULL, blank=True, null=True, related_name="+"
     )
 
     confidential = models.BooleanField(default=False)
@@ -1376,12 +1376,12 @@ class DealHull(HullBase):
         if hasattr(self, "_selected_version_id") and self._selected_version_id:
             try:
                 return self.versions.get(id=self._selected_version_id)
-            except DealVersion2.DoesNotExist:
+            except DealVersion.DoesNotExist:
                 raise Http404
         return self.active_version or self.draft_version
 
-    def add_draft(self, created_by: User = None) -> DealVersion2:
-        dv = DealVersion2.objects.create(deal=self, created_by=created_by)
+    def add_draft(self, created_by: User = None) -> DealVersion:
+        dv = DealVersion.objects.create(deal=self, created_by=created_by)
         self.draft_version = dv
         self.save()
         return dv
@@ -1893,7 +1893,7 @@ class DealWorkflowInfo2(WorkflowInfo2):
         DealHull, on_delete=models.CASCADE, related_name="workflowinfos"
     )
     deal_version = models.ForeignKey(
-        DealVersion2,
+        DealVersion,
         on_delete=models.SET_NULL,
         related_name="workflowinfos",
         null=True,
@@ -1942,7 +1942,7 @@ class DealTopInvestors2(models.Model):
     """A view on dealversion2.top_investors M2M relation table."""
 
     dealversion2 = models.ForeignKey(
-        DealVersion2, on_delete=models.CASCADE, related_name="+"
+        DealVersion, on_delete=models.CASCADE, related_name="+"
     )
     investorhull = models.ForeignKey(
         InvestorHull, on_delete=models.CASCADE, related_name="+"

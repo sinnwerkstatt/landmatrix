@@ -20,7 +20,7 @@ from apps.landmatrix.models.new import (
     Location,
     Contract,
     DealDataSource,
-    DealVersion2,
+    DealVersion,
     InvestorHull,
     Involvement,
     DealTopInvestors2,
@@ -349,7 +349,7 @@ def bool_cast(data, field) -> None:
     data[field] = "Yes" if data[field] else "No"
 
 
-def deal_qs_to_values(qs: QuerySet[DealVersion2]):
+def deal_qs_to_values(qs: QuerySet[DealVersion]):
     return (
         qs.values(
             "deal_id",
@@ -542,7 +542,7 @@ class DataDownload:
 
     def _single_deal(self, deal_id):
         dealhull = DealHull.objects.visible(self.user, self.subset).get(id=deal_id)
-        dealversions: QuerySet[DealVersion2] = DealVersion2.objects.filter(
+        dealversions: QuerySet[DealVersion] = DealVersion.objects.filter(
             id=dealhull.active_version_id
         )
 
@@ -581,7 +581,7 @@ class DataDownload:
         if filtersx:
             dealhulls = dealhulls.filter(parse_filters(filtersx))
 
-        qs: QuerySet[DealVersion2] = DealVersion2.objects.filter(
+        qs: QuerySet[DealVersion] = DealVersion.objects.filter(
             id__in=dealhulls.values_list("active_version_id", flat=True)
         ).order_by("deal_id")
 

@@ -5,7 +5,7 @@ from apps.landmatrix.models.new import (
     DealHull,
     DealTopInvestors2,
     InvestorHull,
-    DealVersion2,
+    DealVersion,
 )
 from apps.landmatrix.utils import parse_filters
 
@@ -54,7 +54,7 @@ def investmentsdict():
 
 def get_deal_top_investments(request):
     dh = DealHull.objects.active().filter(parse_filters(request))
-    deals = DealVersion2.objects.filter(id__in=dh.values_list("active_version_id"))
+    deals = DealVersion.objects.filter(id__in=dh.values_list("active_version_id"))
 
     investors = InvestorHull.objects.exclude(active_version_id=None).filter(
         deleted=False

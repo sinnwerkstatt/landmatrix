@@ -8,7 +8,7 @@ from icecream import ic
 from apps.landmatrix.models.deal import DealOld, DealWorkflowInfoOld
 from apps.landmatrix.models.new import (
     DealHull,
-    DealVersion2,
+    DealVersion,
     Location,
     Area,
     Contract,
@@ -54,7 +54,7 @@ class Command(BaseCommand):
 
             for old_version in old_deal.versions.all().order_by("id"):
                 # ic(old_version.id)
-                new_version: DealVersion2
+                new_version: DealVersion
                 base_payload = {
                     "deal_id": old_deal.id,
                     "id": old_version.id,
@@ -64,9 +64,9 @@ class Command(BaseCommand):
                     "modified_by_id": old_version.modified_by_id,
                 }
                 try:
-                    new_version = DealVersion2.objects.get(**base_payload)
-                except DealVersion2.DoesNotExist:
-                    new_version = DealVersion2(**base_payload)
+                    new_version = DealVersion.objects.get(**base_payload)
+                except DealVersion.DoesNotExist:
+                    new_version = DealVersion(**base_payload)
 
                 old_version_dict = old_version.serialized_data
 
@@ -133,7 +133,7 @@ class Command(BaseCommand):
             )
 
 
-def map_locations(nv: DealVersion2, locations: list[dict]):
+def map_locations(nv: DealVersion, locations: list[dict]):
     for loc in locations:
         l1, _ = Location.objects.get_or_create(dealversion_id=nv.id, nid=loc["id"])
         l1.name = loc.get("name", "")
@@ -156,7 +156,7 @@ def map_locations(nv: DealVersion2, locations: list[dict]):
                 )
 
 
-def map_contracts(nv: DealVersion2, contracts: list[dict]):
+def map_contracts(nv: DealVersion, contracts: list[dict]):
     for con in contracts:
         c1, _ = Contract.objects.get_or_create(dealversion_id=nv.id, nid=con["id"])
         c1.number = con.get("number", "")
@@ -167,7 +167,7 @@ def map_contracts(nv: DealVersion2, contracts: list[dict]):
         c1.save()
 
 
-def map_datasources(nv: DealVersion2, datasources: list[dict]):
+def map_datasources(nv: DealVersion, datasources: list[dict]):
     for dats in datasources:
         ds1, _ = DealDataSource.objects.get_or_create(
             dealversion_id=nv.id, nid=dats["id"]
@@ -194,7 +194,7 @@ def map_datasources(nv: DealVersion2, datasources: list[dict]):
         ds1.save()
 
 
-def map_version_payload(ov: dict, nv: DealVersion2):
+def map_version_payload(ov: dict, nv: DealVersion):
     nv.intended_size = ov["intended_size"]
     nv.contract_size = []
     for x in ov["contract_size"] or []:
@@ -702,7 +702,7 @@ def do_workflows(deal_id):
             continue
         # if dwi.deal_version_id in [43461, 43462]:
         #     print(dwi, dwi.status_before, dwi.status_after, dwi.comment)
-        dv: DealVersion2 = DealVersion2.objects.get(id=wfi.deal_version_id)
+        dv: DealVersion = DealVersion.objects.get(id=wfi.deal_version_id)
         if wfi.status_before is None and wfi.status_after == "DRAFT":
             ...  # TODO I think we're good here. Don't see anything that we ought to be doing.
         elif (
