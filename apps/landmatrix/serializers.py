@@ -1,4 +1,4 @@
-from django.contrib.gis.geos import GEOSGeometry
+from django.contrib.gis.geos import Point
 from django.db.models import Q, QuerySet, F
 from django.db.models.functions import JSONObject
 from django.utils.translation import gettext as _
@@ -211,9 +211,7 @@ class DealVersionSerializer(serializers.ModelSerializer):
                     "name": location["name"],
                     "description": location["description"],
                     "point": (
-                        GEOSGeometry(str(location["point"]))
-                        if location["point"]
-                        else None
+                        Point(str(location["point"])) if location["point"] else None
                     ),
                     "facility_name": location["facility_name"],
                     "level_of_accuracy": location["level_of_accuracy"],
@@ -230,7 +228,7 @@ class DealVersionSerializer(serializers.ModelSerializer):
                             type=area["type"],
                             current=area["current"],
                             date=area["date"],
-                            area=GEOSGeometry(str(area["area"])),
+                            area=Area.geometry_to_multipolygon(area["area"]),
                         )
                         for area in areas
                     ]
@@ -245,7 +243,7 @@ class DealVersionSerializer(serializers.ModelSerializer):
                             "type": area["type"],
                             "current": area["current"],
                             "date": area["date"],
-                            "area": GEOSGeometry(str(area["area"])),
+                            "area": Area.geometry_to_multipolygon(area["area"]),
                         },
                     )
                     a_ids.add(upserted_area.id)

@@ -149,7 +149,7 @@ def map_locations(nv: DealVersion2, locations: list[dict]):
             for feat in area["features"]:
                 Area.objects.create(
                     location=l1,
-                    area=GEOSGeometry(str(feat["geometry"])),
+                    area=Area.geometry_to_multipolygon(feat["geometry"]),
                     type=feat["properties"]["type"],
                     current=feat["properties"].get("current", False),
                     date=feat["properties"].get("date"),
@@ -172,7 +172,10 @@ def map_datasources(nv: DealVersion2, datasources: list[dict]):
         ds1, _ = DealDataSource.objects.get_or_create(
             dealversion_id=nv.id, nid=dats["id"]
         )
-        ds1.type = dats.get("type", "") or ""
+        if ds_type := dats.get("type"):
+            ds1.type = ds_type
+        else:
+            ds1.type = "OTHER"
         ds1.url = dats.get("url", "")
         if dats.get("file"):
             ds1.file.name = dats["file"]

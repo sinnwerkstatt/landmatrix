@@ -3,7 +3,7 @@ import re
 
 from django.conf import settings
 from django.contrib.gis.db import models as gis_models
-from django.contrib.gis.geos import GEOSGeometry
+from django.contrib.gis.geos import GEOSGeometry, MultiPolygon, Polygon
 from django.contrib.gis.geos.prototypes.io import wkt_w
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
@@ -1166,17 +1166,20 @@ class Area(models.Model):
         }
 
     @staticmethod
-    def _remove_third_dimension_on_gis(gis_obj: GEOSGeometry):
-        if not gis_obj:
-            return gis_obj
-        if gis_obj.hasz:
-            wkt = wkt_w(dim=2).write(gis_obj).decode()
-            gis_obj = GEOSGeometry(wkt, srid=4674)
-        return gis_obj
+    def geometry_to_multipolygon(geom: GEOSGeometry | str | dict) -> MultiPolygon:
+        if isinstance(geom, dict):
+            geom = str(geom)
+        if isinstance(geom, str):
+            geom = GEOSGeometry(geom)
+        if geom.hasz:
+            wkt = wkt_w(dim=2).write(geom).decode()
+            geom = GEOSGeometry(wkt, srid=4674)
+        if isinstance(geom, MultiPolygon):
+            return geom
+        elif isinstance(geom, Polygon):
+            return MultiPolygon([geom])
 
-    def save(self, *args, **kwargs):
-        self.area = self._remove_third_dimension_on_gis(self.area)
-        super().save(*args, **kwargs)
+        raise ValidationError
 
     # class Meta:
     #     unique_together = ["location", "type", "current"]
