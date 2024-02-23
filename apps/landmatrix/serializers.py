@@ -2,7 +2,6 @@ from django.contrib.gis.geos import Point
 from django.db.models import Q, QuerySet, F
 from django.db.models.functions import JSONObject
 from django.utils.translation import gettext as _
-from icecream import ic
 from rest_framework import serializers
 
 from apps.landmatrix.models import FieldDefinition

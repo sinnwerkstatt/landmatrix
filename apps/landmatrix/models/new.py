@@ -1220,9 +1220,7 @@ class Contract(models.Model):
 
 class BaseDataSource(models.Model):
     nid = NanoIDField("ID", max_length=15, db_index=True)
-    type = models.CharField(
-        _("Type"), choices=choices.DATASOURCE_TYPE_CHOICES, blank=True
-    )
+    type = models.CharField(_("Type"), choices=choices.DATASOURCE_TYPE_CHOICES)
     # NOTE hit a URL > 1000 chars... so going with 5000 for now.
     url = models.URLField(_("Url"), blank=True, max_length=5000)
     file = models.FileField(_("File"), blank=True, null=True, max_length=3000)

@@ -967,6 +967,7 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
       label: $_("Type"),
       extras: {
         choices: $fieldChoices.datasource.type,
+        required: true,
         otherHint: $_("Please specify in comment field"),
       },
     },
