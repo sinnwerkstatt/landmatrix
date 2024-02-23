@@ -1442,7 +1442,7 @@ class DealHull(HullBase):
         ]
 
 
-class InvestorVersion2(BaseVersionMixin, models.Model):
+class InvestorVersion(BaseVersionMixin, models.Model):
     investor = models.ForeignKey(
         "landmatrix.InvestorHull", on_delete=models.PROTECT, related_name="versions"
     )
@@ -1560,7 +1560,7 @@ class InvestorVersion2(BaseVersionMixin, models.Model):
         )
 
     def copy_to_new_draft(self, created_by_id: int):
-        old_self = InvestorVersion2.objects.get(pk=self.pk)
+        old_self = InvestorVersion.objects.get(pk=self.pk)
 
         super().copy_to_new_draft(created_by_id)
         self.save()
@@ -1575,7 +1575,7 @@ class InvestorVersion2(BaseVersionMixin, models.Model):
 
 class InvestorDataSource(BaseDataSource):
     investorversion = models.ForeignKey(
-        InvestorVersion2, on_delete=models.CASCADE, related_name="datasources"
+        InvestorVersion, on_delete=models.CASCADE, related_name="datasources"
     )
 
     class Meta:
@@ -1624,14 +1624,14 @@ class InvestorHullQuerySet(models.QuerySet):
 
 class InvestorHull(HullBase):
     active_version = models.ForeignKey(
-        InvestorVersion2,
+        InvestorVersion,
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
         related_name="+",
     )
     draft_version = models.ForeignKey(
-        InvestorVersion2,
+        InvestorVersion,
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
@@ -1648,12 +1648,12 @@ class InvestorHull(HullBase):
         if hasattr(self, "_selected_version_id") and self._selected_version_id:
             try:
                 return self.versions.get(id=self._selected_version_id)
-            except InvestorVersion2.DoesNotExist:
+            except InvestorVersion.DoesNotExist:
                 raise Http404
         return self.active_version or self.draft_version
 
-    def add_draft(self, created_by: User = None) -> InvestorVersion2:
-        dv = InvestorVersion2.objects.create(investor=self, created_by=created_by)
+    def add_draft(self, created_by: User = None) -> InvestorVersion:
+        dv = InvestorVersion.objects.create(investor=self, created_by=created_by)
         self.draft_version = dv
         self.save()
         return dv
@@ -1920,7 +1920,7 @@ class InvestorWorkflowInfo2(WorkflowInfo2):
         InvestorHull, on_delete=models.CASCADE, related_name="workflowinfos"
     )
     investor_version = models.ForeignKey(
-        InvestorVersion2,
+        InvestorVersion,
         on_delete=models.SET_NULL,
         related_name="workflowinfos",
         null=True,

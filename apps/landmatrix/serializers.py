@@ -15,7 +15,7 @@ from apps.landmatrix.models.new import (
     Contract,
     Area,
     InvestorHull,
-    InvestorVersion2,
+    InvestorVersion,
     InvestorDataSource,
     Involvement,
     DealWorkflowInfo2,
@@ -320,7 +320,7 @@ class DealSerializer(serializers.ModelSerializer):
 
 class InvestorVersionVersionsListSerializer(serializers.ModelSerializer):
     class Meta:
-        model = InvestorVersion2
+        model = InvestorVersion
         fields = [
             "id",
             "created_at",
@@ -361,7 +361,7 @@ class InvestorVersionSerializer(serializers.ModelSerializer):
     activated_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
-        model = InvestorVersion2
+        model = InvestorVersion
         read_only_fields = (
             "id",
             # base version mixin
@@ -380,7 +380,7 @@ class InvestorVersionSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     @staticmethod
-    def save_submodels(data, iv1: InvestorVersion2):
+    def save_submodels(data, iv1: InvestorVersion):
         iv1.involvements_snapshot = data["involvements"]
 
         # TODO Later right now we're handling datasources here
@@ -433,7 +433,7 @@ class InvestorSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     @staticmethod
-    def get_deals(obj: InvestorVersion2):
+    def get_deals(obj: InvestorVersion):
         target_deals = (
             DealHull.objects.filter(
                 id__in=obj.dealversions.all().values_list("deal_id", flat=True)

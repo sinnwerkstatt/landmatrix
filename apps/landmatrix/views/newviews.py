@@ -27,7 +27,7 @@ from apps.landmatrix.models.new import (
     DealHull,
     InvestorHull,
     DealVersion,
-    InvestorVersion2,
+    InvestorVersion,
     DealWorkflowInfo2,
     InvestorWorkflowInfo2,
     DealTopInvestors2,
@@ -45,7 +45,7 @@ from apps.landmatrix.utils import parse_filters, openapi_filters_parameters
 
 def add_wfi(
     obj: DealHull | InvestorHull = None,
-    obj_version: DealVersion | InvestorVersion2 = None,
+    obj_version: DealVersion | InvestorVersion = None,
     from_user: User = None,
     to_user_id: int = None,
     status_before: str = "",
@@ -128,7 +128,7 @@ class VersionViewSet(viewsets.ReadOnlyModelViewSet):
 
     @transaction.atomic
     def update(self, request, pk: int):
-        ov1: DealVersion | InvestorVersion2 = get_object_or_404(self.queryset, pk=pk)
+        ov1: DealVersion | InvestorVersion = get_object_or_404(self.queryset, pk=pk)
 
         if ov1.created_by_id != request.user.id and request.user.role < UserRole.EDITOR:
             raise PermissionDenied("MISSING_AUTHORIZATION")
@@ -160,7 +160,7 @@ class VersionViewSet(viewsets.ReadOnlyModelViewSet):
             return Response({"versionID": ov1.id})
 
     def destroy(self, request, pk: int):
-        ov1: DealVersion | InvestorVersion2 = get_object_or_404(self.queryset, pk=pk)
+        ov1: DealVersion | InvestorVersion = get_object_or_404(self.queryset, pk=pk)
 
         if ov1.created_by_id != request.user.id and request.user.role < UserRole.EDITOR:
             raise PermissionDenied("MISSING_AUTHORIZATION")
@@ -291,7 +291,7 @@ class HullViewSet(viewsets.ReadOnlyModelViewSet):
         )
         if serializer.is_valid(raise_exception=True):
             # this is untidy
-            ov1: DealVersion | InvestorVersion2 = serializer.save()
+            ov1: DealVersion | InvestorVersion = serializer.save()
             serializer.save_submodels(data, ov1)
             ov1.save()  # recalculating fields here.
 
@@ -505,13 +505,13 @@ class DealViewSet(HullViewSet):
 
 
 class InvestorVersionViewSet(VersionViewSet):
-    queryset = InvestorVersion2.objects.all()
+    queryset = InvestorVersion.objects.all()
     serializer_class = InvestorVersionSerializer
 
     @action(detail=True, methods=["put"])
     @transaction.atomic
     def change_status(self, request, pk: int):
-        iv1: InvestorVersion2 = get_object_or_404(self.queryset, pk=pk)
+        iv1: InvestorVersion = get_object_or_404(self.queryset, pk=pk)
 
         if not iv1.is_current_draft():
             raise PermissionDenied("EDITING_OLD_VERSION")
@@ -557,7 +557,7 @@ class InvestorVersionViewSet(VersionViewSet):
 
 class InvestorViewSet(HullViewSet):
     queryset = InvestorHull.objects.all().prefetch_related(
-        Prefetch("versions", queryset=InvestorVersion2.objects.order_by("-id"))
+        Prefetch("versions", queryset=InvestorVersion.objects.order_by("-id"))
     )
     serializer_class = InvestorSerializer
     version_serializer_class = InvestorVersionSerializer
@@ -594,8 +594,8 @@ class InvestorViewSet(HullViewSet):
         i1._selected_version_id = int(version_id)
 
         try:
-            iv1: InvestorVersion2 = i1.versions.get(id=version_id)
-        except InvestorVersion2.DoesNotExist:
+            iv1: InvestorVersion = i1.versions.get(id=version_id)
+        except InvestorVersion.DoesNotExist:
             raise Http404
 
         if (

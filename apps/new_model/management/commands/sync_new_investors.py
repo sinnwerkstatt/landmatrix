@@ -12,7 +12,7 @@ from apps.landmatrix.models.investor import (
 )
 from apps.landmatrix.models.new import (
     InvestorHull,
-    InvestorVersion2,
+    InvestorVersion,
     InvestorDataSource,
     InvestorWorkflowInfo2,
 )
@@ -52,7 +52,7 @@ class Command(BaseCommand):
             ic(old_investor.id, old_investor.status)
             for old_version in old_investor.versions.all().order_by("id"):
                 ic(old_version)
-                new_version: InvestorVersion2
+                new_version: InvestorVersion
                 base_payload = {
                     "investor_id": old_investor.id,
                     "id": old_version.id,
@@ -62,9 +62,9 @@ class Command(BaseCommand):
                     "modified_by_id": old_version.modified_by_id,
                 }
                 try:
-                    new_version = InvestorVersion2.objects.get(**base_payload)
-                except InvestorVersion2.DoesNotExist:
-                    new_version = InvestorVersion2(**base_payload)
+                    new_version = InvestorVersion.objects.get(**base_payload)
+                except InvestorVersion.DoesNotExist:
+                    new_version = InvestorVersion(**base_payload)
 
                 ov: dict = old_version.serialized_data
                 new_version.country_id = ov["country"]
@@ -141,7 +141,7 @@ def _map_status(investor_hull, new_version, old_version: InvestorVersionOld):
         print("VERSION OHO", old_version.object_id, old_version_dict["status"])
 
 
-def map_datasources(nv: InvestorVersion2, datasources: list[dict]):
+def map_datasources(nv: InvestorVersion, datasources: list[dict]):
     for dats in datasources:
         ds1, _ = InvestorDataSource.objects.get_or_create(
             investorversion_id=nv.id, nid=dats["id"]
@@ -222,7 +222,7 @@ def do_workflows(investor_id):
 
         if not wfi.investor_version_id:
             continue
-        dv: InvestorVersion2 = InvestorVersion2.objects.get(id=wfi.investor_version_id)
+        dv: InvestorVersion = InvestorVersion.objects.get(id=wfi.investor_version_id)
         if wfi.status_before is None and wfi.status_after == "DRAFT":
             ...  # TODO I think we're good here. Don't see anything that we ought to be doing.
         elif (
