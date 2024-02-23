@@ -7,7 +7,7 @@
 # from apps.accounts.models import User
 # from apps.landmatrix.models.abstracts import DRAFT_STATUS, STATUS
 # from apps.landmatrix.models.country import Country
-# from apps.landmatrix.models.deal import Deal, DealVersion, DealWorkflowInfo
+# from apps.landmatrix.models.deal import Deal, DealVersion, DealWorkflowInfoOld
 #
 # from .to_dict import deal_to_dict
 #
@@ -62,7 +62,7 @@
 #             object=deal,
 #             serialized_data=deal.serialize_for_version(),
 #         )
-#         DealWorkflowInfo.objects.create(
+#         DealWorkflowInfoOld.objects.create(
 #             id=3000,
 #             timestamp=FIRST_OF_JANUARY_2022,
 #             deal=deal,
@@ -71,7 +71,7 @@
 #             draft_status_before=DRAFT_STATUS["DRAFT"],
 #             draft_status_after=DRAFT_STATUS["REVIEW"],
 #         )
-#         DealWorkflowInfo.objects.create(
+#         DealWorkflowInfoOld.objects.create(
 #             id=3001,
 #             timestamp=SECOND_OF_JANUARY_2022,
 #             deal=deal,
@@ -111,7 +111,7 @@
 #                 },
 #                 "workflowinfos": [
 #                     {
-#                         "__typename": "DealWorkflowInfo",
+#                         "__typename": "DealWorkflowInfoOld",
 #                         "comment": "",
 #                         "draft_status_before": DRAFT_STATUS["DRAFT"],
 #                         "draft_status_after": DRAFT_STATUS["REVIEW"],
@@ -127,7 +127,7 @@
 #                         "to_user": None,
 #                     },
 #                     {
-#                         "__typename": "DealWorkflowInfo",
+#                         "__typename": "DealWorkflowInfoOld",
 #                         "comment": "",
 #                         "draft_status_before": DRAFT_STATUS["REVIEW"],
 #                         "draft_status_after": DRAFT_STATUS["REVIEW"],

@@ -5,7 +5,7 @@ from django.core.management.base import BaseCommand
 from django.db import connection
 from icecream import ic
 
-from apps.landmatrix.models.deal import Deal, DealWorkflowInfo
+from apps.landmatrix.models.deal import Deal, DealWorkflowInfoOld
 from apps.landmatrix.models.new import (
     DealHull,
     DealVersion2,
@@ -21,8 +21,8 @@ status_map_dings = {
     1: "DRAFT",
     2: "REVIEW",
     3: "ACTIVATION",
-    4: "REJECTED",
-    5: "TO_DELETE",
+    4: "REVIEW",
+    5: "DRAFT",
     None: None,
 }
 
@@ -674,8 +674,8 @@ def map_version_payload(ov: dict, nv: DealVersion2):
 
 
 def do_workflows(deal_id):
-    for wfi_old in DealWorkflowInfo.objects.filter(deal_id=deal_id):
-        wfi_old: DealWorkflowInfo
+    for wfi_old in DealWorkflowInfoOld.objects.filter(deal_id=deal_id):
+        wfi_old: DealWorkflowInfoOld
 
         status_before = status_map_dings[wfi_old.draft_status_before]
         status_after = status_map_dings[wfi_old.draft_status_after]

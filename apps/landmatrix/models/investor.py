@@ -153,7 +153,7 @@ class Investor(models.Model):
         return deals
 
 
-class InvestorWorkflowInfo(WorkflowInfo):
+class InvestorWorkflowInfoOld(WorkflowInfo):
     investor = models.ForeignKey(
         Investor, on_delete=models.CASCADE, related_name="workflowinfos"
     )

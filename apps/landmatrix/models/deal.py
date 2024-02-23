@@ -754,7 +754,7 @@ class Deal(AbstractDealBase):
         return f"#{self.id}"
 
 
-class DealWorkflowInfo(WorkflowInfo):
+class DealWorkflowInfoOld(WorkflowInfo):
     deal = models.ForeignKey(
         Deal, on_delete=models.CASCADE, related_name="workflowinfos"
     )

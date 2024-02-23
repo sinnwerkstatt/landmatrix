@@ -8,7 +8,7 @@ from icecream import ic
 from apps.landmatrix.models.investor import (
     Investor,
     InvestorVersion,
-    InvestorWorkflowInfo,
+    InvestorWorkflowInfoOld,
 )
 from apps.landmatrix.models.new import (
     InvestorHull,
@@ -21,8 +21,8 @@ status_map_dings = {
     1: "DRAFT",
     2: "REVIEW",
     3: "ACTIVATION",
-    4: "REJECTED",
-    5: "TO_DELETE",
+    4: "REVIEW",
+    5: "DRAFT",
     None: None,
 }
 
@@ -123,14 +123,14 @@ def _map_status(investor_hull, new_version, old_version: InvestorVersion):
             new_version.status = "ACTIVATION"
             investor_hull.draft_version_id = old_version.id
         elif old_version_dict["draft_status"] == 4:
-            new_version.status = "REJECTED"
+            new_version.status = "REVIEW"
             # investor_hull.active_version_id = investor_version.id
         else:
             # print("TODO?!", old_version_dict["draft_status"])
             new_version.status = "DELETED"
     elif old_version_dict["status"] == 4:
         if old_version_dict["draft_status"] is None:
-            new_version.status = "TO_DELETE"
+            new_version.status = "DRAFT"
             investor_hull.active_version_id = old_version.id
         else:
             ic("TODO DELETE else?!")
@@ -194,12 +194,12 @@ def _map_involvements_to_new_format(invos: list) -> list:
 
 
 def do_workflows(investor_id):
-    for wfi_old in InvestorWorkflowInfo.objects.filter(investor_id=investor_id):
-        wfi_old: InvestorWorkflowInfo
+    for wfi_old in InvestorWorkflowInfoOld.objects.filter(investor_id=investor_id):
+        wfi_old: InvestorWorkflowInfoOld
 
         status_before = status_map_dings[wfi_old.draft_status_before]
         status_after = status_map_dings[wfi_old.draft_status_after]
-        if status_before == "ACTIVATION" and status_after is None:
+        if status_before in ["REVIEW", "ACTIVATION"] and status_after is None:
             status_after = "ACTIVATED"
 
         wfi, _ = InvestorWorkflowInfo2.objects.get_or_create(
@@ -263,28 +263,45 @@ def do_workflows(investor_id):
             dv.activated_by = wfi.from_user
             dv.save()
         elif wfi.status_before == "REJECTED" or wfi.status_after == "REJECTED":
-            ...  # TODO REJECTED status change
-            # ic(
-            #     "DWI OHO",
-            #     wfi.id,
-            #     wfi.timestamp,
-            #     wfi.from_user,
-            #     wfi.investor_id,
-            #     wfi.status_before,
-            #     wfi.status_after,z
-            #     wfi.comment,
-            # )
-            # sys.exit(1)
-        elif wfi.status_after == "TO_DELETE":
-            dv.status = "TO_DELETE"
+            dv.modified_at = wfi.timestamp
             dv.save()
+            ic(
+                "DWI OHO",
+                wfi.id,
+                wfi.timestamp,
+                wfi.from_user,
+                wfi.investor_id,
+                wfi.status_before,
+                wfi.status_after,
+                wfi.comment,
+            )
+            sys.exit(1)
+        elif wfi.status_after == "TO_DELETE":
+            dv.status = "DRAFT"
+            dv.save()
+            ic(
+                "DWI OHO",
+                wfi.id,
+                wfi.timestamp,
+                wfi.from_user,
+                wfi.investor_id,
+                wfi.status_before,
+                wfi.status_after,
+                wfi.comment,
+            )
+            sys.exit(1)
         elif wfi.status_before == "TO_DELETE" and wfi.status_after != "TO_DELETE":
-            if not wfi.status_after:
-                # TODO What is going on here?
-                ...
-            else:
-                dv.status = status_map_dings[wfi.status_after]
-                dv.save()
+            ic(
+                "DWI OHO",
+                wfi.id,
+                wfi.timestamp,
+                wfi.from_user,
+                wfi.investor_id,
+                wfi.status_before,
+                wfi.status_after,
+                wfi.comment,
+            )
+            sys.exit(1)
         else:
             ...
             ic(

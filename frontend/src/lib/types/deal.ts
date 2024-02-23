@@ -234,7 +234,7 @@ export interface Deal {
   // contracts: Contract[]
   // datasources: DataSource[]
   // versions: DealVersion[]
-  // workflowinfos?: DealWorkflowInfo[]
+  // workflowinfos?: DealWorkflowInfoOld[]
   negotiation_status?: NegotiationStatusItem[]
   contract_size?: ContractSizeItem[]
   current_intention_of_investment?: IntentionOfInvestment[]
