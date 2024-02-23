@@ -28,9 +28,9 @@ from apps.landmatrix.models.new import (
     InvestorHull,
     DealVersion,
     InvestorVersion,
-    DealWorkflowInfo2,
-    InvestorWorkflowInfo2,
-    DealTopInvestors2,
+    DealWorkflowInfo,
+    InvestorWorkflowInfo,
+    DealTopInvestors,
     Location,
 )
 from apps.landmatrix.permissions import IsReporterOrHigher, IsAdministrator
@@ -70,11 +70,11 @@ def add_wfi(
         "comment": comment or "",
     }
     if isinstance(obj, DealHull):
-        return DealWorkflowInfo2.objects.create(
+        return DealWorkflowInfo.objects.create(
             deal=obj or obj_version.deal, deal_version=obj_version, **kwargs
         )
     else:
-        return InvestorWorkflowInfo2.objects.create(
+        return InvestorWorkflowInfo.objects.create(
             investor=obj or obj_version.investor, investor_version=obj_version, **kwargs
         )
 
@@ -224,7 +224,7 @@ class DealVersionViewSet(VersionViewSet):
 
         if request.data["transition"] == "TO_REVIEW" and request.data.get("toUser"):
             # if there was a request for improvement workflowinfo, email the requester
-            old_wfi: DealWorkflowInfo2 | None = self.deal.workflowinfos.last()
+            old_wfi: DealWorkflowInfo | None = self.deal.workflowinfos.last()
             if (
                 old_wfi
                 and old_wfi.status_before in ["REVIEW", "ACTIVATION"]
@@ -401,11 +401,11 @@ class DealViewSet(HullViewSet):
                     ),
                     top_investors=(
                         ArraySubquery(
-                            DealTopInvestors2.objects.exclude(
+                            DealTopInvestors.objects.exclude(
                                 investorhull__active_version=None
                             )
                             .filter(investorhull__deleted=False)
-                            .filter(dealversion2_id=OuterRef("active_version_id"))
+                            .filter(dealversion_id=OuterRef("active_version_id"))
                             .values(
                                 json=JSONObject(
                                     id="investorhull_id",
@@ -433,7 +433,7 @@ class DealViewSet(HullViewSet):
         )
         dv1 = d1.add_draft(created_by=request.user)
 
-        DealWorkflowInfo2.objects.create(
+        DealWorkflowInfo.objects.create(
             deal=d1,
             deal_version=dv1,
             from_user=request.user,
@@ -467,7 +467,7 @@ class DealViewSet(HullViewSet):
         confidential_str = (
             "SET_CONFIDENTIAL" if d1.confidential else "UNSET_CONFIDENTIAL"
         )
-        DealWorkflowInfo2.objects.create(
+        DealWorkflowInfo.objects.create(
             deal=d1,
             from_user=request.user,
             comment=f"[{confidential_str}] {request.data['comment']}",
@@ -493,7 +493,7 @@ class DealViewSet(HullViewSet):
         d1.draft_version = dv1
         d1.save()
 
-        DealWorkflowInfo2.objects.create(
+        DealWorkflowInfo.objects.create(
             deal=d1,
             deal_version=dv1,
             from_user=request.user,
@@ -526,7 +526,7 @@ class InvestorVersionViewSet(VersionViewSet):
 
         if request.data["transition"] == "TO_REVIEW" and to_user_id:
             # if there was a request for improvement workflowinfo, email the requester
-            old_wfi: InvestorWorkflowInfo2 | None = iv1.investor.workflowinfos.last()
+            old_wfi: InvestorWorkflowInfo | None = iv1.investor.workflowinfos.last()
             if (
                 old_wfi
                 and old_wfi.status_before in ["REVIEW", "ACTIVATION"]
@@ -580,7 +580,7 @@ class InvestorViewSet(HullViewSet):
             # no need to save submodels in this step. there are definitely no datasources defined here yet
             # serializer.save_submodels(data, dv1)
 
-        InvestorWorkflowInfo2.objects.create(
+        InvestorWorkflowInfo.objects.create(
             investor=i1,
             investor_version=iv1,
             from_user=request.user,

@@ -14,7 +14,7 @@ from apps.landmatrix.models.new import (
     Contract,
     DealDataSource,
     InvestorHull,
-    DealWorkflowInfo2,
+    DealWorkflowInfo,
 )
 
 status_map_dings = {
@@ -126,10 +126,10 @@ class Command(BaseCommand):
                 "SELECT setval('landmatrix_dealhull_id_seq', (SELECT MAX(id) from landmatrix_dealhull))"
             )
             cursor.execute(
-                "SELECT setval('landmatrix_dealversion2_id_seq', (SELECT MAX(id) from landmatrix_dealversion2))"
+                "SELECT setval('landmatrix_dealversion_id_seq', (SELECT MAX(id) from landmatrix_dealversion))"
             )
             cursor.execute(
-                "SELECT setval('landmatrix_dealworkflowinfo2_id_seq', (SELECT MAX(id) from landmatrix_dealworkflowinfo2))"
+                "SELECT setval('landmatrix_dealworkflowinfo_id_seq', (SELECT MAX(id) from landmatrix_dealworkflowinfo))"
             )
 
 
@@ -682,7 +682,7 @@ def do_workflows(deal_id):
         if status_before in ["REVIEW", "ACTIVATION"] and status_after is None:
             status_after = "ACTIVATED"
 
-        wfi, _ = DealWorkflowInfo2.objects.get_or_create(
+        wfi, _ = DealWorkflowInfo.objects.get_or_create(
             id=wfi_old.id,
             defaults={
                 "from_user_id": wfi_old.from_user_id,

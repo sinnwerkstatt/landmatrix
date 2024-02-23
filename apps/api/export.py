@@ -23,7 +23,7 @@ from apps.landmatrix.models.new import (
     DealVersion,
     InvestorHull,
     Involvement,
-    DealTopInvestors2,
+    DealTopInvestors,
 )
 from apps.landmatrix.utils import parse_filters
 
@@ -506,9 +506,9 @@ def deal_qs_to_values(qs: QuerySet[DealVersion]):
         .annotate(
             top_investors=(
                 ArraySubquery(
-                    DealTopInvestors2.objects.exclude(investorhull__active_version=None)
+                    DealTopInvestors.objects.exclude(investorhull__active_version=None)
                     .filter(investorhull__deleted=False)
-                    .filter(dealversion2_id=OuterRef("id"))
+                    .filter(dealversion_id=OuterRef("id"))
                     .order_by("-id")
                     .annotate(
                         active_version=JSONObject(

@@ -24,8 +24,8 @@ from apps.accounts.models import UserRole
 from apps.landmatrix.models.new import (
     DealHull,
     InvestorHull,
-    DealWorkflowInfo2,
-    InvestorWorkflowInfo2,
+    DealWorkflowInfo,
+    InvestorWorkflowInfo,
 )
 
 
@@ -167,7 +167,7 @@ class Management(View):
                 Prefetch(
                     "workflowinfos",
                     queryset=(
-                        DealWorkflowInfo2 if is_deal else InvestorWorkflowInfo2
+                        DealWorkflowInfo if is_deal else InvestorWorkflowInfo
                     ).objects.order_by("-timestamp"),
                 ),
             )
@@ -176,7 +176,7 @@ class Management(View):
             if is_deal:
                 qs: QuerySet[DealHull]
                 wflos = ArraySubquery(
-                    DealWorkflowInfo2.objects.filter(deal_id=OuterRef("id"))
+                    DealWorkflowInfo.objects.filter(deal_id=OuterRef("id"))
                     .order_by("-id")
                     .values(
                         json=JSONObject(
@@ -229,7 +229,7 @@ class Management(View):
             else:
                 qs: QuerySet[InvestorHull]
                 wflos = ArraySubquery(
-                    InvestorWorkflowInfo2.objects.filter(investor_id=OuterRef("id"))
+                    InvestorWorkflowInfo.objects.filter(investor_id=OuterRef("id"))
                     .order_by("-id")
                     .values(
                         json=JSONObject(

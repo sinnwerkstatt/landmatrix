@@ -57,7 +57,7 @@ class ReadonlyInline(admin.TabularInline):
 
 
 @admin.register(DealVersion)
-class DealVersion2Admin(admin.ModelAdmin):
+class DealVersionAdmin(admin.ModelAdmin):
     model = DealVersion
     readonly_fields = [
         "operating_company",

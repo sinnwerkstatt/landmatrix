@@ -14,7 +14,7 @@ from apps.landmatrix.models.new import (
     InvestorHull,
     InvestorVersion,
     InvestorDataSource,
-    InvestorWorkflowInfo2,
+    InvestorWorkflowInfo,
 )
 
 status_map_dings = {
@@ -97,10 +97,10 @@ class Command(BaseCommand):
                 "SELECT setval('landmatrix_investorhull_id_seq', (SELECT MAX(id) from landmatrix_investorhull))"
             )
             cursor.execute(
-                "SELECT setval('landmatrix_investorversion2_id_seq', (SELECT MAX(id) from landmatrix_investorversion2))"
+                "SELECT setval('landmatrix_investorversion_id_seq', (SELECT MAX(id) from landmatrix_investorversion))"
             )
             cursor.execute(
-                "SELECT setval('landmatrix_investorworkflowinfo2_id_seq', (SELECT MAX(id) from landmatrix_investorworkflowinfo2))"
+                "SELECT setval('landmatrix_investorworkflowinfo_id_seq', (SELECT MAX(id) from landmatrix_investorworkflowinfo))"
             )
 
 
@@ -204,7 +204,7 @@ def do_workflows(investor_id):
         if status_before in ["REVIEW", "ACTIVATION"] and status_after is None:
             status_after = "ACTIVATED"
 
-        wfi, _ = InvestorWorkflowInfo2.objects.get_or_create(
+        wfi, _ = InvestorWorkflowInfo.objects.get_or_create(
             id=wfi_old.id,
             defaults={
                 "from_user_id": wfi_old.from_user_id,

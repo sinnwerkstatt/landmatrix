@@ -42,9 +42,6 @@ VERSION_STATUS_CHOICES = (
     ("REVIEW", _("Review")),
     ("ACTIVATION", _("Activation")),
     ("ACTIVATED", _("Activated")),
-    # TODO: old, can probably remove?
-    ("REJECTED", _("OLD: Rejected")),
-    ("TO_DELETE", _("OLD: To Delete")),
 )
 
 
@@ -713,7 +710,7 @@ class DealVersion(DealVersionBaseFields, BaseVersionMixin):
         related_name="child_deals",
         blank=True,
     )
-    # Can be queried via DealTopInvestors2 view model:
+    # Can be queried via DealTopInvestors view model:
     top_investors = models.ManyToManyField(
         "InvestorHull",
         verbose_name=_("Top parent companies"),
@@ -872,7 +869,7 @@ class DealVersion(DealVersionBaseFields, BaseVersionMixin):
                 & (Q(from_user=user) | Q(to_user=user))
             ).update(resolved=True)
 
-        DealWorkflowInfo2.objects.create(
+        DealWorkflowInfo.objects.create(
             deal_id=self.deal_id,
             deal_version=self,
             from_user=user,
@@ -1549,7 +1546,7 @@ class InvestorVersion(BaseVersionMixin, models.Model):
                 & (Q(from_user=user) | Q(to_user=user))
             ).update(resolved=True)
 
-        InvestorWorkflowInfo2.objects.create(
+        InvestorWorkflowInfo.objects.create(
             investor_id=self.investor_id,
             investor_version=self,
             from_user=user,
@@ -1845,7 +1842,7 @@ class Involvement(models.Model):
         return f"{self.parent_investor} {role} {self.child_investor}"
 
 
-class WorkflowInfo2(models.Model):
+class _WorkflowInfo(models.Model):
     from_user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="+"
     )
@@ -1888,7 +1885,7 @@ class WorkflowInfo2(models.Model):
         abstract = True
 
 
-class DealWorkflowInfo2(WorkflowInfo2):
+class DealWorkflowInfo(_WorkflowInfo):
     deal = models.ForeignKey(
         DealHull, on_delete=models.CASCADE, related_name="workflowinfos"
     )
@@ -1915,7 +1912,7 @@ class DealWorkflowInfo2(WorkflowInfo2):
         return d
 
 
-class InvestorWorkflowInfo2(WorkflowInfo2):
+class InvestorWorkflowInfo(_WorkflowInfo):
     investor = models.ForeignKey(
         InvestorHull, on_delete=models.CASCADE, related_name="workflowinfos"
     )
@@ -1938,10 +1935,10 @@ class InvestorWorkflowInfo2(WorkflowInfo2):
         return d
 
 
-class DealTopInvestors2(models.Model):
-    """A view on dealversion2.top_investors M2M relation table."""
+class DealTopInvestors(models.Model):
+    """A view on dealversion.top_investors M2M relation table."""
 
-    dealversion2 = models.ForeignKey(
+    dealversion = models.ForeignKey(
         DealVersion, on_delete=models.CASCADE, related_name="+"
     )
     investorhull = models.ForeignKey(
@@ -1950,7 +1947,7 @@ class DealTopInvestors2(models.Model):
 
     class Meta:
         managed = False
-        db_table = "landmatrix_dealversion2_top_investors"
+        db_table = "landmatrix_dealversion_top_investors"
 
     def __str__(self):
-        return f"#{self.dealversion2.deal_id} - {self.investorhull.active_version.name}"
+        return f"#{self.dealversion.deal_id} - {self.investorhull.active_version.name}"

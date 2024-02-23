@@ -3,7 +3,7 @@ from collections import defaultdict
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.new import (
     DealHull,
-    DealTopInvestors2,
+    DealTopInvestors,
     InvestorHull,
     DealVersion,
 )
@@ -64,15 +64,15 @@ def get_deal_top_investments(request):
     outgoing = investmentsdict()
 
     for deal_country_id, investor_country_id, size in (
-        DealTopInvestors2.objects.filter(
-            investorhull__in=investors, dealversion2__in=deals
+        DealTopInvestors.objects.filter(
+            investorhull__in=investors, dealversion__in=deals
         )
         .values_list(
-            "dealversion2__deal__country_id",
+            "dealversion__deal__country_id",
             "investorhull__active_version__country_id",
-            "dealversion2__deal_size",
+            "dealversion__deal_size",
         )
-        .order_by("dealversion2__deal__country_id")
+        .order_by("dealversion__deal__country_id")
     ):
         # Ignore deals and investors without country association.
         if deal_country_id is None or investor_country_id is None:

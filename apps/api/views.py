@@ -13,8 +13,8 @@ from apps.blog.models import BlogCategory, BlogPage
 from apps.landmatrix.charts import get_deal_top_investments, web_of_transnational_deals
 from apps.landmatrix.models.new import (
     DealHull,
-    DealWorkflowInfo2,
-    InvestorWorkflowInfo2,
+    DealWorkflowInfo,
+    InvestorWorkflowInfo,
     InvestorHull,
 )
 from apps.landmatrix.utils import parse_filters
@@ -218,9 +218,9 @@ def workflow_info_add_reply(
     data = json.loads(request.body)
 
     if wfitype == "deal":
-        wfi: DealWorkflowInfo2 = DealWorkflowInfo2.objects.get(pk=pk)
+        wfi: DealWorkflowInfo = DealWorkflowInfo.objects.get(pk=pk)
     elif wfitype == "investor":
-        wfi: InvestorWorkflowInfo2 = InvestorWorkflowInfo2.objects.get(pk=pk)
+        wfi: InvestorWorkflowInfo = InvestorWorkflowInfo.objects.get(pk=pk)
     else:
         return JsonResponse({"ok": False})
 
@@ -246,9 +246,9 @@ def workflow_info_resolve(
         raise PermissionDenied("MISSING_AUTHORIZATION")
 
     if wfitype == "deal":
-        wfi: DealWorkflowInfo2 = DealWorkflowInfo2.objects.get(pk=pk)
+        wfi: DealWorkflowInfo = DealWorkflowInfo.objects.get(pk=pk)
     elif wfitype == "investor":
-        wfi: InvestorWorkflowInfo2 = InvestorWorkflowInfo2.objects.get(pk=pk)
+        wfi: InvestorWorkflowInfo = InvestorWorkflowInfo.objects.get(pk=pk)
     else:
         return JsonResponse({"ok": False})
 

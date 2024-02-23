@@ -18,8 +18,8 @@ from apps.landmatrix.models.new import (
     InvestorVersion,
     InvestorDataSource,
     Involvement,
-    DealWorkflowInfo2,
-    InvestorWorkflowInfo2,
+    DealWorkflowInfo,
+    InvestorWorkflowInfo,
 )
 
 
@@ -308,7 +308,7 @@ class DealSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_workflowinfos(obj: DealHull):
-        wfis: QuerySet[DealWorkflowInfo2] = DealWorkflowInfo2.objects.filter(
+        wfis: QuerySet[DealWorkflowInfo] = DealWorkflowInfo.objects.filter(
             deal_id=obj.id
         )
         return [dwi.to_dict() for dwi in wfis.order_by("-timestamp")]
@@ -548,7 +548,7 @@ class InvestorSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def get_workflowinfos(obj: InvestorHull):
-        wfis: QuerySet[InvestorWorkflowInfo2] = InvestorWorkflowInfo2.objects.filter(
+        wfis: QuerySet[InvestorWorkflowInfo] = InvestorWorkflowInfo.objects.filter(
             investor_id=obj.id
         )
         return [x.to_dict() for x in wfis.order_by("-id")]
