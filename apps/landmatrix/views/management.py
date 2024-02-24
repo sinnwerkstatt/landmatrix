@@ -62,7 +62,7 @@ class Management(View):
             },
             "todo_improvement": {
                 "staff": False,
-                "q": ~Q(draft_version=None)
+                "q": Q(draft_version__isnull=False)
                 & Q(workflowinfos__status_before__in=["REVIEW", "ACTIVATION"])
                 & Q(workflowinfos__status_after="DRAFT")
                 & Q(workflowinfos__to_user_id=request.user.id)
@@ -86,12 +86,12 @@ class Management(View):
                     )
                 )
                 & Q(workflowinfos__from_user=request.user)
-                & ~Q(workflowinfos__to_user_id=None)
+                & Q(workflowinfos__to_user__isnull=False)
                 & Q(workflowinfos__resolved=False),
             },
             "requested_improvement": {
                 "staff": True,
-                "q": ~Q(draft_version=None)
+                "q": Q(draft_version__isnull=False)
                 & (
                     Q(workflowinfos__deal_version_id=F("draft_version_id"))
                     if is_deal
@@ -127,11 +127,11 @@ class Management(View):
             },
             "all_active": {
                 "staff": True,
-                "q": ~Q(active_version=None) & Q(deleted=False),
+                "q": Q(active_version__isnull=False) & Q(deleted=False),
             },
             "all_drafts": {
                 "staff": True,
-                "q": ~Q(draft_version=None) & Q(deleted=False),
+                "q": Q(draft_version__isnull=False) & Q(deleted=False),
             },
             "all_deleted": {"staff": True, "q": Q(deleted=True)},
         }
