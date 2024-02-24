@@ -3,8 +3,6 @@ import { derived } from "svelte/store"
 
 import type { Version2Status } from "$lib/types/newtypes"
 
-// TODO Nuts can probably refactor this away. what about the "mode" thingies?
-
 type VersionStatusMap = { [key in Version2Status]: { title: string; classes: string } }
 
 export const stateMap = derived(

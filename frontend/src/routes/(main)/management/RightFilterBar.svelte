@@ -3,14 +3,14 @@
   import { _ } from "svelte-i18n"
   import Select from "svelte-select"
 
+  import { stateMap } from "$lib/newUtils"
   import { countries } from "$lib/stores"
-  import type { DealHull, InvestorHull } from "$lib/types/newtypes"
+  import { Version2Status, type DealHull, type InvestorHull } from "$lib/types/newtypes"
 
   import CountrySelect from "$components/LowLevel/CountrySelect.svelte"
   import UserSelect from "$components/LowLevel/UserSelect.svelte"
 
-  import { managementFilters, modeMap, MODES } from "./state"
-  import type { Mode } from "./state"
+  import { managementFilters } from "./state"
 
   export let showFilters = false
   export let objects: Array<DealHull | InvestorHull> = []
@@ -26,8 +26,19 @@
   )
   $: relCountries = $countries.filter(c => objectsCountryIDs.includes(c.id))
 
-  let modeItems: { value: Mode; label: string }[]
-  $: modeItems = MODES.map(mode => ({ value: mode, label: $modeMap[mode] }))
+  // const STATI = Object.values(Version2Status)
+  const RELEVANT_STATI = [
+    Version2Status.DRAFT,
+    Version2Status.REVIEW,
+    Version2Status.ACTIVATION,
+  ]
+  let statusItems: { value: Version2Status; label: string }[]
+  $: statusItems = Object.values(Version2Status)
+    .filter(v => RELEVANT_STATI.includes(v))
+    .map(v => ({
+      value: v,
+      label: $stateMap[v].title,
+    }))
 </script>
 
 <div
@@ -39,8 +50,12 @@
   <h3 class="mt-0">{$_("Filters")}</h3>
   <div class="space-y-4">
     <div>
-      <div class="mb-1 font-bold">{$_("Mode")}</div>
-      <Select bind:justValue={$managementFilters.mode} items={modeItems} showChevron />
+      <div class="mb-1 font-bold">{$_("Status")}</div>
+      <Select
+        bind:justValue={$managementFilters.status}
+        items={statusItems}
+        showChevron
+      />
     </div>
     <div>
       <div class="mb-1 font-bold">{$_("Target country")}</div>
