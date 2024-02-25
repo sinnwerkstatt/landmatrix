@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { PUBLIC_HCAPTCHA_SITEKEY } from "$env/static/public"
+  import * as staticEnv from "$env/static/public"
   import { createEventDispatcher, onDestroy, onMount } from "svelte"
 
   import { browser } from "$app/environment"
@@ -11,7 +11,7 @@
 
   // https://docs.hcaptcha.com/#integration-testing-test-keys
   export const sitekey =
-    PUBLIC_HCAPTCHA_SITEKEY || "10000000-ffff-ffff-ffff-000000000001"
+    staticEnv.PUBLIC_HCAPTCHA_SITEKEY ?? "10000000-ffff-ffff-ffff-000000000001"
 
   export const reset = () => {
     if (mounted && loaded && widgetID) {
