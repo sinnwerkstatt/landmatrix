@@ -9,6 +9,7 @@
 
   import HeaderDates from "$components/HeaderDates.svelte"
   import InvolvementsGraph from "$components/New/InvolvementsGraph/InvolvementsGraph.svelte"
+  import ManageHeaderOldVersionNote from "$components/New/ManageHeaderOldVersionNote.svelte"
   import SectionDataSources from "$components/SectionDataSources.svelte"
   import SectionHistory from "$components/SectionHistory.svelte"
 
@@ -45,6 +46,7 @@
 </svelte:head>
 
 <div class="container mx-auto mb-12 mt-8 min-h-full">
+  <ManageHeaderOldVersionNote obj={data.investor} />
   {#if $page.data.user?.role > UserRole.ANYBODY}
     <InvestorManageHeader investor={data.investor} on:reload={reloadInvestor} />
   {:else}

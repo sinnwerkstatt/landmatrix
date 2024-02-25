@@ -9,6 +9,7 @@
 
   import HeaderDates from "$components/HeaderDates.svelte"
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
+  import ManageHeaderOldVersionNote from "$components/New/ManageHeaderOldVersionNote.svelte"
   import SectionDataSources from "$components/SectionDataSources.svelte"
   import SectionHistory from "$components/SectionHistory.svelte"
 
@@ -67,22 +68,7 @@
 </svelte:head>
 
 <div class="container mx-auto mb-12 mt-8 min-h-full">
-  {#if ![data.deal.active_version_id, data.deal.draft_version_id].includes(data.deal.selected_version.id)}
-    <div
-      class="rounded border border-orange-500 bg-orange-200 px-4 py-2 text-lg dark:bg-orange-800"
-    >
-      <span class="whitespace-nowrap">
-        {$_("Please note: you are viewing an old version of this deal.")}
-      </span>
-
-      <span class="whitespace-nowrap">
-        {$_("The current version can be found here:")}
-        <a href="/deal/{data.deal.id}/" class="text-pelorous hover:text-pelorous-300">
-          {$_("Deal")} #{data.deal.id}
-        </a>
-      </span>
-    </div>
-  {/if}
+  <ManageHeaderOldVersionNote obj={data.deal} />
   {#if $page.data.user?.role > UserRole.ANYBODY}
     <DealManageHeader deal={data.deal} on:reload={reloadDeal} />
   {:else}
@@ -99,6 +85,7 @@
       <HeaderDates obj={data.deal} />
     </div>
   {/if}
+
   <div class="flex min-h-full">
     <nav class="w-1/6 p-2">
       <ul>
