@@ -1,4 +1,4 @@
-from django.contrib.gis.geos import Point
+from django.contrib.gis.geos import GEOSGeometry
 from django.db.models import Q, QuerySet, F
 from django.db.models.functions import JSONObject
 from django.utils.translation import gettext as _
@@ -210,7 +210,9 @@ class DealVersionSerializer(serializers.ModelSerializer):
                     "name": location["name"],
                     "description": location["description"],
                     "point": (
-                        Point(str(location["point"])) if location["point"] else None
+                        GEOSGeometry(str(location["point"]))
+                        if location["point"]
+                        else None
                     ),
                     "facility_name": location["facility_name"],
                     "level_of_accuracy": location["level_of_accuracy"],
