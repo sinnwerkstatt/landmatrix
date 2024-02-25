@@ -72,6 +72,8 @@ frontend test:
 #        junit: results.xml
 
 frontend formatting and linting:
+  variables:
+    PUBLIC_BASE_URL: "http://localhost:9000"
   stage: test
   interruptible: true
   script:

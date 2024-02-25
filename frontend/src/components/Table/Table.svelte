@@ -29,7 +29,7 @@
   $: nItems = sortedItems?.length ?? 0
 
   $: labels = labels ?? columns
-  $: spans = spans ?? columns.map(() => 1)
+  $: spans = spans && spans.length ? spans : columns.map(() => 1)
   $: nCols = spans.reduce((sum, value) => sum + value)
 
   const onTableHeadClick = (col: string) => {
