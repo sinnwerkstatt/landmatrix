@@ -23,6 +23,7 @@
     "fully_updated_at" in obj
 
   $: objType = isDeal(object) ? "deal" : "investor"
+  $: i18nValues = { values: { object: objType } }
 
   let showCopyOverlay = false
   let showDeletionOverlay = false
@@ -32,6 +33,34 @@
     object.selected_version.id,
   )
 </script>
+
+{#if object.selected_version.id === object.draft_version_id}
+  <div
+    class="flex items-center gap-4 rounded border border-purple-500 bg-purple-100 px-4 py-2 text-lg"
+  >
+    {$_("You're viewing the draft version of this {object}.", i18nValues)}
+    <div class="flex items-center gap-2">
+      <a class="butn butn-flat" href="/{objType}/{object.id}/">
+        {$_("Go to active version")}
+      </a>
+    </div>
+  </div>
+{/if}
+{#if object.draft_version_id && object.selected_version.id !== object.draft_version_id}
+  <div
+    class="flex items-center gap-4 rounded border border-green-500 bg-green-100 px-4 py-2 text-lg"
+  >
+    {$_("There is a draft of this {object}.", i18nValues)}
+    <div class="flex items-center gap-2">
+      <a
+        class="butn butn-flat"
+        href="/{objType}/{object.id}/{object.draft_version_id}/"
+      >
+        {$_("Go to current draft")}
+      </a>
+    </div>
+  </div>
+{/if}
 
 <div class="my-4 grid grid-cols-2 lg:grid-cols-3">
   <div class="col-span-2 rounded-tl bg-gray-100 dark:bg-gray-600">

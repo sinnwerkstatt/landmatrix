@@ -119,7 +119,9 @@
         <div class="inline-block px-1.5 text-[13px] {before.classes}">
           {before.title}
         </div>
-        <ArrowLongRightIcon class="inline-block h-4 w-4" />
+        {#if info.status_after}
+          <ArrowLongRightIcon class="inline-block h-4 w-4" />
+        {/if}
       {/if}
       {#if info.status_after}
         {@const after = $stateMap[info.status_after]}
