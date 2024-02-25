@@ -51,18 +51,17 @@ class Command(BaseCommand):
 
             for old_version in old_investor.versions.all().order_by("id"):
                 new_version: InvestorVersion
-                base_payload = {
-                    "investor_id": old_investor.id,
-                    "id": old_version.id,
-                    "created_at": old_version.created_at,
-                    "created_by_id": old_version.created_by_id,
-                    "modified_at": old_version.modified_at,
-                    "modified_by_id": old_version.modified_by_id,
-                }
-                try:
-                    new_version = InvestorVersion.objects.get(**base_payload)
-                except InvestorVersion.DoesNotExist:
-                    new_version = InvestorVersion(**base_payload)
+                new_version, _ = InvestorVersion.objects.update_or_create(
+                    investor_id=old_investor.id,
+                    id=old_version.id,
+                    defaults={
+                        "created_at": old_version.created_at,
+                        "created_by_id": old_version.created_by_id,
+                        "modified_at": old_version.modified_at,
+                        "modified_by_id": old_version.modified_by_id,
+                    },
+                )
+                ic(new_version.investor_id, new_version.id)
 
                 ov: dict = old_version.serialized_data
                 new_version.country_id = ov["country"]
@@ -124,9 +123,7 @@ def _map_status(investor_hull, new_version, old_version: InvestorVersionOld):
             investor_hull.draft_version_id = old_version.id
         elif old_version_dict["draft_status"] == 4:
             new_version.status = "REVIEW"
-            # investor_hull.active_version_id = investor_version.id
         else:
-            # print("TODO?!", old_version_dict["draft_status"])
             new_version.status = "DELETED"
     elif old_version_dict["status"] == 4:
         if old_version_dict["draft_status"] is None:
@@ -134,7 +131,7 @@ def _map_status(investor_hull, new_version, old_version: InvestorVersionOld):
             investor_hull.active_version_id = old_version.id
         else:
             ic("TODO DELETE else?!")
-            ...  # TODO !!
+            sys.exit(1)
     else:
         print("VERSION OHO", old_version.object_id, old_version_dict["status"])
 
@@ -222,24 +219,18 @@ def do_workflows(investor_id):
             continue
         dv: InvestorVersion = InvestorVersion.objects.get(id=wfi.investor_version_id)
         if wfi.status_before is None and wfi.status_after == "DRAFT":
-            ...  # TODO I think we're good here. Don't see anything that we ought to be doing.
+            pass
+        elif wfi.status_before == "DRAFT" and wfi.status_after is None:
+            pass
         elif (
             wfi.status_before in ["REVIEW", "ACTIVATION"]
             and wfi.status_after == "DRAFT"
         ):
-            # ic(
-            #     "new draft... what to do?",
-            #     wfi.timestamp,
-            #     wfi.from_user,
-            #     wfi.status_before,
-            #     wfi.status_after
-            # )
-            ...  # TODO I think we're good here. Don't see anything that we ought to be doing.
-
+            pass
         elif (wfi.status_before is None and wfi.status_after is None) or (
             wfi.status_before == wfi.status_after
         ):
-            ...  # nothing?
+            pass
         elif (
             wfi.status_before in [None, "DRAFT", "TO_DELETE"]
             and wfi.status_after == "REVIEW"
@@ -314,3 +305,4 @@ def do_workflows(investor_id):
                 wfi.status_after,
                 wfi.comment,
             )
+            sys.exit(1)
