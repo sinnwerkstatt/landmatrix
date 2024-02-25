@@ -141,7 +141,10 @@ def map_datasources(nv: InvestorVersion, datasources: list[dict]):
         ds1, _ = InvestorDataSource.objects.get_or_create(
             investorversion_id=nv.id, nid=dats["id"]
         )
-        ds1.type = dats.get("type", "")
+        if ds_type := dats.get("type"):
+            ds1.type = ds_type
+        else:
+            ds1.type = "OTHER"
         ds1.url = dats.get("url", "")
         if dats.get("file"):
             ds1.file.name = dats["file"]
@@ -217,6 +220,7 @@ def do_workflows(investor_id):
 
         if not wfi.investor_version_id:
             continue
+
         dv: InvestorVersion = InvestorVersion.objects.get(id=wfi.investor_version_id)
         if wfi.status_before is None and wfi.status_after == "DRAFT":
             pass
@@ -245,7 +249,6 @@ def do_workflows(investor_id):
             dv.sent_to_activation_at = wfi.timestamp
             dv.sent_to_activation_by = wfi.from_user
             dv.save()
-            # dv.status
         elif (
             wfi.status_before in ["REVIEW", "ACTIVATION"]
             and wfi.status_after == "ACTIVATED"

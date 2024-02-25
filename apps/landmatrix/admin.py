@@ -2,9 +2,6 @@ from django.contrib import admin
 
 from apps.landmatrix.models.country import Country, Region
 from apps.landmatrix.models.currency import Currency
-from apps.landmatrix.models.deal import DealOld
-from apps.landmatrix.models.investor import InvestorOld, InvestorVentureInvolvement
-
 from apps.landmatrix.models.new import (
     DealHull,
     DealVersion,
@@ -21,26 +18,14 @@ class CountryAdmin(admin.ModelAdmin):
     exclude = ["geom"]
 
 
-admin.site.register(Region)
-admin.site.register(Currency)
-
-
-@admin.register(DealOld)
-class DealAdmin(admin.ModelAdmin):
+@admin.register(Region)
+class RegionAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(InvestorOld)
-class InvestorAdmin(admin.ModelAdmin):
-    list_display = ["pk", "__str__", "created_at"]
-
-
-@admin.register(InvestorVentureInvolvement)
-class InvestorVentureInvolvementAdmin(admin.ModelAdmin):
-    list_display = ["pk", "__str__"]
-
-
-# ######### new models
+@admin.register(Currency)
+class CurrencyAdmin(admin.ModelAdmin):
+    pass
 
 
 class ReadonlyInline(admin.TabularInline):

@@ -40,8 +40,8 @@ class Command(BaseCommand):
         if options["end_id"]:
             deals = deals.filter(id__lte=options["end_id"])
         for old_deal in deals:  # type: DealOld
-            url = f"https://landmatrix.org/deal/{old_deal.id}/"
-            ic(old_deal.id, old_deal.status, url)
+            # url = f"https://landmatrix.org/deal/{old_deal.id}/"
+            # ic(old_deal.id, old_deal.status, url)
 
             deal_hull: DealHull
             deal_hull, _ = DealHull.objects.get_or_create(
@@ -53,20 +53,18 @@ class Command(BaseCommand):
             deal_hull.fully_updated_at = old_deal.fully_updated_at
 
             for old_version in old_deal.versions.all().order_by("id"):
-                # ic(old_version.id)
                 new_version: DealVersion
-                base_payload = {
-                    "deal_id": old_deal.id,
-                    "id": old_version.id,
-                    "created_at": old_version.created_at,
-                    "created_by_id": old_version.created_by_id,
-                    "modified_at": old_version.modified_at,
-                    "modified_by_id": old_version.modified_by_id,
-                }
-                try:
-                    new_version = DealVersion.objects.get(**base_payload)
-                except DealVersion.DoesNotExist:
-                    new_version = DealVersion(**base_payload)
+                new_version, _ = DealVersion.objects.update_or_create(
+                    deal_id=old_deal.id,
+                    id=old_version.id,
+                    defaults={
+                        "created_at": old_version.created_at,
+                        "created_by_id": old_version.created_by_id,
+                        "modified_at": old_version.modified_at,
+                        "modified_by_id": old_version.modified_by_id,
+                    },
+                )
+                ic(new_version.deal_id, new_version.id)
 
                 old_version_dict = old_version.serialized_data
 
@@ -700,28 +698,21 @@ def do_workflows(deal_id):
 
         if not wfi.deal_version_id:
             continue
-        # if dwi.deal_version_id in [43461, 43462]:
-        #     print(dwi, dwi.status_before, dwi.status_after, dwi.comment)
+
         dv: DealVersion = DealVersion.objects.get(id=wfi.deal_version_id)
         if wfi.status_before is None and wfi.status_after == "DRAFT":
-            ...  # TODO I think we're good here. Don't see anything that we ought to be doing.
+            pass
+        elif wfi.status_before == "DRAFT" and wfi.status_after is None:
+            pass
         elif (
             wfi.status_before in ["REVIEW", "ACTIVATION"]
             and wfi.status_after == "DRAFT"
         ):
-            # ic(
-            #     "new draft... what to do?",
-            #     wfi.timestamp,
-            #     wfi.from_user,
-            #     wfi.status_before,
-            #     wfi.status_after
-            # )
-            ...  # TODO I think we're good here. Don't see anything that we ought to be doing.
-
+            pass
         elif (wfi.status_before is None and wfi.status_after is None) or (
             wfi.status_before == wfi.status_after
         ):
-            ...  # nothing?
+            pass
         elif (
             wfi.status_before in [None, "DRAFT", "TO_DELETE"]
             and wfi.status_after == "REVIEW"
@@ -736,7 +727,6 @@ def do_workflows(deal_id):
             dv.sent_to_activation_at = wfi.timestamp
             dv.sent_to_activation_by = wfi.from_user
             dv.save(recalculate_independent=False, recalculate_dependent=False)
-            # dv.status
         elif (
             wfi.status_before in ["REVIEW", "ACTIVATION"]
             and wfi.status_after == "ACTIVATED"
@@ -747,6 +737,9 @@ def do_workflows(deal_id):
         elif wfi.status_before == "ACTIVATION" and wfi.status_after == "REVIEW":
             pass  # ignoring this case because it's not changing anything on the deal
         elif wfi.status_before == "REJECTED" or wfi.status_after == "REJECTED":
+            dv.modified_at = wfi.timestamp
+            # maybe modified_by?
+            dv.save()
             ic(
                 "DWI OHO",
                 wfi.id,
@@ -763,8 +756,17 @@ def do_workflows(deal_id):
             dv.save(recalculate_independent=False, recalculate_dependent=False)
         elif wfi.status_before == "TO_DELETE" and wfi.status_after != "TO_DELETE":
             if not wfi.status_after:
-                # TODO What is going on here?
-                ...
+                ic(
+                    "what is going on here?",
+                    wfi.id,
+                    wfi.timestamp,
+                    wfi.from_user,
+                    wfi.investor_id,
+                    wfi.status_before,
+                    wfi.status_after,
+                    wfi.comment,
+                )
+                sys.exit(1)
             else:
                 dv.status = status_map_dings[wfi.status_after]
                 dv.save(recalculate_independent=False, recalculate_dependent=False)
@@ -781,4 +783,4 @@ def do_workflows(deal_id):
                 wfi.status_after,
                 wfi.comment,
             )
-            # sys.exit(1)
+            sys.exit(1)
