@@ -2,11 +2,9 @@ import { error, redirect } from "@sveltejs/kit"
 
 import type { DealHull } from "$lib/types/newtypes"
 
-import type { PageLoad } from "./$types"
+import type { LayoutLoad } from "./$types"
 
-export const ssr = false
-
-export const load: PageLoad = async ({ fetch, params, depends }) => {
+export const load: LayoutLoad = async ({ fetch, params, depends }) => {
   depends("deal:detail")
   const [dealID, dealVersion] = params.IDs.split("/").map(x => (x ? +x : undefined))
 

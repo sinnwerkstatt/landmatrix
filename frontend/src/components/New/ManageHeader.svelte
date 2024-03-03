@@ -9,7 +9,7 @@
   import { UserRole } from "$lib/types/user"
 
   import DetailsSummary from "$components/DetailsSummary.svelte"
-  import HeaderDates from "$components/HeaderDates.svelte"
+  import HeaderDatesWDownload from "$components/HeaderDatesWDownload.svelte"
   import Cog6ToothIcon from "$components/icons/Cog6ToothIcon.svelte"
   import ManageHeaderConfidentialModal from "$components/New/ManageHeaderConfidentialModal.svelte"
   import ManageHeaderCopyModal from "$components/New/ManageHeaderCopyModal.svelte"
@@ -178,45 +178,7 @@
         </div>
       </div>
 
-      <!--      <DetailsSummary>-->
-      <!--        <div class="butn butn-primary flex items-center gap-1" slot="summary">-->
-      <!--          <Cog6ToothIcon />-->
-      <!--          versions-->
-      <!--        </div>-->
-      <!--        <ul-->
-      <!--          class="absolute z-50 border border-black bg-white p-2 shadow-2xl dark:bg-gray-700"-->
-      <!--          slot="details"-->
-      <!--        >-->
-      <!--          {#if object.active_version_id}-->
-      <!--            <li class="my-2">-->
-      <!--              <div class="flex items-center gap-2">-->
-      <!--                <a-->
-      <!--                  class="butn"-->
-      <!--                  href="/{objType}/{object.id}/{object.active_version_id}/"-->
-      <!--                >-->
-      <!--                  active version-->
-      <!--                </a>-->
-      <!--                go to current active version-->
-      <!--              </div>-->
-      <!--            </li>-->
-      <!--          {/if}-->
-      <!--          {#if object.draft_version_id}-->
-      <!--            <li class="my-2">-->
-      <!--              <div class="flex items-center gap-2">-->
-      <!--                <a-->
-      <!--                  class="butn"-->
-      <!--                  href="/{objType}/{object.id}/{object.draft_version_id}/"-->
-      <!--                >-->
-      <!--                  draft version-->
-      <!--                </a>-->
-      <!--                go to current draft version-->
-      <!--              </div>-->
-      <!--            </li>-->
-      <!--          {/if}-->
-      <!--        </ul>-->
-      <!--      </DetailsSummary>-->
-      <HeaderDates obj={object} />
-      <!--      <div class="bg-white px-4 py-2">Draft version</div>-->
+      <HeaderDatesWDownload obj={object} />
     </div>
     <hr class="h-0.5 bg-black" />
     <div class="p-2 py-4">

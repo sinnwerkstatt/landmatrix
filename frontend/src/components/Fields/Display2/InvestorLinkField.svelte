@@ -40,4 +40,8 @@
       - <CountryField value={investor.selected_version.country_id} />
     {/if}
   </a>
+{:else if value}
+  <a href="/investor/{value}/" class="investor">
+    {$_("Investor")} #{value}
+  </a>
 {/if}

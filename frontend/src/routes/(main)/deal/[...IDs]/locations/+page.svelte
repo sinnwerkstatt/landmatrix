@@ -24,13 +24,16 @@
 
   import LocationAreasField from "./LocationAreasField.svelte"
 
-  export let version: DealVersion2
+  export let data
+
+  let version: DealVersion2 = data.deal.selected_version
+  $: version = data.deal.selected_version
 
   let map: Map | undefined
   let locationsPointLayer: GeoJSON<PointFeatureProps, Point>
 
   let selectedLocationId: string | null = null
-  $: selectedLocationId = $page.url.hash.split("-")[1] ?? null
+  $: selectedLocationId = $page.url.hash?.replace("#", "")
 
   const onMapReady = (e: CustomEvent<Map>) => {
     map = e.detail
@@ -46,8 +49,7 @@
   $: isSelectedLocation = (locationId: string): boolean =>
     selectedLocationId === locationId
 
-  $: getLocationRedirect = (locationId: string): string =>
-    `#locations` + (isSelectedLocation(locationId) ? "" : `-${locationId}`)
+  $: getLocationRedirect = (locationId: string): string => `#` + locationId
 
   $: setCurrentLocation = (locationId: string): Promise<void> =>
     goto(getLocationRedirect(locationId))
@@ -79,14 +81,14 @@
     {#if version.locations.length > 0}
       {#each version.locations as location, index}
         <article
-          id="locations-{location.nid}"
+          id={location.nid}
           class="p-2"
           class:animate-fadeToWhite={isSelectedLocation(location.nid)}
           class:dark:animate-fadeToGray={isSelectedLocation(location.nid)}
         >
           <h3 class="heading4">
             <a
-              href={getLocationRedirect(location.nid)}
+              href="#{location.nid}"
               on:click|preventDefault={() => setCurrentLocation(location.nid)}
             >
               {index + 1}. {$_("Location")}

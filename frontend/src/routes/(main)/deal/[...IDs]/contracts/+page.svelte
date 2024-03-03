@@ -10,14 +10,18 @@
 
   import DisplayField from "$components/Fields/DisplayField.svelte"
 
-  export let version: DealVersion2
+  export let data
+
+  let version: DealVersion2 = data.deal.selected_version
+  $: version = data.deal.selected_version
 
   let selectedEntryId: string | undefined
-  $: selectedEntryId = $page.url.hash.split("/")?.[1]
+  $: selectedEntryId = $page.url.hash?.replace("#", "")
   $: browser && scrollEntryIntoView(selectedEntryId)
 
-  const scrollEntryIntoView = (id: string | undefined) => {
-    const el = document.getElementById(id ?? "")
+  const scrollEntryIntoView = (elemId: string | undefined) => {
+    if (!elemId) return
+    const el = document.getElementById(elemId ?? "")
     if (el && !isElementInViewport(el)) {
       el.scrollIntoView({ block: "nearest", inline: "nearest" })
     }
@@ -36,7 +40,7 @@
           : ''}"
       >
         <div class="heading4">
-          <a href={$page.url.hash.split("/")[0] + `/${contract.nid}`}>
+          <a href="#{contract.nid}">
             {index + 1}. {$_("Contract")}
           </a>
         </div>

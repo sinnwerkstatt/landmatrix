@@ -7,7 +7,10 @@
   import InvolvementsGraph from "$components/New/InvolvementsGraph/InvolvementsGraph.svelte"
   import Subsection from "$components/Subsection.svelte"
 
-  export let version: DealVersion2
+  export let data
+
+  let version: DealVersion2 = data.deal.selected_version
+  $: version = data.deal.selected_version
 </script>
 
 <section>

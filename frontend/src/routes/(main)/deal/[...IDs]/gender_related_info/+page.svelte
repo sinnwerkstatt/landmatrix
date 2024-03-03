@@ -4,15 +4,18 @@
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import Subsection from "$components/Subsection.svelte"
 
-  export let version: DealVersion2
+  export let data
+
+  let version: DealVersion2 = data.deal.selected_version
+  $: version = data.deal.selected_version
 </script>
 
 <section>
-  <Subsection id="overall_comment" obj={version}>
+  <Subsection id="gender_related_information" obj={version}>
     <DisplayField
-      fieldname="overall_comment"
+      fieldname="gender_related_information"
       showLabel
-      value={version.overall_comment}
+      value={version.gender_related_information}
     />
   </Subsection>
 </section>

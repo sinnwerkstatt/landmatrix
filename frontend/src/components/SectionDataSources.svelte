@@ -13,11 +13,12 @@
   export let version: DealVersion2 | InvestorVersion2
 
   let selectedEntryId: string | undefined
-  $: selectedEntryId = $page.url.hash.split("/")?.[1]
+  $: selectedEntryId = $page.url.hash?.replace("#", "")
   $: browser && scrollEntryIntoView(selectedEntryId)
 
-  const scrollEntryIntoView = (id: string | undefined) => {
-    const el = document.getElementById(id ?? "")
+  const scrollEntryIntoView = (elemId: string | undefined) => {
+    if (!elemId) return
+    const el = document.getElementById(elemId ?? "")
     if (el && !isElementInViewport(el)) {
       el.scrollIntoView({ block: "nearest", inline: "nearest" })
     }
@@ -36,7 +37,7 @@
           : ''}"
       >
         <div class="heading4">
-          <a href={$page.url.hash.split("/")[0] + `/${datasource.nid}`}>
+          <a href="#{datasource.nid}">
             {index + 1}. {$_("Data source")}
           </a>
         </div>

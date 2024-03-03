@@ -7,7 +7,7 @@
   import { loading } from "$lib/stores"
   import { UserRole } from "$lib/types/user"
 
-  import HeaderDates from "$components/HeaderDates.svelte"
+  import HeaderDatesWDownload from "$components/HeaderDatesWDownload.svelte"
   import InvolvementsGraph from "$components/New/InvolvementsGraph/InvolvementsGraph.svelte"
   import ManageHeaderOldVersionNote from "$components/New/ManageHeaderOldVersionNote.svelte"
   import SectionDataSources from "$components/SectionDataSources.svelte"
@@ -59,7 +59,7 @@
         {/if}
         <small>#{data.investor.id}</small>
       </h1>
-      <HeaderDates obj={data.investor} />
+      <HeaderDatesWDownload obj={data.investor} />
     </div>
   {/if}
 
