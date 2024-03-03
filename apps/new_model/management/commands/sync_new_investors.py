@@ -259,53 +259,16 @@ def do_workflows(investor_id):
         elif wfi.status_before == "REJECTED" or wfi.status_after == "REJECTED":
             dv.modified_at = wfi.timestamp
             dv.save()
-            ic(
-                "DWI OHO",
-                wfi.id,
-                wfi.timestamp,
-                wfi.from_user,
-                wfi.investor_id,
-                wfi.status_before,
-                wfi.status_after,
-                wfi.comment,
-            )
+            ic("WFI OHO", wfi)
             sys.exit(1)
         elif wfi.status_after == "TO_DELETE":
             dv.status = "DRAFT"
             dv.save()
-            ic(
-                "DWI OHO",
-                wfi.id,
-                wfi.timestamp,
-                wfi.from_user,
-                wfi.investor_id,
-                wfi.status_before,
-                wfi.status_after,
-                wfi.comment,
-            )
+            ic("WFI OHO", wfi)
             sys.exit(1)
         elif wfi.status_before == "TO_DELETE" and wfi.status_after != "TO_DELETE":
-            ic(
-                "DWI OHO",
-                wfi.id,
-                wfi.timestamp,
-                wfi.from_user,
-                wfi.investor_id,
-                wfi.status_before,
-                wfi.status_after,
-                wfi.comment,
-            )
+            ic("WFI OHO", wfi)
             sys.exit(1)
         else:
-            ...
-            ic(
-                "DWI OHO",
-                wfi.id,
-                wfi.timestamp,
-                wfi.from_user,
-                wfi.investor_id,
-                wfi.status_before,
-                wfi.status_after,
-                wfi.comment,
-            )
+            ic("WFI OHO", wfi)
             sys.exit(1)

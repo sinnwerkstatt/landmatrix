@@ -662,8 +662,6 @@ class InvestorViewSet(HullViewSet):
         show_ventures = request.GET.get("show_ventures", "") == "true"
         investor: InvestorHull = self.get_object()
 
-        # TODO Nuts make sure it's a live version (active version)
-
         try:
             return Response(
                 investor.involvements_graph(depth, include_deals, show_ventures)

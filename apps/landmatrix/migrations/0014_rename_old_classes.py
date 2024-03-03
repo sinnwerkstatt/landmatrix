@@ -22,6 +22,7 @@ class Migration(migrations.Migration):
         migrations.RunSQL("alter index landmatrix_dealworkflowinfo_deal_version_id_efd6a313 rename to landmatrix_dealworkflowinfo_deal_version_id_efd6a313_old",""),
         migrations.RunSQL("alter index landmatrix_dealworkflowinfo_from_user_id_74b34a00 rename to landmatrix_dealworkflowinfo_from_user_id_74b34a00_old",""),
         migrations.RunSQL("alter index landmatrix_dealworkflowinfo_to_user_id_ea51b4c9 rename to landmatrix_dealworkflowinfo_to_user_id_ea51b4c9_old",""),
+        migrations.RunSQL("alter sequence landmatrix_dealworkflowinfo_id_seq rename to landmatrix_dealworkflowinfo_id_seq_old",""),
         migrations.RenameModel(
             old_name='InvestorWorkflowInfo',
             new_name='InvestorWorkflowInfoOld',
@@ -31,6 +32,7 @@ class Migration(migrations.Migration):
         migrations.RunSQL("alter index landmatrix_investorworkflowinfo_investor_id_ec893144 rename to landmatrix_investorworkflowinfo_investor_id_ec893144_old",""),
         migrations.RunSQL("alter index landmatrix_investorworkflowinfo_investor_version_id_28a454c2 rename to landmatrix_investorworkflowinfo_investor_version_id_28a454c2_old",""),
         migrations.RunSQL("alter index landmatrix_investorworkflowinfo_to_user_id_d3fbae65 rename to landmatrix_investorworkflowinfo_to_user_id_d3fbae65_old",""),
+        migrations.RunSQL("alter sequence landmatrix_investorworkflowinfo_id_seq rename to landmatrix_investorworkflowinfo_id_seq_old",""),
         migrations.RenameModel(
             old_name='Deal',
             new_name='DealOld',
@@ -44,6 +46,8 @@ class Migration(migrations.Migration):
         migrations.RunSQL("alter index landmatrix_dealversion_created_by_id_6b750335 rename to landmatrix_dealversion_created_by_id_6b750335_old",""),
         migrations.RunSQL("alter index landmatrix_dealversion_modified_by_id_7d7b0ebe rename to landmatrix_dealversion_modified_by_id_7d7b0ebe_old",""),
         migrations.RunSQL("alter index landmatrix_dealversion_object_id_bed74e5d rename to landmatrix_dealversion_object_id_bed74e5d_old",""),
+        migrations.RunSQL("alter sequence landmatrix_dealversion_id_seq rename to landmatrix_dealversion_id_seq_old",""),
+
         migrations.RenameModel(
             old_name='Investor',
             new_name='InvestorOld',
@@ -57,6 +61,7 @@ class Migration(migrations.Migration):
         migrations.RunSQL("alter index landmatrix_investorversion_created_by_id_3a0420a0 rename to landmatrix_investorversion_created_by_id_3a0420a0_old",""),
         migrations.RunSQL("alter index landmatrix_investorversion_modified_by_id_c9192e8f rename to landmatrix_investorversion_modified_by_id_c9192e8f_old",""),
         migrations.RunSQL("alter index landmatrix_investorversion_object_id_cb0d6261 rename to landmatrix_investorversion_object_id_cb0d6261_old",""),
+        migrations.RunSQL("alter sequence landmatrix_investorversion_id_seq rename to landmatrix_investorversion_id_seq_old",""),
         migrations.CreateModel(
             name='DealOldParentCompanies',
             fields=[

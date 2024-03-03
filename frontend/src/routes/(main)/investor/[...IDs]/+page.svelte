@@ -68,14 +68,16 @@
       <ul>
         {#each tabs as { target, name }}
           <li
-            class="whitespace-nowrap border-orange py-2 pr-20 {activeTab === target
+            class="whitespace-nowrap border-pelorous py-2 pr-20 {activeTab === target
               ? 'border-r-4'
               : 'border-r'}"
           >
             {#if name}
               <a
                 href={target}
-                class={activeTab === target ? "text-gray-700 dark:text-white" : ""}
+                class={activeTab === target
+                  ? "investor text-gray-700 dark:text-white"
+                  : "investor"}
               >
                 {name}
               </a>
@@ -97,19 +99,19 @@
         <SectionDataSources version={data.investor.selected_version} />
       {/if}
       {#if activeTab === "#history"}
-        <SectionHistory obj={data.investor} />
+        <SectionHistory obj={data.investor} investorColors />
       {/if}
 
       {#if activeTab === "#network_graph"}
-        {#if data.investor.selected_version.status === "ACTIVATED"}
+        {#if data.investor.selected_version.status === "ACTIVATED" && data.investor.selected_version.id === data.investor.active_version_id}
           <InvolvementsGraph investor_id={data.investor.id} />
         {:else}
           <div class="m-10 bg-neutral-200 px-12 py-24 text-center text-zinc-700">
             {@html $_(
-              "The investor network diagram is not visible in draft mode. Go to {liveLink} to see it.",
+              "The investor network diagram is only available for the current active version. Go to {liveLink} to see it.",
               {
                 values: {
-                  liveLink: `<a href="/investor/${data.investorID}/#network_graph">/investor/${data.investorID}/</a>`,
+                  liveLink: `<a class="investor" href="/investor/${data.investorID}/#network_graph">/investor/${data.investorID}/</a>`,
                 },
               },
             )}

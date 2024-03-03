@@ -12,6 +12,9 @@
   import CircleIcon from "$components/icons/CircleIcon.svelte"
 
   export let obj: DealHull | InvestorHull
+
+  export let investorColors = false
+
   let compareFrom = obj.versions[1]?.id
   let compareTo = obj.versions[0]?.id
 
@@ -30,7 +33,7 @@
 
 <section>
   <h3 class="heading3">{$_("Version history")}</h3>
-  <table class="relative w-full table-auto border-b-2">
+  <table class="relative mb-6 w-full table-auto">
     <thead>
       <tr>
         <th>{$_("ID")}</th>
@@ -45,6 +48,7 @@
           {$_("Show")} /
           {#if compareFrom && compareTo}
             <a
+              class:investor={investorColors}
               class="text-nowrap"
               href={`/${objType}/${obj.id}/compare/${compareFrom}/${compareTo}/`}
             >
@@ -58,9 +62,9 @@
     </thead>
     <tbody>
       {#each filteredVersions as version}
-        <tr class="odd:bg-gray-100 dark:odd:bg-gray-700">
-          <td>{version.id}</td>
-          <td>
+        <tr class="odd:bg-gray-50 dark:odd:bg-gray-700">
+          <td class="p-1">{version.id}</td>
+          <td class="p-1">
             <DisplayField
               fieldname="created_at"
               value={version.created_at}
@@ -76,7 +80,7 @@
               />
             {/if}
           </td>
-          <td>
+          <td class="p-1">
             <DisplayField
               fieldname="modified_at"
               value={version.modified_at}
@@ -92,7 +96,7 @@
               />
             {/if}
           </td>
-          <td>
+          <td class="p-1">
             <DisplayField
               fieldname="sent_to_review_at"
               value={version.sent_to_review_at}
@@ -108,7 +112,7 @@
               />
             {/if}
           </td>
-          <td>
+          <td class="p-1">
             <DisplayField
               fieldname="sent_to_activation_at"
               value={version.sent_to_activation_at}
@@ -124,7 +128,7 @@
               />
             {/if}
           </td>
-          <td>
+          <td class="p-1">
             <DisplayField
               fieldname="activated_at"
               value={version.activated_at}
@@ -141,7 +145,7 @@
             {/if}
           </td>
           {#if isDeal}
-            <td class="px-4">
+            <td class="p-1 px-4">
               {#if version.fully_updated}
                 <div title={$_("Fully updated")}>
                   <CheckCircleIcon />
@@ -153,15 +157,21 @@
               {/if}
             </td>
           {/if}
-          {#if reporterOrHigher}<td>
+          {#if reporterOrHigher}
+            <td class="p-1">
               {$stateMap[version.status].title}
             </td>
           {/if}
-          <td class="whitespace-nowrap text-right">
+          <td class="whitespace-nowrap p-1 text-right">
             {#if obj.selected_version.id ? obj.selected_version.id === version.id : obj.active_version_id === version.id}
               {$_("Current")}
             {:else}
-              <a href="/{objType}/{obj.id}/{version.id}/">{$_("Show")}</a>
+              <a
+                class:investor={investorColors}
+                href="/{objType}/{obj.id}/{version.id}/"
+              >
+                {$_("Show")}
+              </a>
             {/if}
             <span class="ml-4 whitespace-nowrap text-right">
               <input
@@ -169,6 +179,9 @@
                 type="radio"
                 value={version?.id}
                 disabled={version?.id >= compareTo}
+                style="accent-color: {investorColors
+                  ? 'hsl(179, 46%, 49%)'
+                  : 'hsl(32, 97%, 55%)'};"
               />
 
               <input
@@ -176,6 +189,9 @@
                 type="radio"
                 value={version?.id}
                 disabled={version?.id <= compareFrom}
+                style="accent-color: {investorColors
+                  ? 'hsl(179, 46%, 49%)'
+                  : 'hsl(32, 97%, 55%)'};"
               />
             </span>
           </td>
@@ -193,10 +209,12 @@
         {#if isDeal}<td />{/if}
         {#if reporterOrHigher}<td />{/if}
         {#if compareFrom && compareTo}
-          <td class="text-right">
+          <td class="pt-3 text-right">
             <a
               href={`/${objType}/${obj.id}/compare/${compareFrom}/${compareTo}/`}
-              class="btn btn-primary text-nowrap"
+              class="butn text-nowrap {investorColors
+                ? 'butn-secondary'
+                : 'butn-primary'}"
             >
               {$_("Compare versions")}
             </a>

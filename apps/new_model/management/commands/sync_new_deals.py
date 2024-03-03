@@ -95,6 +95,8 @@ class Command(BaseCommand):
                         new_version.status = "REVIEW"
                         # deal_hull.active_version_id = deal_version.id
                     else:
+                        ic("huh?", new_version)
+                        sys.exit(1)
                         # TODO shall we finally just delete these?
                         new_version.status = "DELETED"
                 elif old_version_dict["status"] == 4:
@@ -102,6 +104,8 @@ class Command(BaseCommand):
                         new_version.status = "DRAFT"
                         deal_hull.active_version_id = old_version.id
                     else:
+                        ic("huh?", new_version)
+                        sys.exit(1)
                         print("TODO DELETE else?!")
                         ...  # TODO !!
                 else:
@@ -740,47 +744,18 @@ def do_workflows(deal_id):
             dv.modified_at = wfi.timestamp
             # maybe modified_by?
             dv.save()
-            ic(
-                "DWI OHO",
-                wfi.id,
-                wfi.timestamp,
-                wfi.from_user,
-                wfi.investor_id,
-                wfi.status_before,
-                wfi.status_after,
-                wfi.comment,
-            )
+            ic("WFI OHO", wfi)
             sys.exit(1)
         elif wfi.status_after == "TO_DELETE":
             dv.status = "DRAFT"
             dv.save(recalculate_independent=False, recalculate_dependent=False)
         elif wfi.status_before == "TO_DELETE" and wfi.status_after != "TO_DELETE":
             if not wfi.status_after:
-                ic(
-                    "what is going on here?",
-                    wfi.id,
-                    wfi.timestamp,
-                    wfi.from_user,
-                    wfi.investor_id,
-                    wfi.status_before,
-                    wfi.status_after,
-                    wfi.comment,
-                )
+                ic("WFI OHO", wfi)
                 sys.exit(1)
             else:
                 dv.status = status_map_dings[wfi.status_after]
                 dv.save(recalculate_independent=False, recalculate_dependent=False)
         else:
-            ...
-            ic(
-                "DWI OHO",
-                wfi.id,
-                wfi.timestamp,
-                wfi.from_user,
-                wfi.to_user,
-                wfi.deal_id,
-                wfi.status_before,
-                wfi.status_after,
-                wfi.comment,
-            )
+            ic("WFI OHO", wfi)
             sys.exit(1)

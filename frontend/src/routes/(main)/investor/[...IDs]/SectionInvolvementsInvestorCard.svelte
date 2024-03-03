@@ -11,9 +11,16 @@
 </script>
 
 <div
-  class="flex flex-col gap-1 border border-pelorous p-2"
+  class="relative flex flex-col gap-1 border border-pelorous p-2"
   class:bg-red-200={involvement.other_investor.deleted}
 >
+  {#if involvement.other_investor.deleted}
+    <div
+      class="absolute bottom-2 left-0 right-0 flex items-center justify-center text-3xl italic opacity-30"
+    >
+      DELETED
+    </div>
+  {/if}
   <DisplayField
     fieldname="id"
     {labelClass}

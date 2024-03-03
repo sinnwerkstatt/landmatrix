@@ -1744,6 +1744,32 @@ class InvestorHull(HullBase):
             )
         return _seen_investors
 
+    def get_affected_deals(self, seen_investors=None) -> set[DealVersion]:
+        """
+        Get list of affected deals - this is like Top Investors, only downwards
+        (all left-hand side deals of the network visualisation)
+        """
+        deals = set()
+        if seen_investors is None:
+            seen_investors = {self}
+
+        child_investor_involvements = (
+            self.child_investors.active()
+            .filter(role="PARENT")
+            .exclude(child_investor__in=seen_investors)
+        )
+
+        dealv: DealVersion
+        for dealv in self.dealversions.filter(id=F("deal__active_version_id")):
+            deals.add(dealv)
+
+        for involvement in child_investor_involvements:
+            if involvement.child_investor in seen_investors:
+                continue
+            seen_investors.add(involvement.child_investor)
+            deals.update(involvement.child_investor.get_affected_deals(seen_investors))
+        return deals
+
 
 class InvolvementQuerySet(models.QuerySet):
     def active(self):
@@ -1777,14 +1803,14 @@ class Involvement(models.Model):
         InvestorHull,
         verbose_name=_("Investor"),
         db_index=True,
-        related_name="ventures",
+        related_name="child_investors",
         on_delete=models.PROTECT,
     )
     child_investor = models.ForeignKey(
         InvestorHull,
         verbose_name=_("Venture Company"),
         db_index=True,
-        related_name="investors",
+        related_name="parent_investors",
         on_delete=models.PROTECT,
     )
 
