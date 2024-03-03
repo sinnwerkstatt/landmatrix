@@ -8,6 +8,7 @@
 
   export let objects: Array<CaseStatisticsDeal | CaseStatisticsInvestor> = []
   export let model: "deal" | "investor" = "deal"
+  export let linkDraftVersion: boolean
 
   interface Col {
     key: string
@@ -47,8 +48,7 @@
 
 <Table {columns} items={objects} {labels} rowHeightInPx={36} {spans}>
   <svelte:fragment let:fieldName let:obj slot="field">
-    {#if fieldName === "id"}
-      <!-- TODO nuts: add objectVersion under certain conditions -->
+    {#if fieldName === "id" && linkDraftVersion}
       <DisplayField
         fieldname="id"
         value={obj.id}
@@ -57,23 +57,14 @@
         {model}
         extras={{ objectVersion: obj.draft_version_id }}
       />
-    {:else if fieldName === "name"}
-      <DisplayField
-        fieldname={fieldName}
-        model="investor"
-        value={obj.name}
-        {wrapperClass}
-        {valueClass}
-      />
-    {:else if ["status", "country_id", "deal_size", "confidential", "created_at", "modified_at", "fully_updated_at"].includes(fieldName)}
+    {:else}
       <DisplayField
         value={obj[fieldName]}
         fieldname={fieldName}
+        {model}
         {wrapperClass}
         {valueClass}
       />
-    {:else}
-      {fieldName}
     {/if}
   </svelte:fragment>
 </Table>

@@ -93,7 +93,8 @@ def _send_comment_to_user(
         obj_desc = f"deal #{obj.id}"
         obj_url = f"/deal/{obj.id}/"
     else:
-        obj_desc = f"investor {obj.active_version.name} (#{obj.id})"
+        name = obj.active_version.name if obj.active_version else obj.draft_version.name
+        obj_desc = f"investor {name} (#{obj.id})"
         obj_url = f"/investor/{obj.id}/"
 
     if version_id:
@@ -206,6 +207,7 @@ class DealVersionViewSet(VersionViewSet):
     serializer_class = DealVersionSerializer
 
     @action(detail=True, methods=["put"])
+    @transaction.atomic
     def change_status(self, request, pk: int):
         dv1: DealVersion = get_object_or_404(self.queryset, pk=pk)
 

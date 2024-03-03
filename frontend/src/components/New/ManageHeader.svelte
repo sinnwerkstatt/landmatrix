@@ -220,19 +220,19 @@
     </div>
     <hr class="h-0.5 bg-black" />
     <div class="p-2 py-4">
-      {#if object.deleted}
-        <div
-          class="my-6 flex flex-col items-center justify-center gap-1 bg-red-500 py-2 text-white"
-        >
-          <div class="heading4 mb-0">{$_("Deleted")}</div>
-          <span>{object.deleted_comment}</span>
-        </div>
-      {:else if isDeal(object) && object.confidential}
+      {#if isDeal(object) && object.confidential}
         <div
           class="my-6 flex flex-col items-center justify-center gap-1 bg-red-700 py-2 text-white"
         >
           <div class="heading4 mb-0">{$_("Confidential")}</div>
           <span>{object.confidential_comment}</span>
+        </div>
+      {:else if object.deleted}
+        <div
+          class="my-6 flex flex-col items-center justify-center gap-1 bg-red-500 py-2 text-white"
+        >
+          <div class="heading4 mb-0">{$_("Deleted")}</div>
+          <span>{object.deleted_comment}</span>
         </div>
       {:else}
         <div class="mb-4 flex items-center justify-between gap-4">

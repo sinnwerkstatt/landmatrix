@@ -505,7 +505,14 @@ class InvestorSerializer(serializers.ModelSerializer):
         involvements: list[dict], target_id: int
     ) -> None:
         all_ids = set()
-        for involvement in involvements:
+
+        filtered_involvements = [
+            x
+            for x in involvements
+            if x["parent_investor_id"] and x["child_investor_id"]
+        ]
+
+        for involvement in filtered_involvements:
             all_ids.add(involvement["parent_investor_id"])
             all_ids.add(involvement["child_investor_id"])
         investors = {
@@ -522,7 +529,7 @@ class InvestorSerializer(serializers.ModelSerializer):
             .values("id", "selected_version", "deleted")
         }
 
-        for invo in involvements:
+        for invo in filtered_involvements:
             if target_id == invo["parent_investor_id"]:
                 relationship = (
                     _("Subsidiary company")

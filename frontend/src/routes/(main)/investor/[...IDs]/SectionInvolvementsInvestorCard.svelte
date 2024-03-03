@@ -12,55 +12,59 @@
 
 <div
   class="relative flex flex-col gap-1 border border-pelorous p-2"
-  class:bg-red-200={involvement.other_investor.deleted}
+  class:bg-red-200={involvement.other_investor?.deleted}
 >
-  {#if involvement.other_investor.deleted}
-    <div
-      class="absolute bottom-2 left-0 right-0 flex items-center justify-center text-3xl italic opacity-30"
-    >
-      DELETED
-    </div>
+  {#if involvement.other_investor}
+    {#if involvement.other_investor.deleted}
+      <div
+        class="absolute bottom-2 left-0 right-0 flex items-center justify-center text-3xl italic opacity-30"
+      >
+        DELETED
+      </div>
+    {/if}
+    <DisplayField
+      fieldname="id"
+      {labelClass}
+      model="investor"
+      showLabel
+      value={involvement.other_investor.id}
+      {valueClass}
+      {wrapperClass}
+    />
+    <DisplayField
+      fieldname="name"
+      {labelClass}
+      model="investor"
+      showLabel
+      value={involvement.other_investor.selected_version.name}
+      {valueClass}
+      {wrapperClass}
+      extras={{
+        investorNameUnknown: involvement.other_investor.selected_version.name_unknown,
+      }}
+    />
+    <DisplayField
+      fieldname="country_id"
+      {labelClass}
+      model="investor"
+      showLabel
+      value={involvement.other_investor.selected_version.country_id}
+      {valueClass}
+      {wrapperClass}
+    />
+    <DisplayField
+      fieldname="classification"
+      {labelClass}
+      model="investor"
+      showLabel
+      value={involvement.other_investor.selected_version.classification}
+      {valueClass}
+      {wrapperClass}
+    />
+  {:else}
+    couldn't find the investor. # TODO
+    <!--     TODO Kurt  http://localhost:9000/investor/45014 -->
   {/if}
-  <DisplayField
-    fieldname="id"
-    {labelClass}
-    model="investor"
-    showLabel
-    value={involvement.other_investor.id}
-    {valueClass}
-    {wrapperClass}
-  />
-  <DisplayField
-    fieldname="name"
-    {labelClass}
-    model="investor"
-    showLabel
-    value={involvement.other_investor.selected_version.name}
-    {valueClass}
-    {wrapperClass}
-    extras={{
-      investorNameUnknown: involvement.other_investor.selected_version.name_unknown,
-    }}
-  />
-  <DisplayField
-    fieldname="country_id"
-    {labelClass}
-    model="investor"
-    showLabel
-    value={involvement.other_investor.selected_version.country_id}
-    {valueClass}
-    {wrapperClass}
-  />
-  <DisplayField
-    fieldname="classification"
-    {labelClass}
-    model="investor"
-    showLabel
-    value={involvement.other_investor.selected_version.classification}
-    {valueClass}
-    {wrapperClass}
-  />
-
   <hr class="my-2 w-1/2" />
 
   <DisplayField

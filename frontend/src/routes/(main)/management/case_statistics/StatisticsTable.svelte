@@ -159,12 +159,14 @@
     </div>
   </nav>
   <div class="basis-3/4 xl:basis-4/5">
+    {activeTabId}
     {#if activeTabId}
       <CaseStatisticsTable
         {model}
         objects={model === "deal"
           ? dealsBuckets[activeTabId]
           : investorsBuckets[activeTabId]}
+        linkDraftVersion={["pending"].includes(activeTabId)}
       />
     {/if}
   </div>
