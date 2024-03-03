@@ -967,7 +967,7 @@ class DealVersion(DealVersionBaseFields, BaseVersionMixin):
             return True
 
         # see if one of the parents of the investor exists
-        if oc.investors.filter(
+        if oc.parent_investors.filter(
             parent_investor__active_version__name_unknown=False
         ).exists():
             return True

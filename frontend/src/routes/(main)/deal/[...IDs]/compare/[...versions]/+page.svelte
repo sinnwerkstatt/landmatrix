@@ -255,7 +255,7 @@
   </table>
 </div>
 
-<!--TODO: Include in class tag after refactoring component logic-->
+<!--TODO Marcus: Include in class tag after refactoring component logic-->
 <style lang="postcss">
   table td,
   table th {

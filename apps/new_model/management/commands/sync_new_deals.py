@@ -95,16 +95,13 @@ class Command(BaseCommand):
                         new_version.status = "REVIEW"
                         # deal_hull.active_version_id = deal_version.id
                     else:
-                        ic("huh?", new_version)
-                        sys.exit(1)
-                        # TODO shall we finally just delete these?
-                        new_version.status = "DELETED"
+                        new_version.status = "DRAFT"
                 elif old_version_dict["status"] == 4:
                     if old_version_dict["draft_status"] is None:
                         new_version.status = "DRAFT"
                         deal_hull.active_version_id = old_version.id
                     else:
-                        ic("huh?", new_version)
+                        ic("huh?", new_version, old_version_dict["draft_status"])
                         sys.exit(1)
                         print("TODO DELETE else?!")
                         ...  # TODO !!

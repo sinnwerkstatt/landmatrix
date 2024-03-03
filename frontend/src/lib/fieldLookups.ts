@@ -942,7 +942,7 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
       displayField: TextField,
       editField: DateEditField,
       label: $_("Date"),
-    }, // use DateTimeField TODO? it's loosedatefield
+    },
     "contract.expiration_date": {
       displayField: TextField,
       editField: DateEditField,
@@ -995,7 +995,7 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
     },
     "datasource.date": {
       displayField: TextField,
-      editField: TextEditField,
+      editField: DateEditField,
       label: $_("Date"),
     },
     "datasource.name": {

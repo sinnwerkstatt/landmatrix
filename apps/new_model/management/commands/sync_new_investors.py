@@ -124,7 +124,7 @@ def _map_status(investor_hull, new_version, old_version: InvestorVersionOld):
         elif old_version_dict["draft_status"] == 4:
             new_version.status = "REVIEW"
         else:
-            new_version.status = "DELETED"
+            new_version.status = "DRAFT"
     elif old_version_dict["status"] == 4:
         if old_version_dict["draft_status"] is None:
             new_version.status = "DRAFT"

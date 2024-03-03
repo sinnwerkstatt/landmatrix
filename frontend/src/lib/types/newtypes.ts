@@ -293,7 +293,7 @@ interface DealVersionBase {
   domestic_use: number | null
   has_export: boolean | null
   export: number | null
-  // TODO three more cases of "no _id" because of DRF
+  // TODO Later three more cases of "no _id" because of DRF
   export_country1: number | null
   export_country1_ratio: number | null
   export_country2: number | null
