@@ -366,7 +366,9 @@ class DealViewSet(HullViewSet):
             .order_by("id")
             .visible(request.user, request.GET.get("subset", "PUBLIC"))
             .filter(parse_filters(request))
+            .values("id", "country_id", "fully_updated_at")
             .annotate(
+                region_id=F("country__region_id"),
                 selected_version=JSONObject(
                     deal_size="active_version__deal_size",
                     current_intention_of_investment="active_version__current_intention_of_investment",
@@ -421,9 +423,8 @@ class DealViewSet(HullViewSet):
                             )
                         )
                     ),
-                )
+                ),
             )
-            .values("id", "country_id", "fully_updated_at", "selected_version")
         )
 
     @staticmethod
