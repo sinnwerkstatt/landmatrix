@@ -5,7 +5,7 @@ from apps.landmatrix.models.deal import DealOld
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        # TODO
+        # TODO Kurt
         error_deals = [
             6859,
             7824,

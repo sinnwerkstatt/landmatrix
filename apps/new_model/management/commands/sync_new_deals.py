@@ -104,7 +104,6 @@ class Command(BaseCommand):
                         ic("huh?", new_version, old_version_dict["draft_status"])
                         sys.exit(1)
                         print("TODO DELETE else?!")
-                        ...  # TODO !!
                 else:
                     print("VERSION OHO", old_deal.id, old_version_dict["status"])
                     # return

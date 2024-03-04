@@ -865,7 +865,6 @@ class DealVersion(DealVersionBaseFields, BaseVersionMixin):
             self.workflowinfos.filter(
                 Q(status_before__in=["REVIEW", "ACTIVATION"])
                 & Q(status_after="DRAFT")
-                # TODO Marcus: https://git.sinntern.de/landmatrix/landmatrix/-/issues/404
                 & (Q(from_user=user) | Q(to_user=user))
             ).update(resolved=True)
 
@@ -1093,30 +1092,10 @@ class Location(models.Model):
     facility_name = models.CharField(_("Facility name"), blank=True)
     comment = models.TextField(_("Comment"), blank=True)
 
-    def to_dict(self):
-        # TODO Marcus, nuts: i feel like this is obsolete.
-        areas: QuerySet[Area] = self.areas.all()
-        return {
-            "nid": self.nid,
-            "name": self.name,
-            "description": self.description,
-            "point": json.loads(self.point.geojson) if self.point else None,
-            "facility_name": self.facility_name,
-            "level_of_accuracy": self.level_of_accuracy,
-            "comment": self.comment,
-            "areas": [area.to_dict() for area in areas],
-        }
-
     def save(self, *args, **kwargs):
         if self._state.adding and not self.nid:
             self.nid = generate(size=8)
         super().save(*args, **kwargs)
-
-    def areas_as_feature_collection(self):
-        return {
-            "type": "FeatureCollection",
-            "features": [area.to_feature() for area in self.areas.all()],
-        }
 
     class Meta:
         unique_together = ["dealversion", "nid"]
@@ -1542,7 +1521,6 @@ class InvestorVersion(BaseVersionMixin, models.Model):
             self.workflowinfos.filter(
                 Q(status_before__in=["REVIEW", "ACTIVATION"])
                 & Q(status_after="DRAFT")
-                # TODO Marcus https://git.sinntern.de/landmatrix/landmatrix/-/issues/404
                 & (Q(from_user=user) | Q(to_user=user))
             ).update(resolved=True)
 
@@ -1889,10 +1867,6 @@ class _WorkflowInfo(models.Model):
     comment = models.TextField(blank=True)
     replies = models.JSONField(null=True, default=list)
     resolved = models.BooleanField(default=False)
-
-    # TODO Marcus: nuts asks: "whatsthis?"
-    # watch out: ignore the draft_status within this DealVersion object, it will change
-    # when the workflow moves along. the payload will remain consistent though.
 
     def to_dict(self) -> dict:
         return {
