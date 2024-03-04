@@ -351,7 +351,7 @@ class JSONCarbonSequestrationField(JSONSchemaField):
                 "items": {
                     "type": "object",
                     "additionalProperties": False,
-                    "minProperties": 9,
+                    "minProperties": 10,
                     "properties": {
                         "current": {"type": "boolean"},
                         "date": {
@@ -371,6 +371,7 @@ class JSONCarbonSequestrationField(JSONSchemaField):
                         "certification_standard_name": {
                             "enum": choices2 + [None],
                         },
+                        "certification_standard_id": {"type": "string"},
                         "certification_standard_comment": {"type": "string"},
                     },
                 },

@@ -27,6 +27,7 @@
     projected_annual_sequestration: null,
     certification_standard: null,
     certification_standard_name: null,
+    certification_standard_id: "",
     certification_standard_comment: "",
   })
 
@@ -101,20 +102,31 @@
         />
       </label>
       {#if val.certification_standard === true}
-        <label class={labelClass} for={undefined} transition:slide>
-          {$_("Name of certification standard/mechanism")}
-          <ChoicesEditField
-            bind:value={val.certification_standard_name}
-            extras={{
-              choices: $fieldChoices.deal.carbon_sequestration_certs,
-              placeholder: $_("Name of certification standard/mechanism"),
-              closeListOnChange: true,
-              otherHint: $_("Please specify in comment field"),
-              required: true,
-            }}
-            fieldname="{fieldname}_{i}_certification_standard_name"
-          />
-        </label>
+        <div transition:slide class="flex flex-col gap-4 pl-4">
+          <label class={labelClass} for={undefined}>
+            {$_("Name of certification standard/mechanism")}
+            <ChoicesEditField
+              bind:value={val.certification_standard_name}
+              extras={{
+                choices: $fieldChoices.deal.carbon_sequestration_certs,
+                placeholder: $_("Name of certification standard/mechanism"),
+                closeListOnChange: true,
+                otherHint: $_("Please specify in comment field"),
+                required: true,
+              }}
+              fieldname="{fieldname}_{i}_certification_standard_name"
+            />
+          </label>
+          <label class={labelClass} for={undefined}>
+            {$_("ID of certification standard / mechanism")}
+            <input
+              bind:value={val.certification_standard_id}
+              type="text"
+              class="inpt"
+              placeholder={$_("ID of certification standard / mechanism")}
+            />
+          </label>
+        </div>
       {/if}
 
       <label class={labelClass} for={undefined}>

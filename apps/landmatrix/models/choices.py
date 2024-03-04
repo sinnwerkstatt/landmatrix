@@ -498,10 +498,9 @@ CARBON_SEQUESTRATION_ITEMS = [
         "label": _("Sustainable grassland management"),
     },
     {"value": "RICE_EMISSION_REDUCTIONS", "label": _("Rice emission reductions")},
+    {"value": "SOLAR_PARK", "label": _("Solar park")},
+    {"value": "WIND_FARM", "label": _("Wind farm")},
     {"value": "OTHER", "label": _("Other")},
-]
-CARBON_SEQUESTRATION_CHOICES = [
-    (x["value"], x["label"]) for x in CARBON_SEQUESTRATION_ITEMS
 ]
 
 CARBON_SEQUESTRATION_CERT_ITEMS = [
@@ -512,9 +511,6 @@ CARBON_SEQUESTRATION_CERT_ITEMS = [
     {"value": "CAR", "label": _("Climate Action Reserve (CAR)")},
     {"value": "VIVO", "label": _("Plan Vivo")},
     {"value": "OTHER", "label": _("Other")},
-]
-CARBON_SEQUESTRATION_CERT_CHOICES = [
-    (x["value"], x["label"]) for x in CARBON_SEQUESTRATION_CERT_ITEMS
 ]
 
 WATER_SOURCE_ITEMS = [

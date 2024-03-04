@@ -417,6 +417,7 @@ export interface JSONCarbonSequestrationFieldType {
   projected_annual_sequestration: number | null
   certification_standard: boolean | null
   certification_standard_name: string | null
+  certification_standard_id: string
   certification_standard_comment: string
 }
 
