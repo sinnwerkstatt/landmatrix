@@ -57,7 +57,8 @@ export const agriculture_investment_choices: {
   [key in AgricultureIoI]: string
 } = {
   [AgricultureIoI.BIOFUELS]: "Biomass for biofuels",
-  [AgricultureIoI.BIOMASS_ENERGY_GENERATION]: "Biomass for energy generation",
+  [AgricultureIoI.BIOMASS_ENERGY_GENERATION]:
+    "Biomass for energy generation (agriculture)",
   [AgricultureIoI.FODDER]: "Fodder",
   [AgricultureIoI.FOOD_CROPS]: "Food crops",
   [AgricultureIoI.LIVESTOCK]: "Livestock",
@@ -68,7 +69,7 @@ export const agriculture_investment_choices: {
 export const forestry_investment_choices: {
   [key in ForestryIoI]: string
 } = {
-  [ForestryIoI.BIOMASS_ENERGY_PRODUCTION]: "Biomass for energy generation",
+  [ForestryIoI.BIOMASS_ENERGY_PRODUCTION]: "Biomass for energy generation (forestry)",
   [ForestryIoI.CARBON]: "For carbon sequestration/REDD",
   [ForestryIoI.FOREST_LOGGING]: "Forest logging for wood and fiber",
   [ForestryIoI.TIMBER_PLANTATION]: "Timber plantation for wood and fiber",

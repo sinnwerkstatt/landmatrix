@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-23 13:49+0100\n"
+"POT-Creation-Date: 2024-03-04 16:56+0100\n"
 "PO-Revision-Date: 2023-06-06 12:42+0000\n"
 "Last-Translator: Kurt Gerber <kurt.gerber@unibe.ch>\n"
 "Language-Team: Russian <http://translate.landmatrix.org/projects/landmatrix/landmatrix/ru/>\n"
@@ -80,8 +80,8 @@ msgstr ""
 msgid "Agriculture"
 msgstr "Сельское хозяйство"
 
-msgid "Biomass for energy generation"
-msgstr ""
+msgid "Biomass for energy generation (agriculture)"
+msgstr "Биомасса для производства электроэнергии (сельское хозяйство)"
 
 msgid "Fodder"
 msgstr "Фуражные культуры"
@@ -97,6 +97,9 @@ msgstr "Непродовольственная сельхозпродукция"
 
 msgid "Agriculture unspecified"
 msgstr "Тип сельского хозяйств не установлен"
+
+msgid "Biomass for energy generation (forestry)"
+msgstr "Биомасса для производства электроэнергии (лесное хозяйство)"
 
 msgid "Forestry"
 msgstr "Лесное хозяйство"
@@ -1426,12 +1429,6 @@ msgstr "<является ИНВЕСТОРОМ для>"
 
 msgid "Activated"
 msgstr "Активировано"
-
-msgid "OLD: Rejected"
-msgstr ""
-
-msgid "OLD: To Delete"
-msgstr ""
 
 msgid "Negotiation status"
 msgstr "Статус переговоров"

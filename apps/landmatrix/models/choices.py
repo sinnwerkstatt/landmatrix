@@ -9,7 +9,7 @@ INTENTION_OF_INVESTMENT_ITEMS = [
     },
     {
         "value": "BIOMASS_ENERGY_GENERATION",
-        "label": _("Biomass for energy generation"),
+        "label": _("Biomass for energy generation (agriculture)"),
         "group": _("Agriculture"),
     },
     {"value": "FODDER", "label": _("Fodder"), "group": _("Agriculture")},
@@ -27,7 +27,7 @@ INTENTION_OF_INVESTMENT_ITEMS = [
     },
     {
         "value": "BIOMASS_ENERGY_PRODUCTION",
-        "label": _("Biomass for energy generation"),
+        "label": _("Biomass for energy generation (forestry)"),
         "group": _("Forestry"),
     },
     {

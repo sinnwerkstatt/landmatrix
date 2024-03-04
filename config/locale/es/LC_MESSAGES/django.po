@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-23 13:49+0100\n"
+"POT-Creation-Date: 2024-03-04 16:56+0100\n"
 "PO-Revision-Date: 2023-11-09 16:50+0000\n"
 "Last-Translator: Marie Gradeler <accountability@landmatrix.org>\n"
 "Language-Team: Spanish <http://translate.landmatrix.org/projects/landmatrix/landmatrix/es/>\n"
@@ -78,8 +78,8 @@ msgstr "Biomasa para biocarburantes"
 msgid "Agriculture"
 msgstr "Agricultura"
 
-msgid "Biomass for energy generation"
-msgstr "Biomasa para generación de energía"
+msgid "Biomass for energy generation (agriculture)"
+msgstr "Biomasa para generación de energía (agricultura)"
 
 msgid "Fodder"
 msgstr "Forraje"
@@ -95,6 +95,9 @@ msgstr "Mercancías agrícolas no comestibles"
 
 msgid "Agriculture unspecified"
 msgstr "Agricultura sin especificar"
+
+msgid "Biomass for energy generation (forestry)"
+msgstr "Biomasa para generación de energía (silvicultura)"
 
 msgid "Forestry"
 msgstr "Silvicultura"
@@ -1424,12 +1427,6 @@ msgstr "<es INVERSOR de>"
 
 msgid "Activated"
 msgstr "Activado"
-
-msgid "OLD: Rejected"
-msgstr ""
-
-msgid "OLD: To Delete"
-msgstr ""
 
 msgid "Negotiation status"
 msgstr "Estado de la negociación"
