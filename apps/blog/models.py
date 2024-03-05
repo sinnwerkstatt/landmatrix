@@ -212,9 +212,7 @@ def limit_author_choices():
 
 
 class BlogPage(HeadlessPreviewMixin, Page):
-    body = StreamField(
-        SIMPLE_CONTENT_BLOCKS, verbose_name="body", blank=True, use_json_field=True
-    )
+    body = StreamField(SIMPLE_CONTENT_BLOCKS, use_json_field=True)
     tags = ClusterTaggableManager(through="BlogPageTag", blank=True)
     date = models.DateField(
         "Post date",
@@ -247,7 +245,7 @@ class BlogPage(HeadlessPreviewMixin, Page):
         "BlogCategory", through="BlogCategoryBlogPage", blank=True
     )
 
-    settings_panels = [
+    settings_panels = Page.settings_panels + [
         MultiFieldPanel(
             [
                 FieldRowPanel(
@@ -278,8 +276,7 @@ class BlogPage(HeadlessPreviewMixin, Page):
         verbose_name = "Blog page"
         verbose_name_plural = "Blog pages"
 
-    content_panels = [
-        FieldPanel("title", classname="full title"),
+    content_panels = Page.content_panels + [
         MultiFieldPanel(
             [
                 FieldPanel("tags"),

@@ -36,14 +36,6 @@ def whitelister_element_rules():
     }
 
 
-@hooks.register("insert_global_admin_js", order=100)
-def monkeypatch_wagtail_modeltranslation():
-    return format_html(
-        '<script src="{}"></script>',
-        "/static/js/cleanForSlug.js",
-    )
-
-
 class PartnerViewSet(SnippetViewSet):
     model = Partner
     add_to_admin_menu = False

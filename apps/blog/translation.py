@@ -11,8 +11,7 @@ class BlogIndexPageTR(TranslationOptions):
 
 @register(BlogPage)
 class BlogPageTR(TranslationOptions):
-    # fields = ("body",)
-    pass
+    fields = ("body",)
 
 
 # @register(BlogCategory)
