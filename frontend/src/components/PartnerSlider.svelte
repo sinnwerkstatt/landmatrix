@@ -1,16 +1,16 @@
 <script lang="ts">
   import { Splide, SplideSlide, SplideTrack } from "@splidejs/svelte-splide"
 
-  import "@splidejs/svelte-splide/css/core"
-
   import type { Partner } from "$lib/types/wagtail"
 
-  export let countSlides: number
+  import "@splidejs/svelte-splide/css/core"
+
+  export let perPage: number
   export let partners: Partner[]
 
   const options = {
-    autoplay: true,
-    perPage: countSlides,
+    autoplay: partners.length > perPage,
+    perPage: Math.min(partners.length, perPage),
     perMove: 1,
     type: "loop",
     arrows: false,
@@ -26,11 +26,20 @@
     <SplideTrack>
       {#each partners as partner}
         <SplideSlide>
-          <div class="mx-auto max-w-[360px] px-6">
-            <a href={partner.homepage} target="_blank">
-              <img src={partner.logo} alt={partner.name} class="mx-auto" />
-            </a>
-          </div>
+          <a
+            class="mx-auto flex h-[150px] w-[150px] items-center justify-center"
+            href={partner.homepage}
+            title={partner.name}
+            target="_blank"
+          >
+            <img
+              class="mx-auto bg-gray-50"
+              height="150"
+              width="150"
+              src={partner.logo}
+              alt={partner.name}
+            />
+          </a>
         </SplideSlide>
       {/each}
     </SplideTrack>
