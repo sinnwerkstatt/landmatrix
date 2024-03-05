@@ -1,15 +1,14 @@
 <script lang="ts">
   import { onMount } from "svelte"
-  import { _ } from "svelte-i18n"
   import { expoOut } from "svelte/easing"
   import { tweened } from "svelte/motion"
 
   import { contentRootElement } from "$lib/stores"
 
   export let value: {
-    sum_ha: number
     deals: number
     text: string
+    text_below: string
   }
 
   let element: HTMLElement
@@ -51,8 +50,6 @@
     {Math.round($progress).toLocaleString("fr").replace(",", ".")}
   </p>
   <p class="heading2 text-pelorous-300">
-    {$_("Equals")}
-    {value.sum_ha.toLocaleString("fr").replace(",", ".") ?? "—"}
-    {$_("ha")}
+    {value.text_below}
   </p>
 </div>

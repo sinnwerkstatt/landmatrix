@@ -223,17 +223,16 @@ class PartnerBlock(StructBlock):
 
 class DealCountBlock(StructBlock):
     text = CharBlock(default="It's a big deal")
+    text_below = CharBlock(default="deals are currently tracked.")
 
     def get_api_representation(self, value, context=None):
         deals = DealOld.objects.public()
         count_deals = deals.count()
 
-        x = deals.aggregate(sum_ha=Sum("current_contract_size"))
-
         return {
-            "sum_ha": x["sum_ha"],
             "deals": count_deals,
             "text": value.get("text"),
+            "text_below": value.get("text_below"),
         }
 
     class Meta:
