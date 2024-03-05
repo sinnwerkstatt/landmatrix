@@ -90,7 +90,7 @@
       <li>
         <a
           href="/map/"
-          class="nav-link"
+          class="nav-link button1 transition hover:bg-white hover:text-orange"
           class:active={$page.url.pathname.startsWith("/map")}
         >
           {$_("Map")}
@@ -99,7 +99,7 @@
       <li>
         <NavDropDown>
           <svelte:fragment slot="title">
-            <span class="capitalize">{$_("Data")}</span>
+            <span class="button1 capitalize">{$_("Tables")}</span>
           </svelte:fragment>
           <ul class="border-2 border-orange bg-white dark:bg-gray-800">
             {#each dataViews as view}
@@ -119,7 +119,7 @@
       <li>
         <NavDropDown>
           <svelte:fragment slot="title">
-            <span class="capitalize">{$_("Charts")}</span>
+            <span class="button1 capitalize">{$_("Charts")}</span>
           </svelte:fragment>
           <ul class="border-2 border-orange bg-white dark:bg-gray-800">
             <li

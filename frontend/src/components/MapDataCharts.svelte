@@ -6,10 +6,6 @@
   import MapIcon from "$components/Data/MapTeaser.svelte"
   import DataIcon from "$components/Data/TableTeaser.svelte"
 
-  // import DataIcon from "./icons/DataIcon.svelte"
-  // import MapIcon from "./icons/MapIcon.svelte"
-  // import ChartsIcon from "./icons/ChartsIcon.svelte"
-
   interface Card {
     title: string
     href: string
@@ -20,15 +16,15 @@
   const cards: Card[] = [
     {
       title: $_("Map"),
-      href: "/map",
+      href: "/map/",
       description: $_(
         "Explore the map for information about land deals from global down to regional and country level.",
       ),
       icon: MapIcon,
     },
     {
-      title: $_("Data"),
-      href: "/list/deals",
+      title: $_("Tables"),
+      href: "/list/",
       description: $_(
         "Search and filter the dataset through pre-configured entry points or drill down to single deals.",
       ),
@@ -36,7 +32,7 @@
     },
     {
       title: $_("Charts"),
-      href: "/charts",
+      href: "/charts/",
       description: $_(
         "Generate your own infographics using a wide selection of charts to illustrate information about deals.",
       ),
