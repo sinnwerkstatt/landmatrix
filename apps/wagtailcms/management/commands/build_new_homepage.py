@@ -62,19 +62,6 @@ BODY = [
                 {
                     "type": "item",
                     "value": {
-                        "title": "Charts",
-                        "teaser": "Use a wide selection of charts to illustrate information about deals.",
-                        "link": {
-                            "page": None,
-                            "external_url": "",
-                            "text": "Go to charts >>",
-                        },
-                    },
-                    "id": "9daf91f7-cdaa-4ff1-adb3-c50efd515113",
-                },
-                {
-                    "type": "item",
-                    "value": {
                         "title": "Tables",
                         "teaser": "Filter the dataset to find information according to deals or investors.",
                         "link": {
@@ -84,6 +71,19 @@ BODY = [
                         },
                     },
                     "id": "793d193d-a0cc-497e-84e2-b798f3d5f49a",
+                },
+                {
+                    "type": "item",
+                    "value": {
+                        "title": "Charts",
+                        "teaser": "Use a wide selection of charts to illustrate information about deals.",
+                        "link": {
+                            "page": None,
+                            "external_url": "",
+                            "text": "Go to charts >>",
+                        },
+                    },
+                    "id": "9daf91f7-cdaa-4ff1-adb3-c50efd515113",
                 },
             ],
         },

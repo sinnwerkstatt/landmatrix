@@ -20,7 +20,7 @@
 <div class="container mx-auto my-20 px-10 py-6">
   <h2 class="caption text-center lg:text-left dark:text-white">{value.title}</h2>
   <h3
-    class="heading2 mb-10 text-center underline lg:w-1/2 lg:text-left dark:text-white"
+    class="heading2 mb-10 text-center lg:w-1/2 lg:text-left dark:text-white"
   >
     {value.subtitle}
   </h3>
@@ -35,7 +35,7 @@
       </a>
     </div>
     <div class="mx-auto mb-20 text-center md:mb-0">
-      <CakeTeaser />
+      <TableTeaser />
       <h3 class="heading2 dark:text-white">{value.cards[1].title}</h3>
       <p class="body1 mx-auto">{value.cards[1].teaser}</p>
       <a class="butn-link butn-secondary" href={value.cards[1].link.href}>
@@ -43,7 +43,7 @@
       </a>
     </div>
     <div class="mx-auto mb-20 text-center md:mb-0">
-      <TableTeaser />
+      <CakeTeaser />
       <h3 class="heading2 dark:text-white">{value.cards[2].title}</h3>
       <p class="body1 mx-auto">{value.cards[2].teaser}</p>
       <a class="butn-link butn-secondary" href={value.cards[2].link.href}>
