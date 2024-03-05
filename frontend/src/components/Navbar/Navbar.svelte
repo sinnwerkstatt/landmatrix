@@ -11,14 +11,8 @@
   import NavbarSearch from "$components/Navbar/NavbarSearch.svelte"
   import SubEntries from "$components/Navbar/SubEntries.svelte"
 
-  interface MenuEntry {
-    title: string
-    subEntries?: {
-      title: string
-      href: string
-    }[]
-    href?: string
-  }
+  import { isSubMenu } from "./navbar"
+  import type { MenuEntry } from "./navbar"
 
   let menuEntries: MenuEntry[]
   $: menuEntries = [
@@ -26,8 +20,7 @@
       title: $_("Data"),
       subEntries: [
         { title: $_("Map"), href: "/map/" },
-        { title: $_("Deals"), href: "/list/deals/" },
-        { title: $_("Investors"), href: "/list/investors/" },
+        { title: $_("Tables"), href: "/list/" },
         { title: $_("Charts"), href: "/charts/" },
       ],
     },
@@ -35,43 +28,53 @@
       title: $_("Observatories"),
       subEntries: $observatoryPages.map(page => ({
         title: $_(page.title),
-        href: `/observatory/${page.meta.slug}`,
+        href: `/observatory/${page.meta.slug}/`,
       })),
     },
     {
       title: $_("Resources"),
-      subEntries: $blogCategories.map(cat => ({
-        title: $_(cat.name), // translating them here, because the backend only gives us English
-        href: `/resources/?category=${cat.slug}`,
-      })),
+      subEntries: [
+        {
+          title: $_("All"),
+          href: "/resources/",
+        },
+        ...$blogCategories.map(cat => ({
+          title: $_(cat.name),
+          href: `/resources/?category=${cat.slug}`,
+        })),
+      ],
     },
     {
       title: $_("About"),
       subEntries: $aboutPages.map(page => ({
-        title: page.title,
-        href: `/about/${page.meta.slug}`,
+        title: $_(page.title),
+        href: `/about/${page.meta.slug}/`,
       })),
     },
     { title: $_("FAQ"), href: "/faq/" },
     { title: $_("Contribute"), href: "/contribute/" },
   ]
+
   let menuHidden = true
 
-  const closeMenu = () => (menuHidden = true)
+  const resetMenu = () => {
+    menuHidden = true
+  }
+  const closeMenu = () => {
+    menuHidden = true
+  }
 </script>
 
 <!--https://blog.logrocket.com/building-responsive-navbar-tailwind-css/-->
 <nav
-  class="mb-4 h-[71px] w-full bg-white p-1 py-1 text-lg text-gray-700 shadow-nav dark:bg-gray-900 dark:text-white"
+  class="h-full w-full bg-white p-1 py-1 text-lg text-gray-700 shadow-lg dark:bg-gray-700 dark:text-white"
 >
-  <div
-    class="container mx-auto flex h-full w-full flex-wrap items-center justify-between align-middle"
-  >
+  <div class="mx-auto flex h-full w-full items-center justify-between align-middle">
     <!--   LOGO   -->
-    <a class="order-first mr-3 self-center xl:mr-10" href="/" on:click={closeMenu}>
+    <a class="order-first mr-3 self-center xl:mr-10" href="/" on:click={resetMenu}>
       <img
         alt="Land Matrix"
-        class="hidden h-[36px] w-[144px] min-w-[144px] max-w-[144px] md:block"
+        class="ml-3 hidden h-[36px] w-[144px] min-w-[144px] max-w-[144px] md:block"
         src={$isDarkMode ? "/images/lm-logo-dark.png" : "/images/lm-logo.png"}
       />
       <img
@@ -84,7 +87,10 @@
     </a>
 
     <!--   MOBILE MENU   -->
-    <ul id="menu-mobile" class="order-last flex flex-grow items-center justify-end">
+    <ul
+      id="menu-mobile"
+      class="order-last flex max-w-fit flex-grow items-center justify-end"
+    >
       <li>
         <NavbarSearch />
       </li>
@@ -94,10 +100,12 @@
       <li>
         <LoginSection />
       </li>
-      <li class="xl:hidden">
+      <li class="2xl:hidden">
         <button
           class="h-full p-2"
-          on:click|stopPropagation={() => (menuHidden = !menuHidden)}
+          on:click|stopPropagation={() => {
+            menuHidden = !menuHidden
+          }}
         >
           <BurgerMenuIcon class="mx-3 inline h-7 w-7 text-black dark:text-gray-50" />
         </button>
@@ -108,22 +116,39 @@
     <div
       id="menu"
       class={cn(
-        menuHidden ? "hidden xl:block" : "",
-        "absolute left-0 top-[54px] z-50 w-full bg-white shadow-nav xl:static xl:w-auto xl:shadow-none dark:bg-gray-800",
+        menuHidden ? "hidden 2xl:block" : "",
+        "absolute xl:static",
+        "left-0 top-[65px] z-50 w-full xl:w-auto",
+        "bg-white dark:bg-gray-800",
+        "shadow-lg xl:shadow-none",
       )}
       use:clickOutside
-      on:outClick={closeMenu}
+      on:outClick={resetMenu}
     >
       <ul
-        class="gap-y-6 divide-y divide-solid p-6 px-4 lg:flex lg:flex-wrap lg:items-center lg:justify-center lg:gap-x-12 lg:gap-y-0 lg:divide-transparent lg:p-0 xl:justify-between xl:gap-x-0 dark:bg-gray-900"
+        class="gap-y-6 divide-y divide-solid p-6 px-4 lg:flex
+         lg:flex-wrap lg:items-center lg:justify-center lg:gap-x-12 lg:gap-y-0 lg:divide-transparent lg:p-0 xl:justify-between
+         xl:gap-x-0 dark:bg-gray-700"
       >
         {#each menuEntries as entry}
-          <SubEntries
-            title={entry.title}
-            subEntries={entry.subEntries}
-            href={entry.href ?? ""}
-            on:close={closeMenu}
-          />
+          <li class="group xl:relative">
+            {#if isSubMenu(entry)}
+              <SubEntries
+                title={entry.title}
+                subEntries={entry.subEntries}
+                on:close={closeMenu}
+              />
+            {:else}
+              <a
+                class="nav-link button1 3xl:max-w-none truncate text-center hover:bg-white hover:text-orange 2xl:max-w-[160px] dark:hover:bg-gray-700"
+                title={entry.title}
+                href={entry.href}
+                on:click={resetMenu}
+              >
+                {entry.title}
+              </a>
+            {/if}
+          </li>
         {/each}
       </ul>
     </div>
