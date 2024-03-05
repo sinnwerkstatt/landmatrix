@@ -2,9 +2,10 @@
   import Cookies from "js-cookie"
   import { locale } from "svelte-i18n"
 
+  import LanguageIcon from "$components/icons/LanguageIcon.svelte"
   import NavDropDown from "$components/Navbar/NavDropDown.svelte"
 
-  const languages = {
+  const languages: { [key: string]: string } = {
     en: "English",
     es: "Español",
     fr: "Français",
@@ -20,7 +21,8 @@
 <NavDropDown>
   <svelte:fragment slot="title">
     <span class="button1 mx-3 text-black dark:text-white">
-      {languages[$locale]}
+      <span class="hidden md:inline">{languages[$locale ?? "en"]}</span>
+      <span class="md:hidden"><LanguageIcon /></span>
     </span>
   </svelte:fragment>
 
@@ -33,7 +35,7 @@
           on:click={() => switchLanguage(lcode)}
         >
           <span class="capitalize">{lingo}</span>
-          <span class="uppercase">({lcode})</span>
+          <span class="lowercase">({lcode})</span>
         </button>
       </li>
     {/each}
