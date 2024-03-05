@@ -115,20 +115,15 @@
     <!--   MENU   -->
     <div
       id="menu"
-      class={cn(
-        menuHidden ? "hidden 2xl:block" : "",
-        "absolute xl:static",
-        "left-0 top-[65px] z-50 w-full xl:w-auto",
-        "bg-white dark:bg-gray-800",
-        "shadow-lg xl:shadow-none",
-      )}
+      class="absolute left-0 top-[65px] z-50 w-full bg-white shadow-nav 2xl:static 2xl:w-auto 2xl:shadow-none dark:bg-gray-800
+      {menuHidden ? 'hidden 2xl:block' : ''}"
       use:clickOutside
       on:outClick={resetMenu}
     >
       <ul
-        class="gap-y-6 divide-y divide-solid p-6 px-4 lg:flex
-         lg:flex-wrap lg:items-center lg:justify-center lg:gap-x-12 lg:gap-y-0 lg:divide-transparent lg:p-0 xl:justify-between
-         xl:gap-x-0 dark:bg-gray-700"
+        class="gap-y-6 divide-y divide-solid p-6 px-4
+         lg:flex lg:flex-wrap lg:items-center lg:justify-center lg:gap-x-12 lg:gap-y-0 lg:divide-transparent lg:p-0
+         2xl:justify-between 2xl:gap-x-0 dark:bg-gray-900"
       >
         {#each menuEntries as entry}
           <li class="group xl:relative">
