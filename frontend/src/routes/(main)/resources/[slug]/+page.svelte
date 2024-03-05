@@ -9,7 +9,7 @@
 <div class="flex min-h-full flex-col">
   <PageTitle>{data.page.title}</PageTitle>
 
-  <div class="mx-auto w-[clamp(20rem,75%,56rem)]">
+  <div class="mx-auto mb-10 w-[clamp(20rem,75%,56rem)] xl:mb-16">
     <div class="mb-6 inline-flex gap-4">
       <span class="mr-4">{data.page.date}</span>
       {#if data.page.tags?.length > 0}
