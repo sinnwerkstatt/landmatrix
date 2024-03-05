@@ -71,4 +71,4 @@
   {/if}
 </svelte:head>
 
-<div class={$$props.class} bind:this={targetDiv} />
+<div class={$$props.class ?? ""} bind:this={targetDiv} />

@@ -35,7 +35,7 @@
 <div
   role="menu"
   tabindex="-1"
-  class="relative {$$props.class}"
+  class="relative {$$props.class ?? ''}"
   use:clickOutside
   on:outClick={() => (isOpen = false)}
   on:mouseenter={() => (isHover = true)}

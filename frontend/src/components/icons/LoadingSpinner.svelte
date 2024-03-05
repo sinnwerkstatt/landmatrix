@@ -1,4 +1,4 @@
-<div class="loadingspinner {$$props.class}" />
+<div class="loadingspinner {$$props.class ?? ''}" />
 
 <style>
   .loadingspinner {

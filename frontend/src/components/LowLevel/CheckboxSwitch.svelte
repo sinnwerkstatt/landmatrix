@@ -3,7 +3,10 @@
   export let title = ""
 </script>
 
-<label class="mb-1 flex cursor-pointer items-center gap-1 {$$props.class}" {title}>
+<label
+  class="mb-1 flex cursor-pointer items-center gap-1 {$$props.class ?? ''}"
+  {title}
+>
   <input type="checkbox" bind:checked on:change|preventDefault />
   <span class={checked ? "text-orange" : "text-gray-700 dark:text-white"}>
     <slot />

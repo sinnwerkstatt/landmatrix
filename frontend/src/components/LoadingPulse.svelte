@@ -1,4 +1,6 @@
-<div class="relative flex h-full w-full items-center justify-center {$$props.class}">
+<div
+  class="relative flex h-full w-full items-center justify-center {$$props.class ?? ''}"
+>
   <div class="lds-facebook relative -mt-10 block h-20 w-20">
     <div class="n n1" />
     <div class="n n2" />
