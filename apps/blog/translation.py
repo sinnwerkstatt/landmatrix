@@ -11,7 +11,9 @@ class BlogIndexPageTR(TranslationOptions):
 
 @register(BlogPage)
 class BlogPageTR(TranslationOptions):
-    fields = ("body",)
+    # See: https://git.sinntern.de/landmatrix/landmatrix/-/issues/738
+    # fields = ("body",)
+    pass
 
 
 # @register(BlogCategory)
