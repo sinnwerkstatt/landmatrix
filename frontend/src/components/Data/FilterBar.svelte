@@ -418,7 +418,6 @@
               href={dataDownloadURL + "csv"}
               on:click={() => trackDownload("csv")}
             >
-              <i class="fas fa-file-download" />
               <DownloadIcon />
               {$_("All attributes")} (csv)
             </a>
@@ -431,7 +430,6 @@
               }`}
               on:click={() => trackDownload("locations")}
             >
-              <i class="fas fa-file-download" />
               <DownloadIcon />
               {$_("Locations (as geojson)")}
             </a>
@@ -444,7 +442,6 @@
               }`}
               on:click={() => trackDownload("areas")}
             >
-              <i class="fas fa-file-download" />
               <DownloadIcon />
               {$_("Areas (as geojson)")}
             </a>
