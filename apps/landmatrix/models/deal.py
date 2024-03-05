@@ -109,6 +109,10 @@ class AbstractDealBase(models.Model):
         _("Comment on intention of investment"), blank=True
     )
 
+    # Carbon offset project
+    carbon_offset_project = models.BooleanField(null=True, blank=True)
+    carbon_offset_project_comment = models.TextField(blank=True)
+
     # Nature of the deal
     nature_of_deal = ArrayField(
         models.CharField(choices=choices.NATURE_OF_DEAL_CHOICES),

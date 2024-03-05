@@ -39,6 +39,19 @@
     />
   </Subsection>
 
+  <Subsection id="carbon_offset_project" obj={version}>
+    <DisplayField
+      fieldname="carbon_offset_project"
+      showLabel
+      value={version.carbon_offset_project}
+    />
+    <DisplayField
+      fieldname="carbon_offset_project_comment"
+      showLabel
+      value={version.carbon_offset_project_comment}
+    />
+  </Subsection>
+
   <Subsection id="nature_of_deal" obj={version}>
     <DisplayField fieldname="nature_of_deal" showLabel value={version.nature_of_deal} />
     <DisplayField

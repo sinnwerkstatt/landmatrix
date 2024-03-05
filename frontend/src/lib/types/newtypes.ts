@@ -182,6 +182,9 @@ interface DealVersionBase {
   intention_of_investment: JSONCurrentDateAreaChoicesFieldType[]
   intention_of_investment_comment: string
 
+  carbon_offset_project: boolean | null
+  carbon_offset_project_comment: string
+
   nature_of_deal: string[]
   nature_of_deal_comment: string
 

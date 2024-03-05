@@ -17,6 +17,10 @@ export const dealSectionsLG = derived(_, $_ => ({
       fields: ["intention_of_investment", "intention_of_investment_comment"],
     },
     {
+      name: $_("Carbon offset project"),
+      fields: ["carbon_offset_project", "carbon_offset_project_comment"],
+    },
+    {
       name: $_("Nature of the deal"),
       fields: ["nature_of_deal", "nature_of_deal_comment"],
     },
@@ -359,6 +363,10 @@ export const objectSections = derived(_, $_ => {
     intention_of_investment: {
       title: $_("Intention of investment"),
       fields: ["intention_of_investment", "intention_of_investment_comment"],
+    },
+    carbon_offset_project: {
+      title: $_("Carbon offset project"),
+      fields: ["carbon_offset_project", "carbon_offset_project_comment"],
     },
     nature_of_deal: {
       title: $_("Nature of the deal"),

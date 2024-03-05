@@ -40,6 +40,19 @@
     />
   </EditSubsection>
 
+  <EditSubsection id="carbon_offset_project">
+    <EditField
+      bind:value={version.carbon_offset_project}
+      fieldname="carbon_offset_project"
+      showLabel
+    />
+    <EditField
+      bind:value={version.carbon_offset_project_comment}
+      fieldname="carbon_offset_project_comment"
+      showLabel
+    />
+  </EditSubsection>
+
   <EditSubsection id="nature_of_deal">
     <EditField
       bind:value={version.nature_of_deal}

@@ -268,6 +268,8 @@ def map_version_payload(ov: dict, nv: DealVersion):
         nv.intention_of_investment += [x]
 
     nv.intention_of_investment_comment = ov["intention_of_investment_comment"]
+    nv.carbon_offset_project = ov["carbon_offset_project"]
+    nv.carbon_offset_project_comment = ov["carbon_offset_project_comment"]
     nv.nature_of_deal = ov["nature_of_deal"] or []
     nv.nature_of_deal_comment = ov["nature_of_deal_comment"]
     nv.negotiation_status = []
@@ -583,6 +585,8 @@ def map_version_payload(ov: dict, nv: DealVersion):
             cfa["certification_standard_name"] = None
         if not cfa.get("certification_standard_comment"):
             cfa["certification_standard_comment"] = ""
+        if not cfa.get("certification_standard_id"):
+            cfa["certification_standard_id"] = ""
 
         for p in [
             "date",

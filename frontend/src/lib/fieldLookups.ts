@@ -174,6 +174,18 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
       label: $_("Comment on intention of investment"),
       extras: { multiline: true },
     },
+    carbon_offset_project: {
+      displayField: BooleanField,
+      editField: BooleanEditField,
+      label: $_("Carbon offset project"),
+      extras: { nullable: true },
+    },
+    carbon_offset_project_comment: {
+      displayField: TextField,
+      editField: TextEditField,
+      label: $_("Comment on carbon offset project"),
+      extras: { multiline: true },
+    },
     nature_of_deal: {
       displayField: ChoicesField,
       editField: ChoicesEditField,
