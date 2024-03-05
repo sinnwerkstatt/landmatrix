@@ -35,7 +35,7 @@
       <img src={value.image.url} loading="lazy" />
     </div>
     <a
-      class="button1 mx-auto block w-fit rounded bg-black px-5 py-[10px] text-white transition hover:bg-gray-700 lg:hidden"
+      class="button1 mx-auto mt-5 block w-fit rounded bg-black px-5 py-[10px] text-white transition hover:bg-gray-700 lg:hidden"
       href={value.link.href}
       rel={value.link.rel_external ? "external" : ""}
       target={value.link.rel_external ? "_blank" : ""}
