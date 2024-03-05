@@ -1,30 +1,29 @@
 <script lang="ts">
+  import NewFooter from "$components/NewFooter.svelte"
   import PageTitle from "$components/PageTitle.svelte"
   import Streamfield from "$components/Streamfield.svelte"
 
   export let data
 </script>
 
-<div>
+<div class="flex min-h-full flex-col">
   <PageTitle>{data.page.title}</PageTitle>
 
-  <div class="container mx-auto px-10">
-    <div class="meta mb-3">
-      <div class="mr-4 inline-block">
-        <i class="far fa-calendar-alt" />
-        {data.page.date}
-      </div>
+  <div class="mx-auto w-[clamp(20rem,75%,56rem)]">
+    <div class="mb-6 inline-flex gap-4">
+      <span class="mr-4">{data.page.date}</span>
       {#if data.page.tags?.length > 0}
-        <div class="inline-block">
-          {#each data.page.tags as tag}
-            <a href="/resources/?tag={tag.slug}">
-              <!-- <Tag />-->
-              {tag.name}
-            </a>
-          {/each}
-        </div>
+        {#each data.page.tags as tag}
+          <a href="/resources/?tag={tag.slug}">
+            <!-- <Tag />-->
+            {tag.name}
+          </a>
+        {/each}
       {/if}
     </div>
     <Streamfield content={data.page.body} />
   </div>
+
+  <div class="flex-grow" />
+  <NewFooter />
 </div>

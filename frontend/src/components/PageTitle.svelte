@@ -1,12 +1,9 @@
 {#if $$slots?.default}
-  <div class="container isolate mx-auto mb-6 mt-8 lg:mb-12 lg:mt-16">
-    <h1 class="heading2 mx-auto w-fit px-4">
-      <span
-        class="relative z-10 bg-white text-orange dark:bg-gray-900 {$$props.class ??
-          ''}"
-      >
-        <slot />
-      </span>
-    </h1>
-  </div>
+  <h1
+    class="heading2 mx-auto mb-6 mt-8 w-[clamp(20rem,75%,80rem)] text-center lg:mb-12 lg:mt-16"
+  >
+    <span class="relative z-10 text-orange {$$props.class ?? ''}">
+      <slot />
+    </span>
+  </h1>
 {/if}
