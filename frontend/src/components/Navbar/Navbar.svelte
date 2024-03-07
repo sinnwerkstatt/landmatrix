@@ -1,5 +1,4 @@
 <script lang="ts">
-  import cn from "classnames"
   import { _ } from "svelte-i18n"
 
   import { clickOutside } from "$lib/helpers"
@@ -11,8 +10,8 @@
   import NavbarSearch from "$components/Navbar/NavbarSearch.svelte"
   import SubEntries from "$components/Navbar/SubEntries.svelte"
 
-  import { isSubMenu } from "./navbar"
   import type { MenuEntry } from "./navbar"
+  import { isSubMenu } from "./navbar"
 
   let menuEntries: MenuEntry[]
   $: menuEntries = [
@@ -67,7 +66,7 @@
 
 <!--https://blog.logrocket.com/building-responsive-navbar-tailwind-css/-->
 <nav
-  class="h-full w-full bg-white p-1 py-1 text-lg text-gray-700 shadow-lg dark:bg-gray-700 dark:text-white"
+  class="h-full w-full bg-white p-1 py-1 text-lg text-gray-700 shadow-lg dark:border-b dark:border-orange dark:bg-gray-900 dark:text-white"
 >
   <div class="mx-auto flex h-full w-full items-center justify-between align-middle">
     <!--   LOGO   -->
@@ -115,7 +114,7 @@
     <!--   MENU   -->
     <div
       id="menu"
-      class="absolute left-0 top-[65px] z-50 w-full bg-white shadow-nav 2xl:static 2xl:w-auto 2xl:shadow-none dark:bg-gray-800
+      class="absolute left-0 top-[65px] z-50 w-full bg-white shadow-nav 2xl:static 2xl:w-auto 2xl:shadow-none
       {menuHidden ? 'hidden 2xl:block' : ''}"
       use:clickOutside
       on:outClick={resetMenu}
@@ -123,7 +122,9 @@
       <ul
         class="gap-y-6 divide-y divide-solid p-6 px-4
          lg:flex lg:flex-wrap lg:items-center lg:justify-center lg:gap-x-12 lg:gap-y-0 lg:divide-transparent lg:p-0
-         2xl:justify-between 2xl:gap-x-0 dark:bg-gray-900"
+         2xl:justify-between 2xl:gap-x-0
+         dark:border-b dark:border-orange dark:bg-gray-900 dark:2xl:border-none
+"
       >
         {#each menuEntries as entry}
           <li class="group xl:relative">
@@ -135,7 +136,7 @@
               />
             {:else}
               <a
-                class="nav-link button1 3xl:max-w-none truncate text-center hover:bg-white hover:text-orange 2xl:max-w-[160px] dark:hover:bg-gray-700"
+                class="nav-link button1 3xl:max-w-none truncate text-center hover:bg-white hover:text-orange 2xl:max-w-[160px] dark:hover:bg-gray-900"
                 title={entry.title}
                 href={entry.href}
                 on:click={resetMenu}

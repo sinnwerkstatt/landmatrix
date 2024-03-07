@@ -1,5 +1,4 @@
 <script lang="ts">
-  import cn from "classnames"
   import { createEventDispatcher } from "svelte"
   import { slide } from "svelte/transition"
 
@@ -54,13 +53,9 @@
   {#if isOpen || isHover}
     <ul
       transition:slide={{ duration: 200 }}
-      class={cn(
-        "hidden flex-wrap justify-around",
-        "bg-gray-50 lg:bg-white dark:bg-gray-700 dark:lg:bg-gray-700",
-        "lg:absolute lg:z-50 lg:whitespace-nowrap",
-        "border-t py-1 lg:border-none lg:py-3 lg:shadow-2xl",
-        "group-focus-within:flex lg:group-focus-within:hidden lg:group-hover:block",
-      )}
+      class="hidden flex-wrap justify-around border-t bg-gray-50 py-1 group-focus-within:flex
+       lg:absolute lg:z-50 lg:whitespace-nowrap lg:border-none lg:bg-white lg:py-3 lg:shadow-2xl lg:group-focus-within:hidden lg:group-hover:block
+       dark:bg-gray-900 dark:shadow dark:shadow-orange dark:lg:bg-gray-900"
     >
       {#each subEntries as subEntry}
         <li class="mx-3 lg:mx-0 lg:px-6 lg:hover:bg-orange-100">
