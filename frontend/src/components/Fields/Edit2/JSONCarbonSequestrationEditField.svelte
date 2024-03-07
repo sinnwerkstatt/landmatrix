@@ -130,12 +130,12 @@
       {/if}
 
       <label class={labelClass} for={undefined}>
-        {$_("Comment on certtification standard/mechanism")}
+        {$_("Comment on certification standard / mechanism")}
         <input
           bind:value={val.certification_standard_comment}
           type="text"
           class="inpt"
-          placeholder={$_("Comment on certification standard")}
+          placeholder={$_("Comment on certification standard / mechanism")}
         />
       </label>
 

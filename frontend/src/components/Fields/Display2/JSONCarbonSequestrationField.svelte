@@ -61,7 +61,7 @@
       {/if}
       {#if val.certification_standard_comment}
         <div>
-          {$_("Comment on certification standard")}:
+          {$_("Comment on certification standard / mechanism")}:
           {val.certification_standard_comment}
         </div>
       {/if}
