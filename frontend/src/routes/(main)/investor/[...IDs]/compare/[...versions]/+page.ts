@@ -23,19 +23,16 @@ export const load: PageLoad = async ({ params, fetch }) => {
   const investorTo: InvestorHull = await resTo.json()
   const toVersion = investorTo.selected_version
 
-  // const investorTo: Investor = vTo.data.investor
+  if (!investorFrom || !investorTo) error(500, "problem")
 
   const investordiffy = Object.keys(diff(fromVersion, toVersion))
-  const dsdiffy = Object.keys(diff(fromVersion.datasources, toVersion.datasources))
-  // const idiffy = Object.keys(diff(investorFrom.investors, investorTo.investors))
-  const idiffy: string[] = []
 
   return {
     investorID,
     fromVersion,
     toVersion,
     investordiff: investordiffy.length ? new Set(investordiffy) : new Set(),
-    datasourcesdiff: dsdiffy.length ? new Set(dsdiffy) : null,
-    involvementsdiff: idiffy.length ? new Set(idiffy) : null,
+    // datasourcesdiff: dsdiffy.length ? new Set(dsdiffy) : null,
+    // involvementsdiff: idiffy.length ? new Set(idiffy) : null,
   }
 }

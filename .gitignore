@@ -24,7 +24,6 @@ __pycache__/
 
 
 # IDEs
-#.idea/
 .vscode/
 
 # profiling

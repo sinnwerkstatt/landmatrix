@@ -34,7 +34,6 @@
     { target: "overall_comment/", name: $_("Overall comment") },
     { target: "blank1/", name: null },
     { target: "history/", name: $_("Deal history") },
-    { target: "actions/", name: $_("Actions") },
   ]
 
   const reloadDeal = async () => {

@@ -133,6 +133,7 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
     activated_at: { displayField: DateTimeField, label: $_("Activated at") },
     activated_by_id: { displayField: UserField, label: $_("Activated by") },
 
+    fully_updated: { displayField: BooleanField, label: $_("Fully updated") },
     fully_updated_at: { displayField: DateTimeField, label: $_("Last full update") },
     workflowinfos: {
       displayField: WorkflowInfosField,
