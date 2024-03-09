@@ -65,6 +65,7 @@ interface FieldChoicesType {
     classification: ValueLabelEntry[]
   }
   involvement: {
+    role: ValueLabelEntry[]
     investment_type: ValueLabelEntry[]
     parent_relation: ValueLabelEntry[]
   }
@@ -101,7 +102,7 @@ export const fieldChoices = readable<FieldChoicesType>(
       type: [],
     },
     investor: { classification: [] },
-    involvement: { investment_type: [], parent_relation: [] },
+    involvement: { role: [], investment_type: [], parent_relation: [] },
   },
   set => {
     fetch(PUBLIC_BASE_URL + `/api/field_choices/`, {

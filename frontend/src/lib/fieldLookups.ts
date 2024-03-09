@@ -1057,6 +1057,11 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
       label: $_("Investor"),
       extras: { required: true },
     },
+    "involvement.role": {
+      displayField: ChoicesField,
+      label: $_("Role"),
+      extras: { choices: $fieldChoices.involvement.role },
+    },
     "involvement.loans_amount": {
       displayField: DecimalField,
       editField: DecimalEditField,

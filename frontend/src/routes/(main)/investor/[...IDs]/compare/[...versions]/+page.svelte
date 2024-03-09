@@ -36,6 +36,19 @@
     id: undefined,
     investorversion: undefined,
   }))
+
+  $: fromInvos = data.fromVersion.involvements_snapshot.map(l => ({
+    ...l,
+    id: undefined,
+    parent_investor_id: undefined,
+    child_investor_id: undefined,
+  }))
+  $: toInvos = data.toVersion.involvements_snapshot.map(l => ({
+    ...l,
+    id: undefined,
+    parent_investor_id: undefined,
+    child_investor_id: undefined,
+  }))
 </script>
 
 <svelte:head>
@@ -117,6 +130,15 @@
       label={$_("Data source")}
       lookupString="datasource"
       toObjs={toDSs}
+    />
+
+    <CompareSubmodelDiffBlock
+      fromObjs={fromInvos}
+      heading={$_("Involvements")}
+      label={$_("Involvement")}
+      lookupString="involvement"
+      toObjs={toInvos}
+      useInvoID
     />
   </tbody>
 </table>

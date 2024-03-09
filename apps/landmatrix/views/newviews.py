@@ -714,6 +714,7 @@ class FieldChoicesView(APIView):
             classification = ValueLabelSerializer(many=True)
 
         class InvolvementFields(serializers.Serializer):
+            role = ValueLabelSerializer(many=True)
             investment_type = ValueLabelSerializer(many=True)
             parent_relations = ValueLabelSerializer(many=True)
 
@@ -754,6 +755,7 @@ class FieldChoicesView(APIView):
                 "datasource": {"type": choices.DATASOURCE_TYPE_ITEMS},
                 "investor": {"classification": choices.INVESTOR_CLASSIFICATION_ITEMS},
                 "involvement": {
+                    "role": choices.INVOLVEMENT_ROLE_ITEMS,
                     "investment_type": choices.INVESTMENT_TYPE_ITEMS,
                     "parent_relation": choices.PARENT_RELATION_ITEMS,
                 },

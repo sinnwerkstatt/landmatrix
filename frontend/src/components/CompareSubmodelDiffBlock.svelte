@@ -1,9 +1,11 @@
 <script lang="ts">
   import { diff } from "deep-object-diff"
+  import { _ } from "svelte-i18n"
 
   import { dealFields } from "$lib/fieldLookups"
   import { isNotEmpty } from "$lib/helpers"
 
+  import InvestorLinkField from "$components/Fields/Display2/InvestorLinkField.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"
 
   export let fromObjs: { nid: string; [key: string]: unknown }[]
@@ -13,7 +15,11 @@
   export let label: string
   export let lookupString: string
 
-  $: objNIDs = new Set([...fromObjs.map(l => l.nid), ...toObjs.map(l => l.nid)])
+  export let useInvoID = false
+
+  $: objNIDs = useInvoID
+    ? new Set([...fromObjs.map(l => l.id), ...toObjs.map(l => l.id)])
+    : new Set([...fromObjs.map(l => l.nid), ...toObjs.map(l => l.nid)])
 </script>
 
 <tr class="hidden bg-gray-700 [&:has(+.🍏)]:table-row">
@@ -29,13 +35,19 @@
   {#if Object.keys(hasDiff).length}
     <tr class="🍏 bg-gray-100 dark:bg-gray-600">
       <th colspan="3">
-        <h3>{label} #{dsNID}</h3>
+        <h3>{label} #{dsNID ?? ""}</h3>
       </th>
     </tr>
     {#each Object.keys(hasDiff) as key}
       {#if (fromL && isNotEmpty(fromL[key])) || (toL && isNotEmpty(toL[key]))}
         <tr>
-          <td>{$dealFields[`${lookupString}.${key}`]?.label ?? key}</td>
+          <td>
+            {#if key === "other_investor"}
+              {$_("Investor")}
+            {:else}
+              {$dealFields[`${lookupString}.${key}`]?.label ?? key}
+            {/if}
+          </td>
           <td>
             {#if fromL}
               <DisplayField
@@ -47,11 +59,15 @@
           </td>
           <td>
             {#if toL}
-              <DisplayField
-                fieldname="{lookupString}.{key}"
-                value={toL[key]}
-                wrapperClass="py-2"
-              />
+              {#if key === "other_investor"}
+                <InvestorLinkField value={toL.other_investor?.id} />
+              {:else}
+                <DisplayField
+                  fieldname="{lookupString}.{key}"
+                  value={toL[key]}
+                  wrapperClass="py-2"
+                />
+              {/if}
             {/if}
           </td>
         </tr>
