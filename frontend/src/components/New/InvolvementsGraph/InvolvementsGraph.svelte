@@ -186,18 +186,4 @@
     margin-top: -5px;
     text-align: center;
   }
-
-  /*Space between classes to indicate nesting*/
-  :global(.g-tooltip .name) {
-    font-weight: bold;
-    display: block;
-  }
-
-  /*No space when all classes apply to same element*/
-  :global(.g-tooltip.deal) {
-    background-color: rgba(252, 148, 30, 1);
-  }
-  :global(.g-tooltip.investor) {
-    background-color: rgba(68, 183, 181, 1);
-  }
 </style>

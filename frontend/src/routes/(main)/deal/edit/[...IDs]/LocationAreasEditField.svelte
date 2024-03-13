@@ -149,7 +149,7 @@
 </div>
 
 <button
-  class="btn btn-slim btn-secondary flex items-center"
+  class="butn butn-flat butn-secondary flex items-center"
   on:click={() => (showAddAreaOverlay = true)}
 >
   <PlusIcon />

@@ -20,7 +20,7 @@
 <div class="container mx-auto my-20 px-10 py-6">
   <h2 class="caption text-center lg:text-left dark:text-white">{value.title}</h2>
   <h3
-    class="heading2 mb-10 text-center lg:w-1/2 lg:text-left dark:text-white"
+    class="heading2 xl:heading1 mb-10 text-center lg:w-1/2 lg:text-left dark:text-white"
   >
     {value.subtitle}
   </h3>

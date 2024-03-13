@@ -108,7 +108,7 @@
         type="button"
         class:disabled={!isCurrentDraft || $loading || $navigating}
         title={$_("Submit the {object} for activation", i18nValues)}
-        class="btn btn-pelorous"
+        class="butn butn-pelorous"
         on:click={() => (showSendToActivationOverlay = true)}
       >
         {$_("Submit for activation")}
@@ -123,7 +123,7 @@
         title={object.active_version_id
           ? $_("Activate submitted version replacing currently active version")
           : $_("Set the {object} active", i18nValues)}
-        class="btn btn-pelorous"
+        class="butn butn-pelorous"
         on:click={() => (showActivateOverlay = true)}
       >
         {$_("Activate")}

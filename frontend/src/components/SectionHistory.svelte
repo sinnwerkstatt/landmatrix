@@ -177,21 +177,17 @@
               <input
                 bind:group={compareFrom}
                 type="radio"
+                class={investorColors ? "rdio investor" : "rdio deal"}
                 value={version?.id}
                 disabled={version?.id >= compareTo}
-                style="accent-color: {investorColors
-                  ? 'hsl(179, 46%, 49%)'
-                  : 'hsl(32, 97%, 55%)'};"
               />
 
               <input
                 bind:group={compareTo}
                 type="radio"
+                class={investorColors ? "rdio investor" : "rdio deal"}
                 value={version?.id}
                 disabled={version?.id <= compareFrom}
-                style="accent-color: {investorColors
-                  ? 'hsl(179, 46%, 49%)'
-                  : 'hsl(32, 97%, 55%)'};"
               />
             </span>
           </td>

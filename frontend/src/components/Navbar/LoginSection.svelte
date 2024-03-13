@@ -100,18 +100,19 @@
         </ul>
       </div>
     </NavDropDown>
-    <button
-      type="button"
-      class="button1 hidden w-full text-left text-gray-900 transition hover:text-orange sm:mx-3 xl:block dark:text-white"
-      on:click|preventDefault={logout}
-    >
-      {$_("Logout")}
-    </button>
+    <!--  TODO this button does not show up in the interface it seems?  -->
+    <!--    <button-->
+    <!--      type="button"-->
+    <!--      class="button1 hidden w-full text-left text-gray-900 transition hover:text-orange sm:mx-3 xl:block dark:text-white"-->
+    <!--      on:click|preventDefault={logout}-->
+    <!--    >-->
+    <!--      {$_("Logout")}-->
+    <!--    </button>-->
   </div>
 {:else}
   <div>
     <a
-      class="button1 w-fit rounded bg-orange px-3 py-1 text-white transition hover:bg-orange-600 hover:text-white sm:mx-3 sm:px-6 sm:py-2 lg:px-10"
+      class="butn butn-primary w-fit px-3 py-1 sm:mx-3 sm:px-6 sm:py-2 lg:px-10"
       href="/account/login/?next={$page.url.pathname}"
       title={$_("Login/Register")}
     >

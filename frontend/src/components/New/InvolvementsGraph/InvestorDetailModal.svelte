@@ -1,6 +1,8 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
+  import type { Classification } from "$lib/choices"
+
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import Overlay from "$components/Overlay.svelte"
 
@@ -8,7 +10,7 @@
   export let investor: {
     id: number
     name: string
-    active_version__classification: string
+    active_version__classification: Classification
     active_version__country_id: number | null
     active_version__homepage: string
     active_version__comment: string

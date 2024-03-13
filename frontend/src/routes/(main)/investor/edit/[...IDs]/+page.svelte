@@ -176,12 +176,12 @@
           {$_("Close")}
         </button>
       {:else}
-        <button
-          class="btn btn-gray mx-2"
-          on:click={() => goto(`/investor/${data.investorID}/${data.versionID ?? ""}`)}
+        <a
+          class="butn butn-cancel mx-2"
+          href="/investor/{data.investorID}/{data.versionID ?? ''}"
         >
           {$_("Cancel")}
-        </button>
+        </a>
       {/if}
     </div>
   </div>

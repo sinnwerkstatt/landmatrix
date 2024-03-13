@@ -86,21 +86,32 @@ const makePopper = (ele: NodeSingular & { tippy?: TippyInstance }) => {
         if (ele.data().dealNode) {
           // tooltip content of deal node
           tipEl.classList.add("deal")
+          tipEl.classList.add("bg-orange")
           tipEl.innerHTML = `Deal ${ele.data().name}`
         } else {
           // tooltip content of investor node
           tipEl.classList.add("investor")
-          let content = `<span class="name">${ele.data().active_version__name} (#${
+          tipEl.classList.add("bg-pelorous")
+          let content = `<div class="font-bold">${ele.data().active_version__name} (#${
             ele.data().id
-          })</span>`
-          if ("country" in ele.data() && ele.data().country)
-            content += ` ${ele.data().country.name}, `
-          if (
-            "classification" in ele.data() &&
-            classification_choices[ele.data().classification as Classification]
-          )
-            content +=
-              classification_choices[ele.data().classification as Classification]
+          })</div>`
+
+          //  TODO this doesn't work because countries are not loaded yet
+          // if ("active_version__country_id" in ele.data()) {
+          //   const cntr = get(countries).find(
+          //     c => c.id === ele.data().active_version__country_id,
+          //   )
+          //   if (cntr) content += `${cntr.name}, `
+          // }
+
+          if ("active_version__classification" in ele.data()) {
+            const choice =
+              classification_choices[
+                ele.data().active_version__classification as Classification
+              ]
+            if (choice) content += choice
+          }
+
           tipEl.innerHTML = content
         }
         return tipEl

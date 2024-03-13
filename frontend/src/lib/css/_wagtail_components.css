@@ -15,25 +15,38 @@
     @apply mx-auto block max-h-[700px] w-auto max-w-full text-center;
   }
 
-  .paragraph ol {
+  .paragraph ol,
+  .html-block ol {
     @apply list-decimal pl-4;
   }
-  .paragraph ul {
+  .paragraph ul,
+  .html-block ul {
     @apply mb-4 list-disc pl-4;
   }
-  .paragraph h2 {
+  .paragraph h2,
+  .html-block h2 {
     @apply heading3 mb-3;
   }
-  .paragraph h3 {
+  .html-block h2 {
+    @apply mt-12;
+  }
+  .paragraph h3,
+  .html-block h3 {
     @apply heading4 mb-2;
   }
-  .paragraph h4 {
+  .html-block h3 {
+    @apply mt-6;
+  }
+  .paragraph h4,
+  .html-block h4 {
     @apply heading5 mb-2;
   }
-  .paragraph p {
+  .paragraph p,
+  .html-block p {
     @apply mb-4;
   }
-  .paragraph a {
+  .paragraph a,
+  .html-block a {
     @apply text-orange transition hover:text-orange-700;
   }
 }
