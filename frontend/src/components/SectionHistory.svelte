@@ -208,9 +208,7 @@
           <td class="pt-3 text-right">
             <a
               href={`/${objType}/${obj.id}/compare/${compareFrom}/${compareTo}/`}
-              class="butn text-nowrap {investorColors
-                ? 'butn-secondary'
-                : 'butn-primary'}"
+              class="btn text-nowrap {investorColors ? 'btn-secondary' : 'btn-primary'}"
             >
               {$_("Compare versions")}
             </a>

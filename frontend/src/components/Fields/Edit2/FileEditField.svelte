@@ -90,10 +90,7 @@
       />
     </div>
 
-    <button
-      class="butn-outline butn-flat butn-red"
-      on:click|preventDefault={removeFile}
-    >
+    <button class="btn-outline btn-flat btn-red" on:click|preventDefault={removeFile}>
       {$_("Remove this file")}
     </button>
   </div>

@@ -188,7 +188,7 @@
     </h1>
     <div class="my-2 flex items-center gap-2 lg:my-5">
       <button
-        class="butn butn-primary flex items-center gap-2"
+        class="btn btn-primary flex items-center gap-2"
         class:disabled={!formChanged || savingInProgress}
         on:click|preventDefault={onClickSave}
       >
@@ -199,7 +199,7 @@
         {/if}
       </button>
       <button
-        class="butn butn-cancel"
+        class="btn btn-cancel"
         class:disabled={savingInProgress}
         on:click|preventDefault={() => onClickClose()}
       >

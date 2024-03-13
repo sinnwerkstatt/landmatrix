@@ -75,10 +75,10 @@
     {/if}
 
     <div class="mt-14 flex justify-end gap-4">
-      <button class="butn-outline" on:click={() => (open = false)} type="button">
+      <button class="btn-outline" on:click={() => (open = false)} type="button">
         {$_("Cancel")}
       </button>
-      <button class="butn {feedbackForm ? 'butn-violet' : 'butn-purple'}" type="submit">
+      <button class="btn {feedbackForm ? 'btn-violet' : 'btn-purple'}" type="submit">
         {title}
       </button>
     </div>

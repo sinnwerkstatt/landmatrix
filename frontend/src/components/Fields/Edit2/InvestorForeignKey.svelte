@@ -168,9 +168,9 @@
         />
       </div>
     {/if}
-    <button class="butn butn-flat butn-primary" type="submit">{$_("Save")}</button>
+    <button class="btn btn-flat btn-primary" type="submit">{$_("Save")}</button>
     <button
-      class="butn butn-flat butn-cancel mx-2"
+      class="btn btn-flat btn-cancel mx-2"
       on:click={() => {
         showNewInvestorForm = false
         newInvestor = undefined

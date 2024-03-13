@@ -172,7 +172,7 @@
             placeholder={$_("Reply")}
           />
           <button
-            class="butn butn-pelorous -ml-0.5 inline-flex h-[34px] items-center gap-2 px-2"
+            class="btn btn-pelorous -ml-0.5 inline-flex h-[34px] items-center gap-2 px-2"
             type="submit"
             disabled={!reply}
           >
@@ -182,7 +182,7 @@
       {/if}
       {#if openThread && info.from_user_id === $page.data.user.id}
         <button
-          class="butn butn-primary butn-flat ml-auto mr-1 mt-1 flex items-center gap-1"
+          class="btn btn-primary btn-flat ml-auto mr-1 mt-1 flex items-center gap-1"
           type="button"
           on:click={resolveThread}
         >

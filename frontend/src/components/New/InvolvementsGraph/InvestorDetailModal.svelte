@@ -25,7 +25,7 @@
   gotoLink={{
     href: `/investor/${investor.id}/`,
     title: $_("More details about this investor"),
-    className: "butn-secondary",
+    className: "btn-secondary",
   }}
 >
   <DisplayField

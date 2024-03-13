@@ -17,7 +17,7 @@
 <div class="flex items-center gap-8">
   {#if isDeal}
     <DetailsSummary>
-      <div class="butn butn-violet flex items-center gap-1" slot="summary">
+      <div class="btn btn-violet flex items-center gap-1" slot="summary">
         <DownloadIcon class="mx-1 my-0.5 h-6 w-6" />
       </div>
       <ul

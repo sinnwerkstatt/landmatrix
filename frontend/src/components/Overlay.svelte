@@ -59,11 +59,11 @@
         </div>
 
         <div class="border-t px-7 py-5 text-right">
-          <button type="button" class="butn butn-cancel mx-2" on:click={close}>
+          <button type="button" class="btn btn-cancel mx-2" on:click={close}>
             {closeButtonText}
           </button>
           {#if showSubmit}
-            <button disabled={submitDisabled} type="submit" class="butn butn-primary">
+            <button disabled={submitDisabled} type="submit" class="btn btn-primary">
               {submitTitle ?? title}
             </button>
           {/if}
@@ -71,7 +71,7 @@
             <a
               href={gotoLink.href}
               target="_blank"
-              class="butn butn-primary {gotoLink.className}"
+              class="btn btn-primary {gotoLink.className}"
             >
               {gotoLink.title}
             </a>

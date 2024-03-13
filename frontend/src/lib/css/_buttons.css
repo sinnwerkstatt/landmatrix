@@ -6,111 +6,101 @@
     @apply inline-block cursor-pointer whitespace-nowrap rounded px-4 py-2 text-center text-base font-bold leading-tight tracking-widest transition md:text-lg;
   }
 
-  .butn {
+  .btn {
     @apply buttonBase border-2 shadow;
     color: var(--color2);
     background: var(--color1);
     border-color: var(--color1);
   }
-  .butn:hover {
+  .btn:hover {
     color: var(--color2);
     background: var(--color3);
     border-color: var(--color3);
   }
 
-  .butn-outline {
+  .btn-outline {
     @apply buttonBase border-2 shadow;
     color: var(--color1);
     background: var(--color2);
     border-color: var(--color1);
     /*@apply dark:border-gray-700 dark:text-gray-50;*/
   }
-  .butn-outline:hover {
+  .btn-outline:hover {
     color: var(--color3);
     border-color: var(--color3);
   }
-  .butn-outline:focus {
+  .btn-outline:focus {
     /*@apply border-orange;*/
     color: var(--color1);
   }
 
-  .butn-link {
+  .btn-link {
     @apply buttonBase;
     color: var(--color1);
     background: var(--color2);
     /*@apply hover:brightness-75;*/
     /*@apply dark:border-gray-700 dark:text-gray-50;*/
   }
-  .butn-link:hover {
+  .btn-link:hover {
     color: var(--color3);
     border-color: var(--color3);
   }
-  .butn-link:focus {
+  .btn-link:focus {
     /*@apply border-orange;*/
     color: var(--color1);
   }
 
-  .butn-flat {
+  .btn-flat {
     @apply px-2 py-1;
   }
 
-  .butn-primary, .butn-orange {
+  .btn-primary, .btn-orange {
     --color1: theme("colors.orange.500");
     --color2: white;
     --color3: theme("colors.orange.700");
   }
 
-  .butn-secondary, .butn-pelorous {
+  .btn-secondary, .btn-pelorous {
     --color1: theme("colors.pelorous.500");
     --color2: white;
     --color3: theme("colors.pelorous.600");
   }
 
-  .butn-cancel {
+  .btn-cancel {
     --color1: hsl(0, 0%, 60%);
     --color2: white;
     --color3: hsl(0, 0%, 40%);
   }
 
-  .butn-purple {
+  .btn-purple {
     --color1: theme("colors.purple.500");
     --color2: white;
     --color3: theme("colors.purple.700");
   }
-  .butn-violet {
+  .btn-violet {
     --color1: theme("colors.violet.500");
     --color2: white;
     --color3: theme("colors.violet.700");
   }
 
-  .butn-yellow {
+  .btn-yellow {
     --color1: theme("colors.yellow.500");
     --color2: theme("colors.gray.800");
     --color3: theme("colors.yellow.700");
   }
 
-  .butn-red {
+  .btn-red {
     --color1: theme("colors.red.500");
     --color2: white;
     --color3: theme("colors.red.700");
   }
 
-  .butn.disabled,
-  .butn:disabled,
-  .butn-outline.disabled,
-  .butn-outline:disabled {
+  .btn.disabled,
+  .btn:disabled,
+  .btn-outline.disabled,
+  .btn-outline:disabled {
     @apply pointer-events-none cursor-not-allowed opacity-60;
   }
-
-  .btn {
-    @apply m-0.5 inline-block transform cursor-pointer whitespace-nowrap border bg-white px-4 py-2 text-center shadow transition focus:outline-none;
-  }
-
-  .btn.disabled,
-  .btn:disabled {
-    @apply pointer-events-none opacity-60;
-  }
-
 
   .button1 {
     @apply text-base font-bold leading-tight tracking-widest md:text-lg;

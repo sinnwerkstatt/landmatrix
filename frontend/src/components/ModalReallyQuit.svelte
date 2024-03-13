@@ -15,14 +15,9 @@
     {$_("All unsaved changes will be lost.")}
   </div>
   <div class="flex justify-end gap-4">
-    <button
-      type="button"
-      class="butn-outline"
-      on:click={() => (open = false)}
-      autofocus
-    >
+    <button type="button" class="btn-outline" on:click={() => (open = false)} autofocus>
       Continue editing
     </button>
-    <button type="button" class="butn butn-yellow" on:click>Quit without saving</button>
+    <button type="button" class="btn btn-yellow" on:click>Quit without saving</button>
   </div>
 </Modal>

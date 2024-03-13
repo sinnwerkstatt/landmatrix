@@ -159,7 +159,7 @@
     {/each}
     <div class="mt-6">
       <button
-        class="butn butn-secondary flex items-center"
+        class="btn btn-secondary flex items-center"
         on:click={addEntry}
         type="button"
       >

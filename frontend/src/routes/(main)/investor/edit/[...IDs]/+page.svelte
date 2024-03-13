@@ -161,7 +161,7 @@
     </h1>
     <div class="my-2 flex items-center gap-2 lg:my-5">
       <button
-        class="butn butn-primary flex items-center gap-2"
+        class="btn btn-primary flex items-center gap-2"
         class:disabled={!formChanged || savingInProgress}
         on:click|preventDefault={onClickSave}
       >
@@ -172,12 +172,12 @@
         {/if}
       </button>
       {#if data.investorID}
-        <button class="butn butn-cancel" on:click={() => onClickClose(false)}>
+        <button class="btn btn-cancel" on:click={() => onClickClose(false)}>
           {$_("Close")}
         </button>
       {:else}
         <a
-          class="butn butn-cancel mx-2"
+          class="btn btn-cancel mx-2"
           href="/investor/{data.investorID}/{data.versionID ?? ''}"
         >
           {$_("Cancel")}

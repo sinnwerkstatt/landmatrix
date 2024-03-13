@@ -81,7 +81,7 @@
         type="button"
         class:disabled={!isCurrentDraft || $loading || $navigating}
         title={$_("Submit the {object} for review", i18nValues)}
-        class="butn butn-primary"
+        class="btn btn-primary"
         on:click={() => (showSendToReviewOverlay = true)}
       >
         {$_("Submit for review")}
@@ -108,7 +108,7 @@
         type="button"
         class:disabled={!isCurrentDraft || $loading || $navigating}
         title={$_("Submit the {object} for activation", i18nValues)}
-        class="butn butn-pelorous"
+        class="btn btn-pelorous"
         on:click={() => (showSendToActivationOverlay = true)}
       >
         {$_("Submit for activation")}
@@ -123,7 +123,7 @@
         title={object.active_version_id
           ? $_("Activate submitted version replacing currently active version")
           : $_("Set the {object} active", i18nValues)}
-        class="butn butn-pelorous"
+        class="btn btn-pelorous"
         on:click={() => (showActivateOverlay = true)}
       >
         {$_("Activate")}
@@ -137,7 +137,7 @@
       <div>
         <button
           on:click={() => (showReallyEditModal = true)}
-          class="butn-outline butn-flat butn-primary min-w-[8rem]"
+          class="btn-outline btn-flat btn-primary min-w-[8rem]"
           class:disabled={$loading || $navigating}
         >
           {$_("Edit")}
@@ -152,7 +152,7 @@
       <div>
         <a
           href={editLink}
-          class="butn-outline butn-flat butn-primary min-w-[8rem]"
+          class="btn-outline btn-flat btn-primary min-w-[8rem]"
           class:disabled={$loading || $navigating}
         >
           {$_("Edit")}
@@ -168,7 +168,7 @@
     <div class="flex items-center gap-4">
       <div>
         <button
-          class="butn-outline butn-flat butn-red min-w-[8rem]"
+          class="btn-outline btn-flat btn-red min-w-[8rem]"
           class:disabled={$loading || $navigating}
           on:click|preventDefault={() => (showDeleteOverlay = true)}
         >
@@ -194,13 +194,13 @@
 
     <div class="mt-14 flex justify-end gap-4">
       <button
-        class="butn-outline"
+        class="btn-outline"
         on:click={() => (showReallyEditModal = false)}
         type="button"
       >
         {$_("Cancel")}
       </button>
-      <a class="butn butn-primary" href={editLink}>
+      <a class="btn btn-primary" href={editLink}>
         {$_("Create a new draft")}
       </a>
     </div>

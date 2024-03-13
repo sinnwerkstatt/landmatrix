@@ -112,7 +112,7 @@
 {:else}
   <div>
     <a
-      class="butn butn-primary w-fit px-3 py-1 sm:mx-3 sm:px-6 sm:py-2 lg:px-10"
+      class="btn btn-primary w-fit px-3 py-1 sm:mx-3 sm:px-6 sm:py-2 lg:px-10"
       href="/account/login/?next={$page.url.pathname}"
       title={$_("Login/Register")}
     >

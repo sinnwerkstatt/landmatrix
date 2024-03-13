@@ -66,13 +66,13 @@
     <div class="flex justify-end gap-4">
       <button
         autofocus
-        class="butn-outline"
+        class="btn-outline"
         on:click={() => (open = false)}
         type="button"
       >
         {$_("Cancel")}
       </button>
-      <button class="butn butn-red" type="submit">
+      <button class="btn btn-red" type="submit">
         {$_("Remove")}
       </button>
     </div>

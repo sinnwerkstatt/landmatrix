@@ -37,7 +37,7 @@
   <div class="my-2 text-right">
     {#if $page.data.user.role > UserRole.REPORTER}
       <button
-        class="butn butn-violet butn-flat inline-flex items-center gap-2 px-2"
+        class="btn btn-violet btn-flat inline-flex items-center gap-2 px-2"
         on:click={() => (showFeedbackOverlay = true)}
         type="button"
       >
@@ -46,7 +46,7 @@
       </button>
     {/if}
     <button
-      class="butn butn-purple butn-flat inline-flex items-center gap-2 px-2"
+      class="btn btn-purple btn-flat inline-flex items-center gap-2 px-2"
       on:click={() => (showCommentOverlay = true)}
       type="submit"
     >

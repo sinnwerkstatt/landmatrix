@@ -40,7 +40,7 @@
   >
     {$_("You're viewing the draft version of this {object}.", i18nValues)}
     <div class="flex items-center gap-2">
-      <a class="butn butn-flat" href="/{objType}/{object.id}/">
+      <a class="btn btn-flat" href="/{objType}/{object.id}/">
         {$_("Go to active version")}
       </a>
     </div>
@@ -52,10 +52,7 @@
   >
     {$_("There is a draft version of this {object}.", i18nValues)}
     <div class="flex items-center gap-2">
-      <a
-        class="butn butn-flat"
-        href="/{objType}/{object.id}/{object.draft_version_id}/"
-      >
+      <a class="btn btn-flat" href="/{objType}/{object.id}/{object.draft_version_id}/">
         {$_("Go to current draft")}
       </a>
     </div>
@@ -81,7 +78,7 @@
             : undefined}
         >
           <DetailsSummary>
-            <div class="butn flex items-center gap-1" slot="summary">
+            <div class="btn flex items-center gap-1" slot="summary">
               <Cog6ToothIcon />
               {$_("actions")}
             </div>
@@ -93,7 +90,7 @@
                 <li class="my-3">
                   <div class="flex items-center gap-2">
                     <a
-                      class="butn butn-primary min-w-[9rem]"
+                      class="btn btn-primary min-w-[9rem]"
                       href="/{objType}/edit/{object.id}/"
                     >
                       {$_("Edit")}
@@ -104,7 +101,7 @@
               {:else if object.selected_version.id !== object.draft_version_id}
                 <li class="my-3">
                   <div class="flex items-center gap-2">
-                    <button class="butn butn-primary disabled min-w-[9rem]">
+                    <button class="btn btn-primary disabled min-w-[9rem]">
                       {$_("Edit")}
                     </button>
                     {$_("There is already a draft version, that you can find here:")}
@@ -120,7 +117,7 @@
                   <div class="flex items-center gap-2">
                     <button
                       type="button"
-                      class="butn"
+                      class="btn"
                       on:click={() => (showCopyOverlay = true)}
                     >
                       {$_("Copy deal")}
@@ -133,7 +130,7 @@
                 <div class="flex items-center gap-2">
                   <button
                     type="button"
-                    class="butn butn-red min-w-[9rem]"
+                    class="btn btn-red min-w-[9rem]"
                     on:click={() => (showDeletionOverlay = true)}
                   >
                     {#if object.deleted}
@@ -158,7 +155,7 @@
                   <div class="flex items-center gap-2">
                     <button
                       type="button"
-                      class="butn butn-red"
+                      class="btn btn-red"
                       on:click={() => (showConfidentialOverlay = true)}
                     >
                       {object.confidential

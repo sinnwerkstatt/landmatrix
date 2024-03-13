@@ -84,10 +84,10 @@
       </label>
     </div>
     <div class="mt-14 flex justify-end gap-4">
-      <button class="butn-outline" on:click={() => (open = false)} type="button">
+      <button class="btn-outline" on:click={() => (open = false)} type="button">
         {$_("Cancel")}
       </button>
-      <button class="butn butn-primary" type="submit">
+      <button class="btn btn-primary" type="submit">
         {$_("Submit")}
       </button>
     </div>

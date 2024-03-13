@@ -84,7 +84,7 @@
   {#each AREA_TYPES as areaType}
     <li>
       <button
-        class="butn butn-flat colored"
+        class="btn btn-flat colored"
         class:is-selected={selectedAreaType === areaType}
         style:--color={AREA_TYPE_COLOR_MAP[areaType]}
         on:click|preventDefault={() => (selectedAreaType = areaType)}
@@ -149,7 +149,7 @@
 </div>
 
 <button
-  class="butn butn-flat butn-secondary flex items-center"
+  class="btn btn-flat btn-secondary flex items-center"
   on:click={() => (showAddAreaOverlay = true)}
 >
   <PlusIcon />

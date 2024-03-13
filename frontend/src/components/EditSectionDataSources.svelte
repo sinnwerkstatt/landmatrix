@@ -143,9 +143,7 @@
     {/each}
     <div class="mt-6">
       <button
-        class="butn {investorModel
-          ? 'butn-secondary'
-          : 'butn-primary'} flex items-center"
+        class="btn {investorModel ? 'btn-secondary' : 'btn-primary'} flex items-center"
         on:click={addEntry}
         type="button"
       >
