@@ -43,15 +43,10 @@
   <form class="mt-6 text-lg" on:submit={submit}>
     <div class="mb-6">
       <label>
-        {#if object.confidential}
-          <span class="font-semibold">{$_("Additional comment")}</span>
-          <textarea autofocus bind:value={comment} class="inpt mt-1" />
-        {:else}
-          <span class="font-semibold">
-            {$_("Please provide a comment explaining your request")}
-          </span>
-          <textarea autofocus bind:value={comment} class="inpt mt-1" required />
-        {/if}
+        <span class="font-semibold">
+          {$_("Please provide a comment explaining your request")}
+        </span>
+        <textarea autofocus bind:value={comment} class="inpt mt-1" required />
       </label>
     </div>
 
