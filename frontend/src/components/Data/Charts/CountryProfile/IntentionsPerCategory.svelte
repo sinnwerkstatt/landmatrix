@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { tracker } from "@sinnwerkstatt/sveltekit-matomo"
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
@@ -84,6 +85,7 @@
   }
 
   const handleDownload = ({ detail: fileType }: DownloadEvent) => {
+    if ($tracker) $tracker.trackEvent("Chart", "Intentions per category", fileType)
     switch (fileType) {
       case "json":
         return downloadJSON(JSON.stringify(sankey_links, null, 2), title)

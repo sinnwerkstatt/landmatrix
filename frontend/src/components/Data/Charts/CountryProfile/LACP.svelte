@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { tracker } from "@sinnwerkstatt/sveltekit-matomo"
   import * as R from "ramda"
   import { _ } from "svelte-i18n"
 
@@ -91,6 +92,8 @@
   )
 
   const handleDownload = ({ detail: fileType }: DownloadEvent) => {
+    if ($tracker)
+      $tracker.trackEvent("Chart", "Land acquisitions by category", fileType)
     switch (fileType) {
       case "json":
         return downloadJSON(toJSON(data), title)

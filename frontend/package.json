@@ -21,7 +21,7 @@
     "@ianvs/prettier-plugin-sort-imports": "^4.1.1",
     "@sentry/svelte": "^7.102.1",
     "@sentry/tracing": "^7.102.1",
-    "@sinnwerkstatt/sveltekit-matomo": "^0.0.6",
+    "@sinnwerkstatt/sveltekit-matomo": "^0.0.8",
     "@splidejs/svelte-splide": "^0.2.9",
     "@sveltejs/adapter-node": "^4.0.1",
     "@sveltejs/kit": "^2.5.1",

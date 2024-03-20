@@ -1,5 +1,6 @@
 <script lang="ts">
   // TODO Marcus WIP
+  import { tracker } from "@sinnwerkstatt/sveltekit-matomo"
   import { format, hierarchy, select, treemap, treemapSquarify } from "d3"
   import type { BaseType, HierarchyNode } from "d3"
   import { afterUpdate, onMount } from "svelte"
@@ -217,6 +218,7 @@
   }
 
   const handleDownload = ({ detail: fileType }: DownloadEvent) => {
+    if ($tracker) $tracker.trackEvent("Chart", "Produce info map", fileType)
     switch (fileType) {
       case "json":
         return downloadJSON(JSON.stringify(treeData, null, 2), title)

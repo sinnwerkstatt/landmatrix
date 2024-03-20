@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { tracker } from "@sinnwerkstatt/sveltekit-matomo"
   import { onMount } from "svelte"
 
   import { LandMatrixRadialSpider } from "$lib/data/charts/webOfTransnationalDeals"
@@ -23,6 +24,7 @@
     )
 
   const handleDownload = ({ detail: fileType }: DownloadEvent) => {
+    if ($tracker) $tracker.trackEvent("Chart", "Web of transnational deals", fileType)
     switch (fileType) {
       case "json":
         return downloadJSON(JSON.stringify(deals, null, 2), title)

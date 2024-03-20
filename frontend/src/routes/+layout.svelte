@@ -60,7 +60,11 @@
 </div>
 
 {#if staticEnv.PUBLIC_MATOMO_URL && staticEnv.PUBLIC_MATOMO_SITE_ID}
-  <Matomo url={staticEnv.PUBLIC_MATOMO_URL} siteId={+staticEnv.PUBLIC_MATOMO_SITE_ID} />
+  <Matomo
+    url={staticEnv.PUBLIC_MATOMO_URL}
+    siteId={+staticEnv.PUBLIC_MATOMO_SITE_ID}
+    linkTracking={false}
+  />
 {/if}
 
 <SvelteToast

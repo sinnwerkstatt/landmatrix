@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { tracker } from "@sinnwerkstatt/sveltekit-matomo"
   import * as R from "ramda"
   import { _, number } from "svelte-i18n"
 
@@ -62,6 +63,7 @@
     { detail: fileType }: DownloadEvent,
     displayDealsCount: boolean,
   ) => {
+    if ($tracker) $tracker.trackEvent("Chart", "Concluded deals over time", fileType)
     switch (fileType) {
       case "json":
         return downloadJSON(toJSON(displayDealsCount)(chartData), title)

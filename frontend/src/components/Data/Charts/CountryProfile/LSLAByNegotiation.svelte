@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { tracker } from "@sinnwerkstatt/sveltekit-matomo"
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
@@ -107,6 +108,7 @@
     return header + records
   }
   const handleDownload = ({ detail: fileType }: DownloadEvent) => {
+    if ($tracker) $tracker.trackEvent("Chart", "LSLA by negotiation", fileType)
     switch (fileType) {
       case "json":
         return downloadJSON(JSON.stringify(pots, null, 2), title)
