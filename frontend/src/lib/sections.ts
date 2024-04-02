@@ -229,7 +229,7 @@ export const dealSectionsLG = derived(_, $_ => ({
       fields: ["electricity_generation", "electricity_generation_comment"],
     },
     {
-      name: $_("Detailed carbon sequestration / offsetting information"),
+      name: $_("Detailed carbon sequestration/offsetting information"),
       fields: ["carbon_sequestration", "carbon_sequestration_comment"],
     },
     {
@@ -546,7 +546,7 @@ export const objectSections = derived(_, $_ => {
       fields: ["electricity_generation", "electricity_generation_comment"],
     },
     carbon_sequestration: {
-      title: $_("Detailed carbon sequestration / offsetting information"),
+      title: $_("Detailed carbon sequestration/offsetting information"),
       fields: ["carbon_sequestration", "carbon_sequestration_comment"],
     },
     use_of_produce: {

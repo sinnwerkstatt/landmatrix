@@ -708,12 +708,12 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
     carbon_sequestration: {
       displayField: JSONCarbonSequestrationField,
       editField: JSONCarbonSequestrationEditField,
-      label: $_("Carbon sequestration / offsetting"),
+      label: $_("Carbon sequestration/offsetting"),
     },
     carbon_sequestration_comment: {
       displayField: TextField,
       editField: TextEditField,
-      label: $_("Comment on carbon sequestration / offsetting"),
+      label: $_("Comment on carbon sequestration/offsetting"),
       extras: { multiline: true },
     },
     has_domestic_use: {

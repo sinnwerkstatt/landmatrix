@@ -15,7 +15,7 @@ DRAFT_STATUS = {
     "DRAFT": 1,
     "REVIEW": 2,
     "ACTIVATION": 3,
-    "REJECTED": 4,
+    "REJECTED": 4,  # TODO: Das kommt vermutlich weg
     "TO_DELETE": 5,
 }
 DRAFT_STATUS_CHOICES = (

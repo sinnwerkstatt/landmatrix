@@ -12,7 +12,7 @@ def find_files():
     return files
 
 
-re_i18n_strings = re.compile(r"\$_\(\s*?\"(.*?)\"(?:,\s*?\{.*?\})?,?\s*?\)")
+re_i18n_strings = re.compile(r"\$_\(\s*?\"(.*?)\"(?:,\s*?.*?)?,?\s*?\)")
 
 
 def process():
@@ -23,7 +23,8 @@ def process():
         if "$_(" in cntnt:
             # print(file)
             # for res in re_i18n_strings.findall(cntnt):
-            #     print(res)
+            #     if "i18nValues" in res:
+            #         print(res)
             results |= set(re_i18n_strings.findall(cntnt))
 
     with open("../config/frontend_i18n_strings.py", "w") as f:
