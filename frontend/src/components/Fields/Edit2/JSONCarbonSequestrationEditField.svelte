@@ -118,12 +118,12 @@
             />
           </label>
           <label class={labelClass} for={undefined}>
-            {$_("ID of certification standard / mechanism")}
+            {$_("ID of certification standard/mechanism")}
             <input
               bind:value={val.certification_standard_id}
               type="text"
               class="inpt"
-              placeholder={$_("ID of certification standard / mechanism")}
+              placeholder={$_("ID of certification standard/mechanism")}
             />
           </label>
         </div>

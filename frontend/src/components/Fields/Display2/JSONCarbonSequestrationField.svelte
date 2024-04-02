@@ -55,7 +55,7 @@
       {/if}
       {#if val.certification_standard_id}
         <div class="mr-2">
-          {$_("ID of certification standard / mechanism")}:
+          {$_("ID of certification standard/mechanism")}:
           {val.certification_standard_id}
         </div>
       {/if}
