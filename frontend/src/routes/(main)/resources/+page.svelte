@@ -9,8 +9,8 @@
 
   export let data
 
-  let filteredBlogpages: BlogPage[]
-  $: filteredBlogpages = data.category
+  let filteredBlogPages: BlogPage[]
+  $: filteredBlogPages = data.category
     ? data.blogpages.filter(bp =>
         bp.categories.map(c => c.slug).includes(data.category),
       )
@@ -20,14 +20,14 @@
 
   let blogCategoriesWithAll: BlogCategory[]
   $: blogCategoriesWithAll = [
-    { id: -1, slug: null, name: $_("All categories") },
-    ...$blogCategories,
+    { id: -1, slug: null, name: $_("All") },
+    ...$blogCategories.sort((a, b) => a.id - b.id),
   ]
 </script>
 
 <div>
   <PageTitle class="inline-flex items-center gap-2">
-    <span>{$_(data.page.title)}</span>
+    <span>{data.page.title}</span>
     {#if data.tag}
       <small class="inline-flex items-center">
         <TagIcon class="h-6 w-6" />
@@ -41,20 +41,20 @@
       {#each blogCategoriesWithAll as cat}
         <li>
           <a
-            href={cat.slug ? `?category=${cat.slug}` : "/resources"}
+            href={cat.slug ? `?category=${cat.slug}` : "/resources/"}
             class="button1 mx-1 block w-fit whitespace-nowrap rounded border border-orange px-3 py-2 shadow transition hover:border-orange-700 {data.category ===
             cat.slug
               ? 'bg-orange font-bold text-white hover:bg-orange-700 hover:text-white'
               : 'hover:text-orange-700 '}"
           >
-            {$_(cat.name)}
+            {cat.name}
           </a>
         </li>
       {/each}
     </ul>
   </div>
   <div class="container mx-auto grid gap-4 px-10 md:grid-cols-2 lg:grid-cols-3">
-    {#each filteredBlogpages as blogpage}
+    {#each filteredBlogPages as blogpage}
       <div class="col-md-6 col-lg-4 mb-3">
         <div
           class="h-full rounded border border-gray-900 bg-gray-50 dark:border-white dark:bg-gray-800"

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { _ } from "svelte-i18n"
+
   import type { BlogPage } from "$lib/types/wagtail"
 
   export let articles: BlogPage[] = []
@@ -13,7 +15,7 @@
     <p class="body1 excerpt">
       {@html article.excerpt}
     </p>
-    <a class="button1 text-pelorous" href={article.url}>Read more >></a>
+    <a class="button1 text-pelorous" href={article.url}>{$_("Read more")} >></a>
   </div>
 {/each}
 

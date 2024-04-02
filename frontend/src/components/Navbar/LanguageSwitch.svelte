@@ -20,17 +20,17 @@
 
 <NavDropDown>
   <svelte:fragment slot="title">
-    <span class="button1 mx-3 text-black dark:text-white">
+    <span class="button1 mx-1 text-sm text-black dark:text-white">
       <span class="hidden md:inline">{languages[$locale ?? "en"]}</span>
       <span class="md:hidden"><LanguageIcon /></span>
     </span>
   </svelte:fragment>
 
-  <ul class="bg-white shadow-lg dark:bg-gray-900">
+  <ul class="bg-white text-sm shadow-lg dark:bg-gray-900">
     {#each Object.entries(languages) as [lcode, lingo]}
       <li>
         <button
-          class="nav-link w-full whitespace-nowrap px-6"
+          class="nav-link w-full whitespace-nowrap px-6 text-sm"
           class:active={lcode === $locale}
           on:click={() => switchLanguage(lcode)}
         >

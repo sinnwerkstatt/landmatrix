@@ -27,7 +27,7 @@
   <h3 class="mb-2 ml-1 mt-3 font-medium">{$_("Logbook")}</h3>
 
   <div
-    class="h-0 flex-grow cursor-default overflow-y-scroll border-gray-700 px-[2px] pb-4 pt-1 shadow-inner"
+    class="max-h-[300px] flex-grow cursor-default overflow-y-scroll border-gray-700 px-[2px] pb-4 pt-1 shadow-inner lg:h-0"
   >
     {#each object.workflowinfos as info}
       <WorkflowInfoNew {info} isDeal={isDeal(object)} />

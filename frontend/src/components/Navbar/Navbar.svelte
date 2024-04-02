@@ -10,8 +10,8 @@
   import NavbarSearch from "$components/Navbar/NavbarSearch.svelte"
   import SubEntries from "$components/Navbar/SubEntries.svelte"
 
-  import type { MenuEntry } from "./navbar"
   import { isSubMenu } from "./navbar"
+  import type { MenuEntry } from "./navbar"
 
   let menuEntries: MenuEntry[]
   $: menuEntries = [
@@ -26,7 +26,7 @@
     {
       title: $_("Observatories"),
       subEntries: $observatoryPages.map(page => ({
-        title: $_(page.title),
+        title: page.title,
         href: `/observatory/${page.meta.slug}/`,
       })),
     },
@@ -38,7 +38,7 @@
           href: "/resources/",
         },
         ...$blogCategories.map(cat => ({
-          title: $_(cat.name),
+          title: cat.name,
           href: `/resources/?category=${cat.slug}`,
         })),
       ],
@@ -46,7 +46,7 @@
     {
       title: $_("About"),
       subEntries: $aboutPages.map(page => ({
-        title: $_(page.title),
+        title: page.title,
         href: `/about/${page.meta.slug}/`,
       })),
     },
@@ -123,8 +123,7 @@
         class="gap-y-6 divide-y divide-solid p-6 px-4
          lg:flex lg:flex-wrap lg:items-center lg:justify-center lg:gap-x-12 lg:gap-y-0 lg:divide-transparent lg:p-0
          2xl:justify-between 2xl:gap-x-0
-         dark:border-b dark:border-orange dark:bg-gray-900 dark:2xl:border-none
-"
+         dark:border-b dark:border-orange dark:bg-gray-900 dark:2xl:border-none"
       >
         {#each menuEntries as entry}
           <li class="group xl:relative">

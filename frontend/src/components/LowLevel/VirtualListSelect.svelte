@@ -1,5 +1,6 @@
 <script lang="ts">
   import { tick } from "svelte"
+  import { _ } from "svelte-i18n"
   import Select from "svelte-select"
   import VirtualList from "svelte-tiny-virtual-list"
 
@@ -20,7 +21,7 @@
   export let required = false
   export let disabled = false
   export let creatable = false
-  export let placeholder: string | undefined = undefined
+  export let placeholder: string = $_("Please select")
   export let itemFilter: FilterFn<Item> | undefined = undefined
   export let name: string | undefined = undefined
 

@@ -1,8 +1,10 @@
+import type { BlockKey } from "$components/Wagtail/blocks"
+
 import type { Deal } from "./deal"
 
 export type WagtailStreamfieldBlock = {
-  type: string
-  value: string
+  type: BlockKey
+  value: never
   id: string
 }
 export type WagtailStreamfield = WagtailStreamfieldBlock[]
@@ -103,6 +105,6 @@ export interface Partner {
   id: string
   name: string
   logo: string
-  category: string
+  role: "PARTNER" | "DONOR"
   homepage: string
 }

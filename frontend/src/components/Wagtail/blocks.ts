@@ -38,3 +38,5 @@ export const blockMap = {
   data_teaser: DataTeaserBlock,
   partners: PartnerBlock,
 }
+
+export type BlockKey = keyof typeof blockMap

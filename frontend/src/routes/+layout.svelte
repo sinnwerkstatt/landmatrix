@@ -31,10 +31,10 @@
       // initialScope: { tags: { mode: "svelte frontend" } },
     })
 
-    if (data.user)
-      Sentry.configureScope(scope =>
-        scope.setUser({ id: (data.user as User).username }),
-      )
+    if (data.user) {
+      const scope = Sentry.getCurrentScope()
+      scope.setUser({ id: (data.user as User).username })
+    }
   }
   onMount(async () => {
     if ((data.user?.role || -1) >= UserRole.EDITOR) {

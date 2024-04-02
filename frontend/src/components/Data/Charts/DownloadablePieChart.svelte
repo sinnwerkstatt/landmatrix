@@ -20,6 +20,9 @@
     [data.labels?.join(","), ...data.datasets.map(set => set.data.join(","))].join("\n")
 
   const handleDownload = ({ detail: fileType }: DownloadEvent) => {
+    // TODO Kurt
+    // if ($tracker) $tracker.trackEvent("Chart", title, fileType)
+
     switch (fileType) {
       case "json":
         return downloadJSON(JSON.stringify(data, null, 2), title)

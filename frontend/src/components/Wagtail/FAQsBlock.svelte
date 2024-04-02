@@ -24,8 +24,7 @@
   {#each value.faqs as faq, index}
     <article id="faq-{index}-{faq.slug}">
       <button
-        class="btn w-full whitespace-normal py-4 text-left tracking-wide
-          dark:border-orange dark:bg-gray-900 dark:text-white"
+        class="btn-outline w-full whitespace-normal py-4 text-left tracking-wide"
         id="faq-{index}-question"
         on:click={() => updateHash(`#${faq.slug}`)}
       >

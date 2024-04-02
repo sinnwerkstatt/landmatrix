@@ -40,14 +40,14 @@
         </div>
       {/if}
 
-      <div class="mr-2">
+      <div class="mr-2 italic">
         {$_("Certification standard")}: {#if val.certification_standard}
           {$_("Yes")}{:else if val.certification_standard === false}
           {$_("No")}{:else}—{/if}
       </div>
       {#if val.certification_standard_name}
         <div class="mr-2">
-          {$_("Name of certification standard")}:
+          {$_("Name of certification standard/mechanism")}:
           {$fieldChoices.deal.carbon_sequestration_certs.find(
             i => i.value === val.certification_standard_name,
           )?.label ?? "--"}

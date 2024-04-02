@@ -13,16 +13,6 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AddField(
-            model_name='dealold',
-            name='carbon_offset_project',
-            field=models.BooleanField(blank=True, null=True),
-        ),
-        migrations.AddField(
-            model_name='dealold',
-            name='carbon_offset_project_comment',
-            field=models.TextField(blank=True),
-        ),
-        migrations.AddField(
             model_name='dealversion',
             name='carbon_offset_project',
             field=models.BooleanField(blank=True, null=True),

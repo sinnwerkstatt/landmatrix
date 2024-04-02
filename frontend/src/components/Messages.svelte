@@ -30,7 +30,7 @@
     return await res.json()
   }
 
-  let storage: Storage | object = {}
+  let storage: Storage | { acknowledgedMessages?: number[] } = {}
 
   if (browser) {
     try {
@@ -67,6 +67,9 @@
       closeButtonText={$_("OK")}
       on:close={() => {
         const checkbox = document.getElementById(`do-not-show-again-${msg.id}`)
+        // typescript support for templates comes with svelte5:
+        // https://github.com/sveltejs/svelte/issues/4701
+        // https://github.com/sveltejs/svelte/pull/9482
         if (checkbox && checkbox.checked) {
           ackMsg(msg.id)
         }

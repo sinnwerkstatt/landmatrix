@@ -5,6 +5,9 @@ const config = {
 
   theme: {
     extend: {
+      screens: {
+        "3xl": "1700px",
+      },
       fontFamily: {
         sans: ["Open Sans", ...defaultTheme.fontFamily.sans],
         oswald: ["Oswald", ...defaultTheme.fontFamily.sans],
@@ -44,8 +47,7 @@ const config = {
           300: "hsl(233, 76%, 79%)",
           400: "hsl(233, 76%, 73%)",
           500: "hsl(233, 75%, 70%)",
-          700: "hsl(233, 75%, 50%)"
-
+          700: "hsl(233, 75%, 50%)",
         },
         violet: {
           DEFAULT: "hsl(272, 62%, 65%)",

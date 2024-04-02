@@ -18,7 +18,9 @@
     <div
       class="max-w-[250px] rounded border border-gray-700 bg-white p-2 text-left dark:bg-gray-700"
     >
-      <h4 class="my-0 dark:text-white">{hoverCountry.name}</h4>
+      <h4 class="heading5 text-lm-dark my-0 text-xl dark:text-white">
+        {hoverCountry.name}
+      </h4>
       <div class="flex flex-col">
         {#if hoverCountryId === selectedCountryId}
           {@const nInvestingCountries = Object.values(

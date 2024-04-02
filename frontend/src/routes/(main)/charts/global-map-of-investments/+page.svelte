@@ -22,11 +22,10 @@
 </svelte:head>
 
 <ChartsContainer>
-  <h2 class="heading3 mt-0 text-gray-700">{title}</h2>
-  <GlobalMapOfInvestments />
+  <GlobalMapOfInvestments {title} />
 
   <div slot="ContextBar">
-    <h2 class="heading4 text-gray-700">{title}</h2>
+    <h2 class="heading5">{title}</h2>
     <div>{@html $chartDescriptions.global_web_of_investments}</div>
     <CountryInvestorInfo />
   </div>

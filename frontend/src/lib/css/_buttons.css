@@ -1,9 +1,16 @@
 @layer components {
   .buttonBase {
     --color1: white;
-    --color2: black;
-    --color3: lightgray;
+    --color2: theme("colors.gray.900");
+    --color3: theme("colors.gray.500");
     @apply inline-block cursor-pointer whitespace-nowrap rounded px-4 py-2 text-center text-base font-bold leading-tight tracking-widest transition md:text-lg;
+  }
+  @media (prefers-color-scheme: dark) {
+    .buttonBase {
+      --color1: theme("colors.gray.700");
+      --color2: white;
+      --color3: theme("colors.gray.500");
+    }
   }
 
   .btn {
@@ -20,10 +27,12 @@
 
   .btn-outline {
     @apply buttonBase border-2 shadow;
+    --color1: black;
+    --color2: white;
+    --color3: theme("colors.gray.400");
     color: var(--color1);
     background: var(--color2);
     border-color: var(--color1);
-    /*@apply dark:border-gray-700 dark:text-gray-50;*/
   }
   .btn-outline:hover {
     color: var(--color3);
@@ -32,6 +41,14 @@
   .btn-outline:focus {
     /*@apply border-orange;*/
     color: var(--color1);
+    /*@apply text-lm-orange;*/
+  }
+  @media (prefers-color-scheme: dark) {
+    .btn-outline {
+      --color1: white;
+      --color2: theme("colors.gray.900");
+      --color3: theme("colors.gray.500");
+    }
   }
 
   .btn-link {
@@ -54,13 +71,15 @@
     @apply px-2 py-1;
   }
 
-  .btn-primary, .btn-orange {
+  .btn-primary,
+  .btn-orange {
     --color1: theme("colors.orange.500");
     --color2: white;
     --color3: theme("colors.orange.700");
   }
 
-  .btn-secondary, .btn-pelorous {
+  .btn-secondary,
+  .btn-pelorous {
     --color1: theme("colors.pelorous.500");
     --color2: white;
     --color3: theme("colors.pelorous.600");
@@ -105,5 +124,4 @@
   .button1 {
     @apply text-base font-bold leading-tight tracking-widest md:text-lg;
   }
-
 }

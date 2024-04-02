@@ -16,7 +16,7 @@
   }
 </script>
 
-<div class="py-10" class:bg-orange={value.bg_color === "orange"}>
+<div class="min-h-[75vh] py-10" class:bg-orange={value.bg_color === "orange"}>
   <div class="container mx-auto px-10 lg:grid lg:grid-cols-2 lg:gap-[120px]">
     <div class="flex flex-col justify-center text-center lg:text-left">
       <h2 class="caption text-gray-900">{value.title}</h2>

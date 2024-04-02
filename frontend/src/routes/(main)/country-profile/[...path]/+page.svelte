@@ -31,7 +31,7 @@
   </div>
 
   <div slot="ContextBar">
-    <h2>{$_("Country profile charts")}</h2>
+    <h2 class="heading5">{$_("Country profile charts")}</h2>
     <!-- TODO Marcus: laut wagtailcms/models.py:35 gibt es nur die 4 standard-felder. ist dieser code hier unten korrekt?    -->
     <div>{@html $chartDescriptions[data.profile.key] ?? ""}</div>
     <DealDisplayToggle />

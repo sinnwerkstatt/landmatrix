@@ -13,7 +13,7 @@
     flipped
     on:click={() => showContextBar.set(!$showContextBar)}
   />
-  <div class="h-full w-full overflow-y-auto p-2" class:hidden={!$showContextBar}>
+  <div class="h-full w-full overflow-y-auto p-2 lg:p-3" class:hidden={!$showContextBar}>
     <slot />
   </div>
 </div>

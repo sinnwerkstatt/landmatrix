@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { _ } from "svelte-i18n"
+
   import type { BlogPage } from "$lib/types/wagtail"
 
   import NewArticleList from "$components/Wagtail/NewArticleList.svelte"
@@ -31,7 +33,9 @@
         <p class="body1">
           {@html value.articles[0].excerpt}
         </p>
-        <a class="button1 text-pelorous" href={value.articles[0].url}>Read more >></a>
+        <a class="button1 text-pelorous" href={value.articles[0].url}>
+          {$_("Read more")} >>
+        </a>
       </div>
     </div>
     <div class="lg:col-span-4 lg:col-start-7">

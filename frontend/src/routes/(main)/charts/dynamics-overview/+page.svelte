@@ -27,7 +27,7 @@
 
 <ChartsContainer>
   <div slot="ContextBar">
-    <h2 class="heading4 text-gray-700">{$_("Dynamics overview charts")}</h2>
+    <h2 class="heading5">{$_("Dynamics overview charts")}</h2>
     <div>{@html $chartDescriptions.dynamics_overview}</div>
     <DealDisplayToggle />
   </div>

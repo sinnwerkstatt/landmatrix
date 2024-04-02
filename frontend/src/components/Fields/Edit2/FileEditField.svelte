@@ -85,6 +85,7 @@
       {$_("Change")}:
       <input
         type="file"
+        name={fieldname}
         on:change={uploadFile}
         accept={ACCEPTED_EXTENSIONS.join(",")}
       />
@@ -95,7 +96,12 @@
     </button>
   </div>
 {:else}
-  <input type="file" on:change={uploadFile} accept={ACCEPTED_EXTENSIONS.join(",")} />
+  <input
+    type="file"
+    name={fieldname}
+    on:change={uploadFile}
+    accept={ACCEPTED_EXTENSIONS.join(",")}
+  />
 {/if}
 <small class="block pt-2 text-gray-500">
   {$_("Supported file types: ")}{ACCEPTED_EXTENSIONS.join(", ")}

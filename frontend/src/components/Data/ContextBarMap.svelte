@@ -67,15 +67,17 @@
         {totalCount}
       </div>
       <div class="mb-6 w-full">
-        <h5 class="mb-3 text-center text-lg">{$_("Negotiation status")}</h5>
+        <h5 class="mb-3 text-center text-lg font-bold">{$_("Negotiation status")}</h5>
         <StatusPieChart data={chartNegStat} {unit} />
       </div>
       <div class="mb-6 w-full">
-        <h5 class="mb-3 text-center text-lg">{$_("Implementation status")}</h5>
+        <h5 class="mb-3 text-center text-lg font-bold">
+          {$_("Implementation status")}
+        </h5>
         <StatusPieChart data={chartImpStat} {unit} />
       </div>
       <div class="mb-6 w-full">
-        <h5 class="mb-3 text-center text-lg">{$_("Produce")}</h5>
+        <h5 class="mb-3 text-center text-lg font-bold">{$_("Produce")}</h5>
         <StatusPieChart data={chartProd} {unit} />
       </div>
     </div>

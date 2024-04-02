@@ -10,7 +10,10 @@
   }
 </script>
 
-<div data-block="columns_3" class="mb-8 grid grid-cols-1 gap-4 md:grid-cols-3">
+<div
+  data-block="columns_3"
+  class="mx-auto mb-8 grid max-w-[1200px] grid-cols-1 lg:grid-cols-3"
+>
   <div>
     {#each value.left_column as block}
       <svelte:component this={blockMap[block.type]} bind:value={block.value} />

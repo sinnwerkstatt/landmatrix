@@ -24,16 +24,21 @@ import type { GeometryCollection, Topology } from "topojson-specification"
 import worldTopology from "world-atlas/countries-110m.json"
 
 export interface Investments {
+  incoming: Country2CountryInvestmentsMap
+  outgoing: Country2CountryInvestmentsMap
+}
+export interface CountryInvestments {
   incoming: CountryInvestmentsMap
   outgoing: CountryInvestmentsMap
+}
+export interface Country2CountryInvestmentsMap {
+  [countryId: string]: CountryInvestmentsMap
 }
 
 export interface CountryInvestmentsMap {
   [countryId: string]: {
-    [countryId: string]: {
-      size: number
-      count: number
-    }
+    size: number
+    count: number
   }
 }
 
@@ -152,6 +157,50 @@ export const createGlobalMapOfInvestments = (
       .classed("investor-country", isInvestor)
       .classed("target-country", isTarget)
   }
+
+  // legend
+  const legendPos = [10, height - 80]
+  const legend = svg.append("g").attr("transform", `translate(${legendPos.join(",")})`)
+
+  legend
+    .append("rect")
+    .attr("width", 180)
+    .attr("height", 70)
+    .attr("fill", "white")
+    .attr("stroke-width", 0.3)
+    .attr("stroke", "black")
+
+  legend
+    .append("rect")
+    .attr("x", 10)
+    .attr("y", 10)
+    .attr("width", 20)
+    .attr("height", 20)
+    .attr("class", "target-country")
+
+  legend
+    .append("rect")
+    .attr("x", 10)
+    .attr("y", 40)
+    .attr("width", 20)
+    .attr("height", 20)
+    .attr("class", "investor-country")
+
+  legend
+    .append("text")
+    .attr("x", 40)
+    .attr("y", 25)
+    .text("Target country")
+    .attr("fill", "currentColor")
+    .style("alignment-baseline", "top")
+
+  legend
+    .append("text")
+    .attr("x", 40)
+    .attr("y", 55)
+    .text("Investor country")
+    .attr("fill", "currentColor")
+    .style("alignment-baseline", "top")
 
   return { selectCountry }
 }

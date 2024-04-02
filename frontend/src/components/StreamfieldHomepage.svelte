@@ -6,10 +6,10 @@
   export let content: WagtailStreamfield = []
 </script>
 
-<div class="streamfield {$$props.class ?? ''}">
+<div class={$$props.class ?? ""} data-class="streamfield">
   {#each content as { type, value }}
     {#if blockMap[type]}
-      <svelte:component this={blockMap[type]} bind:value />
+      <svelte:component this={blockMap[type]} {value} />
     {:else}
       <div class="bg-red-100">
         Unknown block: <strong>"{type}"</strong>

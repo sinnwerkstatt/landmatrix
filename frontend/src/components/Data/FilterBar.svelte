@@ -88,7 +88,7 @@
     showing={$showFilterBar}
   />
   <div
-    class="flex h-full w-full flex-col overflow-y-auto"
+    class="flex h-full w-full flex-col overflow-y-auto p-1"
     class:hidden={!$showFilterBar}
     dir="rtl"
   >

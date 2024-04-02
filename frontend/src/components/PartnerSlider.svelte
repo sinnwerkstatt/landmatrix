@@ -1,23 +1,49 @@
 <script lang="ts">
-  import { Splide, SplideSlide, SplideTrack } from "@splidejs/svelte-splide"
+  import {
+    Splide,
+    SplideSlide,
+    SplideTrack,
+    type Options,
+  } from "@splidejs/svelte-splide"
 
   import type { Partner } from "$lib/types/wagtail"
 
-  import "@splidejs/svelte-splide/css/core"
+  import "@splidejs/svelte-splide/css"
 
   export let perPage: number
   export let partners: Partner[]
 
-  const options = {
-    autoplay: partners.length > perPage,
-    perPage: Math.min(partners.length, perPage),
-    perMove: 1,
+  let options: Options
+  $: options = {
     type: "loop",
-    arrows: false,
+    interval: 3000,
+    perMove: 1,
     pagination: false,
     pauseOnHover: false,
     pauseOnFocus: false,
-    interval: 3000,
+    autoplay: partners.length > perPage,
+    perPage: Math.min(partners.length, perPage),
+    drag: partners.length > perPage,
+    arrows: partners.length > perPage,
+    breakpoints: {
+      640: {
+        // 'sm'
+        autoplay: partners.length > 2,
+        perPage: Math.min(partners.length, 2),
+        drag: partners.length > 2,
+        arrows: false,
+      },
+      1024: {
+        // 'lg'
+        autoplay: partners.length > 3,
+        perPage: Math.min(partners.length, 3),
+        drag: partners.length > 3,
+        arrows: partners.length > 3,
+      },
+    },
+    classes: {
+      arrow: "splide__arrow no-background",
+    },
   }
 </script>
 
@@ -45,3 +71,10 @@
     </SplideTrack>
   </Splide>
 </div>
+
+<!-- TODO maybe we have to reenable this. -->
+<!--<style lang="postcss">-->
+<!--  :global(.no-background) {-->
+<!--    @apply bg-transparent hover:bg-orange;-->
+<!--  }-->
+<!--</style>-->

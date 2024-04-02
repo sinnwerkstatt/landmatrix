@@ -129,7 +129,7 @@
   }
 </script>
 
-<PageTitle>{$_(page.title)}</PageTitle>
+<PageTitle>{page.title}</PageTitle>
 
 <div class="mx-auto w-[clamp(20rem,75%,56rem)]">
   <QuasiStaticMap {countryID} markers={page.markers} {regionID} />

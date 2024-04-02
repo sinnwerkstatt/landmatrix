@@ -34,7 +34,7 @@
 
 {#if user}
   <div class="flex">
-    <NavDropDown>
+    <NavDropDown placement="right-0">
       <svelte:fragment slot="title">
         <div
           class="heading5 mx-auto my-auto flex h-10 w-10 items-center justify-center rounded-full bg-pelorous font-bold uppercase text-black md:h-12 md:w-12"
@@ -116,7 +116,7 @@
       href="/account/login/?next={$page.url.pathname}"
       title={$_("Login/Register")}
     >
-      Log in
+      {$_("Login")}
     </a>
   </div>
 {/if}
