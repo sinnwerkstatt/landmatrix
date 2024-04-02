@@ -7,6 +7,8 @@ from django.utils.translation import gettext_lazy as _
 
 from apps.accounts.models import User
 
+UserModel: Type[User] = get_user_model()
+
 
 class MyUserAdmin(UserAdmin):
     def set_inactive(self, request, queryset):
@@ -28,4 +30,4 @@ class MyUserAdmin(UserAdmin):
     actions = [set_active, set_inactive]
 
 
-admin.site.register(User, MyUserAdmin)
+admin.site.register(UserModel, MyUserAdmin)
