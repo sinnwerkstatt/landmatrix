@@ -1,16 +1,16 @@
 image: sinntern/ubuntu_for_django:latest
 
 variables:
-  LANG: C.UTF-8
-  POSTGRES_DB: landmatrix
-  POSTGRES_USER: landmatrix
-  POSTGRES_PASSWORD: landmatrix
   STAGING_HOST: dev.landmatrix.org
   STAGING_USER: landmatrix
   PRODUCTION_HOST: landmatrix.org
   PRODUCTION_USER: landmatrix
   DJANGO_SETTINGS_MODULE: config.settings.ci
-  DATABASE_URL: "postgis://landmatrix:landmatrix@postgres/landmatrix"
+  LANG: C.UTF-8
+  POSTGRES_DB: django
+  POSTGRES_USER: django
+  POSTGRES_PASSWORD: django
+  DATABASE_URL: "postgis://django:django@postgres/django"
 
 stages:
   - test
@@ -20,7 +20,7 @@ django formatting and linting:
   stage: test
   interruptible: true
   services:
-    - name: postgis/postgis:12-3.2
+    - name: postgis/postgis:16-3.4
       alias: postgres
   script:
     - poetry install
@@ -33,7 +33,7 @@ django tests and coverage:
   stage: test
   interruptible: true
   services:
-    - name: postgis/postgis:12-3.2
+    - name: postgis/postgis:16-3.4
       alias: postgres
   script:
     - poetry install

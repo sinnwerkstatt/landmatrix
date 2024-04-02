@@ -168,7 +168,7 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_CREDENTIALS = True
 
 WAGTAIL_SITE_NAME = "Land Matrix"
-WAGTAILADMIN_BASE_URL = "https://landmatrix.org/"
+WAGTAILADMIN_BASE_URL = "https://landmatrix.org"
 
 WAGTAIL_HEADLESS_PREVIEW = {
     "CLIENT_URLS": {"default": "{SITE_ROOT_URL}/wagtail-preview"},
