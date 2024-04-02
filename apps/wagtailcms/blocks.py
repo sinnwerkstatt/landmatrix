@@ -1,7 +1,6 @@
 import re
 
 from django.contrib.sites.models import Site
-from django.db.models import Sum, QuerySet
 from wagtail import blocks
 from wagtail.blocks import CharBlock, RawHTMLBlock, StructBlock
 from wagtail.embeds.blocks import EmbedBlock
@@ -13,8 +12,6 @@ from wagtail.snippets.blocks import SnippetChooserBlock
 from apps.landmatrix.models.country import Country as DataCountry
 from apps.landmatrix.models.country import Region as DataRegion
 from apps.landmatrix.models.deal import DealOld
-
-from .partners import Partner
 from .twitter import TwitterTimeline
 
 
@@ -212,8 +209,9 @@ class ImageTextBlock(StructBlock):
 # New Screendesign
 class PartnerBlock(StructBlock):
     def get_api_representation(self, value, context=None):
-        partners: QuerySet[Partner] = Partner.objects.all()
-        return [p.to_dict("max-220x220") for p in partners]
+        from .models import Partner
+
+        return [p.to_dict("max-220x220") for p in Partner.objects.all()]
 
     class Meta:
         label = "PartnerBlock"

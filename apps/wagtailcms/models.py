@@ -1,17 +1,21 @@
 from django import forms
 from django.db import models
 from django.db.models import QuerySet
+from django.utils.translation import gettext_lazy as _
 from wagtail.admin.panels import FieldPanel, FieldRowPanel
 from wagtail.api import APIField
 from wagtail.contrib.settings.models import BaseGenericSetting, register_setting
 from wagtail.fields import RichTextField, StreamField
-from wagtail.models import Page
+from wagtail.images import get_image_model_string
+from wagtail.models import Page, Orderable
 from wagtail.rich_text import expand_db_html
+from wagtail.snippets.models import register_snippet
 from wagtail_headless_preview.models import HeadlessPreviewMixin
 
 from apps.blog.models import BlogPage
 from apps.landmatrix.models.country import Country, Region
 from apps.landmatrix.models.new import DealHull
+
 from .blocks import (
     COLUMN_BLOCKS,
     CONTENT_BLOCKS,
@@ -20,6 +24,41 @@ from .blocks import (
     SIMPLE_CONTENT_BLOCKS,
 )
 from .twitter import TwitterTimeline
+
+
+@register_snippet
+class Partner(Orderable):
+    name = models.CharField(max_length=500, unique=True)
+
+    class RoleChoices(models.TextChoices):
+        PARTNER = "PARTNER", _("Partner")
+        DONOR = "DONOR", _("Donor")
+
+    role = models.CharField(
+        choices=RoleChoices,
+        default=RoleChoices.PARTNER,
+    )
+
+    homepage = models.URLField(max_length=500)
+
+    logo = models.ForeignKey(
+        get_image_model_string(),
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+
+    def __str__(self):
+        return f"{self.name} ({self.get_role_display()})"
+
+    def to_dict(self, rendition_str):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "role": self.role,
+            "homepage": self.homepage,
+            "logo": self.logo.get_rendition(rendition_str).url if self.logo else None,
+        }
 
 
 @register_setting(icon="radio-empty")
@@ -147,6 +186,17 @@ class ObservatoryPage(HeadlessPreviewMixin, Page):
             slug = self.country.slug if self.country else self.region.slug
             qs = qs.filter(tags__slug=slug)
         return [article.get_dict("fill-500x500|jpegquality-60") for article in qs]
+
+    # @staticmethod
+    # def current_negotiation_status_metrics():
+    #     deals = Deal.objects.visible(subset="PUBLIC").default_filtered(
+    #         unset_filters=["current_negotiation_status"]
+    #     )
+    #     return (
+    #         deals.values(value=F("current_negotiation_status"))
+    #         .annotate(count=Count("pk"))
+    #         .annotate(size=Sum("deal_size"))
+    #     )
 
     def markers(self):
         return DealHull.get_geo_markers(self.region_id, self.country_id)
