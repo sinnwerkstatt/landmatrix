@@ -1,6 +1,8 @@
 import datetime
+from typing import Type
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import models
@@ -24,6 +26,8 @@ from wagtail_headless_preview.models import HeadlessPreviewMixin
 from apps.accounts.models import User
 from apps.wagtailcms.blocks import SIMPLE_CONTENT_BLOCKS
 from .utils import unique_slugify
+
+UserModel: Type[User] = get_user_model()
 
 
 class BlogIndexPage(HeadlessPreviewMixin, Page):
@@ -173,7 +177,7 @@ class BlogTag(Tag):
 def get_blog_context(context):
     """Get context data useful on all blog related pages"""
     context["authors"] = (
-        User.objects.filter(
+        UserModel.objects.filter(
             owned_pages__live=True, owned_pages__content_type__model="blogpage"
         )
         .annotate(Count("owned_pages"))
@@ -309,17 +313,18 @@ class BlogPage(HeadlessPreviewMixin, Page):
             "url": self.get_url(),
         }
 
-    def get_dict(self, rendition_str, verbose=False):
+    def get_dict(self, rendition_str):
         try:
             header_image = self.header_image.get_rendition(rendition_str).url
         except (AttributeError, SourceImageIOError):
             header_image = None
 
         body = str(self.body)
-
-        ret = {
+        return {
             "id": self.id,
             "title": self.title,
+            "slug": self.slug,
+            "body": body,
             "excerpt": Truncator(body).words(50, html=True, truncate=" …"),
             "date": self.date,
             "header_image": header_image,
@@ -330,10 +335,6 @@ class BlogPage(HeadlessPreviewMixin, Page):
             "categories": list(self.blog_categories.all().values()),
             "url": self.get_url(),
         }
-        if verbose:
-            ret.update({"slug": self.slug, "body": body})
-
-        return ret
 
     parent_page_types = ["blog.BlogIndexPage"]
     subpage_types = []
