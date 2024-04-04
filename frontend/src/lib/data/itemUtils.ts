@@ -15,7 +15,7 @@ export const isValidDate: (date: string) => boolean = R.pipe(
 
 export const parseDate: (date: string) => number = R.pipe(
   R.constructN(1, Date),
-  R.invoker(0, "getFullYear"),
+  R.invoker(0, "getUTCFullYear"),
 )
 
 // typeguard 'is' signature not compatible with ramda types -> cast to any
