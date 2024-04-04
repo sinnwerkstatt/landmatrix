@@ -14,9 +14,6 @@ def test_deal_form():
     assert DealForm({"locations": [{"level_of_accuracy": "COUNTRY"}]}).is_valid()
     assert not DealForm({"locations": [{"level_of_accuracy": "-INVALID-"}]}).is_valid()
 
-    # TODO Contracts
-    # TODO DataSources
-
     assert DealForm({"country": 800}).is_valid()
     assert not DealForm({"country": 8000}).is_valid()
 
@@ -130,4 +127,3 @@ def test_deal_form():
         ).errors
         == {}
     )
-    # TODO
