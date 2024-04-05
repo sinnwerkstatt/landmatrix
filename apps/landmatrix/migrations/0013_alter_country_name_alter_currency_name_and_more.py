@@ -142,6 +142,16 @@ class Migration(migrations.Migration):
             name='source_of_water_extraction',
             field=apps.landmatrix.models.fields.ArrayField(base_field=models.CharField(choices=[('GROUNDWATER', 'Groundwater'), ('SURFACE_WATER', 'Surface water'), ('RIVER', 'River'), ('LAKE', 'Lake')]), blank=True, null=True, size=None, verbose_name='Source of water extraction'),
         ),
+        migrations.AddField(
+            model_name='deal',
+            name='carbon_offset_project',
+            field=models.BooleanField(blank=True, null=True),
+        ),
+        migrations.AddField(
+            model_name='deal',
+            name='carbon_offset_project_comment',
+            field=models.TextField(blank=True),
+        ),
         migrations.AlterField(
             model_name='investor',
             name='classification',
