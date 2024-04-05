@@ -1,6 +1,53 @@
-from fastjsonschema import compile
+import json
 
-from apps.landmatrix.models.fields import JSONSchemaField
+from django import forms
+from django.core.exceptions import ValidationError
+from django.db.models import JSONField
+from fastjsonschema import JsonSchemaException, compile
+
+
+class JSONSchemaField(JSONField):
+    schema_definition = None
+
+    def pre_save(self, model_instance, add):
+        value = super().pre_save(model_instance, add)
+        self.validate_schema(value)
+        return value
+
+    def validate_schema(self, value):
+        if not value:
+            return
+        if isinstance(value, str):
+            try:
+                value = json.loads(value)
+            except json.JSONDecodeError as e:
+                raise ValidationError(f"invalid JSON: {e}")
+
+        try:
+            self.schema_definition(value)
+        except JsonSchemaException as e:
+            raise ValidationError(
+                message=f"{self.__class__.__name__} '{self.name}': {e}\n{value}",
+                code="invalid",
+            )
+
+    def formfield(self, **kwargs):
+        current_self = self
+
+        class JSONSchemaFormField(forms.JSONField):
+            def to_python(self, value):
+                current_self.validate_schema(value)
+                value = super().to_python(value)
+                return value
+
+        return super().formfield(**{"form_class": JSONSchemaFormField, **kwargs})
+
+    # def from_db_value(self, value, expression, connection):
+    #     if value is None:
+    #         return value
+    #     # we could do conversion to datefield here
+    #     return value
+
 
 locations_schema_def = {
     "$schema": "http://json-schema.org/draft-07/schema#",

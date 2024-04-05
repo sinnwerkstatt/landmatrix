@@ -194,7 +194,8 @@ def map_datasources(nv: DealVersion, datasources: list[dict]):
 
 def map_version_payload(ov: dict, nv: DealVersion):
     nv.intended_size = ov["intended_size"]
-    nv.contract_size = []
+
+    nv_contract_size = []
     for x in ov["contract_size"] or []:
         if x.get("area") is None:
             continue
@@ -226,10 +227,10 @@ def map_version_payload(ov: dict, nv: DealVersion):
             x["date"] = "2016"
         if nv.deal_id == 5483 and x.get("date") == "1":
             x["date"] = None
+        nv_contract_size += [x]
+    nv.contract_size = nv_contract_size
 
-        nv.contract_size += [x]
-
-    nv.production_size = []
+    nv_production_size = []
     for x in ov["production_size"] or []:
         if x.get("area") is None:
             continue
@@ -249,11 +250,12 @@ def map_version_payload(ov: dict, nv: DealVersion):
 
         if nv.deal_id == 5483 and x.get("date") == "12":
             x["date"] = None
-
-        nv.production_size += [x]
+        nv_production_size += [x]
+    nv.production_size = nv_production_size
 
     nv.land_area_comment = ov["land_area_comment"]
-    nv.intention_of_investment = []
+
+    nv_intention_of_investment = []
     for x in ov["intention_of_investment"] or []:
         if not x.get("choices"):
             continue
@@ -265,14 +267,16 @@ def map_version_payload(ov: dict, nv: DealVersion):
             x["date"] = x["date"].strip()
         if not x.get("area"):
             x["area"] = None
-        nv.intention_of_investment += [x]
+        nv_intention_of_investment += [x]
+    nv.intention_of_investment = nv_intention_of_investment
 
     nv.intention_of_investment_comment = ov["intention_of_investment_comment"]
-    nv.carbon_offset_project = ov["carbon_offset_project"]
-    nv.carbon_offset_project_comment = ov["carbon_offset_project_comment"]
+    nv.carbon_offset_project = ov.get("carbon_offset_project")
+    nv.carbon_offset_project_comment = ov.get("carbon_offset_project_comment") or ""
     nv.nature_of_deal = ov["nature_of_deal"] or []
     nv.nature_of_deal_comment = ov["nature_of_deal_comment"]
-    nv.negotiation_status = []
+
+    nv_negotiation_status = []
     for neg in ov["negotiation_status"] or []:
         if not neg.get("choice"):
             continue
@@ -287,11 +291,12 @@ def map_version_payload(ov: dict, nv: DealVersion):
             neg["date"] = "2012"
         elif nv.deal_id == 5173 and neg.get("date") == "1":
             neg["date"] = "2016"
-        nv.negotiation_status += [neg]
+        nv_negotiation_status += [neg]
+    nv.negotiation_status = nv_negotiation_status
 
     nv.negotiation_status_comment = ov["negotiation_status_comment"]
 
-    nv.implementation_status = []
+    nv_implementation_status = []
     for x in ov["implementation_status"] or []:
         if not x.get("choice"):
             continue
@@ -303,8 +308,8 @@ def map_version_payload(ov: dict, nv: DealVersion):
             x["date"] = None
         if nv.deal_id == 6012 and x.get("date") == "30":
             x["date"] = None
-
-        nv.implementation_status += [x]
+        nv_implementation_status += [x]
+    nv.implementation_status = nv_implementation_status
 
     nv.implementation_status_comment = ov["implementation_status_comment"]
     nv.purchase_price = ov["purchase_price"]
@@ -320,111 +325,48 @@ def map_version_payload(ov: dict, nv: DealVersion):
     nv.contract_farming = ov["contract_farming"]
     nv.on_the_lease_state = ov["on_the_lease_state"]
     nv.on_the_lease = ov["on_the_lease"] or []
-    for x in nv.on_the_lease:
-        if not x.get("current"):
-            x["current"] = False
-        if not x.get("date"):
-            x["date"] = None
-        for p in ["area", "farmers", "households"]:
-            if not x.get(p):
-                x[p] = None
-        if x.get("farmers"):
-            x["farmers"] = int(x["farmers"])
+    # for x in nv.on_the_lease:
+    #     pass
+    #     # if not x.current:
+    #     #     x["current"] = False
+    #     # if not x.get("date"):
+    #     #     x["date"] = None
+    #     # for p in ["area", "farmers", "households"]:
+    #     #     if not x.get(p):
+    #     #         x[p] = None
+    #     if x.farmers:
+    #         ic(x, ov["on_the_lease"])
+    #         sys.exit(1)
+    #     #     x.farmers = int(x.farmers)
 
     nv.off_the_lease_state = ov["off_the_lease_state"]
     nv.off_the_lease = ov["off_the_lease"] or []
-    for x in nv.off_the_lease:
-        if not x.get("current"):
-            x["current"] = False
-        if not x.get("date"):
-            x["date"] = None
-        if not x.get("area"):
-            x["area"] = None
-        if "farmers" in x.keys():
-            x["farmers"] = int(x["farmers"])
-        else:
-            x["farmers"] = None
-        if not x.get("households"):
-            x["households"] = None
 
     nv.contract_farming_comment = ov["contract_farming_comment"]
     nv.total_jobs_created = ov["total_jobs_created"]
     nv.total_jobs_planned = ov["total_jobs_planned"]
     nv.total_jobs_planned_employees = ov["total_jobs_planned_employees"]
     nv.total_jobs_planned_daily_workers = ov["total_jobs_planned_daily_workers"]
-    nv.total_jobs_current = ov["total_jobs_current"] or []
-    for jbs in nv.total_jobs_current:
-        if not jbs.get("current"):
-            jbs["current"] = False
-        if not jbs.get("date"):
-            jbs["date"] = None
-        else:
-            jbs["date"] = jbs["date"].strip()
-        if not jbs.get("jobs"):
-            jbs["jobs"] = None
-        else:
-            jbs["jobs"] = int(float(jbs["jobs"]))
-        if jbs.get("workers") in ["", None]:
-            jbs["workers"] = None
-        else:
-            jbs["workers"] = int(float(jbs["workers"]))
+    # ic(ov["total_jobs_current"])
 
-        if "employees" in jbs.keys() and jbs["employees"] is not None:
-            jbs["employees"] = int(float(jbs["employees"]))
-        else:
-            jbs["employees"] = None
+    nv_total_jobs_current = ov["total_jobs_current"] or []
+    for jb in nv_total_jobs_current:
+        if jb.get("jobs") == "":
+            jb["jobs"] = None
+    nv.total_jobs_current = nv_total_jobs_current
+
     nv.total_jobs_created_comment = ov["total_jobs_created_comment"]
     nv.foreign_jobs_created = ov["foreign_jobs_created"]
     nv.foreign_jobs_planned = ov["foreign_jobs_planned"]
     nv.foreign_jobs_planned_employees = ov["foreign_jobs_planned_employees"]
     nv.foreign_jobs_planned_daily_workers = ov["foreign_jobs_planned_daily_workers"]
     nv.foreign_jobs_current = ov["foreign_jobs_current"] or []
-    for jbs in nv.foreign_jobs_current:
-        if not jbs.get("current"):
-            jbs["current"] = False
-        if not jbs.get("date"):
-            jbs["date"] = None
-        else:
-            jbs["date"] = jbs["date"].strip()
-        if "jobs" in jbs.keys() and jbs["jobs"] is not None:
-            jbs["jobs"] = int(float(jbs["jobs"]))
-        else:
-            jbs["jobs"] = None
-        if "workers" in jbs.keys() and jbs["workers"] is not None:
-            jbs["workers"] = int(float(jbs["workers"]))
-        else:
-            jbs["workers"] = None
-        if "employees" in jbs.keys() and jbs["employees"] is not None:
-            jbs["employees"] = int(float(jbs["employees"]))
-        else:
-            jbs["employees"] = None
-
     nv.foreign_jobs_created_comment = ov["foreign_jobs_created_comment"]
     nv.domestic_jobs_created = ov["domestic_jobs_created"]
     nv.domestic_jobs_planned = ov["domestic_jobs_planned"]
     nv.domestic_jobs_planned_employees = ov["domestic_jobs_planned_employees"]
     nv.domestic_jobs_planned_daily_workers = ov["domestic_jobs_planned_daily_workers"]
     nv.domestic_jobs_current = ov["domestic_jobs_current"] or []
-    for jbs in nv.domestic_jobs_current:
-        if not jbs.get("current"):
-            jbs["current"] = False
-        if not jbs.get("date"):
-            jbs["date"] = None
-        else:
-            jbs["date"] = jbs["date"].strip()
-        if "jobs" in jbs.keys() and jbs["jobs"] is not None:
-            jbs["jobs"] = int(float(jbs["jobs"]))
-        else:
-            jbs["jobs"] = None
-        if "workers" in jbs.keys() and jbs["workers"] is not None:
-            jbs["workers"] = int(float(jbs["workers"]))
-        else:
-            jbs["workers"] = None
-        if "employees" in jbs.keys() and jbs["employees"] is not None:
-            jbs["employees"] = int(float(jbs["employees"]))
-        else:
-            jbs["employees"] = None
-
     nv.domestic_jobs_created_comment = ov["domestic_jobs_created_comment"]
     if oid := ov["operating_company"]:
         try:
@@ -432,12 +374,10 @@ def map_version_payload(ov: dict, nv: DealVersion):
         except InvestorHull.DoesNotExist:
             pass
 
-    nv.involved_actors = ov["involved_actors"] or []
-    for act in nv.involved_actors:
-        if "name" in act.keys():
-            act["name"] = (act.get("name") or "").strip()
-        if "role" not in act.keys():
-            act["role"] = "OTHER"
+    nv_involved_actors = ov["involved_actors"] or []
+    for act in nv_involved_actors:
+        act["name"] = (act.get("name") or "").strip()
+    nv.involved_actors = nv_involved_actors
 
     nv.project_name = ov["project_name"]
     nv.investment_chain_comment = ov["investment_chain_comment"]
@@ -477,7 +417,8 @@ def map_version_payload(ov: dict, nv: DealVersion):
     nv.former_land_use_comment = ov["former_land_use_comment"]
     nv.former_land_cover = ov["former_land_cover"] or []
     nv.former_land_cover_comment = ov["former_land_cover_comment"]
-    nv.crops = []
+
+    nv_crops = []
     for crop in ov["crops"] or []:
         if not crop.get("choices"):
             continue
@@ -487,17 +428,16 @@ def map_version_payload(ov: dict, nv: DealVersion):
             crop["date"] = None
         else:
             crop["date"] = crop["date"].strip()
-
         crop["choices"] = [x for x in crop["choices"] if x not in ["35", "67"]]
-
         for p in ["area", "yield", "export"]:
             if not crop.get(p):
                 crop[p] = None
-        nv.crops += [crop]
+        nv_crops += [crop]
+    nv.crops = nv_crops
 
     nv.crops_comment = ov["crops_comment"]
 
-    nv.animals = []
+    nv_animals = []
     for animal in ov["animals"] or []:
         if not animal.get("choices"):
             continue
@@ -505,16 +445,16 @@ def map_version_payload(ov: dict, nv: DealVersion):
             animal["current"] = False
         if not animal.get("date"):
             animal["date"] = None
-
         animal["choices"] = [x for x in animal["choices"] if x != "1"]
         for p in ["area", "yield", "export"]:
             if not animal.get(p):
                 animal[p] = None
-        nv.animals += [animal]
+        nv_animals += [animal]
+    nv.animals = nv_animals
 
     nv.animals_comment = ov["animals_comment"]
 
-    nv.mineral_resources = []
+    nv_mineral_resources = []
     for mr in ov["mineral_resources"] or []:
         if not mr.get("choices"):
             continue
@@ -527,11 +467,12 @@ def map_version_payload(ov: dict, nv: DealVersion):
             if not mr.get(p):
                 mr[p] = None
         mr["choices"] = [x for x in mr["choices"] if x not in ["PYN", "33"]]
-        nv.mineral_resources += [mr]
+        nv_mineral_resources += [mr]
+    nv.mineral_resources = nv_mineral_resources
 
     nv.mineral_resources_comment = ov["mineral_resources_comment"]
 
-    nv.contract_farming_crops = []
+    nv_contract_farming_crops = []
     for cfc in ov["contract_farming_crops"] or []:
         if not cfc.get("choices"):
             continue
@@ -543,10 +484,12 @@ def map_version_payload(ov: dict, nv: DealVersion):
             cfc["date"] = cfc["date"].strip()
         else:
             cfc["date"] = None
-        nv.contract_farming_crops += [cfc]
+        nv_contract_farming_crops += [cfc]
+    nv.contract_farming_crops = nv_contract_farming_crops
 
     nv.contract_farming_crops_comment = ov["contract_farming_crops_comment"]
-    nv.contract_farming_animals = []
+
+    nv_contract_farming_animals = []
     for cfa in ov["contract_farming_animals"] or []:
         if not cfa.get("choices"):
             continue
@@ -556,48 +499,51 @@ def map_version_payload(ov: dict, nv: DealVersion):
             cfa["date"] = None
         if not cfa.get("area"):
             cfa["area"] = None
-        nv.contract_farming_animals += [cfa]
+        nv_contract_farming_animals += [cfa]
+    nv.contract_farming_animals = nv_contract_farming_animals
 
     nv.contract_farming_animals_comment = ov["contract_farming_animals_comment"]
-    nv.electricity_generation = []
-    for cfa in ov.get("electricity_generation") or []:
-        if not cfa.get("current"):
-            cfa["current"] = False
+    # nv_electricity_generation = []
+    # for cfa in ov.get("electricity_generation") or []:
+    #     if not cfa.get("current"):
+    #         cfa["current"] = False
+    #     # for p in [
+    #     #     "date",
+    #     #     "area",
+    #     #     "export",
+    #     #     "windfarm_count",
+    #     #     "current_capacity",
+    #     #     "intended_capacity",
+    #     # ]:
+    #     #     if not cfa.get(p):
+    #     #         cfa[p] = None
+    #     nv_electricity_generation += [cfa]
+    nv.electricity_generation = ov.get("electricity_generation") or []
 
-        for p in [
-            "date",
-            "area",
-            "export",
-            "windfarm_count",
-            "current_capacity",
-            "intended_capacity",
-        ]:
-            if not cfa.get(p):
-                cfa[p] = None
-        nv.electricity_generation += [cfa]
     nv.electricity_generation_comment = ov.get("electricity_generation_comment") or ""
-    nv.carbon_sequestration = []
-    for cfa in ov.get("carbon_sequestration") or []:
-        if not cfa.get("current"):
-            cfa["current"] = False
-
-        if not cfa.get("certification_standard_name"):
-            cfa["certification_standard_name"] = None
-        if not cfa.get("certification_standard_comment"):
-            cfa["certification_standard_comment"] = ""
-        if not cfa.get("certification_standard_id"):
-            cfa["certification_standard_id"] = ""
-
-        for p in [
-            "date",
-            "area",
-            "projected_lifetime_sequestration",
-            "projected_annual_sequestration",
-            "certification_standard",
-        ]:
-            if cfa.get(p) is None:
-                cfa[p] = None
-        nv.carbon_sequestration += [cfa]
+    # nv.carbon_sequestration = []
+    # for cfa in ov.get("carbon_sequestration") or []:
+    #     if not cfa.get("current"):
+    #         cfa["current"] = False
+    #
+    #     if not cfa.get("certification_standard_name"):
+    #         cfa["certification_standard_name"] = None
+    #     if not cfa.get("certification_standard_comment"):
+    #         cfa["certification_standard_comment"] = ""
+    #     if not cfa.get("certification_standard_id"):
+    #         cfa["certification_standard_id"] = ""
+    #
+    #     for p in [
+    #         "date",
+    #         "area",
+    #         "projected_lifetime_sequestration",
+    #         "projected_annual_sequestration",
+    #         "certification_standard",
+    #     ]:
+    #         if cfa.get(p) is None:
+    #             cfa[p] = None
+    #     nv.carbon_sequestration += [cfa]
+    nv.carbon_sequestration = ov.get("carbon_sequestration") or []
 
     nv.carbon_sequestration_comment = ov.get("carbon_sequestration_comment") or ""
     nv.has_domestic_use = ov["has_domestic_use"]

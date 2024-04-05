@@ -13,27 +13,20 @@ from django.db.models.functions import Concat, JSONObject
 from django.http import Http404
 from django.utils import timezone
 from django.utils.translation import gettext as _
+from django_pydantic_field import SchemaField
 from nanoid import generate
 from rest_framework.exceptions import PermissionDenied, ParseError
 
 from apps.accounts.models import User, UserRole
 from apps.landmatrix.models import choices
+from apps.landmatrix.models import schema
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.fields import (
-    JSONCurrentDateAreaField,
-    JSONCurrentDateChoiceField,
-    JSONCurrentDateAreaChoicesField,
     ChoiceArrayField,
     ArrayField,
-    JSONLeaseField,
-    JSONJobsField,
-    JSONActorsField,
-    JSONExportsField,
     NanoIDField,
     LooseDateField,
-    JSONCarbonSequestrationField,
-    JSONElectricityGenerationField,
     DecimalIntField,
 )
 
@@ -62,15 +55,17 @@ class DealVersionBaseFields(models.Model):
         blank=True,
         null=True,
     )
-    contract_size = JSONCurrentDateAreaField(blank=True, default=list)
-    production_size = JSONCurrentDateAreaField(blank=True, default=list)
+    contract_size = SchemaField(
+        schema=schema.CurrentDateAreaSchema, blank=True, default=list
+    )
+    production_size = SchemaField(
+        schema=schema.CurrentDateAreaSchema, blank=True, default=list
+    )
     land_area_comment = models.TextField(_("Comment on land area"), blank=True)
 
     # Intention of investment
-    intention_of_investment = JSONCurrentDateAreaChoicesField(
-        blank=True,
-        default=list,
-        choices=[x["value"] for x in choices.INTENTION_OF_INVESTMENT_ITEMS],
+    intention_of_investment = SchemaField(
+        schema=schema.CurrentDateAreaChoicesIOI, blank=True, default=list
     )
     intention_of_investment_comment = models.TextField(
         _("Comment on intention of investment"), blank=True
@@ -92,22 +87,20 @@ class DealVersionBaseFields(models.Model):
     )
 
     # # Negotiation status
-    negotiation_status = JSONCurrentDateChoiceField(
-        verbose_name=_("Negotiation status"),
+    negotiation_status = SchemaField(
+        schema=schema.CurrentDateChoiceNegotiationStatus,
         blank=True,
         default=list,
-        choices=[x["value"] for x in choices.NEGOTIATION_STATUS_ITEMS],
     )
     negotiation_status_comment = models.TextField(
         _("Comment on negotiation status"), blank=True
     )
 
     # # Implementation status
-    implementation_status = JSONCurrentDateChoiceField(
-        verbose_name=_("Implementation status"),
+    implementation_status = SchemaField(
+        schema=schema.CurrentDateChoiceImplementationStatus,
         blank=True,
         default=list,
-        choices=[x["value"] for x in choices.IMPLEMENTATION_STATUS_ITEMS],
     )
     implementation_status_comment = models.TextField(
         _("Comment on implementation status"), blank=True
@@ -183,13 +176,12 @@ class DealVersionBaseFields(models.Model):
     contract_farming = models.BooleanField(null=True)
 
     on_the_lease_state = models.BooleanField(_("On leased / purchased"), null=True)
-    on_the_lease = JSONLeaseField(blank=True, default=list)
+    on_the_lease = SchemaField(schema=schema.LeaseSchema, blank=True, default=list)
 
     off_the_lease_state = models.BooleanField(
         _("Not on leased / purchased (out-grower)"), null=True
     )
-    off_the_lease = JSONLeaseField(blank=True, default=list)
-
+    off_the_lease = SchemaField(schema=schema.LeaseSchema, blank=True, default=list)
     contract_farming_comment = models.TextField(
         _("Comment on contract farming"), blank=True
     )
@@ -208,7 +200,7 @@ class DealVersionBaseFields(models.Model):
     total_jobs_planned_daily_workers = models.IntegerField(
         _("Planned daily/seasonal workers (total)"), blank=True, null=True
     )
-    total_jobs_current = JSONJobsField(blank=True, default=list)
+    total_jobs_current = SchemaField(schema=schema.JobsSchema, blank=True, default=list)
     total_jobs_created_comment = models.TextField(
         _("Comment on jobs created (total)"), blank=True
     )
@@ -223,7 +215,9 @@ class DealVersionBaseFields(models.Model):
     foreign_jobs_planned_daily_workers = models.IntegerField(
         _("Planned daily/seasonal workers (foreign)"), blank=True, null=True
     )
-    foreign_jobs_current = JSONJobsField(blank=True, default=list)
+    foreign_jobs_current = SchemaField(
+        schema=schema.JobsSchema, blank=True, default=list
+    )
     foreign_jobs_created_comment = models.TextField(
         _("Comment on jobs created (foreign)"), blank=True
     )
@@ -238,7 +232,9 @@ class DealVersionBaseFields(models.Model):
     domestic_jobs_planned_daily_workers = models.IntegerField(
         _("Planned daily/seasonal workers (domestic)"), blank=True, null=True
     )
-    domestic_jobs_current = JSONJobsField(blank=True, default=list)
+    domestic_jobs_current = SchemaField(
+        schema=schema.JobsSchema, blank=True, default=list
+    )
     domestic_jobs_created_comment = models.TextField(
         _("Comment on jobs created (domestic)"), blank=True
     )
@@ -251,7 +247,7 @@ class DealVersionBaseFields(models.Model):
         null=True,
         related_name="dealversions",
     )
-    involved_actors = JSONActorsField(blank=True, default=list)
+    involved_actors = SchemaField(schema=schema.ActorsSchema, blank=True, default=list)
     project_name = models.CharField(_("Name of investment project"), blank=True)
     investment_chain_comment = models.TextField(
         _("Comment on investment chain"), blank=True
@@ -413,57 +409,44 @@ class DealVersionBaseFields(models.Model):
     )
 
     """ Produce info """
-    crops = JSONExportsField(
-        verbose_name=_("Crops area/yield/export"),
-        blank=True,
-        default=list,
-        choices=[x["value"] for x in choices.CROPS_ITEMS],
-    )
+    crops = SchemaField(schema=schema.ExportsCrops, blank=True, default=list)
     crops_comment = models.TextField(_("Comment on crops"), blank=True)
 
-    animals = JSONExportsField(
-        verbose_name=_("Livestock area/yield/export"),
-        blank=True,
-        default=list,
-        choices=[x["value"] for x in choices.ANIMALS_ITEMS],
-    )
+    animals = SchemaField(schema=schema.ExportsAnimals, blank=True, default=list)
     animals_comment = models.TextField(_("Comment on livestock"), blank=True)
 
-    mineral_resources = JSONExportsField(
-        verbose_name=_("Mineral resources area/yield/export"),
-        blank=True,
-        default=list,
-        choices=[x["value"] for x in choices.MINERALS_ITEMS],
+    mineral_resources = SchemaField(
+        schema=schema.ExportsMineralResources, blank=True, default=list
     )
     mineral_resources_comment = models.TextField(
         _("Comment on mineral resources"), blank=True
     )
 
-    contract_farming_crops = JSONCurrentDateAreaChoicesField(
+    contract_farming_crops = SchemaField(
+        schema=schema.CurrentDateAreaChoicesCrops,
         blank=True,
         default=list,
-        choices=[x["value"] for x in choices.CROPS_ITEMS],
     )
     contract_farming_crops_comment = models.TextField(
         _("Comment on contract farming crops"), blank=True
     )
-    contract_farming_animals = JSONCurrentDateAreaChoicesField(
+    contract_farming_animals = SchemaField(
+        schema=schema.CurrentDateAreaChoicesAnimals,
         blank=True,
         default=list,
-        choices=[x["value"] for x in choices.ANIMALS_ITEMS],
     )
     contract_farming_animals_comment = models.TextField(
         _("Comment on contract farming livestock"), blank=True
     )
 
-    electricity_generation = JSONElectricityGenerationField(
-        verbose_name=_("Electricity generation"), blank=True, default=list
+    electricity_generation = SchemaField(
+        schema=schema.ElectricityGenerationSchema, blank=True, default=list
     )
     electricity_generation_comment = models.TextField(
         _("Comment on electricity generation"), blank=True
     )
-    carbon_sequestration = JSONCarbonSequestrationField(
-        verbose_name=_("Carbon Sequestration"), blank=True, default=list
+    carbon_sequestration = SchemaField(
+        schema=schema.CarbonSequestrationSchema, blank=True, default=list
     )
     carbon_sequestration_comment = models.TextField(
         _("Comment on carbon sequestration"), blank=True
@@ -912,18 +895,20 @@ class DealVersion(DealVersionBaseFields, BaseVersionMixin):
         self.save()
 
     def __get_current(self, attributes, field, multi=False):
-        if not attributes:
+        # ic("x", attributes)
+        if not attributes or not attributes.root:
             return None
         if multi:
             currents = []
             for attr in attributes:
-                if attr.get("current") and (values := attr.get(field)):
+                if attr.current and (values := getattr(attr, field)):
                     currents += values
             return currents or None
         # prioritize "current" checkbox if present
-        current = [x for x in attributes if x.get("current")]
+        current = [x for x in attributes if x.current]
+        # ic(current)
         if current:
-            return current[0].get(field)
+            return getattr(current[0], field)
         else:
             print(self)
             print(attributes)
@@ -1015,10 +1000,10 @@ class DealVersion(DealVersionBaseFields, BaseVersionMixin):
         self.negotiation_status: list
         valid_negotation_status = (
             [
-                int(x["date"][:4])
+                int(x.date[:4])
                 for x in self.negotiation_status
-                if x.get("date")
-                and x["choice"]
+                if x.date
+                and x.choice
                 in (
                     "UNDER_NEGOTIATION",
                     "ORAL_AGREEMENT",
@@ -1033,10 +1018,10 @@ class DealVersion(DealVersionBaseFields, BaseVersionMixin):
         self.implementation_status: list
         valid_implementation_status = (
             [
-                int(x["date"][:4])
+                int(x.date[:4])
                 for x in self.implementation_status
-                if x.get("date")
-                and x["choice"]
+                if x.date
+                and x.choice
                 in (
                     "STARTUP_PHASE",
                     "IN_OPERATION",

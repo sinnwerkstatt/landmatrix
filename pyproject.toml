@@ -16,6 +16,8 @@ djangorestframework = "*"
 djangorestframework-gis = "*"
 drf-spectacular = { version = "*", extras = ['sidecar'] }
 
+pydantic = "*"
+django-pydantic-field = "*"
 django-cors-headers = "*"
 django-environ = "*"
 django-impersonate = "*"

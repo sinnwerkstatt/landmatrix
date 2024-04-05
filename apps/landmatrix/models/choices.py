@@ -1,3 +1,5 @@
+from enum import Enum
+
 from django.utils.translation import gettext_lazy as _
 
 
@@ -80,6 +82,10 @@ INTENTION_OF_INVESTMENT_ITEMS = [
 INTENTION_OF_INVESTMENT_CHOICES = [
     (x["value"], x["label"]) for x in INTENTION_OF_INVESTMENT_ITEMS
 ]
+IntentionOfInvestmentEnum = Enum(
+    "IntentionOfInvestmentEnum",
+    {x["value"]: x["value"] for x in INTENTION_OF_INVESTMENT_ITEMS},
+)
 
 NATURE_OF_DEAL_ITEMS = [
     {"value": "OUTRIGHT_PURCHASE", "label": _("Outright purchase")},
@@ -142,6 +148,9 @@ NEGOTIATION_STATUS_ITEMS = [
 NEGOTIATION_STATUS_CHOICES = [
     (x["value"], x["label"]) for x in NEGOTIATION_STATUS_ITEMS
 ]
+NegotiationStatusEnum = Enum(
+    "NegotiationStatusEnum", {x["value"]: x["value"] for x in NEGOTIATION_STATUS_ITEMS}
+)
 
 IMPLEMENTATION_STATUS_ITEMS = [
     {"value": "PROJECT_NOT_STARTED", "label": _("Project not started")},
@@ -152,6 +161,10 @@ IMPLEMENTATION_STATUS_ITEMS = [
 IMPLEMENTATION_STATUS_CHOICES = [
     (x["value"], x["label"]) for x in IMPLEMENTATION_STATUS_ITEMS
 ]
+ImplementationStatusEnum = Enum(
+    "ImplementationStatusEnum",
+    {x["value"]: x["value"] for x in IMPLEMENTATION_STATUS_ITEMS},
+)
 
 HA_AREA_ITEMS = [
     {"value": "PER_HA", "label": _("per ha")},
@@ -383,6 +396,7 @@ CROPS_ITEMS = [
     {"value": "YAM", "label": _("Yam"), "produce": "FOOD_CROP"},
 ]
 CROPS_CHOICES = [(x["value"], x["label"]) for x in CROPS_ITEMS]
+CropsEnum = Enum("CropsEnum", {x["value"]: x["value"] for x in CROPS_ITEMS})
 
 ANIMALS_ITEMS = [
     {"value": "AQU", "label": _("Aquaculture (animals)")},
@@ -398,6 +412,7 @@ ANIMALS_ITEMS = [
     {"value": "SHR", "label": _("Shrimp")},
 ]
 ANIMALS_CHOICES = [(x["value"], x["label"]) for x in ANIMALS_ITEMS]
+AnimalsEnum = Enum("AnimalsEnum", {x["value"]: x["value"] for x in ANIMALS_ITEMS})
 
 MINERALS_ITEMS = [
     {"value": "ALU", "label": _("Aluminum")},
@@ -452,6 +467,7 @@ MINERALS_ITEMS = [
     {"value": "ZNC", "label": _("Zinc")},
 ]
 MINERALS_CHOICES = [(x["value"], x["label"]) for x in MINERALS_ITEMS]
+MineralsEnum = Enum("MineralsEnum", {x["value"]: x["value"] for x in MINERALS_ITEMS})
 
 ACTOR_ITEMS = [
     {
@@ -473,6 +489,7 @@ ACTOR_ITEMS = [
     {"value": "OTHER", "label": _("Other")},
 ]
 ACTOR_MAP = [(x["value"], x["label"]) for x in ACTOR_ITEMS]
+ActorEnum = Enum("ActorEnum", {x["value"]: x["value"] for x in ACTOR_ITEMS})
 
 ELECTRICITY_GENERATION_ITEMS = [
     {"value": "WIND", "label": _("On-shore wind turbines")},
@@ -482,6 +499,11 @@ ELECTRICITY_GENERATION_ITEMS = [
 ELECTRICITY_GENERATIONS_CHOICES = [
     (x["value"], x["label"]) for x in ELECTRICITY_GENERATION_ITEMS
 ]
+ElectricityGenerationEnum = Enum(
+    "ElectricityGenerationEnum",
+    {x["value"]: x["value"] for x in ELECTRICITY_GENERATION_ITEMS},
+)
+
 
 CARBON_SEQUESTRATION_ITEMS = [
     {"value": "REFORESTATION", "label": _("Reforestation & afforestation")},
@@ -502,6 +524,10 @@ CARBON_SEQUESTRATION_ITEMS = [
     {"value": "WIND_FARM", "label": _("Wind farm")},
     {"value": "OTHER", "label": _("Other")},
 ]
+CarbonSequestrationEnum = Enum(
+    "CarbonSequestrationEnum",
+    {x["value"]: x["value"] for x in CARBON_SEQUESTRATION_ITEMS},
+)
 
 CARBON_SEQUESTRATION_CERT_ITEMS = [
     {"value": "REDD", "label": _("REDD+")},
@@ -512,6 +538,11 @@ CARBON_SEQUESTRATION_CERT_ITEMS = [
     {"value": "VIVO", "label": _("Plan Vivo")},
     {"value": "OTHER", "label": _("Other")},
 ]
+CarbonSequestrationCertEnum = Enum(
+    "CarbonSequestrationCertEnum",
+    {x["value"]: x["value"] for x in CARBON_SEQUESTRATION_CERT_ITEMS},
+)
+
 
 WATER_SOURCE_ITEMS = [
     {"value": "GROUNDWATER", "label": _("Groundwater")},

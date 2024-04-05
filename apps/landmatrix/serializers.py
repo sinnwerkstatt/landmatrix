@@ -21,6 +21,22 @@ from apps.landmatrix.models.new import (
     DealWorkflowInfo,
     InvestorWorkflowInfo,
 )
+from apps.landmatrix.serializer_fields import (
+    CurrentDateAreaSchemaField,
+    CurrentDateAreaChoicesIOIField,
+    CropsSchemaField,
+    CarbonSequestrationSchemaField,
+    CurrentDateChoiceNegotiationStatusField,
+    CurrentDateChoiceImplementationStatusField,
+    LeaseSchemaField,
+    ActorsSchemaField,
+    JobsSchemaField,
+    ExportsAnimalsField,
+    ExportsMineralResourcesField,
+    CurrentDateAreaChoicesCropsField,
+    CurrentDateAreaChoicesAnimalsField,
+    ElectricityGenerationSchemaField,
+)
 
 
 class FieldDefinitionSerializer(serializers.ModelSerializer):
@@ -146,6 +162,25 @@ class DealVersionSerializer(serializers.ModelSerializer):
     sent_to_review_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
     sent_to_activation_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
     activated_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    contract_size = CurrentDateAreaSchemaField()
+    production_size = CurrentDateAreaSchemaField()
+    intention_of_investment = CurrentDateAreaChoicesIOIField()
+    negotiation_status = CurrentDateChoiceNegotiationStatusField()
+    implementation_status = CurrentDateChoiceImplementationStatusField()
+    on_the_lease = LeaseSchemaField()
+    off_the_lease = LeaseSchemaField()
+    total_jobs_current = JobsSchemaField()
+    foreign_jobs_current = JobsSchemaField()
+    domestic_jobs_current = JobsSchemaField()
+    involved_actors = ActorsSchemaField()
+    crops = CropsSchemaField()
+    animals = ExportsAnimalsField()
+    mineral_resources = ExportsMineralResourcesField()
+    contract_farming_crops = CurrentDateAreaChoicesCropsField()
+    contract_farming_animals = CurrentDateAreaChoicesAnimalsField()
+    electricity_generation = ElectricityGenerationSchemaField()
+    carbon_sequestration = CarbonSequestrationSchemaField()
 
     class Meta:
         model = DealVersion
