@@ -1243,8 +1243,11 @@ class DealDataSource(BaseDataSource):
 
 
 class DealHullQuerySet(models.QuerySet):
+    def normal(self):
+        return self.filter(deleted=False)
+
     def active(self):
-        return self.filter(active_version__isnull=False, deleted=False)
+        return self.normal().filter(active_version__isnull=False)
 
     def public(self):
         return self.active().filter(active_version__is_public=True, confidential=False)
@@ -1258,26 +1261,26 @@ class DealHullQuerySet(models.QuerySet):
             return self.public()
         elif subset == "ACTIVE":
             return self.active()
-        return self
+        return self.normal()
 
-    def with_mode(self):
-        return self.annotate(
-            mode=Case(
-                When(
-                    ~Q(active_version_id=None) & ~Q(draft_version_id=None),
-                    then=Concat(Value("ACTIVE + "), "draft_version__status"),
-                ),
-                When(
-                    ~Q(active_version_id=None) & Q(draft_version_id=None),
-                    then=Value("ACTIVE"),
-                ),
-                When(
-                    Q(active_version_id=None) & ~Q(draft_version_id=None),
-                    then="draft_version__status",
-                ),
-                default=Value(""),
-            )
-        )
+    # def with_mode(self):
+    #     return self.annotate(
+    #         mode=Case(
+    #             When(
+    #                 ~Q(active_version_id=None) & ~Q(draft_version_id=None),
+    #                 then=Concat(Value("ACTIVE + "), "draft_version__status"),
+    #             ),
+    #             When(
+    #                 ~Q(active_version_id=None) & Q(draft_version_id=None),
+    #                 then=Value("ACTIVE"),
+    #             ),
+    #             When(
+    #                 Q(active_version_id=None) & ~Q(draft_version_id=None),
+    #                 then="draft_version__status",
+    #             ),
+    #             default=Value(""),
+    #         )
+    #     )
 
 
 class HullBase(models.Model):
@@ -1548,8 +1551,11 @@ class InvestorDataSource(BaseDataSource):
 
 
 class InvestorHullQuerySet(models.QuerySet):
+    def normal(self):
+        return self.filter(deleted=False)
+
     def active(self):
-        return self.filter(active_version__isnull=False, deleted=False)
+        return self.normal().filter(active_version__isnull=False)
 
     # NOTE at the moment the only thing we filter on is the "status".
     # the following is an idea:
@@ -1564,26 +1570,26 @@ class InvestorHullQuerySet(models.QuerySet):
             return self.active()
 
         # hand it out unfiltered.
-        return self
+        return self.normal()
 
-    def with_mode(self):
-        return self.annotate(
-            mode=Case(
-                When(
-                    ~Q(active_version_id=None) & ~Q(draft_version_id=None),
-                    then=Concat(Value("ACTIVE + "), "draft_version__status"),
-                ),
-                When(
-                    ~Q(active_version_id=None) & Q(draft_version_id=None),
-                    then=Value("ACTIVE"),
-                ),
-                When(
-                    Q(active_version_id=None) & ~Q(draft_version_id=None),
-                    then="draft_version__status",
-                ),
-                default=Value(""),
-            )
-        )
+    # def with_mode(self):
+    #     return self.annotate(
+    #         mode=Case(
+    #             When(
+    #                 ~Q(active_version_id=None) & ~Q(draft_version_id=None),
+    #                 then=Concat(Value("ACTIVE + "), "draft_version__status"),
+    #             ),
+    #             When(
+    #                 ~Q(active_version_id=None) & Q(draft_version_id=None),
+    #                 then=Value("ACTIVE"),
+    #             ),
+    #             When(
+    #                 Q(active_version_id=None) & ~Q(draft_version_id=None),
+    #                 then="draft_version__status",
+    #             ),
+    #             default=Value(""),
+    #         )
+    #     )
 
 
 class InvestorHull(HullBase):

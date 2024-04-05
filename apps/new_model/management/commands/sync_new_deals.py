@@ -353,6 +353,8 @@ def map_version_payload(ov: dict, nv: DealVersion):
     for jb in nv_total_jobs_current:
         if jb.get("jobs") == "":
             jb["jobs"] = None
+        if jb.get("workers") == "":
+            jb["workers"] = None
     nv.total_jobs_current = nv_total_jobs_current
 
     nv.total_jobs_created_comment = ov["total_jobs_created_comment"]
