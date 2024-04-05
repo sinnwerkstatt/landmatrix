@@ -12,7 +12,8 @@
     "format:check": "prettier --check .",
     "format": "prettier --write .",
     "test": "vitest run src",
-    "test:watch": "vitest src"
+    "test:watch": "vitest src",
+    "openapi": "openapi-typescript http://localhost:9000/api/schema/ -o ./src/lib/openAPI.d.ts"
   },
   "devDependencies": {
     "@floating-ui/dom": "^1.6.3",
@@ -66,6 +67,8 @@
     "leaflet": "^1.9.4",
     "leaflet-gesture-handling": "^1.2.2",
     "nanoid": "^5.0.6",
+    "openapi-typescript": "^6.7.5",
+    "openapi-fetch": "^0.9.3",
     "postcss": "^8.4.35",
     "postcss-import": "^16.0.1",
     "postcss-load-config": "^5.0.3",
