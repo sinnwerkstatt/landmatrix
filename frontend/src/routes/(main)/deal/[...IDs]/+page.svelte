@@ -4,8 +4,6 @@
   import { goto } from "$app/navigation"
   import { page } from "$app/stores"
 
-  export let data
-
   onMount(() => {
     const activeTab = $page.url.hash.split("-")[0] || "#locations"
     const newLoc = activeTab.replace("#", "")

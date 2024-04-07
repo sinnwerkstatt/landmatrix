@@ -5,6 +5,12 @@
 
 
 export interface paths {
+  "/api/blog_categories/": {
+    get: operations["api_blog_categories_list"];
+  };
+  "/api/blog_categories/{id}/": {
+    get: operations["api_blog_categories_retrieve"];
+  };
   "/api/countries/": {
     get: operations["api_countries_list"];
   };
@@ -229,6 +235,13 @@ export interface components {
     AnnualLeasingFeeTypeEnum: "PER_HA" | "PER_AREA";
     /** @enum {unknown} */
     BlankEnum: "";
+    BlogCategory: {
+      id: number;
+      /** Category Name */
+      name: string;
+      slug: string;
+      description?: string;
+    };
     /**
      * CarbonSequestrationCertEnum
      * @enum {string}
@@ -1527,6 +1540,10 @@ export interface components {
      * @enum {integer}
      */
     RoleEnum: 0 | 1 | 2 | 3;
+    SimpleInvestor: {
+      id: number;
+      name: string;
+    };
     /**
      * @description * `GROUNDWATER` - Groundwater
      * * `SURFACE_WATER` - Surface water
@@ -1582,6 +1599,30 @@ export type external = Record<string, never>;
 
 export interface operations {
 
+  api_blog_categories_list: {
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["BlogCategory"][];
+        };
+      };
+    };
+  };
+  api_blog_categories_retrieve: {
+    parameters: {
+      path: {
+        /** @description A unique integer value identifying this Blog Category. */
+        id: number;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["BlogCategory"];
+        };
+      };
+    };
+  };
   api_countries_list: {
     responses: {
       200: {
@@ -2108,7 +2149,7 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["Investor"];
+          "application/json": components["schemas"]["SimpleInvestor"];
         };
       };
     };
