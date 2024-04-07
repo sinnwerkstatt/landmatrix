@@ -1,7 +1,7 @@
 <script lang="ts">
   import { navigating } from "$app/stores"
 
-  import { loading } from "$lib/stores"
+  import { loading } from "$lib/stores/basics"
 </script>
 
 {#if $navigating || $loading}

@@ -9,7 +9,8 @@
   import { browser } from "$app/environment"
 
   import { filters } from "$lib/filters"
-  import { countries, dealsNG, isMobile, loading, regions } from "$lib/stores"
+  import { countries, dealsNG, regions } from "$lib/stores"
+  import { isMobile, loading } from "$lib/stores/basics"
   import { Location2, type DealHull } from "$lib/types/newtypes"
   import type { Country } from "$lib/types/wagtail"
 

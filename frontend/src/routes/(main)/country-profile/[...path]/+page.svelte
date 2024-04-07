@@ -2,7 +2,8 @@
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
-  import { chartDescriptions, dealsNG, isMobile } from "$lib/stores"
+  import { chartDescriptions, dealsNG } from "$lib/stores"
+  import { isMobile } from "$lib/stores/basics"
 
   import ChartsContainer from "$components/Data/Charts/ChartsContainer.svelte"
   import { showContextBar, showFilterBar } from "$components/Data/stores"

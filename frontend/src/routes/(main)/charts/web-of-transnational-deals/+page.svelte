@@ -4,7 +4,8 @@
 
   import type { EdgeBundlingData } from "$lib/data/charts/webOfTransnationalDeals"
   import { filters, FilterValues } from "$lib/filters"
-  import { chartDescriptions, isMobile } from "$lib/stores"
+  import { chartDescriptions } from "$lib/stores"
+  import { isMobile } from "$lib/stores/basics"
 
   import ChartsContainer from "$components/Data/Charts/ChartsContainer.svelte"
   import CountryInvestorInfo from "$components/Data/Charts/CountryInvestorInfo.svelte"

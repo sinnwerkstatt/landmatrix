@@ -11,7 +11,8 @@ export async function pageQuery(url: URL, fetch: LoadEvent["fetch"]) {
   const res = await fetch(WAGTAIL_API_BASE_URL + pageUrl, {
     headers: { Accept: "application/json" },
   })
-  if (!res.ok) error(res.status as NumericRange<400, 599>, (await res.json()).message)
+  const resJson = await res.json()
+  if (!res.ok) error(res.status as NumericRange<400, 599>, resJson.message)
 
-  return await res.json()
+  return resJson
 }

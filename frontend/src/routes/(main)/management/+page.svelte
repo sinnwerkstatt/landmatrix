@@ -11,7 +11,7 @@
   import { page } from "$app/stores"
 
   import { dealFields, investorFields } from "$lib/fieldLookups"
-  import { loading } from "$lib/stores"
+  import { loading } from "$lib/stores/basics"
   import type { DealHull, InvestorHull } from "$lib/types/newtypes"
   import { UserRole } from "$lib/types/user"
 

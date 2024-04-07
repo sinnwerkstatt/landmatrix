@@ -6,7 +6,7 @@
   import isSameOrBefore from "dayjs/plugin/isSameOrBefore"
   import { _ } from "svelte-i18n"
 
-  import { loading } from "$lib/stores"
+  import { loading } from "$lib/stores/basics"
   import type { Country, Region } from "$lib/types/wagtail"
 
   import type { CaseStatisticsDeal, CaseStatisticsInvestor } from "./caseStatistics"

@@ -4,7 +4,7 @@
   import { page } from "$app/stores"
 
   import { pageQuery } from "$lib/queries"
-  import { loading } from "$lib/stores"
+  import { loading } from "$lib/stores/basics"
 
   import BasePage from "./BasePage.svelte"
   import HomePage from "./HomePage.svelte"

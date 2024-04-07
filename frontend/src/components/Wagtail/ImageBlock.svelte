@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { lightboxImage } from "$lib/stores"
+  import { lightboxImage } from "$lib/stores/basics"
   import type { BlockImage } from "$lib/types/custom"
 
   export let value: BlockImage

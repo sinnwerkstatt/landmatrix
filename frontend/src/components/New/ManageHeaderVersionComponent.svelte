@@ -3,7 +3,7 @@
 
   import { navigating, page } from "$app/stores"
 
-  import { loading } from "$lib/stores"
+  import { loading } from "$lib/stores/basics"
   import type { DealHull, InvestorHull } from "$lib/types/newtypes.js"
   import { Version2Status } from "$lib/types/newtypes.js"
   import { UserRole, type User } from "$lib/types/user"

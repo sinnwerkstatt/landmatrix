@@ -2,7 +2,8 @@
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
-  import { countries, loading, regions } from "$lib/stores"
+  import { countries, regions } from "$lib/stores"
+  import { loading } from "$lib/stores/basics"
   import type { Country, Region } from "$lib/types/wagtail"
 
   import VirtualListSelect from "$components/LowLevel/VirtualListSelect.svelte"

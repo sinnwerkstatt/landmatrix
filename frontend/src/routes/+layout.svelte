@@ -2,7 +2,7 @@
   import * as Sentry from "@sentry/svelte"
   import { BrowserTracing } from "@sentry/tracing"
   import { SvelteToast } from "@zerodevx/svelte-toast"
-  import * as staticEnv from "$env/static/public"
+  import { env } from "$env/dynamic/public"
   import { onMount } from "svelte"
 
   import { afterNavigate } from "$app/navigation"
@@ -22,9 +22,9 @@
 
   export let data
 
-  if (staticEnv.PUBLIC_SENTRY_DSN) {
+  if (env.PUBLIC_SENTRY_DSN) {
     Sentry.init({
-      dsn: staticEnv.PUBLIC_SENTRY_DSN,
+      dsn: env.PUBLIC_SENTRY_DSN,
       environment: "svelte frontend",
       integrations: [new BrowserTracing()],
       tracesSampleRate: 1.0,
@@ -59,10 +59,10 @@
   <slot />
 </div>
 
-{#if staticEnv.PUBLIC_MATOMO_URL && staticEnv.PUBLIC_MATOMO_SITE_ID}
+{#if env.PUBLIC_MATOMO_URL && env.PUBLIC_MATOMO_SITE_ID}
   <Matomo
-    url={staticEnv.PUBLIC_MATOMO_URL}
-    siteId={+staticEnv.PUBLIC_MATOMO_SITE_ID}
+    url={env.PUBLIC_MATOMO_URL}
+    siteId={+env.PUBLIC_MATOMO_SITE_ID}
     linkTracking={false}
   />
 {/if}

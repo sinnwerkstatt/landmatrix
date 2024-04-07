@@ -3,7 +3,8 @@
   import { _ } from "svelte-i18n"
 
   import { investorFields } from "$lib/fieldLookups"
-  import { investorsNG, isMobile } from "$lib/stores"
+  import { investorsNG } from "$lib/stores"
+  import { isMobile } from "$lib/stores/basics"
 
   import DataContainer from "$components/Data/DataContainer.svelte"
   import { showContextBar, showFilterBar } from "$components/Data/stores"

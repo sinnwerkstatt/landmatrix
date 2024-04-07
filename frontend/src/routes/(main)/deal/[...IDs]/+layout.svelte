@@ -4,7 +4,7 @@
   import { invalidate } from "$app/navigation"
   import { page } from "$app/stores"
 
-  import { loading } from "$lib/stores"
+  import { loading } from "$lib/stores/basics"
   import { UserRole } from "$lib/types/user"
 
   import CountryField from "$components/Fields/Display2/CountryField.svelte"

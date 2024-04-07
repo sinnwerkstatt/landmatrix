@@ -11,6 +11,9 @@ export interface paths {
   "/api/blog_categories/{id}/": {
     get: operations["api_blog_categories_retrieve"];
   };
+  "/api/chart_descriptions/": {
+    get: operations["api_chart_descriptions_retrieve"];
+  };
   "/api/countries/": {
     get: operations["api_countries_list"];
   };
@@ -304,6 +307,12 @@ export interface components {
     };
     /** CarbonSequestrationSchema */
     CarbonSequestrationSchema: components["schemas"]["CarbonSequestrationItem"][];
+    ChartDescriptions: {
+      web_of_transnational_deals: string;
+      dynamics_overview: string;
+      produce_info_map: string;
+      global_web_of_investments: string;
+    };
     /**
      * @description * `GOVERNMENT` - Government
      * * `GOVERNMENT_INSTITUTION` - Government institution
@@ -1294,7 +1303,7 @@ export interface components {
     InvolvementFields: {
       role: components["schemas"]["ValueLabel"][];
       investment_type: components["schemas"]["ValueLabel"][];
-      parent_relations: components["schemas"]["ValueLabel"][];
+      parent_relation: components["schemas"]["ValueLabel"][];
     };
     /** JobsItem */
     JobsItem: {
@@ -1326,6 +1335,13 @@ export interface components {
     };
     /** JobsSchema */
     JobsSchema: components["schemas"]["JobsItem"][];
+    LeanUser: {
+      id: number;
+      full_name?: string;
+      /** @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
+      username: string;
+      role?: components["schemas"]["RoleEnum"];
+    };
     /** LeaseItem */
     LeaseItem: {
       /**
@@ -1573,11 +1589,41 @@ export interface components {
      * @enum {string}
      */
     TypeB96Enum: "MEDIA_REPORT" | "RESEARCH_PAPER_OR_POLICY_REPORT" | "GOVERNMENT_SOURCES" | "COMPANY_SOURCES" | "CONTRACT" | "CONTRACT_FARMING_AGREEMENT" | "PERSONAL_INFORMATION" | "CROWDSOURCING" | "OTHER";
-    UserList: {
+    User: {
       id: number;
-      full_name?: string;
+      country_id: number | null;
+      region_id: number | null;
+      /** Format: date-time */
+      last_login?: string | null;
+      /**
+       * Superuser status
+       * @description Designates that this user has all permissions without explicitly assigning them.
+       */
+      is_superuser?: boolean;
       /** @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
       username: string;
+      first_name?: string;
+      last_name?: string;
+      /**
+       * Email address
+       * Format: email
+       */
+      email?: string;
+      /**
+       * Staff status
+       * @description Designates whether the user can log into this admin site.
+       */
+      is_staff?: boolean;
+      /**
+       * Active
+       * @description Designates whether this user should be treated as active. Unselect this instead of deleting accounts.
+       */
+      is_active?: boolean;
+      /** Format: date-time */
+      date_joined?: string;
+      full_name?: string;
+      phone?: string;
+      information?: string;
       role?: components["schemas"]["RoleEnum"];
     };
     ValueLabel: {
@@ -1619,6 +1665,15 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["BlogCategory"];
+        };
+      };
+    };
+  };
+  api_chart_descriptions_retrieve: {
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["ChartDescriptions"];
         };
       };
     };
@@ -2323,7 +2378,7 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["UserList"][];
+          "application/json": components["schemas"]["LeanUser"][];
         };
       };
     };
@@ -2338,7 +2393,7 @@ export interface operations {
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["UserList"];
+          "application/json": components["schemas"]["User"];
         };
       };
     };

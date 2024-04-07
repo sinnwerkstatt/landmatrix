@@ -10,7 +10,7 @@
   } from "chart.js?client"
   import { Pie } from "svelte-chartjs?client"
 
-  import { isDarkMode } from "$lib/stores"
+  import { isDarkMode } from "$lib/stores/basics"
 
   ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale)
 

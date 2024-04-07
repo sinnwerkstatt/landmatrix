@@ -6,7 +6,8 @@
   import { createNegotiationStatusChartData } from "$lib/data/charts/negotiationStatusGroup"
   import { createProduceGroupChartData } from "$lib/data/charts/produceGroup"
   import { filters } from "$lib/filters"
-  import { countries, dealsNG, observatoryPages, regions } from "$lib/stores"
+  import { countries, dealsNG, regions } from "$lib/stores"
+  import { observatoryPages } from "$lib/stores/wagtail"
   import type { CountryOrRegion } from "$lib/types/wagtail"
   import { sum } from "$lib/utils/data_processing"
 

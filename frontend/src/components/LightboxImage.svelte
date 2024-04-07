@@ -1,7 +1,7 @@
 <script lang="ts">
   import { browser } from "$app/environment"
 
-  import { lightboxImage } from "$lib/stores"
+  import { lightboxImage } from "$lib/stores/basics"
 
   const onKeydown = (e: KeyboardEvent) => e.key === "Escape" && lightboxImage.set(null)
   const onClick = () => lightboxImage.set(null)

@@ -4,7 +4,7 @@
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
-  import { loading } from "$lib/stores"
+  import { loading } from "$lib/stores/basics"
 
   import DealDetailModal from "./DealDetailModal.svelte"
   import InvestorDetailModal from "./InvestorDetailModal.svelte"

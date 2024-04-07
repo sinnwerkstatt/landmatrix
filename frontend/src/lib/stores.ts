@@ -1,4 +1,6 @@
-import { PUBLIC_BASE_URL } from "$env/static/public"
+import { error } from "@sveltejs/kit"
+import { env } from "$env/dynamic/public"
+import createClient from "openapi-fetch"
 import { _, locale } from "svelte-i18n"
 import { derived, readable, writable } from "svelte/store"
 
@@ -9,7 +11,8 @@ import {
   intention_of_investment_group_choices,
 } from "$lib/choices"
 import { filters, publicOnly } from "$lib/filters"
-import type { BlockImage } from "$lib/types/custom"
+import type { components, paths } from "$lib/openAPI"
+import { loading } from "$lib/stores/basics"
 import type { AreaType, IntentionOfInvestment } from "$lib/types/deal"
 import {
   ImplementationStatus,
@@ -17,14 +20,7 @@ import {
   NegotiationStatusGroup,
 } from "$lib/types/deal"
 import type { Currency, DealHull, InvestorHull } from "$lib/types/newtypes"
-import type { User } from "$lib/types/user"
-import type {
-  BlogCategory,
-  Country,
-  ObservatoryPage,
-  Region,
-  WagtailPage,
-} from "$lib/types/wagtail"
+import type { Country, Region } from "$lib/types/wagtail"
 
 export interface ValueLabelEntry {
   value: string
@@ -32,46 +28,9 @@ export interface ValueLabelEntry {
   group?: string
 }
 
-interface FieldChoicesType {
-  deal: {
-    intention_of_investment: ValueLabelEntry[]
-    negotiation_status: ValueLabelEntry[]
-    implementation_status: ValueLabelEntry[]
-    level_of_accuracy: ValueLabelEntry[]
-    nature_of_deal: ValueLabelEntry[]
-    recognition_status: ValueLabelEntry[]
-    negative_impacts: ValueLabelEntry[]
-    benefits: ValueLabelEntry[]
-    former_land_owner: ValueLabelEntry[]
-    former_land_use: ValueLabelEntry[]
-    ha_area: ValueLabelEntry[]
-    community_consultation: ValueLabelEntry[]
-    community_reaction: ValueLabelEntry[]
-    former_land_cover: ValueLabelEntry[]
-    crops: ValueLabelEntry[]
-    animals: ValueLabelEntry[]
-    electricity_generation: ValueLabelEntry[]
-    carbon_sequestration: ValueLabelEntry[]
-    carbon_sequestration_certs: ValueLabelEntry[]
-    minerals: ValueLabelEntry[]
-    water_source: ValueLabelEntry[]
-    not_public_reason: ValueLabelEntry[]
-    actors: ValueLabelEntry[]
-  }
-  datasource: {
-    type: ValueLabelEntry[]
-  }
-  investor: {
-    classification: ValueLabelEntry[]
-  }
-  involvement: {
-    role: ValueLabelEntry[]
-    investment_type: ValueLabelEntry[]
-    parent_relation: ValueLabelEntry[]
-  }
-}
+const serverApiClient = createClient<paths>({ baseUrl: env.PUBLIC_BASE_URL })
 
-export const fieldChoices = readable<FieldChoicesType>(
+export const fieldChoices = readable<components["schemas"]["FieldChoices"]>(
   {
     deal: {
       intention_of_investment: [],
@@ -105,113 +64,51 @@ export const fieldChoices = readable<FieldChoicesType>(
     involvement: { role: [], investment_type: [], parent_relation: [] },
   },
   set => {
-    fetch(PUBLIC_BASE_URL + `/api/field_choices/`, {
-      headers: { Accept: "application/json" },
+    serverApiClient.GET("/api/field_choices/").then(ret => {
+      if (ret.error) error(500, ret.error)
+      set(ret.data)
     })
-      .then(ret => ret.json())
-      .then(set)
   },
 )
 
-export const aboutPages = derived(
-  [locale],
-  ([$locale], set) => {
-    // beware, the $locale doesn't really seem to matter. django is apparently using the cookie anyways.
-    fetch(
-      PUBLIC_BASE_URL +
-        `/api/wagtail/v2/pages/?order=title&type=wagtailcms.AboutIndexPage`,
-      { headers: { "Accept-Language": $locale ?? "en" } },
-    )
-      .then(ret => ret.json() as Promise<{ items: WagtailPage[] }>)
-      .then(res => {
-        if (res.items && res.items.length) {
-          const indexPageId = res.items[0].id
-          fetch(PUBLIC_BASE_URL + `/api/wagtail/v2/pages/?child_of=${indexPageId}`)
-            .then(ret => ret.json() as Promise<{ items: WagtailPage[] }>)
-            .then(res => set(res.items))
-        }
-      })
+export const blogCategories = readable(
+  [] as components["schemas"]["BlogCategory"][],
+  set => {
+    serverApiClient.GET("/api/blog_categories/").then(ret => {
+      if (ret.error) error(500, ret.error)
+      set(ret.data)
+    })
   },
-  [] as WagtailPage[],
 )
-
-type ObservatoryGroups = {
-  [key in "global" | "regions" | "countries"]: ObservatoryPage[]
-}
-export const observatoryPages = derived(
-  [locale],
-  ([$locale], set) => {
-    fetch(
-      PUBLIC_BASE_URL +
-        `/api/wagtail/v2/pages/?order=title&type=wagtailcms.ObservatoryPage&fields=region,country,short_description`,
-      { headers: { "Accept-Language": $locale ?? "en" } },
-    )
-      .then(ret => ret.json() as Promise<{ items: ObservatoryPage[] }>)
-      .then(res => {
-        const pages: ObservatoryPage[] = res.items
-        const groups: ObservatoryGroups = pages.reduce(
-          (acc: ObservatoryGroups, value) => {
-            if (value.country) {
-              return { ...acc, countries: [...acc.countries, value] }
-            }
-            if (value.region) {
-              return { ...acc, regions: [...acc.regions, value] }
-            }
-            return { ...acc, global: [...acc.global, value] }
-          },
-          { global: [], regions: [], countries: [] },
-        )
-        set([...groups.global, ...groups.regions, ...groups.countries])
-      })
-  },
-  [] as ObservatoryPage[],
-)
-
-export const blogCategories = readable([] as BlogCategory[], set => {
-  fetch(PUBLIC_BASE_URL + `/api/blog_categories/`)
-    .then(ret => ret.json() as Promise<BlogCategory[]>)
-    .then(set)
-})
-
-interface ChartDesc {
-  web_of_transnational_deals: string
-  dynamics_overview: string
-  produce_info_map: string
-  global_web_of_investments: string
-
-  [key: string]: string
-}
 
 export const chartDescriptions = derived(
   [locale],
   ([$locale], set) => {
-    fetch(`/api/chart_descriptions/?lang=${$locale}`)
-      .then(ret => ret.json() as Promise<ChartDesc>)
-      .then(set)
+    serverApiClient
+      .GET(`/api/chart_descriptions/`, { params: { query: { lang: $locale } } })
+      .then(ret => {
+        if (ret.error) error(500, ret.error)
+        set(ret.data)
+      })
   },
   {
     web_of_transnational_deals: "",
     dynamics_overview: "",
     produce_info_map: "",
     global_web_of_investments: "",
-  } as ChartDesc,
+  } as components["schemas"]["ChartDescriptions"],
 )
 
-export const allUsers = readable([] as User[], set => {
+export const allUsers = readable([] as components["schemas"]["LeanUser"][], set => {
   if (!browser) {
     set([])
     return
   }
-  fetch(`/api/users/`)
-    .then(ret => {
-      if (!ret.ok) throw new Error(`HTTP status code: ${ret.status}\n\n${ret}`)
-      return ret.json() as Promise<User[]>
-    })
-    .then(set)
-    .catch(() => set([]))
+  serverApiClient.GET("/api/users/").then(ret => {
+    if (ret.error) error(500, ret.error)
+    set(ret.data)
+  })
 })
-
-export const loading = writable(false)
 
 type ImplementationStatusMap = { [key in ImplementationStatus]: string }
 export const implementationStatusMap = derived(
@@ -269,38 +166,6 @@ export const areaTypeMap = derived(
   }),
 )
 
-export const lightboxImage = writable<BlockImage | null>(null)
-
-export const isDarkMode = writable(false)
-
-const bindIsDarkModeToPreferredColorScheme = () => {
-  if (window.matchMedia) {
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
-
-    isDarkMode.set(mediaQuery.matches)
-    mediaQuery.addEventListener("change", event => {
-      isDarkMode.set(event.matches)
-    })
-  }
-}
-
-export const isMobile = writable<boolean | null>(null)
-
-const TAILWIND_SM_BREAKPOINT_IN_PX = 640
-
-const bindIsMobileToScreenInnerWidth = () => {
-  isMobile.set(window.innerWidth <= TAILWIND_SM_BREAKPOINT_IN_PX)
-
-  window.addEventListener("resize", () => {
-    isMobile.set(window.innerWidth <= TAILWIND_SM_BREAKPOINT_IN_PX)
-  })
-}
-
-if (browser) {
-  bindIsDarkModeToPreferredColorScheme()
-  bindIsMobileToScreenInnerWidth()
-}
-
 interface FieldDefinition {
   id: number
   model: "deal" | "investor"
@@ -313,7 +178,7 @@ interface FieldDefinition {
 export const fieldDefinitions = derived(
   [locale],
   ([$locale], set) => {
-    fetch(PUBLIC_BASE_URL + "/api/field_definitions/", {
+    fetch(env.PUBLIC_BASE_URL + "/api/field_definitions/", {
       headers: { "Accept-Language": $locale ?? "en" },
     })
       .then(ret => ret.json() as Promise<FieldDefinition[]>)
@@ -328,12 +193,13 @@ export const currencies = readable<Currency[]>([], set => {
     .then(set)
 })
 export const countries = readable<Country[]>([], set => {
-  fetch(PUBLIC_BASE_URL + "/api/countries/")
-    .then(ret => ret.json())
-    .then(set)
+  if (browser)
+    fetch(env.PUBLIC_BASE_URL + "/api/countries/")
+      .then(ret => ret.json())
+      .then(set)
 })
 export const regions = readable<Region[]>([], set => {
-  fetch(PUBLIC_BASE_URL + "/api/regions/")
+  fetch(env.PUBLIC_BASE_URL + "/api/regions/")
     .then(ret => ret.json())
     .then(set)
 })
@@ -377,8 +243,12 @@ export interface SimpleInvestor {
   name: string
 }
 
-export const simpleInvestors = readable<SimpleInvestor[]>([], set => {
-  fetch("/api/investors/simple/")
-    .then(ret => ret.json())
-    .then(set)
-})
+export const simpleInvestors = readable(
+  [] as components["schemas"]["SimpleInvestor"][],
+  set => {
+    serverApiClient.GET("/api/investors/simple/").then(ret => {
+      if (ret.error) error(500, ret.error)
+      set(ret.data)
+    })
+  },
+)

@@ -2,7 +2,8 @@
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
-  import { dealsNG, fieldChoices, isMobile } from "$lib/stores"
+  import { dealsNG, fieldChoices } from "$lib/stores"
+  import { isMobile } from "$lib/stores/basics"
 
   import DataContainer from "$components/Data/DataContainer.svelte"
   import FilterCollapse from "$components/Data/FilterCollapse.svelte"

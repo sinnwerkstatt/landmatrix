@@ -8,7 +8,7 @@
   import { page } from "$app/stores"
 
   import { stateMap } from "$lib/newUtils"
-  import { loading } from "$lib/stores.js"
+  import { loading } from "$lib/stores/basics"
   import type { WorkflowInfoType } from "$lib/types/newtypes"
   import { getCsrfToken } from "$lib/utils"
 

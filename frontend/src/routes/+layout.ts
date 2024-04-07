@@ -1,6 +1,10 @@
-import type { LoadEvent } from "@sveltejs/kit"
+import { type LoadEvent } from "@sveltejs/kit"
+import { env } from "$env/dynamic/public"
+import createClient from "openapi-fetch"
 
 import { i18nload } from "$lib/i18n/i18n"
+import type { paths } from "$lib/openAPI"
+import { fetchAboutPages, fetchObservatoryPages } from "$lib/stores/wagtail"
 import type { User } from "$lib/types/user"
 
 import type { LayoutLoad } from "./$types"
@@ -15,9 +19,14 @@ async function fetchMe(fetch: LoadEvent["fetch"]) {
 }
 
 export const load: LayoutLoad = async ({ fetch, data }) => {
+  const apiClient = createClient<paths>({ baseUrl: env.PUBLIC_BASE_URL, fetch })
+
   const user: User | null = await fetchMe(fetch)
   const lang = data?.locale ?? "en"
   await i18nload(lang)
 
-  return { user }
+  await fetchObservatoryPages(fetch, lang)
+  await fetchAboutPages(fetch, lang)
+
+  return { apiClient, user }
 }

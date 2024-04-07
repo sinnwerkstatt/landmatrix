@@ -2,7 +2,9 @@
   import { _ } from "svelte-i18n"
 
   import { clickOutside } from "$lib/helpers"
-  import { aboutPages, blogCategories, isDarkMode, observatoryPages } from "$lib/stores"
+  import { blogCategories } from "$lib/stores"
+  import { isDarkMode } from "$lib/stores/basics"
+  import { aboutPages, observatoryPages } from "$lib/stores/wagtail"
 
   import BurgerMenuIcon from "$components/icons/BurgerMenuIcon.svelte"
   import LanguageSwitch from "$components/Navbar/LanguageSwitch.svelte"
@@ -13,7 +15,7 @@
   import { isSubMenu } from "./navbar"
   import type { MenuEntry } from "./navbar"
 
-  let menuEntries: MenuEntry[]
+  let menuEntries: MenuEntry[] = []
   $: menuEntries = [
     {
       title: $_("Data"),
@@ -135,7 +137,7 @@
               />
             {:else}
               <a
-                class="nav-link button1 3xl:max-w-none truncate text-center hover:bg-white hover:text-orange 2xl:max-w-[160px] dark:hover:bg-gray-900"
+                class="nav-link button1 truncate text-center hover:bg-white hover:text-orange 2xl:max-w-[160px] 3xl:max-w-none dark:hover:bg-gray-900"
                 title={entry.title}
                 href={entry.href}
                 on:click={resetMenu}

@@ -34,6 +34,10 @@ export const handle: Handle = async ({ event, resolve }) => {
   event.locals.locale = lang
 
   return resolve(event, {
-    filterSerializedResponseHeaders: name => name === "content-type",
+    // filterSerializedResponseHeaders: name => name === "content-type",
+    filterSerializedResponseHeaders(name) {
+      // SvelteKit doesn't serialize any headers on server-side fetches by default but openapi-fetch uses this header for empty responses.
+      return name === "content-length"
+    },
   })
 }
