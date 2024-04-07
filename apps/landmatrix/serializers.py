@@ -452,6 +452,11 @@ class InvestorVersionSerializer(serializers.ModelSerializer):
         ).delete()
 
 
+class SimpleInvestorSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField()
+
+
 class InvestorSerializer(serializers.ModelSerializer):
     active_version_id = serializers.PrimaryKeyRelatedField(read_only=True)
     draft_version_id = serializers.PrimaryKeyRelatedField(read_only=True)

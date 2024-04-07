@@ -114,20 +114,6 @@ def chart_descriptions(request):
         return JsonResponse(cds.to_dict())
 
 
-def blog_categories(request):
-    # language = request.GET.get("lang", "en")
-    # with translation.override(language):
-    return JsonResponse(
-        [
-            x
-            for x in BlogCategory.objects.all().values(
-                "id", "name", "slug", "description"
-            )
-        ],
-        safe=False,
-    )
-
-
 def blog_pages(request):
     language = request.GET.get("lang", "en")
     category = request.GET.get("category")

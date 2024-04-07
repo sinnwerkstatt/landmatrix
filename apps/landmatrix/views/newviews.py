@@ -39,6 +39,7 @@ from apps.landmatrix.serializers import (
     InvestorSerializer,
     DealVersionSerializer,
     InvestorVersionSerializer,
+    SimpleInvestorSerializer,
 )
 from apps.landmatrix.utils import parse_filters, openapi_filters_parameters
 
@@ -568,8 +569,12 @@ class InvestorViewSet(HullViewSet):
     queryset = InvestorHull.objects.all().prefetch_related(
         Prefetch("versions", queryset=InvestorVersion.objects.order_by("-id"))
     )
-    serializer_class = InvestorSerializer
     version_serializer_class = InvestorVersionSerializer
+
+    def get_serializer_class(self):
+        if self.action == "simple":
+            return SimpleInvestorSerializer
+        return InvestorSerializer
 
     @staticmethod
     def create(request, *args, **kwargs):

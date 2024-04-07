@@ -17,6 +17,7 @@ from apps.message.views import MessageViewSet
 from .export import DataDownload
 from .gis_export import gis_export
 from .upload_view import upload_datasource_file
+from ..blog.views import BlogCategoryViewSet
 
 
 def data_download(request):
@@ -34,6 +35,7 @@ router.register(r"dealversions", newviews.DealVersionViewSet)
 router.register(r"investors", newviews.InvestorViewSet)
 router.register(r"investorversions", newviews.InvestorVersionViewSet)
 router.register(r"messages", MessageViewSet)
+router.register(r"blog_categories", BlogCategoryViewSet)
 
 urlpatterns = [
     path("schema.yaml", SpectacularYAMLAPIView.as_view(), name="schema.yaml"),
@@ -53,7 +55,7 @@ urlpatterns = [
     path("user/", include("apps.accounts.urls")),
     # base data
     path("chart_descriptions/", api_views.chart_descriptions),
-    path("blog_categories/", api_views.blog_categories),
+    # path("blog_categories/", api_views.blog_categories),
     path("blog_pages/", api_views.blog_pages),
     path("field_choices/", newviews.FieldChoicesView.as_view()),
     # misc
