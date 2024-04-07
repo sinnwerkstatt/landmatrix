@@ -3,15 +3,10 @@ from rest_framework import serializers
 from apps.accounts.models import User
 
 
-class UserListSerializer(serializers.ModelSerializer):
+class LeanUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = [
-            "id",
-            "full_name",
-            "username",
-            "role",
-        ]
+        fields = ["id", "full_name", "username", "role"]
 
 
 class UserSerializer(serializers.ModelSerializer):

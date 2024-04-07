@@ -8,14 +8,12 @@ from wagtail.contrib.settings.models import BaseGenericSetting, register_setting
 from wagtail.fields import RichTextField, StreamField
 from wagtail.images import get_image_model_string
 from wagtail.models import Page, Orderable
-from wagtail.rich_text import expand_db_html
 from wagtail.snippets.models import register_snippet
 from wagtail_headless_preview.models import HeadlessPreviewMixin
 
 from apps.blog.models import BlogPage
 from apps.landmatrix.models.country import Country, Region
 from apps.landmatrix.models.new import DealHull
-
 from .blocks import (
     COLUMN_BLOCKS,
     CONTENT_BLOCKS,
@@ -70,16 +68,6 @@ class ChartDescriptionsSettings(BaseGenericSetting):
 
     class Meta:
         verbose_name = "Chart descriptions"
-
-    def to_dict(self):
-        return {
-            "web_of_transnational_deals": expand_db_html(
-                self.web_of_transnational_deals
-            ),
-            "dynamics_overview": expand_db_html(self.dynamics_overview),
-            "produce_info_map": expand_db_html(self.produce_info_map),
-            "global_web_of_investments": expand_db_html(self.global_web_of_investments),
-        }
 
     panels = [
         FieldPanel("global_web_of_investments"),

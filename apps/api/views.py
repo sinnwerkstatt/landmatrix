@@ -7,9 +7,14 @@ from django.http import JsonResponse, HttpRequest
 from django.middleware.csrf import get_token
 from django.utils import timezone, translation
 from django.views.decorators.http import require_GET
+from drf_spectacular.utils import extend_schema
+from rest_framework.decorators import api_view
 from rest_framework.exceptions import NotAuthenticated, PermissionDenied
+from rest_framework.response import Response
+from wagtail.rich_text import expand_db_html
 
-from apps.blog.models import BlogCategory, BlogPage
+from apps.api.serializers import ChartDescriptions
+from apps.blog.models import BlogPage
 from apps.landmatrix.charts import get_deal_top_investments, web_of_transnational_deals
 from apps.landmatrix.models.new import (
     DealHull,
@@ -105,13 +110,26 @@ def investor_search(request: HttpRequest) -> JsonResponse:
     return JsonResponse({"investors": list(investors)})
 
 
+@extend_schema(responses=ChartDescriptions)
+@api_view(["GET"])
 def chart_descriptions(request):
     language = request.GET.get("lang", "en")
     with translation.override(language):
         cds: ChartDescriptionsSettings = ChartDescriptionsSettings.load(
             request_or_site=request
         )
-        return JsonResponse(cds.to_dict())
+        return Response(
+            {
+                "web_of_transnational_deals": expand_db_html(
+                    cds.web_of_transnational_deals
+                ),
+                "dynamics_overview": expand_db_html(cds.dynamics_overview),
+                "produce_info_map": expand_db_html(cds.produce_info_map),
+                "global_web_of_investments": expand_db_html(
+                    cds.global_web_of_investments
+                ),
+            }
+        )
 
 
 def blog_pages(request):

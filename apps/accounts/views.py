@@ -9,7 +9,7 @@ from rest_framework.response import Response
 
 from apps.accounts import auth_flow
 from apps.accounts.models import User
-from apps.accounts.serializers import UserSerializer, UserListSerializer
+from apps.accounts.serializers import UserSerializer, LeanUserSerializer
 from apps.landmatrix.permissions import IsReporterOrHigher
 
 
@@ -32,7 +32,11 @@ from apps.landmatrix.permissions import IsReporterOrHigher
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = User.objects.filter(is_active=True)
-    serializer_class = UserListSerializer
+
+    def get_serializer_class(self):
+        if self.action == "retrieve":
+            return UserSerializer
+        return LeanUserSerializer
 
     def get_queryset(self):
         if self.action == "list":
@@ -49,7 +53,7 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
             user = get_object_or_404(self.queryset, pk=pk)
         else:
             user = request.user
-        serializer = UserSerializer(user)
+        serializer = self.get_serializer(user)
         return Response(serializer.data)
 
 

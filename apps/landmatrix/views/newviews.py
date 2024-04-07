@@ -721,7 +721,7 @@ class FieldChoicesView(APIView):
         class InvolvementFields(serializers.Serializer):
             role = ValueLabelSerializer(many=True)
             investment_type = ValueLabelSerializer(many=True)
-            parent_relations = ValueLabelSerializer(many=True)
+            parent_relation = ValueLabelSerializer(many=True)
 
         deal = DealFields()
         datasource = DataSourceFields()
