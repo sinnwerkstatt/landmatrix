@@ -11,7 +11,7 @@ from wagtail.snippets.blocks import SnippetChooserBlock
 
 from apps.landmatrix.models.country import Country as DataCountry
 from apps.landmatrix.models.country import Region as DataRegion
-from apps.landmatrix.models.deal import DealOld
+from apps.landmatrix.models.new import DealHull
 from .twitter import TwitterTimeline
 
 
@@ -224,11 +224,8 @@ class DealCountBlock(StructBlock):
     text_below = CharBlock(default="deals are currently tracked.")
 
     def get_api_representation(self, value, context=None):
-        deals = DealOld.objects.public()
-        count_deals = deals.count()
-
         return {
-            "deals": count_deals,
+            "deals": DealHull.objects.public().count(),
             "text": value.get("text"),
             "text_below": value.get("text_below"),
         }
