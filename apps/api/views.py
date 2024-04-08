@@ -7,13 +7,13 @@ from django.http import JsonResponse, HttpRequest
 from django.middleware.csrf import get_token
 from django.utils import timezone, translation
 from django.views.decorators.http import require_GET
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework.decorators import api_view
 from rest_framework.exceptions import NotAuthenticated, PermissionDenied
 from rest_framework.response import Response
 from wagtail.rich_text import expand_db_html
 
-from apps.api.serializers import ChartDescriptions
+from apps.api.serializers import ChartDescriptions, SearchedInvestorSerializer
 from apps.blog.models import BlogPage
 from apps.landmatrix.charts import get_deal_top_investments, web_of_transnational_deals
 from apps.landmatrix.models.new import (
@@ -30,8 +30,8 @@ def quick_search(request: HttpRequest) -> JsonResponse:
     q = request.GET.get("q")
 
     items = list(
-        DealHull.objects.filter(id__contains=q)
-        .visible(request.user, "ACTIVE")
+        DealHull.objects.visible(request.user, "ACTIVE")
+        .filter(id__contains=q)
         .annotate(
             is_public=Case(
                 When(active_version_id__isnull=False, then="active_version__is_public"),
@@ -45,10 +45,8 @@ def quick_search(request: HttpRequest) -> JsonResponse:
             href=Concat(Value("/deal/"), "id", output_field=CharField()),
         )
     ) + list(
-        InvestorHull.objects.filter(
-            Q(id__icontains=q) | Q(active_version__name__icontains=q)
-        )
-        .visible(request.user, "ACTIVE")
+        InvestorHull.objects.visible(request.user, "ACTIVE")
+        .filter(Q(id__icontains=q) | Q(active_version__name__icontains=q))
         .values("id")
         .annotate(
             name=F("active_version__name"),
@@ -60,14 +58,21 @@ def quick_search(request: HttpRequest) -> JsonResponse:
     return JsonResponse({"items": items})
 
 
-def investor_search(request: HttpRequest) -> JsonResponse:
+@extend_schema(
+    parameters=[
+        OpenApiParameter("q", description="Query string", required=True, type=str)
+    ],
+    responses={200: SearchedInvestorSerializer(many=True)},
+)
+@api_view(["GET"])
+def investor_search(request) -> Response:
     if not request.user.is_authenticated:
         raise NotAuthenticated
     q = request.GET.get("q")
     if not q or len(q) <= 2:
-        return JsonResponse({"investors": []})
+        return Response([])
 
-    qs = InvestorHull.objects.filter(deleted=False).annotate(
+    qs = InvestorHull.objects.normal().annotate(
         selected_version=Case(
             When(
                 active_version_id__isnull=False,
@@ -107,7 +112,7 @@ def investor_search(request: HttpRequest) -> JsonResponse:
         "selected_version",
     )
 
-    return JsonResponse({"investors": list(investors)})
+    return Response(investors)
 
 
 @extend_schema(responses=ChartDescriptions)
