@@ -64,6 +64,7 @@
       </div>
     {/if}
     <div class="flex justify-end gap-4">
+      <!-- svelte-ignore a11y-autofocus -->
       <button
         autofocus
         class="btn-outline"

@@ -46,6 +46,7 @@
         <span class="font-semibold">
           {$_("Please provide a comment explaining your request")}
         </span>
+        <!-- svelte-ignore a11y-autofocus -->
         <textarea autofocus bind:value={comment} class="inpt mt-1" required />
       </label>
     </div>

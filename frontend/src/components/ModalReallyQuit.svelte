@@ -15,6 +15,7 @@
     {$_("All unsaved changes will be lost.")}
   </div>
   <div class="flex justify-end gap-4">
+    <!-- svelte-ignore a11y-autofocus -->
     <button type="button" class="btn-outline" on:click={() => (open = false)} autofocus>
       Continue editing
     </button>

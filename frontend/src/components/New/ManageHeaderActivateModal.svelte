@@ -49,6 +49,7 @@
     <div class="my-6">
       <label>
         <span class="font-semibold">{$_("Additional comment")}</span>
+        <!-- svelte-ignore a11y-autofocus -->
         <textarea autofocus bind:value={comment} class="inpt mt-1" />
       </label>
     </div>
