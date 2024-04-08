@@ -113,6 +113,7 @@ deploy to staging2:
       cd ~/htdocs
       git pull
       git switch newModel2
+      poetry install
       poetry run doit update production=True
       sudo /bin/systemctl restart webapp-dev2.landmatrix.org.service
       cd ~
