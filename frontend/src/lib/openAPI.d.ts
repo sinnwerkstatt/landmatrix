@@ -3,121 +3,120 @@
  * Do not make direct changes to the file.
  */
 
-
 export interface paths {
   "/api/blog_categories/": {
-    get: operations["api_blog_categories_list"];
-  };
+    get: operations["api_blog_categories_list"]
+  }
   "/api/blog_categories/{id}/": {
-    get: operations["api_blog_categories_retrieve"];
-  };
+    get: operations["api_blog_categories_retrieve"]
+  }
   "/api/chart_descriptions/": {
-    get: operations["api_chart_descriptions_retrieve"];
-  };
+    get: operations["api_chart_descriptions_retrieve"]
+  }
   "/api/countries/": {
-    get: operations["api_countries_list"];
-  };
+    get: operations["api_countries_list"]
+  }
   "/api/currencies/": {
-    get: operations["api_currencies_list"];
-  };
+    get: operations["api_currencies_list"]
+  }
   "/api/deals/": {
-    get: operations["api_deals_list"];
-    post: operations["api_deals_create"];
-  };
+    get: operations["api_deals_list"]
+    post: operations["api_deals_create"]
+  }
   "/api/deals/{id}/": {
-    get: operations["api_deals_retrieve"];
+    get: operations["api_deals_retrieve"]
     /** @description creating a new Version when calling "save" on an existing object */
-    put: operations["api_deals_update"];
-  };
+    put: operations["api_deals_update"]
+  }
   "/api/deals/{id}/{version_id}/": {
-    get: operations["api_deals_retrieve_2"];
-  };
+    get: operations["api_deals_retrieve_2"]
+  }
   "/api/deals/{id}/add_comment/": {
-    put: operations["api_deals_add_comment_update"];
-  };
+    put: operations["api_deals_add_comment_update"]
+  }
   "/api/deals/{id}/make_copy/": {
-    put: operations["api_deals_make_copy_update"];
-  };
+    put: operations["api_deals_make_copy_update"]
+  }
   "/api/deals/{id}/toggle_confidential/": {
-    put: operations["api_deals_toggle_confidential_update"];
-  };
+    put: operations["api_deals_toggle_confidential_update"]
+  }
   "/api/deals/{id}/toggle_deleted/": {
-    put: operations["api_deals_toggle_deleted_update"];
-  };
+    put: operations["api_deals_toggle_deleted_update"]
+  }
   "/api/dealversions/": {
-    get: operations["api_dealversions_list"];
-  };
+    get: operations["api_dealversions_list"]
+  }
   "/api/dealversions/{id}/": {
-    get: operations["api_dealversions_retrieve"];
-    put: operations["api_dealversions_update"];
-    delete: operations["api_dealversions_destroy"];
-  };
+    get: operations["api_dealversions_retrieve"]
+    put: operations["api_dealversions_update"]
+    delete: operations["api_dealversions_destroy"]
+  }
   "/api/dealversions/{id}/change_status/": {
-    put: operations["api_dealversions_change_status_update"];
-  };
+    put: operations["api_dealversions_change_status_update"]
+  }
   "/api/field_choices/": {
-    get: operations["api_field_choices_retrieve"];
-  };
+    get: operations["api_field_choices_retrieve"]
+  }
   "/api/field_definitions/": {
-    get: operations["api_field_definitions_list"];
-  };
+    get: operations["api_field_definitions_list"]
+  }
   "/api/field_definitions/{id}/": {
-    get: operations["api_field_definitions_retrieve"];
-  };
+    get: operations["api_field_definitions_retrieve"]
+  }
   "/api/gis_export/": {
     /** @description Export deal gis data. */
-    get: operations["api_gis_export_retrieve"];
-  };
+    get: operations["api_gis_export_retrieve"]
+  }
   "/api/investor_search/": {
-    get: operations["api_investor_search_list"];
-  };
+    get: operations["api_investor_search_list"]
+  }
   "/api/investors/": {
-    get: operations["api_investors_list"];
-    post: operations["api_investors_create"];
-  };
+    get: operations["api_investors_list"]
+    post: operations["api_investors_create"]
+  }
   "/api/investors/{id}/": {
-    get: operations["api_investors_retrieve"];
+    get: operations["api_investors_retrieve"]
     /** @description creating a new Version when calling "save" on an existing object */
-    put: operations["api_investors_update"];
-  };
+    put: operations["api_investors_update"]
+  }
   "/api/investors/{id}/{version_id}/": {
-    get: operations["api_investors_retrieve_2"];
-  };
+    get: operations["api_investors_retrieve_2"]
+  }
   "/api/investors/{id}/add_comment/": {
-    put: operations["api_investors_add_comment_update"];
-  };
+    put: operations["api_investors_add_comment_update"]
+  }
   "/api/investors/{id}/involvements_graph/": {
-    get: operations["api_investors_involvements_graph_retrieve"];
-  };
+    get: operations["api_investors_involvements_graph_retrieve"]
+  }
   "/api/investors/{id}/toggle_deleted/": {
-    put: operations["api_investors_toggle_deleted_update"];
-  };
+    put: operations["api_investors_toggle_deleted_update"]
+  }
   "/api/investors/deal_filtered/": {
-    get: operations["api_investors_deal_filtered_retrieve"];
-  };
+    get: operations["api_investors_deal_filtered_retrieve"]
+  }
   "/api/investors/simple/": {
-    get: operations["api_investors_simple_retrieve"];
-  };
+    get: operations["api_investors_simple_retrieve"]
+  }
   "/api/investorversions/": {
-    get: operations["api_investorversions_list"];
-  };
+    get: operations["api_investorversions_list"]
+  }
   "/api/investorversions/{id}/": {
-    get: operations["api_investorversions_retrieve"];
-    put: operations["api_investorversions_update"];
-    delete: operations["api_investorversions_destroy"];
-  };
+    get: operations["api_investorversions_retrieve"]
+    put: operations["api_investorversions_update"]
+    delete: operations["api_investorversions_destroy"]
+  }
   "/api/investorversions/{id}/change_status/": {
-    put: operations["api_investorversions_change_status_update"];
-  };
+    put: operations["api_investorversions_change_status_update"]
+  }
   "/api/messages/": {
-    get: operations["api_messages_list"];
-  };
+    get: operations["api_messages_list"]
+  }
   "/api/messages/{id}/": {
-    get: operations["api_messages_retrieve"];
-  };
+    get: operations["api_messages_retrieve"]
+  }
   "/api/regions/": {
-    get: operations["api_regions_list"];
-  };
+    get: operations["api_regions_list"]
+  }
   "/api/schema.json": {
     /**
      * @description OpenApi3 schema for this API. Format can be selected via content negotiation.
@@ -125,8 +124,8 @@ export interface paths {
      * - YAML: application/vnd.oai.openapi
      * - JSON: application/vnd.oai.openapi+json
      */
-    get: operations["api_schema.json_retrieve"];
-  };
+    get: operations["api_schema.json_retrieve"]
+  }
   "/api/schema.yaml": {
     /**
      * @description OpenApi3 schema for this API. Format can be selected via content negotiation.
@@ -134,83 +133,83 @@ export interface paths {
      * - YAML: application/vnd.oai.openapi
      * - JSON: application/vnd.oai.openapi+json
      */
-    get: operations["api_schema.yaml_retrieve"];
-  };
+    get: operations["api_schema.yaml_retrieve"]
+  }
   "/api/users/": {
-    get: operations["api_users_list"];
-  };
+    get: operations["api_users_list"]
+  }
   "/api/users/{id}/": {
-    get: operations["api_users_retrieve"];
-  };
+    get: operations["api_users_retrieve"]
+  }
   "/api/wagtail/v2/documents/": {
-    get: operations["api_wagtail_v2_documents_retrieve"];
-  };
+    get: operations["api_wagtail_v2_documents_retrieve"]
+  }
   "/api/wagtail/v2/documents/{id}/": {
-    get: operations["api_wagtail_v2_documents_retrieve_2"];
-  };
+    get: operations["api_wagtail_v2_documents_retrieve_2"]
+  }
   "/api/wagtail/v2/documents/find/": {
-    get: operations["api_wagtail_v2_documents_find_retrieve"];
-  };
+    get: operations["api_wagtail_v2_documents_find_retrieve"]
+  }
   "/api/wagtail/v2/images/": {
-    get: operations["api_wagtail_v2_images_retrieve"];
-  };
+    get: operations["api_wagtail_v2_images_retrieve"]
+  }
   "/api/wagtail/v2/images/{id}/": {
-    get: operations["api_wagtail_v2_images_retrieve_2"];
-  };
+    get: operations["api_wagtail_v2_images_retrieve_2"]
+  }
   "/api/wagtail/v2/images/find/": {
-    get: operations["api_wagtail_v2_images_find_retrieve"];
-  };
+    get: operations["api_wagtail_v2_images_find_retrieve"]
+  }
   "/api/wagtail/v2/page_preview/": {
-    get: operations["api_wagtail_v2_page_preview_retrieve"];
-  };
+    get: operations["api_wagtail_v2_page_preview_retrieve"]
+  }
   "/api/wagtail/v2/page_preview/{id}/": {
-    get: operations["api_wagtail_v2_page_preview_retrieve_2"];
-  };
+    get: operations["api_wagtail_v2_page_preview_retrieve_2"]
+  }
   "/api/wagtail/v2/page_preview/find/": {
-    get: operations["api_wagtail_v2_page_preview_find_retrieve"];
-  };
+    get: operations["api_wagtail_v2_page_preview_find_retrieve"]
+  }
   "/api/wagtail/v2/pages/": {
-    get: operations["api_wagtail_v2_pages_retrieve"];
-  };
+    get: operations["api_wagtail_v2_pages_retrieve"]
+  }
   "/api/wagtail/v2/pages/{id}/": {
-    get: operations["api_wagtail_v2_pages_retrieve_2"];
-  };
+    get: operations["api_wagtail_v2_pages_retrieve_2"]
+  }
   "/api/wagtail/v2/pages/find/": {
-    get: operations["api_wagtail_v2_pages_find_retrieve"];
-  };
+    get: operations["api_wagtail_v2_pages_find_retrieve"]
+  }
   "/cms/api/main/documents/": {
-    get: operations["cms_api_main_documents_retrieve"];
-  };
+    get: operations["cms_api_main_documents_retrieve"]
+  }
   "/cms/api/main/documents/{id}/": {
-    get: operations["cms_api_main_documents_retrieve_2"];
-  };
+    get: operations["cms_api_main_documents_retrieve_2"]
+  }
   "/cms/api/main/documents/find/": {
-    get: operations["cms_api_main_documents_find_retrieve"];
-  };
+    get: operations["cms_api_main_documents_find_retrieve"]
+  }
   "/cms/api/main/images/": {
-    get: operations["cms_api_main_images_retrieve"];
-  };
+    get: operations["cms_api_main_images_retrieve"]
+  }
   "/cms/api/main/images/{id}/": {
-    get: operations["cms_api_main_images_retrieve_2"];
-  };
+    get: operations["cms_api_main_images_retrieve_2"]
+  }
   "/cms/api/main/images/find/": {
-    get: operations["cms_api_main_images_find_retrieve"];
-  };
+    get: operations["cms_api_main_images_find_retrieve"]
+  }
   "/cms/api/main/pages/": {
-    get: operations["cms_api_main_pages_retrieve"];
-  };
+    get: operations["cms_api_main_pages_retrieve"]
+  }
   "/cms/api/main/pages/{id}/": {
-    get: operations["cms_api_main_pages_retrieve_2"];
-  };
+    get: operations["cms_api_main_pages_retrieve_2"]
+  }
   "/cms/api/main/pages/{id}/action/{action_name}/": {
-    post: operations["cms_api_main_pages_action_create"];
-  };
+    post: operations["cms_api_main_pages_action_create"]
+  }
   "/cms/api/main/pages/find/": {
-    get: operations["cms_api_main_pages_find_retrieve"];
-  };
+    get: operations["cms_api_main_pages_find_retrieve"]
+  }
 }
 
-export type webhooks = Record<string, never>;
+export type webhooks = Record<string, never>
 
 export interface components {
   schemas: {
@@ -218,104 +217,141 @@ export interface components {
      * ActorEnum
      * @enum {string}
      */
-    ActorEnum: "GOVERNMENT_OR_STATE_INSTITUTIONS" | "TRADITIONAL_LAND_OWNERS_OR_COMMUNITIES" | "TRADITIONAL_LOCAL_AUTHORITY" | "BROKER" | "INTERMEDIARY" | "OTHER";
+    ActorEnum:
+      | "GOVERNMENT_OR_STATE_INSTITUTIONS"
+      | "TRADITIONAL_LAND_OWNERS_OR_COMMUNITIES"
+      | "TRADITIONAL_LOCAL_AUTHORITY"
+      | "BROKER"
+      | "INTERMEDIARY"
+      | "OTHER"
     /** ActorsItem */
     ActorsItem: {
       /** Name */
-      name: string;
+      name: string
       /** @default OTHER */
-      role?: components["schemas"]["ActorEnum"];
-    };
+      role?: components["schemas"]["ActorEnum"]
+    }
     /** ActorsSchema */
-    ActorsSchema: components["schemas"]["ActorsItem"][];
+    ActorsSchema: components["schemas"]["ActorsItem"][]
     /**
      * AnimalsEnum
      * @enum {string}
      */
-    AnimalsEnum: "AQU" | "BEE" | "CTL" | "DCT" | "FSH" | "GOT" | "OTH" | "PIG" | "POU" | "SHP" | "SHR";
+    AnimalsEnum:
+      | "AQU"
+      | "BEE"
+      | "CTL"
+      | "DCT"
+      | "FSH"
+      | "GOT"
+      | "OTH"
+      | "PIG"
+      | "POU"
+      | "SHP"
+      | "SHR"
     /**
      * @description * `PER_HA` - per ha
      * * `PER_AREA` - for specified area
      * @enum {string}
      */
-    AnnualLeasingFeeTypeEnum: "PER_HA" | "PER_AREA";
+    AnnualLeasingFeeTypeEnum: "PER_HA" | "PER_AREA"
     /** @enum {unknown} */
-    BlankEnum: "";
+    BlankEnum: ""
     BlogCategory: {
-      id: number;
+      id: number
       /** Category Name */
-      name: string;
-      slug: string;
-      description?: string;
-    };
+      name: string
+      slug: string
+      description?: string
+    }
     /**
      * CarbonSequestrationCertEnum
      * @enum {string}
      */
-    CarbonSequestrationCertEnum: "REDD" | "VCS" | "GOLD" | "CDM" | "CAR" | "VIVO" | "OTHER";
+    CarbonSequestrationCertEnum:
+      | "REDD"
+      | "VCS"
+      | "GOLD"
+      | "CDM"
+      | "CAR"
+      | "VIVO"
+      | "OTHER"
     /**
      * CarbonSequestrationEnum
      * @enum {string}
      */
-    CarbonSequestrationEnum: "REFORESTATION" | "AVOIDED_FOREST_CONVERSION" | "AVOIDED_GRASSLAND_CONVERSION" | "PEATLAND_RESTORATION" | "IMPROVED_FOREST_MANAGEMENT" | "SUSTAINABLE_AGRICULTURE" | "SUSTAINABLE_GRASSLAND_MANAGEMENT" | "RICE_EMISSION_REDUCTIONS" | "SOLAR_PARK" | "WIND_FARM" | "OTHER";
+    CarbonSequestrationEnum:
+      | "REFORESTATION"
+      | "AVOIDED_FOREST_CONVERSION"
+      | "AVOIDED_GRASSLAND_CONVERSION"
+      | "PEATLAND_RESTORATION"
+      | "IMPROVED_FOREST_MANAGEMENT"
+      | "SUSTAINABLE_AGRICULTURE"
+      | "SUSTAINABLE_GRASSLAND_MANAGEMENT"
+      | "RICE_EMISSION_REDUCTIONS"
+      | "SOLAR_PARK"
+      | "WIND_FARM"
+      | "OTHER"
     /** CarbonSequestrationItem */
     CarbonSequestrationItem: {
       /**
        * Current
        * @default false
        */
-      current?: boolean;
+      current?: boolean
       /**
        * Date
        * @default null
        */
-      date?: string | null;
+      date?: string | null
       /**
        * Area
        * @default null
        */
-      area?: number | string | null;
+      area?: number | string | null
       /**
        * Choices
        * @default []
        */
-      choices?: components["schemas"]["CarbonSequestrationEnum"][];
+      choices?: components["schemas"]["CarbonSequestrationEnum"][]
       /**
        * Projected Lifetime Sequestration
        * @default null
        */
-      projected_lifetime_sequestration?: number | string | null;
+      projected_lifetime_sequestration?: number | string | null
       /**
        * Projected Annual Sequestration
        * @default null
        */
-      projected_annual_sequestration?: number | string | null;
+      projected_annual_sequestration?: number | string | null
       /**
        * Certification Standard
        * @default null
        */
-      certification_standard?: boolean | null;
+      certification_standard?: boolean | null
       /** @default null */
-      certification_standard_name?: components["schemas"]["CarbonSequestrationCertEnum"] | null;
+      certification_standard_name?:
+        | components["schemas"]["CarbonSequestrationCertEnum"]
+        | null
       /**
        * Certification Standard Id
        * @default
        */
-      certification_standard_id?: string;
+      certification_standard_id?: string
       /**
        * Certification Standard Comment
        * @default
        */
-      certification_standard_comment?: string;
-    };
+      certification_standard_comment?: string
+    }
     /** CarbonSequestrationSchema */
-    CarbonSequestrationSchema: components["schemas"]["CarbonSequestrationItem"][];
+    CarbonSequestrationSchema: components["schemas"]["CarbonSequestrationItem"][]
     ChartDescriptions: {
-      web_of_transnational_deals: string;
-      dynamics_overview: string;
-      produce_info_map: string;
-      global_web_of_investments: string;
-    };
+      web_of_transnational_deals: string
+      dynamics_overview: string
+      produce_info_map: string
+      global_web_of_investments: string
+    }
     /**
      * @description * `GOVERNMENT` - Government
      * * `GOVERNMENT_INSTITUTION` - Government institution
@@ -336,7 +372,24 @@ export interface components {
      * * `OTHER` - Other
      * @enum {string}
      */
-    ClassificationEnum: "GOVERNMENT" | "GOVERNMENT_INSTITUTION" | "STATE_OWNED_COMPANY" | "SEMI_STATE_OWNED_COMPANY" | "ASSET_MANAGEMENT_FIRM" | "BILATERAL_DEVELOPMENT_BANK" | "STOCK_EXCHANGE_LISTED_COMPANY" | "COMMERCIAL_BANK" | "INSURANCE_FIRM" | "INVESTMENT_BANK" | "INVESTMENT_FUND" | "MULTILATERAL_DEVELOPMENT_BANK" | "PRIVATE_COMPANY" | "PRIVATE_EQUITY_FIRM" | "INDIVIDUAL_ENTREPRENEUR" | "NON_PROFIT" | "OTHER";
+    ClassificationEnum:
+      | "GOVERNMENT"
+      | "GOVERNMENT_INSTITUTION"
+      | "STATE_OWNED_COMPANY"
+      | "SEMI_STATE_OWNED_COMPANY"
+      | "ASSET_MANAGEMENT_FIRM"
+      | "BILATERAL_DEVELOPMENT_BANK"
+      | "STOCK_EXCHANGE_LISTED_COMPANY"
+      | "COMMERCIAL_BANK"
+      | "INSURANCE_FIRM"
+      | "INVESTMENT_BANK"
+      | "INVESTMENT_FUND"
+      | "MULTILATERAL_DEVELOPMENT_BANK"
+      | "PRIVATE_COMPANY"
+      | "PRIVATE_EQUITY_FIRM"
+      | "INDIVIDUAL_ENTREPRENEUR"
+      | "NON_PROFIT"
+      | "OTHER"
     /**
      * @description * `NOT_CONSULTED` - Not consulted
      * * `LIMITED_CONSULTATION` - Limited consultation
@@ -344,194 +397,285 @@ export interface components {
      * * `OTHER` - Other
      * @enum {string}
      */
-    CommunityConsultationEnum: "NOT_CONSULTED" | "LIMITED_CONSULTATION" | "FPIC" | "OTHER";
+    CommunityConsultationEnum:
+      | "NOT_CONSULTED"
+      | "LIMITED_CONSULTATION"
+      | "FPIC"
+      | "OTHER"
     /**
      * @description * `CONSENT` - Consent
      * * `MIXED_REACTION` - Mixed reaction
      * * `REJECTION` - Rejection
      * @enum {string}
      */
-    CommunityReactionEnum: "CONSENT" | "MIXED_REACTION" | "REJECTION";
+    CommunityReactionEnum: "CONSENT" | "MIXED_REACTION" | "REJECTION"
     Contract: {
-      id: number;
+      id: number
       /** ID */
-      nid: string;
+      nid: string
       /** Contract number */
-      number?: string;
-      date?: string | null;
-      expiration_date?: string | null;
+      number?: string
+      date?: string | null
+      expiration_date?: string | null
       /** Duration of the agreement */
-      agreement_duration?: number | null;
-      comment?: string;
-      dealversion: number;
-    };
+      agreement_duration?: number | null
+      comment?: string
+      dealversion: number
+    }
     Country: {
-      id: number;
-      name: string;
+      id: number
+      name: string
       /** @description Target countries are countries that are NOT high income */
-      high_income?: boolean;
+      high_income?: boolean
       /** Code ISO 3166-1 alpha2 */
-      code_alpha2: string;
+      code_alpha2: string
       /**
        * Latitude of central point
        * Format: decimal
        */
-      point_lat?: string | null;
+      point_lat?: string | null
       /**
        * Longitude of central point
        * Format: decimal
        */
-      point_lon?: string | null;
+      point_lon?: string | null
       /**
        * Latitude of southernmost point
        * Format: decimal
        */
-      point_lat_min?: string | null;
+      point_lat_min?: string | null
       /**
        * Longitude of westernmost point
        * Format: decimal
        */
-      point_lon_min?: string | null;
+      point_lon_min?: string | null
       /**
        * Latitude of northernmost point
        * Format: decimal
        */
-      point_lat_max?: string | null;
+      point_lat_max?: string | null
       /**
        * Longitude of easternmost point
        * Format: decimal
        */
-      point_lon_max?: string | null;
-      observatory_page_id: number;
-      region_id: number | null;
-      deals: number[];
-    };
+      point_lon_max?: string | null
+      observatory_page_id: number
+      region_id: number | null
+      deals: number[]
+    }
     /**
      * CropsEnum
      * @enum {string}
      */
-    CropsEnum: "ACC" | "ALF" | "ALG" | "ALM" | "ALV" | "APL" | "AQU" | "BAM" | "BAN" | "BEA" | "BOT" | "BRL" | "BWT" | "CAC" | "CAS" | "CAW" | "CHA" | "CHE" | "CNL" | "COC" | "COF" | "COT" | "CRL" | "CRN" | "CRO" | "CST" | "CTR" | "DIL" | "EUC" | "FLW" | "FNT" | "FOD" | "FOO" | "FRT" | "GRA" | "GRN" | "HRB" | "JTR" | "LNT" | "MAN" | "MUS" | "OAT" | "OIL" | "OLE" | "OLV" | "ONI" | "OPL" | "OTH" | "PAL" | "PAP" | "PAS" | "PEA" | "PEP" | "PES" | "PIE" | "PIN" | "PLS" | "POM" | "PON" | "PTT" | "RAP" | "RCH" | "RIC" | "ROS" | "RUB" | "RYE" | "SEE" | "SES" | "SOR" | "SOY" | "SPI" | "SSL" | "SUB" | "SUC" | "SUG" | "SUN" | "SWP" | "TBC" | "TEA" | "TEF" | "TEK" | "TOM" | "TRE" | "VGT" | "VIN" | "WHT" | "YAM";
+    CropsEnum:
+      | "ACC"
+      | "ALF"
+      | "ALG"
+      | "ALM"
+      | "ALV"
+      | "APL"
+      | "AQU"
+      | "BAM"
+      | "BAN"
+      | "BEA"
+      | "BOT"
+      | "BRL"
+      | "BWT"
+      | "CAC"
+      | "CAS"
+      | "CAW"
+      | "CHA"
+      | "CHE"
+      | "CNL"
+      | "COC"
+      | "COF"
+      | "COT"
+      | "CRL"
+      | "CRN"
+      | "CRO"
+      | "CST"
+      | "CTR"
+      | "DIL"
+      | "EUC"
+      | "FLW"
+      | "FNT"
+      | "FOD"
+      | "FOO"
+      | "FRT"
+      | "GRA"
+      | "GRN"
+      | "HRB"
+      | "JTR"
+      | "LNT"
+      | "MAN"
+      | "MUS"
+      | "OAT"
+      | "OIL"
+      | "OLE"
+      | "OLV"
+      | "ONI"
+      | "OPL"
+      | "OTH"
+      | "PAL"
+      | "PAP"
+      | "PAS"
+      | "PEA"
+      | "PEP"
+      | "PES"
+      | "PIE"
+      | "PIN"
+      | "PLS"
+      | "POM"
+      | "PON"
+      | "PTT"
+      | "RAP"
+      | "RCH"
+      | "RIC"
+      | "ROS"
+      | "RUB"
+      | "RYE"
+      | "SEE"
+      | "SES"
+      | "SOR"
+      | "SOY"
+      | "SPI"
+      | "SSL"
+      | "SUB"
+      | "SUC"
+      | "SUG"
+      | "SUN"
+      | "SWP"
+      | "TBC"
+      | "TEA"
+      | "TEF"
+      | "TEK"
+      | "TOM"
+      | "TRE"
+      | "VGT"
+      | "VIN"
+      | "WHT"
+      | "YAM"
     Currency: {
-      id: number;
-      code: string;
-      name: string;
-      symbol: string;
-    };
+      id: number
+      code: string
+      name: string
+      symbol: string
+    }
     /** CurrentDateAreaChoicesAnimals */
-    CurrentDateAreaChoicesAnimals: components["schemas"]["CurrentDateAreaChoicesAnimalsItem"][];
+    CurrentDateAreaChoicesAnimals: components["schemas"]["CurrentDateAreaChoicesAnimalsItem"][]
     /** CurrentDateAreaChoicesAnimalsItem */
     CurrentDateAreaChoicesAnimalsItem: {
       /**
        * Current
        * @default false
        */
-      current?: boolean;
+      current?: boolean
       /**
        * Date
        * @default null
        */
-      date?: string | null;
+      date?: string | null
       /**
        * Area
        * @default null
        */
-      area?: number | string | null;
+      area?: number | string | null
       /** Choices */
-      choices: components["schemas"]["AnimalsEnum"][];
-    };
+      choices: components["schemas"]["AnimalsEnum"][]
+    }
     /** CurrentDateAreaChoicesCrops */
-    CurrentDateAreaChoicesCrops: components["schemas"]["CurrentDateAreaChoicesCropsItem"][];
+    CurrentDateAreaChoicesCrops: components["schemas"]["CurrentDateAreaChoicesCropsItem"][]
     /** CurrentDateAreaChoicesCropsItem */
     CurrentDateAreaChoicesCropsItem: {
       /**
        * Current
        * @default false
        */
-      current?: boolean;
+      current?: boolean
       /**
        * Date
        * @default null
        */
-      date?: string | null;
+      date?: string | null
       /**
        * Area
        * @default null
        */
-      area?: number | string | null;
+      area?: number | string | null
       /** Choices */
-      choices: components["schemas"]["CropsEnum"][];
-    };
+      choices: components["schemas"]["CropsEnum"][]
+    }
     /** CurrentDateAreaChoicesIOI */
-    CurrentDateAreaChoicesIOI: components["schemas"]["CurrentDateAreaChoicesIOIItem"][];
+    CurrentDateAreaChoicesIOI: components["schemas"]["CurrentDateAreaChoicesIOIItem"][]
     /** CurrentDateAreaChoicesIOIItem */
     CurrentDateAreaChoicesIOIItem: {
       /**
        * Current
        * @default false
        */
-      current?: boolean;
+      current?: boolean
       /**
        * Date
        * @default null
        */
-      date?: string | null;
+      date?: string | null
       /**
        * Area
        * @default null
        */
-      area?: number | string | null;
+      area?: number | string | null
       /** Choices */
-      choices: components["schemas"]["IntentionOfInvestmentEnum"][];
-    };
+      choices: components["schemas"]["IntentionOfInvestmentEnum"][]
+    }
     /** CurrentDateAreaItem */
     CurrentDateAreaItem: {
       /**
        * Current
        * @default false
        */
-      current?: boolean;
+      current?: boolean
       /**
        * Date
        * @default null
        */
-      date?: string | null;
+      date?: string | null
       /** Area */
-      area: number | string;
-    };
+      area: number | string
+    }
     /** CurrentDateAreaSchema */
-    CurrentDateAreaSchema: components["schemas"]["CurrentDateAreaItem"][];
+    CurrentDateAreaSchema: components["schemas"]["CurrentDateAreaItem"][]
     /** CurrentDateChoiceImplementationStatus */
-    CurrentDateChoiceImplementationStatus: components["schemas"]["CurrentDateChoiceImplementationStatusItem"][];
+    CurrentDateChoiceImplementationStatus: components["schemas"]["CurrentDateChoiceImplementationStatusItem"][]
     /** CurrentDateChoiceImplementationStatusItem */
     CurrentDateChoiceImplementationStatusItem: {
       /**
        * Current
        * @default false
        */
-      current?: boolean;
+      current?: boolean
       /**
        * Date
        * @default null
        */
-      date?: string | null;
-      choice: components["schemas"]["ImplementationStatusEnum"];
-    };
+      date?: string | null
+      choice: components["schemas"]["ImplementationStatusEnum"]
+    }
     /** CurrentDateChoiceNegotiationStatus */
-    CurrentDateChoiceNegotiationStatus: components["schemas"]["CurrentDateChoiceNegotiationStatusItem"][];
+    CurrentDateChoiceNegotiationStatus: components["schemas"]["CurrentDateChoiceNegotiationStatusItem"][]
     /** CurrentDateChoiceNegotiationStatusItem */
     CurrentDateChoiceNegotiationStatusItem: {
       /**
        * Current
        * @default false
        */
-      current?: boolean;
+      current?: boolean
       /**
        * Date
        * @default null
        */
-      date?: string | null;
-      choice: components["schemas"]["NegotiationStatusEnum"];
-    };
+      date?: string | null
+      choice: components["schemas"]["NegotiationStatusEnum"]
+    }
     /**
      * @description * `PROJECT_NOT_STARTED` - Project not started
      * * `STARTUP_PHASE` - Startup phase (no production)
@@ -539,7 +683,11 @@ export interface components {
      * * `PROJECT_ABANDONED` - Project abandoned
      * @enum {string}
      */
-    CurrentImplementationStatusEnum: "PROJECT_NOT_STARTED" | "STARTUP_PHASE" | "IN_OPERATION" | "PROJECT_ABANDONED";
+    CurrentImplementationStatusEnum:
+      | "PROJECT_NOT_STARTED"
+      | "STARTUP_PHASE"
+      | "IN_OPERATION"
+      | "PROJECT_ABANDONED"
     /**
      * @description * `BIOFUELS` - Biomass for biofuels
      * * `BIOMASS_ENERGY_GENERATION` - Biomass for energy generation (agriculture)
@@ -565,7 +713,29 @@ export interface components {
      * * `OTHER` - Other
      * @enum {string}
      */
-    CurrentIntentionOfInvestmentEnum: "BIOFUELS" | "BIOMASS_ENERGY_GENERATION" | "FODDER" | "FOOD_CROPS" | "LIVESTOCK" | "NON_FOOD_AGRICULTURE" | "AGRICULTURE_UNSPECIFIED" | "BIOMASS_ENERGY_PRODUCTION" | "CARBON" | "FOREST_LOGGING" | "TIMBER_PLANTATION" | "FORESTRY_UNSPECIFIED" | "SOLAR_PARK" | "WIND_FARM" | "RENEWABLE_ENERGY" | "CONVERSATION" | "INDUSTRY" | "LAND_SPECULATION" | "MINING" | "OIL_GAS_EXTRACTION" | "TOURISM" | "OTHER";
+    CurrentIntentionOfInvestmentEnum:
+      | "BIOFUELS"
+      | "BIOMASS_ENERGY_GENERATION"
+      | "FODDER"
+      | "FOOD_CROPS"
+      | "LIVESTOCK"
+      | "NON_FOOD_AGRICULTURE"
+      | "AGRICULTURE_UNSPECIFIED"
+      | "BIOMASS_ENERGY_PRODUCTION"
+      | "CARBON"
+      | "FOREST_LOGGING"
+      | "TIMBER_PLANTATION"
+      | "FORESTRY_UNSPECIFIED"
+      | "SOLAR_PARK"
+      | "WIND_FARM"
+      | "RENEWABLE_ENERGY"
+      | "CONVERSATION"
+      | "INDUSTRY"
+      | "LAND_SPECULATION"
+      | "MINING"
+      | "OIL_GAS_EXTRACTION"
+      | "TOURISM"
+      | "OTHER"
     /**
      * @description * `EXPRESSION_OF_INTEREST` - Intended (Expression of interest)
      * * `UNDER_NEGOTIATION` - Intended (Under negotiation)
@@ -578,574 +748,605 @@ export interface components {
      * * `CONTRACT_EXPIRED` - Contract expired
      * @enum {string}
      */
-    CurrentNegotiationStatusEnum: "EXPRESSION_OF_INTEREST" | "UNDER_NEGOTIATION" | "MEMORANDUM_OF_UNDERSTANDING" | "ORAL_AGREEMENT" | "CONTRACT_SIGNED" | "CHANGE_OF_OWNERSHIP" | "NEGOTIATIONS_FAILED" | "CONTRACT_CANCELED" | "CONTRACT_EXPIRED";
+    CurrentNegotiationStatusEnum:
+      | "EXPRESSION_OF_INTEREST"
+      | "UNDER_NEGOTIATION"
+      | "MEMORANDUM_OF_UNDERSTANDING"
+      | "ORAL_AGREEMENT"
+      | "CONTRACT_SIGNED"
+      | "CHANGE_OF_OWNERSHIP"
+      | "NEGOTIATIONS_FAILED"
+      | "CONTRACT_CANCELED"
+      | "CONTRACT_EXPIRED"
     DataSourceFields: {
-      type: components["schemas"]["ValueLabel"][];
-    };
+      type: components["schemas"]["ValueLabel"][]
+    }
     Deal: {
-      id: number;
-      active_version_id: number | null;
-      draft_version_id: number | null;
-      created_by_id: string;
+      id: number
+      active_version_id: number | null
+      draft_version_id: number | null
+      created_by_id: string
       /** Target country */
-      country_id: number | null;
-      versions: readonly components["schemas"]["DealVersionVersionsList"][];
-      selected_version: components["schemas"]["DealVersion"];
-      workflowinfos: string;
-      deleted?: boolean;
-      deleted_comment?: string;
+      country_id: number | null
+      versions: readonly components["schemas"]["DealVersionVersionsList"][]
+      selected_version: components["schemas"]["DealVersion"]
+      workflowinfos: string
+      deleted?: boolean
+      deleted_comment?: string
       /** Format: date-time */
-      first_created_at: string;
-      confidential?: boolean;
+      first_created_at: string
+      confidential?: boolean
       /** Comment why this deal is private */
-      confidential_comment?: string;
+      confidential_comment?: string
       /**
        * Last full update
        * Format: date-time
        */
-      fully_updated_at?: string | null;
-      first_created_by?: number | null;
+      fully_updated_at?: string | null
+      first_created_by?: number | null
       /** Target country */
-      country?: number | null;
-      active_version?: number | null;
-      draft_version?: number | null;
-    };
+      country?: number | null
+      active_version?: number | null
+      draft_version?: number | null
+    }
     DealDataSource: {
-      id: number;
-      file: string;
+      id: number
+      file: string
       /** ID */
-      nid: string;
-      type: components["schemas"]["TypeB96Enum"];
+      nid: string
+      type: components["schemas"]["TypeB96Enum"]
       /** Format: uri */
-      url?: string;
+      url?: string
       /** Keep PDF not public */
-      file_not_public?: boolean;
-      publication_title?: string;
-      date?: string | null;
-      name?: string;
+      file_not_public?: boolean
+      publication_title?: string
+      date?: string | null
+      name?: string
       /** Organisation */
-      company?: string;
+      company?: string
       /** Format: email */
-      email?: string;
-      phone?: string;
-      includes_in_country_verified_information?: boolean | null;
+      email?: string
+      phone?: string
+      includes_in_country_verified_information?: boolean | null
       /** Open Contracting ID */
-      open_land_contracts_id?: string;
-      comment?: string;
-      dealversion: number;
-    };
+      open_land_contracts_id?: string
+      comment?: string
+      dealversion: number
+    }
     DealFields: {
-      intention_of_investment: components["schemas"]["ValueLabel"][];
-      negotiation_status: components["schemas"]["ValueLabel"][];
-      implementation_status: components["schemas"]["ValueLabel"][];
-      level_of_accuracy: components["schemas"]["ValueLabel"][];
-      nature_of_deal: components["schemas"]["ValueLabel"][];
-      recognition_status: components["schemas"]["ValueLabel"][];
-      negative_impacts: components["schemas"]["ValueLabel"][];
-      benefits: components["schemas"]["ValueLabel"][];
-      former_land_owner: components["schemas"]["ValueLabel"][];
-      former_land_use: components["schemas"]["ValueLabel"][];
-      ha_area: components["schemas"]["ValueLabel"][];
-      community_consultation: components["schemas"]["ValueLabel"][];
-      community_reaction: components["schemas"]["ValueLabel"][];
-      former_land_cover: components["schemas"]["ValueLabel"][];
-      crops: components["schemas"]["ValueLabel"][];
-      animals: components["schemas"]["ValueLabel"][];
-      electricity_generation: components["schemas"]["ValueLabel"][];
-      carbon_sequestration: components["schemas"]["ValueLabel"][];
-      carbon_sequestration_certs: components["schemas"]["ValueLabel"][];
-      minerals: components["schemas"]["ValueLabel"][];
-      water_source: components["schemas"]["ValueLabel"][];
-      not_public_reason: components["schemas"]["ValueLabel"][];
-      actors: components["schemas"]["ValueLabel"][];
-    };
+      intention_of_investment: components["schemas"]["ValueLabel"][]
+      negotiation_status: components["schemas"]["ValueLabel"][]
+      implementation_status: components["schemas"]["ValueLabel"][]
+      level_of_accuracy: components["schemas"]["ValueLabel"][]
+      nature_of_deal: components["schemas"]["ValueLabel"][]
+      recognition_status: components["schemas"]["ValueLabel"][]
+      negative_impacts: components["schemas"]["ValueLabel"][]
+      benefits: components["schemas"]["ValueLabel"][]
+      former_land_owner: components["schemas"]["ValueLabel"][]
+      former_land_use: components["schemas"]["ValueLabel"][]
+      ha_area: components["schemas"]["ValueLabel"][]
+      community_consultation: components["schemas"]["ValueLabel"][]
+      community_reaction: components["schemas"]["ValueLabel"][]
+      former_land_cover: components["schemas"]["ValueLabel"][]
+      crops: components["schemas"]["ValueLabel"][]
+      animals: components["schemas"]["ValueLabel"][]
+      electricity_generation: components["schemas"]["ValueLabel"][]
+      carbon_sequestration: components["schemas"]["ValueLabel"][]
+      carbon_sequestration_certs: components["schemas"]["ValueLabel"][]
+      minerals: components["schemas"]["ValueLabel"][]
+      water_source: components["schemas"]["ValueLabel"][]
+      not_public_reason: components["schemas"]["ValueLabel"][]
+      actors: components["schemas"]["ValueLabel"][]
+    }
     DealVersion: {
-      id: number;
-      locations: readonly components["schemas"]["Location"][];
-      contracts: readonly components["schemas"]["Contract"][];
-      datasources: readonly components["schemas"]["DealDataSource"][];
-      operating_company_id: number | null;
-      created_by_id: number | null;
-      modified_by_id: number | null;
-      sent_to_review_by_id: number | null;
-      sent_to_activation_by_id: number | null;
-      activated_by_id: number | null;
-      contract_size: components["schemas"]["CurrentDateAreaSchema"];
-      production_size: components["schemas"]["CurrentDateAreaSchema"];
-      intention_of_investment: components["schemas"]["CurrentDateAreaChoicesIOI"];
-      negotiation_status: components["schemas"]["CurrentDateChoiceNegotiationStatus"];
-      implementation_status: components["schemas"]["CurrentDateChoiceImplementationStatus"];
-      on_the_lease: components["schemas"]["LeaseSchema"];
-      off_the_lease: components["schemas"]["LeaseSchema"];
-      total_jobs_current: components["schemas"]["JobsSchema"];
-      foreign_jobs_current: components["schemas"]["JobsSchema"];
-      domestic_jobs_current: components["schemas"]["JobsSchema"];
-      involved_actors: components["schemas"]["ActorsSchema"];
-      crops: components["schemas"]["ExportsCrops"];
-      animals: components["schemas"]["ExportsAnimals"];
-      mineral_resources: components["schemas"]["ExportsMineralResources"];
-      contract_farming_crops: components["schemas"]["CurrentDateAreaChoicesCrops"];
-      contract_farming_animals: components["schemas"]["CurrentDateAreaChoicesAnimals"];
-      electricity_generation: components["schemas"]["ElectricityGenerationSchema"];
-      carbon_sequestration: components["schemas"]["CarbonSequestrationSchema"];
+      id: number
+      locations: readonly components["schemas"]["Location"][]
+      contracts: readonly components["schemas"]["Contract"][]
+      datasources: readonly components["schemas"]["DealDataSource"][]
+      operating_company_id: number | null
+      created_by_id: number | null
+      modified_by_id: number | null
+      sent_to_review_by_id: number | null
+      sent_to_activation_by_id: number | null
+      activated_by_id: number | null
+      contract_size: components["schemas"]["CurrentDateAreaSchema"]
+      production_size: components["schemas"]["CurrentDateAreaSchema"]
+      intention_of_investment: components["schemas"]["CurrentDateAreaChoicesIOI"]
+      negotiation_status: components["schemas"]["CurrentDateChoiceNegotiationStatus"]
+      implementation_status: components["schemas"]["CurrentDateChoiceImplementationStatus"]
+      on_the_lease: components["schemas"]["LeaseSchema"]
+      off_the_lease: components["schemas"]["LeaseSchema"]
+      total_jobs_current: components["schemas"]["JobsSchema"]
+      foreign_jobs_current: components["schemas"]["JobsSchema"]
+      domestic_jobs_current: components["schemas"]["JobsSchema"]
+      involved_actors: components["schemas"]["ActorsSchema"]
+      crops: components["schemas"]["ExportsCrops"]
+      animals: components["schemas"]["ExportsAnimals"]
+      mineral_resources: components["schemas"]["ExportsMineralResources"]
+      contract_farming_crops: components["schemas"]["CurrentDateAreaChoicesCrops"]
+      contract_farming_animals: components["schemas"]["CurrentDateAreaChoicesAnimals"]
+      electricity_generation: components["schemas"]["ElectricityGenerationSchema"]
+      carbon_sequestration: components["schemas"]["CarbonSequestrationSchema"]
       /** Format: decimal */
-      intended_size?: string | null;
+      intended_size?: string | null
       /** Comment on land area */
-      land_area_comment?: string;
+      land_area_comment?: string
       /** Comment on intention of investment */
-      intention_of_investment_comment?: string;
-      carbon_offset_project?: boolean | null;
-      carbon_offset_project_comment?: string;
+      intention_of_investment_comment?: string
+      carbon_offset_project?: boolean | null
+      carbon_offset_project_comment?: string
       /** Nature of the deal */
-      nature_of_deal?: components["schemas"]["NatureOfDealEnum"][];
+      nature_of_deal?: components["schemas"]["NatureOfDealEnum"][]
       /** Comment on nature of the deal */
-      nature_of_deal_comment?: string;
+      nature_of_deal_comment?: string
       /** Comment on negotiation status */
-      negotiation_status_comment?: string;
+      negotiation_status_comment?: string
       /** Comment on implementation status */
-      implementation_status_comment?: string;
+      implementation_status_comment?: string
       /** Format: decimal */
-      purchase_price?: string | null;
+      purchase_price?: string | null
       /** Purchase price area type */
-      purchase_price_type?: components["schemas"]["PurchasePriceTypeEnum"] | components["schemas"]["BlankEnum"] | components["schemas"]["NullEnum"] | null;
+      purchase_price_type?:
+        | components["schemas"]["PurchasePriceTypeEnum"]
+        | components["schemas"]["BlankEnum"]
+        | components["schemas"]["NullEnum"]
+        | null
       /** Format: decimal */
-      purchase_price_area?: string | null;
+      purchase_price_area?: string | null
       /** Comment on purchase price */
-      purchase_price_comment?: string;
+      purchase_price_comment?: string
       /** Format: decimal */
-      annual_leasing_fee?: string | null;
+      annual_leasing_fee?: string | null
       /** Annual leasing fee area type */
-      annual_leasing_fee_type?: components["schemas"]["AnnualLeasingFeeTypeEnum"] | components["schemas"]["BlankEnum"] | components["schemas"]["NullEnum"] | null;
+      annual_leasing_fee_type?:
+        | components["schemas"]["AnnualLeasingFeeTypeEnum"]
+        | components["schemas"]["BlankEnum"]
+        | components["schemas"]["NullEnum"]
+        | null
       /** Format: decimal */
-      annual_leasing_fee_area?: string | null;
+      annual_leasing_fee_area?: string | null
       /** Comment on leasing fee */
-      annual_leasing_fee_comment?: string;
-      contract_farming?: boolean | null;
+      annual_leasing_fee_comment?: string
+      contract_farming?: boolean | null
       /** On leased / purchased */
-      on_the_lease_state?: boolean | null;
+      on_the_lease_state?: boolean | null
       /** Not on leased / purchased (out-grower) */
-      off_the_lease_state?: boolean | null;
+      off_the_lease_state?: boolean | null
       /** Comment on contract farming */
-      contract_farming_comment?: string;
+      contract_farming_comment?: string
       /** Jobs created (total) */
-      total_jobs_created?: boolean | null;
+      total_jobs_created?: boolean | null
       /** Planned number of jobs (total) */
-      total_jobs_planned?: number | null;
+      total_jobs_planned?: number | null
       /** Planned employees (total) */
-      total_jobs_planned_employees?: number | null;
+      total_jobs_planned_employees?: number | null
       /** Planned daily/seasonal workers (total) */
-      total_jobs_planned_daily_workers?: number | null;
+      total_jobs_planned_daily_workers?: number | null
       /** Comment on jobs created (total) */
-      total_jobs_created_comment?: string;
+      total_jobs_created_comment?: string
       /** Jobs created (foreign) */
-      foreign_jobs_created?: boolean | null;
+      foreign_jobs_created?: boolean | null
       /** Planned number of jobs (foreign) */
-      foreign_jobs_planned?: number | null;
+      foreign_jobs_planned?: number | null
       /** Planned employees (foreign) */
-      foreign_jobs_planned_employees?: number | null;
+      foreign_jobs_planned_employees?: number | null
       /** Planned daily/seasonal workers (foreign) */
-      foreign_jobs_planned_daily_workers?: number | null;
+      foreign_jobs_planned_daily_workers?: number | null
       /** Comment on jobs created (foreign) */
-      foreign_jobs_created_comment?: string;
+      foreign_jobs_created_comment?: string
       /** Jobs created (domestic) */
-      domestic_jobs_created?: boolean | null;
+      domestic_jobs_created?: boolean | null
       /** Planned number of jobs (domestic) */
-      domestic_jobs_planned?: number | null;
+      domestic_jobs_planned?: number | null
       /** Planned employees (domestic) */
-      domestic_jobs_planned_employees?: number | null;
+      domestic_jobs_planned_employees?: number | null
       /** Planned daily/seasonal workers (domestic) */
-      domestic_jobs_planned_daily_workers?: number | null;
+      domestic_jobs_planned_daily_workers?: number | null
       /** Comment on jobs created (domestic) */
-      domestic_jobs_created_comment?: string;
+      domestic_jobs_created_comment?: string
       /** Name of investment project */
-      project_name?: string;
+      project_name?: string
       /** Comment on investment chain */
-      investment_chain_comment?: string;
-      name_of_community?: string[];
-      name_of_indigenous_people?: string[];
+      investment_chain_comment?: string
+      name_of_community?: string[]
+      name_of_indigenous_people?: string[]
       /** Comment on communities / indigenous peoples affected */
-      people_affected_comment?: string;
+      people_affected_comment?: string
       /** Recognition status of community land tenure */
-      recognition_status?: components["schemas"]["RecognitionStatusEnum"][];
+      recognition_status?: components["schemas"]["RecognitionStatusEnum"][]
       /** Comment on recognition status of community land tenure */
-      recognition_status_comment?: string;
-      community_consultation?: components["schemas"]["CommunityConsultationEnum"] | components["schemas"]["BlankEnum"] | components["schemas"]["NullEnum"] | null;
+      recognition_status_comment?: string
+      community_consultation?:
+        | components["schemas"]["CommunityConsultationEnum"]
+        | components["schemas"]["BlankEnum"]
+        | components["schemas"]["NullEnum"]
+        | null
       /** Comment on consultation of local community */
-      community_consultation_comment?: string;
-      community_reaction?: components["schemas"]["CommunityReactionEnum"] | components["schemas"]["BlankEnum"] | components["schemas"]["NullEnum"] | null;
+      community_consultation_comment?: string
+      community_reaction?:
+        | components["schemas"]["CommunityReactionEnum"]
+        | components["schemas"]["BlankEnum"]
+        | components["schemas"]["NullEnum"]
+        | null
       /** Comment on community reaction */
-      community_reaction_comment?: string;
+      community_reaction_comment?: string
       /** Presence of land conflicts */
-      land_conflicts?: boolean | null;
+      land_conflicts?: boolean | null
       /** Comment on presence of land conflicts */
-      land_conflicts_comment?: string;
-      displacement_of_people?: boolean | null;
+      land_conflicts_comment?: string
+      displacement_of_people?: boolean | null
       /** Number of people actually displaced */
-      displaced_people?: number | null;
+      displaced_people?: number | null
       /** Number of households actually displaced */
-      displaced_households?: number | null;
+      displaced_households?: number | null
       /** Number of people displaced out of their community land */
-      displaced_people_from_community_land?: number | null;
+      displaced_people_from_community_land?: number | null
       /** Number of people displaced staying on community land */
-      displaced_people_within_community_land?: number | null;
+      displaced_people_within_community_land?: number | null
       /** Number of households displaced "only" from their agricultural fields */
-      displaced_households_from_fields?: number | null;
+      displaced_households_from_fields?: number | null
       /** Number of people facing displacement once project is fully implemented */
-      displaced_people_on_completion?: number | null;
+      displaced_people_on_completion?: number | null
       /** Comment on displacement of people */
-      displacement_of_people_comment?: string;
+      displacement_of_people_comment?: string
       /** Negative impacts for local communities */
-      negative_impacts?: components["schemas"]["NegativeImpactsEnum"][];
+      negative_impacts?: components["schemas"]["NegativeImpactsEnum"][]
       /** Comment on negative impacts for local communities */
-      negative_impacts_comment?: string;
+      negative_impacts_comment?: string
       /** Promised compensation (e.g. for damages or resettlements) */
-      promised_compensation?: string;
+      promised_compensation?: string
       /** Received compensation (e.g. for damages or resettlements) */
-      received_compensation?: string;
+      received_compensation?: string
       /** Promised benefits for local communities */
-      promised_benefits?: components["schemas"]["PromisedBenefitsEnum"][];
+      promised_benefits?: components["schemas"]["PromisedBenefitsEnum"][]
       /** Comment on promised benefits for local communities */
-      promised_benefits_comment?: string;
+      promised_benefits_comment?: string
       /** Materialized benefits for local communities */
-      materialized_benefits?: components["schemas"]["MaterializedBenefitsEnum"][];
+      materialized_benefits?: components["schemas"]["MaterializedBenefitsEnum"][]
       /** Comment on materialized benefits for local communities */
-      materialized_benefits_comment?: string;
+      materialized_benefits_comment?: string
       /** Presence of organizations and actions taken (e.g. farmer organizations, NGOs, etc.) */
-      presence_of_organizations?: string;
-      former_land_owner?: components["schemas"]["FormerLandOwnerEnum"][];
+      presence_of_organizations?: string
+      former_land_owner?: components["schemas"]["FormerLandOwnerEnum"][]
       /** Comment on former land owner */
-      former_land_owner_comment?: string;
-      former_land_use?: components["schemas"]["FormerLandUseEnum"][];
+      former_land_owner_comment?: string
+      former_land_use?: components["schemas"]["FormerLandUseEnum"][]
       /** Comment on former land use */
-      former_land_use_comment?: string;
-      former_land_cover?: components["schemas"]["FormerLandCoverEnum"][];
+      former_land_use_comment?: string
+      former_land_cover?: components["schemas"]["FormerLandCoverEnum"][]
       /** Comment on former land cover */
-      former_land_cover_comment?: string;
+      former_land_cover_comment?: string
       /** Comment on crops */
-      crops_comment?: string;
+      crops_comment?: string
       /** Comment on livestock */
-      animals_comment?: string;
+      animals_comment?: string
       /** Comment on mineral resources */
-      mineral_resources_comment?: string;
+      mineral_resources_comment?: string
       /** Comment on contract farming crops */
-      contract_farming_crops_comment?: string;
+      contract_farming_crops_comment?: string
       /** Comment on contract farming livestock */
-      contract_farming_animals_comment?: string;
+      contract_farming_animals_comment?: string
       /** Comment on electricity generation */
-      electricity_generation_comment?: string;
+      electricity_generation_comment?: string
       /** Comment on carbon sequestration */
-      carbon_sequestration_comment?: string;
-      has_domestic_use?: boolean | null;
+      carbon_sequestration_comment?: string
+      has_domestic_use?: boolean | null
       /** Format: double */
-      domestic_use?: number | null;
-      has_export?: boolean | null;
+      domestic_use?: number | null
+      has_export?: boolean | null
       /** Format: double */
-      export?: number | null;
+      export?: number | null
       /**
        * Country 1 ratio
        * Format: double
        */
-      export_country1_ratio?: number | null;
+      export_country1_ratio?: number | null
       /**
        * Country 2 ratio
        * Format: double
        */
-      export_country2_ratio?: number | null;
+      export_country2_ratio?: number | null
       /**
        * Country 3 ratio
        * Format: double
        */
-      export_country3_ratio?: number | null;
+      export_country3_ratio?: number | null
       /** Comment on use of produce */
-      use_of_produce_comment?: string;
+      use_of_produce_comment?: string
       /** In country processing of produce */
-      in_country_processing?: boolean | null;
+      in_country_processing?: boolean | null
       /** Comment on in country processing of produce */
-      in_country_processing_comment?: string;
+      in_country_processing_comment?: string
       /** Processing facilities / production infrastructure of the project (e.g. oil mill, ethanol distillery, biomass power plant etc.) */
-      in_country_processing_facilities?: string;
+      in_country_processing_facilities?: string
       /** In-country end products of the project */
-      in_country_end_products?: string;
-      water_extraction_envisaged?: boolean | null;
+      in_country_end_products?: string
+      water_extraction_envisaged?: boolean | null
       /** Comment on water extraction envisaged */
-      water_extraction_envisaged_comment?: string;
-      source_of_water_extraction?: components["schemas"]["SourceOfWaterExtractionEnum"][];
+      water_extraction_envisaged_comment?: string
+      source_of_water_extraction?: components["schemas"]["SourceOfWaterExtractionEnum"][]
       /** Comment on source of water extraction */
-      source_of_water_extraction_comment?: string;
+      source_of_water_extraction_comment?: string
       /** Comment on how much do investors pay for water */
-      how_much_do_investors_pay_comment?: string;
-      water_extraction_amount?: number | null;
+      how_much_do_investors_pay_comment?: string
+      water_extraction_amount?: number | null
       /** Comment on how much water is extracted */
-      water_extraction_amount_comment?: string;
-      use_of_irrigation_infrastructure?: boolean | null;
+      water_extraction_amount_comment?: string
+      use_of_irrigation_infrastructure?: boolean | null
       /** Comment on use of irrigation infrastructure */
-      use_of_irrigation_infrastructure_comment?: string;
+      use_of_irrigation_infrastructure_comment?: string
       /** Water footprint of the investment project */
-      water_footprint?: string;
+      water_footprint?: string
       /** Comment on gender-related info */
-      gender_related_information?: string;
-      overall_comment?: string;
+      gender_related_information?: string
+      overall_comment?: string
       /** Format: date-time */
-      created_at: string;
+      created_at: string
       /** Format: date-time */
-      modified_at: string | null;
+      modified_at: string | null
       /** Format: date-time */
-      sent_to_review_at: string | null;
+      sent_to_review_at: string | null
       /**
        * Reviewed at
        * Format: date-time
        */
-      sent_to_activation_at: string | null;
+      sent_to_activation_at: string | null
       /** Format: date-time */
-      activated_at: string | null;
-      status: components["schemas"]["StatusEnum"];
-      is_public: boolean;
-      has_known_investor: boolean;
+      activated_at: string | null
+      status: components["schemas"]["StatusEnum"]
+      is_public: boolean
+      has_known_investor: boolean
       /** Format: decimal */
-      current_contract_size: string | null;
+      current_contract_size: string | null
       /** Format: decimal */
-      current_production_size: string | null;
-      current_intention_of_investment: readonly components["schemas"]["CurrentIntentionOfInvestmentEnum"][];
-      current_negotiation_status: components["schemas"]["CurrentNegotiationStatusEnum"] | components["schemas"]["NullEnum"] | null;
-      current_implementation_status: components["schemas"]["CurrentImplementationStatusEnum"] | components["schemas"]["NullEnum"] | null;
-      current_crops: readonly string[];
-      current_animals: readonly string[];
-      current_mineral_resources: readonly string[];
-      current_electricity_generation: readonly string[];
-      current_carbon_sequestration: readonly string[];
+      current_production_size: string | null
+      current_intention_of_investment: readonly components["schemas"]["CurrentIntentionOfInvestmentEnum"][]
+      current_negotiation_status:
+        | components["schemas"]["CurrentNegotiationStatusEnum"]
+        | components["schemas"]["NullEnum"]
+        | null
+      current_implementation_status:
+        | components["schemas"]["CurrentImplementationStatusEnum"]
+        | components["schemas"]["NullEnum"]
+        | null
+      current_crops: readonly string[]
+      current_animals: readonly string[]
+      current_mineral_resources: readonly string[]
+      current_electricity_generation: readonly string[]
+      current_carbon_sequestration: readonly string[]
       /** Format: decimal */
-      deal_size: string | null;
-      initiation_year: number | null;
-      forest_concession: boolean;
-      transnational: boolean | null;
-      fully_updated?: boolean;
-      deal: number;
-      purchase_price_currency?: number | null;
-      annual_leasing_fee_currency?: number | null;
-      operating_company?: number | null;
+      deal_size: string | null
+      initiation_year: number | null
+      forest_concession: boolean
+      transnational: boolean | null
+      fully_updated?: boolean
+      deal: number
+      purchase_price_currency?: number | null
+      annual_leasing_fee_currency?: number | null
+      operating_company?: number | null
       /** Country 1 */
-      export_country1?: number | null;
+      export_country1?: number | null
       /** Country 2 */
-      export_country2?: number | null;
+      export_country2?: number | null
       /** Country 3 */
-      export_country3?: number | null;
-      created_by: number | null;
-      modified_by: number | null;
-      sent_to_review_by: number | null;
-      sent_to_activation_by: number | null;
-      activated_by: number | null;
-      parent_companies: readonly number[];
+      export_country3?: number | null
+      created_by: number | null
+      modified_by: number | null
+      sent_to_review_by: number | null
+      sent_to_activation_by: number | null
+      activated_by: number | null
+      parent_companies: readonly number[]
       /** Top parent companies */
-      top_investors: readonly number[];
-    };
+      top_investors: readonly number[]
+    }
     DealVersionVersionsList: {
-      id: number;
+      id: number
       /** Format: date-time */
-      created_at: string;
-      created_by_id: number | null;
+      created_at: string
+      created_by_id: number | null
       /** Format: date-time */
-      modified_at?: string | null;
-      modified_by_id: number | null;
+      modified_at?: string | null
+      modified_by_id: number | null
       /** Format: date-time */
-      sent_to_review_at?: string | null;
-      sent_to_review_by_id: number | null;
+      sent_to_review_at?: string | null
+      sent_to_review_by_id: number | null
       /**
        * Reviewed at
        * Format: date-time
        */
-      sent_to_activation_at?: string | null;
-      sent_to_activation_by_id: number | null;
+      sent_to_activation_at?: string | null
+      sent_to_activation_by_id: number | null
       /** Format: date-time */
-      activated_at?: string | null;
-      activated_by_id: number | null;
-      status?: components["schemas"]["StatusEnum"];
-      fully_updated?: boolean;
-      is_public?: boolean;
-    };
+      activated_at?: string | null
+      activated_by_id: number | null
+      status?: components["schemas"]["StatusEnum"]
+      fully_updated?: boolean
+      is_public?: boolean
+    }
     /**
      * ElectricityGenerationEnum
      * @enum {string}
      */
-    ElectricityGenerationEnum: "WIND" | "PHOTOVOLTAIC" | "SOLAR_HEAT";
+    ElectricityGenerationEnum: "WIND" | "PHOTOVOLTAIC" | "SOLAR_HEAT"
     /** ElectricityGenerationItem */
     ElectricityGenerationItem: {
       /**
        * Current
        * @default false
        */
-      current?: boolean;
+      current?: boolean
       /**
        * Date
        * @default null
        */
-      date?: string | null;
+      date?: string | null
       /**
        * Area
        * @default null
        */
-      area?: number | string | null;
+      area?: number | string | null
       /**
        * Choices
        * @default []
        */
-      choices?: components["schemas"]["ElectricityGenerationEnum"][];
+      choices?: components["schemas"]["ElectricityGenerationEnum"][]
       /**
        * Export
        * @default null
        */
-      export?: number | string | null;
+      export?: number | string | null
       /**
        * Windfarm Count
        * @default null
        */
-      windfarm_count?: number | string | null;
+      windfarm_count?: number | string | null
       /**
        * Current Capacity
        * @default null
        */
-      current_capacity?: number | string | null;
+      current_capacity?: number | string | null
       /**
        * Intended Capacity
        * @default null
        */
-      intended_capacity?: number | string | null;
-    };
+      intended_capacity?: number | string | null
+    }
     /** ElectricityGenerationSchema */
-    ElectricityGenerationSchema: components["schemas"]["ElectricityGenerationItem"][];
+    ElectricityGenerationSchema: components["schemas"]["ElectricityGenerationItem"][]
     /** ExportsAnimals */
-    ExportsAnimals: components["schemas"]["ExportsAnimalsItem"][];
+    ExportsAnimals: components["schemas"]["ExportsAnimalsItem"][]
     /** ExportsAnimalsItem */
     ExportsAnimalsItem: {
       /**
        * Current
        * @default false
        */
-      current?: boolean;
+      current?: boolean
       /**
        * Date
        * @default null
        */
-      date?: string | null;
+      date?: string | null
       /** Choices */
-      choices: components["schemas"]["AnimalsEnum"][];
+      choices: components["schemas"]["AnimalsEnum"][]
       /**
        * Area
        * @default null
        */
-      area?: number | string | null;
+      area?: number | string | null
       /**
        * Yield
        * @default null
        */
-      yield?: number | string | null;
+      yield?: number | string | null
       /**
        * Export
        * @default null
        */
-      export?: number | string | null;
-    };
+      export?: number | string | null
+    }
     /** ExportsCrops */
-    ExportsCrops: components["schemas"]["ExportsCropsItem"][];
+    ExportsCrops: components["schemas"]["ExportsCropsItem"][]
     /** ExportsCropsItem */
     ExportsCropsItem: {
       /**
        * Current
        * @default false
        */
-      current?: boolean;
+      current?: boolean
       /**
        * Date
        * @default null
        */
-      date?: string | null;
+      date?: string | null
       /** Choices */
-      choices: components["schemas"]["CropsEnum"][];
+      choices: components["schemas"]["CropsEnum"][]
       /**
        * Area
        * @default null
        */
-      area?: number | string | null;
+      area?: number | string | null
       /**
        * Yield
        * @default null
        */
-      yield?: number | string | null;
+      yield?: number | string | null
       /**
        * Export
        * @default null
        */
-      export?: number | string | null;
-    };
+      export?: number | string | null
+    }
     /** ExportsMineralResources */
-    ExportsMineralResources: components["schemas"]["ExportsMineralResourcesItem"][];
+    ExportsMineralResources: components["schemas"]["ExportsMineralResourcesItem"][]
     /** ExportsMineralResourcesItem */
     ExportsMineralResourcesItem: {
       /**
        * Current
        * @default false
        */
-      current?: boolean;
+      current?: boolean
       /**
        * Date
        * @default null
        */
-      date?: string | null;
+      date?: string | null
       /** Choices */
-      choices: components["schemas"]["MineralsEnum"][];
+      choices: components["schemas"]["MineralsEnum"][]
       /**
        * Area
        * @default null
        */
-      area?: number | string | null;
+      area?: number | string | null
       /**
        * Yield
        * @default null
        */
-      yield?: number | string | null;
+      yield?: number | string | null
       /**
        * Export
        * @default null
        */
-      export?: number | string | null;
-    };
+      export?: number | string | null
+    }
     FieldChoices: {
-      deal: components["schemas"]["DealFields"];
-      datasource: components["schemas"]["DataSourceFields"];
-      investor: components["schemas"]["InvestorFields"];
-      involvement: components["schemas"]["InvolvementFields"];
-    };
+      deal: components["schemas"]["DealFields"]
+      datasource: components["schemas"]["DataSourceFields"]
+      investor: components["schemas"]["InvestorFields"]
+      involvement: components["schemas"]["InvolvementFields"]
+    }
     FieldDefinition: {
-      id: number;
-      model: components["schemas"]["ModelEnum"];
-      field: string;
-      short_description: string;
+      id: number
+      model: components["schemas"]["ModelEnum"]
+      field: string
+      short_description: string
       /** Short description [en] */
-      short_description_en?: string | null;
+      short_description_en?: string | null
       /** Short description [es] */
-      short_description_es?: string | null;
+      short_description_es?: string | null
       /** Short description [fr] */
-      short_description_fr?: string | null;
+      short_description_fr?: string | null
       /** Short description [ru] */
-      short_description_ru?: string | null;
-      long_description?: string;
+      short_description_ru?: string | null
+      long_description?: string
       /** Long description [en] */
-      long_description_en?: string | null;
+      long_description_en?: string | null
       /** Long description [es] */
-      long_description_es?: string | null;
+      long_description_es?: string | null
       /** Long description [fr] */
-      long_description_fr?: string | null;
+      long_description_fr?: string | null
       /** Long description [ru] */
-      long_description_ru?: string | null;
-      editor_description?: string;
+      long_description_ru?: string | null
+      editor_description?: string
       /** Editor description [en] */
-      editor_description_en?: string | null;
+      editor_description_en?: string | null
       /** Editor description [es] */
-      editor_description_es?: string | null;
+      editor_description_es?: string | null
       /** Editor description [fr] */
-      editor_description_fr?: string | null;
+      editor_description_fr?: string | null
       /** Editor description [ru] */
-      editor_description_ru?: string | null;
-    };
+      editor_description_ru?: string | null
+    }
     /**
      * @description * `CROPLAND` - Cropland
      * * `FOREST_LAND` - Forest land
@@ -1156,7 +1357,14 @@ export interface components {
      * * `OTHER_LAND` - Other land (e.g. developed land)
      * @enum {string}
      */
-    FormerLandCoverEnum: "CROPLAND" | "FOREST_LAND" | "PASTURE" | "RANGELAND" | "MARGINAL_LAND" | "WETLAND" | "OTHER_LAND";
+    FormerLandCoverEnum:
+      | "CROPLAND"
+      | "FOREST_LAND"
+      | "PASTURE"
+      | "RANGELAND"
+      | "MARGINAL_LAND"
+      | "WETLAND"
+      | "OTHER_LAND"
     /**
      * @description * `STATE` - State
      * * `PRIVATE_SMALLHOLDERS` - Private (smallholders)
@@ -1166,7 +1374,13 @@ export interface components {
      * * `OTHER` - Other
      * @enum {string}
      */
-    FormerLandOwnerEnum: "STATE" | "PRIVATE_SMALLHOLDERS" | "PRIVATE_LARGE_SCALE" | "COMMUNITY" | "INDIGENOUS_PEOPLE" | "OTHER";
+    FormerLandOwnerEnum:
+      | "STATE"
+      | "PRIVATE_SMALLHOLDERS"
+      | "PRIVATE_LARGE_SCALE"
+      | "COMMUNITY"
+      | "INDIGENOUS_PEOPLE"
+      | "OTHER"
     /**
      * @description * `COMMERCIAL_AGRICULTURE` - Commercial (large-scale) agriculture
      * * `SMALLHOLDER_AGRICULTURE` - Smallholder agriculture
@@ -1178,203 +1392,241 @@ export interface components {
      * * `OTHER` - Other
      * @enum {string}
      */
-    FormerLandUseEnum: "COMMERCIAL_AGRICULTURE" | "SMALLHOLDER_AGRICULTURE" | "SHIFTING_CULTIVATION" | "PASTORALISM" | "HUNTING_GATHERING" | "FORESTRY" | "CONSERVATION" | "OTHER";
+    FormerLandUseEnum:
+      | "COMMERCIAL_AGRICULTURE"
+      | "SMALLHOLDER_AGRICULTURE"
+      | "SHIFTING_CULTIVATION"
+      | "PASTORALISM"
+      | "HUNTING_GATHERING"
+      | "FORESTRY"
+      | "CONSERVATION"
+      | "OTHER"
     /**
      * ImplementationStatusEnum
      * @enum {string}
      */
-    ImplementationStatusEnum: "PROJECT_NOT_STARTED" | "STARTUP_PHASE" | "IN_OPERATION" | "PROJECT_ABANDONED";
+    ImplementationStatusEnum:
+      | "PROJECT_NOT_STARTED"
+      | "STARTUP_PHASE"
+      | "IN_OPERATION"
+      | "PROJECT_ABANDONED"
     /**
      * IntentionOfInvestmentEnum
      * @enum {string}
      */
-    IntentionOfInvestmentEnum: "BIOFUELS" | "BIOMASS_ENERGY_GENERATION" | "FODDER" | "FOOD_CROPS" | "LIVESTOCK" | "NON_FOOD_AGRICULTURE" | "AGRICULTURE_UNSPECIFIED" | "BIOMASS_ENERGY_PRODUCTION" | "CARBON" | "FOREST_LOGGING" | "TIMBER_PLANTATION" | "FORESTRY_UNSPECIFIED" | "SOLAR_PARK" | "WIND_FARM" | "RENEWABLE_ENERGY" | "CONVERSATION" | "INDUSTRY" | "LAND_SPECULATION" | "MINING" | "OIL_GAS_EXTRACTION" | "TOURISM" | "OTHER";
+    IntentionOfInvestmentEnum:
+      | "BIOFUELS"
+      | "BIOMASS_ENERGY_GENERATION"
+      | "FODDER"
+      | "FOOD_CROPS"
+      | "LIVESTOCK"
+      | "NON_FOOD_AGRICULTURE"
+      | "AGRICULTURE_UNSPECIFIED"
+      | "BIOMASS_ENERGY_PRODUCTION"
+      | "CARBON"
+      | "FOREST_LOGGING"
+      | "TIMBER_PLANTATION"
+      | "FORESTRY_UNSPECIFIED"
+      | "SOLAR_PARK"
+      | "WIND_FARM"
+      | "RENEWABLE_ENERGY"
+      | "CONVERSATION"
+      | "INDUSTRY"
+      | "LAND_SPECULATION"
+      | "MINING"
+      | "OIL_GAS_EXTRACTION"
+      | "TOURISM"
+      | "OTHER"
     Investor: {
-      id: number;
-      active_version_id: number | null;
-      draft_version_id: number | null;
-      versions: components["schemas"]["InvestorVersionVersionsList"][];
-      selected_version: components["schemas"]["InvestorVersion"];
-      deals: string;
-      involvements: string;
-      workflowinfos: string;
-      deleted?: boolean;
-      deleted_comment?: string;
+      id: number
+      active_version_id: number | null
+      draft_version_id: number | null
+      versions: components["schemas"]["InvestorVersionVersionsList"][]
+      selected_version: components["schemas"]["InvestorVersion"]
+      deals: string
+      involvements: string
+      workflowinfos: string
+      deleted?: boolean
+      deleted_comment?: string
       /** Format: date-time */
-      first_created_at: string;
-      first_created_by?: number | null;
-      active_version?: number | null;
-      draft_version?: number | null;
-    };
+      first_created_at: string
+      first_created_by?: number | null
+      active_version?: number | null
+      draft_version?: number | null
+    }
     InvestorDataSource: {
-      id: number;
-      file: string;
+      id: number
+      file: string
       /** ID */
-      nid: string;
-      type: components["schemas"]["TypeB96Enum"];
+      nid: string
+      type: components["schemas"]["TypeB96Enum"]
       /** Format: uri */
-      url?: string;
+      url?: string
       /** Keep PDF not public */
-      file_not_public?: boolean;
-      publication_title?: string;
-      date?: string | null;
-      name?: string;
+      file_not_public?: boolean
+      publication_title?: string
+      date?: string | null
+      name?: string
       /** Organisation */
-      company?: string;
+      company?: string
       /** Format: email */
-      email?: string;
-      phone?: string;
-      includes_in_country_verified_information?: boolean | null;
+      email?: string
+      phone?: string
+      includes_in_country_verified_information?: boolean | null
       /** Open Contracting ID */
-      open_land_contracts_id?: string;
-      comment?: string;
-      investorversion: number;
-    };
+      open_land_contracts_id?: string
+      comment?: string
+      investorversion: number
+    }
     InvestorFields: {
-      classification: components["schemas"]["ValueLabel"][];
-    };
+      classification: components["schemas"]["ValueLabel"][]
+    }
     InvestorVersion: {
-      id: number;
-      datasources: readonly components["schemas"]["InvestorDataSource"][];
+      id: number
+      datasources: readonly components["schemas"]["InvestorDataSource"][]
       /** Country of registration/origin */
-      country_id: number | null;
-      created_by_id: number | null;
-      modified_by_id: number | null;
-      sent_to_review_by_id: number | null;
-      sent_to_activation_by_id: number | null;
-      activated_by_id: number | null;
+      country_id: number | null
+      created_by_id: number | null
+      modified_by_id: number | null
+      sent_to_review_by_id: number | null
+      sent_to_activation_by_id: number | null
+      activated_by_id: number | null
       /** Format: date-time */
-      created_at: string;
+      created_at: string
       /** Format: date-time */
-      modified_at: string | null;
+      modified_at: string | null
       /** Format: date-time */
-      sent_to_review_at: string | null;
+      sent_to_review_at: string | null
       /**
        * Reviewed at
        * Format: date-time
        */
-      sent_to_activation_at: string | null;
+      sent_to_activation_at: string | null
       /** Format: date-time */
-      activated_at: string | null;
-      status: components["schemas"]["StatusEnum"];
-      name?: string;
-      name_unknown?: boolean;
-      classification?: components["schemas"]["ClassificationEnum"] | components["schemas"]["BlankEnum"] | components["schemas"]["NullEnum"] | null;
+      activated_at: string | null
+      status: components["schemas"]["StatusEnum"]
+      name?: string
+      name_unknown?: boolean
+      classification?:
+        | components["schemas"]["ClassificationEnum"]
+        | components["schemas"]["BlankEnum"]
+        | components["schemas"]["NullEnum"]
+        | null
       /**
        * Investor homepage
        * Format: uri
        */
-      homepage?: string;
+      homepage?: string
       /**
        * Opencorporates link
        * Format: uri
        */
-      opencorporates?: string;
-      comment?: string;
-      involvements_snapshot?: unknown;
-      created_by: number | null;
-      modified_by: number | null;
-      sent_to_review_by: number | null;
-      sent_to_activation_by: number | null;
-      activated_by: number | null;
-      investor: number;
+      opencorporates?: string
+      comment?: string
+      involvements_snapshot?: unknown
+      created_by: number | null
+      modified_by: number | null
+      sent_to_review_by: number | null
+      sent_to_activation_by: number | null
+      activated_by: number | null
+      investor: number
       /** Country of registration/origin */
-      country?: number | null;
-    };
+      country?: number | null
+    }
     InvestorVersionVersionsList: {
-      id: number;
+      id: number
       /** Format: date-time */
-      created_at: string;
-      created_by_id: number | null;
+      created_at: string
+      created_by_id: number | null
       /** Format: date-time */
-      modified_at?: string | null;
-      modified_by_id: number | null;
+      modified_at?: string | null
+      modified_by_id: number | null
       /** Format: date-time */
-      sent_to_review_at?: string | null;
-      sent_to_review_by_id: number | null;
+      sent_to_review_at?: string | null
+      sent_to_review_by_id: number | null
       /**
        * Reviewed at
        * Format: date-time
        */
-      sent_to_activation_at?: string | null;
-      sent_to_activation_by_id: number | null;
+      sent_to_activation_at?: string | null
+      sent_to_activation_by_id: number | null
       /** Format: date-time */
-      activated_at?: string | null;
-      activated_by_id: number | null;
-      status?: components["schemas"]["StatusEnum"];
-    };
+      activated_at?: string | null
+      activated_by_id: number | null
+      status?: components["schemas"]["StatusEnum"]
+    }
     InvolvementFields: {
-      role: components["schemas"]["ValueLabel"][];
-      investment_type: components["schemas"]["ValueLabel"][];
-      parent_relation: components["schemas"]["ValueLabel"][];
-    };
+      role: components["schemas"]["ValueLabel"][]
+      investment_type: components["schemas"]["ValueLabel"][]
+      parent_relation: components["schemas"]["ValueLabel"][]
+    }
     /** JobsItem */
     JobsItem: {
       /**
        * Current
        * @default false
        */
-      current?: boolean;
+      current?: boolean
       /**
        * Date
        * @default null
        */
-      date?: string | null;
+      date?: string | null
       /**
        * Jobs
        * @default null
        */
-      jobs?: number | string | null;
+      jobs?: number | string | null
       /**
        * Employees
        * @default null
        */
-      employees?: number | string | null;
+      employees?: number | string | null
       /**
        * Workers
        * @default null
        */
-      workers?: number | string | null;
-    };
+      workers?: number | string | null
+    }
     /** JobsSchema */
-    JobsSchema: components["schemas"]["JobsItem"][];
+    JobsSchema: components["schemas"]["JobsItem"][]
     LeanUser: {
-      id: number;
-      full_name?: string;
+      id: number
+      full_name?: string
       /** @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
-      username: string;
-      role?: components["schemas"]["RoleEnum"];
-    };
+      username: string
+      role?: components["schemas"]["RoleEnum"]
+    }
     /** LeaseItem */
     LeaseItem: {
       /**
        * Current
        * @default false
        */
-      current?: boolean;
+      current?: boolean
       /**
        * Date
        * @default null
        */
-      date?: string | null;
+      date?: string | null
       /**
        * Area
        * @default null
        */
-      area?: number | string | null;
+      area?: number | string | null
       /**
        * Farmers
        * @default null
        */
-      farmers?: number | string | null;
+      farmers?: number | string | null
       /**
        * Households
        * @default null
        */
-      households?: number | string | null;
-    };
+      households?: number | string | null
+    }
     /** LeaseSchema */
-    LeaseSchema: components["schemas"]["LeaseItem"][];
+    LeaseSchema: components["schemas"]["LeaseItem"][]
     /**
      * @description * `debug` - Debug
      * * `info` - Info
@@ -1383,7 +1635,7 @@ export interface components {
      * * `error` - Error
      * @enum {string}
      */
-    LevelEnum: "debug" | "info" | "success" | "warning" | "error";
+    LevelEnum: "debug" | "info" | "success" | "warning" | "error"
     /**
      * @description * `COUNTRY` - Country
      * * `ADMINISTRATIVE_REGION` - Administrative region
@@ -1392,51 +1644,58 @@ export interface components {
      * * `COORDINATES` - Coordinates
      * @enum {string}
      */
-    LevelOfAccuracyEnum: "COUNTRY" | "ADMINISTRATIVE_REGION" | "APPROXIMATE_LOCATION" | "EXACT_LOCATION" | "COORDINATES";
+    LevelOfAccuracyEnum:
+      | "COUNTRY"
+      | "ADMINISTRATIVE_REGION"
+      | "APPROXIMATE_LOCATION"
+      | "EXACT_LOCATION"
+      | "COORDINATES"
     Location: {
-      id: number;
-      areas: readonly components["schemas"]["LocationArea"][];
+      id: number
+      areas: readonly components["schemas"]["LocationArea"][]
       /** ID */
-      nid: string;
+      nid: string
       /** Spatial accuracy level */
-      level_of_accuracy?: components["schemas"]["LevelOfAccuracyEnum"] | components["schemas"]["BlankEnum"];
+      level_of_accuracy?:
+        | components["schemas"]["LevelOfAccuracyEnum"]
+        | components["schemas"]["BlankEnum"]
       /** Location */
-      name?: string;
+      name?: string
       point?: {
         /** @enum {string} */
-        type?: "Point";
+        type?: "Point"
         /**
          * @example [
          *   12.9721,
          *   77.5933
          * ]
          */
-        coordinates?: number[];
-      } | null;
-      description?: string;
-      facility_name?: string;
-      comment?: string;
-      dealversion: number;
-    };
+        coordinates?: number[]
+      } | null
+      description?: string
+      facility_name?: string
+      comment?: string
+      dealversion: number
+    }
     LocationArea: {
-      id: number;
-      type: components["schemas"]["LocationAreaTypeEnum"];
-      current?: boolean;
-      date?: string | null;
+      id: number
+      type: components["schemas"]["LocationAreaTypeEnum"]
+      current?: boolean
+      date?: string | null
       area: {
         /** @enum {string} */
-        type?: "MultiPolygon";
-        coordinates?: number[][][][];
-      };
-      location: number;
-    };
+        type?: "MultiPolygon"
+        coordinates?: number[][][][]
+      }
+      location: number
+    }
     /**
      * @description * `production_area` - Production area
      * * `contract_area` - Contract area
      * * `intended_area` - Intended area
      * @enum {string}
      */
-    LocationAreaTypeEnum: "production_area" | "contract_area" | "intended_area";
+    LocationAreaTypeEnum: "production_area" | "contract_area" | "intended_area"
     /**
      * @description * `HEALTH` - Health
      * * `EDUCATION` - Education
@@ -1448,30 +1707,88 @@ export interface components {
      * * `OTHER` - Other
      * @enum {string}
      */
-    MaterializedBenefitsEnum: "HEALTH" | "EDUCATION" | "PRODUCTIVE_INFRASTRUCTURE" | "ROADS" | "CAPACITY_BUILDING" | "FINANCIAL_SUPPORT" | "COMMUNITY_SHARES" | "OTHER";
+    MaterializedBenefitsEnum:
+      | "HEALTH"
+      | "EDUCATION"
+      | "PRODUCTIVE_INFRASTRUCTURE"
+      | "ROADS"
+      | "CAPACITY_BUILDING"
+      | "FINANCIAL_SUPPORT"
+      | "COMMUNITY_SHARES"
+      | "OTHER"
     Message: {
-      id: number;
-      title?: string | null;
-      text: string;
-      level?: components["schemas"]["LevelEnum"];
-      is_active: boolean;
+      id: number
+      title?: string | null
+      text: string
+      level?: components["schemas"]["LevelEnum"]
+      is_active: boolean
       /**
        * Allow users to hide message
        * @description Store check off in cookie (expires in 365 days) so that users can choose to not display the messagea again.
        */
-      allow_users_to_hide?: boolean;
-    };
+      allow_users_to_hide?: boolean
+    }
     /**
      * MineralsEnum
      * @enum {string}
      */
-    MineralsEnum: "ALU" | "ASP" | "ATC" | "BAR" | "BAS" | "BAX" | "BEN" | "BUM" | "CAR" | "CHR" | "CLA" | "COA" | "COB" | "COP" | "DIA" | "EME" | "FLD" | "FLO" | "GAS" | "GLD" | "GRT" | "GRV" | "HEA" | "ILM" | "IRO" | "JAD" | "LED" | "LIM" | "LIT" | "MAG" | "MBD" | "MGN" | "MRB" | "NIK" | "OTH" | "PET" | "PHP" | "PLT" | "PUM" | "PYR" | "RUT" | "SAN" | "SIC" | "SIL" | "SLT" | "STO" | "TIN" | "TTM" | "URM" | "ZNC";
+    MineralsEnum:
+      | "ALU"
+      | "ASP"
+      | "ATC"
+      | "BAR"
+      | "BAS"
+      | "BAX"
+      | "BEN"
+      | "BUM"
+      | "CAR"
+      | "CHR"
+      | "CLA"
+      | "COA"
+      | "COB"
+      | "COP"
+      | "DIA"
+      | "EME"
+      | "FLD"
+      | "FLO"
+      | "GAS"
+      | "GLD"
+      | "GRT"
+      | "GRV"
+      | "HEA"
+      | "ILM"
+      | "IRO"
+      | "JAD"
+      | "LED"
+      | "LIM"
+      | "LIT"
+      | "MAG"
+      | "MBD"
+      | "MGN"
+      | "MRB"
+      | "NIK"
+      | "OTH"
+      | "PET"
+      | "PHP"
+      | "PLT"
+      | "PUM"
+      | "PYR"
+      | "RUT"
+      | "SAN"
+      | "SIC"
+      | "SIL"
+      | "SLT"
+      | "STO"
+      | "TIN"
+      | "TTM"
+      | "URM"
+      | "ZNC"
     /**
      * @description * `deal` - Deal
      * * `investor` - Investor
      * @enum {string}
      */
-    ModelEnum: "deal" | "investor";
+    ModelEnum: "deal" | "investor"
     /**
      * @description * `OUTRIGHT_PURCHASE` - Outright purchase
      * * `LEASE` - Lease
@@ -1481,7 +1798,13 @@ export interface components {
      * * `OTHER` - Other
      * @enum {string}
      */
-    NatureOfDealEnum: "OUTRIGHT_PURCHASE" | "LEASE" | "CONCESSION" | "EXPLOITATION_PERMIT" | "PURE_CONTRACT_FARMING" | "OTHER";
+    NatureOfDealEnum:
+      | "OUTRIGHT_PURCHASE"
+      | "LEASE"
+      | "CONCESSION"
+      | "EXPLOITATION_PERMIT"
+      | "PURE_CONTRACT_FARMING"
+      | "OTHER"
     /**
      * @description * `ENVIRONMENTAL_DEGRADATION` - Environmental degradation
      * * `SOCIO_ECONOMIC` - Socio-economic
@@ -1492,14 +1815,30 @@ export interface components {
      * * `OTHER` - Other
      * @enum {string}
      */
-    NegativeImpactsEnum: "ENVIRONMENTAL_DEGRADATION" | "SOCIO_ECONOMIC" | "CULTURAL_LOSS" | "EVICTION" | "DISPLACEMENT" | "VIOLENCE" | "OTHER";
+    NegativeImpactsEnum:
+      | "ENVIRONMENTAL_DEGRADATION"
+      | "SOCIO_ECONOMIC"
+      | "CULTURAL_LOSS"
+      | "EVICTION"
+      | "DISPLACEMENT"
+      | "VIOLENCE"
+      | "OTHER"
     /**
      * NegotiationStatusEnum
      * @enum {string}
      */
-    NegotiationStatusEnum: "EXPRESSION_OF_INTEREST" | "UNDER_NEGOTIATION" | "MEMORANDUM_OF_UNDERSTANDING" | "ORAL_AGREEMENT" | "CONTRACT_SIGNED" | "CHANGE_OF_OWNERSHIP" | "NEGOTIATIONS_FAILED" | "CONTRACT_CANCELED" | "CONTRACT_EXPIRED";
+    NegotiationStatusEnum:
+      | "EXPRESSION_OF_INTEREST"
+      | "UNDER_NEGOTIATION"
+      | "MEMORANDUM_OF_UNDERSTANDING"
+      | "ORAL_AGREEMENT"
+      | "CONTRACT_SIGNED"
+      | "CHANGE_OF_OWNERSHIP"
+      | "NEGOTIATIONS_FAILED"
+      | "CONTRACT_CANCELED"
+      | "CONTRACT_EXPIRED"
     /** @enum {unknown} */
-    NullEnum: "";
+    NullEnum: ""
     /**
      * @description * `HEALTH` - Health
      * * `EDUCATION` - Education
@@ -1511,13 +1850,21 @@ export interface components {
      * * `OTHER` - Other
      * @enum {string}
      */
-    PromisedBenefitsEnum: "HEALTH" | "EDUCATION" | "PRODUCTIVE_INFRASTRUCTURE" | "ROADS" | "CAPACITY_BUILDING" | "FINANCIAL_SUPPORT" | "COMMUNITY_SHARES" | "OTHER";
+    PromisedBenefitsEnum:
+      | "HEALTH"
+      | "EDUCATION"
+      | "PRODUCTIVE_INFRASTRUCTURE"
+      | "ROADS"
+      | "CAPACITY_BUILDING"
+      | "FINANCIAL_SUPPORT"
+      | "COMMUNITY_SHARES"
+      | "OTHER"
     /**
      * @description * `PER_HA` - per ha
      * * `PER_AREA` - for specified area
      * @enum {string}
      */
-    PurchasePriceTypeEnum: "PER_HA" | "PER_AREA";
+    PurchasePriceTypeEnum: "PER_HA" | "PER_AREA"
     /**
      * @description * `INDIGENOUS_RIGHTS_RECOGNIZED` - Indigenous Peoples traditional or customary rights recognized by government
      * * `INDIGENOUS_RIGHTS_NOT_RECOGNIZED` - Indigenous Peoples traditional or customary rights not recognized by government
@@ -1525,32 +1872,36 @@ export interface components {
      * * `COMMUNITY_RIGHTS_NOT_RECOGNIZED` - Community traditional or customary rights not recognized by government
      * @enum {string}
      */
-    RecognitionStatusEnum: "INDIGENOUS_RIGHTS_RECOGNIZED" | "INDIGENOUS_RIGHTS_NOT_RECOGNIZED" | "COMMUNITY_RIGHTS_RECOGNIZED" | "COMMUNITY_RIGHTS_NOT_RECOGNIZED";
+    RecognitionStatusEnum:
+      | "INDIGENOUS_RIGHTS_RECOGNIZED"
+      | "INDIGENOUS_RIGHTS_NOT_RECOGNIZED"
+      | "COMMUNITY_RIGHTS_RECOGNIZED"
+      | "COMMUNITY_RIGHTS_NOT_RECOGNIZED"
     Region: {
-      id: number;
-      name: string;
-      observatory_page_id: number;
+      id: number
+      name: string
+      observatory_page_id: number
       /**
        * Latitude of northernmost point
        * Format: decimal
        */
-      point_lat_min?: string | null;
+      point_lat_min?: string | null
       /**
        * Longitude of westernmost point
        * Format: decimal
        */
-      point_lon_min?: string | null;
+      point_lon_min?: string | null
       /**
        * Latitude of southernmost point
        * Format: decimal
        */
-      point_lat_max?: string | null;
+      point_lat_max?: string | null
       /**
        * Longitude of easternmost point
        * Format: decimal
        */
-      point_lon_max?: string | null;
-    };
+      point_lon_max?: string | null
+    }
     /**
      * @description * `0` - ---------
      * * `1` - Reporter
@@ -1558,30 +1909,30 @@ export interface components {
      * * `3` - Administrator
      * @enum {integer}
      */
-    RoleEnum: 0 | 1 | 2 | 3;
+    RoleEnum: 0 | 1 | 2 | 3
     SearchedInvestor: {
-      id: number;
-      active_version_id: number;
-      draft_version_id: number;
-      deleted: boolean;
+      id: number
+      active_version_id: number
+      draft_version_id: number
+      deleted: boolean
       /** Format: date-time */
-      first_created_at: string;
-      first_created_by_id: number;
-      selected_version: components["schemas"]["SelectedInvestorVersion"];
-    };
+      first_created_at: string
+      first_created_by_id: number
+      selected_version: components["schemas"]["SelectedInvestorVersion"]
+    }
     SelectedInvestorVersion: {
-      id: number;
-      name: string;
-      country_id: number;
+      id: number
+      name: string
+      country_id: number
       /** Format: date-time */
-      modified_at: string;
-      country_name: string;
-      name_unknown: boolean;
-    };
+      modified_at: string
+      country_name: string
+      name_unknown: boolean
+    }
     SimpleInvestor: {
-      id: number;
-      name: string;
-    };
+      id: number
+      name: string
+    }
     /**
      * @description * `GROUNDWATER` - Groundwater
      * * `SURFACE_WATER` - Surface water
@@ -1589,7 +1940,7 @@ export interface components {
      * * `LAKE` - Lake
      * @enum {string}
      */
-    SourceOfWaterExtractionEnum: "GROUNDWATER" | "SURFACE_WATER" | "RIVER" | "LAKE";
+    SourceOfWaterExtractionEnum: "GROUNDWATER" | "SURFACE_WATER" | "RIVER" | "LAKE"
     /**
      * @description * `DRAFT` - Draft
      * * `REVIEW` - Review
@@ -1597,7 +1948,7 @@ export interface components {
      * * `ACTIVATED` - Activated
      * @enum {string}
      */
-    StatusEnum: "DRAFT" | "REVIEW" | "ACTIVATION" | "ACTIVATED";
+    StatusEnum: "DRAFT" | "REVIEW" | "ACTIVATION" | "ACTIVATED"
     /**
      * @description * `MEDIA_REPORT` - Media report
      * * `RESEARCH_PAPER_OR_POLICY_REPORT` - Research Paper / Policy Report
@@ -1610,757 +1961,1159 @@ export interface components {
      * * `OTHER` - Other
      * @enum {string}
      */
-    TypeB96Enum: "MEDIA_REPORT" | "RESEARCH_PAPER_OR_POLICY_REPORT" | "GOVERNMENT_SOURCES" | "COMPANY_SOURCES" | "CONTRACT" | "CONTRACT_FARMING_AGREEMENT" | "PERSONAL_INFORMATION" | "CROWDSOURCING" | "OTHER";
+    TypeB96Enum:
+      | "MEDIA_REPORT"
+      | "RESEARCH_PAPER_OR_POLICY_REPORT"
+      | "GOVERNMENT_SOURCES"
+      | "COMPANY_SOURCES"
+      | "CONTRACT"
+      | "CONTRACT_FARMING_AGREEMENT"
+      | "PERSONAL_INFORMATION"
+      | "CROWDSOURCING"
+      | "OTHER"
     User: {
-      id: number;
-      country_id: number | null;
-      region_id: number | null;
+      id: number
+      country_id: number | null
+      region_id: number | null
       /** Format: date-time */
-      last_login?: string | null;
+      last_login?: string | null
       /**
        * Superuser status
        * @description Designates that this user has all permissions without explicitly assigning them.
        */
-      is_superuser?: boolean;
+      is_superuser?: boolean
       /** @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
-      username: string;
-      first_name?: string;
-      last_name?: string;
+      username: string
+      first_name?: string
+      last_name?: string
       /**
        * Email address
        * Format: email
        */
-      email?: string;
+      email?: string
       /**
        * Staff status
        * @description Designates whether the user can log into this admin site.
        */
-      is_staff?: boolean;
+      is_staff?: boolean
       /**
        * Active
        * @description Designates whether this user should be treated as active. Unselect this instead of deleting accounts.
        */
-      is_active?: boolean;
+      is_active?: boolean
       /** Format: date-time */
-      date_joined?: string;
-      full_name?: string;
-      phone?: string;
-      information?: string;
-      role?: components["schemas"]["RoleEnum"];
-    };
+      date_joined?: string
+      full_name?: string
+      phone?: string
+      information?: string
+      role?: components["schemas"]["RoleEnum"]
+    }
     ValueLabel: {
-      value: string;
-      label: string;
-      group?: string;
-    };
-  };
-  responses: never;
-  parameters: never;
-  requestBodies: never;
-  headers: never;
-  pathItems: never;
+      value: string
+      label: string
+      group?: string
+    }
+  }
+  responses: never
+  parameters: never
+  requestBodies: never
+  headers: never
+  pathItems: never
 }
 
-export type $defs = Record<string, never>;
+export type $defs = Record<string, never>
 
-export type external = Record<string, never>;
+export type external = Record<string, never>
 
 export interface operations {
-
   api_blog_categories_list: {
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["BlogCategory"][];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["BlogCategory"][]
+        }
+      }
+    }
+  }
   api_blog_categories_retrieve: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this Blog Category. */
-        id: number;
-      };
-    };
+        id: number
+      }
+    }
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["BlogCategory"];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["BlogCategory"]
+        }
+      }
+    }
+  }
   api_chart_descriptions_retrieve: {
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["ChartDescriptions"];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["ChartDescriptions"]
+        }
+      }
+    }
+  }
   api_countries_list: {
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["Country"][];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["Country"][]
+        }
+      }
+    }
+  }
   api_currencies_list: {
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["Currency"][];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["Currency"][]
+        }
+      }
+    }
+  }
   api_deals_list: {
     parameters: {
       query?: {
-        animals?: ("AQU" | "BEE" | "CTL" | "DCT" | "FSH" | "GOT" | "OTH" | "PIG" | "POU" | "SHP" | "SHR")[];
+        animals?: (
+          | "AQU"
+          | "BEE"
+          | "CTL"
+          | "DCT"
+          | "FSH"
+          | "GOT"
+          | "OTH"
+          | "PIG"
+          | "POU"
+          | "SHP"
+          | "SHR"
+        )[]
         /** @description Maximum deal area */
-        area_max?: number;
+        area_max?: number
         /** @description Minimum deal area */
-        area_min?: number;
+        area_min?: number
         /** @description See /api/countries/ for IDs */
-        country_id?: number;
-        crops?: ("ACC" | "ALF" | "ALG" | "ALM" | "ALV" | "APL" | "AQU" | "BAM" | "BAN" | "BEA" | "BOT" | "BRL" | "BWT" | "CAC" | "CAS" | "CAW" | "CHA" | "CHE" | "CNL" | "COC" | "COF" | "COT" | "CRL" | "CRN" | "CRO" | "CST" | "CTR" | "DIL" | "EUC" | "FLW" | "FNT" | "FOD" | "FOO" | "FRT" | "GRA" | "GRN" | "HRB" | "JTR" | "LNT" | "MAN" | "MUS" | "OAT" | "OIL" | "OLE" | "OLV" | "ONI" | "OPL" | "OTH" | "PAL" | "PAP" | "PAS" | "PEA" | "PEP" | "PES" | "PIE" | "PIN" | "PLS" | "POM" | "PON" | "PTT" | "RAP" | "RCH" | "RIC" | "ROS" | "RUB" | "RYE" | "SEE" | "SES" | "SOR" | "SOY" | "SPI" | "SSL" | "SUB" | "SUC" | "SUG" | "SUN" | "SWP" | "TBC" | "TEA" | "TEF" | "TEK" | "TOM" | "TRE" | "VGT" | "VIN" | "WHT" | "YAM")[];
+        country_id?: number
+        crops?: (
+          | "ACC"
+          | "ALF"
+          | "ALG"
+          | "ALM"
+          | "ALV"
+          | "APL"
+          | "AQU"
+          | "BAM"
+          | "BAN"
+          | "BEA"
+          | "BOT"
+          | "BRL"
+          | "BWT"
+          | "CAC"
+          | "CAS"
+          | "CAW"
+          | "CHA"
+          | "CHE"
+          | "CNL"
+          | "COC"
+          | "COF"
+          | "COT"
+          | "CRL"
+          | "CRN"
+          | "CRO"
+          | "CST"
+          | "CTR"
+          | "DIL"
+          | "EUC"
+          | "FLW"
+          | "FNT"
+          | "FOD"
+          | "FOO"
+          | "FRT"
+          | "GRA"
+          | "GRN"
+          | "HRB"
+          | "JTR"
+          | "LNT"
+          | "MAN"
+          | "MUS"
+          | "OAT"
+          | "OIL"
+          | "OLE"
+          | "OLV"
+          | "ONI"
+          | "OPL"
+          | "OTH"
+          | "PAL"
+          | "PAP"
+          | "PAS"
+          | "PEA"
+          | "PEP"
+          | "PES"
+          | "PIE"
+          | "PIN"
+          | "PLS"
+          | "POM"
+          | "PON"
+          | "PTT"
+          | "RAP"
+          | "RCH"
+          | "RIC"
+          | "ROS"
+          | "RUB"
+          | "RYE"
+          | "SEE"
+          | "SES"
+          | "SOR"
+          | "SOY"
+          | "SPI"
+          | "SSL"
+          | "SUB"
+          | "SUC"
+          | "SUG"
+          | "SUN"
+          | "SWP"
+          | "TBC"
+          | "TEA"
+          | "TEF"
+          | "TEK"
+          | "TOM"
+          | "TRE"
+          | "VGT"
+          | "VIN"
+          | "WHT"
+          | "YAM"
+        )[]
         /** @description not set: Included, true: Only false: Excluded */
-        forest_concession?: boolean;
-        implementation_status?: ("IN_OPERATION" | "PROJECT_ABANDONED" | "PROJECT_NOT_STARTED" | "STARTUP_PHASE" | "UNKNOWN")[];
+        forest_concession?: boolean
+        implementation_status?: (
+          | "IN_OPERATION"
+          | "PROJECT_ABANDONED"
+          | "PROJECT_NOT_STARTED"
+          | "STARTUP_PHASE"
+          | "UNKNOWN"
+        )[]
         /** @description Maximum year of initiation */
-        initiation_year_max?: number;
+        initiation_year_max?: number
         /** @description Minimum year of initiation */
-        initiation_year_min?: number;
+        initiation_year_min?: number
         /** @description Include unknown years */
-        initiation_year_null?: boolean;
-        intention_of_investment?: ("AGRICULTURE_UNSPECIFIED" | "BIOFUELS" | "BIOMASS_ENERGY_GENERATION" | "BIOMASS_ENERGY_PRODUCTION" | "CARBON" | "CONVERSATION" | "FODDER" | "FOOD_CROPS" | "FORESTRY_UNSPECIFIED" | "FOREST_LOGGING" | "INDUSTRY" | "LAND_SPECULATION" | "LIVESTOCK" | "MINING" | "NON_FOOD_AGRICULTURE" | "OIL_GAS_EXTRACTION" | "OTHER" | "RENEWABLE_ENERGY" | "SOLAR_PARK" | "TIMBER_PLANTATION" | "TOURISM" | "WIND_FARM")[];
-        minerals?: ("ALU" | "ASP" | "ATC" | "BAR" | "BAS" | "BAX" | "BEN" | "BUM" | "CAR" | "CHR" | "CLA" | "COA" | "COB" | "COP" | "DIA" | "EME" | "FLD" | "FLO" | "GAS" | "GLD" | "GRT" | "GRV" | "HEA" | "ILM" | "IRO" | "JAD" | "LED" | "LIM" | "LIT" | "MAG" | "MBD" | "MGN" | "MRB" | "NIK" | "OTH" | "PET" | "PHP" | "PLT" | "PUM" | "PYR" | "RUT" | "SAN" | "SIC" | "SIL" | "SLT" | "STO" | "TIN" | "TTM" | "URM" | "ZNC")[];
-        nature?: ("CONCESSION" | "EXPLOITATION_PERMIT" | "LEASE" | "OTHER" | "OUTRIGHT_PURCHASE" | "PURE_CONTRACT_FARMING")[];
-        negotiation_status?: ("CHANGE_OF_OWNERSHIP" | "CONTRACT_CANCELED" | "CONTRACT_EXPIRED" | "CONTRACT_SIGNED" | "EXPRESSION_OF_INTEREST" | "MEMORANDUM_OF_UNDERSTANDING" | "NEGOTIATIONS_FAILED" | "ORAL_AGREEMENT" | "UNDER_NEGOTIATION")[];
+        initiation_year_null?: boolean
+        intention_of_investment?: (
+          | "AGRICULTURE_UNSPECIFIED"
+          | "BIOFUELS"
+          | "BIOMASS_ENERGY_GENERATION"
+          | "BIOMASS_ENERGY_PRODUCTION"
+          | "CARBON"
+          | "CONVERSATION"
+          | "FODDER"
+          | "FOOD_CROPS"
+          | "FORESTRY_UNSPECIFIED"
+          | "FOREST_LOGGING"
+          | "INDUSTRY"
+          | "LAND_SPECULATION"
+          | "LIVESTOCK"
+          | "MINING"
+          | "NON_FOOD_AGRICULTURE"
+          | "OIL_GAS_EXTRACTION"
+          | "OTHER"
+          | "RENEWABLE_ENERGY"
+          | "SOLAR_PARK"
+          | "TIMBER_PLANTATION"
+          | "TOURISM"
+          | "WIND_FARM"
+        )[]
+        minerals?: (
+          | "ALU"
+          | "ASP"
+          | "ATC"
+          | "BAR"
+          | "BAS"
+          | "BAX"
+          | "BEN"
+          | "BUM"
+          | "CAR"
+          | "CHR"
+          | "CLA"
+          | "COA"
+          | "COB"
+          | "COP"
+          | "DIA"
+          | "EME"
+          | "FLD"
+          | "FLO"
+          | "GAS"
+          | "GLD"
+          | "GRT"
+          | "GRV"
+          | "HEA"
+          | "ILM"
+          | "IRO"
+          | "JAD"
+          | "LED"
+          | "LIM"
+          | "LIT"
+          | "MAG"
+          | "MBD"
+          | "MGN"
+          | "MRB"
+          | "NIK"
+          | "OTH"
+          | "PET"
+          | "PHP"
+          | "PLT"
+          | "PUM"
+          | "PYR"
+          | "RUT"
+          | "SAN"
+          | "SIC"
+          | "SIL"
+          | "SLT"
+          | "STO"
+          | "TIN"
+          | "TTM"
+          | "URM"
+          | "ZNC"
+        )[]
+        nature?: (
+          | "CONCESSION"
+          | "EXPLOITATION_PERMIT"
+          | "LEASE"
+          | "OTHER"
+          | "OUTRIGHT_PURCHASE"
+          | "PURE_CONTRACT_FARMING"
+        )[]
+        negotiation_status?: (
+          | "CHANGE_OF_OWNERSHIP"
+          | "CONTRACT_CANCELED"
+          | "CONTRACT_EXPIRED"
+          | "CONTRACT_SIGNED"
+          | "EXPRESSION_OF_INTEREST"
+          | "MEMORANDUM_OF_UNDERSTANDING"
+          | "NEGOTIATIONS_FAILED"
+          | "ORAL_AGREEMENT"
+          | "UNDER_NEGOTIATION"
+        )[]
         /** @description ID of the parent company */
-        parent_company?: number;
+        parent_company?: number
         /** @description ID of the parent company's country */
-        parent_company_country_id?: number;
+        parent_company_country_id?: number
         /** @description See /api/regions/ for IDs */
-        region_id?: number;
+        region_id?: number
         /** @description Scope. true: Transnational, false: Domestic, not set: both */
-        transnational?: boolean;
-      };
-    };
+        transnational?: boolean
+      }
+    }
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["Deal"][];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["Deal"][]
+        }
+      }
+    }
+  }
   api_deals_create: {
     requestBody: {
       content: {
-        "application/json": components["schemas"]["Deal"];
-        "application/x-www-form-urlencoded": components["schemas"]["Deal"];
-        "multipart/form-data": components["schemas"]["Deal"];
-      };
-    };
+        "application/json": components["schemas"]["Deal"]
+        "application/x-www-form-urlencoded": components["schemas"]["Deal"]
+        "multipart/form-data": components["schemas"]["Deal"]
+      }
+    }
     responses: {
       201: {
         content: {
-          "application/json": components["schemas"]["Deal"];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["Deal"]
+        }
+      }
+    }
+  }
   api_deals_retrieve: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this deal hull. */
-        id: number;
-      };
-    };
+        id: number
+      }
+    }
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["Deal"];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["Deal"]
+        }
+      }
+    }
+  }
   /** @description creating a new Version when calling "save" on an existing object */
   api_deals_update: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this deal hull. */
-        id: number;
-      };
-    };
+        id: number
+      }
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["Deal"];
-        "application/x-www-form-urlencoded": components["schemas"]["Deal"];
-        "multipart/form-data": components["schemas"]["Deal"];
-      };
-    };
+        "application/json": components["schemas"]["Deal"]
+        "application/x-www-form-urlencoded": components["schemas"]["Deal"]
+        "multipart/form-data": components["schemas"]["Deal"]
+      }
+    }
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["Deal"];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["Deal"]
+        }
+      }
+    }
+  }
   api_deals_retrieve_2: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this deal hull. */
-        id: number;
-        version_id: string;
-      };
-    };
+        id: number
+        version_id: string
+      }
+    }
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["Deal"];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["Deal"]
+        }
+      }
+    }
+  }
   api_deals_add_comment_update: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this deal hull. */
-        id: number;
-      };
-    };
+        id: number
+      }
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["Deal"];
-        "application/x-www-form-urlencoded": components["schemas"]["Deal"];
-        "multipart/form-data": components["schemas"]["Deal"];
-      };
-    };
+        "application/json": components["schemas"]["Deal"]
+        "application/x-www-form-urlencoded": components["schemas"]["Deal"]
+        "multipart/form-data": components["schemas"]["Deal"]
+      }
+    }
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["Deal"];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["Deal"]
+        }
+      }
+    }
+  }
   api_deals_make_copy_update: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this deal hull. */
-        id: number;
-      };
-    };
+        id: number
+      }
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["Deal"];
-        "application/x-www-form-urlencoded": components["schemas"]["Deal"];
-        "multipart/form-data": components["schemas"]["Deal"];
-      };
-    };
+        "application/json": components["schemas"]["Deal"]
+        "application/x-www-form-urlencoded": components["schemas"]["Deal"]
+        "multipart/form-data": components["schemas"]["Deal"]
+      }
+    }
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["Deal"];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["Deal"]
+        }
+      }
+    }
+  }
   api_deals_toggle_confidential_update: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this deal hull. */
-        id: number;
-      };
-    };
+        id: number
+      }
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["Deal"];
-        "application/x-www-form-urlencoded": components["schemas"]["Deal"];
-        "multipart/form-data": components["schemas"]["Deal"];
-      };
-    };
+        "application/json": components["schemas"]["Deal"]
+        "application/x-www-form-urlencoded": components["schemas"]["Deal"]
+        "multipart/form-data": components["schemas"]["Deal"]
+      }
+    }
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["Deal"];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["Deal"]
+        }
+      }
+    }
+  }
   api_deals_toggle_deleted_update: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this deal hull. */
-        id: number;
-      };
-    };
+        id: number
+      }
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["Deal"];
-        "application/x-www-form-urlencoded": components["schemas"]["Deal"];
-        "multipart/form-data": components["schemas"]["Deal"];
-      };
-    };
+        "application/json": components["schemas"]["Deal"]
+        "application/x-www-form-urlencoded": components["schemas"]["Deal"]
+        "multipart/form-data": components["schemas"]["Deal"]
+      }
+    }
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["Deal"];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["Deal"]
+        }
+      }
+    }
+  }
   api_dealversions_list: {
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["DealVersion"][];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["DealVersion"][]
+        }
+      }
+    }
+  }
   api_dealversions_retrieve: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this deal version. */
-        id: number;
-      };
-    };
+        id: number
+      }
+    }
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["DealVersion"];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["DealVersion"]
+        }
+      }
+    }
+  }
   api_dealversions_update: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this deal version. */
-        id: number;
-      };
-    };
+        id: number
+      }
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["DealVersion"];
-        "application/x-www-form-urlencoded": components["schemas"]["DealVersion"];
-        "multipart/form-data": components["schemas"]["DealVersion"];
-      };
-    };
+        "application/json": components["schemas"]["DealVersion"]
+        "application/x-www-form-urlencoded": components["schemas"]["DealVersion"]
+        "multipart/form-data": components["schemas"]["DealVersion"]
+      }
+    }
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["DealVersion"];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["DealVersion"]
+        }
+      }
+    }
+  }
   api_dealversions_destroy: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this deal version. */
-        id: number;
-      };
-    };
+        id: number
+      }
+    }
     responses: {
       /** @description No response body */
       204: {
-        content: never;
-      };
-    };
-  };
+        content: never
+      }
+    }
+  }
   api_dealversions_change_status_update: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this deal version. */
-        id: number;
-      };
-    };
+        id: number
+      }
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["DealVersion"];
-        "application/x-www-form-urlencoded": components["schemas"]["DealVersion"];
-        "multipart/form-data": components["schemas"]["DealVersion"];
-      };
-    };
+        "application/json": components["schemas"]["DealVersion"]
+        "application/x-www-form-urlencoded": components["schemas"]["DealVersion"]
+        "multipart/form-data": components["schemas"]["DealVersion"]
+      }
+    }
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["DealVersion"];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["DealVersion"]
+        }
+      }
+    }
+  }
   api_field_choices_retrieve: {
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["FieldChoices"];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["FieldChoices"]
+        }
+      }
+    }
+  }
   api_field_definitions_list: {
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["FieldDefinition"][];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["FieldDefinition"][]
+        }
+      }
+    }
+  }
   api_field_definitions_retrieve: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this field definition. */
-        id: number;
-      };
-    };
+        id: number
+      }
+    }
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["FieldDefinition"];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["FieldDefinition"]
+        }
+      }
+    }
+  }
   /** @description Export deal gis data. */
   api_gis_export_retrieve: {
     responses: {
       /** @description No response body */
       200: {
-        content: never;
-      };
-    };
-  };
+        content: never
+      }
+    }
+  }
   api_investor_search_list: {
     parameters: {
       query: {
         /** @description Query string */
-        q: string;
-      };
-    };
+        q: string
+      }
+    }
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["SearchedInvestor"][];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["SearchedInvestor"][]
+        }
+      }
+    }
+  }
   api_investors_list: {
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["Investor"][];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["Investor"][]
+        }
+      }
+    }
+  }
   api_investors_create: {
     requestBody: {
       content: {
-        "application/json": components["schemas"]["Investor"];
-        "application/x-www-form-urlencoded": components["schemas"]["Investor"];
-        "multipart/form-data": components["schemas"]["Investor"];
-      };
-    };
+        "application/json": components["schemas"]["Investor"]
+        "application/x-www-form-urlencoded": components["schemas"]["Investor"]
+        "multipart/form-data": components["schemas"]["Investor"]
+      }
+    }
     responses: {
       201: {
         content: {
-          "application/json": components["schemas"]["Investor"];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["Investor"]
+        }
+      }
+    }
+  }
   api_investors_retrieve: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this investor hull. */
-        id: number;
-      };
-    };
+        id: number
+      }
+    }
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["Investor"];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["Investor"]
+        }
+      }
+    }
+  }
   /** @description creating a new Version when calling "save" on an existing object */
   api_investors_update: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this investor hull. */
-        id: number;
-      };
-    };
+        id: number
+      }
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["Investor"];
-        "application/x-www-form-urlencoded": components["schemas"]["Investor"];
-        "multipart/form-data": components["schemas"]["Investor"];
-      };
-    };
+        "application/json": components["schemas"]["Investor"]
+        "application/x-www-form-urlencoded": components["schemas"]["Investor"]
+        "multipart/form-data": components["schemas"]["Investor"]
+      }
+    }
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["Investor"];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["Investor"]
+        }
+      }
+    }
+  }
   api_investors_retrieve_2: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this investor hull. */
-        id: number;
-        version_id: string;
-      };
-    };
+        id: number
+        version_id: string
+      }
+    }
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["Investor"];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["Investor"]
+        }
+      }
+    }
+  }
   api_investors_add_comment_update: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this investor hull. */
-        id: number;
-      };
-    };
+        id: number
+      }
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["Investor"];
-        "application/x-www-form-urlencoded": components["schemas"]["Investor"];
-        "multipart/form-data": components["schemas"]["Investor"];
-      };
-    };
+        "application/json": components["schemas"]["Investor"]
+        "application/x-www-form-urlencoded": components["schemas"]["Investor"]
+        "multipart/form-data": components["schemas"]["Investor"]
+      }
+    }
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["Investor"];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["Investor"]
+        }
+      }
+    }
+  }
   api_investors_involvements_graph_retrieve: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this investor hull. */
-        id: number;
-      };
-    };
+        id: number
+      }
+    }
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["Investor"];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["Investor"]
+        }
+      }
+    }
+  }
   api_investors_toggle_deleted_update: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this investor hull. */
-        id: number;
-      };
-    };
+        id: number
+      }
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["Investor"];
-        "application/x-www-form-urlencoded": components["schemas"]["Investor"];
-        "multipart/form-data": components["schemas"]["Investor"];
-      };
-    };
+        "application/json": components["schemas"]["Investor"]
+        "application/x-www-form-urlencoded": components["schemas"]["Investor"]
+        "multipart/form-data": components["schemas"]["Investor"]
+      }
+    }
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["Investor"];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["Investor"]
+        }
+      }
+    }
+  }
   api_investors_deal_filtered_retrieve: {
     parameters: {
       query?: {
-        animals?: ("AQU" | "BEE" | "CTL" | "DCT" | "FSH" | "GOT" | "OTH" | "PIG" | "POU" | "SHP" | "SHR")[];
+        animals?: (
+          | "AQU"
+          | "BEE"
+          | "CTL"
+          | "DCT"
+          | "FSH"
+          | "GOT"
+          | "OTH"
+          | "PIG"
+          | "POU"
+          | "SHP"
+          | "SHR"
+        )[]
         /** @description Maximum deal area */
-        area_max?: number;
+        area_max?: number
         /** @description Minimum deal area */
-        area_min?: number;
+        area_min?: number
         /** @description See /api/countries/ for IDs */
-        country_id?: number;
-        crops?: ("ACC" | "ALF" | "ALG" | "ALM" | "ALV" | "APL" | "AQU" | "BAM" | "BAN" | "BEA" | "BOT" | "BRL" | "BWT" | "CAC" | "CAS" | "CAW" | "CHA" | "CHE" | "CNL" | "COC" | "COF" | "COT" | "CRL" | "CRN" | "CRO" | "CST" | "CTR" | "DIL" | "EUC" | "FLW" | "FNT" | "FOD" | "FOO" | "FRT" | "GRA" | "GRN" | "HRB" | "JTR" | "LNT" | "MAN" | "MUS" | "OAT" | "OIL" | "OLE" | "OLV" | "ONI" | "OPL" | "OTH" | "PAL" | "PAP" | "PAS" | "PEA" | "PEP" | "PES" | "PIE" | "PIN" | "PLS" | "POM" | "PON" | "PTT" | "RAP" | "RCH" | "RIC" | "ROS" | "RUB" | "RYE" | "SEE" | "SES" | "SOR" | "SOY" | "SPI" | "SSL" | "SUB" | "SUC" | "SUG" | "SUN" | "SWP" | "TBC" | "TEA" | "TEF" | "TEK" | "TOM" | "TRE" | "VGT" | "VIN" | "WHT" | "YAM")[];
+        country_id?: number
+        crops?: (
+          | "ACC"
+          | "ALF"
+          | "ALG"
+          | "ALM"
+          | "ALV"
+          | "APL"
+          | "AQU"
+          | "BAM"
+          | "BAN"
+          | "BEA"
+          | "BOT"
+          | "BRL"
+          | "BWT"
+          | "CAC"
+          | "CAS"
+          | "CAW"
+          | "CHA"
+          | "CHE"
+          | "CNL"
+          | "COC"
+          | "COF"
+          | "COT"
+          | "CRL"
+          | "CRN"
+          | "CRO"
+          | "CST"
+          | "CTR"
+          | "DIL"
+          | "EUC"
+          | "FLW"
+          | "FNT"
+          | "FOD"
+          | "FOO"
+          | "FRT"
+          | "GRA"
+          | "GRN"
+          | "HRB"
+          | "JTR"
+          | "LNT"
+          | "MAN"
+          | "MUS"
+          | "OAT"
+          | "OIL"
+          | "OLE"
+          | "OLV"
+          | "ONI"
+          | "OPL"
+          | "OTH"
+          | "PAL"
+          | "PAP"
+          | "PAS"
+          | "PEA"
+          | "PEP"
+          | "PES"
+          | "PIE"
+          | "PIN"
+          | "PLS"
+          | "POM"
+          | "PON"
+          | "PTT"
+          | "RAP"
+          | "RCH"
+          | "RIC"
+          | "ROS"
+          | "RUB"
+          | "RYE"
+          | "SEE"
+          | "SES"
+          | "SOR"
+          | "SOY"
+          | "SPI"
+          | "SSL"
+          | "SUB"
+          | "SUC"
+          | "SUG"
+          | "SUN"
+          | "SWP"
+          | "TBC"
+          | "TEA"
+          | "TEF"
+          | "TEK"
+          | "TOM"
+          | "TRE"
+          | "VGT"
+          | "VIN"
+          | "WHT"
+          | "YAM"
+        )[]
         /** @description not set: Included, true: Only false: Excluded */
-        forest_concession?: boolean;
-        implementation_status?: ("IN_OPERATION" | "PROJECT_ABANDONED" | "PROJECT_NOT_STARTED" | "STARTUP_PHASE" | "UNKNOWN")[];
+        forest_concession?: boolean
+        implementation_status?: (
+          | "IN_OPERATION"
+          | "PROJECT_ABANDONED"
+          | "PROJECT_NOT_STARTED"
+          | "STARTUP_PHASE"
+          | "UNKNOWN"
+        )[]
         /** @description Maximum year of initiation */
-        initiation_year_max?: number;
+        initiation_year_max?: number
         /** @description Minimum year of initiation */
-        initiation_year_min?: number;
+        initiation_year_min?: number
         /** @description Include unknown years */
-        initiation_year_null?: boolean;
-        intention_of_investment?: ("AGRICULTURE_UNSPECIFIED" | "BIOFUELS" | "BIOMASS_ENERGY_GENERATION" | "BIOMASS_ENERGY_PRODUCTION" | "CARBON" | "CONVERSATION" | "FODDER" | "FOOD_CROPS" | "FORESTRY_UNSPECIFIED" | "FOREST_LOGGING" | "INDUSTRY" | "LAND_SPECULATION" | "LIVESTOCK" | "MINING" | "NON_FOOD_AGRICULTURE" | "OIL_GAS_EXTRACTION" | "OTHER" | "RENEWABLE_ENERGY" | "SOLAR_PARK" | "TIMBER_PLANTATION" | "TOURISM" | "WIND_FARM")[];
-        minerals?: ("ALU" | "ASP" | "ATC" | "BAR" | "BAS" | "BAX" | "BEN" | "BUM" | "CAR" | "CHR" | "CLA" | "COA" | "COB" | "COP" | "DIA" | "EME" | "FLD" | "FLO" | "GAS" | "GLD" | "GRT" | "GRV" | "HEA" | "ILM" | "IRO" | "JAD" | "LED" | "LIM" | "LIT" | "MAG" | "MBD" | "MGN" | "MRB" | "NIK" | "OTH" | "PET" | "PHP" | "PLT" | "PUM" | "PYR" | "RUT" | "SAN" | "SIC" | "SIL" | "SLT" | "STO" | "TIN" | "TTM" | "URM" | "ZNC")[];
-        nature?: ("CONCESSION" | "EXPLOITATION_PERMIT" | "LEASE" | "OTHER" | "OUTRIGHT_PURCHASE" | "PURE_CONTRACT_FARMING")[];
-        negotiation_status?: ("CHANGE_OF_OWNERSHIP" | "CONTRACT_CANCELED" | "CONTRACT_EXPIRED" | "CONTRACT_SIGNED" | "EXPRESSION_OF_INTEREST" | "MEMORANDUM_OF_UNDERSTANDING" | "NEGOTIATIONS_FAILED" | "ORAL_AGREEMENT" | "UNDER_NEGOTIATION")[];
+        initiation_year_null?: boolean
+        intention_of_investment?: (
+          | "AGRICULTURE_UNSPECIFIED"
+          | "BIOFUELS"
+          | "BIOMASS_ENERGY_GENERATION"
+          | "BIOMASS_ENERGY_PRODUCTION"
+          | "CARBON"
+          | "CONVERSATION"
+          | "FODDER"
+          | "FOOD_CROPS"
+          | "FORESTRY_UNSPECIFIED"
+          | "FOREST_LOGGING"
+          | "INDUSTRY"
+          | "LAND_SPECULATION"
+          | "LIVESTOCK"
+          | "MINING"
+          | "NON_FOOD_AGRICULTURE"
+          | "OIL_GAS_EXTRACTION"
+          | "OTHER"
+          | "RENEWABLE_ENERGY"
+          | "SOLAR_PARK"
+          | "TIMBER_PLANTATION"
+          | "TOURISM"
+          | "WIND_FARM"
+        )[]
+        minerals?: (
+          | "ALU"
+          | "ASP"
+          | "ATC"
+          | "BAR"
+          | "BAS"
+          | "BAX"
+          | "BEN"
+          | "BUM"
+          | "CAR"
+          | "CHR"
+          | "CLA"
+          | "COA"
+          | "COB"
+          | "COP"
+          | "DIA"
+          | "EME"
+          | "FLD"
+          | "FLO"
+          | "GAS"
+          | "GLD"
+          | "GRT"
+          | "GRV"
+          | "HEA"
+          | "ILM"
+          | "IRO"
+          | "JAD"
+          | "LED"
+          | "LIM"
+          | "LIT"
+          | "MAG"
+          | "MBD"
+          | "MGN"
+          | "MRB"
+          | "NIK"
+          | "OTH"
+          | "PET"
+          | "PHP"
+          | "PLT"
+          | "PUM"
+          | "PYR"
+          | "RUT"
+          | "SAN"
+          | "SIC"
+          | "SIL"
+          | "SLT"
+          | "STO"
+          | "TIN"
+          | "TTM"
+          | "URM"
+          | "ZNC"
+        )[]
+        nature?: (
+          | "CONCESSION"
+          | "EXPLOITATION_PERMIT"
+          | "LEASE"
+          | "OTHER"
+          | "OUTRIGHT_PURCHASE"
+          | "PURE_CONTRACT_FARMING"
+        )[]
+        negotiation_status?: (
+          | "CHANGE_OF_OWNERSHIP"
+          | "CONTRACT_CANCELED"
+          | "CONTRACT_EXPIRED"
+          | "CONTRACT_SIGNED"
+          | "EXPRESSION_OF_INTEREST"
+          | "MEMORANDUM_OF_UNDERSTANDING"
+          | "NEGOTIATIONS_FAILED"
+          | "ORAL_AGREEMENT"
+          | "UNDER_NEGOTIATION"
+        )[]
         /** @description ID of the parent company */
-        parent_company?: number;
+        parent_company?: number
         /** @description ID of the parent company's country */
-        parent_company_country_id?: number;
+        parent_company_country_id?: number
         /** @description See /api/regions/ for IDs */
-        region_id?: number;
+        region_id?: number
         /** @description Scope. true: Transnational, false: Domestic, not set: both */
-        transnational?: boolean;
-      };
-    };
+        transnational?: boolean
+      }
+    }
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["Investor"];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["Investor"]
+        }
+      }
+    }
+  }
   api_investors_simple_retrieve: {
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["SimpleInvestor"];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["SimpleInvestor"]
+        }
+      }
+    }
+  }
   api_investorversions_list: {
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["InvestorVersion"][];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["InvestorVersion"][]
+        }
+      }
+    }
+  }
   api_investorversions_retrieve: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this investor version. */
-        id: number;
-      };
-    };
+        id: number
+      }
+    }
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["InvestorVersion"];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["InvestorVersion"]
+        }
+      }
+    }
+  }
   api_investorversions_update: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this investor version. */
-        id: number;
-      };
-    };
+        id: number
+      }
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["InvestorVersion"];
-        "application/x-www-form-urlencoded": components["schemas"]["InvestorVersion"];
-        "multipart/form-data": components["schemas"]["InvestorVersion"];
-      };
-    };
+        "application/json": components["schemas"]["InvestorVersion"]
+        "application/x-www-form-urlencoded": components["schemas"]["InvestorVersion"]
+        "multipart/form-data": components["schemas"]["InvestorVersion"]
+      }
+    }
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["InvestorVersion"];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["InvestorVersion"]
+        }
+      }
+    }
+  }
   api_investorversions_destroy: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this investor version. */
-        id: number;
-      };
-    };
+        id: number
+      }
+    }
     responses: {
       /** @description No response body */
       204: {
-        content: never;
-      };
-    };
-  };
+        content: never
+      }
+    }
+  }
   api_investorversions_change_status_update: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this investor version. */
-        id: number;
-      };
-    };
+        id: number
+      }
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["InvestorVersion"];
-        "application/x-www-form-urlencoded": components["schemas"]["InvestorVersion"];
-        "multipart/form-data": components["schemas"]["InvestorVersion"];
-      };
-    };
+        "application/json": components["schemas"]["InvestorVersion"]
+        "application/x-www-form-urlencoded": components["schemas"]["InvestorVersion"]
+        "multipart/form-data": components["schemas"]["InvestorVersion"]
+      }
+    }
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["InvestorVersion"];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["InvestorVersion"]
+        }
+      }
+    }
+  }
   api_messages_list: {
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["Message"][];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["Message"][]
+        }
+      }
+    }
+  }
   api_messages_retrieve: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this Message. */
-        id: number;
-      };
-    };
+        id: number
+      }
+    }
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["Message"];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["Message"]
+        }
+      }
+    }
+  }
   api_regions_list: {
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["Region"][];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["Region"][]
+        }
+      }
+    }
+  }
   /**
    * @description OpenApi3 schema for this API. Format can be selected via content negotiation.
    *
@@ -2370,22 +3123,22 @@ export interface operations {
   "api_schema.json_retrieve": {
     parameters: {
       query?: {
-        lang?: "en" | "es" | "fr" | "ru";
-      };
-    };
+        lang?: "en" | "es" | "fr" | "ru"
+      }
+    }
     responses: {
       200: {
         content: {
           "application/vnd.oai.openapi+json": {
-            [key: string]: unknown;
-          };
+            [key: string]: unknown
+          }
           "application/json": {
-            [key: string]: unknown;
-          };
-        };
-      };
-    };
-  };
+            [key: string]: unknown
+          }
+        }
+      }
+    }
+  }
   /**
    * @description OpenApi3 schema for this API. Format can be selected via content negotiation.
    *
@@ -2395,261 +3148,261 @@ export interface operations {
   "api_schema.yaml_retrieve": {
     parameters: {
       query?: {
-        lang?: "en" | "es" | "fr" | "ru";
-      };
-    };
+        lang?: "en" | "es" | "fr" | "ru"
+      }
+    }
     responses: {
       200: {
         content: {
           "application/vnd.oai.openapi": {
-            [key: string]: unknown;
-          };
+            [key: string]: unknown
+          }
           "application/yaml": {
-            [key: string]: unknown;
-          };
-        };
-      };
-    };
-  };
+            [key: string]: unknown
+          }
+        }
+      }
+    }
+  }
   api_users_list: {
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["LeanUser"][];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["LeanUser"][]
+        }
+      }
+    }
+  }
   api_users_retrieve: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this user. */
-        id: number;
-      };
-    };
+        id: number
+      }
+    }
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["User"];
-        };
-      };
-    };
-  };
+          "application/json": components["schemas"]["User"]
+        }
+      }
+    }
+  }
   api_wagtail_v2_documents_retrieve: {
     responses: {
       /** @description No response body */
       200: {
-        content: never;
-      };
-    };
-  };
+        content: never
+      }
+    }
+  }
   api_wagtail_v2_documents_retrieve_2: {
     parameters: {
       path: {
-        id: number;
-      };
-    };
+        id: number
+      }
+    }
     responses: {
       /** @description No response body */
       200: {
-        content: never;
-      };
-    };
-  };
+        content: never
+      }
+    }
+  }
   api_wagtail_v2_documents_find_retrieve: {
     responses: {
       /** @description No response body */
       200: {
-        content: never;
-      };
-    };
-  };
+        content: never
+      }
+    }
+  }
   api_wagtail_v2_images_retrieve: {
     responses: {
       /** @description No response body */
       200: {
-        content: never;
-      };
-    };
-  };
+        content: never
+      }
+    }
+  }
   api_wagtail_v2_images_retrieve_2: {
     parameters: {
       path: {
-        id: number;
-      };
-    };
+        id: number
+      }
+    }
     responses: {
       /** @description No response body */
       200: {
-        content: never;
-      };
-    };
-  };
+        content: never
+      }
+    }
+  }
   api_wagtail_v2_images_find_retrieve: {
     responses: {
       /** @description No response body */
       200: {
-        content: never;
-      };
-    };
-  };
+        content: never
+      }
+    }
+  }
   api_wagtail_v2_page_preview_retrieve: {
     responses: {
       /** @description No response body */
       200: {
-        content: never;
-      };
-    };
-  };
+        content: never
+      }
+    }
+  }
   api_wagtail_v2_page_preview_retrieve_2: {
     parameters: {
       path: {
-        id: number;
-      };
-    };
+        id: number
+      }
+    }
     responses: {
       /** @description No response body */
       200: {
-        content: never;
-      };
-    };
-  };
+        content: never
+      }
+    }
+  }
   api_wagtail_v2_page_preview_find_retrieve: {
     responses: {
       /** @description No response body */
       200: {
-        content: never;
-      };
-    };
-  };
+        content: never
+      }
+    }
+  }
   api_wagtail_v2_pages_retrieve: {
     responses: {
       /** @description No response body */
       200: {
-        content: never;
-      };
-    };
-  };
+        content: never
+      }
+    }
+  }
   api_wagtail_v2_pages_retrieve_2: {
     parameters: {
       path: {
-        id: number;
-      };
-    };
+        id: number
+      }
+    }
     responses: {
       /** @description No response body */
       200: {
-        content: never;
-      };
-    };
-  };
+        content: never
+      }
+    }
+  }
   api_wagtail_v2_pages_find_retrieve: {
     responses: {
       /** @description No response body */
       200: {
-        content: never;
-      };
-    };
-  };
+        content: never
+      }
+    }
+  }
   cms_api_main_documents_retrieve: {
     responses: {
       /** @description No response body */
       200: {
-        content: never;
-      };
-    };
-  };
+        content: never
+      }
+    }
+  }
   cms_api_main_documents_retrieve_2: {
     parameters: {
       path: {
-        id: number;
-      };
-    };
+        id: number
+      }
+    }
     responses: {
       /** @description No response body */
       200: {
-        content: never;
-      };
-    };
-  };
+        content: never
+      }
+    }
+  }
   cms_api_main_documents_find_retrieve: {
     responses: {
       /** @description No response body */
       200: {
-        content: never;
-      };
-    };
-  };
+        content: never
+      }
+    }
+  }
   cms_api_main_images_retrieve: {
     responses: {
       /** @description No response body */
       200: {
-        content: never;
-      };
-    };
-  };
+        content: never
+      }
+    }
+  }
   cms_api_main_images_retrieve_2: {
     parameters: {
       path: {
-        id: number;
-      };
-    };
+        id: number
+      }
+    }
     responses: {
       /** @description No response body */
       200: {
-        content: never;
-      };
-    };
-  };
+        content: never
+      }
+    }
+  }
   cms_api_main_images_find_retrieve: {
     responses: {
       /** @description No response body */
       200: {
-        content: never;
-      };
-    };
-  };
+        content: never
+      }
+    }
+  }
   cms_api_main_pages_retrieve: {
     responses: {
       /** @description No response body */
       200: {
-        content: never;
-      };
-    };
-  };
+        content: never
+      }
+    }
+  }
   cms_api_main_pages_retrieve_2: {
     parameters: {
       path: {
-        id: number;
-      };
-    };
+        id: number
+      }
+    }
     responses: {
       /** @description No response body */
       200: {
-        content: never;
-      };
-    };
-  };
+        content: never
+      }
+    }
+  }
   cms_api_main_pages_action_create: {
     parameters: {
       path: {
-        action_name: string;
-        id: number;
-      };
-    };
+        action_name: string
+        id: number
+      }
+    }
     responses: {
       /** @description No response body */
       200: {
-        content: never;
-      };
-    };
-  };
+        content: never
+      }
+    }
+  }
   cms_api_main_pages_find_retrieve: {
     responses: {
       /** @description No response body */
       200: {
-        content: never;
-      };
-    };
-  };
+        content: never
+      }
+    }
+  }
 }
