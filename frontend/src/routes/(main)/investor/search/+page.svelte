@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { page } from "$app/stores"
+
   import type { InvestorHull } from "$lib/types/newtypes"
 
   import CountryField from "$components/Fields/Display2/CountryField.svelte"
@@ -13,10 +15,12 @@
       drafts = []
       return
     }
-    let ret = await fetch(`/api/investor_search/?q=${v}`)
-    const retJson = (await ret.json()) as { investors: InvestorHull[] }
-    actives = retJson.investors.filter(i => i.active_version_id)
-    drafts = retJson.investors.filter(i => i.draft_version_id)
+    const req = await $page.data.apiClient.GET("/api/investor_search", {
+      params: { query: { q: v } },
+    })
+    if (req.error) error(500, req.error)
+    actives = req.data.filter(i => i.active_version_id)
+    drafts = req.data.filter(i => i.draft_version_id)
   }
   $: getSearchResults(value)
 </script>

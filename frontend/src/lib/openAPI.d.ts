@@ -68,6 +68,9 @@ export interface paths {
     /** @description Export deal gis data. */
     get: operations["api_gis_export_retrieve"];
   };
+  "/api/investor_search/": {
+    get: operations["api_investor_search_list"];
+  };
   "/api/investors/": {
     get: operations["api_investors_list"];
     post: operations["api_investors_create"];
@@ -1556,6 +1559,25 @@ export interface components {
      * @enum {integer}
      */
     RoleEnum: 0 | 1 | 2 | 3;
+    SearchedInvestor: {
+      id: number;
+      active_version_id: number;
+      draft_version_id: number;
+      deleted: boolean;
+      /** Format: date-time */
+      first_created_at: string;
+      first_created_by_id: number;
+      selected_version: components["schemas"]["SelectedInvestorVersion"];
+    };
+    SelectedInvestorVersion: {
+      id: number;
+      name: string;
+      country_id: number;
+      /** Format: date-time */
+      modified_at: string;
+      country_name: string;
+      name_unknown: boolean;
+    };
     SimpleInvestor: {
       id: number;
       name: string;
@@ -2017,6 +2039,21 @@ export interface operations {
       /** @description No response body */
       200: {
         content: never;
+      };
+    };
+  };
+  api_investor_search_list: {
+    parameters: {
+      query: {
+        /** @description Query string */
+        q: string;
+      };
+    };
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["SearchedInvestor"][];
+        };
       };
     };
   };
