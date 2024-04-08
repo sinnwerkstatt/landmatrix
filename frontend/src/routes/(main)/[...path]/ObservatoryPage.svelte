@@ -132,6 +132,7 @@
 <PageTitle>{page.title}</PageTitle>
 
 <div class="mx-auto w-[clamp(20rem,75%,56rem)]">
+  <!--  <StaticMap staticmap={page.staticmap} {countryID} {regionID} />-->
   <QuasiStaticMap {countryID} markers={page.markers} {regionID} />
 
   {#if page.introduction_text}
