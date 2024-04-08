@@ -7,7 +7,7 @@
     intentionOfInvestmentGroupReducer,
   } from "$lib/data/charts/intentionOfInvestmentGroup"
   import { createChartData } from "$lib/data/createChartData"
-  import { intentionOfInvestmentGroupMap } from "$lib/stores"
+  import { intentionOfInvestmentGroupMap } from "$lib/stores/maps"
   import type { Deal } from "$lib/types/deal"
   import { IntentionOfInvestmentGroup } from "$lib/types/deal"
 

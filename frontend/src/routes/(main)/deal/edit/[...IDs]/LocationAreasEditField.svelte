@@ -2,7 +2,7 @@
   import type { FeatureCollection, GeoJsonObject, MultiPolygon, Polygon } from "geojson"
   import { _ } from "svelte-i18n"
 
-  import { areaTypeMap } from "$lib/stores"
+  import { areaTypeMap } from "$lib/stores/maps"
   import type { Area, AreaType } from "$lib/types/newtypes"
   import { validate } from "$lib/utils/geojsonValidation"
   import { AREA_TYPE_COLOR_MAP, AREA_TYPES } from "$lib/utils/location"

@@ -4,7 +4,7 @@
   import { onDestroy, onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
-  import { areaTypeMap } from "$lib/stores"
+  import { areaTypeMap } from "$lib/stores/maps"
   import type { AreaType } from "$lib/types/deal"
   import type { Area, AreaFeature, AreaFeatureLayer } from "$lib/types/newtypes"
 

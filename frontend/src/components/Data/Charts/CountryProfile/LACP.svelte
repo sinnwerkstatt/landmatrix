@@ -11,7 +11,10 @@
   } from "$lib/data/buckets"
   import { clearGraph } from "$lib/data/charts/concludedDealsOverTime"
   import { isConcluded } from "$lib/data/dealUtils"
-  import { intentionOfInvestmentGroupMap, intentionOfInvestmentMap } from "$lib/stores"
+  import {
+    intentionOfInvestmentGroupMap,
+    intentionOfInvestmentMap,
+  } from "$lib/stores/maps"
   import type { Deal, IoIGroup } from "$lib/types/deal"
   import { INTENTION_OF_INVESTMENT_GROUP_MAP, IoI } from "$lib/types/deal"
 

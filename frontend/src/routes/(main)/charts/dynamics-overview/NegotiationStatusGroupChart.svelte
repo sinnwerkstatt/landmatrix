@@ -7,7 +7,7 @@
     negotiationStatusGroupReducer,
   } from "$lib/data/charts/negotiationStatusGroup"
   import { createChartData } from "$lib/data/createChartData"
-  import { negotiationStatusGroupMap } from "$lib/stores"
+  import { negotiationStatusGroupMap } from "$lib/stores/maps"
   import type { Deal } from "$lib/types/deal"
   import { NegotiationStatusGroup } from "$lib/types/deal"
 

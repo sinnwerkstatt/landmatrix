@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import { areaTypeMap } from "$lib/stores"
+  import { areaTypeMap } from "$lib/stores/maps"
   import type { AreaFeature, PointFeature } from "$lib/types/newtypes"
   import { isPoint, isPolygon } from "$lib/utils/geojsonHelpers"
 

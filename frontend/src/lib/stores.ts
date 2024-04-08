@@ -1,26 +1,15 @@
 import { error } from "@sveltejs/kit"
 import { env } from "$env/dynamic/public"
 import createClient from "openapi-fetch"
-import { _, locale } from "svelte-i18n"
-import { derived, readable, writable } from "svelte/store"
+import { locale } from "svelte-i18n"
+import { derived, readable } from "svelte/store"
 
 import { browser } from "$app/environment"
 
-import {
-  flat_intention_of_investment_map,
-  intention_of_investment_group_choices,
-} from "$lib/choices"
 import { filters, publicOnly } from "$lib/filters"
 import type { components, paths } from "$lib/openAPI"
 import { loading } from "$lib/stores/basics"
-import type { AreaType, IntentionOfInvestment } from "$lib/types/deal"
-import {
-  ImplementationStatus,
-  IntentionOfInvestmentGroup,
-  NegotiationStatusGroup,
-} from "$lib/types/deal"
-import type { Currency, DealHull, InvestorHull } from "$lib/types/newtypes"
-import type { Country, Region } from "$lib/types/wagtail"
+import type { DealHull, InvestorHull } from "$lib/types/newtypes"
 
 export interface ValueLabelEntry {
   value: string
@@ -110,101 +99,46 @@ export const allUsers = readable([] as components["schemas"]["LeanUser"][], set 
   })
 })
 
-type ImplementationStatusMap = { [key in ImplementationStatus]: string }
-export const implementationStatusMap = derived(
-  _,
-  ($_): ImplementationStatusMap => ({
-    [ImplementationStatus.PROJECT_NOT_STARTED]: $_("Project not started"),
-    [ImplementationStatus.STARTUP_PHASE]: $_("Startup phase (no production)"),
-    [ImplementationStatus.IN_OPERATION]: $_("In operation (production)"),
-    [ImplementationStatus.PROJECT_ABANDONED]: $_("Project abandoned"),
-  }),
-)
+// interface FieldDefinition {
+//   id: number
+//   model: "deal" | "investor"
+//   field: string
+//   short_description: string
+//   long_description: string
+//   editor_description: string
+// }
+//
+// export const fieldDefinitions = derived(
+//   [locale],
+//   ([$locale], set) => {
+//     fetch(env.PUBLIC_BASE_URL + "/api/field_definitions/", {
+//       headers: { "Accept-Language": $locale ?? "en" },
+//     })
+//       .then(ret => ret.json() as Promise<FieldDefinition[]>)
+//       .then(set)
+//   },
+//   [] as FieldDefinition[],
+// )
 
-type NegotiationStatusGroupMap = { [key in NegotiationStatusGroup]: string }
-export const negotiationStatusGroupMap = derived(
-  _,
-  ($_): NegotiationStatusGroupMap => ({
-    [NegotiationStatusGroup.INTENDED]: $_("Intended"),
-    [NegotiationStatusGroup.CONCLUDED]: $_("Concluded"),
-    [NegotiationStatusGroup.FAILED]: $_("Failed"),
-    [NegotiationStatusGroup.CONTRACT_EXPIRED]: $_("Contract expired"),
-  }),
-)
-
-type IntentionOfInvestmentGroupMap = { [key in IntentionOfInvestmentGroup]: string }
-export const intentionOfInvestmentGroupMap = derived(
-  _,
-  ($_): IntentionOfInvestmentGroupMap =>
-    Object.fromEntries(
-      Object.entries(intention_of_investment_group_choices).map(([key, value]) => [
-        key,
-        $_(value),
-      ]),
-    ) as IntentionOfInvestmentGroupMap,
-)
-
-type IntentionOfInvestmentMap = { [key in IntentionOfInvestment]: string }
-export const intentionOfInvestmentMap = derived(
-  _,
-  ($_): IntentionOfInvestmentMap =>
-    Object.fromEntries(
-      Object.entries(flat_intention_of_investment_map).map(([key, value]) => [
-        key,
-        $_(value),
-      ]),
-    ) as IntentionOfInvestmentMap,
-)
-
-type AreaTypeMap = { [key in AreaType]: string }
-export const areaTypeMap = derived(
-  _,
-  ($_): AreaTypeMap => ({
-    production_area: $_("Production area"),
-    contract_area: $_("Contract area"),
-    intended_area: $_("Intended area"),
-  }),
-)
-
-interface FieldDefinition {
-  id: number
-  model: "deal" | "investor"
-  field: string
-  short_description: string
-  long_description: string
-  editor_description: string
-}
-
-export const fieldDefinitions = derived(
-  [locale],
-  ([$locale], set) => {
-    fetch(env.PUBLIC_BASE_URL + "/api/field_definitions/", {
-      headers: { "Accept-Language": $locale ?? "en" },
-    })
-      .then(ret => ret.json() as Promise<FieldDefinition[]>)
-      .then(set)
-  },
-  [] as FieldDefinition[],
-)
-
-export const currencies = readable<Currency[]>([], set => {
-  fetch("/api/currencies/")
-    .then(ret => ret.json())
-    .then(set)
+export const currencies = readable<components["schemas"]["Currency"][]>([], set => {
+  serverApiClient.GET("/api/currencies/").then(ret => {
+    if (ret.error) error(500, ret.error)
+    set(ret.data)
+  })
 })
-export const countries = readable<Country[]>([], set => {
-  if (browser)
-    fetch(env.PUBLIC_BASE_URL + "/api/countries/")
-      .then(ret => ret.json())
-      .then(set)
+export const countries = readable<components["schemas"]["Country"][]>([], set => {
+  // if (browser)
+  serverApiClient.GET("/api/countries/").then(ret => {
+    if (ret.error) error(500, ret.error)
+    set(ret.data)
+  })
 })
-export const regions = readable<Region[]>([], set => {
-  fetch(env.PUBLIC_BASE_URL + "/api/regions/")
-    .then(ret => ret.json())
-    .then(set)
+export const regions = readable<components["schemas"]["Region"][]>([], set => {
+  serverApiClient.GET("/api/regions/").then(ret => {
+    if (ret.error) error(500, ret.error)
+    set(ret.data)
+  })
 })
-
-export const contentRootElement = writable<HTMLElement>()
 
 export const dealsNG = derived(
   [filters, publicOnly],
@@ -237,11 +171,6 @@ export const investorsNG = derived(
   },
   [] as InvestorHull[],
 )
-
-export interface SimpleInvestor {
-  id: number
-  name: string
-}
 
 export const simpleInvestors = readable(
   [] as components["schemas"]["SimpleInvestor"][],

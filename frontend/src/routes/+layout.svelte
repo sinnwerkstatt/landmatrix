@@ -7,7 +7,7 @@
 
   import { afterNavigate } from "$app/navigation"
 
-  import { contentRootElement } from "$lib/stores"
+  import { contentRootElement } from "$lib/stores/basics"
   import type { User } from "$lib/types/user"
   import { UserRole } from "$lib/types/user"
 

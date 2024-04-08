@@ -4,7 +4,7 @@
   import type { SortBy } from "$lib/data/buckets"
   import { agricultureIntentionReducer } from "$lib/data/charts/agricultureIntention"
   import { createChartData } from "$lib/data/createChartData"
-  import { intentionOfInvestmentMap } from "$lib/stores"
+  import { intentionOfInvestmentMap } from "$lib/stores/maps"
   import type { Deal } from "$lib/types/deal"
   import { AgricultureIoI } from "$lib/types/deal"
 

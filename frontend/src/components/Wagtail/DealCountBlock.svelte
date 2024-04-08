@@ -3,7 +3,7 @@
   import { expoOut } from "svelte/easing"
   import { tweened } from "svelte/motion"
 
-  import { contentRootElement } from "$lib/stores"
+  import { contentRootElement } from "$lib/stores/basics"
 
   export let value: {
     deals: number

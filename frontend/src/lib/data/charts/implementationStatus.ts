@@ -3,7 +3,7 @@ import { get } from "svelte/store"
 import type { BucketMap } from "$lib/data/buckets"
 import { createBucketMapReducer } from "$lib/data/buckets"
 import { COLORS, createChartData } from "$lib/data/createChartData"
-import { implementationStatusMap } from "$lib/stores"
+import { implementationStatusMap } from "$lib/stores/maps"
 import { ImplementationStatus } from "$lib/types/deal"
 import type { Deal } from "$lib/types/deal"
 

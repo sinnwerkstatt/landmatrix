@@ -7,7 +7,7 @@
     implementationStatusReducer,
   } from "$lib/data/charts/implementationStatus"
   import { createChartData } from "$lib/data/createChartData"
-  import { implementationStatusMap } from "$lib/stores"
+  import { implementationStatusMap } from "$lib/stores/maps"
   import type { Deal } from "$lib/types/deal"
   import { ImplementationStatus } from "$lib/types/deal"
 

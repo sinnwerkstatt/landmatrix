@@ -47,7 +47,7 @@
   }
 
   $: {
-    if (map && markers && browser) {
+    if (map && markers && browser && $regions.length) {
       if (!featureGroup) featureGroup = new FeatureGroup()
       else featureGroup.clearLayers()
       featureGroup.addTo(map)

@@ -4,7 +4,7 @@ import type { BucketMap } from "$lib/data/buckets"
 import { createBucketMapReducer } from "$lib/data/buckets"
 import { COLORS, createChartData } from "$lib/data/createChartData"
 import type { DealReducer } from "$lib/data/createChartData"
-import { intentionOfInvestmentGroupMap } from "$lib/stores"
+import { intentionOfInvestmentGroupMap } from "$lib/stores/maps"
 import type { Deal } from "$lib/types/deal"
 import {
   INTENTION_OF_INVESTMENT_GROUP_MAP,

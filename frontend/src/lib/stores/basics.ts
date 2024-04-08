@@ -30,3 +30,4 @@ if (browser) {
   bindIsDarkModeToPreferredColorScheme()
   bindIsMobileToScreenInnerWidth()
 }
+export const contentRootElement = writable<HTMLElement>()

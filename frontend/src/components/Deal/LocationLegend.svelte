@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import { areaTypeMap } from "$lib/stores"
+  import { areaTypeMap } from "$lib/stores/maps"
   import { AREA_TYPE_COLOR_MAP, AREA_TYPES } from "$lib/utils/location"
 </script>
 
