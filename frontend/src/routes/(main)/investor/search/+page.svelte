@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { error } from "@sveltejs/kit"
+
   import { page } from "$app/stores"
 
   import type { InvestorHull } from "$lib/types/newtypes"
