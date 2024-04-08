@@ -1458,18 +1458,18 @@ files = [
 
 [[package]]
 name = "parso"
-version = "0.8.3"
+version = "0.8.4"
 description = "A Python Parser"
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "parso-0.8.3-py2.py3-none-any.whl", hash = "sha256:c001d4636cd3aecdaf33cbb40aebb59b094be2a74c556778ef5576c175e19e75"},
-    {file = "parso-0.8.3.tar.gz", hash = "sha256:8c07be290bb59f03588915921e29e8a50002acaf2cdc5fa0e0114f91709fafa0"},
+    {file = "parso-0.8.4-py2.py3-none-any.whl", hash = "sha256:a418670a20291dacd2dddc80c377c5c3791378ee1e8d12bffc35420643d43f18"},
+    {file = "parso-0.8.4.tar.gz", hash = "sha256:eb3a7b58240fb99099a345571deecc0f9540ea5f4dd2fe14c2a99d6b281ab92d"},
 ]
 
 [package.extras]
-qa = ["flake8 (==3.8.3)", "mypy (==0.782)"]
-testing = ["docopt", "pytest (<6.0.0)"]
+qa = ["flake8 (==5.0.4)", "mypy (==0.971)", "types-setuptools (==67.2.0.1)"]
+testing = ["docopt", "pytest"]
 
 [[package]]
 name = "pathspec"
@@ -2763,13 +2763,13 @@ files = [
 
 [[package]]
 name = "types-docutils"
-version = "0.20.0.20240331"
+version = "0.20.0.20240406"
 description = "Typing stubs for docutils"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "types-docutils-0.20.0.20240331.tar.gz", hash = "sha256:ac99cdf34040c982081f54237d6017f8f5dafe0bebb818a598bf97a65f5b1715"},
-    {file = "types_docutils-0.20.0.20240331-py3-none-any.whl", hash = "sha256:b9042e1cf064b4a82c87a71ed3c5f0f96e81fb6d402ca4daa6ced65a91397679"},
+    {file = "types-docutils-0.20.0.20240406.tar.gz", hash = "sha256:e8ec4a5a125d06d8632bbaac8a11fbea18a1edfa94df9c5129dc45980915b84b"},
+    {file = "types_docutils-0.20.0.20240406-py3-none-any.whl", hash = "sha256:f1966b05087c0e1227c399281ecc796cb67d0afc23398d7c5c95b3355de14113"},
 ]
 
 [[package]]
@@ -2785,13 +2785,13 @@ files = [
 
 [[package]]
 name = "types-openpyxl"
-version = "3.1.0.20240402"
+version = "3.1.0.20240408"
 description = "Typing stubs for openpyxl"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "types-openpyxl-3.1.0.20240402.tar.gz", hash = "sha256:da3efda6c2d9a18616473de49a506cd10fbc0197136d6cd11084c63aff3b4adb"},
-    {file = "types_openpyxl-3.1.0.20240402-py3-none-any.whl", hash = "sha256:84f3d988ed535f3547db62c0bf2f46a1cee63b3b4436b6fbacf4d035b05efe09"},
+    {file = "types-openpyxl-3.1.0.20240408.tar.gz", hash = "sha256:15e1210b76e6de15ace67cd8365b7b07ebd6abfaab898030a1192cee69e59fa6"},
+    {file = "types_openpyxl-3.1.0.20240408-py3-none-any.whl", hash = "sha256:b76fb12d8cbb5301c19198a9e89c38c048263ff985478b76658fef3f3567c45d"},
 ]
 
 [[package]]
@@ -2855,13 +2855,13 @@ files = [
 
 [[package]]
 name = "types-requests"
-version = "2.31.0.20240403"
+version = "2.31.0.20240406"
 description = "Typing stubs for requests"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "types-requests-2.31.0.20240403.tar.gz", hash = "sha256:e1e0cd0b655334f39d9f872b68a1310f0e343647688bf2cee932ec4c2b04de59"},
-    {file = "types_requests-2.31.0.20240403-py3-none-any.whl", hash = "sha256:06abf6a68f5c4f2a62f6bb006672dfb26ed50ccbfddb281e1ee6f09a65707d5d"},
+    {file = "types-requests-2.31.0.20240406.tar.gz", hash = "sha256:4428df33c5503945c74b3f42e82b181e86ec7b724620419a2966e2de604ce1a1"},
+    {file = "types_requests-2.31.0.20240406-py3-none-any.whl", hash = "sha256:6216cdac377c6b9a040ac1c0404f7284bd13199c0e1bb235f4324627e8898cf5"},
 ]
 
 [package.dependencies]
@@ -2902,13 +2902,13 @@ files = [
 
 [[package]]
 name = "typing-extensions"
-version = "4.10.0"
+version = "4.11.0"
 description = "Backported and Experimental Type Hints for Python 3.8+"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "typing_extensions-4.10.0-py3-none-any.whl", hash = "sha256:69b1a937c3a517342112fb4c6df7e72fc39a38e7891a5730ed4985b5214b5475"},
-    {file = "typing_extensions-4.10.0.tar.gz", hash = "sha256:b0abd7c89e8fb96f98db18d86106ff1d90ab692004eb746cf6eda2682f91b3cb"},
+    {file = "typing_extensions-4.11.0-py3-none-any.whl", hash = "sha256:c1f94d72897edaf4ce775bb7558d5b79d8126906a14ea5ed1635921406c0387a"},
+    {file = "typing_extensions-4.11.0.tar.gz", hash = "sha256:83f085bd5ca59c80295fc2a82ab5dac679cbe02b9f33f7d83af68e241bea51b0"},
 ]
 
 [[package]]
@@ -3044,13 +3044,13 @@ testing = ["coverage[toml] (>=7.0,<8.0)", "django-cors-headers", "tox (>=4)"]
 
 [[package]]
 name = "wagtail-modeltranslation"
-version = "0.15.0"
+version = "0.15.1"
 description = "Translates Wagtail CMS models using a registration approach."
 optional = false
 python-versions = "<4.0,>=3.8"
 files = [
-    {file = "wagtail_modeltranslation-0.15.0-py3-none-any.whl", hash = "sha256:da49fed109fa1602bd796de844d0e043bf8079d22a894079cdf3d2d54b154eba"},
-    {file = "wagtail_modeltranslation-0.15.0.tar.gz", hash = "sha256:a0e64896b9b67c3cf362d8b27f293852347fe799090dbe41e32f3200d6fa6ff3"},
+    {file = "wagtail_modeltranslation-0.15.1-py3-none-any.whl", hash = "sha256:d1dc52a15e769111db3507ac1a4ca88bb6f0fdfef3b7fe248e70711dff9ef0a6"},
+    {file = "wagtail_modeltranslation-0.15.1.tar.gz", hash = "sha256:de10d1c503efa9dd946aca137495a86b8236888c957da522c3a3399ddbd914c7"},
 ]
 
 [package.dependencies]
