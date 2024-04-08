@@ -1,22 +1,20 @@
 <script>
-    export let label = "Label";
-    export let type = "fill"; // fill, outline, ghost
-    export let style = "primary"; // primary, neutral, error
-    export let size = "base"; // base, sm, lg
-    export let notification = 0; // 0 or any number
+    import BubbleCount from "$components/Accountability/atomic/BubbleCount.svelte"
 
-    export let disabled = false;
+    export let label = "Label"
+    export let type = "fill" // fill, outline, ghost
+    export let style = "primary" // primary, neutral, error
+    export let size = "base" // base, sm, lg
+    export let count = 0 // 0 or any number
+
+    export let disabled = false
 </script>
 
 <button class="{style} {size} {type}" {disabled} on:click >
     {label}
-    {#if notification > 0}
+    {#if count > 0}
         <span class="bubble">
-            {#if notification > 99}
-                <span class="smaller">99+</span>
-            {:else}
-                <span>{notification}</span>
-            {/if}
+            <BubbleCount {count} {size} />
         </span>
     {/if}
 </button>
@@ -118,36 +116,15 @@
         @apply ring-a-error-200;
     }
 
-    /* Notification bubble */
+    /* Bubble count */
     .bubble {
         @apply absolute;
         @apply -top-1 -right-1;
-        @apply w-4 h-4;
-        @apply flex place-content-center pt-0.5;
-        @apply text-white text-xs;
-        @apply bg-a-primary-500 rounded-full;
-        @apply ring-[1.5px] ring-white;
     }
-
     .sm > .bubble {
         @apply -top-0.5 -right-0.5;
-        @apply w-2 h-2;
     }
-    .sm > .bubble > span {
-        @apply hidden;
-    }
-
     .lg > .bubble {
         @apply -top-2 -right-2;
-        @apply w-6 h-6;
-        @apply text-a-sm;
-    }
-
-    .smaller {
-        @apply text-[0.5rem];
-    }
-
-    .lg .smaller {
-        @apply text-a-xs pt-1;
     }
 </style>
