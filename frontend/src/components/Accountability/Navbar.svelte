@@ -5,6 +5,7 @@
     import IconDocs from "$components/Accountability/icons/IconDocs.svelte"
 
     import NavbarItem from "$components/Accountability/atomic/NavbarItem.svelte"
+    import Avatar from "$components/Accountability/atomic/Avatar.svelte"
 </script>
 
 <div class="h-full p-6 bg-white flex flex-col flex-nowrap items-center justify-between">
@@ -26,6 +27,6 @@
 
     <!-- Bottom section -->
     <div>
-        MG
+        <Avatar />
     </div>
 </div>
