@@ -117,7 +117,7 @@ deploy to staging2:
       poetry run doit update production=True
       sudo /bin/systemctl restart webapp-dev2.landmatrix.org.service
       cd ~
-      mv maintenance.html maintenance.html_
+      mv maintenance.html maintenance.html_ || echo "could not move maintenance"
       E=O=F
   only:
     - newModel2
