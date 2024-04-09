@@ -55,9 +55,7 @@ class InvolvementNetwork:
         ).order_by("id")
 
         all_investors: QuerySet[InvestorHull] = (
-            InvestorHull.objects.normal().filter(id__in=investor_ids)
-            .exclude(active_version=None)
-            .order_by("id")
+            InvestorHull.objects.active().filter(id__in=investor_ids).order_by("id")
         )
         return all_investors, all_involvements, edges, min_depth
 
