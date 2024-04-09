@@ -123,7 +123,7 @@ class InvestorOld(models.Model):
             return f"{self.name} (#{self.id})"
         return f"s#{self.id}"
 
-    def get_affected_deals(self, seen_investors=None):
+    def get_affected_dealversions(self, seen_investors=None):
         """
         Get list of affected deals - this is like Top Investors, only downwards
         (all left-hand side deals of the network visualisation)
@@ -147,7 +147,7 @@ class InvestorOld(models.Model):
             if involvements.venture in seen_investors:
                 continue
             seen_investors.add(involvements.venture)
-            deals.update(involvements.venture.get_affected_deals(seen_investors))
+            deals.update(involvements.venture.get_affected_dealversions(seen_investors))
         return deals
 
 

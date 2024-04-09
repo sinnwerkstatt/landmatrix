@@ -1717,7 +1717,7 @@ class InvestorHull(HullBase):
             )
         return _seen_investors
 
-    def get_affected_deals(self, seen_investors=None) -> set[DealVersion]:
+    def get_affected_dealversions(self, seen_investors=None) -> set[DealVersion]:
         """
         Get list of affected deals - this is like Top Investors, only downwards
         (all left-hand side deals of the network visualisation)
@@ -1740,7 +1740,9 @@ class InvestorHull(HullBase):
             if involvement.child_investor in seen_investors:
                 continue
             seen_investors.add(involvement.child_investor)
-            deals.update(involvement.child_investor.get_affected_deals(seen_investors))
+            deals.update(
+                involvement.child_investor.get_affected_dealversions(seen_investors)
+            )
         return deals
 
 

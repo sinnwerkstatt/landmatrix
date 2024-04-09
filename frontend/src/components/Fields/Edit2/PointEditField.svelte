@@ -1,9 +1,16 @@
 <script lang="ts">
-  import { geometry as turfGeometry } from "@turf/turf"
   import type { Point } from "geojson"
   import { _ } from "svelte-i18n"
 
-  export let value: Point = turfGeometry("Point", [0, 0])
+  export let value: Point | null = null
+
+  $: val = value !== null ?  value: { type: "Point", coordinates: [null, null] }
+
+  const onChange = () => {
+    value = (val.coordinates[0] !== null && val.coordinates[1] !== null) ? <Point>val : null
+  }
+
+
   export let fieldname: string
 
   export const extras = {}
@@ -16,8 +23,9 @@
       class="inpt"
       name="{fieldname}_longitude"
       type="number"
-      bind:value={value.coordinates[0]}
-      required={!!value.coordinates[1]}
+      bind:value={val.coordinates[0]}
+      required={!!val.coordinates[1]}
+      on:change={onChange}
       placeholder="-180 to 180"
       min={-180}
       max={180}
@@ -30,8 +38,9 @@
       class="inpt"
       name="{fieldname}_latitude"
       type="number"
-      bind:value={value.coordinates[1]}
-      required={!!value.coordinates[0]}
+      bind:value={val.coordinates[1]}
+      required={!!val.coordinates[0]}
+      on:change={onChange}
       placeholder="-90 to 90"
       min={-90}
       max={90}

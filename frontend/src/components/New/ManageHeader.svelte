@@ -34,7 +34,7 @@
   )
 </script>
 
-{#if object.selected_version.id === object.draft_version_id}
+{#if object.selected_version.id === object.draft_version_id && object.active_version_id}
   <div
     class="flex items-center gap-4 rounded border border-purple-500 bg-purple-100 px-4 py-2 text-lg"
   >

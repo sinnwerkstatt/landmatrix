@@ -61,7 +61,7 @@ interface Field {
 export const investorFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
   return {
     id: { displayField: IDField, label: $_("ID"), extras: { model: "investor" } },
-    country_id: {
+    country: {
       displayField: CountryField,
       editField: CountryEditField,
       label: $_("Country of registration/origin"),

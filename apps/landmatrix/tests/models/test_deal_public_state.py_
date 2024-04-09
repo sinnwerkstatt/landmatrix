@@ -29,12 +29,12 @@ def public_deal(db) -> Deal:
     assert deal.is_public
     assert Deal.objects.public().count() == 1
 
-    assert deal in i1.get_affected_deals()
-    assert deal in i2.get_affected_deals()
+    assert deal in i1.get_affected_dealversions()
+    assert deal in i2.get_affected_dealversions()
 
     i3 = Investor.objects.create(id=3, name="Test Parent Parent Investor", status=2)
     InvestorVentureInvolvement.objects.create(investor=i3, venture=i2, role="PARENT")
-    assert deal in i3.get_affected_deals()
+    assert deal in i3.get_affected_dealversions()
 
     return deal
 

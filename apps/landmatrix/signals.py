@@ -10,7 +10,7 @@ def investor_change_trigger_refresh_calculated_deal_fields(
     sender, instance: InvestorHull, **kwargs
 ):
     dealversion: DealVersion
-    for dealversion in instance.get_affected_deals():
+    for dealversion in instance.get_affected_dealversions():
         dealversion.save(recalculate_independent=False)
 
 
@@ -19,5 +19,5 @@ def investor_change_trigger_refresh_calculated_deal_fields(
 def involvements_updated(sender, instance: Involvement, **kwargs):
     # Only consider the child_investors' deals. Because:
     # On an Involvement update the deals of the parent_investor are not affected.
-    for deal in instance.child_investor.get_affected_deals():
+    for deal in instance.child_investor.get_affected_dealversions():
         deal.save(recalculate_independent=False)

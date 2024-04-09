@@ -21,7 +21,7 @@
 
   class NewInvestor {
     name: string = ""
-    country_id: number | null = null
+    country: number | null = null
     classification: string = ""
     homepage: string = ""
     opencorporates: string = ""
@@ -136,9 +136,9 @@
           showLabel
         />
         <EditField
-          bind:value={newInvestor.country_id}
+          bind:value={newInvestor.country}
           extras={{ required: true }}
-          fieldname="country_id"
+          fieldname="country"
           model="investor"
           showLabel
         />

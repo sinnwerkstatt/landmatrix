@@ -13,9 +13,9 @@
   <EditSubsection id="investor.general_info">
     <EditField bind:value={version.name} fieldname="name" model="investor" showLabel />
     <EditField
-      bind:value={version.country_id}
+      bind:value={version.country}
       extras={{ required: true }}
-      fieldname="country_id"
+      fieldname="country"
       model="investor"
       showLabel
     />

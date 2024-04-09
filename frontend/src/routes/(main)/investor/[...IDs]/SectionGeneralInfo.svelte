@@ -10,10 +10,10 @@
 <Subsection id="investor.general_info" obj={version}>
   <DisplayField fieldname="name" model="investor" showLabel value={version.name} />
   <DisplayField
-    fieldname="country_id"
+    fieldname="country"
     model="investor"
     showLabel
-    value={version.country_id}
+    value={version.country}
   />
   <DisplayField
     fieldname="classification"
