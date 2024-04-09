@@ -36,6 +36,7 @@ class Timer:
 
         print(f"Runtime {self._name}: {duration:0.3f}s")
 
+
 # Todo?! exchange deal old
 MODELS: list[Type[Model]] = [
     DealOld,

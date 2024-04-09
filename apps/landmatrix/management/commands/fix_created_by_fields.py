@@ -28,6 +28,7 @@ class Command(BaseCommand):
 
             print("Fixed object ids:", {*fixed_obj_ids})
 
+
 # Todo?!
 def fix_creator(obj: DealOld | InvestorOld) -> bool:
     assert obj.versions.count() > 0

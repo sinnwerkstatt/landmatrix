@@ -15,6 +15,7 @@ from ...models.deal import DealOld, DealVersionOld
 
 UserModel: Type[User] = get_user_model()
 
+
 # Todo?! exchange deal old
 @pytest.mark.django_db
 def test_fix_json_fields_deal():

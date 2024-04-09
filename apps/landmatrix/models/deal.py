@@ -18,6 +18,7 @@ from .fields import ArrayField
 from .investor import InvestorOld
 from .oldfields import ContractsField, DatasourcesField, LocationsField
 
+
 # TODO remove this after newModel2. old.
 class DealQuerySet(models.QuerySet):
     def active(self):

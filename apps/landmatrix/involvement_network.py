@@ -126,17 +126,19 @@ class InvolvementNetwork:
             ]
 
         if include_deals:
-            deals = DealHull.objects.normal().filter(
-                active_version__operating_company_id__in=all_investor_ids
-            ).values(
-                "id",
-                "country_id",
-                "active_version__operating_company_id",
-                "active_version__intention_of_investment",
-                "active_version__implementation_status",
-                "active_version__negotiation_status",
-                "active_version__intended_size",
-                "active_version__contract_size",
+            deals = (
+                DealHull.objects.normal()
+                .filter(active_version__operating_company_id__in=all_investor_ids)
+                .values(
+                    "id",
+                    "country_id",
+                    "active_version__operating_company_id",
+                    "active_version__intention_of_investment",
+                    "active_version__implementation_status",
+                    "active_version__negotiation_status",
+                    "active_version__intended_size",
+                    "active_version__contract_size",
+                )
             )
 
             for deal in deals:
