@@ -137,27 +137,6 @@ def chart_descriptions(request):
         )
 
 
-def blog_pages(request):
-    language = request.GET.get("lang", "en")
-    category = request.GET.get("category")
-    qs: QuerySet[BlogPage] = (
-        BlogPage.objects.live()
-        .prefetch_related("tags")
-        .prefetch_related("blog_categories")
-    )
-    if category:
-        qs = qs.filter(blog_categories__slug=category)
-
-    with translation.override(language):
-        return JsonResponse(
-            [
-                x.get_dict("fill-500x500|jpegquality-60")
-                for x in qs.order_by("-date", "-id")
-            ],
-            safe=False,
-        )
-
-
 @require_GET
 def get_csrf(request):
     return JsonResponse({"token": get_token(request)})

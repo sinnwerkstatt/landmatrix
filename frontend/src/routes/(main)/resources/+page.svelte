@@ -1,22 +1,23 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
+  import type { components } from "$lib/openAPI"
   import { blogCategories } from "$lib/stores"
-  import type { BlogCategory, BlogPage } from "$lib/types/wagtail"
+  import type { BlogCategory } from "$lib/types/wagtail"
 
   import TagIcon from "$components/icons/TagIcon.svelte"
   import PageTitle from "$components/PageTitle.svelte"
 
   export let data
 
-  let filteredBlogPages: BlogPage[]
+  const blogpages = data.blogpages
+
+  let filteredBlogPages: components["schemas"]["BlogPage"][]
   $: filteredBlogPages = data.category
-    ? data.blogpages.filter(bp =>
-        bp.categories.map(c => c.slug).includes(data.category),
-      )
+    ? $blogpages.filter(bp => bp.categories.map(c => c.slug).includes(data.category))
     : data.tag
-      ? data.blogpages.filter(bp => bp.tags.map(t => t.slug).includes(data.tag))
-      : data.blogpages
+      ? $blogpages.filter(bp => bp.tags.map(t => t.slug).includes(data.tag))
+      : $blogpages
 
   let blogCategoriesWithAll: BlogCategory[]
   $: blogCategoriesWithAll = [
@@ -36,7 +37,7 @@
     {/if}
   </PageTitle>
 
-  <div class="mb-4 text-center">
+  <div class="mb-12 mt-8 text-center">
     <ul class="flex flex-wrap justify-center gap-1">
       {#each blogCategoriesWithAll as cat}
         <li>
@@ -60,7 +61,12 @@
           class="h-full rounded border border-gray-900 bg-gray-50 dark:border-white dark:bg-gray-800"
         >
           {#if blogpage.header_image}
-            <img src={blogpage.header_image} class="rounded-t" alt="" loading="lazy" />
+            <img
+              src={blogpage.header_image.url}
+              class="w-full rounded-t object-cover"
+              alt=""
+              loading="lazy"
+            />
           {/if}
           <div class="p-2">
             <h5 class="heading5 mb-4">

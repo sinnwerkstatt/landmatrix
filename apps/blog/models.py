@@ -185,15 +185,9 @@ def get_blog_context(context):
     )
     context["all_categories"] = BlogCategory.objects.all()
     context["root_categories"] = (
-        BlogCategory.objects.filter(
-            parent=None,
-        )
-        .prefetch_related(
-            "children",
-        )
-        .annotate(
-            blog_count=Count("blogpage"),
-        )
+        BlogCategory.objects.filter(parent=None)
+        .prefetch_related("children")
+        .annotate(blog_count=Count("blogpage"))
     )
     return context
 

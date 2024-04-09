@@ -10,6 +10,12 @@ export interface paths {
   "/api/blog_categories/{id}/": {
     get: operations["api_blog_categories_retrieve"]
   }
+  "/api/blog_pages/": {
+    get: operations["api_blog_pages_list"]
+  }
+  "/api/blog_pages/{id}/": {
+    get: operations["api_blog_pages_retrieve"]
+  }
   "/api/chart_descriptions/": {
     get: operations["api_chart_descriptions_retrieve"]
   }
@@ -263,6 +269,30 @@ export interface components {
       name: string
       slug: string
       description?: string
+    }
+    BlogPage: {
+      id: number
+      /** @description The page title as you'd like it to be seen by the public */
+      title: string
+      /** @description The name of the page as it will appear in URLs e.g http://domain.com/blog/[my-slug]/ */
+      slug: string
+      body: string
+      excerpt: string
+      /**
+       * Post date
+       * Format: date
+       * @description This date may be displayed on the blog post. It is not used to schedule posts to go live at a later date.
+       */
+      date?: string
+      header_image: components["schemas"]["ImageRenditionField"]
+      tags: readonly components["schemas"]["BlogTag"][]
+      categories: readonly components["schemas"]["BlogCategory"][]
+      url: string
+    }
+    BlogTag: {
+      id: string
+      name: string
+      slug: string
     }
     /**
      * CarbonSequestrationCertEnum
@@ -1401,6 +1431,13 @@ export interface components {
       | "FORESTRY"
       | "CONSERVATION"
       | "OTHER"
+    ImageRenditionField: {
+      url: string
+      full_url: string
+      width: number
+      height: number
+      alt: string
+    }
     /**
      * ImplementationStatusEnum
      * @enum {string}
@@ -2046,6 +2083,30 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["BlogCategory"]
+        }
+      }
+    }
+  }
+  api_blog_pages_list: {
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["BlogPage"][]
+        }
+      }
+    }
+  }
+  api_blog_pages_retrieve: {
+    parameters: {
+      path: {
+        /** @description A unique integer value identifying this Blog page. */
+        id: number
+      }
+    }
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["BlogPage"]
         }
       }
     }

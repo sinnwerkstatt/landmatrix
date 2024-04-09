@@ -1,12 +1,23 @@
+import { error } from "@sveltejs/kit"
+import { get, writable } from "svelte/store"
+
+import type { components } from "$lib/openAPI"
 import { pageQuery } from "$lib/queries"
-import type { BlogPage, WagtailPage } from "$lib/types/wagtail"
+import type { WagtailPage } from "$lib/types/wagtail"
 
 import type { PageLoad } from "./$types"
 
-export const load: PageLoad = async ({ url, fetch }) => {
+const blogpages = writable<components["schemas"]["BlogPage"][]>([])
+
+export const load: PageLoad = async ({ url, fetch, parent }) => {
+  const { apiClient } = await parent()
   const page: WagtailPage = await pageQuery(url, fetch)
-  const retPages = await fetch(`/api/blog_pages/`)
-  const blogpages: BlogPage[] = await retPages.json()
+
+  if (get(blogpages).length === 0) {
+    const retPages = await apiClient.GET(`/api/blog_pages/`)
+    if (retPages.error) error(500, retPages.error)
+    blogpages.set(retPages.data)
+  }
 
   const category = url.searchParams.get("category")
   const tag = url.searchParams.get("tag")
