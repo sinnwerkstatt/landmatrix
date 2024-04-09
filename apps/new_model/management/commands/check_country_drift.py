@@ -4,6 +4,9 @@ from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.deal import DealOld
 
 
+# todo: exchange OldDeal?!
+
+
 class Command(BaseCommand):
     def handle(self, *args, **options):
         countries = {

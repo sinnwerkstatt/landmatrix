@@ -55,9 +55,7 @@ class InvolvementNetwork:
         ).order_by("id")
 
         all_investors: QuerySet[InvestorHull] = (
-            InvestorHull.objects.filter(id__in=investor_ids)
-            .exclude(active_version=None)
-            .order_by("id")
+            InvestorHull.objects.active().filter(id__in=investor_ids).order_by("id")
         )
         return all_investors, all_involvements, edges, min_depth
 
@@ -128,17 +126,19 @@ class InvolvementNetwork:
             ]
 
         if include_deals:
-            deals = DealHull.objects.filter(
-                active_version__operating_company_id__in=all_investor_ids
-            ).values(
-                "id",
-                "country_id",
-                "active_version__operating_company_id",
-                "active_version__intention_of_investment",
-                "active_version__implementation_status",
-                "active_version__negotiation_status",
-                "active_version__intended_size",
-                "active_version__contract_size",
+            deals = (
+                DealHull.objects.normal()
+                .filter(active_version__operating_company_id__in=all_investor_ids)
+                .values(
+                    "id",
+                    "country_id",
+                    "active_version__operating_company_id",
+                    "active_version__intention_of_investment",
+                    "active_version__implementation_status",
+                    "active_version__negotiation_status",
+                    "active_version__intended_size",
+                    "active_version__contract_size",
+                )
             )
 
             for deal in deals:

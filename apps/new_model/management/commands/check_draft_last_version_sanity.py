@@ -2,6 +2,8 @@ from django.core.management.base import BaseCommand
 
 from apps.landmatrix.models.deal import DealOld
 
+# todo: exchange OldDeal?!
+
 
 class Command(BaseCommand):
     def handle(self, *args, **options):

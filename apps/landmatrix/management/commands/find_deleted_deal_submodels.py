@@ -105,6 +105,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         global_count = 0
         global_multi_delete = 0
+        # Todo?!
         deals = DealOld.objects.active().order_by("id")
         deal_count = deals.count()
 

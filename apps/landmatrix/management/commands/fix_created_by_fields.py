@@ -12,7 +12,7 @@ from ...models.investor import InvestorOld, InvestorVersionOld
 class Command(BaseCommand):
     def handle(self, *args, **options):
         """Fix created_by object field."""
-
+        # Todo?!
         for model in [DealOld, InvestorOld]:
             print(f"Fixing {model.__name__} objects...")
 
@@ -29,6 +29,7 @@ class Command(BaseCommand):
             print("Fixed object ids:", {*fixed_obj_ids})
 
 
+# Todo?!
 def fix_creator(obj: DealOld | InvestorOld) -> bool:
     assert obj.versions.count() > 0
 

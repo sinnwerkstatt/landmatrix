@@ -148,28 +148,35 @@ class Management(View):
             Obj = DealHull if is_deal else InvestorHull
             return JsonResponse(
                 {
-                    metric: Obj.objects.filter(filters[metric]["q"]).distinct().count()
+                    metric: Obj.objects.normal()
+                    .filter(filters[metric]["q"])
+                    .distinct()
+                    .count()
                     for metric in filters.keys()
                     if request.user.role > UserRole.REPORTER
                     or not filters[metric]["staff"]
                 }
             )
         elif action in filters.keys():
-            qs = (DealHull if is_deal else InvestorHull).objects.prefetch_related(
-                # Prefetch(
-                #     "versions",
-                #     queryset=(
-                #         DealVersion if is_deal else InvestorVersion
-                #     ).objects.order_by("created_at"),
-                # ),
-                Prefetch("active_version"),
-                Prefetch("draft_version"),
-                Prefetch(
-                    "workflowinfos",
-                    queryset=(
-                        DealWorkflowInfo if is_deal else InvestorWorkflowInfo
-                    ).objects.order_by("-timestamp"),
-                ),
+            qs = (
+                (DealHull if is_deal else InvestorHull)
+                .objects.normal()
+                .prefetch_related(
+                    # Prefetch(
+                    #     "versions",
+                    #     queryset=(
+                    #         DealVersion if is_deal else InvestorVersion
+                    #     ).objects.order_by("created_at"),
+                    # ),
+                    Prefetch("active_version"),
+                    Prefetch("draft_version"),
+                    Prefetch(
+                        "workflowinfos",
+                        queryset=(
+                            DealWorkflowInfo if is_deal else InvestorWorkflowInfo
+                        ).objects.order_by("-timestamp"),
+                    ),
+                )
             )
 
             qs = qs.filter(filters[action]["q"]).order_by("-id").distinct()
@@ -378,51 +385,59 @@ class CaseStatistics(View):
 
     @staticmethod
     def __deals_query():
-        return DealHull.objects.annotate(
-            region_id=F("country__region_id"),
-            created_at=F("first_created_at"),
-            modified_at=F("active_version__modified_at"),
-            status=F("draft_version__status"),
-            deal_size=F("active_version__deal_size"),
-        ).values(
-            "id",
-            "active_version_id",
-            "draft_version_id",
-            "draft_version__status",
-            "status",
-            "country_id",
-            "region_id",
-            "created_at",
-            "modified_at",
-            # deal specific
-            "fully_updated_at",
-            "active_version__fully_updated",
-            "confidential",
-            "deal_size",
-            "active_version__is_public",
+        return (
+            DealHull.objects.normal()
+            .annotate(
+                region_id=F("country__region_id"),
+                created_at=F("first_created_at"),
+                modified_at=F("active_version__modified_at"),
+                status=F("draft_version__status"),
+                deal_size=F("active_version__deal_size"),
+            )
+            .values(
+                "id",
+                "active_version_id",
+                "draft_version_id",
+                "draft_version__status",
+                "status",
+                "country_id",
+                "region_id",
+                "created_at",
+                "modified_at",
+                # deal specific
+                "fully_updated_at",
+                "active_version__fully_updated",
+                "confidential",
+                "deal_size",
+                "active_version__is_public",
+            )
         )
 
     @staticmethod
     def __investors_query():
-        return InvestorHull.objects.annotate(
-            country_id=F("active_version__country_id"),
-            region_id=F("active_version__country__region_id"),
-            created_at=F("first_created_at"),
-            modified_at=F("active_version__modified_at"),
-            status=F("draft_version__status"),
-            name=F("active_version__name"),
-        ).values(
-            "id",
-            "active_version_id",
-            "draft_version_id",
-            "draft_version__status",
-            "status",
-            "country_id",
-            "region_id",
-            "created_at",
-            "modified_at",
-            # investor specific
-            "name",
+        return (
+            InvestorHull.objects.normal()
+            .annotate(
+                country_id=F("active_version__country_id"),
+                region_id=F("active_version__country__region_id"),
+                created_at=F("first_created_at"),
+                modified_at=F("active_version__modified_at"),
+                status=F("draft_version__status"),
+                name=F("active_version__name"),
+            )
+            .values(
+                "id",
+                "active_version_id",
+                "draft_version_id",
+                "draft_version__status",
+                "status",
+                "country_id",
+                "region_id",
+                "created_at",
+                "modified_at",
+                # investor specific
+                "name",
+            )
         )
 
     def _deal_buckets(

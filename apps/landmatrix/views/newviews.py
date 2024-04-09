@@ -351,7 +351,7 @@ class HullViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class DealViewSet(HullViewSet):
-    queryset = DealHull.objects.all().prefetch_related(
+    queryset = DealHull.objects.normal().prefetch_related(
         Prefetch("versions", queryset=DealVersion.objects.order_by("-id"))
     )
     serializer_class = DealSerializer
@@ -359,6 +359,9 @@ class DealViewSet(HullViewSet):
 
     def get_queryset(self):
         if self.action in ["retrieve", "retrieve_version"]:
+            # TODO Kurt if a superuser needs to see a deleted deal, show them?
+            if self.request.user.is_superuser:
+                return DealHull.objects.all()
             return self.queryset.visible(self.request.user, "UNFILTERED")
         return self.queryset
 
@@ -495,6 +498,7 @@ class DealViewSet(HullViewSet):
         d1.fully_updated_at = None
         d1.save()
 
+        # special case where we're not filtering for "normal", maybe we need a copy of a deleted deal
         old_deal = DealHull.objects.get(id=old_id)
         dv1: DealVersion = old_deal.active_version or old_deal.draft_version
         dv1.deal_id = d1.id
@@ -566,7 +570,7 @@ class InvestorVersionViewSet(VersionViewSet):
 
 
 class InvestorViewSet(HullViewSet):
-    queryset = InvestorHull.objects.all().prefetch_related(
+    queryset = InvestorHull.objects.normal().prefetch_related(
         Prefetch("versions", queryset=InvestorVersion.objects.order_by("-id"))
     )
     version_serializer_class = InvestorVersionSerializer
@@ -635,8 +639,7 @@ class InvestorViewSet(HullViewSet):
             )
         # TODO Later this might need an "also search for drafts option"
         return Response(
-            InvestorHull.objects.exclude(deleted=True)
-            .exclude(active_version=None)
+            InvestorHull.objects.active()
             .annotate(name=F("active_version__name"))
             .values("id", "name")
         )
@@ -645,16 +648,14 @@ class InvestorViewSet(HullViewSet):
     @action(methods=["get"], detail=False)
     def deal_filtered(self, request):
         deals = (
-            DealHull.objects.visible(request.user, request.GET.get("subset", "PUBLIC"))
-            .exclude(active_version=None)
-            .filter(deleted=False, confidential=False)
+            DealHull.objects.active()
+            .visible(request.user, request.GET.get("subset", "PUBLIC"))
+            .filter(confidential=False)
             .filter(parse_filters(request))
             .values_list("active_version_id", flat=True)
         )
 
-        ret = InvestorHull.objects.exclude(active_version=None).filter(
-            child_deals__in=deals
-        )
+        ret = InvestorHull.objects.active().filter(child_deals__in=deals)
 
         if investor_id := request.GET.get("parent_company"):
             ret = ret.filter(id=investor_id)
