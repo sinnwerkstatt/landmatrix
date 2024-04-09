@@ -148,14 +148,14 @@ class Management(View):
             Obj = DealHull if is_deal else InvestorHull
             return JsonResponse(
                 {
-                    metric: Obj.objects.filter(filters[metric]["q"]).distinct().count()
+                    metric: Obj.objects.normal().filter(filters[metric]["q"]).distinct().count()
                     for metric in filters.keys()
                     if request.user.role > UserRole.REPORTER
                     or not filters[metric]["staff"]
                 }
             )
         elif action in filters.keys():
-            qs = (DealHull if is_deal else InvestorHull).objects.prefetch_related(
+            qs = (DealHull if is_deal else InvestorHull).objects.normal().prefetch_related(
                 # Prefetch(
                 #     "versions",
                 #     queryset=(
@@ -378,7 +378,7 @@ class CaseStatistics(View):
 
     @staticmethod
     def __deals_query():
-        return DealHull.objects.annotate(
+        return DealHull.objects.normal().annotate(
             region_id=F("country__region_id"),
             created_at=F("first_created_at"),
             modified_at=F("active_version__modified_at"),
@@ -404,7 +404,7 @@ class CaseStatistics(View):
 
     @staticmethod
     def __investors_query():
-        return InvestorHull.objects.annotate(
+        return InvestorHull.objects.normal().annotate(
             country_id=F("active_version__country_id"),
             region_id=F("active_version__country__region_id"),
             created_at=F("first_created_at"),

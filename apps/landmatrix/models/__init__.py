@@ -15,6 +15,7 @@ class _FieldDefinitionFieldSelect(forms.Select):
         ).values_list("field", flat=True)
 
         fields = []
+        # Todo?! exchange deal old
         for field in DealOld._meta.get_fields():
             if isinstance(field, ForeignObjectRel):
                 continue

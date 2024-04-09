@@ -18,7 +18,7 @@ from .fields import ArrayField
 from .investor import InvestorOld
 from .oldfields import ContractsField, DatasourcesField, LocationsField
 
-
+# Todo?! not up to date?!
 class DealQuerySet(models.QuerySet):
     def active(self):
         return self.filter(status__in=(2, 3))

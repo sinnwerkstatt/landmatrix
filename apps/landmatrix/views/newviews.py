@@ -351,7 +351,7 @@ class HullViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class DealViewSet(HullViewSet):
-    queryset = DealHull.objects.all().prefetch_related(
+    queryset = DealHull.objects.normal().prefetch_related(
         Prefetch("versions", queryset=DealVersion.objects.order_by("-id"))
     )
     serializer_class = DealSerializer
@@ -495,7 +495,7 @@ class DealViewSet(HullViewSet):
         d1.fully_updated_at = None
         d1.save()
 
-        old_deal = DealHull.objects.get(id=old_id)
+        old_deal = DealHull.objects.normal().get(id=old_id)
         dv1: DealVersion = old_deal.active_version or old_deal.draft_version
         dv1.deal_id = d1.id
         dv1.copy_to_new_draft(request.user.id)
@@ -566,7 +566,7 @@ class InvestorVersionViewSet(VersionViewSet):
 
 
 class InvestorViewSet(HullViewSet):
-    queryset = InvestorHull.objects.all().prefetch_related(
+    queryset = InvestorHull.objects.normal().prefetch_related(
         Prefetch("versions", queryset=InvestorVersion.objects.order_by("-id"))
     )
     version_serializer_class = InvestorVersionSerializer
@@ -635,7 +635,7 @@ class InvestorViewSet(HullViewSet):
             )
         # TODO Later this might need an "also search for drafts option"
         return Response(
-            InvestorHull.objects.exclude(deleted=True)
+            InvestorHull.objects.normal()
             .exclude(active_version=None)
             .annotate(name=F("active_version__name"))
             .values("id", "name")
@@ -652,7 +652,7 @@ class InvestorViewSet(HullViewSet):
             .values_list("active_version_id", flat=True)
         )
 
-        ret = InvestorHull.objects.exclude(active_version=None).filter(
+        ret = InvestorHull.objects.normal().exclude(active_version=None).filter(
             child_deals__in=deals
         )
 

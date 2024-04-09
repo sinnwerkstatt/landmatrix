@@ -9,6 +9,7 @@ from apps.landmatrix.models.investor import InvestorOld
 class Command(BaseCommand):
     def handle(self, *args, **options):
         print("Deals and deal versions.")
+        # ToDo: Change DealOld?!
         for deal in DealOld.objects.all().order_by("id"):
             updated = False
 
@@ -99,6 +100,7 @@ class Command(BaseCommand):
                     deal_version.save()
 
         print("Investors and investor versions.")
+        # ToDo?!
         for investor in InvestorOld.objects.all().order_by("id"):
             updated = False
 

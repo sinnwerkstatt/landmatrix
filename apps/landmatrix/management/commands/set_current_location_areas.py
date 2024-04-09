@@ -10,7 +10,7 @@ from apps.api.utils.geojson import (
 
 from ...models.deal import DealOld, DealVersionOld
 
-
+# todo?! exchange DealOld
 class Command(BaseCommand):
     def handle(self, *args, **options):
         """Set current on area feature if not ambiguous."""

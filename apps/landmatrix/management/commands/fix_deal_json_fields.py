@@ -40,6 +40,7 @@ class Command(BaseCommand):
             return
 
         print("Iterating Deals.")
+        # Todo?!
         n_deals = DealOld.objects.count()
         deal_iterator = DealOld.objects.iterator()
         for _ in tqdm(range(n_deals)):

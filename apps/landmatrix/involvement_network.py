@@ -55,7 +55,7 @@ class InvolvementNetwork:
         ).order_by("id")
 
         all_investors: QuerySet[InvestorHull] = (
-            InvestorHull.objects.filter(id__in=investor_ids)
+            InvestorHull.objects.normal().filter(id__in=investor_ids)
             .exclude(active_version=None)
             .order_by("id")
         )
@@ -128,7 +128,7 @@ class InvolvementNetwork:
             ]
 
         if include_deals:
-            deals = DealHull.objects.filter(
+            deals = DealHull.objects.normal().filter(
                 active_version__operating_company_id__in=all_investor_ids
             ).values(
                 "id",

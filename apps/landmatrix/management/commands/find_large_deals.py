@@ -11,7 +11,7 @@ from apps.landmatrix.models.deal import DealOld
 class Command(BaseCommand):
     def handle(self, *args, **options):
         """Find large deals in db."""
-
+        # Todo?!
         deals = list(DealOld.objects.values())
 
         sizes = sorted(
