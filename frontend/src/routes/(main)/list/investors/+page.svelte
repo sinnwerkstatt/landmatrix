@@ -15,7 +15,7 @@
     { key: "modified_at", colSpan: 2 },
     { key: "id", colSpan: 1 },
     { key: "name", colSpan: 5 },
-    { key: "country_id", colSpan: 5 },
+    { key: "country", colSpan: 5 },
     { key: "classification", colSpan: 3 },
     { key: "deals", colSpan: 1 },
   ]
