@@ -119,7 +119,8 @@ django_settings_module = "config.settings.dev"
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "config.settings.ci"
 python_files = ["test_*.py"]
-addopts = ["--reuse-db"]
+addopts = ["--cov=apps", "--cov-report", "term-missing"]
+#addopts = ["--reuse-db", "-p no:warnings"]
 #filterwarnings = [
 #    "ignore::django.utils.deprecation.RemovedInDjango51Warning",
 #    "ignore::django.utils.deprecation.RemovedInDjango60Warning",
