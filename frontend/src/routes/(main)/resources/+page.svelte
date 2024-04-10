@@ -10,7 +10,7 @@
 
   export let data
 
-  const blogpages = data.blogpages
+  $: blogpages = data.blogpages
 
   let filteredBlogPages: components["schemas"]["BlogPage"][]
   $: filteredBlogPages = data.category

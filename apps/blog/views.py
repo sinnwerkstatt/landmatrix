@@ -10,6 +10,11 @@ class BlogCategoryViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = BlogCategory.objects.all()
     permission_classes = []
 
+    def list(self, request, *args, **kwargs):
+        language = self.request.query_params.get("lang", "en")
+        with translation.override(language):
+            return super().list(request, *args, **kwargs)
+
 
 class BlogPageViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = BlogPageSerializer
@@ -27,6 +32,6 @@ class BlogPageViewSet(viewsets.ReadOnlyModelViewSet):
         if category := self.request.query_params.get("category"):
             queryset = queryset.filter(blog_categories__slug=category)
 
-        language = self.request.query_params.get("language", "en")
+        language = self.request.query_params.get("lang", "en")
         with translation.override(language):
             return queryset

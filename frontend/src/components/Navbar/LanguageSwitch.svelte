@@ -2,6 +2,8 @@
   import Cookies from "js-cookie"
   import { locale } from "svelte-i18n"
 
+  import { fetchAboutPages, fetchObservatoryPages } from "$lib/stores/wagtail"
+
   import LanguageIcon from "$components/icons/LanguageIcon.svelte"
   import NavDropDown from "$components/Navbar/NavDropDown.svelte"
 
@@ -15,6 +17,9 @@
   const switchLanguage = async (lang: string) => {
     Cookies.set("django_language", lang)
     await locale.set(lang)
+
+    await fetchObservatoryPages(fetch, lang)
+    await fetchAboutPages(fetch, lang)
   }
 </script>
 

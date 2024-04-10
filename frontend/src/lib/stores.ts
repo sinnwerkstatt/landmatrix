@@ -60,14 +60,17 @@ export const fieldChoices = readable<components["schemas"]["FieldChoices"]>(
   },
 )
 
-export const blogCategories = readable(
-  [] as components["schemas"]["BlogCategory"][],
-  set => {
-    serverApiClient.GET("/api/blog_categories/").then(ret => {
-      if (ret.error) error(500, ret.error)
-      set(ret.data)
-    })
+export const blogCategories = derived(
+  [locale],
+  ([$locale], set) => {
+    serverApiClient
+      .GET("/api/blog_categories/", { params: { query: { lang: $locale } } })
+      .then(ret => {
+        if (ret.error) error(500, ret.error)
+        set(ret.data)
+      })
   },
+  [] as components["schemas"]["BlogCategory"][],
 )
 
 export const chartDescriptions = derived(
