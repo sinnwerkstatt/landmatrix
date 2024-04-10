@@ -12,7 +12,7 @@ interface CaseStatisticsObj {
   status: string | null
   active_version_id: number | null
   draft_version_id: number | null
-  draft_version__status: string
+  draft_version__status: string | null
 
   country_id: number | null
   region_id: number | null

@@ -104,9 +104,7 @@
       <li class="2xl:hidden">
         <button
           class="h-full p-2"
-          on:click|stopPropagation={() => {
-            menuHidden = !menuHidden
-          }}
+          on:click|stopPropagation={() => (menuHidden = !menuHidden)}
         >
           <BurgerMenuIcon class="mx-3 inline h-7 w-7 text-black dark:text-gray-50" />
         </button>

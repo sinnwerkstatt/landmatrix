@@ -391,8 +391,8 @@ class CaseStatistics(View):
                 region_id=F("country__region_id"),
                 created_at=F("first_created_at"),
                 modified_at=F("active_version__modified_at"),
-                status=F("draft_version__status"),
                 deal_size=F("active_version__deal_size"),
+                status=F("draft_version__status"),
             )
             .values(
                 "id",
@@ -422,8 +422,8 @@ class CaseStatistics(View):
                 region_id=F("active_version__country__region_id"),
                 created_at=F("first_created_at"),
                 modified_at=F("active_version__modified_at"),
-                status=F("draft_version__status"),
                 name=F("active_version__name"),
+                status=F("draft_version__status"),
             )
             .values(
                 "id",

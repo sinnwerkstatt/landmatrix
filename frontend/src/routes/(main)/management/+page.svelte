@@ -89,7 +89,7 @@
       items: [
         { id: "all_active", name: $_("All active"), staff: true },
         { id: "all_drafts", name: $_("All non active"), staff: true },
-        { id: "all_deleted", name: $_("All deleted"), staff: true },
+        // { id: "all_deleted", name: $_("All deleted"), staff: true },
       ],
     },
   ]

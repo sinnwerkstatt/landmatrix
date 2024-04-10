@@ -66,6 +66,11 @@ export const investorFields = derived([_, fieldChoices], ([$_, $fieldChoices]) =
       editField: CountryEditField,
       label: $_("Country of registration/origin"),
     },
+    country_id: {
+      displayField: CountryField,
+      editField: CountryEditField,
+      label: $_("Country of registration/origin"),
+    },
     name: { displayField: TextField, editField: TextEditField, label: $_("Name") },
     homepage: {
       displayField: TextField,
