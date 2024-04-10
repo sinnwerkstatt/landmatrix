@@ -1,78 +1,7 @@
 import datetime
-import itertools
-from typing import Any
 
-from django.db.models import QuerySet
 from django.utils.duration import duration_iso_string
 from django.utils.timezone import is_aware
-
-
-def qs_values_to_dict(qs: QuerySet, fields, many_to_many_relations=None):
-    if not many_to_many_relations:
-        many_to_many_relations = []
-
-    def _subkey_expode(target: dict, k, v):
-        if "__" not in k:
-            target[k] = v
-            return
-        kx, morekey = k.split("__", 1)
-        if not target.get(kx):
-            target[kx] = {}
-        newtarget = target[kx]
-        _subkey_expode(newtarget, morekey, v)
-
-    for related_field in many_to_many_relations:
-        related_id_field = f"{related_field}__id"
-        if (
-            any(f.startswith(related_field) for f in fields)
-            and related_id_field not in fields
-        ):
-            fields += [related_id_field]
-
-    if "id" not in fields:  # we need an ID to group by.
-        fields += ["id"]
-
-    qs_values = qs.order_by("id").values(
-        *fields,
-    )  # needs to be ordered in order to be grouped :S
-    grouped_results = itertools.groupby(qs_values, key=lambda value: value["id"])
-    results = []
-
-    for _, dealgroup in grouped_results:
-        richdeal = {}
-        firstround = True
-        seen_mtms = {}
-        for mtm in many_to_many_relations:
-            richdeal[mtm] = []
-            seen_mtms[mtm] = set()
-        for group in dealgroup:
-            manytomany_combine = {mtm: {} for mtm in many_to_many_relations}
-            for key, val in group.items():
-                if val is None:
-                    richdeal[key] = None
-                if "__" in key:
-                    keyprefix, restkey = key.split("__", 1)
-                    # many2many / foreign key related
-                    if keyprefix in many_to_many_relations:
-                        _subkey_expode(manytomany_combine[keyprefix], restkey, val)
-                    # foreign key pointer / one2one
-                    elif firstround:
-                        _subkey_expode(richdeal, key, val)
-                elif firstround:
-                    richdeal[key] = val
-
-            firstround = False
-            for mtm in many_to_many_relations:
-                mtm_add = manytomany_combine[mtm]
-                if mtm_add and mtm_add["id"] not in seen_mtms[mtm]:
-                    richdeal[mtm] += [mtm_add]
-                    seen_mtms[mtm].add(mtm_add["id"])
-            for mtm in many_to_many_relations:
-                richdeal[mtm] = sorted(
-                    richdeal[mtm], key=lambda x: x["id"], reverse=True
-                )
-        results += [richdeal]
-    return results
 
 
 def ecma262(o: datetime) -> str:

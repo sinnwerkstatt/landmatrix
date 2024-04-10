@@ -15,7 +15,7 @@ from apps.landmatrix.views import newviews
 from apps.landmatrix import views as oldviews
 from apps.message.views import MessageViewSet
 from .export import DataDownload
-from .gis_export import gis_export
+from .gis_export import gis_export_areas, gis_export_locations
 from .upload_view import upload_datasource_file
 from ..blog.views import BlogCategoryViewSet, BlogPageViewSet
 
@@ -70,7 +70,8 @@ urlpatterns = [
         api_views.workflow_info_resolve,
     ),
     path("legacy_export/", data_download),
-    path("gis_export/", gis_export),
+    path("gis_export/locations/", gis_export_locations),
+    path("gis_export/areas/", gis_export_areas),
     # management / case
     path("management/", management_views.Management.as_view()),
     path("case_statistics/", management_views.CaseStatistics.as_view()),
