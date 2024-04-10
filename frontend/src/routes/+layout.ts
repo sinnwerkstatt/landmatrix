@@ -1,9 +1,9 @@
-import { type LoadEvent } from "@sveltejs/kit"
+import { error, type LoadEvent } from "@sveltejs/kit"
 import { env } from "$env/dynamic/public"
 import createClient from "openapi-fetch"
 
 import { i18nload } from "$lib/i18n/i18n"
-import type { paths } from "$lib/openAPI"
+import type { components, paths } from "$lib/openAPI"
 import { fetchAboutPages, fetchObservatoryPages } from "$lib/stores/wagtail"
 import type { User } from "$lib/types/user"
 
@@ -28,5 +28,13 @@ export const load: LayoutLoad = async ({ fetch, data }) => {
   await fetchObservatoryPages(fetch, lang)
   await fetchAboutPages(fetch, lang)
 
-  return { apiClient, user }
+  const countriesReq = await apiClient.GET("/api/countries/")
+  if (countriesReq.error) error(500, countriesReq.error)
+  const countries: components["schemas"]["Country"][] = countriesReq.data
+
+  const regionsReq = await apiClient.GET("/api/regions/")
+  if (regionsReq.error) error(500, regionsReq.error)
+  const regions: components["schemas"]["Region"][] = regionsReq.data
+
+  return { apiClient, user, countries, regions }
 }

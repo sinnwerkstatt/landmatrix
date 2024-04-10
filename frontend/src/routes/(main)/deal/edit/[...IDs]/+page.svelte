@@ -6,7 +6,6 @@
   import { beforeNavigate, goto, invalidate } from "$app/navigation"
   import { page } from "$app/stores"
 
-  import { countries } from "$lib/stores"
   import { getCsrfToken } from "$lib/utils"
   import { removeEmptyEntries } from "$lib/utils/data_processing"
 
@@ -234,7 +233,7 @@
     {#if activeTab === "#locations"}
       <EditSectionLocations
         bind:locations={deal.selected_version.locations}
-        country={$countries.find(c => c.id === deal.country_id)}
+        country={$page.data.countries.find(c => c.id === deal.country_id)}
       />
     {/if}
     {#if activeTab === "#general"}

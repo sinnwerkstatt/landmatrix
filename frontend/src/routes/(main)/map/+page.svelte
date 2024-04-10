@@ -7,12 +7,13 @@
   import { _ } from "svelte-i18n"
 
   import { browser } from "$app/environment"
+  import { page } from "$app/stores"
 
   import { filters } from "$lib/filters"
-  import { countries, dealsNG, regions } from "$lib/stores"
+  import type { components } from "$lib/openAPI"
+  import { dealsNG } from "$lib/stores"
   import { isMobile, loading } from "$lib/stores/basics"
   import { Location2, type DealHull } from "$lib/types/newtypes"
-  import type { Country } from "$lib/types/wagtail"
 
   import DataContainer from "$components/Data/DataContainer.svelte"
   import FilterCollapse from "$components/Data/FilterCollapse.svelte"
@@ -30,6 +31,8 @@
     styleCircle,
   } from "$components/Map/map_helper"
   import MapMarkerPopup from "$components/Map/MapMarkerPopup.svelte"
+
+  type Country = components["schemas"]["Country"]
 
   interface MyMarker extends Marker {
     deal: DealHull
@@ -71,7 +74,7 @@
     return ret
   }
 
-  $: country_coords = generateCountryCoords($countries as Country[])
+  $: country_coords = generateCountryCoords($page.data.countries as Country[])
 
   function bigMapIsReady(evt: CustomEvent<Map>) {
     if (!browser) return
@@ -120,7 +123,7 @@
           styleCircle(
             circle,
             $displayDealsCount ? deals.length : totalDealSize(deals),
-            $regions.find(r => r.id === +regionId)?.name ?? "",
+            $page.data.regions.find(r => r.id === +regionId)?.name ?? "",
             $displayDealsCount,
           )
         }),
@@ -144,7 +147,7 @@
           styleCircle(
             circle,
             $displayDealsCount ? deals.length : totalDealSize(deals),
-            $countries.find(c => c.id === +countryId)?.name ?? "",
+            $page.data.countries.find(c => c.id === +countryId)?.name ?? "",
             $displayDealsCount,
           )
         }),

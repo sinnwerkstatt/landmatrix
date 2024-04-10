@@ -1,7 +1,8 @@
 import { get } from "svelte/store"
 
+import { page } from "$app/stores"
+
 import { filters } from "$lib/filters"
-import { countries, regions } from "$lib/stores"
 
 export type FileType = "svg" | "png" | "webp" | "json" | "csv"
 export type DownloadEvent = CustomEvent<FileType>
@@ -10,9 +11,10 @@ export function fileName(title: string, suffix = ""): string {
   const $filters = get(filters)
   let prefix = "Global - "
   if ($filters.country_id)
-    prefix = get(countries).find(c => c.id === $filters.country_id)?.name + " - "
+    prefix =
+      get(page).data.countries.find(c => c.id === $filters.country_id)?.name + " - "
   if ($filters.region_id)
-    prefix = get(regions).find(r => r.id === $filters.region_id)?.name + " - "
+    prefix = get(page).data.regions.find(r => r.id === $filters.region_id)?.name + " - "
   return prefix + title + suffix
 }
 

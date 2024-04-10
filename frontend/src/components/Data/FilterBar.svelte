@@ -12,10 +12,9 @@
   } from "$lib/choices"
   import type { Produce } from "$lib/filters"
   import { filters, isDefaultFilter, publicOnly } from "$lib/filters"
-  import { countries, fieldChoices, regions, simpleInvestors } from "$lib/stores"
+  import { fieldChoices, simpleInvestors } from "$lib/stores"
   import { ProduceGroup } from "$lib/types/deal"
   import { UserRole } from "$lib/types/user"
-  import type { Country, Region } from "$lib/types/wagtail"
 
   import { showFilterBar } from "$components/Data/stores"
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
@@ -51,7 +50,7 @@
       ]
     : []
 
-  $: regionsWithGlobal = [{ id: undefined, name: $_("Global") }, ...$regions]
+  $: regionsWithGlobal = [{ id: undefined, name: $_("Global") }, ...$page.data.regions]
 
   $: dataDownloadURL = `/api/legacy_export/?subset=${
     $publicOnly ? "PUBLIC" : "ACTIVE"
@@ -60,10 +59,10 @@
   function trackDownload(format: string) {
     let name = "Global"
     if ($filters.country_id) {
-      name = ($countries.find(c => c.id === $filters.country_id) as Country).name
+      name = $page.data.countries.find(c => c.id === $filters.country_id).name
     }
     if ($filters.region_id) {
-      name = ($regions.find(r => r.id === $filters.region_id) as Region).name
+      name = $page.data.regions.find(r => r.id === $filters.region_id).name
     }
 
     if ($tracker) $tracker.trackEvent("Downloads", format, name)
@@ -136,11 +135,11 @@
         title={$_("Country")}
       >
         <CountrySelect
-          countries={$countries.filter(c => c.deals && c.deals.length > 0)}
+          countries={$page.data.countries.filter(c => c.deals && c.deals.length > 0)}
           on:input={e => {
             $filters.country_id = e.detail?.id
           }}
-          value={$countries.find(c => c.id === $filters.country_id)}
+          value={$page.data.countries.find(c => c.id === $filters.country_id)}
         />
       </FilterCollapse>
 
@@ -216,9 +215,9 @@
         </VirtualListSelect>
         {$_("Country of registration")}
         <CountrySelect
-          countries={$countries}
+          countries={$page.data.countries}
           on:input={e => ($filters.investor_country_id = e.detail?.id)}
-          value={$countries.find(c => c.id === $filters.investor_country_id)}
+          value={$page.data.countries.find(c => c.id === $filters.investor_country_id)}
         />
       </FilterCollapse>
 

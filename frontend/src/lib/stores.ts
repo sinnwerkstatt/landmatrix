@@ -129,19 +129,6 @@ export const currencies = readable<components["schemas"]["Currency"][]>([], set 
     set(ret.data)
   })
 })
-export const countries = readable<components["schemas"]["Country"][]>([], set => {
-  // if (browser)
-  serverApiClient.GET("/api/countries/").then(ret => {
-    if (ret.error) error(500, ret.error)
-    set(ret.data)
-  })
-})
-export const regions = readable<components["schemas"]["Region"][]>([], set => {
-  serverApiClient.GET("/api/regions/").then(ret => {
-    if (ret.error) error(500, ret.error)
-    set(ret.data)
-  })
-})
 
 export const dealsNG = derived(
   [filters, publicOnly],

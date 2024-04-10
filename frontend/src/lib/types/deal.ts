@@ -9,8 +9,8 @@ import type {
   Polygon,
 } from "geojson"
 
+import type { components } from "$lib/openAPI"
 import type { User } from "$lib/types/user"
-import type { Country } from "$lib/types/wagtail"
 
 export enum ACCURACY_LEVEL {
   "",
@@ -227,7 +227,7 @@ export interface Deal {
   created_by?: User
   modified_at: Date
   modified_by?: User
-  country?: Country
+  country?: components["schemas"]["Country"]
   country_id?: number
   current_draft_id?: number
   // locations: Location[]

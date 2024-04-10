@@ -1,9 +1,10 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
+  import { page } from "$app/stores"
+
   import { filters, FilterValues } from "$lib/filters"
-  import { countries } from "$lib/stores"
-  import type { Country } from "$lib/types/wagtail"
+  import type { components } from "$lib/openAPI"
 
   interface CountryStat {
     country_id: number
@@ -12,14 +13,14 @@
     name?: string
   }
 
-  let country: Country | undefined
-  $: country = $countries.find(c => c.id === $filters.country_id)
+  let country: components["schemas"]["Country"] | undefined
+  $: country = $page.data.countries.find(c => c.id === $filters.country_id)
 
   let investingCountries: CountryStat[] = []
   let investedCountries: CountryStat[] = []
 
   async function grabInvestmentsAndRankings(
-    country: Country | undefined,
+    country: components["schemas"]["Country"] | undefined,
     fltrs: FilterValues,
   ) {
     if (!country) return
@@ -34,14 +35,14 @@
     const rankings = await ret.json()
 
     investingCountries = rankings.investing.map(x => ({
-      name: $countries.find(c => c.id === x.country_id)?.name,
+      name: $page.data.countries.find(c => c.id === x.country_id)?.name,
       ...x,
       size: +x.size,
     }))
     investingCountries.sort(sortByDealSizeAndCount)
 
     investedCountries = rankings.invested.map(x => ({
-      name: $countries.find(c => c.id === x.country_id)?.name,
+      name: $page.data.countries.find(c => c.id === x.country_id)?.name,
       ...x,
       size: +x.size,
     }))

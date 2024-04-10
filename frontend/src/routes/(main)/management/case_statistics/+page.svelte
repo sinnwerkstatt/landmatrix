@@ -2,9 +2,10 @@
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
-  import { countries, regions } from "$lib/stores"
+  import { page } from "$app/stores"
+
+  import type { components } from "$lib/openAPI"
   import { loading } from "$lib/stores/basics"
-  import type { Country, Region } from "$lib/types/wagtail"
 
   import VirtualListSelect from "$components/LowLevel/VirtualListSelect.svelte"
 
@@ -13,11 +14,13 @@
   import StatisticsTable from "./StatisticsTable.svelte"
   import TimespanChanges from "./TimespanChanges.svelte"
 
+  type Country = components["schemas"]["Country"]
+  type Region = components["schemas"]["Region"]
+
   let selCountry: Country | undefined
+
   let selRegion: Region | undefined
-
   let counts: Counts = {}
-
   async function getCounts(region: Region | undefined, country: Country | undefined) {
     loading.set(true)
 
@@ -45,7 +48,7 @@
       <div class="w-full">
         <VirtualListSelect
           bind:value={selRegion}
-          items={$regions}
+          items={$page.data.regions}
           label="name"
           on:input={async () => {
             if (selRegion) {
@@ -61,7 +64,7 @@
       <div class="w-full">
         <VirtualListSelect
           bind:value={selCountry}
-          items={$countries.filter(c => c.deals && c.deals.length > 0)}
+          items={$page.data.countries.filter(c => c.deals && c.deals.length > 0)}
           label="name"
           on:input={async () => {
             if (selCountry) {

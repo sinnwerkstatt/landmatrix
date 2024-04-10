@@ -1,10 +1,10 @@
 <script lang="ts">
-  import type { Country } from "$lib/types/wagtail"
+  import type { components } from "$lib/openAPI.js"
 
   import VirtualListSelect from "./VirtualListSelect.svelte"
 
-  export let countries: Country[] = []
-  export let value: Country | null = null
+  export let countries: components["schemas"]["Country"][] = []
+  export let value: components["schemas"]["Country"] | null = null
   export let name: string | undefined = undefined
   export let disabled = false
   export let required = false

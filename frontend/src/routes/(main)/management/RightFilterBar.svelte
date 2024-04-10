@@ -3,8 +3,9 @@
   import { _ } from "svelte-i18n"
   import Select from "svelte-select"
 
+  import { page } from "$app/stores"
+
   import { stateMap } from "$lib/newUtils"
-  import { countries } from "$lib/stores"
   import { Version2Status, type DealHull, type InvestorHull } from "$lib/types/newtypes"
 
   import CountrySelect from "$components/LowLevel/CountrySelect.svelte"
@@ -24,7 +25,7 @@
   $: objectsCountryIDs = objects?.map(d =>
     checkType(d) ? d.country_id : d.selected_version.country_id,
   )
-  $: relCountries = $countries.filter(c => objectsCountryIDs.includes(c.id))
+  $: relCountries = $page.data.countries.filter(c => objectsCountryIDs.includes(c.id))
 
   // const STATI = Object.values(Version2Status)
   const RELEVANT_STATI = [

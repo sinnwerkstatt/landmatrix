@@ -4,9 +4,9 @@
   import { _ } from "svelte-i18n"
 
   import { browser } from "$app/environment"
+  import { page } from "$app/stores"
 
   import { filters } from "$lib/filters"
-  import { countries, regions } from "$lib/stores"
   import type { Marker as MarkerType } from "$lib/types/wagtail"
 
   import BigMap from "$components/Map/BigMap.svelte"
@@ -22,8 +22,8 @@
 
   $: {
     if (map) {
-      if (regionID && $regions.length) {
-        const reg = $regions.find(r => r.id === regionID)!
+      if (regionID) {
+        const reg = $page.data.regions.find(r => r.id === regionID)!
         map.fitBounds(
           [
             [reg.point_lat_min, reg.point_lon_min],
@@ -31,8 +31,8 @@
           ],
           { animate: false },
         )
-      } else if (countryID && $countries.length) {
-        const country = $countries.find(c => c.id === countryID)!
+      } else if (countryID) {
+        const country = $page.data.countries.find(c => c.id === countryID)!
         map.fitBounds(
           [
             [country.point_lat_min, country.point_lon_min],
@@ -47,7 +47,7 @@
   }
 
   $: {
-    if (map && markers && browser && $regions.length) {
+    if (map && markers && browser) {
       if (!featureGroup) featureGroup = new FeatureGroup()
       else featureGroup.clearLayers()
       featureGroup.addTo(map)
@@ -65,7 +65,7 @@
         regionId: mark.region_id,
       } as MarkerOptions)
       featureGroup.addLayer(circle)
-      const country_name = $regions.find(r => r.id === mark.region_id)!.name
+      const country_name = $page.data.regions.find(r => r.id === mark.region_id)!.name
       styleCircle(circle, mark.count! / 50, country_name, true, 30)
     }
   }

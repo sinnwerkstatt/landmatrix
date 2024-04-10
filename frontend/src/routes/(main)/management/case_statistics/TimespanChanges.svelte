@@ -6,11 +6,14 @@
   import isSameOrBefore from "dayjs/plugin/isSameOrBefore"
   import { _ } from "svelte-i18n"
 
+  import type { components } from "$lib/openAPI"
   import { loading } from "$lib/stores/basics"
-  import type { Country, Region } from "$lib/types/wagtail"
 
   import type { CaseStatisticsDeal, CaseStatisticsInvestor } from "./caseStatistics"
   import CaseStatisticsTable from "./CaseStatisticsTable.svelte"
+
+  type Country = components["schemas"]["Country"]
+  type Region = components["schemas"]["Region"]
 
   dayjs.extend(isSameOrBefore)
   dayjs.extend(isSameOrAfter)

@@ -7,12 +7,12 @@
   import { slide } from "svelte/transition"
 
   import { newNanoid } from "$lib/helpers"
+  import type { components } from "$lib/openAPI"
   import {
     Location2,
     type PointFeature,
     type PointFeatureProps,
   } from "$lib/types/newtypes"
-  import type { Country } from "$lib/types/wagtail"
   import { isEmptySubmodel } from "$lib/utils/data_processing"
   import { createComponentAsDiv } from "$lib/utils/domHelpers"
   import { createPointFeatures, fitBounds } from "$lib/utils/location"
@@ -27,7 +27,7 @@
   import LocationAreasEditField from "./LocationAreasEditField.svelte"
 
   export let locations: Location2[]
-  export let country: Country | undefined
+  export let country: components["schemas"]["Country"] | undefined
 
   let activeEntryIdx = -1
 

@@ -1,7 +1,7 @@
 <script lang="ts">
   import Select from "svelte-select"
 
-  import { countries } from "$lib/stores"
+  import { page } from "$app/stores"
 
   export let value: number | null
   export let fieldname: string
@@ -11,8 +11,8 @@
 
   $: isDealTargetCountry = model === "deal" && fieldname === "country"
   $: targetCountries = isDealTargetCountry
-    ? $countries.filter(c => !c.high_income)
-    : $countries
+    ? $page.data.countries.filter(c => !c.high_income)
+    : $page.data.countries
 </script>
 
 <Select

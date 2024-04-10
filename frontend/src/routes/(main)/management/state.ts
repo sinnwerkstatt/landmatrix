@@ -1,12 +1,12 @@
 import { writable } from "svelte/store"
 
+import type { components } from "$lib/openAPI"
 import type { Version2Status } from "$lib/types/newtypes"
 import type { User } from "$lib/types/user"
-import type { Country } from "$lib/types/wagtail"
 
 export interface ManagementFilters {
   status?: Version2Status
-  country?: Country
+  country?: components["schemas"]["Country"]
   dealSizeFrom?: number
   dealSizeTo?: number
   createdAtFrom?: Date

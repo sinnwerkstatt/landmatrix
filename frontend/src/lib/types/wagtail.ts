@@ -1,6 +1,6 @@
-import type { BlockKey } from "$components/Wagtail/blocks"
+import type { components } from "$lib/openAPI"
 
-import type { Deal } from "./deal"
+import type { BlockKey } from "$components/Wagtail/blocks"
 
 export type WagtailStreamfieldBlock = {
   type: BlockKey
@@ -32,18 +32,6 @@ export interface CountryOrRegion {
   point_lon_min: number
   point_lon_max: number
 }
-export interface Region extends CountryOrRegion {
-  placeholder?: string
-}
-
-export interface Country extends CountryOrRegion {
-  code_alpha2: string
-  high_income: boolean
-  point_lat: number
-  point_lon: number
-  deals: Deal[]
-  region_id: number | null
-}
 
 export interface WagtailPage {
   id: number
@@ -69,12 +57,13 @@ export interface Marker {
   count?: number
   coordinates: [number, number]
 }
+
 export interface ObservatoryPage extends WagtailPage {
   short_description: string
   introduction_text: string
   twitter_feed: TwitterFeed
-  region?: Region
-  country?: Country
+  region?: components["schemas"]["Region"]
+  country?: components["schemas"]["Country"]
   related_blogpages?: BlogPage[]
   markers: Marker[]
 }

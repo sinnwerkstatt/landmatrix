@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import { countries } from "$lib/stores"
+  import { page } from "$app/stores"
 
   import type { Investments } from "./globalMapOfInvestments"
 
@@ -9,11 +9,11 @@
   export let selectedCountryId: number | undefined
   export let hoverCountryId: number | undefined
 
-  $: selectedCountry = $countries.find(c => c.id === selectedCountryId)
-  $: hoverCountry = $countries.find(c => c.id === hoverCountryId)
+  $: selectedCountry = $page.data.countries.find(c => c.id === selectedCountryId)
+  $: hoverCountry = $page.data.countries.find(c => c.id === hoverCountryId)
 </script>
 
-<div id="country-tooltip" class="absolute z-10">
+<div class="absolute z-10" id="country-tooltip">
   {#if hoverCountryId && hoverCountry}
     <div
       class="max-w-[250px] rounded border border-gray-700 bg-white p-2 text-left dark:bg-gray-700"

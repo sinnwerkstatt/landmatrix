@@ -1,12 +1,14 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
+  import { page } from "$app/stores"
+
   import type { SortBy } from "$lib/data/buckets"
   import { createImplementationStatusChartData } from "$lib/data/charts/implementationStatus"
   import { createNegotiationStatusChartData } from "$lib/data/charts/negotiationStatusGroup"
   import { createProduceGroupChartData } from "$lib/data/charts/produceGroup"
   import { filters } from "$lib/filters"
-  import { countries, dealsNG, regions } from "$lib/stores"
+  import { dealsNG } from "$lib/stores"
   import { observatoryPages } from "$lib/stores/wagtail"
   import type { CountryOrRegion } from "$lib/types/wagtail"
   import { sum } from "$lib/utils/data_processing"
@@ -26,8 +28,8 @@
   } else {
     currentItem = {
       ...($filters.region_id
-        ? $regions.find(r => r.id === $filters.region_id)
-        : $countries.find(c => c.id === $filters.country_id)),
+        ? $page.data.regions.find(r => r.id === $filters.region_id)
+        : $page.data.countries.find(c => c.id === $filters.country_id)),
     } as CountryOrRegion
     currentItem.observatory_page = $observatoryPages.find(
       o => o.id === currentItem.observatory_page_id,

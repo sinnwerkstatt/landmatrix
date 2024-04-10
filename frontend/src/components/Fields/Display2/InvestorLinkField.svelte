@@ -7,6 +7,8 @@
   import CountryField from "$components/Fields/Display2/CountryField.svelte"
 
   export let value: InvestorHull | number | null
+  // noinspection JSUnusedGlobalSymbols
+  export let extras: never
 
   let investor: InvestorHull | null
 
@@ -26,7 +28,7 @@
 </script>
 
 {#if investor}
-  {#if !investor.active_version_id}
+  {#if "active_version_id" in investor && !investor.active_version_id}
     {$_("Draft")}:
   {/if}
   <a href="/investor/{investor.id}/" class="investor">
