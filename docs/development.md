@@ -58,6 +58,7 @@ zcat landmatrix.sql.gz | psql -h localhost -U landmatrix landmatrix
 #### Backend / Django
 
 * Run tests via: `poetry run pytest apps`
+* Show what is done under the hood (being very verbose and capturing no output): `poetry run pytest apps -s -vv`
 * With coverage: `poetry run pytest apps --cov=apps`
 * To force new db creation after migrating: `poetry run pytest apps --create-db`
 * Start pytest in watch mode: `poetry run ptw apps`
