@@ -4,17 +4,7 @@ from typing import TypedDict
 from django.contrib.postgres.expressions import ArraySubquery
 from django.core.exceptions import PermissionDenied
 from django.core.handlers.wsgi import WSGIRequest
-from django.db.models import (
-    Q,
-    F,
-    Prefetch,
-    Count,
-    Case,
-    When,
-    BooleanField,
-    QuerySet,
-    OuterRef,
-)
+from django.db.models import Q, F, Count, Case, When, BooleanField, QuerySet, OuterRef
 from django.db.models.functions import JSONObject
 from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
 from django.utils.timezone import make_aware
@@ -35,8 +25,8 @@ class Filter(TypedDict):
 
 
 class Management(View):
-    def __init__(self):
-        super().__init__()
+    # def __init__(self):
+    #     super().__init__()
 
     @staticmethod
     def filters(request, is_deal=True) -> dict[str, Filter]:
@@ -127,11 +117,11 @@ class Management(View):
             },
             "all_active": {
                 "staff": True,
-                "q": Q(active_version__isnull=False) & Q(deleted=False),
+                "q": Q(active_version__isnull=False),
             },
             "all_drafts": {
                 "staff": True,
-                "q": Q(draft_version__isnull=False) & Q(deleted=False),
+                "q": Q(draft_version__isnull=False),
             },
             "all_deleted": {"staff": True, "q": Q(deleted=True)},
         }
@@ -142,14 +132,16 @@ class Management(View):
 
         is_deal = request.GET.get("model") != "investor"
         filters = self.filters(request, is_deal)
+        # noinspection PyPep8Naming
+        Obj = DealHull if is_deal else InvestorHull
 
         action = request.GET.get("action")
         if action == "counts":
-            Obj = DealHull if is_deal else InvestorHull
             return JsonResponse(
                 {
                     metric: Obj.objects.normal()
                     .filter(filters[metric]["q"])
+                    .order_by("-id")
                     .distinct()
                     .count()
                     for metric in filters.keys()
@@ -158,26 +150,7 @@ class Management(View):
                 }
             )
         elif action in filters.keys():
-            qs = (
-                (DealHull if is_deal else InvestorHull)
-                .objects.normal()
-                .prefetch_related(
-                    # Prefetch(
-                    #     "versions",
-                    #     queryset=(
-                    #         DealVersion if is_deal else InvestorVersion
-                    #     ).objects.order_by("created_at"),
-                    # ),
-                    Prefetch("active_version"),
-                    Prefetch("draft_version"),
-                    Prefetch(
-                        "workflowinfos",
-                        queryset=(
-                            DealWorkflowInfo if is_deal else InvestorWorkflowInfo
-                        ).objects.order_by("-timestamp"),
-                    ),
-                )
-            )
+            qs = Obj.objects.normal()
 
             qs = qs.filter(filters[action]["q"]).order_by("-id").distinct()
             if is_deal:
@@ -259,6 +232,7 @@ class Management(View):
                                 then=JSONObject(
                                     id="active_version_id",
                                     modified_at="active_version__modified_at",
+                                    modified_by_id="active_version__modified_by_id",
                                     name="active_version__name",
                                     name_unknown="active_version__name_unknown",
                                     country_id="active_version__country_id",
@@ -267,6 +241,7 @@ class Management(View):
                             default=JSONObject(
                                 id="draft_version_id",
                                 modified_at="draft_version__modified_at",
+                                modified_by_id="draft_version__modified_by_id",
                                 name="draft_version__name",
                                 name_unknown="draft_version__name_unknown",
                                 country_id="draft_version__country_id",
