@@ -1,23 +1,21 @@
-from typing import Literal
+from drf_spectacular.utils import extend_schema
 
 from django.db.models import QuerySet, Value
 from django.db.models.functions import JSONObject
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.request import Request
-
-from apps.api.utils.geojson import Feature, create_feature_collection
+from rest_framework.response import Response
 
 from apps.landmatrix.models.new import DealHull, DealVersion
-from apps.landmatrix.utils import parse_filters
+from apps.landmatrix.utils import openapi_filters_parameters, parse_filters
 
-ExportType = Literal["locations", "areas"]
-
-VALID_EXPORT_TYPES: list[ExportType] = ["locations", "areas"]
+from .utils.geojson import Feature, create_feature_collection
 
 
 @api_view()
-def gis_export_areas(request: Request) -> JsonResponse:
+@extend_schema(parameters=openapi_filters_parameters)
+def gis_export_areas(request: Request) -> Response:
     qs_deal_version = get_deal_version_qs(request)
 
     # ensure that all deal versions have locations with areas
@@ -28,6 +26,8 @@ def gis_export_areas(request: Request) -> JsonResponse:
 
     area_features = build_area_features(qs_deal_version)
 
+    # Cannot use rest_framework Response here, it would return html page
+    # Fixme: Use fetch in frontend and write to file manually
     return JsonResponse(
         create_feature_collection(area_features),
         headers={"Content-Disposition": f"attachment; filename=areas.geojson"},
@@ -35,7 +35,8 @@ def gis_export_areas(request: Request) -> JsonResponse:
 
 
 @api_view()
-def gis_export_locations(request: Request) -> JsonResponse:
+@extend_schema(parameters=openapi_filters_parameters)
+def gis_export_locations(request: Request) -> Response:
     qs_deal_version = get_deal_version_qs(request)
 
     # ensure that all deal versions have locations with points
@@ -46,11 +47,11 @@ def gis_export_locations(request: Request) -> JsonResponse:
 
     location_features = build_location_features(qs_deal_version)
 
+    # Cannot use rest_framework Response here, it would return html page
+    # Fixme: Use fetch in frontend and write to file manually
     return JsonResponse(
         create_feature_collection(location_features),
-        headers={
-            "Content-Disposition": f"attachment; filename=locations.geojson",
-        },
+        headers={"Content-Disposition": f"attachment; filename=locations.geojson"},
     )
 
 
