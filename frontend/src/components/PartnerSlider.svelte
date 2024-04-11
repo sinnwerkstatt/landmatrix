@@ -72,7 +72,7 @@
   </Splide>
 </div>
 
-<!-- TODO maybe we have to reenable this. -->
+<!-- TODO nuts maybe we have to reenable this. -->
 <!--<style lang="postcss">-->
 <!--  :global(.no-background) {-->
 <!--    @apply bg-transparent hover:bg-orange;-->

@@ -8,8 +8,11 @@ import cytoscape from "cytoscape"
 import type { LayoutOptions } from "cytoscape-cose-bilkent"
 import cyCoseBilkent from "cytoscape-cose-bilkent"
 import cyPopper from "cytoscape-popper"
+import { get } from "svelte/store"
 import type { Instance as TippyInstance } from "tippy.js"
 import tippy from "tippy.js"
+
+import { page } from "$app/stores"
 
 import { Classification, classification_choices } from "$lib/choices"
 
@@ -96,13 +99,12 @@ const makePopper = (ele: NodeSingular & { tippy?: TippyInstance }) => {
             ele.data().id
           })</div>`
 
-          //  TODO this doesn't work because countries are not loaded yet
-          // if ("active_version__country_id" in ele.data()) {
-          //   const cntr = get(countries).find(
-          //     c => c.id === ele.data().active_version__country_id,
-          //   )
-          //   if (cntr) content += `${cntr.name}, `
-          // }
+          if ("active_version__country_id" in ele.data()) {
+            const cntr = get(page).data.countries.find(
+              c => c.id === ele.data().active_version__country_id,
+            )
+            if (cntr) content += `${cntr.name}, `
+          }
 
           if ("active_version__classification" in ele.data()) {
             const choice =
