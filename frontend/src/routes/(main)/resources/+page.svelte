@@ -6,6 +6,7 @@
   import type { BlogCategory } from "$lib/types/wagtail"
 
   import TagIcon from "$components/icons/TagIcon.svelte"
+  import NewFooter from "$components/NewFooter.svelte"
   import PageTitle from "$components/PageTitle.svelte"
 
   export let data
@@ -26,7 +27,7 @@
   ]
 </script>
 
-<div>
+<div class="flex min-h-full flex-col">
   <PageTitle class="inline-flex items-center gap-2">
     <span>{data.page.title}</span>
     {#if data.tag}
@@ -54,7 +55,8 @@
       {/each}
     </ul>
   </div>
-  <div class="container mx-auto grid gap-4 px-10 md:grid-cols-2 lg:grid-cols-3">
+
+  <div class="container mx-auto grid gap-4 px-10 pb-5 md:grid-cols-2 lg:grid-cols-3">
     {#each filteredBlogPages as blogpage}
       <div class="col-md-6 col-lg-4 mb-3">
         <div
@@ -85,4 +87,7 @@
       </div>
     {/each}
   </div>
+
+  <div class="flex-grow" />
+  <NewFooter />
 </div>
