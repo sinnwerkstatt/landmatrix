@@ -4,6 +4,9 @@ from django.db.models import ForeignObjectRel
 from wagtail.admin.panels import FieldPanel
 from wagtail.snippets.models import register_snippet
 
+# this is here, so Django does not prematurely delete these models
+from .deal import DealOld
+
 
 class _FieldDefinitionFieldSelect(forms.Select):
     @staticmethod
