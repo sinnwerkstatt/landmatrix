@@ -19,6 +19,9 @@ export interface paths {
   "/api/chart_descriptions/": {
     get: operations["api_chart_descriptions_retrieve"]
   }
+  "/api/charts/country_investments_and_rankings/": {
+    get: operations["api_charts_country_investments_and_rankings_retrieve"]
+  }
   "/api/countries/": {
     get: operations["api_countries_list"]
   }
@@ -492,6 +495,15 @@ export interface components {
       observatory_page_id: number
       region_id: number | null
       deals: number[]
+    }
+    CountryInvestmentsAndRankings: {
+      investing: components["schemas"]["CountrySizeCount"][]
+      invested: components["schemas"]["CountrySizeCount"][]
+    }
+    CountrySizeCount: {
+      country_id: number
+      size: number
+      count: number
     }
     /**
      * CropsEnum
@@ -2116,6 +2128,247 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["ChartDescriptions"]
+        }
+      }
+    }
+  }
+  api_charts_country_investments_and_rankings_retrieve: {
+    parameters: {
+      query: {
+        /** @description Country ID */
+        CID: number
+        animals?: (
+          | "AQU"
+          | "BEE"
+          | "CTL"
+          | "DCT"
+          | "FSH"
+          | "GOT"
+          | "OTH"
+          | "PIG"
+          | "POU"
+          | "SHP"
+          | "SHR"
+        )[]
+        /** @description Maximum deal area */
+        area_max?: number
+        /** @description Minimum deal area */
+        area_min?: number
+        /** @description See /api/countries/ for IDs */
+        country_id?: number
+        crops?: (
+          | "ACC"
+          | "ALF"
+          | "ALG"
+          | "ALM"
+          | "ALV"
+          | "APL"
+          | "AQU"
+          | "BAM"
+          | "BAN"
+          | "BEA"
+          | "BOT"
+          | "BRL"
+          | "BWT"
+          | "CAC"
+          | "CAS"
+          | "CAW"
+          | "CHA"
+          | "CHE"
+          | "CNL"
+          | "COC"
+          | "COF"
+          | "COT"
+          | "CRL"
+          | "CRN"
+          | "CRO"
+          | "CST"
+          | "CTR"
+          | "DIL"
+          | "EUC"
+          | "FLW"
+          | "FNT"
+          | "FOD"
+          | "FOO"
+          | "FRT"
+          | "GRA"
+          | "GRN"
+          | "HRB"
+          | "JTR"
+          | "LNT"
+          | "MAN"
+          | "MUS"
+          | "OAT"
+          | "OIL"
+          | "OLE"
+          | "OLV"
+          | "ONI"
+          | "OPL"
+          | "OTH"
+          | "PAL"
+          | "PAP"
+          | "PAS"
+          | "PEA"
+          | "PEP"
+          | "PES"
+          | "PIE"
+          | "PIN"
+          | "PLS"
+          | "POM"
+          | "PON"
+          | "PTT"
+          | "RAP"
+          | "RCH"
+          | "RIC"
+          | "ROS"
+          | "RUB"
+          | "RYE"
+          | "SEE"
+          | "SES"
+          | "SOR"
+          | "SOY"
+          | "SPI"
+          | "SSL"
+          | "SUB"
+          | "SUC"
+          | "SUG"
+          | "SUN"
+          | "SWP"
+          | "TBC"
+          | "TEA"
+          | "TEF"
+          | "TEK"
+          | "TOM"
+          | "TRE"
+          | "VGT"
+          | "VIN"
+          | "WHT"
+          | "YAM"
+        )[]
+        /** @description not set: Included, true: Only false: Excluded */
+        forest_concession?: boolean
+        implementation_status?: (
+          | "IN_OPERATION"
+          | "PROJECT_ABANDONED"
+          | "PROJECT_NOT_STARTED"
+          | "STARTUP_PHASE"
+          | "UNKNOWN"
+        )[]
+        /** @description Maximum year of initiation */
+        initiation_year_max?: number
+        /** @description Minimum year of initiation */
+        initiation_year_min?: number
+        /** @description Include unknown years */
+        initiation_year_null?: boolean
+        intention_of_investment?: (
+          | "AGRICULTURE_UNSPECIFIED"
+          | "BIOFUELS"
+          | "BIOMASS_ENERGY_GENERATION"
+          | "BIOMASS_ENERGY_PRODUCTION"
+          | "CARBON"
+          | "CONVERSATION"
+          | "FODDER"
+          | "FOOD_CROPS"
+          | "FORESTRY_UNSPECIFIED"
+          | "FOREST_LOGGING"
+          | "INDUSTRY"
+          | "LAND_SPECULATION"
+          | "LIVESTOCK"
+          | "MINING"
+          | "NON_FOOD_AGRICULTURE"
+          | "OIL_GAS_EXTRACTION"
+          | "OTHER"
+          | "RENEWABLE_ENERGY"
+          | "SOLAR_PARK"
+          | "TIMBER_PLANTATION"
+          | "TOURISM"
+          | "WIND_FARM"
+        )[]
+        minerals?: (
+          | "ALU"
+          | "ASP"
+          | "ATC"
+          | "BAR"
+          | "BAS"
+          | "BAX"
+          | "BEN"
+          | "BUM"
+          | "CAR"
+          | "CHR"
+          | "CLA"
+          | "COA"
+          | "COB"
+          | "COP"
+          | "DIA"
+          | "EME"
+          | "FLD"
+          | "FLO"
+          | "GAS"
+          | "GLD"
+          | "GRT"
+          | "GRV"
+          | "HEA"
+          | "ILM"
+          | "IRO"
+          | "JAD"
+          | "LED"
+          | "LIM"
+          | "LIT"
+          | "MAG"
+          | "MBD"
+          | "MGN"
+          | "MRB"
+          | "NIK"
+          | "OTH"
+          | "PET"
+          | "PHP"
+          | "PLT"
+          | "PUM"
+          | "PYR"
+          | "RUT"
+          | "SAN"
+          | "SIC"
+          | "SIL"
+          | "SLT"
+          | "STO"
+          | "TIN"
+          | "TTM"
+          | "URM"
+          | "ZNC"
+        )[]
+        nature?: (
+          | "CONCESSION"
+          | "EXPLOITATION_PERMIT"
+          | "LEASE"
+          | "OTHER"
+          | "OUTRIGHT_PURCHASE"
+          | "PURE_CONTRACT_FARMING"
+        )[]
+        negotiation_status?: (
+          | "CHANGE_OF_OWNERSHIP"
+          | "CONTRACT_CANCELED"
+          | "CONTRACT_EXPIRED"
+          | "CONTRACT_SIGNED"
+          | "EXPRESSION_OF_INTEREST"
+          | "MEMORANDUM_OF_UNDERSTANDING"
+          | "NEGOTIATIONS_FAILED"
+          | "ORAL_AGREEMENT"
+          | "UNDER_NEGOTIATION"
+        )[]
+        /** @description ID of the parent company */
+        parent_company?: number
+        /** @description ID of the parent company's country */
+        parent_company_country_id?: number
+        /** @description See /api/regions/ for IDs */
+        region_id?: number
+        /** @description Scope. true: Transnational, false: Domestic, not set: both */
+        transnational?: boolean
+      }
+    }
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["CountryInvestmentsAndRankings"]
         }
       }
     }

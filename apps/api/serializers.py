@@ -24,3 +24,13 @@ class ChartDescriptions(serializers.Serializer):
     dynamics_overview = serializers.CharField()
     produce_info_map = serializers.CharField()
     global_web_of_investments = serializers.CharField()
+
+
+class CountryInvestmentsAndRankings(serializers.Serializer):
+    class CountrySizeCountSerializer(serializers.Serializer):
+        country_id = serializers.IntegerField()
+        size = serializers.IntegerField()
+        count = serializers.IntegerField()
+
+    investing = CountrySizeCountSerializer(many=True)
+    invested = CountrySizeCountSerializer(many=True)

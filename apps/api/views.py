@@ -13,7 +13,11 @@ from rest_framework.exceptions import NotAuthenticated, PermissionDenied
 from rest_framework.response import Response
 from wagtail.rich_text import expand_db_html
 
-from apps.api.serializers import ChartDescriptions, SearchedInvestorSerializer
+from apps.api.serializers import (
+    ChartDescriptions,
+    SearchedInvestorSerializer,
+    CountryInvestmentsAndRankings,
+)
 from apps.blog.models import BlogPage
 from apps.landmatrix.charts import get_deal_top_investments, web_of_transnational_deals
 from apps.landmatrix.models.new import (
@@ -22,7 +26,7 @@ from apps.landmatrix.models.new import (
     InvestorWorkflowInfo,
     InvestorHull,
 )
-from apps.landmatrix.utils import parse_filters
+from apps.landmatrix.utils import parse_filters, openapi_filters_parameters
 from apps.wagtailcms.models import ChartDescriptionsSettings
 
 
@@ -142,11 +146,18 @@ def get_csrf(request):
     return JsonResponse({"token": get_token(request)})
 
 
-@require_GET
-def country_investments_and_rankings(request):
+@extend_schema(
+    parameters=[
+        OpenApiParameter("CID", description="Country ID", required=True, type=int)
+    ]
+    + openapi_filters_parameters,
+    responses=CountryInvestmentsAndRankings,
+)
+@api_view(["get"])
+def country_investments_and_rankings(request) -> Response:
     country_id = request.GET.get("CID")
     investments = get_deal_top_investments(request)
-    return JsonResponse(
+    return Response(
         {
             "investing": [
                 {
