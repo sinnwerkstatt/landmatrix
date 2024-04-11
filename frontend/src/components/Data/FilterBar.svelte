@@ -424,7 +424,7 @@
           <li>
             <a
               data-sveltekit-reload
-              href={`/api/gis_export/?type=locations&${$filters.toRESTFilterArray()}&subset=${
+              href={`/api/gis_export/locations/?${$filters.toRESTFilterArray()}&subset=${
                 $publicOnly ? "PUBLIC" : "ACTIVE"
               }`}
               on:click={() => trackDownload("locations")}
@@ -436,7 +436,7 @@
           <li>
             <a
               data-sveltekit-reload
-              href={`/api/gis_export/?type=areas&${$filters.toRESTFilterArray()}&subset=${
+              href={`/api/gis_export/areas/?${$filters.toRESTFilterArray()}&subset=${
                 $publicOnly ? "PUBLIC" : "ACTIVE"
               }`}
               on:click={() => trackDownload("areas")}

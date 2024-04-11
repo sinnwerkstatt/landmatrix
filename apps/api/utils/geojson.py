@@ -43,12 +43,20 @@ def create_feature_collection(features: list[Feature]) -> FeatureCollection:
     }
 
 
+def is_feature_collection(geojson: dict) -> bool:
+    return (
+        all(prop in geojson for prop in ["type", "features"])
+        and geojson["type"] == "FeatureCollection"
+    )
+
+
 def add_properties(
     properties: FeatureProperties,
     feature: Feature,
 ) -> Feature:
     return {
-        **feature,  # type: ignore
+        "type": feature["type"],
+        "geometry": feature["geometry"],
         "properties": {
             **feature["properties"],
             **properties,

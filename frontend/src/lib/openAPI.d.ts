@@ -72,9 +72,11 @@ export interface paths {
   "/api/field_definitions/{id}/": {
     get: operations["api_field_definitions_retrieve"]
   }
-  "/api/gis_export/": {
-    /** @description Export deal gis data. */
-    get: operations["api_gis_export_retrieve"]
+  "/api/gis_export/areas/": {
+    get: operations["api_gis_export_areas_retrieve"]
+  }
+  "/api/gis_export/locations/": {
+    get: operations["api_gis_export_locations_retrieve"]
   }
   "/api/investor_search/": {
     get: operations["api_investor_search_list"]
@@ -2903,8 +2905,15 @@ export interface operations {
       }
     }
   }
-  /** @description Export deal gis data. */
-  api_gis_export_retrieve: {
+  api_gis_export_areas_retrieve: {
+    responses: {
+      /** @description No response body */
+      200: {
+        content: never
+      }
+    }
+  }
+  api_gis_export_locations_retrieve: {
     responses: {
       /** @description No response body */
       200: {
