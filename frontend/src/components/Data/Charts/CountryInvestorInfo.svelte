@@ -81,7 +81,7 @@
                   {country.count}
                   {country.count === 1 ? "deal" : "deals"}
                   <br />
-                  {country.size.toLocaleString("fr")} ha
+                  {country.size.toLocaleString("fr").replace(",", ".")} ha
                 </td>
               </tr>
             {/each}
@@ -106,7 +106,7 @@
                   {country.count}
                   {country.count === 1 ? "deal" : "deals"}
                   <br />
-                  {country.size.toLocaleString("fr")} ha
+                  {country.size.toLocaleString("fr").replace(",", ".")} ha
                 </td>
               </tr>
             {/each}

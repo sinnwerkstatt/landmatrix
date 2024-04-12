@@ -29,7 +29,7 @@
         </span>
       {/if}
       {#if val.area}
-        ({val.area.toLocaleString("fr")}
+        ({val.area.toLocaleString("fr").replace(",", ".")}
         {$_("ha")})
       {/if}
     </li>

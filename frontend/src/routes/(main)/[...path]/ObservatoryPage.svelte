@@ -47,11 +47,13 @@
       .map(ns => ns.count)
       .reduce((a, b) => +a + +b, 0)
       .toLocaleString("fr")
+      .replace(",", ".")
 
     totalSize = curNegStat
       .map(ns => ns.size)
       .reduce((a, b) => +a + +b, 0)
       .toLocaleString("fr")
+      .replace(",", ".")
 
     let negStatBuckets = [
       { color: "rgba(252,148,31,0.4)", label: $_("Intended"), count: 0, size: 0 },

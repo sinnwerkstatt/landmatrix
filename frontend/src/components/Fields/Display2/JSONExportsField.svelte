@@ -29,21 +29,21 @@
       {#if val.area}
         <span>
           <CircleNotchIcon />
-          {val.area.toLocaleString("fr")}
+          {val.area.toLocaleString("fr").replace(",", ".")}
           {$_("ha")}
         </span>
       {/if}
       {#if val.yield}
         <span class="mx-2">
           <WeightIcon />
-          {val.yield.toLocaleString("fr")}
+          {val.yield.toLocaleString("fr").replace(",", ".")}
           {$_("tons")}
         </span>
       {/if}
       {#if val.export}
         <span class="mx-2">
           <PlaneIcon />
-          {val.export.toLocaleString("fr")} %
+          {val.export.toLocaleString("fr").replace(",", ".")} %
         </span>
       {/if}
     </li>

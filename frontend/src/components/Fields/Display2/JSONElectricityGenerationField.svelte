@@ -30,14 +30,14 @@
       {#if val.area}
         <span class="mx-2">
           <CircleNotchIcon />
-          {val.area.toLocaleString("fr")}
+          {val.area.toLocaleString("fr").replace(",", ".")}
           {$_("ha")}
         </span>
       {/if}
       {#if val.export}
         <span class="mx-2">
           <PlaneIcon />
-          {val.export.toLocaleString("fr")} %
+          {val.export.toLocaleString("fr").replace(",", ".")} %
         </span>
       {/if}
       <br />
@@ -58,7 +58,9 @@
       {/if}
       {#if val.intended_capacity}
         <span class="mx-2">
-          {$_("Intended capacity")}: {val.intended_capacity.toLocaleString("fr")}
+          {$_("Intended capacity")}: {val.intended_capacity
+            .toLocaleString("fr")
+            .replace(",", ".")}
           {$_("MW")}
         </span>
       {/if}

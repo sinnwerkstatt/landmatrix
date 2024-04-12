@@ -97,7 +97,8 @@ export class LSLAByNegotiation {
       .rangeRound([24, this.height])
       .padding(0.1)
 
-    const format = (val: number) => `${Math.round(val).toLocaleString("fr")} ha`
+    const format = (val: number) =>
+      `${Math.round(val).toLocaleString("fr").replace(",", ".")} ha`
 
     const x1 = scaleLinear()
       .domain([0, max(data, d => d.amount) ?? 0])

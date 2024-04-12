@@ -23,19 +23,21 @@
         </span>
       {/if}
       {#if val.area}
-        (<CircleNotchIcon /> {val.area.toLocaleString("fr")} {$_("ha")})
+        (<CircleNotchIcon />
+        {val.area.toLocaleString("fr").replace(",", ".")}
+        {$_("ha")})
       {/if}
       {#if val.projected_lifetime_sequestration}
         <div>
           {$_("Projected carbon sequestration during project lifetime")}:
-          {val.projected_lifetime_sequestration.toLocaleString("fr")}
+          {val.projected_lifetime_sequestration.toLocaleString("fr").replace(",", ".")}
           {$_("tCO2e")}
         </div>
       {/if}
       {#if val.projected_annual_sequestration}
         <div>
           {$_("Projected annual carbon sequestration")}:
-          {val.projected_annual_sequestration.toLocaleString("fr")}
+          {val.projected_annual_sequestration.toLocaleString("fr").replace(",", ".")}
           {$_("tCO2e")}
         </div>
       {/if}

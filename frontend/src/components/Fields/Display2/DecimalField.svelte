@@ -22,7 +22,11 @@
 </script>
 
 <div class="flex items-center gap-2">
-  {value?.toLocaleString("fr") ?? "—"}
+  {#if value === null}
+    -
+  {:else}
+    {value.toLocaleString("fr").replace(",", ".")}
+  {/if}
   {#if extras.unit}
     {extras.unit}
   {/if}

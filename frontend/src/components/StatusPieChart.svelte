@@ -34,7 +34,7 @@
             const percentage = (value / totals[context.datasetIndex]) * 100
 
             let ret = `${context.label}: `
-            ret += Math.round(value).toLocaleString("fr")
+            ret += Math.round(value).toLocaleString("fr").replace(",", ".")
             if (unit) ret += ` ${unit}`
             ret += " (" + percentage.toFixed(0) + "%)"
             return ret

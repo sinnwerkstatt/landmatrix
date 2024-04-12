@@ -188,7 +188,9 @@
       .data(d =>
         d.data.name
           .split(/(?=[A-Z][a-z]\(\) )\s+/g)
-          .concat(`${Math.round(d.data.value).toLocaleString("fr")} ha`),
+          .concat(
+            `${Math.round(d.data.value).toLocaleString("fr").replace(",", ".")} ha`,
+          ),
       )
       .join("tspan")
       .attr("x", 2)

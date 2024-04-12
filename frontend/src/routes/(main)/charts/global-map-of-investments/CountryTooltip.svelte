@@ -68,7 +68,9 @@
                   values: {
                     investingCountryName: hoverCountry.name,
                     nDeals: outgoingInvestments.count,
-                    totalDealSize: (+outgoingInvestments.size).toLocaleString("fr"),
+                    totalDealSize: (+outgoingInvestments.size)
+                      .toLocaleString("fr")
+                      .replace(",", "."),
                     targetCountryName: selectedCountry.name,
                   },
                 },
@@ -87,7 +89,9 @@
                   values: {
                     investingCountryName: selectedCountry.name,
                     nDeals: incomingInvestments.count,
-                    totalDealSize: (+incomingInvestments.size).toLocaleString("fr"),
+                    totalDealSize: (+incomingInvestments.size)
+                      .toLocaleString("fr")
+                      .replace(",", "."),
                     targetCountryName: hoverCountry.name,
                   },
                 },

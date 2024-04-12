@@ -46,8 +46,8 @@
   $: chartProd = createProduceGroupChartData($dealsNG, sortBy)
 
   $: totalCount = $displayDealsCount
-    ? `${Math.round($dealsNG.length).toLocaleString("fr")}`
-    : `${Math.round(sum($dealsNG, "deal_size")).toLocaleString("fr")} ha`
+    ? `${Math.round($dealsNG.length).toLocaleString("fr").replace(",", ".")}`
+    : `${Math.round(sum($dealsNG, "deal_size")).toLocaleString("fr").replace(",", ".")} ha`
 </script>
 
 <ContextBarContainer>

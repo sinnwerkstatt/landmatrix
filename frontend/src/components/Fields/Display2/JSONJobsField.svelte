@@ -14,19 +14,19 @@
       {dateCurrentFormat(val)}
       {#if val.jobs}
         <span class="mx-2">
-          {val.jobs.toLocaleString("fr")}
+          {val.jobs.toLocaleString("fr").replace(",", ".")}
           {$_("jobs")}
         </span>
       {/if}
       {#if val.employees}
         <span class="mx-2">
-          {val.employees.toLocaleString("fr")}
+          {val.employees.toLocaleString("fr").replace(",", ".")}
           {$_("employees")}
         </span>
       {/if}
       {#if val.workers}
         <span class="mx-2">
-          {val.workers.toLocaleString("fr")}
+          {val.workers.toLocaleString("fr").replace(",", ".")}
           {$_("workers")}
         </span>
       {/if}

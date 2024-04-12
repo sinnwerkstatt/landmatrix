@@ -35,7 +35,8 @@ export class DynamicsOfDeal {
       .domain([0, max(data, d => d.value) ?? 0])
       .range([this.margin.left, this.width - this.margin.right])
 
-    const format = (val: number) => `${Math.round(val).toLocaleString("fr")} ha`
+    const format = (val: number) =>
+      `${Math.round(val).toLocaleString("fr").replace(",", ".")} ha`
 
     const bar = svg.selectAll("g").data(data).enter().append("g")
 

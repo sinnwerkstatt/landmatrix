@@ -30,10 +30,10 @@ export function styleCircle(
 
   let factor
   if (dealsCount) {
-    hoverlabel.innerHTML = `<b>${size.toLocaleString("fr")}</b> locations`
+    hoverlabel.innerHTML = `<b>${size.toLocaleString("fr").replace(",", ".")}</b> locations`
     factor = Math.max(Math.log(size) * 17, maxFactor)
   } else {
-    hoverlabel.innerHTML = `${size.toLocaleString("fr")} hectares`
+    hoverlabel.innerHTML = `${size.toLocaleString("fr").replace(",", ".")} hectares`
     factor = Math.max(Math.log(size) * 6, maxFactor)
   }
 

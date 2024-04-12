@@ -15,10 +15,12 @@
 
       <!-- The literal translation strings are defined in apps/landmatrix/models/choices.py -->
       <!--{val.choices.map(v => $_(flat_choices[v])).join(", ")}-->
-      <span class="text-[1.1em]">
-        {val.area.toLocaleString("fr")}
-        {$_("ha")}
-      </span>
+      {#if val.area}
+        <span class="text-[1.1em]">
+          {val.area.toLocaleString("fr").replace(",", ".")}
+          {$_("ha")}
+        </span>
+      {/if}
     </li>
   {/each}
 </ul>

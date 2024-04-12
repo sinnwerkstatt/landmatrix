@@ -18,20 +18,20 @@
       {#if val.area}
         <span class="mx-2">
           <CircleNotchIcon />
-          {val.area.toLocaleString("fr")}
+          {val.area.toLocaleString("fr").replace(",", ".")}
           {$_("ha")}
         </span>
       {/if}
       {#if val.farmers}
         <span class="mx-2">
           <TractorIcon />
-          {val.farmers.toLocaleString("fr")}
+          {val.farmers.toLocaleString("fr").replace(",", ".")}
         </span>
       {/if}
       {#if val.households}
         <span class="mx-2">
           <HouseholdIcon />
-          {val.households.toLocaleString("fr")}
+          {val.households.toLocaleString("fr").replace(",", ".")}
         </span>
       {/if}
     </li>
