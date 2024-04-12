@@ -56,9 +56,9 @@
         </li>
         <li class="flex items-center gap-1">
           {#if deal.selected_version.has_known_investor}
-            <CheckIcon class="mx-1 h-4 w-4" /> {$_("At least one investor")}
+            <CheckIcon class="mx-1 h-4 w-4" /> {$_("At least one active investor")}
           {:else}
-            <XIcon class="mx-1 h-4 w-4" /> {$_("No known investor")}
+            <XIcon class="mx-1 h-4 w-4" /> {$_("No known active investor")}
           {/if}
         </li>
       </ul>
