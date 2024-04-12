@@ -1,7 +1,7 @@
 import json
 
 from django.core.exceptions import PermissionDenied
-from django.db.models import F, Q, QuerySet, Count, Sum, Case, When, Value, CharField
+from django.db.models import F, Q, Count, Sum, Case, When, Value, CharField
 from django.db.models.functions import JSONObject, Concat
 from django.http import JsonResponse, HttpRequest
 from django.middleware.csrf import get_token
@@ -18,7 +18,6 @@ from apps.api.serializers import (
     SearchedInvestorSerializer,
     CountryInvestmentsAndRankings,
 )
-from apps.blog.models import BlogPage
 from apps.landmatrix.charts import get_deal_top_investments, web_of_transnational_deals
 from apps.landmatrix.models.new import (
     DealHull,

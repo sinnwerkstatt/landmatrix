@@ -139,18 +139,23 @@ class Management(View):
         if action == "counts":
             return JsonResponse(
                 {
-                    metric: Obj.objects.normal()
-                    .filter(filters[metric]["q"])
+                    metric_name: Obj.objects.normal()
+                    .filter(mtrx["q"])
                     .order_by("-id")
                     .distinct()
                     .count()
-                    for metric in filters.keys()
-                    if request.user.role > UserRole.REPORTER
-                    or not filters[metric]["staff"]
+                    for metric_name, mtrx in filters.items()
+                    if request.user.role > UserRole.REPORTER or not mtrx["staff"]
                 }
             )
         elif action in filters.keys():
-            qs = Obj.objects.normal()
+            if action == "all_deleted":
+                # WATCH OUT, DELETED DEALS!
+                if request.user.role < UserRole.ADMINISTRATOR:
+                    raise PermissionDenied("unauthorized")
+                qs = Obj.objects.filter(deleted=True)
+            else:
+                qs = Obj.objects.normal()
 
             qs = qs.filter(filters[action]["q"]).order_by("-id").distinct()
             if is_deal:

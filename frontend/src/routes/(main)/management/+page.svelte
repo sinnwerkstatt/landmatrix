@@ -90,7 +90,8 @@
       items: [
         { id: "all_active", name: $_("All active"), staff: true },
         { id: "all_drafts", name: $_("All non active"), staff: true },
-        // { id: "all_deleted", name: $_("All deleted"), staff: true },
+        // TODO Kurt who should be allowed to see all_deleted?
+        { id: "all_deleted", name: $_("All deleted"), staff: true },
       ],
     },
   ]
