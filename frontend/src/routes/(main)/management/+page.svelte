@@ -16,6 +16,7 @@
   import { UserRole } from "$lib/types/user"
 
   import FilterCollapse from "$components/Data/FilterCollapse.svelte"
+  import IDField from "$components/Fields/Display2/IDField.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import AdjustmentsIcon from "$components/icons/AdjustmentsIcon.svelte"
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
@@ -383,6 +384,11 @@
               {wrapperClass}
               {valueClass}
               {model}
+            />
+          {:else if fieldName === "id"}
+            <IDField
+              value={obj.id}
+              extras={{ model, objectVersion: obj.draft_version_id }}
             />
           {:else}
             <DisplayField
