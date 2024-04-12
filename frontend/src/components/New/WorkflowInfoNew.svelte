@@ -68,6 +68,7 @@
   }
 
   async function resolveThread() {
+    if (reply) await sendReply()
     loading.set(true)
 
     const ret = await fetch(
@@ -172,11 +173,12 @@
             placeholder={$_("Reply")}
           />
           <button
-            class="btn btn-pelorous -ml-0.5 inline-flex h-[34px] items-center gap-2 px-2"
+            class="btn btn-pelorous -ml-0.5 inline-flex h-[34px] items-center gap-2 px-2 text-sm"
             type="submit"
             disabled={!reply}
           >
-            <ChatBubbleLeftIcon class="h-5 w-5" />
+            {$_("Send")}
+            <ChatBubbleLeftIcon class="h-4 w-4" />
           </button>
         </form>
       {/if}
@@ -186,6 +188,9 @@
           type="button"
           on:click={resolveThread}
         >
+          {#if reply}
+            {$_("Send")} &amp;
+          {/if}
           {$_("Resolve thread")}
           <CheckCircleIcon class="h-4 w-4" />
         </button>
