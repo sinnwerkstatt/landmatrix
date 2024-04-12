@@ -7,6 +7,8 @@
   import { aboutPages, observatoryPages } from "$lib/stores/wagtail"
 
   import BurgerMenuIcon from "$components/icons/BurgerMenuIcon.svelte"
+  import SearchIcon from "$components/icons/SearchIcon.svelte"
+  import Modal from "$components/Modal.svelte"
   import LanguageSwitch from "$components/Navbar/LanguageSwitch.svelte"
   import LoginSection from "$components/Navbar/LoginSection.svelte"
   import NavbarSearch from "$components/Navbar/NavbarSearch.svelte"
@@ -58,12 +60,7 @@
 
   let menuHidden = true
 
-  const resetMenu = () => {
-    menuHidden = true
-  }
-  const closeMenu = () => {
-    menuHidden = true
-  }
+  let showSearch = false
 </script>
 
 <!--https://blog.logrocket.com/building-responsive-navbar-tailwind-css/-->
@@ -72,7 +69,11 @@
 >
   <div class="mx-auto flex h-full w-full items-center justify-between align-middle">
     <!--   LOGO   -->
-    <a class="order-first mr-3 self-center xl:mr-10" href="/" on:click={resetMenu}>
+    <a
+      class="order-first mr-3 self-center xl:mr-10"
+      href="/"
+      on:click={() => (menuHidden = true)}
+    >
       <img
         alt="Land Matrix"
         class="ml-3 hidden h-[36px] w-[144px] min-w-[144px] max-w-[144px] md:block"
@@ -93,7 +94,21 @@
       class="order-last flex max-w-fit flex-grow items-center justify-end"
     >
       <li>
-        <NavbarSearch />
+        <div class="navbar-search md:hidden">
+          <button class="flex items-center" on:click={() => (showSearch = true)}>
+            <SearchIcon class="h-6 w-6" />
+          </button>
+          <Modal
+            dismissible
+            bind:open={showSearch}
+            class="h-[80vh] w-[clamp(300px,90%,800px)]"
+          >
+            <NavbarSearch />
+          </Modal>
+        </div>
+        <div class="navbar-search hidden w-48 md:block">
+          <NavbarSearch />
+        </div>
       </li>
       <li>
         <LanguageSwitch />
@@ -117,7 +132,7 @@
       class="absolute left-0 top-[65px] z-50 w-full bg-white shadow-nav 2xl:static 2xl:w-auto 2xl:shadow-none
       {menuHidden ? 'hidden 2xl:block' : ''}"
       use:clickOutside
-      on:outClick={resetMenu}
+      on:outClick={() => (menuHidden = true)}
     >
       <ul
         class="gap-y-6 divide-y divide-solid p-6 px-4
@@ -131,14 +146,14 @@
               <SubEntries
                 title={entry.title}
                 subEntries={entry.subEntries}
-                on:close={closeMenu}
+                on:close={() => (menuHidden = true)}
               />
             {:else}
               <a
                 class="nav-link button1 truncate text-center hover:bg-white hover:text-orange 2xl:max-w-[160px] 3xl:max-w-none dark:hover:bg-gray-900"
                 title={entry.title}
                 href={entry.href}
-                on:click={resetMenu}
+                on:click={() => (menuHidden = true)}
               >
                 {entry.title}
               </a>

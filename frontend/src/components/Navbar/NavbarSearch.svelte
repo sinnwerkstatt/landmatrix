@@ -42,36 +42,34 @@
   }
 </script>
 
-<div class="navbar-search w-48">
-  <Select
-    {loadOptions}
-    itemId="id"
-    clearFilterTextOnBlur={false}
-    placeholder="Deals and Investors"
-    listAutoWidth={false}
-    on:select={onSelect}
-    bind:filterText
+<Select
+  bind:filterText
+  clearFilterTextOnBlur={false}
+  itemId="id"
+  listAutoWidth={false}
+  {loadOptions}
+  on:select={onSelect}
+  placeholder="Deals and Investors"
+>
+  <div class="min-w-[20rem] px-2 py-1" slot="empty">
+    This search is matching on deal IDs, investor IDs and investor names.
+  </div>
+  <!--    <div slot="list" let:filteredItems>asdf</div>-->
+  <div
+    class={item.type === "deal" ? "navbar-item deal" : "navbar-item investor"}
+    let:item
+    slot="item"
   >
-    <div slot="empty" class="min-w-[20rem] px-2 py-1">
-      This search is matching on deal IDs, investor IDs and investor names.
-    </div>
-    <!--    <div slot="list" let:filteredItems>asdf</div>-->
-    <div
-      slot="item"
-      let:item
-      class={item.type === "deal" ? "navbar-item deal" : "navbar-item investor"}
+    <a
+      class:investor={item.type === "investor"}
+      class:opacity-40={item.type === "deal" && !item.is_public}
+      href={item.href}
     >
-      <a
-        href={item.href}
-        class:opacity-40={item.type === "deal" && !item.is_public}
-        class:investor={item.type === "investor"}
-      >
-        {@html makeName(item)}
-      </a>
-    </div>
+      {@html makeName(item)}
+    </a>
+  </div>
 
-    <div slot="selection" let:selection>
-      {@html makeName(selection)}
-    </div>
-  </Select>
-</div>
+  <div let:selection slot="selection">
+    {@html makeName(selection)}
+  </div>
+</Select>
