@@ -359,7 +359,7 @@ class DealViewSet(HullViewSet):
 
     def get_queryset(self):
         if self.action in ["retrieve", "retrieve_version"]:
-            # TODO Kurt if a superuser needs to see a deleted deal, show them?
+            # TODO Kurt is_superuser or also role.Administrator?
             if self.request.user.is_superuser:
                 return DealHull.objects.all()
             return self.queryset.visible(self.request.user, "UNFILTERED")
