@@ -587,9 +587,6 @@ class InvestorViewSet(HullViewSet):
 
         # there is more logic here, compared to "new deal" because new deal only ever gets a country
         data = request.data["version"]
-        if data.get("country"):
-            data["country_id"] = data.get("country", {}).get("id", None)
-            del data["country"]
 
         serializer = InvestorVersionSerializer(iv1, data=data, partial=True)
         if serializer.is_valid(raise_exception=True):
