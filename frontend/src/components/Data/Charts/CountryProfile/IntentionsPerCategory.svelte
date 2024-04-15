@@ -17,7 +17,7 @@
     MySankeyLink,
     MySankeyNode,
   } from "$lib/data/charts/intentionsPerCategory"
-  import type { Deal } from "$lib/types/deal"
+  import type { DealVersion2 } from "$lib/types/newtypes"
 
   import ChartWrapper from "$components/Data/Charts/DownloadWrapper.svelte"
   import { downloadCSV, downloadJSON, downloadSVG } from "$components/Data/Charts/utils"
@@ -27,7 +27,7 @@
     "Number of intentions per category of production according to implementation status",
   )
 
-  export let deals: Deal[] = []
+  export let deals: DealVersion2[] = []
 
   let svgComp: SVGElement
 
