@@ -16,6 +16,6 @@
 <style>
     /* Global Accountability styles */
     :global(body) {
-        @apply font-inter font-semibold text-a-sm text-a-gray-900;
+        @apply font-inter font-medium text-a-sm text-a-gray-900;
     }
 </style>

@@ -8,11 +8,11 @@
     import Avatar from "$components/Accountability/atomic/Avatar.svelte"
 </script>
 
-<div class="h-full p-6 bg-white flex flex-col flex-nowrap items-center justify-between">
+<div class="h-full py-6 bg-white flex flex-col flex-nowrap items-center justify-between border border-a-gray-200">
     <!-- Top section -->
-    <div>
+    <div class="flex flex-col items-center">
         <Logo />
-        <div class="mt-10 flex flex-col flex-nowrap gap-4">
+        <div class="mt-10 flex flex-col flex-nowrap gap-4 px-6">
             <NavbarItem label="Deals" href="/accountability/deals/">
                 <span slot="icon"><IconList /></span>
             </NavbarItem>

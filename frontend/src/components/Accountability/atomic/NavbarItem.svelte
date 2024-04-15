@@ -6,7 +6,7 @@
 </script>
 
 <a {href} class:active={$page.url.pathname.startsWith(href)}
-   class="flex flex-col gap-1 items-center text-a-s text-a-gray-900 hover:text-a-gray-900">
+   class="flex flex-col gap-1 items-center text-a-s text-a-gray-900 hover:text-a-gray-900 font-semibold">
     <span class="icon p-2 rounded-lg">
         <slot name="icon" />
     </span>

@@ -6,12 +6,16 @@
     export let style = "primary" // primary, neutral, error
     export let size = "base" // base, sm, lg
     export let count = 0 // 0 or any number
+    export let tailwind = "" // additional tailwind classes
 
     export let disabled = false
 </script>
 
-<button class="{style} {size} {type}" {disabled} on:click >
-    {label}
+<button class="{style} {size} {type} {tailwind}" {disabled} on:click >
+    <span class="flex gap-3 items-center">
+        {label}
+        <slot name="icon-after" />
+    </span>
     {#if count > 0}
         <span class="bubble">
             <BubbleCount {count} {size} />
@@ -21,7 +25,9 @@
 
 <style>
     button {
-        @apply text-white;
+        @apply w-fit;
+        @apply flex justify-center;
+        @apply text-white font-medium;
         @apply rounded-lg;
         @apply relative;
     }
