@@ -20,6 +20,8 @@
     showContextBar.set(!$isMobile)
     showFilterBar.set(!$isMobile)
   })
+
+  $: deals = $dealsNG.map(d => d.selected_version)
 </script>
 
 <svelte:head>
@@ -37,19 +39,10 @@
     <LoadingPulse />
   {:else}
     <div class="mx-8 grid grid-rows-1 gap-8 md:mx-32 md:grid-cols-2 md:gap-x-32">
-      <IoIGroupChart deals={$dealsNG} displayDealsCount={$displayDealsCount} />
-      <AgricultureIntentionChart
-        deals={$dealsNG}
-        displayDealsCount={$displayDealsCount}
-      />
-      <NegotiationStatusGroupChart
-        deals={$dealsNG}
-        displayDealsCount={$displayDealsCount}
-      />
-      <ImplementationStatusChart
-        deals={$dealsNG}
-        displayDealsCount={$displayDealsCount}
-      />
+      <IoIGroupChart {deals} displayDealsCount={$displayDealsCount} />
+      <AgricultureIntentionChart {deals} displayDealsCount={$displayDealsCount} />
+      <NegotiationStatusGroupChart {deals} displayDealsCount={$displayDealsCount} />
+      <ImplementationStatusChart {deals} displayDealsCount={$displayDealsCount} />
     </div>
   {/if}
 </ChartsContainer>
