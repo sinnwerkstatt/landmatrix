@@ -351,24 +351,30 @@ class HullViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class DealViewSet(HullViewSet):
-    queryset = DealHull.objects.normal().prefetch_related(
-        Prefetch("versions", queryset=DealVersion.objects.order_by("-id"))
-    )
+    queryset = DealHull.objects.normal()
     serializer_class = DealSerializer
     version_serializer_class = DealVersionSerializer
 
     def get_queryset(self):
         if self.action in ["retrieve", "retrieve_version"]:
+            versions_prefetch = Prefetch(
+                "versions", queryset=DealVersion.objects.order_by("-id")
+            )
             # TODO Kurt is_superuser or also role.Administrator?
             if self.request.user.is_superuser:
-                return DealHull.objects.all()
-            return self.queryset.visible(self.request.user, "UNFILTERED")
+                return DealHull.objects.all().prefetch_related(versions_prefetch)
+            return self.queryset.prefetch_related(versions_prefetch).visible(
+                self.request.user, "UNFILTERED"
+            )
+        if self.action == "list":
+            return self.queryset.active()
+
         return self.queryset
 
     @extend_schema(parameters=openapi_filters_parameters)
     def list(self, request: Request, *args, **kwargs):
         return Response(
-            DealHull.objects.active()
+            self.get_queryset()
             .order_by("id")
             .visible(request.user, request.GET.get("subset", "PUBLIC"))
             .filter(parse_filters(request))
