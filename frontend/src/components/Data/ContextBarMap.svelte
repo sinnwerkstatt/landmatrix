@@ -19,6 +19,8 @@
 
   import ContextBarContainer from "./ContextBarContainer.svelte"
 
+  $: deals = $dealsNG.map(d => d.selected_version)
+
   let currentItem: CountryOrRegion
   $: if (!$filters.region_id && !$filters.country_id) {
     currentItem = {
@@ -41,13 +43,13 @@
   $: unit = $displayDealsCount ? "deals" : "ha"
   $: sortBy = $displayDealsCount ? "count" : "size"
 
-  $: chartNegStat = createNegotiationStatusChartData($dealsNG, sortBy)
-  $: chartImpStat = createImplementationStatusChartData($dealsNG, sortBy)
-  $: chartProd = createProduceGroupChartData($dealsNG, sortBy)
+  $: chartNegStat = createNegotiationStatusChartData(deals, sortBy)
+  $: chartImpStat = createImplementationStatusChartData(deals, sortBy)
+  $: chartProd = createProduceGroupChartData(deals, sortBy)
 
   $: totalCount = $displayDealsCount
-    ? `${Math.round($dealsNG.length).toLocaleString("fr").replace(",", ".")}`
-    : `${Math.round(sum($dealsNG, "deal_size")).toLocaleString("fr").replace(",", ".")} ha`
+    ? `${Math.round(deals.length).toLocaleString("fr").replace(",", ".")}`
+    : `${Math.round(sum(deals, "deal_size")).toLocaleString("fr").replace(",", ".")} ha`
 </script>
 
 <ContextBarContainer>
@@ -63,7 +65,7 @@
       </p>
     {/if}
   {/if}
-  {#if $dealsNG.length}
+  {#if deals.length}
     <div>
       <DealDisplayToggle />
       <div class="my-3 w-full text-center font-bold">

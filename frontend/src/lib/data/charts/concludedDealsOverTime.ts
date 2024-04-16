@@ -10,7 +10,8 @@ import {
 } from "$lib/data/dealUtils"
 import type { Dated } from "$lib/data/itemUtils"
 import { isDated, parseDate } from "$lib/data/itemUtils"
-import type { ContractSizeItem, Deal } from "$lib/types/deal"
+import type { ContractSizeItem } from "$lib/types/deal"
+import type { DealVersion2 } from "$lib/types/newtypes"
 
 const getCurrentYear: () => number = R.pipe(
   R.constructN(0, Date),
@@ -20,8 +21,8 @@ const getCurrentYear: () => number = R.pipe(
 export const createYears: (startYear: number) => number[] = startYear =>
   R.range(startYear, getCurrentYear())
 
-export const createYearSizeMap: (deal: Deal) => Record<string, number> = R.pipe<
-  [Deal],
+export const createYearSizeMap: (deal: DealVersion2) => Record<string, number> = R.pipe<
+  [DealVersion2],
   ContractSizeItem[],
   Dated<ContractSizeItem>[],
   Dated<ContractSizeItem>[],
@@ -41,7 +42,7 @@ export const createYearSizeMap: (deal: Deal) => Record<string, number> = R.pipe<
 
 export const createBuckets =
   (years: number[]) =>
-  (deal: Deal): Bucket[] => {
+  (deal: DealVersion2): Bucket[] => {
     const [concludedYear, canceledYear] = getConcludedRange(deal)
     const initialSize = getInitialSize(deal)
 
@@ -75,7 +76,7 @@ export interface ConcludedDealsOverTimeAccumulator {
 export const createConcludedDealsOverTimeReducer = (years: number[]) => {
   return (
     acc: ConcludedDealsOverTimeAccumulator,
-    deal: Deal,
+    deal: DealVersion2,
   ): ConcludedDealsOverTimeAccumulator => {
     // filtered
     if (!hasBeenConcluded(deal)) {
@@ -109,7 +110,10 @@ export interface ChartData {
 
 const asDate: (year: number) => Date = R.pipe(R.toString, R.constructN(1, Date))
 
-export const createChartData = (startYear: number, deals: Deal[]): ChartData => {
+export const createChartData = (
+  startYear: number,
+  deals: DealVersion2[],
+): ChartData => {
   const years = createYears(startYear)
 
   const data = R.reduce(createConcludedDealsOverTimeReducer(years), {

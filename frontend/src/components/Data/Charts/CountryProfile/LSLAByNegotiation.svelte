@@ -7,18 +7,18 @@
 
   import { LSLAByNegotiation, LSLAData } from "$lib/data/charts/LSLAByNegotiation"
   import { filters } from "$lib/filters"
-  import type { Deal } from "$lib/types/deal"
   import {
     NEGOTIATION_STATUS_GROUP_MAP,
     NegotiationStatus,
     NegotiationStatusGroup,
   } from "$lib/types/deal"
+  import type { DealVersion2 } from "$lib/types/newtypes"
 
   import ChartWrapper from "$components/Data/Charts/DownloadWrapper.svelte"
   import { downloadCSV, downloadJSON, downloadSVG } from "$components/Data/Charts/utils"
   import type { DownloadEvent } from "$components/Data/Charts/utils"
 
-  export let deals: Deal[] = []
+  export let deals: DealVersion2[] = []
 
   // Large Scale Land Acquisitions
   let title = $_("LSLA by negotiation status")
@@ -128,6 +128,6 @@
     id="lsla-by-negotiation-chart"
     bind:this={svgComp}
   />
-  <!-- TODO Marcus -->
+  <!-- TODO: @Kurt needs text -->
   <!--  <div slot="legend" />-->
 </ChartWrapper>

@@ -354,7 +354,10 @@ export interface DealVersion2 extends DealVersionBase, BaseVersionMixin {
   current_negotiation_status: string
   current_implementation_status: string
   current_intention_of_investment: IntentionOfInvestment[]
+  current_contract_size: number
   deal_size: number
+
+  top_investors: InvestorVersion2[]
 }
 
 export interface JSONCurrentDateAreaFieldType {

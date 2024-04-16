@@ -39,6 +39,10 @@ export const drawGraph = async (
   const width = 1000
   const height = 500
 
+  // normalize
+  const total = data.reduce((acc, entry) => acc + entry.value, 0)
+  data = data.map(entry => ({ ...entry, value: entry.value / total }))
+
   const svg = d3
     .select(node)
     .attr("viewBox", `0 0 ${width} ${height}`)
@@ -71,16 +75,14 @@ export const drawGraph = async (
   const yMax = d3.max(data.map(d => d.value)) ?? 0
   const y = d3
     .scaleLinear()
-    .domain([0, (yMax > 5 ? yMax : 5) * 1.1])
+    .domain([0, yMax < 0.5 ? 0.5 : 1])
     .range([height - margin.bottom, margin.top])
 
-  const yTicks = y.ticks(4).filter(Number.isInteger)
   const yAxis = d3
     .axisLeft(y)
     .tickSizeOuter(0)
-    .tickValues(yTicks)
-    .tickFormat(d3.format(yMax > 10_000 ? ".1e" : "d"))
-
+    .tickValues(y.ticks(5))
+    .tickFormat(d3.format(".0%"))
   svg
     .append("g")
     .attr("transform", `translate(${margin.left},0)`)

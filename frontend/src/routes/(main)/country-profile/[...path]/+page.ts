@@ -14,10 +14,12 @@ export const ssr = false
 const stripTrailingSlash = (path: string): string =>
   path.endsWith("/") ? path.slice(0, -1) : path
 
-const countryProfiles: {
+interface CountryProfile {
   key: string
   component: ComponentType
-}[] = [
+}
+
+const countryProfiles = [
   {
     key: "land-acquisitions",
     component: LACP,
@@ -38,7 +40,7 @@ const countryProfiles: {
     key: "concluded-deals-over-time",
     component: ConcludedDealsOverTime,
   },
-]
+] as const satisfies CountryProfile[]
 
 export const load: PageLoad = async ({ params }) => {
   const stripped = stripTrailingSlash(params.path)

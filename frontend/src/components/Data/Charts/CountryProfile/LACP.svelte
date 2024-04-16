@@ -15,8 +15,12 @@
     intentionOfInvestmentGroupMap,
     intentionOfInvestmentMap,
   } from "$lib/stores/maps"
-  import type { Deal, IoIGroup } from "$lib/types/deal"
-  import { INTENTION_OF_INVESTMENT_GROUP_MAP, IoI } from "$lib/types/deal"
+  import {
+    INTENTION_OF_INVESTMENT_GROUP_MAP,
+    IoI,
+    type IoIGroup,
+  } from "$lib/types/deal"
+  import type { DealVersion2 } from "$lib/types/newtypes"
 
   import {
     drawGraph,
@@ -28,10 +32,18 @@
   import { downloadCSV, downloadJSON, downloadSVG } from "$components/Data/Charts/utils"
   import { displayDealsCount } from "$components/Map/map_helper.js"
 
-  export let deals: Deal[] = []
+  export let deals: DealVersion2[] = []
 
   let sortBy: SortBy
   $: sortBy = $displayDealsCount ? "count" : "size"
+  $: legendText =
+    sortBy === "count"
+      ? $_(
+          "Number of deals per category of production as a percentage of all concluded deals",
+        )
+      : $_(
+          "Size under contract per category of production as a percentage of total size of all concluded deals",
+        )
 
   $: filtered = deals.filter(isConcluded)
 
@@ -68,7 +80,7 @@
 
   $: title = $_("Land acquisitions by category of production")
   $: xLabel = $_("Category of production")
-  $: yLabel = $displayDealsCount ? $_("Number of deals") : $_("Deal size (ha)")
+  $: yLabel = $displayDealsCount ? $_("Deals / Total Deals") : $_("Size / Total Size")
   $: groups = Object.entries<string>($intentionOfInvestmentGroupMap).map(entry => {
     const key = entry[0] as IoIGroup
     return {
@@ -113,4 +125,7 @@
     bind:this={svgElement}
     class="stroke-gray-700 stroke-[0.2] text-gray-700 dark:text-white"
   />
+  <div slot="legend">
+    {legendText}
+  </div>
 </ChartWrapper>

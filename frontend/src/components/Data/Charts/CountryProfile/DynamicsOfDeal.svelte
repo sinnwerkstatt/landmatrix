@@ -8,7 +8,7 @@
   import { classification_choices } from "$lib/choices"
   import { DynamicsOfDeal, toCSV, toJSON } from "$lib/data/charts/dynamicsOfDeal"
   import type { DynamicsDataPoint } from "$lib/data/charts/dynamicsOfDeal"
-  import type { Deal } from "$lib/types/deal"
+  import type { DealVersion2 } from "$lib/types/newtypes"
 
   import ChartWrapper from "$components/Data/Charts/DownloadWrapper.svelte"
   import { downloadCSV, downloadJSON, downloadSVG } from "$components/Data/Charts/utils"
@@ -17,7 +17,7 @@
   const title = $_("Dynamics of deal by investor type")
   const dynamicOfDeal = new DynamicsOfDeal()
 
-  export let deals: Deal[] = []
+  export let deals: DealVersion2[] = []
 
   let svgComp: SVGElement
 

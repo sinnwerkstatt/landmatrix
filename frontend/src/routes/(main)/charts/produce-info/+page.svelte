@@ -26,7 +26,7 @@
   {#if $dealsNG.length === 0}
     <LoadingPulse />
   {:else}
-    <ProduceInfoMap deals={$dealsNG} {title} />
+    <ProduceInfoMap deals={$dealsNG.map(d => d.selected_version)} {title} />
   {/if}
 
   <div slot="ContextBar">

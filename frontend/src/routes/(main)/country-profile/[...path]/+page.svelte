@@ -2,7 +2,7 @@
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
-  import { chartDescriptions, dealsNG } from "$lib/stores"
+  import { dealsNG } from "$lib/stores"
   import { isMobile } from "$lib/stores/basics"
 
   import ChartsContainer from "$components/Data/Charts/ChartsContainer.svelte"
@@ -27,14 +27,17 @@
     {#if $dealsNG.length === 0}
       <LoadingPulse />
     {:else}
-      <svelte:component this={data.profile.component} deals={$dealsNG} />
+      <svelte:component
+        this={data.profile.component}
+        deals={$dealsNG.map(d => d.selected_version)}
+      />
     {/if}
   </div>
 
   <div slot="ContextBar">
     <h2 class="heading5">{$_("Country profile charts")}</h2>
-    <!-- TODO Marcus: laut wagtailcms/models.py:35 gibt es nur die 4 standard-felder. ist dieser code hier unten korrekt?    -->
-    <div>{@html $chartDescriptions[data.profile.key] ?? ""}</div>
+    <!-- TODO: Generalize chartDescriptions to include country profiles as well -->
+    <!-- <div>{@html $chartDescriptions[data.profile.key] ?? ""}</div>-->
     <DealDisplayToggle />
   </div>
 </ChartsContainer>
