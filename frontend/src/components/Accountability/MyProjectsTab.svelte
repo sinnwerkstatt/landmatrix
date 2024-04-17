@@ -9,19 +9,31 @@
         { id: 3, name: "Queensland – Forest", position: 2 }
     ];
 
+    // $: console.log(bookmarked)
+
+    function handleEdit(event) {
+        const projectId = event.detail.id
+        console.log("Edit action: " + projectId)
+    }
+
+    function handleBookmark(event) {
+        const projectId = event.detail.id
+        console.log("Bookmark action: " + projectId)
+    }
+
 </script>
 
-<div class="h-full flex flex-col overflow-hidden">
+<div class="h-fit flex flex-col overflow-hidden">
     <SidebarTab label="All deals" active={true} />
 
     <div class="overflow-scroll">
-        <Section title="Bookmarked projects">
-            <SortableList bind:items={bookmarked} />
+        <Section title="Bookmarked projects" on:edit on:bookmark>
+            <SortableList bind:items={bookmarked} on:edit={handleEdit} on:bookmark={handleBookmark} />
         </Section>
         
         <Section title="My projects">
-            <SidebarTab label="South Africa – In negotiation" menu={true} handle={false} />
-            <SidebarTab label="Albania" menu={true} handle={false} />
+            <SidebarTab id={10} label="South Africa – In negotiation" menu={true} handle={false} on:edit={handleEdit} on:bookmark={handleBookmark} />
+            <SidebarTab id={20} label="Albania" menu={true} handle={false} on:edit={handleEdit} on:bookmark={handleBookmark} />
         </Section>
     </div>
 </div>

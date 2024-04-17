@@ -18,8 +18,8 @@
     function autoSort() { dispatch('sort') }
 </script>
 
-<div class="">
-    <button class="flex items-center justify-between w-full px-4 pt-4 font-semibold shrink-0 bg-white" class:stickyTitle on:click={handleClick}>
+<div class="flex flex-col h-fit" class:stickyTitle >
+    <button class="flex items-center justify-between w-full px-4 pt-4 pb-2 font-semibold shrink-0 bg-white" on:click={handleClick}>
         <div class="flex items-center">
             {title}
             {#if !alwaysOpen}
@@ -33,7 +33,7 @@
     </button>
     
     {#if alwaysOpen || open}
-        <div class="flex flex-col gap-2 py-2" transition:slide>
+        <div class="flex flex-col gap-2 h-full overflow-auto" transition:slide>
             <slot />
         </div>
     {/if}
@@ -47,6 +47,7 @@
         @apply rotate-0;
     }
     .stickyTitle {
-        @apply sticky top-0;
+        /* @apply sticky top-0 z-10; */
+        @apply h-full;
     }
 </style>

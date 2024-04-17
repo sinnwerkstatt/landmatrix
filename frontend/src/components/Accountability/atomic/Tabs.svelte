@@ -18,7 +18,7 @@
     
     {#each items as item}
         {#if activeTabValue == item.value}
-            <div class="overflow-x-scroll pt-2 flex flex-col gap-2 ">
+            <div class="h-full overflow-x-scroll pt-2 flex flex-col gap-2">
                 <svelte:component this={item.component} />
             </div>
         {/if}

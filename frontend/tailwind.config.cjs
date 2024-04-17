@@ -188,6 +188,7 @@ module.exports = {
       },
       boxShadow: {
         nav: "0px 4px 4px rgba(0, 0, 0, 0.25)",
+        "a-md": "0px 2px 4px 0px rgba(31, 41, 55, 0.06), 0px 4px 6px 0px rgba(31, 41, 55, 0.10)"
       },
       animation: {
         fadeToWhite: "fadeToWhite 1s ease-in-out normal forwards",

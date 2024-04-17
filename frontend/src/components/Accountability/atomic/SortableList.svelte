@@ -67,14 +67,14 @@
 
 </script>
 
-<ul class="flex flex-col gap-2 py-2" 
+<ul class="flex flex-col gap-2" 
     on:dragover|preventDefault={(e) => {handleDragover(e, container)}} bind:this={container}>
     {#each items as { id, name, position }, i}
         <li bind:this={refs[i]} {id} class="select-none" style="opacity: 1;"
             draggable="false"
             on:dragstart={(e) => {handleDragstart(e, i)}} on:dragend={(e) => {handleDragend(e, i)}} >
 
-            <SidebarTab label={name} handle={true} menu={true} />
+            <SidebarTab {id} label={name} handle={true} menu={true} on:edit on:bookmark />
 
         </li>
     {/each}
