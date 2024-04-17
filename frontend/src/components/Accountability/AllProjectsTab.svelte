@@ -18,18 +18,7 @@
         { id: 20, name: "For" },
         { id: 21, name: "Testing" },
         { id: 22, name: "Pagination" },
-        { id: 23, name: "Components" },
-        { id: 31, name: "Albania" },
-        { id: 32, name: "Nikka's project test" },
-        { id: 33, name: "South Africa – in negotiation" },
-        { id: 34, name: "Philippines – Soy" },
-        { id: 35, name: "Queensland – Forest" },
-        { id: 36, name: "Senegal" },
-        { id: 37, name: "Some" },
-        { id: 38, name: "Additional" },
-        { id: 39, name: "Projects" },
-        { id: 40, name: "For" },
-        { id: 41, name: "Testing" }
+        { id: 23, name: "Components" }
     ]
 
     // Alphabetically sort projects
