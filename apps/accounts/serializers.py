@@ -6,7 +6,7 @@ from apps.accounts.models import User
 class LeanUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "full_name", "username", "role"]
+        fields = ["id", "full_name", "username", "role", "is_active"]
 
 
 class UserSerializer(serializers.ModelSerializer):

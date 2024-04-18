@@ -31,7 +31,7 @@ from apps.landmatrix.permissions import IsReporterOrHigher
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = User.objects.filter(is_active=True)
+    queryset = User.objects.all()
 
     def get_serializer_class(self):
         if self.action == "retrieve":

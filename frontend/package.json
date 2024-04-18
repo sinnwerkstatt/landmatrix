@@ -13,7 +13,7 @@
     "format": "prettier --write .",
     "test": "vitest run src",
     "test:watch": "vitest src",
-    "openapi": "openapi-typescript http://localhost:9000/api/schema/ -o ./src/lib/openAPI.d.ts"
+    "openapi": "openapi-typescript http://localhost:9000/api/schema/ -o ./src/lib/openAPI.d.ts && prettier --write ./src/lib/openAPI.d.ts"
   },
   "devDependencies": {
     "@floating-ui/dom": "^1.6.3",
