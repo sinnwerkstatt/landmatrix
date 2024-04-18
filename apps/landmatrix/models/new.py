@@ -1,5 +1,6 @@
 import json
 import re
+from enum import Enum
 
 from django.conf import settings
 from django.contrib.gis.db import models as gis_models
@@ -895,20 +896,27 @@ class DealVersion(DealVersionBaseFields, BaseVersionMixin):
         self.save()
 
     def __get_current(self, attributes, field, multi=False):
-        # ic("x", attributes)
         if not attributes or not attributes.root:
             return None
+
         if multi:
             currents = []
             for attr in attributes:
                 if attr.current and (values := getattr(attr, field)):
-                    currents += values
+                    currents += [
+                        val.value if isinstance(val, Enum) else val for val in values
+                    ]
             return currents or None
+
         # prioritize "current" checkbox if present
         current = [x for x in attributes if x.current]
+
         # ic(current)
         if current:
-            return getattr(current[0], field)
+            val = getattr(current[0], field)
+            if isinstance(val, Enum):
+                return val.value
+            return val
         else:
             print(self)
             print(attributes)
