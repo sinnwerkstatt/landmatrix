@@ -179,21 +179,25 @@ class Management(View):
                 )
                 ret = (
                     qs.annotate(
+                        # we're turning the default "first active, then draft" around
+                        # because in the management interface the draft is more relevant
                         selected_version=Case(
                             When(
-                                active_version_id__isnull=False,
+                                draft_version_id__isnull=False,
                                 then=JSONObject(
-                                    id="active_version_id",
-                                    modified_at="active_version__modified_at",
-                                    modified_by_id="active_version__modified_by_id",
-                                    deal_size="active_version__deal_size",
+                                    id="draft_version_id",
+                                    modified_at="draft_version__modified_at",
+                                    modified_by_id="draft_version__modified_by_id",
+                                    deal_size="draft_version__deal_size",
+                                    fully_updated="draft_version__fully_updated",
                                 ),
                             ),
                             default=JSONObject(
-                                id="draft_version_id",
-                                modified_at="draft_version__modified_at",
-                                modified_by_id="draft_version__modified_by_id",
-                                deal_size="draft_version__deal_size",
+                                id="active_version_id",
+                                modified_at="active_version__modified_at",
+                                modified_by_id="active_version__modified_by_id",
+                                deal_size="active_version__deal_size",
+                                fully_updated="active_version__fully_updated",
                             ),
                         ),
                     )
@@ -231,25 +235,27 @@ class Management(View):
                 )
                 ret = (
                     qs.annotate(
+                        # we're turning the default "first active, then draft" around
+                        # because in the management interface the draft is more relevant
                         selected_version=Case(
                             When(
-                                active_version_id__isnull=False,
+                                draft_version_id__isnull=False,
                                 then=JSONObject(
-                                    id="active_version_id",
-                                    modified_at="active_version__modified_at",
-                                    modified_by_id="active_version__modified_by_id",
-                                    name="active_version__name",
-                                    name_unknown="active_version__name_unknown",
-                                    country_id="active_version__country_id",
+                                    id="draft_version_id",
+                                    modified_at="draft_version__modified_at",
+                                    modified_by_id="draft_version__modified_by_id",
+                                    name="draft_version__name",
+                                    name_unknown="draft_version__name_unknown",
+                                    country_id="draft_version__country_id",
                                 ),
                             ),
                             default=JSONObject(
-                                id="draft_version_id",
-                                modified_at="draft_version__modified_at",
-                                modified_by_id="draft_version__modified_by_id",
-                                name="draft_version__name",
-                                name_unknown="draft_version__name_unknown",
-                                country_id="draft_version__country_id",
+                                id="active_version_id",
+                                modified_at="active_version__modified_at",
+                                modified_by_id="active_version__modified_by_id",
+                                name="active_version__name",
+                                name_unknown="active_version__name_unknown",
+                                country_id="active_version__country_id",
                             ),
                         )
                     )

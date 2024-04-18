@@ -109,7 +109,7 @@
     first_created_by_id: 2,
     modified_at: 2,
     modified_by_id: 2,
-    fully_updated_at: 2,
+    fully_updated: 1,
     workflowinfos: 5,
   }
 
@@ -378,7 +378,7 @@
     {:else}
       <Table items={filteredObjects} {columns} {spans} {labels}>
         <svelte:fragment slot="field" let:fieldName let:obj>
-          {#if ["country", "modified_at", "modified_by_id", "deal_size", "name"].includes(fieldName)}
+          {#if ["country", "modified_at", "modified_by_id", "deal_size", "name", "fully_updated"].includes(fieldName)}
             <DisplayField
               fieldname={fieldName}
               value={obj.selected_version[fieldName]}
