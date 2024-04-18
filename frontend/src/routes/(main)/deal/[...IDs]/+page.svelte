@@ -8,6 +8,6 @@
     const activeTab = $page.url.hash.split("-")[0] || "#locations"
     const newLoc = activeTab.replace("#", "")
 
-    goto(`${$page.url.pathname}${newLoc}/`)
+    goto(`${$page.url.pathname}${newLoc}/`, { replaceState: true })
   })
 </script>
