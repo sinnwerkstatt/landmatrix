@@ -98,7 +98,7 @@
     @apply inline-block rounded px-2 py-3 text-base font-bold leading-tight tracking-widest text-black;
     @apply hover:bg-orange-100 hover:text-orange-600 md:text-lg dark:text-white;
   }
-    .nav-link-main.active {
+  .nav-link-main.active {
     @apply font-bold text-orange;
   }
   .nav-link-secondary {
