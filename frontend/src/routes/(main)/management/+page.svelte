@@ -109,7 +109,7 @@
     first_created_by_id: 2,
     modified_at: 2,
     modified_by_id: 2,
-    fully_updated: 1,
+    fully_updated: 2,
     workflowinfos: 5,
   }
 
