@@ -102,7 +102,7 @@ export const investorFields = derived([_, fieldChoices], ([$_, $fieldChoices]) =
     modified_at: { displayField: DateTimeField, label: $_("Last update") },
     workflowinfos: {
       displayField: WorkflowInfosField,
-      label: $_("Comments / History"),
+      label: $_("Logbook"),
     },
     status: { displayField: DraftVersionStatusField, label: $_("Status") },
     deals: { displayField: DealsLengthField, label: $_("Deals") },
@@ -142,7 +142,7 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
     fully_updated_at: { displayField: DateTimeField, label: $_("Last full update") },
     workflowinfos: {
       displayField: WorkflowInfosField,
-      label: $_("Comments / History"),
+      label: $_("Logbook"),
     },
     status: { displayField: DraftVersionStatusField, label: $_("Status") },
     // General
