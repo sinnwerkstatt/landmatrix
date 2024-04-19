@@ -18,6 +18,12 @@
   --error-border: 1px solid theme("colors.red.700");
   /*--error-background: theme("colors.red.100");*/
 }
+.dark .svelte-select {
+  --background: theme("colors.gray.600");
+  --list-background: theme("colors.gray.600");
+  --item-color: white;
+  --selected-item-color: white;
+}
 
 .navbar-search .svelte-select-list {
   /*width: 60vw;*/

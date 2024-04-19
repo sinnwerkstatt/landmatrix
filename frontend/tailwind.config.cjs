@@ -1,7 +1,9 @@
 const defaultTheme = require("tailwindcss/defaultTheme")
 
-const config = {
+/** @type {import('tailwindcss').Config} */
+module.exports = {
   content: ["./src/**/*.{html,js,svelte,ts}"],
+  darkMode: "selector",
 
   theme: {
     extend: {
@@ -129,5 +131,3 @@ const config = {
     },
   },
 }
-
-module.exports = config

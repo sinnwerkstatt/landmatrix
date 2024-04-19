@@ -14,11 +14,14 @@
 
   ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale)
 
-  $: ChartJS.defaults.color = $isDarkMode ? "#ffffff" : "#000000"
-
   export let data: ChartData
   export let unit = ""
-  export let chart: ChartJS = undefined
+  export let chart: ChartJS | undefined = undefined
+
+  isDarkMode.subscribe(v => {
+    ChartJS.defaults.color = v ? "#ffffff" : "#000000"
+    if (chart) chart?.update()
+  })
 
   $: totals = data.datasets.map(dSet => dSet.data.reduce((sum, value) => sum + value))
 

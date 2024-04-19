@@ -37,7 +37,7 @@
     @apply text-sm font-bold leading-tight md:text-base;
   }
   .caption {
-    @apply text-xs font-bold uppercase leading-tight tracking-widest text-gray-900 md:text-sm;
+    @apply text-xs font-bold uppercase leading-tight tracking-widest text-gray-900 md:text-sm dark:text-white;
   }
 
   .code {
@@ -92,5 +92,16 @@
 
   .checkbox-btn {
     @apply h-4 w-4 appearance-none border border-gray-400 transition duration-200 checked:border-2 checked:border-orange-200 checked:bg-orange;
+  }
+
+  .nav-link-main {
+    @apply inline-block rounded px-2 py-3 text-base font-bold leading-tight tracking-widest text-black;
+    @apply hover:bg-orange-100 hover:text-orange-600 md:text-lg dark:text-white;
+  }
+  .nav-link-secondary {
+    @apply block w-full whitespace-nowrap p-2 pl-4 pr-8 text-lg text-black hover:bg-orange-100 hover:text-orange-500 dark:text-white;
+  }
+  .nav-link-secondary.active {
+    @apply font-bold text-orange;
   }
 }

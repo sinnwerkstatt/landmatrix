@@ -3,6 +3,20 @@
   <head>
     <meta charset="utf-8" />
     <meta name="description" content="" />
+    <script>
+      let theme = "light"
+      if ("theme" in sessionStorage) {
+      }
+      if (
+        sessionStorage.theme === "dark" ||
+        (!("theme" in sessionStorage) &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches)
+      ) {
+        document.documentElement.classList.add("dark")
+      } else {
+        document.documentElement.classList.remove("dark")
+      }
+    </script>
     <link
       rel="icon"
       type="image/png"
@@ -24,7 +38,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     %sveltekit.head%
   </head>
-  <body class="text-sans dark:bg-gray-800 dark:text-white">
+  <body class="text-sans transition-colors dark:bg-gray-900 dark:text-white">
     <div class="isolate">%sveltekit.body%</div>
   </body>
 </html>

@@ -12,6 +12,7 @@ import { get } from "svelte/store"
 import type { Instance as TippyInstance } from "tippy.js"
 import tippy from "tippy.js"
 
+import { browser } from "$app/environment"
 import { page } from "$app/stores"
 
 import { Classification, classification_choices } from "$lib/choices"
@@ -19,6 +20,10 @@ import { Classification, classification_choices } from "$lib/choices"
 cytoscape.use(cyCoseBilkent)
 cytoscape.use(cyPopper)
 
+let textColor = "black"
+if (browser && sessionStorage.theme === "dark") {
+  textColor = "white"
+}
 export const LAYOUT_OPTIONS = {
   name: "cose-bilkent",
   quality: "proof",
@@ -30,6 +35,7 @@ export const CY_OPTIONS: CytoscapeOptions = {
   maxZoom: 5,
   // wheelSensitivity: 0.2,
   layout: LAYOUT_OPTIONS,
+
   style: [
     {
       selector: "node",
@@ -44,6 +50,7 @@ export const CY_OPTIONS: CytoscapeOptions = {
         "font-size": "9px",
         "text-wrap": "wrap",
         "text-max-width": "120px",
+        color: textColor,
         // "shape": "ellipse",
       },
     },
