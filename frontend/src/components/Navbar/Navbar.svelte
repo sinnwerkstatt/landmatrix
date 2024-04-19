@@ -1,178 +1,93 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n"
-
-  import { clickOutside } from "$lib/helpers"
-  import { blogCategories } from "$lib/stores"
-  import { isDarkMode } from "$lib/stores/basics"
-  import { aboutPages, observatoryPages } from "$lib/stores/wagtail"
+  import { toggleDarkMode } from "$lib/stores/basics"
 
   import BurgerMenuIcon from "$components/icons/BurgerMenuIcon.svelte"
+  import MoonSolidIcon from "$components/icons/MoonSolidIcon.svelte"
   import SearchIcon from "$components/icons/SearchIcon.svelte"
+  import SunSolidIcon from "$components/icons/SunSolidIcon.svelte"
   import Modal from "$components/Modal.svelte"
   import LanguageSwitch from "$components/Navbar/LanguageSwitch.svelte"
   import LoginSection from "$components/Navbar/LoginSection.svelte"
+  import NavbarLinks from "$components/Navbar/NavbarLinks.svelte"
   import NavbarSearch from "$components/Navbar/NavbarSearch.svelte"
-  import SubEntries from "$components/Navbar/SubEntries.svelte"
 
-  import { isSubMenu } from "./navbar"
-  import type { MenuEntry } from "./navbar"
-
-  let menuEntries: MenuEntry[] = []
-  $: menuEntries = [
-    {
-      title: $_("Data"),
-      subEntries: [
-        { title: $_("Map"), href: "/map/" },
-        { title: $_("Tables"), href: "/list/" },
-        { title: $_("Charts"), href: "/charts/" },
-      ],
-    },
-    {
-      title: $_("Observatories"),
-      subEntries: $observatoryPages.map(page => ({
-        title: page.title,
-        href: `/observatory/${page.meta.slug}/`,
-      })),
-    },
-    {
-      title: $_("Resources"),
-      subEntries: [
-        {
-          title: $_("All"),
-          href: "/resources/",
-        },
-        ...$blogCategories.map(cat => ({
-          title: cat.name,
-          href: `/resources/?category=${cat.slug}`,
-        })),
-      ],
-    },
-    {
-      title: $_("About"),
-      subEntries: $aboutPages.map(page => ({
-        title: page.title,
-        href: `/about/${page.meta.slug}/`,
-      })),
-    },
-    { title: $_("FAQ"), href: "/faq/" },
-    { title: $_("Contribute"), href: "/contribute/" },
-  ]
-
-  let menuHidden = true
+  let showMenu = false
 
   let showSearch = false
 </script>
 
 <!--https://blog.logrocket.com/building-responsive-navbar-tailwind-css/-->
 <nav
-  class="h-full w-full bg-white p-1 py-1 text-lg text-gray-700 shadow-lg dark:border-b dark:border-orange dark:bg-gray-900 dark:text-white"
+  class="sticky top-0 z-50 min-h-16 bg-white shadow-lg dark:border-b dark:border-orange dark:bg-gray-900 dark:text-white"
 >
-  <div class="mx-auto flex h-full w-full items-center justify-between align-middle">
-    <!--   LOGO   -->
-    <a
-      class="order-first mr-3 self-center xl:mr-10"
-      href="/"
-      on:click={() => (menuHidden = true)}
-    >
+  <div class="float-left ml-3 flex h-16 items-center">
+    <a class="order-first self-center" href="/" on:click={() => (showMenu = false)}>
       <img
         alt="Land Matrix"
-        class="ml-3 hidden h-[36px] w-[144px] min-w-[144px] max-w-[144px] md:block"
-        src={$isDarkMode ? "/images/lm-logo-dark.png" : "/images/lm-logo.png"}
+        class="hidden h-[36px] md:block dark:md:hidden"
+        src="/images/lm-logo.png"
       />
       <img
         alt="Land Matrix"
-        class="ml-3 h-[48px] max-w-[144px] sm:mr-3 md:hidden"
-        src={$isDarkMode
-          ? "/images/lm-logo-mobile-dark.png"
-          : "/images/lm-logo-mobile.png"}
+        class=" hidden h-[36px] md:hidden dark:md:inline-block"
+        src="/images/lm-logo-dark.png"
+      />
+      <img
+        alt="Land Matrix"
+        class="h-[48px] sm:mr-3 md:hidden dark:hidden"
+        src="/images/lm-logo-mobile.png"
+      />
+      <img
+        alt="Land Matrix"
+        class="hidden h-[48px] sm:mr-3 md:hidden dark:inline-block dark:md:hidden"
+        src="/images/lm-logo-mobile-dark.png"
       />
     </a>
-
-    <!--   MOBILE MENU   -->
-    <ul
-      id="menu-mobile"
-      class="order-last flex max-w-fit flex-grow items-center justify-end"
-    >
-      <li>
-        <div class="navbar-search md:hidden">
-          <button class="flex items-center" on:click={() => (showSearch = true)}>
-            <SearchIcon class="h-6 w-6" />
-          </button>
-          <Modal
-            dismissible
-            bind:open={showSearch}
-            class="h-[80vh] w-[clamp(300px,90%,800px)]"
-          >
-            <NavbarSearch />
-          </Modal>
-        </div>
-        <div class="navbar-search hidden w-48 md:block">
-          <NavbarSearch />
-        </div>
-      </li>
-      <li>
-        <LanguageSwitch />
-      </li>
-      <li>
-        <LoginSection />
-      </li>
-      <li class="2xl:hidden">
-        <button
-          class="h-full p-2"
-          on:click|stopPropagation={() => (menuHidden = !menuHidden)}
-        >
-          <BurgerMenuIcon class="mx-3 inline h-7 w-7 text-black dark:text-gray-50" />
-        </button>
-      </li>
-    </ul>
-
-    <!--   MENU   -->
-    <div
-      id="menu"
-      class="absolute left-0 top-[65px] z-50 w-full bg-white shadow-nav 2xl:static 2xl:w-auto 2xl:shadow-none
-      {menuHidden ? 'hidden 2xl:block' : ''}"
-      use:clickOutside
-      on:outClick={() => (menuHidden = true)}
-    >
-      <ul
-        class="gap-y-6 divide-y divide-solid p-6 px-4
-         lg:flex lg:flex-wrap lg:items-center lg:justify-center lg:gap-x-12 lg:gap-y-0 lg:divide-transparent lg:p-0
-         2xl:justify-between 2xl:gap-x-0
-         dark:border-b dark:border-orange dark:bg-gray-900 dark:2xl:border-none"
-      >
-        {#each menuEntries as entry}
-          <li class="group xl:relative">
-            {#if isSubMenu(entry)}
-              <SubEntries
-                title={entry.title}
-                subEntries={entry.subEntries}
-                on:close={() => (menuHidden = true)}
-              />
-            {:else}
-              <a
-                class="nav-link button1 truncate text-center hover:bg-white hover:text-orange 2xl:max-w-[160px] 3xl:max-w-none dark:hover:bg-gray-900"
-                title={entry.title}
-                href={entry.href}
-                on:click={() => (menuHidden = true)}
-              >
-                {entry.title}
-              </a>
-            {/if}
-          </li>
-        {/each}
-      </ul>
-    </div>
   </div>
+
+  <ul class="float-right mr-3 flex h-16 items-center justify-end gap-1">
+    <li>
+      <div class="navbar-search md:hidden">
+        <button class="flex items-center" on:click={() => (showSearch = true)}>
+          <SearchIcon class="h-6 w-6" />
+        </button>
+        <Modal
+          bind:open={showSearch}
+          class="h-[80vh] w-[clamp(300px,90%,800px)]"
+          dismissible
+        >
+          <NavbarSearch on:enter={() => (showSearch = false)} />
+        </Modal>
+      </div>
+      <div class="navbar-search hidden w-48 md:block">
+        <NavbarSearch />
+      </div>
+    </li>
+    <li>
+      <LanguageSwitch />
+    </li>
+    <li class="flex items-center">
+      <button on:click={toggleDarkMode}>
+        <SunSolidIcon class="h-6 w-6 dark:hidden" />
+        <MoonSolidIcon class="hidden h-6 w-6 dark:block" />
+      </button>
+    </li>
+    <li>
+      <LoginSection />
+    </li>
+    <li class="lg:hidden">
+      <button class="h-full" on:click|stopPropagation={() => (showMenu = !showMenu)}>
+        <BurgerMenuIcon class="mx-1 inline h-7 w-7 text-black dark:text-gray-50" />
+      </button>
+    </li>
+  </ul>
+
+  <span
+    class="absolute inset-x-0 top-full clear-both w-full max-w-full bg-white shadow-nav
+     lg:static lg:h-16 lg:w-auto lg:px-3 lg:shadow-none 2xl:px-6
+     dark:border-b-2 dark:border-orange dark:bg-gray-900 dark:lg:border-b-0
+     {showMenu ? 'block lg:inline-block' : 'hidden lg:inline-block'}"
+  >
+    <NavbarLinks bind:showMenu />
+  </span>
 </nav>
-
-<style lang="postcss">
-  :global(.nav-link) {
-    @apply block p-2 text-black dark:text-white;
-    @apply lg:hover:bg-orange-100 lg:hover:text-black;
-    /*@apply active:bg-orange active:text-white;*/
-  }
-
-  :global(.nav-link.active) {
-    @apply font-bold text-orange;
-  }
-</style>

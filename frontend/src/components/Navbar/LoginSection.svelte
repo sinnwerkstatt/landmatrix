@@ -33,7 +33,7 @@
 </script>
 
 {#if user}
-  <div class="flex">
+  <div>
     <NavDropDown placement="right-0">
       <svelte:fragment slot="title">
         <div
@@ -59,7 +59,7 @@
           <ul>
             <li>
               <a
-                class="nav-link hover:bg-pelorous-100"
+                class="nav-link-secondary hover:bg-pelorous-100"
                 href="/impersonate/stop/?next=/dashboard/"
               >
                 {$_("Stop impersonation")}
@@ -70,28 +70,24 @@
 
         <ul>
           <li>
-            <a class="nav-link" href="/management/">
+            <a class="nav-link-secondary" href="/management/">
               {$_("Manage")}
             </a>
           </li>
           <li class="whitespace-nowrap">
-            <a
-              class="nav-link"
-              href="/management/case_statistics"
-              data-sveltekit-reload
-            >
+            <a class="nav-link-secondary" href="/management/case_statistics/">
               {$_("Case statistics")}
             </a>
           </li>
         </ul>
         <ul>
           <li>
-            <a class="nav-link" href="/deal/add">{$_("Add a deal")}</a>
+            <a class="nav-link-secondary" href="/deal/add/">{$_("Add a deal")}</a>
           </li>
           <li>
             <button
               type="button"
-              class="nav-link w-full text-left"
+              class="nav-link-secondary text-left"
               on:click|preventDefault={logout}
             >
               {$_("Logout")}
@@ -112,7 +108,7 @@
 {:else}
   <div>
     <a
-      class="btn btn-primary w-fit px-3 py-1 sm:mx-3 sm:px-6 sm:py-2 lg:px-10"
+      class="btn btn-primary mx-1 w-fit px-3 py-1 sm:mx-3 sm:px-6 sm:py-2 lg:px-10"
       href="/account/login/?next={$page.url.pathname}"
       title={$_("Login/Register")}
     >

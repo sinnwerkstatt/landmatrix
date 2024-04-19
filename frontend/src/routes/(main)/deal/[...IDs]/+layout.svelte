@@ -48,9 +48,7 @@
 </script>
 
 <svelte:head>
-  <title>
-    {$_("Deal")} #{data.deal.id}
-  </title>
+  <title>{$_("Deal")} #{data.deal.id}</title>
 </svelte:head>
 
 <div class="container mx-auto mb-12 mt-8 min-h-full">

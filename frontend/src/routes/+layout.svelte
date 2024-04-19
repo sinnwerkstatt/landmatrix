@@ -3,13 +3,11 @@
   import { BrowserTracing } from "@sentry/tracing"
   import { SvelteToast } from "@zerodevx/svelte-toast"
   import { env } from "$env/dynamic/public"
-  import { onMount } from "svelte"
 
   import { afterNavigate } from "$app/navigation"
 
   import { contentRootElement } from "$lib/stores/basics"
   import type { User } from "$lib/types/user"
-  import { UserRole } from "$lib/types/user"
 
   import LightboxImage from "$components/LightboxImage.svelte"
   import Messages from "$components/Messages.svelte"
@@ -36,11 +34,6 @@
       scope.setUser({ id: (data.user as User).username })
     }
   }
-  onMount(async () => {
-    if ((data.user?.role || -1) >= UserRole.EDITOR) {
-      // await getAllUsers(fetch)
-    }
-  })
 
   afterNavigate(() => $contentRootElement?.scrollTo(0, 0))
 </script>
@@ -48,13 +41,11 @@
 <Messages />
 <NavigationLoader />
 
-<div class="h-[71px]">
-  <Navbar />
-</div>
+<Navbar />
 
 <div
   bind:this={$contentRootElement}
-  class="h-[calc(100vh-71px)] overflow-x-auto dark:bg-gray-900"
+  class="overflow-x-auto transition-colors dark:bg-gray-900"
 >
   <slot />
 </div>

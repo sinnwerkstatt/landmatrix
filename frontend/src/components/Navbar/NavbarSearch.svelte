@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { createEventDispatcher } from "svelte"
   import { _ } from "svelte-i18n"
   import Select from "svelte-select"
 
@@ -13,6 +14,8 @@
     name_unknown: boolean
   }
 
+  const dispatch = createEventDispatcher()
+
   const loadOptions = async (filterText: string) => {
     if (filterText.length < 2) return []
 
@@ -26,6 +29,8 @@
   const onSelect = (e: CustomEvent<SearchResultEntry>) => {
     console.log(e.detail)
     goto(e.detail.href)
+    dispatch("enter")
+
     // filterText = ""
   }
 
