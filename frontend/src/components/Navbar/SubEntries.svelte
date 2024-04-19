@@ -47,7 +47,12 @@
       isOpen = false
     }}
   >
-    <button class="nav-link-main" {title} on:click={() => (isOpen = !isOpen)}>
+    <button
+      class="nav-link-main"
+      {title}
+      on:click={() => (isOpen = !isOpen)}
+      class:active={subEntries.find(subEntry => isActive(subEntry))}
+    >
       {title}
     </button>
 
@@ -59,7 +64,7 @@
        dark:bg-gray-900 dark:lg:bg-gray-900 dark:lg:shadow dark:lg:shadow-orange"
       >
         {#each subEntries as subEntry}
-          <li>
+          <li class="pl-3">
             <a
               class="nav-link-secondary"
               class:active={isActive(subEntry)}

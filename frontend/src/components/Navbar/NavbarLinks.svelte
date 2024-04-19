@@ -1,6 +1,8 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
+  import { page } from "$app/stores"
+
   import { blogCategories } from "$lib/stores"
   import { aboutPages, observatoryPages } from "$lib/stores/wagtail"
 
@@ -55,7 +57,7 @@
 </script>
 
 <ul
-  class="mx-3 mb-2 w-full items-center justify-evenly gap-4 divide-y lg:flex lg:h-16 lg:divide-y-0 xl:gap-5"
+  class="mb-2 w-full items-center justify-evenly gap-4 divide-y pl-3 lg:flex lg:h-16 lg:divide-y-0 xl:gap-5"
 >
   {#each menuEntries as entry}
     <SubEntries
@@ -64,13 +66,23 @@
       on:close={() => (showMenu = false)}
     />
   {/each}
-  <li class=" py-1">
-    <a class="nav-link-main" href="/faq/" on:click={() => (showMenu = false)}>
+  <li class="py-1">
+    <a
+      class="nav-link-main"
+      class:active={$page.url.pathname.startsWith("/faq/")}
+      href="/faq/"
+      on:click={() => (showMenu = false)}
+    >
       {$_("FAQ")}
     </a>
   </li>
   <li class="py-1">
-    <a class="nav-link-main" href="/contribute/" on:click={() => (showMenu = false)}>
+    <a
+      class="nav-link-main"
+      class:active={$page.url.pathname.startsWith("/contribute/")}
+      href="/contribute/"
+      on:click={() => (showMenu = false)}
+    >
       {$_("Contribute")}
     </a>
   </li>

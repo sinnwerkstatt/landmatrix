@@ -45,7 +45,7 @@
 
 <div
   bind:this={$contentRootElement}
-  class="overflow-x-auto transition-colors dark:bg-gray-900"
+  class="h-[calc(100vh-70px)] overflow-x-auto transition-colors dark:bg-gray-900"
 >
   <slot />
 </div>

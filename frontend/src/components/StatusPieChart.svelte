@@ -10,6 +10,8 @@
   } from "chart.js?client"
   import { Pie } from "svelte-chartjs?client"
 
+  import { browser } from "$app/environment"
+
   import { isDarkMode } from "$lib/stores/basics"
 
   ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale)
@@ -18,6 +20,8 @@
   export let unit = ""
   export let chart: ChartJS | undefined = undefined
 
+  ChartJS.defaults.color =
+    browser && sessionStorage.theme === "dark" ? "#ffffff" : "#000000"
   isDarkMode.subscribe(v => {
     ChartJS.defaults.color = v ? "#ffffff" : "#000000"
     if (chart) chart?.update()
