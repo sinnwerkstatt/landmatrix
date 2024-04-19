@@ -20,7 +20,7 @@
 <div id="${title}_wrapper" class="flex flex-col flex-nowrap {wrapperClasses}">
   <slot name="heading">
     {#if title}
-      <h2 class="heading3 mt-0 text-gray-700">{title}</h2>
+      <h2 class="heading3 mt-0 text-gray-700 dark:text-gray-50">{title}</h2>
     {/if}
   </slot>
   <div class="svg-wrapper flex items-center justify-center">

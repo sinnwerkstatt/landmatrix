@@ -90,7 +90,7 @@
       <li>
         <a
           href="/map/"
-          class="nav-link button1 transition hover:bg-white hover:text-orange"
+          class="nav-link-secondary button1 transition hover:bg-white hover:text-orange"
           class:active={$page.url.pathname.startsWith("/map")}
         >
           {$_("Map")}
@@ -106,7 +106,7 @@
               <li class="whitespace-nowrap">
                 <a
                   href={view.route}
-                  class="nav-link"
+                  class="nav-link-secondary"
                   class:active={$page.url.pathname.startsWith(view.route)}
                 >
                   {view.title}
@@ -131,7 +131,7 @@
               <li class="whitespace-nowrap">
                 <a
                   href={view.route}
-                  class="nav-link"
+                  class="nav-link-secondary"
                   class:active={$page.url.pathname.startsWith(view.route)}
                 >
                   {view.title}
@@ -147,7 +147,7 @@
               <li class="whitespace-nowrap">
                 <a
                   href={view.route}
-                  class="nav-link"
+                  class="nav-link-secondary"
                   class:active={$page.url.pathname.startsWith(view.route)}
                 >
                   {view.title}

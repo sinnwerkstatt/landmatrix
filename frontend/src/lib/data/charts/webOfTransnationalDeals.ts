@@ -137,7 +137,7 @@ export function LandMatrixRadialSpider(
 
     link.style("mix-blend-mode", null)
     selection.attr("font-weight", "bold")
-    selection.attr("fill", "black")
+    selection.attr("fill", "currentColor")
   }
 
   function mouseout_event(target: HTMLElement) {
@@ -169,9 +169,11 @@ export function LandMatrixRadialSpider(
     .attr("text-anchor", d => (d.x < Math.PI ? "start" : "end"))
     .attr("transform", d => (d.x >= Math.PI ? "rotate(180)" : null))
     .text(d => d.data.name)
-    .each(function (d) {
-      d.text = this
-    })
+    .attr("fill", "currentColor")
+    // seems unused:
+    // .each(function (d) {
+    //   d.text = this
+    // })
     .on("mouseover", event => selectCountry(event.currentTarget))
     .on("mouseout", event => mouseout_event(event.currentTarget))
     .on("mousedown", d => {

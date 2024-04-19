@@ -183,6 +183,7 @@
     // text that is masked (to avoid text overflow)
     leaf
       .append("text")
+      .attr("fill", "currentColor")
       .attr("clip-path", d => d.clipUid)
       .selectAll("tspan")
       .data(d =>
