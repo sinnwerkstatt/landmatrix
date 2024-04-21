@@ -15,7 +15,7 @@ from .utils.geojson import is_feature_collection
 def test_gis_export_locations() -> None:
     client = APIClient()
 
-    response: Response = client.get("/api/gis_export/locations/")
+    response: Response = client.get("/api/gis_export/locations/?format=json")
 
     assert response.status_code == status.HTTP_200_OK
     assert response["Content-Disposition"] == "attachment; filename=locations.geojson"
@@ -27,7 +27,7 @@ def test_gis_export_locations() -> None:
 def test_gis_export_areas() -> None:
     client = APIClient()
 
-    response: Response = client.get("/api/gis_export/areas/")
+    response: Response = client.get("/api/gis_export/areas/?format=json")
 
     assert response.status_code == status.HTTP_200_OK
     assert response["Content-Disposition"] == "attachment; filename=areas.geojson"
