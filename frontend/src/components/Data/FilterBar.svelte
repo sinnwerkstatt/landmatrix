@@ -426,7 +426,7 @@
               data-sveltekit-reload
               href={`/api/gis_export/locations/?${$filters.toRESTFilterArray()}&subset=${
                 $publicOnly ? "PUBLIC" : "ACTIVE"
-              }`}
+              }&format=json`}
               on:click={() => trackDownload("locations")}
             >
               <DownloadIcon />
@@ -438,7 +438,7 @@
               data-sveltekit-reload
               href={`/api/gis_export/areas/?${$filters.toRESTFilterArray()}&subset=${
                 $publicOnly ? "PUBLIC" : "ACTIVE"
-              }`}
+              }&format=json`}
               on:click={() => trackDownload("areas")}
             >
               <DownloadIcon />

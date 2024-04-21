@@ -8,7 +8,7 @@ from rest_framework.test import APIClient
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.new import Area, DealHull, DealVersion, Location
 
-from .gis_export import build_area_features, build_location_features
+from .gis_export import _build_area_features, _build_location_features
 from .utils.geojson import is_feature_collection
 
 
@@ -61,7 +61,7 @@ def test_build_location_features() -> None:
     create_test_locations()
 
     qs_deal_version = DealVersion.objects.all()
-    features = build_location_features(qs_deal_version)
+    features = _build_location_features(qs_deal_version)
 
     assert len(features) == 1
 
@@ -78,7 +78,7 @@ def test_build_area_features() -> None:
     create_test_locations()
 
     qs_deal_version = DealVersion.objects.all()
-    features = build_area_features(qs_deal_version)
+    features = _build_area_features(qs_deal_version)
 
     assert len(features) == 2
 

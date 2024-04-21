@@ -16,63 +16,70 @@ from .utils.geojson import Feature, create_feature_collection
 @api_view()
 @extend_schema(parameters=openapi_filters_parameters)
 def gis_export_areas(request: Request) -> Response:
-    qs_deal_version = get_deal_version_qs(request)
-
+    qs_deal_versions = _get_deal_version_qs(request)
     # ensure that all deal versions have locations with areas
-    qs_deal_version = qs_deal_version.filter(
+    qs_deal_version = qs_deal_versions.filter(
         locations__isnull=False,
         locations__areas__isnull=False,
     ).distinct()
 
-    area_features = build_area_features(qs_deal_version)
+    area_features = _build_area_features(qs_deal_version)
 
-    # Cannot use rest_framework Response here, it would return html page
-    # Fixme: Use fetch in frontend and write to file manually
-    return JsonResponse(
-        create_feature_collection(area_features),
-        headers={"Content-Disposition": f"attachment; filename=areas.geojson"},
-    )
+    headers = None
+    if request.query_params.get("format") == "json":
+        if deal_id := request.query_params.get("deal_id"):
+            filename = f"areas_{deal_id}.geojson"
+        else:
+            filename = f"areas.geojson"
+        headers = {"Content-Disposition": f"attachment; filename={filename}"}
+    return Response(create_feature_collection(area_features), headers=headers)
 
 
 @api_view()
 @extend_schema(parameters=openapi_filters_parameters)
 def gis_export_locations(request: Request) -> Response:
-    qs_deal_version = get_deal_version_qs(request)
-
+    qs_deal_versions = _get_deal_version_qs(request)
     # ensure that all deal versions have locations with points
-    qs_deal_version = qs_deal_version.filter(
+    qs_deal_versions = qs_deal_versions.filter(
         locations__isnull=False,
         locations__point__isnull=False,
     )
 
-    location_features = build_location_features(qs_deal_version)
+    location_features = _build_location_features(qs_deal_versions)
 
-    # Cannot use rest_framework Response here, it would return html page
-    # Fixme: Use fetch in frontend and write to file manually
-    return JsonResponse(
-        create_feature_collection(location_features),
-        headers={"Content-Disposition": f"attachment; filename=locations.geojson"},
-    )
+    headers = None
+    if request.query_params.get("format") == "json":
+        if deal_id := request.query_params.get("deal_id"):
+            filename = f"locations_{deal_id}.geojson"
+        else:
+            filename = f"locations.geojson"
+        headers = {"Content-Disposition": f"attachment; filename={filename}"}
+    return Response(create_feature_collection(location_features), headers=headers)
 
 
-def get_deal_version_qs(request: Request) -> QuerySet[DealVersion]:
+def _get_deal_version_qs(request: Request) -> QuerySet[DealVersion]:
     qs_deal_hull: QuerySet[DealHull] = DealHull.objects.visible(
         user=request.user,
         subset=request.GET.get("subset", "PUBLIC"),
-    ).filter(parse_filters(request))
+    )
+    if deal_id := request.query_params.get("deal_id"):
+        hull = qs_deal_hull.get(id=deal_id)
+        return DealVersion.objects.filter(id=hull.active_version_id).order_by("deal_id")
+
+    qs_deal_hull = qs_deal_hull.filter(parse_filters(request))
 
     return DealVersion.objects.filter(
         id__in=qs_deal_hull.values_list("active_version_id", flat=True)
     ).order_by("deal_id")
 
 
-DEAL_PROPS = dict(
+_DEAL_PROPS = dict(
     deal_id="deal__id",
     country="deal__country__name",
     region="deal__country__region__name",
 )
 
-LOCATION_PROPS = dict(
+_LOCATION_PROPS = dict(
     id="locations__nid",
     name="locations__name",
     level_of_accuracy="locations__level_of_accuracy",
@@ -82,7 +89,7 @@ LOCATION_PROPS = dict(
 )
 
 
-def build_area_features(qs: QuerySet[DealVersion]) -> list[Feature]:
+def _build_area_features(qs: QuerySet[DealVersion]) -> list[Feature]:
     return list(
         qs.annotate(
             as_feature=JSONObject(
@@ -90,15 +97,15 @@ def build_area_features(qs: QuerySet[DealVersion]) -> list[Feature]:
                 geometry="locations__areas__area",
                 properties=JSONObject(
                     type="locations__areas__type",
-                    **DEAL_PROPS,
-                    **LOCATION_PROPS,
+                    **_DEAL_PROPS,
+                    **_LOCATION_PROPS,
                 ),
             ),
         ).values_list("as_feature", flat=True)
     )
 
 
-def build_location_features(qs: QuerySet[DealVersion]) -> list[Feature]:
+def _build_location_features(qs: QuerySet[DealVersion]) -> list[Feature]:
     return list(
         qs.annotate(
             as_feature=JSONObject(
@@ -106,8 +113,8 @@ def build_location_features(qs: QuerySet[DealVersion]) -> list[Feature]:
                 geometry="locations__point",
                 properties=JSONObject(
                     type=Value("point"),
-                    **DEAL_PROPS,
-                    **LOCATION_PROPS,
+                    **_DEAL_PROPS,
+                    **_LOCATION_PROPS,
                 ),
             ),
         ).values_list("as_feature", flat=True)
