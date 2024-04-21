@@ -3,8 +3,6 @@
   import { expoOut } from "svelte/easing"
   import { tweened } from "svelte/motion"
 
-  import { contentRootElement } from "$lib/stores/basics"
-
   export let value: {
     deals: number
     text: string
@@ -20,7 +18,7 @@
       entries => {
         if (entries[0].isIntersecting) progress.set(value.deals)
       },
-      { root: $contentRootElement, threshold: 0.7 },
+      { threshold: 0.7 },
     )
     intersectionObserver.observe(countElement)
   })

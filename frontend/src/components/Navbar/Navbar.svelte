@@ -67,7 +67,7 @@
       <LanguageSwitch />
     </li>
     <li class="flex items-center">
-      <button on:click={toggleDarkMode}>
+      <button on:click={toggleDarkMode} aria-label="Dark mode toggle">
         <SunSolidIcon class="h-6 w-6 dark:hidden" />
         <MoonSolidIcon class="hidden h-6 w-6 dark:block" />
       </button>

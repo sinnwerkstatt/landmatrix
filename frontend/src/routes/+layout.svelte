@@ -4,9 +4,6 @@
   import { SvelteToast } from "@zerodevx/svelte-toast"
   import { env } from "$env/dynamic/public"
 
-  import { afterNavigate } from "$app/navigation"
-
-  import { contentRootElement } from "$lib/stores/basics"
   import type { User } from "$lib/types/user"
 
   import LightboxImage from "$components/LightboxImage.svelte"
@@ -34,20 +31,18 @@
       scope.setUser({ id: (data.user as User).username })
     }
   }
-
-  afterNavigate(() => $contentRootElement?.scrollTo(0, 0))
 </script>
 
-<Messages />
-<NavigationLoader />
+<div class="grid h-screen">
+  <div>
+    <Messages />
+    <NavigationLoader />
+    <Navbar />
+  </div>
 
-<Navbar />
-
-<div
-  bind:this={$contentRootElement}
-  class="h-[calc(100vh-70px)] overflow-x-auto transition-colors dark:bg-gray-900"
->
-  <slot />
+  <div class="h-full overflow-y-auto transition-colors dark:bg-gray-900">
+    <slot />
+  </div>
 </div>
 
 {#if env.PUBLIC_MATOMO_URL && env.PUBLIC_MATOMO_SITE_ID}

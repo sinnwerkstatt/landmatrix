@@ -33,8 +33,6 @@ if (browser) {
   bindIsMobileToScreenInnerWidth()
 }
 
-export const contentRootElement = writable<HTMLElement>()
-
 export const isDarkMode = writable(false)
 export const toggleDarkMode = () => {
   if (document.documentElement.classList.contains("dark")) {
