@@ -13,6 +13,8 @@
   import ManageHeader from "$components/New/ManageHeader.svelte"
 
   export let deal: DealHull
+
+  $: activeVersion = deal.selected_version.id === deal.active_version_id
 </script>
 
 <ManageHeader object={deal}>
@@ -36,11 +38,14 @@
     <div class="flex items-center gap-4 bg-gray-600 px-2 py-1 text-white">
       <div class="flex items-center gap-1 text-lg">
         {#if deal.selected_version.is_public}
-          <EyeIcon class="h-6 w-6 text-orange" /> {$_("Publicly visible")}
+          <EyeIcon class="h-6 w-6 text-orange" />
+          {activeVersion ? $_("Publicly visible") : $_("Will be publicly visible")}
         {:else}
           <EyeSlashIcon class="h-6 w-6 text-gray-100" />
           <span class="text-gray-100 dark:text-white">
-            {$_("Not publicly visible")}
+            {activeVersion
+              ? $_("Not publicly visible")
+              : $_("Will not be publicly visible")}
           </span>
         {/if}
       </div>
