@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from "svelte"
+  import { onDestroy, onMount } from "svelte"
   import { expoOut } from "svelte/easing"
   import { tweened } from "svelte/motion"
 
@@ -11,39 +11,26 @@
     text_below: string
   }
 
-  let element: HTMLElement
-  let countElement: HTMLElement
   const progress = tweened(0, { duration: 3000, easing: expoOut })
-  let countElementInWindow = false
-  $: countElementInWindow
 
-  async function checkPosition() {
-    if (countElementInWindow) {
-      await progress.set(value.deals)
-    } else setTimeout(() => checkPosition().then(), 3000)
-  }
-  async function setProgress() {
-    await progress.set(value.deals)
-    setTimeout(() => setProgress(), 3000)
-  }
-
+  let countElement: HTMLElement
+  let intersectionObserver: IntersectionObserver
   onMount(async () => {
-    checkPosition().then()
-
-    $contentRootElement.addEventListener("scroll", () => {
-      countElementInWindow =
-        countElement?.getBoundingClientRect().bottom < window.innerHeight
-
-      if (countElementInWindow) {
-        setProgress()
-      }
-    })
+    intersectionObserver = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting) progress.set(value.deals)
+      },
+      { root: $contentRootElement, threshold: 0.7 },
+    )
+    intersectionObserver.observe(countElement)
+  })
+  onDestroy(() => {
+    if (intersectionObserver) intersectionObserver.disconnect()
   })
 </script>
 
 <div
   class="content-fit container mx-auto my-20 bg-[url('/images/Background_hoehenlinien.png')] bg-contain p-6 text-center dark:bg-[url('/images/Background_hoehenlinien_dark.png')]"
-  bind:this={element}
 >
   <h3 class="heading1 dark:text-white">{value.text}</h3>
   <p class="display1 text-pelorous" bind:this={countElement}>
