@@ -182,13 +182,15 @@ module.exports = {
         },
         "a-lavender": "#E4E1FF",
         "a-gray-ring": "#E5EAF3",
+        "a-blue": "#43B7B5",
       },
       dropShadow: {
         marker: "3.5px 2.5px 0px rgba(0, 0, 0, 0.35)",
       },
       boxShadow: {
         nav: "0px 4px 4px rgba(0, 0, 0, 0.25)",
-        "a-md": "0px 2px 4px 0px rgba(31, 41, 55, 0.06), 0px 4px 6px 0px rgba(31, 41, 55, 0.10)"
+        "a-md":
+          "0px 2px 4px 0px rgba(31, 41, 55, 0.06), 0px 4px 6px 0px rgba(31, 41, 55, 0.10)",
       },
       animation: {
         fadeToWhite: "fadeToWhite 1s ease-in-out normal forwards",

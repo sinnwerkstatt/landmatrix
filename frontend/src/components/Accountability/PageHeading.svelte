@@ -9,7 +9,8 @@
 <div class="p-4 flex gap-4">
     {#if !$openedFilterBar}
         <button on:click={() => { $openedFilterBar = true }}
-                transition:slide={{ duration: 200, easing: quintOut, axis: 'x' }}>
+                in:slide={{ duration: 800, easing: quintOut, axis: 'x' }}
+                out:slide={{ duration: 200, easing: quintOut, axis: 'x' }} >
             <IconExpand />
         </button>
     {/if}

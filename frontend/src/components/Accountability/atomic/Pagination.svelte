@@ -12,7 +12,7 @@
     export let rowHeight = "56"
 
     $: boxHeight = box?.getBoundingClientRect().height;
-    $: rowsByPage = Math.floor(boxHeight / rowHeight);
+    $: rowsByPage = boxHeight >= rowHeight ? Math.floor(boxHeight / rowHeight) : 4;
     $: totalPages = Math.ceil(dataset.length / rowsByPage);
 
     $: end = currentPage * rowsByPage;
