@@ -7,7 +7,7 @@
     import IconLockClosed from "../icons/IconLockClosed.svelte"
 
     export let label = "Label"
-    export let open = true
+    export let open = false
     export let locked = false
     export let notification = false
     export let count = 0

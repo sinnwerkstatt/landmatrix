@@ -9,6 +9,11 @@
         { id: 3, name: "Queensland – Forest", position: 2 }
     ];
 
+    let myProjects = [
+        { id: 10, name: "South Africa – In negotiation" },
+        { id: 20, name: "Albania" }
+    ];
+
     // $: console.log(bookmarked)
 
     function handleEdit(event) {
@@ -26,14 +31,17 @@
 <div class="h-fit flex flex-col overflow-hidden">
     <SidebarTab label="All deals" active={true} />
 
-    <div class="overflow-scroll">
+    <div class="overflow-auto">
         <Section title="Bookmarked projects" on:edit on:bookmark>
             <SortableList bind:items={bookmarked} on:edit={handleEdit} on:bookmark={handleBookmark} />
         </Section>
         
         <Section title="My projects">
-            <SidebarTab id={10} label="South Africa – In negotiation" menu={true} handle={false} on:edit={handleEdit} on:bookmark={handleBookmark} />
-            <SidebarTab id={20} label="Albania" menu={true} handle={false} on:edit={handleEdit} on:bookmark={handleBookmark} />
+            {#each myProjects as { id, name }, i }
+                {@const menuPosition = i+1 == myProjects.length ? "top" : "bottom" }
+                <SidebarTab {id} label={name} menu={true} handle={false} on:edit={handleEdit} on:bookmark={handleBookmark}
+                            {menuPosition} />
+            {/each}
         </Section>
     </div>
 </div>

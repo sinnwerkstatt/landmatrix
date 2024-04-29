@@ -70,11 +70,13 @@
 <ul class="flex flex-col gap-2" 
     on:dragover|preventDefault={(e) => {handleDragover(e, container)}} bind:this={container}>
     {#each items as { id, name, position }, i}
+        {@const imax = items.length}
+        {@const menuPosition = imax - 1 > i ? "bottom" : "top" }
         <li bind:this={refs[i]} {id} class="select-none" style="opacity: 1;"
             draggable="false"
             on:dragstart={(e) => {handleDragstart(e, i)}} on:dragend={(e) => {handleDragend(e, i)}} >
 
-            <SidebarTab {id} label={name} handle={true} menu={true} on:edit on:bookmark />
+            <SidebarTab {id} label={name} handle={true} menu={true} on:edit on:bookmark {menuPosition} />
 
         </li>
     {/each}

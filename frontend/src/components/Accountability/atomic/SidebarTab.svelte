@@ -11,20 +11,24 @@
     let box:HTMLElement
     let visibleMenu = false
     let position = "bottom"
-
+    
     export let id:number
     export let label = "label"
     export let state = "default"
     export let menu = false
     export let handle = false
     export let active = false
+    export let menuPosition = "auto"
 
     function showMenu() {
-        const y = box.getBoundingClientRect().y
-        const height = box.getBoundingClientRect().height
-        const center = y + height / 2
-        
-        position = center < window.innerHeight * 0.6 ? "bottom" : "top"
+        if (menuPosition == "auto") {
+            const y = box.getBoundingClientRect().y
+            const height = box.getBoundingClientRect().height
+            const center = y + height / 2
+            position = center < window.innerHeight * 0.6 ? "bottom" : "top"
+        } else {
+            position = menuPosition
+        }
         visibleMenu = true
     }
 
@@ -41,7 +45,7 @@
 </script>
 
 <div class="relative">
-    <button class="{state}" class:active bind:this={box} on:click={showMenu}>
+    <button class="wrapper {state}" class:active bind:this={box} >
             <div class="flex items-center gap-2">
                 {#if handle}
                     <span class="shrink-0 cursor-move" draggable="true"><IconMove /></span>
@@ -49,12 +53,12 @@
                 {label}
             </div>
             {#if menu}
-                <span class="text-a-gray-400"><IconEllipsis /></span>
+                <button class="text-a-gray-400" on:click={showMenu}><IconEllipsis /></button>
             {/if}
     </button>
 
     <div class="menu absolute {position} right-0 z-20">
-        <DropdownMenu bind:visible={visibleMenu}>
+        <DropdownMenu bind:visible={visibleMenu} >
             <DropdownMenuItem icon="check" on:click={handleEdit}>Edit</DropdownMenuItem>
             <DropdownMenuItem icon="bookmark" on:click={handleBookmark}>Unbookmark</DropdownMenuItem>
         </DropdownMenu>
@@ -63,7 +67,7 @@
 
 
 <style>
-    button {
+    .wrapper {
         @apply flex items-center justify-between gap-2;
         @apply px-4;
         @apply h-14 w-full;
@@ -72,13 +76,17 @@
         @apply bg-white;
         @apply border-b-2 border-a-gray-200;
     }
-    button:hover,
-    button.active {
+    .wrapper:hover,
+    .wrapper.active {
         @apply bg-a-gray-100;
         @apply border-transparent rounded-lg;
     }
 
     .menu.top {
-        @apply -top-[4.5rem];
+        @apply -top-[4rem];
+    }
+
+    .menu.bottom {
+        @apply top-12;
     }
 </style>

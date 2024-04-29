@@ -18,4 +18,15 @@
     :global(body) {
         @apply font-inter font-medium text-a-sm text-a-gray-900;
     }
+
+    :global(::-webkit-scrollbar) {
+        @apply w-1;
+        @apply rounded-full;
+    }
+    :global(::-webkit-scrollbar-track) {
+        @apply bg-a-gray-200 rounded-full;
+    }
+    :global(::-webkit-scrollbar-thumb) {
+        @apply bg-a-gray-800 rounded-full;
+    }
 </style>

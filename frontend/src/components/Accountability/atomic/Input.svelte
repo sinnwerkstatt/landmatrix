@@ -9,17 +9,20 @@
     import IconXMark from "../icons/IconXMark.svelte"
     import IconChevron from "../icons/IconChevron.svelte"
     import IconSearch from "../icons/IconSearch.svelte"
-    import IconCheck from "../icons/IconCheck.svelte"
 
-    export let type:"text"|"number"|"multiselect" = "text"
+    export let type:"text"|"number"|"radio"|"multiselect" = "text"
     export let choices:{ value:string, label:string }[] = []
+    export let categories:{ label:string, values:string[] } = undefined
     export let value;
-
+    
+    export let readonlyCategories = false
     export let label = ""
     export let placeholder = "Placeholder"
     export let icon = ""
     export let status:"neutral"|"valid"|"invalid" = "neutral"
     export let disabled = false
+
+    export let extraClass = ""
 
     // Type number
     export let unit:string = "ha"
@@ -30,6 +33,7 @@
     // Locales
     let open = false
     let filter = ""
+    let dropdown;
 
     // Functions
     function reset() {
@@ -37,71 +41,73 @@
         status = "neutral";
     }
 
-    // function searchMatch(string, searchWord) {
-    //     return string.toLowerCase().indexOf(searchWord.toLowerCase())>=0;
-    // }
+    function useScrollIntoView(target) {
+        console.log(target);
+        target.scrollIntoView({ behavior: "smooth" });
+    }
+
 </script>
 
-<div class:disabled class="{status} wrapper wrapper-grid bg-red">
-
-    <!-- Icon -->
-    {#if icon != ""}
-        <span><IconUser size=16 /></span>
-    {/if}
-
-    <!-- Input -->
-    {#if type == "text"}
-        <input {disabled} type="text" name="name" {placeholder} bind:value class="w-full bg-transparent"
-            class:noIcon={icon == "" ? true : false} />
-
-    {:else if type == "multiselect"}
-        <button {disabled} on:click={() => { open = !open }} 
-                class="pseudo-input w-full bg-transparent text-left" class:noIcon={icon == "" ? true : false}>
-            <span class="placeholder">{placeholder}</span>
-        </button>
-
-    {:else if type == "number"}
-        <input {disabled} type="number" name="name" pattern="[0-9]+" {placeholder} bind:value {min} {max} {step}
-               class="w-full bg-transparent noIcon" on:keypress={preventNonNumericalInput} />
-    {/if}
+<div>
+    <div class:disabled class="{status} wrapper wrapper-grid">
     
-    <!-- Right item -->
-    {#if type == "text"}
-        <button {disabled} on:click={reset}><IconXMark /></button>
-    {:else if type == "multiselect"}
-        <button {disabled} on:click={() => { open = !open }} class="rotate-180"><IconChevron /></button>
-    {:else if type == "number"}
-        <span>{unit}</span>
-    {/if}
-</div>
-
-<!-- Dropdown menu for multiselect -->
-{#if type == "multiselect" && !disabled && open}
-    <div class="absolute z-10 w-[13.5rem] mt-2">
-        <DropdownMenu extraClass="pb-4" visible={open}>
+        <!-- Icon -->
+        {#if icon != ""}
+            <span><IconUser size=16 /></span>
+        {/if}
+    
+        <!-- Input -->
+        {#if type == "text"}
+            <input {disabled} type="text" name="name" {placeholder} bind:value class="w-full bg-transparent"
+                class:noIcon={icon == "" ? true : false} />
+    
+        {:else if type == "multiselect"}
+            <button {disabled} on:click={() => { open = !open }} 
+                    class="pseudo-input w-full bg-transparent text-left" class:noIcon={icon == "" ? true : false}>
+                <span class="placeholder">{placeholder}</span>
+            </button>
+    
+        {:else if type == "number"}
+            <input {disabled} type="number" name="name" pattern="[0-9]+" {placeholder} bind:value {min} {max} {step}
+                   class="w-full bg-transparent noIcon" on:keypress={preventNonNumericalInput} />
+        {/if}
+        
+        <!-- Right item -->
+        {#if type == "text"}
+            <button {disabled} on:click={reset}><IconXMark /></button>
+        {:else if type == "multiselect"}
+            <button {disabled} on:click={() => { open = !open }} class="rotate-180"><IconChevron /></button>
+        {:else if type == "number"}
+            <span>{unit}</span>
+        {/if}
+    </div>
+    
+    <!-- Dropdown menu for multiselect -->
+    {#if type == "multiselect" && !disabled && open}
+        <DropdownMenu extraClass="pb-4 absolute z-10 w-[13.5rem] {extraClass}" visible={open} >
             <div class="wrapper wrapper-grid m-4">
                 <span><IconSearch /></span>
                 <input {disabled} type="text" name="name" placeholder="Search" class="bg-transparent w-full" bind:value={filter} />
                 <button {disabled} class="text-red" on:click={() => { filter="" }}><IconXMark /></button>
             </div>
 
-            <div class="max-h-52 overflow-auto">
-                <InputCheckboxGroup choices={choices} bind:group={value} {filter} />
+            <div class="max-h-80 overflow-auto" bind:this={dropdown} use:useScrollIntoView>
+                <InputCheckboxGroup {choices} {categories} bind:group={value} {filter} {readonlyCategories} />
             </div>
         </DropdownMenu>
-    </div>
-{/if}
-
-<!-- Badges for multiselect -->
-{#if type == "multiselect" && value instanceof Array && value.length > 0}
-    <div class="mt-2 flex flex-wrap gap-1">
-        {#each value as val}
-            {@const element = choices.find((e) => e.value == val) }
-            <Badge color="neutral" button={true} {disabled} label={element?.label}
-                   on:click={() => { value = value.filter(v => v != val) }} />
-        {/each}
-    </div>
-{/if}
+    {/if}
+    
+    <!-- Badges for multiselect -->
+    {#if type == "multiselect" && value instanceof Array && value.length > 0}
+        <div class="mt-2 flex flex-wrap gap-1">
+            {#each value as val}
+                {@const element = choices.find((e) => e.value == val) }
+                <Badge color="neutral" button={true} {disabled} label={element?.label}
+                       on:click={() => { value = value.filter(v => v != val) }} />
+            {/each}
+        </div>
+    {/if}
+</div>
 
 <style>
     input,

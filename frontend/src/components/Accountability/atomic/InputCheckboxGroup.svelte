@@ -8,8 +8,7 @@
     export let categories:{ values:string[], label:string }[] = []
     export let orphansLabel = "Orphans"
     export let filter:string = ""
-    
-    // $: console.log(group)
+    export let readonlyCategories = false
 
     function getOrphans(choices, categories) {
         if (categories.length > 0) {
@@ -109,7 +108,12 @@
 
         {#each cleanCategories as { label, choices, values, checked, partiallyChecked }}
             {@const hidden = !searchMatchInArray(choices.map(e => e.label), filter)}
-            <Checkbox {label} value={label} bold={true} {checked} {partiallyChecked} {hidden} on:changed={checkCategory} />
+
+            {#if readonlyCategories}
+                <p class="m-0 px-4 my-2 text-a-gray-400 uppercase">{label}</p>
+            {:else}
+                <Checkbox {label} value={label} bold={true} {checked} {partiallyChecked} {hidden} on:changed={checkCategory} />
+            {/if}
 
             <div class="pl-4">
                 {#each choices as { label, value }}
