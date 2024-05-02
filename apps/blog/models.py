@@ -15,6 +15,7 @@ from rest_framework.fields import ListField
 from taggit.models import Tag, TaggedItemBase
 from wagtail.admin.panels import FieldPanel, FieldRowPanel, MultiFieldPanel
 from wagtail.api import APIField
+from wagtail.blocks import CharBlock
 from wagtail.fields import StreamField
 from wagtail.images import get_image_model_string
 from wagtail.images.models import SourceImageIOError
@@ -24,7 +25,8 @@ from wagtail.snippets.models import register_snippet
 from wagtail_headless_preview.models import HeadlessPreviewMixin
 
 from apps.accounts.models import User
-from apps.wagtailcms.blocks import SIMPLE_CONTENT_BLOCKS
+from apps.wagtailcms.blocks import SIMPLE_CONTENT_BLOCKS, MyDocumentChooserBlock
+
 from .utils import unique_slugify
 
 UserModel: Type[User] = get_user_model()
@@ -211,6 +213,12 @@ def limit_author_choices():
 
 class BlogPage(HeadlessPreviewMixin, Page):
     body = StreamField(SIMPLE_CONTENT_BLOCKS, use_json_field=True)
+    documents = StreamField(
+        [("document", MyDocumentChooserBlock()), ("text", CharBlock())],
+        null=True,
+        blank=True,
+        use_json_field=True,
+    )
     tags = ClusterTaggableManager(through="BlogPageTag", blank=True)
     date = models.DateField(
         "Post date",
@@ -283,6 +291,7 @@ class BlogPage(HeadlessPreviewMixin, Page):
             heading="Tags and Categories",
         ),
         FieldPanel("header_image"),
+        FieldPanel("documents"),
         FieldPanel("body", classname="full"),
     ]
 
@@ -341,6 +350,7 @@ class BlogPage(HeadlessPreviewMixin, Page):
 
     api_fields = [
         APIField("body"),
+        APIField("documents"),
         APIField("tags", ListField(source="dict_tags")),
         APIField("date"),
         APIField("header_image"),

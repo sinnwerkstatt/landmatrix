@@ -76,6 +76,14 @@ export interface BlogPage extends WagtailPage {
   excerpt: string
   categories: BlogCategory[]
   tags: BlogTag[]
+  documents: {
+    id: string
+    value: {
+      title: string
+      file: string
+      created_at: string
+    }
+  }[]
 }
 
 export interface BlogCategory {

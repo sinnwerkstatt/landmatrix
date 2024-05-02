@@ -3,6 +3,7 @@ import re
 from django.contrib.sites.models import Site
 from wagtail import blocks
 from wagtail.blocks import CharBlock, RawHTMLBlock, StructBlock
+from wagtail.documents.blocks import DocumentChooserBlock
 from wagtail.embeds.blocks import EmbedBlock
 from wagtail.fields import StreamField
 from wagtail.images.blocks import ImageChooserBlock
@@ -12,6 +13,7 @@ from wagtail.snippets.blocks import SnippetChooserBlock
 from apps.landmatrix.models.country import Country as DataCountry
 from apps.landmatrix.models.country import Region as DataRegion
 from apps.landmatrix.models.new import DealHull
+
 from .twitter import TwitterTimeline
 
 
@@ -19,6 +21,15 @@ class RichTextBlock(blocks.RichTextBlock):
     def get_api_representation(self, value, context=None):
         prep_val = self.get_prep_value(value)
         return expand_db_html(prep_val)
+
+
+class MyDocumentChooserBlock(DocumentChooserBlock):
+    def get_api_representation(self, value, context=None):
+        return {
+            "title": value.title,
+            "file": value.file.name,
+            "created_at": value.created_at,
+        }
 
 
 class ExternalLinkMixin:
