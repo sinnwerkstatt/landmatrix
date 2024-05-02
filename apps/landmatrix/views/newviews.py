@@ -378,6 +378,7 @@ class DealViewSet(HullViewSet):
             .order_by("id")
             .visible(request.user, request.GET.get("subset", "PUBLIC"))
             .filter(parse_filters(request))
+            .distinct()
             .values("id", "country_id", "fully_updated_at")
             .annotate(
                 region_id=F("country__region_id"),
@@ -655,6 +656,7 @@ class InvestorViewSet(HullViewSet):
             .visible(request.user, request.GET.get("subset", "PUBLIC"))
             .filter(confidential=False)
             .filter(parse_filters(request))
+            .distinct()
             .values_list("active_version_id", flat=True)
         )
 
