@@ -184,7 +184,7 @@ def country_investments_and_rankings(request) -> Response:
 
 @require_GET
 def deal_aggregations(request):
-    deals = DealHull.objects.public().filter(parse_filters(request))
+    deals = DealHull.objects.public().filter(parse_filters(request)).distinct()
     return JsonResponse(
         {
             "current_negotiation_status": list(

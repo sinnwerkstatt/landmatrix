@@ -651,16 +651,15 @@ class InvestorViewSet(HullViewSet):
     @extend_schema(parameters=openapi_filters_parameters)
     @action(methods=["get"], detail=False)
     def deal_filtered(self, request):
-        deals = (
+        dealversion_ids = (
             DealHull.objects.active()
             .visible(request.user, request.GET.get("subset", "PUBLIC"))
             .filter(confidential=False)
             .filter(parse_filters(request))
-            .distinct()
             .values_list("active_version_id", flat=True)
         )
 
-        ret = InvestorHull.objects.active().filter(child_deals__in=deals)
+        ret = InvestorHull.objects.active().filter(child_deals__in=dealversion_ids)
 
         if investor_id := request.GET.get("parent_company"):
             ret = ret.filter(id=investor_id)

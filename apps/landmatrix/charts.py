@@ -53,18 +53,20 @@ def investmentsdict():
 
 
 def get_deal_top_investments(request):
-    dh = DealHull.objects.active().filter(parse_filters(request))
-    deals = DealVersion.objects.filter(id__in=dh.values_list("active_version_id"))
+    dealhull_qs = DealHull.objects.visible(
+        request.user, request.GET.get("subset", "PUBLIC")
+    ).filter(parse_filters(request))
 
-    investors = InvestorHull.objects.active()
+    investors = InvestorHull.objects.visible(
+        request.user, request.GET.get("subset", "PUBLIC")
+    )
 
     incoming = investmentsdict()
     outgoing = investmentsdict()
 
     for deal_country_id, investor_country_id, size in (
-        DealTopInvestors.objects.filter(
-            investorhull__in=investors, dealversion__in=deals
-        )
+        DealTopInvestors.objects.filter(investorhull__in=investors)
+        .filter(dealversion_id__in=dealhull_qs.values_list("active_version_id"))
         .values_list(
             "dealversion__deal__country_id",
             "investorhull__active_version__country_id",

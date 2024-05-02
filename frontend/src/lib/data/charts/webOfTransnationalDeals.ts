@@ -184,8 +184,8 @@ export function LandMatrixRadialSpider(
     .call(text =>
       text.append("title").text(
         d => `${d.data.name}
-      ${d.outgoing.length} investing countries
-      investing in ${d.incoming.length} countries`,
+  • ${d.outgoing.length} investing countries
+  • investing in ${d.incoming.length} countries`,
       ),
     )
 

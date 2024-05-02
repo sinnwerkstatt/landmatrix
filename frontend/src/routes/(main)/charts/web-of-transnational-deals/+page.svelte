@@ -3,7 +3,7 @@
   import { _ } from "svelte-i18n"
 
   import type { EdgeBundlingData } from "$lib/data/charts/webOfTransnationalDeals"
-  import { filters, FilterValues } from "$lib/filters"
+  import { filters, FilterValues, publicOnly } from "$lib/filters"
   import { chartDescriptions } from "$lib/stores"
   import { isMobile } from "$lib/stores/basics"
 
@@ -20,8 +20,9 @@
   const fetchTransnationalDeals = async (fltrs: FilterValues) => {
     const f1 = new FilterValues().copyNoCountry(fltrs)
 
+    const subset = $publicOnly ? "PUBLIC" : "ACTIVE"
     const ret = await fetch(
-      `/api/charts/web_of_transnational_deals/?${f1.toRESTFilterArray()}`,
+      `/api/charts/web_of_transnational_deals/?subset=${subset}&${f1.toRESTFilterArray()}`,
     )
     transnationalDeals = await ret.json()
   }
