@@ -33,7 +33,7 @@
   }
 </script>
 
-<div class="grid h-screen">
+<div id="main-content" class="grid h-screen">
   <div>
     <Messages />
     <NavigationLoader />
@@ -58,3 +58,9 @@
 />
 
 <LightboxImage />
+
+<style>
+  #main-content {
+    grid-template-rows: auto 1fr;
+  }
+</style>
