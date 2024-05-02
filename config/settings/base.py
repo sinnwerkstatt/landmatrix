@@ -180,6 +180,7 @@ WAGTAIL_HEADLESS_PREVIEW = {
 
 # Django REST Framework settings
 REST_FRAMEWORK = {
+    "COERCE_DECIMAL_TO_STRING": False,
     "DEFAULT_AUTHENTICATION_CLASSES": (
         # "rest_framework.authentication.BasicAuthentication",
         "rest_framework.authentication.SessionAuthentication",
