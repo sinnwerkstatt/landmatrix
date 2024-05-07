@@ -1,4 +1,5 @@
 import json
+from django.utils.translation import gettext_lazy as _
 
 from django.core.exceptions import PermissionDenied
 from django.db.models import F, Q, Count, Sum, Case, When, Value, CharField
@@ -13,6 +14,7 @@ from rest_framework.exceptions import NotAuthenticated, PermissionDenied
 from rest_framework.response import Response
 from wagtail.rich_text import expand_db_html
 
+from apps.accounts.models import User
 from apps.api.serializers import (
     ChartDescriptions,
     SearchedInvestorSerializer,
@@ -232,6 +234,23 @@ def workflow_info_add_reply(
         }
     ]
     wfi.save()
+
+    sending_user = (
+        f"{request.user.first_name} {request.user.last_name} ({request.user.username})"
+    )
+    comment = f"The user {sending_user} left the following response at {wfi.get_object_url()}:\n\n"
+    comment += f'"{data["comment"]}"'
+
+    relevant_user_ids = [wfi.from_user_id, wfi.to_user_id] + [
+        x["user_id"] for x in wfi.replies
+    ]
+    receiving_users = User.objects.filter(id__in=relevant_user_ids).exclude(
+        id=request.user.id
+    )
+    for user in receiving_users:
+        user: User
+        user.email_user("[Land Matrix] " + _("New feedback reply"), comment)
+
     return JsonResponse({"ok": True})
 
 

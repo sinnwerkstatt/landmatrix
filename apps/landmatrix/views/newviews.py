@@ -116,7 +116,7 @@ def _send_comment_to_user(
         message = _(f"{from_user.full_name} has updated {obj_desc}:")
     message += "\n\n" + _(f"Please review at {base_url + obj_url}")
 
-    receiver.email_user("[Landmatrix] " + _("New comment"), message)
+    receiver.email_user("[Land Matrix] " + _("New comment"), message)
 
 
 class VersionViewSet(viewsets.ReadOnlyModelViewSet):

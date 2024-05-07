@@ -17,6 +17,7 @@ from django.utils.translation import gettext as _
 from django_pydantic_field import SchemaField
 from nanoid import generate
 from rest_framework.exceptions import PermissionDenied, ParseError
+from wagtail.models import Site
 
 from apps.accounts.models import User, UserRole
 from apps.landmatrix.models import choices
@@ -1886,6 +1887,12 @@ class _WorkflowInfo(models.Model):
             "replies": self.replies,
         }
 
+    def get_object_url(self):
+        _site = Site.objects.get(is_default_site=True)
+        _port = f":{_site.port}" if _site.port not in [80, 443] else ""
+        base_url = f"http{'s' if _site.port == 443 else ''}://{_site.hostname}{_port}"
+        return base_url
+
     class Meta:
         abstract = True
 
@@ -1916,6 +1923,10 @@ class DealWorkflowInfo(_WorkflowInfo):
         d.update({"deal_id": self.deal_id, "deal_version_id": self.deal_version_id})
         return d
 
+    def get_object_url(self):
+        base_url = super().get_object_url()
+        return base_url + f"/deal/{self.deal_id}/"
+
 
 class InvestorWorkflowInfo(_WorkflowInfo):
     investor = models.ForeignKey(
@@ -1938,6 +1949,10 @@ class InvestorWorkflowInfo(_WorkflowInfo):
             }
         )
         return d
+
+    def get_object_url(self):
+        base_url = super().get_object_url()
+        return base_url + f"/investor/{self.investor_id}/"
 
 
 class DealTopInvestors(models.Model):
