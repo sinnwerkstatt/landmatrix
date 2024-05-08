@@ -348,10 +348,21 @@ class BlogPage(HeadlessPreviewMixin, Page):
             for tag in self.tags.all()
         ]
 
+    def categories_names(self):
+        # NOTE We are only interested in a subset of categories!
+        relevant_cats = [
+            "accountability",
+            "analytical-report",
+            "country-profile",
+            "deal-narratives",
+        ]
+        return [cat.name for cat in self.blog_categories.filter(slug__in=relevant_cats)]
+
     api_fields = [
         APIField("body"),
         APIField("documents"),
         APIField("tags", ListField(source="dict_tags")),
         APIField("date"),
         APIField("header_image"),
+        APIField("categories_names"),
     ]

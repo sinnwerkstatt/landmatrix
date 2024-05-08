@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { tracker } from "@sinnwerkstatt/sveltekit-matomo"
   import { _ } from "svelte-i18n"
 
   import FilePdfIcon from "$components/icons/FilePdfIcon.svelte"
@@ -8,6 +9,12 @@
   import WagtailBird from "$components/Wagtail/WagtailBird.svelte"
 
   export let data
+
+  function trackDownload(fileTitle: string) {
+    // Note: filtering the categories we're interested in happens in the backend
+    if (data.page.categories_names.length > 0 && $tracker)
+      $tracker.trackEvent("Resources", data.page.categories_names[0], fileTitle)
+  }
 </script>
 
 <div class="mb-10 flex flex-col xl:mb-16">
@@ -40,8 +47,9 @@
             {:else if doc.type === "document"}
               <a
                 class="flex w-fit items-center gap-2 border border-orange-500 bg-orange-100 px-4 py-2 text-black hover:bg-orange-600 hover:text-white"
-                href={doc.value.file}
+                href="/{doc.value.file}"
                 target="_blank"
+                on:click={() => trackDownload(doc.value.title)}
               >
                 <FilePdfIcon class="h-6 w-6" />
                 {doc.value.title}
