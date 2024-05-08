@@ -5,6 +5,7 @@
   import NewFooter from "$components/NewFooter.svelte"
   import PageTitle from "$components/PageTitle.svelte"
   import Streamfield from "$components/Streamfield.svelte"
+  import WagtailBird from "$components/Wagtail/WagtailBird.svelte"
 
   export let data
 </script>
@@ -56,3 +57,7 @@
 </div>
 
 <NewFooter />
+
+{#if data.user?.is_superuser || data.user?.is_staff}
+  <WagtailBird page={data.page} />
+{/if}

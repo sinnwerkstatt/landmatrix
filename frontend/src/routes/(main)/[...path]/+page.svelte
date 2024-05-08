@@ -6,6 +6,8 @@
   import { pageQuery } from "$lib/queries"
   import { loading } from "$lib/stores/basics"
 
+  import WagtailBird from "$components/Wagtail/WagtailBird.svelte"
+
   import BasePage from "./BasePage.svelte"
   import HomePage from "./HomePage.svelte"
   import ObservatoryPage from "./ObservatoryPage.svelte"
@@ -40,4 +42,8 @@
   <svelte:component this={wagtailPage} page={data.page} />
 {:else}
   Dieser Seitentyp existiert nicht: {data.page?.meta?.type}
+{/if}
+
+{#if data.user?.is_superuser || data.user?.is_staff}
+  <WagtailBird page={data.page} />
 {/if}
