@@ -4,7 +4,6 @@
     import InputCheckboxGroup from "./InputCheckboxGroup.svelte"
     import InputRadioGroup from "./InputRadioGroup.svelte"
     import Input from "./Input.svelte"
-    import Button from "../Button.svelte"
 
     const regionChoices = [
         { label: "First region", value: "1" },

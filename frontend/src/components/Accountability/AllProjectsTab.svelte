@@ -4,6 +4,8 @@
     import IconFilter from "./icons/IconFilter.svelte"
     import Section from "./atomic/Section.svelte"
     import Pagination from "./atomic/Pagination.svelte"
+    import Modal from "$components/Accountability/Modal.svelte"
+    import Input from "./atomic/Input.svelte"
 
     const projects = [
         { id: 11, name: "Albania" },
@@ -21,11 +23,14 @@
         { id: 23, name: "Components" }
     ]
 
+    // Open modal to filter projects
+    let openModal = true
+
     // Alphabetically sort projects
     let sortedProjects = projects.sort((a, b) => a.name.localeCompare(b.name))
 
     // Bind page content from Pagination
-    let pageContent = [];
+    let pageContent = []
 
     // Swap alphabetical sorting each time the button is clicked
     function sortProjects() { sortedProjects = sortedProjects.reverse() }
@@ -40,10 +45,19 @@
         const projectId = event.detail.id
         console.log("Bookmark action: " + projectId)
     }
+
+    // Tmp users
+    const users = [
+        { value: "10", label: "Nikka", initials: "NR" },
+        { value: "11", label: "Angela", initials: "AH" },
+        { value: "12", label: "Jérémy", initials: "JB" },
+        { value: "13", label: "Mohamadou", initials: "MD" }
+    ]
+
 </script>
 
 <div class="flex flex-col my-2 h-full overflow-hidden">
-    <Button label="Filter projects (0)" type="outline" style="neutral" tailwind="self-center">
+    <Button label="Filter projects (0)" type="outline" style="neutral" tailwind="self-center" on:click={() => openModal = true}>
         <span slot="icon-after"><IconFilter /></span>
     </Button>
 
@@ -57,3 +71,11 @@
         </Section>
     </div>
 </div>
+
+<Modal bind:open={openModal} title="Filter projects" confirmLabel="Filter" extraClass="overflow-visible" >
+    <div class="h-fit">
+        <Input type="text" label="Name" placeholder="Name" icon="search" />
+        <Input type="text" label="Description" placeholder="Description" icon="search" />
+        <Input type="select" label="Project creator" placeholder="Search for user" choices={users} />
+    </div>
+</Modal>

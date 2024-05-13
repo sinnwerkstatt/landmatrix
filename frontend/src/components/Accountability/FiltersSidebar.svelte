@@ -12,7 +12,7 @@
     import Card from "./atomic/Card.svelte"
     import CardTable from "./atomic/CardTable.svelte"
 
-    let openSaveModal = true
+    let openSaveModal = false
 
     let form = {
         name: undefined,
@@ -35,6 +35,10 @@
         { label: "Last modification:", value: undefined },
         { label: "Last modification by:", value: undefined }
     ]
+
+    function clearFilters() {
+        console.log("Clear all");
+    }
  
 </script>
 

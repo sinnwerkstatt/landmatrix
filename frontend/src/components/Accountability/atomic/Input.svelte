@@ -11,7 +11,7 @@
     import IconChevron from "../icons/IconChevron.svelte"
     import IconSearch from "../icons/IconSearch.svelte"
 
-    export let type:"text"|"textarea"|"number"|"radio"|"multiselect" = "text"
+    export let type:"text"|"textarea"|"number"|"radio"|"select"|"multiselect" = "text"
     export let choices:{ value:string, label:string }[] = []
     export let categories:{ label:string, values:string[] } = undefined
     export let value
@@ -20,7 +20,7 @@
     export let readonlyCategories = false
     export let label = ""
     export let placeholder = "Placeholder"
-    export let icon = ""
+    export let icon:""|"search"|"user" = ""
     export let status:"neutral"|"valid"|"invalid" = "neutral"
     export let disabled = false
 
@@ -39,7 +39,13 @@
     // Locales
     let open = false
     let filter = ""
-    let dropdown;
+    let dropdown
+    
+    const icons = [
+        { icon: "", component: false },
+        { icon: "search", component: IconSearch },
+        { icon: "user", component: IconUser }
+    ]
 
     // Functions
     function reset() {
@@ -50,6 +56,10 @@
     function useScrollIntoView(target) {
         console.log(target);
         target.scrollIntoView({ behavior: "smooth" });
+    }
+
+    function searchMatch(string:string, filter:string) {
+        return string.toLowerCase().indexOf(filter.toLowerCase())>=0;
     }
 
 </script>
@@ -64,14 +74,12 @@
     
         <!-- Icon -->
         {#if icon != ""}
-            <span><IconUser size=16 /></span>
+            <span><svelte:component this={icons.find(e => e.icon == icon)?.component} size=24 /></span>
         {/if}
-
-
     
         <!-- Input -->
         {#if type == "text"}
-            <input {disabled} type="text" name="name" {placeholder} bind:value class="w-full bg-transparent"
+            <input {disabled} type="text" name="name" {placeholder} bind:value class="w-full bg-transparent col-span-2"
                 class:noIcon={icon == "" ? true : false} />
 
         {:else if type == "textarea"}
@@ -83,6 +91,19 @@
                     class="pseudo-input w-full bg-transparent text-left" class:noIcon={icon == "" ? true : false}>
                 <span class="placeholder">{placeholder}</span>
             </button>
+
+        {:else if type == "select"}
+            <button {disabled} on:click={() => { open = !open }} 
+                    class="pseudo-input w-full bg-transparent text-left" class:noIcon={icon == "" ? true : false}
+                    class:extraButton={value ? true : false} >
+                {#if value}
+                    <span class="text-a-gray-900">
+                        {(choices.find(e => e.value == value))?.label}
+                    </span>
+                {:else}
+                    <span class="placeholder">{placeholder}</span>
+                {/if}
+            </button>
     
         {:else if type == "number"}
             <input {disabled} type="number" name="name" pattern="[0-9]+" {placeholder} bind:value {min} {max} {step}
@@ -92,15 +113,23 @@
         <!-- Right item -->
         {#if type == "text"}
             <button {disabled} on:click={reset}><IconXMark /></button>
-        {:else if type == "multiselect"}
+        {/if}
+
+        {#if type == "multiselect" || type == "select"}
             <button {disabled} on:click={() => { open = !open }} class="rotate-180"><IconChevron /></button>
-        {:else if type == "number"}
+        {/if}
+
+        {#if type == "select" && value}
+            <button {disabled} on:click={reset}><IconXMark /></button>
+        {/if}
+
+        {#if type == "number"}
             <span>{unit}</span>
         {/if}
     </div>
     
-    <!-- Dropdown menu for multiselect -->
-    {#if type == "multiselect" && !disabled && open}
+    <!-- Dropdown menu for select or multiselect -->
+    {#if ["select", "multiselect"].includes(type) && !disabled && open}
         <DropdownMenu extraClass="pb-4 absolute z-10 w-[13.5rem] {extraClass}" visible={open} >
             <div class="wrapper wrapper-grid m-4">
                 <span><IconSearch /></span>
@@ -109,7 +138,22 @@
             </div>
 
             <div class="max-h-80 overflow-auto" bind:this={dropdown} use:useScrollIntoView>
-                <InputCheckboxGroup {choices} {categories} bind:group={value} {filter} {readonlyCategories} />
+
+                {#if type == "multiselect"}
+                    <InputCheckboxGroup {choices} {categories} bind:group={value} {filter} {readonlyCategories} />
+                {:else}
+                    <div class="flex flex-col">
+                        {#each choices as choice}
+                        {@const hidden = !searchMatch(choice.label, filter)}
+                            <label class="px-4 py-2 cursor-pointer hover:bg-a-gray-100" {hidden}>
+                                <input type="radio" name="selection" value={choice.value} bind:group={value}
+                                       class="appearance-none" />
+                                {choice.label}
+                            </label>
+                        {/each}
+                    </div>
+                {/if}
+
             </div>
         </DropdownMenu>
     {/if}
@@ -138,16 +182,27 @@
     .pseudo-input {
         @apply relative z-0;
         @apply outline-none;
+        @apply col-span-2;
+    }
+
+    input.extraButton,
+    .pseudo-input.extraButton {
+        @apply col-span-1;
     }
 
     input.noIcon,
     .pseudo-input.noIcon {
+        @apply col-start-1 col-span-3;
+    }
+
+    input.noIcon.extraButton,
+    .pseudo-input.noIcon.extraButton {
         @apply col-start-1 col-span-2;
     }
 
     .wrapper-grid {
         display: grid;
-        grid-template-columns: 16px auto 16px;
+        grid-template-columns: 16px auto 16px 16px;
         @apply items-center gap-2.5;
     }
 
