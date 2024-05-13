@@ -1,12 +1,12 @@
-<script>
+<script lang="ts">
     import BubbleCount from "$components/Accountability/atomic/BubbleCount.svelte"
 
     export let label = "Label"
-    export let type = "fill" // fill, outline, ghost
-    export let style = "primary" // primary, neutral, error
-    export let size = "base" // base, sm, lg
-    export let count = 0 // 0 or any number
-    export let tailwind = "" // additional tailwind classes
+    export let type:"fill"|"outline"|"ghost" = "fill"
+    export let style:"primary"|"neutral"|"error" = "primary"
+    export let size:"base"|"sm"|"lg" = "base"
+    export let count:number = 0
+    export let tailwind:string = "" // additional tailwind classes
 
     export let disabled = false
 </script>

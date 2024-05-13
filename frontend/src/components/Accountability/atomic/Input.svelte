@@ -4,16 +4,18 @@
     import DropdownMenu from "./DropdownMenu.svelte"
     import InputCheckboxGroup from "./InputCheckboxGroup.svelte"
     import Badge from "./Badge.svelte"
+    import Avatar from "./Avatar.svelte"
 
     import IconUser from "../icons/IconUser.svelte"
     import IconXMark from "../icons/IconXMark.svelte"
     import IconChevron from "../icons/IconChevron.svelte"
     import IconSearch from "../icons/IconSearch.svelte"
 
-    export let type:"text"|"number"|"radio"|"multiselect" = "text"
+    export let type:"text"|"textarea"|"number"|"radio"|"multiselect" = "text"
     export let choices:{ value:string, label:string }[] = []
     export let categories:{ label:string, values:string[] } = undefined
-    export let value;
+    export let value
+    export let badgeType:"tag"|"avatar" = "tag"
     
     export let readonlyCategories = false
     export let label = ""
@@ -23,6 +25,10 @@
     export let disabled = false
 
     export let extraClass = ""
+
+    // Type textarea
+    export let maxlength = 280
+    export let rows = 4
 
     // Type number
     export let unit:string = "ha"
@@ -49,17 +55,28 @@
 </script>
 
 <div>
-    <div class:disabled class="{status} wrapper wrapper-grid">
+    <!-- Label -->
+    {#if label}
+        <h3 class="text-a-sm font-medium my-2">{label}</h3>
+    {/if}
+
+    <div class:disabled class="{status} wrapper wrapper-grid {type == 'textarea' ? 'h-32' : '' }">
     
         <!-- Icon -->
         {#if icon != ""}
             <span><IconUser size=16 /></span>
         {/if}
+
+
     
         <!-- Input -->
         {#if type == "text"}
             <input {disabled} type="text" name="name" {placeholder} bind:value class="w-full bg-transparent"
                 class:noIcon={icon == "" ? true : false} />
+
+        {:else if type == "textarea"}
+            <textarea {disabled} name="name" {placeholder} bind:value autocomplete="off" {maxlength}
+                   class="col-start-1 col-span-3 box-border h-full w-full resize-none bg-transparent" />
     
         {:else if type == "multiselect"}
             <button {disabled} on:click={() => { open = !open }} 
@@ -99,11 +116,17 @@
     
     <!-- Badges for multiselect -->
     {#if type == "multiselect" && value instanceof Array && value.length > 0}
-        <div class="mt-2 flex flex-wrap gap-1">
+        <div class="mt-2 flex flex-wrap gap-1 {badgeType == 'avatar' ? 'flex-col' : ''} ">
             {#each value as val}
                 {@const element = choices.find((e) => e.value == val) }
-                <Badge color="neutral" button={true} {disabled} label={element?.label}
-                       on:click={() => { value = value.filter(v => v != val) }} />
+                    {#if badgeType == "avatar"}
+                        <Avatar type="base" button={true} label={element?.label} padding={true}
+                                initials = {element?.initials}
+                                on:click={() => { value = value.filter(v => v != val) }} />
+                    {:else}
+                        <Badge color="neutral" button={true} {disabled} label={element?.label}
+                               on:click={() => { value = value.filter(v => v != val) }} />
+                    {/if}   
             {/each}
         </div>
     {/if}
@@ -111,6 +134,7 @@
 
 <style>
     input,
+    textarea,
     .pseudo-input {
         @apply relative z-0;
         @apply outline-none;

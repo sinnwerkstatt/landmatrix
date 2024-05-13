@@ -1,9 +1,14 @@
 <script lang="ts">
     import IconUser from "$components/Accountability/icons/IconUser.svelte"
+    import IconXMark from "../icons/IconXMark.svelte"
 
-    export let type = "base" // assignment, base
-    export let size = "md" // sm, md, lg, xl
+    export let type:"base"|"assignment" = "base"
+    export let size:"sm"|"md"|"lg"|"xl" = "md"
     export let initials = "JD"
+    export let label = ""
+    export let button = false
+    export let padding = false
+    export let extraClass = ""
 
     let iconSize = {
         "sm": "8",
@@ -13,11 +18,17 @@
     }
 </script>
 
-<div class="flex items-center justify-center rounded-full {type} {size}">
-    {#if type=="base"}
-        {initials}
-    {:else}
-        <IconUser size={iconSize[size]} />
+<div class="flex items-center {extraClass}" class:button class:padding>
+    <div class="flex items-center justify-center rounded-full {type} {size}">
+        {#if type=="base"}
+            {initials}
+        {:else}
+            <IconUser size={iconSize[size]} />
+        {/if}
+    </div>
+    <span class="text-sm pl-2">{label}</span>
+    {#if button}
+        <button class="text-a-gray-400" on:click><IconXMark size=24 /></button>
     {/if}
 </div>
 
@@ -47,5 +58,17 @@
     .xl {
         @apply h-[6.5rem] w-[6.5rem];
         @apply text-a-3xl;
+    }
+
+    .padding {
+        @apply p-1;
+    }
+
+    .button:hover {
+        @apply w-fit rounded-lg;
+        @apply bg-a-gray-50;
+    }
+    .button:hover > div {
+        @apply bg-a-gray-200;
     }
 </style>
