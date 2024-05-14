@@ -37,6 +37,6 @@
     }
 
     .large {
-        @apply w-full md:w-10/12 lg:w-8/12 xl:w-1/2;
+        @apply w-full md:w-10/12 lg:w-8/12 2xl:w-1/2;
     }
 </style>
