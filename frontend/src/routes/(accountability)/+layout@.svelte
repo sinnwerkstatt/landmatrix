@@ -19,6 +19,10 @@
         @apply font-inter font-medium text-a-sm text-a-gray-900;
     }
 
+    :global(a.link) {
+        @apply text-a-sm font-medium text-a-gray-900 underline underline-offset-4;
+    }
+
     :global(::-webkit-scrollbar) {
         @apply w-1;
         @apply rounded-full;

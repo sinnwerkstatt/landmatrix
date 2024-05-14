@@ -1,6 +1,8 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte"
 
+    import { page } from "$app/stores"
+
     import IconMove from "../icons/IconMove.svelte"
     import IconEllipsis from "../icons/IconEllipsis.svelte"
     import DropdownMenu from "./DropdownMenu.svelte"
@@ -17,7 +19,6 @@
     export let state = "default"
     export let menu = false
     export let handle = false
-    export let active = false
     export let menuPosition = "auto"
 
     function showMenu() {
@@ -55,7 +56,7 @@
 </script>
 
 <div class="relative">
-    <div class="wrapper {state}" class:active bind:this={box} >
+    <div class="wrapper {state}" class:active={$page.url.pathname.startsWith(path)} bind:this={box} >
             <div class="flex items-center gap-2 w-full h-full">
                 {#if handle}
                     <span class="shrink-0 cursor-move" draggable="true"><IconMove /></span>

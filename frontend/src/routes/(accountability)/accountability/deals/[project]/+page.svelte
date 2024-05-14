@@ -13,6 +13,11 @@
 
     $: updateLocalStorage($page.url.pathname)
 
+    const totalDeals = 130
+    const toScore = 100
+    const waiting = 20
+    const validated = 100
+
     // TODO: Remember to handle differently the "all deals" project with ID = 0
 
     // TODO: Remember to handle errors when a deal doesn't exist for a project (reset dealsHistory)
@@ -22,12 +27,15 @@
 <!-- <p>Project ID: {$page.params.project}</p> -->
 
 <!-- KPI cards -->
-<div>
-    <CardKPI />
-    <CardKPI />
-    <CardKPI />
+<div class="flex flex-col xl:grid xl:grid-cols-3 gap-4">
+    <CardKPI label="To score" value="{toScore}/{totalDeals}" color="neutral" icon="check" button="Go to" />
+    <CardKPI label="Waiting for review" value="{waiting}/{totalDeals}" color="orange" icon="eye" button="Go to" />
+    <CardKPI label="Validated" value="{validated}/{totalDeals}" color="green" icon="check" button="Go to" />
 </div>
 
 <!-- Map -->
+<div class="h-80 bg-a-gray-100 rounded-lg mt-4 grid place-items-center">
+    <span class="text-a-gray-400">Map placeholder</span>
+</div>
 
 <!-- Activity thread -->

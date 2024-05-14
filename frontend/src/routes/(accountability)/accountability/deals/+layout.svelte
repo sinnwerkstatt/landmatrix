@@ -10,9 +10,9 @@
     <FiltersSidebar />
     <div class="w-full px-4">
         <PageHeading />
-        <div class="flex flex-wrap gap-6 mb-6">
+        <div class="flex flex-wrap justify-between gap-6 mb-6">
             <DealsMenu />
-            <span>Users placeholder</span>
+            <span class="text-a-gray-400">Users placeholder</span>
         </div>
         <slot />
     </div>
