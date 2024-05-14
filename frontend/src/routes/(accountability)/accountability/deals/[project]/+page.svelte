@@ -3,6 +3,7 @@
     import { dealsHistory } from "$lib/accountability/stores"
 
     import CardKPI from "$components/Accountability/CardKPI.svelte"
+    import Thread from "$components/Accountability/Thread.svelte"
 
     // If currentProject =/= page.params.project, update project and empty current page and current Deal
     function updateLocalStorage(pathname) {
@@ -34,8 +35,9 @@
 </div>
 
 <!-- Map -->
-<div class="h-80 bg-a-gray-100 rounded-lg mt-4 grid place-items-center">
+<div class="h-80 bg-a-gray-100 rounded-lg my-4 grid place-items-center">
     <span class="text-a-gray-400">Map placeholder</span>
 </div>
 
 <!-- Activity thread -->
+<Thread />
