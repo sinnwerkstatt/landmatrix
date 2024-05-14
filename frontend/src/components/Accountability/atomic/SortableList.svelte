@@ -1,9 +1,13 @@
 <script lang="ts">
     // A component to create sortable lists of SidebarTab elements based
     // on an array of objects containing at least id, name and position information
+    import { createEventDispatcher } from "svelte";
+
     import SidebarTab from "./SidebarTab.svelte";
 
     let container:HTMLElement;
+
+    const dispatch = createEventDispatcher();
 
     const placeholder = [
         { id: 1, name: "Element 1", position: 0 },
@@ -76,7 +80,8 @@
             draggable="false"
             on:dragstart={(e) => {handleDragstart(e, i)}} on:dragend={(e) => {handleDragend(e, i)}} >
 
-            <SidebarTab {id} label={name} handle={true} menu={true} on:edit on:bookmark {menuPosition} />
+            <SidebarTab {id} label={name} handle={true} menu={true} {menuPosition}
+                        on:edit on:bookmark />
 
         </li>
     {/each}

@@ -6,7 +6,7 @@
     import IconExpand from "$components/Accountability/icons/IconExpand.svelte"
 </script>
 
-<div class="p-4 flex gap-4">
+<div class="py-4 flex gap-4">
     {#if !$openedFilterBar}
         <button on:click={() => { $openedFilterBar = true }}
                 in:slide={{ duration: 800, easing: quintOut, axis: 'x' }}

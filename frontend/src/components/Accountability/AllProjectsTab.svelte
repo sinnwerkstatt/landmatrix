@@ -24,7 +24,7 @@
     ]
 
     // Open modal to filter projects
-    let openModal = true
+    let openModal = false
 
     // Alphabetically sort projects
     let sortedProjects = projects.sort((a, b) => a.name.localeCompare(b.name))

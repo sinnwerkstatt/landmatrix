@@ -11,6 +11,6 @@
     ]
 </script>
 
-<Sidebar>
+<Sidebar transition={false}>
     <Tabs items={tabItems} />
 </Sidebar>

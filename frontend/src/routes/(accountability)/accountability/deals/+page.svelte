@@ -1,9 +1,12 @@
 <script lang="ts">
-    import DropdownMenu from "$components/Accountability/atomic/DropdownMenu.svelte"
-    import DropdownMenuItem from "$components/Accountability/atomic/DropdownMenuItem.svelte"
+    import { goto } from "$app/navigation"
+    import { dealsHistory } from "$lib/accountability/stores"
+
+    // Go to last Deals page opened
+    goto($dealsHistory)
+
 </script>
 
-<div class="w-full">
-    <p class="mb-6">Deals</p>
+<div>
+    Placeholder
 </div>
-

@@ -41,21 +41,31 @@
         dispatch('bookmark', { id })
         visibleMenu = false
     }
+
+    function writePath(id) {
+        if (id) {
+            return `/accountability/deals/${id}/`
+        } else {
+            return `/accountability/deals/0/`
+        }
+    }
+
+    $: path = writePath(id)
     
 </script>
 
 <div class="relative">
-    <button class="wrapper {state}" class:active bind:this={box} >
-            <div class="flex items-center gap-2">
+    <div class="wrapper {state}" class:active bind:this={box} >
+            <div class="flex items-center gap-2 w-full h-full">
                 {#if handle}
                     <span class="shrink-0 cursor-move" draggable="true"><IconMove /></span>
                 {/if}
-                {label}
+                <a class="!text-a-gray-900 !text-a-sm w-full h-full grid items-center" href={path} >{label}</a>
             </div>
             {#if menu}
                 <button class="text-a-gray-400" on:click={showMenu}><IconEllipsis /></button>
             {/if}
-    </button>
+    </div>
 
     <div class="menu absolute {position} right-0 z-20">
         <DropdownMenu bind:visible={visibleMenu} >

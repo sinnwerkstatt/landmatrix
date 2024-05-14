@@ -14,8 +14,6 @@
         { id: 20, name: "Albania" }
     ];
 
-    // $: console.log(bookmarked)
-
     function handleEdit(event) {
         const projectId = event.detail.id
         console.log("Edit action: " + projectId)
