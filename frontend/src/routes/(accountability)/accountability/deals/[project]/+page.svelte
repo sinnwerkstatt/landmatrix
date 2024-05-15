@@ -1,18 +1,18 @@
 <script lang="ts">
-    import { page } from "$app/stores"
-    import { dealsHistory } from "$lib/accountability/stores"
+    // import { page } from "$app/stores"
+    // import { dealsHistory } from "$lib/accountability/stores"
 
     import CardKPI from "$components/Accountability/CardKPI.svelte"
     import Thread from "$components/Accountability/Thread.svelte"
 
     // If currentProject =/= page.params.project, update project and empty current page and current Deal
-    function updateLocalStorage(pathname) {
-        if ($page.params.project) {
-            dealsHistory.set(pathname)
-        }
-    }
+    // function updateLocalStorage(pathname) {
+    //     if ($page.params.project) {
+    //         dealsHistory.set(pathname)
+    //     }
+    // }
 
-    $: updateLocalStorage($page.url.pathname)
+    // $: updateLocalStorage($page.url.pathname)
 
     const totalDeals = 130
     const toScore = 100
@@ -25,19 +25,21 @@
 
 </script>
 
-<!-- <p>Project ID: {$page.params.project}</p> -->
-
-<!-- KPI cards -->
-<div class="flex flex-col xl:grid xl:grid-cols-3 gap-4">
-    <CardKPI label="To score" value="{toScore}/{totalDeals}" color="neutral" icon="check" button="Go to" />
-    <CardKPI label="Waiting for review" value="{waiting}/{totalDeals}" color="orange" icon="eye" button="Go to" />
-    <CardKPI label="Validated" value="{validated}/{totalDeals}" color="green" icon="check" button="Go to" />
+<div class="">
+    <!-- <p>Project ID: {$page.params.project}</p> -->
+    
+    <!-- KPI cards -->
+    <div class="flex flex-col xl:grid xl:grid-cols-3 gap-4">
+        <CardKPI label="To score" value="{toScore}/{totalDeals}" color="neutral" icon="check" button="Go to" />
+        <CardKPI label="Waiting for review" value="{waiting}/{totalDeals}" color="orange" icon="eye" button="Go to" />
+        <CardKPI label="Validated" value="{validated}/{totalDeals}" color="green" icon="check" button="Go to" />
+    </div>
+    
+    <!-- Map -->
+    <div class="h-80 bg-a-gray-100 rounded-lg mt-4 mb-8 grid place-items-center">
+        <span class="text-a-gray-400">Map placeholder</span>
+    </div>
+    
+    <!-- Activity thread -->
+    <Thread />
 </div>
-
-<!-- Map -->
-<div class="h-80 bg-a-gray-100 rounded-lg my-4 grid place-items-center">
-    <span class="text-a-gray-400">Map placeholder</span>
-</div>
-
-<!-- Activity thread -->
-<Thread />

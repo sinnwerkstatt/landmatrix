@@ -26,7 +26,11 @@
             <IconUser size={iconSize[size]} />
         {/if}
     </div>
-    <span class="text-sm pl-2">{label}</span>
+    
+    {#if label}
+        <span class="text-sm pl-2">{label}</span>
+    {/if}
+
     {#if button}
         <button class="text-a-gray-400" on:click><IconXMark size=24 /></button>
     {/if}

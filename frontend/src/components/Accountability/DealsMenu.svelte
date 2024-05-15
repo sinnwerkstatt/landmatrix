@@ -7,27 +7,30 @@
         return "overview"
     }
 
-    function writeHref(path) {
-        let href = `/accountability/deals/${$page.params.project}/`
+    function writeHref(project, path) {
+        let href = `/accountability/deals/${project}/`
         if (path) href += `${path}/`
-        console.log(href)
         return href
     }
 
     $: currentTab = getCurrentTab($page.url.pathname)
+
+    $: hrefOverview = writeHref($page.params.project, "")
+    $: hrefScoring = writeHref($page.params.project, "scoring")
+    $: hrefResults = writeHref($page.params.project, "results")
     
 </script>
 
 <div class="flex">
     <ul class="flex justify-center gap-1">
         <li class="{ currentTab == 'overview' ? 'active' : '' }">
-            <a href="{writeHref('')}" >Overview</a>
+            <a href={hrefOverview} >Overview</a>
         </li>
         <li class="{ currentTab == 'scoring' ? 'active' : '' }">
-            <a href="{writeHref('scoring')}">Scoring</a>
+            <a href={hrefScoring} >Scoring</a>
         </li>
         <li class="{ currentTab == 'results' ? 'active' : '' }">
-            <a href="{writeHref('results')}">Results</a>
+            <a href={hrefResults} >Results</a>
         </li>
     </ul>
 </div>
