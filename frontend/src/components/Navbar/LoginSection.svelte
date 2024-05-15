@@ -85,7 +85,11 @@
             <a class="nav-link-secondary" href="/deal/add/">{$_("Add a deal")}</a>
           </li>
           <li>
-            <a class="nav-link" target="_blank" href="https://doc.landmatrix.org">
+            <a
+              class="nav-link-secondary"
+              target="_blank"
+              href="https://doc.landmatrix.org"
+            >
               {$_("Documentation")}
             </a>
           </li>

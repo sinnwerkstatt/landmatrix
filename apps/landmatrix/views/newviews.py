@@ -470,7 +470,7 @@ class DealViewSet(HullViewSet):
 
         if (
             (request.user.is_authenticated and request.user.role >= UserRole.EDITOR)
-            or dv1.created_by == request.user.id
+            or dv1.created_by_id == request.user.id
             or (dv1.status == "ACTIVATED" and dv1.is_public)
         ):
             return Response(self.get_serializer(d1).data)
