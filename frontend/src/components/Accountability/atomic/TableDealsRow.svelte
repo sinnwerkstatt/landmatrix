@@ -1,5 +1,7 @@
 <script lang="ts">
+    import { onMount } from "svelte"
     import { slide } from "svelte/transition"
+    import { tableSelection } from "$lib/accountability/stores"
 
     import TableRow from "./TableRow.svelte"
     import TableCell from "./TableCell.svelte"
@@ -13,12 +15,55 @@
     export let gridColsTemplate = ""
     export let columns = []
     export let deal
-
-    let open = false
+    
     let dealChecked = false
     let dealPartiallyChecked = false
-    let selectedVariables:number[] = []
+    let checkedVariables:number[] = []
+    let open = false
 
+    function updateDealCheckbox(selection) {
+        const nvar = Object.keys($tableSelection[deal.id].variables).length
+        const nselect = Object.values($tableSelection[deal.id].variables).filter(Boolean).length
+
+        if (nvar == nselect) {
+            dealChecked = true
+        } else {
+            dealChecked = false
+            nselect > 0 ? dealPartiallyChecked = true : dealPartiallyChecked = false
+        }
+    }
+
+    onMount(() => {
+        const dealSelection = $tableSelection[deal.id]
+        if (!dealSelection) $tableSelection[deal.id] = { deal: deal.id, variables: {} }
+        deal.variables.forEach(v => {
+            if (!$tableSelection[deal.id].variables[v.id]) $tableSelection[deal.id].variables[v.id] = false
+        })
+        updateDealCheckbox()
+    })
+
+    // ==================================================================================================
+    // More checkbox reactivity functions
+    function checkDeal(event) {
+        const checked = event.detail.checked
+
+        dealPartiallyChecked = false
+
+        if (checked) {
+            deal.variables.forEach(v => {
+                $tableSelection[deal.id].variables[v.id] = true
+            })
+        } else {
+            deal.variables.forEach(v => {
+                $tableSelection[deal.id].variables[v.id] = false
+            })
+        }
+    }
+
+    $: updateDealCheckbox($tableSelection[deal.id])
+
+    // ==================================================================================================
+    // Assignment functions
     function getAllAssignees(array) {
         let result = []
         array.forEach(e => {
@@ -29,47 +74,6 @@
 
     $: dealAssignees = getAllAssignees(deal.variables?.map(e => e.assignee))
 
-    // ==================================================================================================
-    // Checkbox functions
-    function checkDeal(event) {
-        const deal_id = event.detail.value
-        const checked = event.detail.checked
-       
-        if (checked) {
-            selectedVariables = deal.variables.map(e => e.id)
-        } else {
-            selectedVariables = []
-        }
-    }
-
-    function checkVariable(event) {
-        const variable_id = event.detail.value
-        const checked = event.detail.checked
-
-        if (checked) {
-            selectedVariables = [...selectedVariables, variable_id]
-        } else {
-            selectedVariables = selectedVariables.filter(e => e != variable_id)
-        }
-    }
-
-    function updateDealCheckbox(deal, selectedVariables) {
-        if (deal.variables.length == selectedVariables.length) {
-            dealChecked = true
-        } else if (selectedVariables.length > 0) {
-            dealChecked = false
-            dealPartiallyChecked = true
-        } else {
-            dealChecked = false
-            dealPartiallyChecked = false
-        }
-
-    }
-
-    $: updateDealCheckbox(deal, selectedVariables)
-
-    // ==================================================================================================
-    // Assignment functions
     function removeAssignee() {
         console.log("Remove assignee")
     }
@@ -139,9 +143,8 @@
             <TableRow {gridColsTemplate} >
                 
                 {#each deal.variables as variable}
-                    {@const checked = selectedVariables.includes(variable.id)}
                     <TableCell style="nested">
-                        <span class="w-fit"><Checkbox paddingX=0 paddingY=0 value={variable.id} checked={checked} on:changed={checkVariable} /></span>
+                        <span class="w-fit"><Checkbox paddingX=0 paddingY=0 value={variable.id} bind:checked={$tableSelection[deal.id].variables[variable.id]} /></span>
                     </TableCell>
 
                     <TableCell style="nested" >Variable {variable.id}</TableCell>

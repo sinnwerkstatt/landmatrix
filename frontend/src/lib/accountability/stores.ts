@@ -20,3 +20,7 @@ dealsHistory.subscribe(value => {
 
 // Documentation bookmark
 export const documentationBookmark = writable(undefined)
+
+// =======================================================================================
+// Table selection from Deals/Scoring
+export const tableSelection = writable({})

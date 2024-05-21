@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { tableSelection } from "$lib/accountability/stores"
+
     import Table from "./atomic/Table.svelte"
     import TableRow from "./atomic/TableRow.svelte"
     import TableCell from "./atomic/TableCell.svelte"
@@ -6,8 +8,7 @@
 
     import Input from "./atomic/Input.svelte"
     import Checkbox from "./atomic/Checkbox.svelte"
-    import type { forEach } from "ramda"
-    import { map } from "leaflet?client"
+    import { tab } from "@testing-library/user-event/dist/cjs/setup/directApi.js"
 
     export let deals:{
         id:number,
@@ -60,6 +61,33 @@
 
     $: searchResult = search(searchWord)
 
+    function createDealSelectObject(bool:boolean) {
+        let res = {}
+        deals.forEach(deal => {
+            let vars = {}
+            deal.variables.forEach(variable => {
+                vars[variable.id] = bool
+            })
+            const obj = { deal: deal.id, variables: vars }
+            res[deal.id] = obj
+        })
+
+        return res
+    }
+
+    // Select deals
+    function selectAllDeals(event) {
+        const checked = event.detail.checked
+
+        if (checked) {
+            console.log("Let's select everything")
+            tableSelection.set(createDealSelectObject(true))
+        } else {
+            console.log("Let's unselect everything")
+            tableSelection.set(createDealSelectObject(false))
+        }
+    }
+
 </script>
 
 <Table bind:data={searchResult} bind:pageContent={pageContent} rowHeight=57 >
@@ -75,19 +103,19 @@
         <TableRow {gridColsTemplate} >
             <TableCell style="heading" >
                 <div class="w-fit">
-                    <Checkbox paddingX=0 paddingY=0 />
+                    <Checkbox paddingX=0 paddingY=0 on:changed={selectAllDeals} />
                 </div>
             </TableCell>
 
-            {#each columns as { label }}
-                <TableCell style="heading" >{label.toUpperCase()}</TableCell>
+            {#each columns as column (column.value) }
+                <TableCell style="heading" >{column.label.toUpperCase()}</TableCell>
             {/each}
         </TableRow>
     </svelte:fragment>
 
     <!-- Table body and footer -->
     <svelte:fragment slot="body">
-        {#each pageContent as deal}
+        {#each pageContent as deal (deal.id)}
             <TableDealsRow {gridColsTemplate} {columns} {deal} />
         {/each}
     </svelte:fragment>
