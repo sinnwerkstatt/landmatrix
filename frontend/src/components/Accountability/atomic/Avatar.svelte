@@ -1,14 +1,25 @@
 <script lang="ts">
+    import { fade } from "svelte/transition"
+
     import IconUser from "$components/Accountability/icons/IconUser.svelte"
     import IconXMark from "../icons/IconXMark.svelte"
+    import Card from "./Card.svelte"
 
     export let type:"base"|"assignment" = "base"
     export let size:"sm"|"md"|"lg"|"xl" = "md"
     export let initials = "JD"
     export let label = ""
     export let button = false
+    export let buttonOnHover = false
     export let padding = false
     export let extraClass = ""
+    export let ring = false
+    export let tooltip = true
+
+    export let name = "Name"
+    export let surname = "Surname"
+    export let mail = "name@mail.com"
+    export let description = "Description"
 
     let iconSize = {
         "sm": "8",
@@ -16,10 +27,73 @@
         "lg": "18",
         "xl": "32"
     }
+
+    let bubble:HTMLElement
+    let popupVisible = false
+    let popupTop:number = 0
+    let popupLeft:number = 0
+
+    const popupMargin = 20
+    const popupGap = 10
+    const popupHeight = 183 + popupGap
+    const popupWidth = 240 + popupGap
+
+    function showPopup() {
+        const windowHeight = window.innerHeight
+        const windowWidth = window.innerWidth
+
+        const bubbleLeft = bubble.getBoundingClientRect().x
+        const bubbleTop = bubble.getBoundingClientRect().y
+        const bubbleHeight = bubble.getBoundingClientRect().height
+
+        // Horizontal positioning
+        const deltaLeft = bubbleLeft - popupWidth/2 - popupMargin
+        const deltaRight = bubbleLeft + popupWidth/2 + popupMargin
+
+        if (popupWidth < windowWidth && deltaLeft < 0) {
+            popupLeft = popupMargin
+        } else if (popupWidth < windowWidth && deltaRight > windowWidth) {
+            popupLeft = windowWidth - popupWidth - popupMargin
+        } else {
+            popupLeft = bubbleLeft - popupWidth / 2
+        }
+
+        // Vertical positioning
+        const positionY = bubbleTop > windowHeight / 2 ? "top" : "bottom"
+        popupTop = positionY == "top" ? bubbleTop - popupHeight : bubbleTop + bubbleHeight
+
+        popupVisible = true
+
+    }
+
+    function hidePopup() {
+        popupVisible = false
+    }
+
+    function showButton() {
+        if (!button && buttonOnHover) button = true
+    }
+
+    function hideButton() {
+        if (buttonOnHover) button = false
+    }
+
+    function mouseEnter() {
+        showButton()
+        showPopup()
+    }
+
+    function mouseLeave() {
+        hideButton()
+        hidePopup()
+    }
+
 </script>
 
-<div class="flex items-center {extraClass}" class:button class:padding>
-    <div class="flex items-center justify-center rounded-full {type} {size}">
+<div class="flex items-center {extraClass}" class:button class:padding role="tooltip"
+     on:mouseleave={mouseLeave} on:mouseenter={mouseEnter} >
+    <div class="flex items-center justify-center rounded-full {type} {size} select-none" class:ring
+         role="tooltip" bind:this={bubble} >
         {#if type=="base"}
             {initials}
         {:else}
@@ -28,13 +102,34 @@
     </div>
     
     {#if label}
-        <span class="text-sm pl-2">{label}</span>
+        <span class="text-sm pl-2 select-none">{label}</span>
     {/if}
 
     {#if button}
         <button class="text-a-gray-400" on:click><IconXMark size=24 /></button>
     {/if}
+
+    <!-- Popup with user info -->
+    {#if type=="base" && tooltip && popupVisible}
+        <div class="fixed z-20 grid place-content-center tooltip-bg" 
+             style="height: {popupHeight}px; width: {popupWidth}px; top: {popupTop}px; left: {popupLeft}px;"
+             transition:fade={{ duration:150 }} >
+            <Card extraClass="h-[183px] w-60 shadow-a-md">
+                <div class="h-full w-full flex flex-col justify-center items-center gap-1">
+                    <div class="grid place-content-center h-12 w-12 bg-a-gray-100 rounded-full">{initials}</div>
+                    <div class="text-a-lg font-semibold">
+                        <span>{name}</span>
+                        <span class="uppercase">{surname}</span>
+                    </div>
+                    <div class="text-a-gray-500 font-normal underline">{mail}</div>
+                    <div class="text-a-gray-500 font-normal">{description}</div>
+                </div>
+            </Card>
+        </div>
+    {/if}
+
 </div>
+
 
 <style>
     /* Type styling */
@@ -75,4 +170,14 @@
     .button:hover > div {
         @apply bg-a-gray-200;
     }
+
+    .ring {
+        @apply ring-white;
+    }
+
+    .tooltip-bg,
+    .tooltip-bg:hover {
+        @apply !bg-transparent;
+    }
+
 </style>

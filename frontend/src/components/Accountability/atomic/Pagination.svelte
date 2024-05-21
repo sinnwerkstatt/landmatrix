@@ -1,18 +1,28 @@
 <script lang="ts">
     import IconChevron from "../icons/IconChevron.svelte"
 
-    let box:HTMLElement
     let paginationBox:HTMLElement
-    let currentPage = 1
     let ellipsis = "none"
-
-    export let dataset
-    export let pageContent = []
+    let currentPage = 1
+    
+    export let box:HTMLElement  // Needs to be binded to the data container (ex: table body) when detached
+    export let dataset          // Send the dataset to pagination
+    export let pageContent = [] // Pagination stores here what must be displayed
+    export let detached = false
     export let containerHeight = "400"
     export let rowHeight = "56"
+    export let rowsDelta:number = detached ? -2 : 0 // Positive = add rows, Negative = remove rows
+    export let rowsByPage; // Number of rows by page, if needed outside (like in Table.svelte)
+    export let justify:"center"|"left"|"right" = "center"
+
+    function resetPageOnDataChange(dataset) {
+        currentPage = 1
+    }
+
+    $: resetPageOnDataChange(dataset)
 
     $: boxHeight = box?.getBoundingClientRect().height;
-    $: rowsByPage = boxHeight >= rowHeight ? Math.floor(boxHeight / rowHeight) : 4;
+    $: rowsByPage = ( boxHeight >= rowHeight ? Math.floor(boxHeight / rowHeight) : 4 ) + rowsDelta;
     $: totalPages = Math.ceil(dataset.length / rowsByPage);
 
     $: end = currentPage * rowsByPage;
@@ -54,12 +64,15 @@
 
 </script>
 
-<div class="h-full flex flex-col overflow-hidden">
+<div class="h-full flex flex-col overflow-hidden" class:detached >
+
+    {#if !detached}
     <div class="h-full overflow-y-scroll" bind:this={box}>
         <slot />
     </div>
+    {/if}
 
-    <div class="pagination" bind:this={paginationBox}>
+    <div class="pagination flex justify-{justify}" bind:this={paginationBox}>
         <button class="rounded-s-lg" disabled={currentPage == 1}
                 on:click={() => { currentPage > 1 ? currentPage-- : currentPage = 1 }}>
             <span class="-rotate-90"><IconChevron /></span>
@@ -85,10 +98,10 @@
 </div>
 
 <style>
-    .pagination {
-        @apply flex justify-center;
+    .detached {
+        @apply h-fit;
     }
-    .pagination button {
+   .pagination button {
         @apply h-8 w-8;
         @apply grid place-content-center;
         @apply text-a-gray-500 bg-white;

@@ -1,27 +1,11 @@
 <script lang="ts">
-    // import { page } from "$app/stores"
-    // import { dealsHistory } from "$lib/accountability/stores"
-
     import CardKPI from "$components/Accountability/CardKPI.svelte"
     import Thread from "$components/Accountability/Thread.svelte"
-
-    // If currentProject =/= page.params.project, update project and empty current page and current Deal
-    // function updateLocalStorage(pathname) {
-    //     if ($page.params.project) {
-    //         dealsHistory.set(pathname)
-    //     }
-    // }
-
-    // $: updateLocalStorage($page.url.pathname)
 
     const totalDeals = 130
     const toScore = 100
     const waiting = 20
     const validated = 100
-
-    // TODO: Remember to handle differently the "all deals" project with ID = 0
-
-    // TODO: Remember to handle errors when a deal doesn't exist for a project (reset dealsHistory)
 
 </script>
 

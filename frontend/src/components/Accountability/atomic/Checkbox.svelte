@@ -7,11 +7,12 @@
     export let value = ""
     export let checked = false
     export let partiallyChecked = false
-    export let label = "Label"
+    export let label = ""
     export let bold = false
     export let disabled = false
     export let hidden = false
     export let paddingX:string = "4"
+    export let paddingY:string = "2"
 
     const dispatch = createEventDispatcher()
 
@@ -22,7 +23,7 @@
 </script>
 
 <label class:disabled class:hidden
-       class="relative grid grid-rows-1 gap-2 place-items-center cursor-pointer hover:bg-a-gray-100 px-{paddingX} py-2"
+       class="h-fit relative grid grid-rows-1 place-items-center cursor-pointer hover:bg-a-gray-100 px-{paddingX} py-{paddingY}"
        style="grid-template-columns: 1rem auto;">
 
     <!-- Checkbox -->
@@ -40,16 +41,15 @@
     </span>
 
     <!-- Label -->
-    <span class="col-start-2 row-start-1 w-full select-none text-a-sm font-normal" class:bold>
-        {label}
-    </span>
+    {#if label}
+        <span class="pl-2 col-start-2 row-start-1 w-full select-none text-a-sm font-normal" class:bold>
+            {label}
+        </span>
+    {/if}
+
 </label>
 
 <style>
-    label.resetPaddingX {
-        @apply px-0;
-    }
-
     .bold {
         @apply font-semibold;
     }

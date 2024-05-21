@@ -25,3 +25,11 @@ export function capitalizeFirst(string) {
     throw new Error("Argument must be of type string")
   }
 }
+
+export function getStatusColor(status: string) {
+  if (status == "no_score") return "bg-a-gray-200"
+  if (status == "pending") return "bg-a-primary-500"
+  if (status == "validated") return "bg-a-success-500"
+  if (status == "no_data") return "bg-a-gray-900"
+  return ""
+}

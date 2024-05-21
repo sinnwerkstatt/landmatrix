@@ -6,6 +6,7 @@
     import FiltersSidebar from "$components/Accountability/FiltersSidebar.svelte"
     import PageHeading from "$components/Accountability/PageHeading.svelte"
     import DealsMenu from "$components/Accountability/DealsMenu.svelte"
+    import Avatar from "$components/Accountability/atomic/Avatar.svelte"
 
     // If currentProject =/= page.params.project, update project and empty current page and current Deal
     function updateLocalStorage(pathname) {
@@ -29,9 +30,10 @@
         <PageHeading />
         <div class="flex flex-wrap justify-between gap-6 mb-6">
             <DealsMenu />
-            <span class="text-a-gray-400">Users placeholder</span>
+            <!-- <span class="text-a-gray-400">Users placeholder</span> -->
+            <Avatar />
         </div>
-        <div class="pb-10 overflow-scroll">
+        <div class="pb-10 h-full overflow-auto">
             <slot />
         </div>
     </div>
