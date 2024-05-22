@@ -15,6 +15,8 @@
     export let rowsByPage; // Number of rows by page, if needed outside (like in Table.svelte)
     export let justify:"center"|"left"|"right" = "center"
 
+    export let pagination = {}
+
     function resetPageOnDataChange(dataset) {
         currentPage = 1
     }
@@ -29,6 +31,15 @@
     $: start = end - rowsByPage;
 
     $: pageContent = dataset.slice(start, end);
+
+    function updatePagination(start, end, dataset) {
+        const first = start + 1
+        const last = end > dataset.length ? dataset.length : end
+        const total = dataset.length
+        return { first, last, total }
+    }
+
+    $: pagination = updatePagination(start, end, dataset)
 
     function createArray(i) {
         let array = [];

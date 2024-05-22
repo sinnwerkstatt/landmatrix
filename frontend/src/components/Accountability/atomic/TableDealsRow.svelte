@@ -90,7 +90,7 @@
 <div class="row">
 
     <!-- Deal row -->
-    <TableRow {gridColsTemplate} selected={dealChecked} >
+    <TableRow {gridColsTemplate} >
         <TableCell>
             <div class="flex items-center gap-2">
                 <Checkbox paddingX=0 paddingY=0 value={deal.id} bind:partiallyChecked={dealPartiallyChecked}

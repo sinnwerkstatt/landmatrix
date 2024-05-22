@@ -8,10 +8,13 @@
 
     // Styling
     export let rowHeight = 56;
+
     let rowsByPage:number;
     let tableHeight = "132";
-    $: tableHeight = (rowsByPage * rowHeight + 34).toString()
 
+    let pagination;
+
+    $: tableHeight = (rowsByPage * rowHeight + 34).toString()
 </script>
 
 <div class="h-full flex flex-col" >
@@ -39,9 +42,14 @@
         </div>
     
         <div class="min-h-16 p-4 flex justify-between bg-white border-x border-b rounded-b-lg">
-            <div>Left</div>
+            <div class="text-a-sm font-normal text-a-gray-500">
+                Showing
+                <span class="font-medium text-a-gray-900">{pagination?.first}-{pagination?.last}</span>
+                of
+                <span class="font-medium text-a-gray-900">{pagination?.total}</span>
+            </div>
             <div class="w-40 md:w-96">
-                <Pagination detached={true} bind:box={container} bind:dataset={data} bind:pageContent={pageContent} bind:rowsByPage={rowsByPage} {rowHeight} justify="end" />
+                <Pagination detached={true} bind:box={container} bind:dataset={data} bind:pageContent={pageContent} bind:rowsByPage={rowsByPage} {rowHeight} bind:pagination={pagination} justify="end" />
             </div>
         </div>
     </div>

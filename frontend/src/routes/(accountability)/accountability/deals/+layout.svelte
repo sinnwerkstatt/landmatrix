@@ -30,8 +30,8 @@
         <PageHeading />
         <div class="flex flex-wrap justify-between gap-6 mb-6">
             <DealsMenu />
-            <!-- <span class="text-a-gray-400">Users placeholder</span> -->
-            <Avatar />
+            <span class="text-a-gray-400">Users placeholder</span>
+            <!-- <Avatar /> -->
         </div>
         <div class="pb-10 h-full overflow-auto">
             <slot />
