@@ -33,3 +33,16 @@ export function getStatusColor(status: string) {
   if (status == "no_data") return "bg-a-gray-900"
   return ""
 }
+
+export function usersToUserChoices(users: {
+  id: number
+  name: string
+  initials: string
+}) {
+  const result = users.map(({ id: value, name: label, initials }) => ({
+    label,
+    value: String(value),
+    initials,
+  }))
+  return result
+}

@@ -2,7 +2,7 @@
     export let style:"base"|"heading"|"nested" = "base"
 </script>
 
-<div class="{style}" ><slot /></div>
+<div class="{style}"><slot /></div>
 
 <style>
     div {

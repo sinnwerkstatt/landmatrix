@@ -18,19 +18,25 @@
     
     let dealChecked = false
     let dealPartiallyChecked = false
-    let checkedVariables:number[] = []
     let open = false
 
     function updateDealCheckbox(selection) {
-        const nvar = Object.keys($tableSelection[deal.id].variables).length
-        const nselect = Object.values($tableSelection[deal.id].variables).filter(Boolean).length
-
-        if (nvar == nselect) {
-            dealChecked = true
-        } else {
+        if (!$tableSelection[deal.id]?.variables) {
             dealChecked = false
-            nselect > 0 ? dealPartiallyChecked = true : dealPartiallyChecked = false
+            dealPartiallyChecked = false
+
+        } else {
+            const nvar = Object.keys($tableSelection[deal.id].variables).length
+            const nselect = Object.values($tableSelection[deal.id].variables).filter(Boolean).length
+    
+            if (nvar == nselect) {
+                dealChecked = true
+            } else {
+                dealChecked = false
+                nselect > 0 ? dealPartiallyChecked = true : dealPartiallyChecked = false
+            }
         }
+
     }
 
     onMount(() => {
@@ -84,7 +90,7 @@
 <div class="row">
 
     <!-- Deal row -->
-    <TableRow {gridColsTemplate} >
+    <TableRow {gridColsTemplate} selected={dealChecked} >
         <TableCell>
             <div class="flex items-center gap-2">
                 <Checkbox paddingX=0 paddingY=0 value={deal.id} bind:partiallyChecked={dealPartiallyChecked}

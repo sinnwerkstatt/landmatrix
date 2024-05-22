@@ -16,6 +16,7 @@
     export let categories:{ label:string, values:string[] } = undefined
     export let value
     export let badgeType:"tag"|"avatar" = "tag"
+    export let style:"neutral"|"white" = "neutral"
     
     export let readonlyCategories = false
     export let label = ""
@@ -23,6 +24,7 @@
     export let icon:""|"search"|"user" = ""
     export let status:"neutral"|"valid"|"invalid" = "neutral"
     export let disabled = false
+    export let search = true
 
     export let extraClass = ""
 
@@ -54,7 +56,6 @@
     }
 
     function useScrollIntoView(target) {
-        console.log(target);
         target.scrollIntoView({ behavior: "smooth" });
     }
 
@@ -64,7 +65,7 @@
 
 </script>
 
-<div>
+<div class="{ style == "white" ? 'white' : '' }">
     <!-- Label -->
     {#if label}
         <h3 class="text-a-sm font-medium my-2">{label}</h3>
@@ -131,13 +132,16 @@
     <!-- Dropdown menu for select or multiselect -->
     {#if ["select", "multiselect"].includes(type) && !disabled && open}
         <DropdownMenu extraClass="pb-4 absolute z-10 w-[13.5rem] {extraClass}" visible={open} >
-            <div class="wrapper wrapper-grid m-4">
-                <span><IconSearch /></span>
-                <input {disabled} type="text" name="name" placeholder="Search" class="bg-transparent w-full" bind:value={filter} />
-                <button {disabled} class="text-red" on:click={() => { filter="" }}><IconXMark /></button>
-            </div>
+            
+            {#if search}
+                <div class="wrapper wrapper-grid m-4">
+                    <span><IconSearch /></span>
+                    <input {disabled} type="text" name="name" placeholder="Search" class="bg-transparent w-full" bind:value={filter} />
+                    <button {disabled} class="text-red" on:click={() => { filter="" }}><IconXMark /></button>
+                </div>
+            {/if}
 
-            <div class="max-h-80 overflow-auto" bind:this={dropdown} use:useScrollIntoView>
+            <div class="max-h-80 overflow-auto { search ? '' : 'pt-4'}" bind:this={dropdown} use:useScrollIntoView>
 
                 {#if type == "multiselect"}
                     <InputCheckboxGroup {choices} {categories} bind:group={value} {filter} {readonlyCategories} />
@@ -163,14 +167,14 @@
         <div class="mt-2 flex flex-wrap gap-1 {badgeType == 'avatar' ? 'flex-col' : ''} ">
             {#each value as val}
                 {@const element = choices.find((e) => e.value == val) }
-                    {#if badgeType == "avatar"}
-                        <Avatar type="base" button={true} label={element?.label} padding={true}
-                                initials = {element?.initials}
-                                on:click={() => { value = value.filter(v => v != val) }} />
-                    {:else}
-                        <Badge color="neutral" button={true} {disabled} label={element?.label}
-                               on:click={() => { value = value.filter(v => v != val) }} />
-                    {/if}   
+                {#if badgeType == "avatar"}
+                    <Avatar type="base" button={true} label={element?.label} padding={true}
+                            initials = {element?.initials}
+                            on:click={() => { value = value.filter(v => v != val) }} />
+                {:else}
+                    <Badge color="neutral" button={true} {disabled} label={element?.label}
+                            on:click={() => { value = value.filter(v => v != val) }} />
+                {/if}   
             {/each}
         </div>
     {/if}
@@ -203,14 +207,19 @@
     .wrapper-grid {
         display: grid;
         grid-template-columns: 16px auto 16px 16px;
-        @apply items-center gap-2.5;
+        @apply items-center gap-x-2.5;
     }
 
     .wrapper {
+        @apply h-12;
         @apply min-w-32;
-        @apply px-4 py-3 rounded-lg border;
+        @apply px-4 py-2 rounded-lg border;
         @apply bg-a-gray-50;
         @apply border-a-gray-300;
+    }
+
+    .white .wrapper {
+        @apply bg-white;
     }
 
     .wrapper::placeholder,
@@ -223,6 +232,13 @@
     .wrapper > span,
     .wrapper > button {
         @apply text-a-gray-400;
+    }
+
+    .white .wrapper::placeholder,
+    .white .wrapper .placeholder,
+    .white .wrapper > span,
+    .white .wrapper > button {
+        @apply text-a-gray-900;
     }
 
     .wrapper:focus-within {

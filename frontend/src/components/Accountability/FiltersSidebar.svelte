@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { users } from "$lib/accountability/placeholders"
+    import { usersToUserChoices } from "$lib/accountability/helpers"
     import { openedFilterBar } from "$lib/accountability/stores"
 
     import Sidebar from "./atomic/Sidebar.svelte"
@@ -17,17 +19,14 @@
     let form = {
         name: undefined,
         description: undefined,
-        users: ["10", "11"],
+        users: ["2", "3"],
     }
 
-    const owner = { value: "8", label: "Marie", initials: "MG" }
+    const owner = { value: 1, label: "Marie", initials: "MG" }
 
-    const users = [
-        { value: "10", label: "Nikka", initials: "NR" },
-        { value: "11", label: "Angela", initials: "AH" },
-        { value: "12", label: "Jérémy", initials: "JB" },
-        { value: "13", label: "Mohamadou", initials: "MD" }
-    ]
+    const userChoices = usersToUserChoices(users).filter(e => e.value != owner.value)
+
+    usersToUserChoices(users)
 
     const infos = [
         { label: "Created at:", value: undefined },
@@ -69,7 +68,7 @@
             <Input type="textarea" label="Description" placeholder="Add description" bind:value={form.description}
                    maxlength={280} />
             <Input type="multiselect" label="Users (who can edit)" placeholder="Search for user"
-                   choices={users} bind:value={form.users} badgeType="avatar" />
+                   choices={userChoices} bind:value={form.users} badgeType="avatar" />
             <Avatar initials={owner.initials} label="{owner.label} (owner)" extraClass="mt-1" padding={true} />
             <Divider />
             <Card>
