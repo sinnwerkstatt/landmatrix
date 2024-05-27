@@ -30,7 +30,10 @@
       <MapTeaser />
       <h3 class="heading2 dark:text-white">{value.cards[0].title}</h3>
       <p class="body1 mx-auto">{value.cards[0].teaser}</p>
-      <a class="btn-link btn-secondary" href={value.cards[0].link.href}>
+      <a
+        class="btn-link btn-secondary dark:bg-gray-900"
+        href={value.cards[0].link.href}
+      >
         {value.cards[0].link.text}
       </a>
     </div>
@@ -38,7 +41,10 @@
       <TableTeaser />
       <h3 class="heading2 dark:text-white">{value.cards[1].title}</h3>
       <p class="body1 mx-auto">{value.cards[1].teaser}</p>
-      <a class="btn-link btn-secondary" href={value.cards[1].link.href}>
+      <a
+        class="btn-link btn-secondary dark:bg-gray-900"
+        href={value.cards[1].link.href}
+      >
         {value.cards[1].link.text}
       </a>
     </div>
@@ -46,7 +52,10 @@
       <CakeTeaser />
       <h3 class="heading2 dark:text-white">{value.cards[2].title}</h3>
       <p class="body1 mx-auto">{value.cards[2].teaser}</p>
-      <a class="btn-link btn-secondary" href={value.cards[2].link.href}>
+      <a
+        class="btn-link btn-secondary dark:bg-gray-900"
+        href={value.cards[2].link.href}
+      >
         {value.cards[2].link.text}
       </a>
     </div>

@@ -164,8 +164,7 @@ class ImageBlock(ImageChooserBlock):
         except AttributeError:
             url = ""
         prep_val = self.get_prep_value(value)
-        ret = {"id": prep_val, "url": url}
-        return ret
+        return {"id": prep_val, "url": url, "title": value.title}
 
 
 # New Screendesign
