@@ -19,28 +19,11 @@
   /*--error-background: theme("colors.red.100");*/
 }
 .dark .svelte-select {
-  --background: theme("colors.gray.600");
-  --list-background: theme("colors.gray.600");
-  --item-color: white;
+  --background: theme("colors.gray.900");
+  --list-background: theme("colors.gray.900");
+  --border-focused: 1px solid theme("colors.gray.300");
+  --item-color: theme("colors.gray.300");
+  --item-hover-bg: theme("colors.gray.700");
   --selected-item-color: white;
-}
-
-.navbar-search .svelte-select-list {
-  /*width: 60vw;*/
-  max-width: 80vw;
-}
-
-.navbar-search .svelte-select-list .item {
-  background: unset !important;
-  padding: 0 !important;
-}
-
-.navbar-search .svelte-select-list .item .navbar-item {
-  padding: 0 20px;
-}
-.navbar-search .svelte-select-list .item.hover .deal {
-  background: theme("colors.orange.100");
-}
-.navbar-search .svelte-select-list .item.hover .investor {
-  background: theme("colors.pelorous.100");
+  --list-border: 2px solid theme("colors.gray.300");
 }

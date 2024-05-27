@@ -47,34 +47,55 @@
   }
 </script>
 
-<Select
-  bind:filterText
-  clearFilterTextOnBlur={false}
-  itemId="id"
-  listAutoWidth={false}
-  {loadOptions}
-  on:select={onSelect}
-  placeholder="Deals and Investors"
->
-  <div class="min-w-[20rem] px-2 py-1" slot="empty">
-    This search is matching on deal IDs, investor IDs and investor names.
-  </div>
-  <!--    <div slot="list" let:filteredItems>asdf</div>-->
-  <div
-    class={item.type === "deal" ? "navbar-item deal" : "navbar-item investor"}
-    let:item
-    slot="item"
+<div class="navbar-search">
+  <Select
+    bind:filterText
+    clearFilterTextOnBlur={false}
+    itemId="id"
+    listAutoWidth={false}
+    {loadOptions}
+    on:select={onSelect}
+    placeholder="Deals and Investors"
+    --item-padding="0"
   >
-    <a
-      class:investor={item.type === "investor"}
-      class:opacity-40={item.type === "deal" && !item.is_public}
-      href={item.href}
+    <div
+      class="min-w-[20rem] px-2 py-1 dark:bg-gray-900 dark:text-gray-300"
+      slot="empty"
     >
-      {@html makeName(item)}
-    </a>
-  </div>
+      {$_("This search is matching on deal IDs, investor IDs and investor names.")}
+    </div>
+    <!--    <div slot="list" let:filteredItems>asdf</div>-->
+    <div
+      class={"px-[20px] " +
+        (item.type === "deal" ? "navbar-item deal" : "navbar-item investor")}
+      let:item
+      slot="item"
+    >
+      <a
+        class:investor={item.type === "investor"}
+        class:opacity-40={item.type === "deal" && !item.is_public}
+        href={item.href}
+      >
+        {@html makeName(item)}
+      </a>
+    </div>
 
-  <div let:selection slot="selection">
-    {@html makeName(selection)}
-  </div>
-</Select>
+    <div let:selection slot="selection">
+      {@html makeName(selection)}
+    </div>
+  </Select>
+</div>
+
+<style lang="postcss">
+  :global(.navbar-search .svelte-select-list) {
+    @apply max-w-[80vw];
+  }
+
+  :global(.navbar-search .svelte-select-list .item.hover .deal) {
+    background: theme("colors.orange.100");
+  }
+
+  :global(.navbar-search .svelte-select-list .item.hover .investor) {
+    background: theme("colors.pelorous.100");
+  }
+</style>

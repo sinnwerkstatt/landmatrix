@@ -47,19 +47,19 @@
 
   <ul class="float-right mr-3 flex h-16 items-center justify-end gap-1">
     <li>
-      <div class="navbar-search md:hidden">
+      <div class="md:hidden">
         <button class="flex items-center" on:click={() => (showSearch = true)}>
           <SearchIcon class="h-6 w-6" />
         </button>
         <Modal
           bind:open={showSearch}
-          class="h-[80vh] w-[clamp(300px,90%,800px)]"
+          class="h-[80vh] w-[clamp(300px,90%,800px)] dark:border-gray-300 dark:bg-gray-700"
           dismissible
         >
           <NavbarSearch on:enter={() => (showSearch = false)} />
         </Modal>
       </div>
-      <div class="navbar-search hidden w-48 md:block">
+      <div class="hidden w-48 md:block">
         <NavbarSearch />
       </div>
     </li>
