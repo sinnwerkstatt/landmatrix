@@ -38,3 +38,9 @@
     </article>
   {/each}
 </div>
+
+<style lang="postcss">
+  :global([data-block="faqs_block"] ul) {
+    @apply list-disc pb-4 pl-6;
+  }
+</style>
