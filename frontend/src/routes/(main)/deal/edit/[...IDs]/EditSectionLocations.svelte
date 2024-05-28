@@ -98,98 +98,96 @@
   })
 </script>
 
-<section class="lg:h-full">
-  <form class="flex flex-wrap lg:h-full" id="locations">
-    <div class="w-full overflow-y-auto p-2 lg:h-full lg:w-2/5">
-      {#each locations as location, index}
-        <div class="location-entry">
-          <div
-            class="my-2 flex flex-row items-center justify-between bg-gray-200 dark:bg-gray-700"
-          >
-            <h3 class="flex-grow">
-              <button
-                type="button"
-                class="w-full p-2 text-left"
-                on:click={() => toggleActiveEntry(index)}
-              >
-                {index + 1}. {$_("Location")}
-                <small class="text-sm text-gray-500">
-                  #{location.nid}
-                </small>
-              </button>
-            </h3>
+<form class="flex flex-wrap" id="locations">
+  <div class="w-full overflow-y-auto p-2 lg:w-2/5">
+    {#each locations as location, index}
+      <div class="location-entry">
+        <div
+          class="my-2 flex flex-row items-center justify-between bg-gray-200 dark:bg-gray-700"
+        >
+          <h3 class="flex-grow">
             <button
               type="button"
-              class="flex-initial p-2"
-              on:click={() => removeEntry(location)}
+              class="w-full p-2 text-left"
+              on:click={() => toggleActiveEntry(index)}
             >
-              <TrashIcon class="h-8 w-6 cursor-pointer text-red-600" />
+              {index + 1}. {$_("Location")}
+              <small class="text-sm text-gray-500">
+                #{location.nid}
+              </small>
             </button>
-          </div>
-          {#if activeEntryIdx === index}
-            <div class="grid gap-2" transition:slide={{ duration: 200 }}>
-              <EditField
-                fieldname="location.level_of_accuracy"
-                bind:value={location.level_of_accuracy}
-                extras={{ required: true }}
-                showLabel
-              />
-              <EditField
-                fieldname="location.name"
-                bind:value={location.name}
-                extras={{
-                  countryCode: country?.code_alpha2,
-                  onGoogleAutocomplete,
-                }}
-                showLabel
-              />
-              <EditField
-                fieldname="location.point"
-                bind:value={location.point}
-                showLabel
-              />
-              <EditField
-                fieldname="location.description"
-                bind:value={location.description}
-                showLabel
-              />
-              <EditField
-                fieldname="location.facility_name"
-                bind:value={location.facility_name}
-                showLabel
-              />
-              <EditField
-                fieldname="location.comment"
-                bind:value={location.comment}
-                showLabel
-              />
-            </div>
-          {/if}
+          </h3>
+          <button
+            type="button"
+            class="flex-initial p-2"
+            on:click={() => removeEntry(location)}
+          >
+            <TrashIcon class="h-8 w-6 cursor-pointer text-red-600" />
+          </button>
         </div>
-      {/each}
-      <div class="mt-6">
-        <button
-          class="btn btn-primary flex items-center"
-          on:click={addEntry}
-          type="button"
-        >
-          <PlusIcon class="-ml-2 mr-2 h-6 w-5" />
-          {$_("Add")}
-          {$_("Location")}
-        </button>
-      </div>
-    </div>
-    <div class="w-full p-2 lg:h-full lg:w-3/5">
-      <BigMap
-        containerClass="h-[400px]"
-        on:ready={onMapReady}
-        options={{ center: [0, 0] }}
-      />
-      <div class="overflow-y-auto">
-        {#if activeEntryIdx !== -1}
-          <LocationAreasEditField bind:areas={locations[activeEntryIdx].areas} />
+        {#if activeEntryIdx === index}
+          <div class="grid gap-2" transition:slide={{ duration: 200 }}>
+            <EditField
+              fieldname="location.level_of_accuracy"
+              bind:value={location.level_of_accuracy}
+              extras={{ required: true }}
+              showLabel
+            />
+            <EditField
+              fieldname="location.name"
+              bind:value={location.name}
+              extras={{
+                countryCode: country?.code_alpha2,
+                onGoogleAutocomplete,
+              }}
+              showLabel
+            />
+            <EditField
+              fieldname="location.point"
+              bind:value={location.point}
+              showLabel
+            />
+            <EditField
+              fieldname="location.description"
+              bind:value={location.description}
+              showLabel
+            />
+            <EditField
+              fieldname="location.facility_name"
+              bind:value={location.facility_name}
+              showLabel
+            />
+            <EditField
+              fieldname="location.comment"
+              bind:value={location.comment}
+              showLabel
+            />
+          </div>
         {/if}
       </div>
+    {/each}
+    <div class="mt-6">
+      <button
+        class="btn btn-primary flex items-center"
+        on:click={addEntry}
+        type="button"
+      >
+        <PlusIcon class="-ml-2 mr-2 h-6 w-5" />
+        {$_("Add")}
+        {$_("Location")}
+      </button>
     </div>
-  </form>
-</section>
+  </div>
+  <div class="w-full p-2 lg:w-3/5">
+    <BigMap
+      containerClass="h-[400px]"
+      on:ready={onMapReady}
+      options={{ center: [0, 0] }}
+    />
+    <div class="overflow-y-auto">
+      {#if activeEntryIdx !== -1}
+        <LocationAreasEditField bind:areas={locations[activeEntryIdx].areas} />
+      {/if}
+    </div>
+  </div>
+</form>
