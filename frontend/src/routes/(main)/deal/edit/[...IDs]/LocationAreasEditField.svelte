@@ -1,11 +1,23 @@
 <script lang="ts">
   import type { FeatureCollection, GeoJsonObject, MultiPolygon, Polygon } from "geojson"
+  import { type Map } from "leaflet?client"
+  import { onDestroy, onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
   import { areaTypeMap } from "$lib/stores/maps"
-  import type { Area, AreaType } from "$lib/types/newtypes"
+  import type {
+    Area,
+    AreaFeature,
+    AreaFeatureLayer,
+    AreaType,
+  } from "$lib/types/newtypes"
   import { validate } from "$lib/utils/geojsonValidation"
-  import { AREA_TYPE_COLOR_MAP, AREA_TYPES } from "$lib/utils/location"
+  import {
+    AREA_TYPE_COLOR_MAP,
+    AREA_TYPES,
+    areaToFeature,
+    createAreaFeaturesLayer,
+  } from "$lib/utils/location"
 
   import LowLevelDateYearField from "$components/Fields/Edit2/LowLevelDateYearField.svelte"
   import EyeSlashIcon from "$components/icons/EyeSlashIcon.svelte"
@@ -13,7 +25,10 @@
   import TrashIcon from "$components/icons/TrashIcon.svelte"
   import Overlay from "$components/Overlay.svelte"
 
+  export let map: Map | undefined
   export let areas: Area[]
+
+  export let isSelectedEntry: boolean
 
   let selectedAreaType: AreaType = "production_area"
 
@@ -26,6 +41,27 @@
   let showAddAreaOverlay = false
   let toAddFiles: FileList | undefined
 
+  let features: AreaFeature[]
+  let layer: AreaFeatureLayer
+
+  $: features = areas.map(areaToFeature)
+
+  $: if (map && layer) {
+    map.removeLayer(layer)
+    layer = createAreaFeaturesLayer(features, isSelectedEntry)
+    map.addLayer(layer)
+    // fitBounds(layer, map)
+  }
+
+  onMount(() => {
+    layer = createAreaFeaturesLayer(features, isSelectedEntry)
+  })
+
+  onDestroy(() => {
+    if (map) {
+      map.removeLayer(layer)
+    }
+  })
   const uploadFiles = (): void => {
     const reader = new FileReader()
 

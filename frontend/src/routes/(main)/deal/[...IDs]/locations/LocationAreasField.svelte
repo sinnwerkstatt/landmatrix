@@ -1,12 +1,13 @@
 <script lang="ts">
   import { area as turfArea } from "@turf/turf"
-  import { geoJson, type Map } from "leaflet?client"
+  import { type Map } from "leaflet?client"
   import { onDestroy, onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
   import { areaTypeMap } from "$lib/stores/maps"
   import type { AreaType } from "$lib/types/deal"
   import type { Area, AreaFeature, AreaFeatureLayer } from "$lib/types/newtypes"
+  import { areaToFeature, createAreaFeaturesLayer } from "$lib/utils/location"
 
   import { LABEL_CLASS, VALUE_CLASS, WRAPPER_CLASS } from "$components/Fields/consts"
   import {
@@ -34,52 +35,18 @@
 
   export let isSelectedEntry: boolean
 
-  // TODO Marcus refactor since pure
-  const areaToFeature = (area: Area): AreaFeature => ({
-    type: "Feature",
-    geometry: area.area,
-    properties: {
-      id: area.id as number,
-      type: area.type,
-      date: area.date,
-      current: area.current,
-      visible: area.current,
-    },
-  })
-
-  // TODO Marcus refactor since pure
-  const createLayer = (
-    features: AreaFeature[],
-    isSelectedEntry: boolean,
-  ): AreaFeatureLayer =>
-    geoJson(features, {
-      filter: feature => feature.properties.visible,
-      style: feature => ({
-        weight: 1.5,
-        color: "black",
-        dashArray: "5, 5",
-        dashOffset: "0",
-        fillColor: isSelectedEntry
-          ? feature
-            ? AREA_TYPE_COLOR_MAP[feature.properties.type]
-            : ""
-          : "grey",
-        fillOpacity: 0.4,
-      }),
-    })
-
   let features: AreaFeature[] = areas.map(areaToFeature)
   let layer: AreaFeatureLayer
 
   $: if (map && layer) {
     map.removeLayer(layer)
-    layer = createLayer(features, isSelectedEntry)
+    layer = createAreaFeaturesLayer(features, isSelectedEntry)
     map.addLayer(layer)
     // fitBounds(layer, map)
   }
 
   onMount(() => {
-    layer = createLayer(features, isSelectedEntry)
+    layer = createAreaFeaturesLayer(features, isSelectedEntry)
   })
 
   onDestroy(() => {

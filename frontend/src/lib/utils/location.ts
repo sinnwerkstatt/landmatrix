@@ -1,8 +1,15 @@
 import type { Point } from "geojson"
 import type { GeoJSON, LatLngLiteral, Map } from "leaflet"
-import { LatLngBounds } from "leaflet?client"
+import { geoJson, LatLngBounds } from "leaflet?client"
 
-import type { AreaType, Location2, PointFeature } from "$lib/types/newtypes"
+import type {
+  Area,
+  AreaFeature,
+  AreaFeatureLayer,
+  AreaType,
+  Location2,
+  PointFeature,
+} from "$lib/types/newtypes"
 
 export const AREA_TYPES = [
   "production_area",
@@ -49,3 +56,35 @@ export const fitBounds = (geoJson: GeoJSON, map: Map): void => {
   const bounds = geoJson.getBounds()
   bounds.isValid() && map.fitBounds(padBounds(bounds), { duration: 1 })
 }
+
+export const createAreaFeaturesLayer = (
+  features: AreaFeature[],
+  isSelectedEntry: boolean,
+): AreaFeatureLayer =>
+  geoJson(features, {
+    filter: feature => feature.properties.visible,
+    style: feature => ({
+      weight: 1.5,
+      color: "black",
+      dashArray: "5, 5",
+      dashOffset: "0",
+      fillColor: isSelectedEntry
+        ? feature
+          ? AREA_TYPE_COLOR_MAP[feature.properties.type]
+          : ""
+        : "grey",
+      fillOpacity: 0.4,
+    }),
+  })
+
+export const areaToFeature = (area: Area): AreaFeature => ({
+  type: "Feature",
+  geometry: area.area,
+  properties: {
+    id: area.id as number,
+    type: area.type,
+    date: area.date,
+    current: area.current,
+    visible: area.current,
+  },
+})

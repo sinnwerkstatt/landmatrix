@@ -37,9 +37,9 @@
   const onMapReady = (e: CustomEvent<Map>) => {
     map = e.detail
 
-    const legend = new Control({ position: "bottomleft" })
-    legend.onAdd = () => createComponentAsDiv(LocationLegend)
-    map.addControl(legend)
+    // const legend = new Control({ position: "bottomleft" })
+    // legend.onAdd = () => createComponentAsDiv(LocationLegend)
+    // map.addControl(legend)
 
     map.addLayer(locationsPointLayer)
     fitBounds(locationsPointLayer, map)
@@ -186,7 +186,11 @@
     />
     <div class="overflow-y-auto">
       {#if activeEntryIdx !== -1}
-        <LocationAreasEditField bind:areas={locations[activeEntryIdx].areas} />
+        <LocationAreasEditField
+          bind:areas={locations[activeEntryIdx].areas}
+          {map}
+          isSelectedEntry
+        />
       {/if}
     </div>
   </div>
