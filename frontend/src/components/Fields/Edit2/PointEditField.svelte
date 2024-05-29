@@ -29,7 +29,7 @@
       placeholder="-180 to 180"
       min={-180}
       max={180}
-      step={0.1 ** 5}
+      step={0.1 ** 6}
     />
   </div>
   <div class="w-1/2">
@@ -44,7 +44,7 @@
       placeholder="-90 to 90"
       min={-90}
       max={90}
-      step={0.1 ** 5}
+      step={0.1 ** 6}
     />
   </div>
 </div>
