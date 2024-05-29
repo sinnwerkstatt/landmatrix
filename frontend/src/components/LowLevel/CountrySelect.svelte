@@ -14,7 +14,6 @@
   bind:value
   items={countries}
   label="name"
-  itemId="id"
   {name}
   {disabled}
   {required}

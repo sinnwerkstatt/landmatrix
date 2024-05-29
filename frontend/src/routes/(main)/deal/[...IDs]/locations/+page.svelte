@@ -123,7 +123,6 @@
             {map}
             label={$_("Areas")}
             areas={location.areas}
-            locationId={location.nid}
             fieldname="location.areas"
             isSelectedEntry={isSelectedLocation(location.nid)}
           />

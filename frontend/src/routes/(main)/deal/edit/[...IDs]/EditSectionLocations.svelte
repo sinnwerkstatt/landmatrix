@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Point } from "geojson"
-  import type { GeoJSON, Layer, Map } from "leaflet"
-  import { Control, geoJson } from "leaflet"
+  import type { GeoJSON, Layer, Map } from "leaflet?client"
+  import { Control, geoJson } from "leaflet?client"
   import { onDestroy, onMount } from "svelte"
   import { _ } from "svelte-i18n"
   import { slide } from "svelte/transition"
@@ -37,9 +37,9 @@
   const onMapReady = (e: CustomEvent<Map>) => {
     map = e.detail
 
-    // const legend = new Control({ position: "bottomleft" })
-    // legend.onAdd = () => createComponentAsDiv(LocationLegend)
-    // map.addControl(legend)
+    const legend = new Control({ position: "bottomleft" })
+    legend.onAdd = () => createComponentAsDiv(LocationLegend)
+    map.addControl(legend)
 
     map.addLayer(locationsPointLayer)
     fitBounds(locationsPointLayer, map)

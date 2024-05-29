@@ -8,7 +8,7 @@
 
   export let objects: Array<CaseStatisticsDeal | CaseStatisticsInvestor> = []
   export let model: "deal" | "investor" = "deal"
-  export let linkDraftVersion: boolean
+  export let linkDraftVersion = false
 
   interface Col {
     key: string
