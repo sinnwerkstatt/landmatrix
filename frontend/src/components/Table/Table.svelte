@@ -101,7 +101,7 @@
             <!-- https://github.com/testing-library/svelte-testing-library/issues/48#issuecomment-522029988-->
             <div
               data-testid="{index - 1}-{colIndex}"
-              class="overflow-hidden p-1"
+              class="overflow-hidden p-1 hover:overflow-y-auto"
               style="grid-column: span {spans[colIndex]} / span {spans[colIndex]}"
             >
               <slot name="field" {fieldName} obj={sortedItems[index - 1]}>
