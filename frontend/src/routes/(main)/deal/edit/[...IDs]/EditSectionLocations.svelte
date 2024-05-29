@@ -55,7 +55,7 @@
   const addEntry = () => {
     const currentIDs = locations.map(entry => entry.nid)
     locations = [...locations, new Location2(newNanoid(currentIDs))]
-    activeEntryIdx = -1
+    activeEntryIdx = locations.length - 1
   }
 
   const toggleActiveEntry = (index: number) => {
@@ -68,6 +68,7 @@
       if (!areYouSure) return
     }
     locations = locations.filter(x => x.nid !== c.nid)
+    activeEntryIdx = -1
   }
 
   $: onGoogleAutocomplete = (point: Point) => {
@@ -98,10 +99,10 @@
   })
 </script>
 
-<form class="flex flex-wrap" id="locations">
-  <div class="w-full overflow-y-auto p-2 lg:w-2/5">
+<form class="flex flex-wrap lg:h-full" id="locations">
+  <div class="w-full overflow-y-auto p-2 lg:h-full lg:w-2/5">
     {#each locations as location, index}
-      <div class="location-entry">
+      <div>
         <div
           class="my-2 flex flex-row items-center justify-between bg-gray-200 dark:bg-gray-700"
         >
@@ -166,17 +167,13 @@
         {/if}
       </div>
     {/each}
-    <div class="mt-6">
-      <button
-        class="btn btn-primary flex items-center"
-        on:click={addEntry}
-        type="button"
-      >
-        <PlusIcon class="-ml-2 mr-2 h-6 w-5" />
-        {$_("Add")}
-        {$_("Location")}
-      </button>
-    </div>
+  </div>
+  <div class="py-4 lg:order-last">
+    <button class="btn btn-primary flex items-center" on:click={addEntry} type="button">
+      <PlusIcon class="-ml-2 mr-2 h-6 w-5" />
+      {$_("Add")}
+      {$_("Location")}
+    </button>
   </div>
   <div class="w-full p-2 lg:w-3/5">
     <BigMap
