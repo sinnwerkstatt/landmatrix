@@ -8,7 +8,7 @@
   import {
     getImplementationStatusChoices,
     getNatureOfDealChoices,
-    intention_of_investment_choices,
+    groupedIoIChoices,
   } from "$lib/choices"
   import type { Produce } from "$lib/filters"
   import { filters, isDefaultFilter, publicOnly } from "$lib/filters"
@@ -301,7 +301,7 @@
           />
           {$_("No information")}
         </label>
-        {#each Object.entries(intention_of_investment_choices) as [name, options]}
+        {#each Object.entries(groupedIoIChoices) as [name, options]}
           <div class="mb-2">
             <strong>{$_(name)}</strong>
             {#each Object.entries(options) as [isval, isname]}

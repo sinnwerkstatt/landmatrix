@@ -2,7 +2,7 @@
   import type { ComponentType } from "svelte"
   import { _ } from "svelte-i18n"
 
-  import { flat_intention_of_investment_map } from "$lib/choices"
+  import { flatIoIChoices } from "$lib/choices"
   import type { IntentionOfInvestment } from "$lib/types/deal"
 
   import AgricultureIcon from "$components/icons/AgricultureIcon.svelte"
@@ -21,7 +21,7 @@
 
   export let value: IntentionOfInvestment[]
 
-  const intention_of_investment_map: { [key in IntentionOfInvestment]: ComponentType } =
+  const intentionOfInvestmentIcons: { [key in IntentionOfInvestment]: ComponentType } =
     {
       // agriculture
       BIOFUELS: AgricultureIcon,
@@ -56,11 +56,11 @@
   <span
     class="mx-1 my-0.5 inline-flex items-center gap-1 whitespace-nowrap border border-gray-100 bg-gray-50 px-1 py-0.5 text-gray-800 dark:border-transparent dark:bg-gray-800 dark:text-white"
   >
-    {#if intention_of_investment_map[ioi] != null}
-      <svelte:component this={intention_of_investment_map[ioi]} />
+    {#if intentionOfInvestmentIcons[ioi]}
+      <svelte:component this={intentionOfInvestmentIcons[ioi]} />
     {/if}
     <!-- This is a special case where the string to be translated is NOT defined
         in the backend and needs to be defined in the frontend -->
-    {$_(flat_intention_of_investment_map[ioi])}
+    {$_(flatIoIChoices[ioi])}
   </span>
 {/each}

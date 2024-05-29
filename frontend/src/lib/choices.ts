@@ -5,7 +5,6 @@ import {
   IntentionOfInvestment,
   IntentionOfInvestmentGroup,
   NatureOfDeal,
-  NegotiationStatusGroup,
   OtherIoI,
   RenewableEnergyIoI,
 } from "$lib/types/deal"
@@ -20,14 +19,6 @@ export const getImplementationStatusChoices = (
     [ImplementationStatus.PROJECT_ABANDONED]: $t("Project abandoned"),
   }
 }
-
-export const implementation_status_choices: { [key in ImplementationStatus]: string } =
-  {
-    [ImplementationStatus.PROJECT_NOT_STARTED]: "Project not started",
-    [ImplementationStatus.STARTUP_PHASE]: "Startup phase (no production)",
-    [ImplementationStatus.IN_OPERATION]: "In operation (production)",
-    [ImplementationStatus.PROJECT_ABANDONED]: "Project abandoned",
-  }
 
 export const getNatureOfDealChoices = (
   $t: (t: string) => string,
@@ -44,16 +35,7 @@ export const getNatureOfDealChoices = (
   }
 }
 
-export const negotiation_status_group_choices: {
-  [key in NegotiationStatusGroup]: string
-} = {
-  [NegotiationStatusGroup.INTENDED]: "Intended",
-  [NegotiationStatusGroup.CONCLUDED]: "Concluded",
-  [NegotiationStatusGroup.FAILED]: "Failed",
-  [NegotiationStatusGroup.CONTRACT_EXPIRED]: "Contract expired",
-}
-
-export const agriculture_investment_choices: {
+export const agricultureInvestmentChoices: {
   [key in AgricultureIoI]: string
 } = {
   [AgricultureIoI.BIOFUELS]: "Biomass for biofuels",
@@ -66,7 +48,7 @@ export const agriculture_investment_choices: {
   [AgricultureIoI.AGRICULTURE_UNSPECIFIED]: "Agriculture unspecified",
 }
 
-export const forestry_investment_choices: {
+export const forestryInvestmentChoices: {
   [key in ForestryIoI]: string
 } = {
   [ForestryIoI.BIOMASS_ENERGY_PRODUCTION]: "Biomass for energy generation (forestry)",
@@ -75,14 +57,14 @@ export const forestry_investment_choices: {
   [ForestryIoI.TIMBER_PLANTATION]: "Timber plantation for wood and fiber",
   [ForestryIoI.FORESTRY_UNSPECIFIED]: "Forestry unspecified",
 }
-export const renewable_energy_investment_choices: {
+export const renewableEnergyInvestmentChoices: {
   [key in RenewableEnergyIoI]: string
 } = {
   [RenewableEnergyIoI.SOLAR_PARK]: "Solar park",
   [RenewableEnergyIoI.WIND_FARM]: "Wind farm",
   [RenewableEnergyIoI.RENEWABLE_ENERGY]: "Renewable energy unspecified",
 }
-export const other_intention_choices: { [key in OtherIoI]: string } = {
+export const otherIntentionChoices: { [key in OtherIoI]: string } = {
   [OtherIoI.CONVERSATION]: "Conservation",
   [OtherIoI.INDUSTRY]: "Industry",
   [OtherIoI.LAND_SPECULATION]: "Land speculation",
@@ -92,7 +74,7 @@ export const other_intention_choices: { [key in OtherIoI]: string } = {
   [OtherIoI.OTHER]: "Other",
 }
 
-export const intention_of_investment_group_choices: {
+export const IoIGroupChoices: {
   [key in IntentionOfInvestmentGroup]: string
 } = {
   [IntentionOfInvestmentGroup.AGRICULTURE]: "Agriculture",
@@ -101,20 +83,20 @@ export const intention_of_investment_group_choices: {
   [IntentionOfInvestmentGroup.OTHER]: "Other",
 }
 
-export const intention_of_investment_choices = {
-  Agriculture: agriculture_investment_choices,
-  Forestry: forestry_investment_choices,
-  "Renewable energy power plants": renewable_energy_investment_choices,
-  Other: other_intention_choices,
+export const groupedIoIChoices = {
+  Agriculture: agricultureInvestmentChoices,
+  Forestry: forestryInvestmentChoices,
+  "Renewable energy power plants": renewableEnergyInvestmentChoices,
+  Other: otherIntentionChoices,
 }
 
-export const flat_intention_of_investment_map: {
+export const flatIoIChoices: {
   [key in IntentionOfInvestment]: string
 } = {
-  ...agriculture_investment_choices,
-  ...forestry_investment_choices,
-  ...renewable_energy_investment_choices,
-  ...other_intention_choices,
+  ...agricultureInvestmentChoices,
+  ...forestryInvestmentChoices,
+  ...renewableEnergyInvestmentChoices,
+  ...otherIntentionChoices,
 }
 
 export enum Classification {
@@ -137,7 +119,7 @@ export enum Classification {
   OTHER = "OTHER",
 }
 
-export const classification_choices: { [key in Classification]: string } = {
+export const classificationChoices: { [key in Classification]: string } = {
   [Classification.GOVERNMENT]: "Government",
   [Classification.GOVERNMENT_INSTITUTION]: "Government institution",
   [Classification.STATE_OWNED_COMPANY]: "State-/government (owned) company",

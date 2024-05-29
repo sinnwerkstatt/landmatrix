@@ -15,7 +15,7 @@ import tippy from "tippy.js"
 import { browser } from "$app/environment"
 import { page } from "$app/stores"
 
-import { Classification, classification_choices } from "$lib/choices"
+import { Classification, classificationChoices } from "$lib/choices"
 
 cytoscape.use(cyCoseBilkent)
 cytoscape.use(cyPopper)
@@ -115,7 +115,7 @@ const makePopper = (ele: NodeSingular & { tippy?: TippyInstance }) => {
 
           if ("active_version__classification" in ele.data()) {
             const choice =
-              classification_choices[
+              classificationChoices[
                 ele.data().active_version__classification as Classification
               ]
             if (choice) content += choice

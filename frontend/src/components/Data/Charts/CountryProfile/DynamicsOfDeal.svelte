@@ -5,7 +5,7 @@
 
   import { browser } from "$app/environment"
 
-  import { classification_choices } from "$lib/choices"
+  import { classificationChoices } from "$lib/choices"
   import { DynamicsOfDeal, toCSV, toJSON } from "$lib/data/charts/dynamicsOfDeal"
   import type { DynamicsDataPoint } from "$lib/data/charts/dynamicsOfDeal"
   import type { DealVersion2 } from "$lib/types/newtypes"
@@ -37,7 +37,7 @@
     })
 
     payload = Object.entries(pots).map(([k, v]) => ({
-      name: $_(classification_choices[k]) || $_("Unknown"),
+      name: $_(classificationChoices[k]) || $_("Unknown"),
       value: v,
     }))
 

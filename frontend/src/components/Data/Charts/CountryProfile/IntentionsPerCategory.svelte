@@ -5,10 +5,7 @@
 
   import { browser } from "$app/environment"
 
-  import {
-    flat_intention_of_investment_map,
-    getImplementationStatusChoices,
-  } from "$lib/choices"
+  import { flatIoIChoices, getImplementationStatusChoices } from "$lib/choices"
   import {
     LamaSankey,
     sankey_links_to_csv_cross,
@@ -45,7 +42,7 @@
     }
   }
 
-  $: implementation_status_choices = getImplementationStatusChoices($_)
+  $: implementationStatusChoices = getImplementationStatusChoices($_)
 
   let nodes: MySankeyNode[] = []
   let links: MySankeyLink[] = []
@@ -67,13 +64,13 @@
       })
     })
     nodes = [...datanodes].map(n => {
-      const istatus = implementation_status_choices[n] || n === "S_UNKNOWN"
+      const istatus = implementationStatusChoices[n] || n === "S_UNKNOWN"
       const deal_count = istatus ? i_status_counter[n] : 0
       const name =
         (n === "S_UNKNOWN" && $_("Status unknown")) ||
         (n === "I_UNKNOWN" && $_("Intention unknown")) ||
-        implementation_status_choices[n] ||
-        flat_intention_of_investment_map[n]
+        implementationStatusChoices[n] ||
+        flatIoIChoices[n]
       return { id: n, istatus, deal_count, name }
     })
     links = Object.entries(datalinks).map(([k, v]) => {
