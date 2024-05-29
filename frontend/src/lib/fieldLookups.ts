@@ -62,6 +62,7 @@ export const investorFields = derived([_, fieldChoices], ([$_, $fieldChoices]) =
   return {
     id: { displayField: IDField, label: $_("ID"), extras: { model: "investor" } },
     country: {
+      // @nuts: country deprecated??
       displayField: CountryField,
       editField: CountryEditField,
       label: $_("Country of registration/origin"),
