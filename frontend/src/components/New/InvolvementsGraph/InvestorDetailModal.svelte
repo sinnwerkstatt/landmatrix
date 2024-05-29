@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import type { Classification } from "$lib/choices"
+  import { Classification } from "$lib/types/investor"
 
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import Overlay from "$components/Overlay.svelte"

@@ -15,7 +15,8 @@ import tippy from "tippy.js"
 import { browser } from "$app/environment"
 import { page } from "$app/stores"
 
-import { Classification, classificationChoices } from "$lib/choices"
+import { classificationMap } from "$lib/stores/maps"
+import { Classification } from "$lib/types/investor"
 
 cytoscape.use(cyCoseBilkent)
 cytoscape.use(cyPopper)
@@ -110,15 +111,16 @@ const makePopper = (ele: NodeSingular & { tippy?: TippyInstance }) => {
             const cntr = get(page).data.countries.find(
               c => c.id === ele.data().active_version__country_id,
             )
-            if (cntr) content += `${cntr.name}, `
+            if (cntr) content += `${cntr.name}`
           }
 
           if ("active_version__classification" in ele.data()) {
+            // Todo: make reflexive, e.g., make tooltip a svelte component
             const choice =
-              classificationChoices[
+              get(classificationMap)[
                 ele.data().active_version__classification as Classification
               ]
-            if (choice) content += choice
+            if (choice) content += ", " + choice
           }
 
           tipEl.innerHTML = content

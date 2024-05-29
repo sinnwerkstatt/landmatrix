@@ -17,7 +17,7 @@
   $: isChrome = browser && /Google Inc/.test(navigator.vendor)
 </script>
 
-<div id="${title}_wrapper" class="flex flex-col flex-nowrap {wrapperClasses}">
+<div id="{title}_wrapper" class="flex flex-col flex-nowrap {wrapperClasses}">
   <slot name="heading">
     {#if title}
       <h2 class="heading3 mt-0 text-gray-700 dark:text-gray-50">{title}</h2>

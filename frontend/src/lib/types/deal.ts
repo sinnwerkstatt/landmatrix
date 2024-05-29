@@ -78,15 +78,6 @@ export enum ImplementationStatus {
   PROJECT_ABANDONED = "PROJECT_ABANDONED",
 }
 
-export enum IntentionOfInvestmentGroup {
-  AGRICULTURE = "AGRICULTURE",
-  FORESTRY = "FORESTRY",
-  RENEWABLE_ENERGY = "RENEWABLE_ENERGY",
-  OTHER = "OTHER",
-}
-export const IoIGroup = IntentionOfInvestmentGroup
-export type IoIGroup = IntentionOfInvestmentGroup
-
 export enum AgricultureIoI {
   BIOFUELS = "BIOFUELS",
   BIOMASS_ENERGY_GENERATION = "BIOMASS_ENERGY_GENERATION",
@@ -110,6 +101,7 @@ export enum RenewableEnergyIoI {
   WIND_FARM = "WIND_FARM",
   RENEWABLE_ENERGY = "RENEWABLE_ENERGY",
 }
+
 export enum OtherIoI {
   CONVERSATION = "CONVERSATION",
   INDUSTRY = "INDUSTRY",
@@ -118,6 +110,24 @@ export enum OtherIoI {
   OIL_GAS_EXTRACTION = "OIL_GAS_EXTRACTION",
   TOURISM = "TOURISM",
   OTHER = "OTHER",
+}
+
+export enum IntentionOfInvestmentGroup {
+  AGRICULTURE = "AGRICULTURE",
+  FORESTRY = "FORESTRY",
+  RENEWABLE_ENERGY = "RENEWABLE_ENERGY",
+  OTHER = "OTHER",
+}
+// alias
+export const IoIGroup = IntentionOfInvestmentGroup
+export type IoIGroup = IntentionOfInvestmentGroup
+
+// grouped IoIs
+export const IoIGroups = {
+  [IoIGroup.AGRICULTURE]: AgricultureIoI,
+  [IoIGroup.FORESTRY]: ForestryIoI,
+  [IoIGroup.RENEWABLE_ENERGY]: RenewableEnergyIoI,
+  [IoIGroup.OTHER]: OtherIoI,
 }
 
 // merge intention of investment enums
@@ -137,7 +147,7 @@ export const IoI = IntentionOfInvestment
 export type IoI = IntentionOfInvestment
 
 export const INTENTION_OF_INVESTMENT_GROUP_MAP: {
-  [key in IoI]: IntentionOfInvestmentGroup
+  [key in IoI]: IoIGroup
 } = {
   // agriculture
   [AgricultureIoI.BIOFUELS]: IoIGroup.AGRICULTURE,

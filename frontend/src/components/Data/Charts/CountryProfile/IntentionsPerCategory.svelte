@@ -5,7 +5,6 @@
 
   import { browser } from "$app/environment"
 
-  import { flatIoIChoices, getImplementationStatusChoices } from "$lib/choices"
   import {
     LamaSankey,
     sankey_links_to_csv_cross,
@@ -14,13 +13,14 @@
     MySankeyLink,
     MySankeyNode,
   } from "$lib/data/charts/intentionsPerCategory"
+  import { implementationStatusMap, intentionOfInvestmentMap } from "$lib/stores/maps"
   import type { DealVersion2 } from "$lib/types/newtypes"
 
   import ChartWrapper from "$components/Data/Charts/DownloadWrapper.svelte"
   import { downloadCSV, downloadJSON, downloadSVG } from "$components/Data/Charts/utils"
   import type { DownloadEvent } from "$components/Data/Charts/utils"
 
-  const title = $_(
+  $: title = $_(
     "Number of intentions per category of production according to implementation status",
   )
 
@@ -42,8 +42,6 @@
     }
   }
 
-  $: implementationStatusChoices = getImplementationStatusChoices($_)
-
   let nodes: MySankeyNode[] = []
   let links: MySankeyLink[] = []
 
@@ -64,13 +62,13 @@
       })
     })
     nodes = [...datanodes].map(n => {
-      const istatus = implementationStatusChoices[n] || n === "S_UNKNOWN"
+      const istatus = $implementationStatusMap[n] || n === "S_UNKNOWN"
       const deal_count = istatus ? i_status_counter[n] : 0
       const name =
         (n === "S_UNKNOWN" && $_("Status unknown")) ||
         (n === "I_UNKNOWN" && $_("Intention unknown")) ||
-        implementationStatusChoices[n] ||
-        flatIoIChoices[n]
+        $implementationStatusMap[n] ||
+        $intentionOfInvestmentMap[n]
       return { id: n, istatus, deal_count, name }
     })
     links = Object.entries(datalinks).map(([k, v]) => {

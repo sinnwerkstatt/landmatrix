@@ -1,8 +1,7 @@
 <script lang="ts">
   import type { ComponentType } from "svelte"
-  import { _ } from "svelte-i18n"
 
-  import { flatIoIChoices } from "$lib/choices"
+  import { intentionOfInvestmentMap } from "$lib/stores/maps"
   import type { IntentionOfInvestment } from "$lib/types/deal"
 
   import AgricultureIcon from "$components/icons/AgricultureIcon.svelte"
@@ -21,46 +20,45 @@
 
   export let value: IntentionOfInvestment[]
 
-  const intentionOfInvestmentIcons: { [key in IntentionOfInvestment]: ComponentType } =
-    {
-      // agriculture
-      BIOFUELS: AgricultureIcon,
-      BIOMASS_ENERGY_GENERATION: AgricultureIcon,
-      FODDER: FoodCropsIcon,
-      FOOD_CROPS: FoodCropsIcon,
-      LIVESTOCK: LifestockIcon,
-      NON_FOOD_AGRICULTURE: AgricultureIcon,
-      AGRICULTURE_UNSPECIFIED: AgricultureIcon,
-      // forest
-      BIOMASS_ENERGY_PRODUCTION: ForestIcon,
-      CARBON: ForestIcon,
-      FOREST_LOGGING: ForestIcon,
-      TIMBER_PLANTATION: ForestIcon,
-      FORESTRY_UNSPECIFIED: ForestIcon,
-      // renewable
-      SOLAR_PARK: SolarPanelIcon,
-      WIND_FARM: RenewableEnergyIcon,
-      RENEWABLE_ENERGY: RenewableEnergyIcon,
-      // other
-      CONVERSATION: HandsHoldingCircleIcon,
-      INDUSTRY: IndustryIcon,
-      LAND_SPECULATION: LandSpeculationIcon,
-      MINING: MiningIcon,
-      OIL_GAS_EXTRACTION: OilIcon,
-      TOURISM: PlaneIcon,
-      OTHER: OtterIcon,
-    }
+  const icons: { [key in IntentionOfInvestment]: ComponentType } = {
+    // agriculture
+    BIOFUELS: AgricultureIcon,
+    BIOMASS_ENERGY_GENERATION: AgricultureIcon,
+    FODDER: FoodCropsIcon,
+    FOOD_CROPS: FoodCropsIcon,
+    LIVESTOCK: LifestockIcon,
+    NON_FOOD_AGRICULTURE: AgricultureIcon,
+    AGRICULTURE_UNSPECIFIED: AgricultureIcon,
+    // forest
+    BIOMASS_ENERGY_PRODUCTION: ForestIcon,
+    CARBON: ForestIcon,
+    FOREST_LOGGING: ForestIcon,
+    TIMBER_PLANTATION: ForestIcon,
+    FORESTRY_UNSPECIFIED: ForestIcon,
+    // renewable
+    SOLAR_PARK: SolarPanelIcon,
+    WIND_FARM: RenewableEnergyIcon,
+    RENEWABLE_ENERGY: RenewableEnergyIcon,
+    // other
+    CONVERSATION: HandsHoldingCircleIcon,
+    INDUSTRY: IndustryIcon,
+    LAND_SPECULATION: LandSpeculationIcon,
+    MINING: MiningIcon,
+    OIL_GAS_EXTRACTION: OilIcon,
+    TOURISM: PlaneIcon,
+    OTHER: OtterIcon,
+  }
 </script>
 
 {#each value as ioi}
   <span
     class="mx-1 my-0.5 inline-flex items-center gap-1 whitespace-nowrap border border-gray-100 bg-gray-50 px-1 py-0.5 text-gray-800 dark:border-transparent dark:bg-gray-800 dark:text-white"
   >
-    {#if intentionOfInvestmentIcons[ioi]}
-      <svelte:component this={intentionOfInvestmentIcons[ioi]} />
+    {#if icons[ioi]}
+      <svelte:component this={icons[ioi]} />
     {/if}
     <!-- This is a special case where the string to be translated is NOT defined
         in the backend and needs to be defined in the frontend -->
-    {$_(flatIoIChoices[ioi])}
+    {$intentionOfInvestmentMap[ioi]}
   </span>
 {/each}

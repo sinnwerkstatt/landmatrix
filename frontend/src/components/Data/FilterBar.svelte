@@ -5,15 +5,16 @@
 
   import { page } from "$app/stores"
 
-  import {
-    getImplementationStatusChoices,
-    getNatureOfDealChoices,
-    groupedIoIChoices,
-  } from "$lib/choices"
   import type { Produce } from "$lib/filters"
   import { filters, isDefaultFilter, publicOnly } from "$lib/filters"
   import { fieldChoices, simpleInvestors } from "$lib/stores"
-  import { ProduceGroup } from "$lib/types/deal"
+  import {
+    implementationStatusMap,
+    intentionOfInvestmentMap,
+    natureOfDealMap,
+  } from "$lib/stores/maps"
+  import { intentionOfInvestmentGroupMap } from "$lib/stores/maps.js"
+  import { IoIGroup, IoIGroups, ProduceGroup } from "$lib/types/deal"
   import { UserRole } from "$lib/types/user"
 
   import { showFilterBar } from "$components/Data/stores"
@@ -179,7 +180,7 @@
         on:clear={() => ($filters.nature_of_deal = [])}
         title={$_("Nature of the deal")}
       >
-        {#each Object.entries(getNatureOfDealChoices($_)) as [isval, isname]}
+        {#each Object.entries($natureOfDealMap) as [isval, isname]}
           <label class="block">
             <input
               type="checkbox"
@@ -274,7 +275,7 @@
           />
           {$_("No information")}
         </label>
-        {#each Object.entries(getImplementationStatusChoices($_)) as [isval, isname]}
+        {#each Object.entries($implementationStatusMap) as [isval, isname]}
           <label class="block">
             <input
               bind:group={$filters.implementation_status}
@@ -292,7 +293,7 @@
         on:clear={() => ($filters.intention_of_investment = [])}
         title={$_("Intention of investment")}
       >
-        <label class="block">
+        <label class="mb-2 block">
           <input
             bind:group={$filters.intention_of_investment}
             class="checkbox-btn form-checkbox"
@@ -301,18 +302,18 @@
           />
           {$_("No information")}
         </label>
-        {#each Object.entries(groupedIoIChoices) as [name, options]}
+        {#each Object.keys(IoIGroup) as group}
           <div class="mb-2">
-            <strong>{$_(name)}</strong>
-            {#each Object.entries(options) as [isval, isname]}
+            <strong>{$intentionOfInvestmentGroupMap[group]}</strong>
+            {#each Object.keys(IoIGroups[group]) as val}
               <label class="block">
                 <input
                   type="checkbox"
                   bind:group={$filters.intention_of_investment}
-                  value={isval}
+                  value={val}
                   class="checkbox-btn form-checkbox"
                 />
-                {$_(isname)}
+                {$intentionOfInvestmentMap[val]}
               </label>
             {/each}
           </div>

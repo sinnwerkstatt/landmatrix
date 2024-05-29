@@ -5,16 +5,16 @@
 
   import { browser } from "$app/environment"
 
-  import { classificationChoices } from "$lib/choices"
   import { DynamicsOfDeal, toCSV, toJSON } from "$lib/data/charts/dynamicsOfDeal"
   import type { DynamicsDataPoint } from "$lib/data/charts/dynamicsOfDeal"
+  import { classificationMap } from "$lib/stores/maps"
   import type { DealVersion2 } from "$lib/types/newtypes"
 
   import ChartWrapper from "$components/Data/Charts/DownloadWrapper.svelte"
   import { downloadCSV, downloadJSON, downloadSVG } from "$components/Data/Charts/utils"
   import type { DownloadEvent } from "$components/Data/Charts/utils"
 
-  const title = $_("Dynamics of deal by investor type")
+  $: title = $_("Dynamics of deal by investor type")
   const dynamicOfDeal = new DynamicsOfDeal()
 
   export let deals: DealVersion2[] = []
@@ -37,7 +37,7 @@
     })
 
     payload = Object.entries(pots).map(([k, v]) => ({
-      name: $_(classificationChoices[k]) || $_("Unknown"),
+      name: $classificationMap[k] || $_("Unknown"),
       value: v,
     }))
 
