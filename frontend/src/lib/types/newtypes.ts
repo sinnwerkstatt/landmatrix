@@ -470,7 +470,7 @@ export class Location2 {
 export interface InvestorVersion2 extends BaseVersionMixin {
   name: string
   name_unknown: boolean
-  // country: Country | null
+  country: number | null // todo: switch to country_id
   country_id: number | null
   classification: string
   homepage: string

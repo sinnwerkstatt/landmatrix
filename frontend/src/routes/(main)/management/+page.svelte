@@ -378,7 +378,7 @@
     {:else}
       <Table items={filteredObjects} {columns} {spans} {labels}>
         <svelte:fragment slot="field" let:fieldName let:obj>
-          {#if ["country", "modified_at", "modified_by_id", "deal_size", "name", "fully_updated"].includes(fieldName)}
+          {#if ["country_id", "modified_at", "modified_by_id", "deal_size", "name", "fully_updated"].includes(fieldName)}
             <DisplayField
               fieldname={fieldName}
               value={obj.selected_version[fieldName]}

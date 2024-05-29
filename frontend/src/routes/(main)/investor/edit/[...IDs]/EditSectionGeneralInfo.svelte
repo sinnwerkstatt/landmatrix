@@ -15,7 +15,7 @@
     <EditField
       bind:value={version.country}
       extras={{ required: true }}
-      fieldname="country"
+      fieldname="country_id"
       model="investor"
       showLabel
     />
