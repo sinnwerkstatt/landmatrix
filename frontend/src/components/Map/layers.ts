@@ -1,9 +1,8 @@
+import { env } from "$env/dynamic/public"
 import { TileLayer } from "leaflet?client"
 import { writable } from "svelte/store"
 
 import { browser } from "$app/environment"
-
-const HereApiKey = "OgyVd8v9JkEHQIjrK4Q4sEVY-a19xpJXUxWYkTdBQuo"
 
 function SDILegend(layer: string, folder = "lm"): string {
   return (
@@ -46,7 +45,7 @@ export const getBaseLayers = ($_: (t: string) => string): BaseLayer[] => {
       id: "satellite",
       name: $_("Satellite"),
       layer: new TileLayer(
-        `https://2.aerial.maps.ls.hereapi.com/maptile/2.1/maptile/newest/satellite.day/{z}/{x}/{y}/512/png8?apiKey=${HereApiKey}`,
+        `https://2.aerial.maps.ls.hereapi.com/maptile/2.1/maptile/newest/satellite.day/{z}/{x}/{y}/512/png8?apiKey=${env.PUBLIC_HERE_API_KEY}`,
         {
           attribution: `Map Tiles &copy; ${new Date().getFullYear()} <a href="https://developer.here.com">HERE</a>`,
         },
