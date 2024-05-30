@@ -16,11 +16,10 @@
   import { UserRole } from "$lib/types/user"
 
   import FilterCollapse from "$components/Data/FilterCollapse.svelte"
-  import IDField from "$components/Fields/Display2/IDField.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import AdjustmentsIcon from "$components/icons/AdjustmentsIcon.svelte"
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
-  import Table from "$components/Table/Table.svelte"
+  import Table, { type Column } from "$components/Table/Table.svelte"
 
   import { downloadAsCSV, downloadAsXLSX } from "./downloadObjects.js"
   import RightFilterBar from "./RightFilterBar.svelte"
@@ -100,36 +99,32 @@
   let activeTab: Tab
   $: activeTab = flatTabs.find(item => item.id === activeTabId)!
 
-  const dealColumns = {
-    id: 1,
-    status: 2,
-    country_id: 2,
-    deal_size: 2,
-    first_created_at: 2,
-    first_created_by_id: 2,
-    modified_at: 2,
-    modified_by_id: 2,
-    fully_updated: 2,
-    workflowinfos: 5,
-  }
+  let dealColumns: Column[]
+  $: dealColumns = [
+    { key: "id", colSpan: 1 },
+    { key: "status", colSpan: 2 },
+    { key: "country_id", colSpan: 2 },
+    { key: "deal_size", colSpan: 2, submodel: "selected_version" },
+    { key: "first_created_at", colSpan: 2 },
+    { key: "first_created_by_id", colSpan: 2 },
+    { key: "modified_at", colSpan: 2, submodel: "selected_version" },
+    { key: "modified_by_id", colSpan: 2, submodel: "selected_version" },
+    { key: "fully_updated", colSpan: 2, submodel: "selected_version" },
+    { key: "workflowinfos", colSpan: 5 },
+  ].map(c => ({ ...c, label: $dealFields[c.key].label }))
 
-  const investorColumns = {
-    id: 1,
-    status: 2,
-    name: 3,
-    country_id: 4,
-    // deals: 1,
-    first_created_at: 2,
-    first_created_by_id: 3,
-    workflowinfos: 5,
-  }
+  let investorColumns: Column[]
+  $: investorColumns = [
+    { key: "id", colSpan: 1 },
+    { key: "status", colSpan: 2 },
+    { key: "name", colSpan: 3, submodel: "selected_version" },
+    { key: "country_id", colSpan: 4, submodel: "selected_version" },
+    { key: "first_created_at", colSpan: 2 },
+    { key: "first_created_by_id", colSpan: 3 },
+    { key: "workflowinfos", colSpan: 5 },
+  ].map(c => ({ ...c, label: $investorFields[c.key].label }))
 
-  $: columnsWithSpan = model === "deal" ? dealColumns : investorColumns
-  $: columns = Object.keys(columnsWithSpan)
-  $: labels = columns.map(col =>
-    model === "deal" ? $dealFields[col].label : $investorFields[col].label,
-  )
-  $: spans = Object.entries(columnsWithSpan).map(([, colSpan]) => colSpan)
+  $: columns = model === "deal" ? dealColumns : investorColumns
 
   async function getCounts(model: "deal" | "investor") {
     if (!browser) return
@@ -376,30 +371,19 @@
     {#if activeTab?.useWorkflowInfoView}
       <WorkflowInfoView objects={filteredObjects} {model} tabId={activeTab.id} />
     {:else}
-      <Table items={filteredObjects} {columns} {spans} {labels}>
+      <Table items={filteredObjects} {columns}>
         <svelte:fragment slot="field" let:fieldName let:obj>
-          {#if ["country_id", "modified_at", "modified_by_id", "deal_size", "name", "fully_updated"].includes(fieldName)}
-            <DisplayField
-              fieldname={fieldName}
-              value={obj.selected_version[fieldName]}
-              {wrapperClass}
-              {valueClass}
-              {model}
-            />
-          {:else if fieldName === "id"}
-            <IDField
-              value={obj.id}
-              extras={{ model, objectVersion: obj.draft_version_id }}
-            />
-          {:else}
-            <DisplayField
-              fieldname={fieldName}
-              value={obj[fieldName]}
-              {model}
-              {wrapperClass}
-              {valueClass}
-            />
-          {/if}
+          {@const col = columns.find(c => c.key === fieldName)}
+          <DisplayField
+            fieldname={col.key}
+            value={col.submodel ? obj[col.submodel][col.key] : obj[col.key]}
+            {model}
+            {wrapperClass}
+            {valueClass}
+            extras={col.key === "id"
+              ? { model, objectVersion: obj.draft_version_id }
+              : {}}
+          />
         </svelte:fragment>
       </Table>
     {/if}

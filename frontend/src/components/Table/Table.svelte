@@ -1,3 +1,12 @@
+<script context="module" lang="ts">
+  export interface Column {
+    key: string
+    label: string
+    colSpan: number
+    submodel?: string
+  }
+</script>
+
 <script lang="ts">
   import cn from "classnames"
   import { onMount } from "svelte"
@@ -7,15 +16,7 @@
 
   import ChevronDownIcon from "$components/icons/ChevronDownIcon.svelte"
 
-  // // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  // interface $$Slots {
-  //   default: { prop: boolean }
-  //   // eslint-disable-next-line no-undef
-  //   field: { obj: T; fieldName: keyof T }
-  // }
-  export let columns: string[]
-  export let labels: string[] = []
-  export let spans: number[] = []
+  export let columns: Column[]
   export let items: unknown[] = []
   export let sortBy: string | null = null
 
@@ -25,15 +26,29 @@
 
   export let rowClasses = ""
 
-  $: sortedItems = sortBy ? [...items].sort(sortFn(sortBy)) : items
+  let labels: string[] = []
+  let spans: number[] = []
+
+  $: labels = columns.map(c => c.label)
+  $: spans = columns.map(c => c.colSpan)
+
+  $: sortCol = columns.find(
+    c => c.key === (sortBy?.startsWith("-") ? sortBy.substring(1) : sortBy),
+  )
+  $: sortedItems = sortCol
+    ? [...items].sort(
+        sortFn(
+          (sortBy?.startsWith("-") ? "-" : "") +
+            (sortCol.submodel ? `${sortCol.submodel}.${sortCol.key}` : sortCol.key),
+        ),
+      )
+    : items
   $: nItems = sortedItems?.length ?? 0
 
-  $: labels = labels ?? columns
-  $: spans = spans && spans.length ? spans : columns.map(() => 1)
   $: nCols = spans.reduce((sum, value) => sum + value)
 
-  const onTableHeadClick = (col: string) => {
-    sortBy = sortBy === col ? `-${col}` : col
+  const onTableHeadClick = (key: string) => {
+    sortBy = sortBy === key ? `-${key}` : key
   }
 
   let virtualList: VirtualList
@@ -75,7 +90,7 @@
             <button
               class="m-0 cursor-pointer p-1 text-left"
               style="grid-column: span {spans[colIndex]} / span {spans[colIndex]}"
-              on:click={() => onTableHeadClick(col)}
+              on:click={() => onTableHeadClick(col.key)}
             >
               {labels[colIndex]}
 
@@ -83,20 +98,20 @@
                 <ChevronDownIcon
                   class={cn(
                     "absolute top-0 inline h-4 w-4 rotate-180 rounded",
-                    sortBy === `-${col}` ? "text-orange" : "text-gray-400",
+                    sortBy === `-${col.key}` ? "text-orange" : "text-gray-400",
                   )}
                 />
                 <ChevronDownIcon
                   class={cn(
                     "absolute top-2 inline h-4 w-4 rounded",
-                    sortBy === col ? "text-orange" : "text-gray-400",
+                    sortBy === col.key ? "text-orange" : "text-gray-400",
                   )}
                 />
               </span>
             </button>
           {/each}
         {:else}
-          {#each columns as fieldName, colIndex}
+          {#each columns as col, colIndex}
             <!-- Testing slots not possible atm -->
             <!-- https://github.com/testing-library/svelte-testing-library/issues/48#issuecomment-522029988-->
             <div
@@ -104,8 +119,12 @@
               class="overflow-hidden p-1 hover:overflow-y-auto"
               style="grid-column: span {spans[colIndex]} / span {spans[colIndex]}"
             >
-              <slot name="field" {fieldName} obj={sortedItems[index - 1]}>
-                {sortedItems[index - 1][fieldName]}
+              <slot name="field" fieldName={col.key} obj={sortedItems[index - 1]}>
+                {#if col.submodel}
+                  {sortedItems[index - 1][col.submodel][col.key]}
+                {:else}
+                  {sortedItems[index - 1][col.key]}
+                {/if}
               </slot>
             </div>
           {/each}
