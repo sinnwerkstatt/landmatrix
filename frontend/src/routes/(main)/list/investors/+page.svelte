@@ -9,20 +9,17 @@
   import DataContainer from "$components/Data/DataContainer.svelte"
   import { showContextBar, showFilterBar } from "$components/Data/stores"
   import DisplayField from "$components/Fields/DisplayField.svelte"
-  import Table from "$components/Table/Table.svelte"
+  import Table, { type Column } from "$components/Table/Table.svelte"
 
-  const COLUMNS = [
-    { key: "modified_at", colSpan: 2 },
+  let columns: Column[]
+  $: columns = [
+    { key: "modified_at", colSpan: 2, submodel: "selected_version" },
     { key: "id", colSpan: 1 },
-    { key: "name", colSpan: 5 },
-    { key: "country_id", colSpan: 5 },
-    { key: "classification", colSpan: 3 },
+    { key: "name", colSpan: 5, submodel: "selected_version" },
+    { key: "country_id", colSpan: 5, submodel: "selected_version" },
+    { key: "classification", colSpan: 3, submodel: "selected_version" },
     { key: "deals", colSpan: 1 },
-  ]
-
-  $: columns = COLUMNS.map(x => x.key)
-  $: labels = COLUMNS.map(x => $investorFields[x.key].label)
-  $: spans = COLUMNS.map(x => x.colSpan)
+  ].map(c => ({ ...c, label: $investorFields[c.key].label }))
 
   onMount(() => {
     showContextBar.set(false)
@@ -50,25 +47,16 @@
         {$investorsNG?.length === 1 ? $_("Investor") : $_("Investors")}
       </div>
 
-      <Table {columns} items={$investorsNG} {labels} sortBy="-modified_at" {spans}>
+      <Table {columns} items={$investorsNG} sortBy="-modified_at">
         <svelte:fragment let:fieldName let:obj slot="field">
-          {#if ["id", "deals"].includes(fieldName)}
-            <DisplayField
-              fieldname={fieldName}
-              value={obj[fieldName]}
-              model="investor"
-              {wrapperClass}
-              {valueClass}
-            />
-          {:else}
-            <DisplayField
-              fieldname={fieldName}
-              value={obj.selected_version[fieldName]}
-              model="investor"
-              {wrapperClass}
-              {valueClass}
-            />
-          {/if}
+          {@const col = columns.find(c => c.key === fieldName)}
+          <DisplayField
+            fieldname={col.key}
+            value={col.submodel ? obj[col.submodel][col.key] : obj[col.key]}
+            model="investor"
+            {wrapperClass}
+            {valueClass}
+          />
         </svelte:fragment>
       </Table>
     </div>

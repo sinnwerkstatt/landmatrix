@@ -51,8 +51,10 @@
     : selCountry
       ? simpleDeals.filter(d => d.country_id === selCountry?.id)
       : simpleDeals
+
   let _active_deals: CaseStatisticsDeal[]
   $: _active_deals = deals.filter(deal => deal.active_version_id !== null)
+
   let dealsBuckets: { [key: string]: CaseStatisticsDeal[] }
   $: dealsBuckets = {
     pending: deals.filter(deal =>
@@ -72,6 +74,7 @@
     : selCountry
       ? simpleInvestors.filter(inv => inv.country_id === selCountry?.id)
       : simpleInvestors
+
   let investorsBuckets: { [key: string]: CaseStatisticsInvestor[] }
   $: investorsBuckets = {
     pending: investors.filter(investor =>

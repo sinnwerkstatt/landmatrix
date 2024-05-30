@@ -8,7 +8,7 @@
   import DateTimeField from "$components/Fields/Display2/DateTimeField.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import StarIcon from "$components/icons/StarIcon.svelte"
-  import Table from "$components/Table/Table.svelte"
+  import Table, { type Column } from "$components/Table/Table.svelte"
 
   import type { CreateWorkflowInfoViewFn } from "./workflowViews"
   import {
@@ -39,75 +39,68 @@
 
   $: createObjects = createObjectsMap[tabId]
 
+  let columns: Column[]
   $: columns = [
-    { key: "star", label: "", span: 1 },
-    { key: "dateOfRequest", label: $_("Date of request"), span: 3 },
-    { key: "id", label: $_("ID"), span: 1 },
-    { key: "country_id", label: $_("Country"), span: 3 },
-    { key: "status", label: $_("Status"), span: 2 },
-    { key: "fromUser", label: $_("From user"), span: 2 },
-    { key: "toUser", label: $_("To user"), span: 2 },
-    { key: "feedback", label: $_("Feedback"), span: 5 },
+    { key: "star", label: "", colSpan: 1 },
+    {
+      key: "timestamp",
+      label: $_("Date of request"),
+      colSpan: 3,
+      submodel: "relevantWFI",
+    },
+    { key: "id", label: $_("ID"), colSpan: 1 },
+    {
+      key: "country_id",
+      label: $_("Country"),
+      colSpan: 3,
+      submodel: model === "investor" ? "selected_version" : undefined,
+    },
+    { key: "status", label: $_("Status"), colSpan: 2 },
+    {
+      key: "from_user_id",
+      label: $_("From user"),
+      colSpan: 2,
+      submodel: "relevantWFI",
+    },
+    { key: "to_user_id", label: $_("To user"), colSpan: 2, submodel: "relevantWFI" },
+    { key: "comment", label: $_("Feedback"), colSpan: 5, submodel: "relevantWFI" },
   ]
+
   const wrapperClass = ""
   const valueClass = ""
 </script>
 
-<Table
-  columns={columns.map(c => c.key)}
-  items={createObjects({ page: $page }, objects)}
-  labels={columns.map(c => c.label)}
-  spans={columns.map(c => c.span)}
->
+<Table {columns} items={createObjects({ page: $page }, objects)}>
   <svelte:fragment let:fieldName let:obj slot="field">
-    {#if fieldName === "star"}
+    {@const col = columns.find(c => c.key === fieldName)}
+    {#if col.key === "star"}
       {#if obj.openReq}
         <div title={$_("Open request")}>
           <StarIcon />
         </div>
       {/if}
-    {:else if fieldName === "dateOfRequest"}
+    {:else if col.key === "timestamp"}
       <DateTimeField
         value={obj.relevantWFI?.timestamp}
         extras={{ format: "YYYY-MM-DD HH:mm" }}
       />
-    {:else if fieldName === "id"}
+    {:else if ["from_user_id", "to_user_id"].includes(col.key)}
       <DisplayField
+        fieldname="created_by_id"
+        value={obj.relevantWFI?.[col.key]}
         {wrapperClass}
         {valueClass}
-        fieldname="id"
-        value={obj.id}
-        extras={{ objectVersion: obj.draft_version_id }}
+      />
+    {:else if col.key === "comment"}
+      {obj.relevantWFI?.comment}
+    {:else}
+      <DisplayField
+        fieldname={col.key}
+        value={col.submodel ? obj[col.submodel][col.key] : obj[col.key]}
+        {wrapperClass}
+        {valueClass}
         {model}
       />
-    {:else if fieldName === "country_id"}
-      <DisplayField
-        {wrapperClass}
-        {valueClass}
-        fieldname="country_id"
-        value={obj.country_id}
-      />
-    {:else if fieldName === "status"}
-      <DisplayField {wrapperClass} {valueClass} fieldname="status" value={obj.status} />
-    {:else if fieldName === "fromUser"}
-      <DisplayField
-        fieldname="created_by_id"
-        value={obj.relevantWFI?.from_user_id}
-        {wrapperClass}
-        {valueClass}
-      />
-    {:else if fieldName === "toUser"}
-      <DisplayField
-        fieldname="created_by_id"
-        value={obj.relevantWFI?.to_user_id}
-        {wrapperClass}
-        {valueClass}
-      />
-    {:else if fieldName === "feedback"}
-      {obj.relevantWFI?.comment}
-      <!--      <WorkflowInfosField value={obj.workflowinfos}>-->
-      <!--        {obj.relevantWFI?.comment}-->
-      <!--      </WorkflowInfosField>-->
     {/if}
   </svelte:fragment>
 </Table>

@@ -3,22 +3,30 @@ import "@testing-library/jest-dom"
 import { render, screen } from "@testing-library/svelte"
 import { userEvent } from "@testing-library/user-event"
 
+import type { Column } from "$components/Table/Table.svelte"
+
 import Table from "./Table.svelte"
 
 test("Column labels are shown", () => {
-  const columns = ["col1", "col2"]
-  const labels = ["colName1", "colName2"]
+  const columns: Column[] = [
+    { key: "col1", colSpan: 1, label: "colName1" },
+    { key: "col2", colSpan: 1, label: "colName2" },
+  ]
 
-  render(Table, { columns, labels })
+  render(Table, { columns })
 
   columns.forEach((col, index) => {
-    const el = screen.getByText(labels[index])
+    const el = screen.getByText(columns[index].label)
     expect(el).toBeInTheDocument()
   })
 })
 
 describe("Sorting", () => {
-  const columns = ["col1", "col2"]
+  const columns: Column[] = [
+    { key: "col1", colSpan: 1, label: "colName1" },
+    { key: "col2", colSpan: 1, label: "colName2" },
+  ]
+
   const items = [
     { col1: 2, col2: "second" },
     { col1: 1, col2: "first" },
@@ -36,7 +44,6 @@ describe("Sorting", () => {
 
     render(Table, {
       columns,
-      labels: ["colName1", "colName2"],
       items,
       sortBy: "col1",
     })
@@ -59,25 +66,21 @@ describe("Sorting", () => {
 })
 
 describe("Column spans", () => {
-  const columns = ["col1", "col2", "col3"]
+  const columns: Column[] = [
+    { key: "col1", colSpan: 3, label: "colName1" },
+    { key: "col2", colSpan: 1, label: "colName2" },
+    { key: "col3", colSpan: 5, label: "colName3" },
+  ]
+
   const items = [
     { col1: 1, col2: "first", col3: true },
     { col1: 2, col2: "second", col3: false },
   ]
 
-  test("Default to equal span for all columns", () => {
-    render(Table, { columns, items })
-
-    expect(screen.getByTestId("0-0")).toHaveStyle("grid-column: span 1 / span 1")
-    expect(screen.getByTestId("0-1")).toHaveStyle("grid-column: span 1 / span 1")
-    expect(screen.getByTestId("0-2")).toHaveStyle("grid-column: span 1 / span 1")
-  })
-
   test("Spans are correctly applied when passed as props", () => {
     render(Table, {
       columns,
       items,
-      spans: [3, 1, 5],
     })
 
     expect(screen.getByTestId("0-0")).toHaveStyle("grid-column: span 3 / span 3")

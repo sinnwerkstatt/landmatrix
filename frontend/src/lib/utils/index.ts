@@ -27,6 +27,8 @@ export const sortFn =
     if (y === null || y === undefined) return 1
 
     switch (typeof x) {
+      case "boolean":
+        return x === y ? 0 : x ? -1 : 1
       case "number":
         return x - y
       case "string":
