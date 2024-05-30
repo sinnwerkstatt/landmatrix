@@ -1,5 +1,6 @@
 <script lang="ts">
   import { tracker } from "@sinnwerkstatt/sveltekit-matomo"
+  import { env } from "$env/dynamic/public"
   import { _ } from "svelte-i18n"
 
   import FilePdfIcon from "$components/icons/FilePdfIcon.svelte"
@@ -46,8 +47,9 @@
               <div>{doc.value}</div>
             {:else if doc.type === "document"}
               <a
+                data-sveltekit-reload
                 class="flex w-fit items-center gap-2 border border-orange-500 bg-orange-100 px-4 py-2 text-black hover:bg-orange-600 hover:text-white"
-                href="/{doc.value.file}"
+                href="{env.PUBLIC_MEDIA_URL}{doc.value.file}"
                 target="_blank"
                 on:click={() => trackDownload(doc.value.title)}
               >
