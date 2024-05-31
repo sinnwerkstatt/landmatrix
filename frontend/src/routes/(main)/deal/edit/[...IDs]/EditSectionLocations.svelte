@@ -1,6 +1,15 @@
 <script lang="ts">
+  import { point } from "@turf/turf"
   import type { Point } from "geojson"
-  import type { GeoJSON, Layer, Map } from "leaflet?client"
+  import { icon, marker } from "leaflet"
+  import type {
+    GeoJSON,
+    LatLng,
+    Layer,
+    LeafletMouseEvent,
+    Map,
+    Marker,
+  } from "leaflet?client"
   import { Control, geoJson } from "leaflet?client"
   import { onDestroy, onMount } from "svelte"
   import { _ } from "svelte-i18n"
@@ -17,9 +26,9 @@
   import { createComponentAsDiv } from "$lib/utils/domHelpers"
   import { createPointFeatures, fitBounds } from "$lib/utils/location"
 
-  import LocationLegend from "$components/Deal/LocationLegend.svelte"
   import LocationTooltip from "$components/Deal/LocationTooltip.svelte"
   import EditField from "$components/Fields/EditField.svelte"
+  import LocationDot from "$components/icons/LocationDot.svelte"
   import PlusIcon from "$components/icons/PlusIcon.svelte"
   import TrashIcon from "$components/icons/TrashIcon.svelte"
   import BigMap from "$components/Map/BigMap.svelte"
@@ -30,6 +39,7 @@
   export let country: components["schemas"]["Country"] | undefined
 
   let activeEntryIdx = -1
+  let markerMode = false
 
   let map: Map | undefined
   let locationsPointLayer: GeoJSON<PointFeatureProps, Point>
@@ -38,7 +48,7 @@
     map = e.detail
 
     const legend = new Control({ position: "bottomleft" })
-    legend.onAdd = () => createComponentAsDiv(LocationLegend)
+    // legend.onAdd = () => createComponentAsDiv(LocationLegend)
     map.addControl(legend)
 
     map.addLayer(locationsPointLayer)
@@ -47,9 +57,31 @@
 
   $: if (map && locationsPointLayer) {
     map.removeLayer(locationsPointLayer)
-    locationsPointLayer = createLayer(locations)
+    locationsPointLayer = createLayer(locations, activeEntryIdx)
     map.addLayer(locationsPointLayer)
     fitBounds(locationsPointLayer, map)
+  }
+
+  $: if (map && locationsPointLayer) {
+    const updateActiveLocationMarker = (event: LeafletMouseEvent) =>
+      updateActiveLocationPoint(latLng2Point(event.latlng))
+
+    if (markerMode) {
+      map.addEventListener("click", updateActiveLocationMarker)
+
+      locationsPointLayer.eachLayer(layer => {
+        const marker = layer as Marker
+        if (marker.feature?.properties.id === locations[activeEntryIdx].nid) {
+          marker.dragging?.enable()
+        }
+      })
+    } else {
+      map.removeEventListener("click", updateActiveLocationMarker)
+
+      locationsPointLayer.eachLayer((layer: Layer) =>
+        (layer as Marker).dragging?.disable(),
+      )
+    }
   }
 
   const addEntry = () => {
@@ -60,6 +92,7 @@
 
   const toggleActiveEntry = (index: number) => {
     activeEntryIdx = activeEntryIdx === index ? -1 : index
+    markerMode = false
   }
 
   const removeEntry = (c: Location2) => {
@@ -71,25 +104,49 @@
     activeEntryIdx = -1
   }
 
-  $: onGoogleAutocomplete = (point: Point) => {
+  $: updateActiveLocationPoint = (point: Point) => {
     locations[activeEntryIdx].point = point
   }
 
-  const createLayer = (locations: Location2[]) =>
+  const latLng2Point = (latLng: LatLng): Point => {
+    const coords = [latLng.lng, latLng.lat].map(val => parseFloat(val.toFixed(5)))
+    return point(coords).geometry
+  }
+
+  const createLayer = (locations: Location2[], activeEntryIdx: number) =>
     geoJson(createPointFeatures(locations), {
       onEachFeature: (feature: PointFeature, layer: Layer) => {
         const tooltipElement = createComponentAsDiv(LocationTooltip, { feature })
+        const locationIndex = locations.findIndex(l => l.nid === feature.properties.id)
+
         layer.bindPopup(tooltipElement, { keepInView: true })
-        layer.on("click", () =>
-          toggleActiveEntry(locations.findIndex(l => l.nid === feature.properties.id)),
-        )
+        layer.on("click", () => toggleActiveEntry(locationIndex))
         layer.on("mouseover", () => layer.openPopup())
         layer.on("mouseout", () => layer.closePopup())
+        // layer.on("dragstart", () => console.log("dragstart"))
+        layer.on("dragend", () => {
+          const point = latLng2Point((layer as Marker).getLatLng())
+          updateActiveLocationPoint(point)
+        })
       },
+      pointToLayer: (feature: PointFeature, latlng) =>
+        marker(latlng, {
+          icon: icon({
+            iconUrl: "/images/marker-icon.png",
+            shadowUrl: "/images/marker-shadow.png",
+            shadowSize: [0, 0],
+            iconAnchor: [12.5, 41],
+            popupAnchor: [0, -35],
+            className:
+              feature.properties.id === locations[activeEntryIdx]?.nid
+                ? ""
+                : "leaflet-hidden",
+          }),
+        }),
     })
 
   onMount(() => {
-    locationsPointLayer = createLayer(locations)
+    locationsPointLayer = createLayer(locations, activeEntryIdx)
   })
 
   onDestroy(() => {
@@ -101,7 +158,7 @@
 
 <form class="flex flex-wrap lg:h-full" id="locations">
   <div class="w-full overflow-y-auto p-2 lg:h-full lg:w-2/5">
-    {#each locations as location, index}
+    {#each locations as location, index (location.nid)}
       <div>
         <div
           class="my-2 flex flex-row items-center justify-between bg-gray-200 dark:bg-gray-700"
@@ -139,7 +196,7 @@
               bind:value={location.name}
               extras={{
                 countryCode: country?.code_alpha2,
-                onGoogleAutocomplete,
+                onGoogleAutocomplete: updateActiveLocationPoint,
               }}
               showLabel
             />
@@ -180,7 +237,26 @@
       containerClass="h-[400px]"
       on:ready={onMapReady}
       options={{ center: [0, 0] }}
-    />
+    >
+      {#if activeEntryIdx !== -1}
+        <div
+          class="absolute bottom-2 left-2 {markerMode
+            ? 'bg-orange text-white'
+            : 'bg-white text-orange'}"
+        >
+          <button
+            type="button"
+            class="z-10 rounded border-2 border-black/30 px-2 pb-1.5 pt-0.5"
+            on:click={() => {
+              markerMode = !markerMode
+            }}
+            title="Create or move point"
+          >
+            <LocationDot class="inline h-5 w-5" />
+          </button>
+        </div>
+      {/if}
+    </BigMap>
     <div class="overflow-y-auto">
       {#if activeEntryIdx !== -1}
         <LocationAreasEditField
@@ -192,3 +268,10 @@
     </div>
   </div>
 </form>
+
+<style>
+  :global(img.leaflet-hidden) {
+    opacity: 0.6;
+    filter: saturate(0);
+  }
+</style>

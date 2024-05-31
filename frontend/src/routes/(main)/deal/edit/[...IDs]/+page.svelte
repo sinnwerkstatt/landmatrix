@@ -27,7 +27,8 @@
   import EditSectionWater from "./EditSectionWater.svelte"
 
   export let data
-  let deal = data.deal
+
+  let deal: (typeof data)["deal"]
   $: deal = data.deal
 
   let savingInProgress = false

@@ -116,7 +116,7 @@
   }
 </script>
 
-<ol class="flex justify-between gap-3 p-2">
+<ol class="flex justify-between gap-3 p-2 pt-5">
   {#each AREA_TYPES as areaType}
     <li>
       <button
