@@ -36,7 +36,7 @@
 
 {#if object.selected_version.id === object.draft_version_id && object.active_version_id}
   <div
-    class="flex items-center gap-4 rounded border border-purple-500 bg-purple-100 px-4 py-2 text-lg"
+    class="flex items-center gap-4 rounded border border-purple-500 bg-purple-100 px-4 py-2 text-lg dark:text-gray-900"
   >
     {$_("You're viewing the draft version of this {object}.", i18nValues)}
     <div class="flex items-center gap-2">
@@ -48,7 +48,7 @@
 {/if}
 {#if object.draft_version_id && object.selected_version.id !== object.draft_version_id}
   <div
-    class="flex items-center gap-4 rounded border border-green-500 bg-green-100 px-4 py-2 text-lg"
+    class="flex items-center gap-4 rounded border border-green-500 bg-green-100 px-4 py-2 text-lg dark:text-gray-900"
   >
     {$_("There is a draft version of this {object}.", i18nValues)}
     <div class="flex items-center gap-2">
