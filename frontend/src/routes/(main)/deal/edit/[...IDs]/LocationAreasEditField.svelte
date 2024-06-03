@@ -19,6 +19,15 @@
     createAreaFeaturesLayer,
   } from "$lib/utils/location"
 
+  import Label2 from "$components/Fields/Display2/Label2.svelte"
+  import AddButton from "$components/Fields/Edit2/JSONFieldComponents/AddButton.svelte"
+  import {
+    cardClass,
+    labelClass,
+  } from "$components/Fields/Edit2/JSONFieldComponents/consts"
+  import CurrentRadio from "$components/Fields/Edit2/JSONFieldComponents/CurrentRadio.svelte"
+  import Date from "$components/Fields/Edit2/JSONFieldComponents/Date.svelte"
+  import RemoveButton from "$components/Fields/Edit2/JSONFieldComponents/RemoveButton.svelte"
   import LowLevelDateYearField from "$components/Fields/Edit2/LowLevelDateYearField.svelte"
   import EyeSlashIcon from "$components/icons/EyeSlashIcon.svelte"
   import PlusIcon from "$components/icons/PlusIcon.svelte"
@@ -30,16 +39,18 @@
 
   export let isSelectedEntry: boolean
 
-  let selectedAreaType: AreaType = "production_area"
-
-  let areasOfType: Area[]
-  $: areasOfType = areas.filter(a => a.type === selectedAreaType)
-
-  let currentGroup: number
-  $: currentGroup = areasOfType.findIndex(a => a.current)
-
   let showAddAreaOverlay = false
   let toAddFiles: FileList | undefined
+
+  let selectedAreaType: AreaType | null = null
+
+  $: currentGroups = AREA_TYPES.reduce(
+    (acc, val) => ({
+      ...acc,
+      [val]: areas.filter(a => a.type === val).findIndex(a => a.current),
+    }),
+    {},
+  ) as { [key in (typeof AREA_TYPES)[number]]: number }
 
   let features: AreaFeature[]
   let layer: AreaFeatureLayer
@@ -62,6 +73,7 @@
       map.removeLayer(layer)
     }
   })
+
   const uploadFiles = (): void => {
     const reader = new FileReader()
 
@@ -82,8 +94,8 @@
         ...areas,
         {
           id: null,
-          type: selectedAreaType,
-          current: !areasOfType.some(a => a.current),
+          type: selectedAreaType!,
+          current: !areas.filter(a => a.type === selectedAreaType).some(a => a.current),
           date: "",
           area: feature.geometry,
         },
@@ -116,82 +128,68 @@
   }
 </script>
 
-<ol class="flex justify-between gap-3 p-2 pt-5">
+<div class="flex flex-col gap-2">
   {#each AREA_TYPES as areaType}
-    <li>
-      <button
-        class="btn btn-flat colored"
-        class:is-selected={selectedAreaType === areaType}
-        style:--color={AREA_TYPE_COLOR_MAP[areaType]}
-        on:click|preventDefault={() => (selectedAreaType = areaType)}
-      >
-        {$areaTypeMap[areaType]}
-      </button>
-    </li>
-  {/each}
-</ol>
+    {@const areasOfType = areas.filter(a => a.type === areaType)}
 
-<div class="m-0.5">
-  <table class="w-full">
-    <thead class="mb-5">
-      <tr>
-        <th class="w-1/12 font-normal">{$_("Info")}</th>
-        <th class="w-2/12 font-normal">{$_("Current")}</th>
-        <th class="w-3/12 font-normal">{$_("Date")}</th>
-        <th class="w-5/12 font-normal">{$_("Type")}</th>
-        <th class="w-1/12 font-normal">{$_("Delete")}</th>
-      </tr>
-    </thead>
-    <tbody>
-      {#each areasOfType as area, i}
-        <tr class="text-left">
-          <td class="px-1">
-            <EyeSlashIcon class="h-5 w-5" />
-            <!--{formatArea(turf.area(area.area)) + " " + $_("ha")}-->
-          </td>
-          <td class="px-1" on:click={() => updateCurrent(selectedAreaType, i)}>
-            <input
-              type="radio"
-              bind:group={currentGroup}
+    <div>
+      <Label2 value={$areaTypeMap[areaType]} class="mb-4 w-full font-semibold" />
+      <div class="grid gap-2 lg:grid-cols-2">
+        {#each areasOfType as val, i}
+          <div class:border-violet-400={val.current} class={cardClass}>
+            <Date bind:value={val.date} name="area_{val.id}" />
+            <CurrentRadio
+              bind:group={currentGroups[areaType]}
+              name="{areaType}_current"
+              required={areasOfType.length > 0 && currentGroups[areaType] < 0}
+              disabled={!val.area}
               value={i}
-              name="{selectedAreaType}_current"
-              required
+              on:change={() => updateCurrent(areaType, i)}
             />
-          </td>
-          <td class="px-1">
-            <LowLevelDateYearField bind:value={area.date} name="area_{area.id}" />
-          </td>
-          <td class="px-1">
-            <select
-              bind:value={area.type}
-              on:change
-              name="area_{area.id}_type"
-              class="inpt w-auto"
-            >
-              {#each AREA_TYPES as areaType}
-                <option value={areaType}>{$areaTypeMap[areaType]}</option>
-              {/each}
-            </select>
-          </td>
-          <td class="px-1">
-            <button type="button" on:click={() => deleteArea(selectedAreaType, i)}>
-              <TrashIcon class="h-5 w-5 text-red-600" />
-            </button>
-          </td>
-        </tr>
-      {/each}
-    </tbody>
-  </table>
-</div>
 
-<button
-  class="btn btn-flat btn-secondary flex items-center"
-  on:click={() => (showAddAreaOverlay = true)}
->
-  <PlusIcon />
-  {$_("Add")}
-  {$_("Area")}
-</button>
+            <label class={labelClass} for="area_{val.id}_type">
+              {$_("Type")}
+              <select
+                bind:value={val.type}
+                on:change
+                name="area_{val.id}_type"
+                class="inpt w-auto"
+              >
+                {#each AREA_TYPES as areaType}
+                  <option value={areaType}>{$areaTypeMap[areaType]}</option>
+                {/each}
+              </select>
+            </label>
+
+            <div class="flex justify-between">
+              <button type="button" title={$_("Toggle visibility")}>
+                <EyeSlashIcon class="h-5 w-5" />
+              </button>
+              <button
+                type="button"
+                on:click={() => deleteArea(areaType, i)}
+                title={$_("Remove entry")}
+              >
+                <TrashIcon
+                  class="h-5 w-5 {!(areasOfType.length <= 1)
+                    ? 'text-red-600'
+                    : 'text-gray-200'}"
+                />
+              </button>
+            </div>
+          </div>
+        {/each}
+
+        <AddButton
+          on:click={() => {
+            showAddAreaOverlay = true
+            selectedAreaType = areaType
+          }}
+        />
+      </div>
+    </div>
+  {/each}
+</div>
 
 <Overlay
   bind:visible={showAddAreaOverlay}

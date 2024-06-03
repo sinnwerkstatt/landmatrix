@@ -1,15 +1,8 @@
 <script lang="ts">
   import { point } from "@turf/turf"
   import type { Point } from "geojson"
-  import { icon, marker } from "leaflet"
-  import type {
-    GeoJSON,
-    LatLng,
-    Layer,
-    LeafletMouseEvent,
-    Map,
-    Marker,
-  } from "leaflet?client"
+  import { GeoJSON, icon, marker } from "leaflet"
+  import type { LatLng, Layer, LeafletMouseEvent, Map, Marker } from "leaflet?client"
   import { Control, geoJson } from "leaflet?client"
   import { onDestroy, onMount } from "svelte"
   import { _ } from "svelte-i18n"
@@ -59,6 +52,11 @@
     map.removeLayer(locationsPointLayer)
     locationsPointLayer = createLayer(locations, activeEntryIdx)
     map.addLayer(locationsPointLayer)
+    // let bounds = locationsPointLayer.getBounds()
+    // map.eachLayer(
+    //   l => (bounds = l instanceof GeoJSON ? l.getBounds().extend(bounds) : bounds),
+    // )
+    // map.fitBounds(bounds)
     fitBounds(locationsPointLayer, map)
   }
 
@@ -156,88 +154,104 @@
   })
 </script>
 
-<form class="flex flex-wrap lg:h-full" id="locations">
-  <div class="w-full overflow-y-auto p-2 lg:h-full lg:w-2/5">
-    {#each locations as location, index (location.nid)}
-      <div>
-        <div
-          class="my-2 flex flex-row items-center justify-between bg-gray-200 dark:bg-gray-700"
+<form class="grid h-full grid-cols-5" id="locations">
+  <div class="col-span-2 flex h-full flex-col overflow-y-auto p-2">
+    <div class="flex flex-row items-center justify-between">
+      {#if activeEntryIdx >= 0}
+        <h3 class="heading4">
+          {activeEntryIdx + 1}. {$_("Location")}
+          <small class="text-sm text-gray-500">
+            #{locations[activeEntryIdx].nid}
+          </small>
+        </h3>
+        <button
+          type="button"
+          class="flex-initial p-2"
+          on:click={() => removeEntry(locations[activeEntryIdx])}
         >
-          <h3 class="flex-grow">
-            <button
-              type="button"
-              class="w-full p-2 text-left"
-              on:click={() => toggleActiveEntry(index)}
-            >
-              {index + 1}. {$_("Location")}
-              <small class="text-sm text-gray-500">
-                #{location.nid}
-              </small>
-            </button>
-          </h3>
-          <button
-            type="button"
-            class="flex-initial p-2"
-            on:click={() => removeEntry(location)}
-          >
-            <TrashIcon class="h-8 w-6 cursor-pointer text-red-600" />
-          </button>
-        </div>
-        {#if activeEntryIdx === index}
-          <div class="grid gap-2" transition:slide={{ duration: 200 }}>
-            <EditField
-              fieldname="location.level_of_accuracy"
-              bind:value={location.level_of_accuracy}
-              extras={{ required: true }}
-              showLabel
-            />
-            <EditField
-              fieldname="location.name"
-              bind:value={location.name}
-              extras={{
-                countryCode: country?.code_alpha2,
-                onGoogleAutocomplete: updateActiveLocationPoint,
-              }}
-              showLabel
-            />
-            <EditField
-              fieldname="location.point"
-              bind:value={location.point}
-              showLabel
-            />
-            <EditField
-              fieldname="location.description"
-              bind:value={location.description}
-              showLabel
-            />
-            <EditField
-              fieldname="location.facility_name"
-              bind:value={location.facility_name}
-              showLabel
-            />
-            <EditField
-              fieldname="location.comment"
-              bind:value={location.comment}
-              showLabel
-            />
-          </div>
-        {/if}
+          <TrashIcon class="h-8 w-6 cursor-pointer text-red-600" />
+        </button>
+      {:else}
+        <h3 class="heading4">
+          {$_("No location selected")}
+        </h3>
+      {/if}
+    </div>
+    <div class="flex flex-wrap gap-2 py-2">
+      {#each locations as location, index (location.nid)}
+        <button
+          type="button"
+          class="btn-outline"
+          class:btn-orange={activeEntryIdx !== index}
+          on:click={() => toggleActiveEntry(index)}
+          title="#{location.nid}"
+        >
+          <span class="inline-block h-6 w-6">
+            {index + 1}
+          </span>
+        </button>
+      {/each}
+      <button
+        type="button"
+        class="btn-outline btn-orange"
+        on:click={addEntry}
+        title={$_("Add") + " " + $_("Location")}
+      >
+        <PlusIcon class="h-6 w-6" />
+      </button>
+    </div>
+
+    {#if activeEntryIdx >= 0}
+      <div
+        class="h-full space-y-4 overflow-y-auto pb-52 pt-4"
+        transition:slide={{ duration: 200 }}
+      >
+        <EditField
+          fieldname="location.level_of_accuracy"
+          bind:value={locations[activeEntryIdx].level_of_accuracy}
+          extras={{ required: true }}
+          showLabel
+        />
+        <EditField
+          fieldname="location.name"
+          bind:value={locations[activeEntryIdx].name}
+          extras={{
+            countryCode: country?.code_alpha2,
+            onGoogleAutocomplete: updateActiveLocationPoint,
+          }}
+          showLabel
+        />
+        <EditField
+          fieldname="location.point"
+          bind:value={locations[activeEntryIdx].point}
+          showLabel
+        />
+        <EditField
+          fieldname="location.description"
+          bind:value={locations[activeEntryIdx].description}
+          showLabel
+        />
+        <EditField
+          fieldname="location.facility_name"
+          bind:value={locations[activeEntryIdx].facility_name}
+          showLabel
+        />
+        <EditField
+          fieldname="location.comment"
+          bind:value={locations[activeEntryIdx].comment}
+          showLabel
+        />
+        <LocationAreasEditField
+          bind:areas={locations[activeEntryIdx].areas}
+          {map}
+          isSelectedEntry
+        />
       </div>
-    {/each}
+    {/if}
   </div>
-  <div class="py-4 lg:order-last">
-    <button class="btn btn-primary flex items-center" on:click={addEntry} type="button">
-      <PlusIcon class="-ml-2 mr-2 h-6 w-5" />
-      {$_("Add")}
-      {$_("Location")}
-    </button>
-  </div>
-  <div class="w-full p-2 lg:w-3/5">
-    <BigMap
-      containerClass="h-[400px]"
-      on:ready={onMapReady}
-      options={{ center: [0, 0] }}
-    >
+
+  <div class="col-span-3 p-2">
+    <BigMap on:ready={onMapReady} options={{ center: [0, 0] }}>
       {#if activeEntryIdx !== -1}
         <div
           class="absolute bottom-2 left-2 {markerMode
@@ -257,15 +271,6 @@
         </div>
       {/if}
     </BigMap>
-    <div class="overflow-y-auto">
-      {#if activeEntryIdx !== -1}
-        <LocationAreasEditField
-          bind:areas={locations[activeEntryIdx].areas}
-          {map}
-          isSelectedEntry
-        />
-      {/if}
-    </div>
   </div>
 </form>
 
