@@ -5,7 +5,6 @@
   import { _ } from "svelte-i18n"
 
   import { areaTypeMap } from "$lib/stores/maps"
-  import type { AreaType } from "$lib/types/deal"
   import type { Area, AreaFeature, AreaFeatureLayer } from "$lib/types/newtypes"
   import { areaToFeature, createAreaFeaturesLayer } from "$lib/utils/location"
 
@@ -17,12 +16,6 @@
   import Label2 from "$components/Fields/Display2/Label2.svelte"
   import EyeIcon from "$components/icons/EyeIcon.svelte"
   import EyeSlashIcon from "$components/icons/EyeSlashIcon.svelte"
-
-  export const AREA_TYPE_COLOR_MAP: { [key in AreaType]: string } = {
-    contract_area: "#ff00ff",
-    intended_area: "#66ff33",
-    production_area: "#ff0000",
-  }
 
   export let map: Map | undefined
   export let areas: Area[]

@@ -491,8 +491,8 @@ export type PointFeature = Feature<Point, PointFeatureProps>
 export interface AreaFeatureProps {
   id: number
   type: AreaType
-  date?: string
-  current?: boolean
+  date: string | null
+  current: boolean
   visible: boolean
 }
 
