@@ -36,7 +36,7 @@
 </script>
 
 <section class="my-6 flex flex-wrap">
-  <form class="w-full" id="data_sources">
+  <form class="w-full pb-52" id="data_sources">
     {#each datasources as datasource, index}
       <div class="datasource-entry">
         <div

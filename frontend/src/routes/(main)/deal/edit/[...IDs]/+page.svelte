@@ -230,7 +230,7 @@
       {/each}
     </ul>
   </nav>
-  <div class="overflow-y-auto px-4 pb-52" style="grid-area: main">
+  <div class="overflow-y-auto px-4" style="grid-area: main">
     {#if activeTab === "#locations"}
       <EditSectionLocations
         bind:locations={deal.selected_version.locations}

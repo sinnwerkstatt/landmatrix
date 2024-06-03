@@ -8,7 +8,7 @@
   $: version = deal.selected_version
 </script>
 
-<form id="investor_info">
+<form id="investor_info" class="pb-52">
   <EditSubsection id="operating_company">
     <!-- TODO Later we're using operating_company instead of operating_company_id because of some DRF shit. IF you want, try and fix it.  -->
     <EditField

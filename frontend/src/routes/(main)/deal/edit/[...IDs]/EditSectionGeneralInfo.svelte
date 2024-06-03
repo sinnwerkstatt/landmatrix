@@ -11,7 +11,7 @@
   export let version: DealVersion2
 </script>
 
-<form id="general">
+<form id="general" class="pb-52">
   <EditSubsection id="land_area">
     <EditField bind:value={version.intended_size} fieldname="intended_size" showLabel />
     <EditField bind:value={version.contract_size} fieldname="contract_size" showLabel />

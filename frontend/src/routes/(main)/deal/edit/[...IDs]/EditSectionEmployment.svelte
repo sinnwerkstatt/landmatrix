@@ -9,7 +9,7 @@
   export let version: DealVersion2
 </script>
 
-<form id="employment">
+<form id="employment" class="pb-52">
   <EditSubsection id="total_jobs_created">
     <EditField
       fieldname="total_jobs_created"

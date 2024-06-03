@@ -9,7 +9,7 @@
   export let version: DealVersion2
 </script>
 
-<form id="produce_info">
+<form id="produce_info" class="pb-52">
   <EditSubsection id="farming">
     <EditField fieldname="crops" showLabel bind:value={version.crops} />
     <EditField fieldname="crops_comment" showLabel bind:value={version.crops_comment} />
