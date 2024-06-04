@@ -26,7 +26,7 @@
   } from "./layers"
 
   export let options: MapOptions = {}
-  export let containerClass = "h-full"
+  export let containerClass = ""
   export let showLayerSwitcher = true
 
   const dispatch = createEventDispatcher<{ ready: Map }>()

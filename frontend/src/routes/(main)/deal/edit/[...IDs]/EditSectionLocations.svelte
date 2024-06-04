@@ -154,29 +154,35 @@
   })
 </script>
 
-<form class="grid h-full grid-cols-5" id="locations">
-  <div class="col-span-2 flex h-full flex-col overflow-y-auto p-2">
-    <div class="flex flex-row items-center justify-between">
-      {#if activeEntryIdx >= 0}
-        <h3 class="heading4">
-          {activeEntryIdx + 1}. {$_("Location")}
-          <small class="text-sm text-gray-500">
-            #{locations[activeEntryIdx].nid}
-          </small>
-        </h3>
-        <button
-          type="button"
-          class="flex-initial p-2"
-          on:click={() => removeEntry(locations[activeEntryIdx])}
+<form class="grid h-full lg:grid-cols-5" id="locations">
+  <div class="lg:order-last lg:col-span-2 lg:p-2">
+    <BigMap
+      on:ready={onMapReady}
+      options={{ center: [0, 0] }}
+      containerClass="h-full min-h-[300px]"
+    >
+      {#if activeEntryIdx !== -1}
+        <div
+          class="absolute bottom-2 left-2 {markerMode
+            ? 'bg-orange text-white'
+            : 'bg-white text-orange'}"
         >
-          <TrashIcon class="h-8 w-6 cursor-pointer text-red-600" />
-        </button>
-      {:else}
-        <h3 class="heading4">
-          {$_("No location selected")}
-        </h3>
+          <button
+            type="button"
+            class="z-10 rounded border-2 border-black/30 px-2 pb-1.5 pt-0.5"
+            on:click={() => {
+              markerMode = !markerMode
+            }}
+            title="Create or move point"
+          >
+            <LocationDot class="inline h-5 w-5" />
+          </button>
+        </div>
       {/if}
-    </div>
+    </BigMap>
+  </div>
+
+  <div class="flex h-full flex-col lg:col-span-3 lg:overflow-y-auto lg:p-2">
     <div class="flex flex-wrap gap-2 py-2">
       {#each locations as location, index (location.nid)}
         <button
@@ -199,6 +205,27 @@
       >
         <PlusIcon class="h-6 w-6" />
       </button>
+    </div>
+    <div class="flex flex-row items-center justify-between pt-2">
+      {#if activeEntryIdx >= 0}
+        <h3 class="heading4">
+          {activeEntryIdx + 1}. {$_("Location")}
+          <small class="text-sm text-gray-500">
+            #{locations[activeEntryIdx].nid}
+          </small>
+        </h3>
+        <button
+          type="button"
+          class="flex-initial p-2"
+          on:click={() => removeEntry(locations[activeEntryIdx])}
+        >
+          <TrashIcon class="h-8 w-6 cursor-pointer text-red-600" />
+        </button>
+      {:else}
+        <h3 class="heading4">
+          {$_("No location selected")}
+        </h3>
+      {/if}
     </div>
 
     {#if activeEntryIdx >= 0}
@@ -248,29 +275,6 @@
         />
       </div>
     {/if}
-  </div>
-
-  <div class="col-span-3 p-2">
-    <BigMap on:ready={onMapReady} options={{ center: [0, 0] }}>
-      {#if activeEntryIdx !== -1}
-        <div
-          class="absolute bottom-2 left-2 {markerMode
-            ? 'bg-orange text-white'
-            : 'bg-white text-orange'}"
-        >
-          <button
-            type="button"
-            class="z-10 rounded border-2 border-black/30 px-2 pb-1.5 pt-0.5"
-            on:click={() => {
-              markerMode = !markerMode
-            }}
-            title="Create or move point"
-          >
-            <LocationDot class="inline h-5 w-5" />
-          </button>
-        </div>
-      {/if}
-    </BigMap>
   </div>
 </form>
 
