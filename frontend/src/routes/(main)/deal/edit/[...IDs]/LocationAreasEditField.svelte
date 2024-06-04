@@ -1,8 +1,10 @@
 <script lang="ts">
   import type { FeatureCollection, GeoJsonObject, MultiPolygon, Polygon } from "geojson"
-  import { type Map } from "leaflet?client"
+  import type { Map } from "leaflet?client"
   import { onDestroy, onMount } from "svelte"
   import { _ } from "svelte-i18n"
+  import { quintOut } from "svelte/easing"
+  import { crossfade } from "svelte/transition"
 
   import { areaTypeMap } from "$lib/stores/maps"
   import type {
@@ -13,10 +15,10 @@
   } from "$lib/types/newtypes"
   import { validate } from "$lib/utils/geojsonValidation"
   import {
-    AREA_TYPE_COLOR_MAP,
     AREA_TYPES,
     areaToFeature,
     createAreaFeaturesLayer,
+    fitBounds,
   } from "$lib/utils/location"
 
   import Label2 from "$components/Fields/Display2/Label2.svelte"
@@ -27,10 +29,8 @@
   } from "$components/Fields/Edit2/JSONFieldComponents/consts"
   import CurrentRadio from "$components/Fields/Edit2/JSONFieldComponents/CurrentRadio.svelte"
   import Date from "$components/Fields/Edit2/JSONFieldComponents/Date.svelte"
-  import RemoveButton from "$components/Fields/Edit2/JSONFieldComponents/RemoveButton.svelte"
-  import LowLevelDateYearField from "$components/Fields/Edit2/LowLevelDateYearField.svelte"
+  import EyeIcon from "$components/icons/EyeIcon.svelte"
   import EyeSlashIcon from "$components/icons/EyeSlashIcon.svelte"
-  import PlusIcon from "$components/icons/PlusIcon.svelte"
   import TrashIcon from "$components/icons/TrashIcon.svelte"
   import Overlay from "$components/Overlay.svelte"
 
@@ -126,6 +126,39 @@
       ]
     }
   }
+
+  const [send, receive] = crossfade({
+    duration: d => Math.sqrt(d * 200),
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    fallback(node, params) {
+      const style = getComputedStyle(node)
+      const transform = style.transform === "none" ? "" : style.transform
+
+      return {
+        duration: 600,
+        easing: quintOut,
+        css: t => `
+				transform: ${transform} scale(${t});
+				opacity: ${t}
+			`,
+      }
+    },
+  })
+
+  $: toggleVisibility = (id: number) => {
+    features = features.map(f =>
+      f.properties.id === id
+        ? {
+            ...f,
+            properties: {
+              ...f.properties,
+              visible: !f.properties.visible,
+            },
+          }
+        : f,
+    )
+  }
 </script>
 
 <div class="flex flex-col gap-2">
@@ -136,7 +169,14 @@
       <Label2 value={$areaTypeMap[areaType]} class="mb-4 w-full font-semibold" />
       <div class="grid gap-2 lg:grid-cols-2">
         {#each areasOfType as val, i}
-          <div class:border-violet-400={val.current} class={cardClass}>
+          {@const feature = features.find(f => f.properties.id === val.id)}
+
+          <div
+            class:border-violet-400={val.current}
+            class={cardClass}
+            in:receive={{ key: val.id }}
+            out:send={{ key: val.id }}
+          >
             <Date bind:value={val.date} name="area_{val.id}" />
             <CurrentRadio
               bind:group={currentGroups[areaType]}
@@ -162,8 +202,16 @@
             </label>
 
             <div class="flex justify-between">
-              <button type="button" title={$_("Toggle visibility")}>
-                <EyeSlashIcon class="h-5 w-5" />
+              <button
+                type="button"
+                title={feature?.properties.visible ? $_("Hide") : $_("Show")}
+                on:click={() => toggleVisibility(val.id)}
+              >
+                {#if feature?.properties.visible}
+                  <EyeSlashIcon class="h-5 w-5" />
+                {:else}
+                  <EyeIcon class="h-5 w-5" />
+                {/if}
               </button>
               <button
                 type="button"
