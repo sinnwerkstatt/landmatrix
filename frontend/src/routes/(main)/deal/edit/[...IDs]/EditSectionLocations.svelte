@@ -31,7 +31,7 @@
   export let locations: Location2[]
   export let country: components["schemas"]["Country"] | undefined
 
-  let activeEntryIdx = -1
+  let activeEntryIdx = 0
   let markerMode = false
 
   let map: Map | undefined
@@ -206,7 +206,10 @@
         <PlusIcon class="h-6 w-6" />
       </button>
     </div>
-    <div class="flex flex-row items-center justify-between pt-2">
+
+    <div
+      class="flex animate-fadeToWhite flex-row items-center justify-between p-2 dark:animate-fadeToGray"
+    >
       {#if activeEntryIdx >= 0}
         <h3 class="heading4">
           {activeEntryIdx + 1}. {$_("Location")}
@@ -223,7 +226,7 @@
         </button>
       {:else}
         <h3 class="heading4">
-          {$_("No location selected")}
+          {$_("Select a location")}
         </h3>
       {/if}
     </div>
