@@ -32,7 +32,7 @@
 </script>
 
 <section class="flex flex-wrap">
-  <form class="w-full" id="contracts">
+  <form class="w-full pb-52" id="contracts">
     {#each contracts as contract, index}
       <div class="contract-entry">
         <div

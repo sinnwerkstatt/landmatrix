@@ -27,7 +27,8 @@
   import EditSectionWater from "./EditSectionWater.svelte"
 
   export let data
-  let deal = data.deal
+
+  let deal: (typeof data)["deal"]
   $: deal = data.deal
 
   let savingInProgress = false
@@ -176,7 +177,7 @@
 
 <div class="editgrid container mx-auto h-full max-h-full">
   <div
-    class="mx-2 flex items-center justify-between border-b border-orange"
+    class="mx-2 flex flex-wrap items-center justify-between border-b border-orange"
     style="grid-area: header"
   >
     <h1 class="heading4 my-2 mt-3 flex items-baseline gap-2">
@@ -214,9 +215,10 @@
     <ul class="flex lg:flex-col">
       {#each tabs as { target, name }}
         <li
-          class="border-orange py-3 pr-4 leading-tight {activeTab === target
-            ? 'font-semibold lg:border-r-4'
-            : 'lg:border-r'}"
+          class="border-orange py-3 pr-4 text-center leading-tight lg:text-left {activeTab ===
+          target
+            ? 'border-b-4 font-semibold lg:border-0 lg:border-r-4'
+            : 'border-b lg:border-0 lg:border-r'}"
         >
           <a
             href={target}
@@ -229,7 +231,7 @@
       {/each}
     </ul>
   </nav>
-  <div class="overflow-y-auto px-4 pb-52" style="grid-area: main">
+  <div class="overflow-y-auto px-4" style="grid-area: main">
     {#if activeTab === "#locations"}
       <EditSectionLocations
         bind:locations={deal.selected_version.locations}

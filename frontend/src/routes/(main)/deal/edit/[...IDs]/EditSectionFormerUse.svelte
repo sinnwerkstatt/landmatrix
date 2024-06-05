@@ -7,7 +7,7 @@
   export let version: DealVersion2
 </script>
 
-<form id="former_use">
+<form id="former_use" class="pb-52">
   <EditSubsection id="former_land_owner">
     <EditField
       bind:value={version.former_land_owner}

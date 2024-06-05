@@ -7,7 +7,7 @@
   export let version: DealVersion2
 </script>
 
-<form id="overall_comment">
+<form id="overall_comment" class="pb-52">
   <EditSubsection id="overall_comment">
     <EditField
       bind:value={version.overall_comment}

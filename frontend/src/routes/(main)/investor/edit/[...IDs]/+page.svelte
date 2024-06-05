@@ -151,7 +151,7 @@
 
 <div class="editgrid container mx-auto h-full max-h-full">
   <div
-    class="mx-2 flex items-center justify-between border-b border-pelorous"
+    class="mx-2 flex flex-wrap items-center justify-between border-b border-pelorous"
     style="grid-area: header"
   >
     <h1 class="heading4 my-2 mt-3">

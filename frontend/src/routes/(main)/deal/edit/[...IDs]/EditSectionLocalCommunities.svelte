@@ -9,7 +9,7 @@
   export let version: DealVersion2
 </script>
 
-<form id="local_communities">
+<form id="local_communities" class="pb-52">
   <EditSubsection id="name_of_community">
     <EditField
       fieldname="name_of_community"

@@ -5,12 +5,11 @@
     --color3: theme("colors.gray.500");
     @apply inline-block cursor-pointer whitespace-nowrap rounded px-4 py-2 text-center text-base font-bold leading-tight tracking-widest transition md:text-lg;
   }
-  @media (prefers-color-scheme: dark) {
-    .buttonBase {
-      --color1: theme("colors.gray.700");
-      --color2: white;
-      --color3: theme("colors.gray.500");
-    }
+  /*@media (prefers-color-scheme: dark)*/
+  .dark .buttonBase {
+    --color1: theme("colors.gray.700");
+    --color2: white;
+    --color3: theme("colors.gray.500");
   }
 
   .btn {
@@ -43,12 +42,10 @@
     color: var(--color1);
     /*@apply text-lm-orange;*/
   }
-  @media (prefers-color-scheme: dark) {
-    .btn-outline {
-      --color1: white;
-      --color2: theme("colors.gray.900");
-      --color3: theme("colors.gray.500");
-    }
+  .dark .btn-outline {
+    --color1: white;
+    --color2: theme("colors.gray.900");
+    --color3: theme("colors.gray.500");
   }
 
   .btn-link {
@@ -75,6 +72,12 @@
   .btn-orange {
     --color1: theme("colors.orange.500");
     --color2: white;
+    --color3: theme("colors.orange.700");
+  }
+  .dark .btn-primary,
+  .dark .btn-orange {
+    --color1: theme("colors.orange.500");
+    --color2: theme("colors.gray.900");
     --color3: theme("colors.orange.700");
   }
 
