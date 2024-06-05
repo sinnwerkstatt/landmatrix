@@ -1,14 +1,17 @@
 <script lang="ts">
   import { slide } from "svelte/transition"
 
-  import type { DealVersion2 } from "$lib/types/newtypes"
-
   import EditSubsection from "$components/EditSubsection.svelte"
   import EditField from "$components/Fields/EditField.svelte"
 
+  import { mutableDeal } from "../store"
   import ComplexPriceEditField from "./ComplexPriceEditField.svelte"
 
-  export let version: DealVersion2
+  export let data
+
+  let version = data.deal.selected_version
+
+  $: $mutableDeal.selected_version = version
 </script>
 
 <form id="general" class="pb-52">

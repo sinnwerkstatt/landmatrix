@@ -1,11 +1,14 @@
 <script lang="ts">
-  import type { DealHull } from "$lib/types/newtypes"
-
   import EditSubsection from "$components/EditSubsection.svelte"
   import EditField from "$components/Fields/EditField.svelte"
 
-  export let deal: DealHull
-  $: version = deal.selected_version
+  import { mutableDeal } from "../store"
+
+  export let data
+
+  let version = data.deal.selected_version
+
+  $: $mutableDeal.selected_version = version
 </script>
 
 <form id="investor_info" class="pb-52">

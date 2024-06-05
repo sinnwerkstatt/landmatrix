@@ -10,7 +10,14 @@
   import PlusIcon from "$components/icons/PlusIcon.svelte"
   import TrashIcon from "$components/icons/TrashIcon.svelte"
 
-  export let contracts: Contract[]
+  import { mutableDeal } from "../store"
+
+  export let data
+
+  let contracts = data.deal.selected_version.contracts
+
+  $: $mutableDeal.selected_version.contracts = contracts
+
   let activeEntryIdx = -1
 
   const addEntry = () => {

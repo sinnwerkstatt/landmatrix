@@ -1,12 +1,16 @@
 <script lang="ts">
   import { slide } from "svelte/transition"
 
-  import type { DealVersion2 } from "$lib/types/newtypes"
-
   import EditSubsection from "$components/EditSubsection.svelte"
   import EditField from "$components/Fields/EditField.svelte"
 
-  export let version: DealVersion2
+  import { mutableDeal } from "../store"
+
+  export let data
+
+  let version = data.deal.selected_version
+
+  $: $mutableDeal.selected_version = version
 </script>
 
 <form id="local_communities" class="pb-52">

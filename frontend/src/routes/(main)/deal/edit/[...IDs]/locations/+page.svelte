@@ -9,7 +9,6 @@
   import { slide } from "svelte/transition"
 
   import { newNanoid } from "$lib/helpers"
-  import type { components } from "$lib/openAPI"
   import {
     Location2,
     type PointFeature,
@@ -26,10 +25,15 @@
   import TrashIcon from "$components/icons/TrashIcon.svelte"
   import BigMap from "$components/Map/BigMap.svelte"
 
+  import { mutableDeal } from "../store"
   import LocationAreasEditField from "./LocationAreasEditField.svelte"
 
-  export let locations: Location2[]
-  export let country: components["schemas"]["Country"] | undefined
+  export let data
+
+  let locations = data.deal.selected_version.locations
+  $: country = data.countries.find(c => c.id === data.deal.country_id)
+
+  $: $mutableDeal.selected_version.locations = locations
 
   let activeEntryIdx = 0
   let markerMode = false

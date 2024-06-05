@@ -1,7 +1,6 @@
 <script lang="ts">
   import { toast } from "@zerodevx/svelte-toast"
   import { _ } from "svelte-i18n"
-  import type { MouseEventHandler } from "svelte/elements"
 
   import { beforeNavigate, goto, invalidate } from "$app/navigation"
   import { page } from "$app/stores"
@@ -9,56 +8,66 @@
   import { getCsrfToken } from "$lib/utils"
   import { removeEmptyEntries } from "$lib/utils/data_processing"
 
-  import EditSectionDataSources from "$components/EditSectionDataSources.svelte"
   import CountryField from "$components/Fields/Display2/CountryField.svelte"
   import LoadingSpinner from "$components/icons/LoadingSpinner.svelte"
   import ModalReallyQuit from "$components/ModalReallyQuit.svelte"
 
-  import EditSectionContracts from "./EditSectionContracts.svelte"
-  import EditSectionEmployment from "./EditSectionEmployment.svelte"
-  import EditSectionFormerUse from "./EditSectionFormerUse.svelte"
-  import EditSectionGenderRelatedInfo from "./EditSectionGenderRelatedInfo.svelte"
-  import EditSectionGeneralInfo from "./EditSectionGeneralInfo.svelte"
-  import EditSectionInvestorInfo from "./EditSectionInvestorInfo.svelte"
-  import EditSectionLocalCommunities from "./EditSectionLocalCommunities.svelte"
-  import EditSectionLocations from "./EditSectionLocations.svelte"
-  import EditSectionOverallComment from "./EditSectionOverallComment.svelte"
-  import EditSectionProduceInfo from "./EditSectionProduceInfo.svelte"
-  import EditSectionWater from "./EditSectionWater.svelte"
+  import { mutableDeal } from "./store"
 
   export let data
 
-  let deal: (typeof data)["deal"]
   $: deal = data.deal
 
   let savingInProgress = false
   let showReallyQuitOverlay = false
-  $: activeTab = $page.url.hash || "#locations"
-  $: formChanged = JSON.stringify(deal) !== data.originalDeal
+
+  let tabs: { target: string; name: string | null }[]
   $: tabs = [
-    { target: "#locations", name: $_("Locations") },
-    { target: "#general", name: $_("General info") },
-    { target: "#contracts", name: $_("Contracts") },
-    { target: "#employment", name: $_("Employment") },
-    { target: "#investor_info", name: $_("Investor info") },
-    { target: "#data_sources", name: $_("Data sources") },
+    { target: "locations/", name: $_("Locations") },
+    { target: "general/", name: $_("General info") },
+    { target: "contracts/", name: $_("Contracts") },
+    { target: "employment/", name: $_("Employment") },
+    { target: "investor_info/", name: $_("Investor info") },
+    { target: "data_sources/", name: $_("Data sources") },
     {
-      target: "#local_communities",
+      target: "local_communities/",
       name: $_("Local communities / indigenous peoples"),
     },
-    { target: "#former_use", name: $_("Former use") },
-    { target: "#produce_info", name: $_("Produce info") },
-    { target: "#water", name: $_("Water") },
-    { target: "#gender_related_info", name: $_("Gender-related info") },
-    { target: "#overall_comment", name: $_("Overall comment") },
+    { target: "former_use/", name: $_("Former use") },
+    { target: "produce_info/", name: $_("Produce info") },
+    { target: "water/", name: $_("Water") },
+    { target: "gender_related_info/", name: $_("Gender-related info") },
+    { target: "overall_comment/", name: $_("Overall comment") },
   ]
 
-  beforeNavigate(({ type, cancel }) => {
-    // browser navigation buttons
+  $: hasBeenEdited = data.originalDeal !== JSON.stringify($mutableDeal)
+
+  $: selfLink = data.dealVersion
+    ? `/deal/edit/${data.dealID}/${data.dealVersion}/`
+    : `/deal/edit/${data.dealID}/`
+
+  beforeNavigate(({ type, cancel, to }) => {
+    // if hasNavigatedToOtherSection
+    if (type === "link" && to?.url.pathname.includes(selfLink)) {
+      if (savingInProgress || !isFormValid()) {
+        cancel()
+        return
+      }
+
+      if (hasBeenEdited) {
+        saveDeal().then(success => (success ? goto(to?.url) : null))
+        cancel()
+        return
+      }
+    }
+
+    // browser navigation
+    // TODO: extend this for any navigation
     if (type === "popstate")
-      if (formChanged && !showReallyQuitOverlay) {
+      if (hasBeenEdited && !showReallyQuitOverlay) {
         showReallyQuitOverlay = true
         cancel()
+        return
       }
   })
 
@@ -76,8 +85,8 @@
     )
 
     const ret = await fetch(
-      data.versionID
-        ? `/api/dealversions/${data.versionID}/`
+      data.dealVersion
+        ? `/api/dealversions/${data.dealVersion}/`
         : `/api/deals/${data.dealID}/`,
       {
         method: "PUT",
@@ -122,6 +131,8 @@
 
     if (retBody.versionID !== deal.selected_version.id) {
       toast.push("Created a new draft", { classes: ["success"] })
+      const activeTab =
+        tabs.find(t => `${selfLink}${t.target}` === $page.url.pathname)?.target ?? ""
       await goto(`/deal/edit/${deal.id}/${retBody.versionID}/${activeTab}`)
     } else {
       toast.push("Saved data", { classes: ["success"] })
@@ -133,7 +144,7 @@
 
   const isFormValid = (): boolean => {
     const currentForm: HTMLFormElement | null =
-      document.querySelector<HTMLFormElement>(activeTab)
+      document.querySelector<HTMLFormElement>("form")
 
     if (!currentForm) {
       toast.push("Internal error. Can not grab the form. Try reloading the page.", {
@@ -146,7 +157,7 @@
   }
 
   const onClickClose = async (force = false): Promise<void> => {
-    if (formChanged && !force) {
+    if (hasBeenEdited && !force) {
       showReallyQuitOverlay = true
       return
     }
@@ -154,26 +165,18 @@
     await invalidate("deal:detail") // discard changes
 
     if (!data.dealID) await goto("/")
-    else await goto(`/deal/${data.dealID}/${data.versionID ?? ""}`)
+    else await goto(`/deal/${data.dealID}/${data.dealVersion ?? ""}`)
   }
 
   const onClickSave = async (): Promise<void> => {
     if (savingInProgress || !isFormValid()) return
-    if (formChanged) await saveDeal()
-  }
-
-  const onClickTab: MouseEventHandler<HTMLAnchorElement> = async e => {
-    if (savingInProgress || !isFormValid()) return
-
-    if (formChanged) {
-      const success = await saveDeal()
-      if (!success) return
-    }
-
-    const hash = (e.target as HTMLAnchorElement).hash
-    await goto(hash)
+    if (hasBeenEdited) await saveDeal()
   }
 </script>
+
+<svelte:head>
+  <title>{$_("Deal Edit")} #{data.deal.id}</title>
+</svelte:head>
 
 <div class="editgrid container mx-auto h-full max-h-full">
   <div
@@ -189,7 +192,7 @@
     <div class="my-2 flex items-center gap-2 lg:my-5">
       <button
         class="btn btn-primary flex items-center gap-2"
-        class:disabled={!formChanged || savingInProgress}
+        class:disabled={!hasBeenEdited || savingInProgress}
         on:click|preventDefault={onClickSave}
       >
         {#if savingInProgress}
@@ -214,63 +217,29 @@
   >
     <ul class="flex lg:flex-col">
       {#each tabs as { target, name }}
+        {@const activeTab = `${selfLink}${target}` === $page.url.pathname}
+
         <li
-          class="border-orange py-3 pr-4 text-center leading-tight lg:text-left {activeTab ===
-          target
+          class="border-orange py-3 pr-4 text-center leading-tight lg:text-left {activeTab
             ? 'border-b-4 font-semibold lg:border-0 lg:border-r-4'
             : 'border-b lg:border-0 lg:border-r'}"
         >
-          <a
-            href={target}
-            class={activeTab === target ? "text-gray-700 dark:text-white" : ""}
-            on:click|preventDefault={onClickTab}
-          >
-            {name}
-          </a>
+          {#if name}
+            <a
+              href="{selfLink}{target}"
+              class={activeTab ? "text-gray-700 dark:text-white" : ""}
+            >
+              {name}
+            </a>
+          {:else}
+            <hr />
+          {/if}
         </li>
       {/each}
     </ul>
   </nav>
   <div class="overflow-y-auto px-4" style="grid-area: main">
-    {#if activeTab === "#locations"}
-      <EditSectionLocations
-        bind:locations={deal.selected_version.locations}
-        country={$page.data.countries.find(c => c.id === deal.country_id)}
-      />
-    {/if}
-    {#if activeTab === "#general"}
-      <EditSectionGeneralInfo bind:version={deal.selected_version} />
-    {/if}
-    {#if activeTab === "#contracts"}
-      <EditSectionContracts bind:contracts={deal.selected_version.contracts} />
-    {/if}
-    {#if activeTab === "#employment"}
-      <EditSectionEmployment bind:version={deal.selected_version} />
-    {/if}
-    {#if activeTab === "#investor_info"}
-      <EditSectionInvestorInfo bind:deal />
-    {/if}
-    {#if activeTab === "#data_sources"}
-      <EditSectionDataSources bind:datasources={deal.selected_version.datasources} />
-    {/if}
-    {#if activeTab === "#local_communities"}
-      <EditSectionLocalCommunities bind:version={deal.selected_version} />
-    {/if}
-    {#if activeTab === "#former_use"}
-      <EditSectionFormerUse bind:version={deal.selected_version} />
-    {/if}
-    {#if activeTab === "#produce_info"}
-      <EditSectionProduceInfo bind:version={deal.selected_version} />
-    {/if}
-    {#if activeTab === "#water"}
-      <EditSectionWater bind:version={deal.selected_version} />
-    {/if}
-    {#if activeTab === "#gender_related_info"}
-      <EditSectionGenderRelatedInfo bind:version={deal.selected_version} />
-    {/if}
-    {#if activeTab === "#overall_comment"}
-      <EditSectionOverallComment bind:version={deal.selected_version} />
-    {/if}
+    <slot />
   </div>
 </div>
 
