@@ -88,3 +88,11 @@ export const areaToFeature = (area: Area): AreaFeature => ({
     visible: area.current,
   },
 })
+
+export const featureToArea = (feature: AreaFeature): Area => ({
+  id: feature.properties.id,
+  type: feature.properties.type,
+  date: feature.properties.date,
+  current: feature.properties.current,
+  area: feature.geometry,
+})
