@@ -6,20 +6,13 @@ import type { InvestorHull } from "$lib/types/newtypes"
 import type { PageLoad } from "./$types"
 
 export const load: PageLoad = async ({ params, fetch }) => {
-  const [investorID] = params.IDs.split("/").map(x => (x ? +x : undefined))
-  if (!investorID) error(404, "Investor not found")
+  const investorID = parseInt(params.id)
 
-  const [versionFrom, versionTo] = params.versions
-    .split("/")
-    .map(x => (x ? +x : undefined))
-
-  if (!versionFrom || !versionTo) error(500, "insufficient parameters")
-
-  const resFrom = await fetch(`/api/investors/${investorID}/${versionFrom}/`)
+  const resFrom = await fetch(`/api/investors/${investorID}/${params.versionFrom}/`)
   const investorFrom: InvestorHull = await resFrom.json()
   const fromVersion = investorFrom.selected_version
 
-  const resTo = await fetch(`/api/investors/${investorID}/${versionTo}/`)
+  const resTo = await fetch(`/api/investors/${investorID}/${params.versionTo}/`)
   const investorTo: InvestorHull = await resTo.json()
   const toVersion = investorTo.selected_version
 

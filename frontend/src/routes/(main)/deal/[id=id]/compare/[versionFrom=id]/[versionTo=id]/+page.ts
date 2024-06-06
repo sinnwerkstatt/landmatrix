@@ -6,19 +6,12 @@ import type { DealHull } from "$lib/types/newtypes"
 import type { PageLoad } from "./$types"
 
 export const load: PageLoad = async ({ params, fetch }) => {
-  const [dealID] = params.IDs.split("/").map(x => (x ? +x : undefined))
-  if (!dealID) error(404, `Deal not found`)
+  const dealID = parseInt(params.id)
 
-  const [versionFrom, versionTo] = params.versions
-    .split("/")
-    .map(x => (x ? +x : undefined))
-
-  if (!versionFrom || !versionTo) error(500, "insufficient parameters")
-
-  const resFrom = await fetch(`/api/deals/${dealID}/${versionFrom}/`)
+  const resFrom = await fetch(`/api/deals/${dealID}/${params.versionFrom}/`)
   const dealFrom: DealHull = await resFrom.json()
   const fromVersion = dealFrom.selected_version
-  const resTo = await fetch(`/api/deals/${dealID}/${versionTo}/`)
+  const resTo = await fetch(`/api/deals/${dealID}/${params.versionTo}/`)
   const dealTo: DealHull = await resTo.json()
   const toVersion = dealTo.selected_version
   if (!dealFrom || !dealTo) error(500, "problem")

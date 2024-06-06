@@ -12,7 +12,8 @@ export const load: PageLoad = async ({ depends, params, parent }) => {
   const { user } = await parent()
   if (!user) error(403, "Permission denied")
 
-  const [investorID, versionID] = params.IDs.split("/").map(x => (x ? +x : undefined))
+  const investorID = parseInt(params.id)
+  const versionID = params.versionId ? parseInt(params.versionId) : undefined
 
   if (!investorID) redirect(301, "/list/investors/")
 

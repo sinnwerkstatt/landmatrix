@@ -7,11 +7,8 @@ import type { PageLoad } from "./$types"
 export const load: PageLoad = async ({ depends, params, fetch }) => {
   depends("investor:detail")
 
-  const [investorID, investorVersion] = params.IDs.split("/").map(x =>
-    x ? +x : undefined,
-  )
-
-  if (!investorID) error(404, "Investor not found")
+  const investorID = parseInt(params.id)
+  const investorVersion = params.versionId ? parseInt(params.versionId) : undefined
 
   const url = investorVersion
     ? `/api/investors/${investorID}/${investorVersion}/`

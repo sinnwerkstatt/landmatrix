@@ -6,9 +6,9 @@ import type { LayoutLoad } from "./$types"
 
 export const load: LayoutLoad = async ({ fetch, params, depends }) => {
   depends("deal:detail")
-  const [dealID, dealVersion] = params.IDs.split("/").map(x => (x ? +x : undefined))
 
-  if (!dealID) error(404, "Deal not found")
+  const dealID = parseInt(params.id)
+  const dealVersion = params.versionId ? parseInt(params.versionId) : undefined
 
   const url = dealVersion
     ? `/api/deals/${dealID}/${dealVersion}/`
