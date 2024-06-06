@@ -2,7 +2,6 @@
   import { _ } from "svelte-i18n"
   import { slide } from "svelte/transition"
 
-  import { newNanoid } from "$lib/helpers"
   import { Contract } from "$lib/types/newtypes"
   import { isEmptySubmodel } from "$lib/utils/data_processing"
 
@@ -10,6 +9,7 @@
   import PlusIcon from "$components/icons/PlusIcon.svelte"
   import TrashIcon from "$components/icons/TrashIcon.svelte"
 
+  import { newNanoid } from "../../../../../../../lib/helpers"
   import { mutableDeal } from "../store"
 
   export let data

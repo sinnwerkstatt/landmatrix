@@ -11,13 +11,13 @@ export const load: LayoutLoad = async ({ params, fetch, parent, depends }) => {
   const { user } = await parent()
   if (!user) error(403, "Permission denied")
 
-  const [dealID, dealVersion] = params.IDs.split("/").map(x => (x ? +x : undefined))
-
-  if (!dealID) redirect(301, "/list/deals/")
+  const dealID = parseInt(params.id)
+  const dealVersion = params.versionId ? parseInt(params.versionId) : undefined
 
   const url = dealVersion
     ? `/api/deals/${dealID}/${dealVersion}/`
     : `/api/deals/${dealID}/`
+
   const ret = await fetch(url)
 
   if (ret.status === 404)
@@ -26,6 +26,7 @@ export const load: LayoutLoad = async ({ params, fetch, parent, depends }) => {
   if (!ret.ok) error(ret.status, (await ret.json()).detail)
 
   const deal: DealHull = await ret.json()
+
   mutableDeal.set(structuredClone(deal))
   const originalDeal = JSON.stringify(deal)
 
@@ -41,6 +42,7 @@ export const load: LayoutLoad = async ({ params, fetch, parent, depends }) => {
     console.warn("redirecting to active version")
     redirect(301, `/deal/edit/${dealID}/`)
   }
+
   // don't allow editing active deal if there are newer version
   if (!dealVersion && deal.draft_version_id) {
     console.warn("redirecting to draft version")
