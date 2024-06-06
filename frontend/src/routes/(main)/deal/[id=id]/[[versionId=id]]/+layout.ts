@@ -15,11 +15,16 @@ export const load: LayoutLoad = async ({ fetch, params, depends }) => {
     : `/api/deals/${dealID}/`
   const ret = await fetch(url)
 
+  if (ret.status === 404)
+    error(404, dealVersion ? "Deal version not found" : "Deal not found")
+
   if (!ret.ok) error(ret.status, (await ret.json()).detail)
 
   const deal: DealHull = await ret.json()
 
-  if (deal.active_version_id === dealVersion) redirect(301, `/deal/${dealID}/`)
+  if (deal.active_version_id === dealVersion) {
+    redirect(301, `/deal/${dealID}/`)
+  }
 
   if (!deal.active_version_id && !dealVersion) {
     redirect(301, `/deal/${dealID}/${deal.draft_version_id}/`)
