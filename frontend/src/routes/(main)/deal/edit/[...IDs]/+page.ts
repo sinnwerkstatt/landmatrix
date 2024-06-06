@@ -9,5 +9,8 @@ export const load: PageLoad = async ({ parent }) => {
     ? `/deal/edit/${data.dealID}/${data.dealVersion}/`
     : `/deal/edit/${data.dealID}/`
 
-  redirect(301, path + "locations/")
+  throw redirect(307, path + "locations")
+  // throw error(404)
+
+  // TODO: write matcher : https://kit.svelte.dev/docs/advanced-routing#matching
 }

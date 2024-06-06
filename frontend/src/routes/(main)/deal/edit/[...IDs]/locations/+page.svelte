@@ -211,9 +211,7 @@
       </button>
     </div>
 
-    <div
-      class="flex animate-fadeToWhite flex-row items-center justify-between p-2 dark:animate-fadeToGray"
-    >
+    <div class="flex flex-row items-center justify-between p-2">
       {#if activeEntryIdx >= 0}
         <h3 class="heading4">
           {activeEntryIdx + 1}. {$_("Location")}
