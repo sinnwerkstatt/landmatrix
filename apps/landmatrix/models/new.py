@@ -1098,6 +1098,7 @@ class Location(models.Model):
     class Meta:
         unique_together = ["dealversion", "nid"]
         indexes = [models.Index(fields=["dealversion", "nid"])]
+        ordering = ["id"]
 
     def __str__(self):
         return f"{self.nid} @ {self.dealversion}"
@@ -1156,8 +1157,9 @@ class Area(models.Model):
 
         raise ValidationError
 
-    # class Meta:
-    #     unique_together = ["location", "type", "current"]
+    class Meta:
+        # unique_together = ["location", "type", "current"]
+        ordering = ["id"]
 
 
 class Contract(models.Model):
@@ -1191,6 +1193,7 @@ class Contract(models.Model):
     class Meta:
         unique_together = ["dealversion", "nid"]
         indexes = [models.Index(fields=["dealversion", "nid"])]
+        ordering = ["id"]
 
 
 class BaseDataSource(models.Model):
@@ -1239,6 +1242,7 @@ class BaseDataSource(models.Model):
         abstract = True
         unique_together = ["dealversion", "nid"]
         indexes = [models.Index(fields=["dealversion", "nid"])]
+        ordering = ["id"]
 
 
 class DealDataSource(BaseDataSource):
@@ -1249,6 +1253,7 @@ class DealDataSource(BaseDataSource):
     class Meta:
         unique_together = ["dealversion", "nid"]
         indexes = [models.Index(fields=["dealversion", "nid"])]
+        ordering = ["id"]
 
 
 class DealHullQuerySet(models.QuerySet):
@@ -1557,6 +1562,7 @@ class InvestorDataSource(BaseDataSource):
     class Meta:
         unique_together = ["investorversion", "nid"]
         indexes = [models.Index(fields=["investorversion", "nid"])]
+        ordering = ["id"]
 
 
 class InvestorHullQuerySet(models.QuerySet):
@@ -1840,7 +1846,7 @@ class Involvement(models.Model):
     class Meta:
         verbose_name = _("Investor Venture Involvement")
         verbose_name_plural = _("Investor Venture Involvements")
-        ordering = ["-id"]
+        ordering = ["id"]
         # would be nice to have but not today
         # unique_together = [["parent_investor", "child_investor"]]
 
