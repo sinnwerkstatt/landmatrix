@@ -13,8 +13,8 @@
 </script>
 
 {#if !sectionEmpty}
-  <div class="mt-2 space-y-4">
-    <h3 class="heading3 my-0">{sec.title}</h3>
+  <div class="mt-8 space-y-4 first:mt-2">
+    <h3 class="heading4 my-0">{sec.title}</h3>
 
     <slot />
   </div>
