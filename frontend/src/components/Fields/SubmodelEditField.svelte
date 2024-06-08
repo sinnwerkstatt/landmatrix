@@ -20,10 +20,13 @@
   import PlusIcon from "$components/icons/PlusIcon.svelte"
   import TrashIcon from "$components/icons/TrashIcon.svelte"
 
+  /* eslint-disable no-undef */
   export let entries: T[]
-  export let label: string
   export let createEntry: (nid: string) => T
   export let entryComponent: X
+  /* eslint-enable no-undef */
+
+  export let label: string
 
   let activeEntryIdx = -1
 

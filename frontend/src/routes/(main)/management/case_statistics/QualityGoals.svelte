@@ -5,15 +5,8 @@
 
   export let counts: Counts = {}
 
-  function getRatio(n: number | null | undefined, model = "deal") {
-    if (n === null || n === undefined) return ""
-    if (model !== "deal") {
-      if (!counts.investors_public_count) return " "
-      return ((n / counts.investors_public_count ?? 1) * 100).toFixed(1) + " %"
-    }
-    if (!counts.deals_public_count) return " "
-    return ((n / counts.deals_public_count ?? 1) * 100).toFixed(1) + " %"
-  }
+  const formatRatio = (a?: number, b?: number): string =>
+    a === undefined || !b ? "" : `${((a / b) * 100).toFixed(1)} %`
 </script>
 
 <h2 class="heading5 mb-2 pt-3">{$_("Quality goals")}</h2>
@@ -43,7 +36,9 @@
             {$_("Deals with with multiple data sources")}
           </td>
           <td class="px-3 py-1">{counts.deals_public_multi_ds_count}</td>
-          <td class="px-3 py-1">{getRatio(counts.deals_public_multi_ds_count)}</td>
+          <td class="px-3 py-1">
+            {formatRatio(counts.deals_public_multi_ds_count, counts.deals_public_count)}
+          </td>
         </tr>
 
         <tr>
@@ -52,7 +47,12 @@
             <sup>2</sup>
           </td>
           <td class="px-3 py-1">{counts.deals_public_high_geo_accuracy}</td>
-          <td class="px-3 py-1">{getRatio(counts.deals_public_high_geo_accuracy)}</td>
+          <td class="px-3 py-1">
+            {formatRatio(
+              counts.deals_public_high_geo_accuracy,
+              counts.deals_public_count,
+            )}
+          </td>
         </tr>
 
         <tr>
@@ -60,7 +60,9 @@
             {$_("Deals with polygon data")}
           </td>
           <td class="px-3 py-1">{counts.deals_public_polygons}</td>
-          <td class="px-3 py-1">{getRatio(counts.deals_public_polygons)}</td>
+          <td class="px-3 py-1">
+            {formatRatio(counts.deals_public_polygons, counts.deals_public_count)}
+          </td>
         </tr>
       </tbody>
     </table>
@@ -73,7 +75,8 @@
       <div>
         <sup>2</sup>
         {$_(
-          "Deals with at least one location with either accuracy level 'Coordinates' or 'Exact location' or at least one polygon.",
+          "Deals with at least one location with either accuracy level " +
+            "'Coordinates' or 'Exact location' or at least one polygon.",
         )}
       </div>
     </div>
@@ -101,7 +104,9 @@
             {$_("Investors with name")}
           </td>
           <td class="px-3 py-1">{counts.investors_public_known}</td>
-          <td class="px-3 py-1">{getRatio(counts.investors_public_known, "i")}</td>
+          <td class="px-3 py-1">
+            {formatRatio(counts.investors_public_known, counts.investors_public_count)}
+          </td>
         </tr>
       </tbody>
     </table>
@@ -119,9 +124,11 @@
 <!--    </div>-->
 <!--  </div>-->
 <!--  <div class="flex flex-col items-center gap-2">-->
-<!--    <div class="bg-neutral-200 p-3  font-bold drop-shadow-lg">-->
+<!--    <div class="bg-neutral-200 p-3 font-bold drop-shadow-lg">-->
 <!--      <div class="text-2xl">{counts.deals_public_multi_ds_count}</div>-->
-<!--      <div>{getRatio(counts.deals_public_multi_ds_count)}</div>-->
+<!--      <div>-->
+<!--        {formatRatio(counts.deals_public_multi_ds_count, counts.deals_public_count)}-->
+<!--      </div>-->
 <!--    </div>-->
 <!--    {$_("Deals with with multiple data sources")}-->
 <!--    <div class="text-[10px]">&nbsp;</div>-->
@@ -129,19 +136,22 @@
 <!--  <div class="flex flex-col items-center gap-2">-->
 <!--    <div class="bg-neutral-200 p-3 font-bold drop-shadow-lg">-->
 <!--      <div class="text-2xl">{counts.deals_public_high_geo_accuracy}</div>-->
-<!--      <div>{getRatio(counts.deals_public_high_geo_accuracy)}</div>-->
+<!--      <div>-->
+<!--        {formatRatio(counts.deals_public_high_geo_accuracy, counts.deals_public_count)}-->
+<!--      </div>-->
 <!--    </div>-->
 <!--    {$_("Deals georeferenced with high accuracy")}-->
 <!--    <div class="text-[10px]">-->
 <!--      {$_(-->
-<!--        "Deals with at least one location with either accuracy level 'Coordinates' or 'Exact location' or at least one polygon.",-->
+<!--        "Deals with at least one location with either accuracy level " +-->
+<!--          "'Coordinates' or 'Exact location' or at least one polygon.",-->
 <!--      )}-->
 <!--    </div>-->
 <!--  </div>-->
 <!--  <div class="flex flex-col items-center gap-2">-->
 <!--    <div class="bg-neutral-200 p-3 font-bold drop-shadow-lg">-->
 <!--      <div class="text-2xl">{counts.deals_public_polygons}</div>-->
-<!--      <div>{getRatio(counts.deals_public_polygons)}</div>-->
+<!--      <div>{formatRatio(counts.deals_public_polygons, counts.deals_public_count)}</div>-->
 <!--    </div>-->
 <!--    {$_("Deals with polygon data")}-->
 <!--    <div class="text-[10px]">&nbsp;</div>-->

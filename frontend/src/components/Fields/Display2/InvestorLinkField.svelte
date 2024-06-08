@@ -8,7 +8,7 @@
 
   export let value: InvestorHull | number | null
   // noinspection JSUnusedGlobalSymbols
-  export let extras: never
+  export const extras = {}
 
   let investor: InvestorHull | null
 

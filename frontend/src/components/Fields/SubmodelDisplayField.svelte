@@ -1,4 +1,6 @@
 <script lang="ts" context="module">
+  // https://github.com/dummdidumm/rfcs/blob/ts-typedefs-within-svelte-components/text/ts-typing-props-slots-events.md
+
   /* eslint-disable @typescript-eslint/no-unused-vars */
   import type { SubmodelEntry } from "$lib/utils/data_processing"
 
@@ -13,8 +15,10 @@
 
   import { isElementInViewport } from "$lib/utils/domHelpers"
 
-  // https://github.com/dummdidumm/rfcs/blob/ts-typedefs-within-svelte-components/text/ts-typing-props-slots-events.md
+  /* eslint-disable no-undef */
   export let entries: T[]
+  /* eslint-enable no-undef */
+
   export let label: string
 
   let selectedEntryId: string | undefined
