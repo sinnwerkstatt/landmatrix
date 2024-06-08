@@ -1,5 +1,5 @@
 import type { Feature, MultiPolygon, Point, Polygon } from "geojson"
-import type { GeoJSON } from "leaflet"
+import type { GeoJSON } from "leaflet?client"
 
 import type { IntentionOfInvestment } from "$lib/types/deal"
 

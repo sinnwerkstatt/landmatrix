@@ -6,8 +6,8 @@
 
   import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css"
 
-  import type { MapOptions } from "leaflet"
   import { GestureHandling } from "leaflet-gesture-handling?client"
+  import type { MapOptions } from "leaflet?client"
   import { nanoid } from "nanoid"
   import { createEventDispatcher, onDestroy, onMount } from "svelte"
   import { _ } from "svelte-i18n"

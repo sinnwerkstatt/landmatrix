@@ -1,5 +1,5 @@
 import type { Point } from "geojson"
-import type { GeoJSON, LatLngLiteral, Map } from "leaflet"
+import type { GeoJSON, LatLngLiteral, Map } from "leaflet?client"
 import { geoJson, LatLngBounds } from "leaflet?client"
 
 import type {

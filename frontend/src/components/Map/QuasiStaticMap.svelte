@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Map, MarkerOptions } from "leaflet"
+  import type { Map, MarkerOptions } from "leaflet?client"
   import { DivIcon, FeatureGroup, Marker } from "leaflet?client"
   import { _ } from "svelte-i18n"
 
