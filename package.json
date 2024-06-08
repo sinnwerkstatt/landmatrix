@@ -11,7 +11,7 @@
     "test": "DATABASE_URL=postgis://landmatrix:landmatrix@localhost/playwright_test ./test.sh"
   },
   "devDependencies": {
-    "@playwright/test": "^1.41.2",
+    "@playwright/test": "^1.44.1",
     "@types/node": "~20",
     "concurrently": "^8.2.2"
   }
