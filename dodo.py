@@ -137,9 +137,9 @@ def task_test_watch():
 
 #############################
 def task_frontend_build():
-    actions = ["cd frontend; npm ci"]
+    actions = ["cd frontend; pnpm install"]
     if get_var("production", False):
-        actions += ["cd frontend; npm run build"]
+        actions += ["cd frontend; pnpm run build"]
     return {
         "task_dep": ["compilemessages"],
         "actions": actions,

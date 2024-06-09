@@ -28,7 +28,7 @@ poetry install
 
 ### Javascript
 
-Get `npm`; just follow https://nodejs.org/.
+Get `pnpm`; just follow https://nodejs.org/.
 
 
 ### Custom settings via `.env`
