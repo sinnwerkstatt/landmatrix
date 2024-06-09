@@ -9,14 +9,17 @@ import type { LayoutLoad } from "./$types"
 export const load: LayoutLoad = async ({ fetch, params, depends, parent }) => {
   depends("deal:detail")
 
-  const dealID = parseInt(params.id)
-  const dealVersion = params.versionId ? parseInt(params.versionId) : undefined
-
   const { apiClient } = await parent()
+
+  const dealID = parseInt(params.id)
+  const dealVersion = parseInt(params.versionId as string)
+  const dealSection = params.section as DealSection
+
+  const baseUrl = dealVersion ? `/deal/${dealID}/${dealVersion}` : `/deal/${dealID}`
 
   const ret = dealVersion
     ? await apiClient.GET("/api/deals/{id}/{version_id}/", {
-        // TODO: change dealVersion type to number
+        // TODO: deal_version should be number in schema
         params: { path: { id: dealID, version_id: `${dealVersion}` } },
         fetch,
       })
@@ -26,22 +29,28 @@ export const load: LayoutLoad = async ({ fetch, params, depends, parent }) => {
       })
 
   if (ret.error) {
-    if (ret.response.status === 404)
-      error(404, dealVersion ? "Deal version not found" : "Deal not found")
-
+    // @ts-expect-error openapi-fetch types broken
     error(ret.response.status, ret.error.detail)
   }
 
   // TODO: FIXME
   const deal: DealHull = ret.data
 
-  if (deal.active_version_id === dealVersion) {
-    redirect(301, `/deal/${dealID}/`)
+  if (dealVersion && dealVersion === deal.active_version_id) {
+    console.warn("redirecting to active version")
+    redirect(307, `/deal/${dealID}/`)
   }
 
-  if (!deal.active_version_id && !dealVersion) {
-    redirect(301, `/deal/${dealID}/${deal.draft_version_id}/`)
+  if (!dealVersion && !deal.active_version_id) {
+    console.warn("redirecting to draft version")
+    redirect(307, `/deal/${dealID}/${deal.draft_version_id}/`)
   }
 
-  return { deal, dealID, dealVersion, section: params.section as DealSection }
+  return {
+    deal,
+    dealID,
+    dealVersion,
+    dealSection,
+    baseUrl,
+  }
 }

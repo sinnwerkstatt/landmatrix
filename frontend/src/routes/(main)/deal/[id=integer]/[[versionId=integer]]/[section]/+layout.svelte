@@ -22,10 +22,6 @@
     await invalidate("deal:detail")
     loading.set(false)
   }
-
-  $: selfLink = data.dealVersion
-    ? `/deal/${data.dealID}/${data.dealVersion}`
-    : `/deal/${data.dealID}`
 </script>
 
 <svelte:head>
@@ -64,7 +60,7 @@
         slug: s,
         label: $dealSectionLookup[s].label,
       }))}
-      baseUrl={selfLink}
+      baseUrl={data.baseUrl}
     />
   </div>
 

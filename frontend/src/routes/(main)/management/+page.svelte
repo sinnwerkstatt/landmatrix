@@ -382,7 +382,7 @@
             {valueClass}
             extras={col.key === "id"
               ? { model, objectVersion: obj.draft_version_id }
-              : {}}
+              : undefined}
           />
         </svelte:fragment>
       </Table>

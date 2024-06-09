@@ -4,4 +4,7 @@
   export let data
 </script>
 
-<svelte:component this={$dealSectionLookup[data.section].display} deal={data.deal} />
+<svelte:component
+  this={$dealSectionLookup[data.dealSection].display}
+  deal={data.deal}
+/>

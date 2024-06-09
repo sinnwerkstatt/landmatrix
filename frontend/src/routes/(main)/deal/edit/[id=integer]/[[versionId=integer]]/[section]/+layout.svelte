@@ -22,6 +22,7 @@
   let savingInProgress = false
   let showReallyQuitOverlay = false
 
+  $: $mutableDeal = structuredClone(data.deal)
   $: hasBeenEdited = JSON.stringify(data.deal) !== JSON.stringify($mutableDeal)
 
   beforeNavigate(({ type, cancel, to }) => {
@@ -109,7 +110,7 @@
 
     if (retBody.versionID !== deal.selected_version.id) {
       toast.push("Created a new draft", { classes: ["success"] })
-      await goto(`/deal/edit/${deal.id}/${retBody.versionID}/${data.section}`)
+      await goto(`/deal/edit/${deal.id}/${retBody.versionID}/${data.dealSection}`)
     } else {
       toast.push("Saved data", { classes: ["success"] })
       await invalidate("deal:detail")
@@ -189,7 +190,7 @@
 
   <div style="grid-area: sidenav">
     <SectionNav
-      sections={DEAL_SECTIONS.map(s => ({
+      sections={DEAL_SECTIONS.filter(s => s !== "history").map(s => ({
         slug: s,
         label: $dealSectionLookup[s].label,
       }))}

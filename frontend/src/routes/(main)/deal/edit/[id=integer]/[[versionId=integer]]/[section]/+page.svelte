@@ -7,6 +7,6 @@
 </script>
 
 <svelte:component
-  this={$dealSectionLookup[data.section].edit}
+  this={$dealSectionLookup[data.dealSection].edit}
   bind:deal={$mutableDeal}
 />
