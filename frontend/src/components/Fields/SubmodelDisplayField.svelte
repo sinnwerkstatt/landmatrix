@@ -13,7 +13,7 @@
   import { browser } from "$app/environment"
   import { page } from "$app/stores"
 
-  import { isElementInViewport } from "$lib/utils/domHelpers"
+  import { scrollEntryIntoView } from "$lib/utils/domHelpers"
 
   /* eslint-disable no-undef */
   export let entries: T[]
@@ -26,22 +26,13 @@
 
   $: browser && scrollEntryIntoView(selectedEntryId)
 
-  const scrollEntryIntoView = (elemId: string | undefined) => {
-    if (!elemId) return
-
-    const el = document.getElementById(elemId ?? "")
-    if (el && !isElementInViewport(el)) {
-      el.scrollIntoView({ block: "nearest", inline: "nearest" })
-    }
-  }
-
   onMount(() => scrollEntryIntoView(selectedEntryId))
 </script>
 
 {#if entries.length > 0}
   <section class="w-full">
     {#each entries as entry, index}
-      <div
+      <article
         id={entry.nid}
         class="p-2 {selectedEntryId === entry.nid
           ? 'animate-fadeToWhite dark:animate-fadeToGray'
@@ -56,7 +47,7 @@
           </a>
         </h3>
         <slot {entry} />
-      </div>
+      </article>
     {/each}
   </section>
 {/if}

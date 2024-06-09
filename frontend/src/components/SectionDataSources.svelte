@@ -4,12 +4,12 @@
   import type { DealVersion2, InvestorVersion2 } from "$lib/types/newtypes"
 
   import DisplayField from "$components/Fields/DisplayField.svelte"
-  import JSONArrayDisplayField from "$components/Fields/SubmodelDisplayField.svelte"
+  import SubmodelDisplayField from "$components/Fields/SubmodelDisplayField.svelte"
 
   export let version: DealVersion2 | InvestorVersion2
 </script>
 
-<JSONArrayDisplayField
+<SubmodelDisplayField
   entries={version.datasources}
   label={$_("Data source")}
   let:entry={datasource}
@@ -43,4 +43,4 @@
     value={datasource.open_land_contracts_id}
   />
   <DisplayField fieldname="datasource.comment" showLabel value={datasource.comment} />
-</JSONArrayDisplayField>
+</SubmodelDisplayField>

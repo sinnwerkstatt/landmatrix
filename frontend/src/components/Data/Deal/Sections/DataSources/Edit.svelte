@@ -3,7 +3,8 @@
 
   import { DataSource, type DealHull } from "$lib/types/newtypes"
 
-  import JSONArrayField from "../../../../Fields/SubmodelEditField.svelte"
+  import SubmodelEditField from "$components/Fields/SubmodelEditField.svelte"
+
   import Entry from "./Entry.svelte"
 
   export let deal: DealHull
@@ -13,7 +14,7 @@
   const createEntry = (nid: string) => new DataSource(nid)
 </script>
 
-<JSONArrayField
+<SubmodelEditField
   bind:entries={deal.selected_version.datasources}
   entryComponent={Entry}
   {createEntry}

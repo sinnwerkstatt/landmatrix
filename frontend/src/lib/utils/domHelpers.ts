@@ -26,3 +26,12 @@ export const createComponentAsDiv = (
   new svelteComponent({ props, target: container })
   return container
 }
+
+export const scrollEntryIntoView = (elemId: string | undefined) => {
+  if (!elemId) return
+
+  const el = document.getElementById(elemId ?? "")
+  if (el && !isElementInViewport(el)) {
+    el.scrollIntoView({ block: "nearest", inline: "nearest" })
+  }
+}

@@ -4,15 +4,14 @@
   import type { DealHull } from "$lib/types/newtypes"
 
   import DisplayField from "$components/Fields/DisplayField.svelte"
-
-  import JSONArrayDisplayField from "../../../../Fields/SubmodelDisplayField.svelte"
+  import SubmodelDisplayField from "$components/Fields/SubmodelDisplayField.svelte"
 
   export let deal: DealHull
 
   $: label = $_("Contract")
 </script>
 
-<JSONArrayDisplayField
+<SubmodelDisplayField
   entries={deal.selected_version.contracts}
   {label}
   let:entry={contract}
@@ -30,4 +29,4 @@
     value={contract.agreement_duration}
   />
   <DisplayField fieldname="contract.comment" showLabel value={contract.comment} />
-</JSONArrayDisplayField>
+</SubmodelDisplayField>

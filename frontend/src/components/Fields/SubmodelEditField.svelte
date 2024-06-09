@@ -9,13 +9,21 @@
 
 <script
   lang="ts"
-  generics="T extends SubmodelEntry, X extends typeof SvelteComponent<any>"
+  generics="
+  T extends SubmodelEntry,
+  X extends typeof SvelteComponent<any>,
+  Y extends Record<string, any>"
 >
+  import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
   import { slide } from "svelte/transition"
 
+  import { browser } from "$app/environment"
+  import { page } from "$app/stores"
+
   import { newNanoid } from "$lib/helpers"
   import { isEmptySubmodel } from "$lib/utils/data_processing"
+  import { scrollEntryIntoView } from "$lib/utils/domHelpers"
 
   import PlusIcon from "$components/icons/PlusIcon.svelte"
   import TrashIcon from "$components/icons/TrashIcon.svelte"
@@ -24,54 +32,60 @@
   export let entries: T[]
   export let createEntry: (nid: string) => T
   export let entryComponent: X
+  export let extras: Y
   /* eslint-enable no-undef */
 
   export let label: string
 
-  let activeEntryIdx = -1
+  let selectedEntryId: string | undefined
+  $: selectedEntryId = $page.url.hash?.replace("#", "")
+
+  $: browser && scrollEntryIntoView(selectedEntryId)
+
+  onMount(() => scrollEntryIntoView(selectedEntryId))
 
   const addEntry = () => {
     const currentIDs = entries.map(entry => entry.nid)
-    entries = [...entries, createEntry(newNanoid(currentIDs))]
-    activeEntryIdx = entries.length - 1
+    const newEntryId = newNanoid(currentIDs)
+    entries = [...entries, createEntry(newEntryId)]
+    selectedEntryId = newEntryId
   }
 
   const removeEntry = (index: number) => {
     const entry = entries[index]
 
     if (!isEmptySubmodel(entry)) {
-      console.log("inside remove", entry, isEmptySubmodel(entry))
       const areYouSure = confirm(`${$_("Remove")} ${label} #${entry.nid}}?`)
       if (!areYouSure) return
     }
     entries = entries.filter(x => x.nid !== entry.nid)
   }
-
-  const toggleActiveEntry = (index: number) =>
-    (activeEntryIdx = activeEntryIdx === index ? -1 : index)
 </script>
 
-<section class="flex flex-wrap">
+<section>
   <form class="w-full pb-52" id="{label}-entries">
-    {#each entries as entry, index (entry.nid)}
-      <div>
-        <div
-          class="my-2 flex flex-row items-center justify-between bg-gray-200 dark:bg-gray-700"
-        >
-          <div
-            role="button"
-            class="flex-grow p-2"
-            on:click={() => toggleActiveEntry(index)}
-            on:keydown={e => e.code === "Enter" && toggleActiveEntry(index)}
-            tabindex="0"
-          >
-            <h3 class="m-0">
-              {index + 1}. {label}
-              <small class="text-sm text-gray-500">
-                #{entry.nid}
-              </small>
-            </h3>
-          </div>
+    <div class="flex w-full flex-col gap-2">
+      {#each entries as entry, index (entry.nid)}
+        {@const isSelected = selectedEntryId === entry.nid}
+
+        <div class="flex items-center bg-gray-50 px-2 dark:bg-gray-700">
+          <h3 class="heading4 mb-0 flex-grow">
+            {#if isSelected}
+              <a href="">
+                {index + 1}. {label}
+                <small class="text-sm text-gray-500">
+                  #{entry.nid}
+                </small>
+              </a>
+            {:else}
+              <a href="#{entry.nid}">
+                {index + 1}. {label}
+                <small class="text-sm text-gray-500">
+                  #{entry.nid}
+                </small>
+              </a>
+            {/if}
+          </h3>
           <button
             class="flex-initial p-2"
             on:click|preventDefault={() => removeEntry(index)}
@@ -79,16 +93,16 @@
             <TrashIcon class="h-8 w-6 cursor-pointer text-red-600" />
           </button>
         </div>
-        {#if activeEntryIdx === index}
+        {#if isSelected}
           <div transition:slide={{ duration: 200 }}>
-            <svelte:component this={entryComponent} bind:entry />
+            <svelte:component this={entryComponent} bind:entry {extras} />
           </div>
         {/if}
-      </div>
-    {/each}
+      {/each}
+    </div>
     <div class="mt-6">
       <button
-        class="btn btn-primary flex items-center"
+        class="btn btn-flat btn-primary flex items-center"
         on:click={addEntry}
         type="button"
       >

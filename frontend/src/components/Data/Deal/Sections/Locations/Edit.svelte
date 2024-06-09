@@ -5,28 +5,23 @@
   import type { LatLng, Layer, LeafletMouseEvent, Map, Marker } from "leaflet?client"
   import { onDestroy, onMount } from "svelte"
   import { _ } from "svelte-i18n"
-  import { slide } from "svelte/transition"
 
   import { page } from "$app/stores"
 
-  import { newNanoid } from "$lib/helpers"
   import {
     Location2,
     type DealHull,
     type PointFeature,
     type PointFeatureProps,
   } from "$lib/types/newtypes"
-  import { isEmptySubmodel } from "$lib/utils/data_processing"
   import { createComponentAsDiv } from "$lib/utils/domHelpers"
   import { createPointFeatures, fitBounds } from "$lib/utils/location"
 
-  import EditField from "$components/Fields/EditField.svelte"
+  import SubmodelEditField from "$components/Fields/SubmodelEditField.svelte"
   import LocationDot from "$components/icons/LocationDot.svelte"
-  import PlusIcon from "$components/icons/PlusIcon.svelte"
-  import TrashIcon from "$components/icons/TrashIcon.svelte"
   import BigMap from "$components/Map/BigMap.svelte"
 
-  import LocationAreasEditField from "./LocationAreasEditField.svelte"
+  import Entry from "./Entry.svelte"
   import LocationTooltip from "./LocationTooltip.svelte"
 
   export let deal: DealHull
@@ -39,6 +34,10 @@
 
   let map: Map | undefined
   let locationsPointLayer: GeoJSON<PointFeatureProps, Point>
+
+  const createEntry = (nid: string) => new Location2(nid)
+
+  $: label = $_("Location")
 
   const onMapReady = (e: CustomEvent<Map>) => {
     map = e.detail
@@ -85,26 +84,6 @@
     }
   }
 
-  const addEntry = () => {
-    const currentIDs = locations.map(entry => entry.nid)
-    locations = [...locations, new Location2(newNanoid(currentIDs))]
-    activeEntryIdx = locations.length - 1
-  }
-
-  const toggleActiveEntry = (index: number) => {
-    activeEntryIdx = activeEntryIdx === index ? -1 : index
-    markerMode = false
-  }
-
-  const removeEntry = (c: Location2) => {
-    if (!isEmptySubmodel(c)) {
-      const areYouSure = confirm(`${$_("Remove")} ${$_("Location")} #${c.nid}?`)
-      if (!areYouSure) return
-    }
-    locations = locations.filter(x => x.nid !== c.nid)
-    activeEntryIdx = -1
-  }
-
   $: updateActiveLocationPoint = (point: Point) => {
     locations[activeEntryIdx].point = point
   }
@@ -118,10 +97,10 @@
     geoJson(createPointFeatures(locations), {
       onEachFeature: (feature: PointFeature, layer: Layer) => {
         const tooltipElement = createComponentAsDiv(LocationTooltip, { feature })
-        const locationIndex = locations.findIndex(l => l.nid === feature.properties.id)
+        // const locationIndex = locations.findIndex(l => l.nid === feature.properties.id)
 
         layer.bindPopup(tooltipElement, { keepInView: true })
-        layer.on("click", () => toggleActiveEntry(locationIndex))
+        // layer.on("click", () => toggleActiveEntry(locationIndex))
         layer.on("mouseover", () => layer.openPopup())
         layer.on("mouseout", () => layer.closePopup())
         // layer.on("dragstart", () => console.log("dragstart"))
@@ -186,99 +165,17 @@
   </div>
 
   <div class="flex h-full flex-col lg:col-span-3 lg:overflow-y-auto lg:p-2">
-    <div class="flex flex-wrap gap-2 py-2">
-      {#each locations as location, index (location.nid)}
-        <button
-          type="button"
-          class="btn-outline"
-          class:btn-orange={activeEntryIdx !== index}
-          on:click={() => toggleActiveEntry(index)}
-          title="#{location.nid}"
-        >
-          <span class="inline-block h-6 w-6">
-            {index + 1}
-          </span>
-        </button>
-      {/each}
-      <button
-        type="button"
-        class="btn-outline btn-orange"
-        on:click={addEntry}
-        title={$_("Add") + " " + $_("Location")}
-      >
-        <PlusIcon class="h-6 w-6" />
-      </button>
-    </div>
-
-    <div class="flex flex-row items-center justify-between p-2">
-      {#if activeEntryIdx >= 0}
-        <h3 class="heading4">
-          {activeEntryIdx + 1}. {$_("Location")}
-          <small class="text-sm text-gray-500">
-            #{locations[activeEntryIdx].nid}
-          </small>
-        </h3>
-        <button
-          type="button"
-          class="flex-initial p-2"
-          on:click={() => removeEntry(locations[activeEntryIdx])}
-        >
-          <TrashIcon class="h-8 w-6 cursor-pointer text-red-600" />
-        </button>
-      {:else}
-        <h3 class="heading4">
-          {$_("Select a location")}
-        </h3>
-      {/if}
-    </div>
-
-    {#if activeEntryIdx >= 0}
-      <div
-        class="h-full space-y-4 overflow-y-auto pb-52 pt-4"
-        transition:slide={{ duration: 200 }}
-      >
-        <EditField
-          fieldname="location.level_of_accuracy"
-          bind:value={locations[activeEntryIdx].level_of_accuracy}
-          extras={{ required: true }}
-          showLabel
-        />
-        <EditField
-          fieldname="location.name"
-          bind:value={locations[activeEntryIdx].name}
-          extras={{
-            countryCode: country?.code_alpha2,
-            onGoogleAutocomplete: updateActiveLocationPoint,
-          }}
-          showLabel
-        />
-        <EditField
-          fieldname="location.point"
-          bind:value={locations[activeEntryIdx].point}
-          showLabel
-        />
-        <EditField
-          fieldname="location.description"
-          bind:value={locations[activeEntryIdx].description}
-          showLabel
-        />
-        <EditField
-          fieldname="location.facility_name"
-          bind:value={locations[activeEntryIdx].facility_name}
-          showLabel
-        />
-        <EditField
-          fieldname="location.comment"
-          bind:value={locations[activeEntryIdx].comment}
-          showLabel
-        />
-        <LocationAreasEditField
-          bind:areas={locations[activeEntryIdx].areas}
-          {map}
-          isSelectedEntry
-        />
-      </div>
-    {/if}
+    <SubmodelEditField
+      bind:entries={deal.selected_version.locations}
+      entryComponent={Entry}
+      extras={{
+        map,
+        updateActiveLocationPoint,
+        country,
+      }}
+      {createEntry}
+      {label}
+    />
   </div>
 </form>
 
