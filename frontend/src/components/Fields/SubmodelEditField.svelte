@@ -1,10 +1,14 @@
 <script lang="ts" context="module">
-  /* eslint-disable @typescript-eslint/no-unused-vars */
   import type { SvelteComponent } from "svelte"
 
+  /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
   import type { SubmodelEntry } from "$lib/utils/data_processing"
 
-  /* eslint-enable @typescript-eslint/no-unused-vars */
+  type ExtraProps<T> = T extends typeof SvelteComponent<
+    infer Y extends Record<string, unknown>
+  >
+    ? Y["extras"]
+    : never
 </script>
 
 <script
@@ -12,7 +16,7 @@
   generics="
   T extends SubmodelEntry,
   X extends typeof SvelteComponent<any>,
-  Y extends Record<string, any>"
+"
 >
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
@@ -32,12 +36,11 @@
   export let entries: T[]
   export let createEntry: (nid: string) => T
   export let entryComponent: X
-  export let extras: Y
+  export let extras: ExtraProps<X>
   /* eslint-enable no-undef */
-
   export let label: string
+  export let selectedEntryId: string | undefined // for external reference
 
-  let selectedEntryId: string | undefined
   $: selectedEntryId = $page.url.hash?.replace("#", "")
 
   $: browser && scrollEntryIntoView(selectedEntryId)
@@ -66,11 +69,12 @@
   <form class="w-full pb-52" id="{label}-entries">
     <div class="flex w-full flex-col gap-2">
       {#each entries as entry, index (entry.nid)}
-        {@const isSelected = selectedEntryId === entry.nid}
+        {@const isSelectedEntry = selectedEntryId === entry.nid}
 
         <div class="flex items-center bg-gray-50 px-2 dark:bg-gray-700">
           <h3 class="heading4 mb-0 flex-grow">
-            {#if isSelected}
+            {#if isSelectedEntry}
+              <!-- TODO: FIXME -->
               <a href="">
                 {index + 1}. {label}
                 <small class="text-sm text-gray-500">
@@ -93,7 +97,7 @@
             <TrashIcon class="h-8 w-6 cursor-pointer text-red-600" />
           </button>
         </div>
-        {#if isSelected}
+        {#if isSelectedEntry}
           <div transition:slide={{ duration: 200 }}>
             <svelte:component this={entryComponent} bind:entry {extras} />
           </div>

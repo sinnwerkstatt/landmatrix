@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { Point } from "geojson"
   import { Map } from "leaflet?client"
 
   import type { components } from "$lib/openAPI"
@@ -9,9 +10,12 @@
 
   export let entry: Location2
   export let extras: {
-    country: components["schemas"]["Country"]
-    updateActiveLocationPoint: any
-    map: Map
+    country?: components["schemas"]["Country"]
+    map?: Map
+  }
+
+  const onGoogleAutocomplete = (point: Point) => {
+    entry.point = point
   }
 </script>
 
@@ -25,8 +29,8 @@
   fieldname="location.name"
   bind:value={entry.name}
   extras={{
-    countryCode: extras.country.code_alpha2,
-    onGoogleAutocomplete: extras.updateActiveLocationPoint,
+    countryCode: extras.country?.code_alpha2,
+    onGoogleAutocomplete,
   }}
   showLabel
 />
