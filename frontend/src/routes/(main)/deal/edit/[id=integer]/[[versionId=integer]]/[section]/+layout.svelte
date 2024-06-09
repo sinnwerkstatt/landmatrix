@@ -4,7 +4,6 @@
 
   import { beforeNavigate, goto, invalidate } from "$app/navigation"
 
-  import type { DealHull } from "$lib/types/newtypes"
   import { getCsrfToken } from "$lib/utils"
   import { removeEmptyEntries } from "$lib/utils/data_processing"
 
@@ -15,14 +14,14 @@
   import ModalReallyQuit from "$components/ModalReallyQuit.svelte"
   import SectionNav from "$components/SectionNav.svelte"
 
-  import { mutableDeal } from "./store"
+  import { mutableDeal, type MutableDeal } from "./store"
 
   export let data
 
   let savingInProgress = false
   let showReallyQuitOverlay = false
 
-  $: $mutableDeal = structuredClone(data.deal)
+  $: $mutableDeal = structuredClone(data.deal) as MutableDeal
   $: hasBeenEdited = JSON.stringify(data.deal) !== JSON.stringify($mutableDeal)
 
   beforeNavigate(({ type, cancel, to }) => {
@@ -50,7 +49,7 @@
       }
   })
 
-  const saveDeal = async (deal: DealHull): Promise<boolean> => {
+  const saveDeal = async (deal: MutableDeal): Promise<boolean> => {
     savingInProgress = true
 
     deal.selected_version.locations = removeEmptyEntries(
@@ -115,6 +114,7 @@
       toast.push("Saved data", { classes: ["success"] })
       await invalidate("deal:detail")
     }
+
     savingInProgress = false
     return true
   }

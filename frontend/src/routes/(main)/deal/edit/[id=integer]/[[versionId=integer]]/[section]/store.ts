@@ -1,5 +1,10 @@
 import { writable } from "svelte/store"
 
-import type { DealHull } from "$lib/types/newtypes"
+import type { components } from "$lib/openAPI"
 
-export const mutableDeal = writable<DealHull>()
+type Mutable<Type> = {
+  -readonly [Key in keyof Type]: Mutable<Type[Key]>
+}
+
+export type MutableDeal = Mutable<components["schemas"]["Deal"]>
+export const mutableDeal = writable<MutableDeal>()
