@@ -1,7 +1,5 @@
 import { error, redirect } from "@sveltejs/kit"
 
-import type { DealHull } from "$lib/types/newtypes"
-
 import type { DealSection } from "$components/Data/Deal/Sections/constants"
 
 import type { LayoutLoad } from "./$types"
@@ -33,8 +31,7 @@ export const load: LayoutLoad = async ({ fetch, params, depends, parent }) => {
     error(ret.response.status, ret.error.detail)
   }
 
-  // TODO: FIXME
-  const deal: DealHull = ret.data
+  const deal = ret.data
 
   if (dealVersion && dealVersion === deal.active_version_id) {
     console.warn("redirecting to active version")
