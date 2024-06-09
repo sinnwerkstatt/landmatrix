@@ -96,3 +96,6 @@ export const featureToArea = (feature: AreaFeature): Area => ({
   current: feature.properties.current,
   area: feature.geometry,
 })
+
+export const isVisible = (feature: AreaFeature): boolean => feature.properties.visible
+export const isCurrent = (feature: AreaFeature): boolean => !!feature.properties.current

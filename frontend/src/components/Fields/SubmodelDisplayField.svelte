@@ -1,10 +1,8 @@
 <script lang="ts" context="module">
   // https://github.com/dummdidumm/rfcs/blob/ts-typedefs-within-svelte-components/text/ts-typing-props-slots-events.md
 
-  /* eslint-disable @typescript-eslint/no-unused-vars */
+  /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
   import type { SubmodelEntry } from "$lib/utils/data_processing"
-
-  /* eslint-enable @typescript-eslint/no-unused-vars */
 </script>
 
 <script lang="ts" generics="T extends SubmodelEntry">
@@ -22,7 +20,7 @@
   export let label: string
   export let selectedEntryId: string | undefined = undefined // for external reference
 
-  $: selectedEntryId = $page.url.hash?.replace("#", "")
+  $: selectedEntryId = $page.url.hash?.replace("#", "") || undefined
 
   $: browser && scrollEntryIntoView(selectedEntryId)
 

@@ -42,7 +42,7 @@
   export let label: string
   export let selectedEntryId: string | undefined = undefined // for external reference
 
-  $: selectedEntryId = $page.url.hash?.replace("#", "")
+  $: selectedEntryId = $page.url.hash?.replace("#", "") || undefined
 
   $: browser && scrollEntryIntoView(selectedEntryId)
 

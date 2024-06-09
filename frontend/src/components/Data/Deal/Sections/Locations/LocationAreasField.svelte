@@ -6,7 +6,12 @@
 
   import { areaTypeMap } from "$lib/stores/maps"
   import type { Area, AreaFeature, AreaFeatureLayer } from "$lib/types/newtypes"
-  import { areaToFeature, createAreaFeaturesLayer } from "$lib/utils/location"
+  import {
+    areaToFeature,
+    createAreaFeaturesLayer,
+    isCurrent,
+    isVisible,
+  } from "$lib/utils/location"
 
   import { LABEL_CLASS, VALUE_CLASS, WRAPPER_CLASS } from "$components/Fields/consts"
   import {
@@ -35,7 +40,6 @@
     map.removeLayer(layer)
     layer = createAreaFeaturesLayer(features, isSelectedEntry)
     map.addLayer(layer)
-    // fitBounds(layer, map)
   }
 
   onMount(() => {
@@ -47,9 +51,6 @@
       map.removeLayer(layer)
     }
   })
-
-  const isVisible = (feature: AreaFeature): boolean => feature.properties.visible
-  const isCurrent = (feature: AreaFeature): boolean => !!feature.properties.current
 
   $: createAreaDisplay = (feature: AreaFeature): string => {
     const typeDisplay = $areaTypeMap[feature.properties.type]

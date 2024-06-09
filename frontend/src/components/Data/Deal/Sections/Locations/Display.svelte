@@ -1,16 +1,21 @@
 <script lang="ts">
   import type { Point } from "geojson"
-  import type { GeoJSON, Layer, Map } from "leaflet?client"
-  import { Control, geoJson } from "leaflet?client"
+  import {
+    Control,
+    geoJson,
+    icon,
+    marker,
+    type GeoJSON,
+    type Layer,
+    type Map,
+  } from "leaflet?client"
   import { onDestroy, onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
   import { goto } from "$app/navigation"
-  import { page } from "$app/stores"
 
   import type {
     DealHull,
-    DealVersion2,
     Location2,
     PointFeature,
     PointFeatureProps,
@@ -19,6 +24,7 @@
   import { createPointFeatures, fitBounds } from "$lib/utils/location"
 
   import DisplayField from "$components/Fields/DisplayField.svelte"
+  import SubmodelDisplayField from "$components/Fields/SubmodelDisplayField.svelte"
   import BigMap from "$components/Map/BigMap.svelte"
 
   import LocationAreasField from "./LocationAreasField.svelte"
@@ -27,14 +33,10 @@
 
   export let deal: DealHull
 
-  let version: DealVersion2 = deal.selected_version
-  $: version = deal.selected_version
-
   let map: Map | undefined
   let locationsPointLayer: GeoJSON<PointFeatureProps, Point>
 
-  let selectedLocationId: string | null = null
-  $: selectedLocationId = $page.url.hash?.replace("#", "")
+  let selectedEntryId: string | undefined
 
   const onMapReady = (e: CustomEvent<Map>) => {
     map = e.detail
@@ -47,15 +49,25 @@
     fitBounds(locationsPointLayer, map)
   }
 
+  $: isAnyLocationSelected = (): boolean => selectedEntryId !== undefined
+
   $: isSelectedLocation = (locationId: string): boolean =>
-    selectedLocationId === locationId
+    selectedEntryId === locationId
 
   $: getLocationRedirect = (locationId: string): string => `#` + locationId
 
   $: setCurrentLocation = (locationId: string): Promise<void> =>
     goto(getLocationRedirect(locationId))
 
-  const createLayer = (locations: Location2[]) =>
+  $: if (map && locationsPointLayer) {
+    map.removeLayer(locationsPointLayer)
+    locationsPointLayer = createLayer(deal.selected_version.locations)
+    map.addLayer(locationsPointLayer)
+
+    fitBounds(locationsPointLayer, map)
+  }
+
+  $: createLayer = (locations: Location2[]) =>
     geoJson(createPointFeatures(locations), {
       onEachFeature: (feature: PointFeature, layer: Layer) => {
         const tooltipElement = createComponentAsDiv(LocationTooltip, { feature })
@@ -64,10 +76,24 @@
         layer.on("mouseover", () => layer.openPopup())
         layer.on("mouseout", () => layer.closePopup())
       },
+      pointToLayer: (feature: PointFeature, latlng) =>
+        marker(latlng, {
+          icon: icon({
+            iconUrl: "/images/marker-icon.png",
+            shadowUrl: "/images/marker-shadow.png",
+            shadowSize: [0, 0],
+            iconAnchor: [12.5, 41],
+            popupAnchor: [0, -35],
+            className:
+              isAnyLocationSelected() && !isSelectedLocation(feature.properties.id)
+                ? "leaflet-hidden"
+                : "",
+          }),
+        }),
     })
 
   onMount(() => {
-    locationsPointLayer = createLayer(version.locations)
+    locationsPointLayer = createLayer(deal.selected_version.locations)
   })
 
   onDestroy(() => {
@@ -79,57 +105,38 @@
 
 <section class="flex flex-wrap lg:h-full">
   <div class="w-full overflow-y-auto p-2 lg:h-full lg:w-2/5">
-    {#if version.locations.length > 0}
-      {#each version.locations as location, index}
-        <article
-          id={location.nid}
-          class="p-2"
-          class:animate-fadeToWhite={isSelectedLocation(location.nid)}
-          class:dark:animate-fadeToGray={isSelectedLocation(location.nid)}
-        >
-          <h3 class="heading4">
-            <a
-              href="#{location.nid}"
-              on:click|preventDefault={() => setCurrentLocation(location.nid)}
-            >
-              {index + 1}. {$_("Location")}
-              <small class="text-sm text-gray-500">
-                #{location.nid}
-              </small>
-            </a>
-          </h3>
-          <DisplayField
-            value={location.level_of_accuracy}
-            fieldname="location.level_of_accuracy"
-            showLabel
-          />
-          <DisplayField value={location.name} fieldname="location.name" showLabel />
-          <DisplayField value={location.point} fieldname="location.point" showLabel />
-          <DisplayField
-            value={location.description}
-            fieldname="location.description"
-            showLabel
-          />
-          <DisplayField
-            value={location.facility_name}
-            fieldname="location.facility_name"
-            showLabel
-          />
-          <DisplayField
-            value={location.comment}
-            fieldname="location.comment"
-            showLabel
-          />
-          <LocationAreasField
-            {map}
-            label={$_("Areas")}
-            areas={location.areas}
-            fieldname="location.areas"
-            isSelectedEntry={isSelectedLocation(location.nid)}
-          />
-        </article>
-      {/each}
-    {/if}
+    <SubmodelDisplayField
+      entries={deal.selected_version.locations}
+      bind:selectedEntryId
+      label={$_("Location")}
+      let:entry={location}
+    >
+      <DisplayField
+        value={location.level_of_accuracy}
+        fieldname="location.level_of_accuracy"
+        showLabel
+      />
+      <DisplayField value={location.name} fieldname="location.name" showLabel />
+      <DisplayField value={location.point} fieldname="location.point" showLabel />
+      <DisplayField
+        value={location.description}
+        fieldname="location.description"
+        showLabel
+      />
+      <DisplayField
+        value={location.facility_name}
+        fieldname="location.facility_name"
+        showLabel
+      />
+      <DisplayField value={location.comment} fieldname="location.comment" showLabel />
+      <LocationAreasField
+        {map}
+        label={$_("Areas")}
+        areas={location.areas}
+        fieldname="location.areas"
+        isSelectedEntry={isSelectedLocation(location.nid)}
+      />
+    </SubmodelDisplayField>
   </div>
   <div class="h-[600px] w-full p-2 lg:w-3/5">
     <BigMap
