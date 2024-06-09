@@ -198,7 +198,7 @@
     />
   </div>
 
-  <div class="overflow-y-auto px-4" style="grid-area: main">
+  <div class="overflow-y-auto p-2" style="grid-area: main">
     <slot />
   </div>
 </div>

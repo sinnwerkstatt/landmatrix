@@ -20,8 +20,8 @@
   /* eslint-enable no-undef */
 
   export let label: string
+  export let selectedEntryId: string | undefined = undefined // for external reference
 
-  let selectedEntryId: string | undefined
   $: selectedEntryId = $page.url.hash?.replace("#", "")
 
   $: browser && scrollEntryIntoView(selectedEntryId)
