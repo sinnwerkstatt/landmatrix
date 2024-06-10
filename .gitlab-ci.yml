@@ -45,7 +45,7 @@ frontend test:
   interruptible: true
   script:
     - cd frontend
-    - pnpm run ci
+    - pnpm install
     - pnpm run test
 
 #frontend integration test:
@@ -55,8 +55,8 @@ frontend test:
 #    - name: postgis/postgis:12-3.2
 #      alias: postgres
 #  before_script:
-#    - pnpm run ci && npx playwright install --with-deps
-#    - cd frontend && pnpm run ci && pnpm run build && cd ..
+#    - pnpm install && npx playwright install --with-deps
+#    - cd frontend && pnpm install && pnpm run build && cd ..
 #    - poetry install
 #  script:
 #    - poetry run doit initial_setup production=True
@@ -76,9 +76,8 @@ frontend formatting and linting:
   stage: test
   interruptible: true
   script:
-    - echo 'ci' $CI 'continuouse_integration' $CONTINUOUS_INTEGRATION 'build_number' $BUILD_NUMBER 'run_id' $RUN_ID
     - cd frontend
-    - pnpm run ci
+    - pnpm install
     - pnpm run format:check
     - pnpm run lint:check
     - pnpm run build
