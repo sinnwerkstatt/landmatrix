@@ -18,7 +18,6 @@
     AREA_TYPES,
     areaToFeature,
     createAreaFeaturesLayer,
-    fitBounds,
   } from "$lib/utils/location"
 
   import Label2 from "$components/Fields/Display2/Label2.svelte"

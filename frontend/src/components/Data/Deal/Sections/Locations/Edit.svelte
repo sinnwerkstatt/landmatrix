@@ -1,7 +1,7 @@
 <script lang="ts">
   import { point } from "@turf/turf"
   import type { Point } from "geojson"
-  import { Control, GeoJSON, geoJson, icon, marker } from "leaflet?client"
+  import { Control, GeoJSON, geoJson, icon, latLngBounds, marker } from "leaflet?client"
   import type { LatLng, Layer, LeafletMouseEvent, Map, Marker } from "leaflet?client"
   import { onDestroy, onMount } from "svelte"
   import { _ } from "svelte-i18n"
@@ -48,19 +48,24 @@
     map.addControl(legend)
 
     map.addLayer(locationsPointLayer)
-    // fitBounds(locationsPointLayer, map)
+
+    fitBounds(map)
+  }
+
+  $: fitBounds = (map: Map) => {
+    let bounds = latLngBounds([])
+    map.eachLayer(
+      l => (bounds = l instanceof GeoJSON ? l.getBounds().extend(bounds) : bounds),
+    )
+    map.fitBounds(padBounds(bounds))
   }
 
   $: if (map && locationsPointLayer) {
     map.removeLayer(locationsPointLayer)
     locationsPointLayer = createLayer(locations)
     map.addLayer(locationsPointLayer)
-    let bounds = locationsPointLayer.getBounds()
-    map.eachLayer(
-      l => (bounds = l instanceof GeoJSON ? l.getBounds().extend(bounds) : bounds),
-    )
-    map.fitBounds(padBounds(bounds))
-    // fitBounds(locationsPointLayer, map)
+
+    fitBounds(map)
   }
 
   $: if (map && locationsPointLayer) {
@@ -97,7 +102,8 @@
   $: isAnyLocationSelected = (): boolean => selectedEntryId !== undefined
   $: isSelectedLocation = (locationId: string): boolean =>
     selectedEntryId === locationId
-  $: getLocationRedirect = (locationId: string): string => `#` + locationId
+  $: getLocationRedirect = (locationId: string): string =>
+    `#` + (isSelectedLocation(locationId) ? "" : locationId)
   $: setCurrentLocation = (locationId: string): Promise<void> =>
     goto(getLocationRedirect(locationId))
 
@@ -126,8 +132,8 @@
             popupAnchor: [0, -35],
             className:
               isAnyLocationSelected() && !isSelectedLocation(feature.properties.id)
-                ? ""
-                : "leaflet-hidden",
+                ? "leaflet-hidden"
+                : "",
           }),
         }),
     })

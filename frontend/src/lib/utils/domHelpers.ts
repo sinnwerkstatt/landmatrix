@@ -30,8 +30,13 @@ export const createComponentAsDiv = (
 export const scrollEntryIntoView = (elemId: string | undefined) => {
   if (!elemId) return
 
-  const el = document.getElementById(elemId ?? "")
-  if (el && !isElementInViewport(el)) {
-    el.scrollIntoView({ block: "nearest", inline: "nearest" })
+  const doScroll = () => {
+    const el = document.getElementById(elemId ?? "")
+    if (el && !isElementInViewport(el)) {
+      el.scrollIntoView({ block: "start", inline: "nearest" })
+    }
   }
+
+  // delay a scroll after svelte transitions finished
+  setTimeout(doScroll, 300)
 }
