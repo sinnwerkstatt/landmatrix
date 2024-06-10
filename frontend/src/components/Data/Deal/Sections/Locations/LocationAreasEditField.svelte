@@ -61,7 +61,6 @@
     map.removeLayer(layer)
     layer = createAreaFeaturesLayer(features, isSelectedEntry)
     map.addLayer(layer)
-    fitBounds(layer, map)
   }
 
   onMount(() => {

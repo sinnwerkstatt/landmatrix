@@ -6,6 +6,7 @@
   import { onDestroy, onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
+  import { goto } from "$app/navigation"
   import { page } from "$app/stores"
 
   import {
@@ -15,10 +16,11 @@
     type PointFeatureProps,
   } from "$lib/types/newtypes"
   import { createComponentAsDiv } from "$lib/utils/domHelpers"
-  import { createPointFeatures, fitBounds } from "$lib/utils/location"
+  import { createPointFeatures } from "$lib/utils/location"
+  import { padBounds } from "$lib/utils/location.js"
 
+  import LocationLegend from "$components/Data/Deal/Sections/Locations/LocationLegend.svelte"
   import SubmodelEditField from "$components/Fields/SubmodelEditField.svelte"
-  import LocationDot from "$components/icons/LocationDot.svelte"
   import BigMap from "$components/Map/BigMap.svelte"
 
   import Entry from "./Entry.svelte"
@@ -27,15 +29,14 @@
   export let deal: DealHull
 
   let locations = deal.selected_version.locations
-  $: country = $page.data.countries.find(c => c.id === deal.country_id)
 
+  let selectedEntryId: string | undefined
   let activeEntryIdx = 0
+
   let markerMode = false
 
   let map: Map | undefined
   let locationsPointLayer: GeoJSON<PointFeatureProps, Point>
-
-  const createEntry = (nid: string) => new Location2(nid)
 
   $: label = $_("Location")
 
@@ -43,23 +44,23 @@
     map = e.detail
 
     const legend = new Control({ position: "bottomleft" })
-    // legend.onAdd = () => createComponentAsDiv(LocationLegend)
+    legend.onAdd = () => createComponentAsDiv(LocationLegend)
     map.addControl(legend)
 
     map.addLayer(locationsPointLayer)
-    fitBounds(locationsPointLayer, map)
+    // fitBounds(locationsPointLayer, map)
   }
 
   $: if (map && locationsPointLayer) {
     map.removeLayer(locationsPointLayer)
-    locationsPointLayer = createLayer(locations, activeEntryIdx)
+    locationsPointLayer = createLayer(locations)
     map.addLayer(locationsPointLayer)
-    // let bounds = locationsPointLayer.getBounds()
-    // map.eachLayer(
-    //   l => (bounds = l instanceof GeoJSON ? l.getBounds().extend(bounds) : bounds),
-    // )
-    // map.fitBounds(bounds)
-    fitBounds(locationsPointLayer, map)
+    let bounds = locationsPointLayer.getBounds()
+    map.eachLayer(
+      l => (bounds = l instanceof GeoJSON ? l.getBounds().extend(bounds) : bounds),
+    )
+    map.fitBounds(padBounds(bounds))
+    // fitBounds(locationsPointLayer, map)
   }
 
   $: if (map && locationsPointLayer) {
@@ -85,7 +86,7 @@
   }
 
   $: updateActiveLocationPoint = (point: Point) => {
-    locations[activeEntryIdx].point = point
+    deal.selected_version.locations[activeEntryIdx].point = point
   }
 
   const latLng2Point = (latLng: LatLng): Point => {
@@ -93,14 +94,20 @@
     return point(coords).geometry
   }
 
-  const createLayer = (locations: Location2[], activeEntryIdx: number) =>
+  $: isAnyLocationSelected = (): boolean => selectedEntryId !== undefined
+  $: isSelectedLocation = (locationId: string): boolean =>
+    selectedEntryId === locationId
+  $: getLocationRedirect = (locationId: string): string => `#` + locationId
+  $: setCurrentLocation = (locationId: string): Promise<void> =>
+    goto(getLocationRedirect(locationId))
+
+  $: createLayer = (locations: Location2[]) =>
     geoJson(createPointFeatures(locations), {
       onEachFeature: (feature: PointFeature, layer: Layer) => {
         const tooltipElement = createComponentAsDiv(LocationTooltip, { feature })
-        // const locationIndex = locations.findIndex(l => l.nid === feature.properties.id)
 
         layer.bindPopup(tooltipElement, { keepInView: true })
-        // layer.on("click", () => toggleActiveEntry(locationIndex))
+        layer.on("click", () => setCurrentLocation(feature.properties.id))
         layer.on("mouseover", () => layer.openPopup())
         layer.on("mouseout", () => layer.closePopup())
         // layer.on("dragstart", () => console.log("dragstart"))
@@ -118,7 +125,7 @@
             iconAnchor: [12.5, 41],
             popupAnchor: [0, -35],
             className:
-              feature.properties.id === locations[activeEntryIdx]?.nid
+              isAnyLocationSelected() && !isSelectedLocation(feature.properties.id)
                 ? ""
                 : "leaflet-hidden",
           }),
@@ -126,7 +133,7 @@
     })
 
   onMount(() => {
-    locationsPointLayer = createLayer(locations, activeEntryIdx)
+    locationsPointLayer = createLayer(locations)
   })
 
   onDestroy(() => {
@@ -136,44 +143,43 @@
   })
 </script>
 
-<form class="grid h-full lg:grid-cols-5" id="locations">
-  <div class="lg:order-last lg:col-span-2 lg:p-2">
+<form class="grid h-full gap-2 lg:grid-cols-5" id="locations">
+  <div class="lg:order-last lg:col-span-2">
     <BigMap
       on:ready={onMapReady}
       options={{ center: [0, 0] }}
       containerClass="h-full min-h-[300px]"
-    >
-      {#if activeEntryIdx !== -1}
-        <div
-          class="absolute bottom-2 left-2 {markerMode
-            ? 'bg-orange text-white'
-            : 'bg-white text-orange'}"
-        >
-          <button
-            type="button"
-            class="z-10 rounded border-2 border-black/30 px-2 pb-1.5 pt-0.5"
-            on:click={() => {
-              markerMode = !markerMode
-            }}
-            title="Create or move point"
-          >
-            <LocationDot class="inline h-5 w-5" />
-          </button>
-        </div>
-      {/if}
-    </BigMap>
+    />
+    <!--{#if activeEntryIdx !== -1}-->
+    <!--  <div-->
+    <!--    class="absolute bottom-2 left-2 {markerMode-->
+    <!--      ? 'bg-orange text-white'-->
+    <!--      : 'bg-white text-orange'}"-->
+    <!--  >-->
+    <!--    <button-->
+    <!--      type="button"-->
+    <!--      class="z-10 rounded border-2 border-black/30 px-2 pb-1.5 pt-0.5"-->
+    <!--      on:click={() => {-->
+    <!--        markerMode = !markerMode-->
+    <!--      }}-->
+    <!--      title="Create or move point"-->
+    <!--    >-->
+    <!--      <LocationDot class="inline h-5 w-5" />-->
+    <!--    </button>-->
+    <!--  </div>-->
+    <!--{/if}-->
   </div>
 
-  <div class="flex h-full flex-col lg:col-span-3 lg:overflow-y-auto lg:p-2">
+  <div class="h-full lg:col-span-3 lg:overflow-y-auto">
     <SubmodelEditField
       bind:entries={deal.selected_version.locations}
+      bind:selectedEntryId
       entryComponent={Entry}
+      createEntry={nid => new Location2(nid)}
       extras={{
         map,
-        updateActiveLocationPoint,
-        country,
+        country: $page.data.countries.find(c => c.id === deal.country_id),
       }}
-      {createEntry}
       {label}
     />
   </div>
