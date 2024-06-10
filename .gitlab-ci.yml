@@ -45,7 +45,7 @@ frontend test:
   interruptible: true
   script:
     - cd frontend
-    - pnpm install
+    - pnpm run ci
     - pnpm run test
 
 #frontend integration test:
@@ -55,8 +55,8 @@ frontend test:
 #    - name: postgis/postgis:12-3.2
 #      alias: postgres
 #  before_script:
-#    - pnpm install && npx playwright install --with-deps
-#    - cd frontend && pnpm install && pnpm run build && cd ..
+#    - pnpm run ci && npx playwright install --with-deps
+#    - cd frontend && pnpm run ci && pnpm run build && cd ..
 #    - poetry install
 #  script:
 #    - poetry run doit initial_setup production=True
@@ -77,7 +77,7 @@ frontend formatting and linting:
   interruptible: true
   script:
     - cd frontend
-    - pnpm install
+    - pnpm run ci
     - pnpm run format:check
     - pnpm run lint:check
     - pnpm run build
