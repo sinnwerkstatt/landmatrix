@@ -12,6 +12,7 @@
     export let alwaysOpen = false // Create a section that can't be closed
     export let sortable = false
     export let open = true
+    export let extraClass = ""
 
     function handleClick() { if (!alwaysOpen) open = !open }
 
@@ -19,7 +20,7 @@
 </script>
 
 <div class="flex flex-col h-fit min-h-16" class:stickyTitle >
-    <button class="flex items-center justify-between w-full px-4 pt-4 pb-2 font-semibold shrink-0 bg-white" on:click={handleClick}>
+    <button class="flex items-center justify-between w-full px-4 pt-4 pb-2 font-semibold shrink-0 bg-white {extraClass}" on:click={handleClick}>
         <div class="flex items-center">
             {title}
             {#if !alwaysOpen}

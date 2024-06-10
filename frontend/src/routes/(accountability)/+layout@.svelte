@@ -16,7 +16,14 @@
 <style>
     /* Global Accountability styles */
     :global(body) {
-        @apply font-inter font-medium text-a-sm text-a-gray-900;
+        @apply text-a-gray-900 font-inter font-medium text-a-sm text-a-gray-900;
+    }
+
+    :global(h1),
+    :global(h2),
+    :global(h3),
+    :global(div) {
+        @apply text-a-gray-900;
     }
 
     :global(a.link),

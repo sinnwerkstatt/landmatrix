@@ -2,15 +2,18 @@
     import IconCheck from "../icons/IconCheck.svelte"
     import IconEye from "../icons/IconEye.svelte"
     import IconBookmark from "../icons/IconBookmark.svelte"
+    import IconOpenExternal from "../icons/IconOpenExternal.svelte"
     import IconXMark from "../icons/IconXMark.svelte"
 
     export let label = "Badge"
     export let notification = false
+    export let href:string
     export let button = false
     export let disabled = false
 
     export let size: "base"|"small" = "small"
     export let icon: ""|"check"|"eye"|"bookmark" = ""
+    export let iconRight = false
     export let color: "primary"|"warning"|"error"|"success"|"neutral"|"blue" = "primary"
     export let variant: "filled"|"light" = "light"
 
@@ -19,27 +22,39 @@
     const icons = [
         { icon: "check", component: IconCheck },
         { icon: "eye", component: IconEye },
-        { icon: "bookmark", component: IconBookmark }
+        { icon: "bookmark", component: IconBookmark },
+        { icon: "link", component: IconOpenExternal }
     ]
 </script>
 
-<div class:disabled class="wrapper {size} {icon} {color} {variant}" >
-    {#if icon}
-        <svelte:component this={icons.find(e => e.icon == icon)?.component} />
-    {/if}
+{#if href}
+    <a class:disabled class="wrapper cursor-pointer {size} {icon} {color} {variant}" {href} target="_blank" >
+        <span class="line-clamp-1">{label}</span>
+        <IconOpenExternal size={iconSize} />
+    </a>
+{:else}
+    <div class:disabled class="wrapper {size} {icon} {color} {variant}" >
+        {#if icon && !iconRight}
+            <svelte:component this={icons.find(e => e.icon == icon)?.component} size={iconSize} />
+        {/if}
 
-    {#if notification}
-        <div class="notification inline-block rounded-xl"></div>
-    {/if}
+        {#if notification}
+            <div class="notification inline-block rounded-xl"></div>
+        {/if}
 
-    <span class="line-clamp-1">{label}</span>
+        <span class="line-clamp-1">{label}</span>
 
-    {#if button}
-        <button {disabled} on:click >
-            <IconXMark size={iconSize} />
-        </button>
-    {/if}
-</div>
+        {#if button && !link}
+            <button {disabled} on:click >
+                <IconXMark size={iconSize} />
+            </button>
+        {/if}
+
+        {#if icon && iconRight}
+            <svelte:component this={icons.find(e => e.icon == icon)?.component} size={iconSize} />
+        {/if}
+    </div>
+{/if}
 
 <style>
     .wrapper {
