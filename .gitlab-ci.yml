@@ -76,6 +76,7 @@ frontend formatting and linting:
   stage: test
   interruptible: true
   script:
+    - echo 'ci' $CI 'continuouse_integration' $CONTINUOUS_INTEGRATION 'build_number' $BUILD_NUMBER 'run_id' $RUN_ID
     - cd frontend
     - pnpm run ci
     - pnpm run format:check
