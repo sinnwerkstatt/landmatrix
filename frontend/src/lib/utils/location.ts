@@ -1,5 +1,5 @@
 import type { Point } from "geojson"
-import type { GeoJSON, LatLngLiteral, Map } from "leaflet"
+import type { GeoJSON, LatLngLiteral, Map } from "leaflet?client"
 import { geoJson, LatLngBounds } from "leaflet?client"
 
 import type {
@@ -96,3 +96,6 @@ export const featureToArea = (feature: AreaFeature): Area => ({
   current: feature.properties.current,
   area: feature.geometry,
 })
+
+export const isVisible = (feature: AreaFeature): boolean => feature.properties.visible
+export const isCurrent = (feature: AreaFeature): boolean => !!feature.properties.current

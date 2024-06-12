@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Point } from "geojson"
-  import type { FeatureGroup, LeafletEvent, Map, Marker } from "leaflet"
+  import type { FeatureGroup, LeafletEvent, Map, Marker } from "leaflet?client"
   import { divIcon, featureGroup, marker, popup } from "leaflet?client"
   import * as R from "ramda"
   import { onDestroy, onMount } from "svelte"

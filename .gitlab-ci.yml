@@ -45,8 +45,8 @@ frontend test:
   interruptible: true
   script:
     - cd frontend
-    - npm ci
-    - npm run test
+    - pnpm install
+    - pnpm run test
 
 #frontend integration test:
 #  stage: test
@@ -55,13 +55,13 @@ frontend test:
 #    - name: postgis/postgis:12-3.2
 #      alias: postgres
 #  before_script:
-#    - npm ci && npx playwright install --with-deps
-#    - cd frontend && npm ci && npm run build && cd ..
+#    - pnpm install && npx playwright install --with-deps
+#    - cd frontend && pnpm install && pnpm run build && cd ..
 #    - poetry install
 #  script:
 #    - poetry run doit initial_setup production=True
 #    - poetry run ./manage.py create_playwright_test_users
-#    - PATH=$(npm bin):$PATH ./test.sh
+#    - PATH=$(pnpm bin):$PATH ./test.sh
 #  artifacts:
 #    when: always
 #    paths:
@@ -77,10 +77,10 @@ frontend formatting and linting:
   interruptible: true
   script:
     - cd frontend
-    - npm ci
-    - npm run format:check
-    - npm run lint:check
-    - npm run build
+    - pnpm install
+    - pnpm run format:check
+    - pnpm run lint:check
+    - pnpm run build
 
 deploy to staging:
   stage: deploy

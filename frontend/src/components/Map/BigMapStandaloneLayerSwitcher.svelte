@@ -5,10 +5,11 @@
 
   import { getBaseLayers, visibleLayer } from "./layers"
 
-  let shown
+  let shown: boolean
 </script>
 
 <div
+  role="presentation"
   class="absolute right-[10px] top-[10px] z-10 rounded border-2 border-black/30 bg-white px-2 pb-2 pt-1"
   on:mouseleave={() => (shown = false)}
 >

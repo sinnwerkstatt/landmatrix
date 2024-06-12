@@ -23,7 +23,6 @@
 
   const SIZE_THRESHOLD = 0.005
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const asKeyMap = (array: ValueLabelEntry[] | undefined) =>
     array
       ? array.reduce((acc, { value, label }) => ({ ...acc, [value]: label }), {})

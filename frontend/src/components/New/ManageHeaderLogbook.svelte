@@ -12,7 +12,6 @@
   import WorkflowInfoNew from "$components/New/WorkflowInfoNew.svelte"
 
   export let object: DealHull | InvestorHull
-  export let extraUserIDs: number[] = []
 
   const isDeal = (obj: DealHull | InvestorHull): obj is DealHull =>
     "fully_updated_at" in obj

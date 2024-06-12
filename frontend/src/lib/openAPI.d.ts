@@ -466,34 +466,34 @@ export interface components {
       code_alpha2: string
       /**
        * Latitude of central point
-       * Format: decimal
+       * Format: double
        */
-      point_lat?: string | null
+      point_lat?: number | null
       /**
        * Longitude of central point
-       * Format: decimal
+       * Format: double
        */
-      point_lon?: string | null
+      point_lon?: number | null
       /**
        * Latitude of southernmost point
-       * Format: decimal
+       * Format: double
        */
-      point_lat_min?: string | null
+      point_lat_min?: number | null
       /**
        * Longitude of westernmost point
-       * Format: decimal
+       * Format: double
        */
-      point_lon_min?: string | null
+      point_lon_min?: number | null
       /**
        * Latitude of northernmost point
-       * Format: decimal
+       * Format: double
        */
-      point_lat_max?: string | null
+      point_lat_max?: number | null
       /**
        * Longitude of easternmost point
-       * Format: decimal
+       * Format: double
        */
-      point_lon_max?: string | null
+      point_lon_max?: number | null
       observatory_page_id: number
       region_id: number | null
       deals: number[]
@@ -911,8 +911,8 @@ export interface components {
       contract_farming_animals: components["schemas"]["CurrentDateAreaChoicesAnimals"]
       electricity_generation: components["schemas"]["ElectricityGenerationSchema"]
       carbon_sequestration: components["schemas"]["CarbonSequestrationSchema"]
-      /** Format: decimal */
-      intended_size?: string | null
+      /** Format: double */
+      intended_size?: number | null
       /** Comment on land area */
       land_area_comment?: string
       /** Comment on intention of investment */
@@ -927,28 +927,28 @@ export interface components {
       negotiation_status_comment?: string
       /** Comment on implementation status */
       implementation_status_comment?: string
-      /** Format: decimal */
-      purchase_price?: string | null
+      /** Format: double */
+      purchase_price?: number | null
       /** Purchase price area type */
       purchase_price_type?:
         | components["schemas"]["PurchasePriceTypeEnum"]
         | components["schemas"]["BlankEnum"]
         | components["schemas"]["NullEnum"]
         | null
-      /** Format: decimal */
-      purchase_price_area?: string | null
+      /** Format: double */
+      purchase_price_area?: number | null
       /** Comment on purchase price */
       purchase_price_comment?: string
-      /** Format: decimal */
-      annual_leasing_fee?: string | null
+      /** Format: double */
+      annual_leasing_fee?: number | null
       /** Annual leasing fee area type */
       annual_leasing_fee_type?:
         | components["schemas"]["AnnualLeasingFeeTypeEnum"]
         | components["schemas"]["BlankEnum"]
         | components["schemas"]["NullEnum"]
         | null
-      /** Format: decimal */
-      annual_leasing_fee_area?: string | null
+      /** Format: double */
+      annual_leasing_fee_area?: number | null
       /** Comment on leasing fee */
       annual_leasing_fee_comment?: string
       contract_farming?: boolean | null
@@ -1140,10 +1140,10 @@ export interface components {
       status: components["schemas"]["StatusEnum"]
       is_public: boolean
       has_known_investor: boolean
-      /** Format: decimal */
-      current_contract_size: string | null
-      /** Format: decimal */
-      current_production_size: string | null
+      /** Format: double */
+      current_contract_size: number | null
+      /** Format: double */
+      current_production_size: number | null
       current_intention_of_investment: readonly components["schemas"]["CurrentIntentionOfInvestmentEnum"][]
       current_negotiation_status:
         | components["schemas"]["CurrentNegotiationStatusEnum"]
@@ -1158,8 +1158,8 @@ export interface components {
       current_mineral_resources: readonly string[]
       current_electricity_generation: readonly string[]
       current_carbon_sequestration: readonly string[]
-      /** Format: decimal */
-      deal_size: string | null
+      /** Format: double */
+      deal_size: number | null
       initiation_year: number | null
       forest_concession: boolean
       transnational: boolean | null
@@ -1939,24 +1939,24 @@ export interface components {
       observatory_page_id: number
       /**
        * Latitude of northernmost point
-       * Format: decimal
+       * Format: double
        */
-      point_lat_min?: string | null
+      point_lat_min?: number | null
       /**
        * Longitude of westernmost point
-       * Format: decimal
+       * Format: double
        */
-      point_lon_min?: string | null
+      point_lon_min?: number | null
       /**
        * Latitude of southernmost point
-       * Format: decimal
+       * Format: double
        */
-      point_lat_max?: string | null
+      point_lat_max?: number | null
       /**
        * Longitude of easternmost point
-       * Format: decimal
+       * Format: double
        */
-      point_lon_max?: string | null
+      point_lon_max?: number | null
     }
     /**
      * @description * `0` - ---------

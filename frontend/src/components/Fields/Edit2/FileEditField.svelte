@@ -10,6 +10,14 @@
   export let value: string | null
   export let fieldname: string
 
+  interface Extras {
+    required?: boolean
+  }
+
+  export let extras: Extras = {
+    required: false,
+  }
+
   // would be nice to sync these with MIME type
   // https://www.npmjs.com/package/mime-db
   const ACCEPTED_EXTENSIONS: string[] = [
@@ -98,6 +106,7 @@
 {:else}
   <input
     type="file"
+    required={extras.required}
     name={fieldname}
     on:change={uploadFile}
     accept={ACCEPTED_EXTENSIONS.join(",")}

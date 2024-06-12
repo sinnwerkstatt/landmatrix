@@ -106,6 +106,7 @@
           scrollToIndex={hoverItemIndex}
         >
           <div
+            role="presentation"
             slot="item"
             class="block h-[38px] cursor-default overflow-clip text-ellipsis whitespace-nowrap px-3 align-middle leading-[38px] dark:text-white"
             title={filteredItems[index][label]}

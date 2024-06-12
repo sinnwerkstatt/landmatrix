@@ -1,4 +1,4 @@
-import type { Marker } from "leaflet"
+import type { Marker } from "leaflet?client"
 import { writable } from "svelte/store"
 
 const primary_color = "#fc941f"

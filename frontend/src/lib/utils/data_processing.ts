@@ -1,12 +1,11 @@
-import type {
-  Contract,
-  DataSource,
-  DealVersion2,
-  Involvement,
-  Location2,
-} from "$lib/types/newtypes"
+import type { DealVersion2 } from "$lib/types/newtypes"
 
-export type SubmodelEntry = Contract | DataSource | Location2 | Involvement
+export interface SubmodelEntry {
+  nid: string
+  id?: number
+  role?: string
+  dealversion?: number
+}
 
 export function sum(items: DealVersion2[], prop: keyof DealVersion2): number {
   return items.reduce(function (a, b) {
@@ -37,7 +36,7 @@ function sieveSubmodel(entry: SubmodelEntry, ignoreKeys = ["id", "nid", "role"])
 
 export function isEmptySubmodel(
   entry: SubmodelEntry,
-  keys = ["id", "nid", "role"],
+  keys = ["id", "nid", "role", "dealversion"],
 ): boolean {
   const fieldsWithValues = sieveSubmodel(entry, keys)
   return fieldsWithValues.length === 0

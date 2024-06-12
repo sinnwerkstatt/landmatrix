@@ -466,7 +466,7 @@ class DealViewSet(HullViewSet):
         d1: DealHull = self.get_object()
         d1._selected_version_id = int(version_id)
 
-        dv1: DealVersion = d1.versions.get(id=version_id)
+        dv1: DealVersion = get_object_or_404(d1.versions, id=version_id)
 
         if (
             (request.user.is_authenticated and request.user.role >= UserRole.EDITOR)
@@ -615,10 +615,7 @@ class InvestorViewSet(HullViewSet):
         i1: InvestorHull = self.get_object()
         i1._selected_version_id = int(version_id)
 
-        try:
-            iv1: InvestorVersion = i1.versions.get(id=version_id)
-        except InvestorVersion.DoesNotExist:
-            raise Http404
+        iv1: InvestorVersion = get_object_or_404(i1.versions, id=version_id)
 
         if (
             (request.user.is_authenticated and request.user.role >= UserRole.EDITOR)
@@ -626,6 +623,7 @@ class InvestorViewSet(HullViewSet):
             or iv1.status == "ACTIVATED"
         ):
             return Response(self.get_serializer(i1).data)
+
         raise PermissionDenied if request.user.is_authenticated else NotAuthenticated
 
     @action(methods=["get"], detail=False)

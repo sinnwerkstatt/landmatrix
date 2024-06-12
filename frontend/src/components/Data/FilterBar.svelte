@@ -195,9 +195,10 @@
 
       <FilterCollapse
         clearable={!!($filters.investor_id || $filters.investor_country_id)}
-        on:clear={() =>
-          ($filters.investor_id = undefined) &&
-          ($filters.investor_country_id = undefined)}
+        on:clear={() => {
+          $filters.investor_id = undefined
+          $filters.investor_country_id = undefined
+        }}
         title={$_("Investor")}
       >
         {$_("Investor name")}

@@ -4,15 +4,14 @@
 
   export let value: Point | null = null
 
-  $: val = value !== null ?  value: { type: "Point", coordinates: [null, null] }
+  $: val = value !== null ? value : { type: "Point", coordinates: [null, null] }
 
   const onChange = () => {
-    value = (val.coordinates[0] !== null && val.coordinates[1] !== null) ? <Point>val : null
+    value =
+      val.coordinates[0] !== null && val.coordinates[1] !== null ? (val as Point) : null
   }
 
-
   export let fieldname: string
-
   export const extras = {}
 </script>
 

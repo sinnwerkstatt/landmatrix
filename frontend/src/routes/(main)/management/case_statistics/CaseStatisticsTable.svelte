@@ -49,7 +49,7 @@
       {valueClass}
       extras={col.key === "id" && linkDraftVersion
         ? { objectVersion: obj.draft_version_id }
-        : {}}
+        : undefined}
     />
   </svelte:fragment>
 </Table>

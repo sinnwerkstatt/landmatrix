@@ -9,7 +9,7 @@ import type { LayoutOptions } from "cytoscape-cose-bilkent"
 import cyCoseBilkent from "cytoscape-cose-bilkent"
 import cyPopper from "cytoscape-popper"
 import { get } from "svelte/store"
-import type { Instance as TippyInstance } from "tippy.js"
+import type { Content } from "tippy.js"
 import tippy from "tippy.js"
 
 import { browser } from "$app/environment"
@@ -18,8 +18,29 @@ import { page } from "$app/stores"
 import { classificationMap } from "$lib/stores/maps"
 import { Classification } from "$lib/types/investor"
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const tippyFactory = (ref: any, content: Content) => {
+  // Since tippy constructor requires DOM element/elements, create a placeholder
+  const dummyDomEle = document.createElement("div")
+
+  return tippy(dummyDomEle, {
+    getReferenceClientRect: ref.getBoundingClientRect,
+    trigger: "manual",
+    content: content,
+
+    animation: false,
+    // arrow: true,
+    // placement: "bottom",
+    // hideOnClick: false,
+    // sticky: "reference",
+
+    interactive: true,
+    appendTo: document.body,
+  })
+}
+
 cytoscape.use(cyCoseBilkent)
-cytoscape.use(cyPopper)
+cytoscape.use(cyPopper(tippyFactory))
 
 let textColor = "black"
 if (browser && sessionStorage.theme === "dark") {
@@ -80,61 +101,50 @@ export const createGraph = (
     ...CY_OPTIONS,
   })
 
-const makePopper = (ele: NodeSingular & { tippy?: TippyInstance }) => {
-  const ref = ele.popperRef() // used only for positioning
-  if (ref) {
-    // unfortunately, a dummy element must be passed as tippy only accepts a dom element as the target
-    // https://github.com/atomiks/tippyjs/issues/661
-    const dummyDomEle = document.createElement("div")
+const makeContent = (ele: NodeSingular) => {
+  const tipEl = document.createElement("div")
+  tipEl.classList.add("g-tooltip")
+  if (ele.data().dealNode) {
+    // tooltip content of deal node
+    tipEl.classList.add("deal")
+    tipEl.classList.add("bg-orange")
+    tipEl.innerHTML = `Deal ${ele.data().name}`
+  } else {
+    // tooltip content of investor node
+    tipEl.classList.add("investor")
+    tipEl.classList.add("bg-pelorous")
+    let content = `<div class="font-bold">${ele.data().active_version__name} (#${
+      ele.data().id
+    })</div>`
 
-    ele.tippy = tippy(dummyDomEle, {
-      trigger: "manual", // call show() and hide() yourself
-      getReferenceClientRect: ref.getBoundingClientRect,
-      animation: false,
-      content: () => {
-        const tipEl = document.createElement("div")
-        tipEl.classList.add("g-tooltip")
-        if (ele.data().dealNode) {
-          // tooltip content of deal node
-          tipEl.classList.add("deal")
-          tipEl.classList.add("bg-orange")
-          tipEl.innerHTML = `Deal ${ele.data().name}`
-        } else {
-          // tooltip content of investor node
-          tipEl.classList.add("investor")
-          tipEl.classList.add("bg-pelorous")
-          let content = `<div class="font-bold">${ele.data().active_version__name} (#${
-            ele.data().id
-          })</div>`
+    if ("active_version__country_id" in ele.data()) {
+      const cntr = get(page).data.countries.find(
+        c => c.id === ele.data().active_version__country_id,
+      )
+      if (cntr) content += `${cntr.name}`
+    }
 
-          if ("active_version__country_id" in ele.data()) {
-            const cntr = get(page).data.countries.find(
-              c => c.id === ele.data().active_version__country_id,
-            )
-            if (cntr) content += `${cntr.name}`
-          }
+    if ("active_version__classification" in ele.data()) {
+      // Todo: make reflexive, e.g., make tooltip a svelte component
+      const choice =
+        get(classificationMap)[
+          ele.data().active_version__classification as Classification
+        ]
+      if (choice) content += ", " + choice
+    }
 
-          if ("active_version__classification" in ele.data()) {
-            // Todo: make reflexive, e.g., make tooltip a svelte component
-            const choice =
-              get(classificationMap)[
-                ele.data().active_version__classification as Classification
-              ]
-            if (choice) content += ", " + choice
-          }
-
-          tipEl.innerHTML = content
-        }
-        return tipEl
-      },
-    })
+    tipEl.innerHTML = content
   }
+  return tipEl
 }
 
 export const registerTippy = (cyGraph: Graph) => {
   cyGraph.ready(() => {
-    cyGraph.nodes().forEach(function (ele) {
-      makePopper(ele)
+    cyGraph.nodes().forEach(ele => {
+      // @ts-expect-error tippy is custom property
+      ele.tippy = ele.popper({
+        content: makeContent(ele),
+      })
     })
     cyGraph.nodes().unbind("mouseover")
     cyGraph.nodes().bind("mouseover", event => event.target.tippy.show())

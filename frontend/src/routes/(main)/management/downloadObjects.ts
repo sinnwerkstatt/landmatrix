@@ -39,10 +39,12 @@ const toCSVString = (
     columns: (model === "deal" ? DEAL_COLUMNS : INVESTOR_COLUMNS) as any,
   })
 
-const _enrichObjects = objects => {
+const _enrichObjects = (objects: (DealHull | InvestorHull)[]) => {
   return objects.map(o => {
     const country = get(page).data.countries.find(
-      c => c.id === (o.country_id ?? o.selected_version.country_id),
+      c =>
+        c.id ===
+        ((o as DealHull).country_id ?? (o as InvestorHull).selected_version.country_id),
     )
     const country_name = country ? country.name : undefined
 

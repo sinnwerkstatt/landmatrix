@@ -2,10 +2,10 @@
 
 # 1. Start app
 # The output is discarded to see the actual test results.
-# If you want to see the output run `npm run dev:test` in one terminal
-# and `npm run playwright` in another terminal.
+# If you want to see the output run `pnpm run dev:test` in one terminal
+# and `pnpm run playwright` in another terminal.
 echo 'Starting backend, frontend (dev) and proxy'
-concurrently npm:backend npm:frontend npm:caddy & #> /dev/null &
+concurrently pnpm:backend pnpm:frontend pnpm:caddy & #> /dev/null &
 PID=$!
 
 # 2. Wait for app to be responsive
@@ -29,7 +29,7 @@ echo 'Caddy online'
 
 
 # 3. Run tests
-npm run playwright
+pnpm run playwright
 success=$?
 
 # 4. Cleanup
