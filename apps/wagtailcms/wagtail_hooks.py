@@ -1,5 +1,14 @@
+from django.templatetags.static import static
+from django.utils.html import format_html
 from wagtail import hooks
 from wagtail.whitelist import attribute_rule
+
+
+@hooks.register("insert_global_admin_css")
+def global_admin_css():
+    return format_html(
+        '<link rel="stylesheet" href="{}">', static("fix-document-chooser.css")
+    )
 
 
 @hooks.register("register_icons")
