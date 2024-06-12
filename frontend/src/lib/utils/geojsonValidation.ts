@@ -1,10 +1,8 @@
 import type { FeatureCollection, GeoJsonObject, Geometry, Position } from "geojson"
 import gjv from "geojson-validation"
 
-const areAllFeaturesPolygons = (data: FeatureCollection) =>
-  data.features.every(
-    feature => gjv.isPolygon(feature.geometry) || gjv.isMultiPolygon(feature.geometry),
-  )
+const areAllFeaturesMultiPolygons = (data: FeatureCollection) =>
+  data.features.every(feature => gjv.isMultiPolygon(feature.geometry))
 
 const isSingleFeature = (data: FeatureCollection) => data.features.length === 1
 
@@ -61,7 +59,7 @@ type ValidatorFn = (data: any) => boolean
 
 const validators: [ValidatorFn, string][] = [
   [gjv.isFeatureCollection, "Data is not a valid FeatureCollection."],
-  [areAllFeaturesPolygons, "Not all features are of type Polygons or MultiPolygon."],
+  [areAllFeaturesMultiPolygons, "Not all features are of type MultiPolygon."],
   [isSingleFeature, "Please upload one feature at a time."],
   [
     hasValidLongLatValues,

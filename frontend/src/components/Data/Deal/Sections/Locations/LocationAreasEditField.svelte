@@ -1,11 +1,12 @@
 <script lang="ts">
-  import type { FeatureCollection, GeoJsonObject, MultiPolygon, Polygon } from "geojson"
+  import type { FeatureCollection, GeoJsonObject, MultiPolygon } from "geojson"
   import type { Map } from "leaflet?client"
   import { onDestroy, onMount } from "svelte"
   import { _ } from "svelte-i18n"
   import { quintOut } from "svelte/easing"
   import { crossfade } from "svelte/transition"
 
+  import { newNanoid } from "$lib/helpers"
   import { areaTypeMap } from "$lib/stores/maps"
   import type {
     Area,
@@ -85,17 +86,17 @@
         return
       }
 
-      const feature = (geoJsonObject as FeatureCollection<Polygon | MultiPolygon>)
-        .features[0]
+      const feature = (geoJsonObject as FeatureCollection<MultiPolygon>).features[0]
 
+      const existingIds = areas.map(entry => entry.nid)
       areas = [
         ...areas,
         {
-          id: null,
+          nid: newNanoid(existingIds),
           type: selectedAreaType!,
           current: !areas.filter(a => a.type === selectedAreaType).some(a => a.current),
-          date: "",
           area: feature.geometry,
+          date: "",
         },
       ]
 

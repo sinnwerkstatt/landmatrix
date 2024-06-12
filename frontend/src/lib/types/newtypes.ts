@@ -429,8 +429,15 @@ export interface JSONCarbonSequestrationFieldType {
 
 export type AreaType = "production_area" | "contract_area" | "intended_area"
 
+// // https://stackoverflow.com/questions/78497975
+// type Named<T> = T
+//
+// export interface Area extends Named<components["schemas"]["LocationArea"]> {
+//   area: MultiPolygon
+// }
 export interface Area {
-  id: number | null // null for newly created ones
+  id?: number // undefined for new areas
+  nid: string
   type: AreaType
   current: boolean
   date: string
