@@ -14,7 +14,7 @@
   import { scrollEntryIntoView } from "$lib/utils/domHelpers"
 
   /* eslint-disable no-undef */
-  export let entries: T[]
+  export let entries: readonly T[]
   /* eslint-enable no-undef */
 
   export let label: string

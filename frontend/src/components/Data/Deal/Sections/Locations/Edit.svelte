@@ -10,8 +10,8 @@
   import { page } from "$app/stores"
 
   import {
-    Location2,
     type DealHull,
+    type Location2,
     type PointFeature,
     type PointFeatureProps,
   } from "$lib/types/newtypes"
@@ -39,6 +39,19 @@
   let locationsPointLayer: GeoJSON<PointFeatureProps, Point>
 
   $: label = $_("Location")
+
+  const createLocation = (nid: string): Location2 => ({
+    nid,
+    id: null!,
+    name: "",
+    description: "",
+    point: null,
+    facility_name: "",
+    level_of_accuracy: undefined,
+    comment: "",
+    areas: [],
+    dealversion: deal.selected_version.id,
+  })
 
   const onMapReady = (e: CustomEvent<Map>) => {
     map = e.detail
@@ -181,7 +194,7 @@
       bind:entries={deal.selected_version.locations}
       bind:selectedEntryId
       entryComponent={Entry}
-      createEntry={nid => new Location2(nid)}
+      createEntry={createLocation}
       extras={{
         map,
         country: $page.data.countries.find(c => c.id === deal.country_id),

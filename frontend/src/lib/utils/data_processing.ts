@@ -5,6 +5,7 @@ export interface SubmodelEntry {
   id?: number
   role?: string
   dealversion?: number
+  investorversion?: number
 }
 
 export function sum(items: DealVersion2[], prop: keyof DealVersion2): number {

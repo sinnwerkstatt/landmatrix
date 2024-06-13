@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import { DataSource, type DealHull } from "$lib/types/newtypes"
+  import { type DataSource, type DealHull } from "$lib/types/newtypes"
 
   import SubmodelEditField from "$components/Fields/SubmodelEditField.svelte"
 
@@ -9,14 +9,29 @@
 
   export let deal: DealHull
 
-  $: label = $_("Data Source")
-
-  const createEntry = (nid: string) => new DataSource(nid)
+  const createDataSource = (nid: string): DataSource => ({
+    id: null!,
+    nid,
+    type: "" as any,
+    url: "",
+    file: null!,
+    file_not_public: false,
+    publication_title: "",
+    date: null,
+    name: "",
+    company: "",
+    email: "",
+    phone: "",
+    includes_in_country_verified_information: null,
+    open_land_contracts_id: "",
+    comment: "",
+    dealversion: null!,
+  })
 </script>
 
 <SubmodelEditField
+  label={$_("Data Source")}
   bind:entries={deal.selected_version.datasources}
+  createEntry={createDataSource}
   entryComponent={Entry}
-  {createEntry}
-  {label}
 />

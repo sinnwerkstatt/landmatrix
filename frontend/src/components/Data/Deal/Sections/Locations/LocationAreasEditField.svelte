@@ -92,6 +92,7 @@
       areas = [
         ...areas,
         {
+          id: null!,
           nid: newNanoid(existingIds),
           type: selectedAreaType!,
           current: !areas.filter(a => a.type === selectedAreaType).some(a => a.current),
