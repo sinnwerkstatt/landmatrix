@@ -4,8 +4,12 @@
   import { page } from "$app/stores"
 
   import { stateMap } from "$lib/newUtils"
-  import { Version2Status, type DealHull, type InvestorHull } from "$lib/types/newtypes"
-  import { UserRole } from "$lib/types/user"
+  import {
+    UserRole,
+    Version2Status,
+    type DealHull,
+    type InvestorHull,
+  } from "$lib/types/newtypes"
 
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import CheckCircleIcon from "$components/icons/CheckCircleIcon.svelte"

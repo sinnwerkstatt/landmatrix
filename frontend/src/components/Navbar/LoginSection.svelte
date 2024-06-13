@@ -3,7 +3,7 @@
 
   import { page } from "$app/stores"
 
-  import type { User } from "$lib/types/user.js"
+  import type { User } from "$lib/types/newtypes"
   import { getCsrfToken } from "$lib/utils"
 
   import NavDropDown from "$components/Navbar/NavDropDown.svelte"

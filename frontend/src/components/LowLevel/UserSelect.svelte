@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { components } from "$lib/openAPI"
   import { allUsers } from "$lib/stores"
-  import { UserRole } from "$lib/types/user"
+  import { UserRole } from "$lib/types/newtypes"
 
   import VirtualListSelect from "./VirtualListSelect.svelte"
 

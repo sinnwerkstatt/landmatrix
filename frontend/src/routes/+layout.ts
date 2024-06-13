@@ -5,7 +5,7 @@ import createClient from "openapi-fetch"
 import { i18nload } from "$lib/i18n/i18n"
 import type { components, paths } from "$lib/openAPI"
 import { fetchAboutPages, fetchObservatoryPages } from "$lib/stores/wagtail"
-import type { User } from "$lib/types/user"
+import type { User } from "$lib/types/newtypes"
 
 import type { LayoutLoad } from "./$types"
 

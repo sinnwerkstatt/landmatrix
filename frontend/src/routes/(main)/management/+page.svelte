@@ -12,8 +12,7 @@
 
   import { dealFields, investorFields } from "$lib/fieldLookups"
   import { loading } from "$lib/stores/basics"
-  import type { DealHull, InvestorHull } from "$lib/types/newtypes"
-  import { UserRole } from "$lib/types/user"
+  import { UserRole, type DealHull, type InvestorHull } from "$lib/types/newtypes"
 
   import FilterCollapse from "$components/Data/FilterCollapse.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"

@@ -4,8 +4,6 @@
   import { SvelteToast } from "@zerodevx/svelte-toast"
   import { env } from "$env/dynamic/public"
 
-  import type { User } from "$lib/types/user"
-
   import LightboxImage from "$components/LightboxImage.svelte"
   import Messages from "$components/Messages.svelte"
   import Navbar from "$components/Navbar/Navbar.svelte"
@@ -14,6 +12,8 @@
   import "$lib/css/app.css"
 
   import { Matomo } from "@sinnwerkstatt/sveltekit-matomo"
+
+  import type { User } from "$lib/types/newtypes"
 
   export let data
 

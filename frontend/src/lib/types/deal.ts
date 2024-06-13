@@ -1,60 +1,9 @@
-import type {
-  Feature,
-  FeatureCollection,
-  GeoJsonObject,
-  GeoJsonProperties,
-  Geometry,
-  MultiPolygon,
-  Point,
-  Polygon,
-} from "geojson"
+import type { GeoJsonObject } from "geojson"
 
 import type { components } from "$lib/openAPI"
-import type { User } from "$lib/types/user"
-
-export enum ACCURACY_LEVEL {
-  "",
-  COUNTRY,
-  ADMINISTRATIVE_REGION,
-  APPROXIMATE_LOCATION,
-  EXACT_LOCATION,
-  COORDINATES,
-}
+import type { User } from "$lib/types/newtypes"
 
 export type AreaType = "production_area" | "contract_area" | "intended_area"
-
-export interface FeatureProps {
-  // these are the location id and name -> not unique for feature
-  id: string
-  name?: string
-  level_of_accuracy?: ACCURACY_LEVEL
-}
-
-export interface AreaFeatureProps extends FeatureProps {
-  type: AreaType
-  date?: string
-  current?: boolean
-}
-export interface TempFeatureProps {
-  visible: boolean
-  area: number
-}
-
-export type FeatureWithId<
-  G extends Geometry | null = Geometry,
-  P = GeoJsonProperties,
-> = Feature<G, P> & { id: string }
-
-export type PointFeature = Feature<Point, FeatureProps>
-export type AreaFeature = Feature<Polygon | MultiPolygon, AreaFeatureProps>
-export type EnhancedAreaFeature = FeatureWithId<
-  Polygon | MultiPolygon,
-  AreaFeatureProps & TempFeatureProps
->
-export type AreaFeatureCollection = FeatureCollection<
-  Polygon | MultiPolygon,
-  AreaFeatureProps
->
 
 export enum ProduceGroup {
   CROPS = "CROPS",

@@ -15,8 +15,8 @@ import tippy from "tippy.js"
 import { browser } from "$app/environment"
 import { page } from "$app/stores"
 
+import type { components } from "$lib/openAPI"
 import { classificationMap } from "$lib/stores/maps"
-import { Classification } from "$lib/types/investor"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const tippyFactory = (ref: any, content: Content) => {
@@ -128,7 +128,8 @@ const makeContent = (ele: NodeSingular) => {
       // Todo: make reflexive, e.g., make tooltip a svelte component
       const choice =
         get(classificationMap)[
-          ele.data().active_version__classification as Classification
+          ele.data()
+            .active_version__classification as components["schemas"]["ClassificationEnum"]
         ]
       if (choice) content += ", " + choice
     }

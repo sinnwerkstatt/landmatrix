@@ -15,7 +15,7 @@
   } from "$lib/stores/maps"
   import { intentionOfInvestmentGroupMap } from "$lib/stores/maps.js"
   import { IoIGroup, IoIGroups, ProduceGroup } from "$lib/types/deal"
-  import { UserRole } from "$lib/types/user"
+  import { UserRole } from "$lib/types/newtypes"
 
   import { showFilterBar } from "$components/Data/stores"
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"

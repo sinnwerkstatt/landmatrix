@@ -1,6 +1,7 @@
 import { _ } from "svelte-i18n"
 import { derived } from "svelte/store"
 
+import type { components } from "$lib/openAPI"
 import {
   AgricultureIoI,
   ForestryIoI,
@@ -13,7 +14,6 @@ import {
   type AreaType,
   type IntentionOfInvestment,
 } from "$lib/types/deal"
-import { Classification } from "$lib/types/investor"
 
 type ImplementationStatusMap = { [key in ImplementationStatus]: string }
 export const implementationStatusMap = derived(
@@ -110,32 +110,30 @@ export const natureOfDealMap = derived(
   }),
 )
 
-type ClassificationMap = { [key in Classification]: string }
+type ClassificationMap = {
+  [key in components["schemas"]["ClassificationEnum"]]: string
+}
 export const classificationMap = derived(
   _,
   ($_): ClassificationMap => ({
-    [Classification.GOVERNMENT]: $_("Government"),
-    [Classification.GOVERNMENT_INSTITUTION]: $_("Government institution"),
-    [Classification.STATE_OWNED_COMPANY]: $_("State-/government (owned) company"),
-    [Classification.SEMI_STATE_OWNED_COMPANY]: $_("Semi state-owned company"),
-    [Classification.ASSET_MANAGEMENT_FIRM]: $_("Asset management firm"),
-    [Classification.BILATERAL_DEVELOPMENT_BANK]: $_(
+    GOVERNMENT: $_("Government"),
+    GOVERNMENT_INSTITUTION: $_("Government institution"),
+    STATE_OWNED_COMPANY: $_("State-/government (owned) company"),
+    SEMI_STATE_OWNED_COMPANY: $_("Semi state-owned company"),
+    ASSET_MANAGEMENT_FIRM: $_("Asset management firm"),
+    BILATERAL_DEVELOPMENT_BANK: $_(
       "Bilateral Development Bank / Development Finance Institution",
     ),
-    [Classification.STOCK_EXCHANGE_LISTED_COMPANY]: $_("Stock-exchange listed company"),
-    [Classification.COMMERCIAL_BANK]: $_("Commercial Bank"),
-    [Classification.INSURANCE_FIRM]: $_("Insurance firm"),
-    [Classification.INVESTMENT_BANK]: $_("Investment Bank"),
-    [Classification.INVESTMENT_FUND]: $_("Investment fund"),
-    [Classification.MULTILATERAL_DEVELOPMENT_BANK]: $_(
-      "Multilateral Development Bank (MDB)",
-    ),
-    [Classification.PRIVATE_COMPANY]: $_("Private company"),
-    [Classification.PRIVATE_EQUITY_FIRM]: $_("Private equity firm"),
-    [Classification.INDIVIDUAL_ENTREPRENEUR]: $_("Individual entrepreneur"),
-    [Classification.NON_PROFIT]: $_(
-      "Non - Profit organization (e.g. Church, University etc.)",
-    ),
-    [Classification.OTHER]: $_("Other"),
+    STOCK_EXCHANGE_LISTED_COMPANY: $_("Stock-exchange listed company"),
+    COMMERCIAL_BANK: $_("Commercial Bank"),
+    INSURANCE_FIRM: $_("Insurance firm"),
+    INVESTMENT_BANK: $_("Investment Bank"),
+    INVESTMENT_FUND: $_("Investment fund"),
+    MULTILATERAL_DEVELOPMENT_BANK: $_("Multilateral Development Bank (MDB)"),
+    PRIVATE_COMPANY: $_("Private company"),
+    PRIVATE_EQUITY_FIRM: $_("Private equity firm"),
+    INDIVIDUAL_ENTREPRENEUR: $_("Individual entrepreneur"),
+    NON_PROFIT: $_("Non - Profit organization (e.g. Church, University etc.)"),
+    OTHER: $_("Other"),
   }),
 )

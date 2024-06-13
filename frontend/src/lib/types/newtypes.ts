@@ -141,6 +141,16 @@ export type Location2 = components["schemas"]["Location"]
 
 export type InvestorVersion2 = components["schemas"]["InvestorVersion"]
 
+// Define a ts enum for components["schemas"]["RoleEnum"] for easy access
+export enum UserRole {
+  ANYBODY = 0,
+  REPORTER = 1,
+  EDITOR = 2,
+  ADMINISTRATOR = 3,
+}
+
+export type User = components["schemas"]["User"]
+
 // FRONTEND
 // Types for locations + areas in geojson
 export interface PointFeatureProps {

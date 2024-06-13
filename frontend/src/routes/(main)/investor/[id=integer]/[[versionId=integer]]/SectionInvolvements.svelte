@@ -3,8 +3,7 @@
 
   import { page } from "$app/stores"
 
-  import type { InvestorHull } from "$lib/types/newtypes.js"
-  import { UserRole } from "$lib/types/user"
+  import { UserRole, type InvestorHull } from "$lib/types/newtypes.js"
 
   import SectionInvolvementsDealCard from "./SectionInvolvementsDealCard.svelte"
   import SectionInvolvementsInvestorCard from "./SectionInvolvementsInvestorCard.svelte"
