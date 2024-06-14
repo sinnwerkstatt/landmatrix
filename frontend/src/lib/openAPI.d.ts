@@ -106,7 +106,7 @@ export interface paths {
     get: operations["api_investors_deal_filtered_retrieve"]
   }
   "/api/investors/simple/": {
-    get: operations["api_investors_simple_retrieve"]
+    get: operations["api_investors_simple_list"]
   }
   "/api/investorversions/": {
     get: operations["api_investorversions_list"]
@@ -266,6 +266,9 @@ export interface components {
      * @enum {string}
      */
     AnnualLeasingFeeTypeEnum: "PER_HA" | "PER_AREA"
+    AreaFields: {
+      type: components["schemas"]["ValueLabel"][]
+    }
     /** @enum {unknown} */
     BlankEnum: ""
     BlogCategory: {
@@ -859,7 +862,9 @@ export interface components {
     }
     DealFields: {
       intention_of_investment: components["schemas"]["ValueLabel"][]
+      intention_of_investment_group: components["schemas"]["ValueLabel"][]
       negotiation_status: components["schemas"]["ValueLabel"][]
+      negotiation_status_group: components["schemas"]["ValueLabel"][]
       implementation_status: components["schemas"]["ValueLabel"][]
       level_of_accuracy: components["schemas"]["ValueLabel"][]
       nature_of_deal: components["schemas"]["ValueLabel"][]
@@ -1358,6 +1363,7 @@ export interface components {
       datasource: components["schemas"]["DataSourceFields"]
       investor: components["schemas"]["InvestorFields"]
       involvement: components["schemas"]["InvolvementFields"]
+      area: components["schemas"]["AreaFields"]
     }
     FieldDefinition: {
       id: number
@@ -3319,11 +3325,11 @@ export interface operations {
       }
     }
   }
-  api_investors_simple_retrieve: {
+  api_investors_simple_list: {
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["SimpleInvestor"]
+          "application/json": components["schemas"]["SimpleInvestor"][]
         }
       }
     }
