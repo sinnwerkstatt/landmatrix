@@ -1735,6 +1735,8 @@ export interface components {
     }
     LocationArea: {
       id: number
+      /** ID */
+      nid: string
       type: components["schemas"]["LocationAreaTypeEnum"]
       current?: boolean
       date?: string | null
@@ -1743,7 +1745,6 @@ export interface components {
         type?: "MultiPolygon"
         coordinates?: number[][][][]
       }
-      location: number
     }
     /**
      * @description * `production_area` - Production area

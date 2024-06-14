@@ -118,7 +118,8 @@ class DealVersionVersionsListSerializer(serializers.ModelSerializer):
 class LocationAreaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Area
-        fields = "__all__"
+        # fields = "__all__"
+        exclude = ("location",)
 
 
 class LocationSerializer(serializers.ModelSerializer):
@@ -261,6 +262,7 @@ class DealVersionSerializer(serializers.ModelSerializer):
                     [
                         Area(
                             location=upserted_location,
+                            nid=area["nid"],
                             type=area["type"],
                             current=area["current"],
                             date=area["date"],
@@ -270,10 +272,10 @@ class DealVersionSerializer(serializers.ModelSerializer):
                     ]
                 )
             else:
-                a_ids = set()
+                a_nids = set()
                 for area in areas:
                     upserted_area, _ = Area.objects.update_or_create(
-                        id=area["id"],
+                        nid=area["nid"],
                         location=upserted_location,
                         defaults={
                             "type": area["type"],
@@ -282,10 +284,10 @@ class DealVersionSerializer(serializers.ModelSerializer):
                             "area": Area.geometry_to_multipolygon(area["area"]),
                         },
                     )
-                    a_ids.add(upserted_area.id)
+                    a_nids.add(upserted_area.nid)
 
                 Area.objects.filter(location=upserted_location).exclude(
-                    id__in=a_ids
+                    nid__in=a_nids
                 ).delete()
 
         Location.objects.filter(dealversion=dv1).exclude(nid__in=l_nids).delete()

@@ -1108,6 +1108,7 @@ class Area(models.Model):
     location = models.ForeignKey(
         Location, on_delete=models.CASCADE, related_name="areas"
     )
+    nid = NanoIDField("ID", max_length=15, db_index=True)
     AREA_TYPE_CHOICES = (
         ("production_area", _("Production area")),
         ("contract_area", _("Contract area")),
@@ -1121,14 +1122,7 @@ class Area(models.Model):
     def __str__(self):
         return f"{self.location} >> {self.type}"
 
-    def to_dict(self):
-        return {
-            "type": self.type,
-            "current": self.current,
-            "date": self.date,
-            "area": json.loads(self.area.geojson) if self.area else None,
-        }
-
+    # NOTE: Not in use, but would be nice to query features from backend directly
     def to_feature(self):
         return {
             "type": "Feature",
