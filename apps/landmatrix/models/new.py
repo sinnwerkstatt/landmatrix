@@ -2,34 +2,34 @@ import json
 import re
 from enum import Enum
 
+from django_pydantic_field import SchemaField
+from nanoid import generate
+
 from django.conf import settings
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.geos import GEOSGeometry, MultiPolygon, Polygon
 from django.contrib.gis.geos.prototypes.io import wkt_w
 from django.core.exceptions import ValidationError
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
-from django.db.models import Q, QuerySet, Case, When, Value, Count, Func, F
+from django.db.models import Case, Count, F, Func, Q, QuerySet, Value, When
 from django.db.models.functions import Concat, JSONObject
 from django.http import Http404
 from django.utils import timezone
 from django.utils.translation import gettext as _
-from django_pydantic_field import SchemaField
-from nanoid import generate
-from rest_framework.exceptions import PermissionDenied, ParseError
+from rest_framework.exceptions import ParseError, PermissionDenied
 from wagtail.models import Site
 
 from apps.accounts.models import User, UserRole
-from apps.landmatrix.models import choices
-from apps.landmatrix.models import schema
+from apps.landmatrix.models import choices, schema
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.fields import (
-    ChoiceArrayField,
     ArrayField,
-    NanoIDField,
-    LooseDateField,
+    ChoiceArrayField,
     DecimalIntField,
+    LooseDateField,
+    NanoIDField,
 )
 
 VERSION_STATUS_CHOICES = (
@@ -1109,12 +1109,7 @@ class Area(models.Model):
         Location, on_delete=models.CASCADE, related_name="areas"
     )
     nid = NanoIDField("ID", max_length=15, db_index=True)
-    AREA_TYPE_CHOICES = (
-        ("production_area", _("Production area")),
-        ("contract_area", _("Contract area")),
-        ("intended_area", _("Intended area")),
-    )
-    type = models.CharField(choices=AREA_TYPE_CHOICES)
+    type = models.CharField(choices=choices.AREA_TYPE_CHOICES)
     current = models.BooleanField(default=False)
     date = LooseDateField(_("Date"), blank=True, null=True)
     area = gis_models.MultiPolygonField()

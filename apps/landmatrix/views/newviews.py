@@ -1,16 +1,16 @@
+from drf_spectacular.utils import extend_schema
+
 from django.contrib.postgres.expressions import ArraySubquery
 from django.db import OperationalError, transaction
-from django.db.models import Prefetch, F, Case, When, OuterRef
+from django.db.models import Case, F, OuterRef, Prefetch, When
 from django.db.models.functions import JSONObject
-from django.http import Http404
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from drf_spectacular.utils import extend_schema
-from rest_framework import viewsets, status, serializers
+from rest_framework import serializers, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import (
-    PermissionDenied,
     NotAuthenticated,
+    PermissionDenied,
     ValidationError,
 )
 from rest_framework.generics import get_object_or_404
@@ -20,28 +20,28 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from wagtail.models import Site
 
-from apps.accounts.models import UserRole, User
+from apps.accounts.models import User, UserRole
 from apps.landmatrix.models import choices
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.new import (
     DealHull,
-    InvestorHull,
-    DealVersion,
-    InvestorVersion,
-    DealWorkflowInfo,
-    InvestorWorkflowInfo,
     DealTopInvestors,
+    DealVersion,
+    DealWorkflowInfo,
+    InvestorHull,
+    InvestorVersion,
+    InvestorWorkflowInfo,
     Location,
 )
-from apps.landmatrix.permissions import IsReporterOrHigher, IsAdministrator
+from apps.landmatrix.permissions import IsAdministrator, IsReporterOrHigher
 from apps.landmatrix.serializers import (
     DealSerializer,
-    InvestorSerializer,
     DealVersionSerializer,
+    InvestorSerializer,
     InvestorVersionSerializer,
     SimpleInvestorSerializer,
 )
-from apps.landmatrix.utils import parse_filters, openapi_filters_parameters
+from apps.landmatrix.utils import openapi_filters_parameters, parse_filters
 
 
 def add_wfi(
@@ -626,6 +626,7 @@ class InvestorViewSet(HullViewSet):
 
         raise PermissionDenied if request.user.is_authenticated else NotAuthenticated
 
+    @extend_schema(responses={200: SimpleInvestorSerializer(many=True)})
     @action(methods=["get"], detail=False)
     def simple(self, request: Request):
         if investor_id := request.query_params.get("investor_id"):
@@ -687,12 +688,20 @@ class ValueLabelSerializer(serializers.Serializer):
     group = serializers.CharField(required=False)
 
 
+# class IntentionOfInvestmentValueLabelSerializer(ValueLabelSerializer):
+#     group = serializers.ChoiceField(
+#         choices=choices.INTENTION_OF_INVESTMENT_GROUP_CHOICES
+#     )
+
+
 class FieldChoicesView(APIView):
 
     class FieldChoicesSerializer(serializers.Serializer):
         class DealFields(serializers.Serializer):
             intention_of_investment = ValueLabelSerializer(many=True)
+            intention_of_investment_group = ValueLabelSerializer(many=True)
             negotiation_status = ValueLabelSerializer(many=True)
+            negotiation_status_group = ValueLabelSerializer(many=True)
             implementation_status = ValueLabelSerializer(many=True)
             level_of_accuracy = ValueLabelSerializer(many=True)
             nature_of_deal = ValueLabelSerializer(many=True)
@@ -726,10 +735,14 @@ class FieldChoicesView(APIView):
             investment_type = ValueLabelSerializer(many=True)
             parent_relation = ValueLabelSerializer(many=True)
 
+        class AreaFields(serializers.Serializer):
+            type = ValueLabelSerializer(many=True)
+
         deal = DealFields()
         datasource = DataSourceFields()
         investor = InvestorFields()
         involvement = InvolvementFields()
+        area = AreaFields()
 
     @extend_schema(responses={200: FieldChoicesSerializer()})
     def get(self, request):
@@ -737,7 +750,9 @@ class FieldChoicesView(APIView):
             {
                 "deal": {
                     "intention_of_investment": choices.INTENTION_OF_INVESTMENT_ITEMS,
+                    "intention_of_investment_group": choices.INTENTION_OF_INVESTMENT_GROUP_ITEMS,
                     "negotiation_status": choices.NEGOTIATION_STATUS_ITEMS,
+                    "negotiation_status_group": choices.NEGOTIATION_STATUS_GROUP_ITEMS,
                     "implementation_status": choices.IMPLEMENTATION_STATUS_ITEMS,
                     "level_of_accuracy": choices.LOCATION_ACCURACY_ITEMS,
                     "nature_of_deal": choices.NATURE_OF_DEAL_ITEMS,
@@ -767,5 +782,6 @@ class FieldChoicesView(APIView):
                     "investment_type": choices.INVESTMENT_TYPE_ITEMS,
                     "parent_relation": choices.PARENT_RELATION_ITEMS,
                 },
+                "area": {"type": choices.AREA_TYPE_ITEMS},
             }
         )
