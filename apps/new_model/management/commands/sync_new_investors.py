@@ -1,9 +1,10 @@
 import sys
 
+from icecream import ic
+
 from django.core.management.base import BaseCommand
 from django.db import connection
 from django.db.models import QuerySet
-from icecream import ic
 
 from apps.landmatrix.models.investor import (
     InvestorOld,
@@ -11,9 +12,9 @@ from apps.landmatrix.models.investor import (
     InvestorWorkflowInfoOld,
 )
 from apps.landmatrix.models.new import (
+    InvestorDataSource,
     InvestorHull,
     InvestorVersion,
-    InvestorDataSource,
     InvestorWorkflowInfo,
 )
 

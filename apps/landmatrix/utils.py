@@ -1,9 +1,9 @@
-from django.db.models import Q
 from drf_spectacular.utils import OpenApiParameter
+
+from django.db.models import Q
 from rest_framework.request import Request
 
 from apps.landmatrix.models import choices
-
 
 openapi_filters_parameters = [
     OpenApiParameter("region_id", description="See /api/regions/ for IDs", type=int),

@@ -1,4 +1,5 @@
 import json
+from timeit import default_timer
 from typing import Type
 
 from django.core.management import BaseCommand
@@ -12,9 +13,6 @@ from apps.landmatrix.models.investor import (
     InvestorVersionOld,
     InvestorWorkflowInfoOld,
 )
-
-
-from timeit import default_timer
 
 
 class Timer:

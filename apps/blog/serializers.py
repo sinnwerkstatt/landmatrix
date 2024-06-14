@@ -1,6 +1,7 @@
-from django.utils.text import Truncator
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import extend_schema_field
+
+from django.utils.text import Truncator
 from rest_framework import serializers
 from wagtail.images.api.fields import ImageRenditionField
 

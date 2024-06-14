@@ -2,7 +2,7 @@ from datetime import datetime
 from decimal import Decimal
 from typing import List
 
-from pydantic import BaseModel, Extra, ConfigDict, Field, RootModel
+from pydantic import BaseModel, ConfigDict, Extra, Field, RootModel
 
 from apps.landmatrix.models.choices import (
     ActorEnum,
@@ -10,11 +10,11 @@ from apps.landmatrix.models.choices import (
     CarbonSequestrationCertEnum,
     CarbonSequestrationEnum,
     CropsEnum,
+    ElectricityGenerationEnum,
     ImplementationStatusEnum,
     IntentionOfInvestmentEnum,
-    NegotiationStatusEnum,
-    ElectricityGenerationEnum,
     MineralsEnum,
+    NegotiationStatusEnum,
 )
 
 

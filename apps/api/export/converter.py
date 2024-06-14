@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import QuerySet, Func, Value, CharField, Case, When
+from django.db.models import Case, CharField, Func, QuerySet, Value, When
 from django.db.models.functions import Concat
 
 from apps.landmatrix.models import choices
@@ -7,12 +7,12 @@ from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.fields import ChoiceArrayField, DecimalIntField
 from apps.landmatrix.models.new import (
-    Location,
     Contract,
     DealDataSource,
+    DealVersion,
     InvestorHull,
     Involvement,
-    DealVersion,
+    Location,
 )
 
 deal_fields = {

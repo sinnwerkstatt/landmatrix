@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.postgres.fields import ArrayField as _ArrayField
 from django.core.validators import RegexValidator
-from django.db.models import JSONField, CharField, DecimalField
+from django.db.models import CharField, DecimalField
 
 loose_date_re_val = RegexValidator(
     regex=r"^\d{4}(-(0?[1-9]|1[012])(-(0?[1-9]|[12][0-9]|3[01]))?)?$",

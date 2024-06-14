@@ -12,9 +12,9 @@ from apps.landmatrix.models.country import Country, Region
 from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.new import DealHull
 from apps.landmatrix.serializers import (
-    FieldDefinitionSerializer,
-    CurrencySerializer,
     CountrySerializer,
+    CurrencySerializer,
+    FieldDefinitionSerializer,
     RegionSerializer,
 )
 

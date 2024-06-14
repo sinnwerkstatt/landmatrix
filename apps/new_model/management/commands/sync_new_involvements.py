@@ -1,8 +1,8 @@
 from django.core.management.base import BaseCommand
+from django.db import connection
 
 from apps.landmatrix.models.investor import InvestorVentureInvolvement
 from apps.landmatrix.models.new import Involvement
-from django.db import connection
 
 
 class Command(BaseCommand):
