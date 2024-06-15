@@ -4,7 +4,7 @@
   import { slide } from "svelte/transition"
 
   import { newNanoid } from "$lib/helpers"
-  import { type Involvement } from "$lib/types/newtypes"
+  import { type Involvement } from "$lib/types/data"
   import { isEmptySubmodel } from "$lib/utils/data_processing"
 
   import CurrencySelect from "$components/Fields/Edit2/CurrencySelect.svelte"

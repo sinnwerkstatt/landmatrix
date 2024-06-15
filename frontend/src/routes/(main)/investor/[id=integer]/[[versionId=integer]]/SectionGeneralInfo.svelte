@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { InvestorVersion2 } from "$lib/types/newtypes"
+  import type { InvestorVersion2 } from "$lib/types/data"
 
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import Subsection from "$components/Subsection.svelte"

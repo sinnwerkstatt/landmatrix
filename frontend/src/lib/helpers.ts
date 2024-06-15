@@ -1,12 +1,10 @@
 import { nanoid } from "nanoid"
 import type { ActionReturn } from "svelte/action"
 
-export function isNotEmpty(field: unknown): boolean {
-  // console.log(field)
-  if (field === undefined || field === null || field === "") return false
-  if (Array.isArray(field) && field.length === 0) return false
-  return true
-}
+// What about objects?
+export const isNotEmpty = (field: unknown): boolean =>
+  !(field === undefined || field === null || field === "") &&
+  !(Array.isArray(field) && field.length === 0)
 
 export function newNanoid(existingIDs: string[] = []): string {
   let newID: string

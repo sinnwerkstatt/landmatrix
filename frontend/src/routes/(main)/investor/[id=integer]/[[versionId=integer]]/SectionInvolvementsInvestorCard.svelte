@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Involvement } from "$lib/types/newtypes"
+  import type { Involvement } from "$lib/types/data"
 
   import DisplayField from "$components/Fields/DisplayField.svelte"
 

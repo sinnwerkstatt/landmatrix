@@ -3,12 +3,12 @@ import { derived, writable } from "svelte/store"
 import { browser } from "$app/environment"
 
 import {
-  ImplementationStatus,
-  IntentionOfInvestment,
-  NatureOfDeal,
-  NegotiationStatus,
   ProduceGroup,
-} from "$lib/types/deal"
+  type ImplementationStatus,
+  type IntentionOfInvestment,
+  type NatureOfDeal,
+  type NegotiationStatus,
+} from "$lib/types/data"
 
 export interface Produce {
   // id: string
@@ -65,45 +65,45 @@ export class FilterValues {
     this.deal_size_min = 200
     // Negotiation Status "Concluded"
     this.negotiation_status = [
-      NegotiationStatus.ORAL_AGREEMENT,
-      NegotiationStatus.CONTRACT_SIGNED,
-      NegotiationStatus.CHANGE_OF_OWNERSHIP,
+      "ORAL_AGREEMENT",
+      "CONTRACT_SIGNED",
+      "CHANGE_OF_OWNERSHIP",
     ]
     // Exclude Pure Contract Farming
     this.nature_of_deal = [
-      NatureOfDeal.OUTRIGHT_PURCHASE,
-      NatureOfDeal.LEASE,
-      NatureOfDeal.CONCESSION,
-      NatureOfDeal.EXPLOITATION_PERMIT,
+      "OUTRIGHT_PURCHASE",
+      "LEASE",
+      "CONCESSION",
+      "EXPLOITATION_PERMIT",
     ]
     // Initiation Year unknown or >=2000
     this.initiation_year_min = 2000
     // Exclude: Oil / Gas extraction & Mining
     this.intention_of_investment = [
       // agriculture
-      IntentionOfInvestment.BIOFUELS,
-      IntentionOfInvestment.BIOMASS_ENERGY_GENERATION,
-      IntentionOfInvestment.FODDER,
-      IntentionOfInvestment.FOOD_CROPS,
-      IntentionOfInvestment.LIVESTOCK,
-      IntentionOfInvestment.NON_FOOD_AGRICULTURE,
-      IntentionOfInvestment.AGRICULTURE_UNSPECIFIED,
+      "BIOFUELS",
+      "BIOMASS_ENERGY_GENERATION",
+      "FODDER",
+      "FOOD_CROPS",
+      "LIVESTOCK",
+      "NON_FOOD_AGRICULTURE",
+      "AGRICULTURE_UNSPECIFIED",
       // forest
-      IntentionOfInvestment.BIOMASS_ENERGY_PRODUCTION,
-      IntentionOfInvestment.CARBON,
-      IntentionOfInvestment.FOREST_LOGGING,
-      IntentionOfInvestment.TIMBER_PLANTATION,
-      IntentionOfInvestment.FORESTRY_UNSPECIFIED,
+      "BIOMASS_ENERGY_PRODUCTION",
+      "CARBON",
+      "FOREST_LOGGING",
+      "TIMBER_PLANTATION",
+      "FORESTRY_UNSPECIFIED",
       // renewable
-      IntentionOfInvestment.SOLAR_PARK,
-      IntentionOfInvestment.WIND_FARM,
-      IntentionOfInvestment.RENEWABLE_ENERGY,
+      "SOLAR_PARK",
+      "WIND_FARM",
+      "RENEWABLE_ENERGY",
       // other
-      IntentionOfInvestment.CONVERSATION,
-      IntentionOfInvestment.INDUSTRY,
-      IntentionOfInvestment.LAND_SPECULATION,
-      IntentionOfInvestment.TOURISM,
-      IntentionOfInvestment.OTHER,
+      "CONVERSATION",
+      "INDUSTRY",
+      "LAND_SPECULATION",
+      "TOURISM",
+      "OTHER",
     ]
     // Transnational True
     this.transnational = true
@@ -141,16 +141,16 @@ export class FilterValues {
       this.deal_size_min === 200,
       !this.deal_size_max,
       _equal(this.negotiation_status, [
-        NegotiationStatus.ORAL_AGREEMENT,
-        NegotiationStatus.CONTRACT_SIGNED,
-        NegotiationStatus.CHANGE_OF_OWNERSHIP,
-      ]),
+        "ORAL_AGREEMENT",
+        "CONTRACT_SIGNED",
+        "CHANGE_OF_OWNERSHIP",
+      ] satisfies NegotiationStatus[]),
       _equal(this.nature_of_deal, [
-        NatureOfDeal.OUTRIGHT_PURCHASE,
-        NatureOfDeal.LEASE,
-        NatureOfDeal.CONCESSION,
-        NatureOfDeal.EXPLOITATION_PERMIT,
-      ]),
+        "OUTRIGHT_PURCHASE",
+        "LEASE",
+        "CONCESSION",
+        "EXPLOITATION_PERMIT",
+      ] satisfies NatureOfDeal[]),
       !this.investor_id,
       !this.investor_country_id,
       this.initiation_year_min === 2000,
@@ -159,30 +159,30 @@ export class FilterValues {
       this.implementation_status.length === 0,
       _equal(this.intention_of_investment, [
         // agriculture
-        IntentionOfInvestment.BIOFUELS,
-        IntentionOfInvestment.BIOMASS_ENERGY_GENERATION,
-        IntentionOfInvestment.FODDER,
-        IntentionOfInvestment.FOOD_CROPS,
-        IntentionOfInvestment.LIVESTOCK,
-        IntentionOfInvestment.NON_FOOD_AGRICULTURE,
-        IntentionOfInvestment.AGRICULTURE_UNSPECIFIED,
+        "BIOFUELS",
+        "BIOMASS_ENERGY_GENERATION",
+        "FODDER",
+        "FOOD_CROPS",
+        "LIVESTOCK",
+        "NON_FOOD_AGRICULTURE",
+        "AGRICULTURE_UNSPECIFIED",
         // forest
-        IntentionOfInvestment.BIOMASS_ENERGY_PRODUCTION,
-        IntentionOfInvestment.CARBON,
-        IntentionOfInvestment.FOREST_LOGGING,
-        IntentionOfInvestment.TIMBER_PLANTATION,
-        IntentionOfInvestment.FORESTRY_UNSPECIFIED,
+        "BIOMASS_ENERGY_PRODUCTION",
+        "CARBON",
+        "FOREST_LOGGING",
+        "TIMBER_PLANTATION",
+        "FORESTRY_UNSPECIFIED",
         // renewable
-        IntentionOfInvestment.SOLAR_PARK,
-        IntentionOfInvestment.WIND_FARM,
-        IntentionOfInvestment.RENEWABLE_ENERGY,
+        "SOLAR_PARK",
+        "WIND_FARM",
+        "RENEWABLE_ENERGY",
         // other
-        IntentionOfInvestment.CONVERSATION,
-        IntentionOfInvestment.INDUSTRY,
-        IntentionOfInvestment.LAND_SPECULATION,
-        IntentionOfInvestment.TOURISM,
-        IntentionOfInvestment.OTHER,
-      ]),
+        "CONVERSATION",
+        "INDUSTRY",
+        "LAND_SPECULATION",
+        "TOURISM",
+        "OTHER",
+      ] satisfies IntentionOfInvestment[]),
       !this.produce || this.produce.length === 0,
       this.transnational === true,
       this.forest_concession === false,

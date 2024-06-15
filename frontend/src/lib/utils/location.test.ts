@@ -1,6 +1,6 @@
 import { latLng, latLngBounds } from "leaflet?client"
 
-import { type Location2 } from "$lib/types/newtypes"
+import { type Location2 } from "$lib/types/data"
 
 import { createPointFeature, createPointFeatures, padBounds } from "./location"
 

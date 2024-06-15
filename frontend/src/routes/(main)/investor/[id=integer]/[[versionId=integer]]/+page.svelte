@@ -5,7 +5,7 @@
   import { page } from "$app/stores"
 
   import { loading } from "$lib/stores/basics"
-  import { UserRole } from "$lib/types/newtypes"
+  import { UserRole } from "$lib/types/data"
 
   import HeaderDatesWDownload from "$components/HeaderDatesWDownload.svelte"
   import InvolvementsGraph from "$components/New/InvolvementsGraph/InvolvementsGraph.svelte"

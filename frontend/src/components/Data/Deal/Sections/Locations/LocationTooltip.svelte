@@ -1,8 +1,8 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import { areaTypeMap } from "$lib/stores/maps"
-  import type { AreaFeature, PointFeature } from "$lib/types/newtypes"
+  import { fieldChoices, getFieldChoicesLabel } from "$lib/stores.js"
+  import type { AreaFeature, PointFeature } from "$lib/types/data"
   import { isPoint, isPolygon } from "$lib/utils/geojsonHelpers"
 
   import { formatArea } from "$components/Fields/Display2/jsonHelpers"
@@ -16,6 +16,10 @@
   <div>{$_("Name")}: {feature.properties.name}</div>
   <div>{$_("Point")}: {feature.geometry.coordinates}</div>
 {:else if isPolygon(feature)}
-  <div>{$_("Type")}: {$areaTypeMap[feature.properties.type]}</div>
+  <div>
+    {$_("Type")}: {getFieldChoicesLabel($fieldChoices["area"]["type"])(
+      feature.properties.type,
+    )}
+  </div>
   <div>{$_("Size")}: {formatArea(feature.properties.area)} {$_("ha")}</div>
 {/if}

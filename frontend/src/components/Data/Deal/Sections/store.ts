@@ -2,7 +2,7 @@ import type { SvelteComponent } from "svelte"
 import { _ } from "svelte-i18n"
 import { derived } from "svelte/store"
 
-import type { DealHull } from "$lib/types/newtypes"
+import type { DealHull } from "$lib/types/data"
 
 import type { DealSection } from "./constants"
 import ContractsDisplay from "./Contracts/Display.svelte"

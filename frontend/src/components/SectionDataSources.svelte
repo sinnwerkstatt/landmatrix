@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import type { DealVersion2, InvestorVersion2 } from "$lib/types/newtypes"
+  import type { DealVersion2, InvestorVersion2 } from "$lib/types/data"
 
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import SubmodelDisplayField from "$components/Fields/SubmodelDisplayField.svelte"

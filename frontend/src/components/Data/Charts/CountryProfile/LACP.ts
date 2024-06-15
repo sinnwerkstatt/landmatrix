@@ -1,6 +1,6 @@
 import * as d3 from "d3"
 
-import { IoIGroup } from "$lib/types/deal"
+import { IntentionOfInvestmentGroup } from "$lib/types/data"
 
 export type Data = {
   key: string
@@ -18,13 +18,13 @@ export type Group = {
 }
 
 export const IOI_GROUP_COLORS: {
-  [key in IoIGroup]: string
+  [key in IntentionOfInvestmentGroup]: string
 } = {
   // copied from tailwind.config
-  [IoIGroup.FORESTRY]: "#477722",
-  [IoIGroup.AGRICULTURE]: "#E7CC41",
-  [IoIGroup.RENEWABLE_ENERGY]: "#AA70DD",
-  [IoIGroup.OTHER]: "#E8726A",
+  [IntentionOfInvestmentGroup.FORESTRY]: "#477722",
+  [IntentionOfInvestmentGroup.AGRICULTURE]: "#E7CC41",
+  [IntentionOfInvestmentGroup.RENEWABLE_ENERGY]: "#AA70DD",
+  [IntentionOfInvestmentGroup.OTHER]: "#E8726A",
 }
 
 export const drawGraph = async (

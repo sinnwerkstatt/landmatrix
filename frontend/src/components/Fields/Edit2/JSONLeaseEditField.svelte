@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import type { JSONLeaseFieldType } from "$lib/types/newtypes"
+  import type { JSONLeaseFieldType } from "$lib/types/data"
 
   import AddButton from "$components/Fields/Edit2/JSONFieldComponents/AddButton.svelte"
   import RemoveButton from "$components/Fields/Edit2/JSONFieldComponents/RemoveButton.svelte"

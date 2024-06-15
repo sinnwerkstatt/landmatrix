@@ -3,7 +3,7 @@
   import { slide } from "svelte/transition"
 
   import { newNanoid } from "$lib/helpers"
-  import { DataSource } from "$lib/types/newtypes"
+  import { DataSource } from "$lib/types/data"
   import { isEmptySubmodel } from "$lib/utils/data_processing"
 
   import LowLevelNullBooleanField from "$components/Fields/Edit2/LowLevelNullBooleanField.svelte"

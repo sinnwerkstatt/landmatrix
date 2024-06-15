@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { DealHull } from "$lib/types/newtypes"
+  import type { DealHull } from "$lib/types/data"
 
   import SectionHistory from "$components/SectionHistory.svelte"
 

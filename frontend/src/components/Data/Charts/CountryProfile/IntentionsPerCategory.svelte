@@ -13,8 +13,8 @@
     MySankeyLink,
     MySankeyNode,
   } from "$lib/data/charts/intentionsPerCategory"
-  import { implementationStatusMap, intentionOfInvestmentMap } from "$lib/stores/maps"
-  import type { DealVersion2 } from "$lib/types/newtypes"
+  import { fieldChoices, getFieldChoicesLabel } from "$lib/stores"
+  import type { DealVersion2 } from "$lib/types/data"
 
   import ChartWrapper from "$components/Data/Charts/DownloadWrapper.svelte"
   import { downloadCSV, downloadJSON, downloadSVG } from "$components/Data/Charts/utils"
@@ -45,6 +45,13 @@
   let nodes: MySankeyNode[] = []
   let links: MySankeyLink[] = []
 
+  $: getIoILabel = getFieldChoicesLabel(
+    $fieldChoices["deal"]["intention_of_investment"],
+  )
+  $: getStatusLabel = getFieldChoicesLabel(
+    $fieldChoices["deal"]["implementation_status"],
+  )
+
   $: if (browser && deals?.length > 0) {
     let datanodes: Set<string> = new Set()
     let datalinks: { [key: string]: number } = {}
@@ -62,13 +69,13 @@
       })
     })
     nodes = [...datanodes].map(n => {
-      const istatus = $implementationStatusMap[n] || n === "S_UNKNOWN"
+      const istatus = getStatusLabel(n) || n === "S_UNKNOWN"
       const deal_count = istatus ? i_status_counter[n] : 0
       const name =
         (n === "S_UNKNOWN" && $_("Status unknown")) ||
         (n === "I_UNKNOWN" && $_("Intention unknown")) ||
-        $implementationStatusMap[n] ||
-        $intentionOfInvestmentMap[n]
+        getStatusLabel(n) ||
+        getIoILabel(n)
       return { id: n, istatus, deal_count, name }
     })
     links = Object.entries(datalinks).map(([k, v]) => {

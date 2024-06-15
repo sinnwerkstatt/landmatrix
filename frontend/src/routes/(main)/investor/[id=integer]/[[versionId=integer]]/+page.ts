@@ -1,6 +1,6 @@
 import { error, redirect, type NumericRange } from "@sveltejs/kit"
 
-import type { InvestorHull } from "$lib/types/newtypes"
+import type { InvestorHull } from "$lib/types/data"
 
 import type { PageLoad } from "./$types"
 

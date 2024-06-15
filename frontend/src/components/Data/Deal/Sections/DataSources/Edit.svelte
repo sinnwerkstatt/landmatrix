@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import { type DataSource, type DealHull } from "$lib/types/newtypes"
+  import { type DataSource, type DealHull } from "$lib/types/data"
 
   import SubmodelEditField from "$components/Fields/SubmodelEditField.svelte"
 

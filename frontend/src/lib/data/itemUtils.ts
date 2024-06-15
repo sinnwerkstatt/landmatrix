@@ -1,7 +1,9 @@
 import * as R from "ramda"
 
-import type { BaseItem } from "$lib/types/deal"
-
+export interface BaseItem {
+  date?: string | null
+  current?: boolean
+}
 export type Item = BaseItem | Record<string, unknown>
 
 export type Dated<T extends Item> = T & { date: string }

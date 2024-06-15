@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { DealHull } from "$lib/types/newtypes"
+  import type { DealHull } from "$lib/types/data"
 
   import EditSubsection from "$components/EditSubsection.svelte"
   import EditField from "$components/Fields/EditField.svelte"

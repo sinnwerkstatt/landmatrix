@@ -13,7 +13,7 @@
   import type { components } from "$lib/openAPI"
   import { dealsNG } from "$lib/stores"
   import { isMobile, loading } from "$lib/stores/basics"
-  import { Location2, type DealHull } from "$lib/types/newtypes"
+  import { type DealHull, type Location2 } from "$lib/types/data"
 
   import DataContainer from "$components/Data/DataContainer.svelte"
   import FilterCollapse from "$components/Data/FilterCollapse.svelte"

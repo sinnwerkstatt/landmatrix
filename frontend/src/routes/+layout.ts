@@ -5,7 +5,7 @@ import createClient from "openapi-fetch"
 import { i18nload } from "$lib/i18n/i18n"
 import type { components, paths } from "$lib/openAPI"
 import { fetchAboutPages, fetchObservatoryPages } from "$lib/stores/wagtail"
-import type { User } from "$lib/types/newtypes"
+import type { User } from "$lib/types/data"
 
 import type { LayoutLoad } from "./$types"
 
@@ -29,10 +29,12 @@ export const load: LayoutLoad = async ({ fetch, data }) => {
   await fetchAboutPages(fetch, lang)
 
   const countriesReq = await apiClient.GET("/api/countries/")
+  // @ts-expect-error openapi-fetch types broken
   if (countriesReq.error) error(500, countriesReq.error)
   const countries: components["schemas"]["Country"][] = countriesReq.data
 
   const regionsReq = await apiClient.GET("/api/regions/")
+  // @ts-expect-error openapi-fetch types broken
   if (regionsReq.error) error(500, regionsReq.error)
   const regions: components["schemas"]["Region"][] = regionsReq.data
 

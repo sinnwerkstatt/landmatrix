@@ -7,23 +7,26 @@
     negotiationStatusGroupReducer,
   } from "$lib/data/charts/negotiationStatusGroup"
   import { createChartData } from "$lib/data/createChartData"
-  import { negotiationStatusGroupMap } from "$lib/stores/maps"
-  import type { Deal } from "$lib/types/deal"
-  import { NegotiationStatusGroup } from "$lib/types/deal"
+  import { fieldChoices, getFieldChoicesLabel } from "$lib/stores"
+  import { NegotiationStatusGroup, type DealVersion2 } from "$lib/types/data"
 
   import DownloadablePieChart from "$components/Data/Charts/DownloadablePieChart.svelte"
 
-  export let deals: Deal[] = []
+  export let deals: DealVersion2[] = []
   export let displayDealsCount = false
 
   let sortBy: SortBy
   $: sortBy = displayDealsCount ? "count" : "size"
   $: unit = displayDealsCount ? "deals" : "ha"
 
+  $: getStatusGroupLabel = getFieldChoicesLabel(
+    $fieldChoices["deal"]["negotiation_status_group"],
+  ) as (key: NegotiationStatusGroup) => string
+
   $: createData = createChartData<NegotiationStatusGroup>(
     negotiationStatusGroupReducer,
     Object.values(NegotiationStatusGroup),
-    (key: NegotiationStatusGroup) => $negotiationStatusGroupMap[key],
+    getStatusGroupLabel,
     (key: NegotiationStatusGroup) => NEGOTIATION_STATUS_GROUP_COLORS[key],
   )
   $: data = createData(deals, sortBy)

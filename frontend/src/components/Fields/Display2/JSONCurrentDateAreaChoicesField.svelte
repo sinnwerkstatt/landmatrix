@@ -2,7 +2,7 @@
   import { _ } from "svelte-i18n"
 
   import type { ValueLabelEntry } from "$lib/stores"
-  import type { JSONCurrentDateAreaChoicesFieldType } from "$lib/types/newtypes"
+  import type { JSONCurrentDateAreaChoicesFieldType } from "$lib/types/data"
 
   import { dateCurrentFormat } from "$components/Fields/Display2/jsonHelpers"
 

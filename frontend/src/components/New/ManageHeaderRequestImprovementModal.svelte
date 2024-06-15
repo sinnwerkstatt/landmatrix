@@ -10,7 +10,7 @@
     type DealHull,
     type InvestorHull,
     type User,
-  } from "$lib/types/newtypes.js"
+  } from "$lib/types/data.js"
   import { getCsrfToken } from "$lib/utils"
 
   import UserSelect from "$components/LowLevel/UserSelect.svelte"

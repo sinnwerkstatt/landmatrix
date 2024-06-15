@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import type { DealHull, DealVersion2 } from "$lib/types/newtypes"
+  import type { DealHull, DealVersion2 } from "$lib/types/data"
 
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import InvolvementsGraph from "$components/New/InvolvementsGraph/InvolvementsGraph.svelte"

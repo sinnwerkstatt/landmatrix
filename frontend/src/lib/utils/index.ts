@@ -1,4 +1,4 @@
-import type { DealHull, InvestorHull } from "$lib/types/newtypes"
+import type { DealHull, InvestorHull } from "$lib/types/data"
 
 type TableObj = DealHull | InvestorHull | { [key: string]: unknown }
 

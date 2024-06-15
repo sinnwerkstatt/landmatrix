@@ -1,7 +1,7 @@
 <script lang="ts">
   import { isNotEmpty } from "$lib/helpers"
   import { objectSections } from "$lib/sections"
-  import type { DealVersion2, InvestorVersion2 } from "$lib/types/newtypes"
+  import type { DealVersion2, InvestorVersion2 } from "$lib/types/data"
 
   // export let id: keyof typeof $dealSections
   export let id: string

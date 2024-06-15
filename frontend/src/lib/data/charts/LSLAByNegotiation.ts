@@ -1,31 +1,6 @@
-/**
- *
- */
 import { max, range, scaleBand, scaleLinear, select } from "d3"
 import { t } from "svelte-i18n"
 import { get } from "svelte/store"
-
-import { NegotiationStatus, NegotiationStatusGroup } from "$lib/types/deal"
-
-const getFlatNegStatusMap = (
-  $t: (t: string) => string,
-): { [key in NegotiationStatus | NegotiationStatusGroup]: string } => {
-  return {
-    [NegotiationStatus.EXPRESSION_OF_INTEREST]: $t("Expression of interest"),
-    [NegotiationStatus.UNDER_NEGOTIATION]: $t("Under negotiation"),
-    [NegotiationStatus.MEMORANDUM_OF_UNDERSTANDING]: $t("Memorandum of understanding"),
-    [NegotiationStatus.ORAL_AGREEMENT]: $t("Oral agreement"),
-    [NegotiationStatus.CONTRACT_SIGNED]: $t("Contract signed"),
-    [NegotiationStatus.CHANGE_OF_OWNERSHIP]: $t("Change of ownership"),
-    [NegotiationStatus.NEGOTIATIONS_FAILED]: $t("Negotiations failed"),
-    [NegotiationStatus.CONTRACT_CANCELED]: $t("Contract canceled"),
-
-    [NegotiationStatusGroup.INTENDED]: $t("Intended"),
-    [NegotiationStatusGroup.CONCLUDED]: $t("Concluded"),
-    [NegotiationStatusGroup.FAILED]: $t("Failed"),
-    [NegotiationStatusGroup.CONTRACT_EXPIRED]: $t("Contract expired"),
-  }
-}
 
 export class LSLAData {
   public name: string
@@ -33,14 +8,14 @@ export class LSLAData {
   public contract_size = 0
   public intended_size = 0
   public bold?: boolean
-  constructor(name: NegotiationStatus | NegotiationStatusGroup, bold = false) {
-    this.name = getFlatNegStatusMap(get(t))[name]
+  constructor(name: string, bold = false) {
+    this.name = name
     this.bold = bold
   }
-  add(contract_size: number, intended_size: number): void {
+  add(contract_size?: number | null, intended_size?: number | null): void {
     this.amount += 1
-    this.contract_size += contract_size || 0
-    this.intended_size += intended_size || 0
+    this.contract_size += contract_size ?? 0
+    this.intended_size += intended_size ?? 0
   }
 }
 

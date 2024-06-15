@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import type { JSONCurrentDateAreaFieldType } from "$lib/types/newtypes"
+  import type { JSONCurrentDateAreaFieldType } from "$lib/types/data"
 
   import { dateCurrentFormat } from "$components/Fields/Display2/jsonHelpers"
 

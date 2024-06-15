@@ -2,7 +2,7 @@
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
-  import type { InvestorHull } from "$lib/types/newtypes"
+  import type { InvestorHull } from "$lib/types/data"
 
   import CountryField from "$components/Fields/Display2/CountryField.svelte"
 

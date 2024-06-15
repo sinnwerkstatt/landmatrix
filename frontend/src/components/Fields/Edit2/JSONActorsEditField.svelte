@@ -3,7 +3,7 @@
   import Select from "svelte-select"
 
   import { fieldChoices } from "$lib/stores"
-  import type { InvolvedActor } from "$lib/types/newtypes"
+  import type { InvolvedActor } from "$lib/types/data"
 
   import AddButton from "$components/Fields/Edit2/JSONFieldComponents/AddButton.svelte"
   import {

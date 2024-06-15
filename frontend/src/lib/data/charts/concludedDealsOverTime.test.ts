@@ -3,18 +3,18 @@ import {
   createConcludedDealsOverTimeReducer,
   createYearSizeMap,
 } from "$lib/data/charts/concludedDealsOverTime"
-import { NegotiationStatus } from "$lib/types/deal"
-import type { ContractSizeItem, Deal } from "$lib/types/deal"
+import type { ContractSizeItem } from "$lib/data/dealUtils"
+import type { DealVersion2 } from "$lib/types/data"
 
 describe("Cumulative number of deals", () => {
   test("a.1) Date is given on concluded negotiation status.", () => {
     expect(
       createBuckets([2004, 2005, 2006])({
         negotiation_status: [
-          { date: "2005", choice: NegotiationStatus.CONTRACT_SIGNED },
-          { choice: NegotiationStatus.CONTRACT_CANCELED },
+          { date: "2005", choice: "CONTRACT_SIGNED" },
+          { choice: "CONTRACT_CANCELED" },
         ],
-      } as Deal),
+      } satisfies Partial<DealVersion2> as DealVersion2),
     ).toEqual([
       { count: 0, size: 0 },
       { count: 1, size: 0 },
@@ -25,10 +25,10 @@ describe("Cumulative number of deals", () => {
     expect(
       createBuckets([2004, 2005, 2006, 2007])({
         negotiation_status: [
-          { date: "2005", choice: NegotiationStatus.CONTRACT_SIGNED },
-          { date: "2006", choice: NegotiationStatus.CONTRACT_CANCELED, current: true },
+          { date: "2005", choice: "CONTRACT_SIGNED" },
+          { date: "2006", choice: "CONTRACT_CANCELED", current: true },
         ],
-      } as Deal),
+      } satisfies Partial<DealVersion2> as DealVersion2),
     ).toEqual([
       { count: 0, size: 0 },
       { count: 1, size: 0 },
@@ -43,13 +43,13 @@ describe("Cumulative number of deals", () => {
     () => {
       expect(
         createBuckets([2004, 2005, 2006])({
-          negotiation_status: [{ choice: NegotiationStatus.CONTRACT_SIGNED }],
+          negotiation_status: [{ choice: "CONTRACT_SIGNED" }],
           contract_size: [
             { date: "2015", area: 70 },
             { date: "2005", area: 50 },
             { date: "2010", area: 100 },
           ],
-        } as Deal),
+        } satisfies Partial<DealVersion2> as DealVersion2),
       ).toEqual([
         { count: 0, size: 0 },
         { count: 1, size: 50 },
@@ -74,11 +74,11 @@ describe("Cumulative number of deals", () => {
           },
           {
             negotiation_status: [
-              { choice: NegotiationStatus.CONTRACT_SIGNED },
-              { date: "2010", choice: NegotiationStatus.CONTRACT_CANCELED },
+              { choice: "CONTRACT_SIGNED" },
+              { date: "2010", choice: "CONTRACT_CANCELED" },
             ],
             contract_size: [{ area: 50, current: true }, { area: 100 }],
-          } as Deal,
+          } satisfies Partial<DealVersion2> as DealVersion2,
         ),
       ).toEqual({
         excluded: { count: 1, size: 50 },
@@ -95,14 +95,12 @@ describe("Cumulative number of deals", () => {
 describe("Cumulated size under contract", () => {
   it("a) returns annual sizes for given date range.", () => {
     const deal = {
-      negotiation_status: [
-        { choice: NegotiationStatus.CONTRACT_SIGNED, current: true },
-      ],
+      negotiation_status: [{ choice: "CONTRACT_SIGNED", current: true }],
       contract_size: [
         { date: "2002", area: 20 },
         { date: "2004", area: 100, current: true },
       ],
-    } as Deal
+    } satisfies Partial<DealVersion2> as DealVersion2
     const buckets = createBuckets([2000, 2001, 2002, 2003, 2004, 2005])(deal)
     expect(buckets).toEqual([
       { size: 0, count: 0 },
@@ -116,11 +114,11 @@ describe("Cumulated size under contract", () => {
   it("b) sets sizes to zero if current negotiation status is expired/failed/canceled.", () => {
     const deal = {
       negotiation_status: [
-        { choice: NegotiationStatus.CONTRACT_SIGNED },
-        { date: "2004", choice: NegotiationStatus.CONTRACT_CANCELED, current: true },
+        { choice: "CONTRACT_SIGNED" },
+        { date: "2004", choice: "CONTRACT_CANCELED", current: true },
       ],
       contract_size: [{ date: "2002", area: 20, current: true }],
-    } as Deal
+    } satisfies Partial<DealVersion2> as DealVersion2
     const buckets = createBuckets([2000, 2001, 2002, 2003, 2004, 2005])(deal)
     expect(buckets).toEqual([
       { size: 0, count: 0 },
@@ -137,10 +135,10 @@ describe("Cumulated size under contract", () => {
     () => {
       const deal = {
         negotiation_status: [
-          { date: "2001", choice: NegotiationStatus.CONTRACT_SIGNED, current: true },
+          { date: "2001", choice: "CONTRACT_SIGNED", current: true },
         ],
         contract_size: [{ date: "2002", area: 20, current: true }],
-      } as Deal
+      } satisfies Partial<DealVersion2> as DealVersion2
       const buckets = createBuckets([2000, 2001, 2002, 2003, 2004, 2005])(deal)
       expect(buckets).toEqual([
         { size: 0, count: 0 },
@@ -158,10 +156,10 @@ describe("Cumulated size under contract", () => {
     () => {
       const deal = {
         negotiation_status: [
-          { date: "2001", choice: NegotiationStatus.CONTRACT_SIGNED, current: true },
+          { date: "2001", choice: "CONTRACT_SIGNED", current: true },
         ],
         contract_size: [{ area: 100, current: true }],
-      } as Deal
+      } satisfies Partial<DealVersion2> as DealVersion2
       const buckets = createBuckets([2000, 2001, 2002, 2003, 2004, 2005])(deal)
       expect(buckets).toEqual([
         { size: 0, count: 0 },
@@ -177,14 +175,18 @@ describe("Cumulated size under contract", () => {
 
 describe("createYearSizeMap", () => {
   it("returns empty map if no dates are given", () => {
-    expect(createYearSizeMap({} as Deal)).toEqual({})
     expect(
-      createYearSizeMap({ contract_size: [] as ContractSizeItem[] } as Deal),
+      createYearSizeMap({} satisfies Partial<DealVersion2> as DealVersion2),
+    ).toEqual({})
+    expect(
+      createYearSizeMap({
+        contract_size: [] as ContractSizeItem[],
+      } satisfies Partial<DealVersion2> as DealVersion2),
     ).toEqual({})
     expect(
       createYearSizeMap({
         contract_size: [{ area: 20 }, { area: 50, current: true }],
-      } as Deal),
+      } satisfies Partial<DealVersion2> as DealVersion2),
     ).toEqual({})
   })
 
@@ -196,7 +198,7 @@ describe("createYearSizeMap", () => {
         { area: 100 },
         { area: 50, date: "2022", current: true },
       ],
-    } as Deal
+    } satisfies Partial<DealVersion2> as DealVersion2
 
     expect(createYearSizeMap(deal)).toEqual({
       2015: 10,
@@ -213,7 +215,7 @@ describe("createYearSizeMap", () => {
           { area: 20, date: "2020", current: true },
           { area: 50, date: "2020" },
         ],
-      } as Deal
+      } satisfies Partial<DealVersion2> as DealVersion2
       const yearSizeMap = createYearSizeMap(deal)
 
       expect(yearSizeMap).toEqual({ 2020: 20 })
@@ -226,7 +228,7 @@ describe("createYearSizeMap", () => {
           { area: 20, date: "2020" },
           { area: 50, date: "2020" },
         ],
-      } as Deal
+      } satisfies Partial<DealVersion2> as DealVersion2
       const yearSizeMap = createYearSizeMap(deal)
 
       expect(yearSizeMap).toEqual({ 2020: 50 })

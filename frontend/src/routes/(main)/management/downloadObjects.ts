@@ -5,7 +5,7 @@ import * as xlsx from "xlsx"
 import { page } from "$app/stores"
 
 import { allUsers } from "$lib/stores"
-import type { DealHull, InvestorHull } from "$lib/types/newtypes"
+import type { DealHull, InvestorHull } from "$lib/types/data"
 
 const COMMON_OBJ_COLUMNS = [
   "status",

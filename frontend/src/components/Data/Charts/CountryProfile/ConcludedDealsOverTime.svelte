@@ -9,7 +9,7 @@
     drawGraph,
   } from "$lib/data/charts/concludedDealsOverTime"
   import type { ChartData } from "$lib/data/charts/concludedDealsOverTime"
-  import type { DealVersion2 } from "$lib/types/newtypes"
+  import type { DealVersion2 } from "$lib/types/data"
 
   import ChartWrapper from "$components/Data/Charts/DownloadWrapper.svelte"
   import { downloadCSV, downloadJSON, downloadSVG } from "$components/Data/Charts/utils"

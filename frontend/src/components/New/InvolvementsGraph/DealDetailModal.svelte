@@ -5,7 +5,7 @@
     JSONCurrentDateAreaChoicesFieldType,
     JSONCurrentDateAreaFieldType,
     JSONCurrentDateChoiceFieldType,
-  } from "$lib/types/newtypes"
+  } from "$lib/types/data"
 
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import Overlay from "$components/Overlay.svelte"

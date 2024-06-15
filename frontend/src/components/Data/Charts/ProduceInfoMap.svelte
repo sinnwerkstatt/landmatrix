@@ -9,7 +9,7 @@
   import type { BucketMap } from "$lib/data/buckets"
   import { createBucketMapReducer, sortBuckets } from "$lib/data/buckets"
   import { fieldChoices, type ValueLabelEntry } from "$lib/stores"
-  import type { DealHull } from "$lib/types/newtypes"
+  import type { DealHull } from "$lib/types/data"
 
   import ChartWrapper from "$components/Data/Charts/DownloadWrapper.svelte"
   import { downloadCSV, downloadJSON, downloadSVG } from "$components/Data/Charts/utils"

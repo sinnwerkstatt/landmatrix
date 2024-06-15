@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import { areaTypeMap } from "$lib/stores/maps"
+  import { fieldChoices, getFieldChoicesLabel } from "$lib/stores"
   import { AREA_TYPE_COLOR_MAP, AREA_TYPES } from "$lib/utils/location"
 </script>
 
@@ -18,7 +18,7 @@
         />
       </div>
       <span class="pl-2 text-xs">
-        {$areaTypeMap[areaType]}
+        {getFieldChoicesLabel($fieldChoices["area"]["type"])(areaType)}
       </span>
     </div>
   {/each}

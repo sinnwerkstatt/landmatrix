@@ -3,7 +3,7 @@
   import { Map } from "leaflet?client"
 
   import type { components } from "$lib/openAPI"
-  import type { Location2 } from "$lib/types/newtypes"
+  import type { Location2 } from "$lib/types/data"
 
   import LocationAreasEditField from "$components/Data/Deal/Sections/Locations/LocationAreasEditField.svelte"
   import EditField from "$components/Fields/EditField.svelte"

@@ -3,7 +3,7 @@
 
   import { page } from "$app/stores"
 
-  import { UserRole, type DealHull, type InvestorHull } from "$lib/types/newtypes"
+  import { UserRole, type DealHull, type InvestorHull } from "$lib/types/data"
 
   import ChatBubbleLeftIcon from "$components/icons/ChatBubbleLeftIcon.svelte"
   import ChatBubbleLeftRightIcon from "$components/icons/ChatBubbleLeftRightIcon.svelte"

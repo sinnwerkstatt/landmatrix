@@ -2,7 +2,7 @@
   import { _ } from "svelte-i18n"
 
   import { currencies } from "$lib/stores"
-  import type { DealVersion2 } from "$lib/types/newtypes"
+  import type { DealVersion2 } from "$lib/types/data"
 
   import CurrencySelect from "$components/Fields/Edit2/CurrencySelect.svelte"
   import EditField from "$components/Fields/EditField.svelte"

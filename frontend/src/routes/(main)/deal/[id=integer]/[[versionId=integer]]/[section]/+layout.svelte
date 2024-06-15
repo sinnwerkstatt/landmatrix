@@ -5,7 +5,7 @@
   import { page } from "$app/stores"
 
   import { loading } from "$lib/stores/basics"
-  import { UserRole } from "$lib/types/newtypes"
+  import { UserRole } from "$lib/types/data"
 
   import DealManageHeader from "$components/Data/Deal/DealManageHeader.svelte"
   import { DEAL_SECTIONS } from "$components/Data/Deal/Sections/constants"

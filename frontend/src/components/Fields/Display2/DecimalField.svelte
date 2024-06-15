@@ -2,7 +2,7 @@
   import { _ } from "svelte-i18n"
 
   import { currencies } from "$lib/stores"
-  import type { Currency } from "$lib/types/newtypes"
+  import type { Currency } from "$lib/types/data"
 
   export let value: number | null
 

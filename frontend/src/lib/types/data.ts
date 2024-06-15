@@ -47,6 +47,7 @@ export interface WorkflowInfoType {
 
 export type Currency = components["schemas"]["Currency"]
 
+// Fix dealHull type
 export interface DealHull extends Omit<components["schemas"]["Deal"], "workflowinfos"> {
   workflowinfos: WorkflowInfoType[]
 }
@@ -79,6 +80,7 @@ export interface Involvement {
   relationship: string
 }
 
+// Fix InvestorHull type
 export interface InvestorHull
   extends Omit<
     components["schemas"]["Investor"],
@@ -140,6 +142,53 @@ export type Area = components["schemas"]["LocationArea"]
 export type Location2 = components["schemas"]["Location"]
 
 export type InvestorVersion2 = components["schemas"]["InvestorVersion"]
+
+export type NegotiationStatusItem =
+  components["schemas"]["CurrentDateChoiceNegotiationStatusItem"]
+
+// Should be equal to components["schemas"]["CurrentIntentionOfInvestmentEnum"]
+export type IntentionOfInvestment = components["schemas"]["IntentionOfInvestmentEnum"]
+export type NegotiationStatus = components["schemas"]["NegotiationStatusEnum"]
+
+// export const NegotiationStatus: { [key in NegotiationStatus]: key } = {
+//   // INTENDED
+//   EXPRESSION_OF_INTEREST: "EXPRESSION_OF_INTEREST",
+//   UNDER_NEGOTIATION: "UNDER_NEGOTIATION",
+//   MEMORANDUM_OF_UNDERSTANDING: "MEMORANDUM_OF_UNDERSTANDING",
+//   // CONCLUDED
+//   ORAL_AGREEMENT: "ORAL_AGREEMENT",
+//   CONTRACT_SIGNED: "CONTRACT_SIGNED",
+//   CHANGE_OF_OWNERSHIP: "CHANGE_OF_OWNERSHIP",
+//   // FAILED
+//   NEGOTIATIONS_FAILED: "NEGOTIATIONS_FAILED",
+//   CONTRACT_CANCELED: "CONTRACT_CANCELED",
+//   // CONTRACT_EXPIRED
+//   CONTRACT_EXPIRED: "CONTRACT_EXPIRED",
+// }
+
+export type ImplementationStatus = components["schemas"]["ImplementationStatusEnum"]
+export type NatureOfDeal = components["schemas"]["NatureOfDealEnum"]
+// export type ProduceGroup = components["schemas"][""]
+
+// Todo: solve differently, get from backend?
+// Define a ts enum for IntentionOfInvestment groups
+export enum IntentionOfInvestmentGroup {
+  AGRICULTURE = "AGRICULTURE",
+  FORESTRY = "FORESTRY",
+  RENEWABLE_ENERGY = "RENEWABLE_ENERGY",
+  OTHER = "OTHER",
+}
+export enum NegotiationStatusGroup {
+  INTENDED = "INTENDED",
+  CONCLUDED = "CONCLUDED",
+  FAILED = "FAILED",
+  CONTRACT_EXPIRED = "CONTRACT_EXPIRED",
+}
+export enum ProduceGroup {
+  CROPS = "CROPS",
+  ANIMALS = "ANIMALS",
+  MINERAL_RESOURCES = "MINERAL_RESOURCES",
+}
 
 // Define a ts enum for components["schemas"]["RoleEnum"] for easy access
 export enum UserRole {

@@ -13,7 +13,7 @@
 
   import { Matomo } from "@sinnwerkstatt/sveltekit-matomo"
 
-  import type { User } from "$lib/types/newtypes"
+  import type { User } from "$lib/types/data"
 
   export let data
 

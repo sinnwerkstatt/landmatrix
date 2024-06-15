@@ -1,4 +1,4 @@
-import type { DealVersion2 } from "$lib/types/newtypes"
+import type { DealVersion2 } from "$lib/types/data"
 
 export interface SubmodelEntry {
   nid: string

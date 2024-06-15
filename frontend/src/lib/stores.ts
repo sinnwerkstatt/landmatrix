@@ -9,21 +9,28 @@ import { browser } from "$app/environment"
 import { filters, publicOnly } from "$lib/filters"
 import type { components, paths } from "$lib/openAPI"
 import { loading } from "$lib/stores/basics"
-import type { DealHull, InvestorHull } from "$lib/types/newtypes"
+import type { DealHull, InvestorHull } from "$lib/types/data"
 
-export interface ValueLabelEntry {
-  value: string
-  label: string
-  group?: string
-}
+export type ValueLabelEntry = components["schemas"]["ValueLabel"]
 
 const serverApiClient = createClient<paths>({ baseUrl: env.PUBLIC_BASE_URL })
 
-export const fieldChoices = readable<components["schemas"]["FieldChoices"]>(
+export const fieldChoices = derived(
+  [locale],
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  ([$locale], set) => {
+    serverApiClient.GET("/api/field_choices/").then(ret => {
+      // @ts-expect-error openapi-fetch types broken
+      if (ret.error) error(500, ret.error)
+      set(ret.data)
+    })
+  },
   {
     deal: {
       intention_of_investment: [],
+      intention_of_investment_group: [],
       negotiation_status: [],
+      negotiation_status_group: [],
       implementation_status: [],
       level_of_accuracy: [],
       nature_of_deal: [],
@@ -46,19 +53,29 @@ export const fieldChoices = readable<components["schemas"]["FieldChoices"]>(
       not_public_reason: [],
       actors: [],
     },
-    datasource: {
-      type: [],
-    },
+    datasource: { type: [] },
     investor: { classification: [] },
     involvement: { role: [], investment_type: [], parent_relation: [] },
-  },
-  set => {
-    serverApiClient.GET("/api/field_choices/").then(ret => {
-      if (ret.error) error(500, ret.error)
-      set(ret.data)
-    })
-  },
+    area: { type: [] },
+  } as components["schemas"]["FieldChoices"],
 )
+
+// fieldChoices.subscribe(value => console.log(value))
+
+export const findChoice = (
+  choices: ValueLabelEntry[],
+  value: string,
+): ValueLabelEntry | undefined => choices.find(x => x.value === value)
+
+export const getFieldChoicesLabel =
+  (choices: ValueLabelEntry[]) =>
+  (value: string): string | undefined =>
+    findChoice(choices, value)?.label
+
+export const getFieldChoicesGroup =
+  (choices: ValueLabelEntry[]) =>
+  (value: string): string | undefined =>
+    findChoice(choices, value)?.group
 
 export const blogCategories = derived(
   [locale],
@@ -66,6 +83,7 @@ export const blogCategories = derived(
     serverApiClient
       .GET("/api/blog_categories/", { params: { query: { lang: $locale } } })
       .then(ret => {
+        // @ts-expect-error openapi-fetch types broken
         if (ret.error) error(500, ret.error)
         set(ret.data)
       })
@@ -79,6 +97,7 @@ export const chartDescriptions = derived(
     serverApiClient
       .GET(`/api/chart_descriptions/`, { params: { query: { lang: $locale } } })
       .then(ret => {
+        // @ts-expect-error openapi-fetch types broken
         if (ret.error) error(500, ret.error)
         set(ret.data)
       })
@@ -97,34 +116,15 @@ export const allUsers = readable([] as components["schemas"]["LeanUser"][], set 
     return
   }
   serverApiClient.GET("/api/users/").then(ret => {
+    // @ts-expect-error openapi-fetch types broken
     if (ret.error) error(500, ret.error)
     set(ret.data)
   })
 })
 
-// interface FieldDefinition {
-//   id: number
-//   model: "deal" | "investor"
-//   field: string
-//   short_description: string
-//   long_description: string
-//   editor_description: string
-// }
-//
-// export const fieldDefinitions = derived(
-//   [locale],
-//   ([$locale], set) => {
-//     fetch(env.PUBLIC_BASE_URL + "/api/field_definitions/", {
-//       headers: { "Accept-Language": $locale ?? "en" },
-//     })
-//       .then(ret => ret.json() as Promise<FieldDefinition[]>)
-//       .then(set)
-//   },
-//   [] as FieldDefinition[],
-// )
-
 export const currencies = readable<components["schemas"]["Currency"][]>([], set => {
   serverApiClient.GET("/api/currencies/").then(ret => {
+    // @ts-expect-error openapi-fetch types broken
     if (ret.error) error(500, ret.error)
     set(ret.data)
   })
@@ -166,6 +166,7 @@ export const simpleInvestors = readable(
   [] as components["schemas"]["SimpleInvestor"][],
   set => {
     serverApiClient.GET("/api/investors/simple/").then(ret => {
+      // @ts-expect-error openapi-fetch types broken
       if (ret.error) error(500, ret.error)
       set(ret.data)
     })

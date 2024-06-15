@@ -14,7 +14,7 @@
     type Location2,
     type PointFeature,
     type PointFeatureProps,
-  } from "$lib/types/newtypes"
+  } from "$lib/types/data"
   import { createComponentAsDiv } from "$lib/utils/domHelpers"
   import { createPointFeatures } from "$lib/utils/location"
   import { padBounds } from "$lib/utils/location.js"

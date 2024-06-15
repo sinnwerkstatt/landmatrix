@@ -1,8 +1,8 @@
 <script lang="ts">
   import type { ComponentType } from "svelte"
 
-  import { intentionOfInvestmentMap } from "$lib/stores/maps"
-  import type { IntentionOfInvestment } from "$lib/types/deal"
+  import { fieldChoices, getFieldChoicesLabel } from "$lib/stores"
+  import type { IntentionOfInvestment } from "$lib/types/data"
 
   import AgricultureIcon from "$components/icons/AgricultureIcon.svelte"
   import FoodCropsIcon from "$components/icons/FoodCropsIcon.svelte"
@@ -48,6 +48,10 @@
     TOURISM: PlaneIcon,
     OTHER: OtterIcon,
   }
+
+  $: getIoILabel = getFieldChoicesLabel(
+    $fieldChoices["deal"]["intention_of_investment"],
+  )
 </script>
 
 {#each value as ioi}
@@ -57,8 +61,6 @@
     {#if icons[ioi]}
       <svelte:component this={icons[ioi]} />
     {/if}
-    <!-- This is a special case where the string to be translated is NOT defined
-        in the backend and needs to be defined in the frontend -->
-    {$intentionOfInvestmentMap[ioi]}
+    {getIoILabel(ioi)}
   </span>
 {/each}

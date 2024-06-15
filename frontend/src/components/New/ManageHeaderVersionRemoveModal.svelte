@@ -4,7 +4,7 @@
 
   import { goto } from "$app/navigation"
 
-  import type { DealHull, InvestorHull } from "$lib/types/newtypes.js"
+  import type { DealHull, InvestorHull } from "$lib/types/data.js"
   import { getCsrfToken } from "$lib/utils"
 
   import Modal from "$components/Modal.svelte"

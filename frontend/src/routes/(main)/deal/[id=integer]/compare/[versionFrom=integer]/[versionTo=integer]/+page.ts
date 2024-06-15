@@ -1,7 +1,7 @@
 import { error } from "@sveltejs/kit"
 import { diff } from "deep-object-diff"
 
-import type { DealHull } from "$lib/types/newtypes"
+import type { DealHull } from "$lib/types/data"
 
 import type { PageLoad } from "./$types"
 

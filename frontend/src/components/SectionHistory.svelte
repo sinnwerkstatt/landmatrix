@@ -9,7 +9,7 @@
     Version2Status,
     type DealHull,
     type InvestorHull,
-  } from "$lib/types/newtypes"
+  } from "$lib/types/data"
 
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import CheckCircleIcon from "$components/icons/CheckCircleIcon.svelte"

@@ -8,10 +8,10 @@ import {
   hasBeenConcluded,
   hasConcludedDate,
 } from "$lib/data/dealUtils"
+import type { ContractSizeItem } from "$lib/data/dealUtils"
 import type { Dated } from "$lib/data/itemUtils"
 import { isDated, parseDate } from "$lib/data/itemUtils"
-import type { ContractSizeItem } from "$lib/types/deal"
-import type { DealVersion2 } from "$lib/types/newtypes"
+import type { DealVersion2 } from "$lib/types/data"
 
 const getCurrentYear: () => number = R.pipe(
   R.constructN(0, Date),

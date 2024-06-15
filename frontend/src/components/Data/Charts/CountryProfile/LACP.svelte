@@ -11,16 +11,8 @@
   } from "$lib/data/buckets"
   import { clearGraph } from "$lib/data/charts/concludedDealsOverTime"
   import { isConcluded } from "$lib/data/dealUtils"
-  import {
-    intentionOfInvestmentGroupMap,
-    intentionOfInvestmentMap,
-  } from "$lib/stores/maps"
-  import {
-    INTENTION_OF_INVESTMENT_GROUP_MAP,
-    IoI,
-    type IoIGroup,
-  } from "$lib/types/deal"
-  import type { DealVersion2 } from "$lib/types/newtypes"
+  import { fieldChoices, getFieldChoicesGroup, getFieldChoicesLabel } from "$lib/stores"
+  import { IntentionOfInvestmentGroup, type DealVersion2 } from "$lib/types/data"
 
   import {
     drawGraph,
@@ -58,19 +50,29 @@
         buckets,
       )
     },
-    createEmptyBuckets(Object.values(IoI)),
+    createEmptyBuckets(
+      $fieldChoices["deal"]["intention_of_investment"].map(x => x.value),
+    ),
+  )
+
+  $: getLabel = getFieldChoicesLabel($fieldChoices["deal"]["intention_of_investment"])
+  $: getGroup = getFieldChoicesGroup($fieldChoices["deal"]["intention_of_investment"])
+  $: getGroupLabel = getFieldChoicesLabel(
+    $fieldChoices["deal"]["intention_of_investment_group"],
   )
 
   let data: Data
   $: data = bucketEntries(buckets)
     .map(([key, value]) => {
-      const groupKey = INTENTION_OF_INVESTMENT_GROUP_MAP[key]
+      const label = getLabel(key) as string
+      const groupKey = getGroup(key) as IntentionOfInvestmentGroup
+      const groupLabel = getGroupLabel(groupKey) as string
       return {
         key,
-        label: $intentionOfInvestmentMap[key],
+        label,
         value: sortBy === "count" ? value.count : value.size,
         groupKey,
-        groupLabel: $intentionOfInvestmentGroupMap[groupKey],
+        groupLabel,
         color: IOI_GROUP_COLORS[groupKey],
       }
     })
@@ -81,14 +83,13 @@
   $: title = $_("Land acquisitions by category of production")
   $: xLabel = $_("Category of production")
   $: yLabel = $displayDealsCount ? $_("Deals / Total Deals") : $_("Size / Total Size")
-  $: groups = Object.entries<string>($intentionOfInvestmentGroupMap).map(entry => {
-    const key = entry[0] as IoIGroup
-    return {
-      key,
-      label: entry[1],
-      color: IOI_GROUP_COLORS[key],
-    }
-  })
+
+  // Using groups: Maybe this is a good solution for the future
+  $: groups = $fieldChoices["deal"]["intention_of_investment_group"].map(entry => ({
+    key: entry.value,
+    label: entry.label,
+    color: IOI_GROUP_COLORS[entry.value as IntentionOfInvestmentGroup],
+  }))
 
   $: if (svgElement) {
     clearGraph(svgElement)

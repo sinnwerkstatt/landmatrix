@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { DealHull } from "$lib/types/newtypes"
+  import type { DealHull } from "$lib/types/data"
 
   import DisplayField from "$components/Fields/DisplayField.svelte"
 

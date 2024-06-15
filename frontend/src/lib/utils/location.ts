@@ -9,7 +9,7 @@ import type {
   AreaType,
   Location2,
   PointFeature,
-} from "$lib/types/newtypes"
+} from "$lib/types/data"
 
 export const AREA_TYPES = [
   "production_area",

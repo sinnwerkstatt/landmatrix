@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { InvestorHull } from "$lib/types/newtypes"
+  import type { InvestorHull } from "$lib/types/data"
 
   import EditSubsection from "$components/EditSubsection.svelte"
   import EditField from "$components/Fields/EditField.svelte"

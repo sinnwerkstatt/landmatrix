@@ -1,7 +1,7 @@
 import { createBucketMapReducer } from "$lib/data/buckets"
 import { COLORS, createChartData } from "$lib/data/createChartData"
 import type { DealReducer } from "$lib/data/createChartData"
-import { ProduceGroup } from "$lib/types/deal"
+import { ProduceGroup } from "$lib/types/data"
 
 type ProduceGroupMap = { [key in ProduceGroup]: string }
 
