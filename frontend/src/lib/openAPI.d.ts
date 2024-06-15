@@ -2703,7 +2703,7 @@ export interface operations {
       path: {
         /** @description A unique integer value identifying this deal hull. */
         id: number
-        version_id: string
+        version_id: number
       }
     }
     responses: {
@@ -3016,7 +3016,7 @@ export interface operations {
       path: {
         /** @description A unique integer value identifying this investor hull. */
         id: number
-        version_id: string
+        version_id: number
       }
     }
     responses: {

@@ -1,4 +1,4 @@
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 
 from django.contrib.postgres.expressions import ArraySubquery
 from django.db import OperationalError, transaction
@@ -461,6 +461,11 @@ class DealViewSet(HullViewSet):
         )
         return Response({"dealID": d1.id, "versionID": dv1.id})
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter("version_id", location=OpenApiParameter.PATH, type=int),
+        ]
+    )
     @action(methods=["get"], url_path=r"(?P<version_id>\d+)", detail=True)
     def retrieve_version(self, request, pk: int, version_id: int):
         d1: DealHull = self.get_object()
@@ -610,6 +615,11 @@ class InvestorViewSet(HullViewSet):
         )
         return Response({"investorID": i1.id, "versionID": iv1.id})
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter("version_id", location=OpenApiParameter.PATH, type=int),
+        ]
+    )
     @action(methods=["get"], url_path=r"(?P<version_id>\d+)", detail=True)
     def retrieve_version(self, request, pk: int, version_id: int):
         i1: InvestorHull = self.get_object()

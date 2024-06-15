@@ -17,8 +17,7 @@ export const load: LayoutLoad = async ({ fetch, params, depends, parent }) => {
 
   const ret = dealVersion
     ? await apiClient.GET("/api/deals/{id}/{version_id}/", {
-        // TODO: deal_version should be number in schema
-        params: { path: { id: dealID, version_id: `${dealVersion}` } },
+        params: { path: { id: dealID, version_id: dealVersion } },
         fetch,
       })
     : await apiClient.GET("/api/deals/{id}/", {
