@@ -7,9 +7,9 @@ from django.utils.translation import gettext_lazy as _
 
 # https://stackoverflow.com/questions/68814891
 if sys.version_info < (3, 11):
-    from typing_extensions import NotRequired, TypedDict
+    from typing_extensions import NotRequired, TypedDict, Type
 else:
-    from typing import NotRequired, TypedDict
+    from typing import NotRequired, TypedDict, Type
 
 
 # TypeDict Functional API works, but use class syntax for consistency
@@ -37,6 +37,10 @@ def create_choices(items: list[ValueLabelItem]) -> list[tuple[str, Promise]]:
 # NOTE: mypy says return type is Enum...
 def create_enum(name: str, items: list[ValueLabelItem]) -> Enum:
     return Enum(name, {x["value"]: x["value"] for x in items})
+
+
+def serialize_enum(enum: Type[TextChoices]) -> list[ValueLabelItem]:
+    return [{"value": x[0], "label": x[1]} for x in enum.choices]
 
 
 # Enum Functional API works with mypy, but pycharm cannot infer types :(
@@ -266,25 +270,24 @@ NegotiationStatusEnum = Enum(
     "NegotiationStatusEnum", {x["value"]: x["value"] for x in NEGOTIATION_STATUS_ITEMS}
 )
 
-IMPLEMENTATION_STATUS_ITEMS: list[ValueLabelItem] = [
-    {"value": "PROJECT_NOT_STARTED", "label": _("Project not started")},
-    {"value": "STARTUP_PHASE", "label": _("Startup phase (no production)")},
-    {"value": "IN_OPERATION", "label": _("In operation (production)")},
-    {"value": "PROJECT_ABANDONED", "label": _("Project abandoned")},
-]
-IMPLEMENTATION_STATUS_CHOICES = [
-    (x["value"], x["label"]) for x in IMPLEMENTATION_STATUS_ITEMS
-]
-ImplementationStatusEnum = Enum(
-    "ImplementationStatusEnum",
-    {x["value"]: x["value"] for x in IMPLEMENTATION_STATUS_ITEMS},
-)
 
-HA_AREA_ITEMS: list[ValueLabelItem] = [
-    {"value": "PER_HA", "label": _("per ha")},
-    {"value": "PER_AREA", "label": _("for specified area")},
-]
-HA_AREA_CHOICES = [(x["value"], x["label"]) for x in HA_AREA_ITEMS]
+class ImplementationStatusEnum(TextChoices):
+    PROJECT_NOT_STARTED = "PROJECT_NOT_STARTED", _("Project not started")
+    STARTUP_PHASE = "STARTUP_PHASE", _("Startup phase (no production)")
+    IN_OPERATION = "IN_OPERATION", _("In operation (production)")
+    PROJECT_ABANDONED = "PROJECT_ABANDONED", _("Project abandoned")
+
+
+IMPLEMENTATION_STATUS_CHOICES = ImplementationStatusEnum.choices
+IMPLEMENTATION_STATUS_ITEMS = serialize_enum(ImplementationStatusEnum)
+
+
+class HaAreasEnum(TextChoices):
+    PER_HA = "PER_HA", _("per ha")
+    PER_AREA = "PER_AREA", _("for specified area")
+
+
+HA_AREA_ITEMS = serialize_enum(HaAreasEnum)
 
 RECOGNITION_STATUS_ITEMS: list[ValueLabelItem] = [
     {

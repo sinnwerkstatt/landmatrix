@@ -45,6 +45,7 @@ export interface WorkflowInfoType {
   }[]
 }
 
+export type HaArea = components["schemas"]["HaAreasEnum"]
 export type Currency = components["schemas"]["Currency"]
 
 // Fix dealHull type

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import { currencies } from "$lib/stores"
+  import { currencies, fieldChoices } from "$lib/stores"
   import type { DealVersion2 } from "$lib/types/data"
 
   import CurrencySelect from "$components/Fields/Edit2/CurrencySelect.svelte"
@@ -14,8 +14,6 @@
     "purchase_price_area" | "annual_leasing_fee_area",
   ]
   export let version: DealVersion2
-
-  const PERTYPES = { PER_HA: $_("per ha"), PER_AREA: $_("for specified area") }
 </script>
 
 <EditField bind:value={version[fields[0]]} fieldname={fields[0]} showLabel>
@@ -28,8 +26,9 @@
     class:italic={version[fields[2]] === null}
   >
     <option class="italic" value={null}>- per -</option>
-    <option class="not-italic" value="PER_HA">{PERTYPES.PER_HA}</option>
-    <option class="not-italic" value="PER_AREA">{PERTYPES.PER_AREA}</option>
+    {#each $fieldChoices["deal"]["ha_area"] as { value, label }}
+      <option class="not-italic" {value}>{label}</option>
+    {/each}
   </select>
 </EditField>
 
@@ -38,9 +37,9 @@
 {#if version[fields[0]] && version[fields[3]]}
   <div class="mx-4 mb-6 text-lg italic text-violet-600">
     {#if !version[fields[1]]}
-      Please specify a currency
+      {$_("Please specify a currency")}
     {:else if !version[fields[2]]}
-      Please specify if the amount is per total area or per ha
+      {$_("Please specify if the amount is per total area or per ha")}
     {:else}
       {@const curSym = version[fields[1]]
         ? $currencies.find(c => c.id === version[fields[1]])?.symbol

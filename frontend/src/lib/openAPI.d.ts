@@ -260,12 +260,6 @@ export interface components {
       | "POU"
       | "SHP"
       | "SHR"
-    /**
-     * @description * `PER_HA` - per ha
-     * * `PER_AREA` - for specified area
-     * @enum {string}
-     */
-    AnnualLeasingFeeTypeEnum: "PER_HA" | "PER_AREA"
     AreaFields: {
       type: components["schemas"]["ValueLabel"][]
     }
@@ -936,7 +930,7 @@ export interface components {
       purchase_price?: number | null
       /** Purchase price area type */
       purchase_price_type?:
-        | components["schemas"]["PurchasePriceTypeEnum"]
+        | components["schemas"]["HaAreasEnum"]
         | components["schemas"]["BlankEnum"]
         | components["schemas"]["NullEnum"]
         | null
@@ -948,7 +942,7 @@ export interface components {
       annual_leasing_fee?: number | null
       /** Annual leasing fee area type */
       annual_leasing_fee_type?:
-        | components["schemas"]["AnnualLeasingFeeTypeEnum"]
+        | components["schemas"]["HaAreasEnum"]
         | components["schemas"]["BlankEnum"]
         | components["schemas"]["NullEnum"]
         | null
@@ -1451,6 +1445,12 @@ export interface components {
       | "FORESTRY"
       | "CONSERVATION"
       | "OTHER"
+    /**
+     * @description * `PER_HA` - per ha
+     * * `PER_AREA` - for specified area
+     * @enum {string}
+     */
+    HaAreasEnum: "PER_HA" | "PER_AREA"
     ImageRenditionField: {
       url: string
       full_url: string
@@ -1922,12 +1922,6 @@ export interface components {
       | "FINANCIAL_SUPPORT"
       | "COMMUNITY_SHARES"
       | "OTHER"
-    /**
-     * @description * `PER_HA` - per ha
-     * * `PER_AREA` - for specified area
-     * @enum {string}
-     */
-    PurchasePriceTypeEnum: "PER_HA" | "PER_AREA"
     /**
      * @description * `INDIGENOUS_RIGHTS_RECOGNIZED` - Indigenous Peoples traditional or customary rights recognized by government
      * * `INDIGENOUS_RIGHTS_NOT_RECOGNIZED` - Indigenous Peoples traditional or customary rights not recognized by government

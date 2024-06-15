@@ -122,7 +122,7 @@ class DealVersionBaseFields(models.Model):
     )
     purchase_price_type = models.CharField(
         _("Purchase price area type"),
-        choices=choices.HA_AREA_CHOICES,
+        choices=choices.HaAreasEnum,
         blank=True,
         null=True,
     )
@@ -151,7 +151,7 @@ class DealVersionBaseFields(models.Model):
     )
     annual_leasing_fee_type = models.CharField(
         _("Annual leasing fee area type"),
-        choices=choices.HA_AREA_CHOICES,
+        choices=choices.HaAreasEnum,
         blank=True,
         null=True,
     )

@@ -198,6 +198,10 @@ SPECTACULAR_SETTINGS = {
     # "SERVE_URLCONF": "apps.api.urls",
     "PREPROCESSING_HOOKS": ["apps.api.spectacular.preprocessing_filter_spec"],
     # "SERVE_PUBLIC": False,
+    "ENUM_NAME_OVERRIDES": {
+        # Reuse enum instead of create a distinct one per choices field
+        "HaAreasEnum": "apps.landmatrix.models.choices.HaAreasEnum",
+    },
 }
 
 IMPERSONATE = {
