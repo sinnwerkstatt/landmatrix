@@ -15,6 +15,7 @@ else:
 # TypeDict Functional API works, but use class syntax for consistency
 class ValueLabelItem(TypedDict):
     value: str
+    # QUESTION: Use Promise or str here?
     label: Promise
     group: NotRequired[str]
 
@@ -40,20 +41,12 @@ class ValueLabelItem(TypedDict):
 #     return Enum(name, {x["value"]: x["value"] for x in items})
 
 
+# TODO: Write test
 def serialize_enum(enum: Type[TextChoices]) -> list[ValueLabelItem]:
+    # return [{"value": x.value, "label": x.label} for x in enum]
     return [{"value": x[0], "label": x[1]} for x in enum.choices]
 
 
-# Enum Functional API works with mypy, but pycharm cannot infer types :(
-# QUESTION: Use Promise or str here?
-# class IoIGroup(Promise, Enum):
-#     AGRICULTURE = _("Agriculture")
-#     FORESTRY = _("Forestry")
-#     RENEWABLE_ENERGY = _("Renewable energy power plants")
-#     OTHER = _("Other")
-
-
-# Alternatively use TextChoices
 # https://docs.djangoproject.com/en/5.0/ref/models/fields/#enumeration-types
 class IntentionOfInvestmentGroupEnum(TextChoices):
     AGRICULTURE = "AGRICULTURE", _("Agriculture")
@@ -214,6 +207,7 @@ NEGOTIATION_STATUS_GROUP_ITEMS = serialize_enum(NegotiationStatusGroupEnum)
 
 NEGOTIATION_STATUS_ITEMS: list[ValueLabelItem] = [
     {
+        # TBC: @nuts not a string literal in backend, but in frontend
         "value": "EXPRESSION_OF_INTEREST",
         "label": _("Intended (Expression of interest)"),
         "group": NegotiationStatusGroupEnum.INTENDED,
@@ -267,6 +261,7 @@ NegotiationStatusEnum = Enum(
 )
 
 
+# TBC: Continue here
 class ImplementationStatusEnum(TextChoices):
     PROJECT_NOT_STARTED = "PROJECT_NOT_STARTED", _("Project not started")
     STARTUP_PHASE = "STARTUP_PHASE", _("Startup phase (no production)")
@@ -402,10 +397,11 @@ FORMER_LAND_COVER_ITEMS: list[ValueLabelItem] = [
 FORMER_LAND_COVER_CHOICES = [(x["value"], x["label"]) for x in FORMER_LAND_COVER_ITEMS]
 
 
-class ProduceGroup(Promise, Enum):
-    CROPS = _("Crops")
-    ANIMALS = _("Livestock")
-    MINERAL_RESOURCES = _("Mineral resources")
+# FIXME: Use me
+class ProduceGroupEnum(TextChoices):
+    CROPS = "CROPS", _("Crops")
+    ANIMALS = "ANIMALS", _("Livestock")
+    MINERAL_RESOURCES = "MINERAL_RESOURCES", _("Mineral resources")
 
 
 # FIXME: produce field not in use
@@ -757,6 +753,7 @@ INVOLVEMENT_ROLE_CHOICES = [(x["value"], x["label"]) for x in INVOLVEMENT_ROLE_I
 INVOLVEMENT_ROLE_DICT = {x["value"]: x["label"] for x in INVOLVEMENT_ROLE_ITEMS}
 
 
+# TODO: Sync with investors.py
 PARENT_RELATION_ITEMS: list[ValueLabelItem] = [
     {"value": "SUBSIDIARY", "label": _("Subsidiary of parent company")},
     {"value": "LOCAL_BRANCH", "label": _("Local branch of parent company")},

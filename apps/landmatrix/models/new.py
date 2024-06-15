@@ -22,6 +22,7 @@ from wagtail.models import Site
 
 from apps.accounts.models import User, UserRole
 from apps.landmatrix.models import choices, schema
+from apps.landmatrix.models.choices import NatureOfDealEnum
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.fields import (
@@ -1007,7 +1008,7 @@ class DealVersion(DealVersionBaseFields, BaseVersionMixin):
 
     def __calculate_initiation_year(self):
         self.negotiation_status: list
-        valid_negotation_status = (
+        valid_negotiation_status = (
             [
                 int(x.date[:4])
                 for x in self.negotiation_status
@@ -1040,14 +1041,16 @@ class DealVersion(DealVersionBaseFields, BaseVersionMixin):
             if self.implementation_status
             else []
         )
-        dates = valid_implementation_status + valid_negotation_status
+        dates = valid_implementation_status + valid_negotiation_status
         return min(dates) if dates else None
 
     def __calculate_forest_concession(self) -> bool:
         return bool(
             self.nature_of_deal
+            # TODO: Replace literal with NatureOfDealEnum or enforce type checking on self.nature_of_deal
             and "CONCESSION" in self.nature_of_deal
             and self.current_intention_of_investment
+            # TODO: Replace with IntentionOfInvestmentEnum
             and "FOREST_LOGGING" in self.current_intention_of_investment
         )
 
