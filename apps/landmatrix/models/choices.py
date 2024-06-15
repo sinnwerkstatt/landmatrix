@@ -1,22 +1,68 @@
+import sys
 from enum import Enum
 
+from django.db.models import TextChoices
+from django.utils.functional import Promise
 from django.utils.translation import gettext_lazy as _
 
+# https://stackoverflow.com/questions/68814891
+if sys.version_info < (3, 11):
+    from typing_extensions import NotRequired, TypedDict
+else:
+    from typing import NotRequired, TypedDict
 
-# NOTE: IoIGroup is not stored in database
-class IoIGroup(Enum):
-    AGRICULTURE = _("Agriculture")
-    FORESTRY = _("Forestry")
-    RENEWABLE_ENERGY = _("Renewable energy power plants")
-    OTHER = _("Other")
+
+# TypeDict Functional API works, but use class syntax for consistency
+class ValueLabelItem(TypedDict):
+    value: str
+    label: Promise
+    group: NotRequired[str]
+
+
+# Callable does not get inferred correctly by pycharm :((
+#
+# create_choices: Callable[[list[ValueLabelItem]], list[tuple[str, Promise]]] = (
+#     lambda items: [(x["value"], x["label"]) for x in items]
+# )
+#
+# create_enum: Callable[[str, list[ValueLabelItem]], Enum] = lambda name, items: Enum(
+#     name, {x["value"]: x["value"] for x in items}
+# )
+
+
+def create_choices(items: list[ValueLabelItem]) -> list[tuple[str, Promise]]:
+    return [(x["value"], x["label"]) for x in items]
+
+
+# NOTE: mypy says return type is Enum...
+def create_enum(name: str, items: list[ValueLabelItem]) -> Enum:
+    return Enum(name, {x["value"]: x["value"] for x in items})
+
+
+# Enum Functional API works with mypy, but pycharm cannot infer types :(
+# QUESTION: Use Promise or str here?
+# class IoIGroup(Promise, Enum):
+#     AGRICULTURE = _("Agriculture")
+#     FORESTRY = _("Forestry")
+#     RENEWABLE_ENERGY = _("Renewable energy power plants")
+#     OTHER = _("Other")
+
+
+# Alternatively use TextChoices
+# https://docs.djangoproject.com/en/5.0/ref/models/fields/#enumeration-types
+class IoIGroup(TextChoices):
+    AGRICULTURE = "AGRICULTURE", _("Agriculture")
+    FORESTRY = "FORESTRY", _("Forestry")
+    RENEWABLE_ENERGY = "RENEWABLE_ENERGY", _("Renewable energy power plants")
+    OTHER = "OTHER", _("Other")
 
 
 INTENTION_OF_INVESTMENT_GROUP_ITEMS = [
-    {"value": group.name, "label": group.value} for group in IoIGroup
+    {"value": x[0], "label": x[1]} for x in IoIGroup.choices
 ]
-INTENTION_OF_INVESTMENT_GROUP_CHOICES = [(group.name, group.name) for group in IoIGroup]
+# INTENTION_OF_INVESTMENT_GROUP_CHOICES = IoIGroup.choices
 
-INTENTION_OF_INVESTMENT_ITEMS = [
+INTENTION_OF_INVESTMENT_ITEMS: list[ValueLabelItem] = [
     {
         "value": "BIOFUELS",
         "label": _("Biomass for biofuels"),
@@ -138,7 +184,7 @@ IntentionOfInvestmentEnum = Enum(
     {x["value"]: x["value"] for x in INTENTION_OF_INVESTMENT_ITEMS},
 )
 
-NATURE_OF_DEAL_ITEMS = [
+NATURE_OF_DEAL_ITEMS: list[ValueLabelItem] = [
     {"value": "OUTRIGHT_PURCHASE", "label": _("Outright purchase")},
     {"value": "LEASE", "label": _("Lease")},
     {"value": "CONCESSION", "label": _("Concession")},
@@ -154,8 +200,7 @@ NATURE_OF_DEAL_ITEMS = [
 NATURE_OF_DEAL_CHOICES = [(x["value"], x["label"]) for x in NATURE_OF_DEAL_ITEMS]
 
 
-# NOTE: NegStat is not stored in database
-class NegStat(Enum):
+class NegStat(Promise, Enum):
     INTENDED = _("Intended")
     CONCLUDED = _("Concluded")
     FAILED = _("Failed")
@@ -165,9 +210,9 @@ class NegStat(Enum):
 NEGOTIATION_STATUS_GROUP_ITEMS = [
     {"value": group.name, "label": group.value} for group in NegStat
 ]
-NEGOTIATION_STATUS_GROUP_CHOICES = [(group.name, group.name) for group in NegStat]
+# NEGOTIATION_STATUS_GROUP_CHOICES = [(group.name, group.value) for group in NegStat]
 
-NEGOTIATION_STATUS_ITEMS = [
+NEGOTIATION_STATUS_ITEMS: list[ValueLabelItem] = [
     {
         "value": "EXPRESSION_OF_INTEREST",
         "label": _("Intended (Expression of interest)"),
@@ -221,7 +266,7 @@ NegotiationStatusEnum = Enum(
     "NegotiationStatusEnum", {x["value"]: x["value"] for x in NEGOTIATION_STATUS_ITEMS}
 )
 
-IMPLEMENTATION_STATUS_ITEMS = [
+IMPLEMENTATION_STATUS_ITEMS: list[ValueLabelItem] = [
     {"value": "PROJECT_NOT_STARTED", "label": _("Project not started")},
     {"value": "STARTUP_PHASE", "label": _("Startup phase (no production)")},
     {"value": "IN_OPERATION", "label": _("In operation (production)")},
@@ -235,13 +280,13 @@ ImplementationStatusEnum = Enum(
     {x["value"]: x["value"] for x in IMPLEMENTATION_STATUS_ITEMS},
 )
 
-HA_AREA_ITEMS = [
+HA_AREA_ITEMS: list[ValueLabelItem] = [
     {"value": "PER_HA", "label": _("per ha")},
     {"value": "PER_AREA", "label": _("for specified area")},
 ]
 HA_AREA_CHOICES = [(x["value"], x["label"]) for x in HA_AREA_ITEMS]
 
-RECOGNITION_STATUS_ITEMS = [
+RECOGNITION_STATUS_ITEMS: list[ValueLabelItem] = [
     {
         "value": "INDIGENOUS_RIGHTS_RECOGNIZED",
         "label": _(
@@ -271,7 +316,7 @@ RECOGNITION_STATUS_CHOICES = [
     (x["value"], x["label"]) for x in RECOGNITION_STATUS_ITEMS
 ]
 
-COMMUNITY_CONSULTATION_ITEMS = [
+COMMUNITY_CONSULTATION_ITEMS: list[ValueLabelItem] = [
     {"value": "NOT_CONSULTED", "label": _("Not consulted")},
     {"value": "LIMITED_CONSULTATION", "label": _("Limited consultation")},
     {"value": "FPIC", "label": _("Free, Prior and Informed Consent (FPIC)")},
@@ -281,7 +326,7 @@ COMMUNITY_CONSULTATION_CHOICES = [
     (x["value"], x["label"]) for x in COMMUNITY_CONSULTATION_ITEMS
 ]
 
-COMMUNITY_REACTION_ITEMS = [
+COMMUNITY_REACTION_ITEMS: list[ValueLabelItem] = [
     {"value": "CONSENT", "label": _("Consent")},
     {"value": "MIXED_REACTION", "label": _("Mixed reaction")},
     {"value": "REJECTION", "label": _("Rejection")},
@@ -290,7 +335,7 @@ COMMUNITY_REACTION_CHOICES = [
     (x["value"], x["label"]) for x in COMMUNITY_REACTION_ITEMS
 ]
 
-NEGATIVE_IMPACTS_ITEMS = [
+NEGATIVE_IMPACTS_ITEMS: list[ValueLabelItem] = [
     {"value": "ENVIRONMENTAL_DEGRADATION", "label": _("Environmental degradation")},
     {"value": "SOCIO_ECONOMIC", "label": _("Socio-economic")},
     {"value": "CULTURAL_LOSS", "label": _("Cultural loss")},
@@ -301,7 +346,7 @@ NEGATIVE_IMPACTS_ITEMS = [
 ]
 NEGATIVE_IMPACTS_CHOICES = [(x["value"], x["label"]) for x in NEGATIVE_IMPACTS_ITEMS]
 
-BENEFITS_ITEMS = [
+BENEFITS_ITEMS: list[ValueLabelItem] = [
     {"value": "HEALTH", "label": _("Health")},
     {"value": "EDUCATION", "label": _("Education")},
     {
@@ -321,7 +366,7 @@ BENEFITS_ITEMS = [
 ]
 BENEFITS_CHOICES = [(x["value"], x["label"]) for x in BENEFITS_ITEMS]
 
-FORMER_LAND_OWNER_ITEMS = [
+FORMER_LAND_OWNER_ITEMS: list[ValueLabelItem] = [
     {"value": "STATE", "label": _("State")},
     {"value": "PRIVATE_SMALLHOLDERS", "label": _("Private (smallholders)")},
     {"value": "PRIVATE_LARGE_SCALE", "label": _("Private (large-scale farm)")},
@@ -331,7 +376,7 @@ FORMER_LAND_OWNER_ITEMS = [
 ]
 FORMER_LAND_OWNER_CHOICES = [(x["value"], x["label"]) for x in FORMER_LAND_OWNER_ITEMS]
 
-FORMER_LAND_USE_ITEMS = [
+FORMER_LAND_USE_ITEMS: list[ValueLabelItem] = [
     {
         "value": "COMMERCIAL_AGRICULTURE",
         "label": _("Commercial (large-scale) agriculture"),
@@ -346,24 +391,26 @@ FORMER_LAND_USE_ITEMS = [
 ]
 FORMER_LAND_USE_CHOICES = [(x["value"], x["label"]) for x in FORMER_LAND_USE_ITEMS]
 
-FORMER_LAND_COVER_ITEMS = [
-    {
-        "value": "CROPLAND",
-        "label": _("Cropland"),
-    },
+FORMER_LAND_COVER_ITEMS: list[ValueLabelItem] = [
+    {"value": "CROPLAND", "label": _("Cropland")},
     {"value": "FOREST_LAND", "label": _("Forest land")},
     {"value": "PASTURE", "label": _("Pasture")},
     {"value": "RANGELAND", "label": _("Shrub land/Grassland (Rangeland)")},
     {"value": "MARGINAL_LAND", "label": _("Marginal land")},
     {"value": "WETLAND", "label": _("Wetland")},
-    {
-        "value": "OTHER_LAND",
-        "label": _("Other land (e.g. developed land)"),
-    },
+    {"value": "OTHER_LAND", "label": _("Other land (e.g. developed land)")},
 ]
 FORMER_LAND_COVER_CHOICES = [(x["value"], x["label"]) for x in FORMER_LAND_COVER_ITEMS]
 
-CROPS_ITEMS = [
+
+class ProduceGroup(Promise, Enum):
+    CROPS = _("Crops")
+    ANIMALS = _("Livestock")
+    MINERAL_RESOURCES = _("Mineral resources")
+
+
+# FIXME: produce field not in use
+CROPS_ITEMS: list[ValueLabelItem] = [
     {"value": "ACC", "label": _("Accacia"), "produce": "NON_FOOD"},
     {"value": "ALF", "label": _("Alfalfa"), "produce": "NON_FOOD"},
     {
@@ -483,7 +530,7 @@ ANIMALS_ITEMS = [
 ANIMALS_CHOICES = [(x["value"], x["label"]) for x in ANIMALS_ITEMS]
 AnimalsEnum = Enum("AnimalsEnum", {x["value"]: x["value"] for x in ANIMALS_ITEMS})
 
-MINERALS_ITEMS = [
+MINERALS_ITEMS: list[ValueLabelItem] = [
     {"value": "ALU", "label": _("Aluminum")},
     {"value": "ASP", "label": _("Asphaltite")},
     {"value": "ATC", "label": _("Anthracite")},
@@ -538,7 +585,7 @@ MINERALS_ITEMS = [
 MINERALS_CHOICES = [(x["value"], x["label"]) for x in MINERALS_ITEMS]
 MineralsEnum = Enum("MineralsEnum", {x["value"]: x["value"] for x in MINERALS_ITEMS})
 
-ACTOR_ITEMS = [
+ACTOR_ITEMS: list[ValueLabelItem] = [
     {
         "value": "GOVERNMENT_OR_STATE_INSTITUTIONS",
         "label": _(
@@ -560,7 +607,7 @@ ACTOR_ITEMS = [
 ACTOR_MAP = [(x["value"], x["label"]) for x in ACTOR_ITEMS]
 ActorEnum = Enum("ActorEnum", {x["value"]: x["value"] for x in ACTOR_ITEMS})
 
-ELECTRICITY_GENERATION_ITEMS = [
+ELECTRICITY_GENERATION_ITEMS: list[ValueLabelItem] = [
     {"value": "WIND", "label": _("On-shore wind turbines")},
     {"value": "PHOTOVOLTAIC", "label": _("Solar (Photovoltaic)")},
     {"value": "SOLAR_HEAT", "label": _("Solar (Thermal system)")},
@@ -574,7 +621,7 @@ ElectricityGenerationEnum = Enum(
 )
 
 
-CARBON_SEQUESTRATION_ITEMS = [
+CARBON_SEQUESTRATION_ITEMS: list[ValueLabelItem] = [
     {"value": "REFORESTATION", "label": _("Reforestation & afforestation")},
     {"value": "AVOIDED_FOREST_CONVERSION", "label": _("Avoided forest conversion")},
     {
@@ -598,7 +645,7 @@ CarbonSequestrationEnum = Enum(
     {x["value"]: x["value"] for x in CARBON_SEQUESTRATION_ITEMS},
 )
 
-CARBON_SEQUESTRATION_CERT_ITEMS = [
+CARBON_SEQUESTRATION_CERT_ITEMS: list[ValueLabelItem] = [
     {"value": "REDD", "label": _("REDD+")},
     {"value": "VCS", "label": _("Verified Carbon Standard (VCS)")},
     {"value": "GOLD", "label": _("Gold Standard for the Global Goals (GOLD)")},
@@ -613,7 +660,7 @@ CarbonSequestrationCertEnum = Enum(
 )
 
 
-WATER_SOURCE_ITEMS = [
+WATER_SOURCE_ITEMS: list[ValueLabelItem] = [
     {"value": "GROUNDWATER", "label": _("Groundwater")},
     {"value": "SURFACE_WATER", "label": _("Surface water")},
     {"value": "RIVER", "label": _("River")},
@@ -621,7 +668,7 @@ WATER_SOURCE_ITEMS = [
 ]
 WATER_SOURCE_CHOICES = [(x["value"], x["label"]) for x in WATER_SOURCE_ITEMS]
 
-NOT_PUBLIC_REASON_ITEMS = [
+NOT_PUBLIC_REASON_ITEMS: list[ValueLabelItem] = [
     {"value": "CONFIDENTIAL", "label": _("Confidential flag")},
     {"value": "NO_COUNTRY", "label": _("No country")},
     {"value": "HIGH_INCOME_COUNTRY", "label": _("High-income country")},
@@ -631,7 +678,7 @@ NOT_PUBLIC_REASON_ITEMS = [
 ]
 NOT_PUBLIC_REASON_CHOICES = [(x["value"], x["label"]) for x in NOT_PUBLIC_REASON_ITEMS]
 
-DATASOURCE_TYPE_ITEMS = [
+DATASOURCE_TYPE_ITEMS: list[ValueLabelItem] = [
     {"value": "MEDIA_REPORT", "label": _("Media report")},
     {
         "value": "RESEARCH_PAPER_OR_POLICY_REPORT",
@@ -651,7 +698,7 @@ DATASOURCE_TYPE_ITEMS = [
 DATASOURCE_TYPE_MAP = {x["value"]: x["label"] for x in DATASOURCE_TYPE_ITEMS}
 DATASOURCE_TYPE_CHOICES = ((k, v) for k, v in DATASOURCE_TYPE_MAP.items())
 
-LOCATION_ACCURACY_ITEMS = [
+LOCATION_ACCURACY_ITEMS: list[ValueLabelItem] = [
     {"value": "COUNTRY", "label": _("Country")},
     {"value": "ADMINISTRATIVE_REGION", "label": _("Administrative region")},
     {"value": "APPROXIMATE_LOCATION", "label": _("Approximate location")},
@@ -661,7 +708,7 @@ LOCATION_ACCURACY_ITEMS = [
 LOCATION_ACCURACY_MAP = {x["value"]: x["label"] for x in LOCATION_ACCURACY_ITEMS}
 LEVEL_OF_ACCURACY_CHOICES = [(x["value"], x["label"]) for x in LOCATION_ACCURACY_ITEMS]
 
-INVESTOR_CLASSIFICATION_ITEMS = [
+INVESTOR_CLASSIFICATION_ITEMS: list[ValueLabelItem] = [
     {"value": "GOVERNMENT", "label": _("Government")},
     {"value": "GOVERNMENT_INSTITUTION", "label": _("Government institution")},
     {"value": "STATE_OWNED_COMPANY", "label": _("State-/government (owned) company")},
@@ -696,14 +743,14 @@ INVESTOR_CLASSIFICATION_CHOICES = [
     (x["value"], x["label"]) for x in INVESTOR_CLASSIFICATION_ITEMS
 ]
 
-INVESTMENT_TYPE_ITEMS = [
+INVESTMENT_TYPE_ITEMS: list[ValueLabelItem] = [
     {"value": "EQUITY", "label": _("Shares/Equity")},
     {"value": "DEBT_FINANCING", "label": _("Debt financing")},
 ]
 INVESTMENT_TYPE_MAP = {x["value"]: x["label"] for x in INVESTMENT_TYPE_ITEMS}
 INVESTMENT_TYPE_CHOICES = [(x["value"], x["label"]) for x in INVESTMENT_TYPE_ITEMS]
 
-INVOLVEMENT_ROLE_ITEMS = [
+INVOLVEMENT_ROLE_ITEMS: list[ValueLabelItem] = [
     {"value": "PARENT", "label": _("Parent company")},
     {"value": "LENDER", "label": _("Tertiary investor/lender")},
 ]
@@ -711,7 +758,7 @@ INVOLVEMENT_ROLE_CHOICES = [(x["value"], x["label"]) for x in INVOLVEMENT_ROLE_I
 INVOLVEMENT_ROLE_DICT = {x["value"]: x["label"] for x in INVOLVEMENT_ROLE_ITEMS}
 
 
-PARENT_RELATION_ITEMS = [
+PARENT_RELATION_ITEMS: list[ValueLabelItem] = [
     {"value": "SUBSIDIARY", "label": _("Subsidiary of parent company")},
     {"value": "LOCAL_BRANCH", "label": _("Local branch of parent company")},
     {"value": "JOINT_VENTURE", "label": _("Joint venture of parent companies")},
@@ -719,7 +766,7 @@ PARENT_RELATION_ITEMS = [
 PARENT_RELATION_CHOICES = [(x["value"], x["label"]) for x in PARENT_RELATION_ITEMS]
 
 # FIXME: Use Uppercase characters for value
-AREA_TYPE_ITEMS = [
+AREA_TYPE_ITEMS: list[ValueLabelItem] = [
     {"value": "production_area", "label": _("Production area")},
     {"value": "contract_area", "label": _("Contract area")},
     {"value": "intended_area", "label": _("Intended area")},
