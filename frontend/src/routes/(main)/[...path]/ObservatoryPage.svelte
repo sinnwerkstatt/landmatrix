@@ -6,7 +6,8 @@
   import { afterNavigate } from "$app/navigation"
 
   import { filters, FilterValues } from "$lib/filters"
-  import type { NegotiationStatus } from "$lib/types/data"
+  import { fieldChoices } from "$lib/stores"
+  import { NegotiationStatusGroup, type NegotiationStatus } from "$lib/types/data"
   import type { BlogPage, ObservatoryPage } from "$lib/types/wagtail"
 
   import LoadingPulse from "$components/LoadingPulse.svelte"
@@ -24,8 +25,8 @@
   let readMore = false
   let totalSize = ""
   let totalCount = ""
-  let chartDatSize: ChartData
-  let chartDatCount: ChartData
+  let chartDatSize: ChartData<"pie">
+  let chartDatCount: ChartData<"pie">
   let filteredCountryProfiles: BlogPage[]
   let filteredNewsPubs: BlogPage[]
 
@@ -57,12 +58,20 @@
       .toLocaleString("fr")
       .replace(",", ".")
 
-    let negStatBuckets = [
-      { color: "rgba(252,148,31,0.4)", label: $_("Intended"), count: 0, size: 0 },
-      { color: "rgba(252,148,31,1)", label: $_("Concluded"), count: 0, size: 0 },
-      { color: "rgba(125,74,15,1)", label: $_("Failed"), count: 0, size: 0 },
-      { color: "rgb(44,28,5)", label: $_("Contract expired"), count: 0, size: 0 },
-    ]
+    const colorsMap: { [key in NegotiationStatusGroup]: string } = {
+      INTENDED: "rgba(252,148,31,0.4)",
+      CONCLUDED: "rgba(252,148,31,1)",
+      FAILED: "rgba(125,74,15,1)",
+      CONTRACT_EXPIRED: "rgb(44,28,5)",
+    }
+
+    let negStatBuckets = $fieldChoices["deal"]["negotiation_status_group"].map(x => ({
+      // TODO: Try to type fieldChoices (or create a generic interface) to avoid casting explicitly
+      color: colorsMap[x.value as NegotiationStatusGroup],
+      label: x.label,
+      count: 0,
+      size: 0,
+    }))
 
     for (let agg of curNegStat) {
       switch (agg.value) {
@@ -111,6 +120,7 @@
     }
   }
 
+  // QUESTION: Wouldn't it make sense to keep navigation stuff in +page.svelte ?
   afterNavigate(() => {
     readMore = false
     getAggregations()

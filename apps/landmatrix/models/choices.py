@@ -28,15 +28,16 @@ class ValueLabelItem(TypedDict):
 # create_enum: Callable[[str, list[ValueLabelItem]], Enum] = lambda name, items: Enum(
 #     name, {x["value"]: x["value"] for x in items}
 # )
-
-
-def create_choices(items: list[ValueLabelItem]) -> list[tuple[str, Promise]]:
-    return [(x["value"], x["label"]) for x in items]
-
-
-# NOTE: mypy says return type is Enum...
-def create_enum(name: str, items: list[ValueLabelItem]) -> Enum:
-    return Enum(name, {x["value"]: x["value"] for x in items})
+#
+# Def versions:
+#
+# def create_choices(items: list[ValueLabelItem]) -> list[tuple[str, Promise]]:
+#     return [(x["value"], x["label"]) for x in items]
+#
+#
+# # NOTE: mypy says return type is Enum...
+# def create_enum(name: str, items: list[ValueLabelItem]) -> Enum:
+#     return Enum(name, {x["value"]: x["value"] for x in items})
 
 
 def serialize_enum(enum: Type[TextChoices]) -> list[ValueLabelItem]:
@@ -54,128 +55,125 @@ def serialize_enum(enum: Type[TextChoices]) -> list[ValueLabelItem]:
 
 # Alternatively use TextChoices
 # https://docs.djangoproject.com/en/5.0/ref/models/fields/#enumeration-types
-class IoIGroup(TextChoices):
+class IntentionOfInvestmentGroupEnum(TextChoices):
     AGRICULTURE = "AGRICULTURE", _("Agriculture")
     FORESTRY = "FORESTRY", _("Forestry")
     RENEWABLE_ENERGY = "RENEWABLE_ENERGY", _("Renewable energy power plants")
     OTHER = "OTHER", _("Other")
 
 
-INTENTION_OF_INVESTMENT_GROUP_ITEMS = [
-    {"value": x[0], "label": x[1]} for x in IoIGroup.choices
-]
-# INTENTION_OF_INVESTMENT_GROUP_CHOICES = IoIGroup.choices
+INTENTION_OF_INVESTMENT_GROUP_ITEMS = serialize_enum(IntentionOfInvestmentGroupEnum)
 
 INTENTION_OF_INVESTMENT_ITEMS: list[ValueLabelItem] = [
     {
         "value": "BIOFUELS",
         "label": _("Biomass for biofuels"),
-        "group": IoIGroup.AGRICULTURE.name,
+        "group": IntentionOfInvestmentGroupEnum.AGRICULTURE,
     },
     {
         "value": "BIOMASS_ENERGY_GENERATION",
         "label": _("Biomass for energy generation (agriculture)"),
-        "group": IoIGroup.AGRICULTURE.name,
+        "group": IntentionOfInvestmentGroupEnum.AGRICULTURE,
     },
     {
         "value": "FODDER",
         "label": _("Fodder"),
-        "group": IoIGroup.AGRICULTURE.name,
+        "group": IntentionOfInvestmentGroupEnum.AGRICULTURE,
     },
     {
         "value": "FOOD_CROPS",
         "label": _("Food crops"),
-        "group": IoIGroup.AGRICULTURE.name,
+        "group": IntentionOfInvestmentGroupEnum.AGRICULTURE,
     },
     {
         "value": "LIVESTOCK",
         "label": _("Livestock"),
-        "group": IoIGroup.AGRICULTURE.name,
+        "group": IntentionOfInvestmentGroupEnum.AGRICULTURE,
     },
     {
         "value": "NON_FOOD_AGRICULTURE",
         "label": _("Non-food agricultural commodities"),
-        "group": IoIGroup.AGRICULTURE.name,
+        "group": IntentionOfInvestmentGroupEnum.AGRICULTURE,
     },
     {
         "value": "AGRICULTURE_UNSPECIFIED",
         "label": _("Agriculture unspecified"),
-        "group": IoIGroup.AGRICULTURE.name,
+        "group": IntentionOfInvestmentGroupEnum.AGRICULTURE,
     },
     {
         "value": "BIOMASS_ENERGY_PRODUCTION",
         "label": _("Biomass for energy generation (forestry)"),
-        "group": IoIGroup.FORESTRY.name,
+        "group": IntentionOfInvestmentGroupEnum.FORESTRY,
     },
     {
         "value": "CARBON",
         "label": _("For carbon sequestration/REDD"),
-        "group": IoIGroup.FORESTRY.name,
+        "group": IntentionOfInvestmentGroupEnum.FORESTRY,
     },
     {
         "value": "FOREST_LOGGING",
         "label": _("Forest logging / management for wood and fiber"),
-        "group": IoIGroup.FORESTRY.name,
+        "group": IntentionOfInvestmentGroupEnum.FORESTRY,
     },
     {
         "value": "TIMBER_PLANTATION",
         "label": _("Timber plantation for wood and fiber"),
-        "group": IoIGroup.FORESTRY.name,
+        "group": IntentionOfInvestmentGroupEnum.FORESTRY,
     },
     {
         "value": "FORESTRY_UNSPECIFIED",
         "label": _("Forestry unspecified"),
-        "group": IoIGroup.FORESTRY.name,
+        "group": IntentionOfInvestmentGroupEnum.FORESTRY,
     },
     {
         "value": "SOLAR_PARK",
         "label": _("Solar park"),
-        "group": IoIGroup.RENEWABLE_ENERGY.name,
+        "group": IntentionOfInvestmentGroupEnum.RENEWABLE_ENERGY,
     },
     {
         "value": "WIND_FARM",
         "label": _("Wind farm"),
-        "group": IoIGroup.RENEWABLE_ENERGY.name,
+        "group": IntentionOfInvestmentGroupEnum.RENEWABLE_ENERGY,
     },
     {
         "value": "RENEWABLE_ENERGY",
         "label": _("Renewable energy unspecified"),
-        "group": IoIGroup.RENEWABLE_ENERGY.name,
+        "group": IntentionOfInvestmentGroupEnum.RENEWABLE_ENERGY,
     },
     {
         "value": "CONVERSATION",
         "label": _("Conservation"),
-        "group": IoIGroup.OTHER.name,
+        "group": IntentionOfInvestmentGroupEnum.OTHER,
     },
     {
         "value": "INDUSTRY",
         "label": _("Industry"),
-        "group": IoIGroup.OTHER.name,
+        "group": IntentionOfInvestmentGroupEnum.OTHER,
     },
     {
         "value": "LAND_SPECULATION",
         "label": _("Land speculation"),
-        "group": IoIGroup.OTHER.name,
+        "group": IntentionOfInvestmentGroupEnum.OTHER,
     },
     {
         "value": "MINING",
         "label": _("Mining"),
-        "group": IoIGroup.OTHER.name,
+        "group": IntentionOfInvestmentGroupEnum.OTHER,
     },
     {
         "value": "OIL_GAS_EXTRACTION",
         "label": _("Oil / Gas extraction"),
-        "group": IoIGroup.OTHER.name,
+        "group": IntentionOfInvestmentGroupEnum.OTHER,
     },
     {
         "value": "TOURISM",
         "label": _("Tourism"),
-        "group": IoIGroup.OTHER.name,
+        "group": IntentionOfInvestmentGroupEnum.OTHER,
     },
     {
         "value": "OTHER",
         "label": _("Other"),
-        "group": IoIGroup.OTHER.name,
+        "group": IntentionOfInvestmentGroupEnum.OTHER,
     },
 ]
 
@@ -188,79 +186,77 @@ IntentionOfInvestmentEnum = Enum(
     {x["value"]: x["value"] for x in INTENTION_OF_INVESTMENT_ITEMS},
 )
 
-NATURE_OF_DEAL_ITEMS: list[ValueLabelItem] = [
-    {"value": "OUTRIGHT_PURCHASE", "label": _("Outright purchase")},
-    {"value": "LEASE", "label": _("Lease")},
-    {"value": "CONCESSION", "label": _("Concession")},
-    {
-        "value": "EXPLOITATION_PERMIT",
-        "label": _(
-            "Exploitation permit / license / concession (for mineral resources)"
-        ),
-    },
-    {"value": "PURE_CONTRACT_FARMING", "label": _("Pure contract farming")},
-    {"value": "OTHER", "label": _("Other")},
-]
-NATURE_OF_DEAL_CHOICES = [(x["value"], x["label"]) for x in NATURE_OF_DEAL_ITEMS]
+
+class NatureOfDealEnum(TextChoices):
+    OUTRIGHT_PURCHASE = "OUTRIGHT_PURCHASE", _("Outright purchase")
+    LEASE = "LEASE", _("Lease")
+    CONCESSION = "CONCESSION", _("Concession")
+    EXPLOITATION_PERMIT = "EXPLOITATION_PERMIT", _(
+        "Exploitation permit / license / concession (for mineral resources)"
+    )
+    PURE_CONTRACT_FARMING = "PURE_CONTRACT_FARMING", _("Pure contract farming")
+    OTHER = "OTHER", _("Other")
 
 
-class NegStat(Promise, Enum):
-    INTENDED = _("Intended")
-    CONCLUDED = _("Concluded")
-    FAILED = _("Failed")
-    CONTRACT_EXPIRED = _("Contract expired")
+NATURE_OF_DEAL_ITEMS = serialize_enum(NatureOfDealEnum)
+NATURE_OF_DEAL_CHOICES = NatureOfDealEnum.choices
 
 
-NEGOTIATION_STATUS_GROUP_ITEMS = [
-    {"value": group.name, "label": group.value} for group in NegStat
-]
-# NEGOTIATION_STATUS_GROUP_CHOICES = [(group.name, group.value) for group in NegStat]
+class NegotiationStatusGroupEnum(TextChoices):
+    INTENDED = "INTENDED", _("Intended")
+    CONCLUDED = "CONCLUDED", _("Concluded")
+    FAILED = "FAILED", _("Failed")
+    CONTRACT_EXPIRED = "CONTRACT_EXPIRED", _("Contract expired")
+
+
+NEGOTIATION_STATUS_GROUP_ITEMS = serialize_enum(NegotiationStatusGroupEnum)
+# NEGOTIATION_STATUS_GROUP_CHOICES = NegotiationStatusGroupEnum.choices
 
 NEGOTIATION_STATUS_ITEMS: list[ValueLabelItem] = [
     {
         "value": "EXPRESSION_OF_INTEREST",
         "label": _("Intended (Expression of interest)"),
-        "group": NegStat.INTENDED.name,
+        "group": NegotiationStatusGroupEnum.INTENDED,
     },
     {
         "value": "UNDER_NEGOTIATION",
         "label": _("Intended (Under negotiation)"),
-        "group": NegStat.INTENDED.name,
+        "group": NegotiationStatusGroupEnum.INTENDED,
     },
     {
         "value": "MEMORANDUM_OF_UNDERSTANDING",
         "label": _("Intended (Memorandum of understanding)"),
-        "group": NegStat.INTENDED.name,
+        "group": NegotiationStatusGroupEnum.INTENDED,
     },
     {
         "value": "ORAL_AGREEMENT",
         "label": _("Concluded (Oral Agreement)"),
-        "group": NegStat.CONCLUDED.name,
+        "group": NegotiationStatusGroupEnum.CONCLUDED,
     },
     {
         "value": "CONTRACT_SIGNED",
         "label": _("Concluded (Contract signed)"),
-        "group": NegStat.CONCLUDED.name,
+        "group": NegotiationStatusGroupEnum.CONCLUDED,
     },
     {
         "value": "CHANGE_OF_OWNERSHIP",
         "label": _("Concluded (Change of ownership)"),
-        "group": NegStat.CONCLUDED.name,
+        "group": NegotiationStatusGroupEnum.CONCLUDED,
     },
     {
         "value": "NEGOTIATIONS_FAILED",
         "label": _("Failed (Negotiations failed)"),
-        "group": NegStat.FAILED.name,
+        "group": NegotiationStatusGroupEnum.FAILED,
     },
     {
         "value": "CONTRACT_CANCELED",
         "label": _("Failed (Contract cancelled)"),
-        "group": NegStat.FAILED.name,
+        "group": NegotiationStatusGroupEnum.FAILED,
     },
     {
         "value": "CONTRACT_EXPIRED",
         "label": _("Contract expired"),
-        "group": NegStat.CONTRACT_EXPIRED.name,
+        "group": NegotiationStatusGroupEnum.CONTRACT_EXPIRED,
     },
 ]
 NEGOTIATION_STATUS_CHOICES = [

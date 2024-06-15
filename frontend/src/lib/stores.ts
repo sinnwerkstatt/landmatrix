@@ -60,7 +60,7 @@ export const fieldChoices = derived(
   } as components["schemas"]["FieldChoices"],
 )
 
-// fieldChoices.subscribe(value => console.log(value))
+fieldChoices.subscribe(value => console.log(value))
 
 export const findChoice = (
   choices: ValueLabelEntry[],
