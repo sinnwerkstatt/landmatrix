@@ -8,11 +8,7 @@
   import type { Produce } from "$lib/filters"
   import { filters, isDefaultFilter, publicOnly } from "$lib/filters"
   import { fieldChoices, getFieldChoicesLabel, simpleInvestors } from "$lib/stores"
-  import {
-    IntentionOfInvestmentGroup,
-    ProduceGroup,
-    UserRole,
-  } from "$lib/types/data"
+  import { IntentionOfInvestmentGroup, ProduceGroup, UserRole } from "$lib/types/data"
 
   import { showFilterBar } from "$components/Data/stores"
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
