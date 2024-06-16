@@ -52,6 +52,7 @@ export const fieldChoices = derived(
       water_source: [],
       not_public_reason: [],
       actors: [],
+      produce_group: [],
     },
     datasource: { type: [] },
     investor: { classification: [] },
@@ -60,7 +61,7 @@ export const fieldChoices = derived(
   } as components["schemas"]["FieldChoices"],
 )
 
-fieldChoices.subscribe(value => console.log(value))
+// fieldChoices.subscribe(value => console.log(value))
 
 export const findChoice = (
   choices: ValueLabelEntry[],

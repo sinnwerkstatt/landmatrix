@@ -1,8 +1,14 @@
 import { createEmptyBuckets } from "$lib/data/buckets"
-import { agricultureIntentionReducer } from "$lib/data/charts/agricultureIntention"
+import { createAgricultureIntentionReducer } from "$lib/data/charts/agricultureIntention"
 import { implementationStatusReducer } from "$lib/data/charts/implementationStatus"
-import { intentionOfInvestmentGroupReducer } from "$lib/data/charts/intentionOfInvestmentGroup"
-import { negotiationStatusGroupReducer } from "$lib/data/charts/negotiationStatusGroup"
+import {
+  createIoIGroupReducer,
+  type IoIGroupMap,
+} from "$lib/data/charts/intentionOfInvestmentGroup"
+import {
+  createNegotiationStatusGroupReducer,
+  type NegStatGroupMap,
+} from "$lib/data/charts/negotiationStatusGroup"
 import { produceGroupReducer } from "$lib/data/charts/produceGroup"
 import {
   IntentionOfInvestmentGroup,
@@ -38,8 +44,19 @@ describe("Intention of Investment Group", () => {
       // I don't understand this type error but need to convert to unknown
     ] as unknown as DealVersion2[]
 
+    const groupMap = {
+      CARBON: IntentionOfInvestmentGroup.FORESTRY,
+      TIMBER_PLANTATION: IntentionOfInvestmentGroup.FORESTRY,
+      FOREST_LOGGING: IntentionOfInvestmentGroup.FORESTRY,
+      SOLAR_PARK: IntentionOfInvestmentGroup.RENEWABLE_ENERGY,
+      BIOFUELS: IntentionOfInvestmentGroup.AGRICULTURE,
+      MINING: IntentionOfInvestmentGroup.OTHER,
+      CONVERSATION: IntentionOfInvestmentGroup.OTHER,
+      WIND_FARM: IntentionOfInvestmentGroup.RENEWABLE_ENERGY,
+    } satisfies Partial<IoIGroupMap> as IoIGroupMap
+
     const bucketMap = deals.reduce(
-      intentionOfInvestmentGroupReducer,
+      createIoIGroupReducer(groupMap),
       createEmptyBuckets(Object.values(IntentionOfInvestmentGroup)),
     )
 
@@ -58,15 +75,23 @@ describe("Agriculture Intention of Investment", () => {
       {
         current_intention_of_investment: ["CARBON", "FOREST_LOGGING", "BIOFUELS"],
         deal_size: 500,
-      },
+      } satisfies Partial<DealVersion2>,
       {
         current_intention_of_investment: ["MINING", "BIOFUELS", "FOOD_CROPS"],
         deal_size: 100,
-      },
-    ] satisfies Partial<DealVersion2>[]
+      } satisfies Partial<DealVersion2>,
+    ] as unknown as DealVersion2[]
+
+    const groupMap = {
+      CARBON: IntentionOfInvestmentGroup.FORESTRY,
+      FOREST_LOGGING: IntentionOfInvestmentGroup.FORESTRY,
+      BIOFUELS: IntentionOfInvestmentGroup.AGRICULTURE,
+      FOOD_CROPS: IntentionOfInvestmentGroup.AGRICULTURE,
+      MINING: IntentionOfInvestmentGroup.OTHER,
+    } satisfies Partial<IoIGroupMap> as IoIGroupMap
 
     const bucketMap = deals.reduce(
-      agricultureIntentionReducer,
+      createAgricultureIntentionReducer(groupMap),
       createEmptyBuckets([
         "BIOFUELS",
         "BIOMASS_ENERGY_GENERATION",
@@ -135,8 +160,13 @@ describe("Negotiation Status Group", () => {
       },
     ] satisfies Partial<DealVersion2>[] as DealVersion2[]
 
+    const groupMap = {
+      CONTRACT_SIGNED: NegotiationStatusGroup.CONCLUDED,
+      CONTRACT_EXPIRED: NegotiationStatusGroup.CONTRACT_EXPIRED,
+    } satisfies Partial<NegStatGroupMap> as NegStatGroupMap
+
     const bucketMap = deals.reduce(
-      negotiationStatusGroupReducer,
+      createNegotiationStatusGroupReducer(groupMap),
       createEmptyBuckets(Object.values(NegotiationStatusGroup)),
     )
 

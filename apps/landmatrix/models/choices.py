@@ -7,9 +7,9 @@ from django.utils.translation import gettext_lazy as _
 
 # https://stackoverflow.com/questions/68814891
 if sys.version_info < (3, 11):
-    from typing_extensions import NotRequired, TypedDict, Type
+    from typing_extensions import NotRequired, Type, TypedDict
 else:
-    from typing import NotRequired, TypedDict, Type
+    from typing import NotRequired, Type, TypedDict
 
 
 # TypeDict Functional API works, but use class syntax for consistency
@@ -397,12 +397,14 @@ FORMER_LAND_COVER_ITEMS: list[ValueLabelItem] = [
 FORMER_LAND_COVER_CHOICES = [(x["value"], x["label"]) for x in FORMER_LAND_COVER_ITEMS]
 
 
-# FIXME: Use me
 class ProduceGroupEnum(TextChoices):
     CROPS = "CROPS", _("Crops")
     ANIMALS = "ANIMALS", _("Livestock")
     MINERAL_RESOURCES = "MINERAL_RESOURCES", _("Mineral resources")
 
+
+PRODUCE_GROUP_ITEMS = serialize_enum(ProduceGroupEnum)
+# PRODUCE_GROUP_CHOICES = ProduceGroupEnum.choices
 
 # FIXME: produce field not in use
 CROPS_ITEMS: list[ValueLabelItem] = [

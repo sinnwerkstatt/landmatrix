@@ -12,7 +12,7 @@
   const createDataSource = (nid: string): DataSource => ({
     id: null!,
     nid,
-    type: "" as any,
+    type: "" as never,
     url: "",
     file: null!,
     file_not_public: false,

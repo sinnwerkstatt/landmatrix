@@ -2,10 +2,11 @@
   import { _ } from "svelte-i18n"
 
   import type { SortBy } from "$lib/data/buckets"
-  import { agricultureIntentionReducer } from "$lib/data/charts/agricultureIntention"
+  import { createAgricultureIntentionReducer } from "$lib/data/charts/agricultureIntention"
+  import type { IoIGroupMap } from "$lib/data/charts/intentionOfInvestmentGroup"
   import { createChartData } from "$lib/data/createChartData"
-  import { fieldChoices, getFieldChoicesLabel } from "$lib/stores"
-  import type { DealVersion2, IntentionOfInvestment } from "$lib/types/data"
+  import { fieldChoices } from "$lib/stores"
+  import { type DealVersion2, type IntentionOfInvestment } from "$lib/types/data"
 
   import DownloadablePieChart from "$components/Data/Charts/DownloadablePieChart.svelte"
 
@@ -17,11 +18,19 @@
   $: unit = displayDealsCount ? "deals" : "ha"
 
   $: ioiChoices = $fieldChoices["deal"]["intention_of_investment"]
+  $: ioiGroupMap = ioiChoices.reduce(
+    (acc, { value, group }) => ({ ...acc, [value]: group }),
+    {},
+  ) as IoIGroupMap
+  $: ioiLabels = ioiChoices.reduce(
+    (acc, { value, label }) => ({ ...acc, [value]: label }),
+    {},
+  ) as { [key in IntentionOfInvestment]: string }
 
   $: createData = createChartData<IntentionOfInvestment>(
-    agricultureIntentionReducer,
+    createAgricultureIntentionReducer(ioiGroupMap),
     ioiChoices.map(x => x.value) as IntentionOfInvestment[],
-    getFieldChoicesLabel(ioiChoices) as (key: IntentionOfInvestment) => string,
+    (ioi: IntentionOfInvestment) => ioiLabels[ioi],
     (_, index, array) => {
       const alphaValue = 1 - index / array.length
       return `rgba(252,148,31,${alphaValue})`

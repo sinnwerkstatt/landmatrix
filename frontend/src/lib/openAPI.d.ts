@@ -880,6 +880,7 @@ export interface components {
       water_source: components["schemas"]["ValueLabel"][]
       not_public_reason: components["schemas"]["ValueLabel"][]
       actors: components["schemas"]["ValueLabel"][]
+      produce_group: components["schemas"]["ValueLabel"][]
     }
     DealVersion: {
       id: number

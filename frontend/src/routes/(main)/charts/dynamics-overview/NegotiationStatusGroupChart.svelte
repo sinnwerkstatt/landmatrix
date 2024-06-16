@@ -3,8 +3,8 @@
 
   import type { SortBy } from "$lib/data/buckets"
   import {
+    createNegotiationStatusGroupReducer,
     NEGOTIATION_STATUS_GROUP_COLORS,
-    negotiationStatusGroupReducer,
   } from "$lib/data/charts/negotiationStatusGroup"
   import { createChartData } from "$lib/data/createChartData"
   import { fieldChoices, getFieldChoicesLabel } from "$lib/stores"
@@ -24,7 +24,7 @@
   ) as (key: NegotiationStatusGroup) => string
 
   $: createData = createChartData<NegotiationStatusGroup>(
-    negotiationStatusGroupReducer,
+    createNegotiationStatusGroupReducer,
     Object.values(NegotiationStatusGroup),
     getStatusGroupLabel,
     (key: NegotiationStatusGroup) => NEGOTIATION_STATUS_GROUP_COLORS[key],

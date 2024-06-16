@@ -733,6 +733,7 @@ class FieldChoicesView(APIView):
             water_source = ValueLabelSerializer(many=True)
             not_public_reason = ValueLabelSerializer(many=True)
             actors = ValueLabelSerializer(many=True)
+            produce_group = ValueLabelSerializer(many=True)
 
         class DataSourceFields(serializers.Serializer):
             type = ValueLabelSerializer(many=True)
@@ -784,6 +785,7 @@ class FieldChoicesView(APIView):
                     "water_source": choices.WATER_SOURCE_ITEMS,
                     "not_public_reason": choices.NOT_PUBLIC_REASON_ITEMS,
                     "actors": choices.ACTOR_ITEMS,
+                    "produce_group": choices.PRODUCE_GROUP_ITEMS,
                 },
                 "datasource": {"type": choices.DATASOURCE_TYPE_ITEMS},
                 "investor": {"classification": choices.INVESTOR_CLASSIFICATION_ITEMS},
