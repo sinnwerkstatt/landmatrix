@@ -1,10 +1,13 @@
 <script lang="ts">
-  import type { InvestorVersion2 } from "$lib/types/data"
+  import type { InvestorHull, InvestorVersion2 } from "$lib/types/data"
 
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import Subsection from "$components/Subsection.svelte"
 
-  export let version: InvestorVersion2
+  export let investor: InvestorHull
+
+  let version: InvestorVersion2 = investor.selected_version
+  $: version = investor.selected_version
 </script>
 
 <Subsection id="investor.general_info" obj={version}>

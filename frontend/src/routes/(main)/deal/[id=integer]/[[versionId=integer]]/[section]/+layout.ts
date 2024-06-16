@@ -1,5 +1,7 @@
 import { error, redirect } from "@sveltejs/kit"
 
+import type { DealHull } from "$lib/types/data"
+
 import type { DealSection } from "$components/Data/Deal/Sections/constants"
 
 import type { LayoutLoad } from "./$types"
@@ -10,7 +12,7 @@ export const load: LayoutLoad = async ({ fetch, params, depends, parent }) => {
   const { apiClient } = await parent()
 
   const dealID = parseInt(params.id)
-  const dealVersion = parseInt(params.versionId as string)
+  const dealVersion = parseInt(params.versionId ?? "")
   const dealSection = params.section as DealSection
 
   const baseUrl = dealVersion ? `/deal/${dealID}/${dealVersion}` : `/deal/${dealID}`
@@ -30,7 +32,8 @@ export const load: LayoutLoad = async ({ fetch, params, depends, parent }) => {
     error(ret.response.status, ret.error.detail)
   }
 
-  const deal = ret.data
+  // FIXME: Overwrite with patched DealHull
+  const deal = ret.data as unknown as DealHull
 
   if (dealVersion && dealVersion === deal.active_version_id) {
     console.warn("redirecting to active version")

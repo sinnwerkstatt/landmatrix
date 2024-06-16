@@ -3,10 +3,10 @@
 
   import { page } from "$app/stores"
 
-  import { UserRole, type InvestorHull } from "$lib/types/data.js"
+  import { UserRole, type InvestorHull } from "$lib/types/data"
 
-  import SectionInvolvementsDealCard from "./SectionInvolvementsDealCard.svelte"
-  import SectionInvolvementsInvestorCard from "./SectionInvolvementsInvestorCard.svelte"
+  import DealCard from "./DealCard.svelte"
+  import InvestorCard from "./InvestorCard.svelte"
 
   export let investor: InvestorHull
 
@@ -21,7 +21,7 @@
     <h3 class="heading3 my-0">{$_("Involvements")} ({filteredInvolvements.length})</h3>
     <div class="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
       {#each filteredInvolvements as involvement}
-        <SectionInvolvementsInvestorCard {involvement} />
+        <InvestorCard {involvement} />
       {/each}
     </div>
   </div>
@@ -35,7 +35,7 @@
       </h3>
       <div class="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
         {#each investor.deals as deal}
-          <SectionInvolvementsDealCard {deal} />
+          <DealCard {deal} />
         {/each}
       </div>
     </div>
