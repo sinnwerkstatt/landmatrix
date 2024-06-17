@@ -4,23 +4,24 @@
 
   import { beforeNavigate, goto, invalidate } from "$app/navigation"
 
+  import type { InvestorDataSource, MutableInvestorHull } from "$lib/types/data"
   import { getCsrfToken } from "$lib/utils"
-  import { discardEmptySubmodels } from "$lib/utils/dataProcessing"
 
+  import { isEmptyDataSource } from "$components/Data/DataSources/dataSources"
   import { INVESTOR_EDIT_SECTIONS } from "$components/Data/Investor/Sections/constants"
   import { investorSectionLookup } from "$components/Data/Investor/Sections/store"
   import SectionNav from "$components/Data/SectionNav.svelte"
   import LoadingSpinner from "$components/icons/LoadingSpinner.svelte"
   import ModalReallyQuit from "$components/ModalReallyQuit.svelte"
 
-  import { mutableInvestor, type MutableInvestor } from "./store"
+  import { mutableInvestor } from "./store"
 
   export let data
 
   let savingInProgress = false
   let showReallyQuitOverlay = false
 
-  $: $mutableInvestor = structuredClone(data.investor) as MutableInvestor
+  $: $mutableInvestor = structuredClone(data.investor) as MutableInvestorHull
   $: hasBeenEdited = JSON.stringify(data.investor) !== JSON.stringify($mutableInvestor)
 
   beforeNavigate(({ type, cancel, to }) => {
@@ -47,12 +48,12 @@
         return
       }
   })
-  const saveInvestor = async (investor: MutableInvestor): Promise<boolean> => {
+  const saveInvestor = async (investor: MutableInvestorHull): Promise<boolean> => {
     savingInProgress = true
 
-    investor.selected_version.datasources = discardEmptySubmodels(
-      investor.selected_version.datasources ?? [],
-    )
+    investor.selected_version.datasources = (
+      investor.selected_version.datasources ?? []
+    ).filter(x => !isEmptyDataSource(x as InvestorDataSource))
 
     const ret = await fetch(
       data.investorVersion

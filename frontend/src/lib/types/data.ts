@@ -3,6 +3,11 @@ import type { GeoJSON } from "leaflet?client"
 
 import type { components } from "$lib/openAPI"
 
+// helper to mark a readonly model as mutable
+type Mutable<Type> = {
+  -readonly [Key in keyof Type]: Mutable<Type[Key]>
+}
+
 // helper type to be able to extends components["schemas"] interfaces
 // https://stackoverflow.com/questions/78497975
 type Named<T> = T
@@ -53,6 +58,8 @@ export interface DealHull extends Omit<components["schemas"]["Deal"], "workflowi
   workflowinfos: WorkflowInfoType[]
 }
 
+export type MutableDealHull = Mutable<DealHull>
+
 export enum InvolvementRole {
   PARENT = "PARENT",
   LENDER = "LENDER",
@@ -96,6 +103,8 @@ export interface InvestorHull
   involvements: Involvement[]
   workflowinfos: WorkflowInfoType[]
 }
+
+export type MutableInvestorHull = Mutable<InvestorHull>
 
 export interface DealDataSource extends Named<components["schemas"]["DealDataSource"]> {
   date: LooseDateString | null
