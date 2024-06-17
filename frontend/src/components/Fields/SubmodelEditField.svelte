@@ -107,7 +107,8 @@
             <TrashIcon class="h-8 w-6 cursor-pointer text-red-600" />
           </button>
         </div>
-        <form id="{label}-entry-{idAsString}">
+
+        <form id="form-{idAsString}">
           {#if isSelectedEntry}
             <div class="p-2" transition:slide={{ duration: 200 }}>
               <svelte:component this={entryComponent} bind:entry {extras} />

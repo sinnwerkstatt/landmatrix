@@ -9,6 +9,7 @@
 
   import { isEmptyDataSource } from "$components/Data/DataSources/dataSources"
   import { INVESTOR_EDIT_SECTIONS } from "$components/Data/Investor/Sections/constants"
+  import { isEmptyInvolvement } from "$components/Data/Investor/Sections/Involvements/involvements"
   import { investorSectionLookup } from "$components/Data/Investor/Sections/store"
   import SectionNav from "$components/Data/SectionNav.svelte"
   import LoadingSpinner from "$components/icons/LoadingSpinner.svelte"
@@ -54,6 +55,10 @@
     investor.selected_version.datasources = (
       investor.selected_version.datasources ?? []
     ).filter(x => !isEmptyDataSource(x as InvestorDataSource))
+
+    investor.involvements = (investor.involvements ?? []).filter(
+      x => !isEmptyInvolvement(x),
+    )
 
     const ret = await fetch(
       data.investorVersion
@@ -119,17 +124,16 @@
   }
 
   const isFormValid = (): boolean => {
-    const currentForm: HTMLFormElement | null =
-      document.querySelector<HTMLFormElement>("form")
+    const currentForms = document.querySelectorAll<HTMLFormElement>("form")
 
-    if (!currentForm) {
+    if (currentForms.length === 0) {
       toast.push("Internal error. Can not grab the form. Try reloading the page.", {
         classes: ["error"],
       })
       return false
     }
 
-    return currentForm.reportValidity()
+    return [...currentForms].every(f => f.reportValidity())
   }
 
   const onClickClose = async (force = false): Promise<void> => {

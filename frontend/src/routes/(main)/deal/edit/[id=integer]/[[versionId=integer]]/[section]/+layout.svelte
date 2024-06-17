@@ -123,17 +123,16 @@
   }
 
   const isFormValid = (): boolean => {
-    const currentForm: HTMLFormElement | null =
-      document.querySelector<HTMLFormElement>("form")
+    const currentForms = document.querySelectorAll<HTMLFormElement>("form")
 
-    if (!currentForm) {
+    if (currentForms.length === 0) {
       toast.push("Internal error. Can not grab the form. Try reloading the page.", {
         classes: ["error"],
       })
       return false
     }
 
-    return currentForm.reportValidity()
+    return [...currentForms].every(f => f.reportValidity())
   }
 
   const onClickClose = async (force = false): Promise<void> => {
