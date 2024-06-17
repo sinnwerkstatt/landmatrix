@@ -1,7 +1,7 @@
 import type { DealVersion2 } from "$lib/types/data"
 
 export interface SubmodelEntry {
-  nid: string
+  nid?: string
   id?: number
   role?: string
   dealversion?: number

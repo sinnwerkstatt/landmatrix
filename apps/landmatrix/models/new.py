@@ -1781,6 +1781,8 @@ class InvolvementQuerySet(models.QuerySet):
 
 
 class Involvement(models.Model):
+    # TODO: Add nanoId
+    # nid = NanoIDField("ID", max_length=15, db_index=True, null=True)
     parent_investor = models.ForeignKey(
         InvestorHull,
         verbose_name=_("Investor"),

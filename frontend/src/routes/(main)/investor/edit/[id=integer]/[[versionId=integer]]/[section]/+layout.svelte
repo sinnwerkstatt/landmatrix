@@ -1,44 +1,53 @@
 <script lang="ts">
   import { toast } from "@zerodevx/svelte-toast"
   import { _ } from "svelte-i18n"
-  import type { MouseEventHandler } from "svelte/elements"
 
   import { beforeNavigate, goto, invalidate } from "$app/navigation"
-  import { page } from "$app/stores"
 
   import { getCsrfToken } from "$lib/utils"
   import { removeEmptyEntries } from "$lib/utils/data_processing"
 
-  import EditSectionDataSources from "$components/EditSectionDataSources.svelte"
+  import { INVESTOR_EDIT_SECTIONS } from "$components/Data/Investor/Sections/constants"
+  import { investorSectionLookup } from "$components/Data/Investor/Sections/store"
+  import SectionNav from "$components/Data/SectionNav.svelte"
   import LoadingSpinner from "$components/icons/LoadingSpinner.svelte"
   import ModalReallyQuit from "$components/ModalReallyQuit.svelte"
 
-  import EditSectionGeneralInfo from "./EditSectionGeneralInfo.svelte"
-  import EditSectionInvolvements from "./EditSectionInvolvements.svelte"
+  import { mutableInvestor, type MutableInvestor } from "./store"
 
   export let data
-  let investor = data.investor
-  $: investor = data.investor
 
   let savingInProgress = false
   let showReallyQuitOverlay = false
-  $: activeTab = $page.url.hash || "#general"
-  $: formChanged = JSON.stringify(investor) !== data.originalInvestor
-  $: tabs = [
-    { target: "#general", name: $_("General info") },
-    { target: "#parent_companies", name: $_("Parent companies") },
-    { target: "#tertiary_investors", name: $_("Tertiary investors/lenders") },
-    { target: "#data_sources", name: $_("Data sources") },
-  ]
-  beforeNavigate(({ type, cancel }) => {
-    // browser navigation buttons
+
+  $: $mutableInvestor = structuredClone(data.investor) as MutableInvestor
+  $: hasBeenEdited = JSON.stringify(data.investor) !== JSON.stringify($mutableInvestor)
+
+  beforeNavigate(({ type, cancel, to }) => {
+    // if hasNavigatedToOtherSection
+    if (type === "link" && to?.url.pathname.includes(data.baseUrl)) {
+      if (savingInProgress || !isFormValid()) {
+        cancel()
+        return
+      }
+
+      if (hasBeenEdited) {
+        saveInvestor($mutableInvestor).then(success => (success ? goto(to?.url) : null))
+        cancel()
+        return
+      }
+    }
+
+    // browser navigation
+    // TODO: extend this for any navigation
     if (type === "popstate")
-      if (formChanged && !showReallyQuitOverlay) {
+      if (hasBeenEdited && !showReallyQuitOverlay) {
         showReallyQuitOverlay = true
         cancel()
+        return
       }
   })
-  const saveInvestor = async (): Promise<boolean> => {
+  const saveInvestor = async (investor: MutableInvestor): Promise<boolean> => {
     savingInProgress = true
 
     investor.selected_version.datasources = removeEmptyEntries(
@@ -46,8 +55,8 @@
     )
 
     const ret = await fetch(
-      data.versionID
-        ? `/api/investorversions/${data.versionID}/`
+      data.investorVersion
+        ? `/api/investorversions/${data.investorVersion}/`
         : `/api/investors/${data.investorID}/`,
       {
         method: "PUT",
@@ -97,7 +106,9 @@
 
     if (retBody.versionID !== investor.selected_version.id) {
       toast.push("Created a new draft", { classes: ["success"] })
-      await goto(`/investor/edit/${data.investorID}/${retBody.versionID}/${activeTab}`)
+      await goto(
+        `/investor/edit/${data.investorID}/${retBody.versionID}/${data.investorSection}`,
+      )
     } else {
       toast.push("Saved data", { classes: ["success"] })
       await invalidate("investor:detail")
@@ -105,9 +116,10 @@
     savingInProgress = false
     return true
   }
+
   const isFormValid = (): boolean => {
     const currentForm: HTMLFormElement | null =
-      document.querySelector<HTMLFormElement>(activeTab)
+      document.querySelector<HTMLFormElement>("form")
 
     if (!currentForm) {
       toast.push("Internal error. Can not grab the form. Try reloading the page.", {
@@ -120,7 +132,7 @@
   }
 
   const onClickClose = async (force = false): Promise<void> => {
-    if (formChanged && !force) {
+    if (hasBeenEdited && !force) {
       showReallyQuitOverlay = true
       return
     }
@@ -128,33 +140,25 @@
     await invalidate("investor:detail") // discard changes
 
     if (!data.investorID) await goto("/")
-    else await goto(`/investor/${data.investorID}/${data.versionID ?? ""}`)
+    else await goto(`/investor/${data.investorID}/${data.investorVersion ?? ""}`)
   }
 
   const onClickSave = async (): Promise<void> => {
     if (savingInProgress || !isFormValid()) return
-    if (formChanged) await saveInvestor()
-  }
-
-  const onClickTab: MouseEventHandler<HTMLAnchorElement> = async e => {
-    if (savingInProgress || !isFormValid()) return
-
-    if (formChanged) {
-      const success = await saveInvestor()
-      if (!success) return
-    }
-
-    const hash = (e.target as HTMLAnchorElement).hash
-    await goto(hash)
+    if (hasBeenEdited) await saveInvestor($mutableInvestor)
   }
 </script>
 
+<svelte:head>
+  <title>{$_("Investor Edit")} #{data.investor.id}</title>
+</svelte:head>
+
 <div class="editgrid container mx-auto h-full max-h-full">
   <div
-    class="mx-2 flex flex-wrap items-center justify-between border-b border-pelorous"
+    class="mx-2 flex flex-wrap items-center justify-between border-b border-orange"
     style="grid-area: header"
   >
-    <h1 class="heading4 my-2 mt-3">
+    <h1 class="heading4 my-2 mt-3 flex items-baseline gap-2">
       {data.investorID
         ? $_("Editing Investor #") + data.investorID
         : $_("Adding new investor")}
@@ -162,7 +166,7 @@
     <div class="my-2 flex items-center gap-2 lg:my-5">
       <button
         class="btn btn-primary flex items-center gap-2"
-        class:disabled={!formChanged || savingInProgress}
+        class:disabled={!hasBeenEdited || savingInProgress}
         on:click|preventDefault={onClickSave}
       >
         {#if savingInProgress}
@@ -171,67 +175,28 @@
           {$_("Save")}
         {/if}
       </button>
-      {#if data.investorID}
-        <button class="btn btn-cancel" on:click={() => onClickClose(false)}>
-          {$_("Close")}
-        </button>
-      {:else}
-        <a
-          class="btn btn-cancel mx-2"
-          href="/investor/{data.investorID}/{data.versionID ?? ''}"
-        >
-          {$_("Cancel")}
-        </a>
-      {/if}
+      <button
+        class="btn btn-cancel"
+        class:disabled={savingInProgress}
+        on:click|preventDefault={() => onClickClose()}
+      >
+        {data.investorID ? $_("Close") : $_("Cancel")}
+      </button>
     </div>
   </div>
 
-  <nav
-    class="overflow-x-auto whitespace-nowrap p-2 lg:whitespace-normal"
-    style="grid-area: sidenav"
-  >
-    <ul>
-      {#each tabs as { target, name }}
-        <li
-          class="border-pelorous py-2 pr-4 {activeTab === target
-            ? 'border-r-4'
-            : 'border-r'}"
-        >
-          <a
-            href={target}
-            class={activeTab === target ? "text-gray-700 dark:text-white" : "investor"}
-            on:click|preventDefault={onClickTab}
-          >
-            {name}
-          </a>
-        </li>
-      {/each}
-    </ul>
-  </nav>
+  <div style="grid-area: sidenav">
+    <SectionNav
+      sections={INVESTOR_EDIT_SECTIONS.map(s => ({
+        slug: s,
+        label: $investorSectionLookup[s].label,
+      }))}
+      baseUrl={data.baseUrl}
+    />
+  </div>
 
-  <div class="overflow-y-auto px-4 pb-20" style="grid-area: main">
-    {#if activeTab === "#general"}
-      <EditSectionGeneralInfo bind:investor />
-    {/if}
-    {#if activeTab === "#parent_companies"}
-      <EditSectionInvolvements
-        bind:involvements={investor.involvements}
-        investorID={data.investorID}
-      />
-    {/if}
-    {#if activeTab === "#tertiary_investors"}
-      <EditSectionInvolvements
-        bind:involvements={investor.involvements}
-        tertiary
-        investorID={data.investorID}
-      />
-    {/if}
-    {#if activeTab === "#data_sources"}
-      <EditSectionDataSources
-        bind:datasources={investor.selected_version.datasources}
-        investorModel
-      />
-    {/if}
+  <div class="overflow-y-auto p-2" style="grid-area: main">
+    <slot />
   </div>
 </div>
 

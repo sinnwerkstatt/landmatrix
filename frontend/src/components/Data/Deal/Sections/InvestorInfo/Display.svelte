@@ -3,9 +3,9 @@
 
   import type { DealHull, DealVersion2 } from "$lib/types/data"
 
+  import Subsection from "$components/Data/Subsection.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import InvolvementsGraph from "$components/New/InvolvementsGraph/InvolvementsGraph.svelte"
-  import Subsection from "$components/Subsection.svelte"
 
   export let deal: DealHull
 

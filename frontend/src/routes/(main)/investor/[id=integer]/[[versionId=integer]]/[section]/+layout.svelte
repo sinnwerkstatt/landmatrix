@@ -10,9 +10,9 @@
   import InvestorManageHeader from "$components/Data/Investor/InvestorManageHeader.svelte"
   import { INVESTOR_SECTIONS } from "$components/Data/Investor/Sections/constants"
   import { investorSectionLookup } from "$components/Data/Investor/Sections/store"
+  import SectionNav from "$components/Data/SectionNav.svelte"
   import HeaderDatesWDownload from "$components/HeaderDatesWDownload.svelte"
   import ManageHeaderOldVersionNote from "$components/New/ManageHeaderOldVersionNote.svelte"
-  import SectionNav from "$components/SectionNav.svelte"
 
   export let data
 

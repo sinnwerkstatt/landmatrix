@@ -6,7 +6,7 @@ import type { InvestorSection } from "$components/Data/Investor/Sections/constan
 
 import type { LayoutLoad } from "./$types"
 
-export const load: LayoutLoad = async ({ fetch, params, depends, parent }) => {
+export const load: LayoutLoad = async ({ fetch, params, url, depends, parent }) => {
   depends("investor:detail")
 
   const { apiClient } = await parent()

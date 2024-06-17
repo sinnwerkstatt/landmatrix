@@ -3,7 +3,7 @@
 
   import type { DealHull } from "$lib/types/data"
 
-  import EditSubsection from "$components/EditSubsection.svelte"
+  import EditSubsection from "$components/Data/EditSubsection.svelte"
   import EditField from "$components/Fields/EditField.svelte"
 
   import ComplexPriceEditField from "./ComplexPriceEditField.svelte"

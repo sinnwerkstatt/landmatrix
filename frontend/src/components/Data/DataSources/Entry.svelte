@@ -1,10 +1,12 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
+  import type { DataSource } from "$lib/types/data"
+
   import LowLevelNullBooleanField from "$components/Fields/Edit2/LowLevelNullBooleanField.svelte"
   import EditField from "$components/Fields/EditField.svelte"
 
-  export let entry: Record<string, unknown>
+  export let entry: DataSource
 </script>
 
 <EditField fieldname="datasource.type" bind:value={entry.type} showLabel />

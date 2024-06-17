@@ -1,11 +1,11 @@
 <script lang="ts">
   import type { InvestorHull } from "$lib/types/data"
 
-  import EditSubsection from "$components/EditSubsection.svelte"
+  import EditSubsection from "$components/Data/EditSubsection.svelte"
   import EditField from "$components/Fields/EditField.svelte"
 
   export let investor: InvestorHull
-  let version = investor.selected_version
+
   $: version = investor.selected_version
 </script>
 

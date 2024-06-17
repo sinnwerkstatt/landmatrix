@@ -4,27 +4,32 @@ import { derived } from "svelte/store"
 
 import type { InvestorHull } from "$lib/types/data"
 
-import type { InvestorSection } from "./constants"
+import type { InvestorEditSection, InvestorSection } from "./constants"
 import DataSourcesDisplay from "./DataSources/Display.svelte"
+import DataSourcesEdit from "./DataSources/Edit.svelte"
 import GeneralInfoDisplay from "./General/Display.svelte"
+import GeneralInfoEdit from "./General/Edit.svelte"
 import HistoryDisplay from "./History/Display.svelte"
 import InvolvementsDisplay from "./Involvements/Display.svelte"
+import ParentCompaniesEdit from "./Involvements/EditParentCompanies.svelte"
+import TertiaryInvestorEdit from "./Involvements/EditTertiaryInvestors.svelte"
 import NetworkGraphDisplay from "./NetworkGraph/Display.svelte"
 
 export interface SectionSpecs {
   label: string
-  display: typeof SvelteComponent<{ investor: InvestorHull }>
+  display?: typeof SvelteComponent<{ investor: InvestorHull }>
   edit?: typeof SvelteComponent<{ investor: InvestorHull }>
 }
 
 export const investorSectionLookup = derived(
   [_],
   ([$_]): {
-    [key in InvestorSection]: SectionSpecs
+    [key in InvestorSection | InvestorEditSection]: SectionSpecs
   } => ({
     general: {
       label: $_("General info"),
       display: GeneralInfoDisplay,
+      edit: GeneralInfoEdit,
     },
     involvements: {
       label: $_("Involvements"),
@@ -37,10 +42,19 @@ export const investorSectionLookup = derived(
     "data-sources": {
       label: $_("Data sources"),
       display: DataSourcesDisplay,
+      edit: DataSourcesEdit,
     },
     history: {
       label: $_("Investor history"),
       display: HistoryDisplay,
+    },
+    "parent-companies": {
+      label: $_("Parent companies"),
+      edit: ParentCompaniesEdit,
+    },
+    "tertiary-investors": {
+      label: $_("Tertiary investors/lenders"),
+      edit: TertiaryInvestorEdit,
     },
   }),
 )

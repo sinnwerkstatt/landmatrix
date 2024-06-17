@@ -1,5 +1,7 @@
 import { redirect } from "@sveltejs/kit"
 
-export const load = async () => {
+import type { PageLoad } from "./$types"
+
+export const load: PageLoad = async () => {
   redirect(301, "/list/investors")
 }

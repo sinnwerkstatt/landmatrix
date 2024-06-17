@@ -19,6 +19,7 @@
 
   export let label: string
   export let selectedEntryId: string | undefined = undefined // for external reference
+  export let entryIdKey: "id" | "nid" = "nid"
 
   $: selectedEntryId = $page.url.hash?.replace("#", "") || undefined
 
@@ -29,18 +30,19 @@
 
 {#if entries.length > 0}
   <section class="w-full">
-    {#each entries as entry, index}
+    {#each entries as entry, index (entry[entryIdKey])}
+      {@const isSelectedEntry = selectedEntryId === `${entry[entryIdKey]}`}
       <article
-        id={entry.nid}
-        class="p-2 {selectedEntryId === entry.nid
+        id={`${entry[entryIdKey]}`}
+        class="p-2 {isSelectedEntry
           ? 'animate-fadeToWhite dark:animate-fadeToGray'
           : ''}"
       >
         <h3 class="heading4">
-          <a href="#{entry.nid}">
+          <a href="#{entry[entryIdKey]}">
             {index + 1}. {label}
             <small class="text-sm text-gray-500">
-              #{entry.nid}
+              #{entry[entryIdKey]}
             </small>
           </a>
         </h3>

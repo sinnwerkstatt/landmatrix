@@ -7,3 +7,12 @@ export const INVESTOR_SECTIONS = [
 ] as const
 
 export type InvestorSection = (typeof INVESTOR_SECTIONS)[number]
+
+export const INVESTOR_EDIT_SECTIONS = [
+  "general",
+  "parent-companies",
+  "tertiary-investors",
+  "data-sources",
+] as const
+
+export type InvestorEditSection = (typeof INVESTOR_EDIT_SECTIONS)[number]

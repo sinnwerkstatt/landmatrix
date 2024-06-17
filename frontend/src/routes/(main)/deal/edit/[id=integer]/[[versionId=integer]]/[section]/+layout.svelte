@@ -9,10 +9,10 @@
 
   import { DEAL_SECTIONS } from "$components/Data/Deal/Sections/constants"
   import { dealSectionLookup } from "$components/Data/Deal/Sections/store"
+  import SectionNav from "$components/Data/SectionNav.svelte"
   import CountryField from "$components/Fields/Display2/CountryField.svelte"
   import LoadingSpinner from "$components/icons/LoadingSpinner.svelte"
   import ModalReallyQuit from "$components/ModalReallyQuit.svelte"
-  import SectionNav from "$components/SectionNav.svelte"
 
   import { mutableDeal, type MutableDeal } from "./store"
 
