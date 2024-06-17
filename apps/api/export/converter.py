@@ -164,6 +164,7 @@ deal_fields = {
     "deal__confidential_comment": "Comment on not public",
 }
 
+# TODO: @Kurt why i18n choices and not just use the db values?
 _negotiation_status_choices = dict(choices.NEGOTIATION_STATUS_CHOICES) | {None: "None"}
 _implementation_status_choices = dict(choices.IMPLEMENTATION_STATUS_CHOICES) | {
     None: "None"

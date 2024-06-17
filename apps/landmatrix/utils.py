@@ -21,6 +21,7 @@ openapi_filters_parameters = [
         "implementation_status",
         description="",
         type=str,
+        # UNKNOWN corresponds to front-end filter field "No information", see parse_filters in utils.py
         enum=[x["value"] for x in choices.IMPLEMENTATION_STATUS_ITEMS] + ["UNKNOWN"],
         many=True,
     ),
