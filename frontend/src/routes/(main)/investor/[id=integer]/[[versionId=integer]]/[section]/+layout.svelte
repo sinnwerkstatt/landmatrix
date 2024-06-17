@@ -34,21 +34,14 @@
       <InvestorManageHeader investor={data.investor} on:reload={reloadInvestor} />
     {:else}
       <div class="my-4 md:flex md:flex-row md:justify-between">
-        <div class="flex flex-col">
-          <h1 class="heading3 mb-0 mt-3">
-            {#if data.investor.selected_version.name_unknown}
-              <span class="italic text-gray-600">[{$_("unknown investor")}]</span>
-            {:else}
-              {data.investor.selected_version.name}
-            {/if}
-            <small>#{data.investor.id}</small>
-            {#if data.investor.selected_version.id !== data.investor.active_version_id}
-              <span class="text-[0.9em]">
-                {$_("Version")} #{data.investor.selected_version.id}
-              </span>
-            {/if}
-          </h1>
-        </div>
+        <h1 class="heading3 mb-0 mt-3">
+          {#if data.investor.selected_version.name_unknown}
+            <span class="italic text-gray-600">[{$_("unknown investor")}]</span>
+          {:else}
+            {data.investor.selected_version.name}
+          {/if}
+          <small>#{data.investor.id}</small>
+        </h1>
         <HeaderDatesWDownload obj={data.investor} />
       </div>
     {/if}
@@ -64,7 +57,7 @@
     />
   </div>
 
-  <div class="h-full px-4 pb-20" style="grid-area: main">
+  <div class="mt-2 overflow-y-auto px-4 pb-20" style="grid-area: main">
     <slot />
   </div>
 </div>

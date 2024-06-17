@@ -161,7 +161,7 @@
     style="grid-area: header"
   >
     <h1 class="heading4 my-2 mt-3 flex items-baseline gap-2">
-      {data.dealID ? $_("Editing deal #") + data.dealID : $_("Adding new deal")}
+      {$_("Editing") + " " + $_("Deal") + ` #${data.deal.id}`}
       <span class="text-[0.8em]">
         <CountryField value={data.deal.country_id} />
       </span>
@@ -198,7 +198,7 @@
     />
   </div>
 
-  <div class="overflow-y-auto p-2" style="grid-area: main">
+  <div class="mt-2 overflow-y-auto px-4 pb-20" style="grid-area: main">
     <slot />
   </div>
 </div>

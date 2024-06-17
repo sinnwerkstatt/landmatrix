@@ -158,10 +158,14 @@
     class="mx-2 flex flex-wrap items-center justify-between border-b border-orange"
     style="grid-area: header"
   >
-    <h1 class="heading4 my-2 mt-3 flex items-baseline gap-2">
-      {data.investorID
-        ? $_("Editing Investor #") + data.investorID
-        : $_("Adding new investor")}
+    <h1 class="heading3 mb-0 mt-3">
+      {$_("Editing")}
+      {#if data.investor.selected_version.name_unknown}
+        <span class="italic text-gray-600">[{$_("unknown investor")}]</span>
+      {:else}
+        {data.investor.selected_version.name}
+      {/if}
+      <small>#{data.investor.id}</small>
     </h1>
     <div class="my-2 flex items-center gap-2 lg:my-5">
       <button
@@ -195,7 +199,7 @@
     />
   </div>
 
-  <div class="overflow-y-auto p-2" style="grid-area: main">
+  <div class="mt-2 overflow-y-auto px-4 pb-20" style="grid-area: main">
     <slot />
   </div>
 </div>
