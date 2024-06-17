@@ -5,7 +5,7 @@
   import { beforeNavigate, goto, invalidate } from "$app/navigation"
 
   import { getCsrfToken } from "$lib/utils"
-  import { removeEmptyEntries } from "$lib/utils/data_processing"
+  import { discardEmptySubmodels } from "$lib/utils/dataProcessing"
 
   import { DEAL_SECTIONS } from "$components/Data/Deal/Sections/constants"
   import { dealSectionLookup } from "$components/Data/Deal/Sections/store"
@@ -52,13 +52,13 @@
   const saveDeal = async (deal: MutableDeal): Promise<boolean> => {
     savingInProgress = true
 
-    deal.selected_version.locations = removeEmptyEntries(
+    deal.selected_version.locations = discardEmptySubmodels(
       deal.selected_version.locations ?? [],
     )
-    deal.selected_version.contracts = removeEmptyEntries(
+    deal.selected_version.contracts = discardEmptySubmodels(
       deal.selected_version.contracts ?? [],
     )
-    deal.selected_version.datasources = removeEmptyEntries(
+    deal.selected_version.datasources = discardEmptySubmodels(
       deal.selected_version.datasources ?? [],
     )
 

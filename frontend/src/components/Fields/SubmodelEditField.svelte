@@ -2,7 +2,7 @@
   import type { SvelteComponent } from "svelte"
 
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-  import type { SubmodelEntry } from "$lib/utils/data_processing"
+  import type { Submodel } from "$lib/utils/dataProcessing"
 
   type ExtraProps<T> = T extends typeof SvelteComponent<
     infer Y extends Record<string, unknown>
@@ -14,7 +14,7 @@
 <script
   lang="ts"
   generics="
-  T extends SubmodelEntry,
+  T extends Submodel,
   X extends typeof SvelteComponent<any>,
 "
 >
@@ -27,7 +27,7 @@
   import { page } from "$app/stores"
 
   import { newNanoid } from "$lib/helpers"
-  import { isEmptySubmodel } from "$lib/utils/data_processing"
+  import { isEmptySubmodel, type SubmodelIdKeys } from "$lib/utils/dataProcessing"
   import { scrollEntryIntoView } from "$lib/utils/domHelpers"
 
   import ChevronDownIcon from "$components/icons/ChevronDownIcon.svelte"
@@ -44,7 +44,7 @@
   /* eslint-enable no-undef */
   export let label: string
   export let selectedEntryId: string | undefined = undefined // for external reference
-  export let entryIdKey: "id" | "nid" = "nid"
+  export let entryIdKey: SubmodelIdKeys = "nid"
 
   $: selectedEntryId = $page.url.hash?.replace("#", "") || undefined
 
@@ -71,7 +71,7 @@
   }
 </script>
 
-<section class="w-full pb-52">
+<section class="w-full">
   <div class="flex w-full flex-col gap-2">
     {#each entries.filter(filterFn) as entry, index (entry[entryIdKey])}
       {@const idAsString = `${entry[entryIdKey]}`}

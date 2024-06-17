@@ -5,7 +5,7 @@
   import { beforeNavigate, goto, invalidate } from "$app/navigation"
 
   import { getCsrfToken } from "$lib/utils"
-  import { removeEmptyEntries } from "$lib/utils/data_processing"
+  import { discardEmptySubmodels } from "$lib/utils/dataProcessing"
 
   import { INVESTOR_EDIT_SECTIONS } from "$components/Data/Investor/Sections/constants"
   import { investorSectionLookup } from "$components/Data/Investor/Sections/store"
@@ -50,7 +50,7 @@
   const saveInvestor = async (investor: MutableInvestor): Promise<boolean> => {
     savingInProgress = true
 
-    investor.selected_version.datasources = removeEmptyEntries(
+    investor.selected_version.datasources = discardEmptySubmodels(
       investor.selected_version.datasources ?? [],
     )
 

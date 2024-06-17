@@ -6,6 +6,7 @@
     type DealVersion2,
     type InvestorVersion2,
   } from "$lib/types/data"
+  import { isEmptySubmodel } from "$lib/utils/dataProcessing"
 
   import SubmodelEditField from "$components/Fields/SubmodelEditField.svelte"
 
@@ -33,11 +34,15 @@
       // dealversion: null!,
       // investorversion: null!,
     }) as unknown as DataSource
+
+  $: isEmpty = (dataSource: DataSource) =>
+    isEmptySubmodel(dataSource, ["dealversion", "investorversion", "file_not_public"])
 </script>
 
 <SubmodelEditField
   label={$_("Data Source")}
   bind:entries={version.datasources}
   createEntry={createDataSource}
+  {isEmpty}
   entryComponent={Entry}
 />

@@ -27,7 +27,7 @@
     type ImplementationStatus,
   } from "$lib/types/data"
   import type { CountryOrRegion } from "$lib/types/wagtail"
-  import { sum } from "$lib/utils/data_processing"
+  import { sum } from "$lib/utils/dataProcessing"
 
   import DealDisplayToggle from "$components/DealDisplayToggle.svelte"
   import { displayDealsCount } from "$components/Map/map_helper"

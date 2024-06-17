@@ -2,10 +2,11 @@
   import { _ } from "svelte-i18n"
 
   import { type InvestorHull, type Involvement } from "$lib/types/data"
-  import { isEmptySubmodel } from "$lib/utils/data_processing"
+  import { isEmptySubmodel } from "$lib/utils/dataProcessing"
 
-  import Entry from "$components/Data/DataSources/Entry.svelte"
   import SubmodelEditField from "$components/Fields/SubmodelEditField.svelte"
+
+  import Entry from "./Entry.svelte"
 
   export let investor: InvestorHull
   export let tertiary = false
@@ -20,7 +21,7 @@
   const createInvolvement = (id: string): Involvement => ({
     // weird id nid confusion
     id: id,
-    parent_investor_id: null!,
+    // parent_investor_id: null!,
     child_investor_id: investor.id,
     role: tertiary ? Role.LENDER : Role.PARENT,
     loans_currency_id: null,
@@ -37,7 +38,7 @@
     involvement.role === (tertiary ? Role.LENDER : Role.PARENT)
 
   $: isEmpty = (involvement: Involvement) =>
-    isEmptySubmodel(involvement, ["id", "role", "child_investor_id", "file_not_public"])
+    isEmptySubmodel(involvement, ["role", "child_investor_id", "file_not_public"])
 </script>
 
 <SubmodelEditField
