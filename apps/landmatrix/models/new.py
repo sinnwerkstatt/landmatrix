@@ -1487,6 +1487,7 @@ class InvestorVersion(BaseVersionMixin, models.Model):
                     continue
 
                 try:
+                    # TODO: Cleanup magic foo where id as nid is processed
                     assert isinstance(invo["id"], int)
                     i1 = Involvement.objects.get(id=invo["id"], child_investor=investor)
                 except (Involvement.DoesNotExist, AssertionError):

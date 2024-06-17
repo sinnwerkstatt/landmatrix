@@ -1,53 +1,30 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import { type InvestorHull, type Involvement } from "$lib/types/data"
-  import { isEmptySubmodel } from "$lib/utils/dataProcessing"
+  import { InvolvementRole, type InvestorHull, type Involvement } from "$lib/types/data"
 
   import SubmodelEditField from "$components/Fields/SubmodelEditField.svelte"
 
   import Entry from "./Entry.svelte"
+  import { createInvolvement, isEmptyInvolvement } from "./involvements"
 
   export let investor: InvestorHull
   export let tertiary = false
 
   $: label = tertiary ? $_("Tertiary investor/lender") : $_("Parent company")
 
-  enum Role {
-    PARENT = "PARENT",
-    LENDER = "LENDER",
-  }
-
-  const createInvolvement = (id: string): Involvement => ({
-    // weird id nid confusion
-    id: id,
-    // parent_investor_id: null!,
-    child_investor_id: investor.id,
-    role: tertiary ? Role.LENDER : Role.PARENT,
-    loans_currency_id: null,
-    investment_type: [],
-    percentage: null,
-    loans_amount: null,
-    loans_date: null,
-    parent_relation: null,
-    comment: "",
-  })
-
   $: filterFn = (involvement: Involvement) =>
     involvement.child_investor_id === investor.id &&
-    involvement.role === (tertiary ? Role.LENDER : Role.PARENT)
-
-  $: isEmpty = (involvement: Involvement) =>
-    isEmptySubmodel(involvement, ["role", "child_investor_id", "file_not_public"])
+    involvement.role === (tertiary ? InvolvementRole.LENDER : InvolvementRole.PARENT)
 </script>
 
 <SubmodelEditField
   {label}
   bind:entries={investor.involvements}
-  createEntry={createInvolvement}
+  createEntry={createInvolvement(tertiary, investor.id)}
   entryIdKey="id"
   extras={{}}
   {filterFn}
-  {isEmpty}
+  isEmpty={isEmptyInvolvement}
   entryComponent={Entry}
 />

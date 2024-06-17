@@ -19,11 +19,12 @@
   import { createPointFeatures } from "$lib/utils/location"
   import { padBounds } from "$lib/utils/location.js"
 
-  import LocationLegend from "$components/Data/Deal/Sections/Locations/LocationLegend.svelte"
   import SubmodelEditField from "$components/Fields/SubmodelEditField.svelte"
   import BigMap from "$components/Map/BigMap.svelte"
 
   import Entry from "./Entry.svelte"
+  import LocationLegend from "./LocationLegend.svelte"
+  import { createLocation, isEmptyLocation } from "./locations"
   import LocationTooltip from "./LocationTooltip.svelte"
 
   export let deal: DealHull
@@ -39,19 +40,6 @@
   let locationsPointLayer: GeoJSON<PointFeatureProps, Point>
 
   $: label = $_("Location")
-
-  const createLocation = (nid: string): Location2 => ({
-    nid,
-    id: null!,
-    name: "",
-    description: "",
-    point: null,
-    facility_name: "",
-    level_of_accuracy: undefined,
-    comment: "",
-    areas: [],
-    dealversion: deal.selected_version.id,
-  })
 
   const onMapReady = (e: CustomEvent<Map>) => {
     map = e.detail
@@ -195,6 +183,7 @@
       bind:selectedEntryId
       entryComponent={Entry}
       createEntry={createLocation}
+      isEmpty={isEmptyLocation}
       extras={{
         map,
         country: $page.data.countries.find(c => c.id === deal.country_id),

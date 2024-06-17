@@ -53,12 +53,17 @@ export interface DealHull extends Omit<components["schemas"]["Deal"], "workflowi
   workflowinfos: WorkflowInfoType[]
 }
 
+export enum InvolvementRole {
+  PARENT = "PARENT",
+  LENDER = "LENDER",
+}
+
 // TODO: Fix type in openAPI -> currently string
 export interface Involvement {
   id: number
   parent_investor_id: number
   child_investor_id: number
-  role: string
+  role: InvolvementRole
 
   investment_type: string[]
   percentage: number | null
@@ -92,10 +97,10 @@ export interface InvestorHull
   workflowinfos: WorkflowInfoType[]
 }
 
-interface DealDataSource extends Named<components["schemas"]["DealDataSource"]> {
+export interface DealDataSource extends Named<components["schemas"]["DealDataSource"]> {
   date: LooseDateString | null
 }
-interface InvestorDataSource
+export interface InvestorDataSource
   extends Named<components["schemas"]["InvestorDataSource"]> {
   date: LooseDateString | null
 }
