@@ -59,23 +59,25 @@
     goto(`#${newEntryId}`)
   }
 
-  const removeEntry = (index: number) => {
-    const entry = entries[index]
+  const removeEntry = (id: string) => {
+    const entry = entries.find(entry => `${entry[entryIdKey]}` === id)
 
+    if (!entry) return
     if (!isEmpty(entry)) {
-      const areYouSure = confirm(`${$_("Remove")} ${label} #${entry[entryIdKey]}}?`)
+      const areYouSure = confirm(`${$_("Remove")} ${label} #${id}?`)
       if (!areYouSure) return
     }
-    entries = entries.filter(x => `${x[entryIdKey]}` !== `${entry[entryIdKey]}`)
+    entries = entries.filter(x => `${x[entryIdKey]}` !== id)
   }
 </script>
 
 <section class="w-full pb-52">
   <div class="flex w-full flex-col gap-2">
     {#each entries.filter(filterFn) as entry, index (entry[entryIdKey])}
-      {@const isSelectedEntry = selectedEntryId === `${entry[entryIdKey]}`}
+      {@const idAsString = `${entry[entryIdKey]}`}
+      {@const isSelectedEntry = selectedEntryId === idAsString}
 
-      <article id={`${entry[entryIdKey]}`}>
+      <article id={idAsString}>
         <div
           class="flex items-center bg-gray-50 px-2 dark:bg-gray-700 {isSelectedEntry
             ? 'animate-fadeToWhite dark:animate-fadeToGray'
@@ -85,7 +87,7 @@
             <button
               class="w-full text-left"
               on:click|preventDefault={() =>
-                (window.location.hash = isSelectedEntry ? "" : `${entry[entryIdKey]}`)}
+                goto(isSelectedEntry ? "" : `#${idAsString}`)}
             >
               <ChevronDownIcon
                 class="transition-duration-300 inline h-4 w-4 rounded transition-transform {isSelectedEntry
@@ -94,18 +96,18 @@
               />
               {index + 1}. {label}
               <small class="text-sm text-gray-500">
-                #{entry[entryIdKey]}
+                #{idAsString}
               </small>
             </button>
           </h3>
           <button
             class="flex-initial p-2"
-            on:click|preventDefault={() => removeEntry(index)}
+            on:click|preventDefault={() => removeEntry(idAsString)}
           >
             <TrashIcon class="h-8 w-6 cursor-pointer text-red-600" />
           </button>
         </div>
-        <form id="{label}-entry-{entry[entryIdKey]}">
+        <form id="{label}-entry-{idAsString}">
           {#if isSelectedEntry}
             <div class="p-2" transition:slide={{ duration: 200 }}>
               <svelte:component this={entryComponent} bind:entry {extras} />

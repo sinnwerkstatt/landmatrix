@@ -19,7 +19,7 @@
 
   const createInvolvement = (id: string): Involvement => ({
     // weird id nid confusion
-    id: id as unknown as number,
+    id: id,
     parent_investor_id: null!,
     child_investor_id: investor.id,
     role: tertiary ? Role.LENDER : Role.PARENT,
@@ -36,8 +36,8 @@
     involvement.child_investor_id === investor.id &&
     involvement.role === (tertiary ? Role.LENDER : Role.PARENT)
 
-  $: isEmpty = (entry: Involvement) =>
-    isEmptySubmodel(entry, ["id", "role", "child_investor_id", "file_not_public"])
+  $: isEmpty = (involvement: Involvement) =>
+    isEmptySubmodel(involvement, ["id", "role", "child_investor_id", "file_not_public"])
 </script>
 
 <SubmodelEditField
