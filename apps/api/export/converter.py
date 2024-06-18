@@ -174,17 +174,11 @@ _intention_of_investment_choices = dict(choices.INTENTION_OF_INVESTMENT_CHOICES)
 }
 _classification_choices = dict(choices.INVESTOR_CLASSIFICATION_CHOICES)
 _produce_choices = {
-    "crops": {item["value"]: item["label"] for item in choices.CROPS_ITEMS},
-    "contract_farming_crops": {
-        item["value"]: item["label"] for item in choices.CROPS_ITEMS
-    },
-    "animals": {item["value"]: item["label"] for item in choices.ANIMALS_ITEMS},
-    "contract_farming_animals": {
-        item["value"]: item["label"] for item in choices.ANIMALS_ITEMS
-    },
-    "mineral_resources": {
-        item["value"]: item["label"] for item in choices.MINERALS_ITEMS
-    },
+    "crops": dict(choices.CROPS_CHOICES),
+    "contract_farming_crops": dict(choices.CROPS_CHOICES),
+    "animals": dict(choices.ANIMALS_CHOICES),
+    "contract_farming_animals": dict(choices.ANIMALS_CHOICES),
+    "mineral_resources": dict(choices.MINERALS_CHOICES),
 }
 
 
@@ -396,7 +390,7 @@ def deal_download_format(data: dict):
                     [
                         x.get("name") or "",
                         (
-                            str(dict(choices.ACTOR_MAP)[x["role"]])
+                            str(dict(choices.ACTOR_CHOICES)[x["role"]])
                             if x.get("role")
                             else ""
                         ),
@@ -544,7 +538,7 @@ def location_download_format(locations: QuerySet[Location]) -> list[list]:
             x["nid"],
             x["dealversion__deal_id"],
             str(
-                choices.LOCATION_ACCURACY_MAP[x["level_of_accuracy"]]
+                dict(choices.LOCATION_ACCURACY_CHOICES)[x["level_of_accuracy"]]
                 if x["level_of_accuracy"]
                 else ""
             ),
@@ -616,7 +610,7 @@ def datasource_download_format(datasources: QuerySet[DealDataSource]) -> list[li
         [
             x["nid"],
             x["dealversion__deal_id"],
-            str(choices.DATASOURCE_TYPE_MAP[x["type"]] if x["type"] else ""),
+            str(dict(choices.DATASOURCE_TYPE_CHOICES)[x["type"]] if x["type"] else ""),
             x["url"],
             x["public_file"],
             x["publication_title"],
@@ -701,9 +695,13 @@ def involvement_download_format(involvements: QuerySet[Involvement]) -> list[lis
             x["child_investor__active_version__name"],
             x["parent_investor_id"],
             x["parent_investor__active_version__name"],
-            str(choices.INVOLVEMENT_ROLE_DICT[x["role"]] if x["role"] else ""),
+            str(dict(choices.INVOLVEMENT_ROLE_CHOICES)[x["role"]] if x["role"] else ""),
             "|".join(
-                [str(choices.INVESTMENT_TYPE_MAP[y]) for y in x["investment_type"] if y]
+                [
+                    str(dict(choices.INVESTMENT_TYPE_CHOICES)[y])
+                    for y in x["investment_type"]
+                    if y
+                ]
             ),
             float(x["percentage"]) if x["percentage"] is not None else "",
             x["loans_amount"] if x["loans_amount"] is not None else "",

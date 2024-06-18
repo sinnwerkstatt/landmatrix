@@ -123,7 +123,7 @@ class DealVersionBaseFields(models.Model):
     )
     purchase_price_type = models.CharField(
         _("Purchase price area type"),
-        choices=choices.HaAreasEnum,
+        choices=choices.HA_AREA_CHOICES,
         blank=True,
         null=True,
     )
@@ -152,7 +152,7 @@ class DealVersionBaseFields(models.Model):
     )
     annual_leasing_fee_type = models.CharField(
         _("Annual leasing fee area type"),
-        choices=choices.HaAreasEnum,
+        choices=choices.HA_AREA_CHOICES,
         blank=True,
         null=True,
     )
@@ -1085,7 +1085,7 @@ class Location(models.Model):
     level_of_accuracy = models.CharField(
         _("Spatial accuracy level"),
         blank=True,
-        choices=choices.LEVEL_OF_ACCURACY_CHOICES,
+        choices=choices.LOCATION_ACCURACY_CHOICES,
     )
     name = models.CharField(_("Location"), blank=True)
     point = gis_models.PointField(_("Point"), blank=True, null=True)

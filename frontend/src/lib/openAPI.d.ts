@@ -263,6 +263,26 @@ export interface components {
     AreaFields: {
       type: components["schemas"]["ValueLabel"][]
     }
+    /**
+     * @description * `HEALTH` - Health
+     * * `EDUCATION` - Education
+     * * `PRODUCTIVE_INFRASTRUCTURE` - Productive infrastructure (e.g. irrigation, tractors, machinery...)
+     * * `ROADS` - Roads
+     * * `CAPACITY_BUILDING` - Capacity building
+     * * `FINANCIAL_SUPPORT` - Financial support
+     * * `COMMUNITY_SHARES` - Community shares in the investment project
+     * * `OTHER` - Other
+     * @enum {string}
+     */
+    BenefitsEnum:
+      | "HEALTH"
+      | "EDUCATION"
+      | "PRODUCTIVE_INFRASTRUCTURE"
+      | "ROADS"
+      | "CAPACITY_BUILDING"
+      | "FINANCIAL_SUPPORT"
+      | "COMMUNITY_SHARES"
+      | "OTHER"
     /** @enum {unknown} */
     BlankEnum: ""
     BlogCategory: {
@@ -1042,11 +1062,11 @@ export interface components {
       /** Received compensation (e.g. for damages or resettlements) */
       received_compensation?: string
       /** Promised benefits for local communities */
-      promised_benefits?: components["schemas"]["PromisedBenefitsEnum"][]
+      promised_benefits?: components["schemas"]["BenefitsEnum"][]
       /** Comment on promised benefits for local communities */
       promised_benefits_comment?: string
       /** Materialized benefits for local communities */
-      materialized_benefits?: components["schemas"]["MaterializedBenefitsEnum"][]
+      materialized_benefits?: components["schemas"]["BenefitsEnum"][]
       /** Comment on materialized benefits for local communities */
       materialized_benefits_comment?: string
       /** Presence of organizations and actions taken (e.g. farmer organizations, NGOs, etc.) */
@@ -1760,26 +1780,6 @@ export interface components {
      * @enum {string}
      */
     LocationAreaTypeEnum: "production_area" | "contract_area" | "intended_area"
-    /**
-     * @description * `HEALTH` - Health
-     * * `EDUCATION` - Education
-     * * `PRODUCTIVE_INFRASTRUCTURE` - Productive infrastructure (e.g. irrigation, tractors, machinery...)
-     * * `ROADS` - Roads
-     * * `CAPACITY_BUILDING` - Capacity building
-     * * `FINANCIAL_SUPPORT` - Financial support
-     * * `COMMUNITY_SHARES` - Community shares in the investment project
-     * * `OTHER` - Other
-     * @enum {string}
-     */
-    MaterializedBenefitsEnum:
-      | "HEALTH"
-      | "EDUCATION"
-      | "PRODUCTIVE_INFRASTRUCTURE"
-      | "ROADS"
-      | "CAPACITY_BUILDING"
-      | "FINANCIAL_SUPPORT"
-      | "COMMUNITY_SHARES"
-      | "OTHER"
     Message: {
       id: number
       title?: string | null
@@ -1903,26 +1903,6 @@ export interface components {
       | "CONTRACT_EXPIRED"
     /** @enum {unknown} */
     NullEnum: ""
-    /**
-     * @description * `HEALTH` - Health
-     * * `EDUCATION` - Education
-     * * `PRODUCTIVE_INFRASTRUCTURE` - Productive infrastructure (e.g. irrigation, tractors, machinery...)
-     * * `ROADS` - Roads
-     * * `CAPACITY_BUILDING` - Capacity building
-     * * `FINANCIAL_SUPPORT` - Financial support
-     * * `COMMUNITY_SHARES` - Community shares in the investment project
-     * * `OTHER` - Other
-     * @enum {string}
-     */
-    PromisedBenefitsEnum:
-      | "HEALTH"
-      | "EDUCATION"
-      | "PRODUCTIVE_INFRASTRUCTURE"
-      | "ROADS"
-      | "CAPACITY_BUILDING"
-      | "FINANCIAL_SUPPORT"
-      | "COMMUNITY_SHARES"
-      | "OTHER"
     /**
      * @description * `INDIGENOUS_RIGHTS_RECOGNIZED` - Indigenous Peoples traditional or customary rights recognized by government
      * * `INDIGENOUS_RIGHTS_NOT_RECOGNIZED` - Indigenous Peoples traditional or customary rights not recognized by government
