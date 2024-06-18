@@ -63,20 +63,42 @@ export const fieldChoices = derived(
 
 // fieldChoices.subscribe(value => console.log(value))
 
-export const findChoice = (
+export const createGroupMap = <T extends Record<string, string>>(
   choices: ValueLabelEntry[],
-  value: string,
-): ValueLabelEntry | undefined => choices.find(x => x.value === value)
+): T =>
+  choices.reduce(
+    (acc, { value, group }) => ({
+      ...acc,
+      [value]: group as string,
+    }),
+    {} as T,
+  )
 
-export const getFieldChoicesLabel =
-  (choices: ValueLabelEntry[]) =>
-  (value: string): string | undefined =>
-    findChoice(choices, value)?.label
+export const createLabels = <T extends string>(
+  choices: ValueLabelEntry[],
+): { [key in T]: string } =>
+  choices.reduce(
+    (acc, { value, label }) => ({
+      ...acc,
+      [value]: label,
+    }),
+    {} as { [key in T]: string },
+  )
 
-export const getFieldChoicesGroup =
-  (choices: ValueLabelEntry[]) =>
-  (value: string): string | undefined =>
-    findChoice(choices, value)?.group
+// export const findChoice = (
+//   choices: ValueLabelEntry[],
+//   value: string,
+// ): ValueLabelEntry | undefined => choices.find(x => x.value === value)
+//
+// export const getFieldChoicesLabel =
+//   (choices: ValueLabelEntry[]) =>
+//   (value: string): string | undefined =>
+//     findChoice(choices, value)?.label
+//
+// export const getFieldChoicesGroup =
+//   (choices: ValueLabelEntry[]) =>
+//   (value: string): string | undefined =>
+//     findChoice(choices, value)?.group
 
 export const blogCategories = derived(
   [locale],

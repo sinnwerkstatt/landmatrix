@@ -7,11 +7,12 @@
 
   import { LSLAByNegotiation, LSLAData } from "$lib/data/charts/LSLAByNegotiation"
   import { filters } from "$lib/filters"
-  import { fieldChoices, getFieldChoicesGroup, getFieldChoicesLabel } from "$lib/stores"
+  import { createGroupMap, createLabels, fieldChoices } from "$lib/stores"
   import {
     NegotiationStatusGroup,
     type DealVersion2,
     type NegotiationStatus,
+    type NegStatGroupMap,
   } from "$lib/types/data"
 
   import ChartWrapper from "$components/Data/Charts/DownloadWrapper.svelte"
@@ -20,31 +21,19 @@
 
   export let deals: DealVersion2[] = []
 
-  $: getNegotiationStatusGroup = getFieldChoicesGroup(
-    $fieldChoices["deal"]["negotiation_status"],
-  ) as (value: NegotiationStatus) => NegotiationStatusGroup
+  $: negStatChoices = $fieldChoices.deal.negotiation_status
+  $: negStatLabels = createLabels<NegotiationStatus>(negStatChoices)
 
-  $: getNegotiationStatusLabel = getFieldChoicesLabel(
-    $fieldChoices["deal"]["negotiation_status"],
-  ) as (value: NegotiationStatus) => string
+  $: negStatGroupChoices = $fieldChoices.deal.negotiation_status_group
+  $: negStatGroupLabels = createLabels<NegotiationStatusGroup>(negStatGroupChoices)
 
-  $: getNegotiationStatusGroupLabel = getFieldChoicesLabel(
-    $fieldChoices["deal"]["negotiation_status_group"],
-  ) as (value: NegotiationStatusGroup) => string
+  $: negStatGroupMap = createGroupMap<NegStatGroupMap>(negStatChoices)
 
   // Large Scale Land Acquisitions
   $: title = $_("LSLA by negotiation status")
 
   let svgComp: SVGElement
   let svg = new LSLAByNegotiation()
-
-  const allNegStats = $fieldChoices["deal"]["negotiation_status"].map(
-    x => x.value,
-  ) as NegotiationStatus[]
-
-  const allNegStatGroups = $fieldChoices["deal"]["negotiation_status_group"].map(
-    x => x.value,
-  ) as NegotiationStatusGroup[]
 
   type Pots = {
     [key in NegotiationStatus | NegotiationStatusGroup]: LSLAData
@@ -56,26 +45,27 @@
 
     const filterNegStats = $filters.negotiation_status
     const selectedNegStats =
-      filterNegStats.length > 0 ? [...filterNegStats] : allNegStats
+      filterNegStats.length > 0
+        ? [...filterNegStats]
+        : negStatChoices.map(x => x.value as NegotiationStatus)
 
-    allNegStatGroups.forEach(negStatGroup => {
-      const groupNegStats = $fieldChoices["deal"]["negotiation_status"]
-        .filter(x => x.group === negStatGroup)
-        .map(x => x.value) as NegotiationStatus[]
+    negStatGroupChoices
+      .map(x => x.value as NegotiationStatusGroup)
+      .forEach(negStatGroup => {
+        const groupNegStats = negStatChoices
+          .filter(x => x.group === negStatGroup)
+          .map(x => x.value) as NegotiationStatus[]
 
-      groupNegStats
-        .filter(negStat => selectedNegStats.includes(negStat))
-        .forEach(negStat => {
-          pots[negStat] = new LSLAData(getNegotiationStatusLabel(negStat))
-        })
+        groupNegStats
+          .filter(negStat => selectedNegStats.includes(negStat))
+          .forEach(negStat => {
+            pots[negStat] = new LSLAData(negStatLabels[negStat])
+          })
 
-      if (groupNegStats.every(negStat => selectedNegStats.includes(negStat))) {
-        pots[negStatGroup] = new LSLAData(
-          getNegotiationStatusGroupLabel(negStatGroup),
-          true,
-        )
-      }
-    })
+        if (groupNegStats.every(negStat => selectedNegStats.includes(negStat))) {
+          pots[negStatGroup] = new LSLAData(negStatGroupLabels[negStatGroup], true)
+        }
+      })
 
     // TODO: reduce deals
     deals.forEach(d => {
@@ -88,7 +78,7 @@
 
       pots[d.current_negotiation_status].add(d.current_contract_size, d.intended_size)
 
-      const ngrp = getNegotiationStatusGroup(d.current_negotiation_status)
+      const ngrp = negStatGroupMap[d.current_negotiation_status]
 
       if (ngrp && pots[ngrp]) pots[ngrp].add(d.current_contract_size, d.intended_size)
     })

@@ -7,7 +7,7 @@
 
   import type { Produce } from "$lib/filters"
   import { filters, isDefaultFilter, publicOnly } from "$lib/filters"
-  import { fieldChoices, getFieldChoicesLabel, simpleInvestors } from "$lib/stores"
+  import { createLabels, fieldChoices, simpleInvestors } from "$lib/stores"
   import { IntentionOfInvestmentGroup, ProduceGroup, UserRole } from "$lib/types/data"
 
   import { showFilterBar } from "$components/Data/stores"
@@ -173,7 +173,7 @@
         on:clear={() => ($filters.nature_of_deal = [])}
         title={$_("Nature of the deal")}
       >
-        {#each $fieldChoices["deal"]["nature_of_deal"] as { value, label }}
+        {#each $fieldChoices.deal.nature_of_deal as { value, label }}
           <label class="block">
             <input
               type="checkbox"
@@ -269,7 +269,7 @@
           />
           {$_("No information")}
         </label>
-        {#each $fieldChoices["deal"]["implementation_status"] as { value, label }}
+        {#each $fieldChoices.deal.implementation_status as { value, label }}
           <label class="block">
             <input
               bind:group={$filters.implementation_status}
@@ -297,15 +297,13 @@
           {$_("No information")}
         </label>
         {#each Object.keys(IntentionOfInvestmentGroup) as group}
-          {@const groupValues = $fieldChoices["deal"]["intention_of_investment"].filter(
+          {@const groupValues = $fieldChoices.deal.intention_of_investment.filter(
             entry => entry.group === group,
           )}
 
           <div class="mb-2">
             <strong>
-              {getFieldChoicesLabel(
-                $fieldChoices["deal"]["intention_of_investment_group"],
-              )(group)}
+              {createLabels($fieldChoices.deal.intention_of_investment_group)[group]}
             </strong>
 
             {#each groupValues as { value, label }}

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { dealFields, investorFields } from "$lib/fieldLookups.js"
+  import { dealFields, investorFields } from "$lib/fieldLookups"
 
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import Table, { type Column } from "$components/Table/Table.svelte"

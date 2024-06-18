@@ -16,8 +16,7 @@
     type PointFeatureProps,
   } from "$lib/types/data"
   import { createComponentAsDiv } from "$lib/utils/domHelpers"
-  import { createPointFeatures } from "$lib/utils/location"
-  import { padBounds } from "$lib/utils/location.js"
+  import { createPointFeatures, padBounds } from "$lib/utils/location"
 
   import SubmodelEditField from "$components/Fields/SubmodelEditField.svelte"
   import BigMap from "$components/Map/BigMap.svelte"

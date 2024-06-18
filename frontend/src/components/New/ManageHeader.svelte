@@ -9,7 +9,7 @@
     Version2Status,
     type DealHull,
     type InvestorHull,
-  } from "$lib/types/data.js"
+  } from "$lib/types/data"
 
   import DetailsSummary from "$components/DetailsSummary.svelte"
   import HeaderDatesWDownload from "$components/HeaderDatesWDownload.svelte"

@@ -1,14 +1,8 @@
 import { createEmptyBuckets } from "$lib/data/buckets"
 import { createAgricultureIntentionReducer } from "$lib/data/charts/agricultureIntention"
 import { implementationStatusReducer } from "$lib/data/charts/implementationStatus"
-import {
-  createIoIGroupReducer,
-  type IoIGroupMap,
-} from "$lib/data/charts/intentionOfInvestmentGroup"
-import {
-  createNegotiationStatusGroupReducer,
-  type NegStatGroupMap,
-} from "$lib/data/charts/negotiationStatusGroup"
+import { createIoIGroupReducer } from "$lib/data/charts/intentionOfInvestmentGroup"
+import { createNegotiationStatusGroupReducer } from "$lib/data/charts/negotiationStatusGroup"
 import { produceGroupReducer } from "$lib/data/charts/produceGroup"
 import {
   IntentionOfInvestmentGroup,
@@ -17,6 +11,8 @@ import {
   type DealVersion2,
   type ImplementationStatus,
   type IntentionOfInvestment,
+  type IoIGroupMap,
+  type NegStatGroupMap,
 } from "$lib/types/data"
 
 describe("Intention of Investment Group", () => {

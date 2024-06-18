@@ -65,6 +65,8 @@ export enum InvolvementRole {
   LENDER = "LENDER",
 }
 
+export type Country = components["schemas"]["Country"]
+
 // TODO: Fix type in openAPI -> currently string
 export interface Involvement {
   id: number
@@ -235,3 +237,6 @@ export interface AreaFeatureProps {
 
 export type AreaFeature = Feature<Polygon | MultiPolygon, AreaFeatureProps>
 export type AreaFeatureLayer = GeoJSON<AreaFeatureProps, Polygon | MultiPolygon>
+
+export type IoIGroupMap = { [key in IntentionOfInvestment]: IntentionOfInvestmentGroup }
+export type NegStatGroupMap = { [key in NegotiationStatus]: NegotiationStatusGroup }

@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { ComponentType } from "svelte"
 
-  import { fieldChoices, getFieldChoicesLabel } from "$lib/stores"
+  import { createLabels, fieldChoices } from "$lib/stores"
   import type { IntentionOfInvestment } from "$lib/types/data"
 
   import AgricultureIcon from "$components/icons/AgricultureIcon.svelte"
@@ -49,9 +49,7 @@
     OTHER: OtterIcon,
   }
 
-  $: getIoILabel = getFieldChoicesLabel(
-    $fieldChoices["deal"]["intention_of_investment"],
-  )
+  $: ioiLabels = createLabels($fieldChoices.deal.intention_of_investment)
 </script>
 
 {#each value as ioi}
@@ -61,6 +59,6 @@
     {#if icons[ioi]}
       <svelte:component this={icons[ioi]} />
     {/if}
-    {getIoILabel(ioi)}
+    {ioiLabels[ioi]}
   </span>
 {/each}

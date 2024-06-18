@@ -65,7 +65,7 @@
       CONTRACT_EXPIRED: "rgb(44,28,5)",
     }
 
-    let negStatBuckets = $fieldChoices["deal"]["negotiation_status_group"].map(x => ({
+    let negStatBuckets = $fieldChoices.deal.negotiation_status_group.map(x => ({
       // TODO: Try to type fieldChoices (or create a generic interface) to avoid casting explicitly
       color: colorsMap[x.value as NegotiationStatusGroup],
       label: x.label,

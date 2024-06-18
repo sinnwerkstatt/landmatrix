@@ -4,8 +4,8 @@
   import { onDestroy, onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
-  import { fieldChoices, getFieldChoicesLabel } from "$lib/stores"
-  import type { Area, AreaFeature, AreaFeatureLayer } from "$lib/types/data"
+  import { createLabels, fieldChoices } from "$lib/stores"
+  import type { Area, AreaFeature, AreaFeatureLayer, AreaType } from "$lib/types/data"
   import {
     areaToFeature,
     createAreaFeaturesLayer,
@@ -52,10 +52,10 @@
     }
   })
 
+  $: areaTypeLabels = createLabels<AreaType>($fieldChoices.area.type)
+
   $: createAreaDisplay = (feature: AreaFeature): string => {
-    const typeDisplay = getFieldChoicesLabel($fieldChoices["area"]["type"])(
-      feature.properties.type,
-    )!
+    const typeDisplay = areaTypeLabels[feature.properties.type]
     const areaDisplay = formatArea(turfArea(feature)) + " " + $_("ha")
     const dateCurrentDisplay = dateCurrentFormat(feature.properties)
     return `${typeDisplay} (${areaDisplay}) ${dateCurrentDisplay}`

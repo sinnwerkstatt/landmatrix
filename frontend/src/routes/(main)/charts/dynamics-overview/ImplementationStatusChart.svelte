@@ -7,7 +7,7 @@
     implementationStatusReducer,
   } from "$lib/data/charts/implementationStatus"
   import { createChartData } from "$lib/data/createChartData"
-  import { fieldChoices, getFieldChoicesLabel } from "$lib/stores"
+  import { createLabels, fieldChoices } from "$lib/stores"
   import type { DealVersion2, ImplementationStatus } from "$lib/types/data"
 
   import DownloadablePieChart from "$components/Data/Charts/DownloadablePieChart.svelte"
@@ -19,15 +19,13 @@
   $: sortBy = displayDealsCount ? "count" : "size"
   $: unit = displayDealsCount ? "deals" : "ha"
 
-  $: impStatChoices = $fieldChoices["deal"]["implementation_status"]
-  $: getLabel = getFieldChoicesLabel(impStatChoices) as (
-    key: ImplementationStatus,
-  ) => string
+  $: impStatChoices = $fieldChoices.deal.implementation_status
+  $: impStatLabels = createLabels<ImplementationStatus>(impStatChoices)
 
   $: createData = createChartData<ImplementationStatus>(
     implementationStatusReducer,
     impStatChoices.map(x => x.value) as ImplementationStatus[],
-    getLabel,
+    (key: ImplementationStatus) => impStatLabels[key],
     (key: ImplementationStatus) => IMPLEMENTATION_STATUS_COLORS[key],
   )
 

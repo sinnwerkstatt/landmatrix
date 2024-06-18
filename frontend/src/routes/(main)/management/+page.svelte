@@ -20,7 +20,7 @@
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
   import Table, { type Column } from "$components/Table/Table.svelte"
 
-  import { downloadAsCSV, downloadAsXLSX } from "./downloadObjects.js"
+  import { downloadAsCSV, downloadAsXLSX } from "./downloadObjects"
   import RightFilterBar from "./RightFilterBar.svelte"
   import { managementFilters } from "./state"
   import WorkflowInfoView from "./WorkflowInfoView.svelte"

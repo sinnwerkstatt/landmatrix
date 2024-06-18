@@ -11,7 +11,6 @@
   import {
     createNegotiationStatusGroupReducer,
     getNegotiationStatusGroupColor,
-    type NegStatGroupMap,
   } from "$lib/data/charts/negotiationStatusGroup"
   import {
     getProduceGroupColor,
@@ -19,12 +18,13 @@
   } from "$lib/data/charts/produceGroup"
   import { createChartData } from "$lib/data/createChartData"
   import { filters } from "$lib/filters"
-  import { dealsNG, fieldChoices } from "$lib/stores"
+  import { createGroupMap, createLabels, dealsNG, fieldChoices } from "$lib/stores"
   import { observatoryPages } from "$lib/stores/wagtail"
   import {
     NegotiationStatusGroup,
     ProduceGroup,
     type ImplementationStatus,
+    type NegStatGroupMap,
   } from "$lib/types/data"
   import type { CountryOrRegion } from "$lib/types/wagtail"
   import { sum } from "$lib/utils/dataProcessing"
@@ -59,14 +59,13 @@
   $: unit = $displayDealsCount ? "deals" : "ha"
   $: sortBy = $displayDealsCount ? "count" : "size"
 
-  $: negStatGroupMap = $fieldChoices["deal"]["negotiation_status"].reduce(
-    (acc, { value, group }) => ({ ...acc, [value]: group }),
-    {},
-  ) as NegStatGroupMap
-  $: negStatGroupLabels = $fieldChoices["deal"]["negotiation_status_group"].reduce(
-    (acc, { value, label }) => ({ ...acc, [value]: label }),
-    {},
-  ) as { [key in NegotiationStatusGroup]: string }
+  $: negStatGroupMap = createGroupMap<NegStatGroupMap>(
+    $fieldChoices.deal.negotiation_status,
+  )
+
+  $: negStatGroupLabels = createLabels<NegotiationStatusGroup>(
+    $fieldChoices.deal.negotiation_status_group,
+  )
 
   $: chartNegStat = createChartData(
     createNegotiationStatusGroupReducer(negStatGroupMap),
@@ -75,24 +74,18 @@
     getNegotiationStatusGroupColor,
   )(deals, sortBy)
 
-  $: impStatLabels = $fieldChoices["deal"]["implementation_status"].reduce(
-    (acc, { value, label }) => ({ ...acc, [value]: label }),
-    {},
-  ) as { [key in ImplementationStatus]: string }
+  $: impStatLabels = createLabels<ImplementationStatus>(
+    $fieldChoices.deal.implementation_status,
+  )
 
   $: chartImpStat = createChartData<ImplementationStatus>(
     implementationStatusReducer,
-    $fieldChoices["deal"]["implementation_status"].map(
-      x => x.value,
-    ) as ImplementationStatus[],
+    Object.keys(impStatLabels) as ImplementationStatus[],
     (key: ImplementationStatus) => impStatLabels[key],
     getImplementationStatusColor,
   )(deals, sortBy)
 
-  $: produceGroupLabels = $fieldChoices["deal"]["produce_group"].reduce(
-    (acc, { value, label }) => ({ ...acc, [value]: label }),
-    {},
-  ) as { [key in ProduceGroup]: string }
+  $: produceGroupLabels = createLabels<ProduceGroup>($fieldChoices.deal.produce_group)
 
   $: chartProd = createChartData<ProduceGroup>(
     produceGroupReducer,

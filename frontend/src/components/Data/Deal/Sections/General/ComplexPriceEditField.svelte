@@ -26,7 +26,7 @@
     class:italic={version[fields[2]] === null}
   >
     <option class="italic" value={null}>- per -</option>
-    {#each $fieldChoices["deal"]["ha_area"] as { value, label }}
+    {#each $fieldChoices.deal.ha_area as { value, label }}
       <option class="not-italic" {value}>{label}</option>
     {/each}
   </select>

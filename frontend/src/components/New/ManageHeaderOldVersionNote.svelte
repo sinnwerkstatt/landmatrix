@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import type { DealHull, InvestorHull } from "$lib/types/data.js"
+  import type { DealHull, InvestorHull } from "$lib/types/data"
 
   export let obj: DealHull | InvestorHull
 

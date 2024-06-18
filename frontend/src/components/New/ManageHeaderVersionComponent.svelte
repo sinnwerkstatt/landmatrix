@@ -10,7 +10,7 @@
     type DealHull,
     type InvestorHull,
     type User,
-  } from "$lib/types/data.js"
+  } from "$lib/types/data"
 
   import Modal from "$components/Modal.svelte"
   import ManageHeaderActivateModal from "$components/New/ManageHeaderActivateModal.svelte"

@@ -7,7 +7,7 @@
 
   import { DynamicsOfDeal, toCSV, toJSON } from "$lib/data/charts/dynamicsOfDeal"
   import type { DynamicsDataPoint } from "$lib/data/charts/dynamicsOfDeal"
-  import { fieldChoices, getFieldChoicesLabel } from "$lib/stores"
+  import { createLabels, fieldChoices } from "$lib/stores"
   import type { DealVersion2 } from "$lib/types/data"
 
   import ChartWrapper from "$components/Data/Charts/DownloadWrapper.svelte"
@@ -24,9 +24,7 @@
   let multideals = 0
   let payload: DynamicsDataPoint[] = []
 
-  $: getClassificationLabel = getFieldChoicesLabel(
-    $fieldChoices["investor"]["classification"],
-  )
+  $: classificationLabels = createLabels($fieldChoices.investor.classification)
 
   $: if (browser && deals?.length > 0) {
     let pots: { [key: string]: number } = {}
@@ -43,7 +41,7 @@
     })
 
     payload = Object.entries(pots).map(([k, v]) => ({
-      name: getClassificationLabel(k) || $_("Unknown"),
+      name: classificationLabels[k] || $_("Unknown"),
       value: v,
     }))
 

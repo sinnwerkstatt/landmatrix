@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import type { InvestorHull } from "$lib/types/data.js"
+  import type { InvestorHull } from "$lib/types/data"
 
   import ManageHeader from "$components/New/ManageHeader.svelte"
 

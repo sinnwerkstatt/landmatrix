@@ -5,7 +5,7 @@
 
   import type { components } from "$lib/openAPI"
 
-  import type { CaseStatisticsDeal, CaseStatisticsInvestor } from "./caseStatistics.js"
+  import type { CaseStatisticsDeal, CaseStatisticsInvestor } from "./caseStatistics"
   import CaseStatisticsTable from "./CaseStatisticsTable.svelte"
 
   export let selCountry: components["schemas"]["Country"] | undefined

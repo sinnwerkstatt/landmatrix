@@ -1,9 +1,6 @@
 import { createBucketMapReducer } from "$lib/data/buckets"
-import { COLORS } from "$lib/data/createChartData"
-import type { DealReducer } from "$lib/data/createChartData"
-import { IntentionOfInvestmentGroup, type IntentionOfInvestment } from "$lib/types/data"
-
-export type IoIGroupMap = { [key in IntentionOfInvestment]: IntentionOfInvestmentGroup }
+import { COLORS, type DealReducer } from "$lib/data/createChartData"
+import { IntentionOfInvestmentGroup, type IoIGroupMap } from "$lib/types/data"
 
 export const INTENTION_OF_INVESTMENT_GROUP_COLORS: {
   [key in IntentionOfInvestmentGroup]: string

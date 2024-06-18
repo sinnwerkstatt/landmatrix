@@ -2,7 +2,7 @@
   import { _ } from "svelte-i18n"
   import { slide } from "svelte/transition"
 
-  import { fieldChoices } from "$lib/stores.js"
+  import { fieldChoices } from "$lib/stores"
   import type { JSONElectricityGenerationFieldType } from "$lib/types/data"
 
   import ChoicesEditField from "$components/Fields/Edit2/ChoicesEditField.svelte"

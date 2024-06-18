@@ -1,9 +1,8 @@
 import { createBucketMapReducer } from "$lib/data/buckets"
-import { COLORS } from "$lib/data/createChartData"
 import type { DealReducer } from "$lib/data/createChartData"
-import { NegotiationStatusGroup, type NegotiationStatus } from "$lib/types/data"
+import { COLORS } from "$lib/data/createChartData"
+import { NegotiationStatusGroup, type NegStatGroupMap } from "$lib/types/data"
 
-export type NegStatGroupMap = { [key in NegotiationStatus]: NegotiationStatusGroup }
 export const NEGOTIATION_STATUS_GROUP_COLORS: {
   [key in NegotiationStatusGroup]: string
 } = {

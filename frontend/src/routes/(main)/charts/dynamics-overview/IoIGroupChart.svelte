@@ -5,11 +5,14 @@
   import {
     createIoIGroupReducer,
     INTENTION_OF_INVESTMENT_GROUP_COLORS,
-    type IoIGroupMap,
   } from "$lib/data/charts/intentionOfInvestmentGroup"
   import { createChartData } from "$lib/data/createChartData"
-  import { fieldChoices } from "$lib/stores"
-  import { IntentionOfInvestmentGroup, type DealVersion2 } from "$lib/types/data"
+  import { createGroupMap, createLabels, fieldChoices } from "$lib/stores"
+  import {
+    IntentionOfInvestmentGroup,
+    type DealVersion2,
+    type IoIGroupMap,
+  } from "$lib/types/data"
 
   import DownloadablePieChart from "$components/Data/Charts/DownloadablePieChart.svelte"
 
@@ -20,22 +23,18 @@
   $: sortBy = displayDealsCount ? "count" : "size"
   $: unit = displayDealsCount ? "deals" : "ha"
 
-  $: ioiChoices = $fieldChoices["deal"]["intention_of_investment"]
-  $: ioiGroupChoices = $fieldChoices["deal"]["intention_of_investment_group"]
-  $: ioiGroupMap = ioiChoices.reduce(
-    (acc, { value, group }) => ({ ...acc, [value]: group }),
-    {},
-  ) as IoIGroupMap
+  $: ioiGroupMap = createGroupMap<IoIGroupMap>(
+    $fieldChoices.deal.intention_of_investment,
+  )
 
-  $: ioiGroupLabels = ioiGroupChoices.reduce(
-    (acc, { value, label }) => ({ ...acc, [value]: label }),
-    {},
-  ) as { [key in IntentionOfInvestmentGroup]: string }
+  $: ioiGroupLabels = createLabels<IntentionOfInvestmentGroup>(
+    $fieldChoices.deal.intention_of_investment_group,
+  )
 
   // TODO: Refactor - Why recreate the data on group label change?
   $: createData = createChartData<IntentionOfInvestmentGroup>(
     createIoIGroupReducer(ioiGroupMap),
-    ioiGroupChoices.map(x => x.value) as IntentionOfInvestmentGroup[],
+    Object.keys(ioiGroupLabels) as IntentionOfInvestmentGroup[],
     (group: IntentionOfInvestmentGroup) => ioiGroupLabels[group],
     (key: IntentionOfInvestmentGroup) => INTENTION_OF_INVESTMENT_GROUP_COLORS[key],
   )
