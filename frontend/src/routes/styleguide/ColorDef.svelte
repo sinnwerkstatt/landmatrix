@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { allColors } from "./colors.js"
+  import { allColors } from "./colors"
 
   export let tileColor = ""
   export let title = ""

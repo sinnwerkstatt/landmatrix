@@ -3,7 +3,7 @@
 
   import { page } from "$app/stores"
 
-  import type { DealHull, InvestorHull } from "$lib/types/newtypes"
+  import type { DealHull, InvestorHull } from "$lib/types/data"
 
   import DateTimeField from "$components/Fields/Display2/DateTimeField.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"

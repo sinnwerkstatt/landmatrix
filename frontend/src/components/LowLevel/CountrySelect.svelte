@@ -1,10 +1,12 @@
 <script lang="ts">
-  import type { components } from "$lib/openAPI.js"
+  import { _ } from "svelte-i18n"
+
+  import type { Country } from "$lib/types/data"
 
   import VirtualListSelect from "./VirtualListSelect.svelte"
 
-  export let countries: components["schemas"]["Country"][] = []
-  export let value: components["schemas"]["Country"] | null = null
+  export let countries: Country[] = []
+  export let value: Country | null = null
   export let name: string | undefined = undefined
   export let disabled = false
   export let required = false
@@ -18,5 +20,5 @@
   {disabled}
   {required}
   on:input
-  placeholder="Select a country"
+  placeholder={$_("Select a country")}
 />

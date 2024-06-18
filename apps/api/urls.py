@@ -1,23 +1,25 @@
-from django.urls import include, path
-from django.views.generic import RedirectView
 from drf_spectacular.views import (
-    SpectacularSwaggerView,
-    SpectacularRedocView,
     SpectacularJSONAPIView,
+    SpectacularRedocView,
+    SpectacularSwaggerView,
     SpectacularYAMLAPIView,
 )
+
+from django.urls import include, path
+from django.views.generic import RedirectView
 from rest_framework import routers
 
 import apps.landmatrix.views.management as management_views
 from apps.accounts import views as user_views
 from apps.api import views as api_views
-from apps.landmatrix.views import newviews
 from apps.landmatrix import views as oldviews
+from apps.landmatrix.views import newviews
 from apps.message.views import MessageViewSet
+
+from ..blog.views import BlogCategoryViewSet, BlogPageViewSet
 from .export import DataDownload
 from .gis_export import gis_export_areas, gis_export_locations
 from .upload_view import upload_datasource_file
-from ..blog.views import BlogCategoryViewSet, BlogPageViewSet
 
 
 def data_download(request):

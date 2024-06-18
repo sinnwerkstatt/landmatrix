@@ -1,6 +1,7 @@
 import json
 
 import requests
+
 from django.core.management.base import BaseCommand
 
 deal_detail_query = """query Deal($id: Int!, $version: Int)

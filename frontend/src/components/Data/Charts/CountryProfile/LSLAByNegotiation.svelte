@@ -7,12 +7,13 @@
 
   import { LSLAByNegotiation, LSLAData } from "$lib/data/charts/LSLAByNegotiation"
   import { filters } from "$lib/filters"
+  import { createGroupMap, createLabels, fieldChoices } from "$lib/stores"
   import {
-    NEGOTIATION_STATUS_GROUP_MAP,
-    NegotiationStatus,
     NegotiationStatusGroup,
-  } from "$lib/types/deal"
-  import type { DealVersion2 } from "$lib/types/newtypes"
+    type DealVersion2,
+    type NegotiationStatus,
+    type NegStatGroupMap,
+  } from "$lib/types/data"
 
   import ChartWrapper from "$components/Data/Charts/DownloadWrapper.svelte"
   import { downloadCSV, downloadJSON, downloadSVG } from "$components/Data/Charts/utils"
@@ -20,78 +21,66 @@
 
   export let deals: DealVersion2[] = []
 
+  $: negStatChoices = $fieldChoices.deal.negotiation_status
+  $: negStatLabels = createLabels<NegotiationStatus>(negStatChoices)
+
+  $: negStatGroupChoices = $fieldChoices.deal.negotiation_status_group
+  $: negStatGroupLabels = createLabels<NegotiationStatusGroup>(negStatGroupChoices)
+
+  $: negStatGroupMap = createGroupMap<NegStatGroupMap>(negStatChoices)
+
   // Large Scale Land Acquisitions
-  let title = $_("LSLA by negotiation status")
+  $: title = $_("LSLA by negotiation status")
+
   let svgComp: SVGElement
   let svg = new LSLAByNegotiation()
 
-  type Pots = { [key: string]: LSLAData }
-  let pots: Pots = {}
-  $: if (browser && deals?.length > 0) {
-    const filter_negstat = $filters.negotiation_status
-    const selected_neg_stat =
-      filter_negstat.length > 0
-        ? [...filter_negstat]
-        : [
-            NegotiationStatus.EXPRESSION_OF_INTEREST,
-            NegotiationStatus.UNDER_NEGOTIATION,
-            NegotiationStatus.MEMORANDUM_OF_UNDERSTANDING,
-            NegotiationStatus.ORAL_AGREEMENT,
-            NegotiationStatus.CONTRACT_SIGNED,
-            NegotiationStatus.CHANGE_OF_OWNERSHIP,
-            NegotiationStatus.NEGOTIATIONS_FAILED,
-            NegotiationStatus.CONTRACT_CANCELED,
-            NegotiationStatus.CONTRACT_EXPIRED,
-          ]
-    if (selected_neg_stat.includes(NegotiationStatus.EXPRESSION_OF_INTEREST))
-      pots.EXPRESSION_OF_INTEREST = new LSLAData(
-        NegotiationStatus.EXPRESSION_OF_INTEREST,
-      )
-    if (selected_neg_stat.includes(NegotiationStatus.UNDER_NEGOTIATION))
-      pots.UNDER_NEGOTIATION = new LSLAData(NegotiationStatus.UNDER_NEGOTIATION)
-    if (selected_neg_stat.includes(NegotiationStatus.MEMORANDUM_OF_UNDERSTANDING))
-      pots.MEMORANDUM_OF_UNDERSTANDING = new LSLAData(
-        NegotiationStatus.MEMORANDUM_OF_UNDERSTANDING,
-      )
-    if (
-      selected_neg_stat.includes(NegotiationStatus.EXPRESSION_OF_INTEREST) &&
-      selected_neg_stat.includes(NegotiationStatus.UNDER_NEGOTIATION) &&
-      selected_neg_stat.includes(NegotiationStatus.MEMORANDUM_OF_UNDERSTANDING)
-    )
-      pots.INTENDED = new LSLAData(NegotiationStatusGroup.INTENDED, true)
-    if (selected_neg_stat.includes(NegotiationStatus.ORAL_AGREEMENT))
-      pots.ORAL_AGREEMENT = new LSLAData(NegotiationStatus.ORAL_AGREEMENT)
-    if (selected_neg_stat.includes(NegotiationStatus.CONTRACT_SIGNED))
-      pots.CONTRACT_SIGNED = new LSLAData(NegotiationStatus.CONTRACT_SIGNED)
-    if (selected_neg_stat.includes(NegotiationStatus.CHANGE_OF_OWNERSHIP))
-      pots.CHANGE_OF_OWNERSHIP = new LSLAData(NegotiationStatus.CHANGE_OF_OWNERSHIP)
-    if (
-      selected_neg_stat.includes(NegotiationStatus.ORAL_AGREEMENT) &&
-      selected_neg_stat.includes(NegotiationStatus.CONTRACT_SIGNED) &&
-      selected_neg_stat.includes(NegotiationStatus.CHANGE_OF_OWNERSHIP)
-    )
-      pots.CONCLUDED = new LSLAData(NegotiationStatusGroup.CONCLUDED, true)
-    if (selected_neg_stat.includes(NegotiationStatus.NEGOTIATIONS_FAILED))
-      pots.NEGOTIATIONS_FAILED = new LSLAData(NegotiationStatus.NEGOTIATIONS_FAILED)
-    if (selected_neg_stat.includes(NegotiationStatus.CONTRACT_CANCELED))
-      pots.CONTRACT_CANCELED = new LSLAData(NegotiationStatus.CONTRACT_CANCELED)
-    if (
-      selected_neg_stat.includes(NegotiationStatus.NEGOTIATIONS_FAILED) &&
-      selected_neg_stat.includes(NegotiationStatus.CONTRACT_CANCELED)
-    )
-      pots.FAILED = new LSLAData(NegotiationStatusGroup.FAILED, true)
-    if (selected_neg_stat.includes(NegotiationStatus.CONTRACT_EXPIRED))
-      pots.CONTRACT_EXPIRED = new LSLAData(NegotiationStatus.CONTRACT_EXPIRED, true)
+  type Pots = {
+    [key in NegotiationStatus | NegotiationStatusGroup]: LSLAData
+  }
+  let pots: Pots
 
+  $: if (browser && deals?.length > 0) {
+    pots = {} as Pots
+
+    const filterNegStats = $filters.negotiation_status
+    const selectedNegStats =
+      filterNegStats.length > 0
+        ? [...filterNegStats]
+        : negStatChoices.map(x => x.value as NegotiationStatus)
+
+    negStatGroupChoices
+      .map(x => x.value as NegotiationStatusGroup)
+      .forEach(negStatGroup => {
+        const groupNegStats = negStatChoices
+          .filter(x => x.group === negStatGroup)
+          .map(x => x.value) as NegotiationStatus[]
+
+        groupNegStats
+          .filter(negStat => selectedNegStats.includes(negStat))
+          .forEach(negStat => {
+            pots[negStat] = new LSLAData(negStatLabels[negStat])
+          })
+
+        if (groupNegStats.every(negStat => selectedNegStats.includes(negStat))) {
+          pots[negStatGroup] = new LSLAData(negStatGroupLabels[negStatGroup], true)
+        }
+      })
+
+    // TODO: reduce deals
     deals.forEach(d => {
-      if (!d.current_negotiation_status) return
-      ;(pots[d.current_negotiation_status] as LSLAData).add(
-        d.current_contract_size,
-        d.intended_size,
+      if (
+        !d.current_negotiation_status ||
+        // could happen on filter update before deals update
+        !selectedNegStats.includes(d.current_negotiation_status)
       )
-      const ngrp = NEGOTIATION_STATUS_GROUP_MAP[d.current_negotiation_status]
-      if (ngrp && pots[ngrp])
-        (pots[ngrp] as LSLAData).add(d.current_contract_size, d.intended_size)
+        return
+
+      pots[d.current_negotiation_status].add(d.current_contract_size, d.intended_size)
+
+      const ngrp = negStatGroupMap[d.current_negotiation_status]
+
+      if (ngrp && pots[ngrp]) pots[ngrp].add(d.current_contract_size, d.intended_size)
     })
 
     svg.do_the_graph(svgComp, Object.values(pots))

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { WorkflowInfoType } from "$lib/types/newtypes"
+  import type { WorkflowInfoType } from "$lib/types/data"
 
   import Modal from "$components/Modal.svelte"
   import WorkflowInfoNew from "$components/New/WorkflowInfoNew.svelte"

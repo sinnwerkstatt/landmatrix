@@ -11,16 +11,13 @@
   } from "$lib/data/buckets"
   import { clearGraph } from "$lib/data/charts/concludedDealsOverTime"
   import { isConcluded } from "$lib/data/dealUtils"
+  import { createGroupMap, createLabels, fieldChoices } from "$lib/stores"
   import {
-    intentionOfInvestmentGroupMap,
-    intentionOfInvestmentMap,
-  } from "$lib/stores/maps"
-  import {
-    INTENTION_OF_INVESTMENT_GROUP_MAP,
-    IoI,
-    type IoIGroup,
-  } from "$lib/types/deal"
-  import type { DealVersion2 } from "$lib/types/newtypes"
+    IntentionOfInvestmentGroup,
+    type DealVersion2,
+    type IntentionOfInvestment,
+    type IoIGroupMap,
+  } from "$lib/types/data"
 
   import {
     drawGraph,
@@ -30,7 +27,7 @@
   import ChartWrapper from "$components/Data/Charts/DownloadWrapper.svelte"
   import type { DownloadEvent } from "$components/Data/Charts/utils"
   import { downloadCSV, downloadJSON, downloadSVG } from "$components/Data/Charts/utils"
-  import { displayDealsCount } from "$components/Map/map_helper.js"
+  import { displayDealsCount } from "$components/Map/mapHelper"
 
   export let deals: DealVersion2[] = []
 
@@ -58,19 +55,27 @@
         buckets,
       )
     },
-    createEmptyBuckets(Object.values(IoI)),
+    createEmptyBuckets(ioiChoices.map(x => x.value) as IntentionOfInvestment[]),
   )
+
+  $: ioiChoices = $fieldChoices.deal.intention_of_investment
+  $: ioiLabels = createLabels<IntentionOfInvestment>(ioiChoices)
+
+  $: ioiGroups = $fieldChoices.deal.intention_of_investment_group
+  $: ioiGroupLabels = createLabels<IntentionOfInvestmentGroup>(ioiGroups)
+
+  $: ioiGroupMap = createGroupMap<IoIGroupMap>(ioiChoices)
 
   let data: Data
   $: data = bucketEntries(buckets)
     .map(([key, value]) => {
-      const groupKey = INTENTION_OF_INVESTMENT_GROUP_MAP[key]
+      const groupKey = ioiGroupMap[key]
       return {
         key,
-        label: $intentionOfInvestmentMap[key],
+        label: ioiLabels[key],
         value: sortBy === "count" ? value.count : value.size,
         groupKey,
-        groupLabel: $intentionOfInvestmentGroupMap[groupKey],
+        groupLabel: ioiGroupLabels[groupKey],
         color: IOI_GROUP_COLORS[groupKey],
       }
     })
@@ -81,14 +86,13 @@
   $: title = $_("Land acquisitions by category of production")
   $: xLabel = $_("Category of production")
   $: yLabel = $displayDealsCount ? $_("Deals / Total Deals") : $_("Size / Total Size")
-  $: groups = Object.entries<string>($intentionOfInvestmentGroupMap).map(entry => {
-    const key = entry[0] as IoIGroup
-    return {
-      key,
-      label: entry[1],
-      color: IOI_GROUP_COLORS[key],
-    }
-  })
+
+  // Using groups: Maybe this is a good solution for the future
+  $: groups = ioiGroups.map(entry => ({
+    key: entry.value,
+    label: entry.label,
+    color: IOI_GROUP_COLORS[entry.value as IntentionOfInvestmentGroup],
+  }))
 
   $: if (svgElement) {
     clearGraph(svgElement)

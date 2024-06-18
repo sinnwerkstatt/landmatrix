@@ -2,7 +2,7 @@ import { writable } from "svelte/store"
 
 import { browser } from "$app/environment"
 
-import type { BlockImage } from "$lib/types/custom"
+import type { BlockImage } from "$lib/types/wagtail"
 
 export const loading = writable(false)
 export const lightboxImage = writable<BlockImage | null>(null)

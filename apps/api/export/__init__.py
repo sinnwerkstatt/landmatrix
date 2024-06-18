@@ -2,22 +2,23 @@ import zipfile
 from io import BytesIO
 
 import unicodecsv as csv
+from openpyxl import Workbook
+from openpyxl.utils.exceptions import IllegalCharacterError
+
 from django.contrib.postgres.expressions import ArraySubquery
-from django.db.models import QuerySet, Case, When, OuterRef
+from django.db.models import Case, OuterRef, QuerySet, When
 from django.db.models.functions import JSONObject
 from django.http import HttpResponse
 from django.shortcuts import render
-from openpyxl import Workbook
-from openpyxl.utils.exceptions import IllegalCharacterError
 
 from apps.api.export import converter
 from apps.landmatrix.involvement_network import InvolvementNetwork
 from apps.landmatrix.models.new import (
     DealHull,
+    DealTopInvestors,
     DealVersion,
     InvestorHull,
     Involvement,
-    DealTopInvestors,
 )
 from apps.landmatrix.utils import parse_filters
 

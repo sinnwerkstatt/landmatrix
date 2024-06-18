@@ -2,7 +2,7 @@
   import type { SvelteComponent } from "svelte"
 
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-  import type { SubmodelEntry } from "$lib/utils/data_processing"
+  import type { Submodel } from "$lib/utils/dataProcessing"
 
   type ExtraProps<T> = T extends typeof SvelteComponent<
     infer Y extends Record<string, unknown>
@@ -14,7 +14,7 @@
 <script
   lang="ts"
   generics="
-  T extends SubmodelEntry,
+  T extends Submodel,
   X extends typeof SvelteComponent<any>,
 "
 >
@@ -23,10 +23,11 @@
   import { slide } from "svelte/transition"
 
   import { browser } from "$app/environment"
+  import { goto } from "$app/navigation"
   import { page } from "$app/stores"
 
   import { newNanoid } from "$lib/helpers"
-  import { isEmptySubmodel } from "$lib/utils/data_processing"
+  import { isEmptySubmodel, type SubmodelIdKeys } from "$lib/utils/dataProcessing"
   import { scrollEntryIntoView } from "$lib/utils/domHelpers"
 
   import ChevronDownIcon from "$components/icons/ChevronDownIcon.svelte"
@@ -38,9 +39,12 @@
   export let createEntry: (nid: string) => T
   export let entryComponent: X
   export let extras: ExtraProps<X>
+  export let filterFn: (entry: T) => boolean = () => true
+  export let isEmpty: (entry: T) => boolean = isEmptySubmodel
   /* eslint-enable no-undef */
   export let label: string
   export let selectedEntryId: string | undefined = undefined // for external reference
+  export let entryIdKey: SubmodelIdKeys = "nid"
 
   $: selectedEntryId = $page.url.hash?.replace("#", "") || undefined
 
@@ -49,29 +53,31 @@
   onMount(() => scrollEntryIntoView(selectedEntryId))
 
   const addEntry = () => {
-    const currentIDs = entries.map(entry => entry.nid)
+    const currentIDs = entries.map(entry => `${entry[entryIdKey]}`)
     const newEntryId = newNanoid(currentIDs)
     entries = [...entries, createEntry(newEntryId)]
-    selectedEntryId = newEntryId
+    goto(`#${newEntryId}`)
   }
 
-  const removeEntry = (index: number) => {
-    const entry = entries[index]
+  const removeEntry = (id: string) => {
+    const entry = entries.find(entry => `${entry[entryIdKey]}` === id)
 
-    if (!isEmptySubmodel(entry)) {
-      const areYouSure = confirm(`${$_("Remove")} ${label} #${entry.nid}}?`)
+    if (!entry) return
+    if (!isEmpty(entry)) {
+      const areYouSure = confirm(`${$_("Remove")} ${label} #${id}?`)
       if (!areYouSure) return
     }
-    entries = entries.filter(x => x.nid !== entry.nid)
+    entries = entries.filter(x => `${x[entryIdKey]}` !== id)
   }
 </script>
 
-<section class="w-full pb-52">
+<section class="w-full">
   <div class="flex w-full flex-col gap-2">
-    {#each entries as entry, index (entry.nid)}
-      {@const isSelectedEntry = selectedEntryId === entry.nid}
+    {#each entries.filter(filterFn) as entry, index (entry[entryIdKey])}
+      {@const idAsString = `${entry[entryIdKey]}`}
+      {@const isSelectedEntry = selectedEntryId === idAsString}
 
-      <article id={entry.nid}>
+      <article id={idAsString}>
         <div
           class="flex items-center bg-gray-50 px-2 dark:bg-gray-700 {isSelectedEntry
             ? 'animate-fadeToWhite dark:animate-fadeToGray'
@@ -81,7 +87,7 @@
             <button
               class="w-full text-left"
               on:click|preventDefault={() =>
-                (window.location.hash = isSelectedEntry ? "" : entry.nid)}
+                goto(isSelectedEntry ? "" : `#${idAsString}`)}
             >
               <ChevronDownIcon
                 class="transition-duration-300 inline h-4 w-4 rounded transition-transform {isSelectedEntry
@@ -90,18 +96,19 @@
               />
               {index + 1}. {label}
               <small class="text-sm text-gray-500">
-                #{entry.nid}
+                #{idAsString}
               </small>
             </button>
           </h3>
           <button
             class="flex-initial p-2"
-            on:click|preventDefault={() => removeEntry(index)}
+            on:click|preventDefault={() => removeEntry(idAsString)}
           >
             <TrashIcon class="h-8 w-6 cursor-pointer text-red-600" />
           </button>
         </div>
-        <form id="{label}-entry-{entry.nid}">
+
+        <form id="form-{idAsString}">
           {#if isSelectedEntry}
             <div class="p-2" transition:slide={{ duration: 200 }}>
               <svelte:component this={entryComponent} bind:entry {extras} />
@@ -109,6 +116,8 @@
           {/if}
         </form>
       </article>
+    {:else}
+      <form></form>
     {/each}
   </div>
   <div class="mt-6">

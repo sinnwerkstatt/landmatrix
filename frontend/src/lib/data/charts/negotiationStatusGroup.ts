@@ -1,11 +1,7 @@
-import { get } from "svelte/store"
-
-import type { BucketMap } from "$lib/data/buckets"
 import { createBucketMapReducer } from "$lib/data/buckets"
-import { COLORS, createChartData } from "$lib/data/createChartData"
 import type { DealReducer } from "$lib/data/createChartData"
-import { negotiationStatusGroupMap } from "$lib/stores/maps"
-import { NEGOTIATION_STATUS_GROUP_MAP, NegotiationStatusGroup } from "$lib/types/deal"
+import { COLORS } from "$lib/data/createChartData"
+import { NegotiationStatusGroup, type NegStatGroupMap } from "$lib/types/data"
 
 export const NEGOTIATION_STATUS_GROUP_COLORS: {
   [key in NegotiationStatusGroup]: string
@@ -16,32 +12,17 @@ export const NEGOTIATION_STATUS_GROUP_COLORS: {
   [NegotiationStatusGroup.CONTRACT_EXPIRED]: COLORS.BROWN,
 }
 
-const getNegotiationStatusGroupLabel = (
-  negotiationStatusGroup: NegotiationStatusGroup,
-) => get(negotiationStatusGroupMap)[negotiationStatusGroup]
-
-const getNegotiationStatusGroupColor = (
+export const getNegotiationStatusGroupColor = (
   negotiationStatusGroup: NegotiationStatusGroup,
 ) => NEGOTIATION_STATUS_GROUP_COLORS[negotiationStatusGroup]
 
-export const negotiationStatusGroupReducer: DealReducer<NegotiationStatusGroup> = (
-  bucketMap,
-  deal,
-): BucketMap<NegotiationStatusGroup> => {
+export const createNegotiationStatusGroupReducer: (
+  groupMap: NegStatGroupMap,
+) => DealReducer<NegotiationStatusGroup> = groupMap => (bucketMap, deal) => {
   const negStatus = deal.current_negotiation_status
 
   if (negStatus)
-    return createBucketMapReducer(deal.deal_size)(
-      bucketMap,
-      NEGOTIATION_STATUS_GROUP_MAP[negStatus],
-    )
+    return createBucketMapReducer(deal.deal_size ?? 0)(bucketMap, groupMap[negStatus])
 
   return bucketMap
 }
-
-export const createNegotiationStatusChartData = createChartData(
-  negotiationStatusGroupReducer,
-  Object.values(NegotiationStatusGroup),
-  getNegotiationStatusGroupLabel,
-  getNegotiationStatusGroupColor,
-)

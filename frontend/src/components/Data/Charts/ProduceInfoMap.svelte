@@ -8,36 +8,43 @@
 
   import type { BucketMap } from "$lib/data/buckets"
   import { createBucketMapReducer, sortBuckets } from "$lib/data/buckets"
-  import { fieldChoices, type ValueLabelEntry } from "$lib/stores"
-  import type { DealHull } from "$lib/types/newtypes"
+  import { createLabels, fieldChoices } from "$lib/stores"
+  import {
+    ProduceGroup,
+    type Animals,
+    type Crops,
+    type DealVersion2,
+    type Minerals,
+    type Produce,
+  } from "$lib/types/data"
 
   import ChartWrapper from "$components/Data/Charts/DownloadWrapper.svelte"
   import { downloadCSV, downloadJSON, downloadSVG } from "$components/Data/Charts/utils"
   import type { DownloadEvent } from "$components/Data/Charts/utils"
   import { showContextBar, showFilterBar } from "$components/Data/stores"
 
-  export let deals: DealHull[] = []
+  export let deals: DealVersion2[] = []
   export let title: string
 
   let svgComp: SVGElement
 
   const SIZE_THRESHOLD = 0.005
 
-  const asKeyMap = (array: ValueLabelEntry[] | undefined) =>
-    array
-      ? array.reduce((acc, { value, label }) => ({ ...acc, [value]: label }), {})
-      : {}
-
-  $: keyMap = {
-    ...asKeyMap($fieldChoices.deal.crops),
-    ...asKeyMap($fieldChoices.deal.animals),
-    ...asKeyMap($fieldChoices.deal.minerals),
+  $: labels = {
+    ...createLabels<Crops>($fieldChoices.deal.crops),
+    ...createLabels<Animals>($fieldChoices.deal.animals),
+    ...createLabels<Minerals>($fieldChoices.deal.minerals),
   }
 
   interface ProduceAccumulator {
-    crops: BucketMap
-    animals: BucketMap
-    mineralResources: BucketMap
+    crops: BucketMap<Crops>
+    animals: BucketMap<Animals>
+    mineralResources: BucketMap<Minerals>
+  }
+
+  interface TreeNode {
+    name: string
+    value: number
   }
 
   interface ProduceTreeData {
@@ -45,16 +52,16 @@
     children: {
       name: string
       color: string
-      children: { name: string; value: number }[]
+      children: TreeNode[]
     }[]
   }
 
   // TODO Later not correct to add full deal size for each produce
   const produceReducer = (
     acc: ProduceAccumulator,
-    deal: DealHull,
+    deal: DealVersion2,
   ): ProduceAccumulator => {
-    const bucketMapReducer = createBucketMapReducer(deal.deal_size)
+    const bucketMapReducer = createBucketMapReducer(deal.deal_size ?? 0)
     return {
       crops: (deal.current_crops ?? []).reduce(bucketMapReducer, acc.crops),
       animals: (deal.current_animals ?? []).reduce(bucketMapReducer, acc.animals),
@@ -65,25 +72,27 @@
     }
   }
 
-  const createTreeData = (deals: DealHull[]): ProduceTreeData => {
+  $: produceGroupLabels = createLabels<ProduceGroup>($fieldChoices.deal.produce_group)
+
+  const createTreeData = (deals: DealVersion2[]): ProduceTreeData => {
     const acc = deals.reduce(produceReducer, {} as ProduceAccumulator)
 
-    const root = { name: "Produce", children: [] }
+    const root: ProduceTreeData = { name: $_("Produce"), children: [] }
     if (acc.crops)
       root.children.push({
-        name: $_("Crops"),
+        name: produceGroupLabels[ProduceGroup.CROPS],
         color: "#FC941F",
         children: createChildren(acc.crops),
       })
     if (acc.animals)
       root.children.push({
-        name: $_("Livestock"),
+        name: produceGroupLabels[ProduceGroup.ANIMALS],
         color: "#7D4A0F",
         children: createChildren(acc.animals),
       })
     if (acc.mineralResources)
       root.children.push({
-        name: $_("Mineral resources"),
+        name: produceGroupLabels[ProduceGroup.MINERAL_RESOURCES],
         color: "black",
         children: createChildren(acc.mineralResources),
       })
@@ -91,9 +100,7 @@
     return root
   }
 
-  const createChildren = (
-    bucketMap: BucketMap,
-  ): ProduceTreeData["children"]["children"] => {
+  const createChildren = <T extends Produce>(bucketMap: BucketMap<T>): TreeNode[] => {
     const [keys, buckets] = sortBuckets("size", bucketMap)
     const totalSize = buckets.reduce((sum, bucket) => sum + bucket.size, 0)
     const thresholdIndex = buckets.findIndex(
@@ -104,7 +111,7 @@
       .reduce((sum, bucket) => sum + bucket.size, 0)
 
     const namedChildren = keys.slice(0, thresholdIndex).map(key => ({
-      name: $_(keyMap[key]),
+      name: labels[key],
       value: bucketMap[key].size,
     }))
     return [
@@ -118,8 +125,9 @@
 
   const buildTreeChart = (treeData: ProduceTreeData): void => {
     if (!treeData) return
+
     let count = 0
-    const domUid = name => `O-${name}-${++count}`
+    const domUid = (name: string) => `O-${name}-${++count}`
     const myFormat = format(",d")
 
     const width = 800

@@ -1,7 +1,7 @@
 import { _ } from "svelte-i18n"
 import { derived } from "svelte/store"
 
-import type { Version2Status } from "$lib/types/newtypes"
+import type { Version2Status } from "$lib/types/data"
 
 type VersionStatusMap = { [key in Version2Status]: { title: string; classes: string } }
 

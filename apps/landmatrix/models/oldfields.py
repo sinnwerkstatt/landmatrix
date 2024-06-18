@@ -1,9 +1,10 @@
 import json
 
+from fastjsonschema import JsonSchemaException, compile
+
 from django import forms
 from django.core.exceptions import ValidationError
 from django.db.models import JSONField
-from fastjsonschema import JsonSchemaException, compile
 
 
 class JSONSchemaField(JSONField):

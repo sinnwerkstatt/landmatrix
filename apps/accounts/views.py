@@ -9,9 +9,8 @@ from rest_framework.response import Response
 
 from apps.accounts import auth_flow
 from apps.accounts.models import User
-from apps.accounts.serializers import UserSerializer, LeanUserSerializer
+from apps.accounts.serializers import LeanUserSerializer, UserSerializer
 from apps.landmatrix.permissions import IsReporterOrHigher
-
 
 # unused, but maybe helpful
 # def has_authorization_for_country(user: User, country: Country | int) -> bool:

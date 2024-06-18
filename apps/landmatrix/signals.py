@@ -1,7 +1,7 @@
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 
-from .models.new import Involvement, InvestorHull, DealVersion
+from .models.new import DealVersion, InvestorHull, Involvement
 
 
 @receiver(post_save, sender=InvestorHull)

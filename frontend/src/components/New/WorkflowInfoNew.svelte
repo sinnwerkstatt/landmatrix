@@ -9,7 +9,7 @@
 
   import { stateMap } from "$lib/newUtils"
   import { loading } from "$lib/stores/basics"
-  import type { WorkflowInfoType } from "$lib/types/newtypes"
+  import type { WorkflowInfoType } from "$lib/types/data"
   import { getCsrfToken } from "$lib/utils"
 
   import UserField from "$components/Fields/Display2/UserField.svelte"

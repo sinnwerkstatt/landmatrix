@@ -1,14 +1,15 @@
 import json
-from django.utils.translation import gettext_lazy as _
+
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 
 from django.core.exceptions import PermissionDenied
-from django.db.models import F, Q, Count, Sum, Case, When, Value, CharField
-from django.db.models.functions import JSONObject, Concat
-from django.http import JsonResponse, HttpRequest
+from django.db.models import Case, CharField, Count, F, Q, Sum, Value, When
+from django.db.models.functions import Concat, JSONObject
+from django.http import HttpRequest, JsonResponse
 from django.middleware.csrf import get_token
 from django.utils import timezone, translation
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_GET
-from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework.decorators import api_view
 from rest_framework.exceptions import NotAuthenticated, PermissionDenied
 from rest_framework.response import Response
@@ -17,17 +18,17 @@ from wagtail.rich_text import expand_db_html
 from apps.accounts.models import User
 from apps.api.serializers import (
     ChartDescriptions,
-    SearchedInvestorSerializer,
     CountryInvestmentsAndRankings,
+    SearchedInvestorSerializer,
 )
 from apps.landmatrix.charts import get_deal_top_investments, web_of_transnational_deals
 from apps.landmatrix.models.new import (
     DealHull,
     DealWorkflowInfo,
-    InvestorWorkflowInfo,
     InvestorHull,
+    InvestorWorkflowInfo,
 )
-from apps.landmatrix.utils import parse_filters, openapi_filters_parameters
+from apps.landmatrix.utils import openapi_filters_parameters, parse_filters
 from apps.wagtailcms.models import ChartDescriptionsSettings
 
 

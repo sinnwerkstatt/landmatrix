@@ -5,17 +5,14 @@
 
   import { page } from "$app/stores"
 
-  import type { Produce } from "$lib/filters"
-  import { filters, isDefaultFilter, publicOnly } from "$lib/filters"
-  import { fieldChoices, simpleInvestors } from "$lib/stores"
   import {
-    implementationStatusMap,
-    intentionOfInvestmentMap,
-    natureOfDealMap,
-  } from "$lib/stores/maps"
-  import { intentionOfInvestmentGroupMap } from "$lib/stores/maps.js"
-  import { IoIGroup, IoIGroups, ProduceGroup } from "$lib/types/deal"
-  import { UserRole } from "$lib/types/user"
+    filters,
+    isDefaultFilter,
+    publicOnly,
+    type ProduceFilter,
+  } from "$lib/filters"
+  import { createLabels, fieldChoices, simpleInvestors } from "$lib/stores"
+  import { IntentionOfInvestmentGroup, ProduceGroup, UserRole } from "$lib/types/data"
 
   import { showFilterBar } from "$components/Data/stores"
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
@@ -27,26 +24,28 @@
   import FilterCollapse from "./FilterCollapse.svelte"
   import Wimpel from "./Wimpel.svelte"
 
-  let produceChoices: Produce[]
+  $: produceGroupLabels = createLabels<ProduceGroup>($fieldChoices.deal.produce_group)
+
+  let produceChoices: ProduceFilter[]
   $: produceChoices = $fieldChoices
     ? [
-        ...($fieldChoices.deal.crops.map(item => ({
-          value: item["value"],
-          label: item["label"],
+        ...($fieldChoices.deal.crops.map(({ value, label }) => ({
+          value,
+          label,
           groupId: ProduceGroup.CROPS,
-          group: $_("Crops"),
+          group: produceGroupLabels[ProduceGroup.CROPS],
         })) ?? []),
-        ...($fieldChoices.deal.animals.map(item => ({
-          value: item["value"],
-          label: item["label"],
+        ...($fieldChoices.deal.animals.map(({ value, label }) => ({
+          value,
+          label,
           groupId: ProduceGroup.ANIMALS,
-          group: $_("Animals"),
+          group: produceGroupLabels[ProduceGroup.ANIMALS],
         })) ?? []),
-        ...($fieldChoices.deal.minerals.map(item => ({
-          value: item.value,
-          label: item.label,
+        ...($fieldChoices.deal.minerals.map(({ value, label }) => ({
+          value,
+          label,
           groupId: ProduceGroup.MINERAL_RESOURCES,
-          group: $_("Mineral resources"),
+          group: produceGroupLabels[ProduceGroup.MINERAL_RESOURCES],
         })) ?? []),
       ]
     : []
@@ -60,10 +59,10 @@
   function trackDownload(format: string) {
     let name = "Global"
     if ($filters.country_id) {
-      name = $page.data.countries.find(c => c.id === $filters.country_id).name
+      name = $page.data.countries.find(c => c.id === $filters.country_id)!.name
     }
     if ($filters.region_id) {
-      name = $page.data.regions.find(r => r.id === $filters.region_id).name
+      name = $page.data.regions.find(r => r.id === $filters.region_id)!.name
     }
 
     if ($tracker) $tracker.trackEvent("Downloads", format, name)
@@ -75,7 +74,7 @@
       : $filters.empty()
   }
 
-  const groupByProduce = (p: Produce) => p.groupId
+  const groupByProduce = (p: ProduceFilter) => p.groupId
 </script>
 
 <div
@@ -180,15 +179,15 @@
         on:clear={() => ($filters.nature_of_deal = [])}
         title={$_("Nature of the deal")}
       >
-        {#each Object.entries($natureOfDealMap) as [isval, isname]}
+        {#each $fieldChoices.deal.nature_of_deal as { value, label }}
           <label class="block">
             <input
               type="checkbox"
               bind:group={$filters.nature_of_deal}
-              value={isval}
+              {value}
               class="checkbox-btn"
             />
-            {isname}
+            {label}
           </label>
         {/each}
       </FilterCollapse>
@@ -276,15 +275,15 @@
           />
           {$_("No information")}
         </label>
-        {#each Object.entries($implementationStatusMap) as [isval, isname]}
+        {#each $fieldChoices.deal.implementation_status as { value, label }}
           <label class="block">
             <input
               bind:group={$filters.implementation_status}
               class=" checkbox-btn"
               type="checkbox"
-              value={isval}
+              {value}
             />
-            {isname}
+            {label}
           </label>
         {/each}
       </FilterCollapse>
@@ -303,18 +302,25 @@
           />
           {$_("No information")}
         </label>
-        {#each Object.keys(IoIGroup) as group}
+        {#each Object.keys(IntentionOfInvestmentGroup) as group}
+          {@const groupValues = $fieldChoices.deal.intention_of_investment.filter(
+            entry => entry.group === group,
+          )}
+
           <div class="mb-2">
-            <strong>{$intentionOfInvestmentGroupMap[group]}</strong>
-            {#each Object.keys(IoIGroups[group]) as val}
+            <strong>
+              {createLabels($fieldChoices.deal.intention_of_investment_group)[group]}
+            </strong>
+
+            {#each groupValues as { value, label }}
               <label class="block">
                 <input
                   type="checkbox"
                   bind:group={$filters.intention_of_investment}
-                  value={val}
+                  {value}
                   class="checkbox-btn form-checkbox"
                 />
-                {$intentionOfInvestmentMap[val]}
+                {label}
               </label>
             {/each}
           </div>

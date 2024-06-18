@@ -4,8 +4,12 @@
 
   import { invalidate } from "$app/navigation"
 
-  import type { DealHull, InvestorHull } from "$lib/types/newtypes.js"
-  import { UserRole, type User } from "$lib/types/user"
+  import {
+    UserRole,
+    type DealHull,
+    type InvestorHull,
+    type User,
+  } from "$lib/types/data"
   import { getCsrfToken } from "$lib/utils"
 
   import UserSelect from "$components/LowLevel/UserSelect.svelte"

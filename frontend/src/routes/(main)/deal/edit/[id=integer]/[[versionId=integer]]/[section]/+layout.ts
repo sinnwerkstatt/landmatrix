@@ -1,5 +1,7 @@
 import { error, redirect } from "@sveltejs/kit"
 
+import type { DealHull } from "$lib/types/data"
+
 import type { DealSection } from "$components/Data/Deal/Sections/constants"
 
 import type { LayoutLoad } from "./$types"
@@ -13,7 +15,7 @@ export const load: LayoutLoad = async ({ params, fetch, parent, depends }) => {
   }
 
   const dealID = parseInt(params.id)
-  const dealVersion = parseInt(params.versionId as string)
+  const dealVersion = parseInt(params.versionId ?? "")
   const dealSection = params.section as DealSection
 
   const baseUrl = dealVersion
@@ -22,8 +24,7 @@ export const load: LayoutLoad = async ({ params, fetch, parent, depends }) => {
 
   const ret = dealVersion
     ? await apiClient.GET("/api/deals/{id}/{version_id}/", {
-        // TODO: deal_version should be number in schema
-        params: { path: { id: dealID, version_id: `${dealVersion}` } },
+        params: { path: { id: dealID, version_id: dealVersion } },
         fetch,
       })
     : await apiClient.GET("/api/deals/{id}/", {
@@ -36,7 +37,8 @@ export const load: LayoutLoad = async ({ params, fetch, parent, depends }) => {
     error(ret.response.status, ret.error.detail)
   }
 
-  const deal = ret.data
+  // FIXME: Overwrite with patched DealHull
+  const deal = ret.data as unknown as DealHull
 
   // don't allow editing of older versions
   if (dealVersion && dealVersion !== deal.draft_version_id) {

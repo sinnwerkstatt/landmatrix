@@ -8,25 +8,23 @@ import {
   parseDate,
 } from "$lib/data/itemUtils"
 import type { IsCurrent } from "$lib/data/itemUtils"
-import type { ContractSizeItem, NegotiationStatusItem } from "$lib/types/deal"
-import { NegotiationStatus } from "$lib/types/deal"
-import type { DealVersion2 } from "$lib/types/newtypes"
+import type { components } from "$lib/openAPI"
+import type { DealVersion2, NegotiationStatus } from "$lib/types/data"
+
+export type NegotiationStatusItem =
+  components["schemas"]["CurrentDateChoiceNegotiationStatusItem"]
+
+export type ContractSizeItem = components["schemas"]["CurrentDateAreaItem"]
 
 export const isConcludedItem: (item: NegotiationStatusItem) => boolean =
-  R.propSatisfies(
-    R.includes(R.__, [
-      NegotiationStatus.ORAL_AGREEMENT,
-      NegotiationStatus.CONTRACT_SIGNED,
-    ]),
-    "choice",
-  )
+  R.propSatisfies(R.includes(R.__, ["ORAL_AGREEMENT", "CONTRACT_SIGNED"]), "choice")
 
 export const isCanceledItem: (item: NegotiationStatusItem) => boolean = R.propSatisfies(
   R.includes(R.__, [
-    NegotiationStatus.CONTRACT_CANCELED,
-    NegotiationStatus.CONTRACT_EXPIRED,
-    NegotiationStatus.NEGOTIATIONS_FAILED,
-  ]),
+    "CONTRACT_CANCELED",
+    "CONTRACT_EXPIRED",
+    "NEGOTIATIONS_FAILED",
+  ] satisfies NegotiationStatus[]),
   "choice",
 )
 
@@ -37,10 +35,10 @@ export const hasBeenConcluded: (deal: DealVersion2) => boolean = R.pipe(
 
 export const isConcluded: (deal: DealVersion2) => boolean = R.propSatisfies(
   R.includes(R.__, [
-    NegotiationStatus.ORAL_AGREEMENT,
-    NegotiationStatus.CONTRACT_SIGNED,
-    NegotiationStatus.CHANGE_OF_OWNERSHIP,
-  ]),
+    "ORAL_AGREEMENT",
+    "CONTRACT_SIGNED",
+    "CHANGE_OF_OWNERSHIP",
+  ] satisfies NegotiationStatus[]),
   "current_negotiation_status",
 )
 

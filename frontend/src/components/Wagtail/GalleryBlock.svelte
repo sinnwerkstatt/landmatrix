@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { BlockImage } from "$lib/types/custom"
+  import type { BlockImage } from "$lib/types/wagtail"
 
   import ImageBlock from "$components/Wagtail/ImageBlock.svelte"
 

@@ -11,7 +11,7 @@
 
   import BigMap from "$components/Map/BigMap.svelte"
 
-  import { LMCircleClass, styleCircle } from "./map_helper"
+  import { LMCircleClass, styleCircle } from "./mapHelper"
 
   export let countryID: number
   export let regionID: number

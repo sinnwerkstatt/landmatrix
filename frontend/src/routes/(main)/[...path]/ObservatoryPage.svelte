@@ -1,12 +1,14 @@
 <script lang="ts">
+  import type { ChartData } from "chart.js"
   import { _ } from "svelte-i18n"
   import { slide } from "svelte/transition"
 
   import { afterNavigate } from "$app/navigation"
 
   import { filters, FilterValues } from "$lib/filters"
-  import { NegotiationStatus } from "$lib/types/deal"
-  import type { ObservatoryPage } from "$lib/types/wagtail"
+  import { fieldChoices } from "$lib/stores"
+  import { NegotiationStatusGroup, type NegotiationStatus } from "$lib/types/data"
+  import type { BlogPage, ObservatoryPage } from "$lib/types/wagtail"
 
   import LoadingPulse from "$components/LoadingPulse.svelte"
   import QuasiStaticMap from "$components/Map/QuasiStaticMap.svelte"
@@ -23,10 +25,10 @@
   let readMore = false
   let totalSize = ""
   let totalCount = ""
-  let chartDatSize
-  let chartDatCount
-  let filteredCountryProfiles
-  let filteredNewsPubs
+  let chartDatSize: ChartData<"pie">
+  let chartDatCount: ChartData<"pie">
+  let filteredCountryProfiles: BlogPage[]
+  let filteredNewsPubs: BlogPage[]
 
   $: regionID = page.region?.id
   $: countryID = page.country?.id
@@ -41,7 +43,8 @@
       `/api/charts/deal_aggregations/?${filters.toRESTFilterArray()}`,
     )
     const retJson = await ret.json()
-    const curNegStat = retJson.current_negotiation_status
+    const curNegStat: { value: NegotiationStatus; count: number; size: number }[] =
+      retJson.current_negotiation_status
 
     totalCount = curNegStat
       .map(ns => ns.count)
@@ -55,33 +58,41 @@
       .toLocaleString("fr")
       .replace(",", ".")
 
-    let negStatBuckets = [
-      { color: "rgba(252,148,31,0.4)", label: $_("Intended"), count: 0, size: 0 },
-      { color: "rgba(252,148,31,1)", label: $_("Concluded"), count: 0, size: 0 },
-      { color: "rgba(125,74,15,1)", label: $_("Failed"), count: 0, size: 0 },
-      { color: "rgb(44,28,5)", label: $_("Contract expired"), count: 0, size: 0 },
-    ]
+    const colorsMap: { [key in NegotiationStatusGroup]: string } = {
+      INTENDED: "rgba(252,148,31,0.4)",
+      CONCLUDED: "rgba(252,148,31,1)",
+      FAILED: "rgba(125,74,15,1)",
+      CONTRACT_EXPIRED: "rgb(44,28,5)",
+    }
+
+    let negStatBuckets = $fieldChoices.deal.negotiation_status_group.map(x => ({
+      // TODO: Try to type fieldChoices (or create a generic interface) to avoid casting explicitly
+      color: colorsMap[x.value as NegotiationStatusGroup],
+      label: x.label,
+      count: 0,
+      size: 0,
+    }))
 
     for (let agg of curNegStat) {
       switch (agg.value) {
-        case NegotiationStatus.EXPRESSION_OF_INTEREST:
-        case NegotiationStatus.UNDER_NEGOTIATION:
-        case NegotiationStatus.MEMORANDUM_OF_UNDERSTANDING:
+        case "EXPRESSION_OF_INTEREST":
+        case "UNDER_NEGOTIATION":
+        case "MEMORANDUM_OF_UNDERSTANDING":
           negStatBuckets[0].count += agg.count
           negStatBuckets[0].size += +agg.size
           break
-        case NegotiationStatus.ORAL_AGREEMENT:
-        case NegotiationStatus.CONTRACT_SIGNED:
-        case NegotiationStatus.CHANGE_OF_OWNERSHIP:
+        case "ORAL_AGREEMENT":
+        case "CONTRACT_SIGNED":
+        case "CHANGE_OF_OWNERSHIP":
           negStatBuckets[1].count += agg.count
           negStatBuckets[1].size += +agg.size
           break
-        case NegotiationStatus.NEGOTIATIONS_FAILED:
-        case NegotiationStatus.CONTRACT_CANCELED:
+        case "NEGOTIATIONS_FAILED":
+        case "CONTRACT_CANCELED":
           negStatBuckets[2].count += agg.count
           negStatBuckets[2].size += +agg.size
           break
-        case NegotiationStatus.CONTRACT_EXPIRED:
+        case "CONTRACT_EXPIRED":
           negStatBuckets[3].count += agg.count
           negStatBuckets[3].size += +agg.size
           break
@@ -109,14 +120,15 @@
     }
   }
 
+  // QUESTION: Wouldn't it make sense to keep navigation stuff in +page.svelte ?
   afterNavigate(() => {
     readMore = false
     getAggregations()
   })
-  $: filteredCountryProfiles = page.related_blogpages.filter(p =>
+  $: filteredCountryProfiles = (page.related_blogpages ?? []).filter(p =>
     p.categories.find(c => c.slug && c.slug === "country-profile"),
   )
-  $: filteredNewsPubs = page.related_blogpages.filter(p =>
+  $: filteredNewsPubs = (page.related_blogpages ?? []).filter(p =>
     p.categories.find(c => c.slug && (c.slug === "news" || c.slug === "publications")),
   )
 

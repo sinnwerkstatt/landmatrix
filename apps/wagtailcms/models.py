@@ -7,13 +7,14 @@ from wagtail.api import APIField
 from wagtail.contrib.settings.models import BaseGenericSetting, register_setting
 from wagtail.fields import RichTextField, StreamField
 from wagtail.images import get_image_model_string
-from wagtail.models import Page, Orderable
+from wagtail.models import Orderable, Page
 from wagtail.snippets.models import register_snippet
 from wagtail_headless_preview.models import HeadlessPreviewMixin
 
 from apps.blog.models import BlogPage
 from apps.landmatrix.models.country import Country, Region
 from apps.landmatrix.models.new import DealHull
+
 from .blocks import (
     COLUMN_BLOCKS,
     CONTENT_BLOCKS,

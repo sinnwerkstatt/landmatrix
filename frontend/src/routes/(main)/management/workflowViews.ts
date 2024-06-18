@@ -3,7 +3,7 @@ import {
   type DealHull,
   type InvestorHull,
   type WorkflowInfoType,
-} from "$lib/types/newtypes"
+} from "$lib/types/data"
 
 export type WorkflowInfoView = (DealHull | InvestorHull) & {
   relevantWFI: WorkflowInfoType

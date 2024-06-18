@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import type { DealHull } from "$lib/types/newtypes"
+  import type { DealHull } from "$lib/types/data"
 
   import CountryField from "$components/Fields/Display2/CountryField.svelte"
   import CheckCircleIcon from "$components/icons/CheckCircleIcon.svelte"

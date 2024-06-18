@@ -2,7 +2,7 @@
   import { _ } from "svelte-i18n"
 
   import { fieldChoices } from "$lib/stores"
-  import type { JSONCarbonSequestrationFieldType } from "$lib/types/newtypes"
+  import type { JSONCarbonSequestrationFieldType } from "$lib/types/data"
 
   import { dateCurrentFormat } from "$components/Fields/Display2/jsonHelpers"
   import CircleNotchIcon from "$components/icons/CircleNotchIcon.svelte"

@@ -1,7 +1,7 @@
 from modeltranslation.decorators import register
 from modeltranslation.translator import TranslationOptions
 
-from .models import BlogIndexPage, BlogPage, BlogCategory
+from .models import BlogCategory, BlogIndexPage, BlogPage
 
 
 @register(BlogIndexPage)

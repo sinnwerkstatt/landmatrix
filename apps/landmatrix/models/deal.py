@@ -6,12 +6,7 @@ from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from . import choices
-from .abstracts import (
-    DRAFT_STATUS_CHOICES,
-    STATUS_CHOICES,
-    VersionOld,
-    WorkflowInfoOld,
-)
+from .abstracts import DRAFT_STATUS_CHOICES, STATUS_CHOICES, VersionOld, WorkflowInfoOld
 from .country import Country
 from .currency import Currency
 from .fields import ArrayField

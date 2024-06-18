@@ -6,7 +6,7 @@
   import { page } from "$app/stores"
 
   import { stateMap } from "$lib/newUtils"
-  import { Version2Status, type DealHull, type InvestorHull } from "$lib/types/newtypes"
+  import { Version2Status, type DealHull, type InvestorHull } from "$lib/types/data"
 
   import CountrySelect from "$components/LowLevel/CountrySelect.svelte"
   import UserSelect from "$components/LowLevel/UserSelect.svelte"

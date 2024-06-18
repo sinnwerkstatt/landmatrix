@@ -19,7 +19,7 @@
     Location2,
     PointFeature,
     PointFeatureProps,
-  } from "$lib/types/newtypes"
+  } from "$lib/types/data"
   import { createComponentAsDiv } from "$lib/utils/domHelpers"
   import { createPointFeatures, fitBounds } from "$lib/utils/location"
 

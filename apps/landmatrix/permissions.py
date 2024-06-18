@@ -1,6 +1,6 @@
 from rest_framework.permissions import BasePermission
 
-from apps.accounts.models import UserRole, User
+from apps.accounts.models import User, UserRole
 
 
 class IsReporterOrHigher(BasePermission):

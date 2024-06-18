@@ -3,7 +3,7 @@
 
   import { page } from "$app/stores"
 
-  import type { InvestorHull } from "$lib/types/newtypes"
+  import type { InvestorHull } from "$lib/types/data"
 
   import CountryField from "$components/Fields/Display2/CountryField.svelte"
 

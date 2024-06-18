@@ -1,6 +1,6 @@
 import { error } from "@sveltejs/kit"
 
-import { UserRole } from "$lib/types/user"
+import { UserRole } from "$lib/types/data"
 
 import type { PageLoad } from "./$types"
 

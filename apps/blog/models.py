@@ -1,6 +1,8 @@
 import datetime
 from typing import Type
 
+from taggit.models import Tag, TaggedItemBase
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
@@ -12,7 +14,6 @@ from django.utils.text import Truncator
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey, ParentalManyToManyField
 from rest_framework.fields import ListField
-from taggit.models import Tag, TaggedItemBase
 from wagtail.admin.panels import FieldPanel, FieldRowPanel, MultiFieldPanel
 from wagtail.api import APIField
 from wagtail.blocks import CharBlock

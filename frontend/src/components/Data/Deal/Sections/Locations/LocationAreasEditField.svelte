@@ -7,13 +7,8 @@
   import { crossfade } from "svelte/transition"
 
   import { newNanoid } from "$lib/helpers"
-  import { areaTypeMap } from "$lib/stores/maps"
-  import type {
-    Area,
-    AreaFeature,
-    AreaFeatureLayer,
-    AreaType,
-  } from "$lib/types/newtypes"
+  import { createLabels, fieldChoices } from "$lib/stores"
+  import type { Area, AreaFeature, AreaFeatureLayer, AreaType } from "$lib/types/data"
   import { validate } from "$lib/utils/geojsonValidation"
   import {
     AREA_TYPES,
@@ -44,13 +39,15 @@
 
   let selectedAreaType: AreaType | null = null
 
+  $: areaTypeLabels = createLabels<AreaType>($fieldChoices.area.type)
+
   $: currentGroups = AREA_TYPES.reduce(
     (acc, val) => ({
       ...acc,
       [val]: areas.filter(a => a.type === val).findIndex(a => a.current),
     }),
     {},
-  ) as { [key in (typeof AREA_TYPES)[number]]: number }
+  ) as { [key in AreaType]: number }
 
   let features: AreaFeature[]
   let layer: AreaFeatureLayer
@@ -92,6 +89,7 @@
       areas = [
         ...areas,
         {
+          id: null!,
           nid: newNanoid(existingIds),
           type: selectedAreaType!,
           current: !areas.filter(a => a.type === selectedAreaType).some(a => a.current),
@@ -168,7 +166,7 @@
     {@const areasOfType = areas.filter(a => a.type === areaType)}
 
     <div>
-      <Label2 value={$areaTypeMap[areaType]} class="mb-4 w-full font-semibold" />
+      <Label2 value={areaTypeLabels[areaType]} class="mb-4 w-full font-semibold" />
       <div class="grid gap-2 lg:grid-cols-2">
         {#each areasOfType as val, i}
           {@const feature = features.find(f => f.properties.id === val.id)}
@@ -198,7 +196,7 @@
                 class="inpt w-auto"
               >
                 {#each AREA_TYPES as areaType}
-                  <option value={areaType}>{$areaTypeMap[areaType]}</option>
+                  <option value={areaType}>{areaTypeLabels[areaType]}</option>
                 {/each}
               </select>
             </label>

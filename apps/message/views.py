@@ -1,11 +1,11 @@
-from rest_framework import viewsets, serializers
-from wagtail.rich_text import expand_db_html
 from wagtailorderable.modeladmin.mixins import OrderableMixin
 
+from django.utils import timezone
+from rest_framework import serializers, viewsets
 from wagtail.admin.viewsets.model import ModelViewSet
+from wagtail.rich_text import expand_db_html
 
 from apps.message.models import Message
-from django.utils import timezone
 
 
 class MessageAdminViewSet(OrderableMixin, ModelViewSet):

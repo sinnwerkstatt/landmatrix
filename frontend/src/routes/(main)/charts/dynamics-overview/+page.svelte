@@ -9,7 +9,7 @@
   import { showContextBar, showFilterBar } from "$components/Data/stores"
   import DealDisplayToggle from "$components/DealDisplayToggle.svelte"
   import LoadingPulse from "$components/LoadingPulse.svelte"
-  import { displayDealsCount } from "$components/Map/map_helper"
+  import { displayDealsCount } from "$components/Map/mapHelper"
 
   import AgricultureIntentionChart from "./AgricultureIntentionChart.svelte"
   import ImplementationStatusChart from "./ImplementationStatusChart.svelte"

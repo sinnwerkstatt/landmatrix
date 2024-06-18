@@ -16,9 +16,9 @@
 
   ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale)
 
-  export let data: ChartData
+  export let data: ChartData<"pie">
   export let unit = ""
-  export let chart: ChartJS | undefined = undefined
+  export let chart: ChartJS<"pie"> | undefined = undefined
 
   ChartJS.defaults.color =
     browser && sessionStorage.theme === "dark" ? "#ffffff" : "#000000"

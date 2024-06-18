@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import { Classification } from "$lib/types/investor"
+  import type { components } from "$lib/openAPI"
 
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import Overlay from "$components/Overlay.svelte"
@@ -10,7 +10,7 @@
   export let investor: {
     id: number
     name: string
-    active_version__classification: Classification
+    active_version__classification: components["schemas"]["ClassificationEnum"]
     active_version__country_id: number | null
     active_version__homepage: string
     active_version__comment: string

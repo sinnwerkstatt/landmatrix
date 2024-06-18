@@ -1,8 +1,9 @@
 from datetime import datetime
 from decimal import Decimal
-from typing import List
+from enum import Enum
+from typing import Any, Sequence
 
-from pydantic import BaseModel, Extra, ConfigDict, Field, RootModel
+from pydantic import BaseModel, ConfigDict, Extra, Field, RootModel
 
 from apps.landmatrix.models.choices import (
     ActorEnum,
@@ -10,16 +11,16 @@ from apps.landmatrix.models.choices import (
     CarbonSequestrationCertEnum,
     CarbonSequestrationEnum,
     CropsEnum,
+    ElectricityGenerationEnum,
     ImplementationStatusEnum,
     IntentionOfInvestmentEnum,
-    NegotiationStatusEnum,
-    ElectricityGenerationEnum,
     MineralsEnum,
+    NegotiationStatusEnum,
 )
 
 
 class ListRootModel(RootModel):
-    root: List[None]
+    root: list[Any]
 
     def __iter__(self):
         return iter(self.root)
@@ -62,7 +63,7 @@ class CurrentDateAreaSchema(ListRootModel):
         date: LooseDateStr | str | None = None
         area: Decimal
 
-    root: List[CurrentDateAreaItem]
+    root: list[CurrentDateAreaItem]
 
 
 class _CurrentDateAreaChoicesSchema(BaseModel):
@@ -70,49 +71,52 @@ class _CurrentDateAreaChoicesSchema(BaseModel):
     current: bool = False
     date: LooseDateStr | str | None = None
     area: Decimal | None = None
-    choices: list[str]
+
+    # Use covariant "Sequence" over invariant "List"
+    # see https://mypy.readthedocs.io/en/stable/common_issues.html#variance
+    choices: Sequence[Enum]
 
 
 class CurrentDateAreaChoicesIOI(ListRootModel):
     class CurrentDateAreaChoicesIOIItem(_CurrentDateAreaChoicesSchema):
         choices: list[IntentionOfInvestmentEnum]
 
-    root: List[CurrentDateAreaChoicesIOIItem]
+    root: list[CurrentDateAreaChoicesIOIItem]
 
 
 class CurrentDateAreaChoicesCrops(ListRootModel):
     class CurrentDateAreaChoicesCropsItem(_CurrentDateAreaChoicesSchema):
         choices: list[CropsEnum]
 
-    root: List[CurrentDateAreaChoicesCropsItem]
+    root: list[CurrentDateAreaChoicesCropsItem]
 
 
 class CurrentDateAreaChoicesAnimals(ListRootModel):
     class CurrentDateAreaChoicesAnimalsItem(_CurrentDateAreaChoicesSchema):
         choices: list[AnimalsEnum]
 
-    root: List[CurrentDateAreaChoicesAnimalsItem]
+    root: list[CurrentDateAreaChoicesAnimalsItem]
 
 
 class _CurrentDateChoiceSchema(BaseModel):
     model_config = ConfigDict(extra=Extra.forbid)
     current: bool = False
     date: LooseDateStr | str | None = None
-    choice: str
+    choice: Enum
 
 
 class CurrentDateChoiceNegotiationStatus(ListRootModel):
     class CurrentDateChoiceNegotiationStatusItem(_CurrentDateChoiceSchema):
         choice: NegotiationStatusEnum
 
-    root: List[CurrentDateChoiceNegotiationStatusItem]
+    root: list[CurrentDateChoiceNegotiationStatusItem]
 
 
 class CurrentDateChoiceImplementationStatus(ListRootModel):
     class CurrentDateChoiceImplementationStatusItem(_CurrentDateChoiceSchema):
         choice: ImplementationStatusEnum
 
-    root: List[CurrentDateChoiceImplementationStatusItem]
+    root: list[CurrentDateChoiceImplementationStatusItem]
 
 
 class _ExportsSchema(BaseModel):
@@ -123,7 +127,8 @@ class _ExportsSchema(BaseModel):
     current: bool = False
     # in the following line, the "str" is intentional (https://github.com/pydantic/pydantic/discussions/8176#discussioncomment-7620012)
     date: LooseDateStr | str | None = None
-    choices: list[str]
+    choices: Sequence[Enum]
+
     area: Decimal | None = None
     yield_: Decimal | None = Field(None, alias="yield")
     export: Decimal | None = None
@@ -133,21 +138,21 @@ class ExportsCrops(ListRootModel):
     class ExportsCropsItem(_ExportsSchema):
         choices: list[CropsEnum]
 
-    root: List[ExportsCropsItem]
+    root: list[ExportsCropsItem]
 
 
 class ExportsAnimals(ListRootModel):
     class ExportsAnimalsItem(_ExportsSchema):
         choices: list[AnimalsEnum]
 
-    root: List[ExportsAnimalsItem]
+    root: list[ExportsAnimalsItem]
 
 
 class ExportsMineralResources(ListRootModel):
     class ExportsMineralResourcesItem(_ExportsSchema):
         choices: list[MineralsEnum]
 
-    root: List[ExportsMineralResourcesItem]
+    root: list[ExportsMineralResourcesItem]
 
 
 class LeaseSchema(ListRootModel):
@@ -159,7 +164,7 @@ class LeaseSchema(ListRootModel):
         farmers: Decimal | None = None
         households: Decimal | None = None
 
-    root: List[LeaseItem]
+    root: list[LeaseItem]
 
 
 class JobsSchema(ListRootModel):
@@ -171,7 +176,7 @@ class JobsSchema(ListRootModel):
         employees: Decimal | None = None
         workers: Decimal | None = None
 
-    root: List[JobsItem]
+    root: list[JobsItem]
 
 
 class ActorsSchema(ListRootModel):
@@ -180,7 +185,7 @@ class ActorsSchema(ListRootModel):
         name: str
         role: ActorEnum = ActorEnum.OTHER
 
-    root: List[ActorsItem]
+    root: list[ActorsItem]
 
 
 class ElectricityGenerationSchema(ListRootModel):
@@ -195,7 +200,7 @@ class ElectricityGenerationSchema(ListRootModel):
         current_capacity: Decimal | None = None
         intended_capacity: Decimal | None = None
 
-    root: List[ElectricityGenerationItem]
+    root: list[ElectricityGenerationItem]
 
 
 class CarbonSequestrationSchema(ListRootModel):
@@ -212,4 +217,4 @@ class CarbonSequestrationSchema(ListRootModel):
         certification_standard_id: str = ""
         certification_standard_comment: str = ""
 
-    root: List[CarbonSequestrationItem]
+    root: list[CarbonSequestrationItem]

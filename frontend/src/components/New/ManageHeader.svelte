@@ -4,9 +4,12 @@
 
   import { page } from "$app/stores"
 
-  import type { DealHull, InvestorHull } from "$lib/types/newtypes.js"
-  import { Version2Status } from "$lib/types/newtypes.js"
-  import { UserRole } from "$lib/types/user"
+  import {
+    UserRole,
+    Version2Status,
+    type DealHull,
+    type InvestorHull,
+  } from "$lib/types/data"
 
   import DetailsSummary from "$components/DetailsSummary.svelte"
   import HeaderDatesWDownload from "$components/HeaderDatesWDownload.svelte"

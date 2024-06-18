@@ -1,6 +1,6 @@
 <script lang="ts">
   import { fieldChoices } from "$lib/stores"
-  import type { InvolvedActor } from "$lib/types/newtypes"
+  import type { InvolvedActor } from "$lib/types/data"
 
   export let value: InvolvedActor[]
 </script>

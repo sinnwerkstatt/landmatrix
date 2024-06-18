@@ -106,7 +106,7 @@ export interface paths {
     get: operations["api_investors_deal_filtered_retrieve"]
   }
   "/api/investors/simple/": {
-    get: operations["api_investors_simple_retrieve"]
+    get: operations["api_investors_simple_list"]
   }
   "/api/investorversions/": {
     get: operations["api_investorversions_list"]
@@ -260,12 +260,29 @@ export interface components {
       | "POU"
       | "SHP"
       | "SHR"
+    AreaFields: {
+      type: components["schemas"]["ValueLabel"][]
+    }
     /**
-     * @description * `PER_HA` - per ha
-     * * `PER_AREA` - for specified area
+     * @description * `HEALTH` - Health
+     * * `EDUCATION` - Education
+     * * `PRODUCTIVE_INFRASTRUCTURE` - Productive infrastructure (e.g. irrigation, tractors, machinery...)
+     * * `ROADS` - Roads
+     * * `CAPACITY_BUILDING` - Capacity building
+     * * `FINANCIAL_SUPPORT` - Financial support
+     * * `COMMUNITY_SHARES` - Community shares in the investment project
+     * * `OTHER` - Other
      * @enum {string}
      */
-    AnnualLeasingFeeTypeEnum: "PER_HA" | "PER_AREA"
+    BenefitsEnum:
+      | "HEALTH"
+      | "EDUCATION"
+      | "PRODUCTIVE_INFRASTRUCTURE"
+      | "ROADS"
+      | "CAPACITY_BUILDING"
+      | "FINANCIAL_SUPPORT"
+      | "COMMUNITY_SHARES"
+      | "OTHER"
     /** @enum {unknown} */
     BlankEnum: ""
     BlogCategory: {
@@ -859,7 +876,9 @@ export interface components {
     }
     DealFields: {
       intention_of_investment: components["schemas"]["ValueLabel"][]
+      intention_of_investment_group: components["schemas"]["ValueLabel"][]
       negotiation_status: components["schemas"]["ValueLabel"][]
+      negotiation_status_group: components["schemas"]["ValueLabel"][]
       implementation_status: components["schemas"]["ValueLabel"][]
       level_of_accuracy: components["schemas"]["ValueLabel"][]
       nature_of_deal: components["schemas"]["ValueLabel"][]
@@ -881,6 +900,7 @@ export interface components {
       water_source: components["schemas"]["ValueLabel"][]
       not_public_reason: components["schemas"]["ValueLabel"][]
       actors: components["schemas"]["ValueLabel"][]
+      produce_group: components["schemas"]["ValueLabel"][]
     }
     DealVersion: {
       id: number
@@ -931,7 +951,7 @@ export interface components {
       purchase_price?: number | null
       /** Purchase price area type */
       purchase_price_type?:
-        | components["schemas"]["PurchasePriceTypeEnum"]
+        | components["schemas"]["HaAreasEnum"]
         | components["schemas"]["BlankEnum"]
         | components["schemas"]["NullEnum"]
         | null
@@ -943,7 +963,7 @@ export interface components {
       annual_leasing_fee?: number | null
       /** Annual leasing fee area type */
       annual_leasing_fee_type?:
-        | components["schemas"]["AnnualLeasingFeeTypeEnum"]
+        | components["schemas"]["HaAreasEnum"]
         | components["schemas"]["BlankEnum"]
         | components["schemas"]["NullEnum"]
         | null
@@ -1042,11 +1062,11 @@ export interface components {
       /** Received compensation (e.g. for damages or resettlements) */
       received_compensation?: string
       /** Promised benefits for local communities */
-      promised_benefits?: components["schemas"]["PromisedBenefitsEnum"][]
+      promised_benefits?: components["schemas"]["BenefitsEnum"][]
       /** Comment on promised benefits for local communities */
       promised_benefits_comment?: string
       /** Materialized benefits for local communities */
-      materialized_benefits?: components["schemas"]["MaterializedBenefitsEnum"][]
+      materialized_benefits?: components["schemas"]["BenefitsEnum"][]
       /** Comment on materialized benefits for local communities */
       materialized_benefits_comment?: string
       /** Presence of organizations and actions taken (e.g. farmer organizations, NGOs, etc.) */
@@ -1358,6 +1378,7 @@ export interface components {
       datasource: components["schemas"]["DataSourceFields"]
       investor: components["schemas"]["InvestorFields"]
       involvement: components["schemas"]["InvolvementFields"]
+      area: components["schemas"]["AreaFields"]
     }
     FieldDefinition: {
       id: number
@@ -1445,6 +1466,12 @@ export interface components {
       | "FORESTRY"
       | "CONSERVATION"
       | "OTHER"
+    /**
+     * @description * `PER_HA` - per ha
+     * * `PER_AREA` - for specified area
+     * @enum {string}
+     */
+    HaAreasEnum: "PER_HA" | "PER_AREA"
     ImageRenditionField: {
       url: string
       full_url: string
@@ -1753,26 +1780,6 @@ export interface components {
      * @enum {string}
      */
     LocationAreaTypeEnum: "production_area" | "contract_area" | "intended_area"
-    /**
-     * @description * `HEALTH` - Health
-     * * `EDUCATION` - Education
-     * * `PRODUCTIVE_INFRASTRUCTURE` - Productive infrastructure (e.g. irrigation, tractors, machinery...)
-     * * `ROADS` - Roads
-     * * `CAPACITY_BUILDING` - Capacity building
-     * * `FINANCIAL_SUPPORT` - Financial support
-     * * `COMMUNITY_SHARES` - Community shares in the investment project
-     * * `OTHER` - Other
-     * @enum {string}
-     */
-    MaterializedBenefitsEnum:
-      | "HEALTH"
-      | "EDUCATION"
-      | "PRODUCTIVE_INFRASTRUCTURE"
-      | "ROADS"
-      | "CAPACITY_BUILDING"
-      | "FINANCIAL_SUPPORT"
-      | "COMMUNITY_SHARES"
-      | "OTHER"
     Message: {
       id: number
       title?: string | null
@@ -1896,32 +1903,6 @@ export interface components {
       | "CONTRACT_EXPIRED"
     /** @enum {unknown} */
     NullEnum: ""
-    /**
-     * @description * `HEALTH` - Health
-     * * `EDUCATION` - Education
-     * * `PRODUCTIVE_INFRASTRUCTURE` - Productive infrastructure (e.g. irrigation, tractors, machinery...)
-     * * `ROADS` - Roads
-     * * `CAPACITY_BUILDING` - Capacity building
-     * * `FINANCIAL_SUPPORT` - Financial support
-     * * `COMMUNITY_SHARES` - Community shares in the investment project
-     * * `OTHER` - Other
-     * @enum {string}
-     */
-    PromisedBenefitsEnum:
-      | "HEALTH"
-      | "EDUCATION"
-      | "PRODUCTIVE_INFRASTRUCTURE"
-      | "ROADS"
-      | "CAPACITY_BUILDING"
-      | "FINANCIAL_SUPPORT"
-      | "COMMUNITY_SHARES"
-      | "OTHER"
-    /**
-     * @description * `PER_HA` - per ha
-     * * `PER_AREA` - for specified area
-     * @enum {string}
-     */
-    PurchasePriceTypeEnum: "PER_HA" | "PER_AREA"
     /**
      * @description * `INDIGENOUS_RIGHTS_RECOGNIZED` - Indigenous Peoples traditional or customary rights recognized by government
      * * `INDIGENOUS_RIGHTS_NOT_RECOGNIZED` - Indigenous Peoples traditional or customary rights not recognized by government
@@ -2697,7 +2678,7 @@ export interface operations {
       path: {
         /** @description A unique integer value identifying this deal hull. */
         id: number
-        version_id: string
+        version_id: number
       }
     }
     responses: {
@@ -3010,7 +2991,7 @@ export interface operations {
       path: {
         /** @description A unique integer value identifying this investor hull. */
         id: number
-        version_id: string
+        version_id: number
       }
     }
     responses: {
@@ -3319,11 +3300,11 @@ export interface operations {
       }
     }
   }
-  api_investors_simple_retrieve: {
+  api_investors_simple_list: {
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["SimpleInvestor"]
+          "application/json": components["schemas"]["SimpleInvestor"][]
         }
       }
     }

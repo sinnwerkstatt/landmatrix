@@ -4,17 +4,33 @@
   import { page } from "$app/stores"
 
   import type { SortBy } from "$lib/data/buckets"
-  import { createImplementationStatusChartData } from "$lib/data/charts/implementationStatus"
-  import { createNegotiationStatusChartData } from "$lib/data/charts/negotiationStatusGroup"
-  import { createProduceGroupChartData } from "$lib/data/charts/produceGroup"
+  import {
+    getImplementationStatusColor,
+    implementationStatusReducer,
+  } from "$lib/data/charts/implementationStatus"
+  import {
+    createNegotiationStatusGroupReducer,
+    getNegotiationStatusGroupColor,
+  } from "$lib/data/charts/negotiationStatusGroup"
+  import {
+    getProduceGroupColor,
+    produceGroupReducer,
+  } from "$lib/data/charts/produceGroup"
+  import { createChartData } from "$lib/data/createChartData"
   import { filters } from "$lib/filters"
-  import { dealsNG } from "$lib/stores"
+  import { createGroupMap, createLabels, dealsNG, fieldChoices } from "$lib/stores"
   import { observatoryPages } from "$lib/stores/wagtail"
+  import {
+    NegotiationStatusGroup,
+    ProduceGroup,
+    type ImplementationStatus,
+    type NegStatGroupMap,
+  } from "$lib/types/data"
   import type { CountryOrRegion } from "$lib/types/wagtail"
-  import { sum } from "$lib/utils/data_processing"
+  import { sum } from "$lib/utils/dataProcessing"
 
   import DealDisplayToggle from "$components/DealDisplayToggle.svelte"
-  import { displayDealsCount } from "$components/Map/map_helper"
+  import { displayDealsCount } from "$components/Map/mapHelper"
   import StatusPieChart from "$components/StatusPieChart.svelte"
 
   import ContextBarContainer from "./ContextBarContainer.svelte"
@@ -26,7 +42,7 @@
     currentItem = {
       name: "Global",
       observatory_page: $observatoryPages.find(o => !o.country && !o.region),
-    } as CountryOrRegion
+    } as unknown as CountryOrRegion
   } else {
     currentItem = {
       ...($filters.region_id
@@ -43,9 +59,40 @@
   $: unit = $displayDealsCount ? "deals" : "ha"
   $: sortBy = $displayDealsCount ? "count" : "size"
 
-  $: chartNegStat = createNegotiationStatusChartData(deals, sortBy)
-  $: chartImpStat = createImplementationStatusChartData(deals, sortBy)
-  $: chartProd = createProduceGroupChartData(deals, sortBy)
+  $: negStatGroupMap = createGroupMap<NegStatGroupMap>(
+    $fieldChoices.deal.negotiation_status,
+  )
+
+  $: negStatGroupLabels = createLabels<NegotiationStatusGroup>(
+    $fieldChoices.deal.negotiation_status_group,
+  )
+
+  $: chartNegStat = createChartData(
+    createNegotiationStatusGroupReducer(negStatGroupMap),
+    Object.values(NegotiationStatusGroup),
+    (key: NegotiationStatusGroup) => negStatGroupLabels[key],
+    getNegotiationStatusGroupColor,
+  )(deals, sortBy)
+
+  $: impStatLabels = createLabels<ImplementationStatus>(
+    $fieldChoices.deal.implementation_status,
+  )
+
+  $: chartImpStat = createChartData<ImplementationStatus>(
+    implementationStatusReducer,
+    Object.keys(impStatLabels) as ImplementationStatus[],
+    (key: ImplementationStatus) => impStatLabels[key],
+    getImplementationStatusColor,
+  )(deals, sortBy)
+
+  $: produceGroupLabels = createLabels<ProduceGroup>($fieldChoices.deal.produce_group)
+
+  $: chartProd = createChartData<ProduceGroup>(
+    produceGroupReducer,
+    Object.values(ProduceGroup),
+    (produceGroup: ProduceGroup) => produceGroupLabels[produceGroup],
+    getProduceGroupColor,
+  )(deals, sortBy)
 
   $: totalCount = $displayDealsCount
     ? `${Math.round(deals.length).toLocaleString("fr").replace(",", ".")}`

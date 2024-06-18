@@ -12,8 +12,7 @@
 
   import { dealFields, investorFields } from "$lib/fieldLookups"
   import { loading } from "$lib/stores/basics"
-  import type { DealHull, InvestorHull } from "$lib/types/newtypes"
-  import { UserRole } from "$lib/types/user"
+  import { UserRole, type DealHull, type InvestorHull } from "$lib/types/data"
 
   import FilterCollapse from "$components/Data/FilterCollapse.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"
@@ -21,7 +20,7 @@
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
   import Table, { type Column } from "$components/Table/Table.svelte"
 
-  import { downloadAsCSV, downloadAsXLSX } from "./downloadObjects.js"
+  import { downloadAsCSV, downloadAsXLSX } from "./downloadObjects"
   import RightFilterBar from "./RightFilterBar.svelte"
   import { managementFilters } from "./state"
   import WorkflowInfoView from "./WorkflowInfoView.svelte"

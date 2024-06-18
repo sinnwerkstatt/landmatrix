@@ -5,15 +5,15 @@
   import { page } from "$app/stores"
 
   import { loading } from "$lib/stores/basics"
-  import { UserRole } from "$lib/types/user"
+  import { UserRole } from "$lib/types/data"
 
   import DealManageHeader from "$components/Data/Deal/DealManageHeader.svelte"
   import { DEAL_SECTIONS } from "$components/Data/Deal/Sections/constants"
   import { dealSectionLookup } from "$components/Data/Deal/Sections/store"
+  import SectionNav from "$components/Data/SectionNav.svelte"
   import CountryField from "$components/Fields/Display2/CountryField.svelte"
   import HeaderDatesWDownload from "$components/HeaderDatesWDownload.svelte"
   import ManageHeaderOldVersionNote from "$components/New/ManageHeaderOldVersionNote.svelte"
-  import SectionNav from "$components/SectionNav.svelte"
 
   export let data
 
@@ -64,7 +64,7 @@
     />
   </div>
 
-  <div class="h-full px-4 pb-20" style="grid-area: main">
+  <div class="mt-2 overflow-y-auto px-4 pb-20" style="grid-area: main">
     <slot />
   </div>
 </div>

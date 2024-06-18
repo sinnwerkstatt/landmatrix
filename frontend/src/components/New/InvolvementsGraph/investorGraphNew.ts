@@ -8,6 +8,7 @@ import cytoscape from "cytoscape"
 import type { LayoutOptions } from "cytoscape-cose-bilkent"
 import cyCoseBilkent from "cytoscape-cose-bilkent"
 import cyPopper from "cytoscape-popper"
+import { _ } from "svelte-i18n"
 import { get } from "svelte/store"
 import type { Content } from "tippy.js"
 import tippy from "tippy.js"
@@ -15,8 +16,7 @@ import tippy from "tippy.js"
 import { browser } from "$app/environment"
 import { page } from "$app/stores"
 
-import { classificationMap } from "$lib/stores/maps"
-import { Classification } from "$lib/types/investor"
+import { createLabels, fieldChoices } from "$lib/stores"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const tippyFactory = (ref: any, content: Content) => {
@@ -126,11 +126,12 @@ const makeContent = (ele: NodeSingular) => {
 
     if ("active_version__classification" in ele.data()) {
       // Todo: make reflexive, e.g., make tooltip a svelte component
-      const choice =
-        get(classificationMap)[
-          ele.data().active_version__classification as Classification
-        ]
-      if (choice) content += ", " + choice
+      const classificationLabels = createLabels(
+        get(fieldChoices).investor.classification,
+      )
+      content +=
+        ", " + classificationLabels[ele.data().active_version__classification] ||
+        get(_)("Unknown")
     }
 
     tipEl.innerHTML = content

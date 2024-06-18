@@ -1,15 +1,13 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n"
-
-  import { currencies } from "$lib/stores"
-  import type { Currency } from "$lib/types/newtypes"
+  import { createLabels, currencies, fieldChoices } from "$lib/stores"
+  import type { Currency, HaArea } from "$lib/types/data"
 
   export let value: number | null
 
   interface Extras {
     unit?: string
     currency?: number | null
-    perType?: "PER_HA" | "PER_AREA" | null
+    perType?: HaArea | null
   }
   export let extras: Extras = {}
 
@@ -17,8 +15,6 @@
   $: xcur = extras.currency
     ? $currencies.find(c => c.id === extras.currency)
     : undefined
-
-  const PERTYPES = { PER_HA: $_("per ha"), PER_AREA: $_("for specified area") }
 </script>
 
 <div class="flex items-center gap-2">
@@ -36,6 +32,6 @@
     </div>
   {/if}
   {#if extras.perType}
-    {PERTYPES[extras.perType]}
+    {createLabels($fieldChoices.deal.ha_area)[extras.perType]}
   {/if}
 </div>

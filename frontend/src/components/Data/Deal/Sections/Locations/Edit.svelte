@@ -10,20 +10,20 @@
   import { page } from "$app/stores"
 
   import {
-    Location2,
     type DealHull,
+    type Location2,
     type PointFeature,
     type PointFeatureProps,
-  } from "$lib/types/newtypes"
+  } from "$lib/types/data"
   import { createComponentAsDiv } from "$lib/utils/domHelpers"
-  import { createPointFeatures } from "$lib/utils/location"
-  import { padBounds } from "$lib/utils/location.js"
+  import { createPointFeatures, padBounds } from "$lib/utils/location"
 
-  import LocationLegend from "$components/Data/Deal/Sections/Locations/LocationLegend.svelte"
   import SubmodelEditField from "$components/Fields/SubmodelEditField.svelte"
   import BigMap from "$components/Map/BigMap.svelte"
 
   import Entry from "./Entry.svelte"
+  import LocationLegend from "./LocationLegend.svelte"
+  import { createLocation, isEmptyLocation } from "./locations"
   import LocationTooltip from "./LocationTooltip.svelte"
 
   export let deal: DealHull
@@ -181,7 +181,8 @@
       bind:entries={deal.selected_version.locations}
       bind:selectedEntryId
       entryComponent={Entry}
-      createEntry={nid => new Location2(nid)}
+      createEntry={createLocation}
+      isEmpty={isEmptyLocation}
       extras={{
         map,
         country: $page.data.countries.find(c => c.id === deal.country_id),

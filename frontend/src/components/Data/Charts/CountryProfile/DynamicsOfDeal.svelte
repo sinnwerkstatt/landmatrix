@@ -7,8 +7,8 @@
 
   import { DynamicsOfDeal, toCSV, toJSON } from "$lib/data/charts/dynamicsOfDeal"
   import type { DynamicsDataPoint } from "$lib/data/charts/dynamicsOfDeal"
-  import { classificationMap } from "$lib/stores/maps"
-  import type { DealVersion2 } from "$lib/types/newtypes"
+  import { createLabels, fieldChoices } from "$lib/stores"
+  import type { DealVersion2 } from "$lib/types/data"
 
   import ChartWrapper from "$components/Data/Charts/DownloadWrapper.svelte"
   import { downloadCSV, downloadJSON, downloadSVG } from "$components/Data/Charts/utils"
@@ -24,20 +24,24 @@
   let multideals = 0
   let payload: DynamicsDataPoint[] = []
 
+  $: classificationLabels = createLabels($fieldChoices.investor.classification)
+
   $: if (browser && deals?.length > 0) {
     let pots: { [key: string]: number } = {}
     deals.forEach(d => {
       if (d.top_investors.length > 1) multideals += 1
       d.top_investors.forEach(i => {
-        const cl = i.classification
-        pots[cl] = pots[cl]
-          ? pots[cl] + d.current_contract_size
-          : d.current_contract_size
+        // FIXME: There are investors with invalid classifications null or ''
+        let cl = i.classification
+        if (cl === "" || cl === null) cl = "unknown"
+
+        const dealSize = d.current_contract_size ?? 0
+        pots[cl] = pots[cl] ? pots[cl] + dealSize : dealSize
       })
     })
 
     payload = Object.entries(pots).map(([k, v]) => ({
-      name: $classificationMap[k] || $_("Unknown"),
+      name: classificationLabels[k] || $_("Unknown"),
       value: v,
     }))
 

@@ -2,7 +2,7 @@
   import { _ } from "svelte-i18n"
 
   import { type ValueLabelEntry } from "$lib/stores"
-  import type { JSONExportsFieldType } from "$lib/types/newtypes"
+  import type { JSONExportsFieldType } from "$lib/types/data"
 
   import ChoicesEditField from "$components/Fields/Edit2/ChoicesEditField.svelte"
   import AddButton from "$components/Fields/Edit2/JSONFieldComponents/AddButton.svelte"

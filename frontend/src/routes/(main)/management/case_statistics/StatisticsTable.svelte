@@ -3,13 +3,13 @@
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
-  import type { components } from "$lib/openAPI"
+  import type { Country, Region } from "$lib/types/data"
 
-  import type { CaseStatisticsDeal, CaseStatisticsInvestor } from "./caseStatistics.js"
+  import type { CaseStatisticsDeal, CaseStatisticsInvestor } from "./caseStatistics"
   import CaseStatisticsTable from "./CaseStatisticsTable.svelte"
 
-  export let selCountry: components["schemas"]["Country"] | undefined
-  export let selRegion: components["schemas"]["Region"] | undefined
+  export let selCountry: Country | undefined
+  export let selRegion: Region | undefined
 
   let model: "deal" | "investor" = "deal"
   let activeTabId: string | undefined = "pending"

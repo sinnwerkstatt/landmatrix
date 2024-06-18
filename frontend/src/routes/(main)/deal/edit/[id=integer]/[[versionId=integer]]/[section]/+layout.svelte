@@ -4,24 +4,27 @@
 
   import { beforeNavigate, goto, invalidate } from "$app/navigation"
 
+  import type { Contract, DealDataSource, MutableDealHull } from "$lib/types/data"
   import { getCsrfToken } from "$lib/utils"
-  import { removeEmptyEntries } from "$lib/utils/data_processing"
 
+  import { isEmptyDataSource } from "$components/Data/DataSources/dataSources"
   import { DEAL_SECTIONS } from "$components/Data/Deal/Sections/constants"
+  import { isEmptyContract } from "$components/Data/Deal/Sections/Contracts/contracts"
+  import { isEmptyLocation } from "$components/Data/Deal/Sections/Locations/locations"
   import { dealSectionLookup } from "$components/Data/Deal/Sections/store"
+  import SectionNav from "$components/Data/SectionNav.svelte"
   import CountryField from "$components/Fields/Display2/CountryField.svelte"
   import LoadingSpinner from "$components/icons/LoadingSpinner.svelte"
   import ModalReallyQuit from "$components/ModalReallyQuit.svelte"
-  import SectionNav from "$components/SectionNav.svelte"
 
-  import { mutableDeal, type MutableDeal } from "./store"
+  import { mutableDeal } from "./store"
 
   export let data
 
   let savingInProgress = false
   let showReallyQuitOverlay = false
 
-  $: $mutableDeal = structuredClone(data.deal) as MutableDeal
+  $: $mutableDeal = structuredClone(data.deal) as MutableDealHull
   $: hasBeenEdited = JSON.stringify(data.deal) !== JSON.stringify($mutableDeal)
 
   beforeNavigate(({ type, cancel, to }) => {
@@ -49,18 +52,18 @@
       }
   })
 
-  const saveDeal = async (deal: MutableDeal): Promise<boolean> => {
+  const saveDeal = async (deal: MutableDealHull): Promise<boolean> => {
     savingInProgress = true
 
-    deal.selected_version.locations = removeEmptyEntries(
-      deal.selected_version.locations ?? [],
+    deal.selected_version.locations = (deal.selected_version.locations ?? []).filter(
+      x => !isEmptyLocation(x),
     )
-    deal.selected_version.contracts = removeEmptyEntries(
-      deal.selected_version.contracts ?? [],
+    deal.selected_version.contracts = (deal.selected_version.contracts ?? []).filter(
+      x => !isEmptyContract(x as Contract),
     )
-    deal.selected_version.datasources = removeEmptyEntries(
-      deal.selected_version.datasources ?? [],
-    )
+    deal.selected_version.datasources = (
+      deal.selected_version.datasources ?? []
+    ).filter(x => !isEmptyDataSource(x as DealDataSource))
 
     const ret = await fetch(
       data.dealVersion
@@ -120,17 +123,16 @@
   }
 
   const isFormValid = (): boolean => {
-    const currentForm: HTMLFormElement | null =
-      document.querySelector<HTMLFormElement>("form")
+    const currentForms = document.querySelectorAll<HTMLFormElement>("form")
 
-    if (!currentForm) {
+    if (currentForms.length === 0) {
       toast.push("Internal error. Can not grab the form. Try reloading the page.", {
         classes: ["error"],
       })
       return false
     }
 
-    return currentForm.reportValidity()
+    return [...currentForms].every(f => f.reportValidity())
   }
 
   const onClickClose = async (force = false): Promise<void> => {
@@ -161,7 +163,7 @@
     style="grid-area: header"
   >
     <h1 class="heading4 my-2 mt-3 flex items-baseline gap-2">
-      {data.dealID ? $_("Editing deal #") + data.dealID : $_("Adding new deal")}
+      {$_("Editing") + " " + $_("Deal") + ` #${data.deal.id}`}
       <span class="text-[0.8em]">
         <CountryField value={data.deal.country_id} />
       </span>
@@ -198,7 +200,7 @@
     />
   </div>
 
-  <div class="overflow-y-auto p-2" style="grid-area: main">
+  <div class="mt-2 overflow-y-auto px-4 pb-20" style="grid-area: main">
     <slot />
   </div>
 </div>

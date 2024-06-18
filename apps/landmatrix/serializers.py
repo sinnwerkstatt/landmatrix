@@ -1,5 +1,5 @@
 from django.contrib.gis.geos import GEOSGeometry
-from django.db.models import Q, QuerySet, F
+from django.db.models import F, Q, QuerySet
 from django.db.models.functions import JSONObject
 from django.utils.translation import gettext as _
 from rest_framework import serializers
@@ -8,34 +8,34 @@ from apps.landmatrix.models import FieldDefinition
 from apps.landmatrix.models.country import Country, Region
 from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.new import (
-    DealVersion,
-    DealHull,
-    Location,
-    DealDataSource,
-    Contract,
     Area,
+    Contract,
+    DealDataSource,
+    DealHull,
+    DealVersion,
+    DealWorkflowInfo,
+    InvestorDataSource,
     InvestorHull,
     InvestorVersion,
-    InvestorDataSource,
-    Involvement,
-    DealWorkflowInfo,
     InvestorWorkflowInfo,
+    Involvement,
+    Location,
 )
 from apps.landmatrix.serializer_fields import (
-    CurrentDateAreaSchemaField,
-    CurrentDateAreaChoicesIOIField,
-    CropsSchemaField,
-    CarbonSequestrationSchemaField,
-    CurrentDateChoiceNegotiationStatusField,
-    CurrentDateChoiceImplementationStatusField,
-    LeaseSchemaField,
     ActorsSchemaField,
-    JobsSchemaField,
+    CarbonSequestrationSchemaField,
+    CropsSchemaField,
+    CurrentDateAreaChoicesAnimalsField,
+    CurrentDateAreaChoicesCropsField,
+    CurrentDateAreaChoicesIOIField,
+    CurrentDateAreaSchemaField,
+    CurrentDateChoiceImplementationStatusField,
+    CurrentDateChoiceNegotiationStatusField,
+    ElectricityGenerationSchemaField,
     ExportsAnimalsField,
     ExportsMineralResourcesField,
-    CurrentDateAreaChoicesCropsField,
-    CurrentDateAreaChoicesAnimalsField,
-    ElectricityGenerationSchemaField,
+    JobsSchemaField,
+    LeaseSchemaField,
 )
 
 

@@ -1,56 +1,66 @@
 import { createEmptyBuckets } from "$lib/data/buckets"
-import { agricultureIntentionReducer } from "$lib/data/charts/agricultureIntention"
+import { createAgricultureIntentionReducer } from "$lib/data/charts/agricultureIntention"
 import { implementationStatusReducer } from "$lib/data/charts/implementationStatus"
-import { intentionOfInvestmentGroupReducer } from "$lib/data/charts/intentionOfInvestmentGroup"
-import { negotiationStatusGroupReducer } from "$lib/data/charts/negotiationStatusGroup"
+import { createIoIGroupReducer } from "$lib/data/charts/intentionOfInvestmentGroup"
+import { createNegotiationStatusGroupReducer } from "$lib/data/charts/negotiationStatusGroup"
 import { produceGroupReducer } from "$lib/data/charts/produceGroup"
-import type { Deal } from "$lib/types/deal"
 import {
-  AgricultureIoI,
-  ForestryIoI,
-  ImplementationStatus,
-  IoIGroup,
-  NegotiationStatus,
+  IntentionOfInvestmentGroup,
   NegotiationStatusGroup,
-  OtherIoI,
   ProduceGroup,
-  RenewableEnergyIoI,
-} from "$lib/types/deal"
+  type DealVersion2,
+  type ImplementationStatus,
+  type IntentionOfInvestment,
+  type IoIGroupMap,
+  type NegStatGroupMap,
+} from "$lib/types/data"
 
 describe("Intention of Investment Group", () => {
   test("Multiple intentions of same group per deal are counted as 1", () => {
     const deals = [
       {
         current_intention_of_investment: [
-          ForestryIoI.CARBON,
-          ForestryIoI.TIMBER_PLANTATION,
-          ForestryIoI.FOREST_LOGGING,
-          RenewableEnergyIoI.SOLAR_PARK,
-          AgricultureIoI.BIOFUELS,
+          "CARBON",
+          "TIMBER_PLANTATION",
+          "FOREST_LOGGING",
+          "SOLAR_PARK",
+          "BIOFUELS",
         ],
         deal_size: 500,
-      },
+      } satisfies Partial<DealVersion2>,
       {
         current_intention_of_investment: [
-          OtherIoI.MINING,
-          OtherIoI.CONVERSATION,
-          AgricultureIoI.BIOFUELS,
-          RenewableEnergyIoI.WIND_FARM,
+          "MINING",
+          "CONVERSATION",
+          "BIOFUELS",
+          "WIND_FARM",
         ],
         deal_size: 100,
-      },
-    ] as Deal[]
+      } satisfies Partial<DealVersion2>,
+      // I don't understand this type error but need to convert to unknown
+    ] as unknown as DealVersion2[]
+
+    const groupMap = {
+      CARBON: IntentionOfInvestmentGroup.FORESTRY,
+      TIMBER_PLANTATION: IntentionOfInvestmentGroup.FORESTRY,
+      FOREST_LOGGING: IntentionOfInvestmentGroup.FORESTRY,
+      SOLAR_PARK: IntentionOfInvestmentGroup.RENEWABLE_ENERGY,
+      BIOFUELS: IntentionOfInvestmentGroup.AGRICULTURE,
+      MINING: IntentionOfInvestmentGroup.OTHER,
+      CONVERSATION: IntentionOfInvestmentGroup.OTHER,
+      WIND_FARM: IntentionOfInvestmentGroup.RENEWABLE_ENERGY,
+    } satisfies Partial<IoIGroupMap> as IoIGroupMap
 
     const bucketMap = deals.reduce(
-      intentionOfInvestmentGroupReducer,
-      createEmptyBuckets(Object.values(IoIGroup)),
+      createIoIGroupReducer(groupMap),
+      createEmptyBuckets(Object.values(IntentionOfInvestmentGroup)),
     )
 
     expect(bucketMap).toEqual({
-      [IoIGroup.FORESTRY]: { count: 1, size: 500 },
-      [IoIGroup.AGRICULTURE]: { count: 2, size: 600 },
-      [IoIGroup.RENEWABLE_ENERGY]: { count: 2, size: 600 },
-      [IoIGroup.OTHER]: { count: 1, size: 100 },
+      [IntentionOfInvestmentGroup.FORESTRY]: { count: 1, size: 500 },
+      [IntentionOfInvestmentGroup.AGRICULTURE]: { count: 2, size: 600 },
+      [IntentionOfInvestmentGroup.RENEWABLE_ENERGY]: { count: 2, size: 600 },
+      [IntentionOfInvestmentGroup.OTHER]: { count: 1, size: 100 },
     })
   })
 })
@@ -59,54 +69,62 @@ describe("Agriculture Intention of Investment", () => {
   test("Only count agriculture intentions", () => {
     const deals = [
       {
-        current_intention_of_investment: [
-          ForestryIoI.CARBON,
-          ForestryIoI.FOREST_LOGGING,
-          AgricultureIoI.BIOFUELS,
-        ],
+        current_intention_of_investment: ["CARBON", "FOREST_LOGGING", "BIOFUELS"],
         deal_size: 500,
-      },
+      } satisfies Partial<DealVersion2>,
       {
-        current_intention_of_investment: [
-          OtherIoI.MINING,
-          AgricultureIoI.BIOFUELS,
-          AgricultureIoI.FOOD_CROPS,
-        ],
+        current_intention_of_investment: ["MINING", "BIOFUELS", "FOOD_CROPS"],
         deal_size: 100,
-      },
-    ] as Deal[]
+      } satisfies Partial<DealVersion2>,
+    ] as unknown as DealVersion2[]
+
+    const groupMap = {
+      CARBON: IntentionOfInvestmentGroup.FORESTRY,
+      FOREST_LOGGING: IntentionOfInvestmentGroup.FORESTRY,
+      BIOFUELS: IntentionOfInvestmentGroup.AGRICULTURE,
+      FOOD_CROPS: IntentionOfInvestmentGroup.AGRICULTURE,
+      MINING: IntentionOfInvestmentGroup.OTHER,
+    } satisfies Partial<IoIGroupMap> as IoIGroupMap
 
     const bucketMap = deals.reduce(
-      agricultureIntentionReducer,
-      createEmptyBuckets(Object.values(AgricultureIoI)),
+      createAgricultureIntentionReducer(groupMap),
+      createEmptyBuckets([
+        "BIOFUELS",
+        "BIOMASS_ENERGY_GENERATION",
+        "FOOD_CROPS",
+        "FODDER",
+        "LIVESTOCK",
+        "NON_FOOD_AGRICULTURE",
+        "AGRICULTURE_UNSPECIFIED",
+      ] satisfies IntentionOfInvestment[] as IntentionOfInvestment[]),
     )
 
     expect(bucketMap).toEqual({
-      [AgricultureIoI.BIOFUELS]: { count: 2, size: 600 },
-      [AgricultureIoI.BIOMASS_ENERGY_GENERATION]: { count: 0, size: 0 },
-      [AgricultureIoI.FOOD_CROPS]: { count: 1, size: 100 },
-      [AgricultureIoI.FODDER]: { count: 0, size: 0 },
-      [AgricultureIoI.LIVESTOCK]: { count: 0, size: 0 },
-      [AgricultureIoI.NON_FOOD_AGRICULTURE]: { count: 0, size: 0 },
-      [AgricultureIoI.AGRICULTURE_UNSPECIFIED]: { count: 0, size: 0 },
+      BIOFUELS: { count: 2, size: 600 },
+      BIOMASS_ENERGY_GENERATION: { count: 0, size: 0 },
+      FOOD_CROPS: { count: 1, size: 100 },
+      FODDER: { count: 0, size: 0 },
+      LIVESTOCK: { count: 0, size: 0 },
+      NON_FOOD_AGRICULTURE: { count: 0, size: 0 },
+      AGRICULTURE_UNSPECIFIED: { count: 0, size: 0 },
     })
   })
 })
 
 describe("Produce Group", () => {
   test("Count non empty existing fields", () => {
-    const deals = [
+    const deals: DealVersion2[] = [
       {
-        current_animals: ["cows", "bees"],
-        current_crops: ["corn"],
+        current_animals: ["cows", "bees"] as readonly string[],
+        current_crops: ["corn"] as readonly string[],
         deal_size: 500,
-      },
+      } satisfies Partial<DealVersion2> as DealVersion2,
       {
-        current_animals: ["sloths"],
-        current_mineral_resources: [],
+        current_animals: ["sloths"] as readonly string[],
+        current_mineral_resources: [] as readonly string[],
         deal_size: 100,
-      },
-    ] as Deal[]
+      } satisfies Partial<DealVersion2> as DealVersion2,
+    ]
 
     const bucketMap = deals.reduce(
       produceGroupReducer,
@@ -125,21 +143,26 @@ describe("Negotiation Status Group", () => {
   test("Existing negotiation status is mapped to group", () => {
     const deals = [
       {
-        current_negotiation_status: NegotiationStatus.CONTRACT_SIGNED,
+        current_negotiation_status: "CONTRACT_SIGNED",
         deal_size: 500,
       },
       {
-        current_negotiation_status: NegotiationStatus.CONTRACT_EXPIRED,
+        current_negotiation_status: "CONTRACT_EXPIRED",
         deal_size: 100,
       },
       {
-        current_implementation_status: undefined,
+        // current_implementation_status: undefined,
         deal_size: 1_000_000_000_000_000_000,
       },
-    ] as Deal[]
+    ] satisfies Partial<DealVersion2>[] as DealVersion2[]
+
+    const groupMap = {
+      CONTRACT_SIGNED: NegotiationStatusGroup.CONCLUDED,
+      CONTRACT_EXPIRED: NegotiationStatusGroup.CONTRACT_EXPIRED,
+    } satisfies Partial<NegStatGroupMap> as NegStatGroupMap
 
     const bucketMap = deals.reduce(
-      negotiationStatusGroupReducer,
+      createNegotiationStatusGroupReducer(groupMap),
       createEmptyBuckets(Object.values(NegotiationStatusGroup)),
     )
 
@@ -156,29 +179,34 @@ describe("Implementation Status", () => {
   test("Existing implementation stati are counted", () => {
     const deals = [
       {
-        current_implementation_status: ImplementationStatus.IN_OPERATION,
+        current_implementation_status: "IN_OPERATION",
         deal_size: 500,
       },
       {
-        current_implementation_status: ImplementationStatus.PROJECT_ABANDONED,
+        current_implementation_status: "PROJECT_ABANDONED",
         deal_size: 100,
       },
       {
         current_implementation_status: undefined,
         deal_size: 1_000_000_000_000_000_000,
       },
-    ] as Deal[]
+    ] satisfies Partial<DealVersion2>[] as DealVersion2[]
 
     const bucketMap = deals.reduce(
       implementationStatusReducer,
-      createEmptyBuckets(Object.values(ImplementationStatus)),
+      createEmptyBuckets([
+        "PROJECT_NOT_STARTED",
+        "STARTUP_PHASE",
+        "IN_OPERATION",
+        "PROJECT_ABANDONED",
+      ] satisfies ImplementationStatus[] as ImplementationStatus[]),
     )
 
     expect(bucketMap).toEqual({
-      [ImplementationStatus.PROJECT_NOT_STARTED]: { count: 0, size: 0 },
-      [ImplementationStatus.STARTUP_PHASE]: { count: 0, size: 0 },
-      [ImplementationStatus.IN_OPERATION]: { count: 1, size: 500 },
-      [ImplementationStatus.PROJECT_ABANDONED]: { count: 1, size: 100 },
+      PROJECT_NOT_STARTED: { count: 0, size: 0 },
+      STARTUP_PHASE: { count: 0, size: 0 },
+      IN_OPERATION: { count: 1, size: 500 },
+      PROJECT_ABANDONED: { count: 1, size: 100 },
     })
   })
 })

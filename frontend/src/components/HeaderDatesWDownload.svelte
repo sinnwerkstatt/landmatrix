@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import type { DealHull, InvestorHull } from "$lib/types/newtypes"
+  import type { DealHull, InvestorHull } from "$lib/types/data"
 
   import DetailsSummary from "$components/DetailsSummary.svelte"
   import HeaderDates from "$components/HeaderDates.svelte"

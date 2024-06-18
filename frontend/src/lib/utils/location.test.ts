@@ -1,6 +1,6 @@
 import { latLng, latLngBounds } from "leaflet?client"
 
-import { ACCURACY_LEVEL, type Location2 } from "$lib/types/newtypes"
+import { type Location2 } from "$lib/types/data"
 
 import { createPointFeature, createPointFeatures, padBounds } from "./location"
 
@@ -25,6 +25,8 @@ describe("padBounds", () => {
 describe("createPointFeature", () => {
   test("Map location to geojson point feature with properties", () => {
     const location: Location2 = {
+      id: null!,
+      dealversion: null!,
       nid: "nanoID",
       name: "I have a name?",
       description: "A vast location.",
@@ -33,7 +35,7 @@ describe("createPointFeature", () => {
         coordinates: [6.455027, 3.384082],
       },
       facility_name: "Invisible Inc.",
-      level_of_accuracy: ACCURACY_LEVEL.APPROXIMATE_LOCATION,
+      level_of_accuracy: "APPROXIMATE_LOCATION",
       comment: "BLA",
       areas: [],
     }

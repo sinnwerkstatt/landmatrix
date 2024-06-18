@@ -1,20 +1,21 @@
 import sys
 
-from django.contrib.gis.geos import Point, GEOSGeometry
+from icecream import ic
+
+from django.contrib.gis.geos import GEOSGeometry, Point
 from django.core.management.base import BaseCommand
 from django.db import connection
-from icecream import ic
 
 from apps.landmatrix.models.deal import DealOld, DealWorkflowInfoOld
 from apps.landmatrix.models.new import (
-    DealHull,
-    DealVersion,
-    Location,
     Area,
     Contract,
     DealDataSource,
-    InvestorHull,
+    DealHull,
+    DealVersion,
     DealWorkflowInfo,
+    InvestorHull,
+    Location,
 )
 
 status_map_dings = {

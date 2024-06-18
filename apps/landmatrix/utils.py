@@ -1,9 +1,9 @@
-from django.db.models import Q
 from drf_spectacular.utils import OpenApiParameter
+
+from django.db.models import Q
 from rest_framework.request import Request
 
 from apps.landmatrix.models import choices
-
 
 openapi_filters_parameters = [
     OpenApiParameter("region_id", description="See /api/regions/ for IDs", type=int),
@@ -21,6 +21,7 @@ openapi_filters_parameters = [
         "implementation_status",
         description="",
         type=str,
+        # UNKNOWN corresponds to front-end filter field "No information", see parse_filters in utils.py
         enum=[x["value"] for x in choices.IMPLEMENTATION_STATUS_ITEMS] + ["UNKNOWN"],
         many=True,
     ),
