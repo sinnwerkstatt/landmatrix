@@ -29,7 +29,7 @@
     displayDealsCount,
     LMCircleClass,
     styleCircle,
-  } from "$components/Map/map_helper"
+  } from "$components/Map/mapHelper"
   import MapMarkerPopup from "$components/Map/MapMarkerPopup.svelte"
 
   type Country = components["schemas"]["Country"]

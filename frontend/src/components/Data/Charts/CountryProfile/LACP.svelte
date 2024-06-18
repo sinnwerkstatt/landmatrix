@@ -27,7 +27,7 @@
   import ChartWrapper from "$components/Data/Charts/DownloadWrapper.svelte"
   import type { DownloadEvent } from "$components/Data/Charts/utils"
   import { downloadCSV, downloadJSON, downloadSVG } from "$components/Data/Charts/utils"
-  import { displayDealsCount } from "$components/Map/map_helper"
+  import { displayDealsCount } from "$components/Map/mapHelper"
 
   export let deals: DealVersion2[] = []
 

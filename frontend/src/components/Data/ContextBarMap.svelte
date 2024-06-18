@@ -30,7 +30,7 @@
   import { sum } from "$lib/utils/dataProcessing"
 
   import DealDisplayToggle from "$components/DealDisplayToggle.svelte"
-  import { displayDealsCount } from "$components/Map/map_helper"
+  import { displayDealsCount } from "$components/Map/mapHelper"
   import StatusPieChart from "$components/StatusPieChart.svelte"
 
   import ContextBarContainer from "./ContextBarContainer.svelte"

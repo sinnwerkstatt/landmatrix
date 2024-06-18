@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import { displayDealsCount } from "$components/Map/map_helper"
+  import { displayDealsCount } from "$components/Map/mapHelper"
 
   $: displayDeals = $displayDealsCount
     ? "bg-orange text-white"
