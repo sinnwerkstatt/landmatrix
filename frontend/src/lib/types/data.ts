@@ -1,4 +1,4 @@
-import type { Feature, MultiPolygon, Point, Polygon } from "geojson"
+import type { Feature, MultiPolygon, Point } from "geojson"
 import type { GeoJSON } from "leaflet?client"
 
 import type { components } from "$lib/openAPI"
@@ -65,8 +65,6 @@ export enum InvolvementRole {
   LENDER = "LENDER",
 }
 
-export type Country = components["schemas"]["Country"]
-
 // TODO: Fix type in openAPI -> currently string
 export interface Involvement {
   id: number
@@ -105,6 +103,9 @@ export interface InvestorHull
   involvements: Involvement[]
   workflowinfos: WorkflowInfoType[]
 }
+
+export type Country = components["schemas"]["Country"]
+export type Region = components["schemas"]["Region"]
 
 export type MutableInvestorHull = Mutable<InvestorHull>
 
@@ -163,29 +164,11 @@ export type InvestorVersion2 = components["schemas"]["InvestorVersion"]
 export type NegotiationStatusItem =
   components["schemas"]["CurrentDateChoiceNegotiationStatusItem"]
 
-// Should be equal to components["schemas"]["CurrentIntentionOfInvestmentEnum"]
 export type IntentionOfInvestment = components["schemas"]["IntentionOfInvestmentEnum"]
 export type NegotiationStatus = components["schemas"]["NegotiationStatusEnum"]
 
-// export const NegotiationStatus: { [key in NegotiationStatus]: key } = {
-//   // INTENDED
-//   EXPRESSION_OF_INTEREST: "EXPRESSION_OF_INTEREST",
-//   UNDER_NEGOTIATION: "UNDER_NEGOTIATION",
-//   MEMORANDUM_OF_UNDERSTANDING: "MEMORANDUM_OF_UNDERSTANDING",
-//   // CONCLUDED
-//   ORAL_AGREEMENT: "ORAL_AGREEMENT",
-//   CONTRACT_SIGNED: "CONTRACT_SIGNED",
-//   CHANGE_OF_OWNERSHIP: "CHANGE_OF_OWNERSHIP",
-//   // FAILED
-//   NEGOTIATIONS_FAILED: "NEGOTIATIONS_FAILED",
-//   CONTRACT_CANCELED: "CONTRACT_CANCELED",
-//   // CONTRACT_EXPIRED
-//   CONTRACT_EXPIRED: "CONTRACT_EXPIRED",
-// }
-
 export type ImplementationStatus = components["schemas"]["ImplementationStatusEnum"]
 export type NatureOfDeal = components["schemas"]["NatureOfDealEnum"]
-// export type ProduceGroup = components["schemas"][""]
 
 // Todo: solve differently, get from backend?
 // Define a ts enum for IntentionOfInvestment groups
@@ -195,17 +178,27 @@ export enum IntentionOfInvestmentGroup {
   RENEWABLE_ENERGY = "RENEWABLE_ENERGY",
   OTHER = "OTHER",
 }
+export type IoIGroupMap = { [key in IntentionOfInvestment]: IntentionOfInvestmentGroup }
+
 export enum NegotiationStatusGroup {
   INTENDED = "INTENDED",
   CONCLUDED = "CONCLUDED",
   FAILED = "FAILED",
   CONTRACT_EXPIRED = "CONTRACT_EXPIRED",
 }
+export type NegStatGroupMap = { [key in NegotiationStatus]: NegotiationStatusGroup }
+
 export enum ProduceGroup {
   CROPS = "CROPS",
   ANIMALS = "ANIMALS",
   MINERAL_RESOURCES = "MINERAL_RESOURCES",
 }
+
+export type Crops = components["schemas"]["CropsEnum"]
+export type Animals = components["schemas"]["AnimalsEnum"]
+export type Minerals = components["schemas"]["MineralsEnum"]
+
+export type Produce = Crops | Animals | Minerals
 
 // Define a ts enum for components["schemas"]["RoleEnum"] for easy access
 export enum UserRole {
@@ -235,8 +228,5 @@ export interface AreaFeatureProps {
   visible: boolean
 }
 
-export type AreaFeature = Feature<Polygon | MultiPolygon, AreaFeatureProps>
-export type AreaFeatureLayer = GeoJSON<AreaFeatureProps, Polygon | MultiPolygon>
-
-export type IoIGroupMap = { [key in IntentionOfInvestment]: IntentionOfInvestmentGroup }
-export type NegStatGroupMap = { [key in NegotiationStatus]: NegotiationStatusGroup }
+export type AreaFeature = Feature<MultiPolygon, AreaFeatureProps>
+export type AreaFeatureLayer = GeoJSON<AreaFeatureProps, MultiPolygon>

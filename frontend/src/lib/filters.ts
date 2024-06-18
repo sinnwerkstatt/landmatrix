@@ -10,7 +10,7 @@ import {
   type NegotiationStatus,
 } from "$lib/types/data"
 
-export interface Produce {
+export interface ProduceFilter {
   // id: string
   value: string
   label: string
@@ -32,7 +32,7 @@ export class FilterValues {
   initiation_year_unknown = true
   implementation_status: ImplementationStatus[] = []
   intention_of_investment: IntentionOfInvestment[] = []
-  produce?: Produce[] = []
+  produce?: ProduceFilter[] = []
   transnational: boolean | null = null
   forest_concession: boolean | null = null
 

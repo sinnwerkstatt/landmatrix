@@ -1,4 +1,4 @@
-import type { Point } from "geojson"
+import type { MultiPolygon, Point } from "geojson"
 import type { GeoJSON, LatLngLiteral, Map } from "leaflet?client"
 import { geoJson, LatLngBounds } from "leaflet?client"
 
@@ -11,6 +11,7 @@ import type {
   PointFeature,
 } from "$lib/types/data"
 
+// TODO: use $fieldChoices.area.type
 export const AREA_TYPES = [
   "production_area",
   "contract_area",
@@ -79,23 +80,23 @@ export const createAreaFeaturesLayer = (
 
 export const areaToFeature = (area: Area): AreaFeature => ({
   type: "Feature",
-  geometry: area.area,
+  geometry: area.area as MultiPolygon,
   properties: {
     id: area.id as number,
     type: area.type,
-    date: area.date,
-    current: area.current,
-    visible: area.current,
+    date: area.date ?? "",
+    current: !!area.current,
+    visible: !!area.current,
   },
 })
 
-export const featureToArea = (feature: AreaFeature): Area => ({
-  id: feature.properties.id,
-  type: feature.properties.type,
-  date: feature.properties.date,
-  current: feature.properties.current,
-  area: feature.geometry,
-})
+// export const featureToArea = (feature: AreaFeature): Area => ({
+//   id: feature.properties.id,
+//   type: feature.properties.type,
+//   date: feature.properties.date,
+//   current: feature.properties.current,
+//   area: feature.geometry,
+// })
 
 export const isVisible = (feature: AreaFeature): boolean => feature.properties.visible
-export const isCurrent = (feature: AreaFeature): boolean => !!feature.properties.current
+export const isCurrent = (feature: AreaFeature): boolean => feature.properties.current

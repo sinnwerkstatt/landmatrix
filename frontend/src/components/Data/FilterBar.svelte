@@ -5,8 +5,12 @@
 
   import { page } from "$app/stores"
 
-  import type { Produce } from "$lib/filters"
-  import { filters, isDefaultFilter, publicOnly } from "$lib/filters"
+  import {
+    filters,
+    isDefaultFilter,
+    publicOnly,
+    type ProduceFilter,
+  } from "$lib/filters"
   import { createLabels, fieldChoices, simpleInvestors } from "$lib/stores"
   import { IntentionOfInvestmentGroup, ProduceGroup, UserRole } from "$lib/types/data"
 
@@ -20,26 +24,28 @@
   import FilterCollapse from "./FilterCollapse.svelte"
   import Wimpel from "./Wimpel.svelte"
 
-  let produceChoices: Produce[]
+  $: produceGroupLabels = createLabels<ProduceGroup>($fieldChoices.deal.produce_group)
+
+  let produceChoices: ProduceFilter[]
   $: produceChoices = $fieldChoices
     ? [
-        ...($fieldChoices.deal.crops.map(item => ({
-          value: item["value"],
-          label: item["label"],
+        ...($fieldChoices.deal.crops.map(({ value, label }) => ({
+          value,
+          label,
           groupId: ProduceGroup.CROPS,
-          group: $_("Crops"),
+          group: produceGroupLabels[ProduceGroup.CROPS],
         })) ?? []),
-        ...($fieldChoices.deal.animals.map(item => ({
-          value: item["value"],
-          label: item["label"],
+        ...($fieldChoices.deal.animals.map(({ value, label }) => ({
+          value,
+          label,
           groupId: ProduceGroup.ANIMALS,
-          group: $_("Animals"),
+          group: produceGroupLabels[ProduceGroup.ANIMALS],
         })) ?? []),
-        ...($fieldChoices.deal.minerals.map(item => ({
-          value: item.value,
-          label: item.label,
+        ...($fieldChoices.deal.minerals.map(({ value, label }) => ({
+          value,
+          label,
           groupId: ProduceGroup.MINERAL_RESOURCES,
-          group: $_("Mineral resources"),
+          group: produceGroupLabels[ProduceGroup.MINERAL_RESOURCES],
         })) ?? []),
       ]
     : []
@@ -68,7 +74,7 @@
       : $filters.empty()
   }
 
-  const groupByProduce = (p: Produce) => p.groupId
+  const groupByProduce = (p: ProduceFilter) => p.groupId
 </script>
 
 <div
