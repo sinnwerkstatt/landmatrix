@@ -142,7 +142,11 @@
     }
 
     await invalidate("deal:detail") // discard changes
-    await goto(`/deal/${data.dealID}/${data.dealVersion ?? ""}`)
+    await goto(
+      data.dealVersion
+        ? `/deal/${data.dealID}/${data.dealVersion}/${data.dealSection}/`
+        : `/deal/${data.dealID}/${data.dealSection}/`,
+    )
   }
 
   const onClickSave = async (): Promise<void> => {
@@ -183,7 +187,7 @@
         class:disabled={savingInProgress}
         on:click|preventDefault={() => onClickClose()}
       >
-        {data.dealID ? $_("Close") : $_("Cancel")}
+        {$_("Close")}
       </button>
     </div>
   </div>

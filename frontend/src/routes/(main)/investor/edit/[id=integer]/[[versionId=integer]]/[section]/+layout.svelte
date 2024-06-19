@@ -143,7 +143,11 @@
     }
 
     await invalidate("investor:detail") // discard changes
-    await goto(`/investor/${data.investorID}/${data.investorVersion ?? ""}`)
+    await goto(
+      data.investorVersion
+        ? `/deal/${data.investorID}/${data.investorVersion}/${data.investorSection}/`
+        : `/deal/${data.investorID}/${data.investorSection}/`,
+    )
   }
 
   const onClickSave = async (): Promise<void> => {
@@ -187,7 +191,7 @@
         class:disabled={savingInProgress}
         on:click|preventDefault={() => onClickClose()}
       >
-        {data.investorID ? $_("Close") : $_("Cancel")}
+        {$_("Close")}
       </button>
     </div>
   </div>
