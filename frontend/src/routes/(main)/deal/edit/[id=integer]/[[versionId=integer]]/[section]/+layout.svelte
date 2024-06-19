@@ -142,9 +142,7 @@
     }
 
     await invalidate("deal:detail") // discard changes
-
-    if (!data.dealID) await goto("/")
-    else await goto(`/deal/${data.dealID}/${data.dealVersion ?? ""}`)
+    await goto(`/deal/${data.dealID}/${data.dealVersion ?? ""}`)
   }
 
   const onClickSave = async (): Promise<void> => {

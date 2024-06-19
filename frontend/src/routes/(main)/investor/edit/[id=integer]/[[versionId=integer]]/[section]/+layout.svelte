@@ -143,9 +143,7 @@
     }
 
     await invalidate("investor:detail") // discard changes
-
-    if (!data.investorID) await goto("/")
-    else await goto(`/investor/${data.investorID}/${data.investorVersion ?? ""}`)
+    await goto(`/investor/${data.investorID}/${data.investorVersion ?? ""}`)
   }
 
   const onClickSave = async (): Promise<void> => {
