@@ -4,7 +4,9 @@
   export let data
 </script>
 
-<svelte:component
-  this={$investorSectionLookup[data.investorSection].display}
-  investor={data.investor}
-/>
+<div class="pb-20">
+  <svelte:component
+    this={$investorSectionLookup[data.investorSection].display}
+    investor={data.investor}
+  />
+</div>

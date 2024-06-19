@@ -54,7 +54,7 @@
     {/if}
   </div>
 
-  <div class="sticky top-0 z-[100]" style="grid-area: sidenav">
+  <div class="sticky top-0 z-[10]" style="grid-area: sidenav">
     <SectionNav
       sections={DEAL_SECTIONS.map(s => ({
         slug: s,
@@ -64,7 +64,7 @@
     />
   </div>
 
-  <div class="mt-2 overflow-y-auto px-4 pb-20" style="grid-area: main">
+  <div class="mt-2 px-4 lg:min-h-[92vh]" style="grid-area: main">
     <slot />
   </div>
 </div>
