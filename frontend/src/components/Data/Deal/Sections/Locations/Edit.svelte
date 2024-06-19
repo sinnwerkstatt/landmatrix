@@ -57,7 +57,9 @@
     map.eachLayer(
       l => (bounds = l instanceof GeoJSON ? l.getBounds().extend(bounds) : bounds),
     )
-    map.fitBounds(padBounds(bounds))
+    if (bounds.isValid()) {
+      map.fitBounds(padBounds(bounds))
+    }
   }
 
   $: if (map && locationsPointLayer) {
