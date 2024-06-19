@@ -50,7 +50,7 @@ export const padBounds = (bounds: LatLngBounds): LatLngBounds => {
     )
   }
 
-  return bounds.pad(0.8)
+  return bounds.pad(0.2)
 }
 
 export const fitBounds = (geoJson: GeoJSON, map: Map): void => {
@@ -86,7 +86,7 @@ export const areaToFeature = (area: Area): AreaFeature => ({
     type: area.type,
     date: area.date ?? "",
     current: !!area.current,
-    visible: !!area.current,
+    visible: true,
   },
 })
 

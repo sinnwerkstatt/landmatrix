@@ -30,7 +30,7 @@
       </h3>
       <p class="body1 lg:pb-8">{@html value.text}</p>
       <a
-        class="button1 hidden w-fit rounded bg-gray-900 px-5 py-[10px] text-white transition hover:bg-opacity-80 lg:block"
+        class="btn btn-black hidden w-fit lg:block"
         href={value.link.href}
         rel={value.link.rel_external ? "external" : ""}
         target={value.link.rel_external ? "_blank" : ""}
@@ -42,7 +42,7 @@
       <img alt={value.image.title} src={value.image.url} loading="lazy" />
     </div>
     <a
-      class="button1 mx-auto mt-5 block w-fit rounded bg-gray-900 px-5 py-[10px] text-white transition hover:bg-gray-700 lg:hidden"
+      class="btn btn-black mx-auto mt-5 block w-fit lg:hidden"
       href={value.link.href}
       rel={value.link.rel_external ? "external" : ""}
       target={value.link.rel_external ? "_blank" : ""}

@@ -21,7 +21,7 @@ export const load: LayoutLoad = async ({ params, fetch, parent, depends }) => {
   }
 
   const investorID = parseInt(params.id)
-  const investorVersion = parseInt(params.versionId ?? "")
+  const investorVersion = params.versionId ? parseInt(params.versionId) : null
   const investorSection = params.section as InvestorEditSection
 
   const baseUrl = investorVersion

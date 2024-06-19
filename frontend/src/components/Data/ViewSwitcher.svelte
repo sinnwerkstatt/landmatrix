@@ -85,13 +85,13 @@
 >
   <nav id="data-navigation">
     <ul
-      class="pointer-events-auto inline-flex items-center border border-orange bg-white text-left drop-shadow dark:bg-gray-800"
+      class="pointer-events-auto inline-flex items-center border-2 border-orange bg-white text-left dark:bg-gray-900"
     >
       <li>
         <a
           href="/map/"
-          class="nav-link-secondary button1 transition hover:bg-white hover:text-orange"
-          class:active={$page.url.pathname.startsWith("/map")}
+          class="nav-link-main"
+          class:active={$page.url.pathname.startsWith("/map/")}
         >
           {$_("Map")}
         </a>
@@ -99,14 +99,20 @@
       <li>
         <NavDropDown>
           <svelte:fragment slot="title">
-            <span class="button1 capitalize">{$_("Tables")}</span>
+            <span
+              class="nav-link-main"
+              class:active={$page.url.pathname.startsWith("/list/")}
+            >
+              {$_("Tables")}
+            </span>
           </svelte:fragment>
-          <ul class="border-2 border-orange bg-white dark:bg-gray-800">
+
+          <ul class="border border-orange-500">
             {#each dataViews as view}
               <li class="whitespace-nowrap">
                 <a
                   href={view.route}
-                  class="nav-link-secondary"
+                  class="nav-link-secondary bg-white dark:bg-gray-900"
                   class:active={$page.url.pathname.startsWith(view.route)}
                 >
                   {view.title}
@@ -119,35 +125,32 @@
       <li>
         <NavDropDown>
           <svelte:fragment slot="title">
-            <span class="button1 capitalize">{$_("Charts")}</span>
-          </svelte:fragment>
-          <ul class="border-2 border-orange bg-white dark:bg-gray-800">
-            <li
-              class="whitespace-nowrap border-b border-b-orange bg-gray-700 px-4 py-1 font-bold text-white"
+            <span
+              class="nav-link-main"
+              class:active={["/charts/", "/country-profile/"].some(path =>
+                $page.url.pathname.startsWith(path),
+              )}
             >
               {$_("Charts")}
-            </li>
+            </span>
+          </svelte:fragment>
+          <ul class="border border-orange bg-white dark:bg-gray-800">
             {#each chartViews as view}
               <li class="whitespace-nowrap">
                 <a
                   href={view.route}
-                  class="nav-link-secondary"
+                  class="nav-link-secondary bg-white dark:bg-gray-900"
                   class:active={$page.url.pathname.startsWith(view.route)}
                 >
                   {view.title}
                 </a>
               </li>
             {/each}
-            <li
-              class="whitespace-nowrap border-y border-y-orange bg-gray-700 px-4 py-1 font-bold text-white"
-            >
-              {$_("Country profile charts")}
-            </li>
             {#each countryProfileViews as view}
               <li class="whitespace-nowrap">
                 <a
                   href={view.route}
-                  class="nav-link-secondary"
+                  class="nav-link-secondary bg-white dark:bg-gray-900"
                   class:active={$page.url.pathname.startsWith(view.route)}
                 >
                   {view.title}

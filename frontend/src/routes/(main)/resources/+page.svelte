@@ -45,10 +45,8 @@
         <li>
           <a
             href={cat.slug ? `?category=${cat.slug}` : "/resources/"}
-            class="button1 mx-1 block w-fit whitespace-nowrap rounded border border-orange px-3 py-2 shadow transition hover:border-orange-700 {data.category ===
-            cat.slug
-              ? 'bg-orange font-bold text-white hover:bg-orange-700 hover:text-white'
-              : 'hover:text-orange-700 '}"
+            class="btn-outline btn-primary"
+            class:selected={data.category === cat.slug}
           >
             {cat.name}
           </a>
@@ -96,3 +94,9 @@
 {#if data.user?.is_superuser || data.user?.is_staff}
   <WagtailBird page={data.page} />
 {/if}
+
+<style lang="postcss">
+  .selected {
+    @apply bg-orange-500 text-white hover:bg-orange-700 dark:text-black;
+  }
+</style>

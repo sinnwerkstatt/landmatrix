@@ -50,8 +50,8 @@
           on:input={async () => {
             if (selRegion) {
               selCountry = undefined
-              await getCounts(selRegion, undefined)
             }
+            await getCounts(selRegion, selCountry)
           }}
         />
       </div>
@@ -66,8 +66,8 @@
           on:input={async () => {
             if (selCountry) {
               selRegion = undefined
-              await getCounts(undefined, selCountry)
             }
+            await getCounts(selRegion, selCountry)
           }}
         />
       </div>

@@ -18,7 +18,7 @@
 
 <section>
   <div class="mb-16 mt-2 space-y-4">
-    <h3 class="heading3 my-0">{$_("Involvements")} ({filteredInvolvements.length})</h3>
+    <h3 class="heading4 my-0">{$_("Involvements")} ({filteredInvolvements.length})</h3>
     <div class="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
       {#each filteredInvolvements as involvement}
         <InvestorCard {involvement} />
@@ -30,7 +30,7 @@
 {#if investor.deals.length > 0}
   <section>
     <div class="mb-10 mt-2 space-y-4">
-      <h3 class="heading3 my-0">
+      <h3 class="heading4 my-0">
         {$_("Deals (Involvements as Operating company)")} ({investor.deals.length})
       </h3>
       <div class="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">

@@ -15,7 +15,7 @@ export const load: LayoutLoad = async ({ params, fetch, parent, depends }) => {
   }
 
   const dealID = parseInt(params.id)
-  const dealVersion = parseInt(params.versionId ?? "")
+  const dealVersion = params.versionId ? parseInt(params.versionId) : null
   const dealSection = params.section as DealSection
 
   const baseUrl = dealVersion

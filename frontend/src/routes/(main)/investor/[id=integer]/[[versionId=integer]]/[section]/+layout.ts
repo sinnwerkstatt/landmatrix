@@ -12,7 +12,7 @@ export const load: LayoutLoad = async ({ fetch, params, depends, parent }) => {
   const { apiClient } = await parent()
 
   const investorID = parseInt(params.id)
-  const investorVersion = parseInt(params.versionId ?? "")
+  const investorVersion = params.versionId ? parseInt(params.versionId) : null
   const investorSection = params.section as InvestorSection
 
   const baseUrl = investorVersion

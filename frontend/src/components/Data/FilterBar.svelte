@@ -137,8 +137,12 @@
         <CountrySelect
           countries={$page.data.countries.filter(c => c.deals && c.deals.length > 0)}
           on:input={e => {
-            $filters.country_id = e.detail?.id
+            if (e.detail) {
+              $filters.country_id = e.detail.id
+              $filters.region_id = undefined
+            }
           }}
+          on:clear={() => ($filters.country_id = undefined)}
           value={$page.data.countries.find(c => c.id === $filters.country_id)}
         />
       </FilterCollapse>

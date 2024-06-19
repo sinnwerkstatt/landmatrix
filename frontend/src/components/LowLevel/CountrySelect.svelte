@@ -20,5 +20,6 @@
   {disabled}
   {required}
   on:input
+  on:clear
   placeholder={$_("Select a country")}
 />

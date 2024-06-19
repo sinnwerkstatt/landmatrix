@@ -25,7 +25,7 @@
 
 <NavDropDown>
   <svelte:fragment slot="title">
-    <span class="nav-link-main">
+    <span class="nav-link-main mx-2 inline-block">
       <span class="hidden md:inline">{languages[$locale ?? "en"]}</span>
       <span class="md:hidden"><LanguageIcon /></span>
     </span>
