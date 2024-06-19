@@ -12,6 +12,7 @@
   import {
     type DealHull,
     type Location2,
+    type Mutable,
     type PointFeature,
     type PointFeatureProps,
   } from "$lib/types/data"
@@ -26,9 +27,7 @@
   import { createLocation, isEmptyLocation } from "./locations"
   import LocationTooltip from "./LocationTooltip.svelte"
 
-  export let deal: DealHull
-
-  let locations = deal.selected_version.locations
+  export let deal: Mutable<DealHull>
 
   let selectedEntryId: string | undefined
   let activeEntryIdx = 0
@@ -39,6 +38,7 @@
   let locationsPointLayer: GeoJSON<PointFeatureProps, Point>
 
   $: label = $_("Location")
+  $: locations = deal.selected_version.locations
 
   const onMapReady = (e: CustomEvent<Map>) => {
     map = e.detail
