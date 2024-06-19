@@ -123,14 +123,17 @@
     --color3: theme("colors.red.700");
   }
 
+  .btn-black,
+  .dark .btn-black {
+    --color1: theme("colors.gray.900");
+    --color2: white;
+    --color3: theme("colors.gray.700");
+  }
+
   .btn.disabled,
   .btn:disabled,
   .btn-outline.disabled,
   .btn-outline:disabled {
     @apply pointer-events-none cursor-not-allowed opacity-60;
-  }
-
-  .button1 {
-    @apply text-base font-bold leading-tight tracking-widest md:text-lg;
   }
 }

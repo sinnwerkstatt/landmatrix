@@ -25,7 +25,7 @@
   }}
 >
   <button
-    class="flex items-center p-2 hover:text-orange"
+    class="flex items-center hover:text-orange"
     on:click={() => (isOpen = !isOpen)}
   >
     <slot name="title" />

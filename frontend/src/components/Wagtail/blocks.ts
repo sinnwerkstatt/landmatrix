@@ -17,6 +17,7 @@ import SectionDividerBlock from "$components/Wagtail/SectionDividerBlock.svelte"
 import SliderBlock from "$components/Wagtail/SliderBlock.svelte"
 import TitleBlock from "$components/Wagtail/TitleBlock.svelte"
 
+// TODO: Remove unused blocks!
 export const blockMap = {
   columns_1_1: Columns1on1Block,
   columns_3: Columns3Block,
