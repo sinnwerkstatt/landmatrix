@@ -53,9 +53,15 @@
   onMount(() => scrollEntryIntoView(selectedEntryId))
 
   const addEntry = () => {
+    if (selectedEntryForm && !selectedEntryForm.checkValidity()) {
+      selectedEntryForm.reportValidity()
+      return
+    }
+
     const currentIDs = entries.map(entry => `${entry[entryIdKey]}`)
     const newEntryId = newNanoid(currentIDs)
     entries = [...entries, createEntry(newEntryId)]
+
     goto(`#${newEntryId}`)
   }
 
@@ -63,11 +69,29 @@
     const entry = entries.find(entry => `${entry[entryIdKey]}` === id)
 
     if (!entry) return
+
     if (!isEmpty(entry)) {
       const areYouSure = confirm(`${$_("Remove")} ${label} #${id}?`)
       if (!areYouSure) return
     }
+
     entries = entries.filter(x => `${x[entryIdKey]}` !== id)
+
+    goto("")
+  }
+
+  let selectedEntryForm: HTMLFormElement | null
+  $: selectedEntryForm = selectedEntryId
+    ? (document.getElementById(`form-${selectedEntryId}`) as HTMLFormElement)
+    : null
+
+  const toggleEntry = (id: string): void => {
+    if (selectedEntryForm && !selectedEntryForm.checkValidity()) {
+      selectedEntryForm.reportValidity()
+      return
+    }
+
+    goto(selectedEntryId === id ? "" : `#${id}`)
   }
 </script>
 
@@ -86,8 +110,7 @@
           <h3 class="heading4 mb-0 flex-grow">
             <button
               class="w-full text-left"
-              on:click|preventDefault={() =>
-                goto(isSelectedEntry ? "" : `#${idAsString}`)}
+              on:click|preventDefault={() => toggleEntry(idAsString)}
             >
               <ChevronDownIcon
                 class="transition-duration-300 inline h-4 w-4 rounded transition-transform {isSelectedEntry
