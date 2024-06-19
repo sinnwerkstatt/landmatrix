@@ -84,13 +84,14 @@
   class="pointer-events-none absolute inset-x-0 top-3 z-30 mx-auto text-center drop-shadow"
 >
   <nav id="data-navigation">
-    <ul class="pointer-events-auto inline-flex items-center text-left drop-shadow">
+    <ul
+      class="pointer-events-auto inline-flex items-center border-2 border-orange bg-white text-left dark:bg-gray-900"
+    >
       <li>
         <a
           href="/map/"
-          class="btn btn-flat rounded-r-none"
-          class:btn-black={!$page.url.pathname.startsWith("/map")}
-          class:btn-primary={$page.url.pathname.startsWith("/map")}
+          class="nav-link-main"
+          class:active={$page.url.pathname.startsWith("/map/")}
         >
           {$_("Map")}
         </a>
@@ -99,22 +100,20 @@
         <NavDropDown>
           <svelte:fragment slot="title">
             <span
-              class="btn btn-flat rounded-none"
-              class:btn-black={!$page.url.pathname.startsWith("/list")}
-              class:btn-primary={$page.url.pathname.startsWith("/list")}
+              class="nav-link-main"
+              class:active={$page.url.pathname.startsWith("/list/")}
             >
               {$_("Tables")}
             </span>
           </svelte:fragment>
 
-          <ul class="border-2 border-orange-500">
+          <ul class="border border-orange-500">
             {#each dataViews as view}
               <li class="whitespace-nowrap">
                 <a
                   href={view.route}
-                  class="btn btn-flat w-full rounded-none text-left"
-                  class:btn-black={!$page.url.pathname.startsWith(view.route)}
-                  class:btn-primary={$page.url.pathname.startsWith(view.route)}
+                  class="nav-link-secondary bg-white dark:bg-gray-900"
+                  class:active={$page.url.pathname.startsWith(view.route)}
                 >
                   {view.title}
                 </a>
@@ -127,25 +126,21 @@
         <NavDropDown>
           <svelte:fragment slot="title">
             <span
-              class="btn btn-flat btn-black rounded-l-none"
-              class:btn-black={!["/charts", "/country-profile"].some(path =>
-                $page.url.pathname.startsWith(path),
-              )}
-              class:btn-primary={["/charts", "/country-profile"].some(path =>
+              class="nav-link-main"
+              class:active={["/charts/", "/country-profile/"].some(path =>
                 $page.url.pathname.startsWith(path),
               )}
             >
               {$_("Charts")}
             </span>
           </svelte:fragment>
-          <ul class="border-2 border-orange bg-white dark:bg-gray-800">
+          <ul class="border border-orange bg-white dark:bg-gray-800">
             {#each chartViews as view}
               <li class="whitespace-nowrap">
                 <a
                   href={view.route}
-                  class="btn btn-flat w-full rounded-none text-left"
-                  class:btn-black={!$page.url.pathname.startsWith(view.route)}
-                  class:btn-primary={$page.url.pathname.startsWith(view.route)}
+                  class="nav-link-secondary bg-white dark:bg-gray-900"
+                  class:active={$page.url.pathname.startsWith(view.route)}
                 >
                   {view.title}
                 </a>
@@ -155,9 +150,8 @@
               <li class="whitespace-nowrap">
                 <a
                   href={view.route}
-                  class="btn btn-flat w-full rounded-none text-left"
-                  class:btn-black={!$page.url.pathname.startsWith(view.route)}
-                  class:btn-primary={$page.url.pathname.startsWith(view.route)}
+                  class="nav-link-secondary bg-white dark:bg-gray-900"
+                  class:active={$page.url.pathname.startsWith(view.route)}
                 >
                   {view.title}
                 </a>

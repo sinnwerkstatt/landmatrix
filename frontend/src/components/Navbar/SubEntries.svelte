@@ -59,12 +59,12 @@
     {#if isOpen || isHover}
       <ul
         transition:slide={{ duration: 200 }}
-        class="hidden flex-wrap justify-around bg-gray-50 group-focus-within:flex
-       lg:absolute lg:z-50 lg:whitespace-nowrap lg:border-none lg:bg-white lg:shadow-2xl lg:group-focus-within:hidden lg:group-hover:block
-       dark:bg-gray-900 dark:lg:bg-gray-900 dark:lg:shadow dark:lg:shadow-orange"
+        class="hidden flex-wrap justify-around bg-white group-focus-within:flex
+       lg:absolute lg:z-50 lg:whitespace-nowrap lg:bg-white lg:shadow-2xl lg:group-focus-within:hidden lg:group-hover:block
+       dark:bg-gray-900 dark:lg:border dark:lg:border-orange dark:lg:bg-gray-900 dark:lg:shadow-none"
       >
         {#each subEntries as subEntry}
-          <li class="pl-3">
+          <li>
             <a
               class="nav-link-secondary"
               class:active={isActive(subEntry)}
