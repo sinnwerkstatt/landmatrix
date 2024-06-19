@@ -18,11 +18,22 @@
       #{feature.properties.id}
     </a>
   </div>
-  <div>{$_("Name")}: {feature.properties.name}</div>
-  <div>{$_("Point")}: {feature.geometry.coordinates}</div>
+  <div>
+    <b>{$_("Name")}</b>
+    : {feature.properties.name}
+  </div>
+  <div>
+    <b>{$_("Point")}</b>
+    : {feature.geometry.coordinates}
+  </div>
 {:else if isPolygon(feature)}
   <div>
-    {$_("Type")}: {areaTypeLabels[feature.properties.type]}
+    <b>{$_("Type")}</b>
+    : {areaTypeLabels[feature.properties.type]}
   </div>
-  <div>{$_("Size")}: {formatArea(feature.properties.area)} {$_("ha")}</div>
+  <div>
+    <b>{$_("Size")}</b>
+    : {formatArea(feature.properties.area)}
+    {$_("ha")}
+  </div>
 {/if}
