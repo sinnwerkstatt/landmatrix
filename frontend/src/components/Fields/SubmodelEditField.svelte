@@ -118,9 +118,9 @@
                   : ''}"
               />
               {index + 1}. {label}
-              <small class="text-sm text-gray-500">
+              <span class="font-mono text-sm text-gray-500">
                 #{idAsString}
-              </small>
+              </span>
             </button>
           </h3>
           <button
@@ -143,6 +143,7 @@
       <form></form>
     {/each}
   </div>
+  <!--  <div class="sticky bottom-0 z-[10] mt-6 w-full bg-white dark:bg-gray-900">-->
   <div class="mt-6">
     <button
       class="btn btn-flat btn-primary flex items-center"

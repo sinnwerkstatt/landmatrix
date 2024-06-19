@@ -6,7 +6,6 @@
   import { isPoint, isPolygon } from "$lib/utils/geojsonHelpers"
 
   import { formatArea } from "$components/Fields/Display2/jsonHelpers"
-  import DisplayField from "$components/Fields/DisplayField.svelte"
 
   export let feature: PointFeature | AreaFeature
 
@@ -14,7 +13,11 @@
 </script>
 
 {#if isPoint(feature)}
-  <DisplayField value={feature.properties.id} fieldname="location.nid" />
+  <div class="mb-2">
+    <a class="font-mono text-lg" href="#{feature.properties.id}">
+      #{feature.properties.id}
+    </a>
+  </div>
   <div>{$_("Name")}: {feature.properties.name}</div>
   <div>{$_("Point")}: {feature.geometry.coordinates}</div>
 {:else if isPolygon(feature)}

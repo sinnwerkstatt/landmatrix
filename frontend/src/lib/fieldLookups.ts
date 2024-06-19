@@ -25,7 +25,6 @@ import JSONElectricityGenerationField from "$components/Fields/Display2/JSONElec
 import JSONExportsField from "$components/Fields/Display2/JSONExportsField.svelte"
 import JSONJobsField from "$components/Fields/Display2/JSONJobsField.svelte"
 import JSONLeaseField from "$components/Fields/Display2/JSONLeaseField.svelte"
-import NanoIDField from "$components/Fields/Display2/NanoIDField.svelte"
 import PointField from "$components/Fields/Display2/PointField.svelte"
 import TextField from "$components/Fields/Display2/TextField.svelte"
 import UserField from "$components/Fields/Display2/UserField.svelte"
@@ -914,7 +913,6 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
       extras: { unit: $_("ha") },
     },
     // LOCATIONS
-    "location.nid": { displayField: NanoIDField, label: $_("ID") },
     "location.name": {
       displayField: TextField,
       editField: LocationGoogleEditField,
@@ -948,9 +946,7 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
       label: $_("Comment"),
       extras: { multiline: true },
     },
-    // "location.areas": { displayField: XXX, label: $_("Areas") },
     // CONTRACTS
-    "contract.nid": { displayField: NanoIDField, label: $_("ID") },
     "contract.number": {
       displayField: TextField,
       editField: TextEditField,
@@ -979,7 +975,6 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
       extras: { multiline: true },
     },
     // DATASOURCES
-    "datasource.nid": { displayField: NanoIDField, label: $_("ID") },
     "datasource.type": {
       displayField: ChoicesField,
       editField: ChoicesEditField,
