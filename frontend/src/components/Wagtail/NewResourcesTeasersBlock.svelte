@@ -32,8 +32,9 @@
         <div class="body2 -mt-3 mb-6">{value.articles[0].date}</div>
         <p class="body1">
           {@html value.articles[0].excerpt}
+          {value.articles[0].url}
         </p>
-        <a class="button1 text-pelorous" href={value.articles[0].url}>
+        <a class="btn-link btn-secondary px-0" href={value.articles[0].url}>
           {$_("Read more")} >>
         </a>
       </div>

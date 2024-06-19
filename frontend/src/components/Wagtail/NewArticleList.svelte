@@ -15,7 +15,7 @@
     <p class="body1 excerpt">
       {@html article.excerpt}
     </p>
-    <a class="button1 text-pelorous" href={article.url}>{$_("Read more")} >></a>
+    <a class="btn-link btn-secondary p-0" href={article.url}>{$_("Read more")} >></a>
   </div>
 {/each}
 

@@ -85,7 +85,13 @@
   .btn-pelorous {
     --color1: theme("colors.pelorous.500");
     --color2: white;
-    --color3: theme("colors.pelorous.600");
+    --color3: theme("colors.pelorous.700");
+  }
+  .dark .btn-secondary,
+  .dark .btn-pelorous {
+    --color1: theme("colors.pelorous.500");
+    --color2: theme("colors.gray.900");
+    --color3: theme("colors.pelorous.700");
   }
 
   .btn-cancel {
