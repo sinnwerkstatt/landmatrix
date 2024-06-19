@@ -125,17 +125,19 @@
 
   $: columns = model === "deal" ? dealColumns : investorColumns
 
-  async function getCounts(model: "deal" | "investor") {
+  let counts: { [key: string]: number } = {}
+
+  const getCounts = async (model: "deal" | "investor") => {
     if (!browser) return
+
     const ret = await fetch(`/api/management/?model=${model}&action=counts`)
+
     if (ret.ok) {
-      const counts = await ret.json()
-      navTabs = navTabs.map(navTab => ({
-        ...navTab,
-        items: navTab.items.map(item => ({ ...item, count: counts?.[item.id] ?? 0 })),
-      }))
+      counts = await ret.json()
     }
   }
+
+  $: getCounts(model)
 
   let controller: AbortController
   let createdByUserIDs = new Set<number>()
@@ -190,7 +192,6 @@
 
   let showFilterOverlay = false
 
-  $: getCounts(model)
   $: fetchObjects(activeTabId, model)
   $: filteredObjects = objects.filter(obj => {
     if ($managementFilters.status)
@@ -238,10 +239,10 @@
       const deal = obj as DealHull
 
       if ($managementFilters.dealSizeFrom)
-        if (deal.selected_version.deal_size < $managementFilters.dealSizeFrom)
+        if ((deal.selected_version.deal_size ?? 0) < $managementFilters.dealSizeFrom)
           return false
       if ($managementFilters.dealSizeTo)
-        if (deal.selected_version.deal_size > $managementFilters.dealSizeTo)
+        if ((deal.selected_version.deal_size ?? 0) > $managementFilters.dealSizeTo)
           return false
 
       if ($managementFilters.fullyUpdatedAtFrom)
@@ -327,8 +328,8 @@
                     href="#{item.id}"
                   >
                     {item.name}
-                    {#if item.count}
-                      ({item.count})
+                    {#if counts[item.id]}
+                      ({counts[item.id]})
                     {/if}
                   </a>
                 </li>
@@ -373,6 +374,7 @@
       <Table items={filteredObjects} {columns}>
         <svelte:fragment slot="field" let:fieldName let:obj>
           {@const col = columns.find(c => c.key === fieldName)}
+
           <DisplayField
             fieldname={col.key}
             value={col.submodel ? obj[col.submodel][col.key] : obj[col.key]}

@@ -24,6 +24,7 @@ class Filter(TypedDict):
     q: Q
 
 
+# TODO: Add openAPI schema
 class Management(View):
     # def __init__(self):
     #     super().__init__()
