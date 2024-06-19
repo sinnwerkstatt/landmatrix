@@ -20,6 +20,7 @@
   import { createPointFeatures, padBounds } from "$lib/utils/location"
 
   import SubmodelEditField from "$components/Fields/SubmodelEditField.svelte"
+  import LocationDot from "$components/icons/LocationDot.svelte"
   import BigMap from "$components/Map/BigMap.svelte"
 
   import Entry from "./Entry.svelte"
@@ -30,7 +31,9 @@
   export let deal: Mutable<DealHull>
 
   let selectedEntryId: string | undefined
-  let activeEntryIdx = 0
+
+  const getSelectedEntryIndex = () =>
+    locations.findIndex(l => l.nid === selectedEntryId)
 
   let markerMode = false
 
@@ -43,7 +46,7 @@
   const onMapReady = (e: CustomEvent<Map>) => {
     map = e.detail
 
-    const legend = new Control({ position: "bottomleft" })
+    const legend = new Control({ position: "bottomright" })
     legend.onAdd = () => createComponentAsDiv(LocationLegend)
     map.addControl(legend)
 
@@ -70,20 +73,24 @@
     fitBounds(map)
   }
 
-  $: if (map && locationsPointLayer) {
-    const updateActiveLocationMarker = (event: LeafletMouseEvent) =>
-      updateActiveLocationPoint(latLng2Point(event.latlng))
+  const updateActiveLocationMarker = (event: LeafletMouseEvent) =>
+    updateActiveLocationPoint(latLng2Point(event.latlng))
 
-    if (markerMode) {
+  $: if (map && locationsPointLayer) {
+    if (selectedEntryId && markerMode) {
       map.addEventListener("click", updateActiveLocationMarker)
+
+      const selectedEntryIndex = getSelectedEntryIndex()
 
       locationsPointLayer.eachLayer(layer => {
         const marker = layer as Marker
-        if (marker.feature?.properties.id === locations[activeEntryIdx].nid) {
+        if (marker.feature?.properties.id === locations[selectedEntryIndex].nid) {
           marker.dragging?.enable()
         }
       })
     } else {
+      markerMode = false
+
       map.removeEventListener("click", updateActiveLocationMarker)
 
       locationsPointLayer.eachLayer((layer: Layer) =>
@@ -93,7 +100,8 @@
   }
 
   $: updateActiveLocationPoint = (point: Point) => {
-    deal.selected_version.locations[activeEntryIdx].point = point
+    const selectedEntryIndex = getSelectedEntryIndex()
+    deal.selected_version.locations[selectedEntryIndex].point = point
   }
 
   const latLng2Point = (latLng: LatLng): Point => {
@@ -157,25 +165,26 @@
       on:ready={onMapReady}
       options={{ center: [0, 0] }}
       containerClass="h-full min-h-[300px]"
-    />
-    <!--{#if activeEntryIdx !== -1}-->
-    <!--  <div-->
-    <!--    class="absolute bottom-2 left-2 {markerMode-->
-    <!--      ? 'bg-orange text-white'-->
-    <!--      : 'bg-white text-orange'}"-->
-    <!--  >-->
-    <!--    <button-->
-    <!--      type="button"-->
-    <!--      class="z-10 rounded border-2 border-black/30 px-2 pb-1.5 pt-0.5"-->
-    <!--      on:click={() => {-->
-    <!--        markerMode = !markerMode-->
-    <!--      }}-->
-    <!--      title="Create or move point"-->
-    <!--    >-->
-    <!--      <LocationDot class="inline h-5 w-5" />-->
-    <!--    </button>-->
-    <!--  </div>-->
-    <!--{/if}-->
+    >
+      {#if selectedEntryId}
+        <div
+          class="absolute bottom-[10px] left-[10px] {markerMode
+            ? 'bg-orange text-white'
+            : 'bg-white text-orange'}"
+        >
+          <button
+            type="button"
+            class="z-10 h-[40px] w-[40px] rounded border-2 border-black/30 px-2 pb-1.5 pt-0.5"
+            on:click={() => {
+              markerMode = !markerMode
+            }}
+            title={$_("Create or move point")}
+          >
+            <LocationDot class="inline h-5 w-5" />
+          </button>
+        </div>
+      {/if}
+    </BigMap>
   </div>
 
   <div class="h-full lg:col-span-3 lg:overflow-y-auto">
