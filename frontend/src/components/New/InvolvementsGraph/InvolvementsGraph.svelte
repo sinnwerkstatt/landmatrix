@@ -91,7 +91,7 @@
   }
 </script>
 
-<div class={skipVentures ? "h-[400px]" : "h-[800px]"}>
+<div class={skipVentures ? "h-[400px]" : "h-[600px]"}>
   <div
     bind:this={graphContainer}
     class="min-h-full w-full cursor-all-scroll border-2 border-solid"
