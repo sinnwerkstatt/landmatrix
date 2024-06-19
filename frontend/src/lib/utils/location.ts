@@ -86,7 +86,7 @@ export const areaToFeature = (area: Area): AreaFeature => ({
     type: area.type,
     date: area.date ?? "",
     current: !!area.current,
-    visible: !!area.current,
+    visible: true,
   },
 })
 
