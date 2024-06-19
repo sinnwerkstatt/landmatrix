@@ -37,7 +37,7 @@
     <NavDropDown placement="right-0">
       <svelte:fragment slot="title">
         <div
-          class="heading5 mx-auto my-auto flex h-10 w-10 items-center justify-center rounded-full bg-pelorous font-bold uppercase text-black md:h-12 md:w-12"
+          class="heading5 m-2 flex h-10 w-10 items-center justify-center rounded-full bg-pelorous font-bold uppercase text-black md:h-12 md:w-12"
         >
           {user.full_name
             ? user.full_name
