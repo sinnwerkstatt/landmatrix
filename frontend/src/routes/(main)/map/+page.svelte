@@ -95,11 +95,11 @@
     current_zoom = bigmap.getZoom()
 
     const regionIdAsKey: (deal: DealHull) => string = R.pipe(
-      R.path(["country", "region", "id"]),
+      R.path(["region_id"]),
       R.toString,
     )
     const countryIdAsKey: (deal: DealHull) => string = R.pipe(
-      R.path(["country", "id"]),
+      R.path(["country_id"]),
       R.toString,
     )
     const totalDealSize = R.reduce<DealHull, number>(
