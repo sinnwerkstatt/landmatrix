@@ -88,20 +88,12 @@
   }
 
   const refreshMap = (): void => {
-    if (!bigmap || $dealsNG.length === 0 || markers.length === 0 || skipMapRefresh) {
-      return
-    }
+    if (!bigmap || skipMapRefresh) return
     markersFeatureGroup?.clearLayers()
     current_zoom = bigmap.getZoom()
 
-    const regionIdAsKey: (deal: DealHull) => string = R.pipe(
-      R.path(["region_id"]),
-      R.toString,
-    )
-    const countryIdAsKey: (deal: DealHull) => string = R.pipe(
-      R.path(["country_id"]),
-      R.toString,
-    )
+    if ($dealsNG.length === 0 || markers.length === 0) return
+
     const totalDealSize = R.reduce<DealHull, number>(
       (acc, deal) => acc + (deal.selected_version.deal_size ?? 0),
       0,
@@ -110,7 +102,7 @@
     if (current_zoom < ZOOM_LEVEL.COUNTRY_CLUSTERS && !$filters.country_id) {
       // cluster by LM region
       R.pipe(
-        R.groupBy(regionIdAsKey),
+        R.groupBy(R.pipe(R.prop("region_id"), R.toString)),
         R.forEachObjIndexed((deals, regionId) => {
           if (regionId === "undefined" || !deals) return
 
@@ -134,7 +126,7 @@
     ) {
       // cluster by country
       R.pipe(
-        R.groupBy(countryIdAsKey),
+        R.groupBy(R.pipe(R.prop("country_id"), R.toString)),
         R.forEachObjIndexed((deals, countryId) => {
           if (countryId === "undefined" || !deals) return
 
@@ -226,6 +218,9 @@
   }
 
   async function flyToCountryOrRegion(country_id?: number, region_id?: number) {
+    // skip ambiguous destinations
+    if (country_id && region_id) return
+
     if (!browser || !bigmap) return
     let coords: [number, number] = [0, 0]
     let zoom = ZOOM_LEVEL.REGION_CLUSTERS

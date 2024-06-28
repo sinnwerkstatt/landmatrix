@@ -93,6 +93,7 @@
   >
     <div class="w-full self-start" dir="ltr">
       <h2 class="heading5 my-2 px-2">{$_("Filter")}</h2>
+      <!--      <p>{$dealsNG.length}</p>-->
       <div class="my-2 px-2">
         <CheckboxSwitch
           checked={$isDefaultFilter}
