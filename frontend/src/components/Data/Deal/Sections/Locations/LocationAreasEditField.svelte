@@ -14,6 +14,7 @@
     AREA_TYPES,
     areaToFeature,
     createAreaFeaturesLayer,
+    fitBounds,
   } from "$lib/utils/location"
 
   import Label2 from "$components/Fields/Display2/Label2.svelte"
@@ -58,6 +59,8 @@
     map.removeLayer(layer)
     layer = createAreaFeaturesLayer(features, isSelectedEntry)
     map.addLayer(layer)
+
+    fitBounds(map)
   }
 
   onMount(() => {
@@ -67,6 +70,8 @@
   onDestroy(() => {
     if (map) {
       map.removeLayer(layer)
+
+      fitBounds(map)
     }
   })
 

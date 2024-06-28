@@ -1,7 +1,7 @@
 <script lang="ts">
   import { point } from "@turf/turf"
   import type { Point } from "geojson"
-  import { Control, GeoJSON, geoJson, icon, latLngBounds, marker } from "leaflet?client"
+  import { Control, GeoJSON, geoJson, icon, marker } from "leaflet?client"
   import type { LatLng, Layer, LeafletMouseEvent, Map, Marker } from "leaflet?client"
   import { onDestroy, onMount } from "svelte"
   import { _ } from "svelte-i18n"
@@ -17,7 +17,7 @@
     type PointFeatureProps,
   } from "$lib/types/data"
   import { createComponentAsDiv } from "$lib/utils/domHelpers"
-  import { createPointFeatures, padBounds } from "$lib/utils/location"
+  import { createPointFeatures, fitBounds } from "$lib/utils/location"
 
   import SubmodelEditField from "$components/Fields/SubmodelEditField.svelte"
   import LocationDot from "$components/icons/LocationDot.svelte"
@@ -53,16 +53,6 @@
     map.addLayer(locationsPointLayer)
 
     fitBounds(map)
-  }
-
-  $: fitBounds = (map: Map) => {
-    let bounds = latLngBounds([])
-    map.eachLayer(
-      l => (bounds = l instanceof GeoJSON ? l.getBounds().extend(bounds) : bounds),
-    )
-    if (bounds.isValid()) {
-      map.fitBounds(padBounds(bounds))
-    }
   }
 
   $: if (map && locationsPointLayer) {

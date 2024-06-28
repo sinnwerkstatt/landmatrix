@@ -1,6 +1,12 @@
 import type { MultiPolygon, Point } from "geojson"
-import type { GeoJSON, LatLngLiteral, Map } from "leaflet?client"
-import { geoJson, LatLngBounds } from "leaflet?client"
+import {
+  GeoJSON,
+  geoJson,
+  latLngBounds,
+  LatLngBounds,
+  type LatLngLiteral,
+  type Map,
+} from "leaflet?client"
 
 import type {
   Area,
@@ -53,9 +59,14 @@ export const padBounds = (bounds: LatLngBounds): LatLngBounds => {
   return bounds.pad(0.2)
 }
 
-export const fitBounds = (geoJson: GeoJSON, map: Map): void => {
-  const bounds = geoJson.getBounds()
-  bounds.isValid() && map.fitBounds(padBounds(bounds), { duration: 1 })
+export const fitBounds = (map: Map) => {
+  let bounds = latLngBounds([])
+  map.eachLayer(
+    l => (bounds = l instanceof GeoJSON ? l.getBounds().extend(bounds) : bounds),
+  )
+  if (bounds.isValid()) {
+    map.fitBounds(padBounds(bounds))
+  }
 }
 
 export const createAreaFeaturesLayer = (

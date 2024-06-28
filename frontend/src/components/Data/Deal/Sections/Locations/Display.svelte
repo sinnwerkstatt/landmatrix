@@ -46,7 +46,8 @@
     map.addControl(legend)
 
     map.addLayer(locationsPointLayer)
-    fitBounds(locationsPointLayer, map)
+
+    fitBounds(map)
   }
 
   $: isAnyLocationSelected = (): boolean => selectedEntryId !== undefined
@@ -64,7 +65,7 @@
     locationsPointLayer = createLayer(deal.selected_version.locations)
     map.addLayer(locationsPointLayer)
 
-    fitBounds(locationsPointLayer, map)
+    fitBounds(map)
   }
 
   $: createLayer = (locations: Location2[]) =>
@@ -134,7 +135,7 @@
         label={$_("Areas")}
         areas={location.areas}
         fieldname="location.areas"
-        isSelectedEntry={isSelectedLocation(location.nid)}
+        isSelectedEntry={isSelectedLocation(location.nid) || !isAnyLocationSelected()}
       />
     </SubmodelDisplayField>
   </div>
