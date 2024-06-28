@@ -33,7 +33,9 @@
 
   export let isSelectedEntry: boolean
 
-  let features: AreaFeature[] = areas.map(areaToFeature)
+  // Reflexive so that features change on browser navigation
+  let features: AreaFeature[]
+  $: features = areas.map(areaToFeature)
   let layer: AreaFeatureLayer
 
   $: if (map && layer) {
