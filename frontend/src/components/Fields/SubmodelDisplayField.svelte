@@ -9,6 +9,7 @@
   import { onMount } from "svelte"
 
   import { browser } from "$app/environment"
+  import { goto } from "$app/navigation"
   import { page } from "$app/stores"
 
   import type { SubmodelIdKeys } from "$lib/utils/dataProcessing"
@@ -20,6 +21,7 @@
 
   export let label: string
   export let selectedEntryId: string | undefined = undefined // for external reference
+  export let hoverEntryId: string | undefined = undefined // for external reference
   export let entryIdKey: SubmodelIdKeys = "nid"
 
   $: selectedEntryId = $page.url.hash?.replace("#", "") || undefined
@@ -30,20 +32,29 @@
 </script>
 
 {#if entries.length > 0}
-  <section class="w-full">
+  <section class="flex w-full flex-col gap-2">
     {#each entries as entry, index (entry[entryIdKey])}
-      {@const isSelectedEntry = selectedEntryId === `${entry[entryIdKey]}`}
+      {@const idAsString = `${entry[entryIdKey]}`}
+      {@const href = selectedEntryId === idAsString ? "" : `#${idAsString}`}
+
       <article
-        id={`${entry[entryIdKey]}`}
-        class="p-2 {isSelectedEntry
-          ? 'animate-fadeToWhite dark:animate-fadeToGray'
-          : ''}"
+        id={idAsString}
+        class="p-2"
+        class:is-selected={selectedEntryId === idAsString}
+        class:is-hovered={hoverEntryId === idAsString}
       >
         <h3 class="heading4">
-          <a href="#{entry[entryIdKey]}">
+          <a
+            class="inline-block w-full"
+            {href}
+            on:click|preventDefault
+            on:mousedown={() => goto(href)}
+            on:mouseenter={() => (hoverEntryId = idAsString)}
+            on:mouseleave={() => (hoverEntryId = undefined)}
+          >
             {index + 1}. {label}
             <small class="text-sm text-gray-500">
-              #{entry[entryIdKey]}
+              #{idAsString}
             </small>
           </a>
         </h3>
@@ -52,3 +63,12 @@
     {/each}
   </section>
 {/if}
+
+<style lang="postcss">
+  .is-selected {
+    @apply animate-fadeToWhite dark:animate-fadeToGray;
+  }
+  .is-hovered {
+    @apply bg-orange-50 dark:bg-gray-700;
+  }
+</style>
