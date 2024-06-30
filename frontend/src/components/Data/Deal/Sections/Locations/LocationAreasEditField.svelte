@@ -24,6 +24,7 @@
   import TrashIcon from "$components/icons/TrashIcon.svelte"
   import Overlay from "$components/Overlay.svelte"
 
+  import LocationAreaTooltip from "./LocationAreaTooltip.svelte"
   import {
     AREA_TYPES,
     areaToFeature,
@@ -58,14 +59,14 @@
 
   $: if (map && layer) {
     map.removeLayer(layer)
-    layer = createAreaFeaturesLayer(features, isSelectedEntry)
+    layer = createAreaFeaturesLayer(features, LocationAreaTooltip, isSelectedEntry)
     map.addLayer(layer)
 
     fitBounds(map)
   }
 
   onMount(() => {
-    layer = createAreaFeaturesLayer(features, isSelectedEntry)
+    layer = createAreaFeaturesLayer(features, LocationAreaTooltip, isSelectedEntry)
   })
 
   onDestroy(() => {

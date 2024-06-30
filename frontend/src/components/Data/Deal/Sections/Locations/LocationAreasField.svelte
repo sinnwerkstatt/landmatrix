@@ -16,6 +16,7 @@
   import EyeIcon from "$components/icons/EyeIcon.svelte"
   import EyeSlashIcon from "$components/icons/EyeSlashIcon.svelte"
 
+  import LocationAreaTooltip from "./LocationAreaTooltip.svelte"
   import {
     AREA_TYPE_COLOR_MAP,
     areaToFeature,
@@ -43,7 +44,11 @@
 
   $: if (map) {
     layer && map.removeLayer(layer)
-    layer = createAreaFeaturesLayer(areas.map(areaToFeature), isSelectedEntry)
+    layer = createAreaFeaturesLayer(
+      areas.map(areaToFeature),
+      LocationAreaTooltip,
+      isSelectedEntry,
+    )
     map.addLayer(layer)
 
     layer.eachLayer(layer => {

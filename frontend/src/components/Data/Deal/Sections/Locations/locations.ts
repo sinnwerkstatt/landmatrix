@@ -8,6 +8,7 @@ import {
   type Layer,
   type Map,
 } from "leaflet?client"
+import type { ComponentType } from "svelte"
 
 import type {
   Area,
@@ -19,8 +20,6 @@ import type {
 } from "$lib/types/data"
 import { isEmptySubmodel } from "$lib/utils/dataProcessing"
 import { createComponentAsDiv } from "$lib/utils/domHelpers"
-
-import LocationAreaTooltip from "./LocationAreaTooltip.svelte"
 
 const LOCATION_IGNORE_KEYS = ["dealversion"] satisfies (keyof Location2)[]
 
@@ -95,6 +94,7 @@ export const fitBounds = (map: Map) => {
 
 export const createAreaFeaturesLayer = (
   features: AreaFeature[],
+  tooltipComponent: ComponentType,
   isSelectedEntry = true,
 ): AreaFeatureLayer =>
   geoJson(features, {
@@ -109,7 +109,7 @@ export const createAreaFeaturesLayer = (
       fillOpacity: 0.4,
     }),
     onEachFeature: (feature, layer: Layer) => {
-      const tooltipElement = createComponentAsDiv(LocationAreaTooltip, { feature })
+      const tooltipElement = createComponentAsDiv(tooltipComponent, { feature })
       layer.bindPopup(tooltipElement, {
         keepInView: true,
         autoPanPaddingTopLeft: [20, 20],
