@@ -25,6 +25,8 @@ class Country(models.Model):
         max_length=100,  # not changing max_length to None, because it yields database problems for some reason
     )
 
+    # There is no country in the database without lat, lon information
+    # TODO: Remove null and blank = true to fix openApi types
     point_lat = models.DecimalField(
         _("Latitude of central point"),
         max_digits=18,
@@ -115,6 +117,9 @@ class Country(models.Model):
 class Region(models.Model):
     name = models.CharField("Name")
     slug = models.SlugField("Slug")
+
+    # There is no region in the database without lat, lon information
+    # TODO: Remove null and blank = true to fix openApi types
     point_lat_min = models.DecimalField(
         _("Latitude of northernmost point"),
         max_digits=18,
