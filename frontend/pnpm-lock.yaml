@@ -96,6 +96,9 @@ importers:
       '@types/topojson-client':
         specifier: ^3.1.4
         version: 3.1.4
+      '@types/topojson-specification':
+        specifier: ^1.0.5
+        version: 1.0.5
       '@zerodevx/svelte-toast':
         specifier: ^0.9.5
         version: 0.9.5(svelte@4.2.18)

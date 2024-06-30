@@ -18,6 +18,7 @@
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import SubmodelDisplayField from "$components/Fields/SubmodelDisplayField.svelte"
   import BigMap from "$components/Map/BigMap.svelte"
+  import { createCountryFeatureMap } from "$components/Map/world"
 
   import LocationAreasField from "./LocationAreasField.svelte"
   import LocationLegend from "./LocationLegend.svelte"
@@ -37,7 +38,14 @@
     markerFeatureGroup = createMarkerLayer(deal.selected_version.locations)
     map.addLayer(markerFeatureGroup)
 
-    fitBounds(map)
+    const countryFeature = createCountryFeatureMap()[deal.country_id!]
+    if (countryFeature) {
+      const countryLayer = geoJson(countryFeature)
+      map.addLayer(countryLayer)
+      map.fitBounds(countryLayer.getBounds())
+    } else {
+      fitBounds(map)
+    }
   }
 
   $: if (map) {

@@ -21,6 +21,7 @@
   import SubmodelEditField from "$components/Fields/SubmodelEditField.svelte"
   import LocationDot from "$components/icons/LocationDot.svelte"
   import BigMap from "$components/Map/BigMap.svelte"
+  import { createCountryFeatureMap } from "$components/Map/world"
 
   import Entry from "./Entry.svelte"
   import LocationLegend from "./LocationLegend.svelte"
@@ -56,7 +57,14 @@
 
     map.addLayer(locationsPointLayer)
 
-    fitBounds(map)
+    const countryFeature = createCountryFeatureMap()[deal.country_id!]
+    if (countryFeature) {
+      const countryLayer = geoJson(countryFeature)
+      map.addLayer(countryLayer)
+      map.fitBounds(countryLayer.getBounds())
+    } else {
+      fitBounds(map)
+    }
   }
 
   $: if (map && locationsPointLayer) {

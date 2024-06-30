@@ -1,7 +1,7 @@
 <script lang="ts">
   import { area as turfArea } from "@turf/turf"
   import type { GeoJSON, Map } from "leaflet?client"
-  import { onDestroy, onMount } from "svelte"
+  import { onDestroy } from "svelte"
   import { _ } from "svelte-i18n"
 
   import { createLabels, fieldChoices } from "$lib/stores"
@@ -20,7 +20,6 @@
     AREA_TYPE_COLOR_MAP,
     areaToFeature,
     createAreaFeaturesLayer,
-    fitBounds,
   } from "./locations"
 
   export let map: Map | undefined
@@ -32,6 +31,8 @@
   export let labelClass = LABEL_CLASS
   export let valueClass = VALUE_CLASS
 
+  export let isSelectedEntry: boolean
+
   // Reflexive so that features change on browser navigation
   let layer: AreaFeatureLayer
 
@@ -42,7 +43,9 @@
 
   $: if (map) {
     layer && map.removeLayer(layer)
-    layer = createAreaFeaturesLayer(areas.map(areaToFeature))
+    layer = createAreaFeaturesLayer(areas.map(areaToFeature), isSelectedEntry)
+    map.addLayer(layer)
+
     layer.eachLayer(layer => {
       const l = layer as GeoJSON
       const feature: AreaFeature = l.feature as never
@@ -50,13 +53,10 @@
       l.addEventListener("mouseover", () => (hoverMap[feature.id!] = true))
       l.addEventListener("mouseout", () => (hoverMap[feature.id!] = false))
     })
-    map.addLayer(layer)
-
-    fitBounds(map)
   }
 
-  $: if (map && layer) {
-    layer.eachLayer(layer => {
+  $: if (map) {
+    layer?.eachLayer(layer => {
       const l = layer as GeoJSON
       const feature: AreaFeature = l.feature as never
 
@@ -67,8 +67,8 @@
     })
   }
 
-  $: if (map && layer) {
-    layer.eachLayer(layer => {
+  $: if (map) {
+    layer?.eachLayer(layer => {
       const l = layer as GeoJSON
       const feature: AreaFeature = l.feature as never
 
@@ -79,10 +79,6 @@
       }
     })
   }
-
-  onMount(() => {
-    layer = createAreaFeaturesLayer(areas.map(areaToFeature))
-  })
 
   onDestroy(() => {
     if (map && layer) {

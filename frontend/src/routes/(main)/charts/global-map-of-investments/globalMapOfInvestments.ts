@@ -18,10 +18,8 @@ import {
   zoomIdentity,
 } from "d3"
 import type { BaseType, D3ZoomEvent, GeoPath } from "d3"
-import type { Feature, Geometry } from "geojson"
-import { feature } from "topojson-client"
-import type { GeometryCollection, Topology } from "topojson-specification"
-import worldTopology from "world-atlas/countries-110m.json"
+
+import { createCountryFeatureList, type CountryFeature } from "$components/Map/world"
 
 export interface Investments {
   incoming: Country2CountryInvestmentsMap
@@ -44,10 +42,6 @@ export interface CountryInvestmentsMap {
 
 export interface GlobalMap {
   selectCountry: (id: number | undefined) => void
-}
-
-interface Country extends Feature<Geometry, { name: string }> {
-  id: number
 }
 
 export const createGlobalMapOfInvestments = (
@@ -83,11 +77,6 @@ export const createGlobalMapOfInvestments = (
 
   const gCountries = gZoom.append("g").attr("class", "countries")
 
-  const countries = feature(
-    worldTopology as unknown as Topology,
-    worldTopology.objects.countries as GeometryCollection<{ name: string }>,
-  ).features.map(country => ({ ...country, id: +(country.id as string) })) as Country[]
-
   const resetZoom = () =>
     gZoom
       .transition()
@@ -97,15 +86,15 @@ export const createGlobalMapOfInvestments = (
   const path: GeoPath = geoPath().projection(geoNaturalEarth1())
 
   gCountries
-    .selectAll<BaseType, Country>("*")
-    .data(countries)
+    .selectAll<BaseType, CountryFeature>("*")
+    .data(createCountryFeatureList())
     .enter()
     .append("path")
     .attr("class", "country")
     .attr("d", path)
 
   gCountries
-    .selectAll<BaseType, Country>("*")
+    .selectAll<BaseType, CountryFeature>("*")
     .on("mouseover", async (event: MouseEvent, { id }) => {
       const eventTarget = event.target as HTMLElement
       select(eventTarget).classed("hover", true)
@@ -127,7 +116,7 @@ export const createGlobalMapOfInvestments = (
 
   const clearSelection = (): void => {
     gCountries
-      .selectAll<BaseType, Country>(".country")
+      .selectAll<BaseType, CountryFeature>(".country")
       .classed("selected-country", false)
       .classed("investor-country", false)
       .classed("target-country", false)
@@ -147,12 +136,13 @@ export const createGlobalMapOfInvestments = (
     const investorCountries = Object.keys(investments["incoming"][countryId] ?? {})
     const targetCountries = Object.keys(investments["outgoing"][countryId] ?? {})
 
-    const isSelected = ({ id }: Country) => id === countryId
-    const isInvestor = ({ id }: Country) => investorCountries.includes(id.toString())
-    const isTarget = ({ id }: Country) => targetCountries.includes(id.toString())
+    const isSelected = ({ id }: CountryFeature) => id === countryId
+    const isInvestor = ({ id }: CountryFeature) =>
+      investorCountries.includes(id.toString())
+    const isTarget = ({ id }: CountryFeature) => targetCountries.includes(id.toString())
 
     gCountries
-      .selectAll<BaseType, Country>(".country")
+      .selectAll<BaseType, CountryFeature>(".country")
       .classed("selected-country", isSelected)
       .classed("investor-country", isInvestor)
       .classed("target-country", isTarget)

@@ -93,14 +93,19 @@ export const fitBounds = (map: Map) => {
   }
 }
 
-export const createAreaFeaturesLayer = (features: AreaFeature[]): AreaFeatureLayer =>
+export const createAreaFeaturesLayer = (
+  features: AreaFeature[],
+  isSelectedEntry = true,
+): AreaFeatureLayer =>
   geoJson(features, {
     style: feature => ({
       weight: 1.5,
       color: "black",
       dashArray: "5, 5",
       dashOffset: "0",
-      fillColor: AREA_TYPE_COLOR_MAP[feature!.properties.type],
+      fillColor: isSelectedEntry
+        ? AREA_TYPE_COLOR_MAP[feature!.properties.type]
+        : "grey",
       fillOpacity: 0.4,
     }),
     onEachFeature: (feature, layer: Layer) => {
