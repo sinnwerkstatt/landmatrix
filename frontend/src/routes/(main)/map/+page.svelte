@@ -10,7 +10,6 @@
   import { page } from "$app/stores"
 
   import { filters } from "$lib/filters"
-  import type { components } from "$lib/openAPI"
   import { dealsNG } from "$lib/stores"
   import { isMobile, loading } from "$lib/stores/basics"
   import { type DealHull, type Location2 } from "$lib/types/data"
@@ -31,8 +30,7 @@
     styleCircle,
   } from "$components/Map/mapHelper"
   import MapMarkerPopup from "$components/Map/MapMarkerPopup.svelte"
-
-  type Country = components["schemas"]["Country"]
+  import { createCoordinatesMap } from "$components/Map/utils"
 
   interface MyMarker extends Marker {
     deal: DealHull
@@ -66,15 +64,7 @@
   let markersFeatureGroup: FeatureGroup
   let skipMapRefresh = false
 
-  function generateCountryCoords(countries: Country[]): {
-    [key: number]: [number, number]
-  } {
-    let ret: { [p: number]: [number, number] } = {}
-    countries.forEach(c => (ret[c.id as number] = [c.point_lat, c.point_lon]))
-    return ret
-  }
-
-  $: country_coords = generateCountryCoords($page.data.countries as Country[])
+  $: countryCoords = createCoordinatesMap($page.data.countries)
 
   function bigMapIsReady(evt: CustomEvent<Map>) {
     if (!browser) return
@@ -120,17 +110,14 @@
           )
         }),
       )($dealsNG)
-    } else if (
-      current_zoom < ZOOM_LEVEL.DEAL_CLUSTERS &&
-      Object.keys(country_coords).length
-    ) {
+    } else if (current_zoom < ZOOM_LEVEL.DEAL_CLUSTERS) {
       // cluster by country
       R.pipe(
         R.groupBy(R.pipe(R.prop("country_id"), R.toString)),
         R.forEachObjIndexed((deals, countryId) => {
           if (countryId === "undefined" || !deals) return
 
-          const circle = marker(country_coords[+countryId], {
+          const circle = marker(countryCoords[+countryId], {
             icon: divIcon({ className: LMCircleClass }),
           })
           circle.on("click", () => ($filters.country_id = +countryId))
@@ -225,7 +212,7 @@
     let coords: [number, number] = [0, 0]
     let zoom = ZOOM_LEVEL.REGION_CLUSTERS
     if (country_id) {
-      coords = country_coords[country_id]
+      coords = countryCoords[country_id]
       zoom = ZOOM_LEVEL.DEAL_CLUSTERS
     } else if (region_id) {
       coords = REGION_COORDINATES[region_id]
