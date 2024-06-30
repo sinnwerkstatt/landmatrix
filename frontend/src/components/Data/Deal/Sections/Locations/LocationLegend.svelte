@@ -3,7 +3,8 @@
 
   import { createLabels, fieldChoices } from "$lib/stores"
   import type { AreaType } from "$lib/types/data"
-  import { AREA_TYPE_COLOR_MAP, AREA_TYPES } from "$lib/utils/location"
+
+  import { AREA_TYPE_COLOR_MAP, AREA_TYPES } from "./locations"
 
   $: areaTypeLabels = createLabels<AreaType>($fieldChoices.area.type)
 </script>

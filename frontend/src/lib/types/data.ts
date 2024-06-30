@@ -221,7 +221,7 @@ export interface PointFeatureProps {
 export type PointFeature = Feature<Point, PointFeatureProps>
 
 export interface AreaFeatureProps {
-  id: number
+  id: string // nanoId
   type: AreaType
   date: string
   current: boolean

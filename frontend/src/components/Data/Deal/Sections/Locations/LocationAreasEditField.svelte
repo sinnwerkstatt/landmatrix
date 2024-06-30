@@ -10,12 +10,6 @@
   import { createLabels, fieldChoices } from "$lib/stores"
   import type { Area, AreaFeature, AreaFeatureLayer, AreaType } from "$lib/types/data"
   import { validate } from "$lib/utils/geojsonValidation"
-  import {
-    AREA_TYPES,
-    areaToFeature,
-    createAreaFeaturesLayer,
-    fitBounds,
-  } from "$lib/utils/location"
 
   import Label2 from "$components/Fields/Display2/Label2.svelte"
   import AddButton from "$components/Fields/Edit2/JSONFieldComponents/AddButton.svelte"
@@ -29,6 +23,13 @@
   import EyeSlashIcon from "$components/icons/EyeSlashIcon.svelte"
   import TrashIcon from "$components/icons/TrashIcon.svelte"
   import Overlay from "$components/Overlay.svelte"
+
+  import {
+    AREA_TYPES,
+    areaToFeature,
+    createAreaFeaturesLayer,
+    fitBounds,
+  } from "./locations"
 
   export let map: Map | undefined
   export let areas: Area[]

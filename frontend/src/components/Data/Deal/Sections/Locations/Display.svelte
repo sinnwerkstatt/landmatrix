@@ -1,14 +1,7 @@
 <script lang="ts">
   import type { Point } from "geojson"
-  import {
-    Control,
-    geoJson,
-    icon,
-    marker,
-    type GeoJSON,
-    type Layer,
-    type Map,
-  } from "leaflet?client"
+  import type { GeoJSON, Layer, Map, Marker } from "leaflet?client"
+  import { Control, geoJson } from "leaflet?client"
   import { onDestroy, onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
@@ -21,7 +14,6 @@
     PointFeatureProps,
   } from "$lib/types/data"
   import { createComponentAsDiv } from "$lib/utils/domHelpers"
-  import { createPointFeatures, fitBounds } from "$lib/utils/location"
 
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import SubmodelDisplayField from "$components/Fields/SubmodelDisplayField.svelte"
@@ -29,77 +21,94 @@
 
   import LocationAreasField from "./LocationAreasField.svelte"
   import LocationLegend from "./LocationLegend.svelte"
+  import { createPointFeatures, fitBounds } from "./locations"
   import LocationTooltip from "./LocationTooltip.svelte"
 
   export let deal: DealHull
 
   let map: Map | undefined
-  let locationsPointLayer: GeoJSON<PointFeatureProps, Point>
+  let markerFeatureGroup: GeoJSON<PointFeatureProps, Point>
 
-  let selectedEntryId: string | undefined
+  let selectedLocationId: string | undefined
+  let hoverLocationId: string | undefined
+
+  $: if (map) {
+    map.removeLayer(markerFeatureGroup)
+    markerFeatureGroup = createMarkerLayer(deal.selected_version.locations)
+    map.addLayer(markerFeatureGroup)
+
+    fitBounds(map)
+  }
+
+  $: if (map) {
+    markerFeatureGroup.eachLayer(updateHoverState(hoverLocationId))
+  }
+
+  $: if (map) {
+    markerFeatureGroup.eachLayer(updateSelectState(selectedLocationId))
+  }
+
+  const updateHoverState = (hoverLocationId?: string) => (layer: Layer) => {
+    const marker = layer as Marker
+    const feature: PointFeature = marker.feature!
+
+    if (feature.properties.id === hoverLocationId) {
+      marker.openPopup()
+    } else {
+      marker.closePopup()
+    }
+  }
+
+  const updateSelectState = (selectedLocationId?: string) => (layer: Layer) => {
+    const marker = layer as Marker
+    const feature: PointFeature = marker.feature!
+    const isSelectedLocation = feature.properties.id === selectedLocationId
+
+    marker.removeEventListener("mousedown")
+    marker.on("mousedown", () =>
+      isSelectedLocation ? goto("") : goto(`#${feature.properties.id}`),
+    )
+
+    // FIXME: use marker.setIcon(Icon) with newly styled Icon
+    if (!selectedLocationId || isSelectedLocation) {
+      marker._icon.classList.remove("leaflet-hidden")
+    } else {
+      marker._icon.classList.add("leaflet-hidden")
+    }
+  }
 
   const onMapReady = (e: CustomEvent<Map>) => {
-    map = e.detail
+    const _map = e.detail
 
     const legend = new Control({ position: "bottomleft" })
     legend.onAdd = () => createComponentAsDiv(LocationLegend)
-    map.addControl(legend)
+    _map.addControl(legend)
 
-    map.addLayer(locationsPointLayer)
-
-    fitBounds(map)
+    // set at the end to avoid svelte reactivity issues
+    map = _map
   }
 
-  $: isAnyLocationSelected = (): boolean => selectedEntryId !== undefined
-
-  $: isSelectedLocation = (locationId: string): boolean =>
-    selectedEntryId === locationId
-
-  $: getLocationRedirect = (locationId: string): string => `#` + locationId
-
-  $: setCurrentLocation = (locationId: string): Promise<void> =>
-    goto(getLocationRedirect(locationId))
-
-  $: if (map && locationsPointLayer) {
-    map.removeLayer(locationsPointLayer)
-    locationsPointLayer = createLayer(deal.selected_version.locations)
-    map.addLayer(locationsPointLayer)
-
-    fitBounds(map)
-  }
-
-  $: createLayer = (locations: Location2[]) =>
-    geoJson(createPointFeatures(locations), {
+  const createMarkerLayer = (locations: readonly Location2[]) =>
+    geoJson([...createPointFeatures(locations)], {
       onEachFeature: (feature: PointFeature, layer: Layer) => {
         const tooltipElement = createComponentAsDiv(LocationTooltip, { feature })
-        layer.bindPopup(tooltipElement, { keepInView: true })
-        layer.on("click", () => setCurrentLocation(feature.properties.id))
-        layer.on("mouseover", () => layer.openPopup())
-        layer.on("mouseout", () => layer.closePopup())
+        layer.bindPopup(tooltipElement, {
+          keepInView: true,
+          autoPanPaddingTopLeft: [20, 20],
+          autoPanPaddingBottomRight: [20, 100],
+        })
+        layer.on("mouseover", () => (hoverLocationId = feature.properties.id))
+        layer.on("mouseout", () => (hoverLocationId = undefined))
       },
-      pointToLayer: (feature: PointFeature, latlng) =>
-        marker(latlng, {
-          icon: icon({
-            iconUrl: "/images/marker-icon.png",
-            shadowUrl: "/images/marker-shadow.png",
-            shadowSize: [0, 0],
-            iconAnchor: [12.5, 41],
-            popupAnchor: [0, -35],
-            className:
-              isAnyLocationSelected() && !isSelectedLocation(feature.properties.id)
-                ? "leaflet-hidden"
-                : "",
-          }),
-        }),
     })
 
   onMount(() => {
-    locationsPointLayer = createLayer(deal.selected_version.locations)
+    markerFeatureGroup = createMarkerLayer(deal.selected_version.locations)
   })
 
   onDestroy(() => {
-    if (map && locationsPointLayer) {
-      map.removeLayer(locationsPointLayer)
+    if (map) {
+      map.removeLayer(markerFeatureGroup)
     }
   })
 </script>
@@ -108,7 +117,8 @@
   <div class="w-full overflow-y-auto p-2 lg:h-full lg:w-2/5">
     <SubmodelDisplayField
       entries={deal.selected_version.locations}
-      bind:selectedEntryId
+      bind:selectedEntryId={selectedLocationId}
+      bind:hoverEntryId={hoverLocationId}
       label={$_("Location")}
       let:entry={location}
     >
@@ -135,7 +145,7 @@
         label={$_("Areas")}
         areas={location.areas}
         fieldname="location.areas"
-        isSelectedEntry={isSelectedLocation(location.nid) || !isAnyLocationSelected()}
+        isSelectedEntry={!selectedLocationId || location.nid === selectedLocationId}
       />
     </SubmodelDisplayField>
   </div>

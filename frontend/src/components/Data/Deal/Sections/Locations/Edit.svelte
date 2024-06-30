@@ -17,7 +17,6 @@
     type PointFeatureProps,
   } from "$lib/types/data"
   import { createComponentAsDiv } from "$lib/utils/domHelpers"
-  import { createPointFeatures, fitBounds } from "$lib/utils/location"
 
   import SubmodelEditField from "$components/Fields/SubmodelEditField.svelte"
   import LocationDot from "$components/icons/LocationDot.svelte"
@@ -25,7 +24,12 @@
 
   import Entry from "./Entry.svelte"
   import LocationLegend from "./LocationLegend.svelte"
-  import { createLocation, isEmptyLocation } from "./locations"
+  import {
+    createLocation,
+    createPointFeatures,
+    fitBounds,
+    isEmptyLocation,
+  } from "./locations"
   import LocationTooltip from "./LocationTooltip.svelte"
 
   export let deal: Mutable<DealHull>
@@ -112,7 +116,11 @@
       onEachFeature: (feature: PointFeature, layer: Layer) => {
         const tooltipElement = createComponentAsDiv(LocationTooltip, { feature })
 
-        layer.bindPopup(tooltipElement, { keepInView: true })
+        layer.bindPopup(tooltipElement, {
+          keepInView: true,
+          autoPanPaddingTopLeft: [20, 20],
+          autoPanPaddingBottomRight: [20, 100],
+        })
         layer.on("click", () => setCurrentLocation(feature.properties.id))
         layer.on("mouseover", () => layer.openPopup())
         layer.on("mouseout", () => layer.closePopup())
