@@ -125,7 +125,7 @@ module.exports = {
         },
         fadeToGray: {
           "0%": { backgroundColor: theme("colors.gray.900") },
-          "10%": {backgroundColor: theme("colors.gray.600")},
+          "10%": { backgroundColor: theme("colors.gray.600") },
           "100%": { backgroundColor: theme("colors.gray.700") },
         },
       }),
