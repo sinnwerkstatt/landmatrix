@@ -21,6 +21,8 @@ urlpatterns = [
     # APIs
     path("api/wagtail/v2/", api_router.urls),
     path("api/", include("apps.api.urls")),
+    # Accountability API
+    path("api/accountability/", include("apps.accountability.urls")),
 ]
 
 if settings.DEBUG:
