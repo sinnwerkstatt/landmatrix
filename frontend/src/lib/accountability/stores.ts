@@ -24,3 +24,9 @@ export const documentationBookmark = writable(undefined)
 // =======================================================================================
 // Table selection from Deals/Scoring
 export const tableSelection = writable({})
+
+// =======================================================================================
+// Scoring drawer
+export const currentDeal = writable<number>()
+export const currentVariable = writable<number>()
+export const openDrawer = writable<boolean>(false)

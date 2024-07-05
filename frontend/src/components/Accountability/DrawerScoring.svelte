@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { currentDeal, currentVariable, openDrawer } from "$lib/accountability/stores"
+
     import Drawer from "./atomic/Drawer.svelte"
     import DrawerScoringItem from "./atomic/DrawerScoringItem.svelte"
     import Badge from "./atomic/Badge.svelte"
@@ -7,8 +9,7 @@
     import IconXMark from "./icons/IconXMark.svelte"
     import Section from "./atomic/Section.svelte"
     import DrawerScoringInfo from "./atomic/DrawerScoringInfo.svelte"
-
-    export let open = true
+    import Button from "./Button.svelte"
 
     let score = null
     let status = "no_score"
@@ -115,20 +116,19 @@
         }
     }
 
-    $: console.log(status)
 </script>
 
-<Drawer bind:open>
+<Drawer bind:open={$openDrawer}>
     <div class="h-screen flex flex-col divide-y divide-a-gray-200">
         <!-- Heading -->
         <div class="p-6">
             <div class="flex justify-between">
                 <div class="flex items-center gap-2">
                     <span class="block w-3 h-3 rounded-full indicator"></span>
-                    <h1 class="text-a-xl font-semibold">Variable X - Description</h1>
-                    <Badge variant="filled" label="1234" />
+                    <h1 class="text-a-xl font-semibold">Variable {$currentVariable} - Description</h1>
+                    <Badge variant="filled" label={$currentDeal} href="https://landmatrix.org/deal/{$currentDeal}/" />
                 </div>
-                <button class="text-a-gray-400" on:click={() => open = false}><IconXMark size=24 /></button>
+                <button class="text-a-gray-400" on:click={() => openDrawer.set(false)}><IconXMark size=24 /></button>
             </div>
             <div class="mt-2 flex gap-4">
                 <Input type="select" choices={selectableStatuses} style="white" extraClass="!w-60"
@@ -177,7 +177,13 @@
         </div>
 
         <!-- Footer -->
-        <div class="p-6 grow-0">Footer</div>
+        <div class="p-6 grow-0 flex justify-between">
+            <Button label="Previous" type="outline" style="neutral" />
+            <div class="flex gap-4">
+                <Button label="Next" type="outline" style="neutral" />
+                <Button label="Save" style="neutral" disabled />
+            </div>
+        </div>
     </div>
 </Drawer>
 

@@ -14,8 +14,7 @@
                 {:else if label == "Investor" && id}
                     <span class="flex gap-4">
                         {name} 
-                        <Badge label={id} icon="link" iconRight={true} 
-                               color="blue" variant="filled" 
+                        <Badge label={id} color="blue" variant="filled" 
                                href="https://landmatrix.org/investor/{id}/" />
                     </span>
                 {:else if value}

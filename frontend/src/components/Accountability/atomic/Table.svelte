@@ -3,6 +3,7 @@
 
     export let data:[] = []
     export let pageContent = [] // Data that should be displayed in this specific page (pagination)
+    export let filters = true
 
     let container:HTMLElement
 
@@ -20,16 +21,18 @@
 <div class="h-full flex flex-col" >
 
     <!-- Filters -->
-    <div class="p-4 bg-white border-x border-t rounded-t-lg">
-        <slot name="filters" />
-    </div>
+    {#if filters}
+        <div class="p-4 bg-white border-x border-t rounded-t-lg">
+            <slot name="filters" />
+        </div>
+    {/if}
 
     <!-- Table container for height calculation -->
     <div class="grow" bind:this={container}>
         <div class="flex flex-col border-x overflow-auto" style="height: {tableHeight}px;">
     
             <!-- Header -->
-            <div>
+            <div class="{filters ? '' : 'rounded-t-lg border-t overflox-clip'}">
                 <slot name="header" />
                 <!-- <svelte:fragment slot="header"></svelte:fragment> ADD TABLE ROW IN THIS -->
             </div>

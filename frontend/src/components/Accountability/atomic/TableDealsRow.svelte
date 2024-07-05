@@ -1,7 +1,9 @@
 <script lang="ts">
     import { onMount } from "svelte"
+    import { page } from "$app/stores"
     import { slide } from "svelte/transition"
-    import { tableSelection } from "$lib/accountability/stores"
+    import { tableSelection, currentDeal, currentVariable, openDrawer } from "$lib/accountability/stores"
+    import { initTableSelection } from "$lib/accountability/helpers"
 
     import TableRow from "./TableRow.svelte"
     import TableCell from "./TableCell.svelte"
@@ -40,11 +42,7 @@
     }
 
     onMount(() => {
-        const dealSelection = $tableSelection[deal.id]
-        if (!dealSelection) $tableSelection[deal.id] = { deal: deal.id, variables: {} }
-        deal.variables.forEach(v => {
-            if (!$tableSelection[deal.id].variables[v.id]) $tableSelection[deal.id].variables[v.id] = false
-        })
+        initTableSelection(deal)
         updateDealCheckbox()
     })
 
@@ -84,6 +82,14 @@
         console.log("Remove assignee")
     }
 
+    // ==================================================================================================
+    // Opening a deal page or a scoring drawer
+    function openVariable(id) {
+        currentDeal.set(deal.id)
+        currentVariable.set(id)
+        openDrawer.set(true) 
+    }
+
 
 </script>
 
@@ -94,7 +100,7 @@
         <TableCell>
             <div class="flex items-center gap-2">
                 <Checkbox paddingX=0 paddingY=0 value={deal.id} bind:partiallyChecked={dealPartiallyChecked}
-                          bind:checked={dealChecked} on:changed={checkDeal} />
+                        bind:checked={dealChecked} on:changed={checkDeal} />
                 <button class="text-a-gray-400 { !open ? 'rotate-180' : '' } " 
                         on:click={() => open = !open}>
                     <IconChevron size="16" />
@@ -108,7 +114,7 @@
             <!-- Deal ID -->
             {#if column.value == "id"}
                 <TableCell>
-                    <a class="link" href="">Deal #{val}</a>
+                    <a class="link" href="{$page.url.href}{deal.id}/">Deal #{val}</a>
                     <!-- TODO: New label for new version -->
                 </TableCell>
 
@@ -153,7 +159,12 @@
                         <span class="w-fit"><Checkbox paddingX=0 paddingY=0 value={variable.id} bind:checked={$tableSelection[deal.id].variables[variable.id]} /></span>
                     </TableCell>
 
-                    <TableCell style="nested" >Variable {variable.id}</TableCell>
+                    <TableCell style="nested" >
+                        <button class="text-left w-fit underline underline-offset-4" 
+                                on:click={() => openVariable(variable.id)} >
+                            Variable {variable.id}
+                        </button>
+                    </TableCell>
                     <TableCell style="nested"></TableCell>
 
                     <TableCell style="nested">
@@ -173,5 +184,6 @@
             
         </div>
     {/if}
+
 
 </div>

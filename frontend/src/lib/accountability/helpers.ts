@@ -1,3 +1,7 @@
+import { get } from "svelte/store"
+
+import { tableSelection } from "./stores"
+
 export function arrayIncludesAnyOf(array, values) {
   if (array instanceof Array && values instanceof Array) {
     return values.some(v => array.includes(v))
@@ -45,4 +49,18 @@ export function usersToUserChoices(users: {
     initials,
   }))
   return result
+}
+
+export function initTableSelection(deal) {
+  const totalSelection = get(tableSelection)
+  let dealSelection = totalSelection[deal.id]
+  if (!dealSelection) totalSelection[deal.id] = { deal: deal.id, variables: {} }
+  deal.variables.forEach(v => {
+    if (!totalSelection[deal.id].variables[v.id])
+      totalSelection[deal.id].variables[v.id] = false
+  })
+
+  // console.log(totalSelection)
+  tableSelection.set(totalSelection)
+  console.log(get(tableSelection))
 }

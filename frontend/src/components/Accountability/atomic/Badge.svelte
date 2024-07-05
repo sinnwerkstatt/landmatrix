@@ -15,7 +15,7 @@
     export let icon: ""|"check"|"eye"|"bookmark" = ""
     export let iconRight = false
     export let color: "primary"|"warning"|"error"|"success"|"neutral"|"blue" = "primary"
-    export let variant: "filled"|"light" = "light"
+    export let variant: "filled"|"light"|"filled-light" = "light"
 
     $: iconSize = size == "base" ? "24" : "16";
 
