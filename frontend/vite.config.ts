@@ -1,9 +1,14 @@
-import { sveltekit } from "@sveltejs/kit/vite"
+import { sentrySvelteKit } from "@sentry/sveltekit"
 import { defineConfig } from "vite"
 import { isoImport } from "vite-plugin-iso-import"
 
 export default defineConfig({
-  plugins: [sveltekit(), isoImport()],
+  plugins: [
+    sentrySvelteKit({
+      autoUploadSourceMaps: false,
+    }),
+    isoImport(),
+  ],
   envDir: "..",
   test: {
     include: ["src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],

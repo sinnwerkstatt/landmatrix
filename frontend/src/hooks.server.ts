@@ -1,6 +1,13 @@
+import * as Sentry from "@sentry/sveltekit"
+import { handleErrorWithSentry } from "@sentry/sveltekit"
+import { sentryHandle } from "@sentry/sveltekit"
 import type { Handle } from "@sveltejs/kit"
+import { sequence } from "@sveltejs/kit/hooks"
+import { env } from "$env/dynamic/public"
 
 import { supportedLanguages } from "$lib/i18n/i18n"
+
+Sentry.init({ dsn: env.PUBLIC_SENTRY_DSN, tracesSampleRate: 1.0 })
 
 const langRE = /django_language=(.*?)($|;| )/
 
@@ -22,7 +29,7 @@ function checkBrowserLanguages(request: Request): string {
   return "en"
 }
 
-export const handle: Handle = async ({ event, resolve }) => {
+export const myHandler: Handle = async ({ event, resolve }) => {
   let lang = checkBrowserLanguages(event.request)
 
   const cookies = event.request.headers.get("cookie") ?? undefined
@@ -41,3 +48,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     },
   })
 }
+
+export const handle = sequence(sentryHandle(), myHandler)
+
+export const handleError = handleErrorWithSentry()

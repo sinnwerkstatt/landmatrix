@@ -1,6 +1,5 @@
 <script lang="ts">
-  import * as Sentry from "@sentry/svelte"
-  import { BrowserTracing } from "@sentry/tracing"
+  import * as Sentry from "@sentry/sveltekit"
   import { SvelteToast } from "@zerodevx/svelte-toast"
   import { env } from "$env/dynamic/public"
 
@@ -18,14 +17,6 @@
   export let data
 
   if (env.PUBLIC_SENTRY_DSN) {
-    Sentry.init({
-      dsn: env.PUBLIC_SENTRY_DSN,
-      environment: "svelte frontend",
-      integrations: [new BrowserTracing()],
-      tracesSampleRate: 1.0,
-      // initialScope: { tags: { mode: "svelte frontend" } },
-    })
-
     if (data.user) {
       const scope = Sentry.getCurrentScope()
       scope.setUser({ id: (data.user as User).username })
