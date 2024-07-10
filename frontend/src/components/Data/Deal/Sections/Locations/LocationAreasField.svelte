@@ -21,6 +21,7 @@
     AREA_TYPE_COLOR_MAP,
     areaToFeature,
     createAreaFeaturesLayer,
+    fitBounds,
   } from "./locations"
 
   export let map: Map | undefined
@@ -58,6 +59,8 @@
       l.addEventListener("mouseover", () => (hoverMap[feature.id!] = true))
       l.addEventListener("mouseout", () => (hoverMap[feature.id!] = false))
     })
+
+    fitBounds(map)
   }
 
   $: if (map) {
