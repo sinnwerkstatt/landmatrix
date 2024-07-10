@@ -6,6 +6,7 @@
   import { _ } from "svelte-i18n"
 
   import { goto } from "$app/navigation"
+  import { page } from "$app/stores"
 
   import type {
     DealHull,
@@ -18,7 +19,7 @@
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import SubmodelDisplayField from "$components/Fields/SubmodelDisplayField.svelte"
   import BigMap from "$components/Map/BigMap.svelte"
-  import { createCountryFeatureMap } from "$components/Map/world"
+  import { createCoordinatesMap } from "$components/Map/utils"
 
   import LocationAreasField from "./LocationAreasField.svelte"
   import LocationLegend from "./LocationLegend.svelte"
@@ -33,16 +34,16 @@
   let selectedLocationId: string | undefined
   let hoverLocationId: string | undefined
 
+  $: countryCoords = createCoordinatesMap($page.data.countries)
+
   $: if (map) {
     map.removeLayer(markerFeatureGroup)
     markerFeatureGroup = createMarkerLayer(deal.selected_version.locations)
     map.addLayer(markerFeatureGroup)
 
-    const countryFeature = createCountryFeatureMap()[deal.country_id!]
-    if (countryFeature) {
-      const countryLayer = geoJson(countryFeature)
-      map.addLayer(countryLayer)
-      map.fitBounds(countryLayer.getBounds())
+    if (!deal.selected_version.locations.length) {
+      const coords = countryCoords[deal.country_id!]
+      map.flyTo(coords, 5)
     } else {
       fitBounds(map)
     }
@@ -157,7 +158,7 @@
       />
     </SubmodelDisplayField>
   </div>
-  <div class="h-[600px] w-full p-2 lg:w-3/5">
+  <div class="sticky top-0 h-[600px] w-full p-2 lg:w-3/5">
     <BigMap
       containerClass="min-h-full h-full"
       on:ready={onMapReady}

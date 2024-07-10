@@ -21,7 +21,7 @@
   import SubmodelEditField from "$components/Fields/SubmodelEditField.svelte"
   import LocationDot from "$components/icons/LocationDot.svelte"
   import BigMap from "$components/Map/BigMap.svelte"
-  import { createCountryFeatureMap } from "$components/Map/world"
+  import { createCoordinatesMap } from "$components/Map/utils"
 
   import Entry from "./Entry.svelte"
   import LocationLegend from "./LocationLegend.svelte"
@@ -48,6 +48,8 @@
   $: label = $_("Location")
   $: locations = deal.selected_version.locations
 
+  $: countryCoords = createCoordinatesMap($page.data.countries)
+
   const onMapReady = (e: CustomEvent<Map>) => {
     map = e.detail
 
@@ -57,11 +59,9 @@
 
     map.addLayer(locationsPointLayer)
 
-    const countryFeature = createCountryFeatureMap()[deal.country_id!]
-    if (countryFeature) {
-      const countryLayer = geoJson(countryFeature)
-      map.addLayer(countryLayer)
-      map.fitBounds(countryLayer.getBounds())
+    if (!locations.length) {
+      const coords = countryCoords[deal.country_id!]
+      map.flyTo(coords, 5)
     } else {
       fitBounds(map)
     }
@@ -72,7 +72,7 @@
     locationsPointLayer = createLayer(locations)
     map.addLayer(locationsPointLayer)
 
-    fitBounds(map)
+    // fitBounds(map)
   }
 
   const updateActiveLocationMarker = (event: LeafletMouseEvent) =>
@@ -166,7 +166,7 @@
 </script>
 
 <form class="grid h-full gap-2 lg:grid-cols-5" id="locations">
-  <div class="lg:order-last lg:col-span-2">
+  <div class="lg:order-last lg:col-span-3">
     <BigMap
       on:ready={onMapReady}
       options={{ center: [0, 0] }}
@@ -193,7 +193,7 @@
     </BigMap>
   </div>
 
-  <div class="h-full lg:col-span-3 lg:overflow-y-auto">
+  <div class="h-full lg:col-span-2 lg:overflow-y-auto">
     <SubmodelEditField
       bind:entries={deal.selected_version.locations}
       bind:selectedEntryId

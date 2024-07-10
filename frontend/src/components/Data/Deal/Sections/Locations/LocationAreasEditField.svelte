@@ -29,7 +29,7 @@
     AREA_TYPES,
     areaToFeature,
     createAreaFeaturesLayer,
-    fitBounds,
+    // fitBounds,
   } from "./locations"
 
   export let map: Map | undefined
@@ -62,7 +62,7 @@
     layer = createAreaFeaturesLayer(features, LocationAreaTooltip, isSelectedEntry)
     map.addLayer(layer)
 
-    fitBounds(map)
+    // fitBounds(map)
   }
 
   onMount(() => {
@@ -73,7 +73,7 @@
     if (map) {
       map.removeLayer(layer)
 
-      fitBounds(map)
+      // fitBounds(map)
     }
   })
 
