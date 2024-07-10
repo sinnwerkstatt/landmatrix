@@ -55,7 +55,12 @@
   let features: AreaFeature[]
   let layer: AreaFeatureLayer
 
-  $: features = areas.map(areaToFeature)
+  let hiddenMap: { [id: string]: boolean } = {}
+
+  $: features = areas.map(areaToFeature).map(f => ({
+    ...f,
+    properties: { ...f.properties, visible: !hiddenMap[f.id!] },
+  }))
 
   $: if (map && layer) {
     map.removeLayer(layer)
@@ -114,21 +119,18 @@
     }
   }
 
-  const updateCurrent = (areaType: AreaType, index: number) => {
+  const updateCurrent = (areaType: AreaType, nid: string) => {
     areas = [
       ...areas.filter(a => a.type !== areaType),
       ...areas
         .filter(a => a.type === areaType)
-        .map((a, i) => ({ ...a, current: index === i })),
+        .map(a => ({ ...a, current: a.nid === nid })),
     ]
   }
 
-  const deleteArea = (areaType: AreaType, index: number) => {
+  const deleteArea = (nid: string) => {
     if (confirm($_("Delete area?"))) {
-      areas = [
-        ...areas.filter(a => a.type !== areaType),
-        ...areas.filter((a, i) => a.type === areaType && i !== index),
-      ]
+      areas = areas.filter(a => a.nid !== nid)
     }
   }
 
@@ -151,18 +153,8 @@
     },
   })
 
-  $: toggleVisibility = (id: number) => {
-    features = features.map(f =>
-      f.properties.id === id
-        ? {
-            ...f,
-            properties: {
-              ...f.properties,
-              visible: !f.properties.visible,
-            },
-          }
-        : f,
-    )
+  $: toggleVisibility = (nid: string) => {
+    hiddenMap[nid] = !hiddenMap[nid]
   }
 </script>
 
@@ -173,31 +165,31 @@
     <div>
       <Label2 value={areaTypeLabels[areaType]} class="mb-4 w-full font-semibold" />
       <div class="grid gap-2 lg:grid-cols-2">
-        {#each areasOfType as val, i}
-          {@const feature = features.find(f => f.properties.id === val.id)}
+        {#each areasOfType as val, index}
+          {@const isVisible = !hiddenMap[val.nid]}
 
           <div
             class:border-violet-400={val.current}
             class={cardClass}
-            in:receive={{ key: val.id }}
-            out:send={{ key: val.id }}
+            in:receive={{ key: val.nid }}
+            out:send={{ key: val.nid }}
           >
-            <Date bind:value={val.date} name="area_{val.id}" />
+            <Date bind:value={val.date} name="area_{val.nid}_date" />
             <CurrentRadio
               bind:group={currentGroups[areaType]}
               name="{areaType}_current"
               required={areasOfType.length > 0 && currentGroups[areaType] < 0}
               disabled={!val.area}
-              value={i}
-              on:change={() => updateCurrent(areaType, i)}
+              value={index}
+              on:change={() => updateCurrent(areaType, val.nid)}
             />
 
-            <label class={labelClass} for="area_{val.id}_type">
+            <label class={labelClass} for="area_{val.nid}_type">
               {$_("Type")}
               <select
                 bind:value={val.type}
                 on:change
-                name="area_{val.id}_type"
+                name="area_{val.nid}_type"
                 class="inpt w-auto"
               >
                 {#each AREA_TYPES as areaType}
@@ -209,10 +201,10 @@
             <div class="flex justify-between">
               <button
                 type="button"
-                title={feature?.properties.visible ? $_("Hide") : $_("Show")}
-                on:click={() => toggleVisibility(val.id)}
+                title={isVisible ? $_("Hide") : $_("Show")}
+                on:click={() => toggleVisibility(val.nid)}
               >
-                {#if feature?.properties.visible}
+                {#if isVisible}
                   <EyeSlashIcon class="h-5 w-5" />
                 {:else}
                   <EyeIcon class="h-5 w-5" />
@@ -220,14 +212,10 @@
               </button>
               <button
                 type="button"
-                on:click={() => deleteArea(areaType, i)}
+                on:click={() => deleteArea(val.nid)}
                 title={$_("Remove entry")}
               >
-                <TrashIcon
-                  class="h-5 w-5 {!(areasOfType.length <= 1)
-                    ? 'text-red-600'
-                    : 'text-gray-200'}"
-                />
+                <TrashIcon class="h-5 w-5 text-red-600" />
               </button>
             </div>
           </div>
