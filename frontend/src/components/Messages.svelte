@@ -2,17 +2,13 @@
   import { _ } from "svelte-i18n"
 
   import { browser } from "$app/environment"
+  import { page } from "$app/stores"
+
+  import type { components } from "$lib/openAPI"
 
   import Overlay from "$components/Overlay.svelte"
 
-  interface Message {
-    id: number
-    title: string
-    text: string
-    level: "debug" | "info" | "success" | "warning" | "error"
-    is_active: boolean
-    allow_users_to_hide: boolean
-  }
+  type Message = components["schemas"]["Message"]
 
   async function getMessages(): Promise<Message[]> {
     const isSameSiteReferrer = document.referrer?.startsWith(
@@ -59,7 +55,9 @@
 </script>
 
 {#await getMessages() then msgs}
-  {#each msgs.filter(m => !m.allow_users_to_hide || !acknowledgedMessages.includes(m.id)) as msg}
+  {#each msgs
+    .filter(m => !m.allow_users_to_hide || !acknowledgedMessages.includes(m.id))
+    .filter(m => (m.logged_in_only ? !!$page.data.user : true)) as msg}
     <Overlay
       visible
       title={msg.title}

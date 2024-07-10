@@ -10,6 +10,7 @@ class MessageAdmin(admin.ModelAdmin):
         "text",
         "level",
         "allow_users_to_hide",
+        "logged_in_only",
         "is_active",
         "expires_at",
     )

@@ -21,6 +21,7 @@ class MessageAdminViewSet(OrderableMixin, ModelViewSet):
         "text",
         "level",
         "allow_users_to_hide",
+        "logged_in_only",
         "is_active",
         "expires_at",
     )
@@ -44,6 +45,7 @@ class MessageSerializer(serializers.ModelSerializer):
             "level",
             "is_active",
             "allow_users_to_hide",
+            "logged_in_only",
         ]
 
     @staticmethod

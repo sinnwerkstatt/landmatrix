@@ -1791,6 +1791,8 @@ export interface components {
        * @description Store check off in cookie (expires in 365 days) so that users can choose to not display the messagea again.
        */
       allow_users_to_hide?: boolean
+      /** Only display message to logged in users */
+      logged_in_only?: boolean
     }
     /**
      * MineralsEnum

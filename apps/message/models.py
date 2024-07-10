@@ -25,6 +25,10 @@ class Message(Orderable, models.Model):
         ),
         default=False,
     )
+    logged_in_only = models.BooleanField(
+        _("Only display message to logged in users"),
+        default=False,
+    )
     expires_at = models.DateField(
         _("Expiration date"),
         help_text=_("After this date the message will not be displayed anymore"),
