@@ -1,5 +1,4 @@
 <script lang="ts">
-  // TODO Marcus WIP
   import { tracker } from "@sinnwerkstatt/sveltekit-matomo"
   import { format, hierarchy, select, treemap, treemapSquarify } from "d3"
   import type { BaseType, HierarchyNode } from "d3"

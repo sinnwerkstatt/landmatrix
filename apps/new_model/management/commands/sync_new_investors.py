@@ -260,16 +260,19 @@ def do_workflows(investor_id):
         elif wfi.status_before == "REJECTED" or wfi.status_after == "REJECTED":
             dv.modified_at = wfi.timestamp
             dv.save()
-            ic("WFI OHO", wfi)
+            ic("WFI OHO 1", wfi)
             sys.exit(1)
         elif wfi.status_after == "TO_DELETE":
             dv.status = "DRAFT"
             dv.save()
-            ic("WFI OHO", wfi)
+            ic("WFI OHO 2", wfi)
             sys.exit(1)
         elif wfi.status_before == "TO_DELETE" and wfi.status_after != "TO_DELETE":
-            ic("WFI OHO", wfi)
+            ic("WFI OHO 3", wfi)
             sys.exit(1)
         else:
-            ic("WFI OHO", wfi)
+            if wfi.id == 31234:
+                continue
+
+            ic("WFI OHO 4", wfi)
             sys.exit(1)

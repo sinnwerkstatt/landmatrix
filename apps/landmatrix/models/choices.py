@@ -388,7 +388,7 @@ class ProduceGroupEnum(TextChoices):
 PRODUCE_GROUP_ITEMS = serialize_enum(ProduceGroupEnum)
 # PRODUCE_GROUP_CHOICES = ProduceGroupEnum.choices
 
-# FIXME: produce field not in use
+# TODO: @kurt produce field not in use
 CROPS_ITEMS: list[ValueLabelItem] = [
     {"value": "ACC", "label": _("Accacia"), "produce": "NON_FOOD"},
     {"value": "ALF", "label": _("Alfalfa"), "produce": "NON_FOOD"},

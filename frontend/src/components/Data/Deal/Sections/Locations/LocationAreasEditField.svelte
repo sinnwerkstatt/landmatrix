@@ -151,8 +151,6 @@
     },
   })
 
-  // TODO: Use index, because new features don't have an id yet
-  // OR: Add nanoid to areas
   $: toggleVisibility = (id: number) => {
     features = features.map(f =>
       f.properties.id === id
