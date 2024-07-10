@@ -98,6 +98,7 @@ export const createAreaFeaturesLayer = (
   isSelectedEntry = true,
 ): AreaFeatureLayer =>
   geoJson(features, {
+    filter: feature => feature.properties.visible,
     style: feature => ({
       weight: 1.5,
       color: "black",
