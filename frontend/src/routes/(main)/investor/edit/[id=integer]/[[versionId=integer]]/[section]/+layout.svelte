@@ -145,8 +145,8 @@
     await invalidate("investor:detail") // discard changes
     await goto(
       data.investorVersion
-        ? `/deal/${data.investorID}/${data.investorVersion}/${data.investorSection}/`
-        : `/deal/${data.investorID}/${data.investorSection}/`,
+        ? `/investor/${data.investorID}/${data.investorVersion}/${data.investorSection}/`
+        : `/investor/${data.investorID}/${data.investorSection}/`,
     )
   }
 
