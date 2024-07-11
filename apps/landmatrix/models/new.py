@@ -2,9 +2,6 @@ import json
 import re
 from enum import Enum
 
-from django_pydantic_field import SchemaField
-from nanoid import generate
-
 from django.conf import settings
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.geos import GEOSGeometry, MultiPolygon, Polygon
@@ -12,17 +9,18 @@ from django.contrib.gis.geos.prototypes.io import wkt_w
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
-from django.db.models import Case, Count, F, Func, Q, QuerySet, Value, When
-from django.db.models.functions import Concat, JSONObject
+from django.db.models import Count, F, Func, Q, QuerySet
+from django.db.models.functions import JSONObject
 from django.http import Http404
 from django.utils import timezone
 from django.utils.translation import gettext as _
+from django_pydantic_field import SchemaField
+from nanoid import generate
 from rest_framework.exceptions import ParseError, PermissionDenied
 from wagtail.models import Site
 
 from apps.accounts.models import User, UserRole
 from apps.landmatrix.models import choices, schema
-from apps.landmatrix.models.choices import NatureOfDealEnum
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.fields import (
