@@ -235,6 +235,8 @@ class DealVersionSerializer(serializers.ModelSerializer):
         # TODO Later right now we're handling contracts, locations and datasources here
         #  in the serializer. not very pretty. maybe drf-writable-nested
         #  would be an alternative
+        #  see: https://www.django-rest-framework.org/api-guide/relations/#writable-nested-serializers
+        #  and: https://stackoverflow.com/questions/62847000/write-an-explicit-update-method-for-serializer
 
         l_nids = set()
         for location in data.get("locations"):
@@ -425,6 +427,9 @@ class InvestorVersionSerializer(serializers.ModelSerializer):
         # TODO Later right now we're handling datasources here
         #  in the serializer. not very pretty. maybe drf-writable-nested
         #  would be an alternative
+        #  see: https://www.django-rest-framework.org/api-guide/relations/#writable-nested-serializers
+        #  and: https://stackoverflow.com/questions/62847000/write-an-explicit-update-method-for-serializer
+
         ds_nids = set()
         for datasource in data.get("datasources"):
             ds_nids.add(datasource["nid"])
