@@ -3,6 +3,7 @@ name = "landmatrix"
 version = "0.1.0"
 license = "AGPL-3.0+"
 authors = ["sinnwerkstatt Medienagentur GmbH <support@sinnwerkstatt.com>"]
+package-mode = false
 readme = "README.md"
 description = "Land Matrix"
 

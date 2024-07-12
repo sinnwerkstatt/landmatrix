@@ -2,6 +2,8 @@ from django.contrib.gis.geos import GEOSGeometry
 from django.db.models import F, Q, QuerySet
 from django.db.models.functions import JSONObject
 from django.utils.translation import gettext as _
+from django_pydantic_field.rest_framework import SchemaField
+from django_pydantic_field.v2.fields import PydanticSchemaField
 from rest_framework import serializers
 
 from apps.landmatrix.models import FieldDefinition
@@ -21,22 +23,18 @@ from apps.landmatrix.models.new import (
     Involvement,
     Location,
 )
-from apps.landmatrix.serializer_fields import (
-    ActorsSchemaField,
-    CarbonSequestrationSchemaField,
-    CropsSchemaField,
-    CurrentDateAreaChoicesAnimalsField,
-    CurrentDateAreaChoicesCropsField,
-    CurrentDateAreaChoicesIOIField,
-    CurrentDateAreaSchemaField,
-    CurrentDateChoiceImplementationStatusField,
-    CurrentDateChoiceNegotiationStatusField,
-    ElectricityGenerationSchemaField,
-    ExportsAnimalsField,
-    ExportsMineralResourcesField,
-    JobsSchemaField,
-    LeaseSchemaField,
-)
+
+
+class SpectacularSchemaField(SchemaField):
+    def __init__(self, exclude_unset=True, *args, **kwargs):
+        kwargs.pop("encoder", None)
+        kwargs.pop("decoder", None)
+        super().__init__(
+            schema=self._spectacular_annotation["field"],
+            # exclude_unset=exclude_unset,  # TODO lets think about this
+            *args,
+            **kwargs,
+        )
 
 
 class FieldDefinitionSerializer(serializers.ModelSerializer):
@@ -151,7 +149,25 @@ class ContractSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class DealVersionSerializer(serializers.ModelSerializer):
+class MyModelSerializer(serializers.ModelSerializer):
+
+    def build_standard_field(self, field_name, model_field):
+        standard_field = super().build_standard_field(field_name, model_field)
+        if isinstance(model_field, PydanticSchemaField):
+            standard_field = (
+                type(
+                    model_field.schema.__name__ + "Serializer",
+                    (SpectacularSchemaField,),
+                    {"_spectacular_annotation": {"field": model_field.schema}},
+                ),
+            ) + standard_field[1:]
+        return standard_field
+
+    class Meta:
+        abstract = True
+
+
+class DealVersionSerializer(MyModelSerializer):
     locations = LocationSerializer(many=True, read_only=True)
     contracts = ContractSerializer(many=True, read_only=True)
     datasources = DealDataSourceSerializer(many=True, read_only=True)
@@ -163,25 +179,6 @@ class DealVersionSerializer(serializers.ModelSerializer):
     sent_to_review_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
     sent_to_activation_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
     activated_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
-
-    contract_size = CurrentDateAreaSchemaField()
-    production_size = CurrentDateAreaSchemaField()
-    intention_of_investment = CurrentDateAreaChoicesIOIField()
-    negotiation_status = CurrentDateChoiceNegotiationStatusField()
-    implementation_status = CurrentDateChoiceImplementationStatusField()
-    on_the_lease = LeaseSchemaField()
-    off_the_lease = LeaseSchemaField()
-    total_jobs_current = JobsSchemaField()
-    foreign_jobs_current = JobsSchemaField()
-    domestic_jobs_current = JobsSchemaField()
-    involved_actors = ActorsSchemaField()
-    crops = CropsSchemaField()
-    animals = ExportsAnimalsField()
-    mineral_resources = ExportsMineralResourcesField()
-    contract_farming_crops = CurrentDateAreaChoicesCropsField()
-    contract_farming_animals = CurrentDateAreaChoicesAnimalsField()
-    electricity_generation = ElectricityGenerationSchemaField()
-    carbon_sequestration = CarbonSequestrationSchemaField()
 
     class Meta:
         model = DealVersion
@@ -235,6 +232,8 @@ class DealVersionSerializer(serializers.ModelSerializer):
         # TODO Later right now we're handling contracts, locations and datasources here
         #  in the serializer. not very pretty. maybe drf-writable-nested
         #  would be an alternative
+        #  see: https://www.django-rest-framework.org/api-guide/relations/#writable-nested-serializers
+        #  and: https://stackoverflow.com/questions/62847000/write-an-explicit-update-method-for-serializer
 
         l_nids = set()
         for location in data.get("locations"):
@@ -425,6 +424,9 @@ class InvestorVersionSerializer(serializers.ModelSerializer):
         # TODO Later right now we're handling datasources here
         #  in the serializer. not very pretty. maybe drf-writable-nested
         #  would be an alternative
+        #  see: https://www.django-rest-framework.org/api-guide/relations/#writable-nested-serializers
+        #  and: https://stackoverflow.com/questions/62847000/write-an-explicit-update-method-for-serializer
+
         ds_nids = set()
         for datasource in data.get("datasources"):
             ds_nids.add(datasource["nid"])

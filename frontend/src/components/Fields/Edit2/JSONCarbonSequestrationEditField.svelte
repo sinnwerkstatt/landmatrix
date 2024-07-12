@@ -31,6 +31,9 @@
     certification_standard_comment: "",
   })
 
+  const isEmpty = (val: JSONCarbonSequestrationFieldType) =>
+    JSON.stringify(val) === JSON.stringify(createEmptyEntry())
+
   let valueCopy = structuredClone<JSONCarbonSequestrationFieldType[]>(
     value.length ? value : [createEmptyEntry()],
   )
@@ -55,7 +58,7 @@
           extras={{
             choices: $fieldChoices.deal.carbon_sequestration,
             multipleChoices: true,
-            required: !!(val.date || val.area),
+            required: !isEmpty(val),
           }}
           fieldname="{fieldname}_{i}_choices"
         />
@@ -145,7 +148,6 @@
         bind:checked={val.current}
         name="{fieldname}_{i}_current"
         required={isCurrentRequired}
-        disabled={!val.choices || !val.choices.length}
       />
 
       <RemoveButton disabled={valueCopy.length <= 1} on:click={() => removeEntry(i)} />

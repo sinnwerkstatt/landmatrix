@@ -180,6 +180,9 @@ importers:
       openapi-typescript:
         specifier: ^6.7.6
         version: 6.7.6
+      openapi-typescript-helpers:
+        specifier: ^0.0.9
+        version: 0.0.9
       postcss:
         specifier: ^8.4.38
         version: 8.4.38
@@ -3238,6 +3241,9 @@ packages:
 
   openapi-typescript-helpers@0.0.8:
     resolution: {integrity: sha512-1eNjQtbfNi5Z/kFhagDIaIRj6qqDzhjNJKz8cmMW0CVdGwT6e1GLbAfgI0d28VTJa1A8jz82jm/4dG8qNoNS8g==}
+
+  openapi-typescript-helpers@0.0.9:
+    resolution: {integrity: sha512-BO2TvIDAO/FPVKz1Nj2gy+pUOHfaoENdK5UP3H0Jbh0VXBf3dwYMs58ZwOjiezrbHA2LamdquoyQgahTPvIxGA==}
 
   openapi-typescript@6.7.6:
     resolution: {integrity: sha512-c/hfooPx+RBIOPM09GSxABOZhYPblDoyaGhqBkD/59vtpN21jEuWKDlM0KYTvqJVlSYjKs0tBcIdeXKChlSPtw==}
@@ -8062,6 +8068,8 @@ snapshots:
       openapi-typescript-helpers: 0.0.8
 
   openapi-typescript-helpers@0.0.8: {}
+
+  openapi-typescript-helpers@0.0.9: {}
 
   openapi-typescript@6.7.6:
     dependencies:
