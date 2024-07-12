@@ -13,7 +13,7 @@
     $fieldChoices.deal.carbon_sequestration.find(c => value === c.value)?.label ?? value
 </script>
 
-<ul>
+<ul class="flex flex-col gap-2">
   {#each value ?? [] as val}
     <li class:font-bold={val.current}>
       <span>{dateCurrentFormat(val)}</span>
@@ -43,23 +43,30 @@
       {/if}
 
       <div class="mr-2 italic">
-        {$_("Certification standard")}: {#if val.certification_standard}
-          {$_("Yes")}{:else if val.certification_standard === false}
-          {$_("No")}{:else}—{/if}
+        {$_("Certification standard")}:
+        {#if val.certification_standard}
+          {$_("Yes")}
+        {:else if val.certification_standard === false}
+          {$_("No")}
+        {:else}
+          "--"
+        {/if}
       </div>
-      {#if val.certification_standard_name}
-        <div class="mr-2">
-          {$_("Name of certification standard/mechanism")}:
-          {$fieldChoices.deal.carbon_sequestration_certs.find(
-            i => i.value === val.certification_standard_name,
-          )?.label ?? "--"}
-        </div>
-      {/if}
-      {#if val.certification_standard_id}
-        <div class="mr-2">
-          {$_("ID of certification standard/mechanism")}:
-          {val.certification_standard_id}
-        </div>
+      {#if val.certification_standard}
+        {#if val.certification_standard_name}
+          <div class="mr-2">
+            {$_("Name of certification standard/mechanism")}:
+            {$fieldChoices.deal.carbon_sequestration_certs.find(
+              i => i.value === val.certification_standard_name,
+            )?.label ?? "--"}
+          </div>
+        {/if}
+        {#if val.certification_standard_id}
+          <div class="mr-2">
+            {$_("ID of certification standard/mechanism")}:
+            {val.certification_standard_id}
+          </div>
+        {/if}
       {/if}
       {#if val.certification_standard_comment}
         <div>
