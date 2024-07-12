@@ -18,6 +18,8 @@
     required: false,
   }
 
+  const MAX_FILE_SIZE_IN_MB = 20
+
   // would be nice to sync these with MIME type
   // https://www.npmjs.com/package/mime-db
   const ACCEPTED_EXTENSIONS: string[] = [
@@ -25,6 +27,9 @@
     ".xls",
     ".xlsx",
     ".jpg",
+    ".jpeg",
+    // ".webp",
+    // ".webm",
     ".png",
     ".mp4",
     ".mkv",
@@ -49,6 +54,17 @@
       return
     }
 
+    const fileSizeInMB = file.size / 1e6
+    if (fileSizeInMB > MAX_FILE_SIZE_IN_MB) {
+      alert(
+        $_("File too large:") +
+          " " +
+          $_("Maximum file size is {maxFileSizeInMB}MB.", {
+            values: { maxFileSizeInMB: MAX_FILE_SIZE_IN_MB },
+          }),
+      )
+    }
+
     const reader = new FileReader()
 
     reader.addEventListener("load", async () => {
@@ -64,6 +80,7 @@
       if (ret.ok) {
         const retJson = await ret.json()
         value = retJson.name
+        // alert(`File uploaded`)
       } else {
         alert(`Error uploading file: ${file.name}`)
       }
@@ -115,6 +132,10 @@
 <small class="block pt-2 text-gray-500">
   {$_("Supported file types: ")}{ACCEPTED_EXTENSIONS.join(", ")}
 </small>
-<small class="block text-gray-500">{$_("Maximum file size: 10MB")}</small>
+<small class="block text-gray-500">
+  {$_("Maximum file size is {maxFileSizeInMB}MB.", {
+    values: { maxFileSizeInMB: MAX_FILE_SIZE_IN_MB },
+  })}
+</small>
 
 <slot />
