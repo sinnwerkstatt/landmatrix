@@ -98,7 +98,7 @@
                     >
                       {$_("Edit")}
                     </a>
-                    {$_("Create a new draft version of this investor")}
+                    {$_("Create a new draft version of this {object}", i18nValues)}
                   </div>
                 </li>
               {:else if object.selected_version.id !== object.draft_version_id}
@@ -143,13 +143,9 @@
                     {/if}
                   </button>
                   {#if object.deleted}
-                    {isDeal(object)
-                      ? $_("Reactivate this deal")
-                      : $_("Reactivate this investor")}
+                    {$_("Reactivate this {object}", i18nValues)}
                   {:else}
-                    {isDeal(object)
-                      ? $_("Delete this deal")
-                      : $_("Delete this investor")}
+                    {$_("Delete this {object}", i18nValues)}
                   {/if}
                 </div>
               </li>
@@ -165,11 +161,6 @@
                         ? $_("Unset confidential")
                         : $_("Set confidential")}
                     </button>
-                    {#if object.confidential}
-                      this will unsset confidential
-                    {:else}
-                      this will set confidential
-                    {/if}
                   </div>
                 </li>
               {/if}
