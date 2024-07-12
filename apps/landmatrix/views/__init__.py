@@ -56,6 +56,7 @@ class CurrencyViewSet(ListModelMixin, viewsets.GenericViewSet):
 
 class CountryViewSet(ListModelMixin, viewsets.GenericViewSet):
     queryset = Country.objects.all().prefetch_related(
+        # Only list public deals
         Prefetch("deals", queryset=DealHull.objects.public().order_by("id"))
     )
     permission_classes = [permissions.AllowAny]

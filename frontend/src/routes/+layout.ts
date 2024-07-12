@@ -1,9 +1,10 @@
 import { error, type LoadEvent } from "@sveltejs/kit"
 import { env } from "$env/dynamic/public"
-import createClient from "openapi-fetch"
+import createClient, { type FetchResponse } from "openapi-fetch"
+import type { MediaType } from "openapi-typescript-helpers"
 
 import { i18nload } from "$lib/i18n/i18n"
-import type { components, paths } from "$lib/openAPI"
+import type { paths } from "$lib/openAPI"
 import { fetchAboutPages, fetchObservatoryPages } from "$lib/stores/wagtail"
 import type { User } from "$lib/types/data"
 
@@ -25,18 +26,21 @@ export const load: LayoutLoad = async ({ fetch, data }) => {
   const lang = data?.locale ?? "en"
   await i18nload(lang)
 
-  await fetchObservatoryPages(fetch, lang)
-  await fetchAboutPages(fetch, lang)
-
-  const countriesReq = await apiClient.GET("/api/countries/")
-  // @ts-expect-error openapi-fetch types broken
-  if (countriesReq.error) error(500, countriesReq.error)
-  const countries: components["schemas"]["Country"][] = countriesReq.data
-
-  const regionsReq = await apiClient.GET("/api/regions/")
-  // @ts-expect-error openapi-fetch types broken
-  if (regionsReq.error) error(500, regionsReq.error)
-  const regions: components["schemas"]["Region"][] = regionsReq.data
-
-  return { apiClient, user, countries, regions }
+  // TODO: only fetch minimal data needed for layout ,e.g. nav items
+  try {
+    const [countries, regions] = await Promise.all([
+      apiClient.GET("/api/countries/").then(rejectOnError),
+      apiClient.GET("/api/regions/").then(rejectOnError),
+      // needed by nav
+      fetchObservatoryPages(fetch, lang),
+      fetchAboutPages(fetch, lang),
+    ])
+    return { apiClient, user, countries, regions }
+  } catch (e) {
+    throw error(500, "Layout Load Error")
+  }
 }
+
+const rejectOnError = <T, O, Media extends MediaType>(
+  req: FetchResponse<T, O, Media>,
+) => (req.error ? Promise.reject(req.error.detail) : req.data!)
