@@ -2,7 +2,8 @@
 
 import type createClient from "openapi-fetch"
 
-import type { components, paths } from "$lib/openAPI"
+import type { paths } from "$lib/openAPI"
+import type { Country, Region, User } from "$lib/types/data"
 
 declare global {
   namespace App {
@@ -13,8 +14,8 @@ declare global {
     interface PageData {
       user: User | null
       apiClient: ReturnType<typeof createClient<paths>>
-      countries: components["schemas"]["Country"][]
-      regions: components["schemas"]["Region"][]
+      countries: Country[]
+      regions: Region[]
     }
   }
 
