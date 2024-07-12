@@ -204,6 +204,7 @@ SPECTACULAR_SETTINGS = {
         "CropsEnum": "apps.landmatrix.models.choices.CropsEnum",
         "AnimalsEnum": "apps.landmatrix.models.choices.AnimalsEnum",
         "MineralsEnum": "apps.landmatrix.models.choices.MineralsEnum",
+        "DatasourceTypeEnum": "apps.landmatrix.models.choices.DatasourceTypeEnum",
     },
 }
 
