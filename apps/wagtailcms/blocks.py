@@ -221,7 +221,7 @@ class PartnerBlock(StructBlock):
     def get_api_representation(self, value, context=None):
         from .models import Partner
 
-        return [p.to_dict("max-220x220") for p in Partner.objects.all()]
+        return [p.to_dict("max-150x150") for p in Partner.objects.all()]
 
     class Meta:
         label = "PartnerBlock"

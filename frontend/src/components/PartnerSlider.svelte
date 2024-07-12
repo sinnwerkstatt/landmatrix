@@ -58,13 +58,7 @@
             title={partner.name}
             target="_blank"
           >
-            <img
-              class="mx-auto bg-gray-50"
-              height="150"
-              width="150"
-              src={partner.logo}
-              alt={partner.name}
-            />
+            <img class="mx-auto bg-gray-50" src={partner.logo} alt={partner.name} />
           </a>
         </SplideSlide>
       {/each}
