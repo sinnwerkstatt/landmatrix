@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-11 14:55+0200\n"
+"POT-Creation-Date: 2024-07-12 14:15+0200\n"
 "PO-Revision-Date: 2024-07-11 12:52+0000\n"
 "Last-Translator: Marie Gradeler <accountability@landmatrix.org>\n"
 "Language-Team: Spanish <http://translate.landmatrix.org/projects/landmatrix/landmatrix/es/>\n"
@@ -50,30 +50,6 @@ msgstr "El equipo de %(site_name)s"
 
 msgid "New feedback reply"
 msgstr ""
-
-msgid "Draft"
-msgstr "Borrador"
-
-msgid "Live"
-msgstr "Activo"
-
-msgid "Updated"
-msgstr "Actualizado"
-
-msgid "Deleted"
-msgstr "Eliminado"
-
-msgid "Review"
-msgstr "Revisar"
-
-msgid "Activation"
-msgstr "Activación"
-
-msgid "Rejected"
-msgstr "Rechazada"
-
-msgid "To Delete"
-msgstr "Para eliminar"
 
 msgid "Agriculture"
 msgstr "Agricultura"
@@ -1038,11 +1014,17 @@ msgstr "Índice de Percepción de la Corrupción"
 msgid "High income"
 msgstr "Ingresos altos"
 
-msgid "Locations"
-msgstr "Ubicaciones"
+msgid "Draft"
+msgstr "Borrador"
 
-msgid "Target country"
-msgstr "País objetivo"
+msgid "Review"
+msgstr "Revisar"
+
+msgid "Activation"
+msgstr "Activación"
+
+msgid "Activated"
+msgstr "Activado"
 
 msgid "Intended size"
 msgstr "Tamaño planeado"
@@ -1104,9 +1086,6 @@ msgstr "No en arrendada/comprada (cultivador externo)"
 msgid "Comment on contract farming"
 msgstr "Comentario sobre agricultura contractual"
 
-msgid "Contracts"
-msgstr "Contratos"
-
 msgid "Jobs created (total)"
 msgstr "Puestos de trabajo creados (total)"
 
@@ -1157,9 +1136,6 @@ msgstr "Nombre de proyecto de inversión"
 
 msgid "Comment on investment chain"
 msgstr "Comentario sobre la cadena de inversión"
-
-msgid "Data sources"
-msgstr "Fuentes de datos"
 
 msgid "Name of community"
 msgstr "Nombre de comunidad"
@@ -1365,8 +1341,20 @@ msgstr "Comentario sobre información relacionada con género"
 msgid "Overall comment"
 msgstr "Comentario general"
 
-msgid "Comment why this deal is private"
-msgstr "Comentario sobre cuánta agua se extrae"
+msgid "Created at"
+msgstr "Creado el"
+
+msgid "Modified at"
+msgstr "Modificado en"
+
+msgid "Sent to review at"
+msgstr ""
+
+msgid "Reviewed at"
+msgstr ""
+
+msgid "Activated at"
+msgstr ""
 
 msgid "Parent companies"
 msgstr "Empresas matriz"
@@ -1377,17 +1365,77 @@ msgstr "Principales empresas matriz"
 msgid "Current contract size"
 msgstr "Tamaño actual del contrato"
 
-msgid "Created"
-msgstr "Creado el"
+msgid "Spatial accuracy level"
+msgstr "Nivel de precisión espacial"
 
-msgid "Last update"
-msgstr "Última actualización"
+msgid "Location"
+msgstr "Ubicación"
 
-msgid "Last full update"
-msgstr "Última actualización completa"
+msgid "Point"
+msgstr "Punto"
+
+msgid "Description"
+msgstr "Descripción"
+
+msgid "Facility name"
+msgstr "Nombre de la instalación"
+
+msgid "Comment"
+msgstr "Comentario"
+
+msgid "Date"
+msgstr "Fecha"
+
+msgid "Contract number"
+msgstr "Número de Contrato"
+
+msgid "Expiration date"
+msgstr "Fecha de caducidad"
+
+msgid "Duration of the agreement"
+msgstr "Duración del acuerdo"
+
+msgid "Type"
+msgstr "Tipo"
+
+msgid "Url"
+msgstr "Url"
+
+msgid "File"
+msgstr "Archivo"
+
+msgid "Keep PDF not public"
+msgstr "Mantener el PDF no público"
+
+msgid "Publication title"
+msgstr "Título de publicación"
 
 msgid "Name"
 msgstr "Nombre"
+
+msgid "Organisation"
+msgstr "Organización"
+
+msgid "Email"
+msgstr "Correo Electrónico"
+
+msgid "Phone"
+msgstr "Teléfono"
+
+msgid "Includes in-country-verified information"
+msgstr "Incluye información verificada internamente en el país"
+
+msgid "Open Contracting ID"
+msgstr "ID Contratación Abierta"
+
+msgid "Target country"
+msgstr "País objetivo"
+
+msgid "Comment why this deal is private"
+msgstr "Comentario sobre cuánta agua se extrae"
+
+msgid "Last full update"
+msgstr "Última actualización completa"
 
 msgid "Country of registration/origin"
 msgstr "País de registro/origen"
@@ -1400,9 +1448,6 @@ msgstr "Página principal del inversor"
 
 msgid "Opencorporates link"
 msgstr "Enlace a Opencorporates"
-
-msgid "Comment"
-msgstr "Comentario"
 
 msgid "Investor"
 msgstr "Inversor"
@@ -1442,81 +1487,6 @@ msgstr "<es MATRIZ de>"
 
 msgid "<is INVESTOR of>"
 msgstr "<es INVERSOR de>"
-
-msgid "Activated"
-msgstr "Activado"
-
-msgid "Created at"
-msgstr "Creado el"
-
-msgid "Modified at"
-msgstr "Modificado en"
-
-msgid "Sent to review at"
-msgstr ""
-
-msgid "Reviewed at"
-msgstr ""
-
-msgid "Activated at"
-msgstr ""
-
-msgid "Spatial accuracy level"
-msgstr "Nivel de precisión espacial"
-
-msgid "Location"
-msgstr "Ubicación"
-
-msgid "Point"
-msgstr "Punto"
-
-msgid "Description"
-msgstr "Descripción"
-
-msgid "Facility name"
-msgstr "Nombre de la instalación"
-
-msgid "Date"
-msgstr "Fecha"
-
-msgid "Contract number"
-msgstr "Número de Contrato"
-
-msgid "Expiration date"
-msgstr "Fecha de caducidad"
-
-msgid "Duration of the agreement"
-msgstr "Duración del acuerdo"
-
-msgid "Type"
-msgstr "Tipo"
-
-msgid "Url"
-msgstr "Url"
-
-msgid "File"
-msgstr "Archivo"
-
-msgid "Keep PDF not public"
-msgstr "Mantener el PDF no público"
-
-msgid "Publication title"
-msgstr "Título de publicación"
-
-msgid "Organisation"
-msgstr "Organización"
-
-msgid "Email"
-msgstr "Correo Electrónico"
-
-msgid "Phone"
-msgstr "Teléfono"
-
-msgid "Includes in-country-verified information"
-msgstr "Incluye información verificada internamente en el país"
-
-msgid "Open Contracting ID"
-msgstr "ID Contratación Abierta"
 
 msgid "Subsidiary company"
 msgstr "Empresa filial"
@@ -1810,6 +1780,9 @@ msgstr "Cultivos de agricultura contractual"
 msgid "Contract farming livestock"
 msgstr "Animales de granja de agricultura contractual"
 
+msgid "Contracts"
+msgstr "Contratos"
+
 msgid "Contribute"
 msgstr "Involúcrese"
 
@@ -1840,6 +1813,9 @@ msgstr "Crear"
 msgid "Create a new draft"
 msgstr "Crear un nuevo borrador"
 
+msgid "Create a new draft version of this deal"
+msgstr "Crear un nuevo borrador de esta transacción"
+
 msgid "Create a new draft version of this investor"
 msgstr "Crear un nuevo borrador de este inversor"
 
@@ -1848,6 +1824,9 @@ msgstr ""
 
 msgid "Create or move point"
 msgstr ""
+
+msgid "Created"
+msgstr "Creado el"
 
 msgid "Created by"
 msgstr "Creado por"
@@ -1909,6 +1888,9 @@ msgstr "Fuente de datos"
 
 msgid "Data Source"
 msgstr ""
+
+msgid "Data sources"
+msgstr "Fuentes de datos"
 
 msgid "Date of request"
 msgstr "Fecha de solicitud"
@@ -1994,6 +1976,9 @@ msgstr "Eliminar este inversor"
 #, python-brace-format
 msgid "Delete {object}"
 msgstr ""
+
+msgid "Deleted"
+msgstr "Eliminado"
 
 msgid "Detailed carbon sequestration/offsetting information"
 msgstr "Información sobre la rentención/compensación de carbono"
@@ -2361,6 +2346,9 @@ msgstr "Región Land Matrix"
 msgid "Last name"
 msgstr "Apellido"
 
+msgid "Last update"
+msgstr "Última actualización"
+
 msgid "Latest tweets"
 msgstr "Últimos tweets"
 
@@ -2381,6 +2369,9 @@ msgstr "Exportación de animales de granja"
 
 msgid "Local communities / indigenous peoples"
 msgstr "Comunidades locales/Pueblos Indígenas"
+
+msgid "Locations"
+msgstr "Ubicaciones"
 
 msgid "Locations (as geojson)"
 msgstr "Ubicaciones (como geojson)"
@@ -2671,6 +2662,9 @@ msgstr "Regístrese"
 msgid "Registration successful. You can now close this window and check your emails."
 msgstr "Registro realizado con éxito. Ahora puede cerrar esta ventana y consultar su correo electrónico."
 
+msgid "Rejected"
+msgstr "Rechazada"
+
 msgid "Relationship"
 msgstr "Relación"
 
@@ -2851,8 +2845,10 @@ msgstr ""
 msgid "The investor network diagram is only available for the current active version. Go to {liveLink} to see it."
 msgstr ""
 
-#, python-brace-format
-msgid "There is a draft version of this {object}."
+msgid "There is a draft version of this deal"
+msgstr ""
+
+msgid "There is a draft version of this investor."
 msgstr ""
 
 msgid "There is already a draft version, that you can find here:"
@@ -2893,6 +2889,9 @@ msgstr ""
 
 msgid "Unset confidential"
 msgstr "Confidencial sin fijar"
+
+msgid "Updated"
+msgstr "Actualizado"
 
 msgid "Use of produce"
 msgstr "Uso del producto"
@@ -2948,8 +2947,10 @@ msgstr "Si"
 msgid "Yield"
 msgstr "Rendimiento"
 
-#, python-brace-format
-msgid "You're viewing the draft version of this {object}."
+msgid "You're viewing the draft version of this deal."
+msgstr ""
+
+msgid "You're viewing the draft version of this investor."
 msgstr ""
 
 msgid "Your account has been activated. You can log in now."
@@ -2979,6 +2980,12 @@ msgstr "Français"
 
 msgid "Русский"
 msgstr "Русский"
+
+#~ msgid "Live"
+#~ msgstr "Activo"
+
+#~ msgid "To Delete"
+#~ msgstr "Para eliminar"
 
 #, python-brace-format
 #~ msgid "Please review at {url}"
@@ -3070,9 +3077,6 @@ msgstr "Русский"
 
 #~ msgid "Contract signed"
 #~ msgstr "Contrato firmado"
-
-#~ msgid "Create a new draft version of this deal"
-#~ msgstr "Crear un nuevo borrador de esta transacción"
 
 #~ msgid "Deal ID"
 #~ msgstr "ID de transacción"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-11 14:55+0200\n"
+"POT-Creation-Date: 2024-07-12 14:15+0200\n"
 "PO-Revision-Date: 2024-04-03 14:35+0000\n"
 "Last-Translator: Danya-Zee Pedra <media@landmatrix.org>\n"
 "Language-Team: Russian <http://translate.landmatrix.org/projects/landmatrix/landmatrix/ru/>\n"
@@ -52,30 +52,6 @@ msgstr "Команда %(site_name)s"
 
 msgid "New feedback reply"
 msgstr ""
-
-msgid "Draft"
-msgstr "Активная"
-
-msgid "Live"
-msgstr "Перезаписанная"
-
-msgid "Updated"
-msgstr "Обновлено"
-
-msgid "Deleted"
-msgstr "Удалено"
-
-msgid "Review"
-msgstr "Рассмотрение"
-
-msgid "Activation"
-msgstr "Активация"
-
-msgid "Rejected"
-msgstr "Отклоненная"
-
-msgid "To Delete"
-msgstr "На удаление"
 
 msgid "Agriculture"
 msgstr "Сельское хозяйство"
@@ -1040,11 +1016,17 @@ msgstr "Индекс восприятия коррупции"
 msgid "High income"
 msgstr "Высокий уровень дохода"
 
-msgid "Locations"
-msgstr "Является страной назначения"
+msgid "Draft"
+msgstr "Активная"
 
-msgid "Target country"
-msgstr "Целевая страна"
+msgid "Review"
+msgstr "Рассмотрение"
+
+msgid "Activation"
+msgstr "Активация"
+
+msgid "Activated"
+msgstr "Активировано"
 
 msgid "Intended size"
 msgstr ""
@@ -1106,9 +1088,6 @@ msgstr "Не на сданной в аренду/собственности (с�
 msgid "Comment on contract farming"
 msgstr "Примечания к контрактному фермерству"
 
-msgid "Contracts"
-msgstr "Контракты"
-
 msgid "Jobs created (total)"
 msgstr "Создано рабочих мест (всего)"
 
@@ -1159,9 +1138,6 @@ msgstr "Название инвестиционного проекта"
 
 msgid "Comment on investment chain"
 msgstr "Примечания к инвестиционной цепочке"
-
-msgid "Data sources"
-msgstr "Источники информации"
 
 msgid "Name of community"
 msgstr "Название общины"
@@ -1367,8 +1343,20 @@ msgstr "Причмечания к информации о гендерных ф�
 msgid "Overall comment"
 msgstr "Общие примечания"
 
-msgid "Comment why this deal is private"
-msgstr "Объясните, почему эта сделка является частной"
+msgid "Created at"
+msgstr "Созданны в"
+
+msgid "Modified at"
+msgstr "Изменено пользователем в"
+
+msgid "Sent to review at"
+msgstr ""
+
+msgid "Reviewed at"
+msgstr ""
+
+msgid "Activated at"
+msgstr ""
 
 msgid "Parent companies"
 msgstr "Материнские компании"
@@ -1379,17 +1367,77 @@ msgstr "Основные материнские компании"
 msgid "Current contract size"
 msgstr "Текущий размер контракта"
 
-msgid "Created"
-msgstr "Создано"
+msgid "Spatial accuracy level"
+msgstr "Уровень пространственной точности"
 
-msgid "Last update"
-msgstr "Последнее обновление"
+msgid "Location"
+msgstr "Расположение"
 
-msgid "Last full update"
-msgstr "Последнее полное обновление"
+msgid "Point"
+msgstr "Точка"
+
+msgid "Description"
+msgstr "Описание"
+
+msgid "Facility name"
+msgstr "Название объекта"
+
+msgid "Comment"
+msgstr "Комментарий"
+
+msgid "Date"
+msgstr "Дата"
+
+msgid "Contract number"
+msgstr "Номер контракта"
+
+msgid "Expiration date"
+msgstr "Конечная дата"
+
+msgid "Duration of the agreement"
+msgstr "Длительность соглашения"
+
+msgid "Type"
+msgstr "Тип"
+
+msgid "Url"
+msgstr "Url"
+
+msgid "File"
+msgstr "Файл"
+
+msgid "Keep PDF not public"
+msgstr "Не открывать свободный доступ к PDF"
+
+msgid "Publication title"
+msgstr "Название публикации"
 
 msgid "Name"
 msgstr "Имя"
+
+msgid "Organisation"
+msgstr "Организация"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "Phone"
+msgstr "Телефон"
+
+msgid "Includes in-country-verified information"
+msgstr "Содержит информацию, подтвержденную источником внутри страны"
+
+msgid "Open Contracting ID"
+msgstr "ID данных открытого контрактирования"
+
+msgid "Target country"
+msgstr "Целевая страна"
+
+msgid "Comment why this deal is private"
+msgstr "Объясните, почему эта сделка является частной"
+
+msgid "Last full update"
+msgstr "Последнее полное обновление"
 
 msgid "Country of registration/origin"
 msgstr "Страна регистрации/происхождения"
@@ -1402,9 +1450,6 @@ msgstr "Домашняя страница компании-инвестора"
 
 msgid "Opencorporates link"
 msgstr "Ссылка на компанию-инвестора на Opencorporates"
-
-msgid "Comment"
-msgstr "Комментарий"
 
 msgid "Investor"
 msgstr "Инвестор"
@@ -1444,81 +1489,6 @@ msgstr "<является МАТЕРИНСКОЙ КОМПАНИЕЙ для>"
 
 msgid "<is INVESTOR of>"
 msgstr "<является ИНВЕСТОРОМ для>"
-
-msgid "Activated"
-msgstr "Активировано"
-
-msgid "Created at"
-msgstr "Созданны в"
-
-msgid "Modified at"
-msgstr "Изменено пользователем в"
-
-msgid "Sent to review at"
-msgstr ""
-
-msgid "Reviewed at"
-msgstr ""
-
-msgid "Activated at"
-msgstr ""
-
-msgid "Spatial accuracy level"
-msgstr "Уровень пространственной точности"
-
-msgid "Location"
-msgstr "Расположение"
-
-msgid "Point"
-msgstr "Точка"
-
-msgid "Description"
-msgstr "Описание"
-
-msgid "Facility name"
-msgstr "Название объекта"
-
-msgid "Date"
-msgstr "Дата"
-
-msgid "Contract number"
-msgstr "Номер контракта"
-
-msgid "Expiration date"
-msgstr "Конечная дата"
-
-msgid "Duration of the agreement"
-msgstr "Длительность соглашения"
-
-msgid "Type"
-msgstr "Тип"
-
-msgid "Url"
-msgstr "Url"
-
-msgid "File"
-msgstr "Файл"
-
-msgid "Keep PDF not public"
-msgstr "Не открывать свободный доступ к PDF"
-
-msgid "Publication title"
-msgstr "Название публикации"
-
-msgid "Organisation"
-msgstr "Организация"
-
-msgid "Email"
-msgstr "Email"
-
-msgid "Phone"
-msgstr "Телефон"
-
-msgid "Includes in-country-verified information"
-msgstr "Содержит информацию, подтвержденную источником внутри страны"
-
-msgid "Open Contracting ID"
-msgstr "ID данных открытого контрактирования"
 
 msgid "Subsidiary company"
 msgstr "Дочерняя компания"
@@ -1812,6 +1782,9 @@ msgstr "Сельхозкультуры, выращенные в рамках к�
 msgid "Contract farming livestock"
 msgstr "Скотоводство в рамках контрактного фермерства"
 
+msgid "Contracts"
+msgstr "Контракты"
+
 msgid "Contribute"
 msgstr "Оказать содействие"
 
@@ -1842,6 +1815,9 @@ msgstr "Создать"
 msgid "Create a new draft"
 msgstr "Создать новый черновик"
 
+msgid "Create a new draft version of this deal"
+msgstr "Создать новую черновую версию этой сделки"
+
 msgid "Create a new draft version of this investor"
 msgstr "Создать новую черновую версию этого инвестора"
 
@@ -1850,6 +1826,9 @@ msgstr ""
 
 msgid "Create or move point"
 msgstr ""
+
+msgid "Created"
+msgstr "Создано"
 
 msgid "Created by"
 msgstr "Создано"
@@ -1911,6 +1890,9 @@ msgstr "Источник информации"
 
 msgid "Data Source"
 msgstr ""
+
+msgid "Data sources"
+msgstr "Источники информации"
 
 msgid "Date of request"
 msgstr "Дата запроса"
@@ -1996,6 +1978,9 @@ msgstr "Удалить этого инвестора"
 #, python-brace-format
 msgid "Delete {object}"
 msgstr ""
+
+msgid "Deleted"
+msgstr "Удалено"
 
 msgid "Detailed carbon sequestration/offsetting information"
 msgstr ""
@@ -2363,6 +2348,9 @@ msgstr "Land Matrix регион"
 msgid "Last name"
 msgstr "Фамилия"
 
+msgid "Last update"
+msgstr "Последнее обновление"
+
 msgid "Latest tweets"
 msgstr "Последние твиты"
 
@@ -2383,6 +2371,9 @@ msgstr "Площадь земель для скотоводства/продук
 
 msgid "Local communities / indigenous peoples"
 msgstr "Местные общины / коренные народы"
+
+msgid "Locations"
+msgstr "Является страной назначения"
 
 msgid "Locations (as geojson)"
 msgstr "Локации (в формате GeoJSON)"
@@ -2673,6 +2664,9 @@ msgstr "Зарегистрироваться"
 msgid "Registration successful. You can now close this window and check your emails."
 msgstr "Регистрация прошла успешно. Теперь вы можете закрыть это окно и проверить почту."
 
+msgid "Rejected"
+msgstr "Отклоненная"
+
 msgid "Relationship"
 msgstr "Отношение"
 
@@ -2853,8 +2847,10 @@ msgstr ""
 msgid "The investor network diagram is only available for the current active version. Go to {liveLink} to see it."
 msgstr ""
 
-#, python-brace-format
-msgid "There is a draft version of this {object}."
+msgid "There is a draft version of this deal"
+msgstr ""
+
+msgid "There is a draft version of this investor."
 msgstr ""
 
 msgid "There is already a draft version, that you can find here:"
@@ -2895,6 +2891,9 @@ msgstr ""
 
 msgid "Unset confidential"
 msgstr "Отменить конфиденциальность"
+
+msgid "Updated"
+msgstr "Обновлено"
 
 msgid "Use of produce"
 msgstr "Использование продукции"
@@ -2950,8 +2949,10 @@ msgstr "Да"
 msgid "Yield"
 msgstr "Урожай"
 
-#, python-brace-format
-msgid "You're viewing the draft version of this {object}."
+msgid "You're viewing the draft version of this deal."
+msgstr ""
+
+msgid "You're viewing the draft version of this investor."
 msgstr ""
 
 msgid "Your account has been activated. You can log in now."
@@ -2981,6 +2982,12 @@ msgstr "Français"
 
 msgid "Русский"
 msgstr "Русский"
+
+#~ msgid "Live"
+#~ msgstr "Перезаписанная"
+
+#~ msgid "To Delete"
+#~ msgstr "На удаление"
 
 #, python-brace-format
 #~ msgid "Please review at {url}"
@@ -3063,9 +3070,6 @@ msgstr "Русский"
 
 #~ msgid "Contract signed"
 #~ msgstr "Контракт подписан"
-
-#~ msgid "Create a new draft version of this deal"
-#~ msgstr "Создать новую черновую версию этой сделки"
 
 #~ msgid "Deal ID"
 #~ msgstr "ID сделки"
