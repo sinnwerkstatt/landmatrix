@@ -26,7 +26,6 @@
     "fully_updated_at" in obj
 
   $: objType = isDeal(object) ? "deal" : "investor"
-  $: i18nValues = { values: { object: objType } }
 
   let showCopyOverlay = false
   let showDeletionOverlay = false
@@ -41,7 +40,9 @@
   <div
     class="flex items-center gap-4 rounded border border-purple-500 bg-purple-100 px-4 py-2 text-lg dark:text-gray-900"
   >
-    {$_("You're viewing the draft version of this {object}.", i18nValues)}
+    {isDeal(object)
+      ? $_("You're viewing the draft version of this deal.")
+      : $_("You're viewing the draft version of this investor.")}
     <div class="flex items-center gap-2">
       <a class="btn btn-flat" href="/{objType}/{object.id}/">
         {$_("Go to active version")}
@@ -53,7 +54,9 @@
   <div
     class="flex items-center gap-4 rounded border border-green-500 bg-green-100 px-4 py-2 text-lg dark:text-gray-900"
   >
-    {$_("There is a draft version of this {object}.", i18nValues)}
+    {isDeal(object)
+      ? $_("There is a draft version of this deal")
+      : $_("There is a draft version of this investor.")}
     <div class="flex items-center gap-2">
       <a class="btn btn-flat" href="/{objType}/{object.id}/{object.draft_version_id}/">
         {$_("Go to current draft")}
@@ -98,7 +101,9 @@
                     >
                       {$_("Edit")}
                     </a>
-                    {$_("Create a new draft version of this {object}", i18nValues)}
+                    {isDeal(object)
+                      ? $_("Create a new draft version of this deal")
+                      : $_("Create a new draft version of this investor")}
                   </div>
                 </li>
               {:else if object.selected_version.id !== object.draft_version_id}
@@ -143,9 +148,13 @@
                     {/if}
                   </button>
                   {#if object.deleted}
-                    {$_("Reactivate this {object}", i18nValues)}
+                    {isDeal(object)
+                      ? $_("Reactivate this deal")
+                      : $_("Reactivate this investor")}
                   {:else}
-                    {$_("Delete this {object}", i18nValues)}
+                    {isDeal(object)
+                      ? $_("Delete this deal")
+                      : $_("Delete this investor")}
                   {/if}
                 </div>
               </li>
