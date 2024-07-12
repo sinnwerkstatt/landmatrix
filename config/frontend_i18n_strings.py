@@ -140,6 +140,7 @@ _(
 )
 _("Create")
 _("Create a new draft")
+_("Create a new draft version of this deal")
 _("Create a new draft version of this investor")
 _("Create new investor")
 _("Create or move point")
@@ -597,7 +598,8 @@ _("The current version can be found here:")
 _(
     "The investor network diagram is only available for the current active version. Go to {liveLink} to see it."
 )
-_("There is a draft version of this {object}.")
+_("There is a draft version of this deal")
+_("There is a draft version of this investor.")
 _("There is already a draft version, that you can find here:")
 _(
     "This creates a completely identical copy of the deal. The copy must then be edited and adjusted to prevent identical duplicates."
@@ -638,7 +640,8 @@ _("Year of initiation")
 _("years")
 _("Yes")
 _("Yield")
-_("You're viewing the draft version of this {object}.")
+_("You're viewing the draft version of this deal.")
+_("You're viewing the draft version of this investor.")
 _("Your account has been activated. You can log in now.")
 _(
     "Your contact information will help our researchers get in touch with you for additional information. We respect and protect your privacy and anonymity, and will never share or publish your personal information. You can also write us directly at data@landmatrix.org."

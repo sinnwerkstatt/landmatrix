@@ -1,3 +1,5 @@
+from typing import Literal
+
 from django.db import models
 from django.db.models import Case, CharField, Func, QuerySet, Value, When
 from django.db.models.functions import Concat
@@ -187,13 +189,10 @@ class Choices:
 
     choices = {}
 
-    def get(self, name):
+    def get(self, name: Literal["currency", "country"]):
         if not self.choices.get(name):
             if name == "currency":
-                self.choices[name] = {
-                    x.id: f"{x.name} ({x.symbol})" if x.symbol else x.name
-                    for x in Currency.objects.all()
-                }
+                self.choices[name] = {x.id: str(x) for x in Currency.objects.all()}
             if name == "country":
                 self.choices[name] = dict(Country.objects.values_list("id", "name"))
         return self.choices[name]
@@ -687,6 +686,13 @@ def investor_download_format(investors: QuerySet[InvestorHull]):
     return ret
 
 
+def format_currency(currency_id: int):
+    try:
+        return _mchoices.get("currency")[currency_id]
+    except KeyError:
+        return "Invalid currency identifier"
+
+
 def involvement_download_format(involvements: QuerySet[Involvement]) -> list[list]:
     return [
         [
@@ -705,7 +711,11 @@ def involvement_download_format(involvements: QuerySet[Involvement]) -> list[lis
             ),
             float(x["percentage"]) if x["percentage"] is not None else "",
             x["loans_amount"] if x["loans_amount"] is not None else "",
-            x["loans_currency"] if x["loans_currency"] is not None else "",
+            (
+                format_currency(x["loans_currency"])
+                if x["loans_currency"] is not None
+                else ""
+            ),
             x["loans_date"] if x["loans_date"] is not None else "",
             x["comment"],
         ]

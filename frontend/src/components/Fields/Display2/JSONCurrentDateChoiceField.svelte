@@ -15,7 +15,7 @@
 </script>
 
 <ul>
-  {#each value as val}
+  {#each value ?? [] as val}
     <li class:font-bold={val.current}>
       <span>{dateCurrentFormat(val)}</span>
       {choices.find(c => c.value === val.choice)?.label ?? val.choice ?? ""}
