@@ -822,6 +822,28 @@ export interface components {
     DataSourceFields: {
       type: components["schemas"]["ValueLabel"][]
     }
+    /**
+     * @description * `MEDIA_REPORT` - Media report
+     * * `RESEARCH_PAPER_OR_POLICY_REPORT` - Research Paper / Policy Report
+     * * `GOVERNMENT_SOURCES` - Government sources
+     * * `COMPANY_SOURCES` - Company sources
+     * * `CONTRACT` - Contract
+     * * `CONTRACT_FARMING_AGREEMENT` - Contract (contract farming agreement)
+     * * `PERSONAL_INFORMATION` - Personal information
+     * * `CROWDSOURCING` - Crowdsourcing
+     * * `OTHER` - Other
+     * @enum {string}
+     */
+    DatasourceTypeEnum:
+      | "MEDIA_REPORT"
+      | "RESEARCH_PAPER_OR_POLICY_REPORT"
+      | "GOVERNMENT_SOURCES"
+      | "COMPANY_SOURCES"
+      | "CONTRACT"
+      | "CONTRACT_FARMING_AGREEMENT"
+      | "PERSONAL_INFORMATION"
+      | "CROWDSOURCING"
+      | "OTHER"
     Deal: {
       id: number
       active_version_id: number | null
@@ -855,7 +877,7 @@ export interface components {
       file: string
       /** ID */
       nid: string
-      type: components["schemas"]["TypeB96Enum"]
+      type: components["schemas"]["DatasourceTypeEnum"]
       /** Format: uri */
       url?: string
       /** Keep PDF not public */
@@ -1537,7 +1559,7 @@ export interface components {
       file: string
       /** ID */
       nid: string
-      type: components["schemas"]["TypeB96Enum"]
+      type: components["schemas"]["DatasourceTypeEnum"]
       /** Format: uri */
       url?: string
       /** Keep PDF not public */
@@ -1670,15 +1692,15 @@ export interface components {
     JobsSchema: components["schemas"]["JobsItem"][]
     LeanUser: {
       id: number
-      full_name?: string
+      full_name: string
       /** @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
       username: string
-      role?: components["schemas"]["RoleEnum"]
+      role: components["schemas"]["RoleEnum"]
       /**
        * Active
        * @description Designates whether this user should be treated as active. Unselect this instead of deleting accounts.
        */
-      is_active?: boolean
+      is_active: boolean
     }
     /** LeaseItem */
     LeaseItem: {
@@ -1989,28 +2011,6 @@ export interface components {
      * @enum {string}
      */
     StatusEnum: "DRAFT" | "REVIEW" | "ACTIVATION" | "ACTIVATED"
-    /**
-     * @description * `MEDIA_REPORT` - Media report
-     * * `RESEARCH_PAPER_OR_POLICY_REPORT` - Research Paper / Policy Report
-     * * `GOVERNMENT_SOURCES` - Government sources
-     * * `COMPANY_SOURCES` - Company sources
-     * * `CONTRACT` - Contract
-     * * `CONTRACT_FARMING_AGREEMENT` - Contract (contract farming agreement)
-     * * `PERSONAL_INFORMATION` - Personal information
-     * * `CROWDSOURCING` - Crowdsourcing
-     * * `OTHER` - Other
-     * @enum {string}
-     */
-    TypeB96Enum:
-      | "MEDIA_REPORT"
-      | "RESEARCH_PAPER_OR_POLICY_REPORT"
-      | "GOVERNMENT_SOURCES"
-      | "COMPANY_SOURCES"
-      | "CONTRACT"
-      | "CONTRACT_FARMING_AGREEMENT"
-      | "PERSONAL_INFORMATION"
-      | "CROWDSOURCING"
-      | "OTHER"
     User: {
       id: number
       country_id: number | null

@@ -1,19 +1,35 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import type { DataSource } from "$lib/types/data"
+  import type { DataSource, DataSourceType } from "$lib/types/data"
 
   import LowLevelNullBooleanField from "$components/Fields/Edit2/LowLevelNullBooleanField.svelte"
   import EditField from "$components/Fields/EditField.svelte"
 
   export let entry: DataSource
+
+  const TYPES_REQUIRING_FILE_UPLOAD: DataSourceType[] = [
+    "COMPANY_SOURCES",
+    "CONTRACT",
+    "CONTRACT_FARMING_AGREEMENT",
+    "GOVERNMENT_SOURCES",
+    "MEDIA_REPORT",
+    "RESEARCH_PAPER_OR_POLICY_REPORT",
+  ]
+
+  $: fileUploadRequired = entry.type && TYPES_REQUIRING_FILE_UPLOAD.includes(entry.type)
 </script>
 
 <EditField fieldname="datasource.type" bind:value={entry.type} showLabel />
 
 <EditField fieldname="datasource.url" bind:value={entry.url} showLabel />
 
-<EditField fieldname="datasource.file" showLabel bind:value={entry.file}>
+<EditField
+  fieldname="datasource.file"
+  showLabel
+  bind:value={entry.file}
+  extras={{ required: fileUploadRequired }}
+>
   <label for={undefined} class="my-2 flex items-center gap-2">
     <LowLevelNullBooleanField
       bind:value={entry.file_not_public}

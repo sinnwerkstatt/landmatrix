@@ -39,7 +39,7 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         if self.action == "list":
-            return self.queryset.filter(role__gt=0).order_by(Lower("full_name"))
+            return self.queryset.order_by(Lower("full_name"))
         return self.queryset
 
     def get_permissions(self):
