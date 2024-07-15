@@ -1692,15 +1692,15 @@ export interface components {
     JobsSchema: components["schemas"]["JobsItem"][]
     LeanUser: {
       id: number
-      full_name?: string
+      full_name: string
       /** @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
       username: string
-      role?: components["schemas"]["RoleEnum"]
+      role: components["schemas"]["RoleEnum"]
       /**
        * Active
        * @description Designates whether this user should be treated as active. Unselect this instead of deleting accounts.
        */
-      is_active?: boolean
+      is_active: boolean
     }
     /** LeaseItem */
     LeaseItem: {
