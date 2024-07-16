@@ -676,6 +676,8 @@ class BaseVersionMixin(models.Model):
         self.status = "DRAFT"
         self.created_at = timezone.now()
         self.created_by_id = created_by_id
+        self.modified_at = None
+        self.modified_by = None
         self.sent_to_review_at = None
         self.sent_to_review_by = None
         self.sent_to_activation_at = None

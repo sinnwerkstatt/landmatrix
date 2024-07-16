@@ -7,7 +7,7 @@ from .models import Message
 class MessageAdmin(admin.ModelAdmin):
     list_display = (
         "title",
-        "text",
+        # "text",
         "level",
         "allow_users_to_hide",
         "logged_in_only",
