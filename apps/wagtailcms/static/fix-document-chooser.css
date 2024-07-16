@@ -1,3 +1,8 @@
 .listing .nolink {
   word-break: break-word;
 }
+
+.listing thead th {
+  text-wrap: wrap;
+  word-break: initial;
+}
