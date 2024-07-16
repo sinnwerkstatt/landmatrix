@@ -2,7 +2,7 @@ from drf_spectacular.utils import OpenApiParameter, extend_schema
 
 from django.contrib.postgres.expressions import ArraySubquery
 from django.db import OperationalError, transaction
-from django.db.models import Case, F, OuterRef, Prefetch, When
+from django.db.models import Case, F, OuterRef, Prefetch, When, Q
 from django.db.models.functions import JSONObject
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -650,11 +650,16 @@ class InvestorViewSet(HullViewSet):
                 .filter(id=investor_id)
                 .values("id", "name")[0]
             )
-        # TODO Later this might need an "also search for drafts option"
         return Response(
-            InvestorHull.objects.active()
-            .annotate(name=F("active_version__name"))
-            .values("id", "name")
+            InvestorHull.objects.filter(deleted=False)
+            .annotate(
+                name=Case(
+                    When(active_version__isnull=False, then="active_version__name"),
+                    When(draft_version__isnull=False, then="draft_version__name"),
+                ),
+                active=~Q(active_version=None),
+            )
+            .values("id", "name", "active")
         )
 
     @extend_schema(parameters=openapi_filters_parameters)

@@ -1994,6 +1994,7 @@ export interface components {
     SimpleInvestor: {
       id: number
       name: string
+      active: boolean
     }
     /**
      * @description * `GROUNDWATER` - Groundwater
