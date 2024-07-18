@@ -3,6 +3,7 @@
   import { _ } from "svelte-i18n"
 
   import { simpleInvestors } from "$lib/stores"
+  import type { SimpleInvestor } from "$lib/types/data"
   import { getCsrfToken } from "$lib/utils"
 
   import EditField from "$components/Fields/EditField.svelte"
@@ -13,9 +14,7 @@
 
   export let extras: { required?: boolean; creatable?: boolean } = {}
 
-  interface InvestorItem {
-    id: number | null
-    name: string
+  interface InvestorItem extends SimpleInvestor {
     created?: boolean
   }
 
@@ -31,12 +30,12 @@
   let newInvestor: NewInvestor | undefined
   let showNewInvestorForm = false
 
+  let listValue: InvestorItem
+
   let mountFinished = false
   onMount(async () => {
-    if (value && !$simpleInvestors.find(i => i.id === value)) {
-      const ret = await fetch(`/api/investors/simple/?investor_id=${value}`)
-      const retJson = await ret.json()
-      $simpleInvestors.push(retJson)
+    if (value) {
+      listValue = $simpleInvestors.find(i => i.id === value)!
     }
     mountFinished = true
   })
@@ -70,8 +69,8 @@
     const retJson = await ret.json()
 
     if (ret.ok) {
-      const newI = { id: retJson.investorID, name: newInvestor!.name }
-      $simpleInvestors.push(newI)
+      const newI = { id: retJson.investorID, name: newInvestor!.name, active: false }
+      listValue = newI
       value = newI.id
       newInvestor = undefined
       showNewInvestorForm = false
@@ -97,20 +96,25 @@
     on:input={onInvestorInput}
     placeholder={$_("Select investor")}
     required={extras.required}
-    value={$simpleInvestors.find(i => i.id === value)}
+    value={listValue}
   >
     <svelte:fragment let:selection slot="selection">
       {#if selection.created}
         <div class="font-semibold italic">[new investor]</div>
       {:else}
-        {selection.name} (#{selection.id})
+        <span class:text-red={!selection.active}>
+          {selection.name} (#{selection.id}) {!selection.active ? "-- NOT ACTIVE" : ""}
+        </span>
       {/if}
     </svelte:fragment>
     <svelte:fragment let:item slot="item">
       {#if item.created}
         {$_("Create")}: {item.name}
       {:else}
-        #{item.id}: {item.name}
+        <span class:text-red={!item.active}>
+          #{item.id}: {item.name}
+          {!item.active ? "-- NOT ACTIVE" : ""}
+        </span>
       {/if}
     </svelte:fragment>
   </VirtualListSelect>

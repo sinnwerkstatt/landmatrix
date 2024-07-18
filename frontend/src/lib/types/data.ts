@@ -105,6 +105,8 @@ export interface InvestorHull
   workflowinfos: WorkflowInfoType[]
 }
 
+export type SimpleInvestor = components["schemas"]["SimpleInvestor"]
+
 export type Country = components["schemas"]["Country"]
 export type Region = components["schemas"]["Region"]
 
