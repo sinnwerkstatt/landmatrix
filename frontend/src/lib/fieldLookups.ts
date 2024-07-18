@@ -112,11 +112,7 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
   return {
     // // Deal Hull
     id: { displayField: IDField, label: $_("ID") },
-    country_id: {
-      displayField: CountryField,
-      editField: CountryEditField,
-      label: $_("Target country"),
-    },
+    country_id: { displayField: CountryField, label: $_("Target country") },
     confidential: { displayField: BooleanField, label: $_("Confidential") },
     created_at: { displayField: DateTimeField, label: $_("Created at") },
     first_created_at: { displayField: DateTimeField, label: $_("Created at") },
