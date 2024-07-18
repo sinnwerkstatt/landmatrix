@@ -30,7 +30,7 @@
   let newInvestor: NewInvestor | undefined
   let showNewInvestorForm = false
 
-  let listValue: InvestorItem
+  let listValue: InvestorItem | null
 
   let mountFinished = false
   onMount(async () => {
@@ -179,6 +179,7 @@
         showNewInvestorForm = false
         newInvestor = undefined
         value = null
+        listValue = null
       }}
       type="reset"
     >
