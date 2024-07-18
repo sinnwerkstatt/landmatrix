@@ -4,13 +4,10 @@
   import { page } from "$app/stores"
 
   export let value: number | null
-  export let fieldname: string
 
-  export let extras = { required: false }
-  export let model: "deal" | "investor" = "deal"
+  export let extras = { required: false, excludeHighIncome: false }
 
-  $: isDealTargetCountry = model === "deal" && fieldname === "country"
-  $: targetCountries = isDealTargetCountry
+  $: targetCountries = extras.excludeHighIncome
     ? $page.data.countries.filter(c => !c.high_income)
     : $page.data.countries
 </script>
