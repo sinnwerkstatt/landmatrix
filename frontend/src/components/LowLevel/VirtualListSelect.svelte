@@ -4,7 +4,7 @@
   import Select from "svelte-select"
   import VirtualList from "svelte-tiny-virtual-list"
 
-  // we assume all items have an id field
+  // TODO: Make VirtualListSelect component generic: T extends Item
   interface Item {
     id: number | string | null
     created?: boolean
