@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
   import { simpleInvestors } from "$lib/stores"
@@ -30,15 +29,8 @@
   let newInvestor: NewInvestor | undefined
   let showNewInvestorForm = false
 
-  let listValue: InvestorItem | null
-
-  let mountFinished = false
-  onMount(async () => {
-    if (value) {
-      listValue = $simpleInvestors.find(i => i.id === value)!
-    }
-    mountFinished = true
-  })
+  let listValue: InvestorItem | undefined
+  $: listValue = $simpleInvestors.find(i => i.id === value)
 
   const onInvestorInput = (e: CustomEvent<InvestorItem | null>) => {
     const investorItem = e.detail
@@ -70,8 +62,9 @@
 
     if (ret.ok) {
       const newI = { id: retJson.investorID, name: newInvestor!.name, active: false }
-      listValue = newI
       value = newI.id
+      // FIXME: Dirty hack to show select newInvestor in dropdown
+      $simpleInvestors.push(newI)
       newInvestor = undefined
       showNewInvestorForm = false
     }
@@ -86,39 +79,37 @@
   }
 </script>
 
-{#if mountFinished}
-  <VirtualListSelect
-    creatable={extras.creatable}
-    disabled={showNewInvestorForm}
-    {itemFilter}
-    items={$simpleInvestors}
-    label="name"
-    on:input={onInvestorInput}
-    placeholder={$_("Select investor")}
-    required={extras.required}
-    value={listValue}
-  >
-    <svelte:fragment let:selection slot="selection">
-      {#if selection.created}
-        <div class="font-semibold italic">[new investor]</div>
-      {:else}
-        <span class:text-red={!selection.active}>
-          {selection.name} (#{selection.id}) {!selection.active ? "-- NOT ACTIVE" : ""}
-        </span>
-      {/if}
-    </svelte:fragment>
-    <svelte:fragment let:item slot="item">
-      {#if item.created}
-        {$_("Create")}: {item.name}
-      {:else}
-        <span class:text-red={!item.active}>
-          #{item.id}: {item.name}
-          {!item.active ? "-- NOT ACTIVE" : ""}
-        </span>
-      {/if}
-    </svelte:fragment>
-  </VirtualListSelect>
-{/if}
+<VirtualListSelect
+  creatable={extras.creatable}
+  disabled={showNewInvestorForm}
+  {itemFilter}
+  items={$simpleInvestors}
+  label="name"
+  on:input={onInvestorInput}
+  placeholder={$_("Select investor")}
+  required={extras.required}
+  value={listValue}
+>
+  <svelte:fragment let:selection slot="selection">
+    {#if selection.created}
+      <div class="font-semibold italic">[new investor]</div>
+    {:else}
+      <span class:text-red={!selection.active}>
+        {selection.name} (#{selection.id}) {!selection.active ? "-- NOT ACTIVE" : ""}
+      </span>
+    {/if}
+  </svelte:fragment>
+  <svelte:fragment let:item slot="item">
+    {#if item.created}
+      {$_("Create")}: {item.name}
+    {:else}
+      <span class:text-red={!item.active}>
+        #{item.id}: {item.name}
+        {!item.active ? "-- NOT ACTIVE" : ""}
+      </span>
+    {/if}
+  </svelte:fragment>
+</VirtualListSelect>
 
 {#if !showNewInvestorForm && value}
   <div class="container p-2">
@@ -179,7 +170,6 @@
         showNewInvestorForm = false
         newInvestor = undefined
         value = null
-        listValue = null
       }}
       type="reset"
     >
