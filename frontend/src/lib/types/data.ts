@@ -77,7 +77,7 @@ export interface Involvement {
   parent_relation: string | null
   comment: string
   // the following are generated on the fly in the backend
-  other_investor: {
+  other_investor?: {
     id: number
     selected_version: {
       name: string
