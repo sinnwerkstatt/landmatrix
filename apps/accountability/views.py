@@ -1,7 +1,14 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.db.models import Q
 
-from rest_framework import generics
+from rest_framework import viewsets, generics
+from rest_framework.request import Request
+from rest_framework.response import Response
+
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample
+from drf_spectacular.types import OpenApiTypes
+
 from apps.accountability.models import VggtChapter, VggtArticle, VggtVariable
 from apps.accountability.models import DealScore, DealVariable
 
@@ -40,9 +47,30 @@ class VggtVariableDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = VggtArticleSerializer
 
 
-class DealScoreList(generics.ListCreateAPIView):
+
+class DealScoreList(viewsets.ModelViewSet):
     queryset = DealScore.objects.all()
     serializer_class = DealScoreSerializer
+
+    @extend_schema(
+        parameters=[OpenApiParameter(
+            name="country_id",
+            description="Filter by country",
+            required=False,
+            type=int,
+            many=True,
+            )]
+        )
+    def list(self, request:Request, *args, **kwargs):
+        ret = Q()
+        if request.GET.get("country_id"):
+            ret &= Q(deal__country_id__in=request.GET.getlist("country_id"))
+
+        queryset = DealScore.objects.filter(ret)
+        serializer = DealScoreSerializer(queryset, many=True)
+
+        return Response(serializer.data)
+
 
 class DealScoreDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = DealScore.objects.all()

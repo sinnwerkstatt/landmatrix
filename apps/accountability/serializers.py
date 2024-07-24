@@ -18,9 +18,10 @@ class VggtVariableSerializer(serializers.ModelSerializer):
         fields = ["id", "number", "name", "landmatrix_fields", "landmatrix_additional_fields", "scoring_help"]
 
 class DealScoreSerializer(serializers.ModelSerializer):
+    country_id = serializers.ReadOnlyField(source="deal.country_id")
     class Meta:
         model = DealScore
-        fields = ["deal", "test"]
+        fields = ["deal", "test", "country_id"]
 
 class DealVariableSerializer(serializers.ModelSerializer):
     class Meta:

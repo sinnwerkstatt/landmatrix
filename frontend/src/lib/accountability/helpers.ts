@@ -62,5 +62,4 @@ export function initTableSelection(deal) {
 
   // console.log(totalSelection)
   tableSelection.set(totalSelection)
-  console.log(get(tableSelection))
 }

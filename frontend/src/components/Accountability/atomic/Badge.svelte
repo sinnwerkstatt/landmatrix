@@ -7,7 +7,7 @@
 
     export let label = "Badge"
     export let notification = false
-    export let href:string
+    export let href:string = ""
     export let button = false
     export let disabled = false
 

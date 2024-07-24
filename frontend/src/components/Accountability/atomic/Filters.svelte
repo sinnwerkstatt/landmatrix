@@ -1,9 +1,13 @@
 <script lang="ts">
+    import { page } from "$app/stores"
+
     import SideBarFilterTabItem from "./SideBarFilterTabItem.svelte"
     import Checkbox from "./Checkbox.svelte"
     import InputCheckboxGroup from "./InputCheckboxGroup.svelte"
     import InputRadioGroup from "./InputRadioGroup.svelte"
     import Input from "./Input.svelte"
+
+    console.log($page.data)
 
     const regionChoices = [
         { label: "First region", value: "1" },
@@ -148,7 +152,7 @@
     $: invalidMaxYear = filters.initiationYear.max && filters.initiationYear.min > filters.initiationYear.max ? true : false;
     $: yearNotification = filters.initiationYear.min || filters.initiationYear.max ? true : false;
 
-    $: console.log(filters)
+    // $: console.log(filters)
 
 </script>
 
