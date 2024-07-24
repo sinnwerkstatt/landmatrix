@@ -1,6 +1,7 @@
 <script lang="ts">
     import { page } from "$app/stores"
-
+    import { deals } from "$lib/accountability/stores"
+    import { filters, lastRESTFilterArray } from "$lib/accountability/filters"
     import { groupBy, capitalizeFirst } from "$lib/accountability/helpers"
 
     import SideBarFilterTabItem from "./SideBarFilterTabItem.svelte"
@@ -42,94 +43,81 @@
         { label: "Only", value: true }
     ]
 
-    let filters = {
-        regions: [],
-        countries: [],
-        size: { min: null, max: null },
-        negotiationStatus: ["EXPRESSION_OF_INTEREST", "UNDER_NEGOTIATION"],
-        natureOfDeal: ["OUTRIGHT_PURCHASE"],
-        investor: { names: [] , countries: [] },
-        initiationYear: { min: null, max: null, includeUnknown: false },
-        implementationStatus: [],
-        intentionOfInvestment: { values: [], noInformation: false },
-        produce: [],
-        transnational: null,
-        forestConcession: null
-    }
+    $: invalidMaxSize = $filters.deal_size_min && $filters.deal_size_min > $filters.deal_size_max ? true : false;
+    $: sizeNotification = $filters.deal_size_min || $filters.deal_size_max ? true : false;
 
-    $: invalidMaxSize = filters.size.max && filters.size.min > filters.size.max ? true : false;
-    $: sizeNotification = filters.size.min || filters.size.max ? true : false;
-
-    $: invalidMaxYear = filters.initiationYear.max && filters.initiationYear.min > filters.initiationYear.max ? true : false;
-    $: yearNotification = filters.initiationYear.min || filters.initiationYear.max ? true : false;
+    $: invalidMaxYear = $filters.initiation_year_max && $filters.initiation_year_min > $filters.initiation_year_max ? true : false;
+    $: yearNotification = $filters.initiation_year_min || $filters.initiation_year_max ? true : false;
 
     // $: console.log(filters)
+
+    $: console.log($deals)
 
 </script>
 
 <div class="overflow-y-auto h-fit mb-6">
-    <SideBarFilterTabItem label="Land Matrix region" count={filters.regions?.length} >
-        <Input type="multiselect" placeholder="Choose a region" choices={regionChoices} bind:value={filters.regions} />
+    <SideBarFilterTabItem label="Land Matrix region" count={$filters.region_id?.length} >
+        <Input type="multiselect" placeholder="Choose a region" choices={regionChoices} bind:value={$filters.region_id} />
     </SideBarFilterTabItem>
 
-    <SideBarFilterTabItem label="Countries" count={filters.countries?.length} >
-        <Input type="multiselect" placeholder="Choose a country" choices={countryChoices} bind:value={filters.countries} />
+    <SideBarFilterTabItem label="Countries" count={$filters.country_id?.length} >
+        <Input type="multiselect" placeholder="Choose a country" choices={countryChoices} bind:value={$filters.country_id} />
     </SideBarFilterTabItem>
 
     <SideBarFilterTabItem label="Deal Size" notification={sizeNotification} >
         <div class="flex flex-col gap-1.5">
-            <Input type="number" placeholder="from" min=0 bind:value={filters.size.min} />
-            <Input type="number" placeholder="to" min=0 bind:value={filters.size.max}
+            <Input type="number" placeholder="from" min=0 bind:value={$filters.deal_size_min} />
+            <Input type="number" placeholder="to" min=0 bind:value={$filters.deal_size_max}
                     status={invalidMaxSize ? "invalid" : "neutral"} />
         </div>
     </SideBarFilterTabItem>
 
-    <SideBarFilterTabItem label="Negotiation status" count={filters.negotiationStatus.length} >
+    <SideBarFilterTabItem label="Negotiation status" count={$filters.negotiation_status.length} >
         <InputCheckboxGroup choices={negotiationStatusChoices} categories={negotiationStatusGroups}
-                            orphansLabel="Other" bind:group={filters.negotiationStatus} />
+                            orphansLabel="Other" bind:group={$filters.negotiation_status} />
     </SideBarFilterTabItem>
 
-    <SideBarFilterTabItem label="Nature of the deal" count={filters.natureOfDeal.length} >
-        <InputCheckboxGroup choices={natureOfDealChoices} bind:group={filters.natureOfDeal} />
+    <SideBarFilterTabItem label="Nature of the deal" count={$filters.nature_of_deal.length} >
+        <InputCheckboxGroup choices={natureOfDealChoices} bind:group={$filters.nature_of_deal} />
     </SideBarFilterTabItem>
 
-    <SideBarFilterTabItem label="Investors" count={filters.investor.names?.length + filters.investor.countries?.length} >
-        <div class="flex flex-col gap-1.5" class:gap-4={filters.investor.names?.length > 0}>
-            <Input type="multiselect" placeholder="Investor name" choices={investorNamesChoices} bind:value={filters.investor.names} />
-            <Input type="multiselect" placeholder="Country of registration" choices={countryChoices} bind:value={filters.investor.countries} />
+    <SideBarFilterTabItem label="Investors" count={$filters.investor_id?.length + $filters.investor_country_id?.length} >
+        <div class="flex flex-col gap-1.5" class:gap-4={$filters.investor_id?.length > 0}>
+            <Input type="multiselect" placeholder="Investor name" choices={investorNamesChoices} bind:value={$filters.investor_id} />
+            <Input type="multiselect" placeholder="Country of registration" choices={countryChoices} bind:value={$filters.investor_country_id} />
         </div>
     </SideBarFilterTabItem>
 
     <SideBarFilterTabItem label="Year of initiation" notification={yearNotification} >
         <div class="flex flex-col gap-1.5">
-            <Input type="number" placeholder="from" min=0 bind:value={filters.initiationYear.min} />
-            <Input type="number" placeholder="to" min=0 bind:value={filters.initiationYear.max}
+            <Input type="number" placeholder="from" min=0 bind:value={$filters.initiation_year_min} />
+            <Input type="number" placeholder="to" min=0 bind:value={$filters.initiation_year_max}
                     status={invalidMaxYear ? "invalid" : "neutral"} />
-            <Checkbox label="Include unknown years" paddingX=2 bind:checked={filters.initiationYear.includeUnknown} />
+            <Checkbox label="Include unknown years" paddingX=2 bind:checked={$filters.initiation_year_unknown} />
         </div>
     </SideBarFilterTabItem>
 
-    <SideBarFilterTabItem label="Implementation status" count={filters.implementationStatus.length} >
-        <InputCheckboxGroup choices={implementationStatusChoices} bind:group={filters.implementationStatus} />
+    <SideBarFilterTabItem label="Implementation status" count={$filters.implementation_status.length} >
+        <InputCheckboxGroup choices={implementationStatusChoices} bind:group={$filters.implementation_status} />
     </SideBarFilterTabItem>
 
-    <SideBarFilterTabItem label="Intention of investment" count={filters.intentionOfInvestment.values.length + filters.intentionOfInvestment.noInformation} >
-        <Checkbox label="No information" bind:checked={filters.intentionOfInvestment.noInformation} />
-        <InputCheckboxGroup choices={intentionOfInvestmentChoices} bind:group={filters.intentionOfInvestment.values}
+    <SideBarFilterTabItem label="Intention of investment" count={$filters.intention_of_investment.length + $filters.intention_of_investment_unknown} >
+        <Checkbox label="No information" bind:checked={$filters.intention_of_investment_unknown} />
+        <InputCheckboxGroup choices={intentionOfInvestmentChoices} bind:group={$filters.intention_of_investment}
                             categories={intentionOfInvestmentGroups} orphansLabel="Other" />
     </SideBarFilterTabItem>
 
-    <SideBarFilterTabItem label="Produce" count={filters.produce.length} >
+    <SideBarFilterTabItem label="Produce" count={$filters.produce.length} >
         <Input type="multiselect" placeholder="Select production" choices={produceChoices} 
-                                    bind:value={filters.produce} categories={produceCategories}
+                                    bind:value={$filters.produce} categories={produceCategories}
                                     readonlyCategories={true} />
     </SideBarFilterTabItem>
 
     <SideBarFilterTabItem label="Scope" >
-        <InputRadioGroup choices={scopeChoices} bind:value={filters.transnational} />
+        <InputRadioGroup choices={scopeChoices} bind:value={$filters.transnational} />
     </SideBarFilterTabItem>
 
     <SideBarFilterTabItem label="Forest concession" >
-        <InputRadioGroup choices={forestConcessionChoices} bind:value={filters.forestConcession} />
+        <InputRadioGroup choices={forestConcessionChoices} bind:value={$filters.forest_concession} />
     </SideBarFilterTabItem>
 </div>

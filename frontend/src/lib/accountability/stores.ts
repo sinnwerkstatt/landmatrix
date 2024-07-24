@@ -1,6 +1,10 @@
-import { writable } from "svelte/store"
+import { derived, writable } from "svelte/store"
 
 import { browser } from "$app/environment"
+
+import { loading } from "$lib/stores/basics"
+
+import { filters, lastRESTFilterArray } from "./filters"
 
 // Navigation status
 export const openedFilterBar = writable(false)
@@ -18,6 +22,27 @@ dealsHistory.subscribe(value => {
   }
 })
 
+// =======================================================================================
+// Deals (fetch deals whenever the filters change)
+export const deals = derived(
+  [filters, lastRESTFilterArray],
+  ([$filters, $lastRESTFilterArray], set) => {
+    const restFilterArray = $filters.toRESTFilterArray()
+    if (restFilterArray != $lastRESTFilterArray) {
+      loading.set(true)
+      fetch(`/api/accountability/deal/?${restFilterArray}`)
+        .then(res => res.json())
+        .then(res => {
+          lastRESTFilterArray.set(restFilterArray)
+          loading.set(false)
+          set(res)
+        })
+    }
+  },
+  [],
+)
+
+// =======================================================================================
 // Documentation bookmark
 export const documentationBookmark = writable(undefined)
 
