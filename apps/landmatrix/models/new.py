@@ -1487,7 +1487,7 @@ class InvestorVersion(BaseVersionMixin, models.Model):
                     continue
 
                 try:
-                    # TODO: Cleanup magic foo where id as nid is processed
+                    # TODO: Cleanup magic foo where id as string (nanoId) or None is processed
                     assert isinstance(invo["id"], int)
                     i1 = Involvement.objects.get(id=invo["id"], child_investor=investor)
                 except (Involvement.DoesNotExist, AssertionError):
@@ -1843,6 +1843,7 @@ class Involvement(models.Model):
         verbose_name_plural = _("Investor Venture Involvements")
         ordering = ["id"]
         # would be nice to have but not today
+        # maybe tomorrow?
         # unique_together = [["parent_investor", "child_investor"]]
 
     def __str__(self):

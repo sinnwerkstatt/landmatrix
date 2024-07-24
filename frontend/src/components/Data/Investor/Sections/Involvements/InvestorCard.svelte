@@ -8,18 +8,29 @@
   const wrapperClass = "my-1 flex flex-wrap justify-between"
   const labelClass = "whitespace-nowrap font-light text-gray-400 pr-2 italic"
   const valueClass = "font-medium"
+
+  const is_deleted = (inv: Involvement) => inv.other_investor.deleted
+  const is_draft_only = (inv: Involvement) => inv.other_investor.draft_only
 </script>
 
 <div
   class="relative flex flex-col gap-1 border border-pelorous p-2"
-  class:bg-red-200={involvement.other_investor?.deleted}
+  class:bg-red-200={is_deleted(involvement)}
+  class:bg-yellow-100={is_draft_only(involvement)}
+  class:text-black={is_deleted(involvement) || is_draft_only(involvement)}
 >
   {#if involvement.other_investor}
-    {#if involvement.other_investor.deleted}
+    {#if is_deleted(involvement)}
       <div
         class="absolute bottom-2 left-0 right-0 flex items-center justify-center text-3xl italic opacity-30"
       >
         DELETED
+      </div>
+    {:else if is_draft_only(involvement)}
+      <div
+        class="absolute bottom-2 left-0 right-0 flex items-center justify-center text-3xl italic opacity-30"
+      >
+        DRAFT
       </div>
     {/if}
     <DisplayField

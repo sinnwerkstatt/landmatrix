@@ -1,5 +1,5 @@
 from django.contrib.gis.geos import GEOSGeometry
-from django.db.models import F, Q, QuerySet
+from django.db.models import F, Q, QuerySet, Case, When
 from django.db.models.functions import JSONObject
 from django.utils.translation import gettext as _
 from django_pydantic_field.rest_framework import SchemaField
@@ -511,15 +511,12 @@ class InvestorSerializer(serializers.ModelSerializer):
             selected_version_id = None
 
         if selected_version_id and selected_version_id != obj.active_version_id:
+            # TODO: Add nanoIds
             invos = obj.versions.get(id=selected_version_id).involvements_snapshot
         elif obj.active_version:
-            invos = (
+            qs_invos = (
                 Involvement.objects.filter(
                     Q(parent_investor_id=obj.id) | Q(child_investor_id=obj.id)
-                )
-                .filter(
-                    ~Q(parent_investor__active_version=None),
-                    ~Q(child_investor__active_version=None),
                 )
                 .values(
                     "id",
@@ -537,41 +534,62 @@ class InvestorSerializer(serializers.ModelSerializer):
                 .order_by("id")
             )
 
+            invos = list(qs_invos)
         else:
+            # TODO: Add nanoIds
             invos = obj.draft_version.involvements_snapshot
 
         if invos is None:
             return []
+
         self._enrich_involvements_for_viewing(invos, obj.id)
+
         return invos
 
     @staticmethod
     def _enrich_involvements_for_viewing(
-        involvements: list[dict], target_id: int
+        involvements: list[dict],
+        target_id: int,
     ) -> None:
-        all_ids = set()
-
         filtered_involvements = [
             x
             for x in involvements
             if x["parent_investor_id"] and x["child_investor_id"]
         ]
 
+        all_ids = set()
         for involvement in filtered_involvements:
             all_ids.add(involvement["parent_investor_id"])
             all_ids.add(involvement["child_investor_id"])
-        investors = {
-            x["id"]: x
-            for x in InvestorHull.objects.filter(id__in=all_ids)
-            .annotate(
-                selected_version=JSONObject(
+
+        selected_version = Case(
+            When(
+                ~Q(active_version=None),
+                then=JSONObject(
                     name=F("active_version__name"),
                     name_unknown=F("active_version__name_unknown"),
                     country_id=F("active_version__country_id"),
                     classification=F("active_version__classification"),
-                )
+                ),
+            ),
+            default=JSONObject(
+                name=F("draft_version__name"),
+                name_unknown=F("draft_version__name_unknown"),
+                country_id=F("draft_version__country_id"),
+                classification=F("draft_version__classification"),
+            ),
+        )
+
+        investor_lookup = {
+            x["id"]: x
+            for x in InvestorHull.objects.filter(id__in=all_ids)
+            .annotate(
+                selected_version=selected_version,
             )
-            .values("id", "selected_version", "deleted")
+            .annotate(
+                draft_only=Q(active_version=None),
+            )
+            .values("id", "selected_version", "draft_only", "deleted")
         }
 
         for invo in filtered_involvements:
@@ -581,14 +599,14 @@ class InvestorSerializer(serializers.ModelSerializer):
                     if invo["role"] == "PARENT"
                     else _("Beneficiary company")
                 )
-                other_investor = investors[invo["child_investor_id"]]
+                other_investor = investor_lookup[invo["child_investor_id"]]
             elif target_id == invo["child_investor_id"]:
                 relationship = (
                     _("Parent company")
                     if invo["role"] == "PARENT"
                     else _("Tertiary investor/lender")
                 )
-                other_investor = investors[invo["parent_investor_id"]]
+                other_investor = investor_lookup[invo["parent_investor_id"]]
             else:
                 continue
 
