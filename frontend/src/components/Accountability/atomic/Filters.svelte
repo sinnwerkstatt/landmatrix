@@ -49,10 +49,6 @@
     $: invalidMaxYear = $filters.initiation_year_max && $filters.initiation_year_min > $filters.initiation_year_max ? true : false;
     $: yearNotification = $filters.initiation_year_min || $filters.initiation_year_max ? true : false;
 
-    // $: console.log(filters)
-
-    $: console.log($deals)
-
 </script>
 
 <div class="overflow-y-auto h-fit mb-6">

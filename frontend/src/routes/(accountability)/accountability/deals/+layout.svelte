@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from "$app/stores"
-    import { dealsHistory } from "$lib/accountability/stores"
+    import { dealsHistory, deals } from "$lib/accountability/stores"
 
     import ProjectsSidebar from "$components/Accountability/ProjectsSidebar.svelte"
     import FiltersSidebar from "$components/Accountability/FiltersSidebar.svelte"
@@ -20,6 +20,9 @@
     // TODO: Remember to handle differently the "all deals" project with ID = 0
 
     // TODO: Remember to handle errors when a deal doesn't exist for a project (reset dealsHistory)
+
+    // =====
+    $: console.log($deals)
 
 </script>
 
