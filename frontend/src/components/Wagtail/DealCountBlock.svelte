@@ -28,7 +28,7 @@
 </script>
 
 <div
-  class="content-fit container mx-auto my-20 bg-[url('/images/Background_hoehenlinien.png')] bg-contain p-6 text-center dark:bg-[url('/images/Background_hoehenlinien_dark.png')]"
+  class="container mx-auto my-20 bg-[url('/images/Background_hoehenlinien.png')] bg-cover bg-center p-6 text-center dark:bg-[url('/images/Background_hoehenlinien_dark.png')]"
 >
   <h3 class="heading1 dark:text-white">{value.text}</h3>
   <p class="display1 text-pelorous" bind:this={countElement}>
