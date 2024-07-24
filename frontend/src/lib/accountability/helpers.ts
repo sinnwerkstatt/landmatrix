@@ -18,6 +18,23 @@ export function arrayIncludesAllOf(array, values) {
   }
 }
 
+export function groupBy(array: [], key: string, value: string) {
+  const reduced = array.reduce((result, currentValue) => {
+    if (!result[currentValue[key]]) {
+      result[currentValue[key]] = []
+    }
+    value
+      ? result[currentValue[key]].push(currentValue[value])
+      : result[currentValue[key]].push(currentValue)
+    return result
+  }, {})
+  let res = []
+  Object.entries(reduced).forEach(([key, values]) => {
+    res.push({ label: key, values })
+  })
+  return res
+}
+
 export function capitalizeFirst(string) {
   if (typeof string === "string") {
     const firstLetter = string.charAt(0)

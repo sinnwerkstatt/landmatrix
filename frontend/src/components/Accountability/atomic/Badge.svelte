@@ -44,7 +44,8 @@
 
         <span class="line-clamp-1">{label}</span>
 
-        {#if button && !link}
+        <!-- {#if button && !link} -->
+        {#if button}
             <button {disabled} on:click >
                 <IconXMark size={iconSize} />
             </button>

@@ -38,6 +38,9 @@
     export let max:string = ""
     export let step:string = "100"
 
+    // Type select
+    const choicesLengthLimit = 1000
+
     // Locales
     let open = false
     let filter = ""
@@ -144,7 +147,17 @@
             <div class="max-h-80 overflow-auto { search ? '' : 'pt-4'}" bind:this={dropdown} use:useScrollIntoView>
 
                 {#if type == "multiselect"}
-                    <InputCheckboxGroup {choices} {categories} bind:group={value} {filter} {readonlyCategories} />
+                    {#if choices.length > choicesLengthLimit}
+                        <!-- If too many choices, hide until search is as least 3 characters long -->
+                        {#if filter.length > 0}
+                            <InputCheckboxGroup {choices} {categories} bind:group={value} {filter} {readonlyCategories} />
+                        {:else}
+                            <p class="px-4 italic text-a-gray-400">Start typing to search for investors</p>
+                        {/if}
+                    {:else}
+                        <!-- Show all choices if less than 1000 (performance OK) -->
+                        <InputCheckboxGroup {choices} {categories} bind:group={value} {filter} {readonlyCategories} />
+                    {/if}
                 {:else}
                     <div class="flex flex-col">
                         {#each choices as choice}

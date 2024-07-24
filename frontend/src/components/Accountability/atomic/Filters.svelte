@@ -1,130 +1,41 @@
 <script lang="ts">
     import { page } from "$app/stores"
 
+    import { groupBy, capitalizeFirst } from "$lib/accountability/helpers"
+
     import SideBarFilterTabItem from "./SideBarFilterTabItem.svelte"
     import Checkbox from "./Checkbox.svelte"
     import InputCheckboxGroup from "./InputCheckboxGroup.svelte"
     import InputRadioGroup from "./InputRadioGroup.svelte"
     import Input from "./Input.svelte"
 
-    console.log($page.data)
-
-    const regionChoices = [
-        { label: "First region", value: "1" },
-        { label: "Second region", value: "2" },
-        { label: "Third region", value: "3" }
-    ]
-
-    const countryChoices = [
-        { label: "One", value: "1" },
-        { label: "Two", value: "2" },
-        { label: "Three", value: "3" },
-        { label: "Four", value: "4" },
-        { label: "Five", value: "5" },
-        { label: "Six", value: "6" },
-        { label: "Seven", value: "7" },
-        { label: "Eight", value: "8" },
-        { label: "Nine", value: "9" },
-        { label: "Ten", value: "10" }
-    ]
-
-    const negotiationStatusChoices = [
-        { value: "EXPRESSION_OF_INTEREST", label: "Expression of interest" },
-        { value: "UNDER_NEGOTIATION", label: "Under negotiation"},
-        { value: "MEMORANDUM_OF_UNDERSTANDING", label: "Memorandum of understanding" },
-        { value: "ORAL_AGREEMENT", label: "Oral Agreement" },
-        { value: "CONTRACT_SIGNED", label: "Contract signed" },
-        { value: "CHANGE_OF_OWNERSHIP", label: "Change of ownership" },
-        { value: "NEGOTIATIONS_FAILED", label: "Negotiations failed" },
-        { value: "CONTRACT_CANCELED", label: "Contract cancelled" },
-        { value: "CONTRACT_EXPIRED", label: "Contract expired" }
-    ]
-
-    const negotiationStatusGroups = [
-        { label: "Intended", values: ["EXPRESSION_OF_INTEREST", "UNDER_NEGOTIATION", "MEMORANDUM_OF_UNDERSTANDING"] },
-        { label: "Concluded", values: ["ORAL_AGREEMENT", "CONTRACT_SIGNED", "CHANGE_OF_OWNERSHIP"] },
-        { label: "Failed", values: ["NEGOTIATIONS_FAILED", "CONTRACT_CANCELED"] }
-    ]
-
-    const natureOfDealChoices = [
-        { value: "OUTRIGHT_PURCHASE", label: "Outright purchase" },
-        { value: "LEASE", label: "Lease" },
-        { value: "CONCESSION", label: "Concession" },
-        { value: "EXPLOITATION_PERMIT", label: "Exploitation permit / license / concession (for mineral resources)" },
-        { value: "PURE_CONTRACT_FARMING", label: "Pure contract farming" },
-        { value: "OTHER", label: "Other" }
-    ]
-
-    const investorNamesChoices = [
-        { value: "1", label: "A" },
-        { value: "2", label: "B" },
-        { value: "3", label: "C" }
-    ]
-
-    const implementationStatusChoices = [
-        { value: "PROJECT_NOT_STARTED", label: "Project not started" },
-        { value: "STARTUP_PHASE", label: "Startup phase (no production)" },
-        { value: "IN_OPERATION", label: "In operation (production)" },
-        { value: "PROJECT_ABANDONED", label: "Project abandoned" }
-    ]
-
-    const intentionOfInvestmentChoices = [
-        { value: "BIOFUELS", label: "Biomass for biofuels" },
-        { value: "BIOMASS_ENERGY_GENERATION", label: "Biomass for energy generation (agriculture)" },
-        { value: "FODDER", label: "Fodder" },
-        { value: "FOOD_CROPS", label: "Food crops" },
-        { value: "LIVESTOCK", label: "Livestock" },
-        { value: "NON_FOOD_AGRICULTURE", label: "Non-food agricultural commodities" },
-        { value: "AGRICULTURE_UNSPECIFIED", label: "Agriculture unspecified" },
-        { value: "BIOMASS_ENERGY_PRODUCTION", label: "Biomass for energy generation (forestry)" },
-        { value: "CARBON", label: "For carbon sequestration/REDD" },
-        { value: "FOREST_LOGGING", label: "Forest logging / management for wood and fiber" },
-        { value: "TIMBER_PLANTATION", label: "Timber plantation for wood and fiber" },
-        { value: "FORESTRY_UNSPECIFIED", label: "Forestry unspecified" },
-        { value: "SOLAR_PARK", label: "Solar park" },
-        { value: "WIND_FARM", label: "Wind farm" },
-        { value: "RENEWABLE_ENERGY", label: "Renewable energy unspecified" },
-        { value: "CONVERSATION", label: "Conservation" },
-        { value: "INDUSTRY", label: "Industry" },
-        { value: "LAND_SPECULATION", label: "Land speculation" },
-        { value: "MINING", label: "Mining" },
-        { value: "OIL_GAS_EXTRACTION", label: "Oil / Gas extraction" },
-        { value: "TOURISM", label: "Tourism" },
-        { value: "OTHER", label: "Other" }
-    ]
-
-    const intentionOfInvestmentGroups = [
-        { label: "Agriculture", values: ["BIOFUELS", "BIOMASS_ENERGY_GENERATION", "FODDER", "FOOD_CROPS", "LIVESTOCK", "NON_FOOD_AGRICULTURE", "AGRICULTURE_UNSPECIFIED"] },
-        { label: "Forestry", values: ["BIOMASS_ENERGY_PRODUCTION", "CARBON", "FOREST_LOGGING", "TIMBER_PLANTATION", "FORESTRY_UNSPECIFIED"] },
-        { label: "Renewable energy power plants", values: ["SOLAR_PARK", "WIND_FARM", "RENEWABLE_ENERGY"] },
-    ]
-
-    const produceChoices = [
-        { value: "ACC", label: "Accacia" },
-        { value: "ALF", label: "Alfalfa" },
-        { value: "ALG", label: "Seaweed / Macroalgae(unspecified)" },
-        { value: "ALM", label: "Almond" },
-        { value: "ALV", label: "Aloe Vera" },
-        { value: "APL", label: "Apple" },
-        { value: "BEE", label: "Beef Cattle" },
-        { value: "FSH", label: "Fish" },
-        { value: "GOT", label: "Goats" },
-        { value: "PIG", label: "Pork" },
-        { value: "POU", label: "Poultry" },
-        { value: "SHP", label: "Sheep" }
-    ]
-
+    const regionChoices = $page.data.regions.map(({ name:label, id:value }) => ({ label, value }))
+    const countryChoices = $page.data.countries.map(({ name:label, id:value }) => ({ label, value }))
+    const negotiationStatusChoices = $page.data.fieldChoices.deal.negotiation_status
+    const negotiationStatusGroups = groupBy(negotiationStatusChoices, 'group', 'value')
+                                    .map(({ label, values }) => 
+                                        ({ label: capitalizeFirst(label.replace("_", " ").toLowerCase()), values }))
+    const natureOfDealChoices = $page.data.fieldChoices.deal.nature_of_deal
+    const investorNamesChoices = $page.data.investors.map(({ name:label, id:value }) => ({ label, value }))
+    const implementationStatusChoices = $page.data.fieldChoices.deal.implementation_status
+    const intentionOfInvestmentChoices = $page.data.fieldChoices.deal.intention_of_investment
+    const intentionOfInvestmentGroups = groupBy(intentionOfInvestmentChoices, 'group', 'value')
+                                        .map(({ label, values }) => 
+                                            ({ label: capitalizeFirst(label.replace("_", " ").toLowerCase()), values }))
+    const produceCrops = $page.data.fieldChoices.deal.crops
+    const produceAnimals = $page.data.fieldChoices.deal.animals
+    const produceMinerals = $page.data.fieldChoices.deal.minerals
+    const produceChoices = produceCrops.concat(produceAnimals).concat(produceMinerals)
     const produceCategories = [
-        { label: "Crops", values: ["ACC", "ALF", "ALG", "ALM", "ALV", "APL"] },
-        { label: "Animals", values: ["BEE", "FSH", "GOT", "PIG", "POU", "SHP"] }
+        { label: "Crops", values: produceCrops.map(e => e.value) },
+        { label: "Animals", values: produceAnimals.map(e => e.value) },
+        { label: "Mineral resources", values: produceMinerals.map(e => e.value) }
     ]
-
     const scopeChoices = [
         { label: "All", value: null },
         { label: "Transnational", value: true },
         { label: "Domestic", value: false }
     ]
-
     const forestConcessionChoices = [
         { label: "Included", value: null },
         { label: "Excluded", value: false },

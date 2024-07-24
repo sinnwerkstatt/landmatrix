@@ -12,5 +12,9 @@ export async function load() {
   if (fieldChoicesReq.error) error(500, fieldChoicesReq.error)
   const fieldChoices: components["schemas"]["FieldChoices"][] = fieldChoicesReq.data
 
-  return { fieldChoices }
+  const investorsReq = await apiClient.GET("/api/investors/simple/")
+  if (investorsReq.error) error(500, investorsReq.error)
+  const investors: components["schemas"]["SimpleInvestor"][] = investorsReq.data
+
+  return { fieldChoices, investors }
 }
