@@ -1051,7 +1051,7 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
       displayField: InvestorLinkField,
       editField: InvestorForeignKey,
       label: $_("Investor"),
-      extras: { required: true },
+      extras: { required: true, creatable: true },
     },
     "involvement.role": {
       displayField: ChoicesField,

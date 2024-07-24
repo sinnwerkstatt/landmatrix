@@ -13,7 +13,9 @@
   $: filteredInvolvements =
     $page.data.user && $page.data.user.role > UserRole.ANYBODY
       ? investor.involvements
-      : investor.involvements.filter(i => !i.other_investor.deleted)
+      : investor.involvements.filter(
+          i => !(i.other_investor.deleted || i.other_investor.draft_only),
+        )
 </script>
 
 <section>
