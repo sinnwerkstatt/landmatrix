@@ -90,6 +90,7 @@ export interface Involvement {
       classification: string
     }
     deleted: boolean
+    draft_only: boolean
   }
   relationship: string
 }
