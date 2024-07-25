@@ -236,24 +236,28 @@ def __flatten_array_choices(data, field, choics) -> None:
     data[field] = "|".join(matches)
 
 
-def __bool_cast(data, field) -> None:
-    if data.get(field) is None:
-        return
-    data[field] = "Yes" if data[field] else "No"
+def __bool_cast(data: dict, field_name: str) -> str | None:
+    value: bool | None = data.get(field_name)
+
+    if value is not None:
+        return "Yes" if value else "No"
 
 
 def deal_download_format(data: dict):
     for field in DealVersion._meta.get_fields(include_parents=False):
         if field.name not in data.keys():
             continue
+
         if isinstance(field, models.BooleanField):
-            __bool_cast(data, field.name)
+            if field.name == "transnational":
+                data[field.name] = "transnational" if data[field.name] else "domestic"
+            else:
+                data[field.name] = __bool_cast(data, field.name)
         elif isinstance(field, DecimalIntField):
             if data.get(field.name) is not None:
                 data[field.name] = f"{data[field.name]:.2f}"
             else:
                 data[field.name] = ""
-
         elif isinstance(field, models.CharField):
             if field.choices and data.get(field.name):
                 data[field.name] = str(dict(field.choices).get(data[field.name]))
@@ -263,13 +267,11 @@ def deal_download_format(data: dict):
         #     ic(field)
         #     "nevermind"
 
-    # special cases
-    if "transnational" in data:
-        data["transnational"] = "transnational" if data["transnational"] else "domestic"
-    fully_updated_at = data["deal__fully_updated_at"]
-    if fully_updated_at:
+    # DealHull fields
+    if fully_updated_at := data["deal__fully_updated_at"]:
         data["deal__fully_updated_at"] = fully_updated_at.isoformat()
-    __bool_cast(data, "deal__confidential")
+
+    data["deal_confidential"] = __bool_cast(data, "deal__confidential")
 
     # flatten top investors
     data["top_investors"] = "|".join(
