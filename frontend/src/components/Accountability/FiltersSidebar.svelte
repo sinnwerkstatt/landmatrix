@@ -2,6 +2,7 @@
     import { users } from "$lib/accountability/placeholders"
     import { usersToUserChoices } from "$lib/accountability/helpers"
     import { openedFilterBar } from "$lib/accountability/stores"
+    import { filters } from "$lib/accountability/filters"
 
     import Sidebar from "./atomic/Sidebar.svelte"
     import Filters from "./atomic/Filters.svelte"
@@ -34,10 +35,6 @@
         { label: "Last modification:", value: undefined },
         { label: "Last modification by:", value: undefined }
     ]
-
-    function clearFilters() {
-        console.log("Clear all");
-    }
  
 </script>
 
@@ -54,7 +51,7 @@
 
         <div class="flex justify-center gap-2">
             <Button label="Save new project" size="sm" style="neutral" on:click={() => openSaveModal = true} />
-            <Button label="Clear all" size="sm" style="neutral" type="outline" />
+            <Button label="Clear all" size="sm" style="neutral" type="outline" on:click={() => $filters = $filters.empty()} />
         </div>
     </Sidebar>
 {/if}

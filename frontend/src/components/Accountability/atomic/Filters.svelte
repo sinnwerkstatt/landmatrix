@@ -1,7 +1,6 @@
 <script lang="ts">
     import { page } from "$app/stores"
-    import { deals } from "$lib/accountability/stores"
-    import { filters, lastRESTFilterArray } from "$lib/accountability/filters"
+    import { filters } from "$lib/accountability/filters"
     import { groupBy, capitalizeFirst } from "$lib/accountability/helpers"
 
     import SideBarFilterTabItem from "./SideBarFilterTabItem.svelte"
