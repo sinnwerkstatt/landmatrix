@@ -15,6 +15,8 @@ from apps.accountability.models import DealScore, DealVariable
 from apps.accountability.serializers import VggtChapterSerializer, VggtArticleSerializer, VggtVariableSerializer
 from apps.accountability.serializers import DealScoreSerializer, DealVariableSerializer
 
+from apps.accountability.utils import openapi_filters_parameters_scoring, parse_filters
+
 
 # Tmp root view
 def index(request):
@@ -52,24 +54,19 @@ class DealScoreList(viewsets.ModelViewSet):
     queryset = DealScore.objects.all()
     serializer_class = DealScoreSerializer
 
-    @extend_schema(
-        parameters=[OpenApiParameter(
-            name="country_id",
-            description="Filter by country",
-            required=False,
-            type=int,
-            many=True,
-            )]
-        )
+    # def get_queryset(self):
+    #     return super().get_queryset()
+
+    @extend_schema(parameters=openapi_filters_parameters_scoring)
     def list(self, request:Request, *args, **kwargs):
-        ret = Q()
-        if request.GET.get("country_id"):
-            ret &= Q(deal__country_id__in=request.GET.getlist("country_id"))
-
-        queryset = DealScore.objects.filter(ret)
+        queryset = DealScore.objects.exclude(deal__active_version__is_public=False).filter(parse_filters(request)).order_by("deal").distinct()
         serializer = DealScoreSerializer(queryset, many=True)
-
         return Response(serializer.data)
+        # return Response(
+        #     self.get_queryset()
+        #     .order_by("deal")
+        #     .values("deal")
+        # )
 
 
 class DealScoreDetail(generics.RetrieveUpdateDestroyAPIView):

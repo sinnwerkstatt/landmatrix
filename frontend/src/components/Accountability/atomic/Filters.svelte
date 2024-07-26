@@ -12,39 +12,39 @@
 
     const regionChoices = $page.data.regions.map(({ name:label, id:value }) => ({ label, value }))
     const countryChoices = $page.data.countries.map(({ name:label, id:value }) => ({ label, value }))
+
     const negotiationStatusChoices = $page.data.fieldChoices.deal.negotiation_status
     const negotiationStatusGroups = groupBy(negotiationStatusChoices, 'group', 'value')
                                     .map(({ label, values }) => 
                                         ({ label: capitalizeFirst(label.replace("_", " ").toLowerCase()), values }))
+                                        
     const natureOfDealChoices = $page.data.fieldChoices.deal.nature_of_deal
     const investorNamesChoices = $page.data.investors.map(({ name:label, id:value }) => ({ label, value }))
-    const implementationStatusChoices = $page.data.fieldChoices.deal.implementation_status
+    const implementationStatusChoices = [{ label: "No information", value: "UNKNOWN" }].concat($page.data.fieldChoices.deal.implementation_status)
+
     const intentionOfInvestmentChoices = $page.data.fieldChoices.deal.intention_of_investment
     const intentionOfInvestmentGroups = groupBy(intentionOfInvestmentChoices, 'group', 'value')
                                         .map(({ label, values }) => 
                                             ({ label: capitalizeFirst(label.replace("_", " ").toLowerCase()), values }))
+
     const produceCrops = $page.data.fieldChoices.deal.crops
     const produceAnimals = $page.data.fieldChoices.deal.animals
     const produceMinerals = $page.data.fieldChoices.deal.minerals
-    const produceChoices = produceCrops.concat(produceAnimals).concat(produceMinerals)
-    const produceCategories = [
-        { label: "Crops", values: produceCrops.map(e => e.value) },
-        { label: "Animals", values: produceAnimals.map(e => e.value) },
-        { label: "Mineral resources", values: produceMinerals.map(e => e.value) }
-    ]
+
     const scopeChoices = [
         { label: "All", value: null },
         { label: "Transnational", value: true },
         { label: "Domestic", value: false }
     ]
+
     const forestConcessionChoices = [
         { label: "Included", value: null },
         { label: "Excluded", value: false },
         { label: "Only", value: true }
     ]
 
-    $: invalidMaxSize = $filters.deal_size_min && $filters.deal_size_min > $filters.deal_size_max ? true : false;
-    $: sizeNotification = $filters.deal_size_min || $filters.deal_size_max ? true : false;
+    $: invalidMaxSize = $filters.area_min && $filters.area_min > $filters.area_max ? true : false;
+    $: sizeNotification = $filters.area_min || $filters.area_max ? true : false;
 
     $: invalidMaxYear = $filters.initiation_year_max && $filters.initiation_year_min > $filters.initiation_year_max ? true : false;
     $: yearNotification = $filters.initiation_year_min || $filters.initiation_year_max ? true : false;
@@ -62,8 +62,8 @@
 
     <SideBarFilterTabItem label="Deal Size" notification={sizeNotification} >
         <div class="flex flex-col gap-1.5">
-            <Input type="number" placeholder="from" min=0 bind:value={$filters.deal_size_min} />
-            <Input type="number" placeholder="to" min=0 bind:value={$filters.deal_size_max}
+            <Input type="number" placeholder="from" min=0 bind:value={$filters.area_min} />
+            <Input type="number" placeholder="to" min=0 bind:value={$filters.area_max}
                     status={invalidMaxSize ? "invalid" : "neutral"} />
         </div>
     </SideBarFilterTabItem>
@@ -103,10 +103,14 @@
                             categories={intentionOfInvestmentGroups} orphansLabel="Other" />
     </SideBarFilterTabItem>
 
-    <SideBarFilterTabItem label="Produce" count={$filters.produce.length} >
-        <Input type="multiselect" placeholder="Select production" choices={produceChoices} 
-                                    bind:value={$filters.produce} categories={produceCategories}
-                                    readonlyCategories={true} />
+    <SideBarFilterTabItem label="Produce" count={$filters.crops?.length + $filters.animals?.length + $filters.minerals?.length}>
+        <div class="pb-1.5" class:pb-4={$filters.crops?.length > 0}>
+            <Input type="multiselect" placeholder="Crops" choices={produceCrops} bind:value={$filters.crops} />
+        </div>
+        <div class="pb-1.5" class:pb-4={$filters.animals?.length > 0}>
+            <Input type="multiselect" placeholder="Animals" choices={produceAnimals} bind:value={$filters.animals} />
+        </div>
+        <Input type="multiselect" placeholder="Minerals" choices={produceMinerals} bind:value={$filters.minerals} />
     </SideBarFilterTabItem>
 
     <SideBarFilterTabItem label="Scope" >

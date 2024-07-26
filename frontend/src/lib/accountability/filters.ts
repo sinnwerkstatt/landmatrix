@@ -3,8 +3,8 @@ import { writable } from "svelte/store"
 export class FilterValues {
   region_id?: number[] = []
   country_id?: number[] = []
-  deal_size_min?: number
-  deal_size_max?: number
+  area_min?: number
+  area_max?: number
   negotiation_status: string[] = []
   nature_of_deal: string[] = []
   investor_id?: number[] = []
@@ -15,7 +15,9 @@ export class FilterValues {
   implementation_status: string[] = []
   intention_of_investment: string[] = []
   intention_of_investment_unknown: boolean = false
-  produce?: string[] = []
+  crops?: string[] = []
+  animals?: string[] = []
+  minerals?: string[] = []
   transnational: boolean | null = null
   forest_concession: boolean | null = null
 

@@ -28,7 +28,7 @@ export const deals = derived(
   [filters, lastRESTFilterArray],
   ([$filters, $lastRESTFilterArray], set) => {
     const restFilterArray = $filters.toRESTFilterArray()
-    if (restFilterArray != $lastRESTFilterArray) {
+    if (browser && restFilterArray != $lastRESTFilterArray) {
       loading.set(true)
       fetch(`/api/accountability/deal/?${restFilterArray}`)
         .then(res => res.json())
