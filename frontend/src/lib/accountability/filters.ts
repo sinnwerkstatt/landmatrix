@@ -88,7 +88,56 @@ export class FilterValues {
   public toRESTFilterArray() {
     const searchParams = new URLSearchParams()
 
+    this.region_id?.forEach(e => searchParams.append("region_id", e.toString()))
     this.country_id?.forEach(e => searchParams.append("country_id", e.toString()))
+
+    if (this.area_min) searchParams.append("area_min", this.area_min.toString())
+    if (this.area_max) searchParams.append("area_max", this.area_max.toString())
+
+    this.negotiation_status?.forEach(e =>
+      searchParams.append("negotiation_status", e.toString()),
+    )
+
+    this.nature_of_deal?.forEach(e =>
+      searchParams.append("nature_of_deal", e.toString()),
+    )
+
+    this.investor_id?.forEach(e => searchParams.append("investor_id", e.toString()))
+    this.investor_country_id?.forEach(e =>
+      searchParams.append("investor_country_id", e.toString()),
+    )
+
+    if (this.initiation_year_min)
+      searchParams.append("initiation_year_min", this.initiation_year_min.toString())
+    if (this.initiation_year_max)
+      searchParams.append("initiation_year_max", this.initiation_year_max.toString())
+
+    if (this.initiation_year_unknown === false) {
+      searchParams.append("initiation_year_unknown", "false")
+    } else if (this.initiation_year_unknown) {
+      searchParams.append("initation_year_unknown", "true")
+    }
+
+    this.implementation_status?.forEach(e =>
+      searchParams.append("implementation_status", e.toString()),
+    )
+
+    this.intention_of_investment?.forEach(e =>
+      searchParams.append("intention_of_investment", e.toString()),
+    )
+
+    if (this.intention_of_investment_unknown)
+      searchParams.append("intention_of_investment", "UNKNOWN")
+
+    this.crops?.forEach(e => searchParams.append("crops", e.toString()))
+    this.animals?.forEach(e => searchParams.append("animals", e.toString()))
+    this.minerals?.forEach(e => searchParams.append("minerals", e.toString()))
+
+    if (this.transnational !== null)
+      searchParams.append("transnational", this.transnational.toString())
+
+    if (this.forest_concession !== null)
+      searchParams.append("forest_concession", this.forest_concession.toString())
 
     return searchParams.toString()
   }
