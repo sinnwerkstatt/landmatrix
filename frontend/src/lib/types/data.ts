@@ -213,6 +213,7 @@ export enum UserRole {
 }
 
 export type User = components["schemas"]["User"]
+export type LeanUser = components["schemas"]["LeanUser"]
 
 // FRONTEND
 // Types for locations + areas in geojson

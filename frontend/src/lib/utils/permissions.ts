@@ -1,8 +1,8 @@
-import { UserRole, type User } from "$lib/types/data"
+import { UserRole, type LeanUser, type User } from "$lib/types/data"
 
 export const hasRoleOrAbove =
   (role: UserRole) =>
-  (user: User | null): boolean =>
+  (user: User | LeanUser | null): boolean =>
     user !== null && user.role >= role
 
 export const isAnybodyOrAbove = hasRoleOrAbove(UserRole.ANYBODY)
