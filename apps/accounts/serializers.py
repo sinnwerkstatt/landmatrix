@@ -1,28 +1,38 @@
-from rest_framework import serializers
+from apps.serializer import ReadOnlyModelSerializer
 
-from apps.accounts.models import User
+from .models import User
 
 
-class LeanUserSerializer(serializers.ModelSerializer):
+class LeanUserSerializer(ReadOnlyModelSerializer):
     class Meta:
         model = User
-        fields = ["id", "full_name", "username", "role", "is_active"]
-        # https://github.com/tfranzel/drf-spectacular/issues/810
-        read_only_fields = fields
+        fields = [
+            "id",
+            "full_name",
+            "username",
+            "role",
+            "is_active",
+        ]
 
 
-class UserSerializer(serializers.ModelSerializer):
-    country_id = serializers.PrimaryKeyRelatedField(read_only=True)
-    region_id = serializers.PrimaryKeyRelatedField(read_only=True)
-
+class UserSerializer(ReadOnlyModelSerializer):
     class Meta:
         model = User
-        # fields = "__all__"
-        exclude = [
-            "password",
-            "groups",
-            "region",
+        fields = [
+            "id",
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "full_name",
+            "phone",
+            "information",
             "country",
-            "user_permissions",
-            "email_confirmed",
+            "region",
+            "role",
+            "is_superuser",
+            "is_staff",
+            "is_active",
+            # TODO: Fixme
+            # "is_impersonate",
         ]
