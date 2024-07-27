@@ -12,8 +12,5 @@ export const stateMap = derived(
     REVIEW: { title: $_("Review"), classes: "text-black bg-green-400" },
     ACTIVATION: { title: $_("Activation"), classes: "text-black bg-green-500" },
     ACTIVATED: { title: $_("Activated"), classes: "text-white bg-green-700" },
-    REJECTED: { title: $_("Rejected"), classes: "bg-yellow-400" },
-    TO_DELETE: { title: $_("Deleted"), classes: "text-white bg-red-500" },
-    DELETED: { title: $_("Deleted"), classes: "text-white bg-red-500" },
   }),
 )
