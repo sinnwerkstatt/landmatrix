@@ -1,8 +1,10 @@
 import { init, register, waitLocale } from "svelte-i18n"
 
-export const supportedLanguages = ["en", "es", "fr", "ru"]
-export async function i18nload(lang: string): Promise<void> {
-  supportedLanguages.forEach(locale => {
+export const SUPPORTED_LANGUAGES = ["en", "es", "fr", "ru"] as const
+export type Lang = typeof SUPPORTED_LANGUAGES[number]
+
+export async function i18nload(lang: Lang): Promise<void> {
+  SUPPORTED_LANGUAGES.forEach(locale => {
     register(locale, () => import(`./lang_${locale}.json`))
   })
 

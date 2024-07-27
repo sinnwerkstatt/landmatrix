@@ -6,7 +6,7 @@ import type { InvestorSection } from "$components/Data/Investor/Sections/constan
 
 import type { LayoutLoad } from "./$types"
 
-export const load: LayoutLoad = async ({ fetch, params, depends, parent }) => {
+export const load: LayoutLoad = async ({ params, depends, parent }) => {
   depends("investor:detail")
 
   const { apiClient } = await parent()
@@ -22,11 +22,9 @@ export const load: LayoutLoad = async ({ fetch, params, depends, parent }) => {
   const ret = investorVersion
     ? await apiClient.GET("/api/investors/{id}/{version_id}/", {
         params: { path: { id: investorID, version_id: investorVersion } },
-        fetch,
       })
     : await apiClient.GET("/api/investors/{id}/", {
         params: { path: { id: investorID } },
-        fetch,
       })
 
   if (ret.error) {
