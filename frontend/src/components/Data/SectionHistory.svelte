@@ -4,12 +4,8 @@
   import { page } from "$app/stores"
 
   import { stateMap } from "$lib/newUtils"
-  import {
-    UserRole,
-    Version2Status,
-    type DealHull,
-    type InvestorHull,
-  } from "$lib/types/data"
+  import { Version2Status, type DealHull, type InvestorHull } from "$lib/types/data"
+  import { isReporterOrAbove } from "$lib/utils/permissions"
 
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import CheckCircleIcon from "$components/icons/CheckCircleIcon.svelte"
@@ -25,7 +21,7 @@
   $: isDeal = "fully_updated_at" in obj
   $: objType = isDeal ? "deal" : "investor"
 
-  $: reporterOrHigher = $page.data.user?.role > UserRole.ANYBODY
+  $: reporterOrHigher = isReporterOrAbove($page.data.user)
 
   $: filteredVersions = reporterOrHigher
     ? obj.versions

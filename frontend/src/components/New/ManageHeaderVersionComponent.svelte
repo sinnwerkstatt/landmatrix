@@ -11,6 +11,7 @@
     type InvestorHull,
     type User,
   } from "$lib/types/data"
+  import { isEditorOrAbove } from "$lib/utils/permissions"
 
   import Modal from "$components/Modal.svelte"
   import ManageHeaderActivateModal from "$components/New/ManageHeaderActivateModal.svelte"
@@ -168,7 +169,7 @@
     {/if}
   </div>
 
-  {#if $page.data.user?.role >= UserRole.EDITOR}
+  {#if isEditorOrAbove($page.data.user)}
     <div class="flex items-center gap-4">
       <div>
         <button

@@ -4,12 +4,8 @@
 
   import { page } from "$app/stores"
 
-  import {
-    UserRole,
-    Version2Status,
-    type DealHull,
-    type InvestorHull,
-  } from "$lib/types/data"
+  import { Version2Status, type DealHull, type InvestorHull } from "$lib/types/data"
+  import { isAdmin } from "$lib/utils/permissions"
 
   import DetailsSummary from "$components/DetailsSummary.svelte"
   import HeaderDatesWDownload from "$components/HeaderDatesWDownload.svelte"
@@ -88,6 +84,7 @@
               <Cog6ToothIcon />
               {$_("actions")}
             </div>
+
             <ul
               class="absolute z-50 mt-1 rounded border border-gray-400 bg-white px-4 py-2 shadow-2xl dark:bg-gray-700"
               slot="details"
@@ -120,7 +117,7 @@
                 </li>
               {/if}
 
-              {#if isDeal(object) && $page.data.user?.role === UserRole.ADMINISTRATOR}
+              {#if isDeal(object) && isAdmin($page.data.user)}
                 <li class="my-3">
                   <div class="flex items-center gap-2">
                     <button
@@ -134,6 +131,7 @@
                   </div>
                 </li>
               {/if}
+
               <li class="my-3">
                 <div class="flex items-center gap-2">
                   <button
@@ -158,7 +156,8 @@
                   {/if}
                 </div>
               </li>
-              {#if isDeal(object) && $page.data.user?.role === UserRole.ADMINISTRATOR}
+
+              {#if isDeal(object) && isAdmin($page.data.user)}
                 <li class="my-3">
                   <div class="flex items-center gap-2">
                     <button
@@ -218,7 +217,7 @@
       {/if}
     </div>
   </div>
-  <ManageHeaderLogbook {object} extraUserIDs={[]} />
+  <ManageHeaderLogbook {object} />
 </div>
 
 <ManageHeaderDeletionModal bind:object bind:open={showDeletionOverlay} />

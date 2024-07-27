@@ -12,7 +12,8 @@
     type ProduceFilter,
   } from "$lib/filters"
   import { createLabels, fieldChoices, simpleInvestors } from "$lib/stores"
-  import { IntentionOfInvestmentGroup, ProduceGroup, UserRole } from "$lib/types/data"
+  import { IntentionOfInvestmentGroup, ProduceGroup } from "$lib/types/data"
+  import { isEditorOrAbove } from "$lib/utils/permissions"
 
   import { showFilterBar } from "$components/Data/stores"
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
@@ -103,7 +104,7 @@
           {$_("Default filter")}
         </CheckboxSwitch>
 
-        {#if $page.data.user?.role >= UserRole.EDITOR}
+        {#if isEditorOrAbove($page.data.user)}
           <CheckboxSwitch class="text-base" bind:checked={$publicOnly}>
             {$_("Public deals only")}
           </CheckboxSwitch>
