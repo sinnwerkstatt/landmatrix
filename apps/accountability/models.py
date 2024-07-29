@@ -7,6 +7,7 @@ from datetime import datetime
 
 from django.utils.translation import gettext as _
 
+from apps.landmatrix.models import choices
 from apps.landmatrix.models.new import DealHull
 
 STATUS_CHOICES = [
@@ -113,4 +114,24 @@ class Project(models.Model):
         on_delete=models.PROTECT,
         related_name="+",
     )
-    filters = models.JSONField()
+    # Filters (matching frontend > src > lib > accountability > filters.ts > FilterValues)
+    # filters = models.JSONField()
+    region_id = ArrayField(models.PositiveIntegerField(), blank=True)
+    country_id = ArrayField(models.PositiveIntegerField(), blank=True)
+    area_min = models.PositiveIntegerField(blank=True)
+    area_max = models.PositiveIntegerField(blank=True)
+    negotiation_status = ArrayField(models.CharField(choices=choices.NEGOTIATION_STATUS_CHOICES), blank=True)
+    nature_of_deal = ArrayField(models.CharField(choices=choices.NATURE_OF_DEAL_CHOICES), blank = True)
+    investor_id = ArrayField(models.PositiveIntegerField(), blank=True)
+    investor_country_id = ArrayField(models.PositiveIntegerField(), blank=True)
+    initiation_year_min = models.PositiveIntegerField(blank=True)
+    initiation_year_max = models.PositiveIntegerField(blank=True)
+    initiation_year_unknown = models.BooleanField(default=True)
+    implementation_status = ArrayField(models.CharField(choices=choices.IMPLEMENTATION_STATUS_CHOICES), blank=True)
+    intention_of_investment = ArrayField(models.CharField(choices=choices.INTENTION_OF_INVESTMENT_CHOICES), blank=True)
+    intention_of_investment_unknown = models.BooleanField(default=False)
+    crops = ArrayField(models.CharField(choices=choices.CROPS_CHOICES), blank=True)
+    animals = ArrayField(models.CharField(choices=choices.ANIMALS_CHOICES), blank=True)
+    minerals = ArrayField(models.CharField(choices=choices.MINERALS_CHOICES), blank=True)
+    transnational = models.BooleanField(null=True, blank=True)
+    forest_concession = models.BooleanField(null=True, blank=True)

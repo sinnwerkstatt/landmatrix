@@ -1,7 +1,6 @@
 <script lang="ts">
-    import { users } from "$lib/accountability/placeholders"
     import { usersToUserChoices } from "$lib/accountability/helpers"
-    import { openedFilterBar } from "$lib/accountability/stores"
+    import { openedFilterBar, users } from "$lib/accountability/stores"
     import { filters } from "$lib/accountability/filters"
 
     import Sidebar from "./atomic/Sidebar.svelte"
@@ -20,14 +19,12 @@
     let form = {
         name: undefined,
         description: undefined,
-        users: ["2", "3"],
+        users: ["153"],
     }
 
-    const owner = { value: 1, label: "Marie", initials: "MG" }
+    const owner = { value: 585, label: "Marie GRADELER", initials: "MG" }
 
-    const userChoices = usersToUserChoices(users).filter(e => e.value != owner.value)
-
-    usersToUserChoices(users)
+    const userChoices = usersToUserChoices($users).filter(e => e.value != owner.value)
 
     const infos = [
         { label: "Created at:", value: undefined },

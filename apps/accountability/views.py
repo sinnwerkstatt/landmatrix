@@ -10,10 +10,10 @@ from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExampl
 from drf_spectacular.types import OpenApiTypes
 
 from apps.accountability.models import VggtChapter, VggtArticle, VggtVariable
-from apps.accountability.models import DealScore, DealVariable
+from apps.accountability.models import DealScore, DealVariable, Project
 
 from apps.accountability.serializers import VggtChapterSerializer, VggtArticleSerializer, VggtVariableSerializer
-from apps.accountability.serializers import DealScoreSerializer, DealVariableSerializer
+from apps.accountability.serializers import DealScoreSerializer, DealVariableSerializer, ProjectSerializer
 
 from apps.accountability.utils import openapi_filters_parameters_scoring, parse_filters
 
@@ -81,3 +81,8 @@ class DealVariableList(generics.ListCreateAPIView):
 class DealVariableDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = DealVariable.objects.all()
     serializer_class = DealVariableSerializer
+
+
+class ProjectList(generics.ListCreateAPIView):
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer

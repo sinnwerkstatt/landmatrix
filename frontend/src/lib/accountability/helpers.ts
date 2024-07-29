@@ -80,3 +80,8 @@ export function initTableSelection(deal) {
   // console.log(totalSelection)
   tableSelection.set(totalSelection)
 }
+
+export function sentenceToArray(string: string) {
+  if (string) return string.match(/\b(\w+)\b/g)
+  return [""]
+}

@@ -2,9 +2,11 @@ import { derived, writable } from "svelte/store"
 
 import { browser } from "$app/environment"
 
+import { allUsers } from "$lib/stores"
 import { loading } from "$lib/stores/basics"
 
 import { filters, lastRESTFilterArray } from "./filters"
+import { sentenceToArray } from "./helpers"
 
 // Navigation status
 export const openedFilterBar = writable(false)
@@ -20,6 +22,33 @@ dealsHistory.subscribe(value => {
   if (browser) {
     window.localStorage.setItem("currentDealHistory", value)
   }
+})
+
+// allUsers derived store with more convenient info
+export const users = derived(allUsers, $allUsers => {
+  let res = []
+  $allUsers.forEach(user => {
+    let obj = {
+      id: user.id,
+      name: user.full_name ? user.full_name : user.username,
+    }
+
+    // Initials from usernames
+    const names = sentenceToArray(obj.name)
+    if (names?.length == 1) {
+      obj.initials = obj.name.substring(0, 2).toUpperCase()
+    } else if (names?.length > 1) {
+      const first = names?.at(0).substring(0, 1).toUpperCase()
+      const last = names
+        ?.at(names.length - 1)
+        .substring(0, 1)
+        .toUpperCase()
+      obj.initials = first + last
+    }
+
+    res.push(obj)
+  })
+  return res
 })
 
 // =======================================================================================

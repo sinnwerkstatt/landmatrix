@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from apps.accountability.models import VggtChapter, VggtArticle, VggtVariable
-from apps.accountability.models import DealScore, DealVariable
+from apps.accountability.models import DealScore, DealVariable, Project
 
 class VggtChapterSerializer(serializers.ModelSerializer):
     class Meta:
@@ -64,3 +64,11 @@ class DealVariableSerializer(serializers.ModelSerializer):
     class Meta:
         model = DealVariable
         fields = ["id", "deal_score", "vggt_variable", "status", "score"]
+
+
+
+class ProjectSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Project
+        fields = "__all__"
