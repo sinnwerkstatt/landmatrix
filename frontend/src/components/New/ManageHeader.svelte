@@ -132,30 +132,32 @@
                 </li>
               {/if}
 
-              <li class="my-3">
-                <div class="flex items-center gap-2">
-                  <button
-                    type="button"
-                    class="btn btn-red min-w-[9rem]"
-                    on:click={() => (showDeletionOverlay = true)}
-                  >
+              {#if isAdmin($page.data.user)}
+                <li class="my-3">
+                  <div class="flex items-center gap-2">
+                    <button
+                      type="button"
+                      class="btn btn-red min-w-[9rem]"
+                      on:click={() => (showDeletionOverlay = true)}
+                    >
+                      {#if object.deleted}
+                        {$_("Undelete")}
+                      {:else}
+                        {$_("Delete")}
+                      {/if}
+                    </button>
                     {#if object.deleted}
-                      {$_("Undelete")}
+                      {isDeal(object)
+                        ? $_("Reactivate this deal")
+                        : $_("Reactivate this investor")}
                     {:else}
-                      {$_("Delete")}
+                      {isDeal(object)
+                        ? $_("Delete this deal")
+                        : $_("Delete this investor")}
                     {/if}
-                  </button>
-                  {#if object.deleted}
-                    {isDeal(object)
-                      ? $_("Reactivate this deal")
-                      : $_("Reactivate this investor")}
-                  {:else}
-                    {isDeal(object)
-                      ? $_("Delete this deal")
-                      : $_("Delete this investor")}
-                  {/if}
-                </div>
-              </li>
+                  </div>
+                </li>
+              {/if}
 
               {#if isDeal(object) && isAdmin($page.data.user)}
                 <li class="my-3">
@@ -181,19 +183,19 @@
     </div>
     <hr class="h-0.5 bg-black" />
     <div class="p-2 py-4">
-      {#if isDeal(object) && object.confidential}
-        <div
-          class="my-6 flex flex-col items-center justify-center gap-1 bg-red-700 py-2 text-white"
-        >
-          <div class="heading4 mb-0">{$_("Confidential")}</div>
-          <span>{object.confidential_comment}</span>
-        </div>
-      {:else if object.deleted}
+      {#if object.deleted}
         <div
           class="my-6 flex flex-col items-center justify-center gap-1 bg-red-500 py-2 text-white"
         >
           <div class="heading4 mb-0">{$_("Deleted")}</div>
           <span>{object.deleted_comment}</span>
+        </div>
+      {:else if isDeal(object) && object.confidential}
+        <div
+          class="my-6 flex flex-col items-center justify-center gap-1 bg-red-700 py-2 text-white"
+        >
+          <div class="heading4 mb-0">{$_("Confidential")}</div>
+          <span>{object.confidential_comment}</span>
         </div>
       {:else}
         <div class="mb-4 flex items-center justify-between gap-4">
