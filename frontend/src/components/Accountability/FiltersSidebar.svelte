@@ -3,6 +3,8 @@
     import { openedFilterBar, users } from "$lib/accountability/stores"
     import { filters } from "$lib/accountability/filters"
 
+    import { getCsrfToken } from "$lib/utils"
+
     import Sidebar from "./atomic/Sidebar.svelte"
     import Filters from "./atomic/Filters.svelte"
     import Button from "./Button.svelte"
@@ -15,16 +17,25 @@
     import CardTable from "./atomic/CardTable.svelte"
 
     let openSaveModal = false
+    let disableSaveModal = false
 
+    
     let form = {
         name: undefined,
         description: undefined,
         users: ["153"],
     }
+    let formErrors = {}
+    $: formStatus = {
+        name: formErrors.name ? "invalid" : "neutral",
+        description: formErrors.description ? "invalid" : "neutral",
+    }
 
     const owner = { value: 585, label: "Marie GRADELER", initials: "MG" }
 
     const userChoices = usersToUserChoices($users).filter(e => e.value != owner.value)
+
+    usersToUserChoices($users)
 
     const infos = [
         { label: "Created at:", value: undefined },
@@ -32,6 +43,32 @@
         { label: "Last modification:", value: undefined },
         { label: "Last modification by:", value: undefined }
     ]
+
+    async function save() {
+        console.log("===== SAVING DATA =====")
+        formErrors = {}
+        const data = Object.assign(form, $filters)
+
+        // And now, we post data and cross our fingers
+        disableSaveModal = true
+        const res = await fetch("/api/accountability/project/", {
+                method: "POST",
+                credentials: "include",
+                body: JSON.stringify(data),
+                headers: {
+                    "X-CSRFToken": await getCsrfToken(),
+                    "Content-Type": "application/json",
+                }
+            })
+        const resJson = await res.json()
+        if (res.ok) {
+            console.log("Is Oké")
+            disableSaveModal = false
+        } else {
+            console.error(resJson)
+            disableSaveModal = false
+        }
+    }
  
 </script>
 
@@ -53,14 +90,14 @@
     </Sidebar>
 {/if}
 
-<Modal bind:open={openSaveModal} title="Create new project" large={true}>
+<Modal bind:open={openSaveModal} title="Create new project" large={true} on:click={save} bind:disabled={disableSaveModal}>
     <div class="grid grid-cols-2 w-full divide-x">
 
         <div class="pr-4 lg:pr-14">
             <h2 class="text-a-sm font-semibold text-a-gray-500">Informations</h2>
-            <Input type="text" label="Name" placeholder="Add name" bind:value={form.name} />
+            <Input type="text" label="Name" placeholder="Add name" bind:value={form.name} status={formStatus.name} message={formErrors.name} />
             <Input type="textarea" label="Description" placeholder="Add description" bind:value={form.description}
-                   maxlength={280} />
+                   maxlength={280} status={formStatus.description} message={formErrors.description} />
             <Input type="multiselect" label="Users (who can edit)" placeholder="Search for user"
                    choices={userChoices} bind:value={form.users} badgeType="avatar" />
             <Avatar initials={owner.initials} label="{owner.label} (owner)" extraClass="mt-1" padding={true} />

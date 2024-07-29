@@ -23,6 +23,7 @@
     export let placeholder = "Placeholder"
     export let icon:""|"search"|"user" = ""
     export let status:"neutral"|"valid"|"invalid" = "neutral"
+    export let message:string|undefined = undefined
     export let disabled = false
     export let search = true
 
@@ -130,8 +131,13 @@
         {#if type == "number"}
             <span>{unit}</span>
         {/if}
+
     </div>
     
+    {#if message}
+        <p class="message mt-1.5 text-sm {status}">{message}</p>
+    {/if}
+
     <!-- Dropdown menu for select or multiselect -->
     {#if ["select", "multiselect"].includes(type) && !disabled && open}
         <DropdownMenu extraClass="pb-4 absolute z-10 w-[13.5rem] {extraClass}" visible={open} >
@@ -279,6 +285,10 @@
         @apply border-a-success-500;
     }
 
+    .message.valid {
+        @apply text-a-success-500;
+    }
+
     .wrapper.invalid,
     .wrapper.invalid > span,
     .wrapper.invalid > button {
@@ -288,6 +298,10 @@
     .wrapper.invalid,
     .wrapper.invalid:focus-within {
         @apply border-a-error-500;
+    }
+
+    .message.invalid {
+        @apply text-a-error-500;
     }
 
     label.hide {
