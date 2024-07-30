@@ -98,15 +98,13 @@ class Project(models.Model):
         on_delete=models.PROTECT,
         related_name="owned_projects",
     )
-    editors = models.ForeignKey(
+    editors = models.ManyToManyField(
         settings.AUTH_USER_MODEL,
         blank=True,
-        null=True,
-        on_delete=models.PROTECT,
         related_name="editable_projects",
     )
     created_at = models.DateTimeField(_("Created at"), default=timezone.now)
-    modified_at = models.DateTimeField(_("Modified at"), default=timezone.now)
+    modified_at = models.DateTimeField(_("Modified at"), blank=True, null=True)
     modified_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         blank=True,

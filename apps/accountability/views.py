@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.db.models import Q
+from django.utils import timezone
 
 from rest_framework import viewsets, generics
 from rest_framework.request import Request
@@ -10,8 +11,6 @@ from rest_framework.permissions import AllowAny
 from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample
 from drf_spectacular.types import OpenApiTypes
 
-from apps.landmatrix.permissions import IsAdministrator, IsReporterOrHigher
-
 from apps.accountability.models import VggtChapter, VggtArticle, VggtVariable
 from apps.accountability.models import DealScore, DealVariable, Project
 
@@ -19,6 +18,8 @@ from apps.accountability.serializers import VggtChapterSerializer, VggtArticleSe
 from apps.accountability.serializers import DealScoreSerializer, DealVariableSerializer, ProjectSerializer
 
 from apps.accountability.utils import openapi_filters_parameters_scoring, parse_filters
+
+from apps.accountability.permissions import IsAdministrator, IsReporterOrHigher, IsReporterOrHigherOrReadonly, IsOwnerOrEditorOrReadonly
 
 
 # Tmp root view
@@ -52,24 +53,15 @@ class VggtVariableDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = VggtArticleSerializer
 
 
-
 class DealScoreList(viewsets.ModelViewSet):
     queryset = DealScore.objects.all()
     serializer_class = DealScoreSerializer
-
-    # def get_queryset(self):
-    #     return super().get_queryset()
 
     @extend_schema(parameters=openapi_filters_parameters_scoring)
     def list(self, request:Request, *args, **kwargs):
         queryset = DealScore.objects.exclude(deal__active_version__is_public=False).filter(parse_filters(request)).order_by("deal").distinct()
         serializer = DealScoreSerializer(queryset, many=True)
         return Response(serializer.data)
-        # return Response(
-        #     self.get_queryset()
-        #     .order_by("deal")
-        #     .values("deal")
-        # )
 
 
 class DealScoreDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -89,6 +81,7 @@ class DealVariableDetail(generics.RetrieveUpdateDestroyAPIView):
 class ProjectList(generics.ListCreateAPIView):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
+    permission_classes = [IsReporterOrHigherOrReadonly]
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -96,3 +89,7 @@ class ProjectList(generics.ListCreateAPIView):
 class ProjectDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
+    permission_classes = [IsOwnerOrEditorOrReadonly]
+
+    def perform_update(self, serializer):
+        serializer.save(modified_at=timezone.now(), modified_by=self.request.user)
