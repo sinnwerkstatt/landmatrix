@@ -33,7 +33,7 @@ from apps.landmatrix.models.new import (
     InvestorWorkflowInfo,
     Location,
 )
-from apps.landmatrix.permissions import IsAdministrator, IsReporterOrHigher
+from apps.landmatrix.permissions import IsAdministrator, IsReporterOrHigher, is_admin
 from apps.landmatrix.serializers import (
     DealSerializer,
     DealVersionSerializer,
@@ -351,25 +351,22 @@ class HullViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class DealViewSet(HullViewSet):
-    queryset = DealHull.objects.normal()
+    queryset = DealHull.objects.all()
     serializer_class = DealSerializer
     version_serializer_class = DealVersionSerializer
 
     def get_queryset(self):
-        if self.action in ["retrieve", "retrieve_version"]:
-            versions_prefetch = Prefetch(
-                "versions", queryset=DealVersion.objects.order_by("-id")
-            )
-            # TODO Kurt is_superuser or also role.Administrator?
-            if self.request.user.is_superuser:
-                return DealHull.objects.all().prefetch_related(versions_prefetch)
-            return self.queryset.prefetch_related(versions_prefetch).visible(
-                self.request.user, "UNFILTERED"
-            )
-        if self.action == "list":
-            return self.queryset.active()
+        qs = self.queryset
 
-        return self.queryset
+        if not is_admin(self.request.user):
+            qs = qs.visible(self.request.user, "UNFILTERED")
+
+        if self.action in ["list"]:
+            qs = qs.prefetch_related(
+                Prefetch("versions", queryset=DealVersion.objects.order_by("-id"))
+            )
+
+        return qs
 
     @extend_schema(parameters=openapi_filters_parameters)
     def list(self, request: Request, *args, **kwargs):
@@ -582,10 +579,21 @@ class InvestorVersionViewSet(VersionViewSet):
 
 
 class InvestorViewSet(HullViewSet):
-    queryset = InvestorHull.objects.normal().prefetch_related(
-        Prefetch("versions", queryset=InvestorVersion.objects.order_by("-id"))
-    )
+    queryset = InvestorHull.objects.all()
     version_serializer_class = InvestorVersionSerializer
+
+    def get_queryset(self):
+        qs = self.queryset
+
+        if not is_admin(self.request.user):
+            qs = qs.visible(self.request.user, "UNFILTERED")
+
+        if self.action in ["list", "simple"]:
+            qs = qs.prefetch_related(
+                Prefetch("versions", queryset=InvestorVersion.objects.order_by("-id"))
+            )
+
+        return qs
 
     def get_serializer_class(self):
         if self.action == "simple":
@@ -697,6 +705,7 @@ class InvestorViewSet(HullViewSet):
             return Response(status=status.HTTP_418_IM_A_TEAPOT)
 
 
+# TODO: make value enum type
 class ValueLabelSerializer(serializers.Serializer):
     value = serializers.CharField(required=True)
     label = serializers.CharField(required=True)
