@@ -136,7 +136,7 @@ class Management(View):
         user: User = request.user
 
         if not is_reporter_or_higher(user):
-            raise PermissionDenied("unauthorized")
+            raise PermissionDenied("MISSING_AUTHORIZATION")
 
         is_deal = request.GET.get("model") != "investor"
         filters = self.filters(request, is_deal)
@@ -160,7 +160,7 @@ class Management(View):
             if action == "all_deleted":
                 # WATCH OUT, DELETED DEALS!
                 if not is_admin(user):
-                    raise PermissionDenied("unauthorized")
+                    raise PermissionDenied("MISSING_AUTHORIZATION")
                 qs = Obj.objects.filter(deleted=True)
             else:
                 qs = Obj.objects.normal()

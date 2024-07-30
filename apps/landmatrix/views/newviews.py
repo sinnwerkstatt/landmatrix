@@ -485,7 +485,11 @@ class DealViewSet(HullViewSet):
         ):
             return Response(self.get_serializer(d1).data)
 
-        raise PermissionDenied if user.is_authenticated else NotAuthenticated()
+        raise (
+            PermissionDenied("MISSING_AUTHORIZATION")
+            if user.is_authenticated
+            else NotAuthenticated()
+        )
 
     @action(methods=["put"], detail=True)
     def toggle_confidential(self, request, *args, **kwargs):
@@ -652,11 +656,15 @@ class InvestorViewSet(HullViewSet):
         ):
             return Response(self.get_serializer(i1).data)
 
-        raise PermissionDenied if user.is_authenticated else NotAuthenticated
+        raise (
+            PermissionDenied("MISSING_AUTHORIZATION")
+            if user.is_authenticated
+            else NotAuthenticated()
+        )
 
     @extend_schema(responses={200: SimpleInvestorSerializer(many=True)})
     @action(methods=["get"], detail=False)
-    def simple(self, request: Request):
+    def simple(self, request):
         user: User = request.user
 
         if investor_id := request.query_params.get("investor_id"):
