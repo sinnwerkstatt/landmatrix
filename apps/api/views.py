@@ -28,6 +28,7 @@ from apps.landmatrix.models.new import (
     InvestorHull,
     InvestorWorkflowInfo,
 )
+from apps.landmatrix.permissions import is_reporter_or_higher
 from apps.landmatrix.utils import openapi_filters_parameters, parse_filters
 from apps.wagtailcms.models import ChartDescriptionsSettings
 
@@ -213,7 +214,9 @@ def workflow_info_add_reply(
     wfitype: str,
     pk: int,
 ) -> JsonResponse:
-    if not (request.user.is_authenticated and request.user.role):
+    user: User = request.user
+
+    if not is_reporter_or_higher(user):
         raise PermissionDenied("MISSING_AUTHORIZATION")
 
     data = json.loads(request.body)
@@ -230,27 +233,22 @@ def workflow_info_add_reply(
     wfi.replies += [
         {
             "timestamp": timezone.now().isoformat(),
-            "user_id": request.user.id,
+            "user_id": user.id,
             "comment": data["comment"],
         }
     ]
     wfi.save()
 
-    sending_user = (
-        f"{request.user.first_name} {request.user.last_name} ({request.user.username})"
-    )
+    sending_user = f"{user.first_name} {user.last_name} ({user.username})"
     comment = f"The user {sending_user} left the following response at {wfi.get_object_url()}:\n\n"
     comment += f'"{data["comment"]}"'
 
     relevant_user_ids = [wfi.from_user_id, wfi.to_user_id] + [
         x["user_id"] for x in wfi.replies
     ]
-    receiving_users = User.objects.filter(id__in=relevant_user_ids).exclude(
-        id=request.user.id
-    )
-    for user in receiving_users:
-        user: User
-        user.email_user("[Land Matrix] " + _("New feedback reply"), comment)
+    receiving_users = User.objects.filter(id__in=relevant_user_ids).exclude(id=user.id)
+    for recipient in receiving_users:
+        recipient.email_user("[Land Matrix] " + _("New feedback reply"), comment)
 
     return JsonResponse({"ok": True})
 
@@ -260,7 +258,9 @@ def workflow_info_resolve(
     wfitype: str,
     pk: int,
 ) -> JsonResponse:
-    if not (request.user.is_authenticated and request.user.role):
+    user: User = request.user
+
+    if not is_reporter_or_higher(user):
         raise PermissionDenied("MISSING_AUTHORIZATION")
 
     if wfitype == "deal":

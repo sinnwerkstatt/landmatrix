@@ -10,12 +10,17 @@ from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.utils.timezone import make_aware
 from django.views import View
 
-from apps.accounts.models import UserRole
+from apps.accounts.models import User
 from apps.landmatrix.models.new import (
     DealHull,
     DealWorkflowInfo,
     InvestorHull,
     InvestorWorkflowInfo,
+)
+from apps.landmatrix.permissions import (
+    is_editor_or_higher,
+    is_admin,
+    is_reporter_or_higher,
 )
 
 
@@ -128,7 +133,9 @@ class Management(View):
         }
 
     def get(self, request, *args, **kwargs) -> HttpResponse:
-        if not request.user.is_authenticated or not request.user.role:
+        user: User = request.user
+
+        if not is_reporter_or_higher(user):
             raise PermissionDenied("unauthorized")
 
         is_deal = request.GET.get("model") != "investor"
@@ -146,13 +153,13 @@ class Management(View):
                     .distinct()
                     .count()
                     for metric_name, mtrx in filters.items()
-                    if request.user.role > UserRole.REPORTER or not mtrx["staff"]
+                    if is_editor_or_higher(user) or not mtrx["staff"]
                 }
             )
         elif action in filters.keys():
             if action == "all_deleted":
                 # WATCH OUT, DELETED DEALS!
-                if request.user.role < UserRole.ADMINISTRATOR:
+                if not is_admin(user):
                     raise PermissionDenied("unauthorized")
                 qs = Obj.objects.filter(deleted=True)
             else:

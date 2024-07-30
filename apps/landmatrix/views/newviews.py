@@ -20,7 +20,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from wagtail.models import Site
 
-from apps.accounts.models import User, UserRole
+from apps.accounts.models import User
 from apps.landmatrix.models import choices
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.new import (
@@ -33,7 +33,13 @@ from apps.landmatrix.models.new import (
     InvestorWorkflowInfo,
     Location,
 )
-from apps.landmatrix.permissions import IsAdministrator, IsReporterOrHigher, is_admin
+from apps.landmatrix.permissions import (
+    IsAdministrator,
+    IsReporterOrHigher,
+    is_admin,
+    is_editor_or_higher,
+    is_reporter_or_higher,
+)
 from apps.landmatrix.serializers import (
     DealSerializer,
     DealVersionSerializer,
@@ -131,8 +137,9 @@ class VersionViewSet(viewsets.ReadOnlyModelViewSet):
     @transaction.atomic
     def update(self, request, pk: int):
         ov1: DealVersion | InvestorVersion = get_object_or_404(self.queryset, pk=pk)
+        user: User = request.user
 
-        if ov1.created_by_id != request.user.id and request.user.role < UserRole.EDITOR:
+        if not (ov1.created_by == user or is_editor_or_higher(user)):
             raise PermissionDenied("MISSING_AUTHORIZATION")
 
         if not ov1.is_current_draft():
@@ -140,11 +147,9 @@ class VersionViewSet(viewsets.ReadOnlyModelViewSet):
 
         data = request.data["version"]
 
-        creating_new_version = ov1.created_by_id != request.user.id
+        creating_new_version = ov1.created_by != user
         if creating_new_version:
-            ov1.change_status(
-                new_status="TO_DRAFT", user=request.user, to_user_id=request.user.id
-            )
+            ov1.change_status(new_status="TO_DRAFT", user=user, to_user_id=user.id)
 
         serializer: DealVersionSerializer | InvestorVersionSerializer = (
             self.serializer_class(ov1, data=data, partial=True)
@@ -153,7 +158,7 @@ class VersionViewSet(viewsets.ReadOnlyModelViewSet):
             # this is untidy
             ov1 = serializer.save()
             if not creating_new_version:
-                ov1.modified_by = request.user
+                ov1.modified_by = user
                 ov1.modified_at = timezone.now()
 
             serializer.save_submodels(data, ov1)
@@ -163,8 +168,9 @@ class VersionViewSet(viewsets.ReadOnlyModelViewSet):
 
     def destroy(self, request, pk: int):
         ov1: DealVersion | InvestorVersion = get_object_or_404(self.queryset, pk=pk)
+        user: User = request.user
 
-        if ov1.created_by_id != request.user.id and request.user.role < UserRole.EDITOR:
+        if not (ov1.created_by == user or is_editor_or_higher(user)):
             raise PermissionDenied("MISSING_AUTHORIZATION")
 
         old_draft_status = ov1.status
@@ -193,7 +199,7 @@ class VersionViewSet(viewsets.ReadOnlyModelViewSet):
 
             add_wfi(
                 obj=o1,
-                from_user=request.user,
+                from_user=user,
                 to_user_id=request.data.get("toUser"),
                 status_before=old_draft_status,
                 status_after="DELETED",
@@ -466,18 +472,20 @@ class DealViewSet(HullViewSet):
     @action(methods=["get"], url_path=r"(?P<version_id>\d+)", detail=True)
     def retrieve_version(self, request, pk: int, version_id: int):
         d1: DealHull = self.get_object()
+        user: User = request.user
+
         d1._selected_version_id = int(version_id)
 
         dv1: DealVersion = get_object_or_404(d1.versions, id=version_id)
 
         if (
-            (request.user.is_authenticated and request.user.role >= UserRole.EDITOR)
-            or dv1.created_by_id == request.user.id
+            is_editor_or_higher(user)
+            or dv1.created_by == user
             or (dv1.status == "ACTIVATED" and dv1.is_public)
         ):
             return Response(self.get_serializer(d1).data)
 
-        raise PermissionDenied if request.user.is_authenticated else NotAuthenticated()
+        raise PermissionDenied if user.is_authenticated else NotAuthenticated()
 
     @action(methods=["put"], detail=True)
     def toggle_confidential(self, request, *args, **kwargs):
@@ -631,26 +639,28 @@ class InvestorViewSet(HullViewSet):
     @action(methods=["get"], url_path=r"(?P<version_id>\d+)", detail=True)
     def retrieve_version(self, request, pk: int, version_id: int):
         i1: InvestorHull = self.get_object()
+        user: User = request.user
+
         i1._selected_version_id = int(version_id)
 
         iv1: InvestorVersion = get_object_or_404(i1.versions, id=version_id)
 
         if (
-            (request.user.is_authenticated and request.user.role >= UserRole.EDITOR)
-            or iv1.created_by == request.user.id
+            is_editor_or_higher(user)
+            or iv1.created_by == user
             or iv1.status == "ACTIVATED"
         ):
             return Response(self.get_serializer(i1).data)
 
-        raise PermissionDenied if request.user.is_authenticated else NotAuthenticated
+        raise PermissionDenied if user.is_authenticated else NotAuthenticated
 
     @extend_schema(responses={200: SimpleInvestorSerializer(many=True)})
     @action(methods=["get"], detail=False)
     def simple(self, request: Request):
+        user: User = request.user
+
         if investor_id := request.query_params.get("investor_id"):
-            if not request.user.is_authenticated:
-                raise NotAuthenticated
-            if request.user.role < UserRole.REPORTER:
+            if not is_reporter_or_higher(user):
                 raise NotAuthenticated
             return Response(
                 InvestorHull.objects.exclude(deleted=True)
