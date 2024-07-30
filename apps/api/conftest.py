@@ -61,7 +61,7 @@ def superuser2(db):
 
 
 @pytest.fixture
-def deals(db):
+def deals(db) -> list[DealHull]:
     N_DEALS = 2
     return DealHull.objects.bulk_create(
         [DealHull(first_created_at=timezone.now()) for _ in range(N_DEALS)]
