@@ -1,6 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
+  import { browser } from "$app/environment"
   import { page } from "$app/stores"
 
   import type { InvestorHull } from "$lib/types/data"
@@ -28,7 +29,8 @@
   }
 </script>
 
-{#if value}
+<!-- Need to add browser here. During SSR the fetch somehow returns 404 -->
+{#if browser && value}
   {#await fetchInvestor(value)}
     <span>{$_("Loading")}</span>
   {:then investor}
