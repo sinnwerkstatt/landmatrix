@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { allProjects } from "$lib/accountability/stores"
+
     import SidebarTab from "./atomic/SidebarTab.svelte"
     import Button from "./Button.svelte"
     import IconFilter from "./icons/IconFilter.svelte"
@@ -7,27 +9,11 @@
     import Modal from "$components/Accountability/Modal.svelte"
     import Input from "./atomic/Input.svelte"
 
-    const projects = [
-        { id: 11, name: "Albania" },
-        { id: 12, name: "Nikka's project test" },
-        { id: 13, name: "South Africa – in negotiation" },
-        { id: 14, name: "Philippines – Soy" },
-        { id: 15, name: "Queensland – Forest" },
-        { id: 16, name: "Senegal" },
-        { id: 17, name: "Some" },
-        { id: 18, name: "Additional" },
-        { id: 19, name: "Projects" },
-        { id: 20, name: "For" },
-        { id: 21, name: "Testing" },
-        { id: 22, name: "Pagination" },
-        { id: 23, name: "Components" }
-    ]
-
     // Open modal to filter projects
     let openModal = false
 
     // Alphabetically sort projects
-    let sortedProjects = projects.sort((a, b) => a.name.localeCompare(b.name))
+    let sortedProjects = $allProjects.sort((a, b) => a.name.localeCompare(b.name))
 
     // Bind page content from Pagination
     let pageContent = []

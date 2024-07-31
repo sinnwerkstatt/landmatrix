@@ -24,6 +24,10 @@ SCORE_CHOICES = [
     ("SEVERE_VIOLATIONS", _("Severe violations")),
 ]
 
+class UserInfo(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="info")
+    bookmarks = models.ManyToManyField("Project", blank=True)
+
 class VggtChapter(models.Model):
     chapter = models.PositiveIntegerField(primary_key=True)
     name = models.CharField(max_length=100)
@@ -133,3 +137,6 @@ class Project(models.Model):
     minerals = ArrayField(models.CharField(choices=choices.MINERALS_CHOICES), blank=True, null=True)
     transnational = models.BooleanField(blank=True, null=True)
     forest_concession = models.BooleanField(blank=True, null=True)
+
+    def __str__(self):
+        return f"Score for deal {self.name}"

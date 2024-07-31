@@ -1,5 +1,6 @@
 <script lang="ts">
     import { page } from "$app/stores"
+    import { fetchAllProjects, fetchMyProjects, fetchBookmarkedProjects } from "$lib/accountability/projects"
     import { dealsHistory, deals } from "$lib/accountability/stores"
 
     import ProjectsSidebar from "$components/Accountability/ProjectsSidebar.svelte"
@@ -20,6 +21,11 @@
     // TODO: Remember to handle differently the "all deals" project with ID = 0
 
     // TODO: Remember to handle errors when a deal doesn't exist for a project (reset dealsHistory)
+
+    // Load projects
+    fetchAllProjects()
+    fetchMyProjects()
+    fetchBookmarkedProjects()
 
     // =====
     $: console.log($deals)

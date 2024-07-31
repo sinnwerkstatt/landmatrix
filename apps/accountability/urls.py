@@ -24,6 +24,11 @@ urlpatterns = [
     path("project/", views.ProjectList.as_view()),
     path("project/<int:pk>/", views.ProjectDetail.as_view()),
 
+    path("project/related/", views.UserProjects.as_view()),
+    path("project/bookmark/", views.BookmarkedProjects.as_view()),
+
+    path("user/", views.UserInfoList.as_view()),
+
     path("schema/", SpectacularAPIView.as_view(), name="schema"),
     path("docs/", SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
 ]

@@ -76,6 +76,12 @@ export const deals = derived(
 )
 
 // =======================================================================================
+// projects
+export const allProjects = writable([])
+export const myProjects = writable([])
+export const bookmarkedProjects = writable([])
+
+// =======================================================================================
 // Documentation bookmark
 export const documentationBookmark = writable(undefined)
 

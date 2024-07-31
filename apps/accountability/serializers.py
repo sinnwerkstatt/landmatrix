@@ -1,6 +1,12 @@
 from rest_framework import serializers
 from apps.accountability.models import VggtChapter, VggtArticle, VggtVariable
 from apps.accountability.models import DealScore, DealVariable, Project
+from apps.accountability.models import UserInfo
+
+class UserInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserInfo
+        fields = "__all__"
 
 class VggtChapterSerializer(serializers.ModelSerializer):
     class Meta:
@@ -25,8 +31,6 @@ class DealScoreSerializer(serializers.ModelSerializer):
     nature_of_deal = serializers.ReadOnlyField(source="deal.active_version.nature_of_deal")
     operating_company = serializers.ReadOnlyField(source="deal.active_version.operating_company_id")
     involved_actors = serializers.ReadOnlyField(source="deal.active_version.involved_actors")
-    # parent_companies = serializers.ReadOnlyField(source="deal.active_version.parent_companies")
-    # top_investors = serializers.ReadOnlyField(source="deal.active_version.top_investors")
     initiation_year = serializers.ReadOnlyField(source="deal.active_version.initiation_year")
     implementation_status = serializers.ReadOnlyField(source="deal.active_version.current_implementation_status")
     intention_of_investment = serializers.ReadOnlyField(source="deal.active_version.current_intention_of_investment")
@@ -49,8 +53,6 @@ class DealScoreSerializer(serializers.ModelSerializer):
             "nature_of_deal",
             "operating_company",
             "involved_actors",
-            # "parent_companies",
-            # "top_investors",
             "initiation_year",
             "implementation_status",
             "intention_of_investment",

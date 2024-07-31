@@ -45,7 +45,6 @@
     ]
 
     async function save() {
-        console.log("===== SAVING DATA =====")
         formErrors = {}
         const data = Object.assign(form, $filters)
 
@@ -62,7 +61,6 @@
             })
         const resJson = await res.json()
         if (res.ok) {
-            console.log("Is Oké")
             disableSaveModal = false
         } else {
             console.error(resJson)

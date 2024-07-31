@@ -10,18 +10,18 @@
     const dispatch = createEventDispatcher();
 
     const placeholder = [
-        { id: 1, name: "Element 1", position: 0 },
-        { id: 2, name: "Element 2", position: 1 },
-        { id: 3, name: "Element 3", position: 2 }
+        { id: 2, name: "Element 2" },
+        { id: 3, name: "Element 3" },
+        { id: 1, name: "Element 1" },
     ];
 
-    export let items: { id: number, name: string, position?: number }[] = placeholder;
-
-    items = items.sort((a, b) => a && b ? a.position - b.position : -1)
+    export let items: { id: number, name: string }[] = placeholder;
 
     let refs:[HTMLElement] | [] = []
 
     let draggedItem:HTMLElement | null = null;
+
+    let reordered = items;
 
     function handleDragstart(e, i) {
         refs[i].style.opacity = "0.4";
@@ -30,8 +30,9 @@
 
     function handleDragend(e, i) {
         refs[i].style.opacity = "1";
-        updatePosition(container);
         draggedItem = null;
+        updatePosition(container);
+        dispatch('reorder', { reordered });
     }
 
     function handleDragover(e, container:HTMLElement) {
@@ -63,9 +64,11 @@
         const elements = [...container.querySelectorAll("li")];
         const ids = elements.map(e => Number(e.id));
 
-        ids.forEach((id, i) => {
-            const index = items.findIndex(e => e.id === id);
-            items[index].position = i;
+        reordered = []
+        
+        ids.forEach(id => {
+            const item = items.find(e => e.id === id)
+            reordered.push(item)
         });
     }
 
@@ -73,14 +76,14 @@
 
 <ul class="flex flex-col gap-2" 
     on:dragover|preventDefault={(e) => {handleDragover(e, container)}} bind:this={container}>
-    {#each items as { id, name, position }, i}
+    {#each items as { id, name }, index (id)}
         {@const imax = items.length}
-        {@const menuPosition = imax - 1 > i ? "bottom" : "top" }
-        <li bind:this={refs[i]} {id} class="select-none" style="opacity: 1;"
+        {@const menuPosition = imax - 1 > index ? "bottom" : "top" }
+        <li bind:this={refs[index]} {id} class="select-none" style="opacity: 1;"
             draggable="false"
-            on:dragstart={(e) => {handleDragstart(e, i)}} on:dragend={(e) => {handleDragend(e, i)}} >
+            on:dragstart={(e) => {handleDragstart(e, index)}} on:dragend={(e) => {handleDragend(e, index)}} >
 
-            <SidebarTab {id} label={name} handle={true} menu={true} {menuPosition}
+            <SidebarTab {id} label="{name}" handle={true} menu={true} {menuPosition}
                         on:edit on:bookmark />
 
         </li>
