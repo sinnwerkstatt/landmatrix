@@ -4,7 +4,7 @@
 
 {#if $page.url.searchParams.get("from_graphql")}
   <div
-    class="container mx-auto my-8 rounded border border-orange bg-orange-100 px-4 py-2"
+    class="container mx-auto my-8 rounded border border-orange bg-orange-100 px-4 py-2 text-black"
   >
     <div class="heading4">GraphQL has been deprecated.</div>
 
