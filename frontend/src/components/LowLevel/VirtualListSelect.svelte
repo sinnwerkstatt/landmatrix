@@ -1,28 +1,38 @@
-<script lang="ts">
+<script lang="ts" context="module">
+  export interface Item {
+    id: number | string | null
+    created?: boolean
+  }
+  export type FilterFn<Option> = (
+    label: string,
+    filterText: string,
+    option: Option,
+  ) => boolean
+</script>
+
+<script lang="ts" generics="T extends Item">
   import { tick } from "svelte"
   import { _ } from "svelte-i18n"
   import Select from "svelte-select"
   import VirtualList from "svelte-tiny-virtual-list"
 
-  // TODO: Make VirtualListSelect component generic: T extends Item
-  interface Item {
-    id: number | string | null
-    created?: boolean
-    name?: string
-  }
-
-  type FilterFn<T> = (label: string, filterText: string, option: T) => boolean
-
   export const itemId = "id"
 
-  export let items: Item[] = []
+  /* eslint-disable @typescript-eslint/no-unused-vars, no-undef */
+  interface $$Slots {
+    selection: { selection: T }
+    item: { item: T }
+  }
+  export let items: T[] = []
+  export let itemFilter: FilterFn<T> | undefined = undefined
+  /* eslint-enable */
+
   export let value: Item | null = null
   export let label = "label"
   export let required = false
   export let disabled = false
   export let creatable = false
   export let placeholder: string = $_("Please select")
-  export let itemFilter: FilterFn<Item> | undefined = undefined
   export let name: string | undefined = undefined
 
   let focused: boolean
@@ -36,7 +46,9 @@
     listOpen = false
   }
 
-  const onFilter = (filteredItems: Item[]) => {
+  const onFilter = <T extends Item & { [key in typeof label]: string }>(
+    filteredItems: T[],
+  ) => {
     const filterActive = filterText.length > 0
     const noItemsLefts = filteredItems.filter(i => !i.created).length === 0
     const notCreatedAlready = !filteredItems.find(i => i[label] === filterText)
