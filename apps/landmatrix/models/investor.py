@@ -313,9 +313,7 @@ class Involvement(models.Model):
         verbose_name = _("Investor Venture Involvement")
         verbose_name_plural = _("Investor Venture Involvements")
         ordering = ["id"]
-        # would be nice to have but not today
-        # maybe tomorrow?
-        # unique_together = [["parent_investor", "child_investor"]]
+        unique_together = [["parent_investor", "child_investor"]]
 
     def __str__(self):
         if self.role == "PARENT":
