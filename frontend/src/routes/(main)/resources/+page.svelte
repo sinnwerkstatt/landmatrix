@@ -4,6 +4,7 @@
   import type { components } from "$lib/openAPI"
   import { blogCategories } from "$lib/stores"
   import type { BlogCategory } from "$lib/types/wagtail"
+  import { isStaff } from "$lib/utils/permissions"
 
   import TagIcon from "$components/icons/TagIcon.svelte"
   import NewFooter from "$components/NewFooter.svelte"
@@ -91,7 +92,7 @@
   <NewFooter />
 </div>
 
-{#if data.user?.is_superuser || data.user?.is_staff}
+{#if isStaff(data.user)}
   <WagtailBird page={data.page} />
 {/if}
 

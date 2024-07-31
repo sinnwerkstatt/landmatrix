@@ -1,16 +1,16 @@
+from ..tests.helpers import AbstractModelTestCase
 from .new import BaseVersionMixin
-from ..tests.helpers import AbstractModelMixinTestCase
 
 PETER = 1
 JOHANNA = 2
 KNUT = 3
 
 
-class TestBaseVersionMixin(AbstractModelMixinTestCase):
-    mixin = BaseVersionMixin
+class TestBaseVersionMixin(AbstractModelTestCase):
+    abstract_model = BaseVersionMixin
 
     def test_copy_to_new_draft(self):
-        version = self.model.objects.create(
+        version: BaseVersionMixin = self.derived_model.objects.create(
             status="ACTIVATED",
             created_at="2024-01-01",
             created_by_id=PETER,

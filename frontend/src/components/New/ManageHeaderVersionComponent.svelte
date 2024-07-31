@@ -5,12 +5,13 @@
 
   import { loading } from "$lib/stores/basics"
   import {
-    UserRole,
     Version2Status,
     type DealHull,
     type InvestorHull,
+    type LeanUser,
     type User,
   } from "$lib/types/data"
+  import { isAdmin, isEditorOrAbove } from "$lib/utils/permissions"
 
   import Modal from "$components/Modal.svelte"
   import ManageHeaderActivateModal from "$components/New/ManageHeaderActivateModal.svelte"
@@ -39,19 +40,22 @@
   $: isCurrentDraft = object.selected_version.id === object.draft_version_id
   $: i18nValues = { values: { object: isDeal(object) ? "deal" : "investor" } }
 
-  function isAuthorized(user: User, obj: DealHull | InvestorHull): boolean {
-    const { role } = user
+  // TODO: Refactor to object (deal/investor) utils!
+  const isActiveVersionCreator = (
+    user: User | LeanUser | null,
+    obj: DealHull | InvestorHull,
+  ) => !!user && user.id === obj.selected_version.created_by_id
+
+  const isAuthorized = (user: User | null, obj: DealHull | InvestorHull): boolean => {
     switch (obj.selected_version.status) {
-      case null: // anybody who has a relevant role (Reporter, Editor, Admin)
-        return role >= UserRole.REPORTER
-      case Version2Status.DRAFT: // the Reporter of the Object or Editor,Administrator
-        return role >= UserRole.EDITOR || user.id === obj.selected_version.created_by_id
-      case Version2Status.REVIEW: // at least Editor
-        return role >= UserRole.EDITOR
-      case Version2Status.REJECTED: // only Admins
-        return role === UserRole.ADMINISTRATOR
-      case Version2Status.ACTIVATION: // only Admins
-        return role === UserRole.ADMINISTRATOR
+      case Version2Status.DRAFT:
+        return isEditorOrAbove(user) || isActiveVersionCreator(user, obj)
+      case Version2Status.REVIEW:
+        return isEditorOrAbove(user)
+      case Version2Status.ACTIVATION:
+        return isAdmin(user)
+      case Version2Status.ACTIVATED:
+        return isAdmin(user)
       default:
         return false
     }
@@ -137,7 +141,7 @@
 </div>
 <div class="mt-10 flex flex-col gap-2">
   <div class=" flex items-center gap-4">
-    {#if object.selected_version.created_by_id !== $page.data.user.id}
+    {#if !isActiveVersionCreator($page.data.user, object)}
       <div>
         <button
           on:click={() => (showReallyEditModal = true)}
@@ -168,7 +172,7 @@
     {/if}
   </div>
 
-  {#if $page.data.user?.role >= UserRole.EDITOR}
+  {#if isEditorOrAbove($page.data.user)}
     <div class="flex items-center gap-4">
       <div>
         <button
@@ -193,9 +197,9 @@
   <h2 class="heading4">{$_("Create a new draft")}</h2>
   <hr />
   <form class="mt-6 text-lg">
-    You are not the author of this version. Therefore, a new version will be created if
-    you proceed.
-
+    {$_(
+      "You are not the author of this version. Therefore, a new version will be created if you proceed.",
+    )}
     <div class="mt-14 flex justify-end gap-4">
       <button
         class="btn-outline"

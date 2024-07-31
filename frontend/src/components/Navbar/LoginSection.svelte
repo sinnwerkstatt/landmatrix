@@ -3,19 +3,20 @@
 
   import { page } from "$app/stores"
 
-  import type { User } from "$lib/types/data"
+  import { UserRole } from "$lib/types/data"
   import { getCsrfToken } from "$lib/utils"
 
   import NavDropDown from "$components/Navbar/NavDropDown.svelte"
 
-  let user: User | null
+  let user: typeof $page.data.user
   $: user = $page.data.user
 
-  let roles: { [key: number]: string }
-  $: roles = {
-    1: $_("Reporter"),
-    2: $_("Editor"),
-    3: $_("Administrator"),
+  let userRolesMap: { [role in UserRole]: string }
+  $: userRolesMap = {
+    [UserRole.ANYBODY]: $_("Anybody"),
+    [UserRole.REPORTER]: $_("Reporter"),
+    [UserRole.EDITOR]: $_("Editor"),
+    [UserRole.ADMINISTRATOR]: $_("Administrator"),
   }
 
   const logout = async () => {
@@ -52,21 +53,21 @@
         <p class="m-0 whitespace-nowrap p-2 leading-5 text-gray-400">
           {user.full_name}
           <br />
-          <small>{user.role ? roles[user.role] : ""}</small>
+          <small>{userRolesMap[user.role]}</small>
         </p>
 
-        {#if user.is_impersonate}
-          <ul>
-            <li>
-              <a
-                class="nav-link-secondary hover:bg-pelorous-100"
-                href="/impersonate/stop/?next=/dashboard/"
-              >
-                {$_("Stop impersonation")}
-              </a>
-            </li>
-          </ul>
-        {/if}
+        <!--{#if user.is_impersonate}-->
+        <!--  <ul>-->
+        <!--    <li>-->
+        <!--      <a-->
+        <!--        class="nav-link-secondary hover:bg-pelorous-100"-->
+        <!--        href="/impersonate/stop/?next=/dashboard/"-->
+        <!--      >-->
+        <!--        {$_("Stop impersonation")}-->
+        <!--      </a>-->
+        <!--    </li>-->
+        <!--  </ul>-->
+        <!--{/if}-->
 
         <ul>
           <li>

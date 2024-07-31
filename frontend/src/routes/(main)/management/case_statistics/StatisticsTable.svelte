@@ -18,16 +18,12 @@
     model === "deal"
       ? [
           { id: "pending", name: $_("Deals pending") },
-          { id: "rejected", name: $_("Deals rejected") },
-          { id: "pending_deletion", name: $_("Deals pending deletion") },
           { id: "active", name: $_("Deals active") },
           { id: "active_not_public", name: $_("Deals active, but not public") },
           { id: "active_confidential", name: $_("Deals active, but confidential") },
         ]
       : [
           { id: "pending", name: $_("Investors pending") },
-          { id: "rejected", name: $_("Investors rejected") },
-          { id: "pending_deletion", name: $_("Investors pending deletion") },
           { id: "active", name: $_("Investors active") },
         ]
 
@@ -58,10 +54,8 @@
   let dealsBuckets: { [key: string]: CaseStatisticsDeal[] }
   $: dealsBuckets = {
     pending: deals.filter(deal =>
-      ["DRAFT", "REVIEW", "ACTIVATION"].includes(deal.draft_version__status),
+      ["DRAFT", "REVIEW", "ACTIVATION"].includes(deal.draft_version__status as string),
     ),
-    rejected: deals.filter(deal => deal.draft_version__status === "REJECTED"),
-    pending_deletion: deals.filter(deal => deal.draft_version__status === "TO_DELETE"),
     active: _active_deals,
     active_not_public: _active_deals.filter(
       deal => deal.active_version_id && !deal.active_version__is_public,
@@ -78,13 +72,9 @@
   let investorsBuckets: { [key: string]: CaseStatisticsInvestor[] }
   $: investorsBuckets = {
     pending: investors.filter(investor =>
-      ["DRAFT", "REVIEW", "ACTIVATION"].includes(investor.draft_version__status),
-    ),
-    rejected: investors.filter(
-      investor => investor.draft_version__status === "REJECTED",
-    ),
-    pending_deletion: investors.filter(
-      investor => investor.draft_version__status === "TO_DELETE",
+      ["DRAFT", "REVIEW", "ACTIVATION"].includes(
+        investor.draft_version__status as string,
+      ),
     ),
     active: investors.filter(investor => investor.active_version_id !== null),
   }

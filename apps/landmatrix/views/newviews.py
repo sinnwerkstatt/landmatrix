@@ -20,7 +20,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from wagtail.models import Site
 
-from apps.accounts.models import User, UserRole
+from apps.accounts.models import User
 from apps.landmatrix.models import choices
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.new import (
@@ -33,7 +33,13 @@ from apps.landmatrix.models.new import (
     InvestorWorkflowInfo,
     Location,
 )
-from apps.landmatrix.permissions import IsAdministrator, IsReporterOrHigher
+from apps.landmatrix.permissions import (
+    IsAdministrator,
+    IsReporterOrHigher,
+    is_admin,
+    is_editor_or_higher,
+    is_reporter_or_higher,
+)
 from apps.landmatrix.serializers import (
     DealSerializer,
     DealVersionSerializer,
@@ -131,8 +137,9 @@ class VersionViewSet(viewsets.ReadOnlyModelViewSet):
     @transaction.atomic
     def update(self, request, pk: int):
         ov1: DealVersion | InvestorVersion = get_object_or_404(self.queryset, pk=pk)
+        user: User = request.user
 
-        if ov1.created_by_id != request.user.id and request.user.role < UserRole.EDITOR:
+        if not (ov1.created_by == user or is_editor_or_higher(user)):
             raise PermissionDenied("MISSING_AUTHORIZATION")
 
         if not ov1.is_current_draft():
@@ -140,11 +147,9 @@ class VersionViewSet(viewsets.ReadOnlyModelViewSet):
 
         data = request.data["version"]
 
-        creating_new_version = ov1.created_by_id != request.user.id
+        creating_new_version = ov1.created_by != user
         if creating_new_version:
-            ov1.change_status(
-                new_status="TO_DRAFT", user=request.user, to_user_id=request.user.id
-            )
+            ov1.change_status(new_status="TO_DRAFT", user=user, to_user_id=user.id)
 
         serializer: DealVersionSerializer | InvestorVersionSerializer = (
             self.serializer_class(ov1, data=data, partial=True)
@@ -153,7 +158,7 @@ class VersionViewSet(viewsets.ReadOnlyModelViewSet):
             # this is untidy
             ov1 = serializer.save()
             if not creating_new_version:
-                ov1.modified_by = request.user
+                ov1.modified_by = user
                 ov1.modified_at = timezone.now()
 
             serializer.save_submodels(data, ov1)
@@ -163,8 +168,9 @@ class VersionViewSet(viewsets.ReadOnlyModelViewSet):
 
     def destroy(self, request, pk: int):
         ov1: DealVersion | InvestorVersion = get_object_or_404(self.queryset, pk=pk)
+        user: User = request.user
 
-        if ov1.created_by_id != request.user.id and request.user.role < UserRole.EDITOR:
+        if not (ov1.created_by == user or is_editor_or_higher(user)):
             raise PermissionDenied("MISSING_AUTHORIZATION")
 
         old_draft_status = ov1.status
@@ -193,7 +199,7 @@ class VersionViewSet(viewsets.ReadOnlyModelViewSet):
 
             add_wfi(
                 obj=o1,
-                from_user=request.user,
+                from_user=user,
                 to_user_id=request.data.get("toUser"),
                 status_before=old_draft_status,
                 status_after="DELETED",
@@ -351,25 +357,22 @@ class HullViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class DealViewSet(HullViewSet):
-    queryset = DealHull.objects.normal()
+    queryset = DealHull.objects.all()
     serializer_class = DealSerializer
     version_serializer_class = DealVersionSerializer
 
     def get_queryset(self):
-        if self.action in ["retrieve", "retrieve_version"]:
-            versions_prefetch = Prefetch(
-                "versions", queryset=DealVersion.objects.order_by("-id")
-            )
-            # TODO Kurt is_superuser or also role.Administrator?
-            if self.request.user.is_superuser:
-                return DealHull.objects.all().prefetch_related(versions_prefetch)
-            return self.queryset.prefetch_related(versions_prefetch).visible(
-                self.request.user, "UNFILTERED"
-            )
-        if self.action == "list":
-            return self.queryset.active()
+        qs = self.queryset
 
-        return self.queryset
+        if not is_admin(self.request.user):
+            qs = qs.visible(self.request.user, "UNFILTERED")
+
+        if self.action in ["list"]:
+            qs = qs.prefetch_related(
+                Prefetch("versions", queryset=DealVersion.objects.order_by("-id"))
+            )
+
+        return qs
 
     @extend_schema(parameters=openapi_filters_parameters)
     def list(self, request: Request, *args, **kwargs):
@@ -469,18 +472,24 @@ class DealViewSet(HullViewSet):
     @action(methods=["get"], url_path=r"(?P<version_id>\d+)", detail=True)
     def retrieve_version(self, request, pk: int, version_id: int):
         d1: DealHull = self.get_object()
+        user: User = request.user
+
         d1._selected_version_id = int(version_id)
 
         dv1: DealVersion = get_object_or_404(d1.versions, id=version_id)
 
         if (
-            (request.user.is_authenticated and request.user.role >= UserRole.EDITOR)
-            or dv1.created_by_id == request.user.id
+            is_editor_or_higher(user)
+            or dv1.created_by == user
             or (dv1.status == "ACTIVATED" and dv1.is_public)
         ):
             return Response(self.get_serializer(d1).data)
 
-        raise PermissionDenied if request.user.is_authenticated else NotAuthenticated()
+        raise (
+            PermissionDenied("MISSING_AUTHORIZATION")
+            if user.is_authenticated
+            else NotAuthenticated()
+        )
 
     @action(methods=["put"], detail=True)
     def toggle_confidential(self, request, *args, **kwargs):
@@ -582,10 +591,21 @@ class InvestorVersionViewSet(VersionViewSet):
 
 
 class InvestorViewSet(HullViewSet):
-    queryset = InvestorHull.objects.normal().prefetch_related(
-        Prefetch("versions", queryset=InvestorVersion.objects.order_by("-id"))
-    )
+    queryset = InvestorHull.objects.all()
     version_serializer_class = InvestorVersionSerializer
+
+    def get_queryset(self):
+        qs = self.queryset
+
+        if not is_admin(self.request.user):
+            qs = qs.visible(self.request.user, "UNFILTERED")
+
+        if self.action in ["list", "simple"]:
+            qs = qs.prefetch_related(
+                Prefetch("versions", queryset=InvestorVersion.objects.order_by("-id"))
+            )
+
+        return qs
 
     def get_serializer_class(self):
         if self.action == "simple":
@@ -623,44 +643,36 @@ class InvestorViewSet(HullViewSet):
     @action(methods=["get"], url_path=r"(?P<version_id>\d+)", detail=True)
     def retrieve_version(self, request, pk: int, version_id: int):
         i1: InvestorHull = self.get_object()
+        user: User = request.user
+
         i1._selected_version_id = int(version_id)
 
         iv1: InvestorVersion = get_object_or_404(i1.versions, id=version_id)
 
         if (
-            (request.user.is_authenticated and request.user.role >= UserRole.EDITOR)
-            or iv1.created_by == request.user.id
+            is_editor_or_higher(user)
+            or iv1.created_by == user
             or iv1.status == "ACTIVATED"
         ):
             return Response(self.get_serializer(i1).data)
 
-        raise PermissionDenied if request.user.is_authenticated else NotAuthenticated
+        raise (
+            PermissionDenied("MISSING_AUTHORIZATION")
+            if user.is_authenticated
+            else NotAuthenticated()
+        )
 
     @extend_schema(responses={200: SimpleInvestorSerializer(many=True)})
     @action(methods=["get"], detail=False)
-    def simple(self, request: Request):
-        if investor_id := request.query_params.get("investor_id"):
-            if not request.user.is_authenticated:
-                raise NotAuthenticated
-            if request.user.role < UserRole.REPORTER:
-                raise NotAuthenticated
-            return Response(
-                InvestorHull.objects.exclude(deleted=True)
-                .annotate(name=F("draft_version__name"))
-                .filter(id=investor_id)
-                .values("id", "name")[0]
-            )
-        return Response(
-            InvestorHull.objects.filter(deleted=False)
-            .annotate(
-                name=Case(
-                    When(active_version__isnull=False, then="active_version__name"),
-                    When(draft_version__isnull=False, then="draft_version__name"),
-                ),
-                active=~Q(active_version=None),
-            )
-            .values("id", "name", "active")
-        )
+    def simple(self, request):
+        qs = InvestorHull.objects.annotate(
+            name=Case(
+                When(~Q(active_version=None), then="active_version__name"),
+                default="draft_version__name",
+            ),
+            active=~Q(active_version=None),
+        ).values("id", "name", "active", "deleted")
+        return Response(qs)
 
     @extend_schema(parameters=openapi_filters_parameters)
     @action(methods=["get"], detail=False)
@@ -697,6 +709,7 @@ class InvestorViewSet(HullViewSet):
             return Response(status=status.HTTP_418_IM_A_TEAPOT)
 
 
+# TODO: make value enum type
 class ValueLabelSerializer(serializers.Serializer):
     value = serializers.CharField(required=True)
     label = serializers.CharField(required=True)

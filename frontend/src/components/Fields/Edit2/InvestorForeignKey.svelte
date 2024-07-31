@@ -6,7 +6,9 @@
   import { getCsrfToken } from "$lib/utils"
 
   import EditField from "$components/Fields/EditField.svelte"
-  import VirtualListSelect from "$components/LowLevel/VirtualListSelect.svelte"
+  import VirtualListSelect, {
+    type FilterFn,
+  } from "$components/LowLevel/VirtualListSelect.svelte"
   import Modal from "$components/Modal.svelte"
 
   export let value: number | null
@@ -28,6 +30,9 @@
 
   let newInvestor: NewInvestor | undefined
   let showNewInvestorForm = false
+
+  let items: InvestorItem[]
+  $: items = $simpleInvestors.filter(i => !i.deleted)
 
   let listValue: InvestorItem | undefined
   $: listValue = $simpleInvestors.find(i => i.id === value)
@@ -61,7 +66,12 @@
     const retJson = await ret.json()
 
     if (ret.ok) {
-      const newI = { id: retJson.investorID, name: newInvestor!.name, active: false }
+      const newI: InvestorItem = {
+        id: retJson.investorID,
+        name: newInvestor!.name,
+        active: false,
+        deleted: false,
+      }
       value = newI.id
       // FIXME: Dirty hack to show select newInvestor in dropdown
       $simpleInvestors.push(newI)
@@ -70,11 +80,11 @@
     }
   }
 
-  const itemFilter = (label: string, filterText: string, option: InvestorItem) => {
+  const itemFilter: FilterFn<InvestorItem> = (label, filterText, item) => {
     const filterTextLower = filterText.toLowerCase()
     return (
-      option.name?.toLowerCase().includes(filterTextLower) ||
-      (option.id && option.id.toString().includes(filterTextLower))
+      item.name?.toLowerCase().includes(filterTextLower) ||
+      item.id.toString().includes(filterTextLower)
     )
   }
 </script>
@@ -83,7 +93,7 @@
   creatable={extras.creatable}
   disabled={showNewInvestorForm}
   {itemFilter}
-  items={$simpleInvestors}
+  {items}
   label="name"
   on:input={onInvestorInput}
   placeholder={$_("Select investor")}
@@ -94,19 +104,28 @@
     {#if selection.created}
       <div class="font-semibold italic">[new investor]</div>
     {:else}
-      <span class:text-red={!selection.active}>
-        {selection.name} (#{selection.id}) {!selection.active ? "-- NOT ACTIVE" : ""}
-      </span>
+      {#if selection.deleted}
+        <span class="font-bold text-red">
+          {$_("DELETED")}:
+        </span>
+      {:else if !selection.active}
+        <span class="font-bold text-purple">
+          {$_("DRAFT")}:
+        </span>
+      {/if}
+      {selection.name} (#{selection.id})
     {/if}
   </svelte:fragment>
   <svelte:fragment let:item slot="item">
     {#if item.created}
       {$_("Create")}: {item.name}
     {:else}
-      <span class:text-red={!item.active}>
-        #{item.id}: {item.name}
-        {!item.active ? "-- NOT ACTIVE" : ""}
-      </span>
+      {#if !item.active}
+        <span class="font-bold text-purple">
+          {$_("DRAFT")}:
+        </span>
+      {/if}
+      {item.name} (#{item.id})
     {/if}
   </svelte:fragment>
 </VirtualListSelect>

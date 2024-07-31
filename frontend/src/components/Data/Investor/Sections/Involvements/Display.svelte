@@ -3,19 +3,19 @@
 
   import { page } from "$app/stores"
 
-  import { UserRole, type InvestorHull } from "$lib/types/data"
+  import { type InvestorHull } from "$lib/types/data"
+  import { isReporterOrAbove } from "$lib/utils/permissions"
 
   import DealCard from "./DealCard.svelte"
   import InvestorCard from "./InvestorCard.svelte"
 
   export let investor: InvestorHull
 
-  $: filteredInvolvements =
-    $page.data.user && $page.data.user.role > UserRole.ANYBODY
-      ? investor.involvements
-      : investor.involvements.filter(
-          i => !(i.other_investor.deleted || i.other_investor.draft_only),
-        )
+  $: filteredInvolvements = isReporterOrAbove($page.data.user)
+    ? investor.involvements
+    : investor.involvements.filter(
+        i => !(i.other_investor.deleted || i.other_investor.draft_only),
+      )
 </script>
 
 <section>

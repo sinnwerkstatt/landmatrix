@@ -19,7 +19,7 @@ from nanoid import generate
 from rest_framework.exceptions import ParseError, PermissionDenied
 from wagtail.models import Site
 
-from apps.accounts.models import User, UserRole
+from apps.accounts.models import User
 from apps.landmatrix.models import choices, schema
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.currency import Currency
@@ -30,6 +30,7 @@ from apps.landmatrix.models.fields import (
     LooseDateField,
     NanoIDField,
 )
+from apps.landmatrix.permissions import is_editor_or_higher, is_admin
 
 VERSION_STATUS_CHOICES = (
     ("DRAFT", _("Draft")),
@@ -640,28 +641,28 @@ class BaseVersionMixin(models.Model):
         to_user_id: int = None,
     ):
         if new_status == "TO_REVIEW":
-            if not (self.created_by == user or user.role >= UserRole.EDITOR):
+            if not (self.created_by == user or is_editor_or_higher(user)):
                 raise PermissionDenied("MISSING_AUTHORIZATION")
             self.status = "REVIEW"
             self.sent_to_review_at = timezone.now()
             self.sent_to_review_by = user
             self.save()
         elif new_status == "TO_ACTIVATION":
-            if user.role < UserRole.EDITOR:
+            if not is_editor_or_higher(user):
                 raise PermissionDenied("MISSING_AUTHORIZATION")
             self.status = "ACTIVATION"
             self.sent_to_activation_at = timezone.now()
             self.sent_to_activation_by = user
             self.save()
         elif new_status == "ACTIVATE":
-            if user.role < UserRole.ADMINISTRATOR:
+            if not is_admin(user):
                 raise PermissionDenied("MISSING_AUTHORIZATION")
             self.status = "ACTIVATED"
             self.activated_at = timezone.now()
             self.activated_by = user
             self.save()
         elif new_status == "TO_DRAFT":
-            if user.role < UserRole.EDITOR:
+            if not is_editor_or_higher(user):
                 raise PermissionDenied("MISSING_AUTHORIZATION")
             self.copy_to_new_draft(to_user_id)
 

@@ -23,7 +23,7 @@
   use:clickOutside
 >
   {value}
-  <!--{#if fd && $page.data.user.is_superuser}-->
+  <!--{#if fd && isStaff($page.data.user)}-->
   <!--  <div class="relative flex items-center">-->
   <!--    <button on:click|preventDefault={() => (showDefinition = true)}>-->
   <!--      <QuestionMarkCircleIcon class="h-5 w-5 text-orange-400" />-->

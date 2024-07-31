@@ -29,7 +29,6 @@ wagtail-modeltranslation = "*"
 wagtail-orderable = "*"
 wagtail-headless-preview = "*"
 
-fastjsonschema = "*"  # obsolete, remove after model transition
 nanoid = "*"
 openpyxl = "*"
 polib = "*"  # for PO to JSON
@@ -80,6 +79,7 @@ types-colorama = "^0.4.15.8"
 types-polib = "^1.2.0.0"
 types-simplejson = "^3.18.0.1"
 types-tqdm = "^4.65.0.0"
+freezegun = "^1.5.1"
 
 
 [tool.black]

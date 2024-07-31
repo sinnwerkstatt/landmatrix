@@ -3,6 +3,8 @@
   import { env } from "$env/dynamic/public"
   import { _ } from "svelte-i18n"
 
+  import { isStaff } from "$lib/utils/permissions"
+
   import FilePdfIcon from "$components/icons/FilePdfIcon.svelte"
   import NewFooter from "$components/NewFooter.svelte"
   import PageTitle from "$components/PageTitle.svelte"
@@ -68,6 +70,6 @@
 
 <NewFooter />
 
-{#if data.user?.is_superuser || data.user?.is_staff}
+{#if isStaff(data.user)}
   <WagtailBird page={data.page} />
 {/if}

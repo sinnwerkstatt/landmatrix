@@ -15,6 +15,7 @@ export const load: PageLoad = async ({ url, fetch, parent }) => {
 
   if (get(blogpages).length === 0) {
     const retPages = await apiClient.GET(`/api/blog_pages/`)
+    // @ts-expect-error openapi-fetch types broken
     if (retPages.error) error(500, retPages.error)
     blogpages.set(retPages.data)
   }
