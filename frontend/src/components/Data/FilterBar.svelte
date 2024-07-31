@@ -208,7 +208,7 @@
       >
         {$_("Investor name")}
         <VirtualListSelect
-          items={$simpleInvestors}
+          items={$simpleInvestors.filter(i => !i.deleted && i.active)}
           label="name"
           on:input={e => ($filters.investor_id = e?.detail?.id)}
           value={$simpleInvestors.find(i => i.id === $filters.investor_id)}

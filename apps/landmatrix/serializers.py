@@ -460,6 +460,7 @@ class SimpleInvestorSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     name = serializers.CharField()
     active = serializers.BooleanField()
+    deleted = serializers.BooleanField()
 
 
 class InvestorSerializer(serializers.ModelSerializer):

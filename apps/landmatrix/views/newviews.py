@@ -665,28 +665,14 @@ class InvestorViewSet(HullViewSet):
     @extend_schema(responses={200: SimpleInvestorSerializer(many=True)})
     @action(methods=["get"], detail=False)
     def simple(self, request):
-        user: User = request.user
-
-        if investor_id := request.query_params.get("investor_id"):
-            if not is_reporter_or_higher(user):
-                raise NotAuthenticated
-            return Response(
-                InvestorHull.objects.exclude(deleted=True)
-                .annotate(name=F("draft_version__name"))
-                .filter(id=investor_id)
-                .values("id", "name")[0]
-            )
-        return Response(
-            InvestorHull.objects.filter(deleted=False)
-            .annotate(
-                name=Case(
-                    When(active_version__isnull=False, then="active_version__name"),
-                    When(draft_version__isnull=False, then="draft_version__name"),
-                ),
-                active=~Q(active_version=None),
-            )
-            .values("id", "name", "active")
-        )
+        qs = InvestorHull.objects.annotate(
+            name=Case(
+                When(~Q(active_version=None), then="active_version__name"),
+                default="draft_version__name",
+            ),
+            active=~Q(active_version=None),
+        ).values("id", "name", "active", "deleted")
+        return Response(qs)
 
     @extend_schema(parameters=openapi_filters_parameters)
     @action(methods=["get"], detail=False)

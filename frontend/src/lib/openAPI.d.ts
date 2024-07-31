@@ -1995,6 +1995,7 @@ export interface components {
       id: number
       name: string
       active: boolean
+      deleted: boolean
     }
     /**
      * @description * `GROUNDWATER` - Groundwater
