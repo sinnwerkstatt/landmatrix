@@ -1,14 +1,15 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+from django.utils.translation import gettext_lazy as _
 from apps.landmatrix.models.country import Country, Region
 
 
-class UserRole:
-    ANYBODY = 0
-    REPORTER = 1
-    EDITOR = 2
-    ADMINISTRATOR = 3
+class UserRole(models.IntegerChoices):
+    ANYBODY = 0, _("---------")
+    REPORTER = 1, _("Reporter")
+    EDITOR = 2, _("Editor")
+    ADMINISTRATOR = 3, _("Administrator")
 
 
 class User(AbstractUser):
@@ -23,13 +24,7 @@ class User(AbstractUser):
     )
     region = models.ForeignKey(Region, blank=True, null=True, on_delete=models.PROTECT)
 
-    RoleChoices = (
-        (UserRole.ANYBODY, "---------"),
-        (UserRole.REPORTER, "Reporter"),
-        (UserRole.EDITOR, "Editor"),
-        (UserRole.ADMINISTRATOR, "Administrator"),
-    )
-    role = models.IntegerField(default=UserRole.ANYBODY, choices=RoleChoices)
+    role = models.IntegerField(default=UserRole.ANYBODY, choices=UserRole.choices)
 
     class Meta:
         db_table = "auth_user"

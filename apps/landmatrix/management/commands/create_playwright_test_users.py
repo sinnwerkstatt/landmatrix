@@ -12,7 +12,7 @@ UserModel: Type[User] = get_user_model()
 class Command(BaseCommand):
     def handle(self, *args, **options):
         if not UserModel.objects.filter(username="shakespeare").exists():
-            will = UserModel.objects.create_superuser(
+            will = UserModel.objects.create_user(
                 username="shakespeare",
                 email="william@shakespeare.dev",
                 password="hamlet4eva",

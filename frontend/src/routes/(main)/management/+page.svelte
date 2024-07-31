@@ -12,7 +12,8 @@
 
   import { dealFields, investorFields } from "$lib/fieldLookups"
   import { loading } from "$lib/stores/basics"
-  import { UserRole, type DealHull, type InvestorHull } from "$lib/types/data"
+  import { type DealHull, type InvestorHull } from "$lib/types/data"
+  import { isAdmin } from "$lib/utils/permissions"
 
   import FilterCollapse from "$components/Data/FilterCollapse.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"
@@ -28,7 +29,8 @@
   dayjs.extend(isSameOrBefore)
   dayjs.extend(isSameOrAfter)
 
-  $: userIsEditorOrAbove = $page.data.user.role > UserRole.EDITOR
+  // FIXME
+  $: userIsEditorOrAbove = isAdmin($page.data.user)
 
   let model: "deal" | "investor" = "deal"
   let activeTabId: string

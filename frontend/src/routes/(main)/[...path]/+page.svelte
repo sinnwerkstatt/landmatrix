@@ -5,6 +5,7 @@
 
   import { pageQuery } from "$lib/queries"
   import { loading } from "$lib/stores/basics"
+  import { isStaff } from "$lib/utils/permissions"
 
   import WagtailBird from "$components/Wagtail/WagtailBird.svelte"
 
@@ -22,8 +23,8 @@
 
   let loadedLocale = $locale
 
-  async function reloadOnLocale(newLocale) {
-    if (newLocale != loadedLocale) {
+  const reloadOnLocale = async (newLocale?: string | null) => {
+    if (newLocale !== loadedLocale) {
       loading.set(true)
       data = { ...data, page: await pageQuery($page.url, fetch) }
       loadedLocale = newLocale
@@ -44,6 +45,6 @@
   Dieser Seitentyp existiert nicht: {data.page?.meta?.type}
 {/if}
 
-{#if data.user?.is_superuser || data.user?.is_staff}
+{#if isStaff(data.user)}
   <WagtailBird page={data.page} />
 {/if}

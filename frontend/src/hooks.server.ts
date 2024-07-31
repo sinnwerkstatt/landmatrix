@@ -5,14 +5,14 @@ import type { Handle } from "@sveltejs/kit"
 import { sequence } from "@sveltejs/kit/hooks"
 import { env } from "$env/dynamic/public"
 
-import { supportedLanguages } from "$lib/i18n/i18n"
+import { SUPPORTED_LANGUAGES, type Lang } from "$lib/i18n/i18n"
 
 Sentry.init({ dsn: env.PUBLIC_SENTRY_DSN, tracesSampleRate: 1.0 })
 
 const langRE = /django_language=(.*?)($|;| )/
 
-function checkBrowserLanguages(request: Request): string {
-  let languages
+function checkBrowserLanguages(request: Request): Lang {
+  let languages: string[]
   try {
     languages = request.headers
       ?.get("accept-language")
@@ -24,19 +24,19 @@ function checkBrowserLanguages(request: Request): string {
     languages = ["en"]
   }
   for (const language of languages)
-    for (const supportedLanguage of supportedLanguages)
+    for (const supportedLanguage of SUPPORTED_LANGUAGES)
       if (language.startsWith(supportedLanguage)) return supportedLanguage
   return "en"
 }
 
 export const myHandler: Handle = async ({ event, resolve }) => {
-  let lang = checkBrowserLanguages(event.request)
+  let lang: Lang = checkBrowserLanguages(event.request)
 
   const cookies = event.request.headers.get("cookie") ?? undefined
   if (cookies) {
     event.locals.cookie = cookies
     const match = event.locals.cookie.match(langRE)
-    lang = match?.[1] ?? "en"
+    lang = (match?.[1] as Lang) ?? "en"
   }
   event.locals.locale = lang
 

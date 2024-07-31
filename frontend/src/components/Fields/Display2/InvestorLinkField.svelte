@@ -1,49 +1,62 @@
 <script lang="ts">
-  import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
+
+  import { browser } from "$app/environment"
+  import { page } from "$app/stores"
 
   import type { InvestorHull } from "$lib/types/data"
 
   import CountryField from "$components/Fields/Display2/CountryField.svelte"
 
   export let value: InvestorHull | number | null
-  // noinspection JSUnusedGlobalSymbols
+
   export const extras = {}
 
-  let investor: InvestorHull | null
-
-  async function fetchInvestor() {
-    if (value === null) return
+  const fetchInvestor = async (value: InvestorHull | number): Promise<InvestorHull> => {
     if (typeof value === "number") {
-      const ret = await fetch(`/api/investors/${value}/`)
-      investor = await ret.json()
-    } else {
-      investor = value
-    }
-  }
+      const ret = await $page.data.apiClient.GET("/api/investors/{id}/", {
+        params: { path: { id: value } },
+      })
+      if (ret.error) {
+        // @ts-expect-error openapi-fetch types broken
+        throw new Error(ret.error)
+      }
 
-  onMount(() => {
-    fetchInvestor()
-  })
+      return ret.data as unknown as InvestorHull
+    }
+
+    return value
+  }
 </script>
 
-{#if investor}
-  {#if "active_version_id" in investor && !investor.active_version_id}
-    {$_("Draft")}:
-  {/if}
-  <a href="/investor/{investor.id}/" class="investor">
-    {#if investor.selected_version.name_unknown}
-      <span class="italic">[{$_("unknown investor")}]</span>
-    {:else}
-      {investor.selected_version.name}
+<!-- Need to add browser here. During SSR the fetch somehow returns 404 -->
+{#if browser && value}
+  {#await fetchInvestor(value)}
+    <span>{$_("Loading")}</span>
+  {:then investor}
+    {#if investor.deleted}
+      <span class="font-bold text-red">
+        {$_("DELETED")}:
+      </span>
+    {:else if investor.active_version_id === null}
+      <span class="font-bold text-purple">
+        {$_("DRAFT")}:
+      </span>
     {/if}
-    #{investor.id}
-    {#if investor.selected_version.country_id}
-      - <CountryField value={investor.selected_version.country_id} />
-    {/if}
-  </a>
-{:else if value}
-  <a href="/investor/{value}/" class="investor">
-    {$_("Investor")} #{value}
-  </a>
+
+    <a href="/investor/{investor.id}/" class="investor">
+      {#if investor.selected_version.name_unknown}
+        <span class="italic">[{$_("unknown investor")}]</span>
+      {:else}
+        {investor.selected_version.name}
+      {/if}
+      #{investor.id}
+      {#if investor.selected_version.country_id}
+        - <CountryField value={investor.selected_version.country_id} />
+      {/if}
+    </a>
+    <!-- eslint-disable-next-line @typescript-eslint/no-unused-vars -->
+  {:catch error}
+    <span class="text-red">{$_("Investor not found")} #{value}</span>
+  {/await}
 {/if}

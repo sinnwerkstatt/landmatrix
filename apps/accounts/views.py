@@ -17,10 +17,10 @@ from apps.landmatrix.permissions import IsReporterOrHigher
 #     if isinstance(country, int):
 #         country = Country.objects.get(id=country)
 #
-#     if user.role == UserRole.ADMINISTRATOR:
+#     if is_admin(user):
 #         return True
 #
-#     if user.role >= UserRole.EDITOR:
+#     if is_editor_or_higher(user):
 #         if country == user.country:
 #             return True
 #         if user.region.country == country:

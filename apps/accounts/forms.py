@@ -4,16 +4,16 @@ from wagtail.users.forms import UserCreationForm, UserEditForm
 
 from apps.landmatrix.models.country import Country, Region
 
-from .models import User
+from .models import UserRole
 
 
 class CustomUserEditForm(UserEditForm):
-    role = forms.ChoiceField(required=False, label=_("Role"), choices=User.RoleChoices)
+    role = forms.ChoiceField(required=False, label=_("Role"), choices=UserRole.choices)
     country = forms.ModelChoiceField(required=False, queryset=Country.objects)
     region = forms.ModelChoiceField(required=False, queryset=Region.objects)
 
 
 class CustomUserCreationForm(UserCreationForm):
-    role = forms.ChoiceField(required=False, label=_("Role"), choices=User.RoleChoices)
+    role = forms.ChoiceField(required=False, label=_("Role"), choices=UserRole.choices)
     country = forms.ModelChoiceField(required=False, queryset=Country.objects)
     region = forms.ModelChoiceField(required=False, queryset=Region.objects)

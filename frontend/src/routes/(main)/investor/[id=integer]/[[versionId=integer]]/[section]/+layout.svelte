@@ -5,7 +5,7 @@
   import { page } from "$app/stores"
 
   import { loading } from "$lib/stores/basics"
-  import { UserRole } from "$lib/types/data"
+  import { isReporterOrAbove } from "$lib/utils/permissions"
 
   import InvestorManageHeader from "$components/Data/Investor/InvestorManageHeader.svelte"
   import { INVESTOR_SECTIONS } from "$components/Data/Investor/Sections/constants"
@@ -30,7 +30,8 @@
 <div class="display-grid container mx-auto pt-2">
   <div style="grid-area: header">
     <ManageHeaderOldVersionNote obj={data.investor} />
-    {#if $page.data.user?.role > UserRole.ANYBODY}
+
+    {#if isReporterOrAbove($page.data.user)}
       <InvestorManageHeader investor={data.investor} on:reload={reloadInvestor} />
     {:else}
       <div class="my-4 md:flex md:flex-row md:justify-between">

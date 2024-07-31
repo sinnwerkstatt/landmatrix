@@ -12,7 +12,7 @@ import type { LayoutLoad } from "./$types"
 // Ideas:
 // - reusable load functions
 // - restructure routes to /[obj]/[id]/[[vId]]/[[edit]]
-export const load: LayoutLoad = async ({ params, fetch, parent, depends }) => {
+export const load: LayoutLoad = async ({ params, parent, depends }) => {
   depends("investor:detail")
 
   const { user, apiClient } = await parent()
@@ -31,11 +31,9 @@ export const load: LayoutLoad = async ({ params, fetch, parent, depends }) => {
   const ret = investorVersion
     ? await apiClient.GET("/api/investors/{id}/{version_id}/", {
         params: { path: { id: investorID, version_id: investorVersion } },
-        fetch,
       })
     : await apiClient.GET("/api/investors/{id}/", {
         params: { path: { id: investorID } },
-        fetch,
       })
 
   if (ret.error) {

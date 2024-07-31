@@ -3,7 +3,7 @@ from decimal import Decimal
 from enum import Enum
 from typing import Any, Sequence
 
-from pydantic import BaseModel, ConfigDict, Extra, Field, RootModel
+from pydantic import BaseModel, ConfigDict, Field, RootModel
 
 from apps.landmatrix.models.choices import (
     ActorEnum,
@@ -57,7 +57,7 @@ class LooseDateStr(str):
 
 class CurrentDateAreaSchema(ListRootModel):
     class CurrentDateAreaItem(BaseModel):
-        model_config = ConfigDict(extra=Extra.forbid)
+        model_config = ConfigDict(extra="forbid")
 
         current: bool = False
         date: LooseDateStr | str | None = None
@@ -67,7 +67,7 @@ class CurrentDateAreaSchema(ListRootModel):
 
 
 class _CurrentDateAreaChoicesSchema(BaseModel):
-    model_config = ConfigDict(extra=Extra.forbid)
+    model_config = ConfigDict(extra="forbid")
     current: bool = False
     date: LooseDateStr | str | None = None
     area: Decimal | None = None
@@ -99,7 +99,7 @@ class CurrentDateAreaChoicesAnimals(ListRootModel):
 
 
 class _CurrentDateChoiceSchema(BaseModel):
-    model_config = ConfigDict(extra=Extra.forbid)
+    model_config = ConfigDict(extra="forbid")
     current: bool = False
     date: LooseDateStr | str | None = None
     choice: Enum
@@ -121,7 +121,7 @@ class CurrentDateChoiceImplementationStatus(ListRootModel):
 
 class _ExportsSchema(BaseModel):
     model_config = ConfigDict(
-        extra=Extra.forbid, populate_by_name=True
+        extra="forbid", populate_by_name=True
     )  # turning this off for now because of "yield"
 
     current: bool = False
@@ -157,7 +157,7 @@ class ExportsMineralResources(ListRootModel):
 
 class LeaseSchema(ListRootModel):
     class LeaseItem(BaseModel):
-        model_config = ConfigDict(extra=Extra.forbid)
+        model_config = ConfigDict(extra="forbid")
         current: bool = False
         date: LooseDateStr | str | None = None
         area: Decimal | None = None
@@ -169,7 +169,7 @@ class LeaseSchema(ListRootModel):
 
 class JobsSchema(ListRootModel):
     class JobsItem(BaseModel):
-        model_config = ConfigDict(extra=Extra.forbid)
+        model_config = ConfigDict(extra="forbid")
         current: bool = False
         date: LooseDateStr | str | None = None
         jobs: Decimal | None = None
@@ -181,7 +181,7 @@ class JobsSchema(ListRootModel):
 
 class ActorsSchema(ListRootModel):
     class ActorsItem(BaseModel):
-        model_config = ConfigDict(extra=Extra.forbid)
+        model_config = ConfigDict(extra="forbid")
         name: str
         role: ActorEnum = ActorEnum.OTHER
 
@@ -190,7 +190,7 @@ class ActorsSchema(ListRootModel):
 
 class ElectricityGenerationSchema(ListRootModel):
     class ElectricityGenerationItem(BaseModel):
-        model_config = ConfigDict(extra=Extra.forbid)
+        model_config = ConfigDict(extra="forbid")
         current: bool = False
         date: LooseDateStr | str | None = None
         area: Decimal | None = None
@@ -205,7 +205,7 @@ class ElectricityGenerationSchema(ListRootModel):
 
 class CarbonSequestrationSchema(ListRootModel):
     class CarbonSequestrationItem(BaseModel):
-        model_config = ConfigDict(extra=Extra.forbid)
+        model_config = ConfigDict(extra="forbid")
         current: bool = False
         date: LooseDateStr | str | None = None
         area: Decimal | None = None

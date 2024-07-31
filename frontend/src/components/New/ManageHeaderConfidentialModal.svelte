@@ -31,6 +31,7 @@
       invalidate("deal:detail").then()
 
       open = false
+      comment = ""
     }
   }
 </script>

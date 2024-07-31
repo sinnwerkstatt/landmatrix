@@ -1995,6 +1995,7 @@ export interface components {
       id: number
       name: string
       active: boolean
+      deleted: boolean
     }
     /**
      * @description * `GROUNDWATER` - Groundwater
@@ -2014,40 +2015,36 @@ export interface components {
     StatusEnum: "DRAFT" | "REVIEW" | "ACTIVATION" | "ACTIVATED"
     User: {
       id: number
-      country_id: number | null
-      region_id: number | null
-      /** Format: date-time */
-      last_login?: string | null
-      /**
-       * Superuser status
-       * @description Designates that this user has all permissions without explicitly assigning them.
-       */
-      is_superuser?: boolean
       /** @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
       username: string
-      first_name?: string
-      last_name?: string
       /**
        * Email address
        * Format: email
        */
-      email?: string
+      email: string
+      first_name: string
+      last_name: string
+      full_name: string
+      phone: string
+      information: string
+      country: number | null
+      region: number | null
+      role: components["schemas"]["RoleEnum"]
+      /**
+       * Superuser status
+       * @description Designates that this user has all permissions without explicitly assigning them.
+       */
+      is_superuser: boolean
       /**
        * Staff status
        * @description Designates whether the user can log into this admin site.
        */
-      is_staff?: boolean
+      is_staff: boolean
       /**
        * Active
        * @description Designates whether this user should be treated as active. Unselect this instead of deleting accounts.
        */
-      is_active?: boolean
-      /** Format: date-time */
-      date_joined?: string
-      full_name?: string
-      phone?: string
-      information?: string
-      role?: components["schemas"]["RoleEnum"]
+      is_active: boolean
     }
     ValueLabel: {
       value: string

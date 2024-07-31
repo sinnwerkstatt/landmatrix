@@ -27,10 +27,6 @@ export enum Version2Status {
   REVIEW = "REVIEW",
   ACTIVATION = "ACTIVATION",
   ACTIVATED = "ACTIVATED",
-  //  OLD
-  REJECTED = "REJECTED",
-  TO_DELETE = "TO_DELETE",
-  DELETED = "DELETED",
 }
 
 // TODO: Fix type in openAPI -> currently just string
@@ -213,6 +209,7 @@ export enum UserRole {
 }
 
 export type User = components["schemas"]["User"]
+export type LeanUser = components["schemas"]["LeanUser"]
 
 // FRONTEND
 // Types for locations + areas in geojson

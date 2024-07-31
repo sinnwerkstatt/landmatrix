@@ -5,7 +5,7 @@
   import { page } from "$app/stores"
 
   import { loading } from "$lib/stores/basics"
-  import { UserRole } from "$lib/types/data"
+  import { isReporterOrAbove } from "$lib/utils/permissions"
 
   import DealManageHeader from "$components/Data/Deal/DealManageHeader.svelte"
   import { DEAL_SECTIONS } from "$components/Data/Deal/Sections/constants"
@@ -31,7 +31,8 @@
 <div class="display-grid container mx-auto pt-2">
   <div style="grid-area: header">
     <ManageHeaderOldVersionNote obj={data.deal} />
-    {#if $page.data.user?.role > UserRole.ANYBODY}
+
+    {#if isReporterOrAbove($page.data.user)}
       <DealManageHeader deal={data.deal} on:reload={reloadDeal} />
     {:else}
       <div class="my-4 md:flex md:flex-row md:justify-between">

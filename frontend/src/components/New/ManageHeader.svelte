@@ -4,12 +4,8 @@
 
   import { page } from "$app/stores"
 
-  import {
-    UserRole,
-    Version2Status,
-    type DealHull,
-    type InvestorHull,
-  } from "$lib/types/data"
+  import { Version2Status, type DealHull, type InvestorHull } from "$lib/types/data"
+  import { isAdmin } from "$lib/utils/permissions"
 
   import DetailsSummary from "$components/DetailsSummary.svelte"
   import HeaderDatesWDownload from "$components/HeaderDatesWDownload.svelte"
@@ -88,6 +84,7 @@
               <Cog6ToothIcon />
               {$_("actions")}
             </div>
+
             <ul
               class="absolute z-50 mt-1 rounded border border-gray-400 bg-white px-4 py-2 shadow-2xl dark:bg-gray-700"
               slot="details"
@@ -120,7 +117,7 @@
                 </li>
               {/if}
 
-              {#if isDeal(object) && $page.data.user?.role === UserRole.ADMINISTRATOR}
+              {#if isDeal(object) && isAdmin($page.data.user)}
                 <li class="my-3">
                   <div class="flex items-center gap-2">
                     <button
@@ -134,31 +131,35 @@
                   </div>
                 </li>
               {/if}
-              <li class="my-3">
-                <div class="flex items-center gap-2">
-                  <button
-                    type="button"
-                    class="btn btn-red min-w-[9rem]"
-                    on:click={() => (showDeletionOverlay = true)}
-                  >
+
+              {#if isAdmin($page.data.user)}
+                <li class="my-3">
+                  <div class="flex items-center gap-2">
+                    <button
+                      type="button"
+                      class="btn btn-red min-w-[9rem]"
+                      on:click={() => (showDeletionOverlay = true)}
+                    >
+                      {#if object.deleted}
+                        {$_("Undelete")}
+                      {:else}
+                        {$_("Delete")}
+                      {/if}
+                    </button>
                     {#if object.deleted}
-                      {$_("Undelete")}
+                      {isDeal(object)
+                        ? $_("Reactivate this deal")
+                        : $_("Reactivate this investor")}
                     {:else}
-                      {$_("Delete")}
+                      {isDeal(object)
+                        ? $_("Delete this deal")
+                        : $_("Delete this investor")}
                     {/if}
-                  </button>
-                  {#if object.deleted}
-                    {isDeal(object)
-                      ? $_("Reactivate this deal")
-                      : $_("Reactivate this investor")}
-                  {:else}
-                    {isDeal(object)
-                      ? $_("Delete this deal")
-                      : $_("Delete this investor")}
-                  {/if}
-                </div>
-              </li>
-              {#if isDeal(object) && $page.data.user?.role === UserRole.ADMINISTRATOR}
+                  </div>
+                </li>
+              {/if}
+
+              {#if isDeal(object) && isAdmin($page.data.user)}
                 <li class="my-3">
                   <div class="flex items-center gap-2">
                     <button
@@ -182,19 +183,19 @@
     </div>
     <hr class="h-0.5 bg-black" />
     <div class="p-2 py-4">
-      {#if isDeal(object) && object.confidential}
-        <div
-          class="my-6 flex flex-col items-center justify-center gap-1 bg-red-700 py-2 text-white"
-        >
-          <div class="heading4 mb-0">{$_("Confidential")}</div>
-          <span>{object.confidential_comment}</span>
-        </div>
-      {:else if object.deleted}
+      {#if object.deleted}
         <div
           class="my-6 flex flex-col items-center justify-center gap-1 bg-red-500 py-2 text-white"
         >
           <div class="heading4 mb-0">{$_("Deleted")}</div>
           <span>{object.deleted_comment}</span>
+        </div>
+      {:else if isDeal(object) && object.confidential}
+        <div
+          class="my-6 flex flex-col items-center justify-center gap-1 bg-red-700 py-2 text-white"
+        >
+          <div class="heading4 mb-0">{$_("Confidential")}</div>
+          <span>{object.confidential_comment}</span>
         </div>
       {:else}
         <div class="mb-4 flex items-center justify-between gap-4">
@@ -218,7 +219,7 @@
       {/if}
     </div>
   </div>
-  <ManageHeaderLogbook {object} extraUserIDs={[]} />
+  <ManageHeaderLogbook {object} />
 </div>
 
 <ManageHeaderDeletionModal bind:object bind:open={showDeletionOverlay} />

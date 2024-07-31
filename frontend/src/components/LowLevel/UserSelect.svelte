@@ -1,37 +1,32 @@
 <script lang="ts">
-  import type { components } from "$lib/openAPI"
   import { allUsers } from "$lib/stores"
-  import { UserRole } from "$lib/types/data"
+  import { UserRole, type LeanUser } from "$lib/types/data"
+  import { hasRoleOrAbove } from "$lib/utils/permissions"
 
   import VirtualListSelect from "./VirtualListSelect.svelte"
 
-  export let value: components["schemas"]["LeanUser"] | number | null = null
+  export let value: LeanUser | number | null = null
   export let required = false
 
   export let minimumRole: UserRole = UserRole.ANYBODY
   export let userIDs: Set<number> | undefined = undefined
 
-  let items: components["schemas"]["LeanUser"][] = []
+  let items: LeanUser[] = []
 
-  async function initialize(users: components["schemas"]["LeanUser"][]) {
+  async function initialize(users: LeanUser[]) {
     if (!users.length) return
 
     if (typeof value === "number") value = users.find(u => u.id === value) ?? null
     if (userIDs) items = users.filter(u => userIDs!.has(u.id))
-    else
-      items = minimumRole ? users.filter(u => u.role && u.role >= minimumRole) : users
+    else items = minimumRole ? users.filter(hasRoleOrAbove(minimumRole)) : users
   }
 
   $: initialize($allUsers.filter(u => u.is_active))
 
-  const itemFilter = (
-    label: string,
-    filterText: string,
-    user: components["schemas"]["LeanUser"],
-  ) => {
+  const itemFilter = (label: string, filterText: string, user: LeanUser) => {
     const filterTextLower = filterText.toLowerCase()
     return (
-      user.full_name!.toLowerCase().includes(filterTextLower) ||
+      user.full_name.toLowerCase().includes(filterTextLower) ||
       user.username.toLowerCase().includes(filterTextLower)
     )
   }
