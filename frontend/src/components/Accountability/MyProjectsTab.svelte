@@ -1,20 +1,10 @@
 <script lang="ts">
     import { myProjects, bookmarkedProjects } from "$lib/accountability/stores"
+    import { updateUserBookmarks } from "$lib/accountability/projects"
 
     import SidebarTab from "./atomic/SidebarTab.svelte"
     import Section from "./atomic/Section.svelte"
     import SortableList from "./atomic/SortableList.svelte"
-
-    // let bookmarked = [
-    //     { id: 1, name: "Philippines – Soy", position: 0 },
-    //     { id: 2, name: "Senegal", position: 1 },
-    //     { id: 3, name: "Queensland – Forest", position: 2 },
-    // ];
-
-    // let myProjects = [
-    //     { id: 10, name: "South Africa – In negotiation" },
-    //     { id: 20, name: "Albania" },
-    // ];
 
     function handleEdit(event) {
         const projectId = event.detail.id
@@ -26,16 +16,15 @@
         console.log("Bookmark action: " + projectId)
     }
 
-    function handleReorder(event) {
-        const reordered = event.detail.reordered
-        const old_order = $bookmarkedProjects.map(e => e.id).toString()
-        const new_order = reordered.map(e => e.id).toString()
-
-        if (old_order != new_order) {
-            console.log("Update UserInfo bookmarks")
+    async function handleReorder(event) {
+        console.log("Update bookmarks order on db");
+        try {
+            const res = await updateUserBookmarks()
+            const json = await res.json()
+            console.log(json)
+        } catch (error) {
+            console.error(error)
         }
-
-        bookmarkedProjects.set(reordered)
     }
 
 </script>

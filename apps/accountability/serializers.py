@@ -1,12 +1,16 @@
 from rest_framework import serializers
+
+from drf_spectacular.utils import extend_schema_field
+
 from apps.accountability.models import VggtChapter, VggtArticle, VggtVariable
 from apps.accountability.models import DealScore, DealVariable, Project
-from apps.accountability.models import UserInfo
+from apps.accountability.models import UserInfo, Bookmark
 
 class UserInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserInfo
         fields = "__all__"
+        read_only_fields = ["user"]
 
 class VggtChapterSerializer(serializers.ModelSerializer):
     class Meta:
@@ -74,3 +78,18 @@ class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = "__all__"
+        read_only_fields = ["owner", "created_at", "modified_at", "modified_by"]
+
+
+class BookmarkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Bookmark
+        fields = ["id", "order", "project"]
+        read_only_fields = ["user"]
+
+class BookmarkBulkSerializer(serializers.ModelSerializer):
+    bookmarks = BookmarkSerializer(many=True)
+    class Meta:
+        model = Bookmark
+        fields = "__all__"
+        # depth = 1

@@ -21,8 +21,6 @@
 
     let draggedItem:HTMLElement | null = null;
 
-    let reordered = items;
-
     function handleDragstart(e, i) {
         refs[i].style.opacity = "0.4";
         draggedItem = refs[i];
@@ -32,7 +30,7 @@
         refs[i].style.opacity = "1";
         draggedItem = null;
         updatePosition(container);
-        dispatch('reorder', { reordered });
+        dispatch('reorder');
     }
 
     function handleDragover(e, container:HTMLElement) {
@@ -64,12 +62,14 @@
         const elements = [...container.querySelectorAll("li")];
         const ids = elements.map(e => Number(e.id));
 
-        reordered = []
+        let reordered:{ id: number, name: string }[] = []
         
         ids.forEach(id => {
             const item = items.find(e => e.id === id)
             reordered.push(item)
         });
+
+        items = reordered
     }
 
 </script>

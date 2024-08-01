@@ -26,8 +26,6 @@ SCORE_CHOICES = [
 
 class UserInfo(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="info")
-    bookmarks = models.ManyToManyField("Project", blank=True)
-
 class VggtChapter(models.Model):
     chapter = models.PositiveIntegerField(primary_key=True)
     name = models.CharField(max_length=100)
@@ -139,4 +137,12 @@ class Project(models.Model):
     forest_concession = models.BooleanField(blank=True, null=True)
 
     def __str__(self):
-        return f"Score for deal {self.name}"
+        return f"{self.name}"
+
+
+class Bookmark(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="bookmarks")
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    order = models.PositiveIntegerField(blank=True, null=True)
+    class Meta:
+        unique_together=[["user", "project"]]

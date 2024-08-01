@@ -33,6 +33,14 @@ class IsOwnerOrEditorOrReadonly(BasePermission):
         return False
 
 
+class IsUser(BasePermission):
+    def has_object_permission(self, request, view, obj):
+        user: User = request.user
+        if obj.user == user:
+            return True
+        return False
+
+
 class IsAdministrator(BasePermission):
     def has_permission(self, request, view):
         user: User = request.user  # type: ignore
