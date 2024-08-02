@@ -2,6 +2,7 @@
     import { page } from "$app/stores"
     import { fetchAllProjects, fetchMyProjects, fetchBookmarkedProjects } from "$lib/accountability/projects"
     import { dealsHistory, deals } from "$lib/accountability/stores"
+    import { filters } from "$lib/accountability/filters"
 
     import ProjectsSidebar from "$components/Accountability/ProjectsSidebar.svelte"
     import FiltersSidebar from "$components/Accountability/FiltersSidebar.svelte"
@@ -11,24 +12,23 @@
 
     // If currentProject =/= page.params.project, update project and empty current page and current Deal
     function updateLocalStorage(pathname) {
-        if ($page.params.project) {
+        if ($page.params.project && !$page.error) {
             dealsHistory.set(pathname)
         }
     }
 
     $: updateLocalStorage($page.url.pathname)
 
-    // TODO: Remember to handle differently the "all deals" project with ID = 0
-
-    // TODO: Remember to handle errors when a deal doesn't exist for a project (reset dealsHistory)
-
     // Load projects
     fetchAllProjects()
     fetchMyProjects()
-    fetchBookmarkedProjects()
+    fetchBookmarkedProjects()   
 
     // =====
-    $: console.log($deals)
+    
+    // $: console.log($currentProject)
+    // $: console.log($filters)
+    // $: console.log($deals)
 
 </script>
 

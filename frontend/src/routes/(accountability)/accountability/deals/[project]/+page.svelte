@@ -26,4 +26,4 @@
     
     <!-- Activity thread -->
     <Thread />
-</div>
+</div>  

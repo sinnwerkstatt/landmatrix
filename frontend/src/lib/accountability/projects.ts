@@ -1,8 +1,58 @@
-import { get } from "svelte/store"
+import { error } from "@sveltejs/kit"
+import { get, writable } from "svelte/store"
 
+import { loading } from "$lib/stores/basics"
 import { getCsrfToken } from "$lib/utils"
 
-import { allProjects, bookmarkedProjects, myProjects } from "./stores"
+import { filters, FilterValues } from "./filters"
+
+// ==============================================================================
+// Classes
+export class Project {
+  id: number = 0
+  name: string = ""
+  description: string = ""
+  owner: {} | undefined
+  editors: [] = []
+  created_at: Date | undefined
+  modified_at?: Date
+  modified_by?: Date
+  filters: FilterValues = new FilterValues()
+}
+
+// ==============================================================================
+// Stores
+export const allProjects = writable([])
+export const myProjects = writable([])
+export const bookmarkedProjects = writable([])
+export const formerProjectID = writable<number | undefined>(-1)
+
+// ==============================================================================
+// Project related helper functions
+export function updateFilters(project: Project) {
+  if (project.id != get(formerProjectID)) {
+    if (project.id) {
+      const res = new FilterValues(project.filters)
+      filters.set(res)
+    } else {
+      const res = new FilterValues()
+      filters.set(res.default())
+    }
+  }
+  formerProjectID.set(project.id)
+}
+
+// ==============================================================================
+// Functions to communicate with the API
+export async function getProject(projectID) {
+  try {
+    const res = await fetch(`/api/accountability/project/${projectID}/`)
+    if (!res.ok) throw error(res.status, { message: res.statusText })
+    return res
+  } catch (err) {
+    throw err
+  }
+}
 
 export async function fetchAllProjects() {
   try {
@@ -38,27 +88,46 @@ export async function fetchBookmarkedProjects() {
 }
 
 export async function updateUserBookmarks() {
-  console.log("============= PUT =============")
-  const bookmarks = get(bookmarkedProjects).map(e => e.id)
-
-  console.log(JSON.stringify({ bookmarks: bookmarks }))
+  const data = get(bookmarkedProjects).map((e, index) => ({
+    project: e.id,
+    order: index + 1,
+  }))
 
   try {
-    const res = await fetch("/api/accountability/user/me/", {
+    const res = await fetch("/api/accountability/bookmark/", {
       method: "PUT",
       credentials: "include",
-      body: JSON.stringify({ bookmarks: bookmarks }),
+      body: JSON.stringify(data),
       headers: {
         "X-CSRFToken": await getCsrfToken(),
         "Content-Type": "application/json",
       },
     })
-    console.log(res)
     const resJSON = await res.json()
-    console.log(resJSON.bookmarks)
     return resJSON
   } catch (error) {
-    console.error(error)
+    return error
+  }
+}
+
+export async function createProject(
+  form: { name: string; description: string; editors: number[] },
+  filters: FilterValues,
+) {
+  const data = form
+  data.filters = filters
+  try {
+    const res = await fetch("/api/accountability/project/", {
+      method: "POST",
+      credentials: "include",
+      body: JSON.stringify(data),
+      headers: {
+        "X-CSRFToken": await getCsrfToken(),
+        "Content-Type": "application/json",
+      },
+    })
+    return res
+  } catch (error) {
     return error
   }
 }

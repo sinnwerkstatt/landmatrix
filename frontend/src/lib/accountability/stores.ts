@@ -5,7 +5,7 @@ import { browser } from "$app/environment"
 import { allUsers } from "$lib/stores"
 import { loading } from "$lib/stores/basics"
 
-import { filters, lastRESTFilterArray } from "./filters"
+import { filters, FilterValues, lastRESTFilterArray } from "./filters"
 import { sentenceToArray } from "./helpers"
 
 // Navigation status
@@ -59,10 +59,6 @@ export const deals = derived(
     const restFilterArray = $filters.toRESTFilterArray()
     if (browser && restFilterArray != $lastRESTFilterArray) {
       loading.set(true)
-
-      console.log("---")
-      console.log(restFilterArray)
-
       fetch(`/api/accountability/deal/?${restFilterArray}`)
         .then(res => res.json())
         .then(res => {
@@ -74,12 +70,6 @@ export const deals = derived(
   },
   [],
 )
-
-// =======================================================================================
-// projects
-export const allProjects = writable([])
-export const myProjects = writable([])
-export const bookmarkedProjects = writable([])
 
 // =======================================================================================
 // Documentation bookmark

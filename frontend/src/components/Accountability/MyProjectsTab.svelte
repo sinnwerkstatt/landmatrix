@@ -1,6 +1,5 @@
 <script lang="ts">
-    import { myProjects, bookmarkedProjects } from "$lib/accountability/stores"
-    import { updateUserBookmarks } from "$lib/accountability/projects"
+    import { myProjects, bookmarkedProjects, updateUserBookmarks } from "$lib/accountability/projects"
 
     import SidebarTab from "./atomic/SidebarTab.svelte"
     import Section from "./atomic/Section.svelte"
@@ -17,11 +16,8 @@
     }
 
     async function handleReorder(event) {
-        console.log("Update bookmarks order on db");
         try {
             const res = await updateUserBookmarks()
-            const json = await res.json()
-            console.log(json)
         } catch (error) {
             console.error(error)
         }

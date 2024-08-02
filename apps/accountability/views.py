@@ -116,7 +116,7 @@ class ProjectList(generics.ListCreateAPIView):
         if id_list := request.GET.getlist("id"):
             filters &= Q(id__in=id_list)
         queryset = Project.objects.filter(filters)\
-                                  .order_by("name")\
+                                  .order_by("-created_at")\
                                   .distinct()
         serializer = ProjectSerializer(queryset, many=True)
         return Response(serializer.data)

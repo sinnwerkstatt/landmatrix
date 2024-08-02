@@ -21,6 +21,13 @@ export class FilterValues {
   transnational: boolean | null = null
   forest_concession: boolean | null = null
 
+  constructor(data: Partial<FilterValues> = {}) {
+    const cleanData = Object.keys(data).forEach(
+      key => data[key] === undefined && delete data[key],
+    )
+    Object.assign(this, cleanData)
+  }
+
   public empty() {
     this.region_id = []
     this.country_id = []

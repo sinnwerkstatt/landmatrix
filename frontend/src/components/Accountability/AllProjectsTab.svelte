@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { allProjects } from "$lib/accountability/stores"
+    import { allProjects } from "$lib/accountability/projects"
 
     import SidebarTab from "./atomic/SidebarTab.svelte"
     import Button from "./Button.svelte"

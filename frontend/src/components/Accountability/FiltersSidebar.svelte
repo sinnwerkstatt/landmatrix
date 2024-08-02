@@ -1,9 +1,8 @@
 <script lang="ts">
     import { usersToUserChoices } from "$lib/accountability/helpers"
     import { openedFilterBar, users } from "$lib/accountability/stores"
+    import { createProject } from "$lib/accountability/projects"
     import { filters } from "$lib/accountability/filters"
-
-    import { getCsrfToken } from "$lib/utils"
 
     import Sidebar from "./atomic/Sidebar.svelte"
     import Filters from "./atomic/Filters.svelte"
@@ -18,7 +17,6 @@
 
     let openSaveModal = false
     let disableSaveModal = false
-
     
     let form = {
         name: undefined,
@@ -44,29 +42,26 @@
         { label: "Last modification by:", value: undefined }
     ]
 
+    function resetFormErrors(form) {
+        formErrors = {}
+    }
+
     async function save() {
         formErrors = {}
-        const data = Object.assign(form, $filters)
-
-        // And now, we post data and cross our fingers
         disableSaveModal = true
-        const res = await fetch("/api/accountability/project/", {
-                method: "POST",
-                credentials: "include",
-                body: JSON.stringify(data),
-                headers: {
-                    "X-CSRFToken": await getCsrfToken(),
-                    "Content-Type": "application/json",
-                }
-            })
-        const resJson = await res.json()
+
+        const res = await createProject(form, $filters)
         if (res.ok) {
+            formErrors = {}
             disableSaveModal = false
+            openSaveModal = false
         } else {
-            console.error(resJson)
+            formErrors = await res.json()
             disableSaveModal = false
         }
     }
+
+    $: resetFormErrors(form)
  
 </script>
 

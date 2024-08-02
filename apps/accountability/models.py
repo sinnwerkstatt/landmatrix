@@ -114,8 +114,13 @@ class Project(models.Model):
         on_delete=models.PROTECT,
         related_name="+",
     )
-    # Filters (matching frontend > src > lib > accountability > filters.ts > FilterValues)
-    # filters = models.JSONField()
+
+    def __str__(self):
+        return f"{self.name}"
+
+
+class Filters(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="filters")
     region_id = ArrayField(models.PositiveIntegerField(), blank=True, null=True)
     country_id = ArrayField(models.PositiveIntegerField(), blank=True, null=True)
     area_min = models.PositiveIntegerField(blank=True, null=True)
@@ -137,7 +142,7 @@ class Project(models.Model):
     forest_concession = models.BooleanField(blank=True, null=True)
 
     def __str__(self):
-        return f"{self.name}"
+        return f"{self.project.name} - filters"
 
 
 class Bookmark(models.Model):
