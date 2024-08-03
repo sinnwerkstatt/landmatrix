@@ -362,15 +362,12 @@ class DealViewSet(HullViewSet):
     version_serializer_class = DealVersionSerializer
 
     def get_queryset(self):
-        qs = self.queryset
+        qs = self.queryset.prefetch_related(
+            Prefetch("versions", queryset=DealVersion.objects.order_by("-id"))
+        )
 
         if not is_admin(self.request.user):
             qs = qs.visible(self.request.user, "UNFILTERED")
-
-        if self.action in ["list"]:
-            qs = qs.prefetch_related(
-                Prefetch("versions", queryset=DealVersion.objects.order_by("-id"))
-            )
 
         return qs
 
@@ -595,15 +592,12 @@ class InvestorViewSet(HullViewSet):
     version_serializer_class = InvestorVersionSerializer
 
     def get_queryset(self):
-        qs = self.queryset
+        qs = self.queryset.prefetch_related(
+            Prefetch("versions", queryset=InvestorVersion.objects.order_by("-id"))
+        )
 
         if not is_admin(self.request.user):
             qs = qs.visible(self.request.user, "UNFILTERED")
-
-        if self.action in ["list", "simple"]:
-            qs = qs.prefetch_related(
-                Prefetch("versions", queryset=InvestorVersion.objects.order_by("-id"))
-            )
 
         return qs
 
