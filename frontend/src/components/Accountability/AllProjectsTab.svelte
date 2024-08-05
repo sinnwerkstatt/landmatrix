@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { allProjects } from "$lib/accountability/projects"
+    import { allProjects, addUserBookmark, removeUserBookmark } from "$lib/accountability/projects"
 
     import SidebarTab from "./atomic/SidebarTab.svelte"
     import Button from "./Button.svelte"
@@ -27,9 +27,23 @@
         console.log("Edit action: " + projectId)
     }
 
-    function handleBookmark(event) {
+    async function handleBookmark(event) {
+        const action = event.detail.action
         const projectId = event.detail.id
-        console.log("Bookmark action: " + projectId)
+        console.log(`Action ${action} on project ${projectId}`)
+        if (action == "add") {
+            try {
+                await addUserBookmark(projectId)
+            } catch (error) {
+                console.error(error)
+            }
+        } else if (action == "remove") {
+            try {
+                await removeUserBookmark(projectId)
+            } catch (error) {
+                console.error(error)
+            }
+        }
     }
 
     // Tmp users

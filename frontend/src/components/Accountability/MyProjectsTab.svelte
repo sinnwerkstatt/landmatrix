@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { myProjects, bookmarkedProjects, updateUserBookmarks } from "$lib/accountability/projects"
+    import { myProjects, bookmarkedProjects, addUserBookmark, removeUserBookmark, updateUserBookmarks } from "$lib/accountability/projects"
 
     import SidebarTab from "./atomic/SidebarTab.svelte"
     import Section from "./atomic/Section.svelte"
@@ -10,18 +10,34 @@
         console.log("Edit action: " + projectId)
     }
 
-    function handleBookmark(event) {
+    async function handleBookmark(event) {
+        const action = event.detail.action
         const projectId = event.detail.id
-        console.log("Bookmark action: " + projectId)
+        console.log(`Action ${action} on project ${projectId}`)
+        if (action == "add") {
+            try {
+                await addUserBookmark(projectId)
+            } catch (error) {
+                console.error(error)
+            }
+        } else if (action == "remove") {
+            try {
+                await removeUserBookmark(projectId)
+            } catch (error) {
+                console.error(error)
+            }
+        }
     }
 
     async function handleReorder(event) {
         try {
-            const res = await updateUserBookmarks()
+            await updateUserBookmarks()
         } catch (error) {
             console.error(error)
         }
     }
+
+    $: console.log($bookmarkedProjects)
 
 </script>
 
@@ -31,7 +47,6 @@
     <div class="overflow-auto">
         <Section title="Bookmarked projects" on:edit on:bookmark>
             <SortableList bind:items={$bookmarkedProjects} on:edit={handleEdit} on:bookmark={handleBookmark} on:reorder={handleReorder} />
-            <!-- <SortableList on:edit={handleEdit} on:bookmark={handleBookmark} on:reorder={handleReorder} /> -->
         </Section>
         
         <Section title="My projects">

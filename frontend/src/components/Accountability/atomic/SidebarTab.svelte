@@ -2,6 +2,7 @@
     import { createEventDispatcher } from "svelte"
 
     import { page } from "$app/stores"
+    import { bookmarkIds } from "$lib/accountability/projects"
 
     import IconMove from "../icons/IconMove.svelte"
     import IconEllipsis from "../icons/IconEllipsis.svelte"
@@ -21,6 +22,8 @@
     export let handle = false
     export let menuPosition = "auto"
 
+    $: action = $bookmarkIds.includes(id) ? "remove" : "add"
+
     function showMenu() {
         if (menuPosition == "auto") {
             const y = box.getBoundingClientRect().y
@@ -39,7 +42,7 @@
     }
 
     function handleBookmark() {
-        dispatch('bookmark', { id })
+        dispatch('bookmark', { id, action })
         visibleMenu = false
     }
 
@@ -71,7 +74,15 @@
     <div class="menu absolute {position} right-0 z-20">
         <DropdownMenu bind:visible={visibleMenu} >
             <DropdownMenuItem icon="check" on:click={handleEdit}>Edit</DropdownMenuItem>
-            <DropdownMenuItem icon="bookmark" on:click={handleBookmark}>Unbookmark</DropdownMenuItem>
+            <DropdownMenuItem icon="bookmark" on:click={handleBookmark}>
+                <span class="text-left">
+                    {#if action == "add"}
+                        Bookmark
+                    {:else if action == "remove"}
+                        Remove from bookmarks
+                    {/if}
+                </span>
+            </DropdownMenuItem>
         </DropdownMenu>
     </div>
 </div>

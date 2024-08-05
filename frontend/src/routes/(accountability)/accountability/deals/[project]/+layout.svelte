@@ -19,7 +19,7 @@
     //     console.log($filters)
     // }
 
-    $: console.log($deals)
+    // $: console.log($deals)
 
 </script>
 

@@ -1,5 +1,5 @@
 import { error } from "@sveltejs/kit"
-import { get, writable } from "svelte/store"
+import { derived, get, writable } from "svelte/store"
 
 import { getCsrfToken } from "$lib/utils"
 
@@ -25,6 +25,14 @@ export const allProjects = writable([])
 export const myProjects = writable([])
 export const bookmarkedProjects = writable([])
 export const formerProjectID = writable<number | undefined>(-1)
+
+export const bookmarkIds = derived(
+  bookmarkedProjects,
+  $bookmarkedProjects => {
+    return $bookmarkedProjects.length > 0 ? $bookmarkedProjects.map(b => b.id) : []
+  },
+  [],
+)
 
 // ==============================================================================
 // Project related helper functions
@@ -91,6 +99,55 @@ export async function refreshProjects() {
     await fetchAllProjects()
     await fetchMyProjects()
     await fetchBookmarkedProjects()
+  } catch (error) {
+    return error
+  }
+}
+
+export async function addUserBookmark(id) {
+  const project = get(myProjects).find(p => p.id == id)
+  if (project) {
+    const order = get(bookmarkedProjects).length + 1
+    bookmarkedProjects.set([...get(bookmarkedProjects), project])
+
+    try {
+      const res = await fetch("/api/accountability/bookmark/", {
+        method: "POST",
+        credentials: "include",
+        body: JSON.stringify({ project: id, order }),
+        headers: {
+          "X-CSRFToken": await getCsrfToken(),
+          "Content-Type": "application/json",
+        },
+      })
+      const resJSON = await res.json()
+      return resJSON
+    } catch (error) {
+      return error
+    }
+  } else {
+    throw "Project does not exist"
+  }
+}
+
+export async function removeUserBookmark(id) {
+  bookmarkedProjects.set(get(bookmarkedProjects).filter(b => b.id != id))
+
+  try {
+    const bookmarkRes = await fetch(`/api/accountability/bookmark`)
+    const bookmarks = await bookmarkRes.json()
+    const bookmarkId = bookmarks.filter(b => b.project == id)[0].id
+
+    const res = await fetch(`/api/accountability/bookmark/${bookmarkId}/`, {
+      method: "DELETE",
+      credentials: "include",
+      headers: {
+        "X-CSRFToken": await getCsrfToken(),
+        "Content-Type": "application/json",
+      },
+    })
+    const resJSON = await res.json()
+    return resJSON
   } catch (error) {
     return error
   }
