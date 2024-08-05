@@ -1,7 +1,6 @@
 import { error } from "@sveltejs/kit"
 import { get, writable } from "svelte/store"
 
-import { loading } from "$lib/stores/basics"
 import { getCsrfToken } from "$lib/utils"
 
 import { filters, FilterValues } from "./filters"
@@ -87,6 +86,16 @@ export async function fetchBookmarkedProjects() {
   }
 }
 
+export async function refreshProjects() {
+  try {
+    await fetchAllProjects()
+    await fetchMyProjects()
+    await fetchBookmarkedProjects()
+  } catch (error) {
+    return error
+  }
+}
+
 export async function updateUserBookmarks() {
   const data = get(bookmarkedProjects).map((e, index) => ({
     project: e.id,
@@ -114,11 +123,45 @@ export async function createProject(
   form: { name: string; description: string; editors: number[] },
   filters: FilterValues,
 ) {
-  const data = form
-  data.filters = filters
+  const data = {
+    name: form.name,
+    description: form.description,
+    editors: form.editors,
+    filters: Object.assign({}, filters),
+  }
+
   try {
     const res = await fetch("/api/accountability/project/", {
       method: "POST",
+      credentials: "include",
+      body: JSON.stringify(data),
+      headers: {
+        "X-CSRFToken": await getCsrfToken(),
+        "Content-Type": "application/json",
+      },
+    })
+    return res
+  } catch (error) {
+    return error
+  }
+}
+
+export async function updateProject(
+  id: number,
+  form: { name: string; description: string; editors: number[] },
+  filters: FilterValues,
+) {
+  console.log("===== Called update project =====")
+  const data = {
+    name: form.name,
+    description: form.description,
+    editors: form.editors,
+    filters: Object.assign({}, filters),
+  }
+
+  try {
+    const res = await fetch(`/api/accountability/project/${id}/`, {
+      method: "PUT",
       credentials: "include",
       body: JSON.stringify(data),
       headers: {

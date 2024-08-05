@@ -142,7 +142,7 @@ class UserProjects(generics.ListAPIView):
         # Return a list of all projects related by the user (owned or can edit)
         user = self.request.user
         if not user.is_anonymous:
-            return Project.objects.filter(Q(owner=user) | Q(editors__id=user.id))
+            return Project.objects.filter(Q(owner=user) | Q(editors__id=user.id)).distinct()
 
 
 class BookmarkedProjects(generics.ListAPIView):

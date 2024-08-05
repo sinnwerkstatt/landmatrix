@@ -1,6 +1,7 @@
-import { derived, writable } from "svelte/store"
+import { derived, get, writable } from "svelte/store"
 
 import { browser } from "$app/environment"
+import { page } from "$app/stores"
 
 import { allUsers } from "$lib/stores"
 import { loading } from "$lib/stores/basics"
@@ -50,6 +51,16 @@ export const users = derived(allUsers, $allUsers => {
   })
   return res
 })
+
+export const me = derived(
+  users,
+  ($users, set) => {
+    const pageData = get(page)
+    const userData: { id: number; name: string; intials: string }[] = $users
+    set(userData.filter(u => u.id == pageData.data.user.id)[0])
+  },
+  {},
+)
 
 // =======================================================================================
 // Deals (fetch deals whenever the filters change)

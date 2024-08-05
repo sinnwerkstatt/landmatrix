@@ -120,7 +120,7 @@ class Project(models.Model):
 
 
 class Filters(models.Model):
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="filters")
+    project = models.OneToOneField(Project, on_delete=models.CASCADE, related_name="filters")
     region_id = ArrayField(models.PositiveIntegerField(), blank=True, null=True)
     country_id = ArrayField(models.PositiveIntegerField(), blank=True, null=True)
     area_min = models.PositiveIntegerField(blank=True, null=True)

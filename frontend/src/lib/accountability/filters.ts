@@ -11,7 +11,7 @@ export class FilterValues {
   investor_country_id?: number[] = []
   initiation_year_min?: number
   initiation_year_max?: number
-  initiation_year_unknown = true
+  initiation_year_unknown: boolean = true
   implementation_status: string[] = []
   intention_of_investment: string[] = []
   intention_of_investment_unknown: boolean = false
@@ -22,10 +22,11 @@ export class FilterValues {
   forest_concession: boolean | null = null
 
   constructor(data: Partial<FilterValues> = {}) {
-    const cleanData = Object.keys(data).forEach(
-      key => data[key] === undefined && delete data[key],
-    )
-    Object.assign(this, cleanData)
+    let clean = {}
+    Object.keys(data).forEach(key => {
+      if (data[key] !== undefined) clean[key] = data[key]
+    })
+    Object.assign(this, clean)
   }
 
   public empty() {

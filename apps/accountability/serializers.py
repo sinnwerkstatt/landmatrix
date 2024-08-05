@@ -89,9 +89,25 @@ class ProjectSerializer(serializers.ModelSerializer):
     
     def create(self, validated_data):
         filters_data = validated_data.pop('filters')
+        editors_data = validated_data.pop('editors')
         project = Project.objects.create(**validated_data)
+        project.editors.set(editors_data)
         Filters.objects.create(project=project, **filters_data)
         return project
+
+    def update(self, instance, validated_data):
+        filters_data = validated_data.pop('filters')
+        editors_data = validated_data.pop('editors')
+        for field, value in filters_data.items():
+            setattr(instance.filters, field, value)
+            instance.filters.save()
+        if name := validated_data.get('name'):
+            instance.name = name
+        if description := validated_data.get('description'):
+            instance.description = description
+        instance.editors.set(editors_data)
+        instance.save()
+        return instance
 
 
 class BookmarkSerializer(serializers.ModelSerializer):

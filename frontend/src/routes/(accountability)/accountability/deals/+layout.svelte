@@ -1,8 +1,6 @@
 <script lang="ts">
     import { page } from "$app/stores"
-    import { fetchAllProjects, fetchMyProjects, fetchBookmarkedProjects } from "$lib/accountability/projects"
-    import { dealsHistory, deals } from "$lib/accountability/stores"
-    import { filters } from "$lib/accountability/filters"
+    import { dealsHistory } from "$lib/accountability/stores"
 
     import ProjectsSidebar from "$components/Accountability/ProjectsSidebar.svelte"
     import FiltersSidebar from "$components/Accountability/FiltersSidebar.svelte"
@@ -10,25 +8,16 @@
     import DealsMenu from "$components/Accountability/DealsMenu.svelte"
     import Avatar from "$components/Accountability/atomic/Avatar.svelte"
 
+    export let data
+
     // If currentProject =/= page.params.project, update project and empty current page and current Deal
     function updateLocalStorage(pathname) {
-        if ($page.params.project && !$page.error) {
+        if ($page.params.project) {
             dealsHistory.set(pathname)
         }
     }
 
     $: updateLocalStorage($page.url.pathname)
-
-    // Load projects
-    fetchAllProjects()
-    fetchMyProjects()
-    fetchBookmarkedProjects()   
-
-    // =====
-    
-    // $: console.log($currentProject)
-    // $: console.log($filters)
-    // $: console.log($deals)
 
 </script>
 

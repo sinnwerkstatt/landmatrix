@@ -50,8 +50,6 @@
 
 </script>
 
-<button on:click={console.log($filters)}>Yeet</button>
-
 <div class="overflow-y-auto h-fit mb-6">
     <SideBarFilterTabItem label="Land Matrix region" count={$filters.region_id?.length} >
         <Input type="multiselect" placeholder="Choose a region" choices={regionChoices} bind:value={$filters.region_id} />
