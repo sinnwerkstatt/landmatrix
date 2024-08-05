@@ -717,6 +717,7 @@ def involvement_download_format(involvements: QuerySet[Involvement]) -> list[lis
         ]
         for x in involvements.values(
             "id",
+            "nid",
             "child_investor_id",
             "child_investor__active_version__name",
             "parent_investor_id",

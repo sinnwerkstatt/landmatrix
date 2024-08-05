@@ -81,6 +81,7 @@ class InvolvementNetwork:
         )
         all_involvements_values = all_involvements.values(
             "id",
+            "nid",
             "parent_investor_id",
             "child_investor_id",
             "role",

@@ -497,6 +497,7 @@ class InvestorSerializer(serializers.ModelSerializer):
                 )
                 .values(
                     "id",
+                    "nid",
                     "parent_investor_id",
                     "child_investor_id",
                     "role",
