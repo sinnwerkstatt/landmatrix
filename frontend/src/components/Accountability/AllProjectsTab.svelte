@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { openProjectModal } from "$lib/accountability/projects"
     import { allProjects, addUserBookmark, removeUserBookmark } from "$lib/accountability/projects"
 
     import SidebarTab from "./atomic/SidebarTab.svelte"
@@ -13,7 +14,7 @@
     let openModal = false
 
     // Alphabetically sort projects
-    let sortedProjects = $allProjects.sort((a, b) => a.name.localeCompare(b.name))
+    $: sortedProjects = $allProjects.sort((a, b) => a.name.localeCompare(b.name))
 
     // Bind page content from Pagination
     let pageContent = []
@@ -27,10 +28,13 @@
         console.log("Edit action: " + projectId)
     }
 
+    function handleDelete(event) {
+        openProjectModal('delete', event.detail.id)
+    }
+
     async function handleBookmark(event) {
         const action = event.detail.action
         const projectId = event.detail.id
-        console.log(`Action ${action} on project ${projectId}`)
         if (action == "add") {
             try {
                 await addUserBookmark(projectId)
@@ -46,14 +50,6 @@
         }
     }
 
-    // Tmp users
-    const users = [
-        { value: "10", label: "Nikka", initials: "NR" },
-        { value: "11", label: "Angela", initials: "AH" },
-        { value: "12", label: "Jérémy", initials: "JB" },
-        { value: "13", label: "Mohamadou", initials: "MD" }
-    ]
-
 </script>
 
 <div class="flex flex-col my-2 h-full overflow-hidden">
@@ -65,7 +61,7 @@
         <Section title="Results" alwaysOpen={true} sortable="auto" stickyTitle={true} on:sort={sortProjects}>
             <Pagination bind:dataset={sortedProjects} bind:pageContent={pageContent} rowHeight="56">
                 {#each pageContent as { id, name }}
-                    <SidebarTab {id} label={name} menu={true} handle={false} on:edit={handleEdit} on:bookmark={handleBookmark} />
+                    <SidebarTab {id} label={name} menu={true} handle={false} on:edit={handleEdit} on:bookmark={handleBookmark} on:delete={handleDelete} />
                 {/each}
             </Pagination>
         </Section>

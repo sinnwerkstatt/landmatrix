@@ -1,6 +1,9 @@
 import { error } from "@sveltejs/kit"
 import { derived, get, writable } from "svelte/store"
 
+import { goto } from "$app/navigation"
+import { page } from "$app/stores"
+
 import { getCsrfToken } from "$lib/utils"
 
 import { filters, FilterValues } from "./filters"
@@ -33,6 +36,12 @@ export const bookmarkIds = derived(
   },
   [],
 )
+
+export const showProjectModal = writable<boolean>(false)
+export const projectModalData = writable<{
+  action: "create" | "update" | "delete" | undefined
+  project?: Project
+}>({ action: undefined })
 
 // ==============================================================================
 // Project related helper functions
@@ -208,7 +217,6 @@ export async function updateProject(
   form: { name: string; description: string; editors: number[] },
   filters: FilterValues,
 ) {
-  console.log("===== Called update project =====")
   const data = {
     name: form.name,
     description: form.description,
@@ -229,5 +237,48 @@ export async function updateProject(
     return res
   } catch (error) {
     return error
+  }
+}
+
+export async function deleteProject(id: number) {
+  try {
+    const res = await fetch(`/api/accountability/project/${id}/`, {
+      method: "DELETE",
+      credentials: "include",
+      headers: {
+        "X-CSRFToken": await getCsrfToken(),
+        "Content-Type": "application/json",
+      },
+    })
+    return res
+  } catch (error) {
+    return error
+  }
+}
+
+export function openProjectModal(action: "create" | "update" | "delete", id?: number) {
+  if (["update", "delete"].includes(action) && !id) {
+    console.error("Project ID must be defined")
+  } else if (!["create", "update", "delete"].includes(action)) {
+    console.error("Action must be 'create', 'update' or 'delete'")
+  } else {
+    if (action == "create") {
+      projectModalData.set({ action })
+      showProjectModal.set(true)
+    } else if (action == "update") {
+      const currentProject = get(page).params.project
+      if (currentProject != id?.toString()) goto(`/accountability/deals/${id}/`) // Load project to edit
+      projectModalData.set({
+        action,
+        project: get(allProjects).filter(p => p.id == id)[0],
+      })
+      showProjectModal.set(true)
+    } else if (action == "delete") {
+      projectModalData.set({
+        action,
+        project: get(allProjects).filter(p => p.id == id)[0],
+      })
+      showProjectModal.set(true)
+    }
   }
 }

@@ -2,15 +2,15 @@
     import { createEventDispatcher } from "svelte"
 
     import { page } from "$app/stores"
+    import { me } from "$lib/accountability/stores"
+    import { allProjects } from "$lib/accountability/projects"
     import { bookmarkIds } from "$lib/accountability/projects"
 
     import IconMove from "../icons/IconMove.svelte"
     import IconEllipsis from "../icons/IconEllipsis.svelte"
     import DropdownMenu from "./DropdownMenu.svelte"
     import DropdownMenuItem from "./DropdownMenuItem.svelte"
-
-    const dispatch = createEventDispatcher()
-
+    
     let box:HTMLElement
     let visibleMenu = false
     let position = "bottom"
@@ -21,6 +21,9 @@
     export let menu = false
     export let handle = false
     export let menuPosition = "auto"
+
+    const dispatch = createEventDispatcher()
+    const project = $allProjects.find(p => p.id == id)
 
     $: action = $bookmarkIds.includes(id) ? "remove" : "add"
 
@@ -36,13 +39,18 @@
         visibleMenu = true
     }
 
+    function handleBookmark() {
+        dispatch('bookmark', { id, action })
+        visibleMenu = false
+    }
+
     function handleEdit() {
         dispatch('edit', { id })
         visibleMenu = false
     }
 
-    function handleBookmark() {
-        dispatch('bookmark', { id, action })
+    function handleDelete() {
+        dispatch('delete', { id })
         visibleMenu = false
     }
 
@@ -73,16 +81,19 @@
 
     <div class="menu absolute {position} right-0 z-20">
         <DropdownMenu bind:visible={visibleMenu} >
-            <DropdownMenuItem icon="check" on:click={handleEdit}>Edit</DropdownMenuItem>
             <DropdownMenuItem icon="bookmark" on:click={handleBookmark}>
                 <span class="text-left">
                     {#if action == "add"}
                         Bookmark
                     {:else if action == "remove"}
-                        Remove from bookmarks
+                        Unbookmark
                     {/if}
                 </span>
             </DropdownMenuItem>
+            <DropdownMenuItem icon="check" on:click={handleEdit}>Edit</DropdownMenuItem>
+            {#if project && project.owner == $me.id || project && project.editors.includes($me.id)}
+                <DropdownMenuItem icon="trashcan" on:click={handleDelete}>Delete</DropdownMenuItem>
+            {/if}
         </DropdownMenu>
     </div>
 </div>

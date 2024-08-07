@@ -1,19 +1,27 @@
 <script lang="ts">
-    import { myProjects, bookmarkedProjects, addUserBookmark, removeUserBookmark, updateUserBookmarks } from "$lib/accountability/projects"
+    import { 
+        myProjects,
+        bookmarkedProjects, 
+        addUserBookmark, 
+        removeUserBookmark, 
+        updateUserBookmarks,
+        openProjectModal } from "$lib/accountability/projects"
 
     import SidebarTab from "./atomic/SidebarTab.svelte"
     import Section from "./atomic/Section.svelte"
     import SortableList from "./atomic/SortableList.svelte"
 
     function handleEdit(event) {
-        const projectId = event.detail.id
-        console.log("Edit action: " + projectId)
+        openProjectModal('update', event.detail.id)
+    }
+
+    function handleDelete(event) {
+        openProjectModal('delete', event.detail.id)
     }
 
     async function handleBookmark(event) {
         const action = event.detail.action
         const projectId = event.detail.id
-        console.log(`Action ${action} on project ${projectId}`)
         if (action == "add") {
             try {
                 await addUserBookmark(projectId)
@@ -37,8 +45,6 @@
         }
     }
 
-    $: console.log($bookmarkedProjects)
-
 </script>
 
 <div class="h-fit flex flex-col overflow-hidden">
@@ -46,13 +52,13 @@
 
     <div class="overflow-auto">
         <Section title="Bookmarked projects" on:edit on:bookmark>
-            <SortableList bind:items={$bookmarkedProjects} on:edit={handleEdit} on:bookmark={handleBookmark} on:reorder={handleReorder} />
+            <SortableList bind:items={$bookmarkedProjects} on:edit={handleEdit} on:bookmark={handleBookmark} on:reorder={handleReorder} on:delete={handleDelete} />
         </Section>
         
         <Section title="My projects">
             {#each $myProjects as { id, name }, i }
                 {@const menuPosition = i+1 == $myProjects.length ? "top" : "bottom" }
-                <SidebarTab {id} label={name} menu={true} handle={false} on:edit={handleEdit} on:bookmark={handleBookmark}
+                <SidebarTab {id} label={name} menu={true} handle={false} on:edit={handleEdit} on:bookmark={handleBookmark} on:delete={handleDelete}
                             {menuPosition} />
             {/each}
         </Section>

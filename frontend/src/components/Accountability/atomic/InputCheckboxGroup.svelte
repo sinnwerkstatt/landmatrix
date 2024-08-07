@@ -9,6 +9,7 @@
     export let orphansLabel = "Orphans"
     export let filter:string = ""
     export let readonlyCategories = false
+    export let disabled = false
 
     function getOrphans(choices, categories) {
         if (categories.length > 0) {
@@ -112,14 +113,14 @@
             {#if readonlyCategories}
                 <p class="m-0 px-4 my-2 text-a-gray-400 uppercase">{label}</p>
             {:else}
-                <Checkbox {label} value={label} bold={true} {checked} {partiallyChecked} {hidden} on:changed={checkCategory} />
+                <Checkbox {label} value={label} bold={true} {checked} {partiallyChecked} {hidden} on:changed={checkCategory} {disabled} />
             {/if}
 
             <div class="pl-4">
                 {#each choices as { label, value }}
                     {@const checked = group.includes(value)}
                     {@const hidden = !searchMatch(label, filter)}
-                    <Checkbox {label} {value} {checked} {hidden} on:changed={checkChoice} />
+                    <Checkbox {label} {value} {checked} {hidden} on:changed={checkChoice} {disabled} />
                 {/each}
             </div>
 
@@ -129,7 +130,7 @@
         {#each choices as { label, value }}
             {@const checked = group.includes(value)}
             {@const hidden = !searchMatch(label, filter)}
-            <Checkbox {label} {value} {checked} {hidden} on:changed={checkChoice} />
+            <Checkbox {label} {value} {checked} {hidden} on:changed={checkChoice} {disabled} />
         {/each}
     {/if}
 

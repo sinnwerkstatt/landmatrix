@@ -15,6 +15,7 @@
     export let extraClass = ""
     export let ring = false
     export let tooltip = true
+    export let disabled = false
 
     export let name = "Name"
     export let surname = "Surname"
@@ -90,9 +91,9 @@
 
 </script>
 
-<div class="flex items-center {extraClass}" class:button class:padding role="tooltip"
+<div class="flex items-center {extraClass}" class:button class:padding role="tooltip" class:disabled
      on:mouseleave={mouseLeave} on:mouseenter={mouseEnter} >
-    <div class="flex items-center justify-center rounded-full {type} {size} select-none" class:ring
+    <div class="icon flex items-center justify-center rounded-full {type} {size} select-none" class:ring
          role="tooltip" bind:this={bubble} >
         {#if type=="base"}
             {initials}
@@ -106,7 +107,7 @@
     {/if}
 
     {#if button}
-        <button class="text-a-gray-400" on:click><IconXMark size=24 /></button>
+        <button class="text-a-gray-400" on:click {disabled} ><IconXMark size=24 /></button>
     {/if}
 
     <!-- Popup with user info -->
@@ -178,6 +179,15 @@
     .tooltip-bg,
     .tooltip-bg:hover {
         @apply !bg-transparent;
+    }
+
+    .disabled, 
+    .disabled > .icon {
+        @apply text-a-gray-400;
+    }
+
+    .disabled:hover {
+        @apply bg-white;
     }
 
 </style>

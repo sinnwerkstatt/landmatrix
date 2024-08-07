@@ -4,9 +4,10 @@
 
     import ProjectsSidebar from "$components/Accountability/ProjectsSidebar.svelte"
     import FiltersSidebar from "$components/Accountability/FiltersSidebar.svelte"
+    import ProjectModal from "$components/Accountability/ProjectModal.svelte"
     import PageHeading from "$components/Accountability/PageHeading.svelte"
-    import DealsMenu from "$components/Accountability/DealsMenu.svelte"
     import Avatar from "$components/Accountability/atomic/Avatar.svelte"
+    import DealsMenu from "$components/Accountability/DealsMenu.svelte"
 
     export let data
 
@@ -36,3 +37,5 @@
         </div>
     </div>
 </div>
+
+<ProjectModal />

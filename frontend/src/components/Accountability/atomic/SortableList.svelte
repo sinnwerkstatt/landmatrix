@@ -84,7 +84,7 @@
             on:dragstart={(e) => {handleDragstart(e, index)}} on:dragend={(e) => {handleDragend(e, index)}} >
 
             <SidebarTab {id} label="{name}" handle={true} menu={true} {menuPosition}
-                        on:edit on:bookmark />
+                        on:edit on:bookmark on:delete />
 
         </li>
     {/each}

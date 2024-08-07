@@ -188,7 +188,7 @@
                 {@const element = choices.find((e) => e.value == val) }
                 {#if badgeType == "avatar"}
                     <Avatar type="base" button={true} label={element?.label} padding={true}
-                            initials = {element?.initials}
+                            initials = {element?.initials} {disabled}
                             on:click={() => { value = value.filter(v => v != val) }} />
                 {:else}
                     <Badge color="neutral" button={true} {disabled} label={element?.label}
