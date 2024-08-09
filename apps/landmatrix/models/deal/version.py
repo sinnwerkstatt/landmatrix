@@ -12,11 +12,7 @@ from apps.landmatrix.models import schema, choices
 from apps.landmatrix.models.abstract.version import BaseVersion
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.currency import Currency
-from apps.landmatrix.models.deal import DealHull
-from apps.landmatrix.models.deal.location import Location, Area
-from apps.landmatrix.models.deal.contract import Contract
-from apps.landmatrix.models.deal.datasource import DealDataSource
-from apps.landmatrix.models.deal.workflowinfo import DealWorkflowInfo
+
 from apps.landmatrix.models.fields import DecimalIntField, ChoiceArrayField, ArrayField
 
 
@@ -702,6 +698,8 @@ class DealVersion(DealVersionBaseFields, BaseVersion):
         to_user_id: int = None,
         comment="",
     ):
+        from apps.landmatrix.models.deal import DealHull, DealWorkflowInfo
+
         old_draft_status = self.status
 
         super().change_status(new_status=new_status, user=user, to_user_id=to_user_id)
@@ -746,6 +744,8 @@ class DealVersion(DealVersionBaseFields, BaseVersion):
         )
 
     def copy_to_new_draft(self, created_by_id: int):
+        from apps.landmatrix.models.deal import Location, Area, DealDataSource, Contract
+
         old_self = DealVersion.objects.get(pk=self.pk)
         super().copy_to_new_draft(created_by_id)
         self.save(recalculate_dependent=False)

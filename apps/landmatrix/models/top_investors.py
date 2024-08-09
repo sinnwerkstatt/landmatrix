@@ -1,17 +1,18 @@
 from django.db import models
 
-from apps.landmatrix.models.deal import DealVersion
-from apps.landmatrix.models.investor import InvestorHull
-
 
 class DealTopInvestors(models.Model):
     """A view on dealversion.top_investors M2M relation table."""
 
     dealversion = models.ForeignKey(
-        DealVersion, on_delete=models.CASCADE, related_name="+"
+        "DealVersion",
+        on_delete=models.CASCADE,
+        related_name="+",
     )
     investorhull = models.ForeignKey(
-        InvestorHull, on_delete=models.CASCADE, related_name="+"
+        "InvestorHull",
+        on_delete=models.CASCADE,
+        related_name="+",
     )
 
     class Meta:

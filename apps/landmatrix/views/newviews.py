@@ -24,14 +24,17 @@ from apps.accounts.models import User
 from apps.landmatrix.models import choices
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.top_investors import DealTopInvestors
-from apps.landmatrix.models.deal import DealVersion, DealHull
-from apps.landmatrix.models.deal.workflowinfo import DealWorkflowInfo
+from apps.landmatrix.models.deal import (
+    DealVersion,
+    DealHull,
+    DealWorkflowInfo,
+    Location,
+)
 from apps.landmatrix.models.investor import (
     InvestorVersion,
     InvestorHull,
+    InvestorWorkflowInfo,
 )
-from apps.landmatrix.models.investor.workflowinfo import InvestorWorkflowInfo
-from apps.landmatrix.models.deal.location import Location
 from apps.landmatrix.permissions import (
     IsAdministrator,
     IsReporterOrHigher,
@@ -381,40 +384,39 @@ class DealViewSet(HullViewSet):
             .annotate(
                 region_id=F("country__region_id"),
                 selected_version=JSONObject(
-                    deal_size="active_version__deal_size",
-                    current_intention_of_investment="active_version__current_intention_of_investment",
-                    current_negotiation_status="active_version__current_negotiation_status",
-                    current_contract_size="active_version__current_contract_size",
-                    current_implementation_status="active_version__current_implementation_status",
-                    current_crops="active_version__current_crops",
-                    current_animals="active_version__current_animals",
-                    current_mineral_resources="active_version__current_mineral_resources",
-                    current_electricity_generation="active_version__current_electricity_generation",
-                    current_carbon_sequestration="active_version__current_carbon_sequestration",
-                    intended_size="active_version__intended_size",
-                    negotiation_status="active_version__negotiation_status",
-                    contract_size="active_version__contract_size",
-                    operating_company=Case(
-                        When(
-                            active_version__operating_company__active_version=None,
-                            then=None,
-                        ),
-                        default=JSONObject(
-                            id="active_version__operating_company_id",
-                            selected_version=JSONObject(
-                                name="active_version__operating_company__active_version__name",
-                                name_unknown="active_version__operating_company__active_version__name_unknown",
-                            ),
-                        ),
+                    deal_size=F("active_version__deal_size"),
+                    current_intention_of_investment=F(
+                        "active_version__current_intention_of_investment"
                     ),
+                    current_negotiation_status=F(
+                        "active_version__current_negotiation_status"
+                    ),
+                    current_contract_size=F("active_version__current_contract_size"),
+                    current_implementation_status=F(
+                        "active_version__current_implementation_status"
+                    ),
+                    current_crops=F("active_version__current_crops"),
+                    current_animals=F("active_version__current_animals"),
+                    current_mineral_resources=F(
+                        "active_version__current_mineral_resources"
+                    ),
+                    current_electricity_generation=F(
+                        "active_version__current_electricity_generation"
+                    ),
+                    current_carbon_sequestration=F(
+                        "active_version__current_carbon_sequestration"
+                    ),
+                    intended_size=F("active_version__intended_size"),
+                    negotiation_status=F("active_version__negotiation_status"),
+                    contract_size=F("active_version__contract_size"),
                     locations=ArraySubquery(
                         Location.objects.filter(
                             dealversion_id=OuterRef("active_version_id")
                         ).values(
                             json=JSONObject(
-                                nid="nid",
-                                point="point",
-                                level_of_accuracy="level_of_accuracy",
+                                nid=F("nid"),
+                                point=F("point"),
+                                level_of_accuracy=F("level_of_accuracy"),
                             )
                         )
                     ),
@@ -427,12 +429,31 @@ class DealViewSet(HullViewSet):
                             .filter(dealversion_id=OuterRef("active_version_id"))
                             .values(
                                 json=JSONObject(
-                                    id="investorhull_id",
-                                    name="investorhull__active_version__name",
-                                    classification="investorhull__active_version__classification",
+                                    id=F("investorhull_id"),
+                                    name=F("investorhull__active_version__name"),
+                                    classification=F(
+                                        "investorhull__active_version__classification"
+                                    ),
                                 )
                             )
                         )
+                    ),
+                    operating_company=Case(
+                        When(
+                            active_version__operating_company__active_version=None,
+                            then=None,
+                        ),
+                        default=JSONObject(
+                            id=F("active_version__operating_company_id"),
+                            selected_version=JSONObject(
+                                name=F(
+                                    "active_version__operating_company__active_version__name"
+                                ),
+                                name_unknown=F(
+                                    "active_version__operating_company__active_version__name_unknown"
+                                ),
+                            ),
+                        ),
                     ),
                 ),
             )
