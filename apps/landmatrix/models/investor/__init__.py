@@ -14,9 +14,8 @@ from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.new import (
     InvestorWorkflowInfo,
     InvestorDataSource,
-    DealHull,
-    DealVersion,
 )
+from apps.landmatrix.models.deal import DealVersion, DealHull
 from apps.landmatrix.models.investor.involvement import Involvement
 
 

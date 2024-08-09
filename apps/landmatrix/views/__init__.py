@@ -10,7 +10,7 @@ from rest_framework.mixins import ListModelMixin
 from apps.landmatrix.models import FieldDefinition
 from apps.landmatrix.models.country import Country, Region
 from apps.landmatrix.models.currency import Currency
-from apps.landmatrix.models.new import DealHull
+from apps.landmatrix.models.deal import DealHull
 from apps.landmatrix.serializers import (
     CountrySerializer,
     CurrencySerializer,

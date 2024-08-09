@@ -10,8 +10,8 @@ from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.fields import ChoiceArrayField, DecimalIntField
 from apps.landmatrix.models.new import (
     DealDataSource,
-    DealVersion,
 )
+from apps.landmatrix.models.deal import DealVersion
 from apps.landmatrix.models.investor import InvestorHull, Involvement
 from apps.landmatrix.models.contract import Contract
 from apps.landmatrix.models.location import Location

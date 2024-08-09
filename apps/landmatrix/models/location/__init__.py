@@ -5,7 +5,7 @@ from nanoid import generate
 
 from apps.landmatrix.models import choices
 from apps.landmatrix.models.fields import NanoIDField
-from apps.landmatrix.models.new import DealVersion
+from apps.landmatrix.models.deal import DealVersion
 
 
 class Location(models.Model):

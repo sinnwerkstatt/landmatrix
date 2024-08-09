@@ -13,7 +13,7 @@ from wagtail_headless_preview.models import HeadlessPreviewMixin
 
 from apps.blog.models import BlogPage
 from apps.landmatrix.models.country import Country, Region
-from apps.landmatrix.models.new import DealHull
+from ..landmatrix.models.deal import DealHull
 
 from .blocks import (
     COLUMN_BLOCKS,

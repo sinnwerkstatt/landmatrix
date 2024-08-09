@@ -4,7 +4,7 @@ from tqdm import tqdm
 
 from django.core.management import BaseCommand
 
-from apps.landmatrix.models.new import DealVersion
+from apps.landmatrix.models.deal import DealVersion
 
 
 class Command(BaseCommand):

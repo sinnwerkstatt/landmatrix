@@ -8,7 +8,7 @@ from wagtail.snippets.models import register_snippet
 class _FieldDefinitionFieldSelect(forms.Select):
     @staticmethod
     def _get_choices(current_choices: list[str] = None):
-        from apps.landmatrix.models.new import DealVersion
+        from apps.landmatrix.models.deal import DealVersion
 
         existing_fields = FieldDefinition.objects.exclude(
             field__in=current_choices

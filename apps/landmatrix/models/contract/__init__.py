@@ -3,7 +3,7 @@ from django.utils.translation import gettext as _
 from nanoid import generate
 
 from apps.landmatrix.models.fields import NanoIDField, LooseDateField
-from apps.landmatrix.models.new import DealVersion
+from apps.landmatrix.models.deal import DealVersion
 
 
 class Contract(models.Model):

@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.test import APIClient
 
 from apps.landmatrix.models.country import Country
-from apps.landmatrix.models.new import DealHull, DealVersion
+from ..landmatrix.models.deal import DealVersion, DealHull
 from ..landmatrix.models.location import Location
 from apps.landmatrix.models.area import Area
 

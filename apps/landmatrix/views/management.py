@@ -12,10 +12,10 @@ from django.views import View
 
 from apps.accounts.models import User
 from apps.landmatrix.models.new import (
-    DealHull,
     DealWorkflowInfo,
     InvestorWorkflowInfo,
 )
+from apps.landmatrix.models.deal import DealHull
 from apps.landmatrix.models.investor import InvestorHull
 from apps.landmatrix.permissions import (
     is_editor_or_higher,

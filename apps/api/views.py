@@ -23,10 +23,10 @@ from apps.api.serializers import (
 )
 from apps.landmatrix.charts import get_deal_top_investments, web_of_transnational_deals
 from apps.landmatrix.models.new import (
-    DealHull,
     DealWorkflowInfo,
     InvestorWorkflowInfo,
 )
+from apps.landmatrix.models.deal import DealHull
 from apps.landmatrix.models.investor import InvestorHull
 from apps.landmatrix.permissions import is_reporter_or_higher
 from apps.landmatrix.utils import openapi_filters_parameters, parse_filters
