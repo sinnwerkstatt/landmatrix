@@ -19,9 +19,9 @@ from apps.landmatrix.models.investor import (
     InvestorVersion,
     InvestorHull,
     Involvement,
-    InvestorWorkflowInfo,
-    InvestorDataSource,
 )
+from apps.landmatrix.models.investor.datasource import InvestorDataSource
+from apps.landmatrix.models.investor.workflowinfo import InvestorWorkflowInfo
 from apps.landmatrix.models.deal.contract import Contract
 from apps.landmatrix.models.deal.location import Location, Area
 
