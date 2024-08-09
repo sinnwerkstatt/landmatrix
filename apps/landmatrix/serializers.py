@@ -10,7 +10,6 @@ from apps.landmatrix.models import FieldDefinition
 from apps.landmatrix.models.country import Country, Region
 from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.new import (
-    Area,
     Contract,
     DealDataSource,
     DealHull,
@@ -23,6 +22,7 @@ from apps.landmatrix.models.new import (
     Involvement,
     Location,
 )
+from apps.landmatrix.models.area import Area
 
 
 class SpectacularSchemaField(SchemaField):

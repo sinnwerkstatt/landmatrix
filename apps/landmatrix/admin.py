@@ -3,13 +3,13 @@ from django.contrib import admin
 from apps.landmatrix.models.country import Country, Region
 from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.new import (
-    Area,
     Contract,
     DealDataSource,
     DealHull,
     DealVersion,
     Location,
 )
+from apps.landmatrix.models.area import Area
 
 
 @admin.register(Country)
