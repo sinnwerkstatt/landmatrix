@@ -18,8 +18,7 @@ urlpatterns = [
     path("deal/", views.DealScoreList.as_view()),
     path("deal/<int:pk>/", views.DealScoreDetail.as_view()),
 
-    # path("deal/variable/", views.DealVariableList.as_view()),
-    # path("deal/variable/<int:pk>/", views.DealVariableDetail.as_view()),
+    path("deal/variable/", views.DealVariableList.as_view()),
 
     path("project/", views.ProjectList.as_view()),
     path("project/<int:pk>/", views.ProjectDetail.as_view()),

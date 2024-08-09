@@ -1,8 +1,9 @@
-from django.shortcuts import render
-from django.http import HttpResponse, Http404
-from django.db.models import Q
-from django.db.models.functions import JSONObject
 from django.utils import timezone
+from django.http import HttpResponse, Http404
+from django.shortcuts import render
+from django.db.models import Q, F, Prefetch
+from django.db.models.functions import JSONObject
+from django.contrib.postgres.expressions import ArraySubquery
 
 from rest_framework import viewsets, generics, status
 from rest_framework.views import APIView
@@ -12,12 +13,16 @@ from rest_framework.permissions import AllowAny
 
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 
+from apps.landmatrix.models.new import DealHull
+
 from apps.accountability.models import VggtChapter, VggtArticle, VggtVariable
-from apps.accountability.models import DealScore, DealVariable, Project
+from apps.accountability.models import DealScore, DealScoreVersion, DealVariable
+from apps.accountability.models import Project
 from apps.accountability.models import UserInfo, Bookmark
 
 from apps.accountability.serializers import VggtChapterSerializer, VggtArticleSerializer, VggtVariableSerializer
-from apps.accountability.serializers import DealScoreSerializer, DealVariableSerializer, ProjectSerializer
+from apps.accountability.serializers import DealScoreSerializer, DealScoreVersionSerializer, DealVariableSerializer
+from apps.accountability.serializers import ProjectSerializer
 from apps.accountability.serializers import UserInfoSerializer, BookmarkSerializer, BookmarkBulkSerializer
 
 from apps.accountability.utils import openapi_filters_parameters_scoring, parse_filters
@@ -78,29 +83,65 @@ class VggtVariableDetail(generics.RetrieveUpdateDestroyAPIView):
 class DealScoreList(generics.ListCreateAPIView):
     queryset = DealScore.objects.all()
     serializer_class = DealScoreSerializer
-
-    @extend_schema(parameters=openapi_filters_parameters_scoring)
-    def list(self, request:Request, *args, **kwargs):
-        queryset = DealScore.objects.exclude(deal__active_version__is_public=False)\
-                                    .filter(parse_filters(request))\
-                                    .order_by("deal")\
-                                    .distinct()
-        serializer = DealScoreSerializer(queryset, many=True)
-        return Response(serializer.data)
+    permission_classes = [IsReporterOrHigherOrReadonly]
 
 
 class DealScoreDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = DealScore.objects.all()
     serializer_class = DealScoreSerializer
 
+class DealScoreVersionList(generics.ListCreateAPIView):
+    queryset = DealScoreVersion.objects.all()
+    serializer_class = DealScoreVersionSerializer
+
+
+class DealScoreVersionDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = DealScoreVersion.objects.all()
+    serializer_class = DealScoreVersionSerializer
+
 
 class DealVariableList(generics.ListCreateAPIView):
     queryset = DealVariable.objects.all()
     serializer_class = DealVariableSerializer
 
-class DealVariableDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = DealVariable.objects.all()
-    serializer_class = DealVariableSerializer
+
+
+# class DealScoreList(generics.ListCreateAPIView):
+#     queryset = DealScore.objects.all()
+#     serializer_class = DealScoreSerializer
+
+#     @extend_schema(parameters=openapi_filters_parameters_scoring)
+#     def list(self, request:Request, *args, **kwargs):
+#         queryset = DealScore.objects.exclude(deal__active_version__is_public=False)\
+#                                     .filter(parse_filters(request))\
+#                                     .order_by("deal")\
+#                                     .distinct()\
+#                                     .prefetch_related("deal", "score")
+#         serializer = DealScoreSerializer(queryset, many=True)
+#         return Response(serializer.data)
+#         # return Response(
+#         #     queryset.values("deal", "test")
+#         #             .annotate(
+#         #                 # region_id=F("deal__region_id")
+#         #                 score=ArraySubquery(
+#         #                     DealScore
+#         #                 )
+#         #             )
+#         # )
+
+
+# class DealScoreDetail(generics.RetrieveUpdateDestroyAPIView):
+#     queryset = DealScore.objects.all()
+#     serializer_class = DealScoreSerializer
+
+
+# class DealVariableList(generics.ListCreateAPIView):
+#     queryset = DealVariable.objects.all()
+#     serializer_class = DealVariableSerializer
+
+# class DealVariableDetail(generics.RetrieveUpdateDestroyAPIView):
+#     queryset = DealVariable.objects.all()
+#     serializer_class = DealVariableSerializer
 
 
 class ProjectList(generics.ListCreateAPIView):

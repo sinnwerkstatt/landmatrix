@@ -8,7 +8,7 @@ from datetime import datetime
 from django.utils.translation import gettext as _
 
 from apps.landmatrix.models import choices
-from apps.landmatrix.models.new import DealHull
+from apps.landmatrix.models.new import DealHull, DealVersion
 
 STATUS_CHOICES = [
     ("TO_SCORE", _("To score")),
@@ -42,53 +42,58 @@ class VggtArticle(models.Model):
         return f"{self.chapter.name} - {self.article}"
 
 class VggtVariable(models.Model):
-    number = models.PositiveIntegerField()
+    number = models.PositiveIntegerField(primary_key=True)
     name = models.CharField(max_length=200)
     landmatrix_fields = ArrayField(models.CharField(max_length=100), size=50, blank=True, null=True)
     landmatrix_additional_fields = ArrayField(models.CharField(max_length=100), size=50, blank=True, null=True)
     scoring_help = ArrayField(models.CharField(max_length=2000), size=20, blank=True, null=True)
 
+    class Meta:
+        ordering = ["number"]
+
     def __str__(self):
         return f"{self.number} - {self.name}"
 
+
 class DealScore(models.Model):
-    test = models.CharField(max_length=30)
     deal = models.OneToOneField(DealHull, on_delete=models.CASCADE, primary_key=True)
 
     def __str__(self):
-        return f"Score for deal {self.deal}"
+        return f"Score of deal {self.deal}"
+
+    def current_score(self):
+        return self.deal.active_version.accountability_score
     
-    class Meta:
-        ordering = ["deal"]
+class DealScoreVersion(models.Model):
+    score = models.ForeignKey(DealScore, on_delete=models.CASCADE, related_name='scores')
+    deal_version = models.OneToOneField(DealVersion, on_delete=models.CASCADE, primary_key=True, related_name='accountability_score')
+
 
 class DealVariable(models.Model):
-    deal_score = models.ForeignKey(DealScore, on_delete=models.CASCADE)
-    vggt_variable = models.ForeignKey(VggtVariable, on_delete=models.CASCADE)
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES)
-    score = models.CharField(max_length=20, choices=SCORE_CHOICES)
-    scored_at = models.DateTimeField(_("Created at"), null=True, blank=True)
-    score_by = models.ForeignKey(
+    deal_score = models.ForeignKey(DealScoreVersion, on_delete=models.CASCADE, related_name='variables')
+    vggt_variable = models.ForeignKey(VggtVariable, on_delete=models.CASCADE, related_name="+")
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="TO_SCORE")
+    score = models.CharField(max_length=20, choices=SCORE_CHOICES, default="NO_SCORE")
+    scored_at = models.DateTimeField(_("Scored at"), null=True, blank=True)
+    scored_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         blank=True,
         null=True,
         on_delete=models.PROTECT,
-        related_name="+",
+        related_name="+"
     )
     assignee = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         blank=True,
         null=True,
         on_delete=models.PROTECT,
-        related_name="todo",
+        related_name="todo"
     )
 
-    def __str__(self):
-        return f"{self.deal_score.deal} - {self.vggt_variable}"
-    
     class Meta:
         ordering = ["deal_score", "vggt_variable"]
         unique_together = ["deal_score", "vggt_variable"]
-
+        
 
 class Project(models.Model):
     name = models.CharField(max_length=200, unique=True)
