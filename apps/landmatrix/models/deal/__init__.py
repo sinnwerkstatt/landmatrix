@@ -14,13 +14,13 @@ from apps.landmatrix.models.abstract.datasource import BaseDataSource
 from apps.landmatrix.models.abstract.hull import HullBase
 from apps.landmatrix.models.abstract.version import BaseVersionMixin
 from apps.landmatrix.models.abstract.workflowinfo import _WorkflowInfo
-from apps.landmatrix.models.area import Area
-from apps.landmatrix.models.contract import Contract
+from apps.landmatrix.models.deal.location.area import Area
+from apps.landmatrix.models.deal.contract import Contract
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.fields import DecimalIntField, ChoiceArrayField, ArrayField
 from apps.landmatrix.models.investor import InvestorHull
-from apps.landmatrix.models.location import Location
+from apps.landmatrix.models.deal.location import Location
 
 
 class DealVersionBaseFields(models.Model):

@@ -22,9 +22,9 @@ from apps.landmatrix.models.investor import (
     InvestorWorkflowInfo,
     InvestorDataSource,
 )
-from apps.landmatrix.models.contract import Contract
-from apps.landmatrix.models.location import Location
-from apps.landmatrix.models.area import Area
+from apps.landmatrix.models.deal.contract import Contract
+from apps.landmatrix.models.deal.location import Location
+from apps.landmatrix.models.deal.location.area import Area
 
 
 class SpectacularSchemaField(SchemaField):

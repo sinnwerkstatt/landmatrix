@@ -9,7 +9,7 @@ from django.utils.translation import gettext as _
 
 from apps.landmatrix.models import choices
 from apps.landmatrix.models.fields import NanoIDField, LooseDateField
-from apps.landmatrix.models.location import Location
+from apps.landmatrix.models.deal.location import Location
 
 
 class Area(models.Model):

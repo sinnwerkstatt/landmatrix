@@ -30,13 +30,12 @@ from apps.landmatrix.models.investor import (
     InvestorHull,
     InvestorWorkflowInfo,
 )
-from apps.landmatrix.models.location import Location
+from apps.landmatrix.models.deal.location import Location
 from apps.landmatrix.permissions import (
     IsAdministrator,
     IsReporterOrHigher,
     is_admin,
     is_editor_or_higher,
-    is_reporter_or_higher,
 )
 from apps.landmatrix.serializers import (
     DealSerializer,
