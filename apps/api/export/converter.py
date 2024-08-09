@@ -9,12 +9,12 @@ from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.fields import ChoiceArrayField, DecimalIntField
 from apps.landmatrix.models.new import (
-    Contract,
     DealDataSource,
     DealVersion,
     InvestorHull,
     Involvement,
 )
+from apps.landmatrix.models.contract import Contract
 from apps.landmatrix.models.location import Location
 
 deal_fields = {
