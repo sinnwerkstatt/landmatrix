@@ -18,7 +18,7 @@ class VersionStatus(TextChoices):
 
 
 # TODO: use strEnum?
-class Action(TextChoices):
+class VersionTransition(TextChoices):
     TO_DRAFT = "TO_DRAFT"
     TO_REVIEW = "TO_REVIEW"
     TO_ACTIVATION = "TO_ACTIVATION"
@@ -83,11 +83,11 @@ class BaseVersion(models.Model):
 
     def change_status(
         self,
-        action: Action,
+        transition: VersionTransition,
         user: User,
         to_user_id: int = None,
     ):
-        if action == Action.TO_REVIEW:
+        if transition == VersionTransition.TO_REVIEW:
             if not (self.created_by == user or is_editor_or_higher(user)):
                 raise PermissionDenied("MISSING_AUTHORIZATION")
 
@@ -96,7 +96,7 @@ class BaseVersion(models.Model):
             self.sent_to_review_by = user
             self.save()
 
-        elif action == Action.TO_ACTIVATION:
+        elif transition == VersionTransition.TO_ACTIVATION:
             if not is_editor_or_higher(user):
                 raise PermissionDenied("MISSING_AUTHORIZATION")
 
@@ -105,7 +105,7 @@ class BaseVersion(models.Model):
             self.sent_to_activation_by = user
             self.save()
 
-        elif action == Action.ACTIVATE:
+        elif transition == VersionTransition.ACTIVATE:
             if not is_admin(user):
                 raise PermissionDenied("MISSING_AUTHORIZATION")
 
@@ -114,7 +114,7 @@ class BaseVersion(models.Model):
             self.activated_by = user
             self.save()
 
-        elif action == Action.TO_DRAFT:
+        elif transition == VersionTransition.TO_DRAFT:
             if not is_editor_or_higher(user):
                 raise PermissionDenied("MISSING_AUTHORIZATION")
 

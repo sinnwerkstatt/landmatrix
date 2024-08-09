@@ -22,7 +22,7 @@ from wagtail.models import Site
 
 from apps.accounts.models import User
 from apps.landmatrix.models import choices
-from apps.landmatrix.models.abstract.version import Action, VersionStatus
+from apps.landmatrix.models.abstract.version import VersionTransition, VersionStatus
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.top_investors import DealTopInvestors
 from apps.landmatrix.models.deal import (
@@ -151,7 +151,11 @@ class VersionViewSet(viewsets.ReadOnlyModelViewSet):
 
         creating_new_version = ov1.created_by != user
         if creating_new_version:
-            ov1.change_status(action=Action.TO_DRAFT, user=user, to_user_id=user.id)
+            ov1.change_status(
+                transition=VersionTransition.TO_DRAFT,
+                user=user,
+                to_user_id=user.id,
+            )
 
         serializer: DealVersionSerializer | InvestorVersionSerializer = (
             self.serializer_class(ov1, data=data, partial=True)
@@ -226,7 +230,7 @@ class DealVersionViewSet(VersionViewSet):
         to_user_id = request.data.get("toUser")
 
         dv1.change_status(
-            action=request.data["transition"],
+            transition=request.data["transition"],
             user=request.user,
             fully_updated=request.data.get("fullyUpdated"),
             to_user_id=to_user_id,
@@ -234,7 +238,7 @@ class DealVersionViewSet(VersionViewSet):
         )
 
         # FIXME: Frontend does not send toUser in TO_REVIEW request -> Delete?
-        if request.data["transition"] == Action.TO_REVIEW and to_user_id:
+        if request.data["transition"] == VersionTransition.TO_REVIEW and to_user_id:
             # if there was a request for improvement workflowinfo, email the requester
             old_wfi: DealWorkflowInfo | None = dv1.workflowinfos.last()
             if (
@@ -579,14 +583,14 @@ class InvestorVersionViewSet(VersionViewSet):
 
         to_user_id = request.data.get("toUser")
         iv1.change_status(
-            action=request.data["transition"],
+            transition=request.data["transition"],
             user=request.user,
             to_user_id=to_user_id,
             comment=request.data.get("comment", ""),
         )
 
         # FIXME: Frontend does not send toUser in TO_REVIEW request -> Delete?
-        if request.data["transition"] == Action.TO_REVIEW and to_user_id:
+        if request.data["transition"] == VersionTransition.TO_REVIEW and to_user_id:
             # if there was a request for improvement workflowinfo, email the requester
             old_wfi: InvestorWorkflowInfo | None = iv1.investor.workflowinfos.last()
             if (

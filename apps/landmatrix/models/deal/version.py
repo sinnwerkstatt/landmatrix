@@ -12,7 +12,7 @@ from apps.landmatrix.models import schema, choices
 from apps.landmatrix.models.abstract.version import (
     BaseVersion,
     VersionStatus,
-    Action,
+    VersionTransition,
 )
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.currency import Currency
@@ -696,7 +696,7 @@ class DealVersion(DealVersionBaseFields, BaseVersion):
 
     def change_status(
         self,
-        action: Action,
+        transition: VersionTransition,
         user: User,
         fully_updated=False,
         to_user_id: int = None,
@@ -704,14 +704,14 @@ class DealVersion(DealVersionBaseFields, BaseVersion):
     ):
         old_draft_status = self.status
 
-        super().change_status(action=action, user=user, to_user_id=to_user_id)
+        super().change_status(transition=transition, user=user, to_user_id=to_user_id)
 
-        if action == Action.TO_REVIEW:
+        if transition == VersionTransition.TO_REVIEW:
             if fully_updated:
                 self.fully_updated = True
             self.save()
 
-        elif action == Action.ACTIVATE:
+        elif transition == VersionTransition.ACTIVATE:
             deal = self.deal
             deal.draft_version = None
             deal.active_version = self
@@ -723,7 +723,7 @@ class DealVersion(DealVersionBaseFields, BaseVersion):
             # close unresolved workflowinfos
             self.workflowinfos.all().update(resolved=True)
 
-        elif action == Action.TO_DRAFT:
+        elif transition == VersionTransition.TO_DRAFT:
             self.save()
 
             deal = self.deal

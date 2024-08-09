@@ -8,7 +8,7 @@ from apps.accounts.models import User
 from apps.landmatrix.models import choices
 from apps.landmatrix.models.abstract.version import (
     BaseVersion,
-    Action,
+    VersionTransition,
     VersionStatus,
 )
 from apps.landmatrix.models.country import Country
@@ -65,7 +65,7 @@ class InvestorVersion(BaseVersion):
 
     def change_status(
         self,
-        action: Action,
+        transition: VersionTransition,
         user: User,
         to_user_id: int = None,
         comment="",
@@ -73,9 +73,9 @@ class InvestorVersion(BaseVersion):
 
         old_draft_status = self.status
 
-        super().change_status(action=action, user=user, to_user_id=to_user_id)
+        super().change_status(transition=transition, user=user, to_user_id=to_user_id)
 
-        if action == Action.ACTIVATE:
+        if transition == VersionTransition.ACTIVATE:
             investor = self.investor
             investor.draft_version = None
             investor.active_version = self
@@ -117,7 +117,7 @@ class InvestorVersion(BaseVersion):
             # close unresolved workflowinfos
             self.workflowinfos.all().update(resolved=True)
 
-        elif action == Action.TO_DRAFT:
+        elif transition == VersionTransition.TO_DRAFT:
             investor = self.investor
             investor.draft_version = self
             investor.save()
