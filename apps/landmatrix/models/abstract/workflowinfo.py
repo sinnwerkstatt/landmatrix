@@ -3,7 +3,7 @@ from django.db import models
 from django.utils import timezone
 from wagtail.models import Site
 
-from apps.landmatrix.models.new import VERSION_STATUS_CHOICES
+from apps.landmatrix.models.abstract.version import VERSION_STATUS_CHOICES
 
 
 class _WorkflowInfo(models.Model):
