@@ -2,10 +2,10 @@ from django.contrib import admin
 
 from apps.landmatrix.models.country import Country, Region
 from apps.landmatrix.models.currency import Currency
-from apps.landmatrix.models.deal import DealVersion, DealHull, DealDataSource
+from apps.landmatrix.models.deal import DealVersion, DealHull
+from apps.landmatrix.models.deal.datasource import DealDataSource
 from apps.landmatrix.models.deal.contract import Contract
-from apps.landmatrix.models.deal.location import Location
-from apps.landmatrix.models.deal.location.area import Area
+from apps.landmatrix.models.deal.location import Location, Area
 
 
 @admin.register(Country)

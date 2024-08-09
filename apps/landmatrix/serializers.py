@@ -11,9 +11,9 @@ from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.deal import (
     DealVersion,
     DealHull,
-    DealWorkflowInfo,
-    DealDataSource,
 )
+from apps.landmatrix.models.deal.datasource import DealDataSource
+from apps.landmatrix.models.deal.workflowinfo import DealWorkflowInfo
 from apps.landmatrix.models.field_definition import FieldDefinition
 from apps.landmatrix.models.investor import (
     InvestorVersion,
@@ -23,8 +23,7 @@ from apps.landmatrix.models.investor import (
     InvestorDataSource,
 )
 from apps.landmatrix.models.deal.contract import Contract
-from apps.landmatrix.models.deal.location import Location
-from apps.landmatrix.models.deal.location.area import Area
+from apps.landmatrix.models.deal.location import Location, Area
 
 
 class SpectacularSchemaField(SchemaField):

@@ -24,7 +24,8 @@ from apps.accounts.models import User
 from apps.landmatrix.models import choices
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.top_investors import DealTopInvestors
-from apps.landmatrix.models.deal import DealVersion, DealHull, DealWorkflowInfo
+from apps.landmatrix.models.deal import DealVersion, DealHull
+from apps.landmatrix.models.deal.workflowinfo import DealWorkflowInfo
 from apps.landmatrix.models.investor import (
     InvestorVersion,
     InvestorHull,

@@ -12,7 +12,7 @@ from wagtail.snippets.blocks import SnippetChooserBlock
 
 from apps.landmatrix.models.country import Country as DataCountry
 from apps.landmatrix.models.country import Region as DataRegion
-from ..landmatrix.models.deal import DealHull
+from apps.landmatrix.models.deal import DealHull
 
 from .twitter import TwitterTimeline
 
