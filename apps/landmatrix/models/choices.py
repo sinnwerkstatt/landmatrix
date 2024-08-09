@@ -651,6 +651,7 @@ WATER_SOURCE_ITEMS = serialize_enum(WaterSourceEnum)
 WATER_SOURCE_CHOICES = WaterSourceEnum.choices
 
 
+# FIXME: Not in use. Should be set on dealversion save ??
 class NotPublicReasonEnum(TextChoices):
     CONFIDENTIAL = "CONFIDENTIAL", _("Confidential flag")
     NO_COUNTRY = "NO_COUNTRY", _("No country")

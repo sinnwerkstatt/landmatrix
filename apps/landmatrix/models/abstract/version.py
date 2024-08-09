@@ -6,14 +6,15 @@ from rest_framework.exceptions import PermissionDenied, ParseError
 
 from apps.accounts.models import User
 from apps.landmatrix.permissions import is_editor_or_higher, is_admin
+from django.db.models import TextChoices
 
 
-VERSION_STATUS_CHOICES = (
-    ("DRAFT", _("Draft")),
-    ("REVIEW", _("Review")),
-    ("ACTIVATION", _("Activation")),
-    ("ACTIVATED", _("Activated")),
-)
+# Todo: move to choices?
+class VersionStatusEnum(TextChoices):
+    DRAFT = "DRAFT", _("Draft")
+    REVIEW = "REVIEW", _("Review")
+    ACTIVATION = "ACTIVATION", _("Activation")
+    ACTIVATED = "ACTIVATED", _("Activated")
 
 
 class BaseVersion(models.Model):
@@ -62,7 +63,10 @@ class BaseVersion(models.Model):
         related_name="+",
     )
 
-    status = models.CharField(choices=VERSION_STATUS_CHOICES, default="DRAFT")
+    status = models.CharField(
+        choices=VersionStatusEnum.choices,
+        default=VersionStatusEnum.DRAFT,
+    )
 
     def save(self, *args, **kwargs):
         if self._state.adding and not self.created_at:

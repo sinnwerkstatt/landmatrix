@@ -3,12 +3,14 @@ from django.db import models
 from django.utils import timezone
 from wagtail.models import Site
 
-from apps.landmatrix.models.abstract.version import VERSION_STATUS_CHOICES
+from .version import VersionStatusEnum
 
 
 class BaseWorkflowInfo(models.Model):
     from_user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="+"
+        settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT,
+        related_name="+",
     )
     to_user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -18,10 +20,14 @@ class BaseWorkflowInfo(models.Model):
         related_name="+",
     )
     status_before = models.CharField(
-        choices=VERSION_STATUS_CHOICES, null=True, blank=True
+        choices=VersionStatusEnum.choices,
+        null=True,
+        blank=True,
     )
     status_after = models.CharField(
-        choices=VERSION_STATUS_CHOICES, null=True, blank=True
+        choices=VersionStatusEnum.choices,
+        null=True,
+        blank=True,
     )
     timestamp = models.DateTimeField(default=timezone.now)
     comment = models.TextField(blank=True)
