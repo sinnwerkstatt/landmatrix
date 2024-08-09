@@ -1,6 +1,6 @@
 import pytest
 
-from apps.landmatrix.models.abstract.version import VersionStatusEnum
+from apps.landmatrix.models.abstract.version import VersionStatus
 from apps.landmatrix.models.choices import InvolvementRoleEnum
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.deal import DealHull, DealVersion, DealDataSource
@@ -17,7 +17,7 @@ def public_deal_with_investors() -> (
     i1.active_version = InvestorVersion.objects.create(
         investor=i1,
         name="Test Investor",
-        status=VersionStatusEnum.ACTIVATED,
+        status=VersionStatus.ACTIVATED,
     )
     i1.save()
 
@@ -25,7 +25,7 @@ def public_deal_with_investors() -> (
     i2.active_version = InvestorVersion.objects.create(
         investor=i2,
         name="Test First Parent Investor",
-        status=VersionStatusEnum.ACTIVATED,
+        status=VersionStatus.ACTIVATED,
     )
     i2.save()
 
@@ -39,7 +39,7 @@ def public_deal_with_investors() -> (
     i3.active_version = InvestorVersion.objects.create(
         investor=i3,
         name="Test Second Parent Investor",
-        status=VersionStatusEnum.ACTIVATED,
+        status=VersionStatus.ACTIVATED,
     )
     i3.save()
 
@@ -53,7 +53,7 @@ def public_deal_with_investors() -> (
     i4.active_version = InvestorVersion.objects.create(
         investor=i4,
         name="Test Parent Parent Investor",
-        status=VersionStatusEnum.ACTIVATED,
+        status=VersionStatus.ACTIVATED,
     )
     i4.save()
 
@@ -72,7 +72,7 @@ def public_deal_with_investors() -> (
         deal=d1,
         # Cannot be in here because of save(dependent=True) sets parent_companies
         # operating_company=i1,
-        status=VersionStatusEnum.ACTIVATED,
+        status=VersionStatus.ACTIVATED,
     )
     d1.active_version.operating_company = i1
     d1.active_version.datasources.add(

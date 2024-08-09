@@ -22,6 +22,7 @@ from wagtail.models import Site
 
 from apps.accounts.models import User
 from apps.landmatrix.models import choices
+from apps.landmatrix.models.abstract.version import Action, VersionStatus
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.top_investors import DealTopInvestors
 from apps.landmatrix.models.deal import (
@@ -56,8 +57,8 @@ def add_wfi(
     obj_version: DealVersion | InvestorVersion = None,
     from_user: User = None,
     to_user_id: int = None,
-    status_before: str = "",
-    status_after: str = "",
+    status_before: VersionStatus = "",
+    status_after: VersionStatus = "",
     comment: str = "",
 ):
     if obj is None and obj_version is None:
@@ -150,7 +151,7 @@ class VersionViewSet(viewsets.ReadOnlyModelViewSet):
 
         creating_new_version = ov1.created_by != user
         if creating_new_version:
-            ov1.change_status(new_status="TO_DRAFT", user=user, to_user_id=user.id)
+            ov1.change_status(action=Action.TO_DRAFT, user=user, to_user_id=user.id)
 
         serializer: DealVersionSerializer | InvestorVersionSerializer = (
             self.serializer_class(ov1, data=data, partial=True)
@@ -225,20 +226,25 @@ class DealVersionViewSet(VersionViewSet):
         to_user_id = request.data.get("toUser")
 
         dv1.change_status(
-            new_status=request.data["transition"],
+            action=request.data["transition"],
             user=request.user,
             fully_updated=request.data.get("fullyUpdated"),
             to_user_id=to_user_id,
             comment=request.data.get("comment", ""),
         )
 
-        if request.data["transition"] == "TO_REVIEW" and request.data.get("toUser"):
+        if request.data["transition"] == Action.TO_REVIEW and request.data.get(
+            "toUser"
+        ):
             # if there was a request for improvement workflowinfo, email the requester
             old_wfi: DealWorkflowInfo | None = self.deal.workflowinfos.last()
             if (
                 old_wfi
-                and old_wfi.status_before in ["REVIEW", "ACTIVATION"]
-                and old_wfi.status_after == "DRAFT"
+                and (
+                    old_wfi.status_before
+                    in [VersionStatus.REVIEW, VersionStatus.ACTIVATION]
+                )
+                and old_wfi.status_after == VersionStatus.DRAFT
                 and old_wfi.to_user == to_user_id
             ):
                 old_wfi.resolved = True
@@ -305,7 +311,12 @@ class HullViewSet(viewsets.ReadOnlyModelViewSet):
             serializer.save_submodels(data, ov1)
             ov1.save()  # recalculating fields here.
 
-        add_wfi(obj=o1, obj_version=ov1, from_user=request.user, status_after="DRAFT")
+        add_wfi(
+            obj=o1,
+            obj_version=ov1,
+            from_user=request.user,
+            status_after=VersionStatus.DRAFT,
+        )
 
         return Response({"versionID": ov1.id})
 
@@ -476,7 +487,7 @@ class DealViewSet(HullViewSet):
             deal=d1,
             deal_version=dv1,
             from_user=request.user,
-            status_after="DRAFT",
+            status_after=VersionStatus.DRAFT,
         )
         return Response({"dealID": d1.id, "versionID": dv1.id})
 
@@ -497,7 +508,7 @@ class DealViewSet(HullViewSet):
         if (
             is_editor_or_higher(user)
             or dv1.created_by == user
-            or (dv1.status == "ACTIVATED" and dv1.is_public)
+            or (dv1.status == VersionStatus.ACTIVATED and dv1.is_public)
         ):
             return Response(self.get_serializer(d1).data)
 
@@ -548,7 +559,7 @@ class DealViewSet(HullViewSet):
             deal=d1,
             deal_version=dv1,
             from_user=request.user,
-            status_after="DRAFT",
+            status_after=VersionStatus.DRAFT,
             comment=f"Copied from deal #{old_id}",
         )
 
@@ -569,19 +580,22 @@ class InvestorVersionViewSet(VersionViewSet):
 
         to_user_id = request.data.get("toUser")
         iv1.change_status(
-            new_status=request.data["transition"],
+            action=request.data["transition"],
             user=request.user,
             to_user_id=to_user_id,
             comment=request.data.get("comment", ""),
         )
 
-        if request.data["transition"] == "TO_REVIEW" and to_user_id:
+        if request.data["transition"] == Action.TO_REVIEW and to_user_id:
             # if there was a request for improvement workflowinfo, email the requester
             old_wfi: InvestorWorkflowInfo | None = iv1.investor.workflowinfos.last()
             if (
                 old_wfi
-                and old_wfi.status_before in ["REVIEW", "ACTIVATION"]
-                and old_wfi.status_after == "DRAFT"
+                and (
+                    old_wfi.status_before
+                    in [VersionStatus.REVIEW, VersionStatus.ACTIVATION]
+                )
+                and old_wfi.status_after == VersionStatus.DRAFT
                 and old_wfi.to_user_id == to_user_id
             ):
                 old_wfi.resolved = True
@@ -644,7 +658,7 @@ class InvestorViewSet(HullViewSet):
             investor=i1,
             investor_version=iv1,
             from_user=request.user,
-            status_after="DRAFT",
+            status_after=VersionStatus.DRAFT,
         )
         return Response({"investorID": i1.id, "versionID": iv1.id})
 
@@ -665,7 +679,7 @@ class InvestorViewSet(HullViewSet):
         if (
             is_editor_or_higher(user)
             or iv1.created_by == user
-            or iv1.status == "ACTIVATED"
+            or iv1.status == VersionStatus.ACTIVATED
         ):
             return Response(self.get_serializer(i1).data)
 

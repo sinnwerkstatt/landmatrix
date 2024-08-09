@@ -9,7 +9,11 @@ from django_pydantic_field import SchemaField
 
 from apps.accounts.models import User
 from apps.landmatrix.models import schema, choices
-from apps.landmatrix.models.abstract.version import BaseVersion
+from apps.landmatrix.models.abstract.version import (
+    BaseVersion,
+    VersionStatus,
+    Action,
+)
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.currency import Currency
 
@@ -692,24 +696,23 @@ class DealVersion(DealVersionBaseFields, BaseVersion):
 
     def change_status(
         self,
-        new_status: str,
+        action: Action,
         user: User,
         fully_updated=False,
         to_user_id: int = None,
         comment="",
     ):
-        from apps.landmatrix.models.deal import DealHull, DealWorkflowInfo
-
         old_draft_status = self.status
 
-        super().change_status(new_status=new_status, user=user, to_user_id=to_user_id)
+        super().change_status(action=action, user=user, to_user_id=to_user_id)
 
-        if new_status == "TO_REVIEW":
+        if action == Action.TO_REVIEW:
             if fully_updated:
                 self.fully_updated = True
             self.save()
-        elif new_status == "ACTIVATE":
-            deal: DealHull = self.deal
+
+        elif action == Action.ACTIVATE:
+            deal = self.deal
             deal.draft_version = None
             deal.active_version = self
             # using "last modified" timestamp for "last fully updated" #681
@@ -719,7 +722,8 @@ class DealVersion(DealVersionBaseFields, BaseVersion):
 
             # close unresolved workflowinfos
             self.workflowinfos.all().update(resolved=True)
-        elif new_status == "TO_DRAFT":
+
+        elif action == Action.TO_DRAFT:
             self.save()
 
             deal = self.deal
@@ -728,10 +732,18 @@ class DealVersion(DealVersionBaseFields, BaseVersion):
 
             # close remaining open feedback requests
             self.workflowinfos.filter(
-                Q(status_before__in=["REVIEW", "ACTIVATION"])
-                & Q(status_after="DRAFT")
+                Q(
+                    status_before__in=[
+                        VersionStatus.REVIEW,
+                        VersionStatus.ACTIVATION,
+                    ]
+                )
+                & Q(status_after=VersionStatus.DRAFT)
                 & (Q(from_user=user) | Q(to_user=user))
             ).update(resolved=True)
+
+        # TODO: Factor out
+        from apps.landmatrix.models.deal import DealWorkflowInfo
 
         DealWorkflowInfo.objects.create(
             deal_id=self.deal_id,
@@ -744,29 +756,26 @@ class DealVersion(DealVersionBaseFields, BaseVersion):
         )
 
     def copy_to_new_draft(self, created_by_id: int):
-        from apps.landmatrix.models.deal import Location, Area, DealDataSource, Contract
-
         old_self = DealVersion.objects.get(pk=self.pk)
         super().copy_to_new_draft(created_by_id)
         self.save(recalculate_dependent=False)
 
         # copy foreignkey-relations
-        l1: Location
         for l1 in old_self.locations.all():
-            areas: list[Area] = list(l1.areas.all())
             l1.id = None
             l1.dealversion = self
             l1.save()
-            for a1 in areas:
+
+            for a1 in l1.areas.all():
                 a1.id = None
                 a1.location = l1
                 a1.save()
-        d1: DealDataSource
+
         for d1 in old_self.datasources.all():
             d1.id = None
             d1.dealversion = self
             d1.save()
-        c1: Contract
+
         for c1 in old_self.contracts.all():
             c1.id = None
             c1.dealversion = self

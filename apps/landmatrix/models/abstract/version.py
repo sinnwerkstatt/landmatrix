@@ -10,11 +10,19 @@ from django.db.models import TextChoices
 
 
 # Todo: move to choices?
-class VersionStatusEnum(TextChoices):
+class VersionStatus(TextChoices):
     DRAFT = "DRAFT", _("Draft")
     REVIEW = "REVIEW", _("Review")
     ACTIVATION = "ACTIVATION", _("Activation")
     ACTIVATED = "ACTIVATED", _("Activated")
+
+
+# TODO: use strEnum?
+class Action(TextChoices):
+    TO_DRAFT = "TO_DRAFT"
+    TO_REVIEW = "TO_REVIEW"
+    TO_ACTIVATION = "TO_ACTIVATION"
+    ACTIVATE = "ACTIVATE"
 
 
 class BaseVersion(models.Model):
@@ -63,9 +71,9 @@ class BaseVersion(models.Model):
         related_name="+",
     )
 
-    status = models.CharField(
-        choices=VersionStatusEnum.choices,
-        default=VersionStatusEnum.DRAFT,
+    status: VersionStatus = models.CharField(
+        choices=VersionStatus.choices,
+        default=VersionStatus.DRAFT,
     )
 
     def save(self, *args, **kwargs):
@@ -75,34 +83,41 @@ class BaseVersion(models.Model):
 
     def change_status(
         self,
-        new_status: str,
+        action: Action,
         user: User,
         to_user_id: int = None,
     ):
-        if new_status == "TO_REVIEW":
+        if action == Action.TO_REVIEW:
             if not (self.created_by == user or is_editor_or_higher(user)):
                 raise PermissionDenied("MISSING_AUTHORIZATION")
-            self.status = "REVIEW"
+
+            self.status = VersionStatus.REVIEW
             self.sent_to_review_at = timezone.now()
             self.sent_to_review_by = user
             self.save()
-        elif new_status == "TO_ACTIVATION":
+
+        elif action == Action.TO_ACTIVATION:
             if not is_editor_or_higher(user):
                 raise PermissionDenied("MISSING_AUTHORIZATION")
-            self.status = "ACTIVATION"
+
+            self.status = VersionStatus.ACTIVATION
             self.sent_to_activation_at = timezone.now()
             self.sent_to_activation_by = user
             self.save()
-        elif new_status == "ACTIVATE":
+
+        elif action == Action.ACTIVATE:
             if not is_admin(user):
                 raise PermissionDenied("MISSING_AUTHORIZATION")
-            self.status = "ACTIVATED"
+
+            self.status = VersionStatus.ACTIVATED
             self.activated_at = timezone.now()
             self.activated_by = user
             self.save()
-        elif new_status == "TO_DRAFT":
+
+        elif action == Action.TO_DRAFT:
             if not is_editor_or_higher(user):
                 raise PermissionDenied("MISSING_AUTHORIZATION")
+
             self.copy_to_new_draft(to_user_id)
 
         else:
@@ -113,7 +128,7 @@ class BaseVersion(models.Model):
 
     def copy_to_new_draft(self, created_by_id):
         self.id = None
-        self.status = "DRAFT"
+        self.status = VersionStatus.DRAFT
         self.created_at = timezone.now()
         self.created_by_id = created_by_id
         self.modified_at = None

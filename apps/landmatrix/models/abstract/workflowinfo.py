@@ -3,7 +3,7 @@ from django.db import models
 from django.utils import timezone
 from wagtail.models import Site
 
-from .version import VersionStatusEnum
+from .version import VersionStatus
 
 
 class BaseWorkflowInfo(models.Model):
@@ -19,13 +19,13 @@ class BaseWorkflowInfo(models.Model):
         blank=True,
         related_name="+",
     )
-    status_before = models.CharField(
-        choices=VersionStatusEnum.choices,
+    status_before: VersionStatus | None = models.CharField(
+        choices=VersionStatus.choices,
         null=True,
         blank=True,
     )
-    status_after = models.CharField(
-        choices=VersionStatusEnum.choices,
+    status_after: VersionStatus | None = models.CharField(
+        choices=VersionStatus.choices,
         null=True,
         blank=True,
     )

@@ -6,11 +6,12 @@ from django.utils.translation import gettext as _
 
 from apps.accounts.models import User
 from apps.landmatrix.models import choices
-from apps.landmatrix.models.abstract.version import BaseVersion
+from apps.landmatrix.models.abstract.version import (
+    BaseVersion,
+    Action,
+    VersionStatus,
+)
 from apps.landmatrix.models.country import Country
-from apps.landmatrix.models.investor import InvestorHull, Involvement
-from apps.landmatrix.models.investor.datasource import InvestorDataSource
-from apps.landmatrix.models.investor.workflowinfo import InvestorWorkflowInfo
 
 
 class InvestorVersion(BaseVersion):
@@ -64,19 +65,22 @@ class InvestorVersion(BaseVersion):
 
     def change_status(
         self,
-        new_status: str,
+        action: Action,
         user: User,
         to_user_id: int = None,
         comment="",
     ):
+
         old_draft_status = self.status
 
-        super().change_status(new_status=new_status, user=user, to_user_id=to_user_id)
+        super().change_status(action=action, user=user, to_user_id=to_user_id)
 
-        if new_status == "ACTIVATE":
-            investor: InvestorHull = self.investor
+        if action == Action.ACTIVATE:
+            investor = self.investor
             investor.draft_version = None
             investor.active_version = self
+
+            from apps.landmatrix.models.investor import Involvement
 
             # upon activation, map the involvements_snapshot into the Involvements table
             seen_involvements = set()
@@ -91,6 +95,7 @@ class InvestorVersion(BaseVersion):
                     i1 = Involvement.objects.get(id=invo["id"], child_investor=investor)
                 except (Involvement.DoesNotExist, AssertionError):
                     i1 = Involvement(child_investor=investor)
+
                 i1.parent_investor_id = invo["parent_investor_id"]
                 i1.role = invo["role"]
                 i1.investment_type = invo["investment_type"]
@@ -102,6 +107,7 @@ class InvestorVersion(BaseVersion):
                 i1.comment = invo["comment"]
                 i1.save()
                 seen_involvements.add(i1.id)
+
             Involvement.objects.filter(child_investor=investor).exclude(
                 id__in=seen_involvements
             ).delete()
@@ -110,17 +116,26 @@ class InvestorVersion(BaseVersion):
 
             # close unresolved workflowinfos
             self.workflowinfos.all().update(resolved=True)
-        elif new_status == "TO_DRAFT":
+
+        elif action == Action.TO_DRAFT:
             investor = self.investor
             investor.draft_version = self
             investor.save()
 
             # close remaining open feedback requests
             self.workflowinfos.filter(
-                Q(status_before__in=["REVIEW", "ACTIVATION"])
-                & Q(status_after="DRAFT")
+                Q(
+                    status_before__in=[
+                        VersionStatus.REVIEW,
+                        VersionStatus.ACTIVATION,
+                    ]
+                )
+                & Q(status_after=VersionStatus.DRAFT)
                 & (Q(from_user=user) | Q(to_user=user))
             ).update(resolved=True)
+
+        # TODO: REfactor out
+        from apps.landmatrix.models.investor import InvestorWorkflowInfo
 
         InvestorWorkflowInfo.objects.create(
             investor_id=self.investor_id,
@@ -138,8 +153,6 @@ class InvestorVersion(BaseVersion):
         super().copy_to_new_draft(created_by_id)
         self.save()
 
-        # copy foreignkey-relations
-        d1: InvestorDataSource
         for d1 in old_self.datasources.all():
             d1.id = None
             d1.investorversion = self

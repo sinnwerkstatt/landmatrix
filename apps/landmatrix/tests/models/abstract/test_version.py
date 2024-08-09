@@ -1,5 +1,5 @@
 from apps.landmatrix.tests.helpers import AbstractModelTestCase
-from apps.landmatrix.models.abstract.version import BaseVersion
+from apps.landmatrix.models.abstract.version import BaseVersion, VersionStatus
 
 PETER = 1
 JOHANNA = 2
@@ -11,7 +11,7 @@ class TestBaseVersionMixin(AbstractModelTestCase):
 
     def test_copy_to_new_draft(self):
         version: BaseVersion = self.derived_model.objects.create(
-            status="ACTIVATED",
+            status=VersionStatus.ACTIVATED,
             created_at="2024-01-01",
             created_by_id=PETER,
             modified_at="2024-01-02",
@@ -27,7 +27,7 @@ class TestBaseVersionMixin(AbstractModelTestCase):
         version.copy_to_new_draft(KNUT)
 
         assert version.id is None
-        assert version.status == "DRAFT"
+        assert version.status == VersionStatus.DRAFT
         # assert version.created_at == timezone.now()
         assert version.created_by_id == KNUT
 
