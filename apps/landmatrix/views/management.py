@@ -11,10 +11,8 @@ from django.utils.timezone import make_aware
 from django.views import View
 
 from apps.accounts.models import User
-from apps.landmatrix.models.deal import DealHull
-from apps.landmatrix.models.deal.workflowinfo import DealWorkflowInfo
-from apps.landmatrix.models.investor import InvestorHull
-from apps.landmatrix.models.investor.workflowinfo import InvestorWorkflowInfo
+from apps.landmatrix.models.deal import DealHull, DealWorkflowInfo
+from apps.landmatrix.models.investor import InvestorHull, InvestorWorkflowInfo
 from apps.landmatrix.permissions import (
     is_editor_or_higher,
     is_admin,
