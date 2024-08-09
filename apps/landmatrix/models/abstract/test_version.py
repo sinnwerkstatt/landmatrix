@@ -1,5 +1,5 @@
-from ..tests.helpers import AbstractModelTestCase
-from .new import BaseVersionMixin
+from apps.landmatrix.tests.helpers import AbstractModelTestCase
+from apps.landmatrix.models.abstract.version import BaseVersionMixin
 
 PETER = 1
 JOHANNA = 2
