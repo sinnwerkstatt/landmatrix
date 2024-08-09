@@ -5,12 +5,13 @@ from nanoid import generate
 
 from apps.landmatrix.models import choices
 from apps.landmatrix.models.fields import NanoIDField
-from apps.landmatrix.models.deal import DealVersion
 
 
 class Location(models.Model):
     dealversion = models.ForeignKey(
-        DealVersion, on_delete=models.CASCADE, related_name="locations"
+        "DealVersion",
+        on_delete=models.CASCADE,
+        related_name="locations",
     )
     nid = NanoIDField("ID", max_length=15, db_index=True)
     level_of_accuracy = models.CharField(

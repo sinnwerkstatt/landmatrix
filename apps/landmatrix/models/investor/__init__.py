@@ -13,13 +13,14 @@ from apps.landmatrix.models.abstract.hull import HullBase
 from apps.landmatrix.models.abstract.version import BaseVersionMixin
 from apps.landmatrix.models.abstract.workflowinfo import _WorkflowInfo
 from apps.landmatrix.models.country import Country
-from apps.landmatrix.models.deal import DealVersion, DealHull
 from apps.landmatrix.models.investor.involvement import Involvement
 
 
 class InvestorVersion(BaseVersionMixin, models.Model):
     investor = models.ForeignKey(
-        "InvestorHull", on_delete=models.PROTECT, related_name="versions"
+        "InvestorHull",
+        on_delete=models.PROTECT,
+        related_name="versions",
     )
 
     name = models.CharField(_("Name"), blank=True)
@@ -258,6 +259,8 @@ class InvestorHull(HullBase):
 
     @staticmethod
     def to_investor_list(qs: QuerySet["InvestorHull"]):
+        from apps.landmatrix.models.deal import DealHull
+
         deals = DealHull.objects.filter(
             active_version__operating_company_id__in=qs.values_list("id", flat=True)
         ).values("id", "active_version__operating_company_id")
@@ -315,11 +318,14 @@ class InvestorHull(HullBase):
             )
         return _seen_investors
 
-    def get_affected_dealversions(self, seen_investors=None) -> set[DealVersion]:
+    def get_affected_dealversions(self, seen_investors=None) -> set["DealVersion"]:
         """
         Get list of affected deals - this is like Top Investors, only downwards
         (all left-hand side deals of the network visualisation)
         """
+
+        from apps.landmatrix.models.deal import DealVersion
+
         deals = set()
         if seen_investors is None:
             seen_investors = {self}

@@ -3,12 +3,13 @@ from django.utils.translation import gettext as _
 from nanoid import generate
 
 from apps.landmatrix.models.fields import NanoIDField, LooseDateField
-from apps.landmatrix.models.deal import DealVersion
 
 
 class Contract(models.Model):
     dealversion = models.ForeignKey(
-        DealVersion, on_delete=models.CASCADE, related_name="contracts"
+        "DealVersion",
+        on_delete=models.CASCADE,
+        related_name="contracts",
     )
     nid = NanoIDField("ID", max_length=15, db_index=True)
     number = models.CharField(_("Contract number"), blank=True)

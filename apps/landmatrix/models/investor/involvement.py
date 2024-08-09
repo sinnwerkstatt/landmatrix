@@ -5,7 +5,6 @@ from django.utils.translation import gettext as _
 from apps.landmatrix.models import choices
 from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.fields import ChoiceArrayField, LooseDateField
-from apps.landmatrix.models.investor import InvestorHull
 
 
 class InvolvementQuerySet(models.QuerySet):
@@ -39,14 +38,14 @@ class Involvement(models.Model):
     # TODO: Add nanoId
     # nid = NanoIDField("ID", max_length=15, db_index=True, null=True)
     parent_investor = models.ForeignKey(
-        InvestorHull,
+        "InvestorHull",
         verbose_name=_("Investor"),
         db_index=True,
         related_name="child_investors",
         on_delete=models.PROTECT,
     )
     child_investor = models.ForeignKey(
-        InvestorHull,
+        "InvestorHull",
         verbose_name=_("Venture Company"),
         db_index=True,
         related_name="parent_investors",

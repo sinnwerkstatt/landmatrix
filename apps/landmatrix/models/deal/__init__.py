@@ -19,7 +19,6 @@ from apps.landmatrix.models.deal.contract import Contract
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.fields import DecimalIntField, ChoiceArrayField, ArrayField
-from apps.landmatrix.models.investor import InvestorHull
 from apps.landmatrix.models.deal.location import Location
 
 
@@ -226,7 +225,7 @@ class DealVersionBaseFields(models.Model):
 
     """ Investor info """
     operating_company = models.ForeignKey(
-        "apps.landmatrix.models.investor.__init__.InvestorHull",
+        "InvestorHull",
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
@@ -573,14 +572,14 @@ class DealVersion(DealVersionBaseFields, BaseVersionMixin):
 
     # NOTE: Next two fields should have used through keyword.
     parent_companies = models.ManyToManyField(
-        "apps.landmatrix.models.investor.__init__.InvestorHull",
+        "InvestorHull",
         verbose_name=_("Parent companies"),
         related_name="child_deals",
         blank=True,
     )
     # Can be queried via DealTopInvestors view model:
     top_investors = models.ManyToManyField(
-        "apps.landmatrix.models.investor.__init__.InvestorHull",
+        "InvestorHull",
         verbose_name=_("Top parent companies"),
         related_name="+",
         blank=True,
@@ -803,6 +802,8 @@ class DealVersion(DealVersionBaseFields, BaseVersionMixin):
             raise ValidationError('At least one value needs to be "current".')
 
     def __calculate_parent_companies(self) -> None:
+        from apps.landmatrix.models.investor import InvestorHull
+
         if self.operating_company_id:
             oc: InvestorHull | None = (
                 InvestorHull.objects.active()
@@ -832,6 +833,8 @@ class DealVersion(DealVersionBaseFields, BaseVersionMixin):
         return True
 
     def __has_known_investor(self) -> bool:
+        from apps.landmatrix.models.investor import InvestorHull
+
         if not self.operating_company_id:
             return False
         try:
