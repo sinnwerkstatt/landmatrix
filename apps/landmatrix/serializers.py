@@ -6,7 +6,6 @@ from django_pydantic_field.rest_framework import SchemaField
 from django_pydantic_field.v2.fields import PydanticSchemaField
 from rest_framework import serializers
 
-from apps.landmatrix.models import FieldDefinition
 from apps.landmatrix.models.country import Country, Region
 from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.deal import (
@@ -15,6 +14,7 @@ from apps.landmatrix.models.deal import (
     DealWorkflowInfo,
     DealDataSource,
 )
+from apps.landmatrix.models.field_definition import FieldDefinition
 from apps.landmatrix.models.investor import (
     InvestorVersion,
     InvestorHull,

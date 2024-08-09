@@ -7,7 +7,7 @@ from django.views.generic.base import RedirectView
 from rest_framework import permissions, viewsets
 from rest_framework.mixins import ListModelMixin
 
-from apps.landmatrix.models import FieldDefinition
+from apps.landmatrix.models.field_definition import FieldDefinition
 from apps.landmatrix.models.country import Country, Region
 from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.deal import DealHull
