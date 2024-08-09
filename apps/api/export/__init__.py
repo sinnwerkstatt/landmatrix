@@ -17,9 +17,8 @@ from apps.landmatrix.models.new import (
     DealHull,
     DealTopInvestors,
     DealVersion,
-    Involvement,
 )
-from apps.landmatrix.models.investor import InvestorHull
+from apps.landmatrix.models.investor import InvestorHull, Involvement
 from apps.landmatrix.utils import parse_filters
 
 deal_headers = converter.deal_fields.values()

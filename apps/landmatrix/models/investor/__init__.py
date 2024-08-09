@@ -11,7 +11,13 @@ from apps.landmatrix.models import choices
 from apps.landmatrix.models.abstract.hull import HullBase
 from apps.landmatrix.models.abstract.version import BaseVersionMixin
 from apps.landmatrix.models.country import Country
-from apps.landmatrix.models.new import Involvement, InvestorWorkflowInfo, InvestorDataSource, DealHull, DealVersion
+from apps.landmatrix.models.new import (
+    InvestorWorkflowInfo,
+    InvestorDataSource,
+    DealHull,
+    DealVersion,
+)
+from apps.landmatrix.models.investor.involvement import Involvement
 
 
 class InvestorVersion(BaseVersionMixin, models.Model):
