@@ -20,8 +20,8 @@ from apps.landmatrix.models.new import (
     InvestorVersion,
     InvestorWorkflowInfo,
     Involvement,
-    Location,
 )
+from apps.landmatrix.models.location import Location
 from apps.landmatrix.models.area import Area
 
 

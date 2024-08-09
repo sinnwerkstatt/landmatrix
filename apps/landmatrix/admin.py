@@ -7,8 +7,8 @@ from apps.landmatrix.models.new import (
     DealDataSource,
     DealHull,
     DealVersion,
-    Location,
 )
+from apps.landmatrix.models.location import Location
 from apps.landmatrix.models.area import Area
 
 

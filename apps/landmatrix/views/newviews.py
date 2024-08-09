@@ -31,8 +31,8 @@ from apps.landmatrix.models.new import (
     InvestorHull,
     InvestorVersion,
     InvestorWorkflowInfo,
-    Location,
 )
+from apps.landmatrix.models.location import Location
 from apps.landmatrix.permissions import (
     IsAdministrator,
     IsReporterOrHigher,

@@ -14,8 +14,8 @@ from apps.landmatrix.models.new import (
     DealVersion,
     InvestorHull,
     Involvement,
-    Location,
 )
+from apps.landmatrix.models.location import Location
 
 deal_fields = {
     "deal_id": "Deal ID",
