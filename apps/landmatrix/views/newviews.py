@@ -233,11 +233,10 @@ class DealVersionViewSet(VersionViewSet):
             comment=request.data.get("comment", ""),
         )
 
-        if request.data["transition"] == Action.TO_REVIEW and request.data.get(
-            "toUser"
-        ):
+        # FIXME: Frontend does not send toUser in TO_REVIEW request -> Delete?
+        if request.data["transition"] == Action.TO_REVIEW and to_user_id:
             # if there was a request for improvement workflowinfo, email the requester
-            old_wfi: DealWorkflowInfo | None = self.deal.workflowinfos.last()
+            old_wfi: DealWorkflowInfo | None = dv1.workflowinfos.last()
             if (
                 old_wfi
                 and (
@@ -586,6 +585,7 @@ class InvestorVersionViewSet(VersionViewSet):
             comment=request.data.get("comment", ""),
         )
 
+        # FIXME: Frontend does not send toUser in TO_REVIEW request -> Delete?
         if request.data["transition"] == Action.TO_REVIEW and to_user_id:
             # if there was a request for improvement workflowinfo, email the requester
             old_wfi: InvestorWorkflowInfo | None = iv1.investor.workflowinfos.last()
