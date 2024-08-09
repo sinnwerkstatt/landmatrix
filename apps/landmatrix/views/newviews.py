@@ -28,10 +28,9 @@ from apps.landmatrix.models.new import (
     DealTopInvestors,
     DealVersion,
     DealWorkflowInfo,
-    InvestorHull,
-    InvestorVersion,
     InvestorWorkflowInfo,
 )
+from apps.landmatrix.models.investor import InvestorVersion, InvestorHull
 from apps.landmatrix.models.location import Location
 from apps.landmatrix.permissions import (
     IsAdministrator,

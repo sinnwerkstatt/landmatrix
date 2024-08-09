@@ -5,8 +5,8 @@ from apps.landmatrix.models.new import (
     DealHull,
     DealTopInvestors,
     DealVersion,
-    InvestorHull,
 )
+from apps.landmatrix.models.investor import InvestorHull
 from apps.landmatrix.utils import parse_filters
 
 LONG_COUNTRIES = {

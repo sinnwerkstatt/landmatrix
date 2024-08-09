@@ -14,9 +14,9 @@ from apps.accounts.models import User
 from apps.landmatrix.models.new import (
     DealHull,
     DealWorkflowInfo,
-    InvestorHull,
     InvestorWorkflowInfo,
 )
+from apps.landmatrix.models.investor import InvestorHull
 from apps.landmatrix.permissions import (
     is_editor_or_higher,
     is_admin,
