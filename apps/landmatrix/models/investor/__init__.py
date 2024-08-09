@@ -8,13 +8,11 @@ from django.utils.translation import gettext as _
 
 from apps.accounts.models import User
 from apps.landmatrix.models import choices
+from apps.landmatrix.models.abstract.datasource import BaseDataSource
 from apps.landmatrix.models.abstract.hull import HullBase
 from apps.landmatrix.models.abstract.version import BaseVersionMixin
 from apps.landmatrix.models.abstract.workflowinfo import _WorkflowInfo
 from apps.landmatrix.models.country import Country
-from apps.landmatrix.models.new import (
-    InvestorDataSource,
-)
 from apps.landmatrix.models.deal import DealVersion, DealHull
 from apps.landmatrix.models.investor.involvement import Involvement
 
@@ -371,3 +369,14 @@ class InvestorWorkflowInfo(_WorkflowInfo):
     def get_object_url(self):
         base_url = super().get_object_url()
         return base_url + f"/investor/{self.investor_id}/"
+
+
+class InvestorDataSource(BaseDataSource):
+    investorversion = models.ForeignKey(
+        InvestorVersion, on_delete=models.CASCADE, related_name="datasources"
+    )
+
+    class Meta:
+        unique_together = ["investorversion", "nid"]
+        indexes = [models.Index(fields=["investorversion", "nid"])]
+        ordering = ["id"]

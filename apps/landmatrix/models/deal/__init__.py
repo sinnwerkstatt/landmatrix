@@ -10,6 +10,7 @@ from django_pydantic_field import SchemaField
 
 from apps.accounts.models import User
 from apps.landmatrix.models import schema, choices
+from apps.landmatrix.models.abstract.datasource import BaseDataSource
 from apps.landmatrix.models.abstract.hull import HullBase
 from apps.landmatrix.models.abstract.version import BaseVersionMixin
 from apps.landmatrix.models.abstract.workflowinfo import _WorkflowInfo
@@ -20,7 +21,6 @@ from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.fields import DecimalIntField, ChoiceArrayField, ArrayField
 from apps.landmatrix.models.investor import InvestorHull
 from apps.landmatrix.models.location import Location
-from apps.landmatrix.models.new import DealDataSource
 
 
 class DealVersionBaseFields(models.Model):
@@ -1129,3 +1129,14 @@ class DealWorkflowInfo(_WorkflowInfo):
     def get_object_url(self):
         base_url = super().get_object_url()
         return base_url + f"/deal/{self.deal_id}/"
+
+
+class DealDataSource(BaseDataSource):
+    dealversion = models.ForeignKey(
+        DealVersion, on_delete=models.CASCADE, related_name="datasources"
+    )
+
+    class Meta:
+        unique_together = ["dealversion", "nid"]
+        indexes = [models.Index(fields=["dealversion", "nid"])]
+        ordering = ["id"]

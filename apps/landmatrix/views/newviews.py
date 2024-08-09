@@ -23,9 +23,7 @@ from wagtail.models import Site
 from apps.accounts.models import User
 from apps.landmatrix.models import choices
 from apps.landmatrix.models.country import Country
-from apps.landmatrix.models.new import (
-    DealTopInvestors,
-)
+from apps.landmatrix.models.top_investors import DealTopInvestors
 from apps.landmatrix.models.deal import DealVersion, DealHull, DealWorkflowInfo
 from apps.landmatrix.models.investor import (
     InvestorVersion,

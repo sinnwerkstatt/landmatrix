@@ -1,9 +1,7 @@
 from collections import defaultdict
 
 from apps.landmatrix.models.country import Country
-from apps.landmatrix.models.new import (
-    DealTopInvestors,
-)
+from apps.landmatrix.models.top_investors import DealTopInvestors
 from apps.landmatrix.models.deal import DealVersion, DealHull
 from apps.landmatrix.models.investor import InvestorHull
 from apps.landmatrix.utils import parse_filters

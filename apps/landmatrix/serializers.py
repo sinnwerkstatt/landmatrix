@@ -9,16 +9,18 @@ from rest_framework import serializers
 from apps.landmatrix.models import FieldDefinition
 from apps.landmatrix.models.country import Country, Region
 from apps.landmatrix.models.currency import Currency
-from apps.landmatrix.models.new import (
+from apps.landmatrix.models.deal import (
+    DealVersion,
+    DealHull,
+    DealWorkflowInfo,
     DealDataSource,
-    InvestorDataSource,
 )
-from apps.landmatrix.models.deal import DealVersion, DealHull, DealWorkflowInfo
 from apps.landmatrix.models.investor import (
     InvestorVersion,
     InvestorHull,
     Involvement,
     InvestorWorkflowInfo,
+    InvestorDataSource,
 )
 from apps.landmatrix.models.contract import Contract
 from apps.landmatrix.models.location import Location

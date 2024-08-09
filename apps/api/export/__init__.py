@@ -13,9 +13,7 @@ from django.shortcuts import render
 
 from apps.api.export import converter
 from apps.landmatrix.involvement_network import InvolvementNetwork
-from apps.landmatrix.models.new import (
-    DealTopInvestors,
-)
+from apps.landmatrix.models.top_investors import DealTopInvestors
 from apps.landmatrix.models.deal import DealVersion, DealHull
 from apps.landmatrix.models.investor import InvestorHull, Involvement
 from apps.landmatrix.utils import parse_filters
