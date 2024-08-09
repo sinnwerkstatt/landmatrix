@@ -1,12 +1,9 @@
-from django.conf import settings
 from django.db import models
-from django.utils import timezone
 from django.utils.translation import gettext as _
 from nanoid import generate
-from wagtail.models import Site
 
 from apps.landmatrix.models import choices
-from apps.landmatrix.models.deal import DealVersion, DealHull
+from apps.landmatrix.models.deal import DealVersion
 from apps.landmatrix.models.fields import (
     LooseDateField,
     NanoIDField,
@@ -90,109 +87,6 @@ class InvestorDataSource(BaseDataSource):
         unique_together = ["investorversion", "nid"]
         indexes = [models.Index(fields=["investorversion", "nid"])]
         ordering = ["id"]
-
-
-class _WorkflowInfo(models.Model):
-    from_user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="+"
-    )
-    to_user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.PROTECT,
-        null=True,
-        blank=True,
-        related_name="+",
-    )
-    status_before = models.CharField(
-        choices=VERSION_STATUS_CHOICES, null=True, blank=True
-    )
-    status_after = models.CharField(
-        choices=VERSION_STATUS_CHOICES, null=True, blank=True
-    )
-    timestamp = models.DateTimeField(default=timezone.now)
-    comment = models.TextField(blank=True)
-    replies = models.JSONField(null=True, default=list)
-    resolved = models.BooleanField(default=False)
-
-    def to_dict(self) -> dict:
-        return {
-            "id": self.id,
-            "from_user_id": self.from_user_id,
-            "to_user_id": self.to_user_id,
-            "status_before": self.status_before,
-            "status_after": self.status_after,
-            "timestamp": self.timestamp,
-            "comment": self.comment,
-            "resolved": self.resolved,
-            "replies": self.replies,
-        }
-
-    def get_object_url(self):
-        _site = Site.objects.get(is_default_site=True)
-        _port = f":{_site.port}" if _site.port not in [80, 443] else ""
-        base_url = f"http{'s' if _site.port == 443 else ''}://{_site.hostname}{_port}"
-        return base_url
-
-    class Meta:
-        abstract = True
-
-
-class DealWorkflowInfo(_WorkflowInfo):
-    deal = models.ForeignKey(
-        DealHull, on_delete=models.CASCADE, related_name="workflowinfos"
-    )
-    deal_version = models.ForeignKey(
-        DealVersion,
-        on_delete=models.SET_NULL,
-        related_name="workflowinfos",
-        null=True,
-        blank=True,
-    )
-
-    # OLD Code
-    # # WARNING
-    # # Do not use to map large query sets!
-    # # Takes tons of memory storing related deal and deal_version objects.
-    # def to_dict(self) -> dict:
-    #     d = super().to_dict()
-    #     d.update({"deal": self.deal, "deal_version": self.deal_version})
-    #     return d
-
-    def to_dict(self) -> dict:
-        d = super().to_dict()
-        d.update({"deal_id": self.deal_id, "deal_version_id": self.deal_version_id})
-        return d
-
-    def get_object_url(self):
-        base_url = super().get_object_url()
-        return base_url + f"/deal/{self.deal_id}/"
-
-
-class InvestorWorkflowInfo(_WorkflowInfo):
-    investor = models.ForeignKey(
-        InvestorHull, on_delete=models.CASCADE, related_name="workflowinfos"
-    )
-    investor_version = models.ForeignKey(
-        InvestorVersion,
-        on_delete=models.SET_NULL,
-        related_name="workflowinfos",
-        null=True,
-        blank=True,
-    )
-
-    def to_dict(self) -> dict:
-        d = super().to_dict()
-        d.update(
-            {
-                "investor_id": self.investor_id,
-                "investor_version_id": self.investor_version_id,
-            }
-        )
-        return d
-
-    def get_object_url(self):
-        base_url = super().get_object_url()
-        return base_url + f"/investor/{self.investor_id}/"
 
 
 class DealTopInvestors(models.Model):

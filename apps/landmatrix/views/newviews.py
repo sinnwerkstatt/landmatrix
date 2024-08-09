@@ -25,11 +25,13 @@ from apps.landmatrix.models import choices
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.new import (
     DealTopInvestors,
-    DealWorkflowInfo,
+)
+from apps.landmatrix.models.deal import DealVersion, DealHull, DealWorkflowInfo
+from apps.landmatrix.models.investor import (
+    InvestorVersion,
+    InvestorHull,
     InvestorWorkflowInfo,
 )
-from apps.landmatrix.models.deal import DealVersion, DealHull
-from apps.landmatrix.models.investor import InvestorVersion, InvestorHull
 from apps.landmatrix.models.location import Location
 from apps.landmatrix.permissions import (
     IsAdministrator,

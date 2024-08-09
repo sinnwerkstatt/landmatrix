@@ -11,12 +11,15 @@ from apps.landmatrix.models.country import Country, Region
 from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.new import (
     DealDataSource,
-    DealWorkflowInfo,
     InvestorDataSource,
+)
+from apps.landmatrix.models.deal import DealVersion, DealHull, DealWorkflowInfo
+from apps.landmatrix.models.investor import (
+    InvestorVersion,
+    InvestorHull,
+    Involvement,
     InvestorWorkflowInfo,
 )
-from apps.landmatrix.models.deal import DealVersion, DealHull
-from apps.landmatrix.models.investor import InvestorVersion, InvestorHull, Involvement
 from apps.landmatrix.models.contract import Contract
 from apps.landmatrix.models.location import Location
 from apps.landmatrix.models.area import Area
