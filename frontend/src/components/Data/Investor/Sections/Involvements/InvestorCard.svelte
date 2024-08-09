@@ -9,8 +9,8 @@
   const labelClass = "whitespace-nowrap font-light text-gray-400 pr-2 italic"
   const valueClass = "font-medium"
 
-  const is_deleted = (inv: Involvement) => inv.other_investor.deleted
-  const is_draft_only = (inv: Involvement) => inv.other_investor.draft_only
+  const is_deleted = (inv: Involvement): boolean => inv.other_investor!.deleted
+  const is_draft_only = (inv: Involvement): boolean => inv.other_investor!.draft_only
 </script>
 
 <div
