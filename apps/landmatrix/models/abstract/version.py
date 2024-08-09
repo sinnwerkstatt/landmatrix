@@ -16,7 +16,7 @@ VERSION_STATUS_CHOICES = (
 )
 
 
-class BaseVersionMixin(models.Model):
+class BaseVersion(models.Model):
     created_at = models.DateTimeField(_("Created at"))
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,

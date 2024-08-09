@@ -1,9 +1,9 @@
 from django.db import models
 
-from apps.landmatrix.models.abstract.workflowinfo import _WorkflowInfo
+from apps.landmatrix.models.abstract.workflowinfo import BaseWorkflowInfo
 
 
-class InvestorWorkflowInfo(_WorkflowInfo):
+class InvestorWorkflowInfo(BaseWorkflowInfo):
     investor = models.ForeignKey(
         "InvestorHull",
         on_delete=models.CASCADE,

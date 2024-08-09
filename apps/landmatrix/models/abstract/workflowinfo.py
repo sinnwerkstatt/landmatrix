@@ -6,7 +6,7 @@ from wagtail.models import Site
 from apps.landmatrix.models.abstract.version import VERSION_STATUS_CHOICES
 
 
-class _WorkflowInfo(models.Model):
+class BaseWorkflowInfo(models.Model):
     from_user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="+"
     )

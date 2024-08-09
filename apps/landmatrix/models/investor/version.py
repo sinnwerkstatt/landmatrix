@@ -6,14 +6,14 @@ from django.utils.translation import gettext as _
 
 from apps.accounts.models import User
 from apps.landmatrix.models import choices
-from apps.landmatrix.models.abstract.version import BaseVersionMixin
+from apps.landmatrix.models.abstract.version import BaseVersion
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.investor import InvestorHull, Involvement
 from apps.landmatrix.models.investor.datasource import InvestorDataSource
 from apps.landmatrix.models.investor.workflowinfo import InvestorWorkflowInfo
 
 
-class InvestorVersion(BaseVersionMixin, models.Model):
+class InvestorVersion(BaseVersion):
     investor = models.ForeignKey(
         "InvestorHull",
         on_delete=models.PROTECT,

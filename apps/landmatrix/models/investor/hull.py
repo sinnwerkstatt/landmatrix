@@ -4,7 +4,7 @@ from django.db.models.functions import JSONObject
 from django.http import Http404
 
 from apps.accounts.models import User
-from apps.landmatrix.models.abstract.hull import HullBase
+from apps.landmatrix.models.abstract.hull import BaseHull
 
 
 class InvestorHullQuerySet(models.QuerySet):
@@ -49,7 +49,7 @@ class InvestorHullQuerySet(models.QuerySet):
     #     )
 
 
-class InvestorHull(HullBase):
+class InvestorHull(BaseHull):
     active_version = models.ForeignKey(
         "InvestorVersion",
         on_delete=models.SET_NULL,

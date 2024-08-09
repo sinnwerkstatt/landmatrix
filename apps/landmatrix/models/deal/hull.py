@@ -4,7 +4,7 @@ from django.http import Http404
 from django.utils.translation import gettext as _
 
 from apps.accounts.models import User
-from apps.landmatrix.models.abstract.hull import HullBase
+from apps.landmatrix.models.abstract.hull import BaseHull
 from apps.landmatrix.models.country import Country
 
 
@@ -49,7 +49,7 @@ class DealHullQuerySet(models.QuerySet):
     #     )
 
 
-class DealHull(HullBase):
+class DealHull(BaseHull):
     country = models.ForeignKey(
         Country,
         verbose_name=_("Target country"),

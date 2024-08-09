@@ -1,5 +1,5 @@
 from apps.landmatrix.tests.helpers import AbstractModelTestCase
-from apps.landmatrix.models.abstract.version import BaseVersionMixin
+from apps.landmatrix.models.abstract.version import BaseVersion
 
 PETER = 1
 JOHANNA = 2
@@ -7,10 +7,10 @@ KNUT = 3
 
 
 class TestBaseVersionMixin(AbstractModelTestCase):
-    abstract_model = BaseVersionMixin
+    abstract_model = BaseVersion
 
     def test_copy_to_new_draft(self):
-        version: BaseVersionMixin = self.derived_model.objects.create(
+        version: BaseVersion = self.derived_model.objects.create(
             status="ACTIVATED",
             created_at="2024-01-01",
             created_by_id=PETER,

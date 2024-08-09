@@ -9,7 +9,7 @@ from django_pydantic_field import SchemaField
 
 from apps.accounts.models import User
 from apps.landmatrix.models import schema, choices
-from apps.landmatrix.models.abstract.version import BaseVersionMixin
+from apps.landmatrix.models.abstract.version import BaseVersion
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.deal import DealHull
@@ -563,7 +563,7 @@ class DealVersionBaseFields(models.Model):
         abstract = True
 
 
-class DealVersion(DealVersionBaseFields, BaseVersionMixin):
+class DealVersion(DealVersionBaseFields, BaseVersion):
     """# CALCULATED FIELDS #"""
 
     # is_public: change the logic how it's calculated a bit - confidential is dealhull stuff

@@ -3,7 +3,7 @@ from django.db import models
 from django.utils import timezone
 
 
-class HullBase(models.Model):
+class BaseHull(models.Model):
     deleted = models.BooleanField(default=False)
     deleted_comment = models.TextField(blank=True)
 
