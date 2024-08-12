@@ -84,7 +84,7 @@
     const filterTextLower = filterText.toLowerCase()
     return (
       item.name?.toLowerCase().includes(filterTextLower) ||
-      item.id.toString().includes(filterTextLower)
+      item.id?.toString().includes(filterTextLower)
     )
   }
 </script>
