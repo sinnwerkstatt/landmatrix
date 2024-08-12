@@ -73,6 +73,7 @@
 <Table {columns} items={createObjects({ page: $page }, objects)}>
   <svelte:fragment let:fieldName let:obj slot="field">
     {@const col = columns.find(c => c.key === fieldName)}
+
     {#if col.key === "star"}
       {#if obj.openReq}
         <div title={$_("Open request")}>
@@ -100,6 +101,9 @@
         {wrapperClass}
         {valueClass}
         {model}
+        extras={col.key === "id"
+          ? { model, objectVersion: obj.draft_version_id }
+          : undefined}
       />
     {/if}
   </svelte:fragment>
