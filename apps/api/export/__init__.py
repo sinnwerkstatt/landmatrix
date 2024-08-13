@@ -401,46 +401,57 @@ class DataDownload:
                 "Content-Disposition": f"attachment; filename={self.filename}.xlsx",
             }
         )
+
+        tabs = [
+            {
+                "title": "Deals",
+                "headers": list(deal_headers),
+                "items": self.deals,
+            },
+            {
+                "title": "Locations",
+                "headers": location_headers,
+                "items": self.locations,
+            },
+            {
+                "title": "Contract",
+                "headers": contract_headers,
+                "items": self.contracts,
+            },
+            {
+                "title": "Data sources",
+                "headers": datasource_headers,
+                "items": self.datasources,
+            },
+            {
+                "title": "Involvements",
+                "headers": involvement_headers,
+                "items": self.involvements,
+            },
+            {
+                "title": "Investors",
+                "headers": investor_headers,
+                "items": self.investors,
+            },
+        ]
+
         wb = Workbook(write_only=True)
-        # wb = Workbook()
 
-        # Deals tab
-        ws_deals = wb.create_sheet(title="Deals")
-        ws_deals.append(list(deal_headers))
-        for item in self.deals:
-            try:
-                ws_deals.append(item)
-            except IllegalCharacterError:  # pragma: no cover
-                ws_deals.append(
-                    [str(i).encode("unicode_escape").decode("utf-8") for i in item]
-                )
+        for tab in tabs:
+            ws = wb.create_sheet(title=tab["title"])
+            ws.append(tab["headers"])
 
-        # # Locations tab
-        ws = wb.create_sheet(title="Locations")
-        ws.append(location_headers)
-        [ws.append(item) for item in self.locations]
-
-        # # Contracts tab
-        ws = wb.create_sheet(title="Contracts")
-        ws.append(contract_headers)
-        [ws.append(item) for item in self.contracts]
-
-        # # DataSources tab
-        ws = wb.create_sheet(title="Data sources")
-        ws.append(datasource_headers)
-        [ws.append(item) for item in self.datasources]
-
-        # Involvements tab
-        ws_involvements = wb.create_sheet(title="Involvements")
-        ws_involvements.append(involvement_headers)
-        for item in self.involvements:
-            ws_involvements.append(item)
-
-        # Investors tab
-        ws_investors = wb.create_sheet(title="Investors")
-        ws_investors.append(investor_headers)
-        for item in self.investors:
-            ws_investors.append(item)
+            for item in tab["items"]:
+                cleaned_item = [
+                    str(i).encode("unicode_escape").decode("utf-8") for i in item
+                ]
+                # from openpyxl.cell.cell import ILLEGAL_CHARACTERS_RE
+                # cleaned_item = [ILLEGAL_CHARACTERS_RE.sub(r"", str(i)) for i in item]
+                try:
+                    ws.append(cleaned_item)
+                except IllegalCharacterError:
+                    print("This should not happen.")
+                    continue
 
         wb.save(response)
         return response
