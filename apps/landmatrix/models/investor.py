@@ -19,7 +19,7 @@ from apps.landmatrix.models.abstract import (
 )
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.currency import Currency
-from apps.landmatrix.models.fields import ChoiceArrayField, LooseDateField
+from apps.landmatrix.models.fields import ChoiceArrayField, LooseDateField, NanoIDField
 
 
 class InvestorHullQuerySet(models.QuerySet):

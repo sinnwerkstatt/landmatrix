@@ -3,7 +3,7 @@ import re
 from tqdm import tqdm
 
 from django.core.management import BaseCommand
-from apps.landmatrix.models.new import InvestorHull, Involvement
+from apps.landmatrix.models.investor import InvestorHull, Involvement
 from apps.landmatrix.nid import generate_nid
 
 # Questions:

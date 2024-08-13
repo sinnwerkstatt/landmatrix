@@ -3,7 +3,7 @@ import re
 from django.core.management import BaseCommand
 from django.db import transaction
 
-from apps.landmatrix.models.new import Involvement
+from apps.landmatrix.models.investor import Involvement
 
 from django.db.models import Count
 

@@ -1,6 +1,7 @@
 from django.core.management import BaseCommand
 
-from apps.landmatrix.models.new import InvestorHull, DealHull
+from apps.landmatrix.models.deal import DealHull
+from apps.landmatrix.models.investor import InvestorHull
 
 
 class Command(BaseCommand):
