@@ -2,7 +2,8 @@ from django.db import connection
 from django.db.models import Q, QuerySet
 
 from .involvement_sql import GRAPH_QUERY, UNIDIRECTIONAL_GRAPH_QUERY
-from .models.new import DealHull, InvestorHull, Involvement
+from .models.deal import DealHull
+from .models.investor import InvestorHull, Involvement
 
 
 class InvolvementNetwork:

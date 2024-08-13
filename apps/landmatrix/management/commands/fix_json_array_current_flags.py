@@ -3,7 +3,7 @@ import re
 from django.core.management import BaseCommand
 
 from apps.landmatrix.models import schema
-from apps.landmatrix.models.new import DealVersion
+from apps.landmatrix.models.deal import DealVersion
 
 
 class Command(BaseCommand):

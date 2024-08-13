@@ -22,23 +22,25 @@ from wagtail.models import Site
 
 from apps.accounts.models import User
 from apps.landmatrix.models import choices
+from apps.landmatrix.models.abstract import VersionStatus, VersionTransition
 from apps.landmatrix.models.country import Country
-from apps.landmatrix.models.new import (
-    DealHull,
-    DealTopInvestors,
+from apps.landmatrix.models.top_investors import DealTopInvestors
+from apps.landmatrix.models.deal import (
     DealVersion,
+    DealHull,
     DealWorkflowInfo,
-    InvestorHull,
-    InvestorVersion,
-    InvestorWorkflowInfo,
     Location,
+)
+from apps.landmatrix.models.investor import (
+    InvestorVersion,
+    InvestorHull,
+    InvestorWorkflowInfo,
 )
 from apps.landmatrix.permissions import (
     IsAdministrator,
     IsReporterOrHigher,
     is_admin,
     is_editor_or_higher,
-    is_reporter_or_higher,
 )
 from apps.landmatrix.serializers import (
     DealSerializer,
@@ -55,8 +57,8 @@ def add_wfi(
     obj_version: DealVersion | InvestorVersion = None,
     from_user: User = None,
     to_user_id: int = None,
-    status_before: str = "",
-    status_after: str = "",
+    status_before: VersionStatus = "",
+    status_after: VersionStatus = "",
     comment: str = "",
 ):
     if obj is None and obj_version is None:
@@ -149,7 +151,11 @@ class VersionViewSet(viewsets.ReadOnlyModelViewSet):
 
         creating_new_version = ov1.created_by != user
         if creating_new_version:
-            ov1.change_status(new_status="TO_DRAFT", user=user, to_user_id=user.id)
+            ov1.change_status(
+                transition=VersionTransition.TO_DRAFT,
+                user=user,
+                to_user_id=user.id,
+            )
 
         serializer: DealVersionSerializer | InvestorVersionSerializer = (
             self.serializer_class(ov1, data=data, partial=True)
@@ -224,20 +230,24 @@ class DealVersionViewSet(VersionViewSet):
         to_user_id = request.data.get("toUser")
 
         dv1.change_status(
-            new_status=request.data["transition"],
+            transition=request.data["transition"],
             user=request.user,
             fully_updated=request.data.get("fullyUpdated"),
             to_user_id=to_user_id,
             comment=request.data.get("comment", ""),
         )
 
-        if request.data["transition"] == "TO_REVIEW" and request.data.get("toUser"):
+        # FIXME: Frontend does not send toUser in TO_REVIEW request -> Delete?
+        if request.data["transition"] == VersionTransition.TO_REVIEW and to_user_id:
             # if there was a request for improvement workflowinfo, email the requester
-            old_wfi: DealWorkflowInfo | None = self.deal.workflowinfos.last()
+            old_wfi: DealWorkflowInfo | None = dv1.workflowinfos.last()
             if (
                 old_wfi
-                and old_wfi.status_before in ["REVIEW", "ACTIVATION"]
-                and old_wfi.status_after == "DRAFT"
+                and (
+                    old_wfi.status_before
+                    in [VersionStatus.REVIEW, VersionStatus.ACTIVATION]
+                )
+                and old_wfi.status_after == VersionStatus.DRAFT
                 and old_wfi.to_user == to_user_id
             ):
                 old_wfi.resolved = True
@@ -304,7 +314,12 @@ class HullViewSet(viewsets.ReadOnlyModelViewSet):
             serializer.save_submodels(data, ov1)
             ov1.save()  # recalculating fields here.
 
-        add_wfi(obj=o1, obj_version=ov1, from_user=request.user, status_after="DRAFT")
+        add_wfi(
+            obj=o1,
+            obj_version=ov1,
+            from_user=request.user,
+            status_after=VersionStatus.DRAFT,
+        )
 
         return Response({"versionID": ov1.id})
 
@@ -383,40 +398,39 @@ class DealViewSet(HullViewSet):
             .annotate(
                 region_id=F("country__region_id"),
                 selected_version=JSONObject(
-                    deal_size="active_version__deal_size",
-                    current_intention_of_investment="active_version__current_intention_of_investment",
-                    current_negotiation_status="active_version__current_negotiation_status",
-                    current_contract_size="active_version__current_contract_size",
-                    current_implementation_status="active_version__current_implementation_status",
-                    current_crops="active_version__current_crops",
-                    current_animals="active_version__current_animals",
-                    current_mineral_resources="active_version__current_mineral_resources",
-                    current_electricity_generation="active_version__current_electricity_generation",
-                    current_carbon_sequestration="active_version__current_carbon_sequestration",
-                    intended_size="active_version__intended_size",
-                    negotiation_status="active_version__negotiation_status",
-                    contract_size="active_version__contract_size",
-                    operating_company=Case(
-                        When(
-                            active_version__operating_company__active_version=None,
-                            then=None,
-                        ),
-                        default=JSONObject(
-                            id="active_version__operating_company_id",
-                            selected_version=JSONObject(
-                                name="active_version__operating_company__active_version__name",
-                                name_unknown="active_version__operating_company__active_version__name_unknown",
-                            ),
-                        ),
+                    deal_size=F("active_version__deal_size"),
+                    current_intention_of_investment=F(
+                        "active_version__current_intention_of_investment"
                     ),
+                    current_negotiation_status=F(
+                        "active_version__current_negotiation_status"
+                    ),
+                    current_contract_size=F("active_version__current_contract_size"),
+                    current_implementation_status=F(
+                        "active_version__current_implementation_status"
+                    ),
+                    current_crops=F("active_version__current_crops"),
+                    current_animals=F("active_version__current_animals"),
+                    current_mineral_resources=F(
+                        "active_version__current_mineral_resources"
+                    ),
+                    current_electricity_generation=F(
+                        "active_version__current_electricity_generation"
+                    ),
+                    current_carbon_sequestration=F(
+                        "active_version__current_carbon_sequestration"
+                    ),
+                    intended_size=F("active_version__intended_size"),
+                    negotiation_status=F("active_version__negotiation_status"),
+                    contract_size=F("active_version__contract_size"),
                     locations=ArraySubquery(
                         Location.objects.filter(
                             dealversion_id=OuterRef("active_version_id")
                         ).values(
                             json=JSONObject(
-                                nid="nid",
-                                point="point",
-                                level_of_accuracy="level_of_accuracy",
+                                nid=F("nid"),
+                                point=F("point"),
+                                level_of_accuracy=F("level_of_accuracy"),
                             )
                         )
                     ),
@@ -429,12 +443,31 @@ class DealViewSet(HullViewSet):
                             .filter(dealversion_id=OuterRef("active_version_id"))
                             .values(
                                 json=JSONObject(
-                                    id="investorhull_id",
-                                    name="investorhull__active_version__name",
-                                    classification="investorhull__active_version__classification",
+                                    id=F("investorhull_id"),
+                                    name=F("investorhull__active_version__name"),
+                                    classification=F(
+                                        "investorhull__active_version__classification"
+                                    ),
                                 )
                             )
                         )
+                    ),
+                    operating_company=Case(
+                        When(
+                            active_version__operating_company__active_version=None,
+                            then=None,
+                        ),
+                        default=JSONObject(
+                            id=F("active_version__operating_company_id"),
+                            selected_version=JSONObject(
+                                name=F(
+                                    "active_version__operating_company__active_version__name"
+                                ),
+                                name_unknown=F(
+                                    "active_version__operating_company__active_version__name_unknown"
+                                ),
+                            ),
+                        ),
                     ),
                 ),
             )
@@ -457,7 +490,7 @@ class DealViewSet(HullViewSet):
             deal=d1,
             deal_version=dv1,
             from_user=request.user,
-            status_after="DRAFT",
+            status_after=VersionStatus.DRAFT,
         )
         return Response({"dealID": d1.id, "versionID": dv1.id})
 
@@ -478,7 +511,7 @@ class DealViewSet(HullViewSet):
         if (
             is_editor_or_higher(user)
             or dv1.created_by == user
-            or (dv1.status == "ACTIVATED" and dv1.is_public)
+            or (dv1.status == VersionStatus.ACTIVATED and dv1.is_public)
         ):
             return Response(self.get_serializer(d1).data)
 
@@ -529,7 +562,7 @@ class DealViewSet(HullViewSet):
             deal=d1,
             deal_version=dv1,
             from_user=request.user,
-            status_after="DRAFT",
+            status_after=VersionStatus.DRAFT,
             comment=f"Copied from deal #{old_id}",
         )
 
@@ -550,19 +583,23 @@ class InvestorVersionViewSet(VersionViewSet):
 
         to_user_id = request.data.get("toUser")
         iv1.change_status(
-            new_status=request.data["transition"],
+            transition=request.data["transition"],
             user=request.user,
             to_user_id=to_user_id,
             comment=request.data.get("comment", ""),
         )
 
-        if request.data["transition"] == "TO_REVIEW" and to_user_id:
+        # FIXME: Frontend does not send toUser in TO_REVIEW request -> Delete?
+        if request.data["transition"] == VersionTransition.TO_REVIEW and to_user_id:
             # if there was a request for improvement workflowinfo, email the requester
             old_wfi: InvestorWorkflowInfo | None = iv1.investor.workflowinfos.last()
             if (
                 old_wfi
-                and old_wfi.status_before in ["REVIEW", "ACTIVATION"]
-                and old_wfi.status_after == "DRAFT"
+                and (
+                    old_wfi.status_before
+                    in [VersionStatus.REVIEW, VersionStatus.ACTIVATION]
+                )
+                and old_wfi.status_after == VersionStatus.DRAFT
                 and old_wfi.to_user_id == to_user_id
             ):
                 old_wfi.resolved = True
@@ -625,7 +662,7 @@ class InvestorViewSet(HullViewSet):
             investor=i1,
             investor_version=iv1,
             from_user=request.user,
-            status_after="DRAFT",
+            status_after=VersionStatus.DRAFT,
         )
         return Response({"investorID": i1.id, "versionID": iv1.id})
 
@@ -646,7 +683,7 @@ class InvestorViewSet(HullViewSet):
         if (
             is_editor_or_higher(user)
             or iv1.created_by == user
-            or iv1.status == "ACTIVATED"
+            or iv1.status == VersionStatus.ACTIVATED
         ):
             return Response(self.get_serializer(i1).data)
 

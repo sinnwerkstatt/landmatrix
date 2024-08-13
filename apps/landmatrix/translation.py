@@ -1,7 +1,7 @@
 from modeltranslation.decorators import register
 from modeltranslation.translator import TranslationOptions
 
-from .models import FieldDefinition
+from apps.landmatrix.models.field_definition import FieldDefinition
 
 
 @register(FieldDefinition)

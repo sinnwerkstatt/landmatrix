@@ -1,48 +1,200 @@
 import json
-import re
 from enum import Enum
 
-from django.conf import settings
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.geos import GEOSGeometry, MultiPolygon, Polygon
 from django.contrib.gis.geos.prototypes.io import wkt_w
 from django.core.exceptions import ValidationError
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models, transaction
-from django.db.models import Count, F, Func, Q, QuerySet
-from django.db.models.functions import JSONObject
+from django.db.models import Count, Func, F, Q
 from django.http import Http404
-from django.utils import timezone
 from django.utils.translation import gettext as _
 from django_pydantic_field import SchemaField
 from nanoid import generate
-from rest_framework.exceptions import ParseError, PermissionDenied
-from wagtail.models import Site
 
 from apps.accounts.models import User
-from apps.landmatrix.models import choices, schema
+from apps.landmatrix.models import schema, choices
+from apps.landmatrix.models.abstract import (
+    BaseHull,
+    BaseVersion,
+    VersionTransition,
+    VersionStatus,
+    BaseDataSource,
+    BaseWorkflowInfo,
+)
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.fields import (
-    ArrayField,
-    ChoiceArrayField,
     DecimalIntField,
-    LooseDateField,
+    ChoiceArrayField,
+    ArrayField,
     NanoIDField,
+    LooseDateField,
 )
-from apps.landmatrix.permissions import is_editor_or_higher, is_admin
+from apps.landmatrix.models.investor import InvestorHull
 
-VERSION_STATUS_CHOICES = (
-    ("DRAFT", _("Draft")),
-    ("REVIEW", _("Review")),
-    ("ACTIVATION", _("Activation")),
-    ("ACTIVATED", _("Activated")),
-)
+
+class DealHullQuerySet(models.QuerySet):
+    def normal(self):
+        return self.filter(deleted=False)
+
+    def active(self):
+        return self.normal().filter(active_version__isnull=False)
+
+    def public(self):
+        return self.active().filter(active_version__is_public=True, confidential=False)
+
+    def visible(self, user=None, subset="PUBLIC"):
+        # TODO Later: welche user duerfen unfiltered bekommen?
+        if not user or not user.is_authenticated:
+            return self.public()
+
+        if subset == "PUBLIC":
+            return self.public()
+        elif subset == "ACTIVE":
+            return self.active()
+        return self.normal()
+
+    # def with_mode(self):
+    #     return self.annotate(
+    #         mode=Case(
+    #             When(
+    #                 ~Q(active_version_id=None) & ~Q(draft_version_id=None),
+    #                 then=Concat(Value("ACTIVE + "), "draft_version__status"),
+    #             ),
+    #             When(
+    #                 ~Q(active_version_id=None) & Q(draft_version_id=None),
+    #                 then=Value("ACTIVE"),
+    #             ),
+    #             When(
+    #                 Q(active_version_id=None) & ~Q(draft_version_id=None),
+    #                 then="draft_version__status",
+    #             ),
+    #             default=Value(""),
+    #         )
+    #     )
+
+
+class DealHull(BaseHull):
+    country = models.ForeignKey(
+        Country,
+        verbose_name=_("Target country"),
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        related_name="deals",
+    )
+
+    active_version = models.ForeignKey(
+        "DealVersion",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="+",
+    )
+    draft_version = models.ForeignKey(
+        "DealVersion",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="+",
+    )
+
+    confidential = models.BooleanField(default=False)
+    confidential_comment = models.TextField(
+        _("Comment why this deal is private"), blank=True
+    )
+
+    # ## calculated
+    fully_updated_at = models.DateTimeField(
+        _("Last full update"), null=True, blank=True
+    )
+
+    objects = DealHullQuerySet.as_manager()
+
+    def __str__(self):
+        if self.country:
+            return f"#{self.id} in {self.country.name}"
+        return f"#{self.id}"
+
+    def selected_version(self):
+        if hasattr(self, "_selected_version_id") and self._selected_version_id:
+
+            try:
+                return self.versions.get(id=self._selected_version_id)
+            except DealVersion.DoesNotExist:
+                raise Http404
+        return self.active_version or self.draft_version
+
+    def add_draft(self, created_by: User = None) -> "DealVersion":
+
+        dv = DealVersion.objects.create(deal=self, created_by=created_by)
+        self.draft_version = dv
+        self.save()
+        return dv
+
+    @classmethod
+    def get_geo_markers(cls, region_id=None, country_id=None):
+        deals = cls.objects.public().exclude(country=None)
+        if region_id:
+            return [
+                {
+                    "country_id": x["country_id"],
+                    "count": x["count"],
+                    "coordinates": [x["country__point_lat"], x["country__point_lon"]],
+                }
+                for x in deals.filter(country__region_id=region_id)
+                .values("country_id", "country__point_lat", "country__point_lon")
+                .annotate(count=Count("pk"))
+                # .annotate(size=Sum("deal_size"))
+            ]
+        if country_id:
+            xx = [
+                {"coordinates": x}
+                for x in deals.filter(country_id=country_id)
+                .filter(active_version__locations__point__isnull=False)
+                .annotate(
+                    point_lat=Func(
+                        "active_version__locations__point",
+                        function="ST_Y",
+                        output_field=models.FloatField(),
+                    ),
+                    point_lng=Func(
+                        "active_version__locations__point",
+                        function="ST_X",
+                        output_field=models.FloatField(),
+                    ),
+                )
+                .values_list("point_lat", "point_lng")
+            ]
+            return xx
+
+        region_coordinates = {
+            2: [6.06433, 17.082249],
+            9: [-22.7359, 140.0188],
+            21: [54.526, -105.2551],
+            142: [34.0479, 100.6197],
+            150: [52.0055, 37.9587],
+            419: [-4.442, -61.3269],
+        }
+        return [
+            {
+                "region_id": x["region_id"],
+                "count": x["count"],
+                "coordinates": region_coordinates[x["region_id"]],
+            }
+            for x in deals.values(region_id=F("country__region_id")).annotate(
+                count=Count("pk")
+            )
+        ]
 
 
 class DealVersionBaseFields(models.Model):
     deal = models.ForeignKey(
-        "DealHull", on_delete=models.PROTECT, related_name="versions"
+        DealHull,
+        on_delete=models.PROTECT,
+        related_name="versions",
     )
 
     # """ Locations """
@@ -243,7 +395,7 @@ class DealVersionBaseFields(models.Model):
 
     """ Investor info """
     operating_company = models.ForeignKey(
-        "InvestorHull",
+        InvestorHull,
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
@@ -581,113 +733,7 @@ class DealVersionBaseFields(models.Model):
         abstract = True
 
 
-class BaseVersionMixin(models.Model):
-    created_at = models.DateTimeField(_("Created at"))
-    created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        blank=True,
-        null=True,
-        on_delete=models.PROTECT,
-        related_name="+",
-    )
-    modified_at = models.DateTimeField(_("Modified at"), blank=True, null=True)
-    modified_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        blank=True,
-        null=True,
-        on_delete=models.PROTECT,
-        related_name="+",
-    )
-    sent_to_review_at = models.DateTimeField(
-        _("Sent to review at"), null=True, blank=True
-    )
-    sent_to_review_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        blank=True,
-        null=True,
-        on_delete=models.PROTECT,
-        related_name="+",
-    )
-    sent_to_activation_at = models.DateTimeField(
-        _("Reviewed at"), null=True, blank=True
-    )
-    sent_to_activation_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        blank=True,
-        null=True,
-        on_delete=models.PROTECT,
-        related_name="+",
-    )
-    activated_at = models.DateTimeField(_("Activated at"), null=True, blank=True)
-    activated_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        blank=True,
-        null=True,
-        on_delete=models.PROTECT,
-        related_name="+",
-    )
-
-    status = models.CharField(choices=VERSION_STATUS_CHOICES, default="DRAFT")
-
-    def save(self, *args, **kwargs):
-        if self._state.adding and not self.created_at:
-            self.created_at = timezone.now()
-        super().save(*args, **kwargs)
-
-    def change_status(
-        self,
-        new_status: str,
-        user: User,
-        to_user_id: int = None,
-    ):
-        if new_status == "TO_REVIEW":
-            if not (self.created_by == user or is_editor_or_higher(user)):
-                raise PermissionDenied("MISSING_AUTHORIZATION")
-            self.status = "REVIEW"
-            self.sent_to_review_at = timezone.now()
-            self.sent_to_review_by = user
-            self.save()
-        elif new_status == "TO_ACTIVATION":
-            if not is_editor_or_higher(user):
-                raise PermissionDenied("MISSING_AUTHORIZATION")
-            self.status = "ACTIVATION"
-            self.sent_to_activation_at = timezone.now()
-            self.sent_to_activation_by = user
-            self.save()
-        elif new_status == "ACTIVATE":
-            if not is_admin(user):
-                raise PermissionDenied("MISSING_AUTHORIZATION")
-            self.status = "ACTIVATED"
-            self.activated_at = timezone.now()
-            self.activated_by = user
-            self.save()
-        elif new_status == "TO_DRAFT":
-            if not is_editor_or_higher(user):
-                raise PermissionDenied("MISSING_AUTHORIZATION")
-            self.copy_to_new_draft(to_user_id)
-
-        else:
-            raise ParseError("Invalid transition")
-
-    class Meta:
-        abstract = True
-
-    def copy_to_new_draft(self, created_by_id):
-        self.id = None
-        self.status = "DRAFT"
-        self.created_at = timezone.now()
-        self.created_by_id = created_by_id
-        self.modified_at = None
-        self.modified_by = None
-        self.sent_to_review_at = None
-        self.sent_to_review_by = None
-        self.sent_to_activation_at = None
-        self.sent_to_activation_by = None
-        self.activated_at = None
-        self.activated_by = None
-
-
-class DealVersion(DealVersionBaseFields, BaseVersionMixin):
+class DealVersion(DealVersionBaseFields, BaseVersion):
     """# CALCULATED FIELDS #"""
 
     # is_public: change the logic how it's calculated a bit - confidential is dealhull stuff
@@ -696,14 +742,14 @@ class DealVersion(DealVersionBaseFields, BaseVersionMixin):
 
     # NOTE: Next two fields should have used through keyword.
     parent_companies = models.ManyToManyField(
-        "InvestorHull",
+        InvestorHull,
         verbose_name=_("Parent companies"),
         related_name="child_deals",
         blank=True,
     )
     # Can be queried via DealTopInvestors view model:
     top_investors = models.ManyToManyField(
-        "InvestorHull",
+        InvestorHull,
         verbose_name=_("Top parent companies"),
         related_name="+",
         blank=True,
@@ -820,7 +866,7 @@ class DealVersion(DealVersionBaseFields, BaseVersionMixin):
 
     def change_status(
         self,
-        new_status: str,
+        transition: VersionTransition,
         user: User,
         fully_updated=False,
         to_user_id: int = None,
@@ -828,14 +874,15 @@ class DealVersion(DealVersionBaseFields, BaseVersionMixin):
     ):
         old_draft_status = self.status
 
-        super().change_status(new_status=new_status, user=user, to_user_id=to_user_id)
+        super().change_status(transition=transition, user=user, to_user_id=to_user_id)
 
-        if new_status == "TO_REVIEW":
+        if transition == VersionTransition.TO_REVIEW:
             if fully_updated:
                 self.fully_updated = True
             self.save()
-        elif new_status == "ACTIVATE":
-            deal: DealHull = self.deal
+
+        elif transition == VersionTransition.ACTIVATE:
+            deal = self.deal
             deal.draft_version = None
             deal.active_version = self
             # using "last modified" timestamp for "last fully updated" #681
@@ -845,7 +892,8 @@ class DealVersion(DealVersionBaseFields, BaseVersionMixin):
 
             # close unresolved workflowinfos
             self.workflowinfos.all().update(resolved=True)
-        elif new_status == "TO_DRAFT":
+
+        elif transition == VersionTransition.TO_DRAFT:
             self.save()
 
             deal = self.deal
@@ -854,10 +902,17 @@ class DealVersion(DealVersionBaseFields, BaseVersionMixin):
 
             # close remaining open feedback requests
             self.workflowinfos.filter(
-                Q(status_before__in=["REVIEW", "ACTIVATION"])
-                & Q(status_after="DRAFT")
+                Q(
+                    status_before__in=[
+                        VersionStatus.REVIEW,
+                        VersionStatus.ACTIVATION,
+                    ]
+                )
+                & Q(status_after=VersionStatus.DRAFT)
                 & (Q(from_user=user) | Q(to_user=user))
             ).update(resolved=True)
+
+        # TODO: Factor out
 
         DealWorkflowInfo.objects.create(
             deal_id=self.deal_id,
@@ -875,22 +930,21 @@ class DealVersion(DealVersionBaseFields, BaseVersionMixin):
         self.save(recalculate_dependent=False)
 
         # copy foreignkey-relations
-        l1: Location
         for l1 in old_self.locations.all():
-            areas: list[Area] = list(l1.areas.all())
             l1.id = None
             l1.dealversion = self
             l1.save()
-            for a1 in areas:
+
+            for a1 in l1.areas.all():
                 a1.id = None
                 a1.location = l1
                 a1.save()
-        d1: DealDataSource
+
         for d1 in old_self.datasources.all():
             d1.id = None
             d1.dealversion = self
             d1.save()
-        c1: Contract
+
         for c1 in old_self.contracts.all():
             c1.id = None
             c1.dealversion = self
@@ -926,6 +980,8 @@ class DealVersion(DealVersionBaseFields, BaseVersionMixin):
             raise ValidationError('At least one value needs to be "current".')
 
     def __calculate_parent_companies(self) -> None:
+        from apps.landmatrix.models.investor import InvestorHull
+
         if self.operating_company_id:
             oc: InvestorHull | None = (
                 InvestorHull.objects.active()
@@ -955,6 +1011,8 @@ class DealVersion(DealVersionBaseFields, BaseVersionMixin):
         return True
 
     def __has_known_investor(self) -> bool:
+        from apps.landmatrix.models.investor import InvestorHull
+
         if not self.operating_company_id:
             return False
         try:
@@ -1080,7 +1138,9 @@ class DealVersion(DealVersionBaseFields, BaseVersionMixin):
 
 class Location(models.Model):
     dealversion = models.ForeignKey(
-        DealVersion, on_delete=models.CASCADE, related_name="locations"
+        DealVersion,
+        on_delete=models.CASCADE,
+        related_name="locations",
     )
     nid = NanoIDField("ID", max_length=15, db_index=True)
     level_of_accuracy = models.CharField(
@@ -1155,9 +1215,57 @@ class Area(models.Model):
         ordering = ["id"]
 
 
+class DealDataSource(BaseDataSource):
+    dealversion = models.ForeignKey(
+        DealVersion,
+        on_delete=models.CASCADE,
+        related_name="datasources",
+    )
+
+    class Meta:
+        unique_together = ["dealversion", "nid"]
+        indexes = [models.Index(fields=["dealversion", "nid"])]
+        ordering = ["id"]
+
+
+class DealWorkflowInfo(BaseWorkflowInfo):
+    deal = models.ForeignKey(
+        DealHull,
+        on_delete=models.CASCADE,
+        related_name="workflowinfos",
+    )
+    deal_version = models.ForeignKey(
+        "DealVersion",
+        on_delete=models.SET_NULL,
+        related_name="workflowinfos",
+        null=True,
+        blank=True,
+    )
+
+    # OLD Code
+    # # WARNING
+    # # Do not use to map large query sets!
+    # # Takes tons of memory storing related deal and deal_version objects.
+    # def to_dict(self) -> dict:
+    #     d = super().to_dict()
+    #     d.update({"deal": self.deal, "deal_version": self.deal_version})
+    #     return d
+
+    def to_dict(self) -> dict:
+        d = super().to_dict()
+        d.update({"deal_id": self.deal_id, "deal_version_id": self.deal_version_id})
+        return d
+
+    def get_object_url(self):
+        base_url = super().get_object_url()
+        return base_url + f"/deal/{self.deal_id}/"
+
+
 class Contract(models.Model):
     dealversion = models.ForeignKey(
-        DealVersion, on_delete=models.CASCADE, related_name="contracts"
+        DealVersion,
+        on_delete=models.CASCADE,
+        related_name="contracts",
     )
     nid = NanoIDField("ID", max_length=15, db_index=True)
     number = models.CharField(_("Contract number"), blank=True)
@@ -1187,790 +1295,3 @@ class Contract(models.Model):
         unique_together = ["dealversion", "nid"]
         indexes = [models.Index(fields=["dealversion", "nid"])]
         ordering = ["id"]
-
-
-class BaseDataSource(models.Model):
-    nid = NanoIDField("ID", max_length=15, db_index=True)
-    type = models.CharField(_("Type"), choices=choices.DATASOURCE_TYPE_CHOICES)
-    # NOTE hit a URL > 1000 chars... so going with 5000 for now.
-    url = models.URLField(_("Url"), blank=True, max_length=5000)
-    file = models.FileField(_("File"), blank=True, null=True, max_length=3000)
-    file_not_public = models.BooleanField(_("Keep PDF not public"), default=False)
-    publication_title = models.CharField(_("Publication title"), blank=True)
-    date = LooseDateField(_("Date"), blank=True, null=True)
-    name = models.CharField(_("Name"), blank=True)
-    company = models.CharField(_("Organisation"), blank=True)
-    email = models.EmailField(_("Email"), blank=True)
-    phone = models.CharField(_("Phone"), blank=True)
-    includes_in_country_verified_information = models.BooleanField(
-        _("Includes in-country-verified information"), blank=True, null=True
-    )
-    open_land_contracts_id = models.CharField(_("Open Contracting ID"), blank=True)
-    comment = models.TextField(_("Comment"), blank=True)
-
-    def to_dict(self):
-        return {
-            "nid": self.nid,
-            "type": self.type,
-            "url": self.url,
-            "file": str(self.file),
-            "file_not_public": self.file_not_public,
-            "publication_title": self.publication_title,
-            "date": self.date,
-            "name": self.name,
-            "company": self.company,
-            "email": self.email,
-            "phone": self.phone,
-            "includes_in_country_verified_information": self.includes_in_country_verified_information,
-            "open_land_contracts_id": self.open_land_contracts_id,
-            "comment": self.comment,
-        }
-
-    def save(self, *args, **kwargs):
-        if self._state.adding and not self.nid:
-            self.nid = generate(size=8)
-        super().save(*args, **kwargs)
-
-    class Meta:
-        abstract = True
-        unique_together = ["dealversion", "nid"]
-        indexes = [models.Index(fields=["dealversion", "nid"])]
-        ordering = ["id"]
-
-
-class DealDataSource(BaseDataSource):
-    dealversion = models.ForeignKey(
-        DealVersion, on_delete=models.CASCADE, related_name="datasources"
-    )
-
-    class Meta:
-        unique_together = ["dealversion", "nid"]
-        indexes = [models.Index(fields=["dealversion", "nid"])]
-        ordering = ["id"]
-
-
-class DealHullQuerySet(models.QuerySet):
-    def normal(self):
-        return self.filter(deleted=False)
-
-    def active(self):
-        return self.normal().filter(active_version__isnull=False)
-
-    def public(self):
-        return self.active().filter(active_version__is_public=True, confidential=False)
-
-    def visible(self, user=None, subset="PUBLIC"):
-        # TODO Later: welche user duerfen unfiltered bekommen?
-        if not user or not user.is_authenticated:
-            return self.public()
-
-        if subset == "PUBLIC":
-            return self.public()
-        elif subset == "ACTIVE":
-            return self.active()
-        return self.normal()
-
-    # def with_mode(self):
-    #     return self.annotate(
-    #         mode=Case(
-    #             When(
-    #                 ~Q(active_version_id=None) & ~Q(draft_version_id=None),
-    #                 then=Concat(Value("ACTIVE + "), "draft_version__status"),
-    #             ),
-    #             When(
-    #                 ~Q(active_version_id=None) & Q(draft_version_id=None),
-    #                 then=Value("ACTIVE"),
-    #             ),
-    #             When(
-    #                 Q(active_version_id=None) & ~Q(draft_version_id=None),
-    #                 then="draft_version__status",
-    #             ),
-    #             default=Value(""),
-    #         )
-    #     )
-
-
-class HullBase(models.Model):
-    deleted = models.BooleanField(default=False)
-    deleted_comment = models.TextField(blank=True)
-
-    # mainly for management/case_statistics
-    first_created_at = models.DateTimeField()
-    first_created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        blank=True,
-        null=True,
-        on_delete=models.PROTECT,
-        related_name="+",
-    )
-
-    class Meta:
-        abstract = True
-
-    def save(self, *args, **kwargs):
-        if self._state.adding and not self.first_created_at:
-            self.first_created_at = timezone.now()
-        super().save(*args, **kwargs)
-
-
-class DealHull(HullBase):
-    country = models.ForeignKey(
-        Country,
-        verbose_name=_("Target country"),
-        on_delete=models.PROTECT,
-        blank=True,
-        null=True,
-        related_name="deals",
-    )
-
-    active_version = models.ForeignKey(
-        DealVersion, on_delete=models.SET_NULL, blank=True, null=True, related_name="+"
-    )
-    draft_version = models.ForeignKey(
-        DealVersion, on_delete=models.SET_NULL, blank=True, null=True, related_name="+"
-    )
-
-    confidential = models.BooleanField(default=False)
-    confidential_comment = models.TextField(
-        _("Comment why this deal is private"), blank=True
-    )
-
-    # ## calculated
-    fully_updated_at = models.DateTimeField(
-        _("Last full update"), null=True, blank=True
-    )
-
-    objects = DealHullQuerySet.as_manager()
-
-    def __str__(self):
-        if self.country:
-            return f"#{self.id} in {self.country.name}"
-        return f"#{self.id}"
-
-    def selected_version(self):
-        if hasattr(self, "_selected_version_id") and self._selected_version_id:
-            try:
-                return self.versions.get(id=self._selected_version_id)
-            except DealVersion.DoesNotExist:
-                raise Http404
-        return self.active_version or self.draft_version
-
-    def add_draft(self, created_by: User = None) -> DealVersion:
-        dv = DealVersion.objects.create(deal=self, created_by=created_by)
-        self.draft_version = dv
-        self.save()
-        return dv
-
-    @classmethod
-    def get_geo_markers(cls, region_id=None, country_id=None):
-        deals = cls.objects.public().exclude(country=None)
-        if region_id:
-            return [
-                {
-                    "country_id": x["country_id"],
-                    "count": x["count"],
-                    "coordinates": [x["country__point_lat"], x["country__point_lon"]],
-                }
-                for x in deals.filter(country__region_id=region_id)
-                .values("country_id", "country__point_lat", "country__point_lon")
-                .annotate(count=Count("pk"))
-                # .annotate(size=Sum("deal_size"))
-            ]
-        if country_id:
-            xx = [
-                {"coordinates": x}
-                for x in deals.filter(country_id=country_id)
-                .filter(active_version__locations__point__isnull=False)
-                .annotate(
-                    point_lat=Func(
-                        "active_version__locations__point",
-                        function="ST_Y",
-                        output_field=models.FloatField(),
-                    ),
-                    point_lng=Func(
-                        "active_version__locations__point",
-                        function="ST_X",
-                        output_field=models.FloatField(),
-                    ),
-                )
-                .values_list("point_lat", "point_lng")
-            ]
-            return xx
-
-        region_coordinates = {
-            2: [6.06433, 17.082249],
-            9: [-22.7359, 140.0188],
-            21: [54.526, -105.2551],
-            142: [34.0479, 100.6197],
-            150: [52.0055, 37.9587],
-            419: [-4.442, -61.3269],
-        }
-        return [
-            {
-                "region_id": x["region_id"],
-                "count": x["count"],
-                "coordinates": region_coordinates[x["region_id"]],
-            }
-            for x in deals.values(region_id=F("country__region_id")).annotate(
-                count=Count("pk")
-            )
-        ]
-
-
-class InvestorVersion(BaseVersionMixin, models.Model):
-    investor = models.ForeignKey(
-        "InvestorHull", on_delete=models.PROTECT, related_name="versions"
-    )
-
-    name = models.CharField(_("Name"), blank=True)
-    name_unknown = models.BooleanField(default=False)
-
-    country = models.ForeignKey(
-        Country,
-        verbose_name=_("Country of registration/origin"),
-        blank=True,
-        null=True,
-        on_delete=models.PROTECT,
-    )
-
-    classification = models.CharField(
-        verbose_name=_("Classification"),
-        choices=choices.INVESTOR_CLASSIFICATION_CHOICES,
-        blank=True,
-        null=True,
-    )
-
-    homepage = models.URLField(_("Investor homepage"), blank=True)
-    opencorporates = models.URLField(_("Opencorporates link"), blank=True)
-    comment = models.TextField(_("Comment"), blank=True)
-
-    # """ Data sources """  via Foreignkey
-
-    """ calculated properties """
-    involvements_snapshot = models.JSONField(blank=True, default=list)
-
-    def __str__(self):
-        return f"{self.name} (#{self.id})"
-
-    def is_current_draft(self):
-        return self.investor.draft_version_id == self.id
-
-    def save(self, *args, **kwargs):
-        self._recalculate_fields()
-        super().save(*args, **kwargs)
-
-    def _recalculate_fields(self):
-        self.name_unknown = bool(
-            re.search(r"(unknown|unnamed)", self.name, re.IGNORECASE)
-        )
-
-    def change_status(
-        self,
-        new_status: str,
-        user: User,
-        to_user_id: int = None,
-        comment="",
-    ):
-        old_draft_status = self.status
-
-        super().change_status(new_status=new_status, user=user, to_user_id=to_user_id)
-
-        if new_status == "ACTIVATE":
-            investor: InvestorHull = self.investor
-            investor.draft_version = None
-            investor.active_version = self
-
-            # upon activation, map the involvements_snapshot into the Involvements table
-            seen_involvements = set()
-            for invo in self.involvements_snapshot:
-                # involvements include bidirectional relations. we filter out only parent relations that we save.
-                if invo["child_investor_id"] != investor.id:
-                    continue
-
-                try:
-                    # TODO: Cleanup magic foo where id as string (nanoId) or None is processed
-                    assert isinstance(invo["id"], int)
-                    i1 = Involvement.objects.get(id=invo["id"], child_investor=investor)
-                except (Involvement.DoesNotExist, AssertionError):
-                    i1 = Involvement(child_investor=investor)
-                i1.parent_investor_id = invo["parent_investor_id"]
-                i1.role = invo["role"]
-                i1.investment_type = invo["investment_type"]
-                i1.percentage = invo["percentage"]
-                i1.loans_amount = invo["loans_amount"]
-                i1.loans_currency_id = invo["loans_currency_id"]
-                i1.loans_date = invo["loans_date"]
-                i1.parent_relation = invo["parent_relation"]
-                i1.comment = invo["comment"]
-                i1.save()
-                seen_involvements.add(i1.id)
-            Involvement.objects.filter(child_investor=investor).exclude(
-                id__in=seen_involvements
-            ).delete()
-
-            investor.save()
-
-            # close unresolved workflowinfos
-            self.workflowinfos.all().update(resolved=True)
-        elif new_status == "TO_DRAFT":
-            investor = self.investor
-            investor.draft_version = self
-            investor.save()
-
-            # close remaining open feedback requests
-            self.workflowinfos.filter(
-                Q(status_before__in=["REVIEW", "ACTIVATION"])
-                & Q(status_after="DRAFT")
-                & (Q(from_user=user) | Q(to_user=user))
-            ).update(resolved=True)
-
-        InvestorWorkflowInfo.objects.create(
-            investor_id=self.investor_id,
-            investor_version=self,
-            from_user=user,
-            to_user_id=to_user_id,
-            status_before=old_draft_status,
-            status_after=self.status,
-            comment=comment,
-        )
-
-    def copy_to_new_draft(self, created_by_id: int):
-        old_self = InvestorVersion.objects.get(pk=self.pk)
-
-        super().copy_to_new_draft(created_by_id)
-        self.save()
-
-        # copy foreignkey-relations
-        d1: InvestorDataSource
-        for d1 in old_self.datasources.all():
-            d1.id = None
-            d1.investorversion = self
-            d1.save()
-
-
-class InvestorDataSource(BaseDataSource):
-    investorversion = models.ForeignKey(
-        InvestorVersion, on_delete=models.CASCADE, related_name="datasources"
-    )
-
-    class Meta:
-        unique_together = ["investorversion", "nid"]
-        indexes = [models.Index(fields=["investorversion", "nid"])]
-        ordering = ["id"]
-
-
-class InvestorHullQuerySet(models.QuerySet):
-    def normal(self):
-        return self.filter(deleted=False)
-
-    def active(self):
-        return self.normal().filter(active_version__isnull=False)
-
-    # NOTE at the moment the only thing we filter on is the "status".
-    # the following is an idea:
-    # def public(self):
-    #     return self.active().filter(is_actually_unknown=False)
-
-    def visible(self, user=None, subset="PUBLIC"):
-        if subset in ["ACTIVE", "PUBLIC"]:
-            return self.active()
-
-        if not user or not user.is_authenticated:
-            return self.active()
-
-        # hand it out unfiltered.
-        return self.normal()
-
-    # def with_mode(self):
-    #     return self.annotate(
-    #         mode=Case(
-    #             When(
-    #                 ~Q(active_version_id=None) & ~Q(draft_version_id=None),
-    #                 then=Concat(Value("ACTIVE + "), "draft_version__status"),
-    #             ),
-    #             When(
-    #                 ~Q(active_version_id=None) & Q(draft_version_id=None),
-    #                 then=Value("ACTIVE"),
-    #             ),
-    #             When(
-    #                 Q(active_version_id=None) & ~Q(draft_version_id=None),
-    #                 then="draft_version__status",
-    #             ),
-    #             default=Value(""),
-    #         )
-    #     )
-
-
-class InvestorHull(HullBase):
-    active_version = models.ForeignKey(
-        InvestorVersion,
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-        related_name="+",
-    )
-    draft_version = models.ForeignKey(
-        InvestorVersion,
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-        related_name="+",
-    )
-
-    objects = InvestorHullQuerySet.as_manager()
-
-    def __str__(self):
-        return f"#{self.id}"
-
-    # This method is used by DRF.
-    def selected_version(self):
-        if hasattr(self, "_selected_version_id") and self._selected_version_id:
-            try:
-                return self.versions.get(id=self._selected_version_id)
-            except InvestorVersion.DoesNotExist:
-                raise Http404
-        return self.active_version or self.draft_version
-
-    def add_draft(self, created_by: User = None) -> InvestorVersion:
-        dv = InvestorVersion.objects.create(investor=self, created_by=created_by)
-        self.draft_version = dv
-        self.save()
-        return dv
-
-    # This method is used by DRF.
-    def involvements(self):
-        if not hasattr(self, "_selected_version_id") and self.active_version:
-            return Involvement.objects.filter(
-                Q(parent_investor_id=self.id) | Q(child_investor_id=self.id)
-            )
-        return
-
-    def involvements_graph(self, depth, include_deals, show_ventures):
-        from apps.landmatrix.involvement_network import InvolvementNetwork
-
-        return InvolvementNetwork().get_network_x(
-            self.id, depth, include_deals=include_deals, show_ventures=show_ventures
-        )
-
-    def to_list_dict(self):
-        """
-        should only be called on InvestorHulls filtered by having active_versions
-        """
-        return {
-            "id": self.id,
-            "selected_version": {
-                "id": self.active_version.id,
-                "name": self.active_version.name,
-                "modified_at": self.active_version.modified_at,
-                "classification": self.active_version.classification,
-                "country": {"id": self.active_version.country_id},
-            },
-        }
-
-    @staticmethod
-    def to_investor_list(qs: QuerySet["InvestorHull"]):
-        deals = DealHull.objects.filter(
-            active_version__operating_company_id__in=qs.values_list("id", flat=True)
-        ).values("id", "active_version__operating_company_id")
-
-        return [
-            {
-                "id": inv["id"],
-                "selected_version": inv["selected_version"],
-                "deals": [
-                    x["id"]
-                    for x in deals
-                    if x["active_version__operating_company_id"] == inv["id"]
-                ],
-            }
-            for inv in qs.annotate(
-                selected_version=JSONObject(
-                    id="active_version_id",
-                    name="active_version__name",
-                    name_unknown="active_version__name_unknown",
-                    modified_at="active_version__modified_at",
-                    classification="active_version__classification",
-                    country_id="active_version__country_id",
-                )
-            ).values("id", "selected_version")
-        ]
-
-    def get_parent_companies(
-        self, top_investors_only=False, _seen_investors: set["InvestorHull"] = None
-    ) -> set["InvestorHull"]:
-        """
-        Get list of the highest parent companies
-        (all right-hand side parent companies of the network visualisation)
-        """
-        if _seen_investors is None:
-            _seen_investors = {self}
-
-        investor_involvements = (
-            Involvement.objects.filter(child_investor=self)
-            .filter(
-                parent_investor__active_version__isnull=False,
-                parent_investor__deleted=False,
-            )
-            .filter(role="PARENT")
-            .exclude(parent_investor__in=_seen_investors)
-        )
-
-        self.is_top_investor = not investor_involvements
-
-        for involvement in investor_involvements:
-            if involvement.parent_investor in _seen_investors:
-                continue
-            _seen_investors.add(involvement.parent_investor)
-            involvement.parent_investor.get_parent_companies(
-                top_investors_only, _seen_investors
-            )
-        return _seen_investors
-
-    def get_affected_dealversions(self, seen_investors=None) -> set[DealVersion]:
-        """
-        Get list of affected deals - this is like Top Investors, only downwards
-        (all left-hand side deals of the network visualisation)
-        """
-        deals = set()
-        if seen_investors is None:
-            seen_investors = {self}
-
-        child_investor_involvements = (
-            self.child_investors.active()
-            .filter(role="PARENT")
-            .exclude(child_investor__in=seen_investors)
-        )
-
-        dealv: DealVersion
-        for dealv in self.dealversions.filter(id=F("deal__active_version_id")):
-            deals.add(dealv)
-
-        for involvement in child_investor_involvements:
-            if involvement.child_investor in seen_investors:
-                continue
-            seen_investors.add(involvement.child_investor)
-            deals.update(
-                involvement.child_investor.get_affected_dealversions(seen_investors)
-            )
-        return deals
-
-
-class InvolvementQuerySet(models.QuerySet):
-    def active(self):
-        return self.filter(
-            parent_investor__active_version__isnull=False,
-            parent_investor__deleted=False,
-            child_investor__active_version__isnull=False,
-            child_investor__deleted=False,
-        )
-
-    # this is just an idea at this point
-    # def public(self):
-    #     return self.active().filter(
-    #         investor__is_actually_unknown=False,
-    #         venture__is_actually_unknown=False,
-    #     )
-
-    def visible(self, user=None, subset="PUBLIC"):
-        if subset in ["ACTIVE", "PUBLIC"]:
-            return self.active()
-
-        if not user or not (user.is_staff or user.is_superuser):
-            return self.active()
-
-        # hand it out unfiltered.
-        return self
-
-
-class Involvement(models.Model):
-    # TODO: Add nanoId
-    # nid = NanoIDField("ID", max_length=15, db_index=True, null=True)
-    parent_investor = models.ForeignKey(
-        InvestorHull,
-        verbose_name=_("Investor"),
-        db_index=True,
-        related_name="child_investors",
-        on_delete=models.PROTECT,
-    )
-    child_investor = models.ForeignKey(
-        InvestorHull,
-        verbose_name=_("Venture Company"),
-        db_index=True,
-        related_name="parent_investors",
-        on_delete=models.PROTECT,
-    )
-
-    role = models.CharField(
-        verbose_name=_("Relation type"), choices=choices.INVOLVEMENT_ROLE_CHOICES
-    )
-
-    investment_type = ChoiceArrayField(
-        models.CharField(choices=choices.INVESTMENT_TYPE_CHOICES),
-        verbose_name=_("Investment type"),
-        blank=True,
-        default=list,
-    )
-
-    percentage = models.DecimalField(
-        _("Ownership share"),
-        blank=True,
-        null=True,
-        max_digits=5,
-        decimal_places=2,
-        validators=[MinValueValidator(0), MaxValueValidator(100)],
-    )
-    loans_amount = models.FloatField(_("Loan amount"), blank=True, null=True)
-    loans_currency = models.ForeignKey(
-        Currency,
-        verbose_name=_("Loan currency"),
-        blank=True,
-        null=True,
-        on_delete=models.PROTECT,
-    )
-    loans_date = LooseDateField(_("Loan date"), blank=True, null=True)
-
-    parent_relation = models.CharField(
-        verbose_name=_("Parent relation"),
-        choices=choices.PARENT_RELATION_CHOICES,
-        blank=True,
-        null=True,
-    )
-    comment = models.TextField(_("Comment"), blank=True)
-
-    objects = InvolvementQuerySet.as_manager()
-
-    class Meta:
-        verbose_name = _("Investor Venture Involvement")
-        verbose_name_plural = _("Investor Venture Involvements")
-        ordering = ["id"]
-        # would be nice to have but not today
-        # maybe tomorrow?
-        # unique_together = [["parent_investor", "child_investor"]]
-
-    def __str__(self):
-        if self.role == "PARENT":
-            role = _("<is PARENT of>")
-        else:
-            role = _("<is INVESTOR of>")
-        return f"{self.parent_investor} {role} {self.child_investor}"
-
-
-class _WorkflowInfo(models.Model):
-    from_user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.PROTECT, related_name="+"
-    )
-    to_user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.PROTECT,
-        null=True,
-        blank=True,
-        related_name="+",
-    )
-    status_before = models.CharField(
-        choices=VERSION_STATUS_CHOICES, null=True, blank=True
-    )
-    status_after = models.CharField(
-        choices=VERSION_STATUS_CHOICES, null=True, blank=True
-    )
-    timestamp = models.DateTimeField(default=timezone.now)
-    comment = models.TextField(blank=True)
-    replies = models.JSONField(null=True, default=list)
-    resolved = models.BooleanField(default=False)
-
-    def to_dict(self) -> dict:
-        return {
-            "id": self.id,
-            "from_user_id": self.from_user_id,
-            "to_user_id": self.to_user_id,
-            "status_before": self.status_before,
-            "status_after": self.status_after,
-            "timestamp": self.timestamp,
-            "comment": self.comment,
-            "resolved": self.resolved,
-            "replies": self.replies,
-        }
-
-    def get_object_url(self):
-        _site = Site.objects.get(is_default_site=True)
-        _port = f":{_site.port}" if _site.port not in [80, 443] else ""
-        base_url = f"http{'s' if _site.port == 443 else ''}://{_site.hostname}{_port}"
-        return base_url
-
-    class Meta:
-        abstract = True
-
-
-class DealWorkflowInfo(_WorkflowInfo):
-    deal = models.ForeignKey(
-        DealHull, on_delete=models.CASCADE, related_name="workflowinfos"
-    )
-    deal_version = models.ForeignKey(
-        DealVersion,
-        on_delete=models.SET_NULL,
-        related_name="workflowinfos",
-        null=True,
-        blank=True,
-    )
-
-    # OLD Code
-    # # WARNING
-    # # Do not use to map large query sets!
-    # # Takes tons of memory storing related deal and deal_version objects.
-    # def to_dict(self) -> dict:
-    #     d = super().to_dict()
-    #     d.update({"deal": self.deal, "deal_version": self.deal_version})
-    #     return d
-
-    def to_dict(self) -> dict:
-        d = super().to_dict()
-        d.update({"deal_id": self.deal_id, "deal_version_id": self.deal_version_id})
-        return d
-
-    def get_object_url(self):
-        base_url = super().get_object_url()
-        return base_url + f"/deal/{self.deal_id}/"
-
-
-class InvestorWorkflowInfo(_WorkflowInfo):
-    investor = models.ForeignKey(
-        InvestorHull, on_delete=models.CASCADE, related_name="workflowinfos"
-    )
-    investor_version = models.ForeignKey(
-        InvestorVersion,
-        on_delete=models.SET_NULL,
-        related_name="workflowinfos",
-        null=True,
-        blank=True,
-    )
-
-    def to_dict(self) -> dict:
-        d = super().to_dict()
-        d.update(
-            {
-                "investor_id": self.investor_id,
-                "investor_version_id": self.investor_version_id,
-            }
-        )
-        return d
-
-    def get_object_url(self):
-        base_url = super().get_object_url()
-        return base_url + f"/investor/{self.investor_id}/"
-
-
-class DealTopInvestors(models.Model):
-    """A view on dealversion.top_investors M2M relation table."""
-
-    dealversion = models.ForeignKey(
-        DealVersion, on_delete=models.CASCADE, related_name="+"
-    )
-    investorhull = models.ForeignKey(
-        InvestorHull, on_delete=models.CASCADE, related_name="+"
-    )
-
-    class Meta:
-        managed = False
-        db_table = "landmatrix_dealversion_top_investors"
-
-    def __str__(self):
-        return f"#{self.dealversion.deal_id} - {self.investorhull.active_version.name}"

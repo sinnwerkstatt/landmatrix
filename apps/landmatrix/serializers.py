@@ -6,22 +6,24 @@ from django_pydantic_field.rest_framework import SchemaField
 from django_pydantic_field.v2.fields import PydanticSchemaField
 from rest_framework import serializers
 
-from apps.landmatrix.models import FieldDefinition
 from apps.landmatrix.models.country import Country, Region
 from apps.landmatrix.models.currency import Currency
-from apps.landmatrix.models.new import (
-    Area,
-    Contract,
-    DealDataSource,
-    DealHull,
+from apps.landmatrix.models.deal import (
     DealVersion,
+    DealHull,
+    DealDataSource,
     DealWorkflowInfo,
-    InvestorDataSource,
-    InvestorHull,
-    InvestorVersion,
-    InvestorWorkflowInfo,
-    Involvement,
+    Contract,
     Location,
+    Area,
+)
+from apps.landmatrix.models.field_definition import FieldDefinition
+from apps.landmatrix.models.investor import (
+    InvestorVersion,
+    InvestorHull,
+    Involvement,
+    InvestorWorkflowInfo,
+    InvestorDataSource,
 )
 
 

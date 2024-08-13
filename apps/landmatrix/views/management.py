@@ -11,12 +11,9 @@ from django.utils.timezone import make_aware
 from django.views import View
 
 from apps.accounts.models import User
-from apps.landmatrix.models.new import (
-    DealHull,
-    DealWorkflowInfo,
-    InvestorHull,
-    InvestorWorkflowInfo,
-)
+from apps.landmatrix.models.abstract import VersionStatus
+from apps.landmatrix.models.deal import DealHull, DealWorkflowInfo
+from apps.landmatrix.models.investor import InvestorHull, InvestorWorkflowInfo
 from apps.landmatrix.permissions import (
     is_editor_or_higher,
     is_admin,
@@ -59,18 +56,24 @@ class Management(View):
             "todo_improvement": {
                 "staff": False,
                 "q": Q(draft_version__isnull=False)
-                & Q(workflowinfos__status_before__in=["REVIEW", "ACTIVATION"])
-                & Q(workflowinfos__status_after="DRAFT")
+                & Q(
+                    workflowinfos__status_before__in=[
+                        VersionStatus.REVIEW,
+                        VersionStatus.ACTIVATION,
+                    ]
+                )
+                & Q(workflowinfos__status_after=VersionStatus.DRAFT)
                 & Q(workflowinfos__to_user_id=request.user.id)
                 & Q(workflowinfos__resolved=False),
             },
             "todo_review": {
                 "staff": True,
-                "q": region_or_country & Q(draft_version__status="REVIEW"),
+                "q": region_or_country & Q(draft_version__status=VersionStatus.REVIEW),
             },
             "todo_activation": {
                 "staff": True,
-                "q": region_or_country & Q(draft_version__status="ACTIVATION"),
+                "q": region_or_country
+                & Q(draft_version__status=VersionStatus.ACTIVATION),
             },
             "requested_feedback": {
                 "staff": False,
@@ -93,15 +96,20 @@ class Management(View):
                     if is_deal
                     else Q(workflowinfos__investor_version_id=F("draft_version_id"))
                 )
-                & Q(workflowinfos__status_before__in=["REVIEW", "ACTIVATION"])
-                & Q(workflowinfos__status_after="DRAFT")
+                & Q(
+                    workflowinfos__status_before__in=[
+                        VersionStatus.REVIEW,
+                        VersionStatus.ACTIVATION,
+                    ]
+                )
+                & Q(workflowinfos__status_after=VersionStatus.DRAFT)
                 & Q(workflowinfos__from_user=request.user),
             },
             "my_drafts": {
                 "staff": False,
                 "q": Q(
                     draft_version__created_by=request.user,
-                    draft_version__status="DRAFT",
+                    draft_version__status=VersionStatus.DRAFT,
                 ),
             },
             "created_by_me": {

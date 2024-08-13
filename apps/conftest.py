@@ -7,13 +7,8 @@ from rest_framework.test import APIClient
 
 from apps.accounts.models import User, UserRole
 from apps.landmatrix.models.country import Country
-from apps.landmatrix.models.new import (
-    DealHull,
-    InvestorHull,
-    DealVersion,
-    InvestorVersion,
-    DealDataSource,
-)
+from apps.landmatrix.models.deal import DealVersion, DealHull, DealDataSource
+from apps.landmatrix.models.investor import InvestorVersion, InvestorHull
 
 UserModel: Type[User] = get_user_model()
 

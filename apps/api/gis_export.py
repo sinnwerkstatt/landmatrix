@@ -2,12 +2,11 @@ from drf_spectacular.utils import extend_schema
 
 from django.db.models import QuerySet, Value
 from django.db.models.functions import JSONObject
-from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from apps.landmatrix.models.new import DealHull, DealVersion
+from apps.landmatrix.models.deal import DealVersion, DealHull
 from apps.landmatrix.utils import openapi_filters_parameters, parse_filters
 
 from .utils.geojson import Feature, create_feature_collection

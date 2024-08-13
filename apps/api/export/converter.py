@@ -8,14 +8,8 @@ from apps.landmatrix.models import choices
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.fields import ChoiceArrayField, DecimalIntField
-from apps.landmatrix.models.new import (
-    Contract,
-    DealDataSource,
-    DealVersion,
-    InvestorHull,
-    Involvement,
-    Location,
-)
+from apps.landmatrix.models.deal import DealVersion, DealDataSource, Contract, Location
+from apps.landmatrix.models.investor import InvestorHull, Involvement
 
 deal_fields = {
     "deal_id": "Deal ID",
