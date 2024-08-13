@@ -1,28 +1,198 @@
+import json
 from enum import Enum
 
+from django.contrib.gis.db import models as gis_models
+from django.contrib.gis.geos import GEOSGeometry, MultiPolygon, Polygon
+from django.contrib.gis.geos.prototypes.io import wkt_w
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models, transaction
-from django.db.models import Q
+from django.db.models import Count, Func, F, Q
+from django.http import Http404
 from django.utils.translation import gettext as _
 from django_pydantic_field import SchemaField
+from nanoid import generate
 
 from apps.accounts.models import User
 from apps.landmatrix.models import schema, choices
-from apps.landmatrix.models.abstract.version import (
+from apps.landmatrix.models.abstract import (
+    BaseHull,
     BaseVersion,
-    VersionStatus,
     VersionTransition,
+    VersionStatus,
+    BaseDataSource,
+    BaseWorkflowInfo,
 )
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.currency import Currency
+from apps.landmatrix.models.fields import (
+    DecimalIntField,
+    ChoiceArrayField,
+    ArrayField,
+    NanoIDField,
+    LooseDateField,
+)
+from apps.landmatrix.models.investor import InvestorHull
 
-from apps.landmatrix.models.fields import DecimalIntField, ChoiceArrayField, ArrayField
+
+class DealHullQuerySet(models.QuerySet):
+    def normal(self):
+        return self.filter(deleted=False)
+
+    def active(self):
+        return self.normal().filter(active_version__isnull=False)
+
+    def public(self):
+        return self.active().filter(active_version__is_public=True, confidential=False)
+
+    def visible(self, user=None, subset="PUBLIC"):
+        # TODO Later: welche user duerfen unfiltered bekommen?
+        if not user or not user.is_authenticated:
+            return self.public()
+
+        if subset == "PUBLIC":
+            return self.public()
+        elif subset == "ACTIVE":
+            return self.active()
+        return self.normal()
+
+    # def with_mode(self):
+    #     return self.annotate(
+    #         mode=Case(
+    #             When(
+    #                 ~Q(active_version_id=None) & ~Q(draft_version_id=None),
+    #                 then=Concat(Value("ACTIVE + "), "draft_version__status"),
+    #             ),
+    #             When(
+    #                 ~Q(active_version_id=None) & Q(draft_version_id=None),
+    #                 then=Value("ACTIVE"),
+    #             ),
+    #             When(
+    #                 Q(active_version_id=None) & ~Q(draft_version_id=None),
+    #                 then="draft_version__status",
+    #             ),
+    #             default=Value(""),
+    #         )
+    #     )
+
+
+class DealHull(BaseHull):
+    country = models.ForeignKey(
+        Country,
+        verbose_name=_("Target country"),
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True,
+        related_name="deals",
+    )
+
+    active_version = models.ForeignKey(
+        "DealVersion",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="+",
+    )
+    draft_version = models.ForeignKey(
+        "DealVersion",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="+",
+    )
+
+    confidential = models.BooleanField(default=False)
+    confidential_comment = models.TextField(
+        _("Comment why this deal is private"), blank=True
+    )
+
+    # ## calculated
+    fully_updated_at = models.DateTimeField(
+        _("Last full update"), null=True, blank=True
+    )
+
+    objects = DealHullQuerySet.as_manager()
+
+    def __str__(self):
+        if self.country:
+            return f"#{self.id} in {self.country.name}"
+        return f"#{self.id}"
+
+    def selected_version(self):
+        if hasattr(self, "_selected_version_id") and self._selected_version_id:
+
+            try:
+                return self.versions.get(id=self._selected_version_id)
+            except DealVersion.DoesNotExist:
+                raise Http404
+        return self.active_version or self.draft_version
+
+    def add_draft(self, created_by: User = None) -> "DealVersion":
+
+        dv = DealVersion.objects.create(deal=self, created_by=created_by)
+        self.draft_version = dv
+        self.save()
+        return dv
+
+    @classmethod
+    def get_geo_markers(cls, region_id=None, country_id=None):
+        deals = cls.objects.public().exclude(country=None)
+        if region_id:
+            return [
+                {
+                    "country_id": x["country_id"],
+                    "count": x["count"],
+                    "coordinates": [x["country__point_lat"], x["country__point_lon"]],
+                }
+                for x in deals.filter(country__region_id=region_id)
+                .values("country_id", "country__point_lat", "country__point_lon")
+                .annotate(count=Count("pk"))
+                # .annotate(size=Sum("deal_size"))
+            ]
+        if country_id:
+            xx = [
+                {"coordinates": x}
+                for x in deals.filter(country_id=country_id)
+                .filter(active_version__locations__point__isnull=False)
+                .annotate(
+                    point_lat=Func(
+                        "active_version__locations__point",
+                        function="ST_Y",
+                        output_field=models.FloatField(),
+                    ),
+                    point_lng=Func(
+                        "active_version__locations__point",
+                        function="ST_X",
+                        output_field=models.FloatField(),
+                    ),
+                )
+                .values_list("point_lat", "point_lng")
+            ]
+            return xx
+
+        region_coordinates = {
+            2: [6.06433, 17.082249],
+            9: [-22.7359, 140.0188],
+            21: [54.526, -105.2551],
+            142: [34.0479, 100.6197],
+            150: [52.0055, 37.9587],
+            419: [-4.442, -61.3269],
+        }
+        return [
+            {
+                "region_id": x["region_id"],
+                "count": x["count"],
+                "coordinates": region_coordinates[x["region_id"]],
+            }
+            for x in deals.values(region_id=F("country__region_id")).annotate(
+                count=Count("pk")
+            )
+        ]
 
 
 class DealVersionBaseFields(models.Model):
     deal = models.ForeignKey(
-        "DealHull",
+        DealHull,
         on_delete=models.PROTECT,
         related_name="versions",
     )
@@ -225,7 +395,7 @@ class DealVersionBaseFields(models.Model):
 
     """ Investor info """
     operating_company = models.ForeignKey(
-        "InvestorHull",
+        InvestorHull,
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
@@ -572,14 +742,14 @@ class DealVersion(DealVersionBaseFields, BaseVersion):
 
     # NOTE: Next two fields should have used through keyword.
     parent_companies = models.ManyToManyField(
-        "InvestorHull",
+        InvestorHull,
         verbose_name=_("Parent companies"),
         related_name="child_deals",
         blank=True,
     )
     # Can be queried via DealTopInvestors view model:
     top_investors = models.ManyToManyField(
-        "InvestorHull",
+        InvestorHull,
         verbose_name=_("Top parent companies"),
         related_name="+",
         blank=True,
@@ -743,7 +913,6 @@ class DealVersion(DealVersionBaseFields, BaseVersion):
             ).update(resolved=True)
 
         # TODO: Factor out
-        from apps.landmatrix.models.deal import DealWorkflowInfo
 
         DealWorkflowInfo.objects.create(
             deal_id=self.deal_id,
@@ -965,3 +1134,164 @@ class DealVersion(DealVersionBaseFields, BaseVersion):
             return True
         # `True` if we have investors in other countries else `False`
         return bool(set(investors_countries) - {self.deal.country_id})
+
+
+class Location(models.Model):
+    dealversion = models.ForeignKey(
+        DealVersion,
+        on_delete=models.CASCADE,
+        related_name="locations",
+    )
+    nid = NanoIDField("ID", max_length=15, db_index=True)
+    level_of_accuracy = models.CharField(
+        _("Spatial accuracy level"),
+        blank=True,
+        choices=choices.LOCATION_ACCURACY_CHOICES,
+    )
+    name = models.CharField(_("Location"), blank=True)
+    point = gis_models.PointField(_("Point"), blank=True, null=True)
+    description = models.TextField(_("Description"), blank=True)
+    facility_name = models.CharField(_("Facility name"), blank=True)
+    comment = models.TextField(_("Comment"), blank=True)
+
+    def save(self, *args, **kwargs):
+        if self._state.adding and not self.nid:
+            self.nid = generate(size=8)
+        super().save(*args, **kwargs)
+
+    class Meta:
+        unique_together = ["dealversion", "nid"]
+        indexes = [models.Index(fields=["dealversion", "nid"])]
+        ordering = ["id"]
+
+    def __str__(self):
+        return f"{self.nid} @ {self.dealversion}"
+
+
+class Area(models.Model):
+    location = models.ForeignKey(
+        Location, on_delete=models.CASCADE, related_name="areas"
+    )
+    nid = NanoIDField("ID", max_length=15, db_index=True)
+    type = models.CharField(choices=choices.AREA_TYPE_CHOICES)
+    current = models.BooleanField(default=False)
+    date = LooseDateField(_("Date"), blank=True, null=True)
+    area = gis_models.MultiPolygonField()
+
+    def __str__(self):
+        return f"{self.location} >> {self.type}"
+
+    # NOTE: Not in use, but would be nice to query features from backend directly
+    def to_feature(self):
+        return {
+            "type": "Feature",
+            "geometry": json.loads(self.area.geojson) if self.area else None,
+            "properties": {
+                "id": self.id,
+                "type": self.type,
+                "current": self.current,
+                "date": self.date,
+            },
+        }
+
+    @staticmethod
+    def geometry_to_multipolygon(geom: GEOSGeometry | str | dict) -> MultiPolygon:
+        if isinstance(geom, dict):
+            geom = str(geom)
+        if isinstance(geom, str):
+            geom = GEOSGeometry(geom)
+        if geom.hasz:
+            wkt = wkt_w(dim=2).write(geom).decode()
+            geom = GEOSGeometry(wkt, srid=4674)
+        if isinstance(geom, MultiPolygon):
+            return geom
+        elif isinstance(geom, Polygon):
+            return MultiPolygon([geom])
+
+        raise ValidationError
+
+    class Meta:
+        # unique_together = ["location", "type", "current"]
+        ordering = ["id"]
+
+
+class DealDataSource(BaseDataSource):
+    dealversion = models.ForeignKey(
+        DealVersion,
+        on_delete=models.CASCADE,
+        related_name="datasources",
+    )
+
+    class Meta:
+        unique_together = ["dealversion", "nid"]
+        indexes = [models.Index(fields=["dealversion", "nid"])]
+        ordering = ["id"]
+
+
+class DealWorkflowInfo(BaseWorkflowInfo):
+    deal = models.ForeignKey(
+        DealHull,
+        on_delete=models.CASCADE,
+        related_name="workflowinfos",
+    )
+    deal_version = models.ForeignKey(
+        "DealVersion",
+        on_delete=models.SET_NULL,
+        related_name="workflowinfos",
+        null=True,
+        blank=True,
+    )
+
+    # OLD Code
+    # # WARNING
+    # # Do not use to map large query sets!
+    # # Takes tons of memory storing related deal and deal_version objects.
+    # def to_dict(self) -> dict:
+    #     d = super().to_dict()
+    #     d.update({"deal": self.deal, "deal_version": self.deal_version})
+    #     return d
+
+    def to_dict(self) -> dict:
+        d = super().to_dict()
+        d.update({"deal_id": self.deal_id, "deal_version_id": self.deal_version_id})
+        return d
+
+    def get_object_url(self):
+        base_url = super().get_object_url()
+        return base_url + f"/deal/{self.deal_id}/"
+
+
+class Contract(models.Model):
+    dealversion = models.ForeignKey(
+        DealVersion,
+        on_delete=models.CASCADE,
+        related_name="contracts",
+    )
+    nid = NanoIDField("ID", max_length=15, db_index=True)
+    number = models.CharField(_("Contract number"), blank=True)
+    date = LooseDateField(_("Date"), blank=True, null=True)
+    expiration_date = LooseDateField(_("Expiration date"), blank=True, null=True)
+    agreement_duration = models.IntegerField(
+        _("Duration of the agreement"), blank=True, null=True
+    )
+    comment = models.TextField(_("Comment"), blank=True)
+
+    def to_dict(self):
+        return {
+            "nid": self.nid,
+            "number": self.number,
+            "date": self.date,
+            "expiration_date": self.expiration_date,
+            "agreement_duration": self.agreement_duration,
+            "comment": self.comment,
+        }
+
+    def save(self, *args, **kwargs):
+        if self._state.adding and not self.nid:
+            self.nid = generate(size=8)
+        super().save(*args, **kwargs)
+
+    class Meta:
+        unique_together = ["dealversion", "nid"]
+        indexes = [models.Index(fields=["dealversion", "nid"])]
+        ordering = ["id"]

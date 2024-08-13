@@ -1,5 +1,5 @@
 from apps.landmatrix.tests.helpers import AbstractModelTestCase
-from apps.landmatrix.models.abstract.version import BaseVersion, VersionStatus
+from apps.landmatrix.models.abstract import VersionStatus, BaseVersion
 
 PETER = 1
 JOHANNA = 2

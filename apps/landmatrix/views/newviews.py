@@ -22,7 +22,7 @@ from wagtail.models import Site
 
 from apps.accounts.models import User
 from apps.landmatrix.models import choices
-from apps.landmatrix.models.abstract.version import VersionTransition, VersionStatus
+from apps.landmatrix.models.abstract import VersionStatus, VersionTransition
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.top_investors import DealTopInvestors
 from apps.landmatrix.models.deal import (

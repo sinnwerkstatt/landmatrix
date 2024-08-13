@@ -1,6 +1,6 @@
 import pytest
 
-from apps.landmatrix.models.abstract.version import VersionStatus
+from apps.landmatrix.models.abstract import VersionStatus
 from apps.landmatrix.models.choices import InvolvementRoleEnum
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.deal import DealHull, DealVersion, DealDataSource
