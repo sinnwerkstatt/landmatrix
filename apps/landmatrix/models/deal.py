@@ -10,7 +10,6 @@ from django.db import models, transaction
 from django.db.models import Count, Func, F, Q
 from django.http import Http404
 from django.utils.translation import gettext as _
-from django_pydantic_field import SchemaField
 from nanoid import generate
 
 from apps.accounts.models import User
@@ -33,6 +32,7 @@ from apps.landmatrix.models.fields import (
     LooseDateField,
 )
 from apps.landmatrix.models.investor import InvestorHull
+from django_pydantic_jsonfield import PydanticJSONField
 
 
 class DealHullQuerySet(models.QuerySet):
@@ -209,16 +209,16 @@ class DealVersionBaseFields(models.Model):
         blank=True,
         null=True,
     )
-    contract_size = SchemaField(
+    contract_size = PydanticJSONField(
         schema=schema.CurrentDateAreaSchema, blank=True, default=list
     )
-    production_size = SchemaField(
+    production_size = PydanticJSONField(
         schema=schema.CurrentDateAreaSchema, blank=True, default=list
     )
     land_area_comment = models.TextField(_("Comment on land area"), blank=True)
 
     # Intention of investment
-    intention_of_investment = SchemaField(
+    intention_of_investment = PydanticJSONField(
         schema=schema.CurrentDateAreaChoicesIOI, blank=True, default=list
     )
     intention_of_investment_comment = models.TextField(
@@ -241,7 +241,7 @@ class DealVersionBaseFields(models.Model):
     )
 
     # # Negotiation status
-    negotiation_status = SchemaField(
+    negotiation_status = PydanticJSONField(
         schema=schema.CurrentDateChoiceNegotiationStatus,
         blank=True,
         default=list,
@@ -251,7 +251,7 @@ class DealVersionBaseFields(models.Model):
     )
 
     # # Implementation status
-    implementation_status = SchemaField(
+    implementation_status = PydanticJSONField(
         schema=schema.CurrentDateChoiceImplementationStatus,
         blank=True,
         default=list,
@@ -330,12 +330,16 @@ class DealVersionBaseFields(models.Model):
     contract_farming = models.BooleanField(null=True)
 
     on_the_lease_state = models.BooleanField(_("On leased / purchased"), null=True)
-    on_the_lease = SchemaField(schema=schema.LeaseSchema, blank=True, default=list)
+    on_the_lease = PydanticJSONField(
+        schema=schema.LeaseSchema, blank=True, default=list
+    )
 
     off_the_lease_state = models.BooleanField(
         _("Not on leased / purchased (out-grower)"), null=True
     )
-    off_the_lease = SchemaField(schema=schema.LeaseSchema, blank=True, default=list)
+    off_the_lease = PydanticJSONField(
+        schema=schema.LeaseSchema, blank=True, default=list
+    )
     contract_farming_comment = models.TextField(
         _("Comment on contract farming"), blank=True
     )
@@ -354,7 +358,9 @@ class DealVersionBaseFields(models.Model):
     total_jobs_planned_daily_workers = models.IntegerField(
         _("Planned daily/seasonal workers (total)"), blank=True, null=True
     )
-    total_jobs_current = SchemaField(schema=schema.JobsSchema, blank=True, default=list)
+    total_jobs_current = PydanticJSONField(
+        schema=schema.JobsSchema, blank=True, default=list
+    )
     total_jobs_created_comment = models.TextField(
         _("Comment on jobs created (total)"), blank=True
     )
@@ -369,7 +375,7 @@ class DealVersionBaseFields(models.Model):
     foreign_jobs_planned_daily_workers = models.IntegerField(
         _("Planned daily/seasonal workers (foreign)"), blank=True, null=True
     )
-    foreign_jobs_current = SchemaField(
+    foreign_jobs_current = PydanticJSONField(
         schema=schema.JobsSchema, blank=True, default=list
     )
     foreign_jobs_created_comment = models.TextField(
@@ -386,7 +392,7 @@ class DealVersionBaseFields(models.Model):
     domestic_jobs_planned_daily_workers = models.IntegerField(
         _("Planned daily/seasonal workers (domestic)"), blank=True, null=True
     )
-    domestic_jobs_current = SchemaField(
+    domestic_jobs_current = PydanticJSONField(
         schema=schema.JobsSchema, blank=True, default=list
     )
     domestic_jobs_created_comment = models.TextField(
@@ -401,7 +407,9 @@ class DealVersionBaseFields(models.Model):
         null=True,
         related_name="dealversions",
     )
-    involved_actors = SchemaField(schema=schema.ActorsSchema, blank=True, default=list)
+    involved_actors = PydanticJSONField(
+        schema=schema.ActorsSchema, blank=True, default=list
+    )
     project_name = models.CharField(_("Name of investment project"), blank=True)
     investment_chain_comment = models.TextField(
         _("Comment on investment chain"), blank=True
@@ -563,43 +571,39 @@ class DealVersionBaseFields(models.Model):
     )
 
     """ Produce info """
-    crops = SchemaField(schema=schema.ExportsCrops, blank=True, default=list)
+    crops = PydanticJSONField(schema=schema.ExportsCrops, blank=True, default=list)
     crops_comment = models.TextField(_("Comment on crops"), blank=True)
 
-    animals = SchemaField(schema=schema.ExportsAnimals, blank=True, default=list)
+    animals = PydanticJSONField(schema=schema.ExportsAnimals, blank=True, default=list)
     animals_comment = models.TextField(_("Comment on livestock"), blank=True)
 
-    mineral_resources = SchemaField(
+    mineral_resources = PydanticJSONField(
         schema=schema.ExportsMineralResources, blank=True, default=list
     )
     mineral_resources_comment = models.TextField(
         _("Comment on mineral resources"), blank=True
     )
 
-    contract_farming_crops = SchemaField(
-        schema=schema.CurrentDateAreaChoicesCrops,
-        blank=True,
-        default=list,
+    contract_farming_crops = PydanticJSONField(
+        schema=schema.CurrentDateAreaChoicesCrops, blank=True, default=list
     )
     contract_farming_crops_comment = models.TextField(
         _("Comment on contract farming crops"), blank=True
     )
-    contract_farming_animals = SchemaField(
-        schema=schema.CurrentDateAreaChoicesAnimals,
-        blank=True,
-        default=list,
+    contract_farming_animals = PydanticJSONField(
+        schema=schema.CurrentDateAreaChoicesAnimals, blank=True, default=list
     )
     contract_farming_animals_comment = models.TextField(
         _("Comment on contract farming livestock"), blank=True
     )
 
-    electricity_generation = SchemaField(
+    electricity_generation = PydanticJSONField(
         schema=schema.ElectricityGenerationSchema, blank=True, default=list
     )
     electricity_generation_comment = models.TextField(
         _("Comment on electricity generation"), blank=True
     )
-    carbon_sequestration = SchemaField(
+    carbon_sequestration = PydanticJSONField(
         schema=schema.CarbonSequestrationSchema, blank=True, default=list
     )
     carbon_sequestration_comment = models.TextField(
