@@ -6,9 +6,11 @@
 
   export let value: string | null = null
   export let name: string
+
+  export let label = $_("Date")
 </script>
 
 <label class={labelClass} for={undefined}>
-  {$_("Date")}
+  {label}
   <LowLevelDateYearField bind:value {name} />
 </label>

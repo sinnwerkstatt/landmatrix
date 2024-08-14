@@ -16,6 +16,24 @@ export function dateCurrentFormat(value: {
   return ret
 }
 
+export function dateCurrentFormatStartEnd(value: {
+  start_date: string | null
+  end_date: string | null
+  current: boolean
+}): string {
+  const $_ = get(_)
+
+  if (!value.start_date && !value.end_date && !value.current) return ""
+  let ret = "["
+  if (value.start_date) ret += value.start_date
+  if (value.start_date && value.end_date) ret += "–"
+  if (value.end_date) ret += value.end_date
+  if ((value.start_date || value.end_date) && value.current) ret += ", "
+  if (value.current) ret += $_("current")
+  ret += "]"
+  return ret
+}
+
 export const formatArea = (area: number): string =>
   (area / 10000)
     .toFixed(2)
