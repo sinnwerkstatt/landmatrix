@@ -2,8 +2,6 @@ from django.contrib.gis.geos import GEOSGeometry
 from django.db.models import F, Q, QuerySet, Case, When
 from django.db.models.functions import JSONObject
 from django.utils.translation import gettext as _
-from django_pydantic_field.rest_framework import SchemaField
-from django_pydantic_field.v2.fields import PydanticSchemaField
 from rest_framework import serializers
 
 from apps.landmatrix.models.country import Country, Region
@@ -25,18 +23,7 @@ from apps.landmatrix.models.investor import (
     InvestorWorkflowInfo,
     InvestorDataSource,
 )
-
-
-class SpectacularSchemaField(SchemaField):
-    def __init__(self, exclude_unset=True, *args, **kwargs):
-        kwargs.pop("encoder", None)
-        kwargs.pop("decoder", None)
-        super().__init__(
-            schema=self._spectacular_annotation["field"],
-            # exclude_unset=exclude_unset,  # TODO lets think about this
-            *args,
-            **kwargs,
-        )
+from django_pydantic_jsonfield import PydanticJSONFieldMixin
 
 
 class FieldDefinitionSerializer(serializers.ModelSerializer):
@@ -151,20 +138,7 @@ class ContractSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class MyModelSerializer(serializers.ModelSerializer):
-
-    def build_standard_field(self, field_name, model_field):
-        standard_field = super().build_standard_field(field_name, model_field)
-        if isinstance(model_field, PydanticSchemaField):
-            standard_field = (
-                type(
-                    model_field.schema.__name__ + "Serializer",
-                    (SpectacularSchemaField,),
-                    {"_spectacular_annotation": {"field": model_field.schema}},
-                ),
-            ) + standard_field[1:]
-        return standard_field
-
+class MyModelSerializer(PydanticJSONFieldMixin, serializers.ModelSerializer):
     class Meta:
         abstract = True
 

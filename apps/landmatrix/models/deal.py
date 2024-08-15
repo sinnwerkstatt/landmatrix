@@ -1,5 +1,6 @@
 import json
 from enum import Enum
+from typing import Any
 
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.geos import GEOSGeometry, MultiPolygon, Polygon
@@ -10,7 +11,6 @@ from django.db import models, transaction
 from django.db.models import Count, Func, F, Q
 from django.http import Http404
 from django.utils.translation import gettext as _
-from django_pydantic_field import SchemaField
 from nanoid import generate
 
 from apps.accounts.models import User
@@ -23,6 +23,12 @@ from apps.landmatrix.models.abstract import (
     BaseDataSource,
     BaseWorkflowInfo,
 )
+from apps.landmatrix.models.choices import (
+    NegotiationStatusEnum,
+    ImplementationStatusEnum,
+    NatureOfDealEnum,
+    IntentionOfInvestmentEnum,
+)
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.fields import (
@@ -33,6 +39,7 @@ from apps.landmatrix.models.fields import (
     LooseDateField,
 )
 from apps.landmatrix.models.investor import InvestorHull
+from django_pydantic_jsonfield import PydanticJSONField, SchemaValidator
 
 
 class DealHullQuerySet(models.QuerySet):
@@ -209,17 +216,23 @@ class DealVersionBaseFields(models.Model):
         blank=True,
         null=True,
     )
-    contract_size = SchemaField(
-        schema=schema.CurrentDateAreaSchema, blank=True, default=list
+    contract_size = PydanticJSONField(
+        blank=True,
+        default=list,
+        validators=[SchemaValidator(schema.CurrentDateAreaSchema)],
     )
-    production_size = SchemaField(
-        schema=schema.CurrentDateAreaSchema, blank=True, default=list
+    production_size = PydanticJSONField(
+        blank=True,
+        default=list,
+        validators=[SchemaValidator(schema.CurrentDateAreaSchema)],
     )
     land_area_comment = models.TextField(_("Comment on land area"), blank=True)
 
     # Intention of investment
-    intention_of_investment = SchemaField(
-        schema=schema.CurrentDateAreaChoicesIOI, blank=True, default=list
+    intention_of_investment = PydanticJSONField(
+        blank=True,
+        default=list,
+        validators=[SchemaValidator(schema.CurrentDateAreaChoicesIOI)],
     )
     intention_of_investment_comment = models.TextField(
         _("Comment on intention of investment"), blank=True
@@ -241,20 +254,20 @@ class DealVersionBaseFields(models.Model):
     )
 
     # # Negotiation status
-    negotiation_status = SchemaField(
-        schema=schema.CurrentDateChoiceNegotiationStatus,
+    negotiation_status = PydanticJSONField(
         blank=True,
         default=list,
+        validators=[SchemaValidator(schema.CurrentDateChoiceNegotiationStatus)],
     )
     negotiation_status_comment = models.TextField(
         _("Comment on negotiation status"), blank=True
     )
 
     # # Implementation status
-    implementation_status = SchemaField(
-        schema=schema.CurrentDateChoiceImplementationStatus,
+    implementation_status = PydanticJSONField(
         blank=True,
         default=list,
+        validators=[SchemaValidator(schema.CurrentDateChoiceImplementationStatus)],
     )
     implementation_status_comment = models.TextField(
         _("Comment on implementation status"), blank=True
@@ -330,12 +343,20 @@ class DealVersionBaseFields(models.Model):
     contract_farming = models.BooleanField(null=True)
 
     on_the_lease_state = models.BooleanField(_("On leased / purchased"), null=True)
-    on_the_lease = SchemaField(schema=schema.LeaseSchema, blank=True, default=list)
+    on_the_lease = PydanticJSONField(
+        blank=True,
+        default=list,
+        validators=[SchemaValidator(schema.LeaseSchema)],
+    )
 
     off_the_lease_state = models.BooleanField(
         _("Not on leased / purchased (out-grower)"), null=True
     )
-    off_the_lease = SchemaField(schema=schema.LeaseSchema, blank=True, default=list)
+    off_the_lease = PydanticJSONField(
+        blank=True,
+        default=list,
+        validators=[SchemaValidator(schema.LeaseSchema)],
+    )
     contract_farming_comment = models.TextField(
         _("Comment on contract farming"), blank=True
     )
@@ -354,7 +375,11 @@ class DealVersionBaseFields(models.Model):
     total_jobs_planned_daily_workers = models.IntegerField(
         _("Planned daily/seasonal workers (total)"), blank=True, null=True
     )
-    total_jobs_current = SchemaField(schema=schema.JobsSchema, blank=True, default=list)
+    total_jobs_current = PydanticJSONField(
+        blank=True,
+        default=list,
+        validators=[SchemaValidator(schema.JobsSchema)],
+    )
     total_jobs_created_comment = models.TextField(
         _("Comment on jobs created (total)"), blank=True
     )
@@ -369,8 +394,10 @@ class DealVersionBaseFields(models.Model):
     foreign_jobs_planned_daily_workers = models.IntegerField(
         _("Planned daily/seasonal workers (foreign)"), blank=True, null=True
     )
-    foreign_jobs_current = SchemaField(
-        schema=schema.JobsSchema, blank=True, default=list
+    foreign_jobs_current = PydanticJSONField(
+        blank=True,
+        default=list,
+        validators=[SchemaValidator(schema.JobsSchema)],
     )
     foreign_jobs_created_comment = models.TextField(
         _("Comment on jobs created (foreign)"), blank=True
@@ -386,8 +413,10 @@ class DealVersionBaseFields(models.Model):
     domestic_jobs_planned_daily_workers = models.IntegerField(
         _("Planned daily/seasonal workers (domestic)"), blank=True, null=True
     )
-    domestic_jobs_current = SchemaField(
-        schema=schema.JobsSchema, blank=True, default=list
+    domestic_jobs_current = PydanticJSONField(
+        blank=True,
+        default=list,
+        validators=[SchemaValidator(schema.JobsSchema)],
     )
     domestic_jobs_created_comment = models.TextField(
         _("Comment on jobs created (domestic)"), blank=True
@@ -401,7 +430,11 @@ class DealVersionBaseFields(models.Model):
         null=True,
         related_name="dealversions",
     )
-    involved_actors = SchemaField(schema=schema.ActorsSchema, blank=True, default=list)
+    involved_actors = PydanticJSONField(
+        blank=True,
+        default=list,
+        validators=[SchemaValidator(schema.ActorsSchema)],
+    )
     project_name = models.CharField(_("Name of investment project"), blank=True)
     investment_chain_comment = models.TextField(
         _("Comment on investment chain"), blank=True
@@ -563,44 +596,58 @@ class DealVersionBaseFields(models.Model):
     )
 
     """ Produce info """
-    crops = SchemaField(schema=schema.ExportsCrops, blank=True, default=list)
+    crops = PydanticJSONField(
+        blank=True,
+        default=list,
+        validators=[SchemaValidator(schema.ExportsCrops)],
+    )
     crops_comment = models.TextField(_("Comment on crops"), blank=True)
 
-    animals = SchemaField(schema=schema.ExportsAnimals, blank=True, default=list)
+    animals = PydanticJSONField(
+        blank=True,
+        default=list,
+        validators=[SchemaValidator(schema.ExportsAnimals)],
+    )
     animals_comment = models.TextField(_("Comment on livestock"), blank=True)
 
-    mineral_resources = SchemaField(
-        schema=schema.ExportsMineralResources, blank=True, default=list
+    mineral_resources = PydanticJSONField(
+        blank=True,
+        default=list,
+        validators=[SchemaValidator(schema.ExportsMineralResources)],
     )
     mineral_resources_comment = models.TextField(
         _("Comment on mineral resources"), blank=True
     )
 
-    contract_farming_crops = SchemaField(
-        schema=schema.CurrentDateAreaChoicesCrops,
+    contract_farming_crops = PydanticJSONField(
         blank=True,
         default=list,
+        validators=[SchemaValidator(schema.CurrentDateAreaChoicesCrops)],
     )
     contract_farming_crops_comment = models.TextField(
         _("Comment on contract farming crops"), blank=True
     )
-    contract_farming_animals = SchemaField(
-        schema=schema.CurrentDateAreaChoicesAnimals,
+    contract_farming_animals = PydanticJSONField(
         blank=True,
         default=list,
+        validators=[SchemaValidator(schema.CurrentDateAreaChoicesAnimals)],
     )
     contract_farming_animals_comment = models.TextField(
         _("Comment on contract farming livestock"), blank=True
     )
 
-    electricity_generation = SchemaField(
-        schema=schema.ElectricityGenerationSchema, blank=True, default=list
+    electricity_generation = PydanticJSONField(
+        blank=True,
+        default=list,
+        validators=[SchemaValidator(schema.ElectricityGenerationSchema)],
     )
     electricity_generation_comment = models.TextField(
         _("Comment on electricity generation"), blank=True
     )
-    carbon_sequestration = SchemaField(
-        schema=schema.CarbonSequestrationSchema, blank=True, default=list
+    carbon_sequestration = PydanticJSONField(
+        blank=True,
+        default=list,
+        validators=[SchemaValidator(schema.CarbonSequestrationSchema)],
     )
     carbon_sequestration_comment = models.TextField(
         _("Comment on carbon sequestration"), blank=True
@@ -952,31 +999,29 @@ class DealVersion(DealVersionBaseFields, BaseVersion):
 
         self.save()
 
-    def __get_current(self, attributes, field, multi=False):
-        if not attributes or not attributes.root:
+    @staticmethod
+    def __get_current(attributes, field, multi=False):
+        if not attributes:
             return None
 
+        def get_value_safe(val: Any) -> Any:
+            # probably not needed any more...
+            return val.value if isinstance(val, Enum) else val
+
         if multi:
-            currents = []
-            for attr in attributes:
-                if attr.current and (values := getattr(attr, field)):
-                    currents += [
-                        val.value if isinstance(val, Enum) else val for val in values
-                    ]
-            return currents or None
+            values = [
+                get_value_safe(val)
+                for attr in attributes
+                for val in attr.get(field, [])
+                if attr.get("current")
+            ]
+            return values or None
 
-        # prioritize "current" checkbox if present
-        current = [x for x in attributes if x.current]
+        values = [attr.get(field) for attr in attributes if attr.get("current")]
 
-        # ic(current)
-        if current:
-            val = getattr(current[0], field)
-            if isinstance(val, Enum):
-                return val.value
-            return val
+        if values:
+            return get_value_safe(values[0])
         else:
-            print(self)
-            print(attributes)
             raise ValidationError('At least one value needs to be "current".')
 
     def __calculate_parent_companies(self) -> None:
@@ -1040,78 +1085,67 @@ class DealVersion(DealVersionBaseFields, BaseVersion):
         contract_size = self.current_contract_size or 0.0
         production_size = self.current_production_size or 0.0
 
-        if (
-            negotiation_status
-            in (
-                "EXPRESSION_OF_INTEREST",
-                "UNDER_NEGOTIATION",
-                "MEMORANDUM_OF_UNDERSTANDING",
-            )
-            or negotiation_status == "NEGOTIATIONS_FAILED"
+        if negotiation_status in (
+            NegotiationStatusEnum.EXPRESSION_OF_INTEREST,
+            NegotiationStatusEnum.UNDER_NEGOTIATION,
+            NegotiationStatusEnum.MEMORANDUM_OF_UNDERSTANDING,
+            ## Failed
+            NegotiationStatusEnum.NEGOTIATIONS_FAILED,
         ):
             value = intended_size or contract_size or production_size
-        elif (
-            negotiation_status
-            in (
-                "ORAL_AGREEMENT",
-                "CONTRACT_SIGNED",
-                "CHANGE_OF_OWNERSHIP",
-            )
-            or negotiation_status == "CONTRACT_CANCELED"
-            or negotiation_status == "CONTRACT_EXPIRED"
+        elif negotiation_status in (
+            NegotiationStatusEnum.ORAL_AGREEMENT,
+            NegotiationStatusEnum.CONTRACT_SIGNED,
+            NegotiationStatusEnum.CHANGE_OF_OWNERSHIP,
+            ## Canceled or Expired
+            NegotiationStatusEnum.CONTRACT_CANCELED,
+            NegotiationStatusEnum.CONTRACT_EXPIRED,
         ):
             value = contract_size or production_size
         else:
+            # This should not happen
             value = 0.0
         return value
 
     def __calculate_initiation_year(self):
-        self.negotiation_status: list
-        valid_negotiation_status = (
-            [
-                int(x.date[:4])
-                for x in self.negotiation_status
-                if x.date
-                and x.choice
-                in (
-                    "UNDER_NEGOTIATION",
-                    "ORAL_AGREEMENT",
-                    "CONTRACT_SIGNED",
-                    "NEGOTIATIONS_FAILED",
-                    "CONTRACT_CANCELED",
-                )
-            ]
-            if self.negotiation_status
-            else []
-        )
-        self.implementation_status: list
-        valid_implementation_status = (
-            [
-                int(x.date[:4])
-                for x in self.implementation_status
-                if x.date
-                and x.choice
-                in (
-                    "STARTUP_PHASE",
-                    "IN_OPERATION",
-                    "PROJECT_ABANDONED",
-                )
-            ]
-            if self.implementation_status
-            else []
-        )
-        dates = valid_implementation_status + valid_negotiation_status
+        def year_as_int(date: str) -> int:
+            return int(date[:4])
+
+        negotiation_status_dates = [
+            year_as_int(x["date"])
+            for x in self.negotiation_status
+            if x["date"]
+            and x["choice"]
+            in (
+                NegotiationStatusEnum.UNDER_NEGOTIATION,
+                NegotiationStatusEnum.ORAL_AGREEMENT,
+                NegotiationStatusEnum.CONTRACT_SIGNED,
+                NegotiationStatusEnum.NEGOTIATIONS_FAILED,
+                NegotiationStatusEnum.CONTRACT_CANCELED,
+            )
+        ]
+
+        implementation_status_dates = [
+            year_as_int(x["date"])
+            for x in self.implementation_status
+            if x["date"]
+            and x["choice"]
+            in (
+                ImplementationStatusEnum.STARTUP_PHASE,
+                ImplementationStatusEnum.IN_OPERATION,
+                ImplementationStatusEnum.PROJECT_ABANDONED,
+            )
+        ]
+
+        dates = implementation_status_dates + negotiation_status_dates
         return min(dates) if dates else None
 
     def __calculate_forest_concession(self) -> bool:
-        return bool(
-            self.nature_of_deal
-            # TODO: Replace literal with NatureOfDealEnum or enforce type checking on self.nature_of_deal
-            and "CONCESSION" in self.nature_of_deal
-            and self.current_intention_of_investment
-            # TODO: Replace with IntentionOfInvestmentEnum
-            and "FOREST_LOGGING" in self.current_intention_of_investment
+        is_concession = NatureOfDealEnum.CONCESSION in (self.nature_of_deal or [])
+        is_forest_logging = IntentionOfInvestmentEnum.FOREST_LOGGING in (
+            self.current_intention_of_investment or []
         )
+        return is_concession and is_forest_logging
 
     def __calculate_transnational(self) -> bool | None:
         if not self.deal.country_id:

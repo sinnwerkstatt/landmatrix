@@ -935,10 +935,27 @@ export interface components {
       sent_to_review_by_id: number | null
       sent_to_activation_by_id: number | null
       activated_by_id: number | null
+      /** Format: date-time */
+      created_at: string
+      /** Format: date-time */
+      modified_at: string | null
+      /** Format: date-time */
+      sent_to_review_at: string | null
+      /**
+       * Reviewed at
+       * Format: date-time
+       */
+      sent_to_activation_at: string | null
+      /** Format: date-time */
+      activated_at: string | null
+      status: components["schemas"]["StatusEnum"]
       /** Format: double */
       intended_size?: number | null
+      contract_size?: components["schemas"]["CurrentDateAreaSchema"]
+      production_size?: components["schemas"]["CurrentDateAreaSchema"]
       /** Comment on land area */
       land_area_comment?: string
+      intention_of_investment?: components["schemas"]["CurrentDateAreaChoicesIOI"]
       /** Comment on intention of investment */
       intention_of_investment_comment?: string
       carbon_offset_project?: boolean | null
@@ -947,8 +964,10 @@ export interface components {
       nature_of_deal?: components["schemas"]["NatureOfDealEnum"][]
       /** Comment on nature of the deal */
       nature_of_deal_comment?: string
+      negotiation_status?: components["schemas"]["CurrentDateChoiceNegotiationStatus"]
       /** Comment on negotiation status */
       negotiation_status_comment?: string
+      implementation_status?: components["schemas"]["CurrentDateChoiceImplementationStatus"]
       /** Comment on implementation status */
       implementation_status_comment?: string
       /** Format: double */
@@ -978,8 +997,10 @@ export interface components {
       contract_farming?: boolean | null
       /** On leased / purchased */
       on_the_lease_state?: boolean | null
+      on_the_lease?: components["schemas"]["LeaseSchema"]
       /** Not on leased / purchased (out-grower) */
       off_the_lease_state?: boolean | null
+      off_the_lease?: components["schemas"]["LeaseSchema"]
       /** Comment on contract farming */
       contract_farming_comment?: string
       /** Jobs created (total) */
@@ -990,6 +1011,7 @@ export interface components {
       total_jobs_planned_employees?: number | null
       /** Planned daily/seasonal workers (total) */
       total_jobs_planned_daily_workers?: number | null
+      total_jobs_current?: components["schemas"]["JobsSchema"]
       /** Comment on jobs created (total) */
       total_jobs_created_comment?: string
       /** Jobs created (foreign) */
@@ -1000,6 +1022,7 @@ export interface components {
       foreign_jobs_planned_employees?: number | null
       /** Planned daily/seasonal workers (foreign) */
       foreign_jobs_planned_daily_workers?: number | null
+      foreign_jobs_current?: components["schemas"]["JobsSchema"]
       /** Comment on jobs created (foreign) */
       foreign_jobs_created_comment?: string
       /** Jobs created (domestic) */
@@ -1010,8 +1033,10 @@ export interface components {
       domestic_jobs_planned_employees?: number | null
       /** Planned daily/seasonal workers (domestic) */
       domestic_jobs_planned_daily_workers?: number | null
+      domestic_jobs_current?: components["schemas"]["JobsSchema"]
       /** Comment on jobs created (domestic) */
       domestic_jobs_created_comment?: string
+      involved_actors?: components["schemas"]["ActorsSchema"]
       /** Name of investment project */
       project_name?: string
       /** Comment on investment chain */
@@ -1084,18 +1109,25 @@ export interface components {
       former_land_cover?: components["schemas"]["FormerLandCoverEnum"][]
       /** Comment on former land cover */
       former_land_cover_comment?: string
+      crops?: components["schemas"]["ExportsCrops"]
       /** Comment on crops */
       crops_comment?: string
+      animals?: components["schemas"]["ExportsAnimals"]
       /** Comment on livestock */
       animals_comment?: string
+      mineral_resources?: components["schemas"]["ExportsMineralResources"]
       /** Comment on mineral resources */
       mineral_resources_comment?: string
+      contract_farming_crops?: components["schemas"]["CurrentDateAreaChoicesCrops"]
       /** Comment on contract farming crops */
       contract_farming_crops_comment?: string
+      contract_farming_animals?: components["schemas"]["CurrentDateAreaChoicesAnimals"]
       /** Comment on contract farming livestock */
       contract_farming_animals_comment?: string
+      electricity_generation?: components["schemas"]["ElectricityGenerationSchema"]
       /** Comment on electricity generation */
       electricity_generation_comment?: string
+      carbon_sequestration?: components["schemas"]["CarbonSequestrationSchema"]
       /** Comment on carbon sequestration */
       carbon_sequestration_comment?: string
       has_domestic_use?: boolean | null
@@ -1148,20 +1180,6 @@ export interface components {
       /** Comment on gender-related info */
       gender_related_information?: string
       overall_comment?: string
-      /** Format: date-time */
-      created_at: string
-      /** Format: date-time */
-      modified_at: string | null
-      /** Format: date-time */
-      sent_to_review_at: string | null
-      /**
-       * Reviewed at
-       * Format: date-time
-       */
-      sent_to_activation_at: string | null
-      /** Format: date-time */
-      activated_at: string | null
-      status: components["schemas"]["StatusEnum"]
       is_public: boolean
       has_known_investor: boolean
       /** Format: double */
@@ -1188,24 +1206,11 @@ export interface components {
       forest_concession: boolean
       transnational: boolean | null
       fully_updated?: boolean
-      contract_size?: components["schemas"]["CurrentDateAreaSchema"]
-      production_size?: components["schemas"]["CurrentDateAreaSchema"]
-      intention_of_investment?: components["schemas"]["CurrentDateAreaChoicesIOI"]
-      negotiation_status?: components["schemas"]["CurrentDateChoiceNegotiationStatus"]
-      implementation_status?: components["schemas"]["CurrentDateChoiceImplementationStatus"]
-      on_the_lease?: components["schemas"]["LeaseSchema"]
-      off_the_lease?: components["schemas"]["LeaseSchema"]
-      total_jobs_current?: components["schemas"]["JobsSchema"]
-      foreign_jobs_current?: components["schemas"]["JobsSchema"]
-      domestic_jobs_current?: components["schemas"]["JobsSchema"]
-      involved_actors?: components["schemas"]["ActorsSchema"]
-      crops?: components["schemas"]["ExportsCrops"]
-      animals?: components["schemas"]["ExportsAnimals"]
-      mineral_resources?: components["schemas"]["ExportsMineralResources"]
-      contract_farming_crops?: components["schemas"]["CurrentDateAreaChoicesCrops"]
-      contract_farming_animals?: components["schemas"]["CurrentDateAreaChoicesAnimals"]
-      electricity_generation?: components["schemas"]["ElectricityGenerationSchema"]
-      carbon_sequestration?: components["schemas"]["CarbonSequestrationSchema"]
+      created_by: number | null
+      modified_by: number | null
+      sent_to_review_by: number | null
+      sent_to_activation_by: number | null
+      activated_by: number | null
       deal: number
       purchase_price_currency?: number | null
       annual_leasing_fee_currency?: number | null
@@ -1216,11 +1221,6 @@ export interface components {
       export_country2?: number | null
       /** Country 3 */
       export_country3?: number | null
-      created_by: number | null
-      modified_by: number | null
-      sent_to_review_by: number | null
-      sent_to_activation_by: number | null
-      activated_by: number | null
       parent_companies: readonly number[]
       /** Top parent companies */
       top_investors: readonly number[]
