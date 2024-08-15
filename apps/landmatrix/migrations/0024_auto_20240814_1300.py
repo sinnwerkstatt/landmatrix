@@ -10,12 +10,14 @@ def forward_carbon_sequ(apps, _schema_editor):
         for entry in dv.carbon_sequestration:
             changed = True
             # print(entry)
-            if 'date' in entry:
-                entry['start_date'] = entry.pop("date")
-            entry['end_date'] = None
-            entry['project_proponents'] = ""
-            if entry.get("certification_standard_name"):
-                entry['certification_standard_name'] = [entry["certification_standard_name"]]
+            if "date" in entry:
+                entry["start_date"] = entry.pop("date")
+            entry["end_date"] = None
+            entry["project_proponents"] = ""
+
+            value = entry.get("certification_standard_name")
+            entry["certification_standard_name"] = [value] if value else []
+
         if changed:
             dv.save()
 
@@ -26,12 +28,14 @@ def reverse_carbon_sequ(apps, _schema_editor):
         changed = False
         for entry in dv.carbon_sequestration:
             changed = True
-            if 'start_date' in entry:
-                entry['date'] = entry.pop("start_date")
-            del entry['end_date']
-            del entry['project_proponents']
-            if entry.get("certification_standard_name"):
-                entry['certification_standard_name'] = entry["certification_standard_name"][0]
+            if "start_date" in entry:
+                entry["date"] = entry.pop("start_date")
+            del entry["end_date"]
+            del entry["project_proponents"]
+
+            value = entry.get("certification_standard_name")
+            entry["certification_standard_name"] = value[0] if value else None
+
         if changed:
             dv.save()
 
@@ -39,7 +43,7 @@ def reverse_carbon_sequ(apps, _schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('landmatrix', '0023_alter_dealversion_animals_and_more'),
+        ("landmatrix", "0023_alter_dealversion_animals_and_more"),
     ]
 
     operations = [
