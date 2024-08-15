@@ -1,5 +1,6 @@
 import json
 from enum import Enum
+from typing import Any
 
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.geos import GEOSGeometry, MultiPolygon, Polygon
@@ -21,6 +22,12 @@ from apps.landmatrix.models.abstract import (
     VersionStatus,
     BaseDataSource,
     BaseWorkflowInfo,
+)
+from apps.landmatrix.models.choices import (
+    NegotiationStatusEnum,
+    ImplementationStatusEnum,
+    NatureOfDealEnum,
+    IntentionOfInvestmentEnum,
 )
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.currency import Currency
@@ -956,31 +963,29 @@ class DealVersion(DealVersionBaseFields, BaseVersion):
 
         self.save()
 
-    def __get_current(self, attributes, field, multi=False):
-        if not attributes or not attributes.root:
+    @staticmethod
+    def __get_current(attributes, field, multi=False):
+        if not attributes:
             return None
 
+        def get_value_safe(val: Any) -> Any:
+            # probably not needed any more...
+            return val.value if isinstance(val, Enum) else val
+
         if multi:
-            currents = []
-            for attr in attributes:
-                if attr.current and (values := getattr(attr, field)):
-                    currents += [
-                        val.value if isinstance(val, Enum) else val for val in values
-                    ]
-            return currents or None
+            values = [
+                get_value_safe(val)
+                for attr in attributes
+                for val in attr.get(field, [])
+                if attr.get("current")
+            ]
+            return values or None
 
-        # prioritize "current" checkbox if present
-        current = [x for x in attributes if x.current]
+        values = [attr.get(field) for attr in attributes if attr.get("current")]
 
-        # ic(current)
-        if current:
-            val = getattr(current[0], field)
-            if isinstance(val, Enum):
-                return val.value
-            return val
+        if values:
+            return get_value_safe(values[0])
         else:
-            print(self)
-            print(attributes)
             raise ValidationError('At least one value needs to be "current".')
 
     def __calculate_parent_companies(self) -> None:
@@ -1044,78 +1049,67 @@ class DealVersion(DealVersionBaseFields, BaseVersion):
         contract_size = self.current_contract_size or 0.0
         production_size = self.current_production_size or 0.0
 
-        if (
-            negotiation_status
-            in (
-                "EXPRESSION_OF_INTEREST",
-                "UNDER_NEGOTIATION",
-                "MEMORANDUM_OF_UNDERSTANDING",
-            )
-            or negotiation_status == "NEGOTIATIONS_FAILED"
+        if negotiation_status in (
+            NegotiationStatusEnum.EXPRESSION_OF_INTEREST,
+            NegotiationStatusEnum.UNDER_NEGOTIATION,
+            NegotiationStatusEnum.MEMORANDUM_OF_UNDERSTANDING,
+            ## Failed
+            NegotiationStatusEnum.NEGOTIATIONS_FAILED,
         ):
             value = intended_size or contract_size or production_size
-        elif (
-            negotiation_status
-            in (
-                "ORAL_AGREEMENT",
-                "CONTRACT_SIGNED",
-                "CHANGE_OF_OWNERSHIP",
-            )
-            or negotiation_status == "CONTRACT_CANCELED"
-            or negotiation_status == "CONTRACT_EXPIRED"
+        elif negotiation_status in (
+            NegotiationStatusEnum.ORAL_AGREEMENT,
+            NegotiationStatusEnum.CONTRACT_SIGNED,
+            NegotiationStatusEnum.CHANGE_OF_OWNERSHIP,
+            ## Canceled or Expired
+            NegotiationStatusEnum.CONTRACT_CANCELED,
+            NegotiationStatusEnum.CONTRACT_EXPIRED,
         ):
             value = contract_size or production_size
         else:
+            # This should not happen
             value = 0.0
         return value
 
     def __calculate_initiation_year(self):
-        self.negotiation_status: list
-        valid_negotiation_status = (
-            [
-                int(x.date[:4])
-                for x in self.negotiation_status
-                if x.date
-                and x.choice
-                in (
-                    "UNDER_NEGOTIATION",
-                    "ORAL_AGREEMENT",
-                    "CONTRACT_SIGNED",
-                    "NEGOTIATIONS_FAILED",
-                    "CONTRACT_CANCELED",
-                )
-            ]
-            if self.negotiation_status
-            else []
-        )
-        self.implementation_status: list
-        valid_implementation_status = (
-            [
-                int(x.date[:4])
-                for x in self.implementation_status
-                if x.date
-                and x.choice
-                in (
-                    "STARTUP_PHASE",
-                    "IN_OPERATION",
-                    "PROJECT_ABANDONED",
-                )
-            ]
-            if self.implementation_status
-            else []
-        )
-        dates = valid_implementation_status + valid_negotiation_status
+        def year_as_int(date: str) -> int:
+            return int(date[:4])
+
+        negotiation_status_dates = [
+            year_as_int(x["date"])
+            for x in self.negotiation_status
+            if x["date"]
+            and x["choice"]
+            in (
+                NegotiationStatusEnum.UNDER_NEGOTIATION,
+                NegotiationStatusEnum.ORAL_AGREEMENT,
+                NegotiationStatusEnum.CONTRACT_SIGNED,
+                NegotiationStatusEnum.NEGOTIATIONS_FAILED,
+                NegotiationStatusEnum.CONTRACT_CANCELED,
+            )
+        ]
+
+        implementation_status_dates = [
+            year_as_int(x["date"])
+            for x in self.implementation_status
+            if x["date"]
+            and x["choice"]
+            in (
+                ImplementationStatusEnum.STARTUP_PHASE,
+                ImplementationStatusEnum.IN_OPERATION,
+                ImplementationStatusEnum.PROJECT_ABANDONED,
+            )
+        ]
+
+        dates = implementation_status_dates + negotiation_status_dates
         return min(dates) if dates else None
 
     def __calculate_forest_concession(self) -> bool:
-        return bool(
-            self.nature_of_deal
-            # TODO: Replace literal with NatureOfDealEnum or enforce type checking on self.nature_of_deal
-            and "CONCESSION" in self.nature_of_deal
-            and self.current_intention_of_investment
-            # TODO: Replace with IntentionOfInvestmentEnum
-            and "FOREST_LOGGING" in self.current_intention_of_investment
+        is_concession = NatureOfDealEnum.CONCESSION in (self.nature_of_deal or [])
+        is_forest_logging = IntentionOfInvestmentEnum.FOREST_LOGGING in (
+            self.current_intention_of_investment or []
         )
+        return is_concession and is_forest_logging
 
     def __calculate_transnational(self) -> bool | None:
         if not self.deal.country_id:
