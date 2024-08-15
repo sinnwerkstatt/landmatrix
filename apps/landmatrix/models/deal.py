@@ -39,7 +39,7 @@ from apps.landmatrix.models.fields import (
     LooseDateField,
 )
 from apps.landmatrix.models.investor import InvestorHull
-from django_pydantic_jsonfield import PydanticJSONField
+from django_pydantic_jsonfield import PydanticJSONField, SchemaValidator
 
 
 class DealHullQuerySet(models.QuerySet):
@@ -217,16 +217,22 @@ class DealVersionBaseFields(models.Model):
         null=True,
     )
     contract_size = PydanticJSONField(
-        schema=schema.CurrentDateAreaSchema, blank=True, default=list
+        blank=True,
+        default=list,
+        validators=[SchemaValidator(schema.CurrentDateAreaSchema)],
     )
     production_size = PydanticJSONField(
-        schema=schema.CurrentDateAreaSchema, blank=True, default=list
+        blank=True,
+        default=list,
+        validators=[SchemaValidator(schema.CurrentDateAreaSchema)],
     )
     land_area_comment = models.TextField(_("Comment on land area"), blank=True)
 
     # Intention of investment
     intention_of_investment = PydanticJSONField(
-        schema=schema.CurrentDateAreaChoicesIOI, blank=True, default=list
+        blank=True,
+        default=list,
+        validators=[SchemaValidator(schema.CurrentDateAreaChoicesIOI)],
     )
     intention_of_investment_comment = models.TextField(
         _("Comment on intention of investment"), blank=True
@@ -249,9 +255,9 @@ class DealVersionBaseFields(models.Model):
 
     # # Negotiation status
     negotiation_status = PydanticJSONField(
-        schema=schema.CurrentDateChoiceNegotiationStatus,
         blank=True,
         default=list,
+        validators=[SchemaValidator(schema.CurrentDateChoiceNegotiationStatus)],
     )
     negotiation_status_comment = models.TextField(
         _("Comment on negotiation status"), blank=True
@@ -259,9 +265,9 @@ class DealVersionBaseFields(models.Model):
 
     # # Implementation status
     implementation_status = PydanticJSONField(
-        schema=schema.CurrentDateChoiceImplementationStatus,
         blank=True,
         default=list,
+        validators=[SchemaValidator(schema.CurrentDateChoiceImplementationStatus)],
     )
     implementation_status_comment = models.TextField(
         _("Comment on implementation status"), blank=True
@@ -338,14 +344,18 @@ class DealVersionBaseFields(models.Model):
 
     on_the_lease_state = models.BooleanField(_("On leased / purchased"), null=True)
     on_the_lease = PydanticJSONField(
-        schema=schema.LeaseSchema, blank=True, default=list
+        blank=True,
+        default=list,
+        validators=[SchemaValidator(schema.LeaseSchema)],
     )
 
     off_the_lease_state = models.BooleanField(
         _("Not on leased / purchased (out-grower)"), null=True
     )
     off_the_lease = PydanticJSONField(
-        schema=schema.LeaseSchema, blank=True, default=list
+        blank=True,
+        default=list,
+        validators=[SchemaValidator(schema.LeaseSchema)],
     )
     contract_farming_comment = models.TextField(
         _("Comment on contract farming"), blank=True
@@ -366,7 +376,9 @@ class DealVersionBaseFields(models.Model):
         _("Planned daily/seasonal workers (total)"), blank=True, null=True
     )
     total_jobs_current = PydanticJSONField(
-        schema=schema.JobsSchema, blank=True, default=list
+        blank=True,
+        default=list,
+        validators=[SchemaValidator(schema.JobsSchema)],
     )
     total_jobs_created_comment = models.TextField(
         _("Comment on jobs created (total)"), blank=True
@@ -383,7 +395,9 @@ class DealVersionBaseFields(models.Model):
         _("Planned daily/seasonal workers (foreign)"), blank=True, null=True
     )
     foreign_jobs_current = PydanticJSONField(
-        schema=schema.JobsSchema, blank=True, default=list
+        blank=True,
+        default=list,
+        validators=[SchemaValidator(schema.JobsSchema)],
     )
     foreign_jobs_created_comment = models.TextField(
         _("Comment on jobs created (foreign)"), blank=True
@@ -400,7 +414,9 @@ class DealVersionBaseFields(models.Model):
         _("Planned daily/seasonal workers (domestic)"), blank=True, null=True
     )
     domestic_jobs_current = PydanticJSONField(
-        schema=schema.JobsSchema, blank=True, default=list
+        blank=True,
+        default=list,
+        validators=[SchemaValidator(schema.JobsSchema)],
     )
     domestic_jobs_created_comment = models.TextField(
         _("Comment on jobs created (domestic)"), blank=True
@@ -415,7 +431,9 @@ class DealVersionBaseFields(models.Model):
         related_name="dealversions",
     )
     involved_actors = PydanticJSONField(
-        schema=schema.ActorsSchema, blank=True, default=list
+        blank=True,
+        default=list,
+        validators=[SchemaValidator(schema.ActorsSchema)],
     )
     project_name = models.CharField(_("Name of investment project"), blank=True)
     investment_chain_comment = models.TextField(
@@ -578,40 +596,58 @@ class DealVersionBaseFields(models.Model):
     )
 
     """ Produce info """
-    crops = PydanticJSONField(schema=schema.ExportsCrops, blank=True, default=list)
+    crops = PydanticJSONField(
+        blank=True,
+        default=list,
+        validators=[SchemaValidator(schema.ExportsCrops)],
+    )
     crops_comment = models.TextField(_("Comment on crops"), blank=True)
 
-    animals = PydanticJSONField(schema=schema.ExportsAnimals, blank=True, default=list)
+    animals = PydanticJSONField(
+        blank=True,
+        default=list,
+        validators=[SchemaValidator(schema.ExportsAnimals)],
+    )
     animals_comment = models.TextField(_("Comment on livestock"), blank=True)
 
     mineral_resources = PydanticJSONField(
-        schema=schema.ExportsMineralResources, blank=True, default=list
+        blank=True,
+        default=list,
+        validators=[SchemaValidator(schema.ExportsMineralResources)],
     )
     mineral_resources_comment = models.TextField(
         _("Comment on mineral resources"), blank=True
     )
 
     contract_farming_crops = PydanticJSONField(
-        schema=schema.CurrentDateAreaChoicesCrops, blank=True, default=list
+        blank=True,
+        default=list,
+        validators=[SchemaValidator(schema.CurrentDateAreaChoicesCrops)],
     )
     contract_farming_crops_comment = models.TextField(
         _("Comment on contract farming crops"), blank=True
     )
     contract_farming_animals = PydanticJSONField(
-        schema=schema.CurrentDateAreaChoicesAnimals, blank=True, default=list
+        blank=True,
+        default=list,
+        validators=[SchemaValidator(schema.CurrentDateAreaChoicesAnimals)],
     )
     contract_farming_animals_comment = models.TextField(
         _("Comment on contract farming livestock"), blank=True
     )
 
     electricity_generation = PydanticJSONField(
-        schema=schema.ElectricityGenerationSchema, blank=True, default=list
+        blank=True,
+        default=list,
+        validators=[SchemaValidator(schema.ElectricityGenerationSchema)],
     )
     electricity_generation_comment = models.TextField(
         _("Comment on electricity generation"), blank=True
     )
     carbon_sequestration = PydanticJSONField(
-        schema=schema.CarbonSequestrationSchema, blank=True, default=list
+        blank=True,
+        default=list,
+        validators=[SchemaValidator(schema.CarbonSequestrationSchema)],
     )
     carbon_sequestration_comment = models.TextField(
         _("Comment on carbon sequestration"), blank=True
