@@ -150,9 +150,6 @@ export type JSONExportsFieldType = components["schemas"][
 export type JSONElectricityGenerationFieldType =
   components["schemas"]["ElectricityGenerationItem"]
 
-export type JSONCarbonSequestrationFieldType =
-  components["schemas"]["CarbonSequestrationItem"]
-
 export type AreaType = components["schemas"]["LocationAreaTypeEnum"]
 
 export type Area = components["schemas"]["LocationArea"]

@@ -352,10 +352,15 @@ export interface components {
        */
       current?: boolean
       /**
-       * Date
+       * Start Date
        * @default null
        */
-      date?: string | null
+      start_date?: string | null
+      /**
+       * End Date
+       * @default null
+       */
+      end_date?: string | null
       /**
        * Area
        * @default null
@@ -377,14 +382,20 @@ export interface components {
        */
       projected_annual_sequestration?: number | string | null
       /**
+       * Project Proponents
+       * @default
+       */
+      project_proponents?: string
+      /**
        * Certification Standard
        * @default null
        */
       certification_standard?: boolean | null
-      /** @default null */
-      certification_standard_name?:
-        | components["schemas"]["CarbonSequestrationCertEnum"]
-        | null
+      /**
+       * Certification Standard Name
+       * @default []
+       */
+      certification_standard_name?: components["schemas"]["CarbonSequestrationCertEnum"][]
       /**
        * Certification Standard Id
        * @default

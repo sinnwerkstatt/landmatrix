@@ -2,8 +2,8 @@
   import { _ } from "svelte-i18n"
   import { slide } from "svelte/transition"
 
+  import type { components } from "$lib/openAPI"
   import { fieldChoices } from "$lib/stores"
-  import type { JSONCarbonSequestrationFieldType } from "$lib/types/data"
 
   import ChoicesEditField from "$components/Fields/Edit2/ChoicesEditField.svelte"
   import AddButton from "$components/Fields/Edit2/JSONFieldComponents/AddButton.svelte"
@@ -15,30 +15,32 @@
 
   import { cardClass, labelClass } from "./JSONFieldComponents/consts"
 
-  export let value: JSONCarbonSequestrationFieldType[]
+  export let value: components["schemas"]["CarbonSequestrationItem"][]
   export let fieldname: string
 
-  const createEmptyEntry = (): JSONCarbonSequestrationFieldType => ({
+  const createEmptyEntry = (): components["schemas"]["CarbonSequestrationItem"] => ({
     current: false,
-    date: null,
+    start_date: null,
+    end_date: null,
     area: null,
     choices: [],
     projected_lifetime_sequestration: null,
     projected_annual_sequestration: null,
+    project_proponents: "",
     certification_standard: null,
-    certification_standard_name: null,
+    certification_standard_name: [],
     certification_standard_id: "",
     certification_standard_comment: "",
   })
 
-  const isEmpty = (val: JSONCarbonSequestrationFieldType) =>
+  const isEmpty = (val: components["schemas"]["CarbonSequestrationItem"]) =>
     JSON.stringify(val) === JSON.stringify(createEmptyEntry())
 
-  let valueCopy = structuredClone<JSONCarbonSequestrationFieldType[]>(
+  let valueCopy = structuredClone<components["schemas"]["CarbonSequestrationItem"][]>(
     value.length ? value : [createEmptyEntry()],
   )
 
-  $: value = valueCopy.filter(val => val.choices.length > 0)
+  $: value = valueCopy.filter(val => val.choices && val.choices.length > 0)
 
   const addEntry = () => (valueCopy = [...valueCopy, createEmptyEntry()])
 
@@ -75,7 +77,7 @@
       </label>
 
       <label class={labelClass} for={undefined}>
-        {$_("Projected carbon sequestration during project lifetime")}
+        {$_("Estimated emission reduction/removal during project lifetime")}
         <LowLevelDecimalField
           bind:value={val.projected_lifetime_sequestration}
           unit={$_("tCO2e")}
@@ -85,12 +87,21 @@
       </label>
 
       <label class={labelClass} for={undefined}>
-        {$_("Projected annual carbon sequestration")}
+        {$_("Estimated annual emission reduction/removal")}
         <LowLevelDecimalField
           bind:value={val.projected_annual_sequestration}
           unit={$_("tCO2e")}
           name="{fieldname}_{i}_area"
           class="w-24 max-w-[8rem] grow"
+        />
+      </label>
+      <label class={labelClass}>
+        {$_("Project proponents")}
+        <input
+          bind:value={val.project_proponents}
+          type="text"
+          class="inpt"
+          placeholder={$_("Project proponents")}
         />
       </label>
 
@@ -101,7 +112,7 @@
           nullable
           fieldname="certification_standard"
           wrapperClass="flex justify-end gap-3"
-          on:change={() => (val.certification_standard_name = null)}
+          on:change={() => (val.certification_standard_name = [])}
         />
       </label>
       {#if val.certification_standard === true}
@@ -116,11 +127,12 @@
                 closeListOnChange: true,
                 otherHint: $_("Please specify in comment field"),
                 required: true,
+                multipleChoices: true,
               }}
               fieldname="{fieldname}_{i}_certification_standard_name"
             />
           </label>
-          <label class={labelClass} for={undefined}>
+          <label class={labelClass}>
             {$_("ID of certification standard/mechanism")}
             <input
               bind:value={val.certification_standard_id}
@@ -132,7 +144,7 @@
         </div>
       {/if}
 
-      <label class={labelClass} for={undefined}>
+      <label class={labelClass}>
         {$_("Comment on certification standard / mechanism")}
         <input
           bind:value={val.certification_standard_comment}
@@ -142,7 +154,16 @@
         />
       </label>
 
-      <Date bind:value={val.date} name="{fieldname}_{i}_date" />
+      <Date
+        bind:value={val.start_date}
+        name="{fieldname}_{i}_date"
+        label={$_("Start date")}
+      />
+      <Date
+        bind:value={val.end_date}
+        name="{fieldname}_{i}_date"
+        label={$_("End date")}
+      />
 
       <CurrentCheckbox
         bind:checked={val.current}

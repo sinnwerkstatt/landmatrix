@@ -207,13 +207,15 @@ class CarbonSequestrationSchema(ListRootModel):
     class CarbonSequestrationItem(BaseModel):
         model_config = ConfigDict(extra="forbid")
         current: bool = False
-        date: LooseDateStr | str | None = None
+        start_date: LooseDateStr | str | None = None
+        end_date: LooseDateStr | str | None = None
         area: Decimal | None = None
         choices: list[CarbonSequestrationEnum] = []
         projected_lifetime_sequestration: Decimal | None = None
         projected_annual_sequestration: Decimal | None = None
+        project_proponents: str = ""
         certification_standard: bool | None = None
-        certification_standard_name: CarbonSequestrationCertEnum | None = None
+        certification_standard_name: list[CarbonSequestrationCertEnum] = []
         certification_standard_id: str = ""
         certification_standard_comment: str = ""
 

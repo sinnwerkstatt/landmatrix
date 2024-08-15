@@ -1,13 +1,13 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
+  import type { components } from "$lib/openAPI"
   import { fieldChoices } from "$lib/stores"
-  import type { JSONCarbonSequestrationFieldType } from "$lib/types/data"
 
-  import { dateCurrentFormat } from "$components/Fields/Display2/jsonHelpers"
+  import { dateCurrentFormatStartEnd } from "$components/Fields/Display2/jsonHelpers"
   import CircleNotchIcon from "$components/icons/CircleNotchIcon.svelte"
 
-  export let value: JSONCarbonSequestrationFieldType[] = []
+  export let value: components["schemas"]["CarbonSequestrationItem"][] = []
 
   const getLabel = (value: string) =>
     $fieldChoices.deal.carbon_sequestration.find(c => value === c.value)?.label ?? value
@@ -16,7 +16,7 @@
 <ul class="flex flex-col gap-2">
   {#each value ?? [] as val}
     <li class:font-bold={val.current}>
-      <span>{dateCurrentFormat(val)}</span>
+      <span>{dateCurrentFormatStartEnd(val)}</span>
       {#if val.choices && $fieldChoices.deal.carbon_sequestration.length}
         <span>
           {val.choices.map(getLabel).join(", ")}
@@ -29,16 +29,22 @@
       {/if}
       {#if val.projected_lifetime_sequestration}
         <div>
-          {$_("Projected carbon sequestration during project lifetime")}:
+          {$_("Estimated emission reduction/removal during project lifetime")}:
           {val.projected_lifetime_sequestration.toLocaleString("fr").replace(",", ".")}
           {$_("tCO2e")}
         </div>
       {/if}
       {#if val.projected_annual_sequestration}
         <div>
-          {$_("Projected annual carbon sequestration")}:
+          {$_("Estimated annual emission reduction/removal")}:
           {val.projected_annual_sequestration.toLocaleString("fr").replace(",", ".")}
           {$_("tCO2e")}
+        </div>
+      {/if}
+      {#if val.project_proponents}
+        <div>
+          {$_("Project proponents")}:
+          {val.project_proponents}
         </div>
       {/if}
 
@@ -56,9 +62,11 @@
         {#if val.certification_standard_name}
           <div class="mr-2">
             {$_("Name of certification standard/mechanism")}:
-            {$fieldChoices.deal.carbon_sequestration_certs.find(
-              i => i.value === val.certification_standard_name,
-            )?.label ?? "--"}
+            {#each val.certification_standard_name as cert_name}
+              {$fieldChoices.deal.carbon_sequestration_certs.find(
+                i => i.value === cert_name,
+              )?.label ?? "--"}
+            {/each}
           </div>
         {/if}
         {#if val.certification_standard_id}
