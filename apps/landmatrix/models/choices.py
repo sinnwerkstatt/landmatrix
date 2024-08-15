@@ -1,5 +1,4 @@
 import sys
-from enum import Enum
 
 from django.db.models import TextChoices
 from django.utils.functional import Promise
@@ -154,9 +153,9 @@ INTENTION_OF_INVESTMENT_CHOICES = [
     (x["value"], x["label"]) for x in INTENTION_OF_INVESTMENT_ITEMS
 ]
 
-IntentionOfInvestmentEnum = Enum(
+IntentionOfInvestmentEnum = TextChoices(
     "IntentionOfInvestmentEnum",
-    {x["value"]: x["value"] for x in INTENTION_OF_INVESTMENT_ITEMS},
+    {x["value"]: (x["value"], x["label"]) for x in INTENTION_OF_INVESTMENT_ITEMS},
 )
 
 
@@ -235,8 +234,9 @@ NEGOTIATION_STATUS_ITEMS: list[ValueLabelItem] = [
 NEGOTIATION_STATUS_CHOICES = [
     (x["value"], x["label"]) for x in NEGOTIATION_STATUS_ITEMS
 ]
-NegotiationStatusEnum = Enum(
-    "NegotiationStatusEnum", {x["value"]: x["value"] for x in NEGOTIATION_STATUS_ITEMS}
+NegotiationStatusEnum = TextChoices(
+    "NegotiationStatusEnum",
+    {x["value"]: (x["value"], x["label"]) for x in NEGOTIATION_STATUS_ITEMS},
 )
 
 
@@ -492,7 +492,9 @@ CROPS_ITEMS: list[ValueLabelItem] = [
 ]
 
 CROPS_CHOICES = [(x["value"], x["label"]) for x in CROPS_ITEMS]
-CropsEnum = Enum("CropsEnum", {x["value"]: x["value"] for x in CROPS_ITEMS})
+CropsEnum = TextChoices(
+    "CropsEnum", {x["value"]: (x["value"], x["label"]) for x in CROPS_ITEMS}
+)
 
 
 class AnimalsEnum(TextChoices):
