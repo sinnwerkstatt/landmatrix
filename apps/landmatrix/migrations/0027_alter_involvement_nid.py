@@ -19,7 +19,7 @@ def down(_apps, _schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("landmatrix", "0024_involvement_nid"),
+        ("landmatrix", "0026_involvement_nid"),
     ]
 
     operations = [

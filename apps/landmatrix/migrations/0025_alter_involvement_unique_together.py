@@ -6,12 +6,12 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('landmatrix', '0022_remove_dealold_annual_leasing_fee_currency_and_more'),
+        ("landmatrix", "0024_auto_20240814_1300"),
     ]
 
     operations = [
         migrations.AlterUniqueTogether(
-            name='involvement',
-            unique_together={('parent_investor', 'child_investor')},
+            name="involvement",
+            unique_together={("parent_investor", "child_investor")},
         ),
     ]

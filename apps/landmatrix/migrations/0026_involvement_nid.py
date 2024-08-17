@@ -7,7 +7,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("landmatrix", "0023_alter_involvement_unique_together"),
+        ("landmatrix", "0025_alter_involvement_unique_together"),
     ]
 
     operations = [
