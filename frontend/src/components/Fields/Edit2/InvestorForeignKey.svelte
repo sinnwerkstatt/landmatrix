@@ -13,7 +13,11 @@
 
   export let value: number | null
 
-  export let extras: { required?: boolean; creatable?: boolean } = {}
+  export let extras: {
+    required?: boolean
+    creatable?: boolean
+    excludeIds?: number[]
+  } = {}
 
   interface InvestorItem extends SimpleInvestor {
     created?: boolean
@@ -32,7 +36,9 @@
   let showNewInvestorForm = false
 
   let items: InvestorItem[]
-  $: items = $simpleInvestors.filter(i => !i.deleted)
+  $: items = $simpleInvestors
+    .filter(i => !i.deleted)
+    .filter(i => !(extras.excludeIds ?? []).includes(i.id))
 
   let listValue: InvestorItem | undefined
   $: listValue = $simpleInvestors.find(i => i.id === value)

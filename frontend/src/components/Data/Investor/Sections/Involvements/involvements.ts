@@ -8,10 +8,9 @@ const INVOLVEMENT_IGNORE_KEYS = [
 
 export const createInvolvement =
   (isTertiary: boolean, djangoId: number) =>
-  (id: string): Involvement => ({
-    // magic foo where nid is used on id field in frontend
-    id: id as unknown as number,
-    // nid: undefined as never,
+  (nid: string): Involvement => ({
+    id: null!,
+    nid,
     parent_investor_id: null!,
     child_investor_id: djangoId,
     role: isTertiary ? InvolvementRole.LENDER : InvolvementRole.PARENT,

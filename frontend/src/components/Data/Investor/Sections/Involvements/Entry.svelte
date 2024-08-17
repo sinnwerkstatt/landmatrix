@@ -5,12 +5,15 @@
   import EditField from "$components/Fields/EditField.svelte"
 
   export let entry: Involvement
+
+  export let extras: { excludeIds?: number[] } = {}
 </script>
 
 <div class="grid lg:grid-cols-2 lg:gap-4">
   <EditField
     fieldname="involvement.parent_investor_id"
     bind:value={entry.parent_investor_id}
+    {extras}
     showLabel
   />
   <EditField

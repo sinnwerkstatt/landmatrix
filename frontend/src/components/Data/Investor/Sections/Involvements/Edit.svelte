@@ -22,8 +22,9 @@
   {label}
   bind:entries={investor.involvements}
   createEntry={createInvolvement(tertiary, investor.id)}
-  entryIdKey="id"
-  extras={{}}
+  extras={{
+    excludeIds: [...investor.involvements.map(i => i.parent_investor_id), investor.id],
+  }}
   {filterFn}
   isEmpty={isEmptyInvolvement}
   entryComponent={Entry}

@@ -65,6 +65,7 @@ export enum InvolvementRole {
 // TODO: Fix type in openAPI -> currently string
 export interface Involvement {
   id: number
+  nid: string
   parent_investor_id: number
   child_investor_id: number
   role: InvolvementRole
