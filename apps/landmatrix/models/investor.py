@@ -20,6 +20,7 @@ from apps.landmatrix.models.abstract import (
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.fields import ChoiceArrayField, LooseDateField, NanoIDField
+from apps.landmatrix.nid import generate_nid
 
 
 class InvestorHullQuerySet(models.QuerySet):
@@ -313,6 +314,11 @@ class Involvement(models.Model):
         verbose_name_plural = _("Investor Venture Involvements")
         ordering = ["id"]
         unique_together = [["parent_investor", "child_investor"]]
+
+    def save(self, *args, **kwargs):
+        if self._state.adding and not self.nid:
+            self.nid = generate_nid(Involvement)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         if self.role == "PARENT":

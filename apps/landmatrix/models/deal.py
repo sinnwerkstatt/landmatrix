@@ -39,6 +39,7 @@ from apps.landmatrix.models.fields import (
     LooseDateField,
 )
 from apps.landmatrix.models.investor import InvestorHull
+from apps.landmatrix.nid import generate_nid
 from django_pydantic_jsonfield import PydanticJSONField, SchemaValidator
 
 
@@ -1243,6 +1244,11 @@ class Area(models.Model):
             return MultiPolygon([geom])
 
         raise ValidationError
+
+    def save(self, *args, **kwargs):
+        if self._state.adding and not self.nid:
+            self.nid = generate_nid(Area)
+        super().save(*args, **kwargs)
 
     class Meta:
         # unique_together = ["location", "type", "current"]
