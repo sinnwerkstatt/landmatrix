@@ -20,10 +20,14 @@
 
 <SubmodelEditField
   {label}
-  bind:entries={investor.involvements}
+  bind:entries={investor.parents}
   createEntry={createInvolvement(tertiary, investor.id)}
   extras={{
-    excludeIds: [...investor.involvements.map(i => i.parent_investor_id), investor.id],
+    excludeIds: [
+      ...investor.parents.map(i => i.parent_investor_id),
+      ...investor.children.map(i => i.child_investor_id),
+      investor.id,
+    ],
   }}
   {filterFn}
   isEmpty={isEmptyInvolvement}

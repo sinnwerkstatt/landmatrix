@@ -1548,6 +1548,12 @@ export interface components {
       | "OIL_GAS_EXTRACTION"
       | "TOURISM"
       | "OTHER"
+    /**
+     * @description * `EQUITY` - Shares/Equity
+     * * `DEBT_FINANCING` - Debt financing
+     * @enum {string}
+     */
+    InvestmentTypeEnum: "EQUITY" | "DEBT_FINANCING"
     Investor: {
       id: number
       active_version_id: number | null
@@ -1555,7 +1561,8 @@ export interface components {
       versions: components["schemas"]["InvestorVersionVersionsList"][]
       selected_version: components["schemas"]["InvestorVersion"]
       deals: string
-      involvements: string
+      parents: readonly components["schemas"]["Involvement"][]
+      children: readonly components["schemas"]["Involvement"][]
       workflowinfos: string
       deleted?: boolean
       deleted_comment?: string
@@ -1666,11 +1673,46 @@ export interface components {
       activated_by_id: number | null
       status?: components["schemas"]["StatusEnum"]
     }
+    Involvement: {
+      id: number
+      /** ID */
+      nid: string
+      /** Investor */
+      parent_investor_id: number
+      /** Venture Company */
+      child_investor_id: number
+      /** Relation type */
+      role: components["schemas"]["InvolvementRoleEnum"]
+      investment_type: readonly components["schemas"]["InvestmentTypeEnum"][]
+      /** Format: decimal */
+      percentage: string | null
+      /**
+       * Loan amount
+       * Format: double
+       */
+      loans_amount: number | null
+      /** Loan currency */
+      loans_currency_id: number | null
+      /** Loan date */
+      loans_date: string | null
+      parent_relation:
+        | components["schemas"]["ParentRelationEnum"]
+        | components["schemas"]["BlankEnum"]
+        | components["schemas"]["NullEnum"]
+        | null
+      comment: string
+    }
     InvolvementFields: {
       role: components["schemas"]["ValueLabel"][]
       investment_type: components["schemas"]["ValueLabel"][]
       parent_relation: components["schemas"]["ValueLabel"][]
     }
+    /**
+     * @description * `PARENT` - Parent company
+     * * `LENDER` - Tertiary investor/lender
+     * @enum {string}
+     */
+    InvolvementRoleEnum: "PARENT" | "LENDER"
     /** JobsItem */
     JobsItem: {
       /**
@@ -1706,7 +1748,7 @@ export interface components {
       full_name: string
       /** @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
       username: string
-      role: components["schemas"]["RoleEnum"]
+      role: components["schemas"]["Role443Enum"]
       /**
        * Active
        * @description Designates whether this user should be treated as active. Unselect this instead of deleting accounts.
@@ -1939,6 +1981,13 @@ export interface components {
     /** @enum {unknown} */
     NullEnum: ""
     /**
+     * @description * `SUBSIDIARY` - Subsidiary of parent company
+     * * `LOCAL_BRANCH` - Local branch of parent company
+     * * `JOINT_VENTURE` - Joint venture of parent companies
+     * @enum {string}
+     */
+    ParentRelationEnum: "SUBSIDIARY" | "LOCAL_BRANCH" | "JOINT_VENTURE"
+    /**
      * @description * `INDIGENOUS_RIGHTS_RECOGNIZED` - Indigenous Peoples traditional or customary rights recognized by government
      * * `INDIGENOUS_RIGHTS_NOT_RECOGNIZED` - Indigenous Peoples traditional or customary rights not recognized by government
      * * `COMMUNITY_RIGHTS_RECOGNIZED` - Community traditional or customary rights recognized by government
@@ -1982,7 +2031,7 @@ export interface components {
      * * `3` - Administrator
      * @enum {integer}
      */
-    RoleEnum: 0 | 1 | 2 | 3
+    Role443Enum: 0 | 1 | 2 | 3
     SearchedInvestor: {
       id: number
       active_version_id: number
@@ -2043,7 +2092,7 @@ export interface components {
       information: string
       country: number | null
       region: number | null
-      role: components["schemas"]["RoleEnum"]
+      role: components["schemas"]["Role443Enum"]
       /**
        * Superuser status
        * @description Designates that this user has all permissions without explicitly assigning them.

@@ -21,8 +21,6 @@ export const createInvolvement =
     loans_date: null,
     parent_relation: null,
     comment: "",
-    other_investor: null!,
-    relationship: "",
   })
 
 export const isEmptyInvolvement = (involvement: Involvement) =>

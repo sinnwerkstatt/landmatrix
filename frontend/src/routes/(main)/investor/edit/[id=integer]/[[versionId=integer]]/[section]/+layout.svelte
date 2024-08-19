@@ -56,9 +56,7 @@
       investor.selected_version.datasources ?? []
     ).filter(x => !isEmptyDataSource(x as InvestorDataSource))
 
-    investor.involvements = (investor.involvements ?? []).filter(
-      x => !isEmptyInvolvement(x),
-    )
+    investor.parents = (investor.parents ?? []).filter(x => !isEmptyInvolvement(x))
 
     const ret = await fetch(
       data.investorVersion
@@ -70,7 +68,7 @@
         body: JSON.stringify({
           version: {
             ...investor.selected_version,
-            involvements: investor.involvements,
+            involvements: investor.parents,
           },
         }),
         headers: {
