@@ -201,19 +201,6 @@ class BaseWorkflowInfo(models.Model):
     )
     resolved = models.BooleanField(default=False)
 
-    def to_dict(self) -> dict:
-        return {
-            "id": self.id,
-            "from_user_id": self.from_user_id,
-            "to_user_id": self.to_user_id,
-            "status_before": self.status_before,
-            "status_after": self.status_after,
-            "timestamp": self.timestamp,
-            "comment": self.comment,
-            "resolved": self.resolved,
-            "replies": self.replies,
-        }
-
     def get_object_url(self):
         _site = Site.objects.get(is_default_site=True)
         _port = f":{_site.port}" if _site.port not in [80, 443] else ""
@@ -243,24 +230,6 @@ class BaseDataSource(models.Model):
     )
     open_land_contracts_id = models.CharField(_("Open Contracting ID"), blank=True)
     comment = models.TextField(_("Comment"), blank=True)
-
-    def to_dict(self):
-        return {
-            "nid": self.nid,
-            "type": self.type,
-            "url": self.url,
-            "file": str(self.file),
-            "file_not_public": self.file_not_public,
-            "publication_title": self.publication_title,
-            "date": self.date,
-            "name": self.name,
-            "company": self.company,
-            "email": self.email,
-            "phone": self.phone,
-            "includes_in_country_verified_information": self.includes_in_country_verified_information,
-            "open_land_contracts_id": self.open_land_contracts_id,
-            "comment": self.comment,
-        }
 
     def save(self, *args, **kwargs):
         if self._state.adding and not self.nid:

@@ -496,32 +496,32 @@ export interface components {
        * Latitude of central point
        * Format: double
        */
-      point_lat?: number | null
+      point_lat: number
       /**
        * Longitude of central point
        * Format: double
        */
-      point_lon?: number | null
+      point_lon: number
       /**
        * Latitude of southernmost point
        * Format: double
        */
-      point_lat_min?: number | null
+      point_lat_min: number
       /**
        * Longitude of westernmost point
        * Format: double
        */
-      point_lon_min?: number | null
+      point_lon_min: number
       /**
        * Latitude of northernmost point
        * Format: double
        */
-      point_lat_max?: number | null
+      point_lat_max: number
       /**
        * Longitude of easternmost point
        * Format: double
        */
-      point_lon_max?: number | null
+      point_lon_max: number
       observatory_page_id: number
       region_id: number | null
       deals: number[]
@@ -2073,22 +2073,22 @@ export interface components {
        * Latitude of northernmost point
        * Format: double
        */
-      point_lat_min?: number | null
+      point_lat_min: number
       /**
        * Longitude of westernmost point
        * Format: double
        */
-      point_lon_min?: number | null
+      point_lon_min: number
       /**
        * Latitude of southernmost point
        * Format: double
        */
-      point_lat_max?: number | null
+      point_lat_max: number
       /**
        * Longitude of easternmost point
        * Format: double
        */
-      point_lon_max?: number | null
+      point_lon_max: number
     }
     SearchedInvestor: {
       id: number

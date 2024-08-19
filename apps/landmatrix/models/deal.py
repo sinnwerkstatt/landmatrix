@@ -1302,16 +1302,6 @@ class Contract(models.Model):
     )
     comment = models.TextField(_("Comment"), blank=True)
 
-    def to_dict(self):
-        return {
-            "nid": self.nid,
-            "number": self.number,
-            "date": self.date,
-            "expiration_date": self.expiration_date,
-            "agreement_duration": self.agreement_duration,
-            "comment": self.comment,
-        }
-
     def save(self, *args, **kwargs):
         if self._state.adding and not self.nid:
             self.nid = generate(size=8)
