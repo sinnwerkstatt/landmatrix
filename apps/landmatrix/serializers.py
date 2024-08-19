@@ -74,13 +74,6 @@ class RegionSerializer(serializers.ModelSerializer):
         ]
 
 
-# ########## NEW MODEL
-# class UserIdUsernameSerialiser(serializers.ModelSerializer):
-#     class Meta:
-#         model = User
-#         fields = ["id", "username"]
-
-
 class DealVersionVersionsListSerializer(serializers.ModelSerializer):
     class Meta:
         model = DealVersion
@@ -432,9 +425,15 @@ class InvestorVersionSerializer(serializers.ModelSerializer):
         ).delete()
 
 
+# Not actively used, just for drf_spectacular types (and tests)
 class SimpleInvestorSerializer(serializers.Serializer):
     id = serializers.IntegerField()
-    name = serializers.CharField()
+
+    name = serializers.CharField(allow_null=True)
+    name_unknown = serializers.BooleanField(allow_null=True)
+    country_id = serializers.IntegerField(allow_null=True)
+    classification = serializers.CharField(allow_null=True)
+
     active = serializers.BooleanField()
     deleted = serializers.BooleanField()
 

@@ -2004,7 +2004,10 @@ export interface components {
     }
     SimpleInvestor: {
       id: number
-      name: string
+      name: string | null
+      name_unknown: boolean | null
+      country_id: number | null
+      classification: string | null
       active: boolean
       deleted: boolean
     }
