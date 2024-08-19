@@ -731,13 +731,13 @@ INVESTOR_CLASSIFICATION_ITEMS = serialize_enum(InvestorClassificationEnum)
 INVESTOR_CLASSIFICATION_CHOICES = InvestorClassificationEnum.choices
 
 
-class InvestorTypeEnum(TextChoices):
+class InvestmentTypeEnum(TextChoices):
     EQUITY = "EQUITY", _("Shares/Equity")
     DEBT_FINANCING = "DEBT_FINANCING", _("Debt financing")
 
 
-INVESTMENT_TYPE_ITEMS = serialize_enum(InvestorTypeEnum)
-INVESTMENT_TYPE_CHOICES = InvestorTypeEnum.choices
+INVESTMENT_TYPE_ITEMS = serialize_enum(InvestmentTypeEnum)
+INVESTMENT_TYPE_CHOICES = InvestmentTypeEnum.choices
 
 
 class InvolvementRoleEnum(TextChoices):
