@@ -1560,7 +1560,7 @@ export interface components {
       draft_version_id: number | null
       versions: components["schemas"]["InvestorVersionVersionsList"][]
       selected_version: components["schemas"]["InvestorVersion"]
-      deals: string
+      deals: readonly components["schemas"]["InvestorDeal"][]
       parents: readonly components["schemas"]["Involvement"][]
       children: readonly components["schemas"]["Involvement"][]
       workflowinfos: string
@@ -1595,6 +1595,28 @@ export interface components {
       open_land_contracts_id?: string
       comment?: string
       investorversion: number
+    }
+    InvestorDeal: {
+      id: number
+      /** Target country */
+      country_id: number | null
+      selected_version: components["schemas"]["InvestorDealSelectedVersion"]
+    }
+    InvestorDealSelectedVersion: {
+      id: number
+      current_intention_of_investment: readonly components["schemas"]["CurrentIntentionOfInvestmentEnum"][]
+      current_negotiation_status:
+        | components["schemas"]["CurrentNegotiationStatusEnum"]
+        | components["schemas"]["BlankEnum"]
+        | components["schemas"]["NullEnum"]
+        | null
+      current_implementation_status:
+        | components["schemas"]["CurrentImplementationStatusEnum"]
+        | components["schemas"]["BlankEnum"]
+        | components["schemas"]["NullEnum"]
+        | null
+      /** Format: double */
+      deal_size: number | null
     }
     InvestorFields: {
       classification: components["schemas"]["ValueLabel"][]

@@ -64,10 +64,11 @@ export enum InvolvementRole {
 
 export type Involvement = components["schemas"]["Involvement"]
 
+export type InvestorDeal = components["schemas"]["InvestorDeal"]
+
 // Fix InvestorHull type
 export interface InvestorHull
-  extends Omit<components["schemas"]["Investor"], "deals" | "workflowinfos"> {
-  deals: DealHull[]
+  extends Omit<components["schemas"]["Investor"], "workflowinfos"> {
   workflowinfos: WorkflowInfoType[]
 }
 

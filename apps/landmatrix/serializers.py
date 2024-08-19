@@ -440,6 +440,30 @@ class SimpleInvestorSerializer(serializers.Serializer):
     deleted = serializers.BooleanField()
 
 
+class InvestorDealSelectedVersionSerializer(ReadOnlyModelSerializer):
+    class Meta:
+        model = DealVersion
+        fields = (
+            "id",
+            "current_intention_of_investment",
+            "current_negotiation_status",
+            "current_implementation_status",
+            "deal_size",
+        )
+
+
+class InvestorDealSerializer(ReadOnlyModelSerializer):
+    selected_version = serializers.SerializerMethodField(read_only=True)
+
+    @extend_schema_field(InvestorDealSelectedVersionSerializer)
+    def get_selected_version(self, obj: DealHull):
+        return InvestorDealSelectedVersionSerializer(obj.active_version).data
+
+    class Meta:
+        model = DealHull
+        fields = ("id", "country_id", "selected_version")
+
+
 class InvolvementSerializer(ReadOnlyModelSerializer):
     percentage = serializers.DecimalField(
         decimal_places=2,
@@ -484,30 +508,11 @@ class InvestorSerializer(serializers.ModelSerializer):
         model = InvestorHull
         fields = "__all__"
 
-    @staticmethod
-    def get_deals(obj: InvestorVersion):
-        target_deals = (
-            DealHull.objects.filter(
-                id__in=obj.dealversions.all().values_list("deal_id", flat=True)
-            )
-            .exclude(active_version=None)
-            .prefetch_related("active_version")
-        )
-
-        return [
-            {
-                "id": d.id,
-                "country_id": d.country_id,
-                "selected_version": {
-                    "id": d.active_version.id,
-                    "current_intention_of_investment": d.active_version.current_intention_of_investment,
-                    "current_negotiation_status": d.active_version.current_negotiation_status,
-                    "current_implementation_status": d.active_version.current_implementation_status,
-                    "deal_size": d.active_version.deal_size,
-                },
-            }
-            for d in target_deals
-        ]
+    @extend_schema_field(InvestorDealSerializer(many=True))
+    def get_deals(self, obj: InvestorHull):
+        deal_ids = obj.dealversions.all().values_list("deal_id", flat=True)
+        qs = DealHull.objects.filter(id__in=deal_ids, active_version__isnull=False)
+        return InvestorDealSerializer(qs, many=True).data
 
     @extend_schema_field(InvolvementSerializer(many=True))
     def get_children(self, obj: InvestorHull):
