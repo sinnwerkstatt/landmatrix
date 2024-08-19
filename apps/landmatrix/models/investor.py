@@ -507,16 +507,6 @@ class InvestorWorkflowInfo(BaseWorkflowInfo):
         blank=True,
     )
 
-    def to_dict(self) -> dict:
-        d = super().to_dict()
-        d.update(
-            {
-                "investor_id": self.investor_id,
-                "investor_version_id": self.investor_version_id,
-            }
-        )
-        return d
-
     def get_object_url(self):
         base_url = super().get_object_url()
         return base_url + f"/investor/{self.investor_id}/"

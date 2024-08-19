@@ -220,3 +220,14 @@ class CarbonSequestrationSchema(ListRootModel):
         certification_standard_comment: str = ""
 
     root: list[CarbonSequestrationItem]
+
+
+class WFIReplySchema(ListRootModel):
+    class WFIReplyItem(BaseModel):
+        model_config = ConfigDict(extra="forbid")
+
+        timestamp: str
+        user_id: int
+        comment: str
+
+    root: list[WFIReplyItem]

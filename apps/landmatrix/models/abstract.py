@@ -11,7 +11,9 @@ from apps.accounts.models import User
 from apps.landmatrix.models import choices
 
 from apps.landmatrix.models.fields import NanoIDField, LooseDateField
+from apps.landmatrix.models import schema
 from apps.landmatrix.permissions import is_editor_or_higher, is_admin
+from django_pydantic_jsonfield import PydanticJSONField, SchemaValidator
 
 
 class BaseHull(models.Model):
@@ -192,7 +194,11 @@ class BaseWorkflowInfo(models.Model):
     )
     timestamp = models.DateTimeField(default=timezone.now)
     comment = models.TextField(blank=True)
-    replies = models.JSONField(null=True, default=list)
+    replies = PydanticJSONField(
+        null=True,
+        default=list,
+        validators=[SchemaValidator(schema=schema.WFIReplySchema)],
+    )
     resolved = models.BooleanField(default=False)
 
     def to_dict(self) -> dict:
@@ -216,6 +222,7 @@ class BaseWorkflowInfo(models.Model):
 
     class Meta:
         abstract = True
+        ordering = ("-timestamp",)
 
 
 class BaseDataSource(models.Model):

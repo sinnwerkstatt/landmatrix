@@ -1282,20 +1282,6 @@ class DealWorkflowInfo(BaseWorkflowInfo):
         blank=True,
     )
 
-    # OLD Code
-    # # WARNING
-    # # Do not use to map large query sets!
-    # # Takes tons of memory storing related deal and deal_version objects.
-    # def to_dict(self) -> dict:
-    #     d = super().to_dict()
-    #     d.update({"deal": self.deal, "deal_version": self.deal_version})
-    #     return d
-
-    def to_dict(self) -> dict:
-        d = super().to_dict()
-        d.update({"deal_id": self.deal_id, "deal_version_id": self.deal_version_id})
-        return d
-
     def get_object_url(self):
         base_url = super().get_object_url()
         return base_url + f"/deal/{self.deal_id}/"

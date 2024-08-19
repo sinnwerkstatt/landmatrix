@@ -864,7 +864,7 @@ export interface components {
       country_id: number | null
       versions: readonly components["schemas"]["DealVersionVersionsList"][]
       selected_version: components["schemas"]["DealVersion"]
-      workflowinfos: string
+      workflowinfos: readonly components["schemas"]["DealWorkflowInfo"][]
       deleted?: boolean
       deleted_comment?: string
       /** Format: date-time */
@@ -959,7 +959,7 @@ export interface components {
       sent_to_activation_at: string | null
       /** Format: date-time */
       activated_at: string | null
-      status: components["schemas"]["StatusEnum"]
+      status: components["schemas"]["VersionStatusEnum"]
       /** Format: double */
       intended_size?: number | null
       contract_size?: components["schemas"]["CurrentDateAreaSchema"]
@@ -1256,9 +1256,31 @@ export interface components {
       /** Format: date-time */
       activated_at?: string | null
       activated_by_id: number | null
-      status?: components["schemas"]["StatusEnum"]
+      status?: components["schemas"]["VersionStatusEnum"]
       fully_updated?: boolean
       is_public?: boolean
+    }
+    DealWorkflowInfo: {
+      id: number
+      from_user_id: number
+      to_user_id: number | null
+      status_before:
+        | components["schemas"]["VersionStatusEnum"]
+        | components["schemas"]["BlankEnum"]
+        | components["schemas"]["NullEnum"]
+        | null
+      status_after:
+        | components["schemas"]["VersionStatusEnum"]
+        | components["schemas"]["BlankEnum"]
+        | components["schemas"]["NullEnum"]
+        | null
+      /** Format: date-time */
+      timestamp: string
+      comment: string
+      resolved: boolean
+      replies: unknown
+      deal_id: number
+      deal_version_id: number | null
     }
     /**
      * ElectricityGenerationEnum
@@ -1563,7 +1585,7 @@ export interface components {
       deals: readonly components["schemas"]["InvestorDeal"][]
       parents: readonly components["schemas"]["Involvement"][]
       children: readonly components["schemas"]["Involvement"][]
-      workflowinfos: string
+      workflowinfos: readonly components["schemas"]["InvestorWorkflowInfo"][]
       deleted?: boolean
       deleted_comment?: string
       /** Format: date-time */
@@ -1644,7 +1666,7 @@ export interface components {
       sent_to_activation_at: string | null
       /** Format: date-time */
       activated_at: string | null
-      status: components["schemas"]["StatusEnum"]
+      status: components["schemas"]["VersionStatusEnum"]
       name?: string
       name_unknown?: boolean
       classification?:
@@ -1693,7 +1715,29 @@ export interface components {
       /** Format: date-time */
       activated_at?: string | null
       activated_by_id: number | null
-      status?: components["schemas"]["StatusEnum"]
+      status?: components["schemas"]["VersionStatusEnum"]
+    }
+    InvestorWorkflowInfo: {
+      id: number
+      from_user_id: number
+      to_user_id: number | null
+      status_before:
+        | components["schemas"]["VersionStatusEnum"]
+        | components["schemas"]["BlankEnum"]
+        | components["schemas"]["NullEnum"]
+        | null
+      status_after:
+        | components["schemas"]["VersionStatusEnum"]
+        | components["schemas"]["BlankEnum"]
+        | components["schemas"]["NullEnum"]
+        | null
+      /** Format: date-time */
+      timestamp: string
+      comment: string
+      resolved: boolean
+      replies: unknown
+      investor_id: number
+      investor_version_id: number | null
     }
     Involvement: {
       id: number
@@ -1770,7 +1814,7 @@ export interface components {
       full_name: string
       /** @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
       username: string
-      role: components["schemas"]["Role443Enum"]
+      role: components["schemas"]["UserRoleEnum"]
       /**
        * Active
        * @description Designates whether this user should be treated as active. Unselect this instead of deleting accounts.
@@ -2046,14 +2090,6 @@ export interface components {
        */
       point_lon_max?: number | null
     }
-    /**
-     * @description * `0` - ---------
-     * * `1` - Reporter
-     * * `2` - Editor
-     * * `3` - Administrator
-     * @enum {integer}
-     */
-    Role443Enum: 0 | 1 | 2 | 3
     SearchedInvestor: {
       id: number
       active_version_id: number
@@ -2090,14 +2126,6 @@ export interface components {
      * @enum {string}
      */
     SourceOfWaterExtractionEnum: "GROUNDWATER" | "SURFACE_WATER" | "RIVER" | "LAKE"
-    /**
-     * @description * `DRAFT` - Draft
-     * * `REVIEW` - Review
-     * * `ACTIVATION` - Activation
-     * * `ACTIVATED` - Activated
-     * @enum {string}
-     */
-    StatusEnum: "DRAFT" | "REVIEW" | "ACTIVATION" | "ACTIVATED"
     User: {
       id: number
       /** @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
@@ -2114,7 +2142,7 @@ export interface components {
       information: string
       country: number | null
       region: number | null
-      role: components["schemas"]["Role443Enum"]
+      role: components["schemas"]["UserRoleEnum"]
       /**
        * Superuser status
        * @description Designates that this user has all permissions without explicitly assigning them.
@@ -2131,11 +2159,27 @@ export interface components {
        */
       is_active: boolean
     }
+    /**
+     * @description * `0` - ---------
+     * * `1` - Reporter
+     * * `2` - Editor
+     * * `3` - Administrator
+     * @enum {integer}
+     */
+    UserRoleEnum: 0 | 1 | 2 | 3
     ValueLabel: {
       value: string
       label: string
       group?: string
     }
+    /**
+     * @description * `DRAFT` - Draft
+     * * `REVIEW` - Review
+     * * `ACTIVATION` - Activation
+     * * `ACTIVATED` - Activated
+     * @enum {string}
+     */
+    VersionStatusEnum: "DRAFT" | "REVIEW" | "ACTIVATION" | "ACTIVATED"
   }
   responses: never
   parameters: never
