@@ -1113,10 +1113,10 @@ class DealVersion(DealVersionBaseFields, BaseVersion):
             return int(date[:4])
 
         negotiation_status_dates = [
-            year_as_int(x["date"])
+            year_as_int(x.get("date"))
             for x in self.negotiation_status
-            if x["date"]
-            and x["choice"]
+            if "date" in x
+            and x.get("choice")
             in (
                 NegotiationStatusEnum.UNDER_NEGOTIATION,
                 NegotiationStatusEnum.ORAL_AGREEMENT,
@@ -1127,10 +1127,10 @@ class DealVersion(DealVersionBaseFields, BaseVersion):
         ]
 
         implementation_status_dates = [
-            year_as_int(x["date"])
+            year_as_int(x.get("date"))
             for x in self.implementation_status
-            if x["date"]
-            and x["choice"]
+            if "date" in x
+            and x.get("choice")
             in (
                 ImplementationStatusEnum.STARTUP_PHASE,
                 ImplementationStatusEnum.IN_OPERATION,
