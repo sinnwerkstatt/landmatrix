@@ -36,11 +36,11 @@
   {:then investor}
     {#if investor.deleted}
       <span class="font-bold text-red">
-        {$_("DELETED")}:
+        {$_("Deleted")}:
       </span>
     {:else if investor.active_version_id === null}
       <span class="font-bold text-purple">
-        {$_("DRAFT")}:
+        {$_("Draft")}:
       </span>
     {/if}
 

@@ -51,13 +51,13 @@
       <div
         class="absolute bottom-2 left-0 right-0 flex items-center justify-center text-3xl italic opacity-30"
       >
-        {$_("DELETED")}
+        {$_("Deleted")}
       </div>
     {:else if !otherInvestor.active}
       <div
         class="absolute bottom-2 left-0 right-0 flex items-center justify-center text-3xl italic opacity-30"
       >
-        {$_("DRAFT")}
+        {$_("Draft")}
       </div>
     {/if}
     <DisplayField

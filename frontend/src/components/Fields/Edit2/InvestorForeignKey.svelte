@@ -112,11 +112,11 @@
     {:else}
       {#if selection.deleted}
         <span class="font-bold text-red">
-          {$_("DELETED")}:
+          {$_("Deleted")}:
         </span>
       {:else if !selection.active}
         <span class="font-bold text-purple">
-          {$_("DRAFT")}:
+          {$_("Draft")}:
         </span>
       {/if}
       {selection.name} (#{selection.id})
@@ -128,7 +128,7 @@
     {:else}
       {#if !item.active}
         <span class="font-bold text-purple">
-          {$_("DRAFT")}:
+          {$_("Draft")}:
         </span>
       {/if}
       {item.name} (#{item.id})

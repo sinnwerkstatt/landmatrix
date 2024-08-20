@@ -41,11 +41,11 @@
     {#if investor}
       {#if investor.deleted}
         <span class="text-red">
-          {$_("DELETED")}:
+          {$_("Deleted")}:
         </span>
       {:else if !investor.active}
         <span class="text-purple">
-          {$_("DRAFT")}:
+          {$_("Draft")}:
         </span>
       {/if}
       <span class="font-bold text-pelorous">
