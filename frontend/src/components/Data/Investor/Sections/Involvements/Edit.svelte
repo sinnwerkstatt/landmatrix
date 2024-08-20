@@ -1,6 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
+  import { simpleInvestors } from "$lib/stores"
   import { InvolvementRole, type InvestorHull, type Involvement } from "$lib/types/data"
 
   import SubmodelEditField from "$components/Fields/SubmodelEditField.svelte"
@@ -32,4 +33,24 @@
   {filterFn}
   isEmpty={isEmptyInvolvement}
   entryComponent={Entry}
-/>
+>
+  <svelte:fragment slot="extraHeader" let:entry>
+    {@const investor = $simpleInvestors.find(
+      inv => inv.id === entry.parent_investor_id,
+    )}
+    {#if investor}
+      {#if investor.deleted}
+        <span class="text-lg text-red">
+          {$_("DELETED")}:
+        </span>
+      {:else if !investor.active}
+        <span class="text-lg text-purple">
+          {$_("DRAFT")}:
+        </span>
+      {/if}
+      <span class="text-lg text-pelorous">
+        {investor.name} #{investor.id}
+      </span>
+    {/if}
+  </svelte:fragment>
+</SubmodelEditField>
