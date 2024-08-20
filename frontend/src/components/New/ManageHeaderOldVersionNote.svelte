@@ -14,11 +14,11 @@
   <div
     class="my-4 rounded border border-orange-500 bg-orange-100 px-4 py-2 text-lg dark:bg-orange-800"
   >
-    <span class="whitespace-nowrap">
+    <span class="md:whitespace-nowrap">
       {$_("Please note: you are viewing an old version of this {object}.", i18nValues)}
     </span>
 
-    <span class="whitespace-nowrap">
+    <span class="md:whitespace-nowrap">
       {$_("The current version can be found here:")}
       <a href="/{objType}/{obj.id}/" class="text-pelorous hover:text-pelorous-300">
         {isDeal ? $_("Deal") : $_("Investor")} #{obj.id}
