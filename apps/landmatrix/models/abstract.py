@@ -17,13 +17,14 @@ from django_pydantic_jsonfield import PydanticJSONField, SchemaValidator
 
 
 class BaseHull(models.Model):
-    deleted = models.BooleanField(default=False)
-    deleted_comment = models.TextField(blank=True)
+    deleted = models.BooleanField(_("Deleted"), default=False)
+    deleted_comment = models.TextField(_("Comment on deletion"), blank=True)
 
     # mainly for management/case_statistics
-    first_created_at = models.DateTimeField()
+    first_created_at = models.DateTimeField(_("First created at"))
     first_created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
+        verbose_name=_("First created by"),
         blank=True,
         null=True,
         on_delete=models.PROTECT,
@@ -57,42 +58,59 @@ class BaseVersion(models.Model):
     created_at = models.DateTimeField(_("Created at"))
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
+        verbose_name=_("Created by"),
         blank=True,
         null=True,
         on_delete=models.PROTECT,
         related_name="+",
     )
-    modified_at = models.DateTimeField(_("Modified at"), blank=True, null=True)
+    modified_at = models.DateTimeField(
+        _("Modified at"),
+        blank=True,
+        null=True,
+    )
     modified_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
+        verbose_name=_("Modified by"),
         blank=True,
         null=True,
         on_delete=models.PROTECT,
         related_name="+",
     )
     sent_to_review_at = models.DateTimeField(
-        _("Sent to review at"), null=True, blank=True
+        _("Sent to review at"),
+        blank=True,
+        null=True,
     )
     sent_to_review_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
+        verbose_name=_("Sent to review by"),
         blank=True,
         null=True,
         on_delete=models.PROTECT,
         related_name="+",
     )
     sent_to_activation_at = models.DateTimeField(
-        _("Reviewed at"), null=True, blank=True
+        _("Sent to activation at"),
+        blank=True,
+        null=True,
     )
     sent_to_activation_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
+        verbose_name=_("Sent to activation by"),
         blank=True,
         null=True,
         on_delete=models.PROTECT,
         related_name="+",
     )
-    activated_at = models.DateTimeField(_("Activated at"), null=True, blank=True)
+    activated_at = models.DateTimeField(
+        _("Activated at"),
+        blank=True,
+        null=True,
+    )
     activated_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
+        verbose_name=_("Activated by"),
         blank=True,
         null=True,
         on_delete=models.PROTECT,
@@ -100,9 +118,14 @@ class BaseVersion(models.Model):
     )
 
     status: VersionStatus = models.CharField(
+        _("Status"),
         choices=VersionStatus.choices,
         default=VersionStatus.DRAFT,
     )
+
+    class Meta:
+        abstract = True
+        ordering = ("id",)
 
     def save(self, *args, **kwargs):
         if self._state.adding and not self.created_at:
@@ -150,9 +173,6 @@ class BaseVersion(models.Model):
 
         else:
             raise ParseError("Invalid transition")
-
-    class Meta:
-        abstract = True
 
     def copy_to_new_draft(self, created_by_id):
         self.id = None

@@ -896,7 +896,7 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
     },
     current_intention_of_investment: {
       displayField: IOIField,
-      label: $_("Intention of investment"),
+      label: $_("Current intention of investment"),
     },
     current_implementation_status: {
       displayField: ChoicesField,
