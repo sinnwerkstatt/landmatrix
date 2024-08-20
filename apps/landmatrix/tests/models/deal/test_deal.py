@@ -12,8 +12,8 @@ from apps.landmatrix.models.deal import DealHull, DealVersion
 
 
 def test_get_deal_size():
-    heaven = Country.objects.create(name="Heaven")
-    deal = DealHull.objects.create(country=heaven)
+    spain = Country.objects.get(id=724, name="Spain")
+    deal = DealHull.objects.create(country=spain)
     version = DealVersion.objects.create(
         deal_id=deal.id,
         intended_size=100.23,

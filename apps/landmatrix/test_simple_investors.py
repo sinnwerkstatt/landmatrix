@@ -51,7 +51,7 @@ def test_get_simple_investors(api_client):
         investor=investor,
         name="Bad Company",
         classification=InvestorClassificationEnum.ASSET_MANAGEMENT_FIRM,
-        country=Country.objects.create(id=1000, name="H E L L"),
+        country=Country.objects.get(id=724, name="Spain"),
     )
     investor.save()
 
@@ -64,7 +64,7 @@ def test_get_simple_investors(api_client):
             "id": 500,
             "name": "Bad Company",
             "name_unknown": False,
-            "country_id": 1000,
+            "country_id": 724,
             "classification": InvestorClassificationEnum.ASSET_MANAGEMENT_FIRM,
             "active": True,
             "deleted": False,

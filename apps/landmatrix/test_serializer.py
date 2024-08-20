@@ -84,7 +84,7 @@ def test_investor_serializer_get_deals():
 
     deal = DealHull.objects.create(
         id=50,
-        country=Country.objects.create(id=1000, name="HEAVEN"),
+        country=Country.objects.get(id=724, name="Spain"),
     )
 
     deal.draft_version = DealVersion.objects.create(
@@ -113,7 +113,7 @@ def test_investor_serializer_get_deals():
     assert InvestorSerializer().get_deals(investor) == [
         {
             "id": 50,
-            "country_id": 1000,
+            "country_id": 724,
             "selected_version": {
                 "id": 502,
                 "current_intention_of_investment": [],
