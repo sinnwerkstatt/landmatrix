@@ -627,6 +627,7 @@ class InvestorVersionViewSet(VersionViewSet):
 class InvestorViewSet(HullViewSet):
     queryset = InvestorHull.objects.all()
     version_serializer_class = InvestorVersionSerializer
+    serializer_class = InvestorSerializer
 
     def get_queryset(self):
         qs = self.queryset.prefetch_related(
@@ -637,11 +638,6 @@ class InvestorViewSet(HullViewSet):
             qs = qs.visible(self.request.user, "UNFILTERED")
 
         return qs
-
-    def get_serializer_class(self):
-        if self.action == "simple":
-            return SimpleInvestorSerializer
-        return InvestorSerializer
 
     @staticmethod
     def create(request, *args, **kwargs):
@@ -696,13 +692,29 @@ class InvestorViewSet(HullViewSet):
     @extend_schema(responses={200: SimpleInvestorSerializer(many=True)})
     @action(methods=["get"], detail=False)
     def simple(self, request):
-        qs = InvestorHull.objects.annotate(
-            name=Case(
-                When(~Q(active_version=None), then="active_version__name"),
-                default="draft_version__name",
-            ),
-            active=~Q(active_version=None),
-        ).values("id", "name", "active", "deleted")
+
+        def version_find(field_name: str) -> Case:
+            return Case(
+                When(
+                    Q(active_version__isnull=False),
+                    then=F(f"active_version__{field_name}"),
+                ),
+                When(
+                    Q(draft_version__isnull=False),
+                    then=F(f"draft_version__{field_name}"),
+                ),
+                default=None,
+            )
+
+        qs = InvestorHull.objects.values(
+            "id",
+            "deleted",
+            name=version_find("name"),
+            name_unknown=version_find("name_unknown"),
+            country_id=version_find("country_id"),
+            classification=version_find("classification"),
+            active=Q(active_version__isnull=False),
+        )
         return Response(qs)
 
     @extend_schema(parameters=openapi_filters_parameters)

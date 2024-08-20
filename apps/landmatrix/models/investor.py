@@ -19,7 +19,8 @@ from apps.landmatrix.models.abstract import (
 )
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.currency import Currency
-from apps.landmatrix.models.fields import ChoiceArrayField, LooseDateField
+from apps.landmatrix.models.fields import ChoiceArrayField, LooseDateField, NanoIDField
+from apps.landmatrix.nid import generate_nid
 
 
 class InvestorHullQuerySet(models.QuerySet):
@@ -193,6 +194,12 @@ class InvestorHull(BaseHull):
             )
         return _seen_investors
 
+    def get_parents(self) -> QuerySet["Involvement"]:
+        return Involvement.objects.filter(child_investor=self)
+
+    def get_children(self) -> QuerySet["Involvement"]:
+        return Involvement.objects.filter(parent_investor=self)
+
     def get_affected_dealversions(self, seen_investors=None) -> set["DealVersion"]:
         """
         Get list of affected deals - this is like Top Investors, only downwards
@@ -253,8 +260,7 @@ class InvolvementQuerySet(models.QuerySet):
 
 
 class Involvement(models.Model):
-    # TODO: Add nanoId
-    # nid = NanoIDField("ID", max_length=15, db_index=True, null=True)
+    nid = NanoIDField("ID", max_length=15, db_index=True)
     parent_investor = models.ForeignKey(
         InvestorHull,
         verbose_name=_("Investor"),
@@ -313,9 +319,12 @@ class Involvement(models.Model):
         verbose_name = _("Investor Venture Involvement")
         verbose_name_plural = _("Investor Venture Involvements")
         ordering = ["id"]
-        # would be nice to have but not today
-        # maybe tomorrow?
-        # unique_together = [["parent_investor", "child_investor"]]
+        unique_together = [["parent_investor", "child_investor"]]
+
+    def save(self, *args, **kwargs):
+        if self._state.adding and not self.nid:
+            self.nid = generate_nid(Involvement)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         if self.role == "PARENT":
@@ -391,18 +400,11 @@ class InvestorVersion(BaseVersion):
             investor.draft_version = None
             investor.active_version = self
 
-            # upon activation, map the involvements_snapshot into the Involvements table
             seen_involvements = set()
             for invo in self.involvements_snapshot:
-                # involvements include bidirectional relations. we filter out only parent relations that we save.
-                if invo["child_investor_id"] != investor.id:
-                    continue
-
                 try:
-                    # TODO: Cleanup magic foo where id as string (nanoId) or None is processed
-                    assert isinstance(invo["id"], int)
-                    i1 = Involvement.objects.get(id=invo["id"], child_investor=investor)
-                except (Involvement.DoesNotExist, AssertionError):
+                    i1 = Involvement.objects.get(id=invo["id"])
+                except Involvement.DoesNotExist:
                     i1 = Involvement(child_investor=investor)
 
                 i1.parent_investor_id = invo["parent_investor_id"]
@@ -415,12 +417,18 @@ class InvestorVersion(BaseVersion):
                 i1.parent_relation = invo["parent_relation"]
                 i1.comment = invo["comment"]
                 i1.save()
+
                 seen_involvements.add(i1.id)
 
             Involvement.objects.filter(child_investor=investor).exclude(
                 id__in=seen_involvements
             ).delete()
 
+            # recreate snapshot
+            self.involvements_snapshot = self._create_snapshot()
+            self.save()
+
+            # recalculate depended fields
             investor.save()
 
             # close unresolved workflowinfos
@@ -454,6 +462,11 @@ class InvestorVersion(BaseVersion):
             status_after=self.status,
             comment=comment,
         )
+
+    def _create_snapshot(self) -> list[dict]:
+        from apps.landmatrix.serializers import InvolvementSerializer
+
+        return InvolvementSerializer(self.investor.get_parents(), many=True).data
 
     def copy_to_new_draft(self, created_by_id: int):
         old_self = InvestorVersion.objects.get(pk=self.pk)

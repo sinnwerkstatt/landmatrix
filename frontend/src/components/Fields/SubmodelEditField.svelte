@@ -121,6 +121,7 @@
               <span class="font-mono text-sm text-gray-500">
                 #{idAsString}
               </span>
+              <slot name="extraHeader" {entry} />
             </button>
           </h3>
           <button

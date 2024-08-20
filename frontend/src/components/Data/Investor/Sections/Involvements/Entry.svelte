@@ -1,16 +1,19 @@
 <script lang="ts">
-  import type { Involvement } from "$lib/types/data"
+  import type { Involvement, Mutable } from "$lib/types/data"
 
   import CurrencySelect from "$components/Fields/Edit2/CurrencySelect.svelte"
   import EditField from "$components/Fields/EditField.svelte"
 
-  export let entry: Involvement
+  export let entry: Mutable<Involvement>
+
+  export let extras: { excludeIds?: number[] } = {}
 </script>
 
 <div class="grid lg:grid-cols-2 lg:gap-4">
   <EditField
     fieldname="involvement.parent_investor_id"
     bind:value={entry.parent_investor_id}
+    {extras}
     showLabel
   />
   <EditField

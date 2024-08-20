@@ -91,6 +91,7 @@ involvement_headers = [
 ]
 involvement_fields = [
     "id",
+    "nid",
     "child_investor_id",
     "child_investor__active_version__name",
     "parent_investor_id",

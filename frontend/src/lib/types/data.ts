@@ -62,43 +62,12 @@ export enum InvolvementRole {
   LENDER = "LENDER",
 }
 
-// TODO: Fix type in openAPI -> currently string
-export interface Involvement {
-  id: number
-  parent_investor_id: number
-  child_investor_id: number
-  role: InvolvementRole
-
-  investment_type: string[]
-  percentage: number | null
-  loans_amount: number | null
-  loans_currency_id: number | null
-  loans_date: LooseDateString | null
-  parent_relation: string | null
-  comment: string
-  // the following are generated on the fly in the backend
-  other_investor?: {
-    id: number
-    selected_version: {
-      name: string
-      name_unknown: boolean
-      country_id: number | null
-      classification: string
-    }
-    deleted: boolean
-    draft_only: boolean
-  }
-  relationship: string
-}
+export type Involvement = components["schemas"]["Involvement"]
 
 // Fix InvestorHull type
 export interface InvestorHull
-  extends Omit<
-    components["schemas"]["Investor"],
-    "deals" | "involvements" | "workflowinfos"
-  > {
+  extends Omit<components["schemas"]["Investor"], "deals" | "workflowinfos"> {
   deals: DealHull[]
-  involvements: Involvement[]
   workflowinfos: WorkflowInfoType[]
 }
 

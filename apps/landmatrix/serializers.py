@@ -1,9 +1,9 @@
 from django.contrib.gis.geos import GEOSGeometry
-from django.db.models import F, Q, QuerySet, Case, When
-from django.db.models.functions import JSONObject
-from django.utils.translation import gettext as _
+from django.db.models import QuerySet
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
+from apps.accounts.models import User
 from apps.landmatrix.models.country import Country, Region
 from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.deal import (
@@ -23,6 +23,8 @@ from apps.landmatrix.models.investor import (
     InvestorWorkflowInfo,
     InvestorDataSource,
 )
+from apps.landmatrix.permissions import is_reporter_or_higher
+from apps.serializer import ReadOnlyModelSerializer
 from django_pydantic_jsonfield import PydanticJSONFieldMixin
 
 
@@ -72,13 +74,6 @@ class RegionSerializer(serializers.ModelSerializer):
             "point_lat_max",
             "point_lon_max",
         ]
-
-
-# ########## NEW MODEL
-# class UserIdUsernameSerialiser(serializers.ModelSerializer):
-#     class Meta:
-#         model = User
-#         fields = ["id", "username"]
 
 
 class DealVersionVersionsListSerializer(serializers.ModelSerializer):
@@ -432,11 +427,43 @@ class InvestorVersionSerializer(serializers.ModelSerializer):
         ).delete()
 
 
+# Not actively used, just for drf_spectacular types (and tests)
 class SimpleInvestorSerializer(serializers.Serializer):
     id = serializers.IntegerField()
-    name = serializers.CharField()
+
+    name = serializers.CharField(allow_null=True)
+    name_unknown = serializers.BooleanField(allow_null=True)
+    country_id = serializers.IntegerField(allow_null=True)
+    classification = serializers.CharField(allow_null=True)
+
     active = serializers.BooleanField()
     deleted = serializers.BooleanField()
+
+
+class InvolvementSerializer(ReadOnlyModelSerializer):
+    percentage = serializers.DecimalField(
+        decimal_places=2,
+        max_digits=5,
+        coerce_to_string=True,
+        allow_null=True,
+    )
+
+    class Meta:
+        model = Involvement
+        fields = [
+            "id",
+            "nid",
+            "parent_investor_id",
+            "child_investor_id",
+            "role",
+            "investment_type",
+            "percentage",
+            "loans_amount",
+            "loans_currency_id",
+            "loans_date",
+            "parent_relation",
+            "comment",
+        ]
 
 
 class InvestorSerializer(serializers.ModelSerializer):
@@ -448,8 +475,9 @@ class InvestorSerializer(serializers.ModelSerializer):
     selected_version = InvestorVersionSerializer()
     deals = serializers.SerializerMethodField()
 
-    # involvements = InvolvementSerializer(many=True)
-    involvements = serializers.SerializerMethodField()
+    parents = serializers.SerializerMethodField(read_only=True)
+    children = serializers.SerializerMethodField(read_only=True)
+
     workflowinfos = serializers.SerializerMethodField()
 
     class Meta:
@@ -481,119 +509,41 @@ class InvestorSerializer(serializers.ModelSerializer):
             for d in target_deals
         ]
 
-    def get_involvements(self, obj: InvestorHull):
+    @extend_schema_field(InvolvementSerializer(many=True))
+    def get_children(self, obj: InvestorHull):
+        user: User = self.context["request"].user
+
+        qs = obj.get_children()
+        qs = qs.active() if not is_reporter_or_higher(user) else qs
+
+        return InvolvementSerializer(qs, read_only=True, many=True).data
+
+    @extend_schema_field(InvolvementSerializer(many=True))
+    def get_parents(self, obj: InvestorHull):
+        user: User = self.context["request"].user
+
         if hasattr(obj, "_selected_version_id"):
-            selected_version_id = obj._selected_version_id
+            version = obj.versions.get(id=getattr(obj, "_selected_version_id"))
         else:
-            selected_version_id = None
+            version = obj.active_version or obj.draft_version
 
-        if selected_version_id and selected_version_id != obj.active_version_id:
-            # TODO: Add nanoIds
-            invos = obj.versions.get(id=selected_version_id).involvements_snapshot
-        elif obj.active_version:
-            qs_invos = (
-                Involvement.objects.filter(
-                    Q(parent_investor_id=obj.id) | Q(child_investor_id=obj.id)
-                )
-                .values(
-                    "id",
-                    "parent_investor_id",
-                    "child_investor_id",
-                    "role",
-                    "investment_type",
-                    "percentage",
-                    "loans_amount",
-                    "loans_currency_id",
-                    "loans_date",
-                    "parent_relation",
-                    "comment",
-                )
-                .order_by("id")
+        # just take snapshot here, because it is set correctly for activated versions
+        snapshot = version.involvements_snapshot or []
+
+        if not is_reporter_or_higher(user):
+            parent_ids = [inv["parent_investor_id"] for inv in snapshot]
+            active_parent_ids = (
+                InvestorHull.objects.filter(id__in=parent_ids)
+                .active()
+                .values_list("id", flat=True)
             )
+            return [
+                inv
+                for inv in snapshot
+                if inv["parent_investor_id"] in active_parent_ids
+            ]
 
-            invos = list(qs_invos)
-        else:
-            # TODO: Add nanoIds
-            invos = obj.draft_version.involvements_snapshot
-
-        if invos is None:
-            return []
-
-        self._enrich_involvements_for_viewing(invos, obj.id)
-
-        return invos
-
-    @staticmethod
-    def _enrich_involvements_for_viewing(
-        involvements: list[dict],
-        target_id: int,
-    ) -> None:
-        filtered_involvements = [
-            x
-            for x in involvements
-            if x["parent_investor_id"] and x["child_investor_id"]
-        ]
-
-        all_ids = set()
-        for involvement in filtered_involvements:
-            all_ids.add(involvement["parent_investor_id"])
-            all_ids.add(involvement["child_investor_id"])
-
-        selected_version = Case(
-            When(
-                ~Q(active_version=None),
-                then=JSONObject(
-                    name=F("active_version__name"),
-                    name_unknown=F("active_version__name_unknown"),
-                    country_id=F("active_version__country_id"),
-                    classification=F("active_version__classification"),
-                ),
-            ),
-            default=JSONObject(
-                name=F("draft_version__name"),
-                name_unknown=F("draft_version__name_unknown"),
-                country_id=F("draft_version__country_id"),
-                classification=F("draft_version__classification"),
-            ),
-        )
-
-        investor_lookup = {
-            x["id"]: x
-            for x in InvestorHull.objects.filter(id__in=all_ids)
-            .annotate(
-                selected_version=selected_version,
-            )
-            .annotate(
-                draft_only=Q(active_version=None),
-            )
-            .values("id", "selected_version", "draft_only", "deleted")
-        }
-
-        for invo in filtered_involvements:
-            if target_id == invo["parent_investor_id"]:
-                relationship = (
-                    _("Subsidiary company")
-                    if invo["role"] == "PARENT"
-                    else _("Beneficiary company")
-                )
-                other_investor = investor_lookup[invo["child_investor_id"]]
-            elif target_id == invo["child_investor_id"]:
-                relationship = (
-                    _("Parent company")
-                    if invo["role"] == "PARENT"
-                    else _("Tertiary investor/lender")
-                )
-                other_investor = investor_lookup[invo["parent_investor_id"]]
-            else:
-                continue
-
-            invo |= {
-                "relationship": relationship,
-                "other_investor": other_investor,  # this exists for detail view
-            }
-
-    # def get_deals(self):
-    #     return
+        return snapshot
 
     @staticmethod
     def get_workflowinfos(obj: InvestorHull):
