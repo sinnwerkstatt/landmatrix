@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-07-12 14:15+0200\n"
+"POT-Creation-Date: 2024-08-20 22:24+0200\n"
 "PO-Revision-Date: 2024-07-11 12:52+0000\n"
 "Last-Translator: Marie Gradeler <accountability@landmatrix.org>\n"
 "Language-Team: Spanish <http://translate.landmatrix.org/projects/landmatrix/landmatrix/es/>\n"
@@ -31,6 +31,18 @@ msgstr "Cuenta aún no activada."
 msgid "Role"
 msgstr "Rol"
 
+msgid "---------"
+msgstr "---------"
+
+msgid "Reporter"
+msgstr "Periodista"
+
+msgid "Editor"
+msgstr "Editor"
+
+msgid "Administrator"
+msgstr "Administrador"
+
 #, python-format
 msgid "You're receiving this email because you requested a password reset for your user account at %(site_name)s."
 msgstr "Está recibiendo este correo electrónico porque solicitó restablecer la contraseña de su cuenta de usuario en %(site_name)s."
@@ -50,6 +62,102 @@ msgstr "El equipo de %(site_name)s"
 
 msgid "New feedback reply"
 msgstr ""
+
+msgid "Deleted"
+msgstr "Eliminado"
+
+msgid "Comment on deletion"
+msgstr ""
+
+msgid "First created at"
+msgstr ""
+
+msgid "First created by"
+msgstr ""
+
+msgid "Draft"
+msgstr "Borrador"
+
+msgid "Review"
+msgstr "Revisar"
+
+msgid "Activation"
+msgstr "Activación"
+
+msgid "Activated"
+msgstr "Activado"
+
+msgid "Created at"
+msgstr "Creado el"
+
+msgid "Created by"
+msgstr "Creado por"
+
+msgid "Modified at"
+msgstr "Modificado en"
+
+msgid "Modified by"
+msgstr "Modificado por"
+
+msgid "Sent to review at"
+msgstr ""
+
+msgid "Sent to review by"
+msgstr ""
+
+msgid "Sent to activation at"
+msgstr ""
+
+msgid "Sent to activation by"
+msgstr ""
+
+msgid "Activated at"
+msgstr ""
+
+msgid "Activated by"
+msgstr ""
+
+msgid "Status"
+msgstr "Estado"
+
+msgid "Type"
+msgstr "Tipo"
+
+msgid "Url"
+msgstr "Url"
+
+msgid "File"
+msgstr "Archivo"
+
+msgid "Keep PDF not public"
+msgstr "Mantener el PDF no público"
+
+msgid "Publication title"
+msgstr "Título de publicación"
+
+msgid "Date"
+msgstr "Fecha"
+
+msgid "Name"
+msgstr "Nombre"
+
+msgid "Organisation"
+msgstr "Organización"
+
+msgid "Email"
+msgstr "Correo Electrónico"
+
+msgid "Phone"
+msgstr "Teléfono"
+
+msgid "Includes in-country-verified information"
+msgstr "Incluye información verificada internamente en el país"
+
+msgid "Open Contracting ID"
+msgstr "ID Contratación Abierta"
+
+msgid "Comment"
+msgstr "Comentario"
 
 msgid "Agriculture"
 msgstr "Agricultura"
@@ -978,6 +1086,9 @@ msgstr "Área de contrato"
 msgid "Intended area"
 msgstr "Área planeada"
 
+msgid "Slug"
+msgstr ""
+
 msgid "Region"
 msgstr "Región"
 
@@ -1014,26 +1125,56 @@ msgstr "Índice de Percepción de la Corrupción"
 msgid "High income"
 msgstr "Ingresos altos"
 
-msgid "Draft"
-msgstr "Borrador"
+msgid "Countries"
+msgstr "Países"
 
-msgid "Review"
-msgstr "Revisar"
+msgid "Regions"
+msgstr "Regiones"
 
-msgid "Activation"
-msgstr "Activación"
+msgid "Target country"
+msgstr "País objetivo"
 
-msgid "Activated"
-msgstr "Activado"
+msgid "Active version"
+msgstr ""
+
+msgid "Draft version"
+msgstr ""
+
+msgid "Confidential"
+msgstr "Confidencial"
+
+msgid "Comment why this deal is private"
+msgstr "Comentario sobre cuánta agua se extrae"
+
+msgid "Last full update"
+msgstr "Última actualización completa"
+
+msgid "Deal"
+msgstr "Transacción"
 
 msgid "Intended size"
 msgstr "Tamaño planeado"
 
+msgid "Contract size"
+msgstr ""
+
+msgid "Production size"
+msgstr ""
+
 msgid "Comment on land area"
 msgstr "Comentario sobre área de tierra"
 
+msgid "Intention of investment"
+msgstr "Intención de la inversión"
+
 msgid "Comment on intention of investment"
 msgstr "Comentario sobre la intención de la inversión"
+
+msgid "Carbon offset project"
+msgstr "Proyecto de compensación de emisiones de carbono"
+
+msgid "Comment on carbon offset project"
+msgstr ""
 
 msgid "Nature of the deal"
 msgstr "Naturaleza de la transacción"
@@ -1041,8 +1182,14 @@ msgstr "Naturaleza de la transacción"
 msgid "Comment on nature of the deal"
 msgstr "Comentario sobre la naturaleza de la transacción"
 
+msgid "Negotiation status"
+msgstr "Estado de la negociación"
+
 msgid "Comment on negotiation status"
 msgstr "Comentario sobre el estado de la negociación"
+
+msgid "Implementation status"
+msgstr "Estado de la implementación"
 
 msgid "Comment on implementation status"
 msgstr "Comentario sobre el estado de la implementación"
@@ -1077,11 +1224,20 @@ msgstr "Cuota anual de arrendamiento"
 msgid "Comment on leasing fee"
 msgstr "Comentario sobre cuotas de arrendamiento"
 
+msgid "Contract farming"
+msgstr "Agricultura contractual"
+
 msgid "On leased / purchased"
 msgstr "En arrendada/comprada"
 
+msgid "On leased area/farmers/households"
+msgstr "En área arrendada/agricultores/hogares"
+
 msgid "Not on leased / purchased (out-grower)"
 msgstr "No en arrendada/comprada (cultivador externo)"
+
+msgid "Not on leased area/farmers/households (out-grower)"
+msgstr "No en la superficie arrendada/agricultores/hogares (cultivador externo)"
 
 msgid "Comment on contract farming"
 msgstr "Comentario sobre agricultura contractual"
@@ -1098,6 +1254,9 @@ msgstr "Personas empleadas planificadas (total)"
 msgid "Planned daily/seasonal workers (total)"
 msgstr "Personas trabajadoras diarias/temporales planificadas (total)"
 
+msgid "Current total number of jobs/employees/ daily/seasonal workers"
+msgstr "Número total actual de puestos de trabajo/empleados/trabajadores diarios/trabajadores temporales"
+
 msgid "Comment on jobs created (total)"
 msgstr "Comentario sobre puestos de trabajo creados (total)"
 
@@ -1112,6 +1271,9 @@ msgstr "Personas empleadas planificadas (extranjeras)"
 
 msgid "Planned daily/seasonal workers (foreign)"
 msgstr "Personas trabajadoras diarias/temporales planificadas (extranjeras)"
+
+msgid "Current foreign number of jobs/employees/ daily/seasonal workers"
+msgstr "Número actual de puestos de trabajo extranjeros/empleados/trabajadores diarios/trabajadores temporales"
 
 msgid "Comment on jobs created (foreign)"
 msgstr "Comentario sobre puestos de trabajo creados (personas extranjeras)"
@@ -1128,8 +1290,17 @@ msgstr "Personas empleadas planificadas (nacionales)"
 msgid "Planned daily/seasonal workers (domestic)"
 msgstr "Personas trabajadoras diarias/temporales planificadas (nacionales)"
 
+msgid "Current domestic number of jobs/employees/ daily/seasonal workers"
+msgstr "Número actual de puestos de trabajo domésticos/empleados/trabajadores diarios/trabajadores temporales"
+
 msgid "Comment on jobs created (domestic)"
 msgstr "Comentario sobre puestos de trabajo creados (nacionales)"
+
+msgid "Operating company"
+msgstr "Empresa operadora"
+
+msgid "Actors involved in the negotiation / admission process"
+msgstr "Actores involucrados en la negociación/proceso de admisión"
 
 msgid "Name of investment project"
 msgstr "Nombre de proyecto de inversión"
@@ -1239,26 +1410,47 @@ msgstr "Anterior cubierta terrestre"
 msgid "Comment on former land cover"
 msgstr "Comentario sobre anterior cubierta terrestre"
 
+msgid "Crops area/yield/export"
+msgstr "Exportación de cultivos"
+
 msgid "Comment on crops"
 msgstr "Comentario sobre cultivos"
+
+msgid "Livestock area/yield/export"
+msgstr "Exportación de animales de granja"
 
 msgid "Comment on livestock"
 msgstr "Comentario sobre animales de granja"
 
+msgid "Mineral resources area/yield/export"
+msgstr "Exportación de recursos naturales"
+
 msgid "Comment on mineral resources"
 msgstr "Comentario sobre recursos minerales"
+
+msgid "Contract farming crops"
+msgstr "Cultivos de agricultura contractual"
 
 msgid "Comment on contract farming crops"
 msgstr "Comentario sobre cultivos de agricultura contractual"
 
+msgid "Contract farming livestock"
+msgstr "Animales de granja de agricultura contractual"
+
 msgid "Comment on contract farming livestock"
 msgstr "Comentario sobre animales de granja de agricultura contractual"
+
+msgid "Electricity generation"
+msgstr "Producción de electricidad"
 
 msgid "Comment on electricity generation"
 msgstr "Comentarios sobre la generación de electricidad"
 
-msgid "Comment on carbon sequestration"
-msgstr "Comentarios sobre la captura de carbono"
+msgid "Carbon sequestration/offsetting"
+msgstr "Retención/compensación de carbono"
+
+msgid "Comment on carbon sequestration/offsetting"
+msgstr ""
 
 msgid "Has domestic use"
 msgstr "Hectáreas de uso nacional"
@@ -1341,19 +1533,10 @@ msgstr "Comentario sobre información relacionada con género"
 msgid "Overall comment"
 msgstr "Comentario general"
 
-msgid "Created at"
-msgstr "Creado el"
+msgid "Is public"
+msgstr "Es público"
 
-msgid "Modified at"
-msgstr "Modificado en"
-
-msgid "Sent to review at"
-msgstr ""
-
-msgid "Reviewed at"
-msgstr ""
-
-msgid "Activated at"
+msgid "Has known investor"
 msgstr ""
 
 msgid "Parent companies"
@@ -1364,6 +1547,48 @@ msgstr "Principales empresas matriz"
 
 msgid "Current contract size"
 msgstr "Tamaño actual del contrato"
+
+msgid "Current production size"
+msgstr ""
+
+msgid "Current intention of investment"
+msgstr ""
+
+msgid "Current negotiation status"
+msgstr "Estado actual de la negociación"
+
+msgid "Current implementation status"
+msgstr "Estado actual de la implementación"
+
+msgid "Current crops"
+msgstr ""
+
+msgid "Current livestock"
+msgstr ""
+
+msgid "Current mineral resources"
+msgstr ""
+
+msgid "Current electricity generation"
+msgstr ""
+
+msgid "Current carbon sequestration/offsetting"
+msgstr ""
+
+msgid "Deal size"
+msgstr "Tamaño de transacción"
+
+msgid "Initiation year"
+msgstr ""
+
+msgid "Forest concession"
+msgstr "Concesión forestal"
+
+msgid "Transnational"
+msgstr "Transnacional"
+
+msgid "Fully updated"
+msgstr "Completamente actualizado"
 
 msgid "Spatial accuracy level"
 msgstr "Nivel de precisión espacial"
@@ -1380,12 +1605,6 @@ msgstr "Descripción"
 msgid "Facility name"
 msgstr "Nombre de la instalación"
 
-msgid "Comment"
-msgstr "Comentario"
-
-msgid "Date"
-msgstr "Fecha"
-
 msgid "Contract number"
 msgstr "Número de Contrato"
 
@@ -1395,59 +1614,8 @@ msgstr "Fecha de caducidad"
 msgid "Duration of the agreement"
 msgstr "Duración del acuerdo"
 
-msgid "Type"
-msgstr "Tipo"
-
-msgid "Url"
-msgstr "Url"
-
-msgid "File"
-msgstr "Archivo"
-
-msgid "Keep PDF not public"
-msgstr "Mantener el PDF no público"
-
-msgid "Publication title"
-msgstr "Título de publicación"
-
-msgid "Name"
-msgstr "Nombre"
-
-msgid "Organisation"
-msgstr "Organización"
-
-msgid "Email"
-msgstr "Correo Electrónico"
-
-msgid "Phone"
-msgstr "Teléfono"
-
-msgid "Includes in-country-verified information"
-msgstr "Incluye información verificada internamente en el país"
-
-msgid "Open Contracting ID"
-msgstr "ID Contratación Abierta"
-
-msgid "Target country"
-msgstr "País objetivo"
-
-msgid "Comment why this deal is private"
-msgstr "Comentario sobre cuánta agua se extrae"
-
-msgid "Last full update"
-msgstr "Última actualización completa"
-
-msgid "Country of registration/origin"
-msgstr "País de registro/origen"
-
-msgid "Classification"
-msgstr "Clasificación"
-
-msgid "Investor homepage"
-msgstr "Página principal del inversor"
-
-msgid "Opencorporates link"
-msgstr "Enlace a Opencorporates"
+msgid "ID"
+msgstr "ID"
 
 msgid "Investor"
 msgstr "Inversor"
@@ -1476,6 +1644,9 @@ msgstr "Fecha del préstamo"
 msgid "Parent relation"
 msgstr "Relación matriz"
 
+msgid "Comment on involvement"
+msgstr ""
+
 msgid "Investor Venture Involvement"
 msgstr "Involucramiento del Inversor en el Negocio"
 
@@ -1488,11 +1659,17 @@ msgstr "<es MATRIZ de>"
 msgid "<is INVESTOR of>"
 msgstr "<es INVERSOR de>"
 
-msgid "Subsidiary company"
-msgstr "Empresa filial"
+msgid "Country of registration/origin"
+msgstr "País de registro/origen"
 
-msgid "Beneficiary company"
-msgstr "Empresa beneficiaria"
+msgid "Classification"
+msgstr "Clasificación"
+
+msgid "Investor homepage"
+msgstr "Página principal del inversor"
+
+msgid "Opencorporates link"
+msgstr "Enlace a Opencorporates"
 
 msgid "Server Error"
 msgstr "Error del Servidor"
@@ -1593,17 +1770,11 @@ msgstr "Activar"
 msgid "Activate submitted version replacing currently active version"
 msgstr "Activar la versión enviada sustituyendo a la versión actualmente activa"
 
-msgid "Activated by"
-msgstr ""
-
 msgid "Activated by me"
 msgstr "Activado por mí"
 
 msgid "Active deals with public filter ok, not confidential."
 msgstr "Tratos activos con filtro público ok, no confidenciales."
-
-msgid "Actors involved in the negotiation / admission process"
-msgstr "Actores involucrados en la negociación/proceso de admisión"
 
 msgid "Add"
 msgstr "Añadir"
@@ -1619,9 +1790,6 @@ msgstr "Añadir GeoJSON"
 
 msgid "Additional comment"
 msgstr "Comentario adicional"
-
-msgid "Administrator"
-msgstr "Administrador"
 
 msgid "All"
 msgstr "Todos"
@@ -1646,6 +1814,9 @@ msgstr ""
 
 msgid "Any gender-specific information about the investment and its impacts"
 msgstr "Cualquier información específica de género sobre la inversión y sus impactos"
+
+msgid "Anybody"
+msgstr ""
 
 msgid "area"
 msgstr ""
@@ -1677,17 +1848,14 @@ msgstr "Al menos una fuente de datos"
 msgid "Base layer"
 msgstr "Capa base"
 
+msgid "Beneficiary company"
+msgstr "Empresa beneficiaria"
+
 msgid "By making this information available, the Land Matrix hopes to enhance broad engagement and data exchange, facilitating the continuous improvement of the data. Find out how to get involved"
 msgstr "Al poner esta información a disposición, Land Matrix espera fomentar un mayor compromiso e intercambio de datos, facilitando la mejora continua de los mismos. Descubra cómo aportar aquí"
 
 msgid "Cancel"
 msgstr "Cancelar"
-
-msgid "Carbon offset project"
-msgstr "Proyecto de compensación de emisiones de carbono"
-
-msgid "Carbon sequestration/offsetting"
-msgstr "Retención/compensación de carbono"
 
 msgid "Case statistics"
 msgstr "Estadísticas de caso"
@@ -1713,6 +1881,9 @@ msgstr "Cambios en el tiempo"
 msgid "Charts"
 msgstr "Gráficos"
 
+msgid "Children (Involvements as parent)"
+msgstr ""
+
 msgid "Choice"
 msgstr "Opción"
 
@@ -1721,12 +1892,6 @@ msgstr "Opciones"
 
 msgid "Close"
 msgstr "Cerrar"
-
-msgid "Comment on carbon offset project"
-msgstr ""
-
-msgid "Comment on carbon sequestration/offsetting"
-msgstr ""
 
 msgid "Comment on certification standard / mechanism"
 msgstr ""
@@ -1762,23 +1927,11 @@ msgstr "Transacciones concluidas a lo largo del tiempo"
 msgid "Concluded deals over time since the year {year}"
 msgstr "Operaciones concluidas en el tiempo desde el año {year}"
 
-msgid "Confidential"
-msgstr "Confidencial"
-
 msgid "Consultation of local community"
 msgstr "Consulta de la comunidad local"
 
 msgid "Context layers"
 msgstr "Capas de contexto"
-
-msgid "Contract farming"
-msgstr "Agricultura contractual"
-
-msgid "Contract farming crops"
-msgstr "Cultivos de agricultura contractual"
-
-msgid "Contract farming livestock"
-msgstr "Animales de granja de agricultura contractual"
 
 msgid "Contracts"
 msgstr "Contratos"
@@ -1828,14 +1981,8 @@ msgstr ""
 msgid "Created"
 msgstr "Creado el"
 
-msgid "Created by"
-msgstr "Creado por"
-
 msgid "Created by me"
 msgstr "Creado por mí"
-
-msgid "Crops area/yield/export"
-msgstr "Exportación de cultivos"
 
 msgid "CSV file"
 msgstr "Archivo CSV"
@@ -1852,24 +1999,6 @@ msgstr "actual"
 
 msgid "Current"
 msgstr "Actual"
-
-msgid "Current domestic number of jobs/employees/ daily/seasonal workers"
-msgstr "Número actual de puestos de trabajo domésticos/empleados/trabajadores diarios/trabajadores temporales"
-
-msgid "Current foreign number of jobs/employees/ daily/seasonal workers"
-msgstr "Número actual de puestos de trabajo extranjeros/empleados/trabajadores diarios/trabajadores temporales"
-
-msgid "Current implementation status"
-msgstr "Estado actual de la implementación"
-
-msgid "Current intention of investment"
-msgstr ""
-
-msgid "Current negotiation status"
-msgstr "Estado actual de la negociación"
-
-msgid "Current total number of jobs/employees/ daily/seasonal workers"
-msgstr "Número total actual de puestos de trabajo/empleados/trabajadores diarios/trabajadores temporales"
 
 msgid "Currently installed capacity"
 msgstr "Capacidad instalada actualmente"
@@ -1895,17 +2024,11 @@ msgstr "Fuentes de datos"
 msgid "Date of request"
 msgstr "Fecha de solicitud"
 
-msgid "Deal"
-msgstr "Transacción"
-
 msgid "Deal Edit"
 msgstr ""
 
 msgid "Deal history"
 msgstr "Historial de transacción"
-
-msgid "Deal size"
-msgstr "Tamaño de transacción"
 
 msgid "Deals"
 msgstr "Transacciones"
@@ -1940,12 +2063,6 @@ msgstr "Transacciones georreferenciadas con gran precisión"
 msgid "Deals pending"
 msgstr "Transacciones pendientes"
 
-msgid "Deals pending deletion"
-msgstr "Transacciones pendientes de eliminación"
-
-msgid "Deals rejected"
-msgstr "Transacciones rechazadas"
-
 msgid "Deals updated"
 msgstr "Transacciones actualizadas"
 
@@ -1976,9 +2093,6 @@ msgstr "Eliminar este inversor"
 #, python-brace-format
 msgid "Delete {object}"
 msgstr ""
-
-msgid "Deleted"
-msgstr "Eliminado"
 
 msgid "Detailed carbon sequestration/offsetting information"
 msgstr "Información sobre la rentención/compensación de carbono"
@@ -2049,12 +2163,6 @@ msgstr ""
 msgid "Editing"
 msgstr ""
 
-msgid "Editor"
-msgstr "Editor"
-
-msgid "Electricity generation"
-msgstr "Producción de electricidad"
-
 msgid "employees"
 msgstr "personas empleadas"
 
@@ -2063,6 +2171,15 @@ msgstr "Empleados"
 
 msgid "Employment"
 msgstr "Empleo"
+
+msgid "End date"
+msgstr ""
+
+msgid "Estimated annual emission reduction/removal"
+msgstr ""
+
+msgid "Estimated emission reduction/removal during project lifetime"
+msgstr ""
 
 msgid "Excel document"
 msgstr "Documento Excel"
@@ -2088,6 +2205,9 @@ msgstr "Mis comentarios"
 msgid "Feedback for me"
 msgstr "Comentarios para mí"
 
+msgid "File too large:"
+msgstr ""
+
 msgid "Filter"
 msgstr "Filtro"
 
@@ -2099,9 +2219,6 @@ msgstr "Nombre"
 
 msgid "Follow us"
 msgstr "Seguinos"
-
-msgid "Forest concession"
-msgstr "Concesión forestal"
 
 msgid "Forgot password?"
 msgstr "¿Olvidó la contraseña?"
@@ -2117,9 +2234,6 @@ msgstr "de"
 
 msgid "From user"
 msgstr "Del usuario"
-
-msgid "Fully updated"
-msgstr "Completamente actualizado"
 
 msgid "Fully updated at"
 msgstr "Totalmente actualizado en"
@@ -2181,9 +2295,6 @@ msgstr "He leído y estoy de acuerdo con la"
 msgid "id"
 msgstr ""
 
-msgid "ID"
-msgstr "ID"
-
 msgid "ID of certification standard/mechanism"
 msgstr "ID de la norma/del mecanismo de certificación"
 
@@ -2195,9 +2306,6 @@ msgstr "Si desactiva el indicador de confidencialidad, este acuerdo será visibl
 
 msgid "If your email-address is registered <b>and active</b> you should receive an email shortly."
 msgstr "Si su dirección de correo electrónico está registrada <b>y activa</b>, en breve recibirá un mensaje."
-
-msgid "Implementation status"
-msgstr "Estado de la implementación"
 
 msgid "Impressum / Legal notice"
 msgstr "Aviso legal"
@@ -2229,9 +2337,6 @@ msgstr "Tierras indígenas reconocidas por el gobierno (documentadas)"
 msgid "Intended capacity"
 msgstr "Capacidad prevista"
 
-msgid "Intention of investment"
-msgstr "Intención de la inversión"
-
 msgid "Intention unknown"
 msgstr "Intención desconocida"
 
@@ -2259,6 +2364,9 @@ msgstr "Información del inversor"
 msgid "Investor name"
 msgstr "Nombre de inversor"
 
+msgid "Investor not found"
+msgstr ""
+
 msgid "Investors"
 msgstr "Inversores"
 
@@ -2285,12 +2393,6 @@ msgstr "Inversores de {nCountries} países participan en {countryName}"
 
 msgid "Investors pending"
 msgstr "Inversores pendientes"
-
-msgid "Investors pending deletion"
-msgstr "Inversores pendientes de supresión"
-
-msgid "Investors rejected"
-msgstr "Inversores rechazados"
 
 msgid "Investors updated"
 msgstr "Inversores actualizados"
@@ -2364,8 +2466,8 @@ msgstr "Leyenda"
 msgid "Letters, digits and @/./+/-/_ only."
 msgstr "Sólo letras, dígitos y @/./+/-/_."
 
-msgid "Livestock area/yield/export"
-msgstr "Exportación de animales de granja"
+msgid "Loading"
+msgstr ""
 
 msgid "Local communities / indigenous peoples"
 msgstr "Comunidades locales/Pueblos Indígenas"
@@ -2412,20 +2514,15 @@ msgstr "Mapa"
 msgid "Map settings"
 msgstr "Configuración de mapa"
 
-msgid "Maximum file size: 10MB"
-msgstr "Tamaño máximo de archivo: 10MB"
+#, python-brace-format
+msgid "Maximum file size is {maxFileSizeInMB}MB."
+msgstr ""
 
 msgid "Meta"
 msgstr "Meta"
 
-msgid "Mineral resources area/yield/export"
-msgstr "Exportación de recursos naturales"
-
 msgid "Modified"
 msgstr "Modificado"
-
-msgid "Modified by"
-msgstr "Modificado por"
 
 msgid "Modified by me"
 msgstr "Modificado por mí"
@@ -2457,9 +2554,6 @@ msgstr "Nombre de la norma/del mecanismo de certificación"
 msgid "Names of communities / indigenous peoples affected"
 msgstr "Nombre de comunidades/Pueblos Indígenas con afectación"
 
-msgid "Negotiation status"
-msgstr "Estado de la negociación"
-
 msgid "Network graph"
 msgstr "Gráfico de red"
 
@@ -2489,9 +2583,6 @@ msgstr "Número de transacciones"
 
 msgid "Not fully updated"
 msgstr "No totalmente actualizado"
-
-msgid "Not on leased area/farmers/households (out-grower)"
-msgstr "No en la superficie arrendada/agricultores/hogares (cultivador externo)"
 
 msgid "Not publicly visible"
 msgstr "No visible para el público"
@@ -2539,22 +2630,19 @@ msgstr "Concesiones de palma aceitera Indonesia"
 msgid "OK"
 msgstr "OK"
 
-msgid "On leased area/farmers/households"
-msgstr "En área arrendada/agricultores/hogares"
-
 msgid "Only"
 msgstr "Sólo"
 
 msgid "Open request"
 msgstr "Abrir una solicitud"
 
-msgid "Operating company"
-msgstr "Empresa operadora"
-
 msgid "Operating Company"
 msgstr ""
 
 msgid "Other: please specify in comment field"
+msgstr ""
+
+msgid "Parents (Involvements as child)"
 msgstr ""
 
 msgid "Partners"
@@ -2610,11 +2698,8 @@ msgstr "Información de Producto"
 msgid "Produce info map"
 msgstr "Producir mapa informativo"
 
-msgid "Projected annual carbon sequestration"
-msgstr "Secuestro anual de carbono previsto"
-
-msgid "Projected carbon sequestration during project lifetime"
-msgstr "Secuestro de carbono previsto durante la vida del proyecto"
+msgid "Project proponents"
+msgstr ""
 
 msgid "Promised or received compensation"
 msgstr "Compensación prometida o recibida"
@@ -2662,9 +2747,6 @@ msgstr "Regístrese"
 msgid "Registration successful. You can now close this window and check your emails."
 msgstr "Registro realizado con éxito. Ahora puede cerrar esta ventana y consultar su correo electrónico."
 
-msgid "Rejected"
-msgstr "Rechazada"
-
 msgid "Relationship"
 msgstr "Relación"
 
@@ -2683,9 +2765,6 @@ msgstr ""
 
 msgid "Reply"
 msgstr "Responder"
-
-msgid "Reporter"
-msgstr "Periodista"
 
 msgid "Request improvement"
 msgstr "Solicitar una mejora"
@@ -2742,16 +2821,7 @@ msgstr ""
 msgid "Send feedback"
 msgstr "Enviar comentarios"
 
-msgid "Sent to activation at"
-msgstr ""
-
-msgid "Sent to activation by"
-msgstr ""
-
 msgid "Sent to review"
-msgstr ""
-
-msgid "Sent to review by"
 msgstr ""
 
 msgid "Set confidential"
@@ -2791,8 +2861,8 @@ msgstr ""
 msgid "Size under contract per category of production as a percentage of total size of all concluded deals"
 msgstr "Proporción del tamaño por categoría de producción en el tamaño total de todas las transacciones concluidas"
 
-msgid "Status"
-msgstr "Estado"
+msgid "Start date"
+msgstr ""
 
 msgid "Status unknown"
 msgstr "Estado desconocido"
@@ -2822,6 +2892,9 @@ msgstr "Enviado para activación"
 
 msgid "Submitted for review"
 msgstr "Enviado para revisión"
+
+msgid "Subsidiary company"
+msgstr "Empresa filial"
 
 msgid "Supported file types: "
 msgstr "Tipos de archivo compatibles: "
@@ -2874,9 +2947,6 @@ msgstr "Todo"
 
 msgid "tons"
 msgstr "toneladas"
-
-msgid "Transnational"
-msgstr "Transnacional"
 
 msgid "Undelete"
 msgstr "Desborrar"
@@ -2947,6 +3017,9 @@ msgstr "Si"
 msgid "Yield"
 msgstr "Rendimiento"
 
+msgid "You are not the author of this version. Therefore, a new version will be created if you proceed."
+msgstr "Usted no es el autor de esta versión. Por lo tanto, se creará una nueva versión si continúa."
+
 msgid "You're viewing the draft version of this deal."
 msgstr ""
 
@@ -2980,6 +3053,33 @@ msgstr "Français"
 
 msgid "Русский"
 msgstr "Русский"
+
+#~ msgid "Comment on carbon sequestration"
+#~ msgstr "Comentarios sobre la captura de carbono"
+
+#~ msgid "Deals pending deletion"
+#~ msgstr "Transacciones pendientes de eliminación"
+
+#~ msgid "Deals rejected"
+#~ msgstr "Transacciones rechazadas"
+
+#~ msgid "Investors pending deletion"
+#~ msgstr "Inversores pendientes de supresión"
+
+#~ msgid "Investors rejected"
+#~ msgstr "Inversores rechazados"
+
+#~ msgid "Maximum file size: 10MB"
+#~ msgstr "Tamaño máximo de archivo: 10MB"
+
+#~ msgid "Projected annual carbon sequestration"
+#~ msgstr "Secuestro anual de carbono previsto"
+
+#~ msgid "Projected carbon sequestration during project lifetime"
+#~ msgstr "Secuestro de carbono previsto durante la vida del proyecto"
+
+#~ msgid "Rejected"
+#~ msgstr "Rechazada"
 
 #~ msgid "Live"
 #~ msgstr "Activo"
@@ -3201,9 +3301,6 @@ msgstr "Русский"
 
 #~ msgid "User"
 #~ msgstr "Usuario"
-
-#~ msgid "You are not the author of this version. Therefore, a new version will be created if you proceed."
-#~ msgstr "Usted no es el autor de esta versión. Por lo tanto, se creará una nueva versión si continúa."
 
 #~ msgid "You can only change the country when no locations are defined."
 #~ msgstr "Sólo puede cambiar el país cuando no hay ninguna localidad definida."
@@ -3522,9 +3619,6 @@ msgstr "Русский"
 #~ msgid "Show all inbound deals"
 #~ msgstr "Mostrar todas las transacciones entrantes"
 
-#~ msgid "Regions"
-#~ msgstr "Regiones"
-
 #~ msgid "Show all outbound deals"
 #~ msgstr "Mostrar todas las transacciones salientes"
 
@@ -3554,9 +3648,6 @@ msgstr "Русский"
 
 #~ msgid "Impersonate"
 #~ msgstr "Impersonar"
-
-#~ msgid "Countries"
-#~ msgstr "Países"
 
 #~ msgid "Users"
 #~ msgstr "Usuarios"
@@ -3740,9 +3831,6 @@ msgstr "Русский"
 
 #~ msgid "Forest logging / management (for wood and fibre)"
 #~ msgstr "Tala de árboles/gestión (para madera y fibra)"
-
-#~ msgid "---------"
-#~ msgstr "---------"
 
 #~ msgid "Government / State institutions (government, ministries, departments, agencies etc.)"
 #~ msgstr "Gobierno/Instituciones estatales (gobierno, ministerios, departamentos, agencias, etc.)"
@@ -4351,9 +4439,6 @@ msgstr "Русский"
 
 #~ msgid "The deal #{} has been recovered successfully."
 #~ msgstr "La transacción #{} ha sido recuperada con éxito."
-
-#~ msgid "Is public"
-#~ msgstr "Es público"
 
 #~ msgid "Deal scope"
 #~ msgstr "Alcance de la transacción"
