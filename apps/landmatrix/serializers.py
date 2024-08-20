@@ -520,17 +520,30 @@ class InvestorSerializer(serializers.ModelSerializer):
 
     @extend_schema_field(InvolvementSerializer(many=True))
     def get_parents(self, obj: InvestorHull):
+        user: User = self.context["request"].user
+
         if hasattr(obj, "_selected_version_id"):
             version = obj.versions.get(id=getattr(obj, "_selected_version_id"))
         else:
             version = obj.active_version or obj.draft_version
 
-        # this should not happen
-        if not version:
-            return []
-
         # just take snapshot here, because it is set correctly for activated versions
-        return version.involvements_snapshot or []
+        snapshot = version.involvements_snapshot or []
+
+        if not is_reporter_or_higher(user):
+            parent_ids = [inv["parent_investor_id"] for inv in snapshot]
+            active_parent_ids = (
+                InvestorHull.objects.filter(id__in=parent_ids)
+                .active()
+                .values_list("id", flat=True)
+            )
+            return [
+                inv
+                for inv in snapshot
+                if inv["parent_investor_id"] in active_parent_ids
+            ]
+
+        return snapshot
 
     @staticmethod
     def get_workflowinfos(obj: InvestorHull):
