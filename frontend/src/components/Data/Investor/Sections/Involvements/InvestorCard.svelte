@@ -43,7 +43,7 @@
 <div
   class="relative flex flex-col gap-1 border border-pelorous p-2"
   class:bg-red-200={otherInvestor.deleted}
-  class:bg-yellow-100={!otherInvestor.active}
+  class:bg-yellow-100={"active" in otherInvestor && !otherInvestor.active}
   class:text-black={otherInvestor.deleted || !otherInvestor.active}
 >
   {#if otherInvestor}

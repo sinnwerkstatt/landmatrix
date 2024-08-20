@@ -40,15 +40,15 @@
     )}
     {#if investor}
       {#if investor.deleted}
-        <span class="text-lg text-red">
+        <span class="text-red">
           {$_("DELETED")}:
         </span>
       {:else if !investor.active}
-        <span class="text-lg text-purple">
+        <span class="text-purple">
           {$_("DRAFT")}:
         </span>
       {/if}
-      <span class="text-lg text-pelorous">
+      <span class="font-bold text-pelorous">
         {investor.name} #{investor.id}
       </span>
     {/if}
