@@ -58,6 +58,7 @@ export type InvestorDeal = components["schemas"]["InvestorDeal"]
 
 export type InvestorHull = components["schemas"]["Investor"]
 
+export type SearchedInvestor = components["schemas"]["SearchedInvestor"]
 export type SimpleInvestor = components["schemas"]["SimpleInvestor"]
 
 export type Country = components["schemas"]["Country"]
