@@ -1,25 +1,28 @@
 <script lang="ts">
   import { error } from "@sveltejs/kit"
+  import { _ } from "svelte-i18n"
 
   import { page } from "$app/stores"
 
-  import type { InvestorHull } from "$lib/types/data"
+  import type { SearchedInvestor } from "$lib/types/data"
 
   import CountryField from "$components/Fields/Display2/CountryField.svelte"
 
   let value = ""
 
-  let actives: InvestorHull[] = []
-  let drafts: InvestorHull[] = []
+  let actives: SearchedInvestor[] = []
+  let drafts: SearchedInvestor[] = []
+
   async function getSearchResults(v: string) {
     if (v.length < 3) {
       actives = []
       drafts = []
       return
     }
-    const req = await $page.data.apiClient.GET("/api/investor_search", {
+    const req = await $page.data.apiClient.GET("/api/investor_search/", {
       params: { query: { q: v } },
     })
+    // @ts-expect-error openapi-fetch types broken
     if (req.error) error(500, req.error)
     actives = req.data.filter(i => i.active_version_id)
     drafts = req.data.filter(i => i.draft_version_id)
@@ -28,7 +31,7 @@
 </script>
 
 <div class="mt-12 flex w-full items-center justify-center">
-  <h1>Investor search</h1>
+  <h1>{$_("Investor search")}</h1>
 </div>
 
 <div class="container mx-auto">
@@ -51,7 +54,7 @@
       {/each}
     </ul>
     {#if drafts.length}
-      Drafts:
+      {$_("Drafts")}:
 
       <ul>
         {#each drafts as investor}

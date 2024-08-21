@@ -496,32 +496,32 @@ export interface components {
        * Latitude of central point
        * Format: double
        */
-      point_lat?: number | null
+      point_lat: number
       /**
        * Longitude of central point
        * Format: double
        */
-      point_lon?: number | null
+      point_lon: number
       /**
        * Latitude of southernmost point
        * Format: double
        */
-      point_lat_min?: number | null
+      point_lat_min: number
       /**
        * Longitude of westernmost point
        * Format: double
        */
-      point_lon_min?: number | null
+      point_lon_min: number
       /**
        * Latitude of northernmost point
        * Format: double
        */
-      point_lat_max?: number | null
+      point_lat_max: number
       /**
        * Longitude of easternmost point
        * Format: double
        */
-      point_lon_max?: number | null
+      point_lon_max: number
       observatory_page_id: number
       region_id: number | null
       deals: number[]
@@ -864,8 +864,9 @@ export interface components {
       country_id: number | null
       versions: readonly components["schemas"]["DealVersionVersionsList"][]
       selected_version: components["schemas"]["DealVersion"]
-      workflowinfos: string
+      workflowinfos: readonly components["schemas"]["DealWorkflowInfo"][]
       deleted?: boolean
+      /** Comment on deletion */
       deleted_comment?: string
       /** Format: date-time */
       first_created_at: string
@@ -952,14 +953,11 @@ export interface components {
       modified_at: string | null
       /** Format: date-time */
       sent_to_review_at: string | null
-      /**
-       * Reviewed at
-       * Format: date-time
-       */
+      /** Format: date-time */
       sent_to_activation_at: string | null
       /** Format: date-time */
       activated_at: string | null
-      status: components["schemas"]["StatusEnum"]
+      status: components["schemas"]["VersionStatusEnum"]
       /** Format: double */
       intended_size?: number | null
       contract_size?: components["schemas"]["CurrentDateAreaSchema"]
@@ -970,6 +968,7 @@ export interface components {
       /** Comment on intention of investment */
       intention_of_investment_comment?: string
       carbon_offset_project?: boolean | null
+      /** Comment on carbon offset project */
       carbon_offset_project_comment?: string
       /** Nature of the deal */
       nature_of_deal?: components["schemas"]["NatureOfDealEnum"][]
@@ -1008,9 +1007,11 @@ export interface components {
       contract_farming?: boolean | null
       /** On leased / purchased */
       on_the_lease_state?: boolean | null
+      /** On leased area/farmers/households */
       on_the_lease?: components["schemas"]["LeaseSchema"]
       /** Not on leased / purchased (out-grower) */
       off_the_lease_state?: boolean | null
+      /** Not on leased area/farmers/households (out-grower) */
       off_the_lease?: components["schemas"]["LeaseSchema"]
       /** Comment on contract farming */
       contract_farming_comment?: string
@@ -1022,6 +1023,7 @@ export interface components {
       total_jobs_planned_employees?: number | null
       /** Planned daily/seasonal workers (total) */
       total_jobs_planned_daily_workers?: number | null
+      /** Current total number of jobs/employees/ daily/seasonal workers */
       total_jobs_current?: components["schemas"]["JobsSchema"]
       /** Comment on jobs created (total) */
       total_jobs_created_comment?: string
@@ -1033,6 +1035,7 @@ export interface components {
       foreign_jobs_planned_employees?: number | null
       /** Planned daily/seasonal workers (foreign) */
       foreign_jobs_planned_daily_workers?: number | null
+      /** Current foreign number of jobs/employees/ daily/seasonal workers */
       foreign_jobs_current?: components["schemas"]["JobsSchema"]
       /** Comment on jobs created (foreign) */
       foreign_jobs_created_comment?: string
@@ -1044,9 +1047,11 @@ export interface components {
       domestic_jobs_planned_employees?: number | null
       /** Planned daily/seasonal workers (domestic) */
       domestic_jobs_planned_daily_workers?: number | null
+      /** Current domestic number of jobs/employees/ daily/seasonal workers */
       domestic_jobs_current?: components["schemas"]["JobsSchema"]
       /** Comment on jobs created (domestic) */
       domestic_jobs_created_comment?: string
+      /** Actors involved in the negotiation / admission process */
       involved_actors?: components["schemas"]["ActorsSchema"]
       /** Name of investment project */
       project_name?: string
@@ -1120,26 +1125,31 @@ export interface components {
       former_land_cover?: components["schemas"]["FormerLandCoverEnum"][]
       /** Comment on former land cover */
       former_land_cover_comment?: string
+      /** Crops area/yield/export */
       crops?: components["schemas"]["ExportsCrops"]
       /** Comment on crops */
       crops_comment?: string
+      /** Livestock area/yield/export */
       animals?: components["schemas"]["ExportsAnimals"]
       /** Comment on livestock */
       animals_comment?: string
+      /** Mineral resources area/yield/export */
       mineral_resources?: components["schemas"]["ExportsMineralResources"]
       /** Comment on mineral resources */
       mineral_resources_comment?: string
       contract_farming_crops?: components["schemas"]["CurrentDateAreaChoicesCrops"]
       /** Comment on contract farming crops */
       contract_farming_crops_comment?: string
+      /** Contract farming livestock */
       contract_farming_animals?: components["schemas"]["CurrentDateAreaChoicesAnimals"]
       /** Comment on contract farming livestock */
       contract_farming_animals_comment?: string
       electricity_generation?: components["schemas"]["ElectricityGenerationSchema"]
       /** Comment on electricity generation */
       electricity_generation_comment?: string
+      /** Carbon sequestration/offsetting */
       carbon_sequestration?: components["schemas"]["CarbonSequestrationSchema"]
-      /** Comment on carbon sequestration */
+      /** Comment on carbon sequestration/offsetting */
       carbon_sequestration_comment?: string
       has_domestic_use?: boolean | null
       /** Format: double */
@@ -1207,9 +1217,11 @@ export interface components {
         | components["schemas"]["NullEnum"]
         | null
       current_crops: readonly string[]
+      /** Current livestock */
       current_animals: readonly string[]
       current_mineral_resources: readonly string[]
       current_electricity_generation: readonly string[]
+      /** Current carbon sequestration/offsetting */
       current_carbon_sequestration: readonly string[]
       /** Format: double */
       deal_size: number | null
@@ -1247,18 +1259,37 @@ export interface components {
       /** Format: date-time */
       sent_to_review_at?: string | null
       sent_to_review_by_id: number | null
-      /**
-       * Reviewed at
-       * Format: date-time
-       */
+      /** Format: date-time */
       sent_to_activation_at?: string | null
       sent_to_activation_by_id: number | null
       /** Format: date-time */
       activated_at?: string | null
       activated_by_id: number | null
-      status?: components["schemas"]["StatusEnum"]
+      status?: components["schemas"]["VersionStatusEnum"]
       fully_updated?: boolean
       is_public?: boolean
+    }
+    DealWorkflowInfo: {
+      id: number
+      from_user_id: number
+      to_user_id: number | null
+      status_before:
+        | components["schemas"]["VersionStatusEnum"]
+        | components["schemas"]["BlankEnum"]
+        | components["schemas"]["NullEnum"]
+        | null
+      status_after:
+        | components["schemas"]["VersionStatusEnum"]
+        | components["schemas"]["BlankEnum"]
+        | components["schemas"]["NullEnum"]
+        | null
+      /** Format: date-time */
+      timestamp: string
+      comment: string
+      resolved: boolean
+      replies: unknown
+      deal_id: number
+      deal_version_id: number | null
     }
     /**
      * ElectricityGenerationEnum
@@ -1560,11 +1591,12 @@ export interface components {
       draft_version_id: number | null
       versions: components["schemas"]["InvestorVersionVersionsList"][]
       selected_version: components["schemas"]["InvestorVersion"]
-      deals: string
+      deals: readonly components["schemas"]["InvestorDeal"][]
       parents: readonly components["schemas"]["Involvement"][]
       children: readonly components["schemas"]["Involvement"][]
-      workflowinfos: string
+      workflowinfos: readonly components["schemas"]["InvestorWorkflowInfo"][]
       deleted?: boolean
+      /** Comment on deletion */
       deleted_comment?: string
       /** Format: date-time */
       first_created_at: string
@@ -1596,6 +1628,28 @@ export interface components {
       comment?: string
       investorversion: number
     }
+    InvestorDeal: {
+      id: number
+      /** Target country */
+      country_id: number | null
+      selected_version: components["schemas"]["InvestorDealSelectedVersion"]
+    }
+    InvestorDealSelectedVersion: {
+      id: number
+      current_intention_of_investment: readonly components["schemas"]["CurrentIntentionOfInvestmentEnum"][]
+      current_negotiation_status:
+        | components["schemas"]["CurrentNegotiationStatusEnum"]
+        | components["schemas"]["BlankEnum"]
+        | components["schemas"]["NullEnum"]
+        | null
+      current_implementation_status:
+        | components["schemas"]["CurrentImplementationStatusEnum"]
+        | components["schemas"]["BlankEnum"]
+        | components["schemas"]["NullEnum"]
+        | null
+      /** Format: double */
+      deal_size: number | null
+    }
     InvestorFields: {
       classification: components["schemas"]["ValueLabel"][]
     }
@@ -1615,16 +1669,12 @@ export interface components {
       modified_at: string | null
       /** Format: date-time */
       sent_to_review_at: string | null
-      /**
-       * Reviewed at
-       * Format: date-time
-       */
+      /** Format: date-time */
       sent_to_activation_at: string | null
       /** Format: date-time */
       activated_at: string | null
-      status: components["schemas"]["StatusEnum"]
+      status: components["schemas"]["VersionStatusEnum"]
       name?: string
-      name_unknown?: boolean
       classification?:
         | components["schemas"]["ClassificationEnum"]
         | components["schemas"]["BlankEnum"]
@@ -1641,6 +1691,7 @@ export interface components {
        */
       opencorporates?: string
       comment?: string
+      name_unknown?: boolean
       involvements_snapshot?: unknown
       created_by: number | null
       modified_by: number | null
@@ -1662,16 +1713,35 @@ export interface components {
       /** Format: date-time */
       sent_to_review_at?: string | null
       sent_to_review_by_id: number | null
-      /**
-       * Reviewed at
-       * Format: date-time
-       */
+      /** Format: date-time */
       sent_to_activation_at?: string | null
       sent_to_activation_by_id: number | null
       /** Format: date-time */
       activated_at?: string | null
       activated_by_id: number | null
-      status?: components["schemas"]["StatusEnum"]
+      status?: components["schemas"]["VersionStatusEnum"]
+    }
+    InvestorWorkflowInfo: {
+      id: number
+      from_user_id: number
+      to_user_id: number | null
+      status_before:
+        | components["schemas"]["VersionStatusEnum"]
+        | components["schemas"]["BlankEnum"]
+        | components["schemas"]["NullEnum"]
+        | null
+      status_after:
+        | components["schemas"]["VersionStatusEnum"]
+        | components["schemas"]["BlankEnum"]
+        | components["schemas"]["NullEnum"]
+        | null
+      /** Format: date-time */
+      timestamp: string
+      comment: string
+      resolved: boolean
+      replies: unknown
+      investor_id: number
+      investor_version_id: number | null
     }
     Involvement: {
       id: number
@@ -1700,6 +1770,7 @@ export interface components {
         | components["schemas"]["BlankEnum"]
         | components["schemas"]["NullEnum"]
         | null
+      /** Comment on involvement */
       comment: string
     }
     InvolvementFields: {
@@ -1748,7 +1819,7 @@ export interface components {
       full_name: string
       /** @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
       username: string
-      role: components["schemas"]["Role443Enum"]
+      role: components["schemas"]["UserRoleEnum"]
       /**
        * Active
        * @description Designates whether this user should be treated as active. Unselect this instead of deleting accounts.
@@ -2007,31 +2078,23 @@ export interface components {
        * Latitude of northernmost point
        * Format: double
        */
-      point_lat_min?: number | null
+      point_lat_min: number
       /**
        * Longitude of westernmost point
        * Format: double
        */
-      point_lon_min?: number | null
+      point_lon_min: number
       /**
        * Latitude of southernmost point
        * Format: double
        */
-      point_lat_max?: number | null
+      point_lat_max: number
       /**
        * Longitude of easternmost point
        * Format: double
        */
-      point_lon_max?: number | null
+      point_lon_max: number
     }
-    /**
-     * @description * `0` - ---------
-     * * `1` - Reporter
-     * * `2` - Editor
-     * * `3` - Administrator
-     * @enum {integer}
-     */
-    Role443Enum: 0 | 1 | 2 | 3
     SearchedInvestor: {
       id: number
       active_version_id: number
@@ -2068,14 +2131,6 @@ export interface components {
      * @enum {string}
      */
     SourceOfWaterExtractionEnum: "GROUNDWATER" | "SURFACE_WATER" | "RIVER" | "LAKE"
-    /**
-     * @description * `DRAFT` - Draft
-     * * `REVIEW` - Review
-     * * `ACTIVATION` - Activation
-     * * `ACTIVATED` - Activated
-     * @enum {string}
-     */
-    StatusEnum: "DRAFT" | "REVIEW" | "ACTIVATION" | "ACTIVATED"
     User: {
       id: number
       /** @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
@@ -2092,7 +2147,7 @@ export interface components {
       information: string
       country: number | null
       region: number | null
-      role: components["schemas"]["Role443Enum"]
+      role: components["schemas"]["UserRoleEnum"]
       /**
        * Superuser status
        * @description Designates that this user has all permissions without explicitly assigning them.
@@ -2109,11 +2164,27 @@ export interface components {
        */
       is_active: boolean
     }
+    /**
+     * @description * `0` - ---------
+     * * `1` - Reporter
+     * * `2` - Editor
+     * * `3` - Administrator
+     * @enum {integer}
+     */
+    UserRoleEnum: 0 | 1 | 2 | 3
     ValueLabel: {
       value: string
       label: string
       group?: string
     }
+    /**
+     * @description * `DRAFT` - Draft
+     * * `REVIEW` - Review
+     * * `ACTIVATION` - Activation
+     * * `ACTIVATED` - Activated
+     * @enum {string}
+     */
+    VersionStatusEnum: "DRAFT" | "REVIEW" | "ACTIVATION" | "ACTIVATED"
   }
   responses: never
   parameters: never

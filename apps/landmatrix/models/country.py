@@ -10,6 +10,12 @@ class CountryManager(models.Manager):
 
 
 class Country(models.Model):
+    name = models.CharField(_("Name"))
+    slug = models.SlugField(
+        _("Slug"),
+        max_length=100,  # not changing max_length to None, because it yields database problems for some reason
+    )
+
     region = models.ForeignKey(
         "Region",
         verbose_name=_("Region"),
@@ -19,58 +25,43 @@ class Country(models.Model):
     )
     code_alpha2 = models.CharField(_("Code ISO 3166-1 alpha2"), max_length=2)
     code_alpha3 = models.CharField(_("Code ISO 3166-1 alpha3"), max_length=3)
-    name = models.CharField("Name")
-    slug = models.SlugField(
-        "Slug",
-        max_length=100,  # not changing max_length to None, because it yields database problems for some reason
-    )
 
-    # There is no country in the database without lat, lon information
-    # TODO: Remove null and blank = true to fix openApi types
     point_lat = models.DecimalField(
         _("Latitude of central point"),
         max_digits=18,
         decimal_places=12,
-        blank=True,
-        null=True,
     )
     point_lon = models.DecimalField(
         _("Longitude of central point"),
         max_digits=18,
         decimal_places=12,
-        blank=True,
-        null=True,
     )
     point_lat_min = models.DecimalField(
         _("Latitude of southernmost point"),
         max_digits=18,
         decimal_places=12,
-        blank=True,
-        null=True,
     )
     point_lon_min = models.DecimalField(
         _("Longitude of westernmost point"),
         max_digits=18,
         decimal_places=12,
-        blank=True,
-        null=True,
     )
     point_lat_max = models.DecimalField(
         _("Latitude of northernmost point"),
         max_digits=18,
         decimal_places=12,
-        blank=True,
-        null=True,
     )
     point_lon_max = models.DecimalField(
         _("Longitude of easternmost point"),
         max_digits=18,
         decimal_places=12,
-        blank=True,
-        null=True,
     )
     democracy_index = models.DecimalField(
-        _("Democracy index"), max_digits=3, decimal_places=2, blank=True, null=True
+        _("Democracy index"),
+        max_digits=3,
+        decimal_places=2,
+        blank=True,
+        null=True,
     )
     corruption_perception_index = models.DecimalField(
         _("Corruption perception index"),
@@ -88,12 +79,12 @@ class Country(models.Model):
 
     objects = CountryManager()
 
-    def __str__(self):
-        return self.name
-
     class Meta:
         ordering = ("name",)
-        verbose_name_plural = "Countries"
+        verbose_name_plural = _("Countries")
+
+    def __str__(self):
+        return self.name
 
     @property
     def short_description(self):
@@ -106,48 +97,35 @@ class Country(models.Model):
     def get_absolute_url(self):
         return reverse_lazy("country", kwargs={"country_slug": self.slug})
 
-    def to_dict(self, deep=False):
-        retdict = {"id": self.id, "name": self.name, "code_alpha2": self.code_alpha2}
-        if deep:
-            retdict["high_income"] = self.high_income
-            retdict["region"] = self.region.to_dict()
-        return retdict
-
 
 class Region(models.Model):
-    name = models.CharField("Name")
-    slug = models.SlugField("Slug")
+    name = models.CharField(_("Name"))
+    slug = models.SlugField(_("Slug"))
 
-    # There is no region in the database without lat, lon information
-    # TODO: Remove null and blank = true to fix openApi types
     point_lat_min = models.DecimalField(
         _("Latitude of northernmost point"),
         max_digits=18,
         decimal_places=12,
-        blank=True,
-        null=True,
     )
     point_lon_min = models.DecimalField(
         _("Longitude of westernmost point"),
         max_digits=18,
         decimal_places=12,
-        blank=True,
-        null=True,
     )
     point_lat_max = models.DecimalField(
         _("Latitude of southernmost point"),
         max_digits=18,
         decimal_places=12,
-        blank=True,
-        null=True,
     )
     point_lon_max = models.DecimalField(
         _("Longitude of easternmost point"),
         max_digits=18,
         decimal_places=12,
-        blank=True,
-        null=True,
     )
+
+    class Meta:
+        ordering = ("name",)
+        verbose_name_plural = _("Regions")
 
     def __str__(self):
         return self.name
@@ -167,6 +145,3 @@ class Region(models.Model):
             if hasattr(self, "observatorypage")
             else None
         )
-
-    def to_dict(self):
-        return {"id": self.id, "name": self.name}

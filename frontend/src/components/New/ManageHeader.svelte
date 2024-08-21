@@ -34,36 +34,32 @@
 
 {#if object.selected_version.id === object.draft_version_id && object.active_version_id}
   <div
-    class="flex items-center gap-4 rounded border border-purple-500 bg-purple-100 px-4 py-2 text-lg dark:text-gray-900"
+    class="rounded border border-purple-500 bg-purple-100 px-4 py-2 text-lg dark:text-gray-900"
   >
     {isDeal(object)
       ? $_("You're viewing the draft version of this deal.")
       : $_("You're viewing the draft version of this investor.")}
-    <div class="flex items-center gap-2">
-      <a class="btn btn-flat" href="/{objType}/{object.id}/">
-        {$_("Go to active version")}
-      </a>
-    </div>
+    <a class="btn btn-flat" href="/{objType}/{object.id}/">
+      {$_("Go to active version")}
+    </a>
   </div>
 {/if}
 {#if object.draft_version_id && object.selected_version.id !== object.draft_version_id}
   <div
-    class="flex items-center gap-4 rounded border border-green-500 bg-green-100 px-4 py-2 text-lg dark:text-gray-900"
+    class="rounded border border-green-500 bg-green-100 px-4 py-2 text-lg dark:text-gray-900"
   >
     {isDeal(object)
       ? $_("There is a draft version of this deal")
       : $_("There is a draft version of this investor.")}
-    <div class="flex items-center gap-2">
-      <a class="btn btn-flat" href="/{objType}/{object.id}/{object.draft_version_id}/">
-        {$_("Go to current draft")}
-      </a>
-    </div>
+    <a class="btn btn-flat" href="/{objType}/{object.id}/{object.draft_version_id}/">
+      {$_("Go to current draft")}
+    </a>
   </div>
 {/if}
 
 <div class="my-4 grid grid-cols-2 lg:grid-cols-3">
   <div class="col-span-2 rounded-tl bg-gray-100 dark:bg-gray-600">
-    <div class="flex items-center justify-between gap-4 p-2">
+    <div class="flex flex-col items-center justify-between gap-4 p-2 md:flex-row">
       <div class="flex items-center gap-8">
         <h1 class="heading4 my-0 text-[1.875rem]">
           {#if object.selected_version.id !== object.active_version_id}

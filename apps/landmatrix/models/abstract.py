@@ -11,17 +11,20 @@ from apps.accounts.models import User
 from apps.landmatrix.models import choices
 
 from apps.landmatrix.models.fields import NanoIDField, LooseDateField
+from apps.landmatrix.models import schema
 from apps.landmatrix.permissions import is_editor_or_higher, is_admin
+from django_pydantic_jsonfield import PydanticJSONField, SchemaValidator
 
 
 class BaseHull(models.Model):
-    deleted = models.BooleanField(default=False)
-    deleted_comment = models.TextField(blank=True)
+    deleted = models.BooleanField(_("Deleted"), default=False)
+    deleted_comment = models.TextField(_("Comment on deletion"), blank=True)
 
     # mainly for management/case_statistics
-    first_created_at = models.DateTimeField()
+    first_created_at = models.DateTimeField(_("First created at"))
     first_created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
+        verbose_name=_("First created by"),
         blank=True,
         null=True,
         on_delete=models.PROTECT,
@@ -55,42 +58,59 @@ class BaseVersion(models.Model):
     created_at = models.DateTimeField(_("Created at"))
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
+        verbose_name=_("Created by"),
         blank=True,
         null=True,
         on_delete=models.PROTECT,
         related_name="+",
     )
-    modified_at = models.DateTimeField(_("Modified at"), blank=True, null=True)
+    modified_at = models.DateTimeField(
+        _("Modified at"),
+        blank=True,
+        null=True,
+    )
     modified_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
+        verbose_name=_("Modified by"),
         blank=True,
         null=True,
         on_delete=models.PROTECT,
         related_name="+",
     )
     sent_to_review_at = models.DateTimeField(
-        _("Sent to review at"), null=True, blank=True
+        _("Sent to review at"),
+        blank=True,
+        null=True,
     )
     sent_to_review_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
+        verbose_name=_("Sent to review by"),
         blank=True,
         null=True,
         on_delete=models.PROTECT,
         related_name="+",
     )
     sent_to_activation_at = models.DateTimeField(
-        _("Reviewed at"), null=True, blank=True
+        _("Sent to activation at"),
+        blank=True,
+        null=True,
     )
     sent_to_activation_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
+        verbose_name=_("Sent to activation by"),
         blank=True,
         null=True,
         on_delete=models.PROTECT,
         related_name="+",
     )
-    activated_at = models.DateTimeField(_("Activated at"), null=True, blank=True)
+    activated_at = models.DateTimeField(
+        _("Activated at"),
+        blank=True,
+        null=True,
+    )
     activated_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
+        verbose_name=_("Activated by"),
         blank=True,
         null=True,
         on_delete=models.PROTECT,
@@ -98,9 +118,14 @@ class BaseVersion(models.Model):
     )
 
     status: VersionStatus = models.CharField(
+        _("Status"),
         choices=VersionStatus.choices,
         default=VersionStatus.DRAFT,
     )
+
+    class Meta:
+        abstract = True
+        ordering = ("id",)
 
     def save(self, *args, **kwargs):
         if self._state.adding and not self.created_at:
@@ -149,9 +174,6 @@ class BaseVersion(models.Model):
         else:
             raise ParseError("Invalid transition")
 
-    class Meta:
-        abstract = True
-
     def copy_to_new_draft(self, created_by_id):
         self.id = None
         self.status = VersionStatus.DRAFT
@@ -192,21 +214,12 @@ class BaseWorkflowInfo(models.Model):
     )
     timestamp = models.DateTimeField(default=timezone.now)
     comment = models.TextField(blank=True)
-    replies = models.JSONField(null=True, default=list)
+    replies = PydanticJSONField(
+        null=True,
+        default=list,
+        validators=[SchemaValidator(schema=schema.WFIReplySchema)],
+    )
     resolved = models.BooleanField(default=False)
-
-    def to_dict(self) -> dict:
-        return {
-            "id": self.id,
-            "from_user_id": self.from_user_id,
-            "to_user_id": self.to_user_id,
-            "status_before": self.status_before,
-            "status_after": self.status_after,
-            "timestamp": self.timestamp,
-            "comment": self.comment,
-            "resolved": self.resolved,
-            "replies": self.replies,
-        }
 
     def get_object_url(self):
         _site = Site.objects.get(is_default_site=True)
@@ -216,6 +229,7 @@ class BaseWorkflowInfo(models.Model):
 
     class Meta:
         abstract = True
+        ordering = ("-timestamp",)
 
 
 class BaseDataSource(models.Model):
@@ -236,24 +250,6 @@ class BaseDataSource(models.Model):
     )
     open_land_contracts_id = models.CharField(_("Open Contracting ID"), blank=True)
     comment = models.TextField(_("Comment"), blank=True)
-
-    def to_dict(self):
-        return {
-            "nid": self.nid,
-            "type": self.type,
-            "url": self.url,
-            "file": str(self.file),
-            "file_not_public": self.file_not_public,
-            "publication_title": self.publication_title,
-            "date": self.date,
-            "name": self.name,
-            "company": self.company,
-            "email": self.email,
-            "phone": self.phone,
-            "includes_in_country_verified_information": self.includes_in_country_verified_information,
-            "open_land_contracts_id": self.open_land_contracts_id,
-            "comment": self.comment,
-        }
 
     def save(self, *args, **kwargs):
         if self._state.adding and not self.nid:

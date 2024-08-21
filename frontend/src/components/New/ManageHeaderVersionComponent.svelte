@@ -146,7 +146,7 @@
         <button
           on:click={() => (showReallyEditModal = true)}
           class="btn-outline btn-flat btn-primary min-w-[8rem]"
-          class:disabled={$loading || $navigating}
+          class:disabled={!isCurrentDraft || $loading || $navigating}
         >
           {$_("Edit")}
         </button>
@@ -161,7 +161,7 @@
         <a
           href={editLink}
           class="btn-outline btn-flat btn-primary min-w-[8rem]"
-          class:disabled={$loading || $navigating}
+          class:disabled={!isCurrentDraft || $loading || $navigating}
         >
           {$_("Edit")}
         </a>

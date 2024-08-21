@@ -22,6 +22,8 @@ class NanoIDField(CharField):
     pass
 
 
+# NOTE: Not in use, but referenced by migrations
+# TODO: Delete after squashing migrations
 class DecimalIntField(DecimalField):
     def from_db_value(self, value, expression, connection):
         if value is None:

@@ -29,32 +29,22 @@ export enum Version2Status {
   ACTIVATED = "ACTIVATED",
 }
 
-// TODO: Fix type in openAPI -> currently just string
-export interface WorkflowInfoType {
-  id: number
-  from_user_id: number
-  to_user_id: number | null
-  status_before: Version2Status | null
-  status_after: Version2Status | null
+export interface WFIReply {
   timestamp: string
+  user_id: number
   comment: string
-  resolved: boolean
-  replies: {
-    timestamp: string
-    user_id: number
-    comment: string
-  }[]
 }
+
+export type WorkflowInfo = (
+  | components["schemas"]["DealWorkflowInfo"]
+  | components["schemas"]["InvestorWorkflowInfo"]
+) & { replies: WFIReply[] }
 
 export type HaArea = components["schemas"]["HaAreasEnum"]
 export type DataSourceType = components["schemas"]["DatasourceTypeEnum"]
 export type Currency = components["schemas"]["Currency"]
 
-// Fix dealHull type
-export interface DealHull extends Omit<components["schemas"]["Deal"], "workflowinfos"> {
-  workflowinfos: WorkflowInfoType[]
-}
-
+export type DealHull = components["schemas"]["Deal"]
 export type MutableDealHull = Mutable<DealHull>
 
 export enum InvolvementRole {
@@ -64,13 +54,11 @@ export enum InvolvementRole {
 
 export type Involvement = components["schemas"]["Involvement"]
 
-// Fix InvestorHull type
-export interface InvestorHull
-  extends Omit<components["schemas"]["Investor"], "deals" | "workflowinfos"> {
-  deals: DealHull[]
-  workflowinfos: WorkflowInfoType[]
-}
+export type InvestorDeal = components["schemas"]["InvestorDeal"]
 
+export type InvestorHull = components["schemas"]["Investor"]
+
+export type SearchedInvestor = components["schemas"]["SearchedInvestor"]
 export type SimpleInvestor = components["schemas"]["SimpleInvestor"]
 
 export type Country = components["schemas"]["Country"]

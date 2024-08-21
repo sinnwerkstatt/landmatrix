@@ -68,6 +68,7 @@ class InvestorHullQuerySet(models.QuerySet):
 class InvestorHull(BaseHull):
     active_version = models.ForeignKey(
         "InvestorVersion",
+        verbose_name=_("Active version"),
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
@@ -75,6 +76,7 @@ class InvestorHull(BaseHull):
     )
     draft_version = models.ForeignKey(
         "InvestorVersion",
+        verbose_name=_("Draft version"),
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
@@ -260,7 +262,8 @@ class InvolvementQuerySet(models.QuerySet):
 
 
 class Involvement(models.Model):
-    nid = NanoIDField("ID", max_length=15, db_index=True)
+    nid = NanoIDField(_("ID"), max_length=15, db_index=True)
+
     parent_investor = models.ForeignKey(
         InvestorHull,
         verbose_name=_("Investor"),
@@ -275,18 +278,16 @@ class Involvement(models.Model):
         related_name="parent_investors",
         on_delete=models.PROTECT,
     )
-
     role = models.CharField(
-        verbose_name=_("Relation type"), choices=choices.INVOLVEMENT_ROLE_CHOICES
+        _("Relation type"),
+        choices=choices.INVOLVEMENT_ROLE_CHOICES,
     )
-
     investment_type = ChoiceArrayField(
         models.CharField(choices=choices.INVESTMENT_TYPE_CHOICES),
         verbose_name=_("Investment type"),
         blank=True,
         default=list,
     )
-
     percentage = models.DecimalField(
         _("Ownership share"),
         blank=True,
@@ -295,7 +296,11 @@ class Involvement(models.Model):
         decimal_places=2,
         validators=[MinValueValidator(0), MaxValueValidator(100)],
     )
-    loans_amount = models.FloatField(_("Loan amount"), blank=True, null=True)
+    loans_amount = models.FloatField(
+        _("Loan amount"),
+        blank=True,
+        null=True,
+    )
     loans_currency = models.ForeignKey(
         Currency,
         verbose_name=_("Loan currency"),
@@ -303,15 +308,21 @@ class Involvement(models.Model):
         null=True,
         on_delete=models.PROTECT,
     )
-    loans_date = LooseDateField(_("Loan date"), blank=True, null=True)
-
+    loans_date = LooseDateField(
+        _("Loan date"),
+        blank=True,
+        null=True,
+    )
     parent_relation = models.CharField(
-        verbose_name=_("Parent relation"),
+        _("Parent relation"),
         choices=choices.PARENT_RELATION_CHOICES,
         blank=True,
         null=True,
     )
-    comment = models.TextField(_("Comment"), blank=True)
+    comment = models.TextField(
+        _("Comment on involvement"),
+        blank=True,
+    )
 
     objects = InvolvementQuerySet.as_manager()
 
@@ -337,13 +348,12 @@ class Involvement(models.Model):
 class InvestorVersion(BaseVersion):
     investor = models.ForeignKey(
         InvestorHull,
+        verbose_name=_("Investor"),
         on_delete=models.PROTECT,
         related_name="versions",
     )
 
     name = models.CharField(_("Name"), blank=True)
-    name_unknown = models.BooleanField(default=False)
-
     country = models.ForeignKey(
         Country,
         verbose_name=_("Country of registration/origin"),
@@ -351,14 +361,12 @@ class InvestorVersion(BaseVersion):
         null=True,
         on_delete=models.PROTECT,
     )
-
     classification = models.CharField(
-        verbose_name=_("Classification"),
+        _("Classification"),
         choices=choices.INVESTOR_CLASSIFICATION_CHOICES,
         blank=True,
         null=True,
     )
-
     homepage = models.URLField(_("Investor homepage"), blank=True)
     opencorporates = models.URLField(_("Opencorporates link"), blank=True)
     comment = models.TextField(_("Comment"), blank=True)
@@ -366,6 +374,7 @@ class InvestorVersion(BaseVersion):
     # """ Data sources """  via Foreignkey
 
     """ calculated properties """
+    name_unknown = models.BooleanField(default=False)
     involvements_snapshot = models.JSONField(blank=True, default=list)
 
     def __str__(self):
@@ -506,16 +515,6 @@ class InvestorWorkflowInfo(BaseWorkflowInfo):
         null=True,
         blank=True,
     )
-
-    def to_dict(self) -> dict:
-        d = super().to_dict()
-        d.update(
-            {
-                "investor_id": self.investor_id,
-                "investor_version_id": self.investor_version_id,
-            }
-        )
-        return d
 
     def get_object_url(self):
         base_url = super().get_object_url()

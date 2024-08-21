@@ -2,11 +2,11 @@ import {
   Version2Status,
   type DealHull,
   type InvestorHull,
-  type WorkflowInfoType,
+  type WorkflowInfo,
 } from "$lib/types/data"
 
 export type WorkflowInfoView = (DealHull | InvestorHull) & {
-  relevantWFI: WorkflowInfoType
+  relevantWFI: WorkflowInfo
   openReq?: boolean
 }
 
@@ -23,7 +23,7 @@ export const createTodoFeedbackView: CreateWorkflowInfoViewFn = (context, object
         wfi =>
           wfi.status_before === wfi.status_after &&
           wfi.to_user_id === context.page.data.user.id,
-      )
+      ) as WorkflowInfo | undefined
 
       const lastReply = relevantWFI?.replies.at(-1)
       const openReq = !lastReply || lastReply.user_id !== context.page.data.user.id
@@ -100,7 +100,7 @@ export const createRequestFeedbackView: CreateWorkflowInfoViewFn = (context, obj
         wfi =>
           wfi.status_before === wfi.status_after &&
           wfi.from_user_id === context.page.data.user.id,
-      )
+      ) as WorkflowInfo | undefined
 
       const lastReply = relevantWFI?.replies.at(-1)
       const openReq = lastReply && lastReply.user_id !== context.page.data.user.id

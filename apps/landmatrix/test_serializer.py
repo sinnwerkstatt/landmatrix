@@ -3,9 +3,11 @@ from apps.landmatrix.models.choices import (
     InvestmentTypeEnum,
     ParentRelationEnum,
 )
+from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.currency import Currency
+from apps.landmatrix.models.deal import DealHull, DealVersion
 from apps.landmatrix.models.investor import InvestorHull, Involvement
-from apps.landmatrix.serializers import InvolvementSerializer
+from apps.landmatrix.serializers import InvolvementSerializer, InvestorSerializer
 
 
 def test_involvement_serializer_empty():
@@ -73,3 +75,51 @@ def test_involvement_serializer_all():
         "parent_relation": ParentRelationEnum.LOCAL_BRANCH,
         "comment": "The have a strong bound (through money).",
     }
+
+
+def test_investor_serializer_get_deals():
+    investor = InvestorHull.objects.create(id=500)
+
+    assert InvestorSerializer().get_deals(investor) == [], "Sanity check."
+
+    deal = DealHull.objects.create(
+        id=50,
+        country=Country.objects.get(id=724, name="Spain"),
+    )
+
+    deal.draft_version = DealVersion.objects.create(
+        id=501,
+        deal=deal,
+        operating_company=investor,
+    )
+    deal.save()
+
+    assert InvestorSerializer().get_deals(investor) == [], "Ignores draft versions."
+
+    deal.active_version = DealVersion.objects.create(
+        id=502,
+        deal=deal,
+        operating_company=investor,
+        intention_of_investment=[],
+        negotiation_status=[
+            {"date": "2008", "choice": "EXPRESSION_OF_INTEREST", "current": False},
+            {"date": "2024", "choice": "MEMORANDUM_OF_UNDERSTANDING", "current": True},
+        ],
+        implementation_status=[{"choice": "TOURISM", "current": True}],
+        contract_size=[{"date": "2008", "area": 1000, "current": True}],
+    )
+    deal.save()
+
+    assert InvestorSerializer().get_deals(investor) == [
+        {
+            "id": 50,
+            "country_id": 724,
+            "selected_version": {
+                "id": 502,
+                "current_intention_of_investment": [],
+                "current_negotiation_status": "MEMORANDUM_OF_UNDERSTANDING",
+                "current_implementation_status": "TOURISM",
+                "deal_size": 1000.0,
+            },
+        },
+    ], "Returns computed values of active version."

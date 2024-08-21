@@ -45,7 +45,12 @@ def quick_search(request: HttpRequest) -> JsonResponse:
         .annotate(
             country_name=F("country__name"),
             type=Value("deal"),
-            href=Concat(Value("/deal/"), "id", output_field=CharField()),
+            href=Concat(
+                Value("/deal/"),
+                "id",
+                Value("/"),
+                output_field=CharField(),
+            ),
         )
     ) + list(
         InvestorHull.objects.visible(request.user, "ACTIVE")
@@ -55,7 +60,12 @@ def quick_search(request: HttpRequest) -> JsonResponse:
             name=F("active_version__name"),
             name_unknown=F("active_version__name_unknown"),
             type=Value("investor"),
-            href=Concat(Value("/investor/"), "id", output_field=CharField()),
+            href=Concat(
+                Value("/investor/"),
+                "id",
+                Value("/"),
+                output_field=CharField(),
+            ),
         )
     )
     return JsonResponse({"items": items})

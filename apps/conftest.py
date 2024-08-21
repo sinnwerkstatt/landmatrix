@@ -80,8 +80,8 @@ def investors(db) -> list[InvestorHull]:
 
 @pytest.fixture
 def deal_with_active_version(db) -> DealHull:
-    heaven = Country.objects.create(name="Heaven")
-    deal = DealHull.objects.create(country=heaven)
+    spain = Country.objects.get(id=724, name="Spain")
+    deal = DealHull.objects.create(country=spain)
     deal.active_version = DealVersion.objects.create(deal_id=deal.id)
     deal.save()
     return deal

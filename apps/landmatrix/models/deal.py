@@ -32,7 +32,6 @@ from apps.landmatrix.models.choices import (
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.fields import (
-    DecimalIntField,
     ChoiceArrayField,
     ArrayField,
     NanoIDField,
@@ -96,6 +95,7 @@ class DealHull(BaseHull):
 
     active_version = models.ForeignKey(
         "DealVersion",
+        verbose_name=_("Active version"),
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
@@ -103,20 +103,27 @@ class DealHull(BaseHull):
     )
     draft_version = models.ForeignKey(
         "DealVersion",
+        verbose_name=_("Draft version"),
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
         related_name="+",
     )
 
-    confidential = models.BooleanField(default=False)
+    confidential = models.BooleanField(
+        _("Confidential"),
+        default=False,
+    )
     confidential_comment = models.TextField(
-        _("Comment why this deal is private"), blank=True
+        _("Comment why this deal is private"),
+        blank=True,
     )
 
     # ## calculated
     fully_updated_at = models.DateTimeField(
-        _("Last full update"), null=True, blank=True
+        _("Last full update"),
+        blank=True,
+        null=True,
     )
 
     objects = DealHullQuerySet.as_manager()
@@ -201,6 +208,7 @@ class DealHull(BaseHull):
 class DealVersionBaseFields(models.Model):
     deal = models.ForeignKey(
         DealHull,
+        verbose_name=_("Deal"),
         on_delete=models.PROTECT,
         related_name="versions",
     )
@@ -210,7 +218,7 @@ class DealVersionBaseFields(models.Model):
 
     """ General info """
     # Land area
-    intended_size = DecimalIntField(
+    intended_size = models.DecimalField(
         _("Intended size"),
         max_digits=12,
         decimal_places=2,
@@ -218,30 +226,44 @@ class DealVersionBaseFields(models.Model):
         null=True,
     )
     contract_size = PydanticJSONField(
+        _("Contract size"),
         blank=True,
         default=list,
         validators=[SchemaValidator(schema.CurrentDateAreaSchema)],
     )
     production_size = PydanticJSONField(
+        _("Production size"),
         blank=True,
         default=list,
         validators=[SchemaValidator(schema.CurrentDateAreaSchema)],
     )
-    land_area_comment = models.TextField(_("Comment on land area"), blank=True)
+    land_area_comment = models.TextField(
+        _("Comment on land area"),
+        blank=True,
+    )
 
     # Intention of investment
     intention_of_investment = PydanticJSONField(
+        _("Intention of investment"),
         blank=True,
         default=list,
         validators=[SchemaValidator(schema.CurrentDateAreaChoicesIOI)],
     )
     intention_of_investment_comment = models.TextField(
-        _("Comment on intention of investment"), blank=True
+        _("Comment on intention of investment"),
+        blank=True,
     )
 
     # Carbon offset project
-    carbon_offset_project = models.BooleanField(null=True, blank=True)
-    carbon_offset_project_comment = models.TextField(blank=True)
+    carbon_offset_project = models.BooleanField(
+        _("Carbon offset project"),
+        blank=True,
+        null=True,
+    )
+    carbon_offset_project_comment = models.TextField(
+        _("Comment on carbon offset project"),
+        blank=True,
+    )
 
     # Nature of the deal
     nature_of_deal = ChoiceArrayField(
@@ -251,32 +273,41 @@ class DealVersionBaseFields(models.Model):
         default=list,
     )
     nature_of_deal_comment = models.TextField(
-        _("Comment on nature of the deal"), blank=True
+        _("Comment on nature of the deal"),
+        blank=True,
     )
 
     # # Negotiation status
     negotiation_status = PydanticJSONField(
+        _("Negotiation status"),
         blank=True,
         default=list,
         validators=[SchemaValidator(schema.CurrentDateChoiceNegotiationStatus)],
     )
     negotiation_status_comment = models.TextField(
-        _("Comment on negotiation status"), blank=True
+        _("Comment on negotiation status"),
+        blank=True,
     )
 
     # # Implementation status
     implementation_status = PydanticJSONField(
+        _("Implementation status"),
         blank=True,
         default=list,
         validators=[SchemaValidator(schema.CurrentDateChoiceImplementationStatus)],
     )
     implementation_status_comment = models.TextField(
-        _("Comment on implementation status"), blank=True
+        _("Comment on implementation status"),
+        blank=True,
     )
 
     # Purchase price
-    purchase_price = DecimalIntField(
-        _("Purchase price"), max_digits=18, decimal_places=2, blank=True, null=True
+    purchase_price = models.DecimalField(
+        _("Purchase price"),
+        max_digits=18,
+        decimal_places=2,
+        blank=True,
+        null=True,
     )
     purchase_price_currency = models.ForeignKey(
         Currency,
@@ -292,7 +323,7 @@ class DealVersionBaseFields(models.Model):
         blank=True,
         null=True,
     )
-    purchase_price_area = DecimalIntField(
+    purchase_price_area = models.DecimalField(
         _("Purchase price area"),
         max_digits=18,
         decimal_places=2,
@@ -300,12 +331,17 @@ class DealVersionBaseFields(models.Model):
         null=True,
     )
     purchase_price_comment = models.TextField(
-        _("Comment on purchase price"), blank=True
+        _("Comment on purchase price"),
+        blank=True,
     )
 
     # Leasing fees
-    annual_leasing_fee = DecimalIntField(
-        _("Annual leasing fee"), max_digits=18, decimal_places=2, blank=True, null=True
+    annual_leasing_fee = models.DecimalField(
+        _("Annual leasing fee"),
+        max_digits=18,
+        decimal_places=2,
+        blank=True,
+        null=True,
     )
     annual_leasing_fee_currency = models.ForeignKey(
         Currency,
@@ -321,7 +357,7 @@ class DealVersionBaseFields(models.Model):
         blank=True,
         null=True,
     )
-    annual_leasing_fee_area = DecimalIntField(
+    annual_leasing_fee_area = models.DecimalField(
         _("Annual leasing fee area"),
         max_digits=18,
         decimal_places=2,
@@ -329,116 +365,162 @@ class DealVersionBaseFields(models.Model):
         null=True,
     )
     annual_leasing_fee_comment = models.TextField(
-        _("Comment on leasing fee"), blank=True
+        _("Comment on leasing fee"),
+        blank=True,
     )
 
     # Contract farming
-    # started implementing #113 . but not urgent, defering.
-    # YES_IN_PLANNING_NO_CHOICES = (
-    #     ("", _("Unknown")),
-    #     ("YES", _("Yes")),
-    #     ("IN_PLANNING", _("In Planning")),
-    #     ("NO", _("No")),
-    # )
-    # models.CharField(choices=YES_IN_PLANNING_NO_CHOICES)
-    contract_farming = models.BooleanField(null=True)
-
-    on_the_lease_state = models.BooleanField(_("On leased / purchased"), null=True)
+    contract_farming = models.BooleanField(
+        _("Contract farming"),
+        blank=True,
+        null=True,
+    )
+    on_the_lease_state = models.BooleanField(
+        _("On leased / purchased"),
+        blank=True,
+        null=True,
+    )
     on_the_lease = PydanticJSONField(
+        _("On leased area/farmers/households"),
         blank=True,
         default=list,
         validators=[SchemaValidator(schema.LeaseSchema)],
     )
-
     off_the_lease_state = models.BooleanField(
-        _("Not on leased / purchased (out-grower)"), null=True
+        _("Not on leased / purchased (out-grower)"),
+        blank=True,
+        null=True,
     )
     off_the_lease = PydanticJSONField(
+        _("Not on leased area/farmers/households (out-grower)"),
         blank=True,
         default=list,
         validators=[SchemaValidator(schema.LeaseSchema)],
     )
     contract_farming_comment = models.TextField(
-        _("Comment on contract farming"), blank=True
+        _("Comment on contract farming"),
+        blank=True,
     )
 
     # """ Contracts """
     # via Foreignkey
 
     """ Employment """
-    total_jobs_created = models.BooleanField(_("Jobs created (total)"), null=True)
+    total_jobs_created = models.BooleanField(
+        _("Jobs created (total)"),
+        blank=True,
+        null=True,
+    )
     total_jobs_planned = models.IntegerField(
-        _("Planned number of jobs (total)"), blank=True, null=True
+        _("Planned number of jobs (total)"),
+        blank=True,
+        null=True,
     )
     total_jobs_planned_employees = models.IntegerField(
-        _("Planned employees (total)"), blank=True, null=True
+        _("Planned employees (total)"),
+        blank=True,
+        null=True,
     )
     total_jobs_planned_daily_workers = models.IntegerField(
-        _("Planned daily/seasonal workers (total)"), blank=True, null=True
+        _("Planned daily/seasonal workers (total)"),
+        blank=True,
+        null=True,
     )
     total_jobs_current = PydanticJSONField(
+        _("Current total number of jobs/employees/ daily/seasonal workers"),
         blank=True,
         default=list,
         validators=[SchemaValidator(schema.JobsSchema)],
     )
     total_jobs_created_comment = models.TextField(
-        _("Comment on jobs created (total)"), blank=True
+        _("Comment on jobs created (total)"),
+        blank=True,
     )
 
-    foreign_jobs_created = models.BooleanField(_("Jobs created (foreign)"), null=True)
+    foreign_jobs_created = models.BooleanField(
+        _("Jobs created (foreign)"),
+        blank=True,
+        null=True,
+    )
     foreign_jobs_planned = models.IntegerField(
-        _("Planned number of jobs (foreign)"), blank=True, null=True
+        _("Planned number of jobs (foreign)"),
+        blank=True,
+        null=True,
     )
     foreign_jobs_planned_employees = models.IntegerField(
-        _("Planned employees (foreign)"), blank=True, null=True
+        _("Planned employees (foreign)"),
+        blank=True,
+        null=True,
     )
     foreign_jobs_planned_daily_workers = models.IntegerField(
-        _("Planned daily/seasonal workers (foreign)"), blank=True, null=True
+        _("Planned daily/seasonal workers (foreign)"),
+        blank=True,
+        null=True,
     )
     foreign_jobs_current = PydanticJSONField(
+        _("Current foreign number of jobs/employees/ daily/seasonal workers"),
         blank=True,
         default=list,
         validators=[SchemaValidator(schema.JobsSchema)],
     )
     foreign_jobs_created_comment = models.TextField(
-        _("Comment on jobs created (foreign)"), blank=True
+        _("Comment on jobs created (foreign)"),
+        blank=True,
     )
 
-    domestic_jobs_created = models.BooleanField(_("Jobs created (domestic)"), null=True)
+    domestic_jobs_created = models.BooleanField(
+        _("Jobs created (domestic)"),
+        blank=True,
+        null=True,
+    )
     domestic_jobs_planned = models.IntegerField(
-        _("Planned number of jobs (domestic)"), blank=True, null=True
+        _("Planned number of jobs (domestic)"),
+        blank=True,
+        null=True,
     )
     domestic_jobs_planned_employees = models.IntegerField(
-        _("Planned employees (domestic)"), blank=True, null=True
+        _("Planned employees (domestic)"),
+        blank=True,
+        null=True,
     )
     domestic_jobs_planned_daily_workers = models.IntegerField(
-        _("Planned daily/seasonal workers (domestic)"), blank=True, null=True
+        _("Planned daily/seasonal workers (domestic)"),
+        blank=True,
+        null=True,
     )
     domestic_jobs_current = PydanticJSONField(
+        _("Current domestic number of jobs/employees/ daily/seasonal workers"),
         blank=True,
         default=list,
         validators=[SchemaValidator(schema.JobsSchema)],
     )
     domestic_jobs_created_comment = models.TextField(
-        _("Comment on jobs created (domestic)"), blank=True
+        _("Comment on jobs created (domestic)"),
+        blank=True,
     )
 
     """ Investor info """
     operating_company = models.ForeignKey(
         InvestorHull,
+        verbose_name=_("Operating company"),
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
         related_name="dealversions",
     )
     involved_actors = PydanticJSONField(
+        _("Actors involved in the negotiation / admission process"),
         blank=True,
         default=list,
         validators=[SchemaValidator(schema.ActorsSchema)],
     )
-    project_name = models.CharField(_("Name of investment project"), blank=True)
+    project_name = models.CharField(
+        _("Name of investment project"),
+        blank=True,
+    )
     investment_chain_comment = models.TextField(
-        _("Comment on investment chain"), blank=True
+        _("Comment on investment chain"),
+        blank=True,
     )
 
     # """ Data sources """  via Foreignkey
@@ -457,7 +539,8 @@ class DealVersionBaseFields(models.Model):
         default=list,
     )
     people_affected_comment = models.TextField(
-        _("Comment on communities / indigenous peoples affected"), blank=True
+        _("Comment on communities / indigenous peoples affected"),
+        blank=True,
     )
 
     recognition_status = ChoiceArrayField(
@@ -467,7 +550,8 @@ class DealVersionBaseFields(models.Model):
         default=list,
     )
     recognition_status_comment = models.TextField(
-        _("Comment on recognition status of community land tenure"), blank=True
+        _("Comment on recognition status of community land tenure"),
+        blank=True,
     )
     community_consultation = models.CharField(
         _("Community consultation"),
@@ -476,7 +560,8 @@ class DealVersionBaseFields(models.Model):
         null=True,
     )
     community_consultation_comment = models.TextField(
-        _("Comment on consultation of local community"), blank=True
+        _("Comment on consultation of local community"),
+        blank=True,
     )
 
     community_reaction = models.CharField(
@@ -486,20 +571,34 @@ class DealVersionBaseFields(models.Model):
         null=True,
     )
     community_reaction_comment = models.TextField(
-        _("Comment on community reaction"), blank=True
+        _("Comment on community reaction"),
+        blank=True,
     )
 
-    land_conflicts = models.BooleanField(_("Presence of land conflicts"), null=True)
+    land_conflicts = models.BooleanField(
+        _("Presence of land conflicts"),
+        blank=True,
+        null=True,
+    )
     land_conflicts_comment = models.TextField(
-        _("Comment on presence of land conflicts"), blank=True
+        _("Comment on presence of land conflicts"),
+        blank=True,
     )
 
-    displacement_of_people = models.BooleanField(_("Displacement of people"), null=True)
+    displacement_of_people = models.BooleanField(
+        _("Displacement of people"),
+        blank=True,
+        null=True,
+    )
     displaced_people = models.IntegerField(
-        _("Number of people actually displaced"), blank=True, null=True
+        _("Number of people actually displaced"),
+        blank=True,
+        null=True,
     )
     displaced_households = models.IntegerField(
-        _("Number of households actually displaced"), blank=True, null=True
+        _("Number of households actually displaced"),
+        blank=True,
+        null=True,
     )
     displaced_people_from_community_land = models.IntegerField(
         _("Number of people displaced out of their community land"),
@@ -507,7 +606,9 @@ class DealVersionBaseFields(models.Model):
         null=True,
     )
     displaced_people_within_community_land = models.IntegerField(
-        _("Number of people displaced staying on community land"), blank=True, null=True
+        _("Number of people displaced staying on community land"),
+        blank=True,
+        null=True,
     )
     displaced_households_from_fields = models.IntegerField(
         _('Number of households displaced "only" from their agricultural fields'),
@@ -520,7 +621,8 @@ class DealVersionBaseFields(models.Model):
         null=True,
     )
     displacement_of_people_comment = models.TextField(
-        _("Comment on displacement of people"), blank=True
+        _("Comment on displacement of people"),
+        blank=True,
     )
 
     negative_impacts = ChoiceArrayField(
@@ -530,14 +632,17 @@ class DealVersionBaseFields(models.Model):
         default=list,
     )
     negative_impacts_comment = models.TextField(
-        _("Comment on negative impacts for local communities"), blank=True
+        _("Comment on negative impacts for local communities"),
+        blank=True,
     )
 
     promised_compensation = models.TextField(
-        _("Promised compensation (e.g. for damages or resettlements)"), blank=True
+        _("Promised compensation (e.g. for damages or resettlements)"),
+        blank=True,
     )
     received_compensation = models.TextField(
-        _("Received compensation (e.g. for damages or resettlements)"), blank=True
+        _("Received compensation (e.g. for damages or resettlements)"),
+        blank=True,
     )
 
     promised_benefits = ChoiceArrayField(
@@ -547,7 +652,8 @@ class DealVersionBaseFields(models.Model):
         default=list,
     )
     promised_benefits_comment = models.TextField(
-        _("Comment on promised benefits for local communities"), blank=True
+        _("Comment on promised benefits for local communities"),
+        blank=True,
     )
 
     materialized_benefits = ChoiceArrayField(
@@ -557,12 +663,14 @@ class DealVersionBaseFields(models.Model):
         default=list,
     )
     materialized_benefits_comment = models.TextField(
-        _("Comment on materialized benefits for local communities"), blank=True
+        _("Comment on materialized benefits for local communities"),
+        blank=True,
     )
 
     presence_of_organizations = models.TextField(
         _(
-            "Presence of organizations and actions taken (e.g. farmer organizations, NGOs, etc.)"
+            "Presence of organizations and actions taken "
+            "(e.g. farmer organizations, NGOs, etc.)"
         ),
         blank=True,
     )
@@ -575,7 +683,8 @@ class DealVersionBaseFields(models.Model):
         default=list,
     )
     former_land_owner_comment = models.TextField(
-        _("Comment on former land owner"), blank=True
+        _("Comment on former land owner"),
+        blank=True,
     )
     former_land_use = ChoiceArrayField(
         models.CharField(choices=choices.FORMER_LAND_USE_CHOICES),
@@ -584,7 +693,8 @@ class DealVersionBaseFields(models.Model):
         default=list,
     )
     former_land_use_comment = models.TextField(
-        _("Comment on former land use"), blank=True
+        _("Comment on former land use"),
+        blank=True,
     )
     former_land_cover = ChoiceArrayField(
         models.CharField(choices=choices.FORMER_LAND_COVER_CHOICES),
@@ -593,75 +703,105 @@ class DealVersionBaseFields(models.Model):
         default=list,
     )
     former_land_cover_comment = models.TextField(
-        _("Comment on former land cover"), blank=True
+        _("Comment on former land cover"),
+        blank=True,
     )
 
     """ Produce info """
     crops = PydanticJSONField(
+        _("Crops area/yield/export"),
         blank=True,
         default=list,
         validators=[SchemaValidator(schema.ExportsCrops)],
     )
-    crops_comment = models.TextField(_("Comment on crops"), blank=True)
+    crops_comment = models.TextField(
+        _("Comment on crops"),
+        blank=True,
+    )
 
     animals = PydanticJSONField(
+        _("Livestock area/yield/export"),
         blank=True,
         default=list,
         validators=[SchemaValidator(schema.ExportsAnimals)],
     )
-    animals_comment = models.TextField(_("Comment on livestock"), blank=True)
+    animals_comment = models.TextField(
+        _("Comment on livestock"),
+        blank=True,
+    )
 
     mineral_resources = PydanticJSONField(
+        _("Mineral resources area/yield/export"),
         blank=True,
         default=list,
         validators=[SchemaValidator(schema.ExportsMineralResources)],
     )
     mineral_resources_comment = models.TextField(
-        _("Comment on mineral resources"), blank=True
+        _("Comment on mineral resources"),
+        blank=True,
     )
 
     contract_farming_crops = PydanticJSONField(
+        _("Contract farming crops"),
         blank=True,
         default=list,
         validators=[SchemaValidator(schema.CurrentDateAreaChoicesCrops)],
     )
     contract_farming_crops_comment = models.TextField(
-        _("Comment on contract farming crops"), blank=True
+        _("Comment on contract farming crops"),
+        blank=True,
     )
+
     contract_farming_animals = PydanticJSONField(
+        _("Contract farming livestock"),
         blank=True,
         default=list,
         validators=[SchemaValidator(schema.CurrentDateAreaChoicesAnimals)],
     )
     contract_farming_animals_comment = models.TextField(
-        _("Comment on contract farming livestock"), blank=True
+        _("Comment on contract farming livestock"),
+        blank=True,
     )
 
     electricity_generation = PydanticJSONField(
+        _("Electricity generation"),
         blank=True,
         default=list,
         validators=[SchemaValidator(schema.ElectricityGenerationSchema)],
     )
     electricity_generation_comment = models.TextField(
-        _("Comment on electricity generation"), blank=True
+        _("Comment on electricity generation"),
+        blank=True,
     )
+
     carbon_sequestration = PydanticJSONField(
+        _("Carbon sequestration/offsetting"),
         blank=True,
         default=list,
         validators=[SchemaValidator(schema.CarbonSequestrationSchema)],
     )
     carbon_sequestration_comment = models.TextField(
-        _("Comment on carbon sequestration"), blank=True
+        _("Comment on carbon sequestration/offsetting"),
+        blank=True,
     )
 
-    has_domestic_use = models.BooleanField(_("Has domestic use"), null=True)
+    has_domestic_use = models.BooleanField(
+        _("Has domestic use"),
+        blank=True,
+        null=True,
+    )
     domestic_use = models.FloatField(
         _("Domestic use"),
         blank=True,
         null=True,
         validators=[MinValueValidator(0), MaxValueValidator(100)],
     )
-    has_export = models.BooleanField(_("Has export"), null=True)
+
+    has_export = models.BooleanField(
+        _("Has export"),
+        blank=True,
+        null=True,
+    )
     export = models.FloatField(
         _("Export"),
         blank=True,
@@ -711,33 +851,41 @@ class DealVersionBaseFields(models.Model):
         null=True,
         validators=[MinValueValidator(0), MaxValueValidator(100)],
     )
-
     use_of_produce_comment = models.TextField(
-        verbose_name=_("Comment on use of produce"), blank=True
+        verbose_name=_("Comment on use of produce"),
+        blank=True,
     )
 
     in_country_processing = models.BooleanField(
-        _("In country processing of produce"), null=True
+        _("In country processing of produce"),
+        blank=True,
+        null=True,
     )
     in_country_processing_comment = models.TextField(
-        _("Comment on in country processing of produce"), blank=True
+        _("Comment on in country processing of produce"),
+        blank=True,
     )
     in_country_processing_facilities = models.TextField(
         _(
-            "Processing facilities / production infrastructure of the project (e.g. oil mill, ethanol distillery, biomass power plant etc.)"
+            "Processing facilities / production infrastructure of the project "
+            "(e.g. oil mill, ethanol distillery, biomass power plant etc.)"
         ),
         blank=True,
     )
     in_country_end_products = models.TextField(
-        _("In-country end products of the project"), blank=True
+        _("In-country end products of the project"),
+        blank=True,
     )
 
     """Water"""
     water_extraction_envisaged = models.BooleanField(
-        _("Water extraction envisaged"), null=True
+        _("Water extraction envisaged"),
+        blank=True,
+        null=True,
     )
     water_extraction_envisaged_comment = models.TextField(
-        _("Comment on water extraction envisaged"), blank=True
+        _("Comment on water extraction envisaged"),
+        blank=True,
     )
 
     source_of_water_extraction = ChoiceArrayField(
@@ -747,46 +895,66 @@ class DealVersionBaseFields(models.Model):
         default=list,
     )
     source_of_water_extraction_comment = models.TextField(
-        _("Comment on source of water extraction"), blank=True
+        _("Comment on source of water extraction"),
+        blank=True,
     )
     how_much_do_investors_pay_comment = models.TextField(
-        _("Comment on how much do investors pay for water"), blank=True
+        _("Comment on how much do investors pay for water"),
+        blank=True,
     )
 
     water_extraction_amount = models.IntegerField(
-        _("Water extraction amount"), blank=True, null=True
+        _("Water extraction amount"),
+        blank=True,
+        null=True,
     )
     water_extraction_amount_comment = models.TextField(
-        _("Comment on how much water is extracted"), blank=True
+        _("Comment on how much water is extracted"),
+        blank=True,
     )
     use_of_irrigation_infrastructure = models.BooleanField(
-        _("Use of irrigation infrastructure"), null=True
+        _("Use of irrigation infrastructure"),
+        blank=True,
+        null=True,
     )
     use_of_irrigation_infrastructure_comment = models.TextField(
-        _("Comment on use of irrigation infrastructure"), blank=True
+        _("Comment on use of irrigation infrastructure"),
+        blank=True,
     )
     water_footprint = models.TextField(
-        _("Water footprint of the investment project"), blank=True
+        _("Water footprint of the investment project"),
+        blank=True,
     )
 
     """ Gender-related info """
     gender_related_information = models.TextField(
-        _("Comment on gender-related info"), blank=True
+        _("Comment on gender-related info"),
+        blank=True,
     )
 
     """ Overall comment """
-    overall_comment = models.TextField(_("Overall comment"), blank=True)
+    overall_comment = models.TextField(
+        _("Overall comment"),
+        blank=True,
+    )
 
     class Meta:
         abstract = True
+        ordering = ("id",)
 
 
 class DealVersion(DealVersionBaseFields, BaseVersion):
     """# CALCULATED FIELDS #"""
 
     # is_public: change the logic how it's calculated a bit - confidential is dealhull stuff
-    is_public = models.BooleanField(default=False)
-    has_known_investor = models.BooleanField(default=False)
+    is_public = models.BooleanField(
+        _("Is public"),
+        default=False,
+    )
+    has_known_investor = models.BooleanField(
+        _("Has known investor"),
+        default=False,
+    )
 
     # NOTE: Next two fields should have used through keyword.
     parent_companies = models.ManyToManyField(
@@ -802,14 +970,15 @@ class DealVersion(DealVersionBaseFields, BaseVersion):
         related_name="+",
         blank=True,
     )
-    current_contract_size = DecimalIntField(
-        verbose_name=_("Current contract size"),
+    current_contract_size = models.DecimalField(
+        _("Current contract size"),
         max_digits=18,
         decimal_places=2,
         blank=True,
         null=True,
     )
-    current_production_size = DecimalIntField(
+    current_production_size = models.DecimalField(
+        _("Current production size"),
         max_digits=18,
         decimal_places=2,
         blank=True,
@@ -817,38 +986,81 @@ class DealVersion(DealVersionBaseFields, BaseVersion):
     )
     current_intention_of_investment = ChoiceArrayField(
         models.CharField(choices=choices.INTENTION_OF_INVESTMENT_CHOICES),
+        verbose_name=_("Current intention of investment"),
         blank=True,
         default=list,
     )
     current_negotiation_status = models.CharField(
+        _("Current negotiation status"),
         choices=choices.NEGOTIATION_STATUS_CHOICES,
         blank=True,
         null=True,
     )
     current_implementation_status = models.CharField(
+        _("Current implementation status"),
         choices=choices.IMPLEMENTATION_STATUS_CHOICES,
         blank=True,
         null=True,
     )
-    current_crops = ArrayField(models.CharField(), blank=True, default=list)
-    current_animals = ArrayField(models.CharField(), blank=True, default=list)
-    current_mineral_resources = ArrayField(models.CharField(), blank=True, default=list)
+    current_crops = ArrayField(
+        models.CharField(),
+        verbose_name=_("Current crops"),
+        blank=True,
+        default=list,
+    )
+    current_animals = ArrayField(
+        models.CharField(),
+        verbose_name=_("Current livestock"),
+        blank=True,
+        default=list,
+    )
+    current_mineral_resources = ArrayField(
+        models.CharField(),
+        verbose_name=_("Current mineral resources"),
+        blank=True,
+        default=list,
+    )
     current_electricity_generation = ArrayField(
-        models.CharField(), blank=True, default=list
+        models.CharField(),
+        verbose_name=_("Current electricity generation"),
+        blank=True,
+        default=list,
     )
     current_carbon_sequestration = ArrayField(
-        models.CharField(), blank=True, default=list
+        models.CharField(),
+        verbose_name=_("Current carbon sequestration/offsetting"),
+        blank=True,
+        default=list,
     )
 
-    deal_size = DecimalIntField(max_digits=18, decimal_places=2, blank=True, null=True)
-    initiation_year = models.IntegerField(
-        blank=True, null=True, validators=[MinValueValidator(1970)]
+    deal_size = models.DecimalField(
+        _("Deal size"),
+        max_digits=18,
+        decimal_places=2,
+        blank=True,
+        null=True,
     )
-    forest_concession = models.BooleanField(default=False)
-    transnational = models.BooleanField(null=True)
+    initiation_year = models.IntegerField(
+        _("Initiation year"),
+        blank=True,
+        null=True,
+        validators=[MinValueValidator(1970)],
+    )
+    forest_concession = models.BooleanField(
+        _("Forest concession"),
+        default=False,
+    )
+    transnational = models.BooleanField(
+        _("Transnational"),
+        blank=True,
+        null=True,
+    )
 
     # META
-    fully_updated = models.BooleanField(default=False)
+    fully_updated = models.BooleanField(
+        _("Fully updated"),
+        default=False,
+    )
 
     def __str__(self):
         return f"v{self.id} for #{self.deal_id}"
@@ -858,7 +1070,11 @@ class DealVersion(DealVersionBaseFields, BaseVersion):
 
     @transaction.atomic
     def save(
-        self, recalculate_independent=True, recalculate_dependent=True, *args, **kwargs
+        self,
+        recalculate_independent=True,
+        recalculate_dependent=True,
+        *args,
+        **kwargs,
     ):
         self._recalculate_fields(recalculate_independent, recalculate_dependent)
         super().save(*args, **kwargs)
@@ -1113,10 +1329,10 @@ class DealVersion(DealVersionBaseFields, BaseVersion):
             return int(date[:4])
 
         negotiation_status_dates = [
-            year_as_int(x["date"])
+            x["date"]
             for x in self.negotiation_status
-            if x["date"]
-            and x["choice"]
+            if x.get("date")
+            and x.get("choice")
             in (
                 NegotiationStatusEnum.UNDER_NEGOTIATION,
                 NegotiationStatusEnum.ORAL_AGREEMENT,
@@ -1127,10 +1343,10 @@ class DealVersion(DealVersionBaseFields, BaseVersion):
         ]
 
         implementation_status_dates = [
-            year_as_int(x["date"])
+            x["date"]
             for x in self.implementation_status
-            if x["date"]
-            and x["choice"]
+            if x.get("date")
+            and x.get("choice")
             in (
                 ImplementationStatusEnum.STARTUP_PHASE,
                 ImplementationStatusEnum.IN_OPERATION,
@@ -1139,7 +1355,8 @@ class DealVersion(DealVersionBaseFields, BaseVersion):
         ]
 
         dates = implementation_status_dates + negotiation_status_dates
-        return min(dates) if dates else None
+
+        return min([year_as_int(d) for d in dates]) if dates else None
 
     def __calculate_forest_concession(self) -> bool:
         is_concession = NatureOfDealEnum.CONCESSION in (self.nature_of_deal or [])
@@ -1282,20 +1499,6 @@ class DealWorkflowInfo(BaseWorkflowInfo):
         blank=True,
     )
 
-    # OLD Code
-    # # WARNING
-    # # Do not use to map large query sets!
-    # # Takes tons of memory storing related deal and deal_version objects.
-    # def to_dict(self) -> dict:
-    #     d = super().to_dict()
-    #     d.update({"deal": self.deal, "deal_version": self.deal_version})
-    #     return d
-
-    def to_dict(self) -> dict:
-        d = super().to_dict()
-        d.update({"deal_id": self.deal_id, "deal_version_id": self.deal_version_id})
-        return d
-
     def get_object_url(self):
         base_url = super().get_object_url()
         return base_url + f"/deal/{self.deal_id}/"
@@ -1315,16 +1518,6 @@ class Contract(models.Model):
         _("Duration of the agreement"), blank=True, null=True
     )
     comment = models.TextField(_("Comment"), blank=True)
-
-    def to_dict(self):
-        return {
-            "nid": self.nid,
-            "number": self.number,
-            "date": self.date,
-            "expiration_date": self.expiration_date,
-            "agreement_duration": self.agreement_duration,
-            "comment": self.comment,
-        }
 
     def save(self, *args, **kwargs):
         if self._state.adding and not self.nid:

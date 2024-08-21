@@ -7,7 +7,7 @@ from django.db.models.functions import Concat
 from apps.landmatrix.models import choices
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.currency import Currency
-from apps.landmatrix.models.fields import ChoiceArrayField, DecimalIntField
+from apps.landmatrix.models.fields import ChoiceArrayField
 from apps.landmatrix.models.deal import DealVersion, DealDataSource, Contract, Location
 from apps.landmatrix.models.investor import InvestorHull, Involvement
 
@@ -247,7 +247,7 @@ def deal_download_format(data: dict):
                 data[field.name] = "transnational" if data[field.name] else "domestic"
             else:
                 data[field.name] = __bool_cast(data, field.name)
-        elif isinstance(field, DecimalIntField):
+        elif isinstance(field, models.DecimalField):
             if data.get(field.name) is not None:
                 data[field.name] = f"{data[field.name]:.2f}"
             else:

@@ -102,35 +102,47 @@
       {@const isSelectedEntry = selectedEntryId === idAsString}
 
       <article id={idAsString}>
-        <div
-          class="flex items-center bg-gray-50 px-2 dark:bg-gray-700 {isSelectedEntry
+        <header
+          class="flex items-center bg-gray-50 p-1 dark:bg-gray-700 {isSelectedEntry
             ? 'animate-fadeToWhite dark:animate-fadeToGray'
             : ''}"
         >
-          <h3 class="heading4 mb-0 flex-grow">
+          <h3 class="mb-0 flex-grow">
             <button
-              class="w-full text-left"
+              aria-expanded={isSelectedEntry}
+              aria-controls="form-{idAsString}"
+              class="inline-flex w-full flex-row gap-1 text-left"
               on:click|preventDefault={() => toggleEntry(idAsString)}
             >
-              <ChevronDownIcon
-                class="transition-duration-300 inline h-4 w-4 rounded transition-transform {isSelectedEntry
-                  ? 'rotate-180'
-                  : ''}"
-              />
-              {index + 1}. {label}
-              <span class="font-mono text-sm text-gray-500">
-                #{idAsString}
+              <span
+                class="transition-duration-300 self-center p-2 transition-transform"
+                class:rotate-180={isSelectedEntry}
+              >
+                <ChevronDownIcon class="h-4 w-4" />
               </span>
-              <slot name="extraHeader" {entry} />
+              <span class="inline-flex flex-col">
+                <span>
+                  <span class="heading4">
+                    {index + 1}. {label}
+                  </span>
+                  <span class="font-mono text-sm text-gray-500">
+                    #{idAsString}
+                  </span>
+                </span>
+                <span>
+                  <slot name="extraHeader" {entry} />
+                </span>
+              </span>
             </button>
           </h3>
+
           <button
-            class="flex-initial p-2"
+            class="self-stretch p-2"
             on:click|preventDefault={() => removeEntry(idAsString)}
           >
-            <TrashIcon class="h-8 w-6 cursor-pointer text-red-600" />
+            <TrashIcon class="h-8 w-6 text-red-600" />
           </button>
-        </div>
+        </header>
 
         <form id="form-{idAsString}">
           {#if isSelectedEntry}

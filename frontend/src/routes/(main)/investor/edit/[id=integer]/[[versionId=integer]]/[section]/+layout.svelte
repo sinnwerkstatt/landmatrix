@@ -204,7 +204,7 @@
     />
   </div>
 
-  <div class="mt-2 overflow-y-auto px-4 pb-20" style="grid-area: main">
+  <div class="mt-2 overflow-y-auto px-1 pb-20 sm:px-4" style="grid-area: main">
     <slot />
   </div>
 </div>

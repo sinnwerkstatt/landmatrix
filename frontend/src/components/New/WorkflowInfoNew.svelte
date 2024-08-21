@@ -9,7 +9,7 @@
 
   import { stateMap } from "$lib/newUtils"
   import { loading } from "$lib/stores/basics"
-  import type { WorkflowInfoType } from "$lib/types/data"
+  import type { WorkflowInfo } from "$lib/types/data"
   import { getCsrfToken } from "$lib/utils"
 
   import UserField from "$components/Fields/Display2/UserField.svelte"
@@ -17,7 +17,7 @@
   import ChatBubbleLeftIcon from "$components/icons/ChatBubbleLeftIcon.svelte"
   import CheckCircleIcon from "$components/icons/CheckCircleIcon.svelte"
 
-  export let info: WorkflowInfoType
+  export let info: WorkflowInfo
   export let isDeal = true
 
   $: confidentialStatusChange = info.comment?.startsWith("[SET_CONFIDENTIAL]")
@@ -33,7 +33,7 @@
   $: openThread =
     info.status_after === info.status_before &&
     info.to_user_id &&
-    [info.to_user_id, info.from_user_id].includes($page.data.user.id) &&
+    [info.to_user_id, info.from_user_id].includes($page.data.user?.id as number) &&
     !info.resolved
 
   let reply = ""
