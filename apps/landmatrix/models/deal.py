@@ -1329,9 +1329,9 @@ class DealVersion(DealVersionBaseFields, BaseVersion):
             return int(date[:4])
 
         negotiation_status_dates = [
-            year_as_int(x.get("date"))
+            x["date"]
             for x in self.negotiation_status
-            if "date" in x
+            if x.get("date")
             and x.get("choice")
             in (
                 NegotiationStatusEnum.UNDER_NEGOTIATION,
@@ -1343,9 +1343,9 @@ class DealVersion(DealVersionBaseFields, BaseVersion):
         ]
 
         implementation_status_dates = [
-            year_as_int(x.get("date"))
+            x["date"]
             for x in self.implementation_status
-            if "date" in x
+            if x.get("date")
             and x.get("choice")
             in (
                 ImplementationStatusEnum.STARTUP_PHASE,
@@ -1355,7 +1355,8 @@ class DealVersion(DealVersionBaseFields, BaseVersion):
         ]
 
         dates = implementation_status_dates + negotiation_status_dates
-        return min(dates) if dates else None
+
+        return min([year_as_int(d) for d in dates]) if dates else None
 
     def __calculate_forest_concession(self) -> bool:
         is_concession = NatureOfDealEnum.CONCESSION in (self.nature_of_deal or [])
