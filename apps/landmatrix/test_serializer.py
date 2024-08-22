@@ -1,3 +1,5 @@
+from rest_framework.test import APIRequestFactory
+
 from apps.landmatrix.models.choices import (
     InvolvementRoleEnum,
     InvestmentTypeEnum,
@@ -77,10 +79,17 @@ def test_involvement_serializer_all():
     }
 
 
-def test_investor_serializer_get_deals():
+def test_investor_serializer_get_deals_admin(admin_user):
     investor = InvestorHull.objects.create(id=500)
 
-    assert InvestorSerializer().get_deals(investor) == [], "Sanity check."
+    request = APIRequestFactory().get("/does/not/matter/for/serializer/test")
+    # Set user directly, alternative would be to use APIClient which includes
+    # the authentication middleware and use api_client.force_authenticate(user).
+    request.user = admin_user
+
+    serializer = InvestorSerializer(context={"request": request})
+
+    assert serializer.get_deals(investor) == [], "Sanity check."
 
     deal = DealHull.objects.create(
         id=50,
@@ -94,7 +103,7 @@ def test_investor_serializer_get_deals():
     )
     deal.save()
 
-    assert InvestorSerializer().get_deals(investor) == [], "Ignores draft versions."
+    assert serializer.get_deals(investor) == [], "Ignores draft versions."
 
     deal.active_version = DealVersion.objects.create(
         id=502,
@@ -110,7 +119,7 @@ def test_investor_serializer_get_deals():
     )
     deal.save()
 
-    assert InvestorSerializer().get_deals(investor) == [
+    assert serializer.get_deals(investor) == [
         {
             "id": 50,
             "country_id": 724,
@@ -132,4 +141,4 @@ def test_investor_serializer_get_deals():
     )
     deal.save()
 
-    assert InvestorSerializer().get_deals(investor) == [], "Ignores old versions."
+    assert serializer.get_deals(investor) == [], "Ignores old versions."

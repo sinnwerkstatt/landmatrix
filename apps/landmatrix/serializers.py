@@ -538,8 +538,13 @@ class InvestorSerializer(serializers.ModelSerializer):
 
     @extend_schema_field(InvestorDealSerializer(many=True))
     def get_deals(self, obj: InvestorHull):
+        user: User = self.context["request"].user
+
         version_ids = obj.dealversions.values_list("id", flat=True).distinct()
+
         qs = DealHull.objects.filter(active_version_id__in=version_ids)
+        qs = qs.public() if not is_reporter_or_higher(user) else qs
+
         return InvestorDealSerializer(qs, many=True).data
 
     @extend_schema_field(InvolvementSerializer(many=True))
