@@ -123,3 +123,13 @@ def test_investor_serializer_get_deals():
             },
         },
     ], "Returns computed values of active version."
+
+    new_investor = InvestorHull.objects.create(id=51)
+    deal.active_version = DealVersion.objects.create(
+        id=503,
+        deal=deal,
+        operating_company=new_investor,
+    )
+    deal.save()
+
+    assert InvestorSerializer().get_deals(investor) == [], "Ignores old versions."

@@ -538,8 +538,8 @@ class InvestorSerializer(serializers.ModelSerializer):
 
     @extend_schema_field(InvestorDealSerializer(many=True))
     def get_deals(self, obj: InvestorHull):
-        deal_ids = obj.dealversions.all().values_list("deal_id", flat=True)
-        qs = DealHull.objects.filter(id__in=deal_ids, active_version__isnull=False)
+        version_ids = obj.dealversions.values_list("id", flat=True).distinct()
+        qs = DealHull.objects.filter(active_version_id__in=version_ids)
         return InvestorDealSerializer(qs, many=True).data
 
     @extend_schema_field(InvolvementSerializer(many=True))
