@@ -77,7 +77,7 @@ class VggtVariableList(generics.ListCreateAPIView):
 
 class VggtVariableDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = VggtVariable.objects.all()
-    serializer_class = VggtArticleSerializer
+    serializer_class = VggtVariableSerializer
 
 
 class DealScoreList(generics.ListCreateAPIView):
@@ -104,44 +104,9 @@ class DealVariableList(generics.ListCreateAPIView):
     queryset = DealVariable.objects.all()
     serializer_class = DealVariableSerializer
 
-
-
-# class DealScoreList(generics.ListCreateAPIView):
-#     queryset = DealScore.objects.all()
-#     serializer_class = DealScoreSerializer
-
-#     @extend_schema(parameters=openapi_filters_parameters_scoring)
-#     def list(self, request:Request, *args, **kwargs):
-#         queryset = DealScore.objects.exclude(deal__active_version__is_public=False)\
-#                                     .filter(parse_filters(request))\
-#                                     .order_by("deal")\
-#                                     .distinct()\
-#                                     .prefetch_related("deal", "score")
-#         serializer = DealScoreSerializer(queryset, many=True)
-#         return Response(serializer.data)
-#         # return Response(
-#         #     queryset.values("deal", "test")
-#         #             .annotate(
-#         #                 # region_id=F("deal__region_id")
-#         #                 score=ArraySubquery(
-#         #                     DealScore
-#         #                 )
-#         #             )
-#         # )
-
-
-# class DealScoreDetail(generics.RetrieveUpdateDestroyAPIView):
-#     queryset = DealScore.objects.all()
-#     serializer_class = DealScoreSerializer
-
-
-# class DealVariableList(generics.ListCreateAPIView):
-#     queryset = DealVariable.objects.all()
-#     serializer_class = DealVariableSerializer
-
-# class DealVariableDetail(generics.RetrieveUpdateDestroyAPIView):
-#     queryset = DealVariable.objects.all()
-#     serializer_class = DealVariableSerializer
+class DealVariableDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = DealVariable.objects.all()
+    serializer_class = DealVariableSerializer
 
 
 class ProjectList(generics.ListCreateAPIView):

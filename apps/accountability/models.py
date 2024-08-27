@@ -38,6 +38,9 @@ class VggtArticle(models.Model):
     article = models.PositiveIntegerField()
     description = models.CharField(max_length=2000)
 
+    class Meta:
+        unique_together=[["chapter", "article"]]
+
     def __str__(self):
         return f"{self.chapter.name} - {self.article}"
 
@@ -56,18 +59,34 @@ class VggtVariable(models.Model):
 
 
 class DealScore(models.Model):
-    deal = models.OneToOneField(DealHull, on_delete=models.CASCADE, primary_key=True)
+    deal = models.OneToOneField(DealHull, on_delete=models.CASCADE, primary_key=True, related_name='accountability_score_hull')
 
     def __str__(self):
         return f"Score of deal {self.deal}"
 
     def current_score(self):
-        return self.deal.active_version.accountability_score
+        try:
+            return self.deal.active_version.accountability_score
+        except:
+            return None
     
 class DealScoreVersion(models.Model):
     score = models.ForeignKey(DealScore, on_delete=models.CASCADE, related_name='scores')
     deal_version = models.OneToOneField(DealVersion, on_delete=models.CASCADE, primary_key=True, related_name='accountability_score')
 
+    def is_current(self):
+        return True if self.score.current_score() else False
+    
+    def save(self, *args, **kwargs):
+        # On create, create related objects
+        if self._state.adding:
+            super(DealScoreVersion, self).save(*args, **kwargs)
+            vggt_variables = VggtVariable.objects.all()
+            for vggt_variable in vggt_variables:
+                variable = DealVariable(deal_score=self, vggt_variable=vggt_variable)
+                variable.save()
+        else:
+            super(DealScoreVersion, self).save(*args, **kwargs)
 
 class DealVariable(models.Model):
     deal_score = models.ForeignKey(DealScoreVersion, on_delete=models.CASCADE, related_name='variables')
@@ -93,7 +112,10 @@ class DealVariable(models.Model):
     class Meta:
         ordering = ["deal_score", "vggt_variable"]
         unique_together = ["deal_score", "vggt_variable"]
-        
+    
+    def is_current(self):
+        current_score = self.deal_score.score.current_score()
+        return True if self.deal_score == current_score else False
 
 class Project(models.Model):
     name = models.CharField(max_length=200, unique=True)

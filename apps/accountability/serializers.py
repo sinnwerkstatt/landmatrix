@@ -27,7 +27,13 @@ class VggtVariableSerializer(serializers.ModelSerializer):
     class Meta:
         model = VggtVariable
         fields = "__all__"
-
+    
+    def create(self, validated_data):
+        variable = VggtVariable.objects.create(**validated_data)
+        score_versions = DealScoreVersion.objects.all()
+        for score in score_versions:
+            DealVariable.objects.create(deal_score=score, vggt_variable=variable)
+        return variable
 
 class DealVariableSerializer(serializers.ModelSerializer):
     class Meta:
