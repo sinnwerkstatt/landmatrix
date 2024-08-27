@@ -136,20 +136,38 @@ class VersionViewSet(viewsets.ReadOnlyModelViewSet):
             return [IsReporterOrHigher()]
         return [IsAdminUser()]
 
+    @staticmethod
+    def _check_update_destroy_perms(ov1: DealVersion | InvestorVersion, user: User):
+        if not ov1.is_current_draft():
+            raise PermissionDenied("OLD_VERSION")
+
+        # either we're Reporter and it's our Version, or we're Editor or above
+        if not (ov1.created_by == user or is_editor_or_higher(user)):
+            raise PermissionDenied("MISSING_AUTHORIZATION")
+
+        # Reporters can only edit DRAFT
+        if not is_editor_or_higher(user) and ov1.status != VersionStatus.DRAFT:
+            raise PermissionDenied("CANT_EDIT_DRAFT_IN_REVIEW")
+
+        # Editors can only edit DRAFT or REVIEW
+        if not is_admin(user) and ov1.status not in [
+            VersionStatus.DRAFT,
+            VersionStatus.REVIEW,
+        ]:
+            raise PermissionDenied("CANT_DELETE_DRAFT_IN_ACTIVATION_PROCESS")
+
     @transaction.atomic
     def update(self, request, pk: int):
         ov1: DealVersion | InvestorVersion = get_object_or_404(self.queryset, pk=pk)
         user: User = request.user
 
-        if not (ov1.created_by == user or is_editor_or_higher(user)):
-            raise PermissionDenied("MISSING_AUTHORIZATION")
-
-        if not ov1.is_current_draft():
-            raise PermissionDenied("EDITING_OLD_VERSION")
+        self._check_update_destroy_perms(ov1, user)
 
         data = request.data["version"]
 
-        creating_new_version = ov1.created_by != user
+        creating_new_version = (
+            ov1.created_by != user or ov1.status != VersionStatus.DRAFT
+        )
         if creating_new_version:
             ov1.change_status(
                 transition=VersionTransition.TO_DRAFT,
@@ -176,8 +194,7 @@ class VersionViewSet(viewsets.ReadOnlyModelViewSet):
         ov1: DealVersion | InvestorVersion = get_object_or_404(self.queryset, pk=pk)
         user: User = request.user
 
-        if not (ov1.created_by == user or is_editor_or_higher(user)):
-            raise PermissionDenied("MISSING_AUTHORIZATION")
+        self._check_update_destroy_perms(ov1, user)
 
         old_draft_status = ov1.status
 
@@ -226,6 +243,8 @@ class DealVersionViewSet(VersionViewSet):
 
         if not dv1.is_current_draft():
             raise PermissionDenied("EDITING_OLD_VERSION")
+
+        # TODO Marcus: are permission checks missing here too?
 
         to_user_id = request.data.get("toUser")
 

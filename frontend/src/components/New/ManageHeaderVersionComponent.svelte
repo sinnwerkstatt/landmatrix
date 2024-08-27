@@ -60,6 +60,13 @@
         return false
     }
   }
+
+  $: userCanEditOrRemove = isAdmin($page.data.user)
+    ? true
+    : isEditorOrAbove($page.data.user)
+      ? ["DRAFT", "REVIEW"].includes(object.selected_version.status)
+      : isActiveVersionCreator($page.data.user, object) &&
+        object.selected_version.status === "DRAFT"
 </script>
 
 <div class="flex w-full flex-wrap justify-between text-center">
@@ -95,7 +102,7 @@
         {$_("Submit for review")}
       </button>
     {/if}
-    {#if [Version2Status.REVIEW, Version2Status.ACTIVATION].includes(object.selected_version.status) && isAuthorized($page.data.user, object)}
+    {#if ["REVIEW", "ACTIVATION"].includes(object.selected_version.status) && isAuthorized($page.data.user, object)}
       <button
         type="button"
         class:disabled={!isCurrentDraft || $loading || $navigating}
@@ -140,39 +147,47 @@
   </div>
 </div>
 <div class="mt-10 flex flex-col gap-2">
-  <div class=" flex items-center gap-4">
-    {#if !isActiveVersionCreator($page.data.user, object)}
-      <div>
-        <button
-          on:click={() => (showReallyEditModal = true)}
-          class="btn-outline btn-flat btn-primary min-w-[8rem]"
-          class:disabled={!isCurrentDraft || $loading || $navigating}
-        >
-          {$_("Edit")}
-        </button>
-      </div>
-      <div class="italic text-gray-700 dark:text-white">
-        {$_(
-          "Edit this version. Since you are not the author of the current one, a new draft will be created.",
-        )}
-      </div>
-    {:else}
-      <div>
-        <a
-          href={editLink}
-          class="btn-outline btn-flat btn-primary min-w-[8rem]"
-          class:disabled={!isCurrentDraft || $loading || $navigating}
-        >
-          {$_("Edit")}
-        </a>
-      </div>
-      <div class="italic text-gray-700 dark:text-white">
-        {$_("Edit this version.")}
-      </div>
-    {/if}
-  </div>
+  {#if userCanEditOrRemove}
+    <div class=" flex items-center gap-4">
+      {#if isActiveVersionCreator($page.data.user, object) && object.selected_version.status === "DRAFT"}
+        <div>
+          <a
+            href={editLink}
+            class="btn-outline btn-flat btn-primary min-w-[8rem]"
+            class:disabled={!isCurrentDraft || $loading || $navigating}
+          >
+            {$_("Edit")}
+          </a>
+        </div>
+        <div class="italic text-gray-700 dark:text-white">
+          {$_("Edit this version.")}
+        </div>
+      {:else}
+        <div>
+          <button
+            on:click={() => (showReallyEditModal = true)}
+            class="btn-outline btn-flat btn-primary min-w-[8rem]"
+            class:disabled={!isCurrentDraft || $loading || $navigating}
+          >
+            {$_("Edit")}
+          </button>
+        </div>
+        <div class="italic text-gray-700 dark:text-white">
+          {#if object.selected_version.status === "DRAFT"}
+            {$_(
+              "Edit this version. Since you are not the author of the current one, a new draft will be created.",
+            )}
+          {:else}
+            {$_(
+              "Edit this version. Since this version is not in Draft status anymore, a new draft will be created.",
+            )}
+          {/if}
+        </div>
+      {/if}
+    </div>
+  {/if}
 
-  {#if isEditorOrAbove($page.data.user)}
+  {#if userCanEditOrRemove}
     <div class="flex items-center gap-4">
       <div>
         <button
@@ -197,9 +212,15 @@
   <h2 class="heading4">{$_("Create a new draft")}</h2>
   <hr />
   <form class="mt-6 text-lg">
-    {$_(
-      "You are not the author of this version. Therefore, a new version will be created if you proceed.",
-    )}
+    {#if object.selected_version.status === "DRAFT"}
+      {$_(
+        "You are not the author of this version. Therefore, a new version will be created if you proceed.",
+      )}
+    {:else}
+      {$_(
+        "This version is not in Draft status anymore. Therefore, a new version will be created if you proceed.",
+      )}
+    {/if}
     <div class="mt-14 flex justify-end gap-4">
       <button
         class="btn-outline"
@@ -255,6 +276,9 @@
   }
 
   .status-field.inactive {
-    @apply bg-gray-100 after:border-l-gray-100;
+    @apply bg-gray-100;
+  }
+  .status-field.inactive:after {
+    @apply border-l-gray-100;
   }
 </style>
