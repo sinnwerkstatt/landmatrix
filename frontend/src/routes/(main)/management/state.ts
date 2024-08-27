@@ -1,7 +1,7 @@
 import { writable } from "svelte/store"
 
 import type { components } from "$lib/openAPI"
-import type { User, Version2Status } from "$lib/types/data"
+import type { Version2Status } from "$lib/types/data"
 
 export interface ManagementFilters {
   status?: Version2Status
@@ -10,10 +10,10 @@ export interface ManagementFilters {
   dealSizeTo?: number
   createdAtFrom?: Date
   createdAtTo?: Date
-  createdBy?: User
+  createdByID?: number
   modifiedAtFrom?: Date
   modifiedAtTo?: Date
-  modifiedBy?: User
+  modifiedByID?: number
   fullyUpdatedAtFrom?: Date
   fullyUpdatedAtTo?: Date
 }

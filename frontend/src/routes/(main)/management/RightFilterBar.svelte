@@ -103,7 +103,7 @@
     <div>
       <div class="font-bold">{$_("Created by")}</div>
       <UserSelect
-        bind:value={$managementFilters.createdBy}
+        bind:value={$managementFilters.createdByID}
         userIDs={createdByUserIDs}
       />
     </div>
@@ -128,7 +128,7 @@
     <div>
       <div class="font-bold">{$_("Modified by")}</div>
       <UserSelect
-        bind:value={$managementFilters.modifiedBy}
+        bind:value={$managementFilters.modifiedByID}
         userIDs={modifiedByUserIDs}
       />
     </div>

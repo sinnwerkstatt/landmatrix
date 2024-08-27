@@ -4,12 +4,7 @@
 
   import { invalidate } from "$app/navigation"
 
-  import {
-    UserRole,
-    type DealHull,
-    type InvestorHull,
-    type User,
-  } from "$lib/types/data"
+  import { UserRole, type DealHull, type InvestorHull } from "$lib/types/data"
   import { getCsrfToken } from "$lib/utils"
 
   import UserSelect from "$components/LowLevel/UserSelect.svelte"
@@ -20,7 +15,7 @@
   export let feedbackForm = false
 
   let comment = ""
-  let toUser: User | number | null = object.selected_version.created_by_id
+  let toUser: number | null = object.selected_version.created_by_id
 
   const isDeal = (obj: DealHull | InvestorHull): obj is DealHull =>
     "fully_updated_at" in obj
@@ -32,7 +27,7 @@
       credentials: "include",
       body: JSON.stringify({
         comment,
-        toUser: toUser?.id,
+        toUser: toUser,
         version: object.selected_version.id,
       }),
       headers: {

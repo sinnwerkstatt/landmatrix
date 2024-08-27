@@ -214,8 +214,8 @@
     if ($managementFilters.createdAtTo)
       if (dayjs(obj.first_created_at).isAfter($managementFilters.createdAtTo, "day"))
         return false
-    if ($managementFilters.createdBy)
-      if (obj.first_created_by_id !== $managementFilters.createdBy.id) return false
+    if ($managementFilters.createdByID)
+      if (obj.first_created_by_id !== $managementFilters.createdByID) return false
 
     if ($managementFilters.modifiedAtFrom)
       if (
@@ -233,8 +233,8 @@
         )
       )
         return false
-    if ($managementFilters.modifiedBy)
-      if (obj.selected_version.modified_by_id !== $managementFilters.modifiedBy.id)
+    if ($managementFilters.modifiedByID)
+      if (obj.selected_version.modified_by_id !== $managementFilters.modifiedByID)
         return false
 
     if (model === "deal") {

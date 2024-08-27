@@ -5,25 +5,26 @@
 
   import VirtualListSelect from "./VirtualListSelect.svelte"
 
-  export let value: LeanUser | number | null = null
+  export let value: number | null = null
   export let required = false
 
   export let minimumRole: UserRole = UserRole.ANYBODY
   export let userIDs: Set<number> | undefined = undefined
 
-  let items: LeanUser[] = []
+  $: items = $allUsers.length
+    ? $allUsers.filter(u => {
+        if (!u.is_active) return false
 
-  async function initialize(users: LeanUser[]) {
-    if (!users.length) return
+        if (u.id === value) return true
 
-    if (typeof value === "number") value = users.find(u => u.id === value) ?? null
-    if (userIDs) items = users.filter(u => userIDs!.has(u.id))
-    else items = minimumRole ? users.filter(hasRoleOrAbove(minimumRole)) : users
-  }
+        if (userIDs) return userIDs!.has(u.id)
+        if (minimumRole > UserRole.ANYBODY) return hasRoleOrAbove(minimumRole)(u)
 
-  $: initialize($allUsers.filter(u => u.is_active))
+        return true
+      })
+    : []
 
-  const itemFilter = (label: string, filterText: string, user: LeanUser) => {
+  const itemFilter = (_label: string, filterText: string, user: LeanUser) => {
     const filterTextLower = filterText.toLowerCase()
     return (
       user.full_name.toLowerCase().includes(filterTextLower) ||
@@ -33,7 +34,14 @@
 </script>
 
 {#if items.length}
-  <VirtualListSelect bind:value {items} label="username" {required} {itemFilter}>
+  <VirtualListSelect
+    value={$allUsers.find(u => u.id === value) ?? null}
+    {items}
+    label="username"
+    {required}
+    {itemFilter}
+    on:input={e => (value = e.detail?.id ?? null)}
+  >
     <svelte:fragment slot="selection" let:selection>
       {#if selection.full_name}
         {selection.full_name} (
