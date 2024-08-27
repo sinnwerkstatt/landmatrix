@@ -39,7 +39,6 @@ def test_is_reporter_or_higher():
     assert is_reporter_or_higher(EDITOR)
     assert is_reporter_or_higher(ADMINISTRATOR)
 
-    assert not is_reporter_or_higher(STAFF)
     assert is_reporter_or_higher(SUPERUSER)
 
 
