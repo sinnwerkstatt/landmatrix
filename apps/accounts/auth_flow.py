@@ -106,9 +106,6 @@ def register(
     new_user.set_password(password)
     new_user.save()
 
-    group, created = Group.objects.get_or_create(name="Reporters")
-    new_user.groups.add(group)
-
     _request_email_confirmation(new_user, request)
     return {"ok": True}
 

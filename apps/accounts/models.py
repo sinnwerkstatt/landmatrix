@@ -24,7 +24,7 @@ class User(AbstractUser):
     )
     region = models.ForeignKey(Region, blank=True, null=True, on_delete=models.PROTECT)
 
-    role = models.IntegerField(default=UserRole.ANYBODY, choices=UserRole.choices)
+    role = models.IntegerField(default=UserRole.REPORTER, choices=UserRole.choices)
 
     class Meta:
         db_table = "auth_user"
