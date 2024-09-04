@@ -34,6 +34,8 @@ from apps.accountability.permissions import IsAdministrator, IsReporterOrHigher,
 def index(request):
     return HttpResponse("Hello world, this is accountability.")
 
+# Add custom view to retrieve api > export > converter.py fields
+
 
 class UserInfoList(generics.ListCreateAPIView):
     permission_classes = [IsReporterOrHigher]
@@ -84,6 +86,33 @@ class DealScoreList(generics.ListCreateAPIView):
     queryset = DealScore.objects.all()
     serializer_class = DealScoreSerializer
     permission_classes = [IsReporterOrHigherOrReadonly]
+
+    @extend_schema(parameters=openapi_filters_parameters_scoring)
+    def get(self, request:Request, *args, **kwargs):
+        queryset = DealScore.objects.filter(parse_filters(request))\
+                                    .prefetch_related("deal")\
+                                    .distinct()\
+                                    .annotate(
+                                        country=JSONObject(
+                                            id="deal__country__id",
+                                            name="deal__country__name"
+                                        )
+                                    )
+        serializer = DealScoreSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    # @extend_schema(parameters=[
+    #     OpenApiParameter(name="id", type=int, many=True)
+    # ])
+    # def get(self, request:Request, *args, **kwargs):
+    #     filters = Q()
+    #     if id_list := request.GET.getlist("id"):
+    #         filters &= Q(id__in=id_list)
+    #     queryset = Project.objects.filter(filters)\
+    #                               .order_by("-created_at")\
+    #                               .distinct()
+    #     serializer = ProjectSerializer(queryset, many=True)
+    #     return Response(serializer.data)
 
 
 class DealScoreDetail(generics.RetrieveUpdateDestroyAPIView):

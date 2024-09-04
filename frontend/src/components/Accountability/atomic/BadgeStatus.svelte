@@ -7,10 +7,10 @@
     export let type:"badge"|"dot" = "badge"
 
     const statuses = [
-        { value: "no_score", label: "To score", color: "neutral", variant: "light" },
-        { value: "pending", label: "Waiting for review", color: "primary", variant: "light" },
-        { value: "validated", label: "Validated", color: "success", variant: "light" },
-        { value: "no_data", label: "No data", color: "neutral", variant: "filled" }
+        { value: "TO_SCORE", label: "To score", color: "neutral", variant: "light" },
+        { value: "WAITING", label: "Waiting for review", color: "primary", variant: "light" },
+        { value: "VALIDATED", label: "Validated", color: "success", variant: "light" },
+        { value: "NO_DATA", label: "No data", color: "neutral", variant: "filled" }
     ]
 
     $: status = statuses.find(e => e.value == value)

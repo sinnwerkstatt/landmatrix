@@ -1,7 +1,8 @@
 <script lang="ts">
     import { page } from "$app/stores"
     import { users } from "$lib/accountability/placeholders"
-    import { deals } from "$lib/accountability/placeholders"
+    // import { deals } from "$lib/accountability/placeholders"
+    import { deals } from "$lib/accountability/stores"
 
     import TableVariables from "$components/Accountability/TableVariables.svelte"
     import DrawerScoring from "$components/Accountability/DrawerScoring.svelte"
@@ -10,7 +11,10 @@
     import IconChevron from "$components/Accountability/icons/IconChevron.svelte"
     import AvatarGroup from "$components/Accountability/atomic/AvatarGroup.svelte"
 
-    const href = $page.url.href.substring(0, $page.url.href.indexOf("scoring/") + "scoring/".length);
+    const href = $page.url.href.substring(0, $page.url.href.indexOf("scoring/") + "scoring/".length)
+
+    // $: console.log($deals)
+
 </script>
 
 <div class="h-full w-full flex flex-col px-4 py-6">
@@ -27,6 +31,6 @@
     </div>
     
     <div class="h-full">
-        <TableVariables deal={deals[0]} />
+        <TableVariables deal={$deals[0]} />
     </div>
 </div>

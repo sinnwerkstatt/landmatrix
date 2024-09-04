@@ -14,11 +14,15 @@
     export let deals:{
         id:number,
         country: {id:number, name:string},
-        status:string,
-        variables:{id:number, 
+        score:{
+            status:string,
+            variables:{
+                vggt_variable:number, 
                 status:string, 
                 score:number|null, 
-                assignee:{id:number, name:string}|null}[]
+                assignee:{id:number, name:string}|null
+            }[]
+        }
     }[] = []
 
     const columns:{label:string, value:string}[] = [
@@ -39,14 +43,14 @@
     let searchResult = deals
 
     const statuses = [
-        { value: "no_score", label: "To score" },
-        { value: "pending", label: "Waiting for review" },
-        { value: "validated", label: "Validated" },
-        { value: "no_data", label: "No data" }
+        { value: "TO_SCORE", label: "To score" },
+        { value: "WAITING", label: "Waiting for review" },
+        { value: "VALIDATED", label: "Validated" },
+        { value: "NO_DATA", label: "No data" }
     ]
 
     function getAssignedUsers(deals, users) {
-        const allAssignees = deals.map(deal => deal.variables).flat().map(e => e.assignee).filter(Boolean).map(user => user.id)
+        const allAssignees = deals.map(deal => deal.score.variables).flat().map(e => e.assignee).filter(Boolean).map(user => user.id)
         const uniqueAssignees = [...new Set(allAssignees)]
         const assignedUsers = users.filter(user => uniqueAssignees.includes(user.id))
         const result = usersToUserChoices(assignedUsers)
@@ -88,10 +92,9 @@
         return result
     }
 
-    function filterDeals(searchWord, statusFilter, assigneeFilter) {
-        let data = deals
+    function filterDeals(data, searchWord, statusFilter, assigneeFilter) {
         if (statusFilter) {
-            data = data.filter(e => e.status == statusFilter)
+            data = data.filter(e => e.score.status == statusFilter)
         }
         if (assigneeFilter) {
             data = assignedToUser(data, assigneeFilter)
@@ -100,14 +103,14 @@
         return result
     }
 
-    $: searchResult = filterDeals(searchWord, statusFilter, assigneeFilter)
+    $: searchResult = filterDeals(deals, searchWord, statusFilter, assigneeFilter)
 
     function createDealSelectObject(bool:boolean) {
         let res = {}
         deals.forEach(deal => {
             let vars = {}
-            deal.variables.forEach(variable => {
-                vars[variable.id] = bool
+            deal.score.variables.forEach(variable => {
+                vars[variable.vggt_variable] = bool
             })
             const obj = { deal: deal.id, variables: vars }
             res[deal.id] = obj
@@ -131,7 +134,6 @@
 
 <Table bind:data={searchResult} bind:pageContent={pageContent} rowHeight=57 >
 
-    <!-- Table filters -->
     <div slot="filters" class="flex flex-wrap gap-2">
         <div><Input type="text" icon="search" placeholder="Search for a deal (ID, Country)" bind:value={searchWord} /></div>
         <div class="w-52">
@@ -144,8 +146,7 @@
         </div>
     </div>
 
-    <!-- Table header -->
-    <svelte:fragment slot="header">
+   <svelte:fragment slot="header">
         <TableRow {gridColsTemplate} >
             <TableCell style="heading" >
                 <div class="w-fit">
@@ -159,7 +160,6 @@
         </TableRow>
     </svelte:fragment>
 
-    <!-- Table body and footer -->
     <svelte:fragment slot="body">
         {#each pageContent as deal (deal.id)}
             <TableDealsRow {gridColsTemplate} {columns} {deal} />

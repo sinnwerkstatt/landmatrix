@@ -16,5 +16,9 @@ export async function load() {
   if (investorsReq.error) error(500, investorsReq.error)
   const investors: components["schemas"]["SimpleInvestor"][] = investorsReq.data
 
-  return { fieldChoices, investors }
+  const vggtVariablesReq = await apiClient.GET("/api/accountability/variable/")
+  if (vggtVariablesReq.error) error(500, vggtVariablesReq.error)
+  const vggtVariables: components["schemas"]["VggtVariable"][] = vggtVariablesReq.data
+
+  return { fieldChoices, investors, vggtVariables }
 }

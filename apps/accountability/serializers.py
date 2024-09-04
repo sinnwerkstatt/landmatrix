@@ -7,6 +7,9 @@ from apps.accountability.models import DealScore, DealScoreVersion, DealVariable
 from apps.accountability.models import Project, Filters
 from apps.accountability.models import UserInfo, Bookmark
 
+from apps.landmatrix.models.country import Country
+from apps.landmatrix.serializers import CountrySerializer
+
 class UserInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserInfo
@@ -29,30 +32,105 @@ class VggtVariableSerializer(serializers.ModelSerializer):
         fields = "__all__"
     
     def create(self, validated_data):
+        articles_data = validated_data.pop('articles')
         variable = VggtVariable.objects.create(**validated_data)
+        variable.articles.set(articles_data)
         score_versions = DealScoreVersion.objects.all()
         for score in score_versions:
             DealVariable.objects.create(deal_score=score, vggt_variable=variable)
         return variable
 
+
 class DealVariableSerializer(serializers.ModelSerializer):
     class Meta:
         model = DealVariable
-        fields = "__all__"
+        fields = ["vggt_variable", "status", "score", "scored_at", "scored_by", "assignee"]
 
 
 class DealScoreVersionSerializer(serializers.ModelSerializer):
     variables = DealVariableSerializer(many=True)
     class Meta:
         model = DealScoreVersion
-        fields = "__all__"
+        fields = ["deal_version", "status", "variables"]
 
 
 class DealScoreSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField(source="deal.id")
     score = DealScoreVersionSerializer(source="current_score")
+
+    """
+    Filters and general information
+    """
+    region_id = serializers.ReadOnlyField(source="deal.country.region_id")
+    country = serializers.SerializerMethodField() # Empty field to include country as .annotate() in views.py
+    deal_size = serializers.ReadOnlyField(source="deal.active_version.deal_size")
+    negotiation_status = serializers.ReadOnlyField(source="deal.active_version.current_negotiation_status")
+    nature_of_deal = serializers.ReadOnlyField(source="deal.active_version.nature_of_deal")
+    operating_company = serializers.ReadOnlyField(source="deal.active_version.operating_company_id")
+    involved_actors = serializers.ReadOnlyField(source="deal.active_version.involved_actors")
+    initiation_year = serializers.ReadOnlyField(source="deal.active_version.initiation_year")
+    implementation_status = serializers.ReadOnlyField(source="deal.active_version.current_implementation_status")
+    intention_of_investment = serializers.ReadOnlyField(source="deal.active_version.current_intention_of_investment")
+    crops = serializers.ReadOnlyField(source="deal.active_version.current_crops")
+    animals = serializers.ReadOnlyField(source="deal.active_version.current_animals")
+    minerals = serializers.ReadOnlyField(source="deal.active_version.current_minerals")
+    transnational = serializers.ReadOnlyField(source="deal.active_version.transnational")
+    forest_concession = serializers.ReadOnlyField(source="deal.active_version.forest_concession")
+    # is_public = serializers.ReadOnlyField(source="deal.active_version.is_public")
+
+    """
+    Additional VGGTs scoring fields
+    """
+    recognition_status = serializers.ReadOnlyField(source="deal.active_version.recognition_status")
+    recognition_status_comment = serializers.ReadOnlyField(source="deal.active_version.recognition_status_comment")
+    displacement_of_people = serializers.ReadOnlyField(source="deal.active_version.displacement_of_people")
+    displaced_people = serializers.ReadOnlyField(source="deal.active_version.displaced_people")
+    displaced_households = serializers.ReadOnlyField(source="deal.active_version.displaced_households")
+    displaced_people_from_community_land = serializers.ReadOnlyField(source="deal.active_version.displaced_people_from_community_land")
+    displaced_people_within_community_land = serializers.ReadOnlyField(source="deal.active_version.displaced_people_within_community_land")
+    displaced_households_from_fields = serializers.ReadOnlyField(source="deal.active_version.displaced_households_from_fields")
+    displaced_people_on_completion = serializers.ReadOnlyField(source="deal.active_version.displaced_people_on_completion")
+    displacement_of_people_comment = serializers.ReadOnlyField(source="deal.active_version.displacement_of_people_comment")
+    promised_compensation = serializers.ReadOnlyField(source="deal.active_version.promised_compensation")
+    received_compensation = serializers.ReadOnlyField(source="deal.active_version.received_compensation")
+    community_consultation = serializers.ReadOnlyField(source="deal.active_version.community_consultation")
+    community_consultation_comment = serializers.ReadOnlyField(source="deal.active_version.community_consultation_comment")
+    land_conflicts = serializers.ReadOnlyField(source="deal.active_version.land_conflicts")
+    land_conflicts_comment = serializers.ReadOnlyField(source="deal.active_version.land_conflicts_comment")
+    negative_impacts = serializers.ReadOnlyField(source="deal.active_version.negative_impacts")
+    negative_impacts_comment = serializers.ReadOnlyField(source="deal.active_version.negative_impacts_comment")
+    materialized_benefits = serializers.ReadOnlyField(source="deal.active_version.materialized_benefits")
+    materialized_benefits_comment = serializers.ReadOnlyField(source="deal.active_version.materialized_benefits_comment")
+    contract_farming = serializers.ReadOnlyField(source="deal.active_version.contract_farming")
+    contract_farming_comment = serializers.ReadOnlyField(source="deal.active_version.contract_farming_comment")
+    promised_benefits = serializers.ReadOnlyField(source="deal.active_version.promised_benefits")
+    promised_benefits_comment = serializers.ReadOnlyField(source="deal.active_version.promised_benefits_comment")
+    water_extraction_envisaged = serializers.ReadOnlyField(source="deal.active_version.water_extraction_envisaged")
+    water_extraction_envisaged_comment = serializers.ReadOnlyField(source="deal.active_version.water_extraction_envisaged_comment")
+    source_of_water_extraction = serializers.ReadOnlyField(source="deal.active_version.source_of_water_extraction")
+    source_of_water_extraction_comment = serializers.ReadOnlyField(source="deal.active_version.source_of_water_extraction_comment")
+    community_reaction = serializers.ReadOnlyField(source="deal.active_version.community_reaction")
+    community_reaction_comment = serializers.ReadOnlyField(source="deal.active_version.community_reaction_comment")
+    gender_related_information = serializers.ReadOnlyField(source="deal.active_version.gender_related_information")
+    purchase_price = serializers.ReadOnlyField(source="deal.active_version.purchase_price")
+    purchase_price_area = serializers.ReadOnlyField(source="deal.active_version.purchase_price_area")
+    purchase_price_currency = serializers.ReadOnlyField(source="deal.active_version.purchase_price_currency")
+    purchase_price_comment = serializers.ReadOnlyField(source="deal.active_version.purchase_price_comment")
+    annual_leasing_fee = serializers.ReadOnlyField(source="deal.active_version.annual_leasing_fee")
+    annual_leasing_fee_area = serializers.ReadOnlyField(source="deal.active_version.annual_leasing_fee_area")
+    annual_leasing_fee_currency = serializers.ReadOnlyField(source="deal.active_version.annual_leasing_fee_currency")
+    annual_leasing_fee_comment = serializers.ReadOnlyField(source="deal.active_version.annual_leasing_fee_comment")
+    presence_of_organizations = serializers.ReadOnlyField(source="deal.active_version.presence_of_organizations")
+    
     class Meta:
         model = DealScore
-        fields = "__all__"
+        exclude = ["deal"]
+    
+    def get_country(self, obj): # Get .annotate() field "country" from views.py
+        try:
+            return obj.country
+        except:
+            return None
 
         
 # class DealVariableSerializer(serializers.ModelSerializer):

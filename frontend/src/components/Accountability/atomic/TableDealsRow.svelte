@@ -54,12 +54,12 @@
         dealPartiallyChecked = false
 
         if (checked) {
-            deal.variables.forEach(v => {
-                $tableSelection[deal.id].variables[v.id] = true
+            deal.score.variables.forEach(v => {
+                $tableSelection[deal.id].variables[v.vggt_variable] = true
             })
         } else {
-            deal.variables.forEach(v => {
-                $tableSelection[deal.id].variables[v.id] = false
+            deal.score.variables.forEach(v => {
+                $tableSelection[deal.id].variables[v.vggt_variable] = false
             })
         }
     }
@@ -76,7 +76,7 @@
         return result
     }
 
-    $: dealAssignees = getAllAssignees(deal.variables?.map(e => e.assignee))
+    $: dealAssignees = getAllAssignees(deal.score.variables?.map(e => e.assignee))
 
     function removeAssignee() {
         console.log("Remove assignee")
@@ -109,25 +109,25 @@
         </TableCell>
 
         {#each columns as column}
-            {@const val = deal[column.value]}
+            <!-- {@const val = deal[column.value]} -->
 
             <!-- Deal ID -->
             {#if column.value == "id"}
                 <TableCell>
-                    <a class="link" href="{$page.url.href}{deal.id}/">Deal #{val}</a>
+                    <a class="link" href="{$page.url.href}{deal.id}/">Deal #{deal.id}</a>
                     <!-- TODO: New label for new version -->
                 </TableCell>
 
             <!-- Deal Status -->
             {:else if column.value == "status"}
                 <TableCell>
-                    <BadgeStatus value={val} />
+                    <BadgeStatus value={deal.score.status} />
                 </TableCell>
             
             <!-- Variable Scoring -->
             {:else if column.value == "variables"}
                 <TableCell>
-                    <VariableDots variables={val} />
+                    <VariableDots variables={deal.score.variables} />
                 </TableCell>
 
             <!-- Assignee -->
@@ -142,7 +142,7 @@
 
             <!-- Else (simple text) -->
             {:else if column.value == "country"}
-                <TableCell>{val.name}</TableCell>
+                <TableCell>{deal.country.name}</TableCell>
             {/if}
 
         {/each}
@@ -154,15 +154,15 @@
 
             <TableRow {gridColsTemplate} >
                 
-                {#each deal.variables as variable}
+                {#each deal.score.variables as variable}
                     <TableCell style="nested">
-                        <span class="w-fit"><Checkbox paddingX=0 paddingY=0 value={variable.id} bind:checked={$tableSelection[deal.id].variables[variable.id]} /></span>
+                        <span class="w-fit"><Checkbox paddingX=0 paddingY=0 value={variable.vggt_variable} bind:checked={$tableSelection[deal.id].variables[variable.vggt_variable]} /></span>
                     </TableCell>
 
                     <TableCell style="nested" >
                         <button class="text-left w-fit underline underline-offset-4" 
-                                on:click={() => openVariable(variable.id)} >
-                            Variable {variable.id}
+                                on:click={() => openVariable(variable.vggt_variable)} >
+                            Variable {variable.vggt_variable}
                         </button>
                     </TableCell>
                     <TableCell style="nested"></TableCell>

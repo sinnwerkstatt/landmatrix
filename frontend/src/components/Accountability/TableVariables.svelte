@@ -14,13 +14,16 @@
         id:number,
         country: {id:number, name:string},
         status:string,
-        variables:{id:number, 
-                status:string, 
-                score:number|null, 
-                assignee:{id:number, name:string}|null}[]
+        score:{
+            status:string,
+            variables:{id:number, 
+                    status:string, 
+                    score:number|null, 
+                    assignee:{id:number, name:string}|null}[]
+        }
     }
 
-    $: data = deal.variables ? deal.variables : []
+    $: data = deal.score.variables ? deal.score.variables : []
 
     const columns:{label:string, value:string}[] = [
         { label: "id", value: "id" },
@@ -35,8 +38,7 @@
     let dealPartiallyChecked = false
     
     function updateDealCheckbox(selection) {
-        console.log("Updating deal checkbox")
-        if (!tableSelection[deal.id]?.variables) {
+        if ($tableSelection[deal.id]?.variables) {
             const nvar = Object.keys($tableSelection[deal.id].variables).length
             const nselect = Object.values($tableSelection[deal.id].variables).filter(Boolean).length
     
@@ -56,14 +58,16 @@
 
     function checkDeal(event) {
         const checked = event.detail.checked
-        
+
+        dealPartiallyChecked = false
+
         if (checked) {
-            deal.variables.forEach(v => {
-                $tableSelection[deal.id].variables[v.id] = true
+            deal.score.variables.forEach(v => {
+                $tableSelection[deal.id].variables[v.vggt_variable] = true
             })
         } else {
-            deal.variables.forEach(v => {
-                $tableSelection[deal.id].variables[v.id] = false
+            deal.score.variables.forEach(v => {
+                $tableSelection[deal.id].variables[v.vggt_variable] = false
             })
         }
     }
@@ -72,13 +76,14 @@
         console.log("Remove assignee")
     }
 
-    $: updateDealCheckbox($tableSelection)
+    $: updateDealCheckbox($tableSelection[deal.id])
+
+    // $: console.log($tableSelection[deal.id])
 
 </script>
 
 <Table {data} bind:pageContent={pageContent} filters={false} rowHeight=57>
 
-    <!-- Table header -->
     <svelte:fragment slot="header" >
         <TableRow {gridColsTemplate}>
             <TableCell style="heading" >
@@ -95,27 +100,22 @@
         </TableRow>
     </svelte:fragment>
 
-    <!-- Table body -->
     <svelte:fragment slot="body">
-        {#each pageContent as variable (variable.id)}
+        {#each pageContent as variable (variable.vggt_variable)}
             <TableRow {gridColsTemplate}>
-                <!-- Checkbox -->
                 <TableCell>
                     <div class="w-fit">
-                        <Checkbox paddingX=0 paddingY=0 value={variable.id}
-                         bind:checked={$tableSelection[deal.id].variables[variable.id]} />
+                        <Checkbox paddingX=0 paddingY=0 value={variable.vggt_variable}
+                         bind:checked={$tableSelection[deal.id].variables[variable.vggt_variable]} />
                     </div>
                 </TableCell>
 
-                <!-- ID -->
-                <TableCell>{variable.id}</TableCell>
+                <TableCell>{variable.vggt_variable}</TableCell>
 
-                <!-- Scoring status -->
                 <TableCell>
                     <BadgeStatus type="dot" value={variable.status} />
                 </TableCell>
 
-                <!-- Assignee -->
                 <TableCell>
                     {#if variable.assignee}
                         <Avatar size="sm" label={variable.assignee?.name} initials={variable.assignee?.initials}

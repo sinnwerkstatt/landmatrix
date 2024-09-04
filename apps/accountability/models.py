@@ -8,6 +8,7 @@ from datetime import datetime
 from django.utils.translation import gettext as _
 
 from apps.landmatrix.models import choices
+from apps.landmatrix.models.fields import ChoiceArrayField
 from apps.landmatrix.models.new import DealHull, DealVersion
 
 STATUS_CHOICES = [
@@ -16,13 +17,19 @@ STATUS_CHOICES = [
     ("VALIDATED", _("Validated")),
 ]
 
-SCORE_CHOICES = [
-    ("NO_SCORE", _("No score")),
-    ("NO_DATA", _("Insufficient data")),
-    ("NO_VIOLATIONS", _("No violation")),
-    ("PARTIAL_VIOLATIONS", _("Violations")),
-    ("SEVERE_VIOLATIONS", _("Severe violations")),
+NO_DATA = "NO_DATA"
+SEVERE_VIOLATIONS = "SEVERE_VIOLATIONS"
+PARTIAL_VIOLATIONS = "PARTIAL_VIOLATIONS"
+NO_VIOLATIONS = "NO_VIOLATIONS"
+
+SCORE_OPTIONS_CHOICES = [
+    (NO_DATA, _("Insufficient data")),
+    (SEVERE_VIOLATIONS, _("Severe violations")),
+    (PARTIAL_VIOLATIONS, _("Violations")),
+    (NO_VIOLATIONS, _("No violation")),
 ]
+
+SCORE_CHOICES = [("NO_SCORE", _("No score"))] + SCORE_OPTIONS_CHOICES
 
 class UserInfo(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="info")
@@ -47,9 +54,14 @@ class VggtArticle(models.Model):
 class VggtVariable(models.Model):
     number = models.PositiveIntegerField(primary_key=True)
     name = models.CharField(max_length=200)
+    score_options = ChoiceArrayField(
+        models.CharField(choices=SCORE_OPTIONS_CHOICES),
+        blank=True, default=[NO_DATA, SEVERE_VIOLATIONS, PARTIAL_VIOLATIONS, NO_VIOLATIONS],
+    )
     landmatrix_fields = ArrayField(models.CharField(max_length=100), size=50, blank=True, null=True)
     landmatrix_additional_fields = ArrayField(models.CharField(max_length=100), size=50, blank=True, null=True)
     scoring_help = ArrayField(models.CharField(max_length=2000), size=20, blank=True, null=True)
+    articles = models.ManyToManyField(VggtArticle, related_name="variables")
 
     class Meta:
         ordering = ["number"]
@@ -71,8 +83,9 @@ class DealScore(models.Model):
             return None
     
 class DealScoreVersion(models.Model):
-    score = models.ForeignKey(DealScore, on_delete=models.CASCADE, related_name='scores')
     deal_version = models.OneToOneField(DealVersion, on_delete=models.CASCADE, primary_key=True, related_name='accountability_score')
+    score = models.ForeignKey(DealScore, on_delete=models.CASCADE, related_name='scores')
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="TO_SCORE")
 
     def is_current(self):
         return True if self.score.current_score() else False

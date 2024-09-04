@@ -48,10 +48,10 @@ export function capitalizeFirst(string) {
 }
 
 export function getStatusColor(status: string) {
-  if (status == "no_score") return "bg-a-gray-200"
-  if (status == "pending") return "bg-a-primary-500"
-  if (status == "validated") return "bg-a-success-500"
-  if (status == "no_data") return "bg-a-gray-900"
+  if (status == "TO_SCORE") return "bg-a-gray-200"
+  if (status == "WAITING") return "bg-a-primary-500"
+  if (status == "VALIDATED") return "bg-a-success-500"
+  if (status == "NO_DATA") return "bg-a-gray-900"
   return ""
 }
 
@@ -72,9 +72,9 @@ export function initTableSelection(deal) {
   const totalSelection = get(tableSelection)
   let dealSelection = totalSelection[deal.id]
   if (!dealSelection) totalSelection[deal.id] = { deal: deal.id, variables: {} }
-  deal.variables.forEach(v => {
-    if (!totalSelection[deal.id].variables[v.id])
-      totalSelection[deal.id].variables[v.id] = false
+  deal.score.variables.forEach(v => {
+    if (!totalSelection[deal.id].variables[v.vggt_variable])
+      totalSelection[deal.id].variables[v.vggt_variable] = false
   })
 
   // console.log(totalSelection)

@@ -10,10 +10,10 @@
 
     const colors = [
         { value: null, class: "neutral" },
-        { value: 0, class: "black" },
-        { value: 1, class: "red" },
-        { value: 2, class: "yellow" },
-        { value: 3, class: "green" }
+        { value: "NO_SCORE", class: "black" },
+        { value: "SEVERE_VIOLATIONS", class: "red" },
+        { value: "PARTIAL_VIOLATIONS", class: "yellow" },
+        { value: "NO_VIOLATIONS", class: "green" }
     ]
 
     $: color = colors.find(e => e.value == value)?.class

@@ -2,7 +2,7 @@
     import { getStatusColor } from "$lib/accountability/helpers"
 
     export let variables:{
-        id:number,
+        vggt_variable:number,
         status:"no_score"|"pending"|"validated"|"no_data",
         score:number|null,
         assignee:{id:number, name:string, initials:string}|null

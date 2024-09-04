@@ -1,5 +1,7 @@
 <script lang="ts">
-    import { currentDeal, currentVariable, openDrawer } from "$lib/accountability/stores"
+    import { page } from "$app/stores"
+    import { dealFields } from "$lib/fieldLookups"
+    import { currentDeal, currentVariable, openDrawer, deals } from "$lib/accountability/stores"
 
     import Drawer from "./atomic/Drawer.svelte"
     import DrawerScoringItem from "./atomic/DrawerScoringItem.svelte"
@@ -11,14 +13,27 @@
     import DrawerScoringInfo from "./atomic/DrawerScoringInfo.svelte"
     import Button from "./Button.svelte"
 
+    let vggtVariables = $page.data.vggtVariables
+
+    $: variableInfo = vggtVariables.filter(v => v.number == $currentVariable)[0]
+
+    // $: console.log(variableInfo)
+    // $: console.log($dealFields["negotiation_status"])
+
+    // $: console.log($deals.find(deal => deal.id == $currentDeal))
+
+    $: deal = $deals.find(deal => deal.id == $currentDeal) ?? undefined
+
+    // $: console.log(deal)
+
     let score = null
     let status = "no_score"
 
     const scores = [
-        { value: 0, label: "No data", description: "Insufficient data available to score this variable" },
-        { value: 1, label: "Severe violations", description: "Severe violations description" },
-        { value: 2, label: "Partial violations", description: "Partial violations description" },
-        { value: 3, label: "No violations", description: "No violations description (congrats!)" }
+        { value: "NO_DATA", label: "No data", description: "Insufficient data available to score this variable" },
+        { value: "SEVERE_VIOLATIONS", label: "Severe violations", description: "Severe violations description" },
+        { value: "PARTIAL_VIOLATIONS", label: "Partial violations", description: "Partial violations description" },
+        { value: "NO_VIOLATIONS", label: "No violations", description: "No violations description (congrats!)" }
     ]
 
     const statuses = [
@@ -125,7 +140,7 @@
             <div class="flex justify-between">
                 <div class="flex items-center gap-2">
                     <span class="block w-3 h-3 rounded-full indicator"></span>
-                    <h1 class="text-a-xl font-semibold">Variable {$currentVariable} - Description</h1>
+                    <h1 class="text-a-xl font-semibold">Variable {$currentVariable} - {variableInfo.name}</h1>
                     <Badge variant="filled" label={$currentDeal} href="https://landmatrix.org/deal/{$currentDeal}/" />
                 </div>
                 <button class="text-a-gray-400" on:click={() => openDrawer.set(false)}><IconXMark size=24 /></button>
@@ -142,7 +157,9 @@
             <h2>VGGT compliance</h2>
             <div class="flex gap-2">
                 {#each scores as scoreBox}
-                    <DrawerScoringItem {...scoreBox} {score} on:onClick={selectScore} />
+                    {#if variableInfo.score_options.includes(scoreBox.value)}
+                        <DrawerScoringItem {...scoreBox} {score} on:onClick={selectScore} />
+                    {/if}
                 {/each}
             </div>
 
@@ -150,10 +167,15 @@
                 <!-- Help -->
                 <h3>Help</h3>
                 <ul>
+                    {#each variableInfo.scoring_help as info}
+                        <li>{info}</li>
+                    {/each}
+                </ul>
+                <!-- <ul>
                     <li>Please make sure that compensation refer to displacement</li>
                     <li>Dealt with means that the company addressed the issues created by the displacement. Compensation and Resettlement that do not address the issue  created by displacement such as not providing any new livelihood opportunities or creating even more conflict should be rated as not adequately dealt with.</li>
                     <li>If displacement and no information provided on “is dealt with”, then assume it is not dealt with</li>
-                </ul>
+                </ul> -->
 
                 <!-- Resources -->
                 <h3>Resources (VGGTs articles linked to this variable)</h3>
@@ -169,11 +191,12 @@
 
             <!-- LM Info -->
             <h2 class="mt-4">Land Matrix information</h2>
-            <DrawerScoringInfo {dealInfo} />
+            <!-- <DrawerScoringInfo {dealInfo} /> -->
+            <DrawerScoringInfo {deal} fields={variableInfo.landmatrix_fields} />
             <h4 class="my-4 text-sm font-medium text-a-gray-500">Additional fields</h4>
-            <DrawerScoringInfo dealInfo={dealAdditionalInfo} />
+            <!-- <DrawerScoringInfo dealInfo={dealAdditionalInfo} /> -->
             <h2 class="mt-10">Deal main information</h2>
-            <DrawerScoringInfo dealInfo={dealMainInfo} />
+            <!-- <DrawerScoringInfo dealInfo={dealMainInfo} /> -->
         </div>
 
         <!-- Footer -->
