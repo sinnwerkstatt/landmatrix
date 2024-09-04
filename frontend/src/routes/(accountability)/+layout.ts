@@ -20,5 +20,9 @@ export async function load() {
   if (vggtVariablesReq.error) error(500, vggtVariablesReq.error)
   const vggtVariables: components["schemas"]["VggtVariable"][] = vggtVariablesReq.data
 
-  return { fieldChoices, investors, vggtVariables }
+  const vggtArticlesReq = await apiClient.GET("/api/accountability/article/")
+  if (vggtArticlesReq.error) error(500, vggtArticlesReq.error)
+  const vggtArticles: components["schemas"]["VggtArticle"][] = vggtArticlesReq.data
+
+  return { fieldChoices, investors, vggtVariables, vggtArticles }
 }

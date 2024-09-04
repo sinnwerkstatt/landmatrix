@@ -60,7 +60,6 @@ class VggtVariable(models.Model):
     )
     landmatrix_fields = ArrayField(models.CharField(max_length=100), size=50, blank=True, null=True)
     landmatrix_additional_fields = ArrayField(models.CharField(max_length=100), size=50, blank=True, null=True)
-    scoring_help = ArrayField(models.CharField(max_length=2000), size=20, blank=True, null=True)
     articles = models.ManyToManyField(VggtArticle, related_name="variables")
 
     class Meta:

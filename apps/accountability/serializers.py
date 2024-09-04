@@ -22,6 +22,7 @@ class VggtChapterSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 class VggtArticleSerializer(serializers.ModelSerializer):
+    title = serializers.ReadOnlyField(source="chapter.name")
     class Meta:
         model = VggtArticle
         fields = "__all__"
@@ -66,7 +67,7 @@ class DealScoreSerializer(serializers.ModelSerializer):
     deal_size = serializers.ReadOnlyField(source="deal.active_version.deal_size")
     negotiation_status = serializers.ReadOnlyField(source="deal.active_version.current_negotiation_status")
     nature_of_deal = serializers.ReadOnlyField(source="deal.active_version.nature_of_deal")
-    operating_company = serializers.ReadOnlyField(source="deal.active_version.operating_company_id")
+    operating_company = serializers.SerializerMethodField() # Empty field to include operating_company as .annotate() in views.py
     involved_actors = serializers.ReadOnlyField(source="deal.active_version.involved_actors")
     initiation_year = serializers.ReadOnlyField(source="deal.active_version.initiation_year")
     implementation_status = serializers.ReadOnlyField(source="deal.active_version.current_implementation_status")
@@ -129,6 +130,12 @@ class DealScoreSerializer(serializers.ModelSerializer):
     def get_country(self, obj): # Get .annotate() field "country" from views.py
         try:
             return obj.country
+        except:
+            return None
+        
+    def get_operating_company(self, obj): # Get .annotate() field "operating_company" from views.py
+        try:
+            return obj.operating_company
         except:
             return None
 

@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from "$app/stores"
-    import { dealFields } from "$lib/fieldLookups"
+    import { scoreLabels, vggtInfo } from "$lib/accountability/vggtInfo"
     import { currentDeal, currentVariable, openDrawer, deals } from "$lib/accountability/stores"
 
     import Drawer from "./atomic/Drawer.svelte"
@@ -13,28 +13,16 @@
     import DrawerScoringInfo from "./atomic/DrawerScoringInfo.svelte"
     import Button from "./Button.svelte"
 
+    let vggtArticles = $page.data.vggtArticles
     let vggtVariables = $page.data.vggtVariables
 
     $: variableInfo = vggtVariables.filter(v => v.number == $currentVariable)[0]
-
-    // $: console.log(variableInfo)
-    // $: console.log($dealFields["negotiation_status"])
-
-    // $: console.log($deals.find(deal => deal.id == $currentDeal))
-
     $: deal = $deals.find(deal => deal.id == $currentDeal) ?? undefined
-
-    // $: console.log(deal)
 
     let score = null
     let status = "no_score"
 
-    const scores = [
-        { value: "NO_DATA", label: "No data", description: "Insufficient data available to score this variable" },
-        { value: "SEVERE_VIOLATIONS", label: "Severe violations", description: "Severe violations description" },
-        { value: "PARTIAL_VIOLATIONS", label: "Partial violations", description: "Partial violations description" },
-        { value: "NO_VIOLATIONS", label: "No violations", description: "No violations description (congrats!)" }
-    ]
+    $: console.log(vggtArticles)
 
     const statuses = [
         { value: "no_score", label: "To score" },
@@ -67,58 +55,6 @@
             title: "Informal tenure",
             description: "Where it is not possible to provide legal recognition to informal tenure, States should prevent forced evictions that violate existing obligations under national and international law, and consistent with relevant provisions under Section 16."
         }
-    ]
-
-    const dealInfo = [
-        {
-            label: "Recognition of status of community land tenure",
-            value: "Indigenous rights recognized"
-        },
-        {
-            label: "Comment on recognition of community land tenure",
-            value: "Rights officially recognised, but not applied."
-        },
-        {
-            label: "Number of people displaced out of their community land",
-            value: "104"
-        },
-        {
-            label: "Number of people displaced staying on their community land",
-            value: undefined
-        },
-        {
-            label: "Number of households displaced “only” from their agricultural fields",
-            value: undefined
-        },
-        {
-            label: "Number of people facing displacement once project is fully implemented",
-            value: undefined
-        },
-        {
-            label: "Comments on displacement of people",
-            value: "244 farmers complained in Sept. 2016 against the planting of oil palm [company] for violation of property rights."
-        }
-    ]
-
-    const dealAdditionalInfo = [
-        {
-            label: "Received compensation",
-            value: "The group is accused of never having respected its commitments."
-        },
-        {
-            label: "Community consultation",
-            value: "Limited consultation"
-        },
-        {
-            label: "Comment on consultation of local community",
-            value: "No consultation with the forest-dwelling people during the privatisation of the current Company plantation after 2000. The government committed to returning thousands of hectares to local communities but so far just over 100 hectares have been returned. People are not aware of what land has been returned to them and their customary lands and farms are inside concession boundaries."
-        }
-    ]
-
-    const dealMainInfo = [
-        { label: "Country", value: "Senegal" },
-        { label: "Size", value: 1000 },
-        { label: "Investor", id: 44470, name: "Swami Agri" }
     ]
 
     function selectScore(event) {
@@ -156,34 +92,32 @@
         <div class="p-6 h-full w-full overflow-auto">
             <h2>VGGT compliance</h2>
             <div class="flex gap-2">
-                {#each scores as scoreBox}
-                    {#if variableInfo.score_options.includes(scoreBox.value)}
-                        <DrawerScoringItem {...scoreBox} {score} on:onClick={selectScore} />
-                    {/if}
+                {#each variableInfo.score_options as value}
+                    {@const label = scoreLabels[value] ?? ""}
+                    {@const description = vggtInfo[$currentVariable].score_meaning[value] ?? ""}
+                    <DrawerScoringItem {label} {description} {value} {score} on:onClick={selectScore} />
                 {/each}
             </div>
 
             <Section title="Show more details" extraClass="pl-0 underline underline-offset-4" open={false}>
                 <!-- Help -->
-                <h3>Help</h3>
-                <ul>
-                    {#each variableInfo.scoring_help as info}
-                        <li>{info}</li>
-                    {/each}
-                </ul>
-                <!-- <ul>
-                    <li>Please make sure that compensation refer to displacement</li>
-                    <li>Dealt with means that the company addressed the issues created by the displacement. Compensation and Resettlement that do not address the issue  created by displacement such as not providing any new livelihood opportunities or creating even more conflict should be rated as not adequately dealt with.</li>
-                    <li>If displacement and no information provided on “is dealt with”, then assume it is not dealt with</li>
-                </ul> -->
+                 {#if vggtInfo[$currentVariable].score_help.length > 0}
+                    <h3>Help</h3>
+                    <ul>
+                        {#each vggtInfo[$currentVariable].score_help as help}
+                            <li>{help}</li>
+                        {/each}
+                    </ul>
+                 {/if}
 
                 <!-- Resources -->
                 <h3>Resources (VGGTs articles linked to this variable)</h3>
-                {#each relatedArticles as { chapter, article, title, description }}
+                {#each variableInfo.articles as id}
+                    {@const item = vggtArticles.find(i => i.id == id)}
                     <ul>
-                        <li class="font-semibold">Article {article} - Chapter {chapter} - {title}</li>
+                        <li class="font-semibold">Article {item.chapter}.{item.article} (Chapter {item.chapter}: {item.title})</li>
                         <ul>
-                            <li>{description}</li>
+                            <li>{item.description}</li>
                         </ul>
                     </ul>
                 {/each}
@@ -191,12 +125,13 @@
 
             <!-- LM Info -->
             <h2 class="mt-4">Land Matrix information</h2>
-            <!-- <DrawerScoringInfo {dealInfo} /> -->
             <DrawerScoringInfo {deal} fields={variableInfo.landmatrix_fields} />
-            <h4 class="my-4 text-sm font-medium text-a-gray-500">Additional fields</h4>
-            <!-- <DrawerScoringInfo dealInfo={dealAdditionalInfo} /> -->
+            {#if variableInfo?.landmatrix_additional_fields.length > 0}
+                <h4 class="my-4 text-sm font-medium text-a-gray-500">Additional fields</h4>
+                <DrawerScoringInfo {deal} fields={variableInfo.landmatrix_additional_fields} />
+            {/if}
             <h2 class="mt-10">Deal main information</h2>
-            <!-- <DrawerScoringInfo dealInfo={dealMainInfo} /> -->
+            <DrawerScoringInfo {deal} main_info={true} />
         </div>
 
         <!-- Footer -->

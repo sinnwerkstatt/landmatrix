@@ -96,23 +96,14 @@ class DealScoreList(generics.ListCreateAPIView):
                                         country=JSONObject(
                                             id="deal__country__id",
                                             name="deal__country__name"
+                                        ),
+                                        operating_company=JSONObject(
+                                            id="deal__active_version__operating_company__active_version__id",
+                                            name="deal__active_version__operating_company__active_version__name"
                                         )
                                     )
         serializer = DealScoreSerializer(queryset, many=True)
         return Response(serializer.data)
-
-    # @extend_schema(parameters=[
-    #     OpenApiParameter(name="id", type=int, many=True)
-    # ])
-    # def get(self, request:Request, *args, **kwargs):
-    #     filters = Q()
-    #     if id_list := request.GET.getlist("id"):
-    #         filters &= Q(id__in=id_list)
-    #     queryset = Project.objects.filter(filters)\
-    #                               .order_by("-created_at")\
-    #                               .distinct()
-    #     serializer = ProjectSerializer(queryset, many=True)
-    #     return Response(serializer.data)
 
 
 class DealScoreDetail(generics.RetrieveUpdateDestroyAPIView):
