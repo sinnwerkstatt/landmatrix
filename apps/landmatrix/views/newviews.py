@@ -1,3 +1,4 @@
+from django.http import Http404
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 
 from django.contrib.postgres.expressions import ArraySubquery
@@ -395,6 +396,12 @@ class DealViewSet(HullViewSet):
     serializer_class = DealSerializer
     version_serializer_class = DealVersionSerializer
 
+    def get_object(self):
+        try:
+            return super().get_object()
+        except:
+            raise Http404(f"Deal {self.kwargs[self.lookup_field]} does not exist.")
+
     def get_queryset(self):
         qs = self.queryset.prefetch_related(
             Prefetch("versions", queryset=DealVersion.objects.order_by("-id"))
@@ -525,7 +532,10 @@ class DealViewSet(HullViewSet):
 
         d1._selected_version_id = int(version_id)
 
-        dv1: DealVersion = get_object_or_404(d1.versions, id=version_id)
+        try:
+            dv1: DealVersion = d1.versions.get(id=version_id)
+        except DealVersion.DoesNotExist:
+            raise Http404(f"DealVersion {version_id} does not exist.")
 
         if (
             is_editor_or_higher(user)
@@ -648,6 +658,12 @@ class InvestorViewSet(HullViewSet):
     version_serializer_class = InvestorVersionSerializer
     serializer_class = InvestorSerializer
 
+    def get_object(self):
+        try:
+            return super().get_object()
+        except:
+            raise Http404(f"Investor {self.kwargs[self.lookup_field]} does not exist.")
+
     def get_queryset(self):
         qs = self.queryset.prefetch_related(
             Prefetch("versions", queryset=InvestorVersion.objects.order_by("-id"))
@@ -693,7 +709,10 @@ class InvestorViewSet(HullViewSet):
 
         i1._selected_version_id = int(version_id)
 
-        iv1: InvestorVersion = get_object_or_404(i1.versions, id=version_id)
+        try:
+            iv1: InvestorVersion = i1.versions.get(id=version_id)
+        except InvestorVersion.DoesNotExist:
+            raise Http404(f"InvestorVersion {version_id} does not exist.")
 
         if (
             is_editor_or_higher(user)
