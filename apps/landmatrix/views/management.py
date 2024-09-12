@@ -34,19 +34,20 @@ class Management(View):
     @staticmethod
     def filters(request, is_deal=True) -> dict[str, Filter]:
         # TODO Later should admins see all?
-        # user_groups = list(request.user.groups.values_list("name", flat=True))
         region_or_country = Q()
         if country_id := request.user.country_id:
             region_or_country |= (
                 Q(country_id=country_id)
                 if is_deal
-                else Q(active_version__country_id=country_id)
+                else Q()  # See: Issue #833
+                # else Q(active_version__country_id=country_id)
             )
         if region_id := request.user.region_id:
             region_or_country |= (
                 Q(country__region_id=region_id)
                 if is_deal
-                else Q(active_version__country__region_id=region_id)
+                else Q()  # See: Issue #833
+                # else Q(active_version__country__region_id=region_id)
             )
 
         return {
