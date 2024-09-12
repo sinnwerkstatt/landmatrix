@@ -87,14 +87,15 @@
               wrapperClass=""
               valueClass=""
             />
-            {#if reporterOrHigher}
-              <DisplayField
-                fieldname="modified_by_id"
-                value={version.modified_by_id}
-                wrapperClass=""
-                valueClass=""
-              />
-            {/if}
+            <!-- TODO: Remove modified_by everywhere (see: #825) -->
+            <!--{#if reporterOrHigher}-->
+            <!--  <DisplayField-->
+            <!--    fieldname="modified_by_id"-->
+            <!--    value={version.modified_by_id}-->
+            <!--    wrapperClass=""-->
+            <!--    valueClass=""-->
+            <!--  />-->
+            <!--{/if}-->
           </td>
           <td class="p-1">
             <DisplayField
