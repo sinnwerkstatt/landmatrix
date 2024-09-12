@@ -99,6 +99,7 @@ export const investorFields = derived([_, fieldChoices], ([$_, $fieldChoices]) =
     first_created_by_id: { displayField: UserField, label: $_("Created by") },
     created_at: { displayField: DateTimeField, label: $_("Created at") },
     modified_at: { displayField: DateTimeField, label: $_("Last update") },
+    modified_by_id: { displayField: UserField, label: $_("Modified by") },
     workflowinfos: {
       displayField: WorkflowInfosField,
       label: $_("Logbook"),

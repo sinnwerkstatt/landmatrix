@@ -106,24 +106,22 @@
     { key: "status", colSpan: 2 },
     { key: "country_id", colSpan: 2 },
     { key: "deal_size", colSpan: 2, submodel: "selected_version" },
-    { key: "first_created_at", colSpan: 2 },
-    { key: "first_created_by_id", colSpan: 2 },
-    { key: "modified_at", colSpan: 2, submodel: "selected_version" },
-    { key: "modified_by_id", colSpan: 2, submodel: "selected_version" },
+    { key: "created", colSpan: 3, label: $_("Created") },
+    { key: "modified", colSpan: 3, label: $_("Modified") },
     { key: "fully_updated", colSpan: 2, submodel: "selected_version" },
     { key: "workflowinfos", colSpan: 5 },
-  ].map(c => ({ ...c, label: $dealFields[c.key].label }))
+  ].map(c => ({ ...c, label: c.label || $dealFields[c.key].label }))
 
   let investorColumns: Column[]
   $: investorColumns = [
     { key: "id", colSpan: 1 },
     { key: "status", colSpan: 2 },
     { key: "name", colSpan: 3, submodel: "selected_version" },
-    { key: "country_id", colSpan: 4, submodel: "selected_version" },
-    { key: "first_created_at", colSpan: 2 },
-    { key: "first_created_by_id", colSpan: 3 },
+    { key: "country_id", colSpan: 3, submodel: "selected_version" },
+    { key: "created", colSpan: 3, label: $_("Created") },
+    { key: "modified", colSpan: 3, label: $_("Modified") },
     { key: "workflowinfos", colSpan: 5 },
-  ].map(c => ({ ...c, label: $investorFields[c.key].label }))
+  ].map(c => ({ ...c, label: c.label || $investorFields[c.key].label }))
 
   $: columns = model === "deal" ? dealColumns : investorColumns
 
@@ -377,16 +375,48 @@
         <svelte:fragment slot="field" let:fieldName let:obj>
           {@const col = columns.find(c => c.key === fieldName)}
 
-          <DisplayField
-            fieldname={col.key}
-            value={col.submodel ? obj[col.submodel][col.key] : obj[col.key]}
-            {model}
-            {wrapperClass}
-            {valueClass}
-            extras={col.key === "id"
-              ? { model, objectVersion: obj.draft_version_id }
-              : undefined}
-          />
+          {#if col.key === "created"}
+            <DisplayField
+              fieldname="first_created_at"
+              value={obj.first_created_at}
+              {model}
+              {wrapperClass}
+              {valueClass}
+            />
+            <DisplayField
+              fieldname="first_created_by_id"
+              value={obj.first_created_by_id}
+              {model}
+              {wrapperClass}
+              {valueClass}
+            />
+          {:else if col.key === "modified"}
+            <DisplayField
+              fieldname="modified_at"
+              value={obj.selected_version.modified_at}
+              {model}
+              {wrapperClass}
+              {valueClass}
+            />
+            <DisplayField
+              fieldname="modified_by_id"
+              value={obj.selected_version.modified_by_id}
+              {model}
+              {wrapperClass}
+              {valueClass}
+            />
+          {:else}
+            <DisplayField
+              fieldname={col.key}
+              value={col.submodel ? obj[col.submodel][col.key] : obj[col.key]}
+              {model}
+              {wrapperClass}
+              {valueClass}
+              extras={col.key === "id"
+                ? { model, objectVersion: obj.draft_version_id }
+                : undefined}
+            />
+          {/if}
         </svelte:fragment>
       </Table>
     {/if}

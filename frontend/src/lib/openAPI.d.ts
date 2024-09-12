@@ -860,6 +860,7 @@ export interface components {
       active_version_id: number | null
       draft_version_id: number | null
       created_by_id: string
+      first_created_by_id: number | null
       /** Target country */
       country_id: number | null
       versions: readonly components["schemas"]["DealVersionVersionsList"][]
@@ -1589,6 +1590,7 @@ export interface components {
       id: number
       active_version_id: number | null
       draft_version_id: number | null
+      first_created_by_id: number | null
       versions: components["schemas"]["InvestorVersionVersionsList"][]
       selected_version: components["schemas"]["InvestorVersion"]
       deals: readonly components["schemas"]["InvestorDeal"][]

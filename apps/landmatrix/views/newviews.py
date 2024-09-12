@@ -182,10 +182,6 @@ class VersionViewSet(viewsets.ReadOnlyModelViewSet):
         if serializer.is_valid(raise_exception=True):
             # this is untidy
             ov1 = serializer.save()
-            if not creating_new_version:
-                ov1.modified_by = user
-                ov1.modified_at = timezone.now()
-
             serializer.save_submodels(data, ov1)
             ov1.save()
 
