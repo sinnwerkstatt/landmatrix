@@ -121,39 +121,9 @@
             
             const deal_index = $deals.findIndex(d => d.id == deal_id)
             const variable_index = $deals.find(d => d.id == deal_id).score.variables.findIndex(v => v.vggt_variable == variable_number)
-
-            const allDeals = $deals
-
-
             const newValue = await res.json()
 
-            console.log("--- Value from store ---")
-            console.log($deals[deal_index].score.variables[variable_index])
-
-            console.log("--- Value from allDeals ---")
-            console.log(allDeals[deal_index].score.variables[variable_index])
-
-            console.log("--- Updated value from allDeals ---")
-            allDeals[deal_index].score.variables[variable_index] = newValue
-            console.log(allDeals[deal_index].score.variables[variable_index])
-
-            console.log("--- $deals and allDeals ---")
-            console.log($deals)
-            console.log(allDeals)
-
-            // console.log($deals[deal_index].score.variables)
-            // console.log(allDeals[deal_index].score.variables)
-            // console.log("---")
-            // console.log(allDeals[deal_index].score.variables[variable_index])
-            // console.log("---")
-            // console.log(newValue)
-            // allDeals[deal_index].score.variables[variable_index] = newValue
-            // console.log(allDeals[deal_index].score.variables[variable_index])
-
-            
-            // console.log(allDeals[deal_index].score.variables[variable_index])
-            // console.log($deals[deal_index].score.variables[variable_index])
-            // $deals[deal_index].score.variables[variable_index] = newValue
+            $deals[deal_index].score.variables[variable_index] = newValue
 
         } catch (error) {
             console.error(error)

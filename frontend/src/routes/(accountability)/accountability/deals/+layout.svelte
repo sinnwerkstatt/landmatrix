@@ -1,6 +1,8 @@
 <script lang="ts">
     import { page } from "$app/stores"
-    import { dealsHistory } from "$lib/accountability/stores"
+    import { filters } from "$lib/accountability/filters.js"
+    import { fetchDeals } from "$lib/accountability/deals.js"
+    import { deals, dealsHistory } from "$lib/accountability/stores"
 
     import ProjectsSidebar from "$components/Accountability/ProjectsSidebar.svelte"
     import FiltersSidebar from "$components/Accountability/FiltersSidebar.svelte"
@@ -19,6 +21,10 @@
     }
 
     $: updateLocalStorage($page.url.pathname)
+
+    $: fetchDeals($filters)
+
+    $: console.log($deals)
 
 </script>
 

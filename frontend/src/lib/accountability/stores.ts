@@ -64,23 +64,24 @@ export const me = derived(
 
 // =======================================================================================
 // Deals (fetch deals whenever the filters change)
-export const deals = derived(
-  [filters, lastRESTFilterArray],
-  ([$filters, $lastRESTFilterArray], set) => {
-    const restFilterArray = $filters.toRESTFilterArray()
-    if (browser && restFilterArray != $lastRESTFilterArray) {
-      loading.set(true)
-      fetch(`/api/accountability/deal/?${restFilterArray}`)
-        .then(res => res.json())
-        .then(res => {
-          lastRESTFilterArray.set(restFilterArray)
-          loading.set(false)
-          set(res)
-        })
-    }
-  },
-  [],
-)
+export const deals = writable([])
+// export const deals = derived(
+//   [filters, lastRESTFilterArray],
+//   ([$filters, $lastRESTFilterArray], set) => {
+//     const restFilterArray = $filters.toRESTFilterArray()
+//     if (browser && restFilterArray != $lastRESTFilterArray) {
+//       loading.set(true)
+//       fetch(`/api/accountability/deal/?${restFilterArray}`)
+//         .then(res => res.json())
+//         .then(res => {
+//           lastRESTFilterArray.set(restFilterArray)
+//           loading.set(false)
+//           set(res)
+//         })
+//     }
+//   },
+//   [],
+// )
 
 // =======================================================================================
 // Documentation bookmark
