@@ -124,10 +124,14 @@ class DealVariable(models.Model):
     class Meta:
         ordering = ["deal_score", "vggt_variable"]
         unique_together = ["deal_score", "vggt_variable"]
+
+    def __str__(self):
+        return f"Deal {self.deal_score.score.deal} - Variable {self.vggt_variable.number} (pk={self.pk})"
     
     def is_current(self):
         current_score = self.deal_score.score.current_score()
         return True if self.deal_score == current_score else False
+    
 
 class Project(models.Model):
     name = models.CharField(max_length=200, unique=True)

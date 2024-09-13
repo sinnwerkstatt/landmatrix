@@ -3,14 +3,14 @@
 
     export let label = "Label"
     export let description = "Description"
-    export let value:number|null = null
-    export let score:number|null = null
+    export let value:string = "NO_SCORE"
+    export let score:string = "NO_SCORE"
 
     const dispatch = createEventDispatcher()
 
     const colors = [
-        { value: null, class: "neutral" },
-        { value: "NO_SCORE", class: "black" },
+        { value: "NO_SCORE", class: "neutral" },
+        { value: "NO_DATA", class: "black" },
         { value: "SEVERE_VIOLATIONS", class: "red" },
         { value: "PARTIAL_VIOLATIONS", class: "yellow" },
         { value: "NO_VIOLATIONS", class: "green" }
@@ -19,7 +19,7 @@
     $: color = colors.find(e => e.value == value)?.class
 
     function getBehavior(value, score) {
-        if (score == null) return ""
+        if (score == "NO_SCORE") return ""
         if (value == score) return "active"
         return "dimmed"
     }

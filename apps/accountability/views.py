@@ -109,24 +109,73 @@ class DealScoreList(generics.ListCreateAPIView):
 class DealScoreDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = DealScore.objects.all()
     serializer_class = DealScoreSerializer
+    permission_classes = [IsReporterOrHigherOrReadonly]
+
 
 class DealScoreVersionList(generics.ListCreateAPIView):
     queryset = DealScoreVersion.objects.all()
     serializer_class = DealScoreVersionSerializer
+    permission_classes = [IsReporterOrHigherOrReadonly]
 
 
 class DealScoreVersionDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = DealScoreVersion.objects.all()
     serializer_class = DealScoreVersionSerializer
+    permission_classes = [IsReporterOrHigherOrReadonly]
 
 
 class DealVariableList(generics.ListCreateAPIView):
     queryset = DealVariable.objects.all()
     serializer_class = DealVariableSerializer
+    permission_classes = [IsReporterOrHigherOrReadonly]
 
-class DealVariableDetail(generics.RetrieveUpdateDestroyAPIView):
+# class DealVariableList(generics.ListCreateAPIView):
+#     queryset = DealVariable.objects.all()
+#     serializer_class = DealVariableSerializer
+#     permission_classes = [IsReporterOrHigherOrReadonly]
+
+#     @extend_schema(parameters=[
+#         OpenApiParameter(name="deal", type="int", many=True),
+#         OpenApiParameter(name="number", type="int", many=True)
+#     ])
+#     def get(self, request:Request, *args, **kwargs):
+#         filters = Q()
+#         if deal_list := request.GET.getlist("deal"):
+#             filters &= Q()
+
+
+# class DealVariableDetail(generics.RetrieveUpdateDestroyAPIView):
+#     queryset = DealVariable.objects.all()
+#     serializer_class = DealVariableSerializer
+#     permission_classes = [IsReporterOrHigherOrReadonly]
+
+
+class DealVariableView(APIView):
     queryset = DealVariable.objects.all()
     serializer_class = DealVariableSerializer
+    permission_classes = [IsReporterOrHigherOrReadonly]
+
+    def get_queryset(self):
+        deal_id = self.kwargs['deal']
+        vggt_variable_number = self.kwargs['variable']
+        return DealVariable.objects.get(
+            deal_score__score__deal__pk = deal_id,
+            vggt_variable__number = vggt_variable_number
+        )
+    
+    def get(self, request, deal, variable, format=None):
+        queryset = self.get_queryset()
+        serializer = DealVariableSerializer(queryset)
+        return Response(serializer.data)
+    
+    def patch(self, request, deal, variable, format=None):
+        queryset = self.get_queryset()
+        serializer = DealVariableSerializer(queryset, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ProjectList(generics.ListCreateAPIView):
