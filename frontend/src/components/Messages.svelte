@@ -30,7 +30,7 @@
 
   if (browser) {
     try {
-      storage = window.sessionStorage || {}
+      storage = window.localStorage || {}
     } catch {
       // sessionStorage disabled due to private browsing
       // https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API#private_browsing_incognito_modes
