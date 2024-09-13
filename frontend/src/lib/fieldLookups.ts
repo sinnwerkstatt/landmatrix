@@ -57,9 +57,301 @@ interface Field {
   extras?: unknown
 }
 
-export const investorFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
-  return {
-    id: { displayField: IDField, label: $_("ID"), extras: { model: "investor" } },
+type FieldLookup = { [key: string]: Field }
+
+export const prefixObjectKeys = <T extends Record<string, unknown>>(
+  obj: T,
+  prefix: string,
+): Record<string, unknown> =>
+  Object.fromEntries(
+    Object.entries(obj).map(([key, value]) => [`${prefix}.${key}`, value]),
+  )
+
+export const commonHullFields = derived(
+  [_],
+  ([$_]): FieldLookup => ({
+    first_created_at: { displayField: DateTimeField, label: $_("Created at") },
+    first_created_by_id: { displayField: UserField, label: $_("Created by") },
+  }),
+)
+
+export const commonVersionFields = derived(
+  [_],
+  ([$_]): FieldLookup => ({
+    created_at: { displayField: DateTimeField, label: $_("Created at") },
+    created_by_id: { displayField: UserField, label: $_("Created by") },
+    modified_at: { displayField: DateTimeField, label: $_("Last update") },
+    modified_by_id: { displayField: UserField, label: $_("Modified by") },
+    sent_to_review_at: { displayField: DateTimeField, label: $_("Sent to review at") },
+    sent_to_review_by_id: { displayField: UserField, label: $_("Sent to review by") },
+    sent_to_activation_at: {
+      displayField: DateTimeField,
+      label: $_("Sent to activation at"),
+    },
+    sent_to_activation_by_id: {
+      displayField: UserField,
+      label: $_("Sent to activation by"),
+    },
+    activated_at: {
+      displayField: DateTimeField,
+      label: $_("Activated at"),
+    },
+    activated_by_id: {
+      displayField: UserField,
+      label: $_("Activated by"),
+    },
+    workflowinfos: {
+      displayField: WorkflowInfosField,
+      label: $_("Logbook"),
+    },
+    status: {
+      displayField: DraftVersionStatusField,
+      label: $_("Status"),
+    },
+  }),
+)
+
+export const datasourceFields = derived(
+  [_, fieldChoices],
+  ([$_, $fieldChoices]): FieldLookup => ({
+    type: {
+      displayField: ChoicesField,
+      editField: ChoicesEditField,
+      label: $_("Type"),
+      extras: {
+        choices: $fieldChoices.datasource.type,
+        required: true,
+        otherHint: $_("Please specify in comment field"),
+      },
+    },
+    url: {
+      displayField: TextField,
+      editField: TextEditField,
+      label: $_("Url"),
+      extras: { url: true },
+    },
+    file: {
+      displayField: FileField,
+      editField: FileEditField,
+      label: $_("File"),
+    },
+    file_not_public: {
+      displayField: BooleanField,
+      editField: BooleanEditField,
+      label: $_("Keep PDF not public"),
+    },
+    publication_title: {
+      displayField: TextField,
+      editField: TextEditField,
+      label: $_("Publication title"),
+    },
+    date: {
+      displayField: TextField,
+      editField: DateEditField,
+      label: $_("Date"),
+    },
+    name: {
+      displayField: TextField,
+      editField: TextEditField,
+      label: $_("Name"),
+    },
+    company: {
+      displayField: TextField,
+      editField: TextEditField,
+      label: $_("Organisation"),
+    },
+    email: {
+      displayField: TextField,
+      editField: TextEditField,
+      label: $_("Email"),
+      extras: { email: true },
+    },
+    phone: {
+      displayField: TextField,
+      editField: TextEditField,
+      label: $_("Phone"),
+    },
+    includes_in_country_verified_information: {
+      displayField: BooleanField,
+      editField: BooleanEditField,
+      label: $_("Includes in-country-verified information"),
+      extras: { nullable: true },
+    },
+    open_land_contracts_id: {
+      displayField: TextField,
+      editField: TextEditField,
+      label: $_("Open Contracting ID"),
+      extras: { ocid: true },
+    },
+    comment: {
+      displayField: TextField,
+      editField: TextEditField,
+      label: $_("Comment on data source"),
+      extras: { multiline: true },
+    },
+  }),
+)
+
+export const involvementFields = derived(
+  [_, fieldChoices],
+  ([$_, $fieldChoices]): FieldLookup => ({
+    parent_investor_id: {
+      displayField: InvestorLinkField,
+      editField: InvestorForeignKey,
+      label: $_("Investor"),
+      extras: { required: true, creatable: true },
+    },
+    role: {
+      displayField: ChoicesField,
+      label: $_("Role"),
+      extras: { choices: $fieldChoices.involvement.role },
+    },
+    loans_amount: {
+      displayField: DecimalField,
+      editField: DecimalEditField,
+      label: $_("Loan amount"),
+    },
+    loans_date: {
+      displayField: TextField,
+      editField: DateEditField,
+      label: $_("Loan date"),
+    },
+    relationship: {
+      displayField: TextField,
+      label: $_("Relationship"),
+    },
+    percentage: {
+      displayField: DecimalField,
+      editField: DecimalEditField,
+      label: $_("Ownership share"),
+      extras: { unit: "%", range: [0, 100] },
+    },
+    investment_type: {
+      displayField: ChoicesField,
+      editField: ChoicesEditField,
+      label: $_("Investment type"),
+      extras: {
+        choices: $fieldChoices.involvement.investment_type,
+        multipleChoices: true,
+      },
+    },
+    parent_relation: {
+      displayField: ChoicesField,
+      editField: ChoicesEditField,
+      label: $_("Parent relation"),
+      extras: {
+        choices: $fieldChoices.involvement.parent_relation,
+        clearable: true,
+      },
+    },
+    comment: {
+      displayField: TextField,
+      editField: TextEditField,
+      label: $_("Comment"),
+      extras: { multiline: true },
+    },
+  }),
+)
+
+export const locationFields = derived(
+  [_, fieldChoices],
+  ([$_, $fieldChoices]): FieldLookup => ({
+    name: {
+      displayField: TextField,
+      editField: LocationGoogleEditField,
+      label: $_("Location"),
+    },
+    description: {
+      displayField: TextField,
+      editField: TextEditField,
+      label: $_("Description"),
+      extras: { multiline: true },
+    },
+    point: {
+      displayField: PointField,
+      editField: PointEditField,
+      label: $_("Point"),
+    },
+    facility_name: {
+      displayField: TextField,
+      editField: TextEditField,
+      label: $_("Facility name"),
+    },
+    level_of_accuracy: {
+      displayField: ChoicesField,
+      editField: ChoicesEditField,
+      label: $_("Spatial accuracy level"),
+      extras: { choices: $fieldChoices.deal.level_of_accuracy },
+    },
+    comment: {
+      displayField: TextField,
+      editField: TextEditField,
+      label: $_("Comment"),
+      extras: { multiline: true },
+    },
+  }),
+)
+
+export const contractFields = derived(
+  [_],
+  ([$_]): FieldLookup => ({
+    number: {
+      displayField: TextField,
+      editField: TextEditField,
+      label: $_("Contract number"),
+    },
+    date: {
+      displayField: TextField,
+      editField: DateEditField,
+      label: $_("Date"),
+    },
+    expiration_date: {
+      displayField: TextField,
+      editField: DateEditField,
+      label: $_("Expiration date"),
+    },
+    agreement_duration: {
+      displayField: DecimalField,
+      editField: DecimalEditField,
+      label: $_("Duration of the agreement"),
+      extras: { unit: $_("years") },
+    },
+    comment: {
+      displayField: TextField,
+      editField: TextEditField,
+      label: $_("Comment on contract"),
+      extras: { multiline: true },
+    },
+  }),
+)
+
+export const investorFields = derived(
+  [
+    _,
+    fieldChoices,
+    commonHullFields,
+    commonVersionFields,
+    involvementFields,
+    datasourceFields,
+  ],
+  ([
+    $_,
+    $fieldChoices,
+    $commonHullFields,
+    $commonVersionFields,
+    $involvementFields,
+    $datasourceFields,
+  ]): FieldLookup => ({
+    // Investor Hull
+    ...$commonHullFields,
+    id: {
+      displayField: IDField,
+      label: $_("ID"),
+      extras: { model: "investor" },
+    },
+
+    // Investor Version
+    ...$commonVersionFields,
     country: {
       displayField: CountryField,
       editField: CountryEditField,
@@ -70,7 +362,11 @@ export const investorFields = derived([_, fieldChoices], ([$_, $fieldChoices]) =
       editField: CountryEditField,
       label: $_("Country of registration/origin"),
     },
-    name: { displayField: TextField, editField: TextEditField, label: $_("Name") },
+    name: {
+      displayField: TextField,
+      editField: TextEditField,
+      label: $_("Name"),
+    },
     homepage: {
       displayField: TextField,
       editField: TextEditField,
@@ -94,53 +390,46 @@ export const investorFields = derived([_, fieldChoices], ([$_, $fieldChoices]) =
       label: $_("Classification"),
       extras: { choices: $fieldChoices.investor.classification },
     },
-    //  TODO deduplicate with below's Deal-stuff
-    first_created_at: { displayField: DateTimeField, label: $_("Created at") },
-    first_created_by_id: { displayField: UserField, label: $_("Created by") },
-    created_at: { displayField: DateTimeField, label: $_("Created at") },
-    modified_at: { displayField: DateTimeField, label: $_("Last update") },
-    modified_by_id: { displayField: UserField, label: $_("Modified by") },
-    workflowinfos: {
-      displayField: WorkflowInfosField,
-      label: $_("Logbook"),
-    },
-    status: { displayField: DraftVersionStatusField, label: $_("Status") },
-    deals: { displayField: DealsLengthField, label: $_("Deals") },
-  } as { [key: string]: Field }
-})
 
-export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
-  return {
-    // // Deal Hull
+    // submodels
+    ...prefixObjectKeys($involvementFields, "involvement"),
+    ...prefixObjectKeys($datasourceFields, "datasource"),
+
+    // derived
+    deals: { displayField: DealsLengthField, label: $_("Deals") },
+  }),
+)
+
+export const dealFields = derived(
+  [
+    _,
+    fieldChoices,
+    commonHullFields,
+    commonVersionFields,
+    datasourceFields,
+    contractFields,
+    locationFields,
+  ],
+  ([
+    $_,
+    $fieldChoices,
+    $commonHullFields,
+    $commonVersionFields,
+    $datasourceFields,
+    $contractFields,
+    $locationFields,
+  ]): FieldLookup => ({
+    // Deal Hull
+    ...$commonHullFields,
     id: { displayField: IDField, label: $_("ID") },
     country_id: { displayField: CountryField, label: $_("Target country") },
     confidential: { displayField: BooleanField, label: $_("Confidential") },
-    created_at: { displayField: DateTimeField, label: $_("Created at") },
-    first_created_at: { displayField: DateTimeField, label: $_("Created at") },
-    created_by_id: { displayField: UserField, label: $_("Created by") },
-    first_created_by_id: { displayField: UserField, label: $_("Created by") },
-    modified_at: { displayField: DateTimeField, label: $_("Last update") },
-    modified_by_id: { displayField: UserField, label: $_("Modified by") },
-    sent_to_review_at: { displayField: DateTimeField, label: $_("Sent to review at") },
-    sent_to_review_by_id: { displayField: UserField, label: $_("Sent to review by") },
-    sent_to_activation_at: {
-      displayField: DateTimeField,
-      label: $_("Sent to activation at"),
-    },
-    sent_to_activation_by_id: {
-      displayField: UserField,
-      label: $_("Sent to activation by"),
-    },
-    activated_at: { displayField: DateTimeField, label: $_("Activated at") },
-    activated_by_id: { displayField: UserField, label: $_("Activated by") },
-
     fully_updated: { displayField: BooleanField, label: $_("Fully updated") },
     fully_updated_at: { displayField: DateTimeField, label: $_("Last full update") },
-    workflowinfos: {
-      displayField: WorkflowInfosField,
-      label: $_("Logbook"),
-    },
-    status: { displayField: DraftVersionStatusField, label: $_("Status") },
+
+    // Deal Version
+    ...$commonVersionFields,
+
     // General
     intended_size: {
       displayField: DecimalField,
@@ -909,193 +1198,10 @@ export const dealFields = derived([_, fieldChoices], ([$_, $fieldChoices]) => {
       label: $_("Current contract size"),
       extras: { unit: $_("ha") },
     },
-    // LOCATIONS
-    "location.name": {
-      displayField: TextField,
-      editField: LocationGoogleEditField,
-      label: $_("Location"),
-    },
-    "location.description": {
-      displayField: TextField,
-      editField: TextEditField,
-      label: $_("Description"),
-      extras: { multiline: true },
-    },
-    "location.point": {
-      displayField: PointField,
-      editField: PointEditField,
-      label: $_("Point"),
-    },
-    "location.facility_name": {
-      displayField: TextField,
-      editField: TextEditField,
-      label: $_("Facility name"),
-    },
-    "location.level_of_accuracy": {
-      displayField: ChoicesField,
-      editField: ChoicesEditField,
-      label: $_("Spatial accuracy level"),
-      extras: { choices: $fieldChoices.deal.level_of_accuracy },
-    },
-    "location.comment": {
-      displayField: TextField,
-      editField: TextEditField,
-      label: $_("Comment"),
-      extras: { multiline: true },
-    },
-    // CONTRACTS
-    "contract.number": {
-      displayField: TextField,
-      editField: TextEditField,
-      label: $_("Contract number"),
-    },
-    "contract.date": {
-      displayField: TextField,
-      editField: DateEditField,
-      label: $_("Date"),
-    },
-    "contract.expiration_date": {
-      displayField: TextField,
-      editField: DateEditField,
-      label: $_("Expiration date"),
-    },
-    "contract.agreement_duration": {
-      displayField: DecimalField,
-      editField: DecimalEditField,
-      label: $_("Duration of the agreement"),
-      extras: { unit: $_("years") },
-    },
-    "contract.comment": {
-      displayField: TextField,
-      editField: TextEditField,
-      label: $_("Comment on contract"),
-      extras: { multiline: true },
-    },
-    // DATASOURCES
-    "datasource.type": {
-      displayField: ChoicesField,
-      editField: ChoicesEditField,
-      label: $_("Type"),
-      extras: {
-        choices: $fieldChoices.datasource.type,
-        required: true,
-        otherHint: $_("Please specify in comment field"),
-      },
-    },
-    "datasource.url": {
-      displayField: TextField,
-      editField: TextEditField,
-      label: $_("Url"),
-      extras: { url: true },
-    },
-    "datasource.file": {
-      displayField: FileField,
-      editField: FileEditField,
-      label: $_("File"),
-    },
-    "datasource.file_not_public": {
-      displayField: BooleanField,
-      editField: BooleanEditField,
-      label: $_("Keep PDF not public"),
-    },
-    "datasource.publication_title": {
-      displayField: TextField,
-      editField: TextEditField,
-      label: $_("Publication title"),
-    },
-    "datasource.date": {
-      displayField: TextField,
-      editField: DateEditField,
-      label: $_("Date"),
-    },
-    "datasource.name": {
-      displayField: TextField,
-      editField: TextEditField,
-      label: $_("Name"),
-    },
-    "datasource.company": {
-      displayField: TextField,
-      editField: TextEditField,
-      label: $_("Organisation"),
-    },
-    "datasource.email": {
-      displayField: TextField,
-      editField: TextEditField,
-      label: $_("Email"),
-      extras: { email: true },
-    },
-    "datasource.phone": {
-      displayField: TextField,
-      editField: TextEditField,
-      label: $_("Phone"),
-    },
-    "datasource.includes_in_country_verified_information": {
-      displayField: BooleanField,
-      editField: BooleanEditField,
-      label: $_("Includes in-country-verified information"),
-      extras: { nullable: true },
-    },
-    "datasource.open_land_contracts_id": {
-      displayField: TextField,
-      editField: TextEditField,
-      label: $_("Open Contracting ID"),
-      extras: { ocid: true },
-    },
-    "datasource.comment": {
-      displayField: TextField,
-      editField: TextEditField,
-      label: $_("Comment on data source"),
-      extras: { multiline: true },
-    },
-    // INVOLVEMENTS
-    "involvement.parent_investor_id": {
-      displayField: InvestorLinkField,
-      editField: InvestorForeignKey,
-      label: $_("Investor"),
-      extras: { required: true, creatable: true },
-    },
-    "involvement.role": {
-      displayField: ChoicesField,
-      label: $_("Role"),
-      extras: { choices: $fieldChoices.involvement.role },
-    },
-    "involvement.loans_amount": {
-      displayField: DecimalField,
-      editField: DecimalEditField,
-      label: $_("Loan amount"),
-    },
-    "involvement.loans_date": {
-      displayField: TextField,
-      editField: DateEditField,
-      label: $_("Loan date"),
-    },
-    "involvement.relationship": { displayField: TextField, label: $_("Relationship") },
-    "involvement.percentage": {
-      displayField: DecimalField,
-      editField: DecimalEditField,
-      label: $_("Ownership share"),
-      extras: { unit: "%", range: [0, 100] },
-    },
-    "involvement.investment_type": {
-      displayField: ChoicesField,
-      editField: ChoicesEditField,
-      label: $_("Investment type"),
-      extras: {
-        choices: $fieldChoices.involvement.investment_type,
-        multipleChoices: true,
-      },
-    },
-    "involvement.parent_relation": {
-      displayField: ChoicesField,
-      editField: ChoicesEditField,
-      label: $_("Parent relation"),
-      extras: { choices: $fieldChoices.involvement.parent_relation, clearable: true },
-    },
-    "involvement.comment": {
-      displayField: TextField,
-      editField: TextEditField,
-      label: $_("Comment"),
-      extras: { multiline: true },
-    },
-  } as { [key: string]: Field }
-})
+
+    // submodels
+    ...prefixObjectKeys($datasourceFields, "datasource"),
+    ...prefixObjectKeys($contractFields, "contract"),
+    ...prefixObjectKeys($locationFields, "location"),
+  }),
+)

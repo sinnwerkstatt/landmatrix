@@ -1,11 +1,9 @@
 <script lang="ts">
   import { diff } from "deep-object-diff"
-  import { _ } from "svelte-i18n"
 
-  import { dealFields } from "$lib/fieldLookups"
+  import { dealFields, investorFields } from "$lib/fieldLookups"
   import { isNotEmpty } from "$lib/helpers"
 
-  import InvestorLinkField from "$components/Fields/Display2/InvestorLinkField.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"
 
   export let fromObjs: { nid: string; [key: string]: unknown }[]
@@ -15,11 +13,13 @@
   export let label: string
   export let lookupString: string
 
-  export let useInvoID = false
+  export let model: "deal" | "investor" = "deal"
 
-  $: objNIDs = useInvoID
-    ? new Set([...fromObjs.map(l => l.id), ...toObjs.map(l => l.id)])
-    : new Set([...fromObjs.map(l => l.nid), ...toObjs.map(l => l.nid)])
+  const IGNORE_KEYS = ["nid"]
+
+  const objNIDs = new Set([...fromObjs.map(l => l.nid), ...toObjs.map(l => l.nid)])
+
+  $: fieldLookup = model === "deal" ? $dealFields : $investorFields
 </script>
 
 <tr class="hidden bg-gray-700 [&:has(+.🍏)]:table-row">
@@ -32,26 +32,27 @@
   {@const fromL = fromObjs.find(l => l.nid === dsNID)}
   {@const toL = toObjs.find(l => l.nid === dsNID)}
   {@const hasDiff = diff(fromL ?? {}, toL ?? {})}
+
   {#if Object.keys(hasDiff).length}
     <tr class="🍏 bg-gray-100 dark:bg-gray-600">
       <th colspan="3">
         <h3>{label} #{dsNID ?? ""}</h3>
       </th>
     </tr>
-    {#each Object.keys(hasDiff) as key}
+
+    {#each Object.keys(hasDiff).filter(k => !IGNORE_KEYS.includes(k)) as key}
+      {@const fieldname = `${lookupString}.${key}`}
+
       {#if (fromL && isNotEmpty(fromL[key])) || (toL && isNotEmpty(toL[key]))}
         <tr>
           <td>
-            {#if key === "other_investor"}
-              {$_("Investor")}
-            {:else}
-              {$dealFields[`${lookupString}.${key}`]?.label ?? key}
-            {/if}
+            {fieldLookup[fieldname]?.label ?? key}
           </td>
           <td>
             {#if fromL}
               <DisplayField
-                fieldname="{lookupString}.{key}"
+                {fieldname}
+                {model}
                 value={fromL[key]}
                 wrapperClass="py-2"
               />
@@ -59,15 +60,7 @@
           </td>
           <td>
             {#if toL}
-              {#if key === "other_investor"}
-                <InvestorLinkField value={toL.other_investor?.id} />
-              {:else}
-                <DisplayField
-                  fieldname="{lookupString}.{key}"
-                  value={toL[key]}
-                  wrapperClass="py-2"
-                />
-              {/if}
+              <DisplayField {fieldname} {model} value={toL[key]} wrapperClass="py-2" />
             {/if}
           </td>
         </tr>

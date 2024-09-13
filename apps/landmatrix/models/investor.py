@@ -100,7 +100,11 @@ class InvestorHull(BaseHull):
 
     def add_draft(self, created_by: User = None) -> "InvestorVersion":
 
-        dv = InvestorVersion.objects.create(investor=self, created_by=created_by)
+        dv = InvestorVersion.objects.create(
+            investor=self,
+            created_by=created_by,
+            modified_by=created_by,
+        )
         self.draft_version = dv
         self.save()
         return dv

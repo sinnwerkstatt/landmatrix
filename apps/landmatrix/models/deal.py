@@ -143,8 +143,11 @@ class DealHull(BaseHull):
         return self.active_version or self.draft_version
 
     def add_draft(self, created_by: User = None) -> "DealVersion":
-
-        dv = DealVersion.objects.create(deal=self, created_by=created_by)
+        dv = DealVersion.objects.create(
+            deal=self,
+            created_by=created_by,
+            modified_by=created_by,
+        )
         self.draft_version = dv
         self.save()
         return dv
@@ -1191,7 +1194,7 @@ class DealVersion(DealVersionBaseFields, BaseVersion):
     def copy_to_new_draft(self, created_by_id: int):
         old_self = DealVersion.objects.get(pk=self.pk)
         super().copy_to_new_draft(created_by_id)
-        self.save(recalculate_dependent=False)
+        self.save()
 
         # copy foreignkey-relations
         for l1 in old_self.locations.all():
