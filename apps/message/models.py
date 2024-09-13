@@ -3,30 +3,33 @@ from wagtailorderable.models import Orderable
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from wagtail.fields import RichTextField
-from wagtail.rich_text import expand_db_html
 
 
-class Message(Orderable, models.Model):
-    LEVEL_CHOICES = (
-        ("debug", _("Debug")),
-        ("info", _("Info")),
-        ("success", _("Success")),
-        ("warning", _("Warning")),
-        ("error", _("Error")),
-    )
+class Message(Orderable):
+    class Level(models.TextChoices):
+        DEBUG = "debug", _("Debug")
+        INFO = "info", _("Info")
+        SUCCESS = "success", _("Success")
+        WARNING = "warning", _("Warning")
+        ERROR = "error", _("Error")
 
-    title = models.CharField(_("Title"), blank=True, null=True)
+    title = models.CharField(_("Title"))
     text = RichTextField(_("Text"))
-    level = models.CharField(_("Level"), choices=LEVEL_CHOICES, default="info")
+    level = models.CharField(
+        _("Level"),
+        choices=Level.choices,
+        default=Level.INFO,
+    )
     allow_users_to_hide = models.BooleanField(
         _("Allow users to hide message"),
         help_text=_(
-            "Store check off in cookie (expires in 365 days) so that users can choose to not display the messagea again."
+            "Store check off in cookie (expires in 365 days) "
+            "so that users can choose to not display the message again."
         ),
         default=False,
     )
     logged_in_only = models.BooleanField(
-        _("Only display message to logged in users"),
+        _("Only display message to logged-in users"),
         default=False,
     )
     expires_at = models.DateField(
@@ -44,4 +47,4 @@ class Message(Orderable, models.Model):
         ordering = ["sort_order"]
 
     def __str__(self):
-        return self.title
+        return f"{self.get_level_display()} -- {self.title}"

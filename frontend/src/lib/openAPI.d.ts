@@ -860,6 +860,7 @@ export interface components {
       active_version_id: number | null
       draft_version_id: number | null
       created_by_id: string
+      first_created_by_id: number | null
       /** Target country */
       country_id: number | null
       versions: readonly components["schemas"]["DealVersionVersionsList"][]
@@ -1589,6 +1590,7 @@ export interface components {
       id: number
       active_version_id: number | null
       draft_version_id: number | null
+      first_created_by_id: number | null
       versions: components["schemas"]["InvestorVersionVersionsList"][]
       selected_version: components["schemas"]["InvestorVersion"]
       deals: readonly components["schemas"]["InvestorDeal"][]
@@ -1928,17 +1930,17 @@ export interface components {
     LocationAreaTypeEnum: "production_area" | "contract_area" | "intended_area"
     Message: {
       id: number
-      title?: string | null
       text: string
-      level?: components["schemas"]["LevelEnum"]
-      is_active: boolean
+      title: string
+      level: components["schemas"]["LevelEnum"]
       /**
        * Allow users to hide message
-       * @description Store check off in cookie (expires in 365 days) so that users can choose to not display the messagea again.
+       * @description Store check off in cookie (expires in 365 days) so that users can choose to not display the message again.
        */
-      allow_users_to_hide?: boolean
-      /** Only display message to logged in users */
-      logged_in_only?: boolean
+      allow_users_to_hide: boolean
+      /** Only display message to logged-in users */
+      logged_in_only: boolean
+      is_active: boolean
     }
     /**
      * MineralsEnum

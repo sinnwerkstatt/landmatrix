@@ -38,15 +38,8 @@ class MessageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Message
-        fields = [
-            "id",
-            "title",
-            "text",
-            "level",
-            "is_active",
-            "allow_users_to_hide",
-            "logged_in_only",
-        ]
+        exclude = ["sort_order", "expires_at"]
+        read_only_fields = ["level", "logged_in_only", "allow_users_to_hide"]
 
     @staticmethod
     def get_text(obj):

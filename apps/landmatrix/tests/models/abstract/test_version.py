@@ -1,3 +1,7 @@
+from django.utils import timezone
+
+from freezegun import freeze_time
+
 from apps.landmatrix.tests.helpers import AbstractModelTestCase
 from apps.landmatrix.models.abstract import VersionStatus, BaseVersion
 
@@ -9,6 +13,7 @@ KNUT = 3
 class TestBaseVersionMixin(AbstractModelTestCase):
     abstract_model = BaseVersion
 
+    @freeze_time("2024-07-26")
     def test_copy_to_new_draft(self):
         version: BaseVersion = self.derived_model.objects.create(
             status=VersionStatus.ACTIVATED,
@@ -28,11 +33,12 @@ class TestBaseVersionMixin(AbstractModelTestCase):
 
         assert version.id is None
         assert version.status == VersionStatus.DRAFT
-        # assert version.created_at == timezone.now()
-        assert version.created_by_id == KNUT
 
-        assert version.modified_at is None
-        assert version.modified_by is None
+        assert version.created_at == timezone.now()
+        assert version.created_by_id == KNUT
+        assert version.modified_at == timezone.now()
+        assert version.modified_by_id == KNUT
+
         assert version.sent_to_review_at is None
         assert version.sent_to_review_by is None
         assert version.sent_to_activation_at is None

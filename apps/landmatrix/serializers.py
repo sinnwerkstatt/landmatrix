@@ -341,6 +341,7 @@ class DealSerializer(serializers.ModelSerializer):
     active_version_id = serializers.PrimaryKeyRelatedField(read_only=True)
     draft_version_id = serializers.PrimaryKeyRelatedField(read_only=True)
     created_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
+    first_created_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
 
     country_id = serializers.PrimaryKeyRelatedField(read_only=True)
     versions = DealVersionVersionsListSerializer(many=True, read_only=True)
@@ -519,6 +520,7 @@ class InvolvementSerializer(ReadOnlyModelSerializer):
 class InvestorSerializer(serializers.ModelSerializer):
     active_version_id = serializers.PrimaryKeyRelatedField(read_only=True)
     draft_version_id = serializers.PrimaryKeyRelatedField(read_only=True)
+    first_created_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
 
     versions = InvestorVersionVersionsListSerializer(many=True)
 

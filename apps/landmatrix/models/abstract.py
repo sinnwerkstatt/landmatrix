@@ -130,6 +130,8 @@ class BaseVersion(models.Model):
     def save(self, *args, **kwargs):
         if self._state.adding and not self.created_at:
             self.created_at = timezone.now()
+
+        self.modified_at = timezone.now()
         super().save(*args, **kwargs)
 
     def change_status(
@@ -174,13 +176,15 @@ class BaseVersion(models.Model):
         else:
             raise ParseError("Invalid transition")
 
-    def copy_to_new_draft(self, created_by_id):
+    def copy_to_new_draft(self, created_by_id: int) -> None:
+        now = timezone.now()
+
         self.id = None
         self.status = VersionStatus.DRAFT
-        self.created_at = timezone.now()
+        self.created_at = now
         self.created_by_id = created_by_id
-        self.modified_at = None
-        self.modified_by = None
+        self.modified_at = now
+        self.modified_by_id = created_by_id
         self.sent_to_review_at = None
         self.sent_to_review_by = None
         self.sent_to_activation_at = None
