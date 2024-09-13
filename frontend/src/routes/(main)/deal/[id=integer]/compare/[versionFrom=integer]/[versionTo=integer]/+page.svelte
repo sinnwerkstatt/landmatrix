@@ -79,7 +79,11 @@
   >
     <thead class="sticky top-0 bg-white dark:bg-gray-800">
       <tr class="text-base md:text-lg xl:text-xl">
-        <th class="w-1/5 border-t"></th>
+        <th class="w-1/5 border-t">
+          <a href="/deal/{data.dealID}/">
+            {$_("Deal")} #{data.dealID}
+          </a>
+        </th>
         <th class="w-2/5 border-t">
           <a href="/deal/{data.dealID}/{data.fromVersion.id}/">
             {$_("Version")}

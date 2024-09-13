@@ -40,13 +40,11 @@
   $: fromInvos = data.fromVersion.involvements_snapshot.map(l => ({
     ...l,
     id: undefined,
-    parent_investor_id: undefined,
     child_investor_id: undefined,
   }))
   $: toInvos = data.toVersion.involvements_snapshot.map(l => ({
     ...l,
     id: undefined,
-    parent_investor_id: undefined,
     child_investor_id: undefined,
   }))
 </script>
@@ -64,7 +62,7 @@
   <thead>
     <tr class="text-2xl">
       <th class="pl-1">
-        <a href="/investor/{data.investorID}" class="investor">
+        <a href="/investor/{data.investorID}/" class="investor">
           {$_("Investor")} #{data.investorID}
         </a>
       </th>
@@ -130,6 +128,7 @@
       label={$_("Data source")}
       lookupString="datasource"
       toObjs={toDSs}
+      model="investor"
     />
 
     <CompareSubmodelDiffBlock
@@ -138,7 +137,7 @@
       label={$_("Involvement")}
       lookupString="involvement"
       toObjs={toInvos}
-      useInvoID
+      model="investor"
     />
   </tbody>
 </table>
