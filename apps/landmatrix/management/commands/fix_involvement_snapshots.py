@@ -21,8 +21,7 @@ class Command(BaseCommand):
             print("Aborting")
             return
 
-        # IMPORTANT: Filter out deleted ones, because they have status issues
-        qs = InvestorHull.objects.filter(deleted=False)
+        qs = InvestorHull.objects.all()
         qs_iterator = map(lambda x: cast(InvestorHull, x), qs.iterator())
 
         print("Iterating InvestorHulls.")
