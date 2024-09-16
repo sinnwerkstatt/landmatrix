@@ -1079,8 +1079,9 @@ class DealVersion(DealVersionBaseFields, BaseVersion):
         *args,
         **kwargs,
     ):
+        super().save(*args, **kwargs)  # give the object an id so then calculate fields
         self._recalculate_fields(recalculate_independent, recalculate_dependent)
-        super().save(*args, **kwargs)
+        super().save()
 
     def _recalculate_fields(self, independent=True, dependent=True):
         if independent:
@@ -1126,8 +1127,6 @@ class DealVersion(DealVersionBaseFields, BaseVersion):
             self.has_known_investor = self.__has_known_investor()
             self.is_public = self.__calculate_is_public()
 
-            # this might error because it's m2m, and we need the
-            # Deal to have an ID first before we can save the investors. 🙄
             self.__calculate_parent_companies()
             self.transnational = self.__calculate_transnational()
 
