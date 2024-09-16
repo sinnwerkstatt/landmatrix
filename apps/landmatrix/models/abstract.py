@@ -131,7 +131,9 @@ class BaseVersion(models.Model):
         if self._state.adding and not self.created_at:
             self.created_at = timezone.now()
 
-        self.modified_at = timezone.now()
+        if self.status == VersionStatus.DRAFT:
+            self.modified_at = timezone.now()
+
         super().save(*args, **kwargs)
 
     def change_status(
