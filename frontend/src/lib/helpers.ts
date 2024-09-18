@@ -35,3 +35,17 @@ export const clickOutside = (
     },
   }
 }
+
+export const sleep = (ms: number): Promise<void> =>
+  new Promise(resolve => setTimeout(resolve, ms))
+
+export const scrollToTop = async () => {
+  await sleep(250)
+
+  const el = document.getElementById("content")
+  el &&
+    el.scrollTo({
+      top: 0,
+      // behavior: "smooth", // Optional: Add smooth scrolling effect
+    })
+}
