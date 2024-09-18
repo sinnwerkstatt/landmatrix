@@ -1,6 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
+  import { scrollToTop } from "$lib/helpers"
   import type { BlogPage } from "$lib/types/wagtail"
 
   import NewArticleList from "$components/Wagtail/NewArticleList.svelte"
@@ -32,9 +33,13 @@
         <div class="body2 -mt-3 mb-6">{value.articles[0].date}</div>
         <p class="body1">
           {@html value.articles[0].excerpt}
-          {value.articles[0].url}
         </p>
-        <a class="btn-link btn-secondary px-0" href={value.articles[0].url}>
+        <!-- NOTE: Might be better to use onMount(scrollToTop) on content page! -->
+        <a
+          class="btn-link btn-secondary px-0"
+          href={value.articles[0].url}
+          on:click={scrollToTop}
+        >
           {$_("Read more")} >>
         </a>
       </div>

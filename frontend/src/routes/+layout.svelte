@@ -31,7 +31,7 @@
     <Navbar />
   </div>
 
-  <div class="h-full overflow-y-auto transition-colors dark:bg-gray-900">
+  <div id="content" class="h-full overflow-y-auto transition-colors dark:bg-gray-900">
     <slot />
   </div>
 </div>
