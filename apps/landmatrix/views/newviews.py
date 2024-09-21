@@ -762,7 +762,11 @@ class InvestorViewSet(HullViewSet):
             .values_list("active_version_id", flat=True)
         )
 
-        ret = InvestorHull.objects.active().filter(child_deals__in=dealversion_ids)
+        ret = (
+            InvestorHull.objects.active()
+            .filter(child_deals__in=dealversion_ids)
+            .distinct()
+        )
 
         if investor_id := request.GET.get("parent_company"):
             ret = ret.filter(id=investor_id)
