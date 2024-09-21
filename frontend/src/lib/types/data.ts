@@ -3,6 +3,8 @@ import type { GeoJSON } from "leaflet?client"
 
 import type { components } from "$lib/openAPI"
 
+export type Model = "deal" | "investor"
+
 // helper to mark a readonly model as mutable
 export type Mutable<Type> = {
   -readonly [Key in keyof Type]: Mutable<Type[Key]>
