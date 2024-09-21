@@ -17,6 +17,7 @@
   items={targetCountries}
   label="name"
   on:change={e => (value = e.detail.id)}
+  on:clear={() => (value = null)}
   required={extras.required}
   value={targetCountries.find(c => c.id === value)}
 />
