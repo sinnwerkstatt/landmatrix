@@ -5,6 +5,7 @@
   import {
     InvolvementRole,
     type Involvement,
+    type Model,
     type SimpleInvestor,
   } from "$lib/types/data"
 
@@ -12,6 +13,8 @@
 
   export let involvement: Involvement
   export let isParent: boolean = false
+
+  const model: Model = "investor"
 
   const wrapperClass = "my-1 flex flex-wrap justify-between"
   const labelClass = "whitespace-nowrap font-light text-gray-400 pr-2 italic"
@@ -62,42 +65,42 @@
     {/if}
     <DisplayField
       fieldname="id"
-      {labelClass}
-      model="investor"
-      showLabel
       value={otherInvestor.id}
+      {model}
+      {labelClass}
       {valueClass}
       {wrapperClass}
+      showLabel
     />
     <DisplayField
       fieldname="name"
-      {labelClass}
-      model="investor"
-      showLabel
       value={otherInvestor.name}
+      {model}
+      {labelClass}
       {valueClass}
       {wrapperClass}
+      showLabel
       extras={{
         investorNameUnknown: otherInvestor.name_unknown,
       }}
     />
     <DisplayField
       fieldname="country_id"
-      {labelClass}
-      model="investor"
-      showLabel
       value={otherInvestor.country_id}
+      {model}
+      {labelClass}
       {valueClass}
       {wrapperClass}
+      showLabel
     />
     <DisplayField
       fieldname="classification"
-      {labelClass}
-      model="investor"
-      showLabel
       value={otherInvestor.classification}
+      {model}
+      {labelClass}
       {valueClass}
       {wrapperClass}
+      showLabel
     />
   {/if}
 
@@ -105,59 +108,66 @@
 
   <DisplayField
     fieldname="involvement.relationship"
-    {labelClass}
-    showLabel
     value={relationship}
+    {model}
+    {labelClass}
     {valueClass}
     {wrapperClass}
+    showLabel
   />
   <DisplayField
     fieldname="involvement.parent_relation"
-    {labelClass}
-    showLabel
     value={involvement.parent_relation}
+    {model}
+    {labelClass}
     {valueClass}
     {wrapperClass}
+    showLabel
   />
   <DisplayField
     fieldname="involvement.investment_type"
-    {labelClass}
-    showLabel
     value={involvement.investment_type}
+    {model}
+    {labelClass}
     {valueClass}
     {wrapperClass}
+    showLabel
   />
   <DisplayField
     fieldname="involvement.percentage"
-    {labelClass}
-    showLabel
     value={involvement.percentage}
+    {model}
+    {labelClass}
     {valueClass}
     {wrapperClass}
+    showLabel
   />
   <DisplayField
     fieldname="involvement.loans_amount"
-    {labelClass}
-    showLabel
     value={involvement.loans_amount}
+    {model}
+    {labelClass}
     {valueClass}
     {wrapperClass}
+    showLabel
     extras={{ currency: involvement.loans_currency_id }}
   />
   <DisplayField
     fieldname="involvement.loans_date"
-    {labelClass}
-    showLabel
     value={involvement.loans_date}
+    {model}
+    {labelClass}
     {valueClass}
     {wrapperClass}
+    showLabel
   />
   <DisplayField
     fieldname="involvement.comment"
-    {labelClass}
-    showLabel
     value={involvement.comment}
+    {model}
+    {labelClass}
     {valueClass}
     {wrapperClass}
+    showLabel
   />
 </div>
