@@ -50,8 +50,8 @@
   ]
 </script>
 
-<div class="bg-gray-700 pt-12 text-white lg:text-center">
-  <div class="mb-12">
+<div class="bg-gray-700 pt-12 text-white">
+  <div class="mb-12 px-10 sm:text-center">
     <h4 class="heading3 mx-2">Sign up for our newsletter</h4>
     <Newsletter />
   </div>
