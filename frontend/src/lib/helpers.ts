@@ -49,3 +49,7 @@ export const scrollToTop = async () => {
       // behavior: "smooth", // Optional: Add smooth scrolling effect
     })
 }
+
+export const getTypedEntries = <T extends Record<string, unknown>>(
+  obj: T,
+): [keyof T, T[keyof T]][] => Object.entries(obj) as never

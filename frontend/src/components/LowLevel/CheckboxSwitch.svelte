@@ -1,17 +1,27 @@
 <script lang="ts">
   export let checked = false
   export let title = ""
+  export let model: "deal" | "investor" = "deal"
+
+  $: modelClasses = model === "deal" ? "text-orange" : "text-pelorous"
+  $: normalClasses = "text-gray-700 dark:text-white"
 </script>
 
-<label
-  class="mb-1 flex cursor-pointer items-center gap-1 {$$props.class ?? ''}"
-  {title}
->
-  <input type="checkbox" bind:checked on:change|preventDefault />
-  <span class={checked ? "text-orange" : "text-gray-700 dark:text-white"}>
+<div class="flex cursor-pointer items-center gap-1 {$$props.class ?? ''}" {title}>
+  <label for="qi-inverse-switch" class={!checked ? modelClasses : normalClasses}>
+    <slot name="left" />
+  </label>
+  <input
+    id="qi-inverse-switch"
+    type="checkbox"
+    bind:checked
+    on:change|preventDefault
+    class={model === "deal" ? "checked:bg-orange" : "checked:bg-pelorous"}
+  />
+  <label for="qi-inverse-switch" class={checked ? modelClasses : normalClasses}>
     <slot />
-  </span>
-</label>
+  </label>
+</div>
 
 <style lang="postcss">
   input {
@@ -24,9 +34,6 @@
     height: 1.25em;
     transition: background-color 100ms ease-in-out;
     cursor: pointer;
-  }
-  input:checked {
-    @apply bg-orange;
   }
 
   input::before {
