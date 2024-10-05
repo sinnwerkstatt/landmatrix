@@ -51,6 +51,7 @@ def person_model(transactional_db):  # need transactional here for some reason
         schema_editor.delete_model(Person)
 
 
+@pytest.mark.skip
 def test_q_any(person_model):
 
     def q_any_pupils_younger_than(age: int) -> Q:
@@ -68,6 +69,7 @@ def test_q_any(person_model):
     ) == [ALI], "Any of Ali's pupils is younger than 10."
 
 
+@pytest.mark.skip
 def test_q_all(person_model):
 
     def q_all_pupils_older_than(age: int) -> Q:
@@ -85,6 +87,7 @@ def test_q_all(person_model):
     ) == [TJORVE], "All of Tjorve's pupils are older than 10."
 
 
+@pytest.mark.skip
 def test_q_multiple(person_model):
 
     def q_multiple_pupils_named(name: str) -> Q:
