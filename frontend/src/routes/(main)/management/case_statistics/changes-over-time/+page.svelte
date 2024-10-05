@@ -7,16 +7,21 @@
   import { _ } from "svelte-i18n"
 
   import { loading } from "$lib/stores/basics"
-  import type { Country, Region } from "$lib/types/data"
 
-  import type { CaseStatisticsDeal, CaseStatisticsInvestor } from "./caseStatistics"
-  import CaseStatisticsTable from "./CaseStatisticsTable.svelte"
+  import DownloadIcon from "$components/icons/DownloadIcon.svelte"
+  import DownloadModal, {
+    type DownloadEvent,
+  } from "$components/New/DownloadModal.svelte"
+
+  import CaseStatisticsTable, {
+    type CaseStatisticsDeal,
+    type CaseStatisticsInvestor,
+  } from "../CaseStatisticsTable.svelte"
+  import { createFilename, downloadEnriched } from "../downloadObjects"
+  import { filters, type Filters } from "../FilterBar.svelte"
 
   dayjs.extend(isSameOrBefore)
   dayjs.extend(isSameOrAfter)
-
-  export let region: Region | undefined = undefined
-  export let country: Country | undefined = undefined
 
   let model: "deal" | "investor" = "deal"
   let activeTabId: string | undefined = "added"
@@ -56,57 +61,53 @@
   let dealBuckets: { [key: string]: CaseStatisticsDeal[] } = {}
   let investorBuckets: { [key: string]: CaseStatisticsInvestor[] } = {}
 
-  async function _fetchDeals(
-    region: Region | undefined,
-    country: Country | undefined,
-    daterange: Daterange,
-  ) {
+  async function _fetchDeals(filters: Filters, daterange: Daterange) {
     const params = new URLSearchParams({
       action: "deal_buckets",
       start: dayjs(daterange.start).format("YYYY-MM-DD"),
       end: dayjs(daterange.end).format("YYYY-MM-DD"),
     })
-    if (region) params.append("region", `${region.id}`)
-    if (country) params.append("country", `${country.id}`)
+    if (filters.region) params.append("region", `${filters.region.id}`)
+    if (filters.country) params.append("country", `${filters.country.id}`)
 
     const ret = await fetch(`/api/case_statistics/?${params}`)
     if (ret.ok) dealBuckets = (await ret.json()).buckets
   }
 
-  async function _fetchInvestors(
-    region: Region | undefined,
-    country: Country | undefined,
-    daterange: Daterange,
-  ) {
+  async function _fetchInvestors(filters: Filters, daterange: Daterange) {
     const params = new URLSearchParams({
       action: "investor_buckets",
       start: dayjs(daterange.start).format("YYYY-MM-DD"),
       end: dayjs(daterange.end).format("YYYY-MM-DD"),
     })
-    if (region) params.append("region", `${region.id}`)
-    if (country) params.append("country", `${country.id}`)
+    if (filters.region) params.append("region", `${filters.region.id}`)
+    if (filters.country) params.append("country", `${filters.country.id}`)
 
     const ret = await fetch(`/api/case_statistics/?${params}`)
     if (ret.ok) investorBuckets = (await ret.json()).buckets
   }
 
-  async function fetchObjs(
-    region: Region | undefined,
-    country: Country | undefined,
-    daterange: Daterange,
-  ) {
+  async function fetchObjs(filters: Filters, daterange: Daterange) {
     loading.set(true)
     await Promise.all([
-      _fetchDeals(region, country, daterange),
-      _fetchInvestors(region, country, daterange),
+      _fetchDeals(filters, daterange),
+      _fetchInvestors(filters, daterange),
     ])
     loading.set(false)
   }
 
-  $: fetchObjs(region, country, daterange)
-</script>
+  $: fetchObjs($filters, daterange)
 
-<h2 class="heading5">{$_("Changes within timespan")}</h2>
+  let showDownloadModal = false
+
+  const download = (e: DownloadEvent) => {
+    const objects = (model === "deal" ? dealBuckets : investorBuckets)[activeTabId!]
+    const filename = createFilename(model, activeTabId, $filters)
+
+    downloadEnriched(e.detail, filename, objects)
+    showDownloadModal = false
+  }
+</script>
 
 <div class="my-2 flex items-center gap-6">
   <select
@@ -127,6 +128,20 @@
   </select>
   <DateInput bind:value={daterange.start} format="yyyy-MM-dd" />
   <DateInput bind:value={daterange.end} format="yyyy-MM-dd" />
+</div>
+
+<div class="relative w-full">
+  <button
+    class="absolute -top-14 right-0 p-2"
+    on:click={() => {
+      showDownloadModal = true
+    }}
+    title={$_("Download")}
+  >
+    <DownloadIcon class="inline-block h-8 w-8" />
+  </button>
+
+  <DownloadModal bind:open={showDownloadModal} on:download={download} />
 </div>
 
 <div class="relative flex h-[400px] w-full border">
@@ -198,7 +213,8 @@
       </ul>
     </div>
   </nav>
-  <div class="basis-3/4 xl:basis-4/5">
+
+  <div class="basis-3/4 overflow-auto xl:basis-4/5">
     {#if activeTabId}
       <CaseStatisticsTable
         {model}

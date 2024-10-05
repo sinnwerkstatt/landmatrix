@@ -1,7 +1,7 @@
 import type { Feature, MultiPolygon, Point } from "geojson"
 import type { GeoJSON } from "leaflet?client"
 
-import type { components } from "$lib/openAPI"
+import type { components, operations } from "$lib/openAPI"
 
 export type Model = "deal" | "investor"
 
@@ -81,6 +81,10 @@ export interface Contract extends Named<components["schemas"]["Contract"]> {
   date: LooseDateString | null
   expiration_date: LooseDateString | null
 }
+
+export type DealQIKey = operations["qi_deal_list"]["parameters"]["query"]["qi"]
+
+export type InvestorQIKey = operations["qi_investor_list"]["parameters"]["query"]["qi"]
 
 export type InvolvedActor = components["schemas"]["ActorsItem"]
 

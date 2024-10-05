@@ -29,18 +29,22 @@ const DEAL_COLUMNS = [
   ...COMMON_OBJ_COLUMNS,
 ]
 
-const toCSVString = (
-  objects: (DealHull | InvestorHull)[],
-  model: "deal" | "investor",
-): string =>
+type SimpleObject = DealHull | InvestorHull
+type EnrichedObject = Omit<SimpleObject, "first_created_by"> & {
+  country_name?: string
+  first_created_by?: string
+  modified_by?: string
+}
+
+const toCSVString = (objects: EnrichedObject[], model: "deal" | "investor"): string =>
   csvStringify(objects, {
     header: true,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     columns: (model === "deal" ? DEAL_COLUMNS : INVESTOR_COLUMNS) as any,
   })
 
-const _enrichObjects = (objects: (DealHull | InvestorHull)[]) => {
-  return objects.map(o => {
+const _enrichObjects = (objects: SimpleObject[]): EnrichedObject[] =>
+  objects.map(o => {
     const country = get(page).data.countries.find(
       c =>
         c.id ===
@@ -56,10 +60,9 @@ const _enrichObjects = (objects: (DealHull | InvestorHull)[]) => {
 
     return { ...o, country_name, first_created_by, modified_by }
   })
-}
 
 export const downloadAsCSV = (
-  objects: (DealHull | InvestorHull)[],
+  objects: SimpleObject[],
   model: "deal" | "investor",
   action: string,
 ) => {
@@ -69,7 +72,7 @@ export const downloadAsCSV = (
 }
 
 export const downloadAsXLSX = (
-  objects: (DealHull | InvestorHull)[],
+  objects: SimpleObject[],
   model: "deal" | "investor",
   action: string,
 ) => {
@@ -83,7 +86,7 @@ export const downloadAsXLSX = (
   aDownload(blob, `${action}_${model}.xlsx`)
 }
 
-const aDownload = (blob: Blob, filename: string) => {
+export const aDownload = (blob: Blob, filename: string) => {
   const url = window.URL.createObjectURL(blob)
   const a = document.createElement("a")
 

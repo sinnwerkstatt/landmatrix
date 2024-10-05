@@ -1,12 +1,39 @@
+<script context="module" lang="ts">
+  // TODO: type case_statistics endpoint
+  interface BaseObject {
+    id: number
+    status: string | null
+    active_version_id: number | null
+    draft_version_id: number | null
+    draft_version__status: string | null
+
+    country_id: number | null
+    region_id: number | null
+
+    created_at: string
+    modified_at: string | null
+  }
+
+  export interface CaseStatisticsDeal extends BaseObject {
+    fully_updated_at: string | null
+    confidential: boolean
+    deal_size: number | null
+    active_version__is_public: boolean
+    active_version__fully_updated: boolean
+  }
+  export interface CaseStatisticsInvestor extends BaseObject {
+    name: string
+  }
+  export type CaseStatisticsObject = CaseStatisticsDeal | CaseStatisticsInvestor
+</script>
+
 <script lang="ts">
   import { dealFields, investorFields } from "$lib/fieldLookups"
 
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import Table, { type Column } from "$components/Table/Table.svelte"
 
-  import type { CaseStatisticsDeal, CaseStatisticsInvestor } from "./caseStatistics"
-
-  export let objects: Array<CaseStatisticsDeal | CaseStatisticsInvestor> = []
+  export let objects: CaseStatisticsObject[] = []
   export let model: "deal" | "investor" = "deal"
   export let linkDraftVersion = false
 
@@ -38,18 +65,22 @@
   const valueClass = "text-gray-700 dark:text-white"
 </script>
 
-<Table {columns} items={objects} rowHeightInPx={36}>
-  <svelte:fragment let:fieldName let:obj slot="field">
-    {@const col = columns.find(c => c.key === fieldName)}
-    <DisplayField
-      fieldname={col.key}
-      value={col.submodel ? obj[col.submodel][col.key] : obj[col.key]}
-      {model}
-      {wrapperClass}
-      {valueClass}
-      extras={col.key === "id" && linkDraftVersion
-        ? { objectVersion: obj.draft_version_id }
-        : undefined}
-    />
-  </svelte:fragment>
-</Table>
+<div class="h-full w-full">
+  <Table {columns} items={objects} rowHeightInPx={36}>
+    <svelte:fragment let:fieldName let:obj slot="field">
+      {@const col = columns.find(c => c.key === fieldName)}
+      {#if col}
+        <DisplayField
+          fieldname={col.key}
+          value={col.submodel ? obj[col.submodel][col.key] : obj[col.key]}
+          {model}
+          {wrapperClass}
+          {valueClass}
+          extras={col.key === "id" && linkDraftVersion
+            ? { objectVersion: obj.draft_version_id }
+            : undefined}
+        />
+      {/if}
+    </svelte:fragment>
+  </Table>
+</div>

@@ -3,13 +3,17 @@
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
-  import type { Country, Region } from "$lib/types/data"
+  import DownloadIcon from "$components/icons/DownloadIcon.svelte"
+  import DownloadModal, {
+    type DownloadEvent,
+  } from "$components/New/DownloadModal.svelte"
 
-  import type { CaseStatisticsDeal, CaseStatisticsInvestor } from "./caseStatistics"
-  import CaseStatisticsTable from "./CaseStatisticsTable.svelte"
-
-  export let selCountry: Country | undefined
-  export let selRegion: Region | undefined
+  import CaseStatisticsTable, {
+    type CaseStatisticsDeal,
+    type CaseStatisticsInvestor,
+  } from "../CaseStatisticsTable.svelte"
+  import { createFilename, downloadEnriched } from "../downloadObjects"
+  import { filters } from "../FilterBar.svelte"
 
   let model: "deal" | "investor" = "deal"
   let activeTabId: string | undefined = "pending"
@@ -42,10 +46,10 @@
 
   onMount(() => getDealsInvestors())
 
-  $: deals = selRegion
-    ? simpleDeals.filter(d => d.region_id === selRegion?.id)
-    : selCountry
-      ? simpleDeals.filter(d => d.country_id === selCountry?.id)
+  $: deals = $filters.country
+    ? simpleDeals.filter(d => d.country_id === $filters.country?.id)
+    : $filters.region
+      ? simpleDeals.filter(d => d.region_id === $filters.region?.id)
       : simpleDeals
 
   let _active_deals: CaseStatisticsDeal[]
@@ -63,10 +67,10 @@
     active_confidential: _active_deals.filter(deal => deal.confidential),
   }
 
-  $: investors = selRegion
-    ? simpleInvestors.filter(inv => inv.region_id === selRegion?.id)
-    : selCountry
-      ? simpleInvestors.filter(inv => inv.country_id === selCountry?.id)
+  $: investors = $filters.country
+    ? simpleInvestors.filter(inv => inv.country_id === $filters.country?.id)
+    : $filters.region
+      ? simpleInvestors.filter(inv => inv.region_id === $filters.region?.id)
       : simpleInvestors
 
   let investorsBuckets: { [key: string]: CaseStatisticsInvestor[] }
@@ -78,9 +82,31 @@
     ),
     active: investors.filter(investor => investor.active_version_id !== null),
   }
+
+  let showDownloadModal = false
+
+  const download = (e: DownloadEvent) => {
+    const objects = (model === "deal" ? dealsBuckets : investorsBuckets)[activeTabId!]
+    const filename = createFilename(model, activeTabId, $filters)
+
+    downloadEnriched(e.detail, filename, objects)
+    showDownloadModal = false
+  }
 </script>
 
-<h2 class="heading5">{$_("Indicator listings")}</h2>
+<div class="relative w-full">
+  <button
+    class="absolute -top-14 right-0 p-2"
+    on:click={() => {
+      showDownloadModal = true
+    }}
+    title={$_("Download")}
+  >
+    <DownloadIcon class="inline-block h-8 w-8" />
+  </button>
+
+  <DownloadModal bind:open={showDownloadModal} on:download={download} />
+</div>
 
 <div class="relative flex h-[400px] w-full border">
   <nav
@@ -114,6 +140,7 @@
         {$_("Investors")}
       </button>
     </div>
+
     <div class="w-full self-start">
       <ul>
         {#each navTabs as item}
@@ -151,8 +178,8 @@
       </ul>
     </div>
   </nav>
-  <div class="basis-3/4 xl:basis-4/5">
-    <!--{activeTabId}-->
+
+  <div class="basis-3/4 overflow-auto xl:basis-4/5">
     {#if activeTabId}
       <CaseStatisticsTable
         {model}
