@@ -29,6 +29,9 @@ export const downloadFns: {
 
     aDownload(blob, `${filename}.xlsx`)
   },
+  json: () => {
+    throw new Error("NOT IMPLEMENTED")
+  },
 }
 
 export const downloadEnriched = (
@@ -56,15 +59,19 @@ export const downloadEnriched = (
   downloadFns[fileType](enriched, filename)
 }
 
+export const createCountyRegionSuffix = (filters: Filters) =>
+  filters.country
+    ? "_" + filters.country.name
+    : filters.region
+      ? "_" + filters.region.name
+      : ""
+
 export const createFilename = (
   model: Model,
   tabId: string | undefined,
   filters: Filters,
 ) =>
-  `${model}s` +
+  new Date().toISOString().slice(0, 10) +
+  `_${model}s` +
   (tabId ? "_" + tabId : "") +
-  (filters.country
-    ? "_" + filters.country.name
-    : filters.region
-      ? "_" + filters.region.name
-      : "")
+  createCountyRegionSuffix(filters)
