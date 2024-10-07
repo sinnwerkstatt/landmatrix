@@ -32,10 +32,10 @@
   let columns: Column[]
   $: columns = [
     // { key: "id", colSpan: 1, label: $_("ID") },
-    { key: "created_at", colSpan: 2, label: $_("Created at") },
+    { key: "created_at", colSpan: 2, label: $_("Date") },
     { key: "region", colSpan: 5, label: $_("LM Region") },
     { key: "subset_key", colSpan: 5, label: $_("Subset") },
-    { key: "TOTAL", colSpan: 3, label: $_("#total deals"), submodel: "data" },
+    { key: "TOTAL", colSpan: 3, label: $_("#Total deals"), submodel: "data" },
     { key: "actions", colSpan: 3, label: $_("Actions") },
   ]
 
