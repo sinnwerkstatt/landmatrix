@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { DateInput } from "date-picker-svelte"
+  import dayjs from "dayjs"
   import { _ } from "svelte-i18n"
   import { fade, slide } from "svelte/transition"
 
@@ -50,15 +52,72 @@
       "data-quality-indicators.json",
     )
   }
+
+  interface Filter {
+    startDate: Date
+    endDate: Date
+    region: number | null | "none"
+    subset: string | null | "none"
+  }
+  let filter: Filter = {
+    startDate: dayjs().subtract(90, "day").toDate(),
+    endDate: new Date(),
+    region: "none",
+    subset: "none",
+  }
+
+  $: satisfiesFilter = (item: components["schemas"]["DealQISnapshot"]): boolean => {
+    const date = new Date(item.created_at)
+    return (
+      date >= filter.startDate &&
+      date <= filter.endDate &&
+      (filter.region === "none" || item.region === filter.region) &&
+      (filter.subset === "none" || item.subset_key === filter.subset)
+    )
+  }
 </script>
+
+<div class="flex items-center gap-4 p-2">
+  <DateInput
+    id="qi-start-date-input"
+    bind:value={filter.startDate}
+    format="yyyy-MM-dd"
+    browseWithoutSelecting
+  />
+  <DateInput
+    id="qi-end-date-input"
+    bind:value={filter.endDate}
+    format="yyyy-MM-dd"
+    browseWithoutSelecting
+  />
+
+  <select id="qi-region-select" class="inpt w-40" bind:value={filter.region}>
+    <option value={"none"} selected>{$_("All Regions")}</option>
+    <option value={null}>{$_("Global")}</option>
+    {#each $page.data.regions as region}
+      <option value={region.id}>{region.name}</option>
+    {/each}
+  </select>
+
+  <select id="qi-subset-select" class="inpt w-40" bind:value={filter.subset}>
+    <option value={"none"} selected>{$_("Any Subset")}</option>
+    <option value={null}>{$_("Unfiltered")}</option>
+    {#await qiPromise then qiSpecs}
+      {#each qiSpecs.deal_subset as subset}
+        <option value={subset.key}>{subset.description}</option>
+      {/each}
+    {/await}
+  </select>
+</div>
 
 <div class="h-[400px] border border-white">
   {#await Promise.all([qiPromise, statsPromise])}
     <LoadingSpinner />
   {:then [data, stats]}
-    {@const item = stats[model].find(item => item.id === selectedItemId)}
+    {@const filtered = stats[model].filter(satisfiesFilter)}
+    {@const item = filtered.find(item => item.id === selectedItemId)}
 
-    <Table {columns} items={stats[model]} rowHeightInPx={35} headerHeightInPx={45}>
+    <Table {columns} items={filtered} rowHeightInPx={35} headerHeightInPx={45}>
       <svelte:fragment slot="field" let:fieldName let:obj>
         {#if fieldName === "subset_key"}
           {data.deal_subset.find(x => x.key === obj.subset_key)?.description ?? "-----"}
