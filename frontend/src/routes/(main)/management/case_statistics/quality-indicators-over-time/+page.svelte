@@ -1,8 +1,10 @@
 <script lang="ts">
+  import { stringify as csvStringify } from "csv-stringify/browser/esm/sync"
   import { DateInput } from "date-picker-svelte"
   import dayjs from "dayjs"
   import { _ } from "svelte-i18n"
   import { fade, slide } from "svelte/transition"
+  import * as xlsx from "xlsx"
 
   import { page } from "$app/stores"
 
@@ -15,7 +17,12 @@
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
   import EyeIcon from "$components/icons/EyeIcon.svelte"
   import LoadingSpinner from "$components/icons/LoadingSpinner.svelte"
+  import DownloadModal, {
+    type DownloadEvent,
+  } from "$components/New/DownloadModal.svelte"
   import Table, { type Column } from "$components/Table/Table.svelte"
+
+  import { aDownload } from "../../downloadObjects"
 
   let model: Model = "deal"
   type Item = components["schemas"]["DealQISnapshot"]
@@ -46,7 +53,7 @@
   const onClickEntry = (id: number) => {
     selectedItemId = id === selectedItemId ? null : id
   }
-  const download = (item: Item) => {
+  const downloadSingle = (item: Item) => {
     a_download(
       "data:application/json;charset=utf-8," + encodeURIComponent(JSON.stringify(item)),
       "data-quality-indicators.json",
@@ -74,6 +81,49 @@
       (filter.region === "none" || item.region === filter.region) &&
       (filter.subset === "none" || item.subset_key === filter.subset)
     )
+  }
+
+  let showDownloadModal = false
+
+  const download = (
+    e: DownloadEvent,
+    data: components["schemas"]["DealQISnapshot"][],
+  ) => {
+    const filename = "quality-indicators-over-time"
+
+    const flatData = data.map(x => {
+      const { data, ...rest } = x // omit data key
+      return { ...rest, ...data }
+    })
+
+    switch (e.detail) {
+      case "json": {
+        const jsonString = JSON.stringify(data)
+        a_download(
+          "data:application/json;charset=utf-8," + encodeURIComponent(jsonString),
+          `${filename}.json`,
+        )
+        break
+      }
+      case "csv": {
+        const csvString = csvStringify(flatData, { header: true })
+        a_download(
+          "data:text/csv;charset=utf-8," + encodeURIComponent(csvString),
+          `${filename}.csv`,
+        )
+        break
+      }
+      case "xlsx": {
+        const csvString = csvStringify(flatData, { header: true })
+        const wb = xlsx.read(csvString, { type: "string" })
+        const data = xlsx.write(wb, { type: "array", bookType: "xlsx" })
+        const blob = new Blob([data], { type: "application/ms-excel" })
+        aDownload(blob, `${filename}.xlsx`)
+        break
+      }
+    }
+
+    showDownloadModal = false
   }
 </script>
 
@@ -117,6 +167,23 @@
     {@const filtered = stats[model].filter(satisfiesFilter)}
     {@const item = filtered.find(item => item.id === selectedItemId)}
 
+    <div class="relative w-full">
+      <button
+        class="absolute -top-14 right-0 p-2"
+        on:click={() => {
+          showDownloadModal = true
+        }}
+        title={$_("Download")}
+      >
+        <DownloadIcon class="inline-block h-8 w-8" />
+      </button>
+
+      <DownloadModal
+        bind:open={showDownloadModal}
+        on:download={e => download(e, filtered)}
+      />
+    </div>
+
     <Table {columns} items={filtered} rowHeightInPx={35} headerHeightInPx={45}>
       <svelte:fragment slot="field" let:fieldName let:obj>
         {#if fieldName === "subset_key"}
@@ -131,7 +198,7 @@
           <span class="space-x-2">
             <button
               title={$_("Download")}
-              on:click|stopPropagation={() => download(obj)}
+              on:click|stopPropagation={() => downloadSingle(obj)}
             >
               <DownloadIcon />
             </button>
