@@ -141,7 +141,11 @@
     <DownloadIcon class="inline-block h-8 w-8" />
   </button>
 
-  <DownloadModal bind:open={showDownloadModal} on:download={download} />
+  <DownloadModal
+    bind:open={showDownloadModal}
+    on:download={download}
+    fileTypes={["csv", "xlsx"]}
+  />
 </div>
 
 <div class="relative flex h-[400px] w-full border">

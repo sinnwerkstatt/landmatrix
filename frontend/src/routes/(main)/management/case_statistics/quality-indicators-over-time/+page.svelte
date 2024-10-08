@@ -1,6 +1,10 @@
 <script lang="ts">
+  import { stringify as csvStringify } from "csv-stringify/browser/esm/sync"
+  import { DateInput } from "date-picker-svelte"
+  import dayjs from "dayjs"
   import { _ } from "svelte-i18n"
   import { fade, slide } from "svelte/transition"
+  import * as xlsx from "xlsx"
 
   import { page } from "$app/stores"
 
@@ -13,7 +17,12 @@
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
   import EyeIcon from "$components/icons/EyeIcon.svelte"
   import LoadingSpinner from "$components/icons/LoadingSpinner.svelte"
+  import DownloadModal, {
+    type DownloadEvent,
+  } from "$components/New/DownloadModal.svelte"
   import Table, { type Column } from "$components/Table/Table.svelte"
+
+  import { aDownload } from "../../downloadObjects"
 
   let model: Model = "deal"
   type Item = components["schemas"]["DealQISnapshot"]
@@ -32,10 +41,10 @@
   let columns: Column[]
   $: columns = [
     // { key: "id", colSpan: 1, label: $_("ID") },
-    { key: "created_at", colSpan: 2, label: $_("Created at") },
+    { key: "created_at", colSpan: 2, label: $_("Date") },
     { key: "region", colSpan: 5, label: $_("LM Region") },
     { key: "subset_key", colSpan: 5, label: $_("Subset") },
-    { key: "TOTAL", colSpan: 3, label: $_("#total deals"), submodel: "data" },
+    { key: "TOTAL", colSpan: 3, label: $_("#Total deals"), submodel: "data" },
     { key: "actions", colSpan: 3, label: $_("Actions") },
   ]
 
@@ -44,21 +53,138 @@
   const onClickEntry = (id: number) => {
     selectedItemId = id === selectedItemId ? null : id
   }
-  const download = (item: Item) => {
+  const downloadSingle = (item: Item) => {
     a_download(
       "data:application/json;charset=utf-8," + encodeURIComponent(JSON.stringify(item)),
       "data-quality-indicators.json",
     )
   }
+
+  interface Filter {
+    startDate: Date
+    endDate: Date
+    region: number | null | "none"
+    subset: string | null | "none"
+  }
+  let filter: Filter = {
+    startDate: dayjs().subtract(90, "day").toDate(),
+    endDate: new Date(),
+    region: "none",
+    subset: "none",
+  }
+
+  $: satisfiesFilter = (item: components["schemas"]["DealQISnapshot"]): boolean => {
+    const date = new Date(item.created_at)
+    return (
+      date >= filter.startDate &&
+      date <= filter.endDate &&
+      (filter.region === "none" || item.region === filter.region) &&
+      (filter.subset === "none" || item.subset_key === filter.subset)
+    )
+  }
+
+  let showDownloadModal = false
+
+  const download = (
+    e: DownloadEvent,
+    data: components["schemas"]["DealQISnapshot"][],
+  ) => {
+    const filename = "quality-indicators-over-time"
+
+    const flatData = data.map(x => {
+      const { data, ...rest } = x // omit data key
+      return { ...rest, ...data }
+    })
+
+    switch (e.detail) {
+      case "json": {
+        const jsonString = JSON.stringify(data)
+        a_download(
+          "data:application/json;charset=utf-8," + encodeURIComponent(jsonString),
+          `${filename}.json`,
+        )
+        break
+      }
+      case "csv": {
+        const csvString = csvStringify(flatData, { header: true })
+        a_download(
+          "data:text/csv;charset=utf-8," + encodeURIComponent(csvString),
+          `${filename}.csv`,
+        )
+        break
+      }
+      case "xlsx": {
+        const csvString = csvStringify(flatData, { header: true })
+        const wb = xlsx.read(csvString, { type: "string" })
+        const data = xlsx.write(wb, { type: "array", bookType: "xlsx" })
+        const blob = new Blob([data], { type: "application/ms-excel" })
+        aDownload(blob, `${filename}.xlsx`)
+        break
+      }
+    }
+
+    showDownloadModal = false
+  }
 </script>
+
+<div class="flex items-center gap-4 p-2">
+  <DateInput
+    id="qi-start-date-input"
+    bind:value={filter.startDate}
+    format="yyyy-MM-dd"
+    browseWithoutSelecting
+  />
+  <DateInput
+    id="qi-end-date-input"
+    bind:value={filter.endDate}
+    format="yyyy-MM-dd"
+    browseWithoutSelecting
+  />
+
+  <select id="qi-region-select" class="inpt w-40" bind:value={filter.region}>
+    <option value={"none"} selected>{$_("All Regions")}</option>
+    <option value={null}>{$_("Global")}</option>
+    {#each $page.data.regions as region}
+      <option value={region.id}>{region.name}</option>
+    {/each}
+  </select>
+
+  <select id="qi-subset-select" class="inpt w-40" bind:value={filter.subset}>
+    <option value={"none"} selected>{$_("Any Subset")}</option>
+    <option value={null}>{$_("Unfiltered")}</option>
+    {#await qiPromise then qiSpecs}
+      {#each qiSpecs.deal_subset as subset}
+        <option value={subset.key}>{subset.description}</option>
+      {/each}
+    {/await}
+  </select>
+</div>
 
 <div class="h-[400px] border border-white">
   {#await Promise.all([qiPromise, statsPromise])}
     <LoadingSpinner />
   {:then [data, stats]}
-    {@const item = stats[model].find(item => item.id === selectedItemId)}
+    {@const filtered = stats[model].filter(satisfiesFilter)}
+    {@const item = filtered.find(item => item.id === selectedItemId)}
 
-    <Table {columns} items={stats[model]} rowHeightInPx={35} headerHeightInPx={45}>
+    <div class="relative w-full">
+      <button
+        class="absolute -top-14 right-0 p-2"
+        on:click={() => {
+          showDownloadModal = true
+        }}
+        title={$_("Download")}
+      >
+        <DownloadIcon class="inline-block h-8 w-8" />
+      </button>
+
+      <DownloadModal
+        bind:open={showDownloadModal}
+        on:download={e => download(e, filtered)}
+      />
+    </div>
+
+    <Table {columns} items={filtered} rowHeightInPx={35} headerHeightInPx={45}>
       <svelte:fragment slot="field" let:fieldName let:obj>
         {#if fieldName === "subset_key"}
           {data.deal_subset.find(x => x.key === obj.subset_key)?.description ?? "-----"}
@@ -72,7 +198,7 @@
           <span class="space-x-2">
             <button
               title={$_("Download")}
-              on:click|stopPropagation={() => download(obj)}
+              on:click|stopPropagation={() => downloadSingle(obj)}
             >
               <DownloadIcon />
             </button>

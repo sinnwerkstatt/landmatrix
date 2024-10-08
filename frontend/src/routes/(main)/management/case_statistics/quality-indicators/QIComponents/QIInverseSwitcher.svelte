@@ -7,7 +7,7 @@
   export let model: "deal" | "investor"
 </script>
 
-<div class="flex gap-2 p-2 font-bold italic text-gray-700">
+<div class="flex gap-2 p-2 font-bold italic text-gray-700 dark:text-gray-100">
   {$_(
     "Show inverse ({dealsOrInvestors} not fulfilling the quality indicator condition):",
     {

@@ -38,7 +38,7 @@
       class:border-orange={model === "deal"}
       class:border-pelorous={model === "investor"}
     >
-      <li class="grid grid-cols-12 gap-2 px-2 text-lg text-gray-700">
+      <li class="grid grid-cols-12 gap-2 px-2 text-lg text-gray-700 dark:text-white">
         <span class="col-span-8 pl-5 lg:col-span-10">
           {model === "deal" ? $_("Public deals") : $_("Public investors")}
         </span>

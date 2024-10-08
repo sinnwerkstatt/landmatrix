@@ -44,10 +44,9 @@
   $: model && (inverse = false)
 </script>
 
-<div class="mb-4 space-y-2">
-  <QIDownloadStats {counts} />
-
+<div class="mx-10 mb-4 flex items-baseline justify-between space-y-2">
   <QIModelSwitcher bind:model />
+  <QIDownloadStats {counts} {model} />
 </div>
 <!--<p>-->
 <!--  {$_(-->
