@@ -24,3 +24,24 @@ export async function updateDealVariable(deal: number, variable: number, body: {
     return error
   }
 }
+
+export async function bulkUpdateDealVariable(body: {
+  toUpdate: { deal: number; variable: number }[]
+  assignee: number | null
+}) {
+  try {
+    const res = await fetch(`/api/accountability/deal/bulk/`, {
+      method: "PATCH",
+      credentials: "include",
+      body: JSON.stringify({ to_update: body.toUpdate, assignee: body.assignee }),
+      headers: {
+        "X-CSRFToken": await getCsrfToken(),
+        "Content-Type": "application/json",
+      },
+    })
+    if (!res.ok) throw error(res.status, { message: res.statusText })
+    return res
+  } catch (error) {
+    return error
+  }
+}

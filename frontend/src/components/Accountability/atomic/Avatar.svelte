@@ -17,8 +17,8 @@
     export let tooltip = true
     export let disabled = false
 
+    // export let surname = "Surname"
     export let name = "Name"
-    export let surname = "Surname"
     export let mail = "name@mail.com"
     export let description = "Description"
 
@@ -91,9 +91,9 @@
 
 </script>
 
-<div class="flex items-center {extraClass}" class:button class:padding role="tooltip" class:disabled
+<div class="w-full overflow-hidden flex items-center {extraClass}" class:button class:padding role="tooltip" class:disabled
      on:mouseleave={mouseLeave} on:mouseenter={mouseEnter} >
-    <div class="icon flex items-center justify-center rounded-full {type} {size} select-none" class:ring
+    <div class="icon shrink-0 flex items-center justify-center rounded-full {type} {size} select-none" class:ring
          role="tooltip" bind:this={bubble} >
         {#if type=="base"}
             {initials}
@@ -103,24 +103,24 @@
     </div>
     
     {#if label}
-        <span class="text-sm pl-2 select-none">{label}</span>
+        <span class="pl-2 text-sm select-none text-nowrap truncate {type == 'assignment' ? 'text-a-gray-400' : ''}">{label}</span>
     {/if}
 
     {#if button}
-        <button class="text-a-gray-400" on:click {disabled} ><IconXMark size=24 /></button>
+        <button class="pl-1 text-a-gray-400" on:click {disabled} ><IconXMark size=24 /></button>
     {/if}
 
     <!-- Popup with user info -->
     {#if type=="base" && tooltip && popupVisible}
         <div class="fixed z-20 grid place-content-center tooltip-bg" 
              style="height: {popupHeight}px; width: {popupWidth}px; top: {popupTop}px; left: {popupLeft}px;"
-             transition:fade={{ duration:150 }} >
+             transition:fade={{ delay:100, duration:150 }} >
             <Card extraClass="h-[183px] w-60 shadow-a-md">
                 <div class="h-full w-full flex flex-col justify-center items-center gap-1">
                     <div class="grid place-content-center h-12 w-12 bg-a-gray-100 rounded-full">{initials}</div>
                     <div class="text-a-lg font-semibold">
                         <span>{name}</span>
-                        <span class="uppercase">{surname}</span>
+                        <!-- <span class="uppercase">{surname}</span> -->
                     </div>
                     <div class="text-a-gray-500 font-normal underline">{mail}</div>
                     <div class="text-a-gray-500 font-normal">{description}</div>
@@ -144,19 +144,19 @@
 
     /* Size styling */
     .sm {
-        @apply h-6 w-6;
+        @apply h-[24px] w-[24px];
         @apply text-a-xs;
     }
     .md {
-        @apply h-8 w-8;
+        @apply h-[32px] w-[32px];
         @apply text-a-sm;
     }
     .lg {
-        @apply h-12 w-12;
+        @apply h-[48px] w-[48px];
         @apply text-a-base;
     }
     .xl {
-        @apply h-[6.5rem] w-[6.5rem];
+        @apply h-[104px] w-[104px];
         @apply text-a-3xl;
     }
 
@@ -165,7 +165,7 @@
     }
 
     .button:hover {
-        @apply w-fit rounded-lg;
+        @apply rounded-lg;
         @apply bg-a-gray-50;
     }
     .button:hover > div {

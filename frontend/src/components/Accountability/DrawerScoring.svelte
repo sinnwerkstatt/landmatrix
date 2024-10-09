@@ -1,14 +1,15 @@
 <script lang="ts">
     import { page } from "$app/stores"
+    import { getStatusColor } from "$lib/accountability/helpers"
     import { updateDealVariable } from "$lib/accountability/scores"
     import { scoreLabels, vggtInfo } from "$lib/accountability/vggtInfo"
-    import { currentDeal, currentVariable, openDrawer, deals } from "$lib/accountability/stores"
+    import { currentDeal, currentVariable, openDrawer, deals, users, me } from "$lib/accountability/stores"
 
     import Drawer from "./atomic/Drawer.svelte"
     import DrawerScoringItem from "./atomic/DrawerScoringItem.svelte"
     import Badge from "./atomic/Badge.svelte"
     import Input from "./atomic/Input.svelte"
-    import Avatar from "./atomic/Avatar.svelte"
+    import InputAssignee from "./atomic/InputAssignee.svelte"
     import IconXMark from "./icons/IconXMark.svelte"
     import Section from "./atomic/Section.svelte"
     import DrawerScoringInfo from "./atomic/DrawerScoringInfo.svelte"
@@ -26,19 +27,33 @@
     $: variableInfo = vggtVariables.filter(v => v.number == $currentVariable)[0]
 
     $: deal = $deals.find(deal => deal.id == $currentDeal) ?? undefined
-    $: variable = deal?.score?.variables.find(v => v.vggt_variable == $currentVariable)
-    $: score = variable?.score ?? undefined
-    $: status = variable?.status ?? ''
+
+    let variable:{score:string, status:string, assignee:number}|undefined = undefined
+    let score:string = "NO_SCORE"
+    let status:string = "TO_SCORE"
+    let assignee:number|undefined = undefined
+
+    function readVariableInfo(deal, currentVariable) {
+        // Can't use $: notation as it causes issues (loops) with Svelte bindings, so using an init function instead
+        // TODO: replace with runes in the future
+        variable = deal?.score?.variables.find(v => v.vggt_variable == currentVariable)
+        score = variable?.score ?? "NO_SCORE"
+        status = variable?.status ?? "TO_SCORE"
+        assignee = variable?.assignee ?? undefined
+    }
+
+    $: readVariableInfo(deal, $currentVariable)
 
     const selectableStatuses = [
-        { value: "VALIDATED", label: "Validated" },
-        { value: "WAITING", label: "Waiting for review" }
+        { value: "VALIDATED", label: "Validated", icon: "check", color: "green" },
+        { value: "WAITING", label: "Waiting for review", icon: "eye", color: "orange" }
     ]
 
-    const statuses = [
-        { value: "TO_SCORE", label: "To score" },
-        ...selectableStatuses
+    const readonlyStatuses = [
+        { value: "TO_SCORE", label: "To score", color: "gray" }
     ]
+
+    $: bubbleColor = getStatusColor(status) ?? 'gray'
 
     function selectScore(event) {
         const value = event.detail.value
@@ -46,21 +61,26 @@
         // Select the new score
         if (score != "NO_SCORE" && score == value) { // If clicking on selected, unselect (= "NO_SCORE")
             score = "NO_SCORE"
-        } else {
-            score = value
-        }
-
-        // Check if the user changed the score
-        const currentScore = deal.score.variables.find(v => v.vggt_variable == $currentVariable).score
-        currentScore != score ? pendingChanges = true : pendingChanges = false
-
-        // Update the status
-        if (value == 0) {
             status = "TO_SCORE"
         } else {
+            score = value
             if (!["WAITING", "VALIDATED"].includes(status)) status = "VALIDATED"
         }
     }
+
+    function checkForPendingChanges(currentVariable, score, status, assignee) {
+        if (deal) {
+            const dbVariable = deal.score.variables.find(v => v.vggt_variable == currentVariable)
+
+            if (score != dbVariable.score || status != dbVariable.status || assignee != dbVariable.assignee) {
+                pendingChanges = true
+            } else {
+                pendingChanges = false
+            }
+        }
+    }
+
+    $: checkForPendingChanges($currentVariable, score, status, assignee)
 
     function isPreviousAvailable(current) {
         const index = vggtVariableNumbers.findIndex(n => n == current)
@@ -112,13 +132,16 @@
     async function save() {
         const deal_id = deal.id
         const variable_number = variable.vggt_variable
-        const body = { status, score }
+        const body = { 
+            status,
+            score,
+            assignee: assignee ? assignee : null }
+
         try {
             const res = await updateDealVariable(deal_id, variable_number, body)
             if (res.ok) pendingChanges = false
-            console.log("===== UPDATING FRONTEND =====")
-            console.log($deals)
-            
+
+            // Update $deals (so we don't fetch all deals again -> performance)
             const deal_index = $deals.findIndex(d => d.id == deal_id)
             const variable_index = $deals.find(d => d.id == deal_id).score.variables.findIndex(v => v.vggt_variable == variable_number)
             const newValue = await res.json()
@@ -138,17 +161,29 @@
         <!-- Heading -->
         <div class="p-6">
             <div class="flex justify-between">
-                <div class="flex items-center gap-2">
-                    <span class="block w-3 h-3 rounded-full indicator"></span>
+                <div class="flex gap-2">
+                    <span class="block mt-2 w-3 h-3 rounded-full indicator {bubbleColor}"></span>
                     <h1 class="text-a-xl font-semibold">Variable {$currentVariable} - {variableInfo.name}</h1>
-                    <Badge variant="filled" label={$currentDeal} href="https://landmatrix.org/deal/{$currentDeal}/" />
+                    <span class="block mt-1">
+                        <Badge variant="filled" label={$currentDeal} href="https://landmatrix.org/deal/{$currentDeal}/" />
+                    </span>
                 </div>
                 <button class="text-a-gray-400" on:click={() => navigationConfirmationModal("quit")}><IconXMark size=24 /></button>
             </div>
+
             <div class="mt-2 flex gap-4">
-                <Input type="select" choices={selectableStatuses} style="white" extraClass="!w-60"
-                    search={false} value={status}  />
-                <Avatar />
+                <!-- Show a disabled "TO_SCORE" if score == "NO_SCORE" -->
+                 {#if status=="TO_SCORE"}
+                    <Input type="select" choices={readonlyStatuses} style="white" extraClass="!w-60"
+                    search={false} bind:value={status} disabled={true} resetButton={false} />
+                {:else}
+                    <!-- Select either Validated or Waiting for Review if score != "NO_SCORE" -->
+                    <Input type="select" choices={selectableStatuses} style="white" extraClass="!w-60"
+                    search={false} bind:value={status} resetButton={false} />
+                {/if}
+
+                <InputAssignee bind:assigneeID={assignee} />
+
             </div>
         </div>
 
@@ -209,7 +244,7 @@
     </div>
 </Drawer>
 
-<Modal bind:open={openNavigationConfirmationModal} title="Confirm navigation" confirmLabel="Leave page" 
+<Modal bind:open={openNavigationConfirmationModal} title="Confirm navigation" confirmLabel="Leave" 
        on:click={confirmNavigation}>
     You changed the score for this variable. Are you sure you want to leave? Any unsaved changes will be lost.
 </Modal>
@@ -227,9 +262,5 @@
     ul {
         @apply list-disc pl-4;
         @apply text-a-sm font-normal text-a-gray-500;
-    }
-
-    .indicator {
-        @apply bg-a-gray-200;
     }
 </style>

@@ -10,11 +10,19 @@
     import IconXMark from "../icons/IconXMark.svelte"
     import IconChevron from "../icons/IconChevron.svelte"
     import IconSearch from "../icons/IconSearch.svelte"
+    import IconCheck from "../icons/IconCheck.svelte"
+    import IconEye from "../icons/IconEye.svelte"
 
     export let type:"text"|"textarea"|"number"|"radio"|"select"|"multiselect" = "text"
-    export let choices:{ value:string, label:string }[] = []
+    export let choices:{ 
+        value:string,
+        label:string,
+        icon?:"check"|"eye"
+        color?:"green"|"orange" 
+    }[] = []
     export let categories:{ label:string, values:string[] } = undefined
     export let value
+    export let resetButton = true
     export let badgeType:"tag"|"avatar" = "tag"
     export let style:"neutral"|"white" = "neutral"
     
@@ -28,6 +36,8 @@
     export let search = true
 
     export let extraClass = ""
+
+    export let inputColor = ""
 
     // Type textarea
     export let maxlength = 280
@@ -53,6 +63,11 @@
         { icon: "user", component: IconUser }
     ]
 
+    const selectIcons = [
+        { icon: "check", component: IconCheck },
+        { icon: "eye", component: IconEye },
+    ]
+
     // Functions
     function reset() {
         value = "";
@@ -67,6 +82,17 @@
         return string.toLowerCase().indexOf(filter.toLowerCase())>=0;
     }
 
+    function getInputColor(value) {
+        let res = ''
+        if (type == 'select' && value) {
+            const choice = choices?.find(c => c.value == value)
+            if (choice.color) res = choice.color
+        }
+        return res
+    }
+
+    $: inputColor = getInputColor(value)
+
 </script>
 
 <div class="{ style == "white" ? 'white' : '' }">
@@ -75,7 +101,7 @@
         <h3 class="text-a-sm font-medium my-2">{label}</h3>
     {/if}
 
-    <div class:disabled class="{status} wrapper wrapper-grid {type == 'textarea' ? 'h-32' : '' }">
+    <div class:disabled class="{inputColor} {status} wrapper wrapper-grid {type == 'textarea' ? 'h-32' : '' }">
     
         <!-- Icon -->
         {#if icon != ""}
@@ -98,11 +124,12 @@
             </button>
 
         {:else if type == "select"}
-            <button {disabled} on:click={() => { open = !open }} 
-                    class="pseudo-input w-full bg-transparent text-left" class:noIcon={icon == "" ? true : false}
-                    class:extraButton={value ? true : false} >
+            <button {disabled} on:focus={() => { open = !open }} on:click={() => { open = !open }} 
+                    class="pseudo-input w-full bg-transparent text-left" 
+                    class:noIcon={icon == "" ? true : false}
+                    class:extraButton={value && resetButton ? true : false} >
                 {#if value}
-                    <span class="text-a-gray-900">
+                    <span>
                         {(choices.find(e => e.value == value))?.label}
                     </span>
                 {:else}
@@ -124,7 +151,7 @@
             <button {disabled} on:click={() => { open = !open }} class="rotate-180"><IconChevron /></button>
         {/if}
 
-        {#if type == "select" && value}
+        {#if type == "select" && resetButton && value}
             <button {disabled} on:click={reset}><IconXMark /></button>
         {/if}
 
@@ -158,19 +185,25 @@
                         {#if filter.length > 0}
                             <InputCheckboxGroup {choices} {categories} bind:group={value} {filter} {readonlyCategories} />
                         {:else}
-                            <p class="px-4 italic text-a-gray-400">Start typing to search for investors</p>
+                            <p class="px-4 italic text-a-gray-400">Start typing to search</p>
                         {/if}
                     {:else}
                         <!-- Show all choices if less than 1000 (performance OK) -->
                         <InputCheckboxGroup {choices} {categories} bind:group={value} {filter} {readonlyCategories} />
                     {/if}
-                {:else}
+                
+                {:else} <!-- Type "select" -->
                     <div class="flex flex-col">
                         {#each choices as choice}
                         {@const hidden = !searchMatch(choice.label, filter)}
-                            <label class="px-4 py-2 cursor-pointer hover:bg-a-gray-100" {hidden}>
+                            <label class="px-4 py-2 cursor-pointer hover:bg-a-gray-100 flex gap-2 items-center" {hidden}>
                                 <input type="radio" name="selection" value={choice.value} bind:group={value}
                                        class="appearance-none" />
+                                {#if choice.icon}
+                                    <span class="icon {choice.color ? choice.color : ''}">
+                                        <svelte:component this={selectIcons.find(e => e.icon == choice.icon)?.component} size=18 />
+                                    </span>
+                                {/if}
                                 {choice.label}
                             </label>
                         {/each}
@@ -237,8 +270,18 @@
         @apply border-a-gray-300;
     }
 
-    .white .wrapper {
+    .wrapper .white {
         @apply bg-white;
+    }
+
+    .wrapper.green {
+        @apply bg-a-success-50;
+        @apply border-a-success-700;
+    }
+
+    .wrapper.orange {
+        @apply bg-a-primary-50;
+        @apply border-a-primary-500;
     }
 
     .wrapper::placeholder,
@@ -306,5 +349,12 @@
 
     label.hide {
         @apply hidden;
+    }
+
+    .icon.green {
+        @apply text-a-success-900;
+    }
+    .icon.orange {
+        @apply text-a-warning-500;
     }
 </style>

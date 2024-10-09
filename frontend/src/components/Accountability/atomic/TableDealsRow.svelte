@@ -2,9 +2,11 @@
     import { onMount } from "svelte"
     import { page } from "$app/stores"
     import { slide } from "svelte/transition"
-    import { tableSelection, currentDeal, currentVariable, openDrawer } from "$lib/accountability/stores"
-    import { initTableSelection } from "$lib/accountability/helpers"
+    import { tableSelection, tableSelectionChecked, currentDeal, currentVariable, openDrawer, deals, users } from "$lib/accountability/stores"
+    import { initTableSelection, unique } from "$lib/accountability/helpers"
+    import { updateDealVariable, bulkUpdateDealVariable } from "$lib/accountability/scores"
 
+    import Modal from "../Modal.svelte"
     import TableRow from "./TableRow.svelte"
     import TableCell from "./TableCell.svelte"
     import Checkbox from "./Checkbox.svelte"
@@ -13,6 +15,7 @@
     import VariableDots from "./VariableDots.svelte"
     import Avatar from "./Avatar.svelte"
     import AvatarGroup from "./AvatarGroup.svelte"
+    import InputAssignee from "./InputAssignee.svelte"
 
     export let gridColsTemplate = ""
     export let columns = []
@@ -21,8 +24,14 @@
     let dealChecked = false
     let dealPartiallyChecked = false
     let open = false
+    let openBulkUpdateModal = false
 
-    function updateDealCheckbox(selection) {
+    let bulkUpdateInfo = {
+        toUpdate: [],
+        assignee: null
+    }
+
+    function updateDealCheckbox() {
         if (!$tableSelection[deal.id]?.variables) {
             dealChecked = false
             dealPartiallyChecked = false
@@ -68,18 +77,77 @@
 
     // ==================================================================================================
     // Assignment functions
-    function getAllAssignees(array) {
-        let result = []
-        array.forEach(e => {
-            if (e && !result.map(u => u.id).includes(e.id)) result.push(e)
+    function getDealAssignees(deal) {
+        const assigneesID = unique(deal.score.variables.map(v => v.assignee).filter(Number))
+        let assignees = []
+        assigneesID.forEach(id => {
+            const assignee = $users.find(u => u.id == id)
+            assignees.push(assignee)
         })
-        return result
+        return assignees
     }
 
-    $: dealAssignees = getAllAssignees(deal.score.variables?.map(e => e.assignee))
+    $: dealAssignees = getDealAssignees(deal) ?? []
 
-    function removeAssignee() {
-        console.log("Remove assignee")
+    async function selectAssignee(event, vggt_variable) {
+        const assigneeID = event.detail.assignee
+
+        if ($tableSelectionChecked.length == 0) {
+            bulkUpdateInfo = {
+                toUpdate: [{ deal: deal.id, variable: vggt_variable }],
+                assignee: assigneeID
+            }
+            await updateAssignee()
+
+        } else {
+            // Add clicked variable to toUpdate even if it wasn't selected
+            let toUpdate = $tableSelectionChecked
+            if(!toUpdate.find(e => e.deal == deal.id && e.variable == vggt_variable)) {
+                toUpdate.push({ deal: `${deal.id}`, variable: `${vggt_variable}` })
+            }
+
+            bulkUpdateInfo = { toUpdate, assignee: assigneeID }
+            openBulkUpdateModal = true
+        }
+    }
+
+    async function unselectAssignee(vggt_variable) {
+        if ($tableSelectionChecked.length == 0) {
+            bulkUpdateInfo = {
+                toUpdate: [{ deal: deal.id, variable: vggt_variable }],
+                assignee: null
+            }
+            await updateAssignee()
+
+        } else {
+            let toUpdate = $tableSelectionChecked
+            if(!toUpdate.find(e => e.deal == deal.id && e.variable == vggt_variable)) {
+                toUpdate.push({ deal: `${deal.id}`, variable: `${vggt_variable}` })
+            }
+
+            bulkUpdateInfo = { toUpdate, assignee: null }
+            openBulkUpdateModal = true
+        }
+    }
+
+    async function updateAssignee() {
+        try {
+            const res = await bulkUpdateDealVariable(bulkUpdateInfo)
+            if (res.ok) {
+                // Update $deals (so we dont' fetch all deals again -> performance)
+                bulkUpdateInfo.toUpdate.forEach(e => {
+                    const deal_index = $deals.findIndex(d => d.id == e.deal)
+                    const variable_index = $deals.find(d => d.id == e.deal).score.variables.findIndex(v => v.vggt_variable == e.variable)
+
+                    $deals[deal_index].score.variables[variable_index].assignee = bulkUpdateInfo.assignee
+                })
+            }
+        } catch (error) {
+            console.error(error)
+            console.error(error.body.message)
+        }
+        bulkUpdateInfo = { toUpdate: [], assignee: null }
+        openBulkUpdateModal = false
     }
 
     // ==================================================================================================
@@ -89,8 +157,7 @@
         currentVariable.set(id)
         openDrawer.set(true) 
     }
-
-
+    
 </script>
 
 <div class="row">
@@ -172,10 +239,10 @@
                     </TableCell>
 
                     <TableCell style="nested">
-                        {#if variable.assignee}
-                            <Avatar size="sm" label={variable.assignee?.name} initials={variable.assignee?.initials}
-                                    buttonOnHover={true} on:click={removeAssignee} />
-                        {/if}
+                        <InputAssignee auto={false} size="sm" extraClass="" showOnHover={true} assigneeID={variable.assignee}
+                                       on:selectAssignee={event => selectAssignee(event, variable.vggt_variable)} 
+                                       on:unselectAssignee={() => unselectAssignee(variable.vggt_variable)} />
+
                     </TableCell>
 
                     <TableCell style="nested"></TableCell>
@@ -187,3 +254,8 @@
 
 
 </div>
+
+<Modal bind:open={openBulkUpdateModal} title="Confirm assignment" on:click={updateAssignee}>
+    <p>Are you sure you want to reassign all selected variables? This action cannot be undone.</p>
+    <p>This change will affect {bulkUpdateInfo.toUpdate.length} variables from {unique(bulkUpdateInfo.toUpdate.map(e => e.deal)).length} deals.</p>
+</Modal>

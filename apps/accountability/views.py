@@ -178,6 +178,29 @@ class DealVariableView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class DealBulkAssigneeUpdate(APIView):
+    queryset = DealVariable.objects.all()
+    serializer_class = DealVariableSerializer
+    permission_classes = [IsReporterOrHigher]
+
+    def patch(self, request):
+        to_update = request.data.get("to_update")
+        assigneeID = request.data.get("assignee")
+
+        for e in to_update:
+            variable = DealVariable.objects.get(
+                deal_score__score__deal__pk = e["deal"],
+                vggt_variable__number = e["variable"]
+            )
+            serializer = DealVariableSerializer(instance=variable, data={"assignee": assigneeID}, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
 class ProjectList(generics.ListCreateAPIView):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer

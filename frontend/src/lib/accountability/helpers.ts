@@ -85,3 +85,14 @@ export function sentenceToArray(string: string) {
   if (string) return string.match(/\b(\w+)\b/g)
   return [""]
 }
+
+export function searchMatch(string: string, filter: string) {
+  return string.toLowerCase().indexOf(filter.toLocaleLowerCase()) >= 0
+}
+
+export function unique(myArray: []) {
+  let newArray = myArray.filter((v, i, self) => {
+    return i == self.indexOf(v)
+  })
+  return newArray
+}

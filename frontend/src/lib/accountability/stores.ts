@@ -25,29 +25,31 @@ dealsHistory.subscribe(value => {
   }
 })
 
-// allUsers derived store with more convenient info
+// allUsers derived store with more convenient info + filter only editor and above
 export const users = derived(allUsers, $allUsers => {
   let res = []
   $allUsers.forEach(user => {
-    let obj = {
-      id: user.id,
-      name: user.full_name ? user.full_name : user.username,
-    }
+    if (user.role >= 2) {
+      let obj = {
+        id: user.id,
+        name: user.full_name ? user.full_name : user.username,
+      }
 
-    // Initials from usernames
-    const names = sentenceToArray(obj.name)
-    if (names?.length == 1) {
-      obj.initials = obj.name.substring(0, 2).toUpperCase()
-    } else if (names?.length > 1) {
-      const first = names?.at(0).substring(0, 1).toUpperCase()
-      const last = names
-        ?.at(names.length - 1)
-        .substring(0, 1)
-        .toUpperCase()
-      obj.initials = first + last
-    }
+      // Initials from usernames
+      const names = sentenceToArray(obj.name)
+      if (names?.length == 1) {
+        obj.initials = obj.name.substring(0, 2).toUpperCase()
+      } else if (names?.length > 1) {
+        const first = names?.at(0).substring(0, 1).toUpperCase()
+        const last = names
+          ?.at(names.length - 1)
+          .substring(0, 1)
+          .toUpperCase()
+        obj.initials = first + last
+      }
 
-    res.push(obj)
+      res.push(obj)
+    }
   })
   return res
 })
@@ -63,8 +65,9 @@ export const me = derived(
 )
 
 // =======================================================================================
-// Deals (fetch deals whenever the filters change)
+// Deals
 export const deals = writable([])
+
 // export const deals = derived(
 //   [filters, lastRESTFilterArray],
 //   ([$filters, $lastRESTFilterArray], set) => {
@@ -90,6 +93,15 @@ export const documentationBookmark = writable(undefined)
 // =======================================================================================
 // Table selection from Deals/Scoring
 export const tableSelection = writable({})
+export const tableSelectionChecked = derived(tableSelection, $tableSelection => {
+  let checked = []
+  Object.keys($tableSelection).forEach(d => {
+    Object.keys($tableSelection[d].variables).forEach(v => {
+      if ($tableSelection[d].variables[v]) checked.push({ deal: d, variable: v })
+    })
+  })
+  return checked
+})
 
 // =======================================================================================
 // Scoring drawer
