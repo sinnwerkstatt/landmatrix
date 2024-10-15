@@ -6,7 +6,10 @@
   import isSameOrBefore from "dayjs/plugin/isSameOrBefore"
   import { _ } from "svelte-i18n"
 
+  import { page } from "$app/stores"
+
   import { loading } from "$lib/stores/basics"
+  import { aDownload } from "$lib/utils/download"
 
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
   import DownloadModal, {
@@ -17,7 +20,11 @@
     type CaseStatisticsDeal,
     type CaseStatisticsInvestor,
   } from "../CaseStatisticsTable.svelte"
-  import { createFilename, downloadEnriched } from "../downloadObjects"
+  import {
+    createBlob,
+    createFilename,
+    resolveCountryAndRegionNames,
+  } from "../downloadObjects"
   import { filters, type Filters } from "../FilterBar.svelte"
 
   dayjs.extend(isSameOrBefore)
@@ -102,9 +109,13 @@
 
   const download = (e: DownloadEvent) => {
     const objects = (model === "deal" ? dealBuckets : investorBuckets)[activeTabId!]
-    const filename = createFilename(model, activeTabId, $filters)
+    const enrichedObjects = resolveCountryAndRegionNames(objects, $page.data)
+    const blob = createBlob(e.detail, enrichedObjects)
 
-    downloadEnriched(e.detail, filename, objects)
+    const filename = createFilename(`${model}s_${activeTabId}`, $filters, e.detail)
+
+    blob && aDownload(blob, filename)
+
     showDownloadModal = false
   }
 </script>

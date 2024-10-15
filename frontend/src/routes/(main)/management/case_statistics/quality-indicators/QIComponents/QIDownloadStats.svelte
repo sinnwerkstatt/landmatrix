@@ -5,6 +5,7 @@
 
   import type { components } from "$lib/openAPI"
   import type { Model } from "$lib/types/data"
+  import { aDownload } from "$lib/utils/download"
 
   import { a_download } from "$components/Data/Charts/utils"
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
@@ -12,7 +13,6 @@
     type DownloadEvent,
   } from "$components/New/DownloadModal.svelte"
 
-  import { aDownload } from "../../../downloadObjects"
   import { createCountyRegionSuffix } from "../../downloadObjects"
   import { filters } from "../../FilterBar.svelte"
 

@@ -11,6 +11,7 @@
   import { clickOutside } from "$lib/helpers"
   import type { components } from "$lib/openAPI"
   import type { Model } from "$lib/types/data"
+  import { aDownload } from "$lib/utils/download"
 
   import { a_download } from "$components/Data/Charts/utils"
   import DateTimeField from "$components/Fields/Display2/DateTimeField.svelte"
@@ -21,8 +22,6 @@
     type DownloadEvent,
   } from "$components/New/DownloadModal.svelte"
   import Table, { type Column } from "$components/Table/Table.svelte"
-
-  import { aDownload } from "../../downloadObjects"
 
   let model: Model = "deal"
   type Item = components["schemas"]["DealQISnapshot"]

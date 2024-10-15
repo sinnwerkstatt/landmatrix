@@ -1,77 +1,80 @@
 import { stringify as csvStringify } from "csv-stringify/browser/esm/sync"
-import { get } from "svelte/store"
 import * as xlsx from "xlsx"
 
-import { page } from "$app/stores"
-
-import type { Country, Model, Region } from "$lib/types/data"
+import type { Country, Region } from "$lib/types/data"
 
 import { type FileType } from "$components/New/DownloadModal.svelte"
 
-import { aDownload } from "../downloadObjects"
 import type { CaseStatisticsObject } from "./CaseStatisticsTable.svelte"
 import type { Filters } from "./FilterBar.svelte"
 
-export const downloadFns: {
-  [key in FileType]: (objects: CaseStatisticsObject[], filename: string) => void
-} = {
-  csv: (objects, filename) => {
-    const csvString = csvStringify(objects, { header: true })
-    const blob = new Blob([csvString], { type: "text/csv" })
-
-    aDownload(blob, `${filename}.csv`)
-  },
-  xlsx: (objects, filename) => {
-    const csvString = csvStringify(objects, { header: true })
-    const wb = xlsx.read(csvString, { type: "string" })
-    const data = xlsx.write(wb, { type: "array", bookType: "xlsx" })
-    const blob = new Blob([data], { type: "application/ms-excel" })
-
-    aDownload(blob, `${filename}.xlsx`)
-  },
-  json: () => {
-    throw new Error("NOT IMPLEMENTED")
-  },
+export const createBlob: <T>(fileType: FileType, objects: T[]) => Blob | void = (
+  fileType,
+  objects,
+) => {
+  //eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const blobFns: { [key in FileType]: (objects: any[]) => void } = {
+    csv: objects => {
+      const csvString = csvStringify(objects, { header: true })
+      return new Blob([csvString], { type: "text/csv" })
+    },
+    xlsx: objects => {
+      const csvString = csvStringify(objects, { header: true })
+      const wb = xlsx.read(csvString, { type: "string" })
+      const data = xlsx.write(wb, { type: "array", bookType: "xlsx" })
+      return new Blob([data], { type: "application/ms-excel" })
+    },
+    json: () => {
+      throw new Error("NOT IMPLEMENTED")
+    },
+  }
+  return blobFns[fileType](objects)
 }
 
-export const downloadEnriched = (
-  fileType: FileType,
-  filename: string,
+export const createLookup = <T extends Record<"id", string | number>>(
+  objects: T[],
+): { [id: string | number]: T } =>
+  objects.reduce((acc, val) => ({ ...acc, [val.id]: val }), {})
+
+export const resolveCountryAndRegionNames = (
   objects: CaseStatisticsObject[],
-) => {
-  const countryLookup: { [key: number]: Country } = get(page).data.countries.reduce(
-    (acc, val) => ({ ...acc, [val.id]: val }),
-    {},
-  )
-  const regionLookup: { [key: number]: Region } = get(page).data.regions.reduce(
-    (acc, val) => ({ ...acc, [val.id]: val }),
-    {},
-  )
+  relatedObjects: {
+    countries: Country[]
+    regions: Region[]
+  },
+): (Omit<CaseStatisticsObject, "country_id" | "region_id"> & {
+  country?: string
+  region?: string
+})[] => {
+  const countryLookup = createLookup(relatedObjects.countries)
+  const regionLookup = createLookup(relatedObjects.regions)
 
-  const enriched = objects.map(o => ({
-    ...o,
-    // country_id: undefined,
-    // region_id: undefined,
-    country: countryLookup[o.country_id!]?.name,
-    region: regionLookup[o.region_id!]?.name,
-  }))
-
-  downloadFns[fileType](enriched, filename)
+  return objects.map(o => {
+    const { country_id, region_id, ...rest } = o
+    return {
+      ...rest,
+      country: countryLookup[country_id!]?.name,
+      region: regionLookup[region_id!]?.name,
+    }
+  })
 }
 
 export const createCountyRegionSuffix = (filters: Filters) =>
   filters.country
-    ? "_" + filters.country.name
+    ? filters.country.name
     : filters.region
-      ? "_" + filters.region.name
-      : ""
+      ? filters.region.name
+      : "Global"
+
+export const createDateString = () => new Date().toISOString().slice(0, 10)
 
 export const createFilename = (
-  model: Model,
-  tabId: string | undefined,
+  basename: string,
   filters: Filters,
+  fileType: FileType,
 ) =>
-  new Date().toISOString().slice(0, 10) +
-  `_${model}s` +
-  (tabId ? "_" + tabId : "") +
-  createCountyRegionSuffix(filters)
+  [createDateString(), basename, createCountyRegionSuffix(filters)]
+    .join("_")
+    .replaceAll(" ", "-") +
+  "." +
+  fileType

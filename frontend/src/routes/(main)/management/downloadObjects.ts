@@ -6,6 +6,7 @@ import { page } from "$app/stores"
 
 import { allUsers } from "$lib/stores"
 import type { DealHull, InvestorHull } from "$lib/types/data"
+import { aDownload } from "$lib/utils/download"
 
 const COMMON_OBJ_COLUMNS = [
   "status",
@@ -84,13 +85,4 @@ export const downloadAsXLSX = (
     type: "application/ms-excel",
   })
   aDownload(blob, `${action}_${model}.xlsx`)
-}
-
-export const aDownload = (blob: Blob, filename: string) => {
-  const url = window.URL.createObjectURL(blob)
-  const a = document.createElement("a")
-
-  a.setAttribute("href", url)
-  a.setAttribute("download", filename)
-  a.click()
 }

@@ -3,6 +3,10 @@
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
+  import { page } from "$app/stores"
+
+  import { aDownload } from "$lib/utils/download"
+
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
   import DownloadModal, {
     type DownloadEvent,
@@ -12,7 +16,11 @@
     type CaseStatisticsDeal,
     type CaseStatisticsInvestor,
   } from "../CaseStatisticsTable.svelte"
-  import { createFilename, downloadEnriched } from "../downloadObjects"
+  import {
+    createBlob,
+    createFilename,
+    resolveCountryAndRegionNames,
+  } from "../downloadObjects"
   import { filters } from "../FilterBar.svelte"
 
   let model: "deal" | "investor" = "deal"
@@ -87,9 +95,13 @@
 
   const download = (e: DownloadEvent) => {
     const objects = (model === "deal" ? dealsBuckets : investorsBuckets)[activeTabId!]
-    const filename = createFilename(model, activeTabId, $filters)
+    const enrichedObjects = resolveCountryAndRegionNames(objects, $page.data)
+    const blob = createBlob(e.detail, enrichedObjects)
 
-    downloadEnriched(e.detail, filename, objects)
+    const filename = createFilename(`${model}s_${activeTabId}`, $filters, e.detail)
+
+    blob && aDownload(blob, filename)
+
     showDownloadModal = false
   }
 </script>
