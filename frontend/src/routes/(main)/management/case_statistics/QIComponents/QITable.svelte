@@ -10,7 +10,7 @@
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import Table from "$components/Table/Table.svelte"
 
-  import { filters } from "../../FilterBar.svelte"
+  import { filters } from "../FilterBar.svelte"
 
   export let model: "deal" | "investor"
   export let key: DealQIKey | InvestorQIKey

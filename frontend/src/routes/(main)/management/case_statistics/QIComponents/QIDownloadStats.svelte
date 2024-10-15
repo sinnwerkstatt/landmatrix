@@ -13,8 +13,8 @@
     type DownloadEvent,
   } from "$components/New/DownloadModal.svelte"
 
-  import { createCountyRegionSuffix } from "../../downloadObjects"
-  import { filters } from "../../FilterBar.svelte"
+  import { createCountyRegionSuffix } from "../downloadObjects"
+  import { filters } from "../FilterBar.svelte"
 
   export let counts: components["schemas"]["QICountsResponse"] | null
   export let model: Model

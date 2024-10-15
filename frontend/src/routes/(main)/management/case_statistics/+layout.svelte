@@ -5,23 +5,32 @@
 
   export let data
 
-  let tabs: { id: string; name: string }[]
+  let tabs: { id: string; name: string; showFilter: boolean }[]
   $: tabs = [
     {
-      id: "quality-indicators",
-      name: $_("Quality indicators"),
+      id: "deal-quality-indicators",
+      name: $_("Deal quality indicators"),
+      showFilter: true,
     },
     {
-      id: "quality-indicators-over-time",
-      name: $_("Quality indicators over time"),
+      id: "investor-quality-indicators",
+      name: $_("Investor quality indicators"),
+      showFilter: false,
+    },
+    {
+      id: "quality-indicators-records",
+      name: $_("Quality indicators records"),
+      showFilter: false,
     },
     {
       id: "activation-status",
       name: $_("Activation status"),
+      showFilter: true,
     },
     {
       id: "changes-over-time",
       name: $_("Changes over time"),
+      showFilter: true,
     },
   ]
 
@@ -57,7 +66,9 @@
     </ul>
   </nav>
 
-  <FilterBar />
+  {#if activeTab && activeTab.showFilter}
+    <FilterBar />
+  {/if}
 
   <div class="my-4 lg:my-8">
     {#if activeTab}

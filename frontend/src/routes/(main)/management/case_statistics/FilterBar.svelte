@@ -8,7 +8,10 @@
     region: Region | null
   }
 
-  export const filters = writable<Filters>({ country: null, region: null })
+  const DEFAULT_FILTER_VALUES: Filters = { country: null, region: null }
+
+  export const filters = writable<Filters>(DEFAULT_FILTER_VALUES)
+  // export const resetFilters = () => filters.set(DEFAULT_FILTER_VALUES)
 </script>
 
 <script lang="ts">

@@ -5,16 +5,16 @@
   import { page } from "$app/stores"
 
   import type { components } from "$lib/openAPI"
-  import type { DealQIKey, InvestorQIKey } from "$lib/types/data"
+  import type { DealQIKey, InvestorQIKey, Model } from "$lib/types/data"
 
   import { filters } from "../FilterBar.svelte"
-  import QIDownloadStats from "./QIComponents/QIDownloadStats.svelte"
-  import QIInverseSwitcher from "./QIComponents/QIInverseSwitcher.svelte"
-  import QIModelSwitcher from "./QIComponents/QIModelSwitcher.svelte"
-  import QINavigator from "./QIComponents/QINavigator.svelte"
-  import QITable from "./QIComponents/QITable.svelte"
+  import QIDownloadStats from "../QIComponents/QIDownloadStats.svelte"
+  import QIInverseSwitcher from "../QIComponents/QIInverseSwitcher.svelte"
+  import QINavigator from "../QIComponents/QINavigator.svelte"
+  import QITable from "../QIComponents/QITable.svelte"
 
-  let model: "deal" | "investor" = "deal"
+  const model: Model = "deal"
+
   let activeKey: DealQIKey | InvestorQIKey | null = null
   let inverse = false
 
@@ -38,23 +38,11 @@
   onMount(fetchCounts)
 
   $: $filters && fetchCounts()
-
-  // reset on model switch
-  $: model && (activeKey = null)
-  $: model && (inverse = false)
 </script>
 
-<div class="mx-10 mb-4 flex items-baseline justify-between space-y-2">
-  <QIModelSwitcher bind:model />
+<div class="mx-10 mb-4 flex items-baseline justify-end space-y-2">
   <QIDownloadStats {counts} {model} />
 </div>
-<!--<p>-->
-<!--  {$_(-->
-<!--    "Click on an indicator to show the list of {dealsOrInvestors} " +-->
-<!--      "fulfilling the quality indicator condition.",-->
-<!--    { values: { dealsOrInvestors: `${model}s` } },-->
-<!--  )}-->
-<!--</p>-->
 
 <QINavigator {model} {counts} bind:activeKey>
   <svelte:fragment slot="list">
