@@ -7,6 +7,8 @@
   import type { components } from "$lib/openAPI"
   import type { DealQIKey, InvestorQIKey, Model } from "$lib/types/data"
 
+  import DownloadIcon from "$components/icons/DownloadIcon.svelte"
+
   import { filters } from "../FilterBar.svelte"
   import QIDownloadStats from "../QIComponents/QIDownloadStats.svelte"
   import QIInverseSwitcher from "../QIComponents/QIInverseSwitcher.svelte"
@@ -48,6 +50,13 @@
   <svelte:fragment slot="list">
     <div class="p-2" transition:slide={{ duration: 300 }}>
       <QIInverseSwitcher bind:inverse {model} />
+      <a
+        data-sveltekit-reload
+        href={`/api/legacy_export/?country_id=${$filters.country?.id ?? ""}&region_id=${$filters.region?.id ?? ""}&format=xlsx`}
+      >
+        <DownloadIcon />
+        xlsx
+      </a>
       <div class="h-[300px] overflow-y-auto">
         <QITable key={activeKey} {model} {inverse} />
       </div>
