@@ -1,5 +1,6 @@
 <script lang="ts">
     import { page } from "$app/stores"
+    import { fetchDealDetail } from "$lib/accountability/deals"
     import { getStatusColor } from "$lib/accountability/helpers"
     import { updateDealVariable } from "$lib/accountability/scores"
     import { scoreLabels, vggtInfo } from "$lib/accountability/vggtInfo"
@@ -16,6 +17,7 @@
     import Button from "./Button.svelte"
     import Modal from "./Modal.svelte"
 
+    let data = undefined
     let pendingChanges = false
     let openNavigationConfirmationModal = false
     let navigationAction:"previous"|"next"|"quit"|undefined = undefined
@@ -25,8 +27,23 @@
     let vggtVariableNumbers = vggtVariables.map(v => v.number).sort((a,b) => a - b)
 
     $: variableInfo = vggtVariables.filter(v => v.number == $currentVariable)[0]
-
     $: deal = $deals.find(deal => deal.id == $currentDeal) ?? undefined
+
+    async function fetchDeal(id) {
+        if (!id) {
+            data = undefined
+        } else {
+            try {
+                const res = await fetchDealDetail(id)
+                data = res.selected_version
+            } catch (error) {
+                console.error(error)
+                data = undefined
+            }
+        }
+    }
+
+    $: fetchDeal(deal?.id)
 
     let variable:{score:string, status:string, assignee:number}|undefined = undefined
     let score:string = "NO_SCORE"
@@ -152,6 +169,15 @@
             console.error(error)
             console.error(error.body.message)
         }
+    }
+
+    // $: console.log(data)
+    // $: console.log(variableInfo)
+
+    $: {
+        console.log("-----")
+        console.log(variableInfo?.landmatrix_fields)
+        console.log(data)
     }
 
 </script>

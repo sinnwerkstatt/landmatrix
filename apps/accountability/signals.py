@@ -4,7 +4,7 @@ from django.dispatch import receiver
 from apps.landmatrix.models.new import DealHull, DealVersion
 from apps.accountability.models import DealScore, DealScoreVersion
 
-@receiver(post_save, sender=DealVersion)
+@receiver(post_save, sender=DealVersion) # Actions when a new deal version is saved
 def create_deal_score(sender, instance, **kwargs):
     # Only care for activated deals
     if (instance.status == "ACTIVATED"):

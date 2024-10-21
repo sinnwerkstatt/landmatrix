@@ -209,7 +209,7 @@
 
             <!-- Else (simple text) -->
             {:else if column.value == "country"}
-                <TableCell>{deal.country.name}</TableCell>
+                <TableCell>{deal?.country?.name}</TableCell>
             {/if}
 
         {/each}

@@ -9,6 +9,7 @@ from apps.accountability.models import UserInfo, Bookmark
 
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.serializers import CountrySerializer
+from apps.landmatrix.serializer_fields import ActorsSchemaField
 
 class UserInfoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -68,7 +69,7 @@ class DealScoreSerializer(serializers.ModelSerializer):
     negotiation_status = serializers.ReadOnlyField(source="deal.active_version.current_negotiation_status")
     nature_of_deal = serializers.ReadOnlyField(source="deal.active_version.nature_of_deal")
     operating_company = serializers.SerializerMethodField() # Empty field to include operating_company as .annotate() in views.py
-    involved_actors = serializers.ReadOnlyField(source="deal.active_version.involved_actors")
+    involved_actors = ActorsSchemaField(source="deal.active_version.involved_actors")
     initiation_year = serializers.ReadOnlyField(source="deal.active_version.initiation_year")
     implementation_status = serializers.ReadOnlyField(source="deal.active_version.current_implementation_status")
     intention_of_investment = serializers.ReadOnlyField(source="deal.active_version.current_intention_of_investment")
@@ -115,11 +116,11 @@ class DealScoreSerializer(serializers.ModelSerializer):
     gender_related_information = serializers.ReadOnlyField(source="deal.active_version.gender_related_information")
     purchase_price = serializers.ReadOnlyField(source="deal.active_version.purchase_price")
     purchase_price_area = serializers.ReadOnlyField(source="deal.active_version.purchase_price_area")
-    purchase_price_currency = serializers.ReadOnlyField(source="deal.active_version.purchase_price_currency")
+    # purchase_price_currency = serializers.ReadOnlyField(source="deal.active_version.purchase_price_currency")
     purchase_price_comment = serializers.ReadOnlyField(source="deal.active_version.purchase_price_comment")
     annual_leasing_fee = serializers.ReadOnlyField(source="deal.active_version.annual_leasing_fee")
     annual_leasing_fee_area = serializers.ReadOnlyField(source="deal.active_version.annual_leasing_fee_area")
-    annual_leasing_fee_currency = serializers.ReadOnlyField(source="deal.active_version.annual_leasing_fee_currency")
+    # annual_leasing_fee_currency = serializers.ReadOnlyField(source="deal.active_version.annual_leasing_fee_currency")
     annual_leasing_fee_comment = serializers.ReadOnlyField(source="deal.active_version.annual_leasing_fee_comment")
     presence_of_organizations = serializers.ReadOnlyField(source="deal.active_version.presence_of_organizations")
     

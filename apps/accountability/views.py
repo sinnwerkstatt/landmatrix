@@ -10,6 +10,7 @@ from rest_framework.views import APIView
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
+from rest_framework.renderers import JSONRenderer
 
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 
@@ -89,8 +90,10 @@ class DealScoreList(generics.ListCreateAPIView):
 
     @extend_schema(parameters=openapi_filters_parameters_scoring)
     def get(self, request:Request, *args, **kwargs):
-        queryset = DealScore.objects.filter(parse_filters(request))\
-                                    .prefetch_related("deal")\
+        queryset = DealScore.objects.prefetch_related("deal")\
+                                    .filter(deal__confidential=False)\
+                                    .exclude(deal__active_version__isnull=True)\
+                                    .filter(parse_filters(request))\
                                     .distinct()\
                                     .annotate(
                                         country=JSONObject(

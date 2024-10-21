@@ -21,3 +21,13 @@ export async function fetchDeals(filters: FilterValues) {
     }
   }
 }
+
+export async function fetchDealDetail(id: number) {
+  try {
+    const res = await fetch(`/api/deals/${id}/`)
+    const resJSON = await res.json()
+    return resJSON
+  } catch (error) {
+    return error
+  }
+}

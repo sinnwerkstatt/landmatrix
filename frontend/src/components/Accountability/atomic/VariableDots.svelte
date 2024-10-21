@@ -10,7 +10,7 @@
 
 </script>
 
-<div class="flex justify-between">
+<div class="flex justify-between max-w-48">
     {#each variables as variable}
         {@const color = getStatusColor(variable.status)}
         <div class="h-2.5 w-2.5 rounded-full {color}"></div>
