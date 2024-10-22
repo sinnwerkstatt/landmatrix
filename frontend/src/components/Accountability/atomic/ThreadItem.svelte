@@ -1,36 +1,38 @@
 <script lang="ts">
-    import dayjs from "dayjs"
-    import relativeTime from 'dayjs/plugin/relativeTime'
+  import dayjs from "dayjs"
+  import relativeTime from "dayjs/plugin/relativeTime"
 
-    import { capitalizeFirst } from "$lib/accountability/helpers"
+  import { capitalizeFirst } from "$lib/accountability/helpers"
 
-    import Avatar from "./Avatar.svelte"
-    import Embed from "./Embed.svelte"
-    import Badge from "./Badge.svelte"
+  import Avatar from "./Avatar.svelte"
+  import Badge from "./Badge.svelte"
+  import Embed from "./Embed.svelte"
 
-    export let data:{ user:{name:string, initials:string}, 
-                      type:string, deal:number, 
-                      timestamp:string } = {
-        user: { name: "Placeholder", initials: "P" },
-        type: "score",
-        score: "undefined",
-        timestamp: "2024-05-12T14:48:00.000+09:00"
-    }
+  export let data: {
+    user: { name: string; initials: string }
+    type: string
+    deal: number
+    timestamp: string
+  } = {
+    user: { name: "Placeholder", initials: "P" },
+    type: "score",
+    score: "undefined",
+    timestamp: "2024-05-12T14:48:00.000+09:00",
+  }
 
-    export let line = false
+  export let line = false
 
-    function getColorPalette(score) {
-        if (score == "validated") return "success"
-        return "primary"
-    }
+  function getColorPalette(score) {
+    if (score == "validated") return "success"
+    return "primary"
+  }
 
-    function getRelativeTime() {
-        dayjs.extend(relativeTime)
-        return dayjs(data.timestamp).fromNow()
-    }
+  function getRelativeTime() {
+    dayjs.extend(relativeTime)
+    return dayjs(data.timestamp).fromNow()
+  }
 
-    $: time = getRelativeTime()
-
+  $: time = getRelativeTime()
 </script>
 
 <!-- <div class="wrapper">
@@ -69,11 +71,11 @@
 </div> -->
 
 <style>
-    .wrapper {
-        @apply grid gap-2;
-        grid-template-columns: 2rem auto;
-    }
-    .sentence {
-        @apply font-normal text-a-gray-500;
-    }
+  .wrapper {
+    @apply grid gap-2;
+    grid-template-columns: 2rem auto;
+  }
+  .sentence {
+    @apply font-normal text-a-gray-500;
+  }
 </style>

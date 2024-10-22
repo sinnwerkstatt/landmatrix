@@ -1,23 +1,27 @@
 <script lang="ts">
-    import { fade } from "svelte/transition"
-    import { slide } from "svelte/transition"
-    import { quintOut } from 'svelte/easing'
+  import { quintOut } from "svelte/easing"
+  import { fade, slide } from "svelte/transition"
 
-    export let open = false
+  export let open = false
 
-    const transitionParams = {
-        delay: 100,
-        duration: 500,
-        easing: quintOut,
-        axis: 'x'
-    }
-
+  const transitionParams = {
+    delay: 100,
+    duration: 500,
+    easing: quintOut,
+    axis: "x",
+  }
 </script>
 
 {#if open}
-    <div class="absolute top-0 left-0 w-screen h-screen bg-a-gray-900/60 grid justify-end" transition:fade={{ delay: 100, duration: 200 }}>
-        <div class="h-full w-screen md:w-[45rem] bg-white" transition:slide={transitionParams} >
-            <slot />
-        </div>
+  <div
+    class="absolute left-0 top-0 grid h-screen w-screen justify-end bg-a-gray-900/60"
+    transition:fade={{ delay: 100, duration: 200 }}
+  >
+    <div
+      class="h-full w-screen bg-white md:w-[45rem]"
+      transition:slide={transitionParams}
+    >
+      <slot />
     </div>
+  </div>
 {/if}

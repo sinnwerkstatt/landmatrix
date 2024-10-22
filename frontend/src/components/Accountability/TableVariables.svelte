@@ -1,130 +1,144 @@
 <script lang="ts">
-    import { onMount } from "svelte"
-    import { tableSelection } from "$lib/accountability/stores"
-    import { initTableSelection } from "$lib/accountability/helpers"
+  import { onMount } from "svelte"
 
-    import Table from "./atomic/Table.svelte"
-    import TableRow from "./atomic/TableRow.svelte"
-    import TableCell from "./atomic/TableCell.svelte"
-    import Checkbox from "./atomic/Checkbox.svelte"
-    import BadgeStatus from "./atomic/BadgeStatus.svelte"
-    import Avatar from "./atomic/Avatar.svelte"
+  import { initTableSelection } from "$lib/accountability/helpers"
+  import { tableSelection } from "$lib/accountability/stores"
 
-    export let deal:{
-        id:number,
-        country: {id:number, name:string},
-        status:string,
-        score:{
-            status:string,
-            variables:{id:number, 
-                    status:string, 
-                    score:number|null, 
-                    assignee:{id:number, name:string}|null}[]
-        }
+  import Avatar from "./atomic/Avatar.svelte"
+  import BadgeStatus from "./atomic/BadgeStatus.svelte"
+  import Checkbox from "./atomic/Checkbox.svelte"
+  import Table from "./atomic/Table.svelte"
+  import TableCell from "./atomic/TableCell.svelte"
+  import TableRow from "./atomic/TableRow.svelte"
+
+  export let deal: {
+    id: number
+    country: { id: number; name: string }
+    status: string
+    score: {
+      status: string
+      variables: {
+        id: number
+        status: string
+        score: number | null
+        assignee: { id: number; name: string } | null
+      }[]
     }
+  }
 
-    $: data = deal.score.variables ? deal.score.variables : []
+  $: data = deal.score.variables ? deal.score.variables : []
 
-    const columns:{label:string, value:string}[] = [
-        { label: "id", value: "id" },
-        { label: "variable scoring", value: "variables" },
-        { label: "assignee", value: "assignees" }
-    ]
+  const columns: { label: string; value: string }[] = [
+    { label: "id", value: "id" },
+    { label: "variable scoring", value: "variables" },
+    { label: "assignee", value: "assignees" },
+  ]
 
-    const gridColsTemplate = "32px repeat(3, 1fr)"
+  const gridColsTemplate = "32px repeat(3, 1fr)"
 
-    let pageContent = []
-    let dealChecked = false
-    let dealPartiallyChecked = false
-    
-    function updateDealCheckbox(selection) {
-        if ($tableSelection[deal.id]?.variables) {
-            const nvar = Object.keys($tableSelection[deal.id].variables).length
-            const nselect = Object.values($tableSelection[deal.id].variables).filter(Boolean).length
-    
-            if (nvar == nselect) {
-                dealChecked = true
-            } else {
-                dealChecked = false
-                nselect > 0 ? dealPartiallyChecked = true : dealPartiallyChecked = false
-            }
-        }
+  let pageContent = []
+  let dealChecked = false
+  let dealPartiallyChecked = false
+
+  function updateDealCheckbox(selection) {
+    if ($tableSelection[deal.id]?.variables) {
+      const nvar = Object.keys($tableSelection[deal.id].variables).length
+      const nselect = Object.values($tableSelection[deal.id].variables).filter(
+        Boolean,
+      ).length
+
+      if (nvar == nselect) {
+        dealChecked = true
+      } else {
+        dealChecked = false
+        nselect > 0 ? (dealPartiallyChecked = true) : (dealPartiallyChecked = false)
+      }
     }
+  }
 
-    onMount(() => {
-        initTableSelection(deal)
-        updateDealCheckbox()
-    })
+  onMount(() => {
+    initTableSelection(deal)
+    updateDealCheckbox()
+  })
 
-    function checkDeal(event) {
-        const checked = event.detail.checked
+  function checkDeal(event) {
+    const checked = event.detail.checked
 
-        dealPartiallyChecked = false
+    dealPartiallyChecked = false
 
-        if (checked) {
-            deal.score.variables.forEach(v => {
-                $tableSelection[deal.id].variables[v.vggt_variable] = true
-            })
-        } else {
-            deal.score.variables.forEach(v => {
-                $tableSelection[deal.id].variables[v.vggt_variable] = false
-            })
-        }
+    if (checked) {
+      deal.score.variables.forEach(v => {
+        $tableSelection[deal.id].variables[v.vggt_variable] = true
+      })
+    } else {
+      deal.score.variables.forEach(v => {
+        $tableSelection[deal.id].variables[v.vggt_variable] = false
+      })
     }
+  }
 
-    function removeAssignee() {
-        // console.log("Remove assignee")
-    }
+  function removeAssignee() {
+    // console.log("Remove assignee")
+  }
 
-    $: updateDealCheckbox($tableSelection[deal.id])
+  $: updateDealCheckbox($tableSelection[deal.id])
 
-    // $: console.log($tableSelection[deal.id])
-
+  // $: console.log($tableSelection[deal.id])
 </script>
 
-<Table {data} bind:pageContent={pageContent} filters={false} rowHeight=57>
+<Table {data} bind:pageContent filters={false} rowHeight="57">
+  <svelte:fragment slot="header">
+    <TableRow {gridColsTemplate}>
+      <TableCell style="heading">
+        <div class="w-fit">
+          <Checkbox
+            paddingX="0"
+            paddingY="0"
+            on:changed={checkDeal}
+            bind:checked={dealChecked}
+            bind:partiallyChecked={dealPartiallyChecked}
+          />
+        </div>
+      </TableCell>
 
-    <svelte:fragment slot="header" >
-        <TableRow {gridColsTemplate}>
-            <TableCell style="heading" >
-                <div class="w-fit">
-                    <Checkbox paddingX=0 paddingY=0 on:changed={checkDeal}
-                     bind:checked={dealChecked} bind:partiallyChecked={dealPartiallyChecked} />
-                </div>
-            </TableCell>
+      {#each columns as column (column.value)}
+        <TableCell style="heading">{column.label.toUpperCase()}</TableCell>
+      {/each}
+    </TableRow>
+  </svelte:fragment>
 
-            {#each columns as column(column.value)}
-                <TableCell style="heading">{column.label.toUpperCase()}</TableCell>
-            {/each}
+  <svelte:fragment slot="body">
+    {#each pageContent as variable (variable.vggt_variable)}
+      <TableRow {gridColsTemplate}>
+        <TableCell>
+          <div class="w-fit">
+            <Checkbox
+              paddingX="0"
+              paddingY="0"
+              value={variable.vggt_variable}
+              bind:checked={$tableSelection[deal.id].variables[variable.vggt_variable]}
+            />
+          </div>
+        </TableCell>
 
-        </TableRow>
-    </svelte:fragment>
+        <TableCell>{variable.vggt_variable}</TableCell>
 
-    <svelte:fragment slot="body">
-        {#each pageContent as variable (variable.vggt_variable)}
-            <TableRow {gridColsTemplate}>
-                <TableCell>
-                    <div class="w-fit">
-                        <Checkbox paddingX=0 paddingY=0 value={variable.vggt_variable}
-                         bind:checked={$tableSelection[deal.id].variables[variable.vggt_variable]} />
-                    </div>
-                </TableCell>
+        <TableCell>
+          <BadgeStatus type="dot" value={variable.status} />
+        </TableCell>
 
-                <TableCell>{variable.vggt_variable}</TableCell>
-
-                <TableCell>
-                    <BadgeStatus type="dot" value={variable.status} />
-                </TableCell>
-
-                <TableCell>
-                    {#if variable.assignee}
-                        <Avatar size="sm" label={variable.assignee?.name} initials={variable.assignee?.initials}
-                                buttonOnHover={true} on:click={removeAssignee} />
-                    {/if}
-                </TableCell>
-
-            </TableRow>
-        {/each}
-    </svelte:fragment>
-
+        <TableCell>
+          {#if variable.assignee}
+            <Avatar
+              size="sm"
+              label={variable.assignee?.name}
+              initials={variable.assignee?.initials}
+              buttonOnHover={true}
+              on:click={removeAssignee}
+            />
+          {/if}
+        </TableCell>
+      </TableRow>
+    {/each}
+  </svelte:fragment>
 </Table>

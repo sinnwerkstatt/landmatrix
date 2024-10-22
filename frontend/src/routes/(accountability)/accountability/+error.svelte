@@ -1,13 +1,13 @@
 <script lang="ts">
-    import { page } from "$app/stores"
-    import { dealsHistory } from "$lib/accountability/stores"
+  import { page } from "$app/stores"
 
-    dealsHistory.set("/accountability/deals/0/")
+  import { dealsHistory } from "$lib/accountability/stores"
 
-  </script>
-  
-  <div class="container mx-auto">
-    <h1 class=" heading4 mt-10">
-      {$page.status}: {$page.error.message}
-    </h1>
-  </div>
+  dealsHistory.set("/accountability/deals/0/")
+</script>
+
+<div class="container mx-auto">
+  <h1 class=" heading4 mt-10">
+    {$page.status}: {$page.error.message}
+  </h1>
+</div>

@@ -38,10 +38,9 @@
       <slot />
     </div>
   </div>
-
-  {:else}
-    <!-- Reset layout for /accountability -->
-    <slot />
+{:else}
+  <!-- Reset layout for /accountability -->
+  <slot />
 {/if}
 
 {#if env.PUBLIC_MATOMO_URL && env.PUBLIC_MATOMO_SITE_ID}
