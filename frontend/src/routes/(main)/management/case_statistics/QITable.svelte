@@ -4,13 +4,12 @@
   import { page } from "$app/stores"
 
   import { dealFields, investorFields } from "$lib/fieldLookups"
+  import { filters } from "$lib/filters"
   import type { DealQIKey, InvestorQIKey } from "$lib/types/data"
 
   import IDField from "$components/Fields/Display2/IDField.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import Table from "$components/Table/Table.svelte"
-
-  import { filters } from "../FilterBar.svelte"
 
   export let model: "deal" | "investor"
   export let key: DealQIKey | InvestorQIKey
@@ -22,8 +21,8 @@
         query: {
           qi: key,
           inverse,
-          region_id: $filters.region?.id,
-          country_id: $filters.country?.id,
+          region_id: $filters.region_id,
+          country_id: $filters.country_id,
         },
       },
     })

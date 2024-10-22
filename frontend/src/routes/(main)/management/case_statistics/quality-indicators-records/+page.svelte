@@ -23,6 +23,8 @@
   } from "$components/New/DownloadModal.svelte"
   import Table, { type Column } from "$components/Table/Table.svelte"
 
+  import ActionButton from "../ActionButton.svelte"
+
   let model: Model = "deal"
   type Item = components["schemas"]["DealQISnapshot"]
 
@@ -126,7 +128,7 @@
   }
 </script>
 
-<div class="flex items-center gap-4 p-2">
+<div class="my-2 flex items-center gap-6">
   <DateInput
     id="qi-start-date-input"
     bind:value={filter.startDate}
@@ -157,6 +159,13 @@
       {/each}
     {/await}
   </select>
+
+  <span class="flex-grow" />
+  <ActionButton
+    on:click={() => (showDownloadModal = true)}
+    icon={DownloadIcon}
+    label={$_("Download")}
+  />
 </div>
 
 <div class="h-[400px] border border-white">
@@ -166,22 +175,10 @@
     {@const filtered = stats[model].filter(satisfiesFilter)}
     {@const item = filtered.find(item => item.id === selectedItemId)}
 
-    <div class="relative w-full">
-      <button
-        class="absolute -top-14 right-0 p-2"
-        on:click={() => {
-          showDownloadModal = true
-        }}
-        title={$_("Download")}
-      >
-        <DownloadIcon class="inline-block h-8 w-8" />
-      </button>
-
-      <DownloadModal
-        bind:open={showDownloadModal}
-        on:download={e => download(e, filtered)}
-      />
-    </div>
+    <DownloadModal
+      bind:open={showDownloadModal}
+      on:download={e => download(e, filtered)}
+    />
 
     <Table {columns} items={filtered} rowHeightInPx={35} headerHeightInPx={45}>
       <svelte:fragment slot="field" let:fieldName let:obj>
