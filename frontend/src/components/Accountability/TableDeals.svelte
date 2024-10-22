@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { loadingDeals } from "$lib/accountability/deals"
     import { users } from "$lib/accountability/placeholders"
     import { usersToUserChoices } from "$lib/accountability/helpers"
     import { tableSelection } from "$lib/accountability/stores"
@@ -10,6 +11,8 @@
 
     import Input from "./atomic/Input.svelte"
     import Checkbox from "./atomic/Checkbox.svelte"
+
+    import Loader from "./atomic/Loader.svelte"
 
     export let deals:{
         id:number,
@@ -130,6 +133,12 @@
         }
     }
 
+    $: {
+        console.log("---")
+        console.log($loadingDeals)
+        console.log(deals)
+    }
+
 </script>
 
 <Table bind:data={searchResult} bind:pageContent={pageContent} rowHeight=57 >
@@ -161,9 +170,15 @@
     </svelte:fragment>
 
     <svelte:fragment slot="body">
-        {#each pageContent as deal (deal.id)}
-            <TableDealsRow {gridColsTemplate} {columns} {deal} />
-        {/each}
+        {#if $loadingDeals}
+            <div class="w-full h-full grid place-content-center">
+                <Loader />
+            </div>
+        {:else}
+            {#each pageContent as deal (deal.id)}
+                <TableDealsRow {gridColsTemplate} {columns} {deal} />
+            {/each}
+        {/if}
     </svelte:fragment>
 
 </Table>

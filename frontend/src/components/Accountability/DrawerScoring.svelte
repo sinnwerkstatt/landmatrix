@@ -174,11 +174,11 @@
     // $: console.log(data)
     // $: console.log(variableInfo)
 
-    $: {
-        console.log("-----")
-        console.log(variableInfo?.landmatrix_fields)
-        console.log(data)
-    }
+    // $: {
+    //     console.log("-----")
+    //     console.log(variableInfo?.landmatrix_fields)
+    //     console.log(data)
+    // }
 
 </script>
 

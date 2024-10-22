@@ -14,9 +14,6 @@
     export let fields:string[]
     export let main_info = false
 
-    // $: console.log(deal)
-    // $: console.log(fields)
-    // $: console.log($dealFields)
 </script>
 
 {#if deal}
@@ -55,7 +52,11 @@
                 <div class="font-normal text-a-gray-500">
                     <!-- TODO: Parse arrays and objects properly -->
                     {#if value && value.length > 0}
-                        {value}
+                        {#if Array.isArray(value)}
+                            {value.join(', ')}
+                        {:else}
+                            {value}
+                        {/if}
                     {:else}
                         —
                     {/if}
