@@ -21,6 +21,7 @@ from .serializers import (
     QualityIndicatorSubsetSerializer,
 )
 from apps.landmatrix.models.quality_indicators import DealQISnapshot, InvestorQISnapshot
+from ...landmatrix.utils import parse_filters
 
 
 @extend_schema(
@@ -51,86 +52,67 @@ def specs(request: Request) -> Response:
 
 
 @extend_schema(
-    operation_id="qi_counts",
-    parameters=[
-        OpenApiParameter(
-            "region_id",
-            description="Filter by Land Matrix region.",
-            required=False,
-            type=int,
-        ),
-        OpenApiParameter(
-            "country_id",
-            description="Filter by country.",
-            required=False,
-            type=int,
-        ),
-    ],
+    operation_id="qi_deal_counts",
+    # TODO: Type filter parameters
+    # parameters={...}
     responses={
         200: inline_serializer(
-            name="QICountsResponse",
-            fields={
-                "investor": inline_serializer(
-                    name="InvestorQICounts",
-                    fields={qi.key: serializers.IntegerField() for qi in INVESTOR_QIS}
-                    | {"total": serializers.IntegerField()},
-                ),
-                "deal": inline_serializer(
-                    name="DealQICounts",
-                    fields={qi.key: serializers.IntegerField() for qi in DEAL_QIS}
-                    | {"total": serializers.IntegerField()},
-                ),
-            },
+            name="DealQICounts",
+            fields={qi.key: serializers.IntegerField() for qi in DEAL_QIS}
+            | {"total": serializers.IntegerField()},
         ),
     },
 )
 @api_view()
 @permission_classes([IsEditorOrHigher])
-def counts(request: Request) -> Response:
-    region_id = request.query_params.get("region_id")
-    country_id = request.query_params.get("country_id")
+def deal_counts(request: Request) -> Response:
 
-    def get_deal_counts():
-        qs = DealHull.objects.public()
-        if region_id:
-            qs = qs.filter(country__region_id=region_id)
-        if country_id:
-            qs = qs.filter(country__id=country_id)
-        ids = qs.values_list("active_version_id", flat=True)
-        return {
-            qi.key: DealVersion.objects.filter(id__in=ids)
-            .annotate(counts=annotate_counts())
-            .distinct()
+    qs = DealHull.objects.public()
+    qs = qs.filter(parse_filters(request))
+
+    ids = qs.values_list("active_version_id", flat=True)
+    counts = {
+        qi.key: DealVersion.objects.filter(id__in=ids)
+        .annotate(counts=annotate_counts())
+        .distinct()
+        .filter(qi.query())
+        .distinct()
+        .count()
+        for qi in DEAL_QIS
+    } | {"total": qs.count()}
+
+    return Response(data=counts)
+
+
+@extend_schema(
+    operation_id="qi_investor_counts",
+    # TODO: Type filter parameters
+    # parameters={...}
+    responses={
+        200: inline_serializer(
+            name="InvestorQICounts",
+            fields={qi.key: serializers.IntegerField() for qi in INVESTOR_QIS}
+            | {"total": serializers.IntegerField()},
+        ),
+    },
+)
+@api_view()
+@permission_classes([IsEditorOrHigher])
+def investor_counts(request: Request) -> Response:
+    qs = InvestorHull.objects.active()
+    ids = qs.values_list("active_version_id", flat=True)
+
+    counts = {
+        qi.key: (
+            InvestorVersion.objects.filter(id__in=ids)
             .filter(qi.query())
             .distinct()
             .count()
-            for qi in DEAL_QIS
-        } | {"total": qs.count()}
+        )
+        for qi in INVESTOR_QIS
+    } | {"total": qs.count()}
 
-    def get_investor_counts():
-        qs = InvestorHull.objects.active()
-        if region_id:
-            qs = qs.filter(active_version__country__region_id=region_id)
-        if country_id:
-            qs = qs.filter(active_version__country__id=country_id)
-        ids = qs.values_list("active_version_id", flat=True)
-
-        return {
-            qi.key: (
-                InvestorVersion.objects.filter(id__in=ids)
-                .filter(qi.query())
-                .distinct()
-                .count()
-            )
-            for qi in INVESTOR_QIS
-        } | {"total": qs.count()}
-
-    return Response(
-        data={
-            "deal": get_deal_counts(),
-            "investor": get_investor_counts(),
-        }
-    )
+    return Response(data=counts)
 
 
 @extend_schema(

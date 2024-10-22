@@ -7,7 +7,7 @@
 
   import { filters } from "$lib/filters"
   import type { components } from "$lib/openAPI"
-  import type { DealQIKey, InvestorQIKey, Model } from "$lib/types/data"
+  import type { InvestorQIKey, Model } from "$lib/types/data"
   import { aDownload } from "$lib/utils/download"
 
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
@@ -23,16 +23,16 @@
 
   const model: Model = "investor"
 
-  let activeKey: DealQIKey | InvestorQIKey | null = null
+  let activeKey: InvestorQIKey | null = null
   let inverse = false
 
-  let counts: components["schemas"]["QICountsResponse"] | null = null
+  let counts: components["schemas"]["InvestorQICounts"] | null = null
 
   const fetchCounts = () => {
     counts = null
 
     $page.data.apiClient
-      .GET("/api/quality-indicators/count/")
+      .GET("/api/quality-indicators/counts/investor/")
       .then(res => ("error" in res ? Promise.reject(res.error) : res.data!))
       .then(res => (counts = res))
   }
@@ -41,10 +41,8 @@
 
   let downloadOpen: boolean = false
 
-  $: modelData = counts && counts[model]
-
   const download = (e: DownloadEvent) => {
-    const blob = createBlob(e.detail, modelData)
+    const blob = createBlob(e.detail, counts)
     const context: DownloadContext = {
       filters: $filters,
       regions: $page.data.regions,
@@ -74,7 +72,9 @@
       <QIInverseSwitcher bind:inverse {model} />
       <!--      <QITableDownload />-->
       <div class="h-[300px] overflow-y-auto">
-        <QITable key={activeKey} {model} {inverse} />
+        {#if activeKey}
+          <QITable key={activeKey} {model} {inverse} />
+        {/if}
       </div>
     </div>
   </svelte:fragment>
@@ -83,5 +83,5 @@
 <DownloadModal
   bind:open={downloadOpen}
   on:download={download}
-  disableSubmit={!modelData}
+  disableSubmit={!counts}
 />

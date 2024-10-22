@@ -5,13 +5,13 @@
 
   import { dealFields, investorFields } from "$lib/fieldLookups"
   import { filters } from "$lib/filters"
-  import type { DealQIKey, InvestorQIKey } from "$lib/types/data"
+  import type { DealQIKey, InvestorQIKey, Model } from "$lib/types/data"
 
   import IDField from "$components/Fields/Display2/IDField.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import Table from "$components/Table/Table.svelte"
 
-  export let model: "deal" | "investor"
+  export let model: Model
   export let key: DealQIKey | InvestorQIKey
   export let inverse: boolean
 

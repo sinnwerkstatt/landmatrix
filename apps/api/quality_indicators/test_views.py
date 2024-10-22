@@ -8,7 +8,8 @@ from apps.landmatrix.quality_indicators import DEAL_QIS, INVESTOR_QIS
 def test_permissions(api_client, anybody2, reporter2, editor2, admin2):
     for url in [
         reverse("qi-specs"),
-        reverse("qi-counts"),
+        reverse("qi-deal-counts"),
+        reverse("qi-investor-counts"),
         reverse("qi-deals"),
         reverse("qi-investors"),
     ]:
@@ -25,16 +26,6 @@ def test_permissions(api_client, anybody2, reporter2, editor2, admin2):
 
 def test_specs_response(api_client, admin2):
     url = reverse("qi-specs")
-    api_client.force_authenticate(user=admin2)
-    response = api_client.get(url)
-
-    assert response.status_code == status.HTTP_200_OK
-    assert "deal" in response.data
-    assert "investor" in response.data
-
-
-def test_counts_response(api_client, admin2):
-    url = reverse("qi-counts")
     api_client.force_authenticate(user=admin2)
     response = api_client.get(url)
 

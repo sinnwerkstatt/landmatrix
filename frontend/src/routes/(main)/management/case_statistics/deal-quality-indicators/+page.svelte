@@ -7,7 +7,7 @@
 
   import { filters } from "$lib/filters"
   import type { components } from "$lib/openAPI"
-  import type { DealQIKey, InvestorQIKey, Model } from "$lib/types/data"
+  import type { DealQIKey, Model } from "$lib/types/data"
   import { aDownload } from "$lib/utils/download"
 
   import AdjustmentsIcon from "$components/icons/AdjustmentsIcon.svelte"
@@ -26,38 +26,29 @@
 
   const model: Model = "deal"
 
-  let activeKey: DealQIKey | InvestorQIKey | null = null
+  let activeKey: DealQIKey | null = null
   let inverse = false
 
-  let counts: components["schemas"]["QICountsResponse"] | null = null
+  let counts: components["schemas"]["DealQICounts"] | null = null
 
   const fetchCounts = () => {
     counts = null
 
     $page.data.apiClient
-      .GET("/api/quality-indicators/count/", {
-        params: {
-          query: {
-            region_id: $filters.region_id,
-            country_id: $filters.country_id,
-          },
-        },
-      })
+      .GET(
+        `/api/quality-indicators/counts/deal/?${$filters.toRESTFilterArray()}` as "/api/quality-indicators/counts/deal/",
+      )
       .then(res => ("error" in res ? Promise.reject(res.error) : res.data!))
       .then(res => (counts = res))
   }
 
   onMount(fetchCounts)
 
-  // $: $filters && fetchCounts()
-
-  $: modelData = counts && counts[model]
-
   let filterOpen: boolean = false
   let downloadOpen: boolean = false
 
   const download = (e: DownloadEvent) => {
-    const blob = createBlob(e.detail, modelData)
+    const blob = createBlob(e.detail, counts)
     const context: DownloadContext = {
       filters: $filters,
       regions: $page.data.regions,
@@ -96,7 +87,9 @@
         <QITableDownload />
       </div>
       <div class="h-[300px] overflow-y-auto">
-        <QITable key={activeKey} {model} {inverse} />
+        {#if activeKey}
+          <QITable key={activeKey} {model} {inverse} />
+        {/if}
       </div>
     </div>
   </svelte:fragment>
@@ -105,7 +98,7 @@
 <DownloadModal
   bind:open={downloadOpen}
   on:download={download}
-  disableSubmit={!modelData}
+  disableSubmit={!counts}
 />
 
 <FilterModal

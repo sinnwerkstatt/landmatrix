@@ -4,15 +4,12 @@
 
   import { page } from "$app/stores"
 
-  import type { components } from "$lib/openAPI"
-  import type { DealQIKey, InvestorQIKey } from "$lib/types/data"
-
   import ChevronDownIcon from "$components/icons/ChevronDownIcon.svelte"
   import LoadingSpinner from "$components/icons/LoadingSpinner.svelte"
 
   export let model: "deal" | "investor"
-  export let counts: components["schemas"]["QICountsResponse"] | null
-  export let activeKey: DealQIKey | InvestorQIKey | null
+  export let counts: ({ [key: string]: number } & { total: number }) | null
+  export let activeKey: string | "total" | null
 
   $: qiPromise = $page.data.apiClient
     .GET("/api/quality-indicators/")
@@ -45,7 +42,7 @@
 
         {#if counts}
           <span class="col-span-2 lg:col-span-1">
-            {counts[model].total}
+            {counts.total}
           </span>
         {:else}
           <LoadingSpinner />
@@ -83,10 +80,10 @@
 
             {#if counts}
               <span class="col-span-2 lg:col-span-1">
-                {counts[model][qi.key]}
+                {counts[qi.key]}
               </span>
               <span class="col-span-2 lg:col-span-1">
-                {formatRatio(counts[model][qi.key], counts[model]["total"])}
+                {formatRatio(counts[qi.key], counts["total"])}
               </span>
             {:else}
               <LoadingSpinner />
