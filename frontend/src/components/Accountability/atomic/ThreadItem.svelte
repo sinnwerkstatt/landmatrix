@@ -33,7 +33,7 @@
 
 </script>
 
-<div class="wrapper">
+<!-- <div class="wrapper">
     <div class="flex flex-col items-center">
         <Avatar initials={data.user.initials} />
 
@@ -66,7 +66,7 @@
         {/if}
 
     </div>
-</div>
+</div> -->
 
 <style>
     .wrapper {

@@ -73,7 +73,7 @@
     }
 
     function removeAssignee() {
-        console.log("Remove assignee")
+        // console.log("Remove assignee")
     }
 
     $: updateDealCheckbox($tableSelection[deal.id])

@@ -133,11 +133,11 @@
         }
     }
 
-    $: {
-        console.log("---")
-        console.log($loadingDeals)
-        console.log(deals)
-    }
+    // $: {
+    //     console.log("---")
+    //     console.log($loadingDeals)
+    //     console.log(deals)
+    // }
 
 </script>
 

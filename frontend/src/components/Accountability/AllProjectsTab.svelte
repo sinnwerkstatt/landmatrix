@@ -25,11 +25,11 @@
     // Menu
     function handleEdit(event) {
         const projectId = event.detail.id
-        console.log("Edit action: " + projectId)
+        // console.log("Edit action: " + projectId)
     }
 
     function handleDelete(event) {
-        openProjectModal('delete', event.detail.id)
+        // openProjectModal('delete', event.detail.id)
     }
 
     async function handleBookmark(event) {
