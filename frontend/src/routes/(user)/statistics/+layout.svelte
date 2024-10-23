@@ -9,7 +9,19 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
+  import { afterNavigate } from "$app/navigation"
+
   export let data
+
+  let lastFocusedElement: HTMLAnchorElement | null = null
+
+  const handleFocus = (event: FocusEvent) => {
+    lastFocusedElement = event.target as HTMLAnchorElement | null
+  }
+
+  afterNavigate(() => {
+    lastFocusedElement && lastFocusedElement.focus()
+  })
 
   let sections: Section[]
   $: sections = [
@@ -61,7 +73,7 @@
     <nav class="flex gap-8">
       {#each sections as section (section.id)}
         <div class="flex items-baseline">
-          <div class="px-2 font-bold after:content-[':']">
+          <div class="px-4 font-bold underline after:content-[':']">
             {section.name}
           </div>
 
@@ -71,9 +83,16 @@
               {@const isActive = data.url.pathname === url.pathname}
 
               <li>
+                <!-- TODO: Use custom components -->
                 <a
-                  class="inline-block p-2 font-bold text-gray-900 hover:bg-white hover:text-orange dark:text-white dark:hover:bg-gray-900"
+                  class="
+                    inline-block px-4 py-2 font-bold text-gray-900
+                    hover:bg-white hover:text-orange
+                    focus:relative focus:z-10
+                    dark:text-white dark:hover:bg-gray-900
+                  "
                   class:is-active={isActive}
+                  on:focus={handleFocus}
                   href={url.pathname}
                 >
                   {tab.name}
