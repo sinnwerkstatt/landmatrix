@@ -6,6 +6,7 @@
   import { page } from "$app/stores"
 
   import { filters } from "$lib/filters"
+  import type { Model } from "$lib/types/data"
   import { aDownload } from "$lib/utils/download"
 
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
@@ -13,19 +14,19 @@
     type DownloadEvent,
   } from "$components/New/DownloadModal.svelte"
 
-  import ActionButton from "../ActionButton.svelte"
-  import CaseStatisticsTable, {
-    type CaseStatisticsDeal,
-    type CaseStatisticsInvestor,
-  } from "../CaseStatisticsTable.svelte"
+  import ActionButton from "../../ActionButton.svelte"
   import {
     createBlob,
     createFilename,
     resolveCountryAndRegionNames,
     type DownloadContext,
-  } from "../downloadObjects"
+  } from "../../download"
+  import CaseStatisticsTable, {
+    type CaseStatisticsDeal,
+    type CaseStatisticsInvestor,
+  } from "../CaseStatisticsTable.svelte"
 
-  let model: "deal" | "investor" = "deal"
+  let model: Model = "deal"
   let activeTabId: string | undefined = "pending"
 
   $: navTabs =
@@ -112,6 +113,10 @@
     showDownloadModal = false
   }
 </script>
+
+<h2 class="heading2">
+  {$_("Activation status")}
+</h2>
 
 <div class="my-2 flex items-center justify-end gap-6">
   <ActionButton

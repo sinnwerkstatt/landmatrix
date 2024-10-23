@@ -1,83 +1,100 @@
+<script lang="ts" context="module">
+  export interface Section {
+    id: string
+    name: string
+    tabs: { id: string; name: string }[]
+  }
+</script>
+
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
   export let data
 
-  let tabs: { id: string; name: string; showFilter: boolean }[]
-  $: tabs = [
+  let sections: Section[]
+  $: sections = [
     {
-      id: "deal-quality-indicators",
-      name: $_("Deal quality indicators"),
-      showFilter: true,
+      id: "quality",
+      name: $_("Quality"),
+      tabs: [
+        {
+          id: "deal",
+          name: $_("Deal"),
+        },
+        {
+          id: "investor",
+          name: $_("Investor"),
+        },
+        {
+          id: "over-time",
+          name: $_("Over time"),
+        },
+      ],
     },
     {
-      id: "investor-quality-indicators",
-      name: $_("Investor quality indicators"),
-      showFilter: false,
-    },
-    {
-      id: "quality-indicators-records",
-      name: $_("Quality indicators records"),
-      showFilter: false,
-    },
-    {
-      id: "activation-status",
-      name: $_("Activation status"),
-      showFilter: true,
-    },
-    {
-      id: "changes-over-time",
-      name: $_("Changes over time"),
-      showFilter: true,
+      id: "quantity",
+      name: $_("Quantity"),
+      tabs: [
+        {
+          id: "by-status",
+          name: $_("By status"),
+        },
+        {
+          id: "over-time",
+          name: $_("Over time"),
+        },
+      ],
     },
   ]
-
-  $: activeTab = tabs.find(
-    x => data.url.pathname === `/management/case_statistics/${x.id}/`,
-  )
 </script>
 
 <svelte:head>
-  <title>{$_("Case statistics")} | {$_("Land Matrix")}</title>
+  <title>{$_("Data statistics")} | {$_("Land Matrix")}</title>
 </svelte:head>
 
 <div class="bg-gray-50 dark:bg-gray-700">
   <div class="container mx-auto pt-4 lg:pt-8">
     <h1 class="heading1">
-      {$_("Case statistics")}
+      {$_("Data statistics")}
     </h1>
 
-    <nav>
-      <ul class="flex flex-col lg:flex-row">
-        {#each tabs as tab (tab.id)}
-          {@const pathname = `/management/case_statistics/${tab.id}/`}
-          {@const isActive = data.url.pathname === pathname}
+    <nav class="flex gap-8">
+      {#each sections as section (section.id)}
+        <div class="flex items-baseline">
+          <div class="px-2 font-bold after:content-[':']">
+            {section.name}
+          </div>
 
-          <li>
-            <a
-              class="inline-block p-2 font-bold text-gray-900 hover:bg-white hover:text-orange dark:text-white dark:hover:bg-gray-900"
-              class:bg-white={isActive}
-              class:dark:bg-gray-900={isActive}
-              class:text-orange={isActive}
-              href={pathname}
-            >
-              {tab.name}
-            </a>
-          </li>
-        {/each}
-      </ul>
+          <ul class="flex flex-col lg:flex-row">
+            {#each section.tabs as tab (tab.id)}
+              {@const url = new URL(`../../${section.id}/${tab.id}/`, data.url)}
+              {@const isActive = data.url.pathname === url.pathname}
+
+              <li>
+                <a
+                  class="inline-block p-2 font-bold text-gray-900 hover:bg-white hover:text-orange dark:text-white dark:hover:bg-gray-900"
+                  class:is-active={isActive}
+                  href={url.pathname}
+                >
+                  {tab.name}
+                </a>
+              </li>
+            {/each}
+          </ul>
+        </div>
+      {/each}
     </nav>
   </div>
 </div>
 
 <div class="container mx-auto my-4 lg:my-8">
   <div class="my-4 lg:my-8">
-    {#if activeTab}
-      <h2 id={activeTab.id} class="heading2">
-        {activeTab.name}
-      </h2>
-
-      <slot />
-    {/if}
+    <slot />
   </div>
 </div>
+
+<style lang="postcss">
+  .is-active {
+    @apply bg-white text-orange dark:bg-gray-900;
+  }
+</style>

@@ -10,6 +10,7 @@
 
   import { filters, FilterValues } from "$lib/filters"
   import { loading } from "$lib/stores/basics"
+  import type { Model } from "$lib/types/data"
   import { aDownload } from "$lib/utils/download"
 
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
@@ -17,22 +18,22 @@
     type DownloadEvent,
   } from "$components/New/DownloadModal.svelte"
 
-  import ActionButton from "../ActionButton.svelte"
-  import CaseStatisticsTable, {
-    type CaseStatisticsDeal,
-    type CaseStatisticsInvestor,
-  } from "../CaseStatisticsTable.svelte"
+  import ActionButton from "../../ActionButton.svelte"
   import {
     createBlob,
     createFilename,
     resolveCountryAndRegionNames,
     type DownloadContext,
-  } from "../downloadObjects"
+  } from "../../download"
+  import CaseStatisticsTable, {
+    type CaseStatisticsDeal,
+    type CaseStatisticsInvestor,
+  } from "../CaseStatisticsTable.svelte"
 
   dayjs.extend(isSameOrBefore)
   dayjs.extend(isSameOrAfter)
 
-  let model: "deal" | "investor" = "deal"
+  let model: Model = "deal"
   let activeTabId: string | undefined = "added"
 
   $: navTabs =
@@ -126,6 +127,10 @@
     showDownloadModal = false
   }
 </script>
+
+<h2 class="heading2">
+  {$_("Changes over time")}
+</h2>
 
 <div class="my-2 flex items-center gap-6">
   <select

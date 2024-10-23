@@ -23,7 +23,7 @@
   } from "$components/New/DownloadModal.svelte"
   import Table, { type Column } from "$components/Table/Table.svelte"
 
-  import ActionButton from "../ActionButton.svelte"
+  import ActionButton from "../../ActionButton.svelte"
 
   let model: Model = "deal"
   type Item = components["schemas"]["DealQISnapshot"]
@@ -127,6 +127,10 @@
     showDownloadModal = false
   }
 </script>
+
+<h2 class="heading2">
+  {$_("Quality indicators over time")}
+</h2>
 
 <div class="my-2 flex items-center gap-6">
   <DateInput

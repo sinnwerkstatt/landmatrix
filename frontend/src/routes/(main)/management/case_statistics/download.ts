@@ -6,7 +6,7 @@ import type { Country, Region } from "$lib/types/data"
 
 import { type FileType } from "$components/New/DownloadModal.svelte"
 
-import type { CaseStatisticsObject } from "./CaseStatisticsTable.svelte"
+import type { CaseStatisticsObject } from "./quantity/CaseStatisticsTable.svelte"
 
 export const createBlob = (fileType: FileType, data: unknown): Blob => {
   switch (fileType) {
