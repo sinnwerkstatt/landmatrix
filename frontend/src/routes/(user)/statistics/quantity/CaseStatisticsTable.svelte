@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-  // TODO: type case_statistics endpoint
+  // TODO: add parameter types for case_statistics endpoint and rename to data-statistics
   interface BaseObject {
     id: number
     status: string | null

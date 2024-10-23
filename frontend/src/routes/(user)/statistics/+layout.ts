@@ -2,7 +2,7 @@ import { error } from "@sveltejs/kit"
 
 import { isEditorOrAbove } from "$lib/utils/permissions"
 
-import type { LayoutLoad } from "./$types"
+import type { LayoutLoad } from "../../../../.svelte-kit/types/src/routes"
 
 export const ssr = false
 

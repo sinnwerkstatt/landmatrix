@@ -49,13 +49,13 @@
 </script>
 
 <svelte:head>
-  <title>{$_("Data statistics")} | {$_("Land Matrix")}</title>
+  <title>{$_("Statistics")} | {$_("Land Matrix")}</title>
 </svelte:head>
 
 <div class="bg-gray-50 dark:bg-gray-700">
   <div class="container mx-auto pt-4 lg:pt-8">
     <h1 class="heading1">
-      {$_("Data statistics")}
+      {$_("Statistics")}
     </h1>
 
     <nav class="flex gap-8">
