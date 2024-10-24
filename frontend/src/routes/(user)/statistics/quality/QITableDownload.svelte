@@ -2,10 +2,14 @@
   import { _ } from "svelte-i18n"
 
   import { filters } from "$lib/filters"
+  import type { DealQIKey } from "$lib/types/data"
 
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
 
-  $: dataDownloadURL = `/api/legacy_export/?${$filters.toRESTFilterArray()}`
+  export let qi: DealQIKey
+  export let inverse: boolean
+
+  $: dataDownloadURL = `/api/legacy_export/?${$filters.toRESTFilterArray()}&qi=${qi}&inverse=${inverse}`
 </script>
 
 <ul>

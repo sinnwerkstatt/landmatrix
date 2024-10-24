@@ -90,7 +90,7 @@
       <div class="p-2" transition:slide={{ duration: 300 }}>
         <div class="flex justify-between">
           <QIInverseSwitcher bind:inverse {model} />
-          <QITableDownload />
+          <QITableDownload qi={activeKey} {inverse} />
         </div>
         <div class="h-[300px] overflow-y-auto">
           <QITable key={activeKey} {model} {inverse} />
