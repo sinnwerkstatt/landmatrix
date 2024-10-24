@@ -51,8 +51,12 @@
 </script>
 
 <div class="bg-gray-700 pt-12 text-white">
-  <div class="mb-12 px-10 sm:text-center">
-    <h4 class="heading3 mx-2">Sign up for our newsletter</h4>
+  <div class="mb-5 px-10 sm:text-center lg:mb-12">
+    <h4 class="heading5 mx-2">
+      {$_(
+        "Sign up for our eBulletins to receive important updates from the Land Matrix about key events and publications",
+      )}
+    </h4>
     <Newsletter />
   </div>
   <div class="container mx-auto p-10 pt-5 lg:p-4">
