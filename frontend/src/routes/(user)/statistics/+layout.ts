@@ -10,5 +10,6 @@ export const load: LayoutLoad = async ({ url, parent }) => {
   const { user } = await parent()
 
   if (!isEditorOrAbove(user)) error(403, "Permission denied")
+
   return { url }
 }

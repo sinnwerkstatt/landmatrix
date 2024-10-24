@@ -71,6 +71,7 @@
     <ActionButton
       on:click={() => (filterOpen = true)}
       icon={AdjustmentsIcon}
+      highlight={!$filters.isEmpty()}
       label={$_("Filter")}
     />
   </li>
