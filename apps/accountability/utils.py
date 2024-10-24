@@ -5,40 +5,55 @@ from drf_spectacular.utils import OpenApiParameter
 from apps.landmatrix.models import choices
 
 openapi_filters_parameters_scoring = [
-    OpenApiParameter(name="region_id", description="Filter by region", type=int, many=True),
-    OpenApiParameter(name="country_id", description="Filter by country", type=int, many=True),
+    OpenApiParameter(
+        name="region_id", description="Filter by region", type=int, many=True
+    ),
+    OpenApiParameter(
+        name="country_id", description="Filter by country", type=int, many=True
+    ),
     OpenApiParameter(name="area_min", description="Minimum deal area", type=int),
     OpenApiParameter(name="area_max", description="Maximum deal area", type=int),
     OpenApiParameter(
-        name="negotiation_status", 
-        description="Negotiation status", 
-        type=str, 
-        enum=[x["value"] for x in choices.NEGOTIATION_STATUS_ITEMS], 
-        many=True
+        name="negotiation_status",
+        description="Negotiation status",
+        type=str,
+        enum=[x["value"] for x in choices.NEGOTIATION_STATUS_ITEMS],
+        many=True,
     ),
     OpenApiParameter(
-        name="nature_of_deal", 
-        description="Nature of the deal", 
-        type=str, 
-        enum=[x["value"] for x in choices.NATURE_OF_DEAL_ITEMS], 
-        many=True
+        name="nature_of_deal",
+        description="Nature of the deal",
+        type=str,
+        enum=[x["value"] for x in choices.NATURE_OF_DEAL_ITEMS],
+        many=True,
     ),
-    OpenApiParameter(name="parent_company", description="ID of the parent company", type=int, many=True),
+    OpenApiParameter(
+        name="parent_company",
+        description="ID of the parent company",
+        type=int,
+        many=True,
+    ),
     OpenApiParameter(
         name="parent_company_country_id",
         description="ID of the parent company's country",
         type=int,
-        many=True
+        many=True,
     ),
-    OpenApiParameter("initiation_year_min", description="Minimum year of initiation", type=int),
-    OpenApiParameter("initiation_year_max", description="Maximum year of initiation", type=int),
-    OpenApiParameter("initiation_year_unknown", description="Include unknown years", type=bool),
     OpenApiParameter(
-        name="implementation_status", 
-        description="Implementation status", 
-        type=str, 
-        enum=[x["value"] for x in choices.IMPLEMENTATION_STATUS_ITEMS] + ["UNKNOWN"], 
-        many=True
+        "initiation_year_min", description="Minimum year of initiation", type=int
+    ),
+    OpenApiParameter(
+        "initiation_year_max", description="Maximum year of initiation", type=int
+    ),
+    OpenApiParameter(
+        "initiation_year_unknown", description="Include unknown years", type=bool
+    ),
+    OpenApiParameter(
+        name="implementation_status",
+        description="Implementation status",
+        type=str,
+        enum=[x["value"] for x in choices.IMPLEMENTATION_STATUS_ITEMS] + ["UNKNOWN"],
+        many=True,
     ),
     OpenApiParameter(
         name="intention_of_investment",
@@ -77,6 +92,7 @@ openapi_filters_parameters_scoring = [
     ),
 ]
 
+
 def parse_filters(request: Request):
     res = Q()
 
@@ -89,23 +105,25 @@ def parse_filters(request: Request):
         res &= Q(deal__active_version__deal_size__gte=area_min)
     if area_max := request.GET.get("area_max"):
         res &= Q(deal__active_version__deal_size__lte=area_max)
-    
+
     if neg_status := request.GET.getlist("negotiation_status"):
         res &= Q(deal__active_version__current_negotiation_status__in=neg_status)
 
     if nature := request.GET.getlist("nature_of_deal"):
         all_nature = set([x["value"] for x in choices.NATURE_OF_DEAL_ITEMS])
         res &= ~Q(
-            deal__active_version__nature_of_deal__contained_by=list(all_nature - set(nature))
+            deal__active_version__nature_of_deal__contained_by=list(
+                all_nature - set(nature)
+            )
         )
-    
+
     if parents := request.GET.getlist("parent_company"):
         res &= Q(deal__active_version__parent_companies__id__in=parents)
     if parents_c_id := request.GET.getlist("parent_company_country_id"):
         res &= Q(
             deal__active_version__parent_companies__active_version__country_id__in=parents_c_id
         )
-    
+
     if request.GET.get("initiation_year_unknown") == "false":
         res &= Q(deal__active_version__initiation_year__isnull=False)
     if init_year_min := request.GET.get("initiation_year_min"):
@@ -114,12 +132,15 @@ def parse_filters(request: Request):
         res &= Q(deal__active_version__initiation_year_max__lte=init_year_max)
 
     if imp_status := request.GET.getlist("implementation_status"):
-        unknown = ( 
+        unknown = (
             Q(deal__active_version__current_implementation_status=None)
             if "UNKNOWN" in imp_status
             else Q()
         )
-        res &= Q(deal__active_version__current_implementation_status__in=imp_status) | unknown
+        res &= (
+            Q(deal__active_version__current_implementation_status__in=imp_status)
+            | unknown
+        )
 
     if int_of_inv := request.GET.getlist("intention_of_investment"):
         unknown = (
@@ -131,7 +152,7 @@ def parse_filters(request: Request):
             Q(deal__active_version__current_intention_of_investment__overlap=int_of_inv)
             | unknown
         )
-    
+
     if crops := request.GET.getlist("crops"):
         res &= Q(deal__active_version__current_crops__overlap=crops)
     if animals := request.GET.getlist("animals"):
