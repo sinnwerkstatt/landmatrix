@@ -15,8 +15,10 @@
     .GET("/api/quality-indicators/")
     .then(res => ("error" in res ? Promise.reject(res.error) : res.data!))
 
-  const formatRatio = (a: number, b: number): string =>
-    `${((a / b) * 100).toFixed(1)} %`
+  const formatRatio = (a: number, b: number): string => {
+    const ratio = (a / b) * 100
+    return Number.isNaN(ratio) ? "---" : `${ratio.toFixed(1)} %`
+  }
 </script>
 
 {#await qiPromise}
