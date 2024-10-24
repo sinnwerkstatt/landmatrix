@@ -5,7 +5,7 @@
 
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
 
-  $: dataDownloadURL = `/api/legacy_export/${$filters.toRESTFilterArray()}`
+  $: dataDownloadURL = `/api/legacy_export/?${$filters.toRESTFilterArray()}`
 </script>
 
 <ul>
