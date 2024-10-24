@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { deals } from "$lib/accountability/stores"
   import { loadingDeals } from "$lib/accountability/deals"
+  import { deals } from "$lib/accountability/stores"
 
   import Loader from "$components/Accountability/atomic/Loader.svelte"
   import CardKPI from "$components/Accountability/CardKPI.svelte"
@@ -15,7 +15,6 @@
     console.log("Deals (from Overview):")
     console.log($deals)
   }
-
 </script>
 
 <div class="">
@@ -25,7 +24,7 @@
   <div class="flex flex-col gap-4 xl:grid xl:grid-cols-3">
     <CardKPI
       label="Number of deals"
-      value="{$deals.length}"
+      value={$deals.length}
       color="neutral"
       icon="check"
       button=""
