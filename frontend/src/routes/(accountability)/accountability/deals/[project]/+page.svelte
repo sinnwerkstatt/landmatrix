@@ -1,4 +1,8 @@
 <script lang="ts">
+  import { deals } from "$lib/accountability/stores"
+  import { loadingDeals } from "$lib/accountability/deals"
+
+  import Loader from "$components/Accountability/atomic/Loader.svelte"
   import CardKPI from "$components/Accountability/CardKPI.svelte"
   import Thread from "$components/Accountability/Thread.svelte"
 
@@ -6,6 +10,12 @@
   const toScore = 100
   const waiting = 20
   const validated = 100
+
+  $: {
+    console.log("Deals (from Overview):")
+    console.log($deals)
+  }
+
 </script>
 
 <div class="">
@@ -14,25 +24,28 @@
   <!-- KPI cards -->
   <div class="flex flex-col gap-4 xl:grid xl:grid-cols-3">
     <CardKPI
-      label="To score"
-      value="{toScore}/{totalDeals}"
+      label="Number of deals"
+      value="{$deals.length}"
       color="neutral"
       icon="check"
-      button="Go to"
+      button=""
+      loader={$loadingDeals}
     />
     <CardKPI
       label="Waiting for review"
-      value="{waiting}/{totalDeals}"
+      value="…"
       color="orange"
       icon="eye"
-      button="Go to"
+      button=""
+      loader={$loadingDeals}
     />
     <CardKPI
       label="Validated"
-      value="{validated}/{totalDeals}"
+      value="…"
       color="green"
       icon="check"
-      button="Go to"
+      button=""
+      loader={$loadingDeals}
     />
   </div>
 

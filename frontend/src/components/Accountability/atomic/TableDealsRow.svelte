@@ -201,7 +201,13 @@
       <!-- Deal ID -->
       {#if column.value == "id"}
         <TableCell>
-          <a class="link" href="{$page.url.href}{deal.id}/">Deal #{deal.id}</a>
+          <!-- <a class="link" href="{$page.url.href}{deal.id}/">Deal #{deal.id}</a> -->
+
+          <!-- TMP: Click on deal opens variables instead of deal page -->
+          <button class="text-left" on:click={() => (open = !open)}>
+            Deal #{deal.id}
+          </button>
+
           <!-- TODO: New label for new version -->
         </TableCell>
 

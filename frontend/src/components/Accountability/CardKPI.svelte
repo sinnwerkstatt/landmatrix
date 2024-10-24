@@ -1,5 +1,6 @@
 <script lang="ts">
   import Card from "./atomic/Card.svelte"
+  import Loader from "./atomic/Loader.svelte"
   import Button from "./Button.svelte"
   import IconCheckCircle from "./icons/IconCheckCircle.svelte"
   import IconEye from "./icons/IconEye.svelte"
@@ -9,6 +10,7 @@
   export let button: string = ""
   export let href: string = ""
   export let hrefLabel = "A link leading to href"
+  export let loader = false
 
   export let color: "neutral" | "orange" | "green" = "neutral"
   export let icon: "" | "check" | "eye" = ""
@@ -44,7 +46,11 @@
           />
         </div>
       {/if}
-      <span class="text-a-2xl font-semibold">{value}</span>
+      {#if loader}
+        <Loader />
+      {:else}
+        <span class="text-a-2xl font-semibold">{value}</span>
+      {/if}
     </div>
 
     <div class="flex items-center justify-between gap-2">

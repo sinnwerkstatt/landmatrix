@@ -167,7 +167,9 @@
         style="white"
       />
     </div>
-    <div class="w-40">
+
+    <!-- TODO: Repair Assignee filter -->
+    <!-- <div class="w-40">
       <Input
         type="select"
         placeholder="Assignee"
@@ -177,7 +179,7 @@
         extraClass="!w-40"
         style="white"
       />
-    </div>
+    </div> -->
   </div>
 
   <svelte:fragment slot="header">
