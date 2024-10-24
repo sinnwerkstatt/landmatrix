@@ -6,6 +6,7 @@
   import LinkedInIcon from "$components/icons/LinkedInIcon.svelte"
   import TwitterIcon from "$components/icons/TwitterIcon.svelte"
   import YoutubeIcon from "$components/icons/YoutubeIcon.svelte"
+  import Newsletter from "$components/Newsletter.svelte"
 
   let menuEntries: {
     title: string
@@ -49,7 +50,15 @@
   ]
 </script>
 
-<div class="bg-gray-700 text-white lg:text-center">
+<div class="bg-gray-700 pt-12 text-white">
+  <div class="mb-5 px-10 sm:text-center lg:mb-12">
+    <h4 class="heading5 mx-2">
+      {$_(
+        "Sign up for our eBulletins to receive important updates from the Land Matrix about key events and publications",
+      )}
+    </h4>
+    <Newsletter />
+  </div>
   <div class="container mx-auto p-10 pt-5 lg:p-4">
     <hr class="my-10 text-white lg:hidden" />
 
