@@ -2179,6 +2179,7 @@ export interface components {
     }
     QualityIndicator: {
       key: string
+      name: string
       description: string
     }
     /**

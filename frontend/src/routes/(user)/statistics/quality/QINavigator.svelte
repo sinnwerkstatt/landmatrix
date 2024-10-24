@@ -65,7 +65,7 @@
           <button
             class="grid w-full grid-cols-12 flex-nowrap items-center gap-2 px-2 text-left text-lg text-gray-700 hover:bg-gray-50 dark:text-white dark:hover:bg-gray-700"
             class:font-bold={isActive}
-            title={qi.description}
+            title={qi.name}
             on:click={() => (activeKey = activeKey !== qi.key ? qi.key : null)}
           >
             <!--            <span class="font-bold">-->
@@ -77,7 +77,7 @@
                   ? 'rotate-180'
                   : ''}"
               />
-              {qi.description}
+              {qi.name}
             </span>
 
             {#if counts}
@@ -93,7 +93,10 @@
           </button>
 
           {#if isActive}
-            <slot name="list"></slot>
+            <span class="px-4 font-bold">
+              {qi.description}
+            </span>
+            <slot name="list" />
           {/if}
         </li>
       {/each}

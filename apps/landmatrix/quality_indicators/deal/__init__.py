@@ -8,87 +8,98 @@ from apps.landmatrix.models.choices import IntentionOfInvestmentGroupEnum
 DEAL_QIS: list[QualityIndicator] = [
     QualityIndicator(
         key="locations/any-georeferenced-or-high-accuracy",
-        description=_("Any location is georeferenced or marked as high accuracy."),
+        name=_("Any location is georeferenced or marked as high accuracy."),
+        description=_(""),
         query=lambda: q_any_location_georeferenced_or_high_accuracy(),
     ),
     QualityIndicator(
         key="locations/all-georeferenced-or-high-accuracy",
-        description=_("All locations are georeferenced or marked as high accuracy."),
+        name=_("All locations are georeferenced or marked as high accuracy."),
+        description=_(""),
         query=lambda: q_all_location_georeferenced_or_high_accuracy(),
     ),
     QualityIndicator(
         key="locations/any-georeferenced",
-        description=_("Any location is georeferenced."),
+        name=_("Any location is georeferenced."),
+        description=_(""),
         query=lambda: q_any_location_georeferenced(),
     ),
     QualityIndicator(
         key="locations/all-georeferenced",
-        description=_("All locations are georeferenced."),
+        name=_("All locations are georeferenced."),
+        description=_(""),
         query=lambda: q_all_location_georeferenced(),
     ),
     QualityIndicator(
         key="locations/any-georeferenced-as-contract",
-        description=_("Any location is georeferenced as contract area."),
+        name=_("Any location is georeferenced as contract area."),
+        description=_(""),
         query=lambda: q_any_location_georeferenced_as_contract(),
     ),
     QualityIndicator(
         key="locations/any-georeferenced-as-production",
-        description=_("Any location is georeferenced as production area."),
+        name=_("Any location is georeferenced as production area."),
+        description=_(""),
         query=lambda: q_any_location_georeferenced_as_production(),
     ),
     QualityIndicator(
         key="data-sources/has-multiple",
-        description=_("Has multiple data sources."),
+        name=_("Has multiple data sources."),
+        description=_(""),
         query=lambda: q_multiple_datasource(),
     ),
     QualityIndicator(
         key="data-sources/all-valid",
-        description=_("All data sources that require a file have a file."),
+        name=_("All data sources that require a file have a file."),
+        description=_(""),
         query=lambda: q_all_datasource_valid(),
     ),
     QualityIndicator(
         key="imp-and-neg-status",
-        description=_("Negotiation status and implementation status given."),
+        name=_("Negotiation status and implementation status given."),
+        description=_(""),
         query=lambda: q_all_status(),
     ),
     QualityIndicator(
         key="imp-and-neg-status-dated",
-        description=_("Negotiation status and implementation status given with dates."),
+        name=_("Negotiation status and implementation status given with dates."),
+        description=_(""),
         query=lambda: q_all_status_dated(),
     ),
     QualityIndicator(
         key="imp-and-neg-status-and-area-dated",
-        description=_(
-            "Negotiation status, implementation status and area given with dates."
-        ),
+        name=_("Negotiation status, implementation status and area given with dates."),
+        description=_(""),
         query=lambda: q_all_status_dated_and_any_area_dated(),
     ),
     QualityIndicator(
         key="production-or-contract-area-dated",
-        description=_("Production size or contract size given with dates."),
+        name=_("Production size or contract size given with dates."),
+        description=_(""),
         query=lambda: q_any_area_dated(),
     ),
     QualityIndicator(
         key="all-basic-fields",
-        description=_(
+        name=_(
             "Contract size, intention of investment, negotiation status, "
             "implementation status, nature of deal AND any produce info given."
         ),
+        description=_(""),
         query=lambda: q_all_basic_fields(),
     ),
     QualityIndicator(
         key="any-produce-info",
-        description=_(
+        name=_(
             "(Contract farming) crops, (contract farming) animals, minerals, "
             "electricity generation OR carbon sequestration given.",
         ),
+        description=_(""),
         query=lambda: q_any_produce_info(),
     ),
     QualityIndicator(
         key="operating-company-in-target-country",
-        description=_(
-            "Operating company registered in target country",
-        ),
+        name=_("Operating company registered in target country"),
+        description=_(""),
         query=lambda: q_operating_company_in_target_country(),
     ),
 ]
