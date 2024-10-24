@@ -128,8 +128,8 @@
   }
 </script>
 
-<h2 class="heading2">
-  {$_("Changes over time")}
+<h2 class="heading3">
+  {$_("Data changes within time span")}
 </h2>
 
 <div class="my-2 flex items-center gap-6">
