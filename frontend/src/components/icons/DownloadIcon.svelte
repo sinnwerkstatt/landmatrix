@@ -1,7 +1,7 @@
 <svg
   xmlns="http://www.w3.org/2000/svg"
   class={$$props.class ?? "inline h-4 w-4 rounded"}
-  viewBox="0 0 512 512"
+  viewBox="-75 -75 662 662"
 >
   <path
     fill="currentColor"

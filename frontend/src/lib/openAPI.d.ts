@@ -128,8 +128,11 @@ export interface paths {
   "/api/quality-indicators/": {
     get: operations["qi_specs"]
   }
-  "/api/quality-indicators/count/": {
-    get: operations["qi_counts"]
+  "/api/quality-indicators/counts/deal/": {
+    get: operations["qi_deal_counts"]
+  }
+  "/api/quality-indicators/counts/investor/": {
+    get: operations["qi_investor_counts"]
   }
   "/api/quality-indicators/deal/": {
     get: operations["qi_deal_list"]
@@ -2139,10 +2142,6 @@ export interface components {
      * @enum {string}
      */
     ParentRelationEnum: "SUBSIDIARY" | "LOCAL_BRANCH" | "JOINT_VENTURE"
-    QICountsResponse: {
-      investor: components["schemas"]["InvestorQICounts"]
-      deal: components["schemas"]["DealQICounts"]
-    }
     QIDealListResponse: {
       id: number
       /** Format: double */
@@ -3686,19 +3685,20 @@ export interface operations {
       }
     }
   }
-  qi_counts: {
-    parameters: {
-      query?: {
-        /** @description Filter by country. */
-        country_id?: number
-        /** @description Filter by Land Matrix region. */
-        region_id?: number
-      }
-    }
+  qi_deal_counts: {
     responses: {
       200: {
         content: {
-          "application/json": components["schemas"]["QICountsResponse"]
+          "application/json": components["schemas"]["DealQICounts"]
+        }
+      }
+    }
+  }
+  qi_investor_counts: {
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["InvestorQICounts"]
         }
       }
     }
