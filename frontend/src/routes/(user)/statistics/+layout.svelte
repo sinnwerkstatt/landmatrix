@@ -27,15 +27,15 @@
   $: sections = [
     {
       id: "quality",
-      name: $_("Quality"),
+      name: $_("Data quality"),
       tabs: [
         {
           id: "deal",
-          name: $_("Deal"),
+          name: $_("Deals"),
         },
         {
           id: "investor",
-          name: $_("Investor"),
+          name: $_("Investors"),
         },
         {
           id: "over-time",
@@ -45,7 +45,7 @@
     },
     {
       id: "quantity",
-      name: $_("Quantity"),
+      name: $_("Data quantity"),
       tabs: [
         {
           id: "by-status",
@@ -61,13 +61,13 @@
 </script>
 
 <svelte:head>
-  <title>{$_("Statistics")} | {$_("Land Matrix")}</title>
+  <title>{$_("Data Statistics")} | {$_("Land Matrix")}</title>
 </svelte:head>
 
 <div class="bg-gray-50 dark:bg-gray-700">
   <div class="container mx-auto pt-4 lg:pt-8">
     <h1 class="heading1">
-      {$_("Statistics")}
+      {$_("Data Statistics")}
     </h1>
 
     <nav class="flex gap-8">

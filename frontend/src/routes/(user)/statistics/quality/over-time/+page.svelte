@@ -128,8 +128,8 @@
   }
 </script>
 
-<h2 class="heading2">
-  {$_("Quality indicators over time")}
+<h2 class="heading3">
+  {$_("Data quality indicators over time")}
 </h2>
 
 <div class="my-2 flex items-center gap-6">

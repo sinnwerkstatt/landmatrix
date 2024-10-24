@@ -62,8 +62,8 @@
   }
 </script>
 
-<h2 class="heading2">
-  {$_("Deal quality indicators")}
+<h2 class="heading3">
+  {$_("Quality indicators for deal data")}
 </h2>
 
 <ul class="mb-4 ml-4 mr-8 flex flex-wrap items-baseline justify-end gap-x-8">

@@ -6,22 +6,26 @@ from .queries import *
 INVESTOR_QIS: list[QualityIndicator] = [
     QualityIndicator(
         key="name",
-        description=_("Name given and not unknown/unnamed."),
+        name=_("Name given and not unknown/unnamed."),
+        description=_(""),
         query=lambda: q_has_valid_name(),
     ),
     QualityIndicator(
         key="country",
-        description=_("Country of origin/registration given."),
+        name=_("Country of origin/registration given."),
+        description=_(""),
         query=lambda: q_has_country(),
     ),
     QualityIndicator(
         key="involvements",
-        description=_("Involved in at least one deal or with one investor."),
+        name=_("Involved in at least one deal or with one investor."),
+        description=_(""),
         query=lambda: q_has_involvement(),
     ),
     QualityIndicator(
         key="data-sources",
-        description=_("Files given for all data sources."),
+        name=_("Files given for all data sources."),
+        description=_(""),
         query=lambda: q_all_data_source_have_file(),
     ),
 ]

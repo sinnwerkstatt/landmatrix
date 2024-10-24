@@ -55,9 +55,9 @@ def test_create_counts():
     assert list(create_counts([]).keys()) == ["TOTAL"]
 
     qis = [
-        QualityIndicator("GREEN_DEAL", "Green deals", Q),
-        QualityIndicator("BLUE_DEAL", "Blue deals", Q),
-        QualityIndicator("RED_DEAL", "Red deals", Q),
+        QualityIndicator("GREEN_DEAL", "Green deals", "Green is the color of hope", Q),
+        QualityIndicator("BLUE_DEAL", "Blue deals", "Blue is the color of calm", Q),
+        QualityIndicator("RED_DEAL", "Red deals", "Red is the color of hate", Q),
     ]
 
     assert list(create_counts(qis).keys()) == [

@@ -114,8 +114,8 @@
   }
 </script>
 
-<h2 class="heading2">
-  {$_("Activation status")}
+<h2 class="heading3">
+  {$_("Deals and investors by activation status")}
 </h2>
 
 <div class="my-2 flex items-center justify-end gap-6">

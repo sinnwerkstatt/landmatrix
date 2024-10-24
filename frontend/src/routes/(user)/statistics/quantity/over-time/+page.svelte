@@ -39,13 +39,15 @@
   $: navTabs =
     model === "deal"
       ? [
-          { id: "added", name: $_("Deals added") },
+          { id: "added", name: $_("Deals created") },
+          { id: "added_and_activated", name: $_("Deals created and activated") },
           { id: "updated", name: $_("Deals updated") },
           { id: "fully_updated", name: $_("Deals fully updated") },
           { id: "activated", name: $_("Deals activated") },
         ]
       : [
-          { id: "added", name: $_("Investors added") },
+          { id: "added", name: $_("Investors created") },
+          { id: "added_and_activated", name: $_("Investors created and activated") },
           { id: "updated", name: $_("Investors updated") },
           { id: "activated", name: $_("Investors activated") },
         ]
@@ -128,8 +130,8 @@
   }
 </script>
 
-<h2 class="heading2">
-  {$_("Changes over time")}
+<h2 class="heading3">
+  {$_("Data changes within time span")}
 </h2>
 
 <div class="my-2 flex items-center gap-6">

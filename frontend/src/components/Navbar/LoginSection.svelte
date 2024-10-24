@@ -77,7 +77,7 @@
           </li>
           <li class="whitespace-nowrap">
             <a class="nav-link-secondary" href="/statistics/">
-              {$_("Statistics")}
+              {$_("Data Statistics")}
             </a>
           </li>
         </ul>
