@@ -39,13 +39,15 @@
   $: navTabs =
     model === "deal"
       ? [
-          { id: "added", name: $_("Deals added") },
+          { id: "added", name: $_("Deals created") },
+          { id: "added_and_activated", name: $_("Deals created and activated") },
           { id: "updated", name: $_("Deals updated") },
           { id: "fully_updated", name: $_("Deals fully updated") },
           { id: "activated", name: $_("Deals activated") },
         ]
       : [
-          { id: "added", name: $_("Investors added") },
+          { id: "added", name: $_("Investors created") },
+          { id: "added_and_activated", name: $_("Investors created and activated") },
           { id: "updated", name: $_("Investors updated") },
           { id: "activated", name: $_("Investors activated") },
         ]
