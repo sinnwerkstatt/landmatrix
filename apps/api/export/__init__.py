@@ -251,6 +251,7 @@ def _deal_qs_to_values(qs: QuerySet[DealVersion]):
             "deal__confidential_comment",
             "deal__country",
             "deal__fully_updated_at",
+            "deal__first_created_at",
         )
         .annotate(
             operating_company=Case(

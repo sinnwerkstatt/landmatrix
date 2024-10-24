@@ -22,6 +22,7 @@ deal_fields = {
     "current_negotiation_status": "Current negotiation status",
     "current_implementation_status": "Current implementation status",
     "deal__fully_updated_at": "Fully updated",
+    "deal__first_created_at": "Created at",
     "top_investors": "Top parent companies",
     "intended_size": "Intended size (in ha)",  # TODO LATER 100% Compat hacks
     "contract_size": "Size under contract (leased or purchased area, in ha)",
@@ -264,6 +265,9 @@ def deal_download_format(data: dict):
     # DealHull fields
     if fully_updated_at := data["deal__fully_updated_at"]:
         data["deal__fully_updated_at"] = fully_updated_at.isoformat()
+
+    if created_at := data["deal__first_created_at"]:
+        data["deal__first_created_at"] = created_at.isoformat()
 
     data["deal_confidential"] = __bool_cast(data, "deal__confidential")
 
