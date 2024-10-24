@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-  export const FILTER_MODES = ["none", "default", "custom"] as const
+  export const FILTER_MODES = ["custom", "default"] as const
   export type FilterMode = (typeof FILTER_MODES)[number]
 </script>
 
@@ -31,10 +31,9 @@
   export let open = false
   export let disableSubmit = false
 
-  let filterModeGroup: FilterMode = "none"
+  let filterModeGroup: FilterMode = "custom"
   let filterModeLabel: { [key in FilterMode]: string }
   $: filterModeLabel = {
-    none: $_("Off"),
     default: $_("Default"),
     custom: $_("Custom"),
   }
@@ -72,22 +71,31 @@
         value={$page.data.countries.find(c => c.id === $filters.country_id)}
       />
 
-      <div class="my-2 flex gap-6 px-2">
-        {$_("Advanced filter")}:
-        {#each FILTER_MODES as filterMode, index}
-          <label class="block">
-            <input
-              id={`filter-mode-input-${index}`}
-              bind:group={filterModeGroup}
-              class="radio-btn"
-              name="filter-mode"
-              type="radio"
-              value={filterMode}
-              on:click={() => handleFilterModeChange(filterMode)}
-            />
-            {filterModeLabel[filterMode]}
-          </label>
-        {/each}
+      <div class="my-2 mt-4 flex items-baseline gap-6">
+        <span class="inline after:content-[':']">
+          {$_("Filter sets")}
+        </span>
+
+        <ul class="flex gap-6">
+          {#each FILTER_MODES as filterMode, index}
+            {@const id = `filter-mode-input-${index}`}
+
+            <li class="inline-flex items-baseline gap-2">
+              <input
+                {id}
+                bind:group={filterModeGroup}
+                class="radio-btn"
+                name="filter-mode"
+                type="radio"
+                value={filterMode}
+                on:click={() => handleFilterModeChange(filterMode)}
+              />
+              <label for={id} class="block">
+                {filterModeLabel[filterMode]}
+              </label>
+            </li>
+          {/each}
+        </ul>
       </div>
 
       {#if filterModeGroup === "custom"}
