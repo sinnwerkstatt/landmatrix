@@ -1,6 +1,7 @@
 <script lang="ts">
   // import { filters } from "$lib/accountability/filters.js"
   import { updateFilters } from "$lib/accountability/projects.js"
+
   // import { deals } from "$lib/accountability/stores.js"
 
   export let data

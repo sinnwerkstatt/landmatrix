@@ -52,5 +52,4 @@
   .footer {
     @apply w-full p-6;
   }
-
 </style>

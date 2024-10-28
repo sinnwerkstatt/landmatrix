@@ -5,10 +5,10 @@
     // openProjectModal,
     removeUserBookmark,
   } from "$lib/accountability/projects"
-
   import { users } from "$lib/accountability/stores"
 
   import Modal from "$components/Accountability/Modal.svelte"
+
   import Input from "./atomic/Input.svelte"
   import Pagination from "./atomic/Pagination.svelte"
   import Section from "./atomic/Section.svelte"

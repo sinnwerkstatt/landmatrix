@@ -5,9 +5,7 @@
   // import { page } from "$app/stores"
 
   import { initTableSelection, unique } from "$lib/accountability/helpers"
-  import {
-    bulkUpdateDealVariable,
-  } from "$lib/accountability/scores"
+  import { bulkUpdateDealVariable } from "$lib/accountability/scores"
   import {
     currentDeal,
     currentVariable,

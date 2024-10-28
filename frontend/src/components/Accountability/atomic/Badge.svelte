@@ -31,7 +31,9 @@
 {#if href}
   <a
     class:disabled
-    class="wrapper cursor-pointer {size} {icon} {color} {variant} {disabled ? '!text-a-gray-400 !bg-a-gray-100' : ''} "
+    class="wrapper cursor-pointer {size} {icon} {color} {variant} {disabled
+      ? '!bg-a-gray-100 !text-a-gray-400'
+      : ''} "
     {href}
     target="_blank"
   >
@@ -48,7 +50,9 @@
     {/if}
 
     {#if notification}
-      <div class="notification inline-block rounded-xl {disabled ? '!bg-a-gray-400' : ''} "></div>
+      <div
+        class="notification inline-block rounded-xl {disabled ? '!bg-a-gray-400' : ''} "
+      ></div>
     {/if}
 
     <span class="line-clamp-1">{label}</span>

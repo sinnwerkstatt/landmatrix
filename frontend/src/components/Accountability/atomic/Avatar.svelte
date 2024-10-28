@@ -131,7 +131,7 @@
   <!-- Popup with user info -->
   {#if type == "base" && tooltip && popupVisible}
     <div
-      class="!bg-transparent hover:!bg-transparent fixed z-20 grid place-content-center"
+      class="fixed z-20 grid place-content-center !bg-transparent hover:!bg-transparent"
       style="height: {popupHeight}px; width: {popupWidth}px; top: {popupTop}px; left: {popupLeft}px;"
       transition:fade={{ delay: 100, duration: 150 }}
     >
