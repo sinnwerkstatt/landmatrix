@@ -15,11 +15,15 @@ export const createBlob = (fileType: FileType, data: unknown): Blob => {
       return new Blob([jsonString], { type: "application/json" })
     }
     case "csv": {
-      const csvString = csvStringify([data], { header: true })
+      const csvString = csvStringify(Array.isArray(data) ? data : [data], {
+        header: true,
+      })
       return new Blob([csvString], { type: "text/csv" })
     }
     case "xlsx": {
-      const csvString = csvStringify([data], { header: true })
+      const csvString = csvStringify(Array.isArray(data) ? data : [data], {
+        header: true,
+      })
       const wb = xlsx.read(csvString, { type: "string" })
       const wbString = xlsx.write(wb, { type: "array", bookType: "xlsx" })
       return new Blob([wbString], { type: "application/ms-excel" })

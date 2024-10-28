@@ -1,19 +1,17 @@
 <script lang="ts">
-  import { stringify as csvStringify } from "csv-stringify/browser/esm/sync"
   import { DateInput } from "date-picker-svelte"
   import dayjs from "dayjs"
   import { _ } from "svelte-i18n"
   import { fade, slide } from "svelte/transition"
-  import * as xlsx from "xlsx"
 
   import { page } from "$app/stores"
 
+  import { filters } from "$lib/filters"
   import { clickOutside } from "$lib/helpers"
   import type { components } from "$lib/openAPI"
   import type { Model } from "$lib/types/data"
   import { aDownload } from "$lib/utils/download"
 
-  import { a_download } from "$components/Data/Charts/utils"
   import DateTimeField from "$components/Fields/Display2/DateTimeField.svelte"
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
   import EyeIcon from "$components/icons/EyeIcon.svelte"
@@ -24,6 +22,7 @@
   import Table, { type Column } from "$components/Table/Table.svelte"
 
   import ActionButton from "../../ActionButton.svelte"
+  import { createBlob, createFilename, type DownloadContext } from "../../download"
 
   let model: Model = "deal"
   type Item = components["schemas"]["DealQISnapshot"]
@@ -55,10 +54,13 @@
     selectedItemId = id === selectedItemId ? null : id
   }
   const downloadSingle = (item: Item) => {
-    a_download(
-      "data:application/json;charset=utf-8," + encodeURIComponent(JSON.stringify(item)),
-      "data-quality-indicators.json",
-    )
+    const blob = createBlob("json", item)
+    const filename =
+      new Date(item.created_at).toISOString().slice(0, 10) +
+      "_" +
+      "over-time-deal-quality-indicator.json"
+
+    aDownload(blob, filename)
   }
 
   interface Filter {
@@ -90,39 +92,20 @@
     e: DownloadEvent,
     data: components["schemas"]["DealQISnapshot"][],
   ) => {
-    const filename = "quality-indicators-over-time"
-
     const flatData = data.map(x => {
       const { data, ...rest } = x // omit data key
       return { ...rest, ...data }
     })
 
-    switch (e.detail) {
-      case "json": {
-        const jsonString = JSON.stringify(data)
-        a_download(
-          "data:application/json;charset=utf-8," + encodeURIComponent(jsonString),
-          `${filename}.json`,
-        )
-        break
-      }
-      case "csv": {
-        const csvString = csvStringify(flatData, { header: true })
-        a_download(
-          "data:text/csv;charset=utf-8," + encodeURIComponent(csvString),
-          `${filename}.csv`,
-        )
-        break
-      }
-      case "xlsx": {
-        const csvString = csvStringify(flatData, { header: true })
-        const wb = xlsx.read(csvString, { type: "string" })
-        const data = xlsx.write(wb, { type: "array", bookType: "xlsx" })
-        const blob = new Blob([data], { type: "application/ms-excel" })
-        aDownload(blob, `${filename}.xlsx`)
-        break
-      }
+    const blob = createBlob(e.detail, flatData)
+    const context: DownloadContext = {
+      filters: $filters,
+      regions: $page.data.regions,
+      countries: $page.data.countries,
     }
+    const filename = createFilename("quality-over-time", e.detail, context)
+
+    aDownload(blob, filename)
 
     showDownloadModal = false
   }
@@ -250,10 +233,10 @@
             {#each data[model] as qi (qi.key)}
               <li
                 class="grid w-full grid-cols-12 flex-nowrap items-center gap-2 text-left text-gray-700 dark:text-white"
-                title={qi.description}
+                title={qi.name}
               >
                 <span class="col-span-8 lg:col-span-10">
-                  {qi.description}
+                  {qi.name}
                 </span>
                 <span class="col-span-2 lg:col-span-1">
                   {item.data[qi.key]}
