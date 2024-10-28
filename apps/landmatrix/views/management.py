@@ -305,9 +305,6 @@ class CaseStatistics(View):
     def get(self, request: WSGIRequest) -> HttpResponse:
         action = request.GET.get("action")
 
-        if action == "counts":
-            return self._counts(request)
-
         if action == "deals":
             return JsonResponse({"deals": list(self.__deals_query())})
 
@@ -333,66 +330,6 @@ class CaseStatistics(View):
             return self._investor_buckets(dt_start, dt_end, region, country)
 
         return HttpResponseBadRequest(f"Unknown action: {action}")
-
-    @staticmethod
-    def _create_statistics(country_id=None, region_id=None):
-        qs = DealHull.objects.public()
-
-        if country_id:
-            qs = qs.filter(country_id=country_id)
-        if region_id:
-            qs = qs.filter(country__region_id=region_id)
-
-        deals_public_count = qs.count()
-
-        deals_public_multi_ds_count = (
-            qs.annotate(num_ds=Count("active_version__datasources"))
-            .filter(num_ds__gt=1)
-            .count()
-        )
-
-        deals_public_high_geo_accuracy = (
-            qs.annotate(
-                high_accuracy=Case(
-                    When(
-                        active_version__locations__level_of_accuracy__in=[
-                            "EXACT_LOCATION",
-                            "COORDINATES",
-                        ],
-                        then=True,
-                    ),
-                    default=False,
-                    output_field=BooleanField(),
-                ),
-                num_ds=Count("active_version__locations__areas"),
-            )
-            .filter(Q(num_ds__gt=0) | Q(high_accuracy=True))
-            .count()
-        )
-
-        deals_public_polygons = (
-            qs.annotate(num_areas=Count("active_version__locations__areas"))
-            .filter(num_areas__gt=0)
-            .count()
-        )
-
-        return {
-            "deals_public_count": deals_public_count,
-            "deals_public_multi_ds_count": deals_public_multi_ds_count,
-            "deals_public_high_geo_accuracy": deals_public_high_geo_accuracy,
-            "deals_public_polygons": deals_public_polygons,
-        }
-
-    def _counts(self, request) -> JsonResponse:
-        country_id = request.GET.get("country")
-        region_id = request.GET.get("region")
-        counts = self._create_statistics(country_id, region_id)
-        public_investors = InvestorHull.objects.active()
-        counts["investors_public_count"] = public_investors.count()
-        counts["investors_public_known"] = public_investors.filter(
-            active_version__name_unknown=False
-        ).count()
-        return JsonResponse(counts)
 
     @staticmethod
     def __deals_query():
@@ -460,6 +397,10 @@ class CaseStatistics(View):
     ) -> JsonResponse:
         queries = {
             "added": Q(first_created_at__range=(start, end)),
+            "added_and_activated": Q(
+                first_created_at__range=(start, end),
+                active_version__isnull=False,
+            ),
             "updated": Q(active_version__modified_at__range=(start, end)),
             "fully_updated": Q(fully_updated_at__range=(start, end)),
             "activated": Q(active_version__activated_at__range=(start, end)),
@@ -485,6 +426,10 @@ class CaseStatistics(View):
     ) -> JsonResponse:
         queries = {
             "added": Q(first_created_at__range=(start, end)),
+            "added_and_activated": Q(
+                first_created_at__range=(start, end),
+                active_version__isnull=False,
+            ),
             "updated": Q(active_version__modified_at__range=(start, end)),
             "activated": Q(active_version__activated_at__range=(start, end)),
         }

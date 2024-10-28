@@ -38,6 +38,7 @@ django tests and coverage:
       alias: postgres
   script:
     - poetry install
+#    - poetry run ./manage.py migrate --noinput
     - poetry run pytest -x -p warnings --cov=apps --cov-report=term-missing
   coverage: /^TOTAL.*\s+(\d+\%)$/
 

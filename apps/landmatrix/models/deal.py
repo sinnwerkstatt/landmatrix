@@ -63,25 +63,6 @@ class DealHullQuerySet(models.QuerySet):
             return self.active()
         return self.normal()
 
-    # def with_mode(self):
-    #     return self.annotate(
-    #         mode=Case(
-    #             When(
-    #                 ~Q(active_version_id=None) & ~Q(draft_version_id=None),
-    #                 then=Concat(Value("ACTIVE + "), "draft_version__status"),
-    #             ),
-    #             When(
-    #                 ~Q(active_version_id=None) & Q(draft_version_id=None),
-    #                 then=Value("ACTIVE"),
-    #             ),
-    #             When(
-    #                 Q(active_version_id=None) & ~Q(draft_version_id=None),
-    #                 then="draft_version__status",
-    #             ),
-    #             default=Value(""),
-    #         )
-    #     )
-
 
 class DealHull(BaseHull):
     country = models.ForeignKey(

@@ -22,6 +22,7 @@
     <button
       class="m-0.5 flex-grow p-1 text-left"
       on:click={() => (expanded = !expanded)}
+      type="button"
     >
       <ChevronDownIcon
         class="transition-duration-300 inline h-4 w-4 rounded transition-transform {expanded
@@ -37,6 +38,7 @@
           expanded = false
           dispatch("clear")
         }}
+        type="reset"
       >
         <ClearFilter />
       </button>

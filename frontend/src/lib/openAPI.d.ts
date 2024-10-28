@@ -125,6 +125,24 @@ export interface paths {
   "/api/messages/{id}/": {
     get: operations["api_messages_retrieve"]
   }
+  "/api/quality-indicators/": {
+    get: operations["qi_specs"]
+  }
+  "/api/quality-indicators/counts/deal/": {
+    get: operations["qi_deal_counts"]
+  }
+  "/api/quality-indicators/counts/investor/": {
+    get: operations["qi_investor_counts"]
+  }
+  "/api/quality-indicators/deal/": {
+    get: operations["qi_deal_list"]
+  }
+  "/api/quality-indicators/investor/": {
+    get: operations["qi_investor_list"]
+  }
+  "/api/quality-indicators/stats/": {
+    get: operations["qi_stats"]
+  }
   "/api/regions/": {
     get: operations["api_regions_list"]
   }
@@ -937,6 +955,50 @@ export interface components {
       actors: components["schemas"]["ValueLabel"][]
       produce_group: components["schemas"]["ValueLabel"][]
     }
+    DealQICounts: {
+      "locations/any-georeferenced-or-high-accuracy": number
+      "locations/all-georeferenced-or-high-accuracy": number
+      "locations/any-georeferenced": number
+      "locations/all-georeferenced": number
+      "locations/any-georeferenced-as-contract": number
+      "locations/any-georeferenced-as-production": number
+      "data-sources/has-multiple": number
+      "data-sources/all-valid": number
+      "imp-and-neg-status": number
+      "imp-and-neg-status-dated": number
+      "imp-and-neg-status-and-area-dated": number
+      "production-or-contract-area-dated": number
+      "all-basic-fields": number
+      "any-produce-info": number
+      "operating-company-in-target-country": number
+      total: number
+    }
+    DealQIData: {
+      "locations/any-georeferenced-or-high-accuracy": number
+      "locations/all-georeferenced-or-high-accuracy": number
+      "locations/any-georeferenced": number
+      "locations/all-georeferenced": number
+      "locations/any-georeferenced-as-contract": number
+      "locations/any-georeferenced-as-production": number
+      "data-sources/has-multiple": number
+      "data-sources/all-valid": number
+      "imp-and-neg-status": number
+      "imp-and-neg-status-dated": number
+      "imp-and-neg-status-and-area-dated": number
+      "production-or-contract-area-dated": number
+      "all-basic-fields": number
+      "any-produce-info": number
+      "operating-company-in-target-country": number
+      TOTAL: number
+    }
+    DealQISnapshot: {
+      id: number
+      data: components["schemas"]["DealQIData"]
+      /** Format: date-time */
+      created_at: string
+      subset_key: string | null
+      region: number | null
+    }
     DealVersion: {
       id: number
       locations: readonly components["schemas"]["Location"][]
@@ -1655,6 +1717,26 @@ export interface components {
     InvestorFields: {
       classification: components["schemas"]["ValueLabel"][]
     }
+    InvestorQICounts: {
+      name: number
+      country: number
+      involvements: number
+      "data-sources": number
+      total: number
+    }
+    InvestorQIData: {
+      name: number
+      country: number
+      involvements: number
+      "data-sources": number
+      TOTAL: number
+    }
+    InvestorQISnapshot: {
+      id: number
+      data: components["schemas"]["InvestorQIData"]
+      /** Format: date-time */
+      created_at: string
+    }
     InvestorVersion: {
       id: number
       datasources: readonly components["schemas"]["InvestorDataSource"][]
@@ -2060,6 +2142,46 @@ export interface components {
      * @enum {string}
      */
     ParentRelationEnum: "SUBSIDIARY" | "LOCAL_BRANCH" | "JOINT_VENTURE"
+    QIDealListResponse: {
+      id: number
+      /** Format: double */
+      deal_size: number
+      version_id: number
+      country_id: number
+      /** Format: date-time */
+      created_at: string
+      /** Format: date-time */
+      modified_at: string
+      /** Format: date-time */
+      fully_updated_at: string
+      current_intention_of_investment: string[]
+      current_negotiation_status: string[]
+      current_implementation_status: string[]
+    }
+    QIInvestorListResponse: {
+      id: number
+      name: string
+      version_id: number
+      country_id: number
+      /** Format: date-time */
+      created_at: string
+      /** Format: date-time */
+      modified_at: string
+    }
+    QISpecsResponse: {
+      investor: components["schemas"]["QualityIndicator"][]
+      deal: components["schemas"]["QualityIndicator"][]
+      deal_subset: components["schemas"]["Subset"][]
+    }
+    QIStatsResponse: {
+      deal: components["schemas"]["DealQISnapshot"][]
+      investor: components["schemas"]["InvestorQISnapshot"][]
+    }
+    QualityIndicator: {
+      key: string
+      name: string
+      description: string
+    }
     /**
      * @description * `INDIGENOUS_RIGHTS_RECOGNIZED` - Indigenous Peoples traditional or customary rights recognized by government
      * * `INDIGENOUS_RIGHTS_NOT_RECOGNIZED` - Indigenous Peoples traditional or customary rights not recognized by government
@@ -2133,6 +2255,10 @@ export interface components {
      * @enum {string}
      */
     SourceOfWaterExtractionEnum: "GROUNDWATER" | "SURFACE_WATER" | "RIVER" | "LAKE"
+    Subset: {
+      key: string
+      description: string
+    }
     User: {
       id: number
       /** @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
@@ -3547,6 +3673,99 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["Message"]
+        }
+      }
+    }
+  }
+  qi_specs: {
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["QISpecsResponse"]
+        }
+      }
+    }
+  }
+  qi_deal_counts: {
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["DealQICounts"]
+        }
+      }
+    }
+  }
+  qi_investor_counts: {
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["InvestorQICounts"]
+        }
+      }
+    }
+  }
+  qi_deal_list: {
+    parameters: {
+      query: {
+        /** @description Filter by country. */
+        country_id?: number
+        /** @description Get the inverse query set. */
+        inverse?: boolean
+        /** @description Filter deals by quality indicator. */
+        qi:
+          | "all-basic-fields"
+          | "any-produce-info"
+          | "data-sources/all-valid"
+          | "data-sources/has-multiple"
+          | "imp-and-neg-status"
+          | "imp-and-neg-status-and-area-dated"
+          | "imp-and-neg-status-dated"
+          | "locations/all-georeferenced"
+          | "locations/all-georeferenced-or-high-accuracy"
+          | "locations/any-georeferenced"
+          | "locations/any-georeferenced-as-contract"
+          | "locations/any-georeferenced-as-production"
+          | "locations/any-georeferenced-or-high-accuracy"
+          | "operating-company-in-target-country"
+          | "production-or-contract-area-dated"
+        /** @description Filter by Land Matrix region. */
+        region_id?: number
+      }
+    }
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["QIDealListResponse"][]
+        }
+      }
+    }
+  }
+  qi_investor_list: {
+    parameters: {
+      query: {
+        /** @description Filter by country. */
+        country_id?: number
+        /** @description Get the inverse query set. */
+        inverse?: boolean
+        /** @description Filter investors by quality indicator. */
+        qi: "country" | "data-sources" | "involvements" | "name"
+        /** @description Filter by Land Matrix region. */
+        region_id?: number
+      }
+    }
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["QIInvestorListResponse"][]
+        }
+      }
+    }
+  }
+  qi_stats: {
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["QIStatsResponse"]
         }
       }
     }

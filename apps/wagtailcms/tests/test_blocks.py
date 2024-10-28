@@ -1,5 +1,6 @@
 from django.test import RequestFactory, TestCase
 from wagtail.images.tests.utils import Image, get_test_image_file
+from wagtail.models import Locale, Collection
 
 from apps.blog.models import BlogPage
 from apps.wagtailcms.blocks import *
@@ -88,9 +89,17 @@ class TwitterBlockTestCase(TestCase):
 
 
 class ImageBlockTestCase(TestCase):
+
+    def setUp(self):
+        self.collection = Collection.objects.create(name="Test Collection", depth=0)
+
     def test_get_context(self):
         block = ImageBlock()
-        image = Image.objects.create(id=1, title="Test", file=get_test_image_file())
+        image = Image.objects.create(
+            title="Test",
+            file=get_test_image_file(),
+            collection=self.collection,
+        )
         context = block.get_context(image)
         self.assertGreater(len(context.get("url")), 0)
         self.assertEqual("Test", context.get("name"))
@@ -99,11 +108,18 @@ class ImageBlockTestCase(TestCase):
 class LinkedImageBlockTestCase(TestCase):
     fixtures = ["countries_and_regions"]
 
+    def setUp(self):
+        self.collection = Collection.objects.create(name="Test Collection", depth=0)
+
     def test_get_context(self):
         block = LinkedImageBlock()
         request = RequestFactory()
         request.resolver_match = AttrDict(kwargs={"country_slug": "myanmar"})
-        image = Image.objects.create(id=1, title="Test", file=get_test_image_file())
+        image = Image.objects.create(
+            title="Test",
+            file=get_test_image_file(),
+            collection=self.collection,
+        )
         context = block.get_context(
             {"url": "url", "image": image}, {"request": request}
         )
@@ -112,11 +128,18 @@ class LinkedImageBlockTestCase(TestCase):
 
 
 class SliderBlockTestCase(TestCase):
+    def setUp(self):
+        self.collection = Collection.objects.create(name="Test Collection", depth=0)
+
     def test_get_context(self):
         block = SliderBlock()
         request = RequestFactory()
         request.resolver_match = AttrDict(kwargs={"country_slug": "myanmar"})
-        image = Image.objects.create(id=1, title="Test", file=get_test_image_file())
+        image = Image.objects.create(
+            title="Test",
+            file=get_test_image_file(),
+            collection=self.collection,
+        )
         context = block.get_context(
             {
                 "title": "title",
@@ -133,11 +156,19 @@ class SliderBlockTestCase(TestCase):
 
 
 class GalleryBlockTestCase(TestCase):
+
+    def setUp(self):
+        self.collection = Collection.objects.create(name="Test Collection", depth=0)
+
     def test_get_context(self):
         block = GalleryBlock()
         request = RequestFactory()
         request.resolver_match = AttrDict(kwargs={"country_slug": "myanmar"})
-        image = Image.objects.create(id=1, title="Test", file=get_test_image_file())
+        image = Image.objects.create(
+            title="Test",
+            file=get_test_image_file(),
+            collection=self.collection,
+        )
         context = block.get_context(
             {
                 "title": "title",
@@ -173,10 +204,15 @@ class LatestNewsBlockTestCase(TestCase):
     fixtures = ["countries_and_regions"]
 
     def setUp(self):
+        en, _ = Locale.objects.get_or_create(language_code="en")
         self.block = LatestNewsBlock()
         self.request = RequestFactory()
         self.page = BlogPage.objects.create(
-            title="Blog Page", path="/", depth=0, live=True
+            title="Blog Page",
+            path="/",
+            depth=0,
+            live=True,
+            locale=en,
         )
 
     def test_get_context_with_country(self):

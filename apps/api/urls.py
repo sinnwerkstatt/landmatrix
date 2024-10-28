@@ -18,6 +18,7 @@ from apps.message.views import MessageViewSet
 from .export import DataDownload
 from .gis_export import gis_export_areas, gis_export_locations
 from .upload_view import upload_datasource_file
+from .quality_indicators import urls as qi_urls
 
 
 def data_download(request):
@@ -39,6 +40,7 @@ router.register(r"blog_categories", BlogCategoryViewSet)
 router.register(r"blog_pages", BlogPageViewSet)
 
 urlpatterns = [
+    path("quality-indicators/", include(qi_urls)),
     path("schema.yaml", SpectacularYAMLAPIView.as_view(), name="schema.yaml"),
     path("schema.json", SpectacularJSONAPIView.as_view(), name="schema.json"),
     path("schema/", RedirectView.as_view(url="/api/schema.yaml")),

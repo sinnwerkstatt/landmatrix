@@ -3,15 +3,30 @@
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
-  import type { Country, Region } from "$lib/types/data"
+  import { page } from "$app/stores"
 
-  import type { CaseStatisticsDeal, CaseStatisticsInvestor } from "./caseStatistics"
-  import CaseStatisticsTable from "./CaseStatisticsTable.svelte"
+  import { filters } from "$lib/filters"
+  import type { Model } from "$lib/types/data"
+  import { aDownload } from "$lib/utils/download"
 
-  export let selCountry: Country | undefined
-  export let selRegion: Region | undefined
+  import DownloadIcon from "$components/icons/DownloadIcon.svelte"
+  import DownloadModal, {
+    type DownloadEvent,
+  } from "$components/New/DownloadModal.svelte"
 
-  let model: "deal" | "investor" = "deal"
+  import ActionButton from "../../ActionButton.svelte"
+  import {
+    createBlob,
+    createFilename,
+    resolveCountryAndRegionNames,
+    type DownloadContext,
+  } from "../../download"
+  import CaseStatisticsTable, {
+    type CaseStatisticsDeal,
+    type CaseStatisticsInvestor,
+  } from "../CaseStatisticsTable.svelte"
+
+  let model: Model = "deal"
   let activeTabId: string | undefined = "pending"
 
   $: navTabs =
@@ -42,10 +57,10 @@
 
   onMount(() => getDealsInvestors())
 
-  $: deals = selRegion
-    ? simpleDeals.filter(d => d.region_id === selRegion?.id)
-    : selCountry
-      ? simpleDeals.filter(d => d.country_id === selCountry?.id)
+  $: deals = $filters.country_id
+    ? simpleDeals.filter(d => d.country_id === $filters.country_id)
+    : $filters.region_id
+      ? simpleDeals.filter(d => d.region_id === $filters.region_id)
       : simpleDeals
 
   let _active_deals: CaseStatisticsDeal[]
@@ -63,10 +78,10 @@
     active_confidential: _active_deals.filter(deal => deal.confidential),
   }
 
-  $: investors = selRegion
-    ? simpleInvestors.filter(inv => inv.region_id === selRegion?.id)
-    : selCountry
-      ? simpleInvestors.filter(inv => inv.country_id === selCountry?.id)
+  $: investors = $filters.country_id
+    ? simpleInvestors.filter(inv => inv.country_id === $filters.country_id)
+    : $filters.region_id
+      ? simpleInvestors.filter(inv => inv.region_id === $filters.region_id)
       : simpleInvestors
 
   let investorsBuckets: { [key: string]: CaseStatisticsInvestor[] }
@@ -78,9 +93,44 @@
     ),
     active: investors.filter(investor => investor.active_version_id !== null),
   }
+
+  let showDownloadModal = false
+
+  const download = (e: DownloadEvent) => {
+    const context: DownloadContext = {
+      filters: $filters,
+      regions: $page.data.regions,
+      countries: $page.data.countries,
+    }
+    const objects = (model === "deal" ? dealsBuckets : investorsBuckets)[activeTabId!]
+    const enrichedObjects = resolveCountryAndRegionNames(objects, context)
+    const blob = createBlob(e.detail, enrichedObjects)
+
+    const filename = createFilename(`${model}s_${activeTabId}`, e.detail, context)
+
+    blob && aDownload(blob, filename)
+
+    showDownloadModal = false
+  }
 </script>
 
-<h2 class="heading5">{$_("Indicator listings")}</h2>
+<h2 class="heading3">
+  {$_("Deals and investors by activation status")}
+</h2>
+
+<div class="my-2 flex items-center justify-end gap-6">
+  <ActionButton
+    on:click={() => (showDownloadModal = true)}
+    icon={DownloadIcon}
+    label={$_("Download")}
+  />
+</div>
+
+<DownloadModal
+  bind:open={showDownloadModal}
+  on:download={download}
+  fileTypes={["csv", "xlsx"]}
+/>
 
 <div class="relative flex h-[400px] w-full border">
   <nav
@@ -114,6 +164,7 @@
         {$_("Investors")}
       </button>
     </div>
+
     <div class="w-full self-start">
       <ul>
         {#each navTabs as item}
@@ -151,8 +202,8 @@
       </ul>
     </div>
   </nav>
-  <div class="basis-3/4 xl:basis-4/5">
-    <!--{activeTabId}-->
+
+  <div class="basis-3/4 overflow-auto xl:basis-4/5">
     {#if activeTabId}
       <CaseStatisticsTable
         {model}

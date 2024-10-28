@@ -2,6 +2,7 @@ import zipfile
 from io import BytesIO
 
 import unicodecsv as csv
+from django.http.response import HttpResponseBadRequest
 from openpyxl import Workbook
 from openpyxl.utils.exceptions import IllegalCharacterError
 
@@ -12,10 +13,13 @@ from django.http import HttpResponse
 from django.shortcuts import render
 
 from apps.api.export import converter
+from apps.api.quality_indicators.serializers import QueryParamsSerializer
 from apps.landmatrix.involvement_network import InvolvementNetwork
 from apps.landmatrix.models.top_investors import DealTopInvestors
 from apps.landmatrix.models.deal import DealVersion, DealHull
 from apps.landmatrix.models.investor import InvestorHull, Involvement
+from apps.landmatrix.quality_indicators import DEAL_QIS
+from apps.landmatrix.quality_indicators.deal import annotate_counts
 from apps.landmatrix.utils import parse_filters
 
 deal_headers = converter.deal_fields.values()
@@ -247,6 +251,7 @@ def _deal_qs_to_values(qs: QuerySet[DealVersion]):
             "deal__confidential_comment",
             "deal__country",
             "deal__fully_updated_at",
+            "deal__first_created_at",
         )
         .annotate(
             operating_company=Case(
@@ -297,7 +302,7 @@ class DataDownload:
         if deal_id:
             self._single_deal(deal_id)
         else:
-            self._multiple_deals(self.request)
+            self._multiple_deals()
 
     def _single_deal(self, deal_id):
         dealhull = DealHull.objects.visible(self.user, self.subset).get(id=deal_id)
@@ -336,15 +341,33 @@ class DataDownload:
 
         self.filename = f"deal_{deal_id}"
 
-    def _multiple_deals(self, filtersx):
-        # print(filtersx)
-        dealhulls = DealHull.objects.visible(self.user, subset=self.subset)
-        if filtersx:
-            dealhulls = dealhulls.filter(parse_filters(filtersx))
+    def _multiple_deals(self):
+        dealhulls = DealHull.objects.visible(self.user, subset=self.subset).filter(
+            parse_filters(self.request)
+        )
 
         qs: QuerySet[DealVersion] = DealVersion.objects.filter(
             id__in=dealhulls.values_list("active_version_id", flat=True)
         ).order_by("deal_id")
+
+        # Quality indicators
+        if qi := self.request.GET.get("qi"):
+            keys = [qi.key for qi in DEAL_QIS]
+
+            try:
+                qi_index = keys.index(qi)
+            except ValueError:
+                return HttpResponseBadRequest("Invalid qi")
+
+            query = DEAL_QIS[qi_index].query()
+
+            serializer = QueryParamsSerializer(data=self.request.GET)
+            serializer.is_valid(raise_exception=True)
+
+            if serializer.validated_data["inverse"]:
+                query = ~query
+
+            qs = qs.annotate(counts=annotate_counts()).filter(query)
 
         self.deals = [converter.deal_download_format(d) for d in _deal_qs_to_values(qs)]
 

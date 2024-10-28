@@ -7,7 +7,7 @@
   }
 </script>
 
-<script lang="ts">
+<script lang="ts" generics="T extends object">
   import cn from "classnames"
   import { onMount } from "svelte"
   import VirtualList from "svelte-tiny-virtual-list"
@@ -16,8 +16,10 @@
 
   import ChevronDownIcon from "$components/icons/ChevronDownIcon.svelte"
 
+  /* eslint-disable no-undef */
+  export let items: T[] = []
+  /* eslint-enable no-undef */
   export let columns: Column[]
-  export let items: unknown[] = []
   export let sortBy: string | null = null
 
   export let rowHeightInPx = 90
@@ -79,7 +81,7 @@
       <div
         slot="item"
         class="row {index === 0
-          ? 'items-center bg-gray-700 font-medium text-white'
+          ? 'items-center bg-gray-700 font-medium text-white dark:bg-gray-800 dark:text-white'
           : 'odd:bg-white even:bg-gray-100 hover:bg-gray-200 dark:odd:bg-gray-600 dark:even:bg-gray-700 dark:hover:bg-gray-500'} {rowClasses}"
         let:index
         let:style
@@ -91,6 +93,7 @@
               class="m-0 cursor-pointer p-1 text-left"
               style="grid-column: span {spans[colIndex]} / span {spans[colIndex]}"
               on:click={() => onTableHeadClick(col.key)}
+              title={labels[colIndex]}
             >
               {labels[colIndex]}
 

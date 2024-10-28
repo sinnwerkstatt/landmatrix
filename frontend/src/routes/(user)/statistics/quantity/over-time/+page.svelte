@@ -6,31 +6,48 @@
   import isSameOrBefore from "dayjs/plugin/isSameOrBefore"
   import { _ } from "svelte-i18n"
 
-  import { loading } from "$lib/stores/basics"
-  import type { Country, Region } from "$lib/types/data"
+  import { page } from "$app/stores"
 
-  import type { CaseStatisticsDeal, CaseStatisticsInvestor } from "./caseStatistics"
-  import CaseStatisticsTable from "./CaseStatisticsTable.svelte"
+  import { filters, FilterValues } from "$lib/filters"
+  import { loading } from "$lib/stores/basics"
+  import type { Model } from "$lib/types/data"
+  import { aDownload } from "$lib/utils/download"
+
+  import DownloadIcon from "$components/icons/DownloadIcon.svelte"
+  import DownloadModal, {
+    type DownloadEvent,
+  } from "$components/New/DownloadModal.svelte"
+
+  import ActionButton from "../../ActionButton.svelte"
+  import {
+    createBlob,
+    createFilename,
+    resolveCountryAndRegionNames,
+    type DownloadContext,
+  } from "../../download"
+  import CaseStatisticsTable, {
+    type CaseStatisticsDeal,
+    type CaseStatisticsInvestor,
+  } from "../CaseStatisticsTable.svelte"
 
   dayjs.extend(isSameOrBefore)
   dayjs.extend(isSameOrAfter)
 
-  export let region: Region | undefined = undefined
-  export let country: Country | undefined = undefined
-
-  let model: "deal" | "investor" = "deal"
+  let model: Model = "deal"
   let activeTabId: string | undefined = "added"
 
   $: navTabs =
     model === "deal"
       ? [
-          { id: "added", name: $_("Deals added") },
+          { id: "added", name: $_("Deals created") },
+          { id: "added_and_activated", name: $_("Deals created and activated") },
           { id: "updated", name: $_("Deals updated") },
           { id: "fully_updated", name: $_("Deals fully updated") },
           { id: "activated", name: $_("Deals activated") },
         ]
       : [
-          { id: "added", name: $_("Investors added") },
+          { id: "added", name: $_("Investors created") },
+          { id: "added_and_activated", name: $_("Investors created and activated") },
           { id: "updated", name: $_("Investors updated") },
           { id: "activated", name: $_("Investors activated") },
         ]
@@ -56,57 +73,66 @@
   let dealBuckets: { [key: string]: CaseStatisticsDeal[] } = {}
   let investorBuckets: { [key: string]: CaseStatisticsInvestor[] } = {}
 
-  async function _fetchDeals(
-    region: Region | undefined,
-    country: Country | undefined,
-    daterange: Daterange,
-  ) {
+  async function _fetchDeals(filters: FilterValues, daterange: Daterange) {
     const params = new URLSearchParams({
       action: "deal_buckets",
       start: dayjs(daterange.start).format("YYYY-MM-DD"),
       end: dayjs(daterange.end).format("YYYY-MM-DD"),
     })
-    if (region) params.append("region", `${region.id}`)
-    if (country) params.append("country", `${country.id}`)
+    if (filters.region_id) params.append("region", `${filters.region_id}`)
+    if (filters.country_id) params.append("country", `${filters.country_id}`)
 
     const ret = await fetch(`/api/case_statistics/?${params}`)
     if (ret.ok) dealBuckets = (await ret.json()).buckets
   }
 
-  async function _fetchInvestors(
-    region: Region | undefined,
-    country: Country | undefined,
-    daterange: Daterange,
-  ) {
+  async function _fetchInvestors(filters: FilterValues, daterange: Daterange) {
     const params = new URLSearchParams({
       action: "investor_buckets",
       start: dayjs(daterange.start).format("YYYY-MM-DD"),
       end: dayjs(daterange.end).format("YYYY-MM-DD"),
     })
-    if (region) params.append("region", `${region.id}`)
-    if (country) params.append("country", `${country.id}`)
+    if (filters.region_id) params.append("region", `${filters.region_id}`)
+    if (filters.country_id) params.append("country", `${filters.country_id}`)
 
     const ret = await fetch(`/api/case_statistics/?${params}`)
     if (ret.ok) investorBuckets = (await ret.json()).buckets
   }
 
-  async function fetchObjs(
-    region: Region | undefined,
-    country: Country | undefined,
-    daterange: Daterange,
-  ) {
+  async function fetchObjs(filters: FilterValues, daterange: Daterange) {
     loading.set(true)
     await Promise.all([
-      _fetchDeals(region, country, daterange),
-      _fetchInvestors(region, country, daterange),
+      _fetchDeals(filters, daterange),
+      _fetchInvestors(filters, daterange),
     ])
     loading.set(false)
   }
 
-  $: fetchObjs(region, country, daterange)
+  $: fetchObjs($filters, daterange)
+
+  let showDownloadModal = false
+
+  const download = (e: DownloadEvent) => {
+    const context: DownloadContext = {
+      filters: $filters,
+      regions: $page.data.regions,
+      countries: $page.data.countries,
+    }
+    const objects = (model === "deal" ? dealBuckets : investorBuckets)[activeTabId!]
+    const enrichedObjects = resolveCountryAndRegionNames(objects, context)
+    const blob = createBlob(e.detail, enrichedObjects)
+
+    const filename = createFilename(`${model}s_${activeTabId}`, e.detail, context)
+
+    blob && aDownload(blob, filename)
+
+    showDownloadModal = false
+  }
 </script>
 
-<h2 class="heading5">{$_("Changes within timespan")}</h2>
+<h2 class="heading3">
+  {$_("Data changes within time span")}
+</h2>
 
 <div class="my-2 flex items-center gap-6">
   <select
@@ -127,7 +153,19 @@
   </select>
   <DateInput bind:value={daterange.start} format="yyyy-MM-dd" />
   <DateInput bind:value={daterange.end} format="yyyy-MM-dd" />
+  <span class="flex-grow" />
+  <ActionButton
+    on:click={() => (showDownloadModal = true)}
+    icon={DownloadIcon}
+    label={$_("Download")}
+  />
 </div>
+
+<DownloadModal
+  bind:open={showDownloadModal}
+  on:download={download}
+  fileTypes={["csv", "xlsx"]}
+/>
 
 <div class="relative flex h-[400px] w-full border">
   <nav
@@ -198,7 +236,8 @@
       </ul>
     </div>
   </nav>
-  <div class="basis-3/4 xl:basis-4/5">
+
+  <div class="basis-3/4 overflow-auto xl:basis-4/5">
     {#if activeTabId}
       <CaseStatisticsTable
         {model}

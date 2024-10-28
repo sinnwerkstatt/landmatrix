@@ -29,6 +29,7 @@
 
   export let value: Item | null = null
   export let label = "label"
+  export let id: string | null = null
   export let required = false
   export let disabled = false
   export let creatable = false
@@ -95,6 +96,7 @@
   {disabled}
   {placeholder}
   {name}
+  {id}
   showChevron
   hasError={required && !value && !focused}
   on:input

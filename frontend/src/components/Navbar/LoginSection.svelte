@@ -76,8 +76,8 @@
             </a>
           </li>
           <li class="whitespace-nowrap">
-            <a class="nav-link-secondary" href="/management/case_statistics/">
-              {$_("Case statistics")}
+            <a class="nav-link-secondary" href="/statistics/">
+              {$_("Data Statistics")}
             </a>
           </li>
         </ul>
