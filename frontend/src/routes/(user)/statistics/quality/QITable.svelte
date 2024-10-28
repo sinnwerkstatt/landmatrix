@@ -61,7 +61,7 @@
     {columns}
     items={data}
     colWidthInPx={70}
-    rowHeightInPx={54}
+    rowHeightInPx={70}
     headerHeightInPx={54}
   >
     <svelte:fragment let:fieldName let:obj slot="field">

@@ -93,9 +93,9 @@
           </button>
 
           {#if isActive}
-            <span class="px-4 font-bold">
+            <div class="w-2/3 p-4">
               {qi.description}
-            </span>
+            </div>
             <slot name="list" />
           {/if}
         </li>
