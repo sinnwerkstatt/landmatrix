@@ -28,7 +28,7 @@ export function groupBy(array: [], key: string, value: string) {
       : result[currentValue[key]].push(currentValue)
     return result
   }, {})
-  let res = []
+  const res = []
   Object.entries(reduced).forEach(([key, values]) => {
     res.push({ label: key, values })
   })
@@ -70,7 +70,7 @@ export function usersToUserChoices(users: {
 
 export function initTableSelection(deal) {
   const totalSelection = get(tableSelection)
-  let dealSelection = totalSelection[deal.id]
+  const dealSelection = totalSelection[deal.id]
   if (!dealSelection) totalSelection[deal.id] = { deal: deal.id, variables: {} }
   deal.score.variables.forEach(v => {
     if (!totalSelection[deal.id].variables[v.vggt_variable])
@@ -91,7 +91,7 @@ export function searchMatch(string: string, filter: string) {
 }
 
 export function unique(myArray: []) {
-  let newArray = myArray.filter((v, i, self) => {
+  const newArray = myArray.filter((v, i, self) => {
     return i == self.indexOf(v)
   })
   return newArray

@@ -8,9 +8,7 @@
     currentDeal,
     currentVariable,
     deals,
-    me,
     openDrawer,
-    users,
   } from "$lib/accountability/stores"
   import { scoreLabels, vggtInfo } from "$lib/accountability/vggtInfo"
 
@@ -187,7 +185,7 @@
     }
   }
 
-  // $: console.log(data)
+  $: console.log(data)
   // $: console.log(variableInfo)
 
   // $: {

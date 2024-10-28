@@ -1,5 +1,5 @@
 <script lang="ts">
-  export let checkbox = false
+  export const checkbox = false
   export let ncol: number = 2 // To define if auto layout needed
   export let gridColsTemplate: string = `repeat(${ncol}, 1fr)` // CSS grid-template-columns rules
   export let divider = true

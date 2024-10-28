@@ -9,7 +9,7 @@ import {
 } from "$lib/accountability/projects.js"
 import type { components, paths } from "$lib/openAPI"
 
-export async function load({ params, fetch }) {
+export async function load({ fetch }) {
   const apiClient = createClient<paths>({ baseUrl: env.PUBLIC_BASE_URL, fetch })
 
   const allProjectsReq = await apiClient.GET("/api/accountability/project/")

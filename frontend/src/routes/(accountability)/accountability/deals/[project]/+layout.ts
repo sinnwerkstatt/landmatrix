@@ -1,7 +1,8 @@
 import { error } from "@sveltejs/kit"
 import { env } from "$env/dynamic/public"
 import createClient from "openapi-fetch"
-import { _ } from "svelte-i18n"
+
+// import { _ } from "svelte-i18n"
 
 import type { components, paths } from "$lib/openAPI"
 

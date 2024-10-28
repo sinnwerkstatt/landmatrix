@@ -132,15 +132,15 @@
     @apply border-a-gray-900;
   }
 
-  .search.disabled,
-  .search.disabled > span,
-  .search.disabled > button {
+  /* .search.disabled > span, */
+  /* .search.disabled > button, */
+  .search.disabled {
     @apply text-a-gray-400;
   }
 
-  .search.disabled > button {
+  /* .search.disabled > button {
     @apply cursor-default;
-  }
+  } */
 
   .showOnHover {
     @apply opacity-0;

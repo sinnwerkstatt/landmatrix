@@ -4,9 +4,8 @@ import { browser } from "$app/environment"
 import { page } from "$app/stores"
 
 import { allUsers } from "$lib/stores"
-import { loading } from "$lib/stores/basics"
 
-import { filters, FilterValues, lastRESTFilterArray } from "./filters"
+// import { filters, FilterValues, lastRESTFilterArray } from "./filters"
 import { sentenceToArray } from "./helpers"
 
 // Navigation status
@@ -27,10 +26,10 @@ dealsHistory.subscribe(value => {
 
 // allUsers derived store with more convenient info + filter only editor and above
 export const users = derived(allUsers, $allUsers => {
-  let res = []
+  const res = []
   $allUsers.forEach(user => {
     if (user.role >= 2) {
-      let obj = {
+      const obj = {
         id: user.id,
         name: user.full_name ? user.full_name : user.username,
       }
@@ -94,7 +93,7 @@ export const documentationBookmark = writable(undefined)
 // Table selection from Deals/Scoring
 export const tableSelection = writable({})
 export const tableSelectionChecked = derived(tableSelection, $tableSelection => {
-  let checked = []
+  const checked = []
   Object.keys($tableSelection).forEach(d => {
     Object.keys($tableSelection[d].variables).forEach(v => {
       if ($tableSelection[d].variables[v]) checked.push({ deal: d, variable: v })

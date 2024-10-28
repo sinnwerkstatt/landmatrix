@@ -1,11 +1,8 @@
 import { error } from "@sveltejs/kit"
 
-import { goto } from "$app/navigation"
-import { page } from "$app/stores"
-
 import { getCsrfToken } from "$lib/utils"
 
-export async function updateDealVariable(deal: number, variable: number, body: {}) {
+export async function updateDealVariable(deal: number, variable: number, body: object) {
   if (!deal || !variable)
     throw error(400, { message: "Deal ID and Variable must be defined" })
   try {

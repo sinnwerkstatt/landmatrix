@@ -14,7 +14,7 @@ export class Project {
   id: number = 0
   name: string = ""
   description: string = ""
-  owner: {} | undefined
+  owner: object | undefined
   editors: [] = []
   created_at: Date | undefined
   modified_at?: Date
@@ -61,13 +61,15 @@ export function updateFilters(project: Project) {
 // ==============================================================================
 // Functions to communicate with the API
 export async function getProject(projectID) {
-  try {
-    const res = await fetch(`/api/accountability/project/${projectID}/`)
-    if (!res.ok) throw error(res.status, { message: res.statusText })
-    return res
-  } catch (err) {
-    throw err
-  }
+  // try {
+  //   const res = await fetch(`/api/accountability/project/${projectID}/`)
+  //   if (!res.ok) throw error(res.status, { message: res.statusText })
+  //   return res
+  // } catch (err) {
+  //   throw err
+  // }
+  const res = await fetch(`/api/accountability/project/${projectID}/`)
+  if (!res.ok) throw error(res.status, { message: res.statusText })
 }
 
 export async function fetchAllProjects() {

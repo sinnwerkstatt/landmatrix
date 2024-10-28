@@ -6,7 +6,7 @@
   export let visible = false
   export let extraClass = ""
 
-  function handleClickOutside(event) {
+  function handleClickOutside() {
     visible = false
   }
 </script>

@@ -7,7 +7,7 @@
   export let open: boolean = false
   export let extraClass: string = ""
   export let title: string
-  export let large: boolean = false
+  export const large: boolean = false
   export let confirmLabel = "Save"
   export let disabled = false
 </script>
@@ -18,8 +18,7 @@
     transition:fade={{ duration: 100 }}
   >
     <div
-      class="relative flex max-h-full max-h-full min-w-[30rem] flex-col overflow-hidden rounded-lg bg-white shadow-a-md {extraClass}"
-      class:large
+      class="relative flex max-h-full max-h-full min-w-[30rem] flex-col overflow-hidden rounded-lg bg-white shadow-a-md {extraClass} w-full md:w-10/12 lg:w-8/12 2xl:w-1/2"
     >
       <div class="header border-b text-center text-a-xl font-semibold">
         {title}
@@ -54,7 +53,4 @@
     @apply w-full p-6;
   }
 
-  .large {
-    @apply w-full md:w-10/12 lg:w-8/12 2xl:w-1/2;
-  }
 </style>

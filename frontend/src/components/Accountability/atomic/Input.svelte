@@ -41,7 +41,7 @@
 
   // Type textarea
   export let maxlength = 280
-  export let rows = 4
+  export const rows = 4
 
   // Type number
   export let unit: string = "ha"
@@ -345,7 +345,6 @@
     @apply col-span-2;
   }
 
-  input.extraButton,
   .pseudo-input.extraButton {
     @apply col-span-1;
   }
@@ -355,7 +354,6 @@
     @apply col-span-3 col-start-1;
   }
 
-  input.noIcon.extraButton,
   .pseudo-input.noIcon.extraButton {
     @apply col-span-2 col-start-1;
   }
@@ -374,7 +372,7 @@
     @apply border-a-gray-300;
   }
 
-  .wrapper .white {
+  .wrapper.white {
     @apply bg-white;
   }
 
@@ -451,9 +449,9 @@
     @apply text-a-error-500;
   }
 
-  label.hide {
+  /* label.hide {
     @apply hidden;
-  }
+  } */
 
   .icon.green {
     @apply text-a-success-900;

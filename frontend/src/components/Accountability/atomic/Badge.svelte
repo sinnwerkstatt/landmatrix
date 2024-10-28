@@ -31,7 +31,7 @@
 {#if href}
   <a
     class:disabled
-    class="wrapper cursor-pointer {size} {icon} {color} {variant}"
+    class="wrapper cursor-pointer {size} {icon} {color} {variant} {disabled ? '!text-a-gray-400 !bg-a-gray-100' : ''} "
     {href}
     target="_blank"
   >
@@ -48,7 +48,7 @@
     {/if}
 
     {#if notification}
-      <div class="notification inline-block rounded-xl"></div>
+      <div class="notification inline-block rounded-xl {disabled ? '!bg-a-gray-400' : ''} "></div>
     {/if}
 
     <span class="line-clamp-1">{label}</span>
@@ -90,15 +90,6 @@
 
   .wrapper.small .notification {
     @apply h-2 w-2;
-  }
-
-  /* Disabled */
-  .wrapper.disabled {
-    @apply !text-a-gray-400;
-    @apply !bg-a-gray-100;
-  }
-  .wrapper.disabled > .notification {
-    @apply !bg-a-gray-400;
   }
 
   /* Light color variants */

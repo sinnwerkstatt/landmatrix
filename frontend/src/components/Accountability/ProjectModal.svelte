@@ -112,6 +112,7 @@
     description: formErrors.description ? "invalid" : "neutral",
   }
   function resetFormErrors(form) {
+    console.log(form)
     formErrors = {}
   }
   $: resetFormErrors(form)

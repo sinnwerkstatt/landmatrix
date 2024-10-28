@@ -38,7 +38,7 @@
     }
   }
 
-  async function handleReorder(event) {
+  async function handleReorder() {
     try {
       await updateUserBookmarks()
     } catch (error) {

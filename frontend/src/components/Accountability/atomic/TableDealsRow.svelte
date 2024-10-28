@@ -2,12 +2,11 @@
   import { onMount } from "svelte"
   import { slide } from "svelte/transition"
 
-  import { page } from "$app/stores"
+  // import { page } from "$app/stores"
 
   import { initTableSelection, unique } from "$lib/accountability/helpers"
   import {
     bulkUpdateDealVariable,
-    updateDealVariable,
   } from "$lib/accountability/scores"
   import {
     currentDeal,

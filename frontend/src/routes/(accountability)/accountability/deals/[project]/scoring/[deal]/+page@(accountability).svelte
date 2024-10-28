@@ -2,12 +2,10 @@
   import { page } from "$app/stores"
 
   import { users } from "$lib/accountability/placeholders"
-  // import { deals } from "$lib/accountability/placeholders"
   import { deals } from "$lib/accountability/stores"
 
   import AvatarGroup from "$components/Accountability/atomic/AvatarGroup.svelte"
   import Badge from "$components/Accountability/atomic/Badge.svelte"
-  import DrawerScoring from "$components/Accountability/DrawerScoring.svelte"
   import IconChevron from "$components/Accountability/icons/IconChevron.svelte"
   import TableVariables from "$components/Accountability/TableVariables.svelte"
 

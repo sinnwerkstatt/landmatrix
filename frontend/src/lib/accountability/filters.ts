@@ -22,7 +22,7 @@ export class FilterValues {
   forest_concession: boolean | null = null
 
   constructor(data: Partial<FilterValues> = {}) {
-    let clean = {}
+    const clean = {}
     Object.keys(data).forEach(key => {
       if (data[key] !== undefined) clean[key] = data[key]
     })

@@ -113,7 +113,7 @@
 
 <div class="">
   {#if categories.length > 0}
-    {#each cleanCategories as { label, choices, values, checked, partiallyChecked }}
+    {#each cleanCategories as { label, choices, checked, partiallyChecked }}
       {@const hidden = !searchMatchInArray(
         choices.map(e => e.label),
         filter,

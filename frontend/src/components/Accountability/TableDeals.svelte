@@ -1,7 +1,7 @@
 <script lang="ts">
   import { loadingDeals } from "$lib/accountability/deals"
-  import { usersToUserChoices } from "$lib/accountability/helpers"
-  import { users } from "$lib/accountability/placeholders"
+  // import { usersToUserChoices } from "$lib/accountability/helpers"
+  // import { users } from "$lib/accountability/placeholders"
   import { tableSelection } from "$lib/accountability/stores"
 
   import Checkbox from "./atomic/Checkbox.svelte"
@@ -50,20 +50,20 @@
     { value: "NO_DATA", label: "No data" },
   ]
 
-  function getAssignedUsers(deals, users) {
-    const allAssignees = deals
-      .map(deal => deal.score.variables)
-      .flat()
-      .map(e => e.assignee)
-      .filter(Boolean)
-      .map(user => user.id)
-    const uniqueAssignees = [...new Set(allAssignees)]
-    const assignedUsers = users.filter(user => uniqueAssignees.includes(user.id))
-    const result = usersToUserChoices(assignedUsers)
-    return result
-  }
+  // function getAssignedUsers(deals, users) {
+  //   const allAssignees = deals
+  //     .map(deal => deal.score.variables)
+  //     .flat()
+  //     .map(e => e.assignee)
+  //     .filter(Boolean)
+  //     .map(user => user.id)
+  //   const uniqueAssignees = [...new Set(allAssignees)]
+  //   const assignedUsers = users.filter(user => uniqueAssignees.includes(user.id))
+  //   const result = usersToUserChoices(assignedUsers)
+  //   return result
+  // }
 
-  $: userChoices = getAssignedUsers(deals, users)
+  // $: userChoices = getAssignedUsers(deals, users)
 
   function search(searchWord, data) {
     if (searchWord == "") {

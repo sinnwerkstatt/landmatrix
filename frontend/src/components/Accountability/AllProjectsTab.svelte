@@ -2,12 +2,13 @@
   import {
     addUserBookmark,
     allProjects,
-    openProjectModal,
+    // openProjectModal,
     removeUserBookmark,
   } from "$lib/accountability/projects"
 
-  import Modal from "$components/Accountability/Modal.svelte"
+  import { users } from "$lib/accountability/stores"
 
+  import Modal from "$components/Accountability/Modal.svelte"
   import Input from "./atomic/Input.svelte"
   import Pagination from "./atomic/Pagination.svelte"
   import Section from "./atomic/Section.svelte"
@@ -30,12 +31,12 @@
   }
 
   // Menu
-  function handleEdit(event) {
-    const projectId = event.detail.id
+  function handleEdit() {
+    // const projectId = event.detail.id
     // console.log("Edit action: " + projectId)
   }
 
-  function handleDelete(event) {
+  function handleDelete() {
     // openProjectModal('delete', event.detail.id)
   }
 
@@ -107,7 +108,7 @@
       type="select"
       label="Project creator"
       placeholder="Search for user"
-      choices={users}
+      choices={$users}
     />
   </div>
 </Modal>

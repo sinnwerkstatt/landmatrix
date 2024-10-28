@@ -47,7 +47,7 @@
 </script>
 
 <div class="relative {size} w-full" bind:this={box} bind:offsetWidth={boxWidth}>
-  {#each avatars.users as { id, name, initials }}
+  {#each avatars.users as { name, initials }}
     <span class="avatar">
       <Avatar {name} {initials} {size} ring={true} />
     </span>

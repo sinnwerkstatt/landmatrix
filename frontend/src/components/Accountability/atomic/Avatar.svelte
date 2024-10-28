@@ -131,7 +131,7 @@
   <!-- Popup with user info -->
   {#if type == "base" && tooltip && popupVisible}
     <div
-      class="tooltip-bg fixed z-20 grid place-content-center"
+      class="!bg-transparent hover:!bg-transparent fixed z-20 grid place-content-center"
       style="height: {popupHeight}px; width: {popupWidth}px; top: {popupTop}px; left: {popupLeft}px;"
       transition:fade={{ delay: 100, duration: 150 }}
     >
@@ -194,11 +194,6 @@
 
   .ring {
     @apply ring-white;
-  }
-
-  .tooltip-bg,
-  .tooltip-bg:hover {
-    @apply !bg-transparent;
   }
 
   .disabled,

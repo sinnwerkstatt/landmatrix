@@ -117,7 +117,7 @@ function makeDeal(id) {
 }
 
 function generateDeals(n) {
-  let array = [deal1, deal2]
+  const array = [deal1, deal2]
   let deal_id = 1235
   for (let i = 0; i < n; i++) {
     const newDeal = makeDeal(deal_id)

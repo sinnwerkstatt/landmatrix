@@ -1,12 +1,12 @@
-<script lang="ts">
+<!-- <script lang="ts">
   import dayjs from "dayjs"
   import relativeTime from "dayjs/plugin/relativeTime"
 
-  import { capitalizeFirst } from "$lib/accountability/helpers"
+  // import { capitalizeFirst } from "$lib/accountability/helpers"
 
-  import Avatar from "./Avatar.svelte"
-  import Badge from "./Badge.svelte"
-  import Embed from "./Embed.svelte"
+  // import Avatar from "./Avatar.svelte"
+  // import Badge from "./Badge.svelte"
+  // import Embed from "./Embed.svelte"
 
   export let data: {
     user: { name: string; initials: string }
@@ -20,7 +20,7 @@
     timestamp: "2024-05-12T14:48:00.000+09:00",
   }
 
-  export let line = false
+  export const line = false
 
   function getColorPalette(score) {
     if (score == "validated") return "success"
@@ -32,8 +32,8 @@
     return dayjs(data.timestamp).fromNow()
   }
 
-  $: time = getRelativeTime()
-</script>
+  // $: time = getRelativeTime()
+</script> -->
 
 <!-- <div class="wrapper">
     <div class="flex flex-col items-center">
@@ -70,7 +70,7 @@
     </div>
 </div> -->
 
-<style>
+<!-- <style>
   .wrapper {
     @apply grid gap-2;
     grid-template-columns: 2rem auto;
@@ -78,4 +78,4 @@
   .sentence {
     @apply font-normal text-a-gray-500;
   }
-</style>
+</style> -->

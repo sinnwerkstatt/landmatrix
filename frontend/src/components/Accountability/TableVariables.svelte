@@ -40,7 +40,7 @@
   let dealChecked = false
   let dealPartiallyChecked = false
 
-  function updateDealCheckbox(selection) {
+  function updateDealCheckbox() {
     if ($tableSelection[deal.id]?.variables) {
       const nvar = Object.keys($tableSelection[deal.id].variables).length
       const nselect = Object.values($tableSelection[deal.id].variables).filter(

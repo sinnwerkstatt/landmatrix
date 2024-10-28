@@ -5,7 +5,7 @@
   import { filters } from "$lib/accountability/filters.js"
   import { deals, dealsHistory } from "$lib/accountability/stores"
 
-  import Avatar from "$components/Accountability/atomic/Avatar.svelte"
+  // import Avatar from "$components/Accountability/atomic/Avatar.svelte"
   import DealsMenu from "$components/Accountability/DealsMenu.svelte"
   import FiltersSidebar from "$components/Accountability/FiltersSidebar.svelte"
   import PageHeading from "$components/Accountability/PageHeading.svelte"
@@ -26,6 +26,7 @@
   $: fetchDeals($filters)
 
   $: console.log($deals)
+  $: console.log(data)
 </script>
 
 <div class="flex h-screen w-full flex-row flex-nowrap bg-a-gray-50">

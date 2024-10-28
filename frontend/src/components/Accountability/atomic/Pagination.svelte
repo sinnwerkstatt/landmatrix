@@ -9,7 +9,7 @@
   export let dataset // Send the dataset to pagination
   export let pageContent = [] // Pagination stores here what must be displayed
   export let detached = false
-  export let containerHeight = "400"
+  export const containerHeight = "400"
   export let rowHeight = "56"
   export let rowsDelta: number = detached ? -2 : 0 // Positive = add rows, Negative = remove rows
   export let rowsByPage // Number of rows by page, if needed outside (like in Table.svelte)
@@ -18,6 +18,7 @@
   export let pagination = {}
 
   function resetPageOnDataChange(dataset) {
+    console.log(dataset)
     currentPage = 1
   }
 
