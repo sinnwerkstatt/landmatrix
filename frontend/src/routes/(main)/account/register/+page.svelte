@@ -42,7 +42,7 @@
       },
     })
     const retJson = await ret.json()
-    console.log(retJson)
+    // console.log(retJson)
     if (!ret.ok) {
       return toast.push(`Unknown Problem: ${retJson}`, { classes: ["error"] })
     }

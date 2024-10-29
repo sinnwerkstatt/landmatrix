@@ -3,6 +3,8 @@
   import { SvelteToast } from "@zerodevx/svelte-toast"
   import { env } from "$env/dynamic/public"
 
+  import { page } from "$app/stores"
+
   import LightboxImage from "$components/LightboxImage.svelte"
   import Messages from "$components/Messages.svelte"
   import Navbar from "$components/Navbar/Navbar.svelte"
@@ -24,17 +26,22 @@
   }
 </script>
 
-<div id="main-content" class="grid h-screen">
-  <div>
-    <Messages />
-    <NavigationLoader />
-    <Navbar />
-  </div>
+{#if $page.url.pathname.split("/")[1] != "accountability"}
+  <div id="main-content" class="grid h-screen">
+    <div>
+      <Messages />
+      <NavigationLoader />
+      <Navbar />
+    </div>
 
-  <div id="content" class="h-full overflow-y-auto transition-colors dark:bg-gray-900">
-    <slot />
+    <div id="content" class="h-full overflow-y-auto transition-colors dark:bg-gray-900">
+      <slot />
+    </div>
   </div>
-</div>
+{:else}
+  <!-- Reset layout for /accountability -->
+  <slot />
+{/if}
 
 {#if env.PUBLIC_MATOMO_URL && env.PUBLIC_MATOMO_SITE_ID}
   <Matomo

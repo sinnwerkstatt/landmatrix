@@ -4,6 +4,99 @@
  */
 
 export interface paths {
+  "/api/accountability/article/": {
+    get: operations["api_accountability_article_list"]
+    post: operations["api_accountability_article_create"]
+  }
+  "/api/accountability/article/{id}/": {
+    get: operations["api_accountability_article_retrieve"]
+    put: operations["api_accountability_article_update"]
+    delete: operations["api_accountability_article_destroy"]
+    patch: operations["api_accountability_article_partial_update"]
+  }
+  "/api/accountability/bookmark/": {
+    get: operations["api_accountability_bookmark_retrieve"]
+    put: operations["api_accountability_bookmark_update"]
+    post: operations["api_accountability_bookmark_create"]
+  }
+  "/api/accountability/bookmark/{id}/": {
+    get: operations["api_accountability_bookmark_retrieve_2"]
+    put: operations["api_accountability_bookmark_update_2"]
+    delete: operations["api_accountability_bookmark_destroy"]
+    patch: operations["api_accountability_bookmark_partial_update"]
+  }
+  "/api/accountability/chapter/": {
+    get: operations["api_accountability_chapter_list"]
+    post: operations["api_accountability_chapter_create"]
+  }
+  "/api/accountability/chapter/{chapter}/": {
+    get: operations["api_accountability_chapter_retrieve"]
+    put: operations["api_accountability_chapter_update"]
+    delete: operations["api_accountability_chapter_destroy"]
+    patch: operations["api_accountability_chapter_partial_update"]
+  }
+  "/api/accountability/deal/": {
+    get: operations["api_accountability_deal_list"]
+    post: operations["api_accountability_deal_create"]
+  }
+  "/api/accountability/deal/{deal}/{variable}/": {
+    get: operations["api_accountability_deal_retrieve_2"]
+    patch: operations["api_accountability_deal_partial_update_2"]
+  }
+  "/api/accountability/deal/{deal}/": {
+    get: operations["api_accountability_deal_retrieve"]
+    put: operations["api_accountability_deal_update"]
+    delete: operations["api_accountability_deal_destroy"]
+    patch: operations["api_accountability_deal_partial_update"]
+  }
+  "/api/accountability/deal/bulk/": {
+    patch: operations["api_accountability_deal_bulk_partial_update"]
+  }
+  "/api/accountability/project/": {
+    get: operations["api_accountability_project_list"]
+    post: operations["api_accountability_project_create"]
+  }
+  "/api/accountability/project/{id}/": {
+    get: operations["api_accountability_project_retrieve"]
+    put: operations["api_accountability_project_update"]
+    delete: operations["api_accountability_project_destroy"]
+    patch: operations["api_accountability_project_partial_update"]
+  }
+  "/api/accountability/project/bookmark/": {
+    get: operations["api_accountability_project_bookmark_list"]
+  }
+  "/api/accountability/project/related/": {
+    get: operations["api_accountability_project_related_list"]
+  }
+  "/api/accountability/schema/": {
+    /**
+     * @description OpenApi3 schema for this API. Format can be selected via content negotiation.
+     *
+     * - YAML: application/vnd.oai.openapi
+     * - JSON: application/vnd.oai.openapi+json
+     */
+    get: operations["api_accountability_schema_retrieve"]
+  }
+  "/api/accountability/user/": {
+    get: operations["api_accountability_user_list"]
+    post: operations["api_accountability_user_create"]
+  }
+  "/api/accountability/user/me/": {
+    get: operations["api_accountability_user_me_retrieve"]
+    put: operations["api_accountability_user_me_update"]
+    delete: operations["api_accountability_user_me_destroy"]
+    patch: operations["api_accountability_user_me_partial_update"]
+  }
+  "/api/accountability/variable/": {
+    get: operations["api_accountability_variable_list"]
+    post: operations["api_accountability_variable_create"]
+  }
+  "/api/accountability/variable/{number}/": {
+    get: operations["api_accountability_variable_retrieve"]
+    put: operations["api_accountability_variable_update"]
+    delete: operations["api_accountability_variable_destroy"]
+    patch: operations["api_accountability_variable_partial_update"]
+  }
   "/api/blog_categories/": {
     get: operations["api_blog_categories_list"]
   }
@@ -333,6 +426,11 @@ export interface components {
       id: string
       name: string
       slug: string
+    }
+    Bookmark: {
+      id: number
+      order?: number | null
+      project: number
     }
     /**
      * CarbonSequestrationCertEnum
@@ -999,6 +1097,127 @@ export interface components {
       subset_key: string | null
       region: number | null
     }
+    DealScore: {
+      id: number
+      score: components["schemas"]["DealScoreVersion"]
+      region_id: number | null
+      country: string
+      /** Format: double */
+      deal_size: number | null
+      negotiation_status:
+        | components["schemas"]["NegotiationStatusEnum"]
+        | components["schemas"]["BlankEnum"]
+        | components["schemas"]["NullEnum"]
+        | null
+      /** Nature of the deal */
+      nature_of_deal: readonly components["schemas"]["NatureOfDealEnum"][]
+      operating_company: string
+      initiation_year: number | null
+      implementation_status:
+        | components["schemas"]["ImplementationStatusEnum"]
+        | components["schemas"]["BlankEnum"]
+        | components["schemas"]["NullEnum"]
+        | null
+      intention_of_investment: readonly components["schemas"]["IntentionOfInvestmentEnum"][]
+      crops: readonly string[]
+      /** Current livestock */
+      animals: readonly string[]
+      minerals: string
+      transnational: boolean | null
+      forest_concession: boolean
+      /** Recognition status of community land tenure */
+      recognition_status: readonly components["schemas"]["RecognitionStatusEnum"][]
+      /** Comment on recognition status of community land tenure */
+      recognition_status_comment: string
+      displacement_of_people: boolean | null
+      /** Number of people actually displaced */
+      displaced_people: number | null
+      /** Number of households actually displaced */
+      displaced_households: number | null
+      /** Number of people displaced out of their community land */
+      displaced_people_from_community_land: number | null
+      /** Number of people displaced staying on community land */
+      displaced_people_within_community_land: number | null
+      /** Number of households displaced "only" from their agricultural fields */
+      displaced_households_from_fields: number | null
+      /** Number of people facing displacement once project is fully implemented */
+      displaced_people_on_completion: number | null
+      /** Comment on displacement of people */
+      displacement_of_people_comment: string
+      /** Promised compensation (e.g. for damages or resettlements) */
+      promised_compensation: string
+      /** Received compensation (e.g. for damages or resettlements) */
+      received_compensation: string
+      community_consultation:
+        | components["schemas"]["CommunityConsultationEnum"]
+        | components["schemas"]["BlankEnum"]
+        | components["schemas"]["NullEnum"]
+        | null
+      /** Comment on consultation of local community */
+      community_consultation_comment: string
+      /** Presence of land conflicts */
+      land_conflicts: boolean | null
+      /** Comment on presence of land conflicts */
+      land_conflicts_comment: string
+      /** Negative impacts for local communities */
+      negative_impacts: readonly components["schemas"]["NegativeImpactsEnum"][]
+      /** Comment on negative impacts for local communities */
+      negative_impacts_comment: string
+      /** Materialized benefits for local communities */
+      materialized_benefits: readonly components["schemas"]["BenefitsEnum"][]
+      /** Comment on materialized benefits for local communities */
+      materialized_benefits_comment: string
+      contract_farming: boolean | null
+      /** Comment on contract farming */
+      contract_farming_comment: string
+      /** Promised benefits for local communities */
+      promised_benefits: readonly components["schemas"]["BenefitsEnum"][]
+      /** Comment on promised benefits for local communities */
+      promised_benefits_comment: string
+      water_extraction_envisaged: boolean | null
+      /** Comment on water extraction envisaged */
+      water_extraction_envisaged_comment: string
+      source_of_water_extraction: readonly components["schemas"]["SourceOfWaterExtractionEnum"][]
+      /** Comment on source of water extraction */
+      source_of_water_extraction_comment: string
+      community_reaction:
+        | components["schemas"]["CommunityReactionEnum"]
+        | components["schemas"]["BlankEnum"]
+        | components["schemas"]["NullEnum"]
+        | null
+      /** Comment on community reaction */
+      community_reaction_comment: string
+      /** Comment on gender-related info */
+      gender_related_information: string
+      /** Format: double */
+      purchase_price: number | null
+      /** Format: double */
+      purchase_price_area: number | null
+      /** Comment on purchase price */
+      purchase_price_comment: string
+      /** Format: double */
+      annual_leasing_fee: number | null
+      /** Format: double */
+      annual_leasing_fee_area: number | null
+      /** Comment on leasing fee */
+      annual_leasing_fee_comment: string
+      /** Presence of organizations and actions taken (e.g. farmer organizations, NGOs, etc.) */
+      presence_of_organizations: string
+    }
+    DealScoreVersion: {
+      deal_version: number
+      status?: components["schemas"]["StatusFa7Enum"]
+      variables: components["schemas"]["DealVariable"][]
+    }
+    DealVariable: {
+      vggt_variable: number
+      status?: components["schemas"]["StatusFa7Enum"]
+      score?: components["schemas"]["ScoreEnum"]
+      /** Format: date-time */
+      scored_at?: string | null
+      scored_by?: number | null
+      assignee?: number | null
+    }
     DealVersion: {
       id: number
       locations: readonly components["schemas"]["Location"][]
@@ -1538,6 +1757,31 @@ export interface components {
       editor_description_fr?: string | null
       /** Editor description [ru] */
       editor_description_ru?: string | null
+    }
+    Filters: {
+      id: number
+      region_id?: number[] | null
+      country_id?: number[] | null
+      area_min?: number | null
+      area_max?: number | null
+      negotiation_status?: components["schemas"]["NegotiationStatusEnum"][] | null
+      nature_of_deal?: components["schemas"]["NatureOfDealEnum"][] | null
+      investor_id?: number[] | null
+      investor_country_id?: number[] | null
+      initiation_year_min?: number | null
+      initiation_year_max?: number | null
+      initiation_year_unknown?: boolean
+      implementation_status?: components["schemas"]["ImplementationStatusEnum"][] | null
+      intention_of_investment?:
+        | components["schemas"]["IntentionOfInvestmentEnum"][]
+        | null
+      intention_of_investment_unknown?: boolean
+      crops?: components["schemas"]["CropsEnum"][] | null
+      animals?: components["schemas"]["AnimalsEnum"][] | null
+      minerals?: components["schemas"]["MineralsEnum"][] | null
+      transnational?: boolean | null
+      forest_concession?: boolean | null
+      project: number
     }
     /**
      * @description * `CROPLAND` - Cropland
@@ -2142,6 +2386,176 @@ export interface components {
      * @enum {string}
      */
     ParentRelationEnum: "SUBSIDIARY" | "LOCAL_BRANCH" | "JOINT_VENTURE"
+    PatchedBookmark: {
+      id?: number
+      order?: number | null
+      project?: number
+    }
+    PatchedDealScore: {
+      id?: number
+      score?: components["schemas"]["DealScoreVersion"]
+      region_id?: number | null
+      country?: string
+      /** Format: double */
+      deal_size?: number | null
+      negotiation_status?:
+        | components["schemas"]["NegotiationStatusEnum"]
+        | components["schemas"]["BlankEnum"]
+        | components["schemas"]["NullEnum"]
+        | null
+      /** Nature of the deal */
+      nature_of_deal?: readonly components["schemas"]["NatureOfDealEnum"][]
+      operating_company?: string
+      initiation_year?: number | null
+      implementation_status?:
+        | components["schemas"]["ImplementationStatusEnum"]
+        | components["schemas"]["BlankEnum"]
+        | components["schemas"]["NullEnum"]
+        | null
+      intention_of_investment?: readonly components["schemas"]["IntentionOfInvestmentEnum"][]
+      crops?: readonly string[]
+      /** Current livestock */
+      animals?: readonly string[]
+      minerals?: string
+      transnational?: boolean | null
+      forest_concession?: boolean
+      /** Recognition status of community land tenure */
+      recognition_status?: readonly components["schemas"]["RecognitionStatusEnum"][]
+      /** Comment on recognition status of community land tenure */
+      recognition_status_comment?: string
+      displacement_of_people?: boolean | null
+      /** Number of people actually displaced */
+      displaced_people?: number | null
+      /** Number of households actually displaced */
+      displaced_households?: number | null
+      /** Number of people displaced out of their community land */
+      displaced_people_from_community_land?: number | null
+      /** Number of people displaced staying on community land */
+      displaced_people_within_community_land?: number | null
+      /** Number of households displaced "only" from their agricultural fields */
+      displaced_households_from_fields?: number | null
+      /** Number of people facing displacement once project is fully implemented */
+      displaced_people_on_completion?: number | null
+      /** Comment on displacement of people */
+      displacement_of_people_comment?: string
+      /** Promised compensation (e.g. for damages or resettlements) */
+      promised_compensation?: string
+      /** Received compensation (e.g. for damages or resettlements) */
+      received_compensation?: string
+      community_consultation?:
+        | components["schemas"]["CommunityConsultationEnum"]
+        | components["schemas"]["BlankEnum"]
+        | components["schemas"]["NullEnum"]
+        | null
+      /** Comment on consultation of local community */
+      community_consultation_comment?: string
+      /** Presence of land conflicts */
+      land_conflicts?: boolean | null
+      /** Comment on presence of land conflicts */
+      land_conflicts_comment?: string
+      /** Negative impacts for local communities */
+      negative_impacts?: readonly components["schemas"]["NegativeImpactsEnum"][]
+      /** Comment on negative impacts for local communities */
+      negative_impacts_comment?: string
+      /** Materialized benefits for local communities */
+      materialized_benefits?: readonly components["schemas"]["BenefitsEnum"][]
+      /** Comment on materialized benefits for local communities */
+      materialized_benefits_comment?: string
+      contract_farming?: boolean | null
+      /** Comment on contract farming */
+      contract_farming_comment?: string
+      /** Promised benefits for local communities */
+      promised_benefits?: readonly components["schemas"]["BenefitsEnum"][]
+      /** Comment on promised benefits for local communities */
+      promised_benefits_comment?: string
+      water_extraction_envisaged?: boolean | null
+      /** Comment on water extraction envisaged */
+      water_extraction_envisaged_comment?: string
+      source_of_water_extraction?: readonly components["schemas"]["SourceOfWaterExtractionEnum"][]
+      /** Comment on source of water extraction */
+      source_of_water_extraction_comment?: string
+      community_reaction?:
+        | components["schemas"]["CommunityReactionEnum"]
+        | components["schemas"]["BlankEnum"]
+        | components["schemas"]["NullEnum"]
+        | null
+      /** Comment on community reaction */
+      community_reaction_comment?: string
+      /** Comment on gender-related info */
+      gender_related_information?: string
+      /** Format: double */
+      purchase_price?: number | null
+      /** Format: double */
+      purchase_price_area?: number | null
+      /** Comment on purchase price */
+      purchase_price_comment?: string
+      /** Format: double */
+      annual_leasing_fee?: number | null
+      /** Format: double */
+      annual_leasing_fee_area?: number | null
+      /** Comment on leasing fee */
+      annual_leasing_fee_comment?: string
+      /** Presence of organizations and actions taken (e.g. farmer organizations, NGOs, etc.) */
+      presence_of_organizations?: string
+    }
+    PatchedDealVariable: {
+      vggt_variable?: number
+      status?: components["schemas"]["StatusFa7Enum"]
+      score?: components["schemas"]["ScoreEnum"]
+      /** Format: date-time */
+      scored_at?: string | null
+      scored_by?: number | null
+      assignee?: number | null
+    }
+    PatchedProject: {
+      id?: number
+      filters?: components["schemas"]["Filters"]
+      name?: string
+      description?: string
+      /** Format: date-time */
+      created_at?: string
+      /** Format: date-time */
+      modified_at?: string | null
+      owner?: number | null
+      modified_by?: number | null
+      editors?: number[]
+    }
+    PatchedUserInfo: {
+      id?: number
+      user?: number
+    }
+    PatchedVggtArticle: {
+      id?: number
+      title?: string
+      article?: number
+      description?: string
+      chapter?: number
+    }
+    PatchedVggtChapter: {
+      chapter?: number
+      name?: string
+    }
+    PatchedVggtVariable: {
+      number?: number
+      name?: string
+      score_options?: components["schemas"]["ScoreOptionsEnum"][]
+      landmatrix_fields?: string[] | null
+      landmatrix_additional_fields?: string[] | null
+      articles?: number[]
+    }
+    Project: {
+      id: number
+      filters: components["schemas"]["Filters"]
+      name: string
+      description: string
+      /** Format: date-time */
+      created_at: string
+      /** Format: date-time */
+      modified_at: string | null
+      owner: number | null
+      modified_by: number | null
+      editors?: number[]
+    }
     QIDealListResponse: {
       id: number
       /** Format: double */
@@ -2219,6 +2633,32 @@ export interface components {
        */
       point_lon_max: number
     }
+    /**
+     * @description * `NO_SCORE` - No score
+     * * `NO_DATA` - Insufficient data
+     * * `SEVERE_VIOLATIONS` - Severe violations
+     * * `PARTIAL_VIOLATIONS` - Violations
+     * * `NO_VIOLATIONS` - No violation
+     * @enum {string}
+     */
+    ScoreEnum:
+      | "NO_SCORE"
+      | "NO_DATA"
+      | "SEVERE_VIOLATIONS"
+      | "PARTIAL_VIOLATIONS"
+      | "NO_VIOLATIONS"
+    /**
+     * @description * `NO_DATA` - Insufficient data
+     * * `SEVERE_VIOLATIONS` - Severe violations
+     * * `PARTIAL_VIOLATIONS` - Violations
+     * * `NO_VIOLATIONS` - No violation
+     * @enum {string}
+     */
+    ScoreOptionsEnum:
+      | "NO_DATA"
+      | "SEVERE_VIOLATIONS"
+      | "PARTIAL_VIOLATIONS"
+      | "NO_VIOLATIONS"
     SearchedInvestor: {
       id: number
       active_version_id: number
@@ -2255,6 +2695,13 @@ export interface components {
      * @enum {string}
      */
     SourceOfWaterExtractionEnum: "GROUNDWATER" | "SURFACE_WATER" | "RIVER" | "LAKE"
+    /**
+     * @description * `TO_SCORE` - To score
+     * * `WAITING` - Waiting
+     * * `VALIDATED` - Validated
+     * @enum {string}
+     */
+    StatusFa7Enum: "TO_SCORE" | "WAITING" | "VALIDATED"
     Subset: {
       key: string
       description: string
@@ -2292,6 +2739,10 @@ export interface components {
        */
       is_active: boolean
     }
+    UserInfo: {
+      id: number
+      user: number
+    }
     /**
      * @description * `0` - ---------
      * * `1` - Reporter
@@ -2313,6 +2764,25 @@ export interface components {
      * @enum {string}
      */
     VersionStatusEnum: "DRAFT" | "REVIEW" | "ACTIVATION" | "ACTIVATED"
+    VggtArticle: {
+      id: number
+      title: string
+      article: number
+      description: string
+      chapter: number
+    }
+    VggtChapter: {
+      chapter: number
+      name: string
+    }
+    VggtVariable: {
+      number: number
+      name: string
+      score_options?: components["schemas"]["ScoreOptionsEnum"][]
+      landmatrix_fields?: string[] | null
+      landmatrix_additional_fields?: string[] | null
+      articles: number[]
+    }
   }
   responses: never
   parameters: never
@@ -2326,6 +2796,1014 @@ export type $defs = Record<string, never>
 export type external = Record<string, never>
 
 export interface operations {
+  api_accountability_article_list: {
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["VggtArticle"][]
+        }
+      }
+    }
+  }
+  api_accountability_article_create: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["VggtArticle"]
+        "application/x-www-form-urlencoded": components["schemas"]["VggtArticle"]
+        "multipart/form-data": components["schemas"]["VggtArticle"]
+      }
+    }
+    responses: {
+      201: {
+        content: {
+          "application/json": components["schemas"]["VggtArticle"]
+        }
+      }
+    }
+  }
+  api_accountability_article_retrieve: {
+    parameters: {
+      path: {
+        id: number
+      }
+    }
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["VggtArticle"]
+        }
+      }
+    }
+  }
+  api_accountability_article_update: {
+    parameters: {
+      path: {
+        id: number
+      }
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["VggtArticle"]
+        "application/x-www-form-urlencoded": components["schemas"]["VggtArticle"]
+        "multipart/form-data": components["schemas"]["VggtArticle"]
+      }
+    }
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["VggtArticle"]
+        }
+      }
+    }
+  }
+  api_accountability_article_destroy: {
+    parameters: {
+      path: {
+        id: number
+      }
+    }
+    responses: {
+      /** @description No response body */
+      204: {
+        content: never
+      }
+    }
+  }
+  api_accountability_article_partial_update: {
+    parameters: {
+      path: {
+        id: number
+      }
+    }
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedVggtArticle"]
+        "application/x-www-form-urlencoded": components["schemas"]["PatchedVggtArticle"]
+        "multipart/form-data": components["schemas"]["PatchedVggtArticle"]
+      }
+    }
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["VggtArticle"]
+        }
+      }
+    }
+  }
+  api_accountability_bookmark_retrieve: {
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["Bookmark"]
+        }
+      }
+    }
+  }
+  api_accountability_bookmark_update: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["Bookmark"][]
+        "application/x-www-form-urlencoded": components["schemas"]["Bookmark"][]
+        "multipart/form-data": components["schemas"]["Bookmark"][]
+      }
+    }
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["Bookmark"]
+        }
+      }
+    }
+  }
+  api_accountability_bookmark_create: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["Bookmark"]
+        "application/x-www-form-urlencoded": components["schemas"]["Bookmark"]
+        "multipart/form-data": components["schemas"]["Bookmark"]
+      }
+    }
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["Bookmark"]
+        }
+      }
+    }
+  }
+  api_accountability_bookmark_retrieve_2: {
+    parameters: {
+      path: {
+        id: number
+      }
+    }
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["Bookmark"]
+        }
+      }
+    }
+  }
+  api_accountability_bookmark_update_2: {
+    parameters: {
+      path: {
+        id: number
+      }
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["Bookmark"]
+        "application/x-www-form-urlencoded": components["schemas"]["Bookmark"]
+        "multipart/form-data": components["schemas"]["Bookmark"]
+      }
+    }
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["Bookmark"]
+        }
+      }
+    }
+  }
+  api_accountability_bookmark_destroy: {
+    parameters: {
+      path: {
+        id: number
+      }
+    }
+    responses: {
+      /** @description No response body */
+      204: {
+        content: never
+      }
+    }
+  }
+  api_accountability_bookmark_partial_update: {
+    parameters: {
+      path: {
+        id: number
+      }
+    }
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedBookmark"]
+        "application/x-www-form-urlencoded": components["schemas"]["PatchedBookmark"]
+        "multipart/form-data": components["schemas"]["PatchedBookmark"]
+      }
+    }
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["Bookmark"]
+        }
+      }
+    }
+  }
+  api_accountability_chapter_list: {
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["VggtChapter"][]
+        }
+      }
+    }
+  }
+  api_accountability_chapter_create: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["VggtChapter"]
+        "application/x-www-form-urlencoded": components["schemas"]["VggtChapter"]
+        "multipart/form-data": components["schemas"]["VggtChapter"]
+      }
+    }
+    responses: {
+      201: {
+        content: {
+          "application/json": components["schemas"]["VggtChapter"]
+        }
+      }
+    }
+  }
+  api_accountability_chapter_retrieve: {
+    parameters: {
+      path: {
+        /** @description A unique value identifying this vggt chapter. */
+        chapter: number
+      }
+    }
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["VggtChapter"]
+        }
+      }
+    }
+  }
+  api_accountability_chapter_update: {
+    parameters: {
+      path: {
+        /** @description A unique value identifying this vggt chapter. */
+        chapter: number
+      }
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["VggtChapter"]
+        "application/x-www-form-urlencoded": components["schemas"]["VggtChapter"]
+        "multipart/form-data": components["schemas"]["VggtChapter"]
+      }
+    }
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["VggtChapter"]
+        }
+      }
+    }
+  }
+  api_accountability_chapter_destroy: {
+    parameters: {
+      path: {
+        /** @description A unique value identifying this vggt chapter. */
+        chapter: number
+      }
+    }
+    responses: {
+      /** @description No response body */
+      204: {
+        content: never
+      }
+    }
+  }
+  api_accountability_chapter_partial_update: {
+    parameters: {
+      path: {
+        /** @description A unique value identifying this vggt chapter. */
+        chapter: number
+      }
+    }
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedVggtChapter"]
+        "application/x-www-form-urlencoded": components["schemas"]["PatchedVggtChapter"]
+        "multipart/form-data": components["schemas"]["PatchedVggtChapter"]
+      }
+    }
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["VggtChapter"]
+        }
+      }
+    }
+  }
+  api_accountability_deal_list: {
+    parameters: {
+      query?: {
+        animals?: (
+          | "AQU"
+          | "BEE"
+          | "CTL"
+          | "DCT"
+          | "FSH"
+          | "GOT"
+          | "OTH"
+          | "PIG"
+          | "POU"
+          | "SHP"
+          | "SHR"
+        )[]
+        /** @description Maximum deal area */
+        area_max?: number
+        /** @description Minimum deal area */
+        area_min?: number
+        /** @description Filter by country */
+        country_id?: number[]
+        crops?: (
+          | "ACC"
+          | "ALF"
+          | "ALG"
+          | "ALM"
+          | "ALV"
+          | "APL"
+          | "AQU"
+          | "BAM"
+          | "BAN"
+          | "BEA"
+          | "BOT"
+          | "BRL"
+          | "BWT"
+          | "CAC"
+          | "CAS"
+          | "CAW"
+          | "CHA"
+          | "CHE"
+          | "CNL"
+          | "COC"
+          | "COF"
+          | "COT"
+          | "CRL"
+          | "CRN"
+          | "CRO"
+          | "CST"
+          | "CTR"
+          | "DIL"
+          | "EUC"
+          | "FLW"
+          | "FNT"
+          | "FOD"
+          | "FOO"
+          | "FRT"
+          | "GRA"
+          | "GRN"
+          | "HRB"
+          | "JTR"
+          | "LNT"
+          | "MAN"
+          | "MUS"
+          | "OAT"
+          | "OIL"
+          | "OLE"
+          | "OLV"
+          | "ONI"
+          | "OPL"
+          | "OTH"
+          | "PAL"
+          | "PAP"
+          | "PAS"
+          | "PEA"
+          | "PEP"
+          | "PES"
+          | "PIE"
+          | "PIN"
+          | "PLS"
+          | "POM"
+          | "PON"
+          | "PTT"
+          | "RAP"
+          | "RCH"
+          | "RIC"
+          | "ROS"
+          | "RUB"
+          | "RYE"
+          | "SEE"
+          | "SES"
+          | "SOR"
+          | "SOY"
+          | "SPI"
+          | "SSL"
+          | "SUB"
+          | "SUC"
+          | "SUG"
+          | "SUN"
+          | "SWP"
+          | "TBC"
+          | "TEA"
+          | "TEF"
+          | "TEK"
+          | "TOM"
+          | "TRE"
+          | "VGT"
+          | "VIN"
+          | "WHT"
+          | "YAM"
+        )[]
+        /** @description not set: Included, true: Only false: Excluded */
+        forest_concession?: boolean
+        /** @description Implementation status */
+        implementation_status?: (
+          | "IN_OPERATION"
+          | "PROJECT_ABANDONED"
+          | "PROJECT_NOT_STARTED"
+          | "STARTUP_PHASE"
+          | "UNKNOWN"
+        )[]
+        /** @description Maximum year of initiation */
+        initiation_year_max?: number
+        /** @description Minimum year of initiation */
+        initiation_year_min?: number
+        /** @description Include unknown years */
+        initiation_year_unknown?: boolean
+        intention_of_investment?: (
+          | "AGRICULTURE_UNSPECIFIED"
+          | "BIOFUELS"
+          | "BIOMASS_ENERGY_GENERATION"
+          | "BIOMASS_ENERGY_PRODUCTION"
+          | "CARBON"
+          | "CONVERSATION"
+          | "FODDER"
+          | "FOOD_CROPS"
+          | "FORESTRY_UNSPECIFIED"
+          | "FOREST_LOGGING"
+          | "INDUSTRY"
+          | "LAND_SPECULATION"
+          | "LIVESTOCK"
+          | "MINING"
+          | "NON_FOOD_AGRICULTURE"
+          | "OIL_GAS_EXTRACTION"
+          | "OTHER"
+          | "RENEWABLE_ENERGY"
+          | "SOLAR_PARK"
+          | "TIMBER_PLANTATION"
+          | "TOURISM"
+          | "UNKNOWN"
+          | "WIND_FARM"
+        )[]
+        minerals?: (
+          | "ALU"
+          | "ASP"
+          | "ATC"
+          | "BAR"
+          | "BAS"
+          | "BAX"
+          | "BEN"
+          | "BUM"
+          | "CAR"
+          | "CHR"
+          | "CLA"
+          | "COA"
+          | "COB"
+          | "COP"
+          | "DIA"
+          | "EME"
+          | "FLD"
+          | "FLO"
+          | "GAS"
+          | "GLD"
+          | "GRT"
+          | "GRV"
+          | "HEA"
+          | "ILM"
+          | "IRO"
+          | "JAD"
+          | "LED"
+          | "LIM"
+          | "LIT"
+          | "MAG"
+          | "MBD"
+          | "MGN"
+          | "MRB"
+          | "NIK"
+          | "OTH"
+          | "PET"
+          | "PHP"
+          | "PLT"
+          | "PUM"
+          | "PYR"
+          | "RUT"
+          | "SAN"
+          | "SIC"
+          | "SIL"
+          | "SLT"
+          | "STO"
+          | "TIN"
+          | "TTM"
+          | "URM"
+          | "ZNC"
+        )[]
+        /** @description Nature of the deal */
+        nature_of_deal?: (
+          | "CONCESSION"
+          | "EXPLOITATION_PERMIT"
+          | "LEASE"
+          | "OTHER"
+          | "OUTRIGHT_PURCHASE"
+          | "PURE_CONTRACT_FARMING"
+        )[]
+        /** @description Negotiation status */
+        negotiation_status?: (
+          | "CHANGE_OF_OWNERSHIP"
+          | "CONTRACT_CANCELED"
+          | "CONTRACT_EXPIRED"
+          | "CONTRACT_SIGNED"
+          | "EXPRESSION_OF_INTEREST"
+          | "MEMORANDUM_OF_UNDERSTANDING"
+          | "NEGOTIATIONS_FAILED"
+          | "ORAL_AGREEMENT"
+          | "UNDER_NEGOTIATION"
+        )[]
+        /** @description ID of the parent company */
+        parent_company?: number[]
+        /** @description ID of the parent company's country */
+        parent_company_country_id?: number[]
+        /** @description Filter by region */
+        region_id?: number[]
+        /** @description Scope. true: Transnational, false: Domestic, not set: both */
+        transnational?: boolean
+      }
+    }
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["DealScore"][]
+        }
+      }
+    }
+  }
+  api_accountability_deal_create: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["DealScore"]
+        "application/x-www-form-urlencoded": components["schemas"]["DealScore"]
+        "multipart/form-data": components["schemas"]["DealScore"]
+      }
+    }
+    responses: {
+      201: {
+        content: {
+          "application/json": components["schemas"]["DealScore"]
+        }
+      }
+    }
+  }
+  api_accountability_deal_retrieve_2: {
+    parameters: {
+      path: {
+        deal: number
+        variable: number
+      }
+    }
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["DealVariable"]
+        }
+      }
+    }
+  }
+  api_accountability_deal_partial_update_2: {
+    parameters: {
+      path: {
+        deal: number
+        variable: number
+      }
+    }
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedDealVariable"]
+        "application/x-www-form-urlencoded": components["schemas"]["PatchedDealVariable"]
+        "multipart/form-data": components["schemas"]["PatchedDealVariable"]
+      }
+    }
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["DealVariable"]
+        }
+      }
+    }
+  }
+  api_accountability_deal_retrieve: {
+    parameters: {
+      path: {
+        /** @description A unique value identifying this deal score. */
+        deal: number
+      }
+    }
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["DealScore"]
+        }
+      }
+    }
+  }
+  api_accountability_deal_update: {
+    parameters: {
+      path: {
+        /** @description A unique value identifying this deal score. */
+        deal: number
+      }
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["DealScore"]
+        "application/x-www-form-urlencoded": components["schemas"]["DealScore"]
+        "multipart/form-data": components["schemas"]["DealScore"]
+      }
+    }
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["DealScore"]
+        }
+      }
+    }
+  }
+  api_accountability_deal_destroy: {
+    parameters: {
+      path: {
+        /** @description A unique value identifying this deal score. */
+        deal: number
+      }
+    }
+    responses: {
+      /** @description No response body */
+      204: {
+        content: never
+      }
+    }
+  }
+  api_accountability_deal_partial_update: {
+    parameters: {
+      path: {
+        /** @description A unique value identifying this deal score. */
+        deal: number
+      }
+    }
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedDealScore"]
+        "application/x-www-form-urlencoded": components["schemas"]["PatchedDealScore"]
+        "multipart/form-data": components["schemas"]["PatchedDealScore"]
+      }
+    }
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["DealScore"]
+        }
+      }
+    }
+  }
+  api_accountability_deal_bulk_partial_update: {
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedDealVariable"]
+        "application/x-www-form-urlencoded": components["schemas"]["PatchedDealVariable"]
+        "multipart/form-data": components["schemas"]["PatchedDealVariable"]
+      }
+    }
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["DealVariable"]
+        }
+      }
+    }
+  }
+  api_accountability_project_list: {
+    parameters: {
+      query?: {
+        id?: number[]
+      }
+    }
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["Project"][]
+        }
+      }
+    }
+  }
+  api_accountability_project_create: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["Project"]
+        "application/x-www-form-urlencoded": components["schemas"]["Project"]
+        "multipart/form-data": components["schemas"]["Project"]
+      }
+    }
+    responses: {
+      201: {
+        content: {
+          "application/json": components["schemas"]["Project"]
+        }
+      }
+    }
+  }
+  api_accountability_project_retrieve: {
+    parameters: {
+      path: {
+        id: number
+      }
+    }
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["Project"]
+        }
+      }
+    }
+  }
+  api_accountability_project_update: {
+    parameters: {
+      path: {
+        id: number
+      }
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["Project"]
+        "application/x-www-form-urlencoded": components["schemas"]["Project"]
+        "multipart/form-data": components["schemas"]["Project"]
+      }
+    }
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["Project"]
+        }
+      }
+    }
+  }
+  api_accountability_project_destroy: {
+    parameters: {
+      path: {
+        id: number
+      }
+    }
+    responses: {
+      /** @description No response body */
+      204: {
+        content: never
+      }
+    }
+  }
+  api_accountability_project_partial_update: {
+    parameters: {
+      path: {
+        id: number
+      }
+    }
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedProject"]
+        "application/x-www-form-urlencoded": components["schemas"]["PatchedProject"]
+        "multipart/form-data": components["schemas"]["PatchedProject"]
+      }
+    }
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["Project"]
+        }
+      }
+    }
+  }
+  api_accountability_project_bookmark_list: {
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["Project"][]
+        }
+      }
+    }
+  }
+  api_accountability_project_related_list: {
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["Project"][]
+        }
+      }
+    }
+  }
+  /**
+   * @description OpenApi3 schema for this API. Format can be selected via content negotiation.
+   *
+   * - YAML: application/vnd.oai.openapi
+   * - JSON: application/vnd.oai.openapi+json
+   */
+  api_accountability_schema_retrieve: {
+    parameters: {
+      query?: {
+        format?: "json" | "yaml"
+        lang?: "en" | "es" | "fr" | "ru"
+      }
+    }
+    responses: {
+      200: {
+        content: {
+          "application/vnd.oai.openapi": {
+            [key: string]: unknown
+          }
+          "application/yaml": {
+            [key: string]: unknown
+          }
+          "application/vnd.oai.openapi+json": {
+            [key: string]: unknown
+          }
+          "application/json": {
+            [key: string]: unknown
+          }
+        }
+      }
+    }
+  }
+  api_accountability_user_list: {
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["UserInfo"][]
+        }
+      }
+    }
+  }
+  api_accountability_user_create: {
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["UserInfo"]
+        "application/x-www-form-urlencoded": components["schemas"]["UserInfo"]
+        "multipart/form-data": components["schemas"]["UserInfo"]
+      }
+    }
+    responses: {
+      201: {
+        content: {
+          "application/json": components["schemas"]["UserInfo"]
+        }
+      }
+    }
+  }
+  api_accountability_user_me_retrieve: {
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["UserInfo"]
+        }
+      }
+    }
+  }
+  api_accountability_user_me_update: {
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["UserInfo"]
+        "application/x-www-form-urlencoded": components["schemas"]["UserInfo"]
+        "multipart/form-data": components["schemas"]["UserInfo"]
+      }
+    }
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["UserInfo"]
+        }
+      }
+    }
+  }
+  api_accountability_user_me_destroy: {
+    responses: {
+      /** @description No response body */
+      204: {
+        content: never
+      }
+    }
+  }
+  api_accountability_user_me_partial_update: {
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedUserInfo"]
+        "application/x-www-form-urlencoded": components["schemas"]["PatchedUserInfo"]
+        "multipart/form-data": components["schemas"]["PatchedUserInfo"]
+      }
+    }
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["UserInfo"]
+        }
+      }
+    }
+  }
+  api_accountability_variable_list: {
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["VggtVariable"][]
+        }
+      }
+    }
+  }
+  api_accountability_variable_create: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["VggtVariable"]
+        "application/x-www-form-urlencoded": components["schemas"]["VggtVariable"]
+        "multipart/form-data": components["schemas"]["VggtVariable"]
+      }
+    }
+    responses: {
+      201: {
+        content: {
+          "application/json": components["schemas"]["VggtVariable"]
+        }
+      }
+    }
+  }
+  api_accountability_variable_retrieve: {
+    parameters: {
+      path: {
+        /** @description A unique value identifying this vggt variable. */
+        number: number
+      }
+    }
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["VggtVariable"]
+        }
+      }
+    }
+  }
+  api_accountability_variable_update: {
+    parameters: {
+      path: {
+        /** @description A unique value identifying this vggt variable. */
+        number: number
+      }
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["VggtVariable"]
+        "application/x-www-form-urlencoded": components["schemas"]["VggtVariable"]
+        "multipart/form-data": components["schemas"]["VggtVariable"]
+      }
+    }
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["VggtVariable"]
+        }
+      }
+    }
+  }
+  api_accountability_variable_destroy: {
+    parameters: {
+      path: {
+        /** @description A unique value identifying this vggt variable. */
+        number: number
+      }
+    }
+    responses: {
+      /** @description No response body */
+      204: {
+        content: never
+      }
+    }
+  }
+  api_accountability_variable_partial_update: {
+    parameters: {
+      path: {
+        /** @description A unique value identifying this vggt variable. */
+        number: number
+      }
+    }
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedVggtVariable"]
+        "application/x-www-form-urlencoded": components["schemas"]["PatchedVggtVariable"]
+        "multipart/form-data": components["schemas"]["PatchedVggtVariable"]
+      }
+    }
+    responses: {
+      200: {
+        content: {
+          "application/json": components["schemas"]["VggtVariable"]
+        }
+      }
+    }
+  }
   api_blog_categories_list: {
     responses: {
       200: {
