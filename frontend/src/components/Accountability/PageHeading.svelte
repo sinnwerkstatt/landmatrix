@@ -8,7 +8,11 @@
 
   import IconExpand from "$components/Accountability/icons/IconExpand.svelte"
 
-  $: project_id = $page.params.project
+  export let data
+
+  $: projectId = $page.params.project
+
+  $: currentProject = data.allProjects.find(p => p.id == projectId)
 </script>
 
 <div class="flex gap-4 py-4">
@@ -25,10 +29,10 @@
   {/if}
   <div>
     <h1 class="text-a-3xl font-semibold">
-      {#if project_id == 0}
+      {#if projectId == 0}
         All deals
       {:else}
-        Project {project_id}
+        {currentProject?.name ?? "Project"}
       {/if}
     </h1>
     <p class="font-normal text-a-gray-500">All deals from the database.</p>

@@ -1,7 +1,7 @@
 from django.utils import timezone
 from django.http import HttpResponse, Http404
 from django.shortcuts import render
-from django.db.models import Q, F, Prefetch
+from django.db.models import Q, F, Prefetch, Case, When, OuterRef
 from django.db.models.functions import JSONObject
 from django.contrib.postgres.expressions import ArraySubquery
 
@@ -14,7 +14,7 @@ from rest_framework.renderers import JSONRenderer
 
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 
-from apps.landmatrix.models.deal import DealHull
+from apps.landmatrix.models.deal import DealHull, DealVersion
 
 from apps.accountability.models import VggtChapter, VggtArticle, VggtVariable
 from apps.accountability.models import DealScore, DealScoreVersion, DealVariable
@@ -110,24 +110,190 @@ class DealScoreList(generics.ListCreateAPIView):
     serializer_class = DealScoreSerializer
     permission_classes = [IsReporterOrHigherOrReadonly]
 
-    @extend_schema(parameters=openapi_filters_parameters_scoring)
-    def get(self, request: Request, *args, **kwargs):
-        queryset = (
-            DealScore.objects.prefetch_related("deal")
-            .filter(deal__confidential=False)
-            .exclude(deal__active_version__isnull=True)
-            .filter(parse_filters(request))
-            .distinct()
-            .annotate(
-                country=JSONObject(id="deal__country__id", name="deal__country__name"),
-                operating_company=JSONObject(
-                    id="deal__active_version__operating_company__active_version__id",
-                    name="deal__active_version__operating_company__active_version__name",
+    def get_queryset(self):
+        qs = self.queryset.prefetch_related(
+            Prefetch(
+                "deals",
+                queryset=DealHull.objects.filter(
+                    confidential=False, active_version__isnull=False
+                ).prefetch_related(
+                    Prefetch("versions", queryset=DealVersion.objects.order_by("-id"))
                 ),
             )
         )
-        serializer = DealScoreSerializer(queryset, many=True)
-        return Response(serializer.data)
+        return qs
+
+    @extend_schema(parameters=openapi_filters_parameters_scoring)
+    def get(self, request: Request, *args, **kwargs):
+        return Response(
+            self.get_queryset()
+            .order_by("deal_id")
+            .filter(parse_filters(request))
+            .distinct()
+            .values("deal")
+            .annotate(
+                id=F("deal"),
+                ## Filters
+                region_id=F("deal__country__region_id"),
+                country=JSONObject(id="deal__country__id", name="deal__country__name"),
+                deal_size=F("deal__active_version__deal_size"),
+                negotiation_status=F(
+                    "deal__active_version__current_negotiation_status"
+                ),
+                nature_of_deal=F("deal__active_version__nature_of_deal"),
+                operating_company=Case(
+                    When(
+                        deal__active_version__operating_company__active_version=None,
+                        then=None,
+                    ),
+                    default=JSONObject(
+                        id=F("deal__active_version__operating_company_id"),
+                        name=F(
+                            "deal__active_version__operating_company__active_version__name"
+                        ),
+                    ),
+                ),
+                initiation_year=F("deal__active_version__initiation_year"),
+                # involved_actors= TODO: add when needed, excluded for now, Pydantic field
+                implementation_status=F("deal__active_version__implementation_status"),
+                intention_of_investment=F(
+                    "deal__active_version__current_intention_of_investment"
+                ),
+                crops=F("deal__active_version__current_crops"),
+                animals=F("deal__active_version__current_animals"),
+                minerals=F("deal__active_version__current_mineral_resources"),
+                transnational=F("deal__active_version__transnational"),
+                forest_concession=F("deal__active_version__forest_concession"),
+                ## VGGTs Scoring information
+                recognition_status=F("deal__active_version__recognition_status"),
+                recognition_status_comment=F(
+                    "deal__active_version__recognition_status_comment"
+                ),
+                displacement_of_people=F(
+                    "deal__active_version__displacement_of_people"
+                ),
+                displaced_people=F("deal__active_version__displaced_people"),
+                displaced_households=F("deal__active_version__displaced_households"),
+                displaced_people_from_community_land=F(
+                    "deal__active_version__displaced_people_from_community_land"
+                ),
+                displaced_people_within_community_land=F(
+                    "deal__active_version__displaced_people_within_community_land"
+                ),
+                displaced_households_from_fields=F(
+                    "deal__active_version__displaced_households_from_fields"
+                ),
+                displaced_people_on_completion=F(
+                    "deal__active_version__displaced_people_on_completion"
+                ),
+                displacement_of_people_comment=F(
+                    "deal__active_version__displacement_of_people_comment"
+                ),
+                promised_compensation=F("deal__active_version__promised_compensation"),
+                received_compensation=F("deal__active_version__received_compensation"),
+                community_consultation=F(
+                    "deal__active_version__community_consultation"
+                ),
+                community_consultation_comment=F(
+                    "deal__active_version__community_consultation_comment"
+                ),
+                land_conflicts=F("deal__active_version__land_conflicts"),
+                land_conflicts_comment=F(
+                    "deal__active_version__land_conflicts_comment"
+                ),
+                negative_impacts=F("deal__active_version__negative_impacts"),
+                negative_impacts_comment=F(
+                    "deal__active_version__negative_impacts_comment"
+                ),
+                materialized_benefits=F("deal__active_version__materialized_benefits"),
+                materialized_benefits_comment=F(
+                    "deal__active_version__materialized_benefits_comment"
+                ),
+                contract_farming=F("deal__active_version__contract_farming"),
+                contract_farming_comment=F(
+                    "deal__active_version__contract_farming_comment"
+                ),
+                promised_benefits=F("deal__active_version__promised_benefits"),
+                promised_benefits_comment=F(
+                    "deal__active_version__promised_benefits_comment"
+                ),
+                water_extraction_envisaged=F(
+                    "deal__active_version__water_extraction_envisaged"
+                ),
+                water_extraction_envisaged_comment=F(
+                    "deal__active_version__water_extraction_envisaged_comment"
+                ),
+                source_of_water_extraction=F(
+                    "deal__active_version__source_of_water_extraction"
+                ),
+                community_reaction=F("deal__active_version__community_reaction"),
+                community_reaction_comment=F(
+                    "deal__active_version__community_reaction_comment"
+                ),
+                gender_related_information=F(
+                    "deal__active_version__gender_related_information"
+                ),
+                purchase_price=F("deal__active_version__purchase_price"),
+                purchase_price_area=F("deal__active_version__purchase_price_area"),
+                purchase_price_currency=F(
+                    "deal__active_version__purchase_price_currency"
+                ),
+                purchase_price_comment=F(
+                    "deal__active_version__purchase_price_comment"
+                ),
+                annual_leasing_fee=F("deal__active_version__annual_leasing_fee"),
+                annual_leasing_fee_currency=F(
+                    "deal__active_version__annual_leasing_fee_currency"
+                ),
+                annual_leasing_fee_comment=F(
+                    "deal__active_version__annual_leasing_fee_comment"
+                ),
+                presence_of_organizations=F(
+                    "deal__active_version__presence_of_organizations"
+                ),
+                ## VGGTs Scores
+                score=JSONObject(
+                    deal_version=F("deal__active_version"),
+                    status=F("deal__active_version__accountability_score__status"),
+                    variables=(
+                        ArraySubquery(
+                            DealVariable.objects.filter(
+                                deal_score=OuterRef(
+                                    "deal__active_version__accountability_score"
+                                )
+                            ).values(
+                                json=JSONObject(
+                                    vggt_variable=F("vggt_variable"),
+                                    status=F("status"),
+                                    score=F("score"),
+                                    scored_at=F("scored_at"),
+                                    scored_by=F("scored_by"),
+                                    assignee=F("assignee"),
+                                )
+                            )
+                        )
+                    ),
+                ),
+            )
+        )
+
+    # def get(self, request: Request, *args, **kwargs):
+    #     queryset = (
+    #         DealScore.objects.prefetch_related("deal")
+    #         .filter(deal__confidential=False)
+    #         .exclude(deal__active_version__isnull=True)
+    #         .filter(parse_filters(request))
+    #         .distinct()
+    #         .annotate(
+    #             country=JSONObject(id="deal__country__id", name="deal__country__name"),
+    #             operating_company=JSONObject(
+    #                 id="deal__active_version__operating_company__active_version__id",
+    #                 name="deal__active_version__operating_company__active_version__name",
+    #             ),
+    #         )
+    #     )
+    #     serializer = DealScoreSerializer(queryset, many=True)
+    #     return Response(serializer.data)
 
 
 class DealScoreDetail(generics.RetrieveUpdateDestroyAPIView):

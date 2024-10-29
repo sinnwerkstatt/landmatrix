@@ -95,6 +95,11 @@
             </a>
           </li>
           <li>
+            <a class="nav-link-secondary" href="/accountability/">
+              {$_("VGGTs scoring")}
+            </a>
+          </li>
+          <li>
             <button
               type="button"
               class="nav-link-secondary text-left"

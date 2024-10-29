@@ -9,7 +9,7 @@ import { allUsers } from "$lib/stores"
 import { sentenceToArray } from "./helpers"
 
 // Navigation status
-export const openedFilterBar = writable(false)
+export const openedFilterBar = writable(true)
 
 // Deals navigation history (remember the last opened project and deal for faster navigation between tabs and sessions)
 const currentDealsHistory = browser
@@ -66,18 +66,21 @@ export const me = derived(
 // =======================================================================================
 // Deals
 export const deals = writable([])
+export const loadingDeals = writable(false)
 
-// export const deals = derived(
+// Store that fetches deals when the filters change but value is stores in deals store (above) or it's not locally editable
+// export const dealsStore = derived(
 //   [filters, lastRESTFilterArray],
 //   ([$filters, $lastRESTFilterArray], set) => {
 //     const restFilterArray = $filters.toRESTFilterArray()
 //     if (browser && restFilterArray != $lastRESTFilterArray) {
-//       loading.set(true)
+//       loadingDeals.set(true)
 //       fetch(`/api/accountability/deal/?${restFilterArray}`)
 //         .then(res => res.json())
 //         .then(res => {
 //           lastRESTFilterArray.set(restFilterArray)
-//           loading.set(false)
+//           loadingDeals.set(false)
+//           deals.set(res)
 //           set(res)
 //         })
 //     }

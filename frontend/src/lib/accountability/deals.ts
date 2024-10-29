@@ -1,26 +1,32 @@
 import { get, writable } from "svelte/store"
 
-import { FilterValues, lastRESTFilterArray } from "./filters"
-import { deals } from "./stores"
+import { browser } from "$app/environment"
 
-export const loadingDeals = writable(false)
+import { FilterValues, lastRESTFilterArray } from "./filters"
+import { deals, loadingDeals } from "./stores"
+
+export const queryID = writable(0)
 
 export async function fetchDeals(filters: FilterValues) {
   const restFilterArray = filters.toRESTFilterArray()
   const lastFilterArray = get(lastRESTFilterArray)
   loadingDeals.set(true)
-  if (restFilterArray != lastFilterArray) {
+
+  queryID.set(get(queryID) + 1)
+  const currentQueryID = get(queryID)
+
+  if (browser && restFilterArray != lastFilterArray) {
     try {
       const res = await fetch(`/api/accountability/deal/?${restFilterArray}`)
       const resJSON = await res.json()
       lastRESTFilterArray.set(restFilterArray)
-      loadingDeals.set(false)
-      deals.set(resJSON)
+      if (get(queryID) == currentQueryID) deals.set(resJSON)
     } catch (error) {
-      loadingDeals.set(false)
       return error
     }
   }
+
+  loadingDeals.set(false)
 }
 
 export async function fetchDealDetail(id: number) {

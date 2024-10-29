@@ -23,17 +23,16 @@
 
   $: updateLocalStorage($page.url.pathname)
 
-  $: fetchDeals($filters)
+  $: fetchDeals($filters) // TODO: Find workaround between derived store efficiency and possibility to SET one section of the store
 
   $: console.log($deals)
-  $: console.log(data)
 </script>
 
 <div class="flex h-screen w-full flex-row flex-nowrap bg-a-gray-50">
   <ProjectsSidebar />
   <FiltersSidebar />
   <div class="flex h-screen w-full flex-col px-4">
-    <PageHeading />
+    <PageHeading {data} />
     <div class="mb-6 flex flex-wrap justify-between gap-6">
       <DealsMenu />
       <span class="text-a-gray-400">Users placeholder</span>

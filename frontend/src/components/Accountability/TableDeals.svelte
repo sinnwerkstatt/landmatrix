@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { loadingDeals } from "$lib/accountability/deals"
+  import { loadingDeals, tableSelection } from "$lib/accountability/stores"
+
   // import { usersToUserChoices } from "$lib/accountability/helpers"
   // import { users } from "$lib/accountability/placeholders"
-  import { tableSelection } from "$lib/accountability/stores"
 
   import Checkbox from "./atomic/Checkbox.svelte"
   import Input from "./atomic/Input.svelte"

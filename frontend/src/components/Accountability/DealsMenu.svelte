@@ -17,7 +17,7 @@
 
   $: hrefOverview = writeHref($page.params.project, "")
   $: hrefScoring = writeHref($page.params.project, "scoring")
-  $: hrefResults = writeHref($page.params.project, "results")
+  // $: hrefResults = writeHref($page.params.project, "results")
 </script>
 
 <div class="flex">
@@ -28,9 +28,9 @@
     <li class={currentTab == "scoring" ? "active" : ""}>
       <a href={hrefScoring}>Scoring</a>
     </li>
-    <li class={currentTab == "results" ? "active" : ""}>
+    <!-- <li class={currentTab == "results" ? "active" : ""}>
       <a href={hrefResults}>Results</a>
-    </li>
+    </li> -->
   </ul>
 </div>
 

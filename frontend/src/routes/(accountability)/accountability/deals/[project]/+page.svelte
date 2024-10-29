@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { loadingDeals } from "$lib/accountability/deals"
-  import { deals } from "$lib/accountability/stores"
+  import { deals, loadingDeals } from "$lib/accountability/stores"
 
   import CardKPI from "$components/Accountability/CardKPI.svelte"
   import Thread from "$components/Accountability/Thread.svelte"
@@ -9,11 +8,6 @@
   // const toScore = 100
   // const waiting = 20
   // const validated = 100
-
-  $: {
-    console.log("Deals (from Overview):")
-    console.log($deals)
-  }
 </script>
 
 <div class="">

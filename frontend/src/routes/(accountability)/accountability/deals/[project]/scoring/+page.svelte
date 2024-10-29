@@ -1,6 +1,6 @@
 <script lang="ts">
   // import { deals } from "$lib/accountability/placeholders"
-  import { deals } from "$lib/accountability/stores"
+  import { currentDeal, currentVariable, deals } from "$lib/accountability/stores"
 
   import DrawerScoring from "$components/Accountability/DrawerScoring.svelte"
   import TableDeals from "$components/Accountability/TableDeals.svelte"
@@ -10,4 +10,6 @@
   <TableDeals deals={$deals} />
 </div>
 
-<DrawerScoring />
+{#if $currentDeal && $currentVariable}
+  <DrawerScoring />
+{/if}

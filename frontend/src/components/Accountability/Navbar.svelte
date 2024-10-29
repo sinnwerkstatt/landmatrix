@@ -1,9 +1,9 @@
 <script lang="ts">
   import Avatar from "$components/Accountability/atomic/Avatar.svelte"
   import NavbarItem from "$components/Accountability/atomic/NavbarItem.svelte"
-  import IconDocs from "$components/Accountability/icons/IconDocs.svelte"
   import IconList from "$components/Accountability/icons/IconList.svelte"
-  import IconToDo from "$components/Accountability/icons/IconToDo.svelte"
+  // import IconToDo from "$components/Accountability/icons/IconToDo.svelte"
+  // import IconDocs from "$components/Accountability/icons/IconDocs.svelte"
   import Logo from "$components/Accountability/icons/Logo.svelte"
 </script>
 
@@ -17,12 +17,12 @@
       <NavbarItem label="Deals" href="/accountability/deals/">
         <span slot="icon"><IconList /></span>
       </NavbarItem>
-      <NavbarItem label="To Do" href="/accountability/todo/">
+      <!-- <NavbarItem label="To Do" href="/accountability/todo/">
         <span slot="icon"><IconToDo /></span>
       </NavbarItem>
       <NavbarItem label="Doc" href="/accountability/doc/">
         <span slot="icon"><IconDocs /></span>
-      </NavbarItem>
+      </NavbarItem> -->
     </div>
   </div>
 

@@ -13,8 +13,9 @@
   import Pagination from "./atomic/Pagination.svelte"
   import Section from "./atomic/Section.svelte"
   import SidebarTab from "./atomic/SidebarTab.svelte"
-  import Button from "./Button.svelte"
-  import IconFilter from "./icons/IconFilter.svelte"
+
+  // import Button from "./Button.svelte"
+  // import IconFilter from "./icons/IconFilter.svelte"
 
   // Open modal to filter projects
   let openModal = false
@@ -60,7 +61,7 @@
 </script>
 
 <div class="my-2 flex h-full flex-col overflow-hidden">
-  <Button
+  <!-- <Button
     label="Filter projects (0)"
     type="outline"
     style="neutral"
@@ -68,7 +69,7 @@
     on:click={() => (openModal = true)}
   >
     <span slot="icon-after"><IconFilter /></span>
-  </Button>
+  </Button> -->
 
   <div class="h-full overflow-scroll">
     <Section
