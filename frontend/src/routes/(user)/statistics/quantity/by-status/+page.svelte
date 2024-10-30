@@ -9,6 +9,7 @@
   import type { Model } from "$lib/types/data"
   import { aDownload } from "$lib/utils/download"
 
+  import AdjustmentsIcon from "$components/icons/AdjustmentsIcon.svelte"
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
   import DownloadModal, {
     type DownloadEvent,
@@ -21,6 +22,7 @@
     resolveCountryAndRegionNames,
     type DownloadContext,
   } from "../../download"
+  import FilterModal from "../../FilterModal.svelte"
   import CaseStatisticsTable, {
     type CaseStatisticsDeal,
     type CaseStatisticsInvestor,
@@ -95,6 +97,7 @@
   }
 
   let showDownloadModal = false
+  let showFilterModal = false
 
   const download = (e: DownloadEvent) => {
     const context: DownloadContext = {
@@ -118,13 +121,31 @@
   {$_("Deals and investors by activation status")}
 </h2>
 
-<div class="my-2 flex items-center justify-end gap-6">
-  <ActionButton
-    on:click={() => (showDownloadModal = true)}
-    icon={DownloadIcon}
-    label={$_("Download")}
-  />
-</div>
+<ul class="my-2 flex justify-end gap-6">
+  <li>
+    <ActionButton
+      on:click={() => (showFilterModal = true)}
+      icon={AdjustmentsIcon}
+      highlight={!$filters.isEmpty()}
+      label={$_("Filter")}
+    />
+  </li>
+  <li>
+    <ActionButton
+      on:click={() => (showDownloadModal = true)}
+      icon={DownloadIcon}
+      label={$_("Download")}
+    />
+  </li>
+</ul>
+
+<FilterModal
+  bind:open={showFilterModal}
+  disableAdvanced
+  on:submit={async () => {
+    showFilterModal = false
+  }}
+/>
 
 <DownloadModal
   bind:open={showDownloadModal}
