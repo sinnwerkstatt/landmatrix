@@ -16,6 +16,7 @@
   bind:value
   items={countries}
   label="name"
+  heightInPx={152}
   {name}
   {disabled}
   {required}

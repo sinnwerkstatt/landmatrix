@@ -17,6 +17,7 @@
   id="region-select"
   items={regions}
   label="name"
+  heightInPx={152}
   {name}
   {disabled}
   {required}
