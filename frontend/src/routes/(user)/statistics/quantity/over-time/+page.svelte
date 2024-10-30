@@ -13,6 +13,7 @@
   import type { Model } from "$lib/types/data"
   import { aDownload } from "$lib/utils/download"
 
+  import AdjustmentsIcon from "$components/icons/AdjustmentsIcon.svelte"
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
   import DownloadModal, {
     type DownloadEvent,
@@ -25,6 +26,7 @@
     resolveCountryAndRegionNames,
     type DownloadContext,
   } from "../../download"
+  import FilterModal from "../../FilterModal.svelte"
   import CaseStatisticsTable, {
     type CaseStatisticsDeal,
     type CaseStatisticsInvestor,
@@ -111,6 +113,7 @@
   $: fetchObjs($filters, daterange)
 
   let showDownloadModal = false
+  let showFilterModal = false
 
   const download = (e: DownloadEvent) => {
     const context: DownloadContext = {
@@ -154,13 +157,33 @@
   <DateInput bind:value={daterange.start} format="yyyy-MM-dd" />
   <DateInput bind:value={daterange.end} format="yyyy-MM-dd" />
   <span class="flex-grow" />
-  <ActionButton
-    on:click={() => (showDownloadModal = true)}
-    icon={DownloadIcon}
-    label={$_("Download")}
-  />
+
+  <ul class="flex gap-6">
+    <li>
+      <ActionButton
+        on:click={() => (showFilterModal = true)}
+        icon={AdjustmentsIcon}
+        highlight={!$filters.isEmpty()}
+        label={$_("Filter")}
+      />
+    </li>
+    <li>
+      <ActionButton
+        on:click={() => (showDownloadModal = true)}
+        icon={DownloadIcon}
+        label={$_("Download")}
+      />
+    </li>
+  </ul>
 </div>
 
+<FilterModal
+  bind:open={showFilterModal}
+  disableAdvanced
+  on:submit={async () => {
+    showFilterModal = false
+  }}
+/>
 <DownloadModal
   bind:open={showDownloadModal}
   on:download={download}

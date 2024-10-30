@@ -18,7 +18,7 @@
 
   import ActionButton from "../../ActionButton.svelte"
   import { createBlob, createFilename, type DownloadContext } from "../../download"
-  import FilterModal from "../FilterModal.svelte"
+  import FilterModal from "../../FilterModal.svelte"
   import QIInverseSwitcher from "../QIInverseSwitcher.svelte"
   import QINavigator from "../QINavigator.svelte"
   import QITable from "../QITable.svelte"
