@@ -7,10 +7,11 @@ from openpyxl import Workbook
 from openpyxl.utils.exceptions import IllegalCharacterError
 
 from django.contrib.postgres.expressions import ArraySubquery
-from django.db.models import Case, OuterRef, QuerySet, When
+from django.db.models.expressions import Case, OuterRef, When
+from django.db.models.query import QuerySet
 from django.db.models.functions import JSONObject
+from django.db.models.enums import TextChoices
 from django.http import HttpResponse
-from django.shortcuts import render
 
 from apps.api.export import converter
 from apps.api.quality_indicators.serializers import QueryParamsSerializer
@@ -291,24 +292,56 @@ def _deal_qs_to_values(qs: QuerySet[DealVersion]):
     )
 
 
+from rest_framework import serializers
+from django.utils.translation import gettext_lazy as _
+
+
+class DataSubset(TextChoices):
+    PUBLIC = "PUBLIC", _("Public")
+    ACTIVE = "ACTIVE", _("Active")
+    UNFILTERED = "UNFILTERED", _("Unfiltered")
+
+
+class DataFormat(TextChoices):
+    CSV = "csv", _("csv")
+    XLSX = "xlsx", _("xlsx")
+
+
+class DownloadQueryParameterSerializer(serializers.Serializer):
+    deal_id = serializers.IntegerField(required=False)
+    subset = serializers.ChoiceField(choices=DataSubset, default=DataSubset.PUBLIC)
+    format = serializers.ChoiceField(choices=DataFormat, default=DataFormat.CSV)
+
+
 class DataDownload:
     def __init__(self, request):
         self.request = request
         self.user = request.user
-        deal_id = self.request.GET.get("deal_id")
-        self.subset = self.request.GET.get("subset", "PUBLIC")
-        self.return_format = self.request.GET.get("format", "html")
 
-        if deal_id:
-            self._single_deal(deal_id)
+        serializer = DownloadQueryParameterSerializer(data=self.request.GET)
+        if serializer.is_valid():
+            self.errors = None
+            self.subset = serializer.validated_data.get("subset")
+            self.return_format = serializer.validated_data.get("format")
+
+            if deal_id := serializer.validated_data.get("deal_id"):
+                self._single_deal(deal_id)
+            else:
+                self._multiple_deals()
         else:
-            self._multiple_deals()
+            self.errors = serializer.errors
 
-    def _single_deal(self, deal_id):
-        dealhull = DealHull.objects.visible(self.user, self.subset).get(id=deal_id)
-        dealversions: QuerySet[DealVersion] = DealVersion.objects.filter(
-            id=dealhull.active_version_id
-        )
+    def _single_deal(self, deal_id: int) -> None:
+        try:
+            dealhull = DealHull.objects.visible(self.user, self.subset).get(id=deal_id)
+        except DealHull.DoesNotExist as e:
+            self.errors = e
+            return
+
+        dealversions = DealVersion.objects.filter(id=dealhull.active_version_id)
+        if not dealversions.count():
+            self.errors = f"No active version for deal {deal_id}."
+            return
 
         version = dealversions[0]
 
@@ -395,28 +428,13 @@ class DataDownload:
         self.filename = "export"
 
     def get_response(self):
-        if self.return_format == "xlsx":
-            return self._xlsx()
-        if self.return_format == "csv":
-            return self._csv()
-        return self._html()
+        if self.errors:
+            return HttpResponseBadRequest(self.errors)
 
-    def _html(self):
-        ctx = {
-            "deal_headers": deal_headers,
-            "deals": self.deals,
-            "location_headers": location_headers,
-            "locations": self.locations,
-            "contract_headers": contract_headers,
-            "contracts": self.contracts,
-            "datasource_headers": datasource_headers,
-            "datasources": self.datasources,
-            "investor_headers": investor_headers,
-            "investors": self.investors,
-            "involvement_headers": involvement_headers,
-            "involvements": self.involvements,
-        }
-        return render(self.request, "landmatrix/export_table.html", ctx)
+        return {
+            DataFormat.CSV: self._csv,
+            DataFormat.XLSX: self._xlsx,
+        }[self.return_format]()
 
     def _xlsx(self):
         response = HttpResponse(
