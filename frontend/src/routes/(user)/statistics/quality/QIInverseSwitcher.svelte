@@ -13,7 +13,7 @@
   <span>
     {model === "deal" ? $_("Showing deals") : $_("Showing investors")}
   </span>
-  <CheckboxSwitch {model} bind:checked={inverse}>
+  <CheckboxSwitch {model} id="inverse" bind:checked={inverse}>
     <svelte:fragment slot="left">
       {$_("Meeting quality indicator condition")}
     </svelte:fragment>
