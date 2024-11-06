@@ -97,15 +97,16 @@
       <!--      <p>{$dealsNG.length}</p>-->
       <div class="my-2 px-2">
         <CheckboxSwitch
-          checked={$isDefaultFilter}
           class="text-base"
+          id="default"
+          checked={$isDefaultFilter}
           on:change={toggleDefaultFilter}
         >
           {$_("Default filter")}
         </CheckboxSwitch>
 
         {#if isEditorOrAbove($page.data.user)}
-          <CheckboxSwitch class="text-base" bind:checked={$publicOnly}>
+          <CheckboxSwitch class="text-base" id="public" bind:checked={$publicOnly}>
             {$_("Public deals only")}
           </CheckboxSwitch>
         {/if}
