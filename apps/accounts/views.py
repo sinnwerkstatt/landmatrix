@@ -10,7 +10,11 @@ from rest_framework.response import Response
 from apps.accounts import auth_flow
 from apps.accounts.models import User
 from apps.accounts.serializers import LeanUserSerializer, UserSerializer
-from apps.landmatrix.permissions import IsReporterOrHigher
+from apps.landmatrix.permissions import (
+    IsReporterOrHigher,
+    is_admin,
+)
+
 
 # unused, but maybe helpful
 # def has_authorization_for_country(user: User, country: Country | int) -> bool:
@@ -38,9 +42,7 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
         return LeanUserSerializer
 
     def get_queryset(self):
-        if self.action == "list":
-            return self.queryset.order_by(Lower("full_name"))
-        return self.queryset
+        return self.queryset.order_by(Lower("full_name"))
 
     def get_permissions(self):
         if self.action == "retrieve":
@@ -48,10 +50,11 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
         return [IsReporterOrHigher()]
 
     def retrieve(self, request, pk=None, *args, **kwargs):
-        if request.user.is_staff and not pk == "me":
+        if is_admin(request.user) and not pk == "me":
             user = get_object_or_404(self.queryset, pk=pk)
         else:
             user = request.user
+
         serializer = self.get_serializer(user)
         return Response(serializer.data)
 

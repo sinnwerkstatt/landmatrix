@@ -2144,7 +2144,7 @@ export interface components {
     JobsSchema: components["schemas"]["JobsItem"][]
     LeanUser: {
       id: number
-      full_name: string
+      full_name: string | null
       /** @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
       username: string
       role: components["schemas"]["UserRoleEnum"]
