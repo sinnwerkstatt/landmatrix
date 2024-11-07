@@ -9,7 +9,7 @@ from rest_framework.response import Response
 
 from apps.landmatrix.models.deal import DealHull, DealVersion
 from apps.landmatrix.models.investor import InvestorHull, InvestorVersion
-from apps.landmatrix.permissions import IsEditorOrHigher
+from apps.landmatrix.permissions import IsReporterOrHigher
 from apps.landmatrix.quality_indicators import DEAL_QIS, INVESTOR_QIS
 from apps.landmatrix.quality_indicators.deal import annotate_counts, DEAL_SUBSETS
 
@@ -38,7 +38,7 @@ from ...landmatrix.utils import parse_filters
     },
 )
 @api_view()
-@permission_classes([IsEditorOrHigher])
+@permission_classes([IsReporterOrHigher])
 def specs(request: Request) -> Response:
     return Response(
         data={
@@ -64,7 +64,7 @@ def specs(request: Request) -> Response:
     },
 )
 @api_view()
-@permission_classes([IsEditorOrHigher])
+@permission_classes([IsReporterOrHigher])
 def deal_counts(request: Request) -> Response:
 
     qs = DealHull.objects.public()
@@ -97,7 +97,7 @@ def deal_counts(request: Request) -> Response:
     },
 )
 @api_view()
-@permission_classes([IsEditorOrHigher])
+@permission_classes([IsReporterOrHigher])
 def investor_counts(request: Request) -> Response:
     qs = InvestorHull.objects.active()
     ids = qs.values_list("active_version_id", flat=True)
@@ -128,7 +128,7 @@ def investor_counts(request: Request) -> Response:
     },
 )
 @api_view()
-@permission_classes([IsEditorOrHigher])
+@permission_classes([IsReporterOrHigher])
 def stats(request: Request) -> Response:
 
     return Response(
@@ -191,7 +191,7 @@ def stats(request: Request) -> Response:
     },
 )
 @api_view()
-@permission_classes([IsEditorOrHigher])
+@permission_classes([IsReporterOrHigher])
 def investors(request: Request) -> Response | HttpResponse:
     qi = request.query_params.get("qi")
     keys = [qi.key for qi in INVESTOR_QIS]
@@ -290,7 +290,7 @@ def investors(request: Request) -> Response | HttpResponse:
     },
 )
 @api_view()
-@permission_classes([IsEditorOrHigher])
+@permission_classes([IsReporterOrHigher])
 def deals(request: Request) -> Response | HttpResponse:
     qi = request.query_params.get("qi")
     keys = [qi.key for qi in DEAL_QIS]
