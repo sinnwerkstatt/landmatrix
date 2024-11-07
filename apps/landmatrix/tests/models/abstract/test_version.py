@@ -17,15 +17,15 @@ class TestBaseVersionMixin(AbstractModelTestCase):
     def test_copy_to_new_draft(self):
         version: BaseVersion = self.derived_model.objects.create(
             status=VersionStatus.ACTIVATED,
-            created_at="2024-01-01",
+            created_at="2024-01-01T00:00:00Z",
             created_by_id=PETER,
-            modified_at="2024-01-02",
+            modified_at="2024-01-02T00:00:00Z",
             modified_by_id=JOHANNA,
-            sent_to_review_at="2024-01-03",
+            sent_to_review_at="2024-01-03T00:00:00Z",
             sent_to_review_by_id=JOHANNA,
-            sent_to_activation_at="2024-01-03",
+            sent_to_activation_at="2024-01-03T00:00:00Z",
             sent_to_activation_by_id=JOHANNA,
-            activated_at="2024-01-03",
+            activated_at="2024-01-03T00:00:00Z",
             activated_by_id=KNUT,
         )
 
