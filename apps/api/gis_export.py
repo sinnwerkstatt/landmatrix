@@ -2,6 +2,7 @@ from drf_spectacular.utils import extend_schema
 
 from django.db.models import QuerySet, Value
 from django.db.models.functions import JSONObject
+from rest_framework.exceptions import NotFound
 from rest_framework.decorators import api_view
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -62,7 +63,10 @@ def _get_deal_version_qs(request: Request) -> QuerySet[DealVersion]:
         subset=request.GET.get("subset", "PUBLIC"),
     )
     if deal_id := request.query_params.get("deal_id"):
-        hull = qs_deal_hull.get(id=deal_id)
+        try:
+            hull = qs_deal_hull.get(id=deal_id)
+        except DealHull.DoesNotExist:
+            raise NotFound(f"Deal {deal_id} does not exist.")
         return DealVersion.objects.filter(id=hull.active_version_id).order_by("deal_id")
 
     qs_deal_hull = qs_deal_hull.filter(parse_filters(request))

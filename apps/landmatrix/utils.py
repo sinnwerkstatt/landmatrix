@@ -150,7 +150,7 @@ def parse_filters(request: Request):
     if animals := request.GET.getlist("animals"):
         ret &= Q(active_version__current_animals__overlap=animals)
     if minerals := request.GET.getlist("minerals"):
-        ret &= Q(active_version__current_minerals__overlap=minerals)
+        ret &= Q(active_version__current_mineral_resources__overlap=minerals)
 
     if trans := request.GET.get("transnational"):
         ret &= Q(active_version__transnational=trans == "true")
