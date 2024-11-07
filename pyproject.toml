@@ -21,7 +21,6 @@ pydantic = "*"
 django-pydantic-field = "*"
 django-cors-headers = "*"
 django-environ = "*"
-django-impersonate = "*"
 django-modeltranslation = "*"
 
 wagtail-font-awesome-svg = "*"
