@@ -10,7 +10,7 @@ description = "Land Matrix"
 [tool.poetry.dependencies]
 python = "^3.10"
 Django = "*"
-wagtail = ">=6.0,<6.1"
+wagtail = ">=6.1,<6.2"
 psycopg2-binary = "*"
 
 djangorestframework = "*"
