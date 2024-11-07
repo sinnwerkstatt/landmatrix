@@ -56,19 +56,6 @@
           <small>{userRolesMap[user.role]}</small>
         </p>
 
-        <!--{#if user.is_impersonate}-->
-        <!--  <ul>-->
-        <!--    <li>-->
-        <!--      <a-->
-        <!--        class="nav-link-secondary hover:bg-pelorous-100"-->
-        <!--        href="/impersonate/stop/?next=/dashboard/"-->
-        <!--      >-->
-        <!--        {$_("Stop impersonation")}-->
-        <!--      </a>-->
-        <!--    </li>-->
-        <!--  </ul>-->
-        <!--{/if}-->
-
         <ul>
           <li>
             <a class="nav-link-secondary" href="/management/">

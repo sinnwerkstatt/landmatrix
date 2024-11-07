@@ -13,12 +13,12 @@ def test_permissions(api_client, anybody2, reporter2, editor2, admin2):
         reverse("qi-deals"),
         reverse("qi-investors"),
     ]:
-        for user in [anybody2, reporter2]:
+        for user in [anybody2]:
             api_client.force_authenticate(user=user)
             response = api_client.get(url)
             assert response.status_code == status.HTTP_403_FORBIDDEN
 
-        for user in [editor2, admin2]:
+        for user in [reporter2, editor2, admin2]:
             api_client.force_authenticate(user=user)
             response = api_client.get(url)
             assert response.status_code != status.HTTP_403_FORBIDDEN

@@ -78,7 +78,6 @@ INSTALLED_APPS = [
     "apps.wagtailcms",
     "apps.accountability",
     # plumbing
-    "impersonate",
     "corsheaders",
 ]
 
@@ -96,7 +95,6 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     # wagtail and dependencies
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
-    "impersonate.middleware.ImpersonateMiddleware",
     # "django.middleware.cache.FetchFromCacheMiddleware",
 ]
 
@@ -211,12 +209,6 @@ SPECTACULAR_SETTINGS = {
     },
 }
 
-IMPERSONATE = {
-    "REDIRECT_URL": "/editor/",
-    "REQUIRE_SUPERUSER": True,
-    "ALLOW_SUPERUSER": True,
-    "REDIRECT_FIELD_NAME": "next",
-}
 
 BLOG_LIMIT_AUTHOR_CHOICES_GROUP = "CMS Global (Editors)"
 

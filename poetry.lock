@@ -506,16 +506,6 @@ files = [
 Django = ">=3.2"
 
 [[package]]
-name = "django-impersonate"
-version = "1.9.4"
-description = "Django app to allow superusers to impersonate other users."
-optional = false
-python-versions = "*"
-files = [
-    {file = "django_impersonate-1.9.4.tar.gz", hash = "sha256:77b1ad339ad2e5e90c1250b13731a77f50f7621abaaa2758c5a629a05f67396b"},
-]
-
-[[package]]
 name = "django-livereload"
 version = "1.7"
 description = "LiveReload with the Django development server"
@@ -3220,4 +3210,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "25690c57195c2d00197d45372ca2bc043d759049ecd92b00fcc335553a709590"
+content-hash = "6eb7097ec78261c82d899513e4c791f3d6041746fe8b02b104e25d8e55c5cbd3"

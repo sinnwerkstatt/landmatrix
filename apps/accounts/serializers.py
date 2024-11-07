@@ -46,6 +46,4 @@ class UserSerializer(ReadOnlyModelSerializer):
             "is_superuser",
             "is_staff",
             "is_active",
-            # TODO: Fixme
-            # "is_impersonate",
         ]
