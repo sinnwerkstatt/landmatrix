@@ -27,7 +27,7 @@
   const itemFilter = (_label: string, filterText: string, user: LeanUser) => {
     const filterTextLower = filterText.toLowerCase()
     return (
-      user.full_name.toLowerCase().includes(filterTextLower) ||
+      user.full_name?.toLowerCase().includes(filterTextLower) ||
       user.username.toLowerCase().includes(filterTextLower)
     )
   }

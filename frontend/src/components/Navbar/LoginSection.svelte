@@ -51,7 +51,7 @@
 
       <div class="divide-y divide-solid bg-white shadow-lg dark:bg-gray-900">
         <p class="m-0 whitespace-nowrap p-2 leading-5 text-gray-400">
-          {user.full_name}
+          {user.full_name ?? user.username}
           <br />
           <small>{userRolesMap[user.role]}</small>
         </p>
