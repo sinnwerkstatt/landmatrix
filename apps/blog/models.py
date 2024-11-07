@@ -213,12 +213,11 @@ def limit_author_choices():
 
 
 class BlogPage(HeadlessPreviewMixin, Page):
-    body = StreamField(SIMPLE_CONTENT_BLOCKS, use_json_field=True)
+    body = StreamField(SIMPLE_CONTENT_BLOCKS)
     documents = StreamField(
         [("document", MyDocumentChooserBlock()), ("text", CharBlock())],
         null=True,
         blank=True,
-        use_json_field=True,
     )
     tags = ClusterTaggableManager(through="BlogPageTag", blank=True)
     date = models.DateField(

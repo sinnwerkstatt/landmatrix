@@ -83,7 +83,6 @@ class WagtailRootPage(HeadlessPreviewMixin, Page):
 
     body = StreamField(
         NEW_BLOCKS + CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS,
-        use_json_field=True,
     )
 
     content_panels = Page.content_panels + [FieldPanel("body")]
@@ -91,9 +90,7 @@ class WagtailRootPage(HeadlessPreviewMixin, Page):
 
 
 class WagtailPage(HeadlessPreviewMixin, Page):
-    body = StreamField(
-        CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS, use_json_field=True
-    )
+    body = StreamField(CONTENT_BLOCKS + DATA_BLOCKS + COLUMN_BLOCKS)
     content_panels = Page.content_panels + [FieldPanel("body")]
     api_fields = [APIField("body")]
 
@@ -132,7 +129,7 @@ class ObservatoryPage(HeadlessPreviewMixin, Page):
         blank=True,
         help_text="Introduction before 'Read more'",
     )
-    body = StreamField(SIMPLE_CONTENT_BLOCKS, use_json_field=True)
+    body = StreamField(SIMPLE_CONTENT_BLOCKS)
 
     twitter_username = models.CharField(blank=True)
 
