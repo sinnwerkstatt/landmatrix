@@ -23,9 +23,9 @@ class TestHullBase(AbstractModelTestCase):
 
     def test_creation_with_date(self):
         hull: BaseHull = self.derived_model.objects.create(
-            first_created_at="2012-07-26",
+            first_created_at="2012-07-26T00:00:00Z",
         )
 
         assert (
-            hull.first_created_at == "2012-07-26"
+            hull.first_created_at == "2012-07-26T00:00:00Z"
         ), "Initialized to given datetime, i.e. 2012-07-26."

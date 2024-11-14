@@ -36,6 +36,7 @@ DATABASES["default"]["OPTIONS"] = {"options": "-c statement_timeout=10000"}
 INSTALLED_APPS = [
     # this must come first (before django.contrib.auth)
     "apps.accounts",
+    "apps.accounts.apps.CustomUsersAppConfig",
     # django
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -54,7 +55,6 @@ INSTALLED_APPS = [
     "wagtail.contrib.settings",
     "wagtail.embeds",
     "wagtail.sites",
-    "wagtail.users",
     "wagtail.snippets",
     "wagtail.documents",
     "wagtail.images",
@@ -118,9 +118,6 @@ TEMPLATES = [
 ]
 
 AUTH_USER_MODEL = "accounts.User"
-WAGTAIL_USER_EDIT_FORM = "apps.accounts.forms.CustomUserEditForm"
-WAGTAIL_USER_CREATION_FORM = "apps.accounts.forms.CustomUserCreationForm"
-WAGTAIL_USER_CUSTOM_FIELDS = ["role", "country", "region"]
 
 LOGIN_REDIRECT_URL = "/"
 # Limit all uploads to 20MB, and data sources to 1MB

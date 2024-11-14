@@ -12,8 +12,14 @@ class CustomUserEditForm(UserEditForm):
     country = forms.ModelChoiceField(required=False, queryset=Country.objects)
     region = forms.ModelChoiceField(required=False, queryset=Region.objects)
 
+    class Meta(UserEditForm.Meta):
+        fields = UserEditForm.Meta.fields | {"role", "country", "region"}
+
 
 class CustomUserCreationForm(UserCreationForm):
     role = forms.ChoiceField(required=False, label=_("Role"), choices=UserRole.choices)
     country = forms.ModelChoiceField(required=False, queryset=Country.objects)
     region = forms.ModelChoiceField(required=False, queryset=Region.objects)
+
+    class Meta(UserCreationForm.Meta):
+        fields = UserCreationForm.Meta.fields | {"role", "country", "region"}
