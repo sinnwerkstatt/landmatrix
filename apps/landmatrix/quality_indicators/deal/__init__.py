@@ -21,7 +21,7 @@ DEAL_QIS: list[QualityIndicator] = [
         key="locations/all-georeferenced-or-high-accuracy",
         name=_("All locations georeferenced with high accuracy."),
         description=_(
-            "Deals for which all deal location is georeferenced "
+            "Deals for which all deal locations are georeferenced "
             "with high accuracy: Accuracy level = 'exact location' "
             "OR accuracy level = 'coordinates' "
             "OR georeferenced area data given / polygon given."
