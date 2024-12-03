@@ -9,12 +9,13 @@ description = "Land Matrix"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-Django = "*"
-wagtail = "<5.3"
+Django = "<5.1"
+wagtail = "<6.4"
 psycopg2-binary = "*"
 
 djangorestframework = "*"
 djangorestframework-gis = "*"
+djangorestframework-dataclasses = "*"
 drf-spectacular = { version = "*", extras = ['sidecar'] }
 
 pydantic = "*"
@@ -41,10 +42,7 @@ doit = "*"
 sentry_sdk = "*"
 gunicorn = "*"
 tzdata = "*"
-python-memcached = "^1.59"
-ramda = "^0.7.6"
-icecream = "^2.1.3"
-djangorestframework-dataclasses = "^1.3.1"
+icecream = "*"
 
 [tool.poetry.group.dev.dependencies]
 ipdb = "*"
@@ -64,6 +62,7 @@ pydot = "*"
 tqdm = "*"
 isort = "*"
 termtables = "*"
+freezegun = "*"
 
 # stubs
 django-stubs = { extras = ["compatible-mypy"], version = "^1.14.0" }
@@ -79,7 +78,6 @@ types-colorama = "^0.4.15.8"
 types-polib = "^1.2.0.0"
 types-simplejson = "^3.18.0.1"
 types-tqdm = "^4.65.0.0"
-freezegun = "^1.5.1"
 
 
 [tool.black]
