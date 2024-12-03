@@ -1,9 +1,10 @@
 from django.utils.translation import gettext_lazy as _
 
-from .subsets import *
+from apps.landmatrix.models.choices import IntentionOfInvestmentGroupEnum
+
 from ..dataclass import QualityIndicator, Subset
 from .queries import *
-from apps.landmatrix.models.choices import IntentionOfInvestmentGroupEnum
+from .subsets import *
 
 DEAL_QIS: list[QualityIndicator] = [
     QualityIndicator(
