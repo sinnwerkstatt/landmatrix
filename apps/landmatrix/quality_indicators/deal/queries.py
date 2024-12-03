@@ -15,6 +15,27 @@ from .location.queries import (
 )
 
 
+__all__ = (
+    "annotate_counts",
+    "produce_counts",
+    "q_any_location_georeferenced_or_high_accuracy",
+    "q_all_location_georeferenced_or_high_accuracy",
+    "q_any_location_georeferenced",
+    "q_all_location_georeferenced",
+    "q_any_location_georeferenced_as_contract",
+    "q_any_location_georeferenced_as_production",
+    "q_multiple_datasource",
+    "q_all_datasource_valid",
+    "q_all_status",
+    "q_all_status_dated",
+    "q_all_status_dated_and_any_area_dated",
+    "q_any_area_dated",
+    "q_all_basic_fields",
+    "q_any_produce_info",
+    "q_operating_company_in_target_country",
+)
+
+
 ### Location subqueries
 def qs_location_subquery() -> QuerySet["Location"]:
     from apps.landmatrix.models.deal import Location
@@ -149,7 +170,7 @@ def annotate_counts() -> JSONObject:
 
 def produce_counts() -> JSONObject:
     return JSONObject(
-        **{
+        **{  # type: ignore[arg-type]
             produce: JSONArrayLength(produce)
             for produce in [
                 "crops",

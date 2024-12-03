@@ -635,8 +635,8 @@ def test_q_operating_company_in_target_country():
 
 # Annotations: Counts and quality indicators
 def test_annotate_counts(deal_with_active_version):
-    counts = (
-        DealVersion.objects.all()
+    counts: dict = (
+        DealVersion.objects.all()  # type: ignore[assignment]
         .annotate(counts=annotate_counts())
         .values_list("counts", flat=True)
         .first()
