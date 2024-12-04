@@ -43,6 +43,7 @@ sentry_sdk = "*"
 gunicorn = "*"
 tzdata = "*"
 icecream = "*"
+django-email-bandit = "*"
 
 [tool.poetry.group.dev.dependencies]
 ipdb = "*"
