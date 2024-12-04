@@ -27,7 +27,7 @@
   let filterText = ""
 
   const onSelect = (e: CustomEvent<SearchResultEntry>) => {
-    console.log(e.detail)
+    // console.log(e.detail)
     goto(e.detail.href)
     dispatch("enter")
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-  console.log("huhu")
+  // console.log("huhu")
 </script>
 
 <h2 class="display1 mb-20">Button styles</h2>

@@ -76,6 +76,7 @@ INSTALLED_APPS = [
     "apps.message",
     "apps.landmatrix",
     "apps.wagtailcms",
+    "apps.accountability",
     # plumbing
     "corsheaders",
 ]
