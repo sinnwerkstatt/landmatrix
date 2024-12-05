@@ -1,10 +1,9 @@
 import { error, redirect } from "@sveltejs/kit"
 
-import type { InvestorHull } from "$lib/types/data"
-
-import type { InvestorEditSection } from "$components/Data/Investor/Sections/constants"
+import type { InvestorHull, MutableInvestorHull } from "$lib/types/data"
 
 import type { LayoutLoad } from "./$types"
+import { mutableInvestor } from "./store"
 
 // Duplicate lines between display and edit views as well as
 // between deal and investor load functions
@@ -22,7 +21,6 @@ export const load: LayoutLoad = async ({ params, parent, depends }) => {
 
   const investorID = parseInt(params.id)
   const investorVersion = params.versionId ? parseInt(params.versionId) : null
-  const investorSection = params.section as InvestorEditSection
 
   const baseUrl = investorVersion
     ? `/investor/edit/${investorID}/${investorVersion}`
@@ -62,11 +60,12 @@ export const load: LayoutLoad = async ({ params, parent, depends }) => {
     redirect(307, `/investor/edit/${investorID}/${investor.draft_version_id}/`)
   }
 
+  mutableInvestor.set(structuredClone(investor) as MutableInvestorHull)
+
   return {
     investor,
     investorID,
     investorVersion,
-    investorSection,
     baseUrl,
   }
 }

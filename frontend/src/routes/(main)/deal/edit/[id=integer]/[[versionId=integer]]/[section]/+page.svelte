@@ -1,7 +1,7 @@
 <script lang="ts">
   import { dealSectionLookup } from "$components/Data/Deal/Sections/store"
 
-  import { mutableDeal } from "./store"
+  import { mutableDeal } from "../store"
 
   export let data
 </script>

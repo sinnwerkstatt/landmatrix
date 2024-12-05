@@ -22,19 +22,12 @@
   let savingInProgress = false
   let showReallyQuitOverlay = false
 
-  $: $mutableInvestor = structuredClone(data.investor) as MutableInvestorHull
   $: hasBeenEdited = JSON.stringify(data.investor) !== JSON.stringify($mutableInvestor)
 
   beforeNavigate(({ type, cancel, to }) => {
     // if hasNavigatedToOtherSection
     if (type === "link" && to?.url.pathname.includes(data.baseUrl)) {
       if (savingInProgress || !isFormValid()) {
-        cancel()
-        return
-      }
-
-      if (hasBeenEdited) {
-        saveInvestor($mutableInvestor).then(success => (success ? goto(to?.url) : null))
         cancel()
         return
       }
@@ -110,9 +103,7 @@
 
     if (retBody.versionID !== investor.selected_version.id) {
       toast.push("Created a new draft", { classes: ["success"] })
-      await goto(
-        `/investor/edit/${data.investorID}/${retBody.versionID}/${data.investorSection}`,
-      )
+      await goto(`/investor/edit/${data.investorID}/${retBody.versionID}/`)
     } else {
       toast.push("Saved data", { classes: ["success"] })
       await invalidate("investor:detail")
@@ -143,8 +134,8 @@
     await invalidate("investor:detail") // discard changes
     await goto(
       data.investorVersion
-        ? `/investor/${data.investorID}/${data.investorVersion}/${data.investorSection}/`
-        : `/investor/${data.investorID}/${data.investorSection}/`,
+        ? `/investor/${data.investorID}/${data.investorVersion}/`
+        : `/investor/${data.investorID}/`,
     )
   }
 
