@@ -17,6 +17,7 @@ from apps.landmatrix.models.abstract import (
     VersionStatus,
     VersionTransition,
 )
+from apps.landmatrix.models.choices import InvolvementRoleEnum
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.fields import ChoiceArrayField, LooseDateField, NanoIDField
@@ -201,41 +202,41 @@ class InvestorHull(BaseHull):
         return _seen_investors
 
     def get_parents(self) -> QuerySet["Involvement"]:
+        # return self.parent_investors.all()
         return Involvement.objects.filter(child_investor=self)
 
     def get_children(self) -> QuerySet["Involvement"]:
+        # return self.child_investors.all()
         return Involvement.objects.filter(parent_investor=self)
 
-    def get_affected_dealversions(self, seen_investors=None) -> set["DealVersion"]:
+    def get_involved_deal_versions(
+        self,
+        seen_investors: set["InvestorHull"] | None = None,
+    ) -> set["DealVersion"]:
         """
         Get list of affected deals - this is like Top Investors, only downwards
         (all left-hand side deals of the network visualisation)
         """
-
-        from apps.landmatrix.models.deal import DealVersion
-
-        deals = set()
         if seen_investors is None:
             seen_investors = {self}
 
-        child_investor_involvements = (
-            self.child_investors.active()
-            .filter(role="PARENT")
-            .exclude(child_investor__in=seen_investors)
+        deal_versions = {*self.dealversions.all()}
+
+        qs_involvements_as_parent = (
+            self.get_children()
+            .filter(role=InvolvementRoleEnum.PARENT)
+            .exclude(child_investor_id__in=seen_investors)
         )
 
-        dealv: DealVersion
-        for dealv in self.dealversions.filter(id=F("deal__active_version_id")):
-            deals.add(dealv)
+        for involvement in qs_involvements_as_parent:
+            child_investor = involvement.child_investor
 
-        for involvement in child_investor_involvements:
-            if involvement.child_investor in seen_investors:
-                continue
-            seen_investors.add(involvement.child_investor)
-            deals.update(
-                involvement.child_investor.get_affected_dealversions(seen_investors)
+            seen_investors.add(child_investor)
+            deal_versions.update(
+                child_investor.get_involved_deal_versions(seen_investors)
             )
-        return deals
+
+        return deal_versions
 
 
 class InvolvementQuerySet(models.QuerySet):

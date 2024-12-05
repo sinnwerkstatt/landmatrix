@@ -68,10 +68,17 @@ def public_deal_with_investors() -> (
         country=c1,
     )
 
-    d1.active_version = DealVersion.objects.create(
+    d1.draft_version = DealVersion.objects.create(
         deal=d1,
         # Cannot be in here because of save(dependent=True) sets parent_companies
         # operating_company=i1,
+        status=VersionStatus.DRAFT,
+    )
+    d1.draft_version.operating_company = i1
+    d1.draft_version.save()
+
+    d1.active_version = DealVersion.objects.create(
+        deal=d1,
         status=VersionStatus.ACTIVATED,
     )
     d1.active_version.operating_company = i1
@@ -95,9 +102,13 @@ def test_public_deal(public_deal_with_investors):
     assert d1.active_version.is_public
     assert DealHull.objects.public().count() == 1
 
-    assert d1.active_version in i1.get_affected_dealversions()
-    assert d1.active_version in i2.get_affected_dealversions()
-    assert d1.active_version in i3.get_affected_dealversions()
+    assert d1.active_version in i1.get_involved_deal_versions()
+    assert d1.active_version in i2.get_involved_deal_versions()
+    assert d1.active_version in i3.get_involved_deal_versions()
+
+    assert d1.draft_version in i1.get_involved_deal_versions()
+    assert d1.draft_version in i2.get_involved_deal_versions()
+    assert d1.draft_version in i3.get_involved_deal_versions()
 
 
 # def test_public_deal_confidential_flag(public_deal_with_investors):
