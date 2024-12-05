@@ -3,7 +3,7 @@ from django.db.models import ProtectedError
 
 
 @pytest.mark.django_db
-def test_investor_change_trigger_refresh_calculated_deal_fields(
+def test_investor_updated(
     investors,
     public_deal,
 ):
@@ -29,3 +29,10 @@ def test_investor_change_trigger_refresh_calculated_deal_fields(
 
     with pytest.raises(ProtectedError):
         public_deal_version.operating_company.delete()
+
+    public_deal_version.operating_company.deleted = True
+    public_deal_version.operating_company.save()
+
+    public_deal_version.refresh_from_db()
+    assert not public_deal_version.has_known_investor
+    assert not public_deal_version.is_public

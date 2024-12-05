@@ -29,6 +29,16 @@ SCORE_OPTIONS_CHOICES = [
     (NO_VIOLATIONS, _("No violation")),
 ]
 
+
+def get_default_score_options() -> list[str]:
+    return [
+        NO_DATA,
+        SEVERE_VIOLATIONS,
+        PARTIAL_VIOLATIONS,
+        NO_VIOLATIONS,
+    ]
+
+
 SCORE_CHOICES = [("NO_SCORE", _("No score"))] + SCORE_OPTIONS_CHOICES
 
 
@@ -64,12 +74,7 @@ class VggtVariable(models.Model):
     score_options = ChoiceArrayField(
         models.CharField(choices=SCORE_OPTIONS_CHOICES),
         blank=True,
-        default=[
-            NO_DATA,
-            SEVERE_VIOLATIONS,
-            PARTIAL_VIOLATIONS,
-            NO_VIOLATIONS,
-        ],
+        default=get_default_score_options,
     )
     landmatrix_fields = ArrayField(
         models.CharField(max_length=100), size=50, blank=True, null=True
