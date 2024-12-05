@@ -8,7 +8,11 @@ import {
 import type { PageLoad } from "./$types"
 
 export const load: PageLoad = async ({ params, url }) => {
-  if (!DEAL_SECTIONS.includes(params.section as DealSection)) {
+  const dealSection = params.section as DealSection
+
+  if (!DEAL_SECTIONS.includes(dealSection)) {
     redirect(307, new URL("../locations", url))
   }
+
+  return { dealSection }
 }

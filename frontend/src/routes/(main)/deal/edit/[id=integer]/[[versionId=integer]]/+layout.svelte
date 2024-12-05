@@ -24,19 +24,12 @@
   let savingInProgress = false
   let showReallyQuitOverlay = false
 
-  $: $mutableDeal = structuredClone(data.deal) as MutableDealHull
   $: hasBeenEdited = JSON.stringify(data.deal) !== JSON.stringify($mutableDeal)
 
   beforeNavigate(({ type, cancel, to }) => {
     // if hasNavigatedToOtherSection
     if (type === "link" && to?.url.pathname.includes(data.baseUrl)) {
       if (savingInProgress || !isFormValid()) {
-        cancel()
-        return
-      }
-
-      if (hasBeenEdited) {
-        saveDeal($mutableDeal).then(success => (success ? goto(to?.url) : null))
         cancel()
         return
       }
@@ -112,7 +105,7 @@
 
     if (retBody.versionID !== deal.selected_version.id) {
       toast.push("Created a new draft", { classes: ["success"] })
-      await goto(`/deal/edit/${deal.id}/${retBody.versionID}/${data.dealSection}`)
+      await goto(`/deal/edit/${deal.id}/${retBody.versionID}/`)
     } else {
       toast.push("Saved data", { classes: ["success"] })
       await invalidate("deal:detail")
@@ -144,8 +137,8 @@
     await invalidate("deal:detail") // discard changes
     await goto(
       data.dealVersion
-        ? `/deal/${data.dealID}/${data.dealVersion}/${data.dealSection}/`
-        : `/deal/${data.dealID}/${data.dealSection}/`,
+        ? `/deal/${data.dealID}/${data.dealVersion}/`
+        : `/deal/${data.dealID}/`,
     )
   }
 

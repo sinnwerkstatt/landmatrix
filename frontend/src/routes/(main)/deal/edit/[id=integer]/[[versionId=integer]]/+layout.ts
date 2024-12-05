@@ -1,10 +1,9 @@
 import { error, redirect } from "@sveltejs/kit"
 
-import type { DealHull } from "$lib/types/data"
-
-import type { DealSection } from "$components/Data/Deal/Sections/constants"
+import type { DealHull, MutableDealHull } from "$lib/types/data"
 
 import type { LayoutLoad } from "./$types"
+import { mutableDeal } from "./store"
 
 export const load: LayoutLoad = async ({ params, parent, depends }) => {
   depends("deal:detail")
@@ -16,7 +15,6 @@ export const load: LayoutLoad = async ({ params, parent, depends }) => {
 
   const dealID = parseInt(params.id)
   const dealVersion = params.versionId ? parseInt(params.versionId) : null
-  const dealSection = params.section as DealSection
 
   const baseUrl = dealVersion
     ? `/deal/edit/${dealID}/${dealVersion}`
@@ -56,11 +54,12 @@ export const load: LayoutLoad = async ({ params, parent, depends }) => {
     redirect(307, `/deal/edit/${dealID}/${deal.draft_version_id}/`)
   }
 
+  mutableDeal.set(structuredClone(deal) as MutableDealHull)
+
   return {
     deal,
     dealID,
     dealVersion,
-    dealSection,
     baseUrl,
   }
 }
