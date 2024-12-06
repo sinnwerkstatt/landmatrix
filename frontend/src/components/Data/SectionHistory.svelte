@@ -15,20 +15,21 @@
 
   export let investorColors = false
 
-  let compareFrom = obj.versions[1]?.id
-  let compareTo = obj.versions[0]?.id
-
   $: isDeal = "fully_updated_at" in obj
   $: objType = isDeal ? "deal" : "investor"
 
   $: reporterOrHigher = isReporterOrAbove($page.data.user)
 
+  // TODO: Only return filteredVersions from backend
   $: filteredVersions = reporterOrHigher
     ? obj.versions
     : obj.versions.filter(v => {
         if (isDeal) return v.status === Version2Status.ACTIVATED && v.is_public
         return v.status === Version2Status.ACTIVATED
       })
+
+  $: compareFrom = filteredVersions[1]?.id
+  $: compareTo = filteredVersions[0]?.id
 </script>
 
 <section>

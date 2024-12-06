@@ -289,6 +289,12 @@ export const locationFields = derived(
       label: $_("Comment"),
       extras: { multiline: true },
     },
+    // TODO: Add location.areas field components
+    // areas: {
+    //   displayField: null,
+    //   editField: null,
+    //   label: $_("Areas"),
+    // }
   }),
 )
 

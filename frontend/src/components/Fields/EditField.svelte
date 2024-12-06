@@ -56,7 +56,7 @@
         <svelte:component this={richField.editField} bind:value {fieldname} />
       {/if}
     {:else}
-      <div class="italic text-red-400">unknown field</div>
+      <div class="italic text-red-400">unknown field: {fieldname}</div>
     {/if}
   </div>
 </div>
