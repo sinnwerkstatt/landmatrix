@@ -44,20 +44,23 @@ export const load: LayoutLoad = async ({ params, parent, depends }) => {
 
   // don't allow editing of older versions
   if (investorVersion && investorVersion !== investor.draft_version_id) {
-    console.warn("redirecting to draft version")
-    redirect(307, `/investor/edit/${investorID}/${investor.draft_version_id}/`)
+    const url = `/investor/edit/${investorID}/${investor.draft_version_id}/`
+    console.warn(`redirecting to draft version: ${url}`)
+    redirect(307, url)
   }
 
   // don't allow editing version of active investor
   if (investorVersion && investorVersion === investor.active_version_id) {
-    console.warn("redirecting to active version")
-    redirect(307, `/investor/edit/${investorID}/`)
+    const url = `/investor/edit/${investorID}/`
+    console.warn(`redirecting to active version: ${url}`)
+    redirect(307, url)
   }
 
   // don't allow editing active investor if there are newer version
   if (!investorVersion && investor.draft_version_id) {
-    console.warn("redirecting to draft version")
-    redirect(307, `/investor/edit/${investorID}/${investor.draft_version_id}/`)
+    const url = `/investor/edit/${investorID}/${investor.draft_version_id}/`
+    console.warn(`redirecting to draft version: ${url}`)
+    redirect(307, url)
   }
 
   mutableInvestor.set(structuredClone(investor) as MutableInvestorHull)
