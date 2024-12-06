@@ -36,13 +36,15 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
   const investor = ret.data as unknown as InvestorHull
 
   if (investorVersion && investorVersion === investor.active_version_id) {
-    console.warn("redirecting to active version")
-    redirect(307, `/investor/${investorID}/`)
+    const url = `/investor/${investorID}/`
+    console.warn(`redirecting to active version: ${url}`)
+    redirect(307, url)
   }
 
   if (!investorVersion && !investor.active_version_id) {
-    console.warn("redirecting to draft version")
-    redirect(307, `/investor/${investorID}/${investor.draft_version_id}/`)
+    const url = `/investor/${investorID}/${investor.draft_version_id}/`
+    console.warn(`redirecting to draft version: ${url}`)
+    redirect(307, url)
   }
 
   return {

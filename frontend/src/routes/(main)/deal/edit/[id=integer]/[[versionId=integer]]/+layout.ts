@@ -38,20 +38,23 @@ export const load: LayoutLoad = async ({ params, parent, depends }) => {
 
   // don't allow editing of older versions
   if (dealVersion && dealVersion !== deal.draft_version_id) {
-    console.warn("redirecting to draft version")
-    redirect(307, `/deal/edit/${dealID}/${deal.draft_version_id}/`)
+    const url = `/deal/edit/${dealID}/${deal.draft_version_id}/`
+    console.warn(`redirecting to draft version: ${url}`)
+    redirect(307, url)
   }
 
   // don't allow editing version of active deal
   if (dealVersion && dealVersion === deal.active_version_id) {
-    console.warn("redirecting to active version")
-    redirect(307, `/deal/edit/${dealID}/`)
+    const url = `/deal/edit/${dealID}/`
+    console.warn(`redirecting to active version: ${url}`)
+    redirect(307, url)
   }
 
   // don't allow editing active deal if there are newer version
   if (!dealVersion && deal.draft_version_id) {
-    console.warn("redirecting to draft version")
-    redirect(307, `/deal/edit/${dealID}/${deal.draft_version_id}/`)
+    const url = `/deal/edit/${dealID}/${deal.draft_version_id}/`
+    console.warn(`redirecting to draft version: ${url}`)
+    redirect(307, url)
   }
 
   mutableDeal.set(structuredClone(deal) as MutableDealHull)

@@ -34,13 +34,15 @@ export const load: LayoutLoad = async ({ params, depends, parent }) => {
   const deal = ret.data as unknown as DealHull
 
   if (dealVersion && dealVersion === deal.active_version_id) {
-    console.warn("redirecting to active version")
-    redirect(307, `/deal/${dealID}/`)
+    const url = `/deal/${dealID}/`
+    console.warn(`redirecting to active version: ${url}`)
+    redirect(307, url)
   }
 
   if (!dealVersion && !deal.active_version_id) {
-    console.warn("redirecting to draft version")
-    redirect(307, `/deal/${dealID}/${deal.draft_version_id}/`)
+    const url = `/deal/${dealID}/${deal.draft_version_id}/`
+    console.warn(`redirecting to draft version: ${url}`)
+    redirect(307, url)
   }
 
   return {
