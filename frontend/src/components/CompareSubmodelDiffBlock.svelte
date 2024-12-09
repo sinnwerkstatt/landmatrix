@@ -45,9 +45,9 @@
 
       {#if (fromL && isNotEmpty(fromL[key])) || (toL && isNotEmpty(toL[key]))}
         <tr>
-          <td>
+          <th>
             {fieldLookup[fieldname]?.label ?? key}
-          </td>
+          </th>
           <td>
             {#if fromL}
               <DisplayField
@@ -55,12 +55,19 @@
                 {model}
                 value={fromL[key]}
                 wrapperClass="py-2"
+                valueClass=""
               />
             {/if}
           </td>
           <td>
             {#if toL}
-              <DisplayField {fieldname} {model} value={toL[key]} wrapperClass="py-2" />
+              <DisplayField
+                {fieldname}
+                {model}
+                value={toL[key]}
+                wrapperClass="py-2"
+                valueClass=""
+              />
             {/if}
           </td>
         </tr>
