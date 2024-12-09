@@ -21,15 +21,15 @@
   $: reporterOrHigher = isReporterOrAbove($page.data.user)
 
   // TODO: Only return filteredVersions from backend
-  $: filteredVersions = reporterOrHigher
+  const filteredVersions = reporterOrHigher
     ? obj.versions
     : obj.versions.filter(v => {
         if (isDeal) return v.status === Version2Status.ACTIVATED && v.is_public
         return v.status === Version2Status.ACTIVATED
       })
 
-  $: compareFrom = filteredVersions[1]?.id
-  $: compareTo = filteredVersions[0]?.id
+  let compareFrom = filteredVersions[1]?.id
+  let compareTo = filteredVersions[0]?.id
 </script>
 
 <section>
@@ -178,6 +178,7 @@
             <span class="ml-4 whitespace-nowrap text-right">
               <input
                 bind:group={compareFrom}
+                name="versionFrom"
                 type="radio"
                 class={investorColors ? "rdio investor" : "rdio deal"}
                 value={version?.id}
@@ -187,6 +188,7 @@
               <input
                 bind:group={compareTo}
                 type="radio"
+                name="versionTo"
                 class={investorColors ? "rdio investor" : "rdio deal"}
                 value={version?.id}
                 disabled={version?.id <= compareFrom}
