@@ -15,10 +15,10 @@
 
   export let investorColors = false
 
-  $: isDeal = "fully_updated_at" in obj
-  $: objType = isDeal ? "deal" : "investor"
+  const isDeal = "fully_updated_at" in obj
+  const objType = isDeal ? "deal" : "investor"
 
-  $: reporterOrHigher = isReporterOrAbove($page.data.user)
+  const reporterOrHigher = isReporterOrAbove($page.data.user)
 
   // TODO: Only return filteredVersions from backend
   const filteredVersions = reporterOrHigher
