@@ -9,10 +9,21 @@
     email: false,
     investorNameUnknown: false,
   }
+
+  const safeGetHostname = (value: string): string => {
+    try {
+      return new URL(value).hostname
+    } catch (e) {
+      // console.error("error", e)
+      return value
+    }
+  }
 </script>
 
 {#if extras.url}
-  <a href={value} target="_blank" rel="noreferrer">{new URL(value).hostname}</a>
+  <a href={value} target="_blank" rel="noreferrer" class="break-all">
+    {safeGetHostname(value)}
+  </a>
   <!--{:else if extras.email}-->
   <!--  <a href="mailto://{value}">{value}</a>-->
 {:else if extras.ocid}
