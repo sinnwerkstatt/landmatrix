@@ -68,7 +68,9 @@
 
 <svelte:head>
   <title>
-    {$_("Comparing deal #{dealID}", { values: { dealID: data.dealID } })}
+    {$_("Comparing deal #{dealID}", {
+      values: { dealID: data.dealID },
+    })}
     @{data.fromVersion.id} - @{data.toVersion.id}
   </title>
 </svelte:head>
@@ -114,7 +116,7 @@
           </tr>
           {#each subsec.fields as field}
             {#if data.dealdiff.has(field)}
-              <tr class="🍌 odd:bg-gray-50 dark:odd:bg-gray-700">
+              <tr class="🍌">
                 <th>
                   {$dealFields[field].label}
                 </th>
@@ -123,6 +125,7 @@
                     fieldname={field}
                     value={data.fromVersion[field]}
                     wrapperClass="py-2"
+                    valueClass=""
                   />
                 </td>
                 <td>
@@ -130,6 +133,7 @@
                     fieldname={field}
                     value={data.toVersion[field]}
                     wrapperClass="py-2"
+                    valueClass=""
                   />
                 </td>
               </tr>

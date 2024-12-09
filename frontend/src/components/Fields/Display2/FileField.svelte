@@ -26,7 +26,9 @@
   <div>
     <FilePdfIcon class="h-4 w-4" />
   </div>
-  {fileName.length > CUTOFF
-    ? fileName.slice(0, CUTOFF) + "..." + fileName.slice(fileExt)
-    : fileName}
+  <span class="break-all">
+    {fileName.length > CUTOFF
+      ? fileName.slice(0, CUTOFF) + "..." + fileName.slice(fileExt)
+      : fileName}
+  </span>
 </a>

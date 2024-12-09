@@ -26,7 +26,7 @@
 {:else if extras.investorNameUnknown}
   <span class="italic text-gray-600">[{$_("unknown investor")}]</span>
 {:else}
-  <div class="whitespace-pre-wrap">
+  <div class="whitespace-pre-wrap break-words">
     {value ?? "—"}
   </div>
 {/if}
