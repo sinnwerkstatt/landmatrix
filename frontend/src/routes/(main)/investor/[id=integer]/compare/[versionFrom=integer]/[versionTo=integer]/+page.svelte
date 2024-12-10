@@ -2,6 +2,7 @@
   import { _ } from "svelte-i18n"
 
   import { investorFields } from "$lib/fieldLookups"
+  import type { DataSource, Involvement } from "$lib/types/data"
 
   import CompareSubmodelDiffBlock from "$components/CompareSubmodelDiffBlock.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"
@@ -26,33 +27,28 @@
     ],
   }
 
-  $: fromDSs = data.fromVersion.datasources.map(l => ({
-    ...l,
+  const cleanDataSource = (dataSource: DataSource) => ({
+    ...dataSource,
     id: undefined,
     investorversion: undefined,
-  }))
-  $: toDSs = data.toVersion.datasources.map(l => ({
-    ...l,
+  })
+  const cleanInvolvement = (involvement: Involvement) => ({
+    ...involvement,
     id: undefined,
-    investorversion: undefined,
-  }))
+    child_investor_id: undefined,
+  })
 
-  $: fromInvos = data.fromVersion.involvements_snapshot.map(l => ({
-    ...l,
-    id: undefined,
-    child_investor_id: undefined,
-  }))
-  $: toInvos = data.toVersion.involvements_snapshot.map(l => ({
-    ...l,
-    id: undefined,
-    child_investor_id: undefined,
-  }))
+  $: fromDSs = data.fromVersion.datasources.map(cleanDataSource)
+  $: toDSs = data.toVersion.datasources.map(cleanDataSource)
+
+  $: fromInvos = data.fromVersion.involvements_snapshot.map(cleanInvolvement)
+  $: toInvos = data.toVersion.involvements_snapshot.map(cleanInvolvement)
 </script>
 
 <svelte:head>
   <title>
-    {$_("Comparing investor #{investorID}", {
-      values: { investorID: data.investorID },
+    {$_("Comparing investor #{investorId}", {
+      values: { investorId: data.investorId },
     })}
     @{data.fromVersion.id} - @{data.toVersion.id}
   </title>
@@ -65,18 +61,18 @@
     <thead class="sticky top-0 bg-white dark:bg-gray-800">
       <tr class="text-base md:text-lg xl:text-xl">
         <th class="w-1/5 border-t">
-          <a href="/investor/{data.investorID}/" class="investor">
-            {$_("Investor")} #{data.investorID}
+          <a href="/investor/{data.investorId}/" class="investor">
+            {$_("Investor")} #{data.investorId}
           </a>
         </th>
         <th class="w-2/5 border-t">
-          <a href="/investor/{data.investorID}/{data.fromVersion.id}/" class="investor">
+          <a href="/investor/{data.investorId}/{data.fromVersion.id}/" class="investor">
             {$_("Version")}
             {data.fromVersion.id}
           </a>
         </th>
         <th class="w-2/5 border-t">
-          <a href="/investor/{data.investorID}/{data.toVersion.id}/" class="investor">
+          <a href="/investor/{data.investorId}/{data.toVersion.id}/" class="investor">
             {$_("Version")}
             {data.toVersion.id}
           </a>
