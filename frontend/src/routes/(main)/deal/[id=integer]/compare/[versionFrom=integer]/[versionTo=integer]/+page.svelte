@@ -3,12 +3,14 @@
 
   import { dealFields } from "$lib/fieldLookups"
   import { dealSectionsLG } from "$lib/sections"
+  import type { Area, Contract, DataSource, Location2 } from "$lib/types/data"
 
   import CompareSubmodelDiffBlock from "$components/CompareSubmodelDiffBlock.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"
 
   export let data
 
+  let labels: { [sectionKey: string]: string }
   $: labels = {
     general_info: $_("General info"),
     employment: $_("Employment"),
@@ -22,54 +24,45 @@
     meta: $_("Meta"),
   }
 
-  $: fromLocs = data.fromVersion.locations.map(l => {
-    l.id = undefined
-    l.dealversion = undefined
-    l.areas = l.areas.map(a => {
-      a.id = undefined
-      a.location = undefined
-      return a
-    })
-    return l
-  })
-  $: toLocs = data.toVersion.locations.map(l => {
-    l.id = undefined
-    l.dealversion = undefined
-    l.areas = l.areas.map(a => {
-      a.id = undefined
-      a.location = undefined
-      return a
-    })
-    return l
+  const cleanArea = (area: Area) => ({
+    ...area,
+    id: undefined,
+    location: undefined,
   })
 
-  $: fromDSs = data.fromVersion.datasources.map(l => ({
-    ...l,
+  const cleanLocation = (location: Location2) => ({
+    ...location,
     id: undefined,
     dealversion: undefined,
-  }))
-  $: toDSs = data.toVersion.datasources.map(l => ({
-    ...l,
-    id: undefined,
-    dealversion: undefined,
-  }))
+    areas: location.areas.map(cleanArea),
+  })
 
-  $: fromCons = data.fromVersion.contracts.map(l => {
-    l.id = undefined
-    l.dealversion = undefined
-    return l
+  const cleanDataSource = (dataSource: DataSource) => ({
+    ...dataSource,
+    id: undefined,
+    dealversion: undefined,
   })
-  $: toCons = data.toVersion.contracts.map(l => {
-    l.id = undefined
-    l.dealversion = undefined
-    return l
+
+  const cleanContract = (contract: Contract) => ({
+    ...contract,
+    id: undefined,
+    dealversion: undefined,
   })
+
+  const fromLocs = data.fromVersion.locations.map(cleanLocation)
+  const toLocs = data.toVersion.locations.map(cleanLocation)
+
+  const fromDSs = data.fromVersion.datasources.map(cleanDataSource)
+  const toDSs = data.toVersion.datasources.map(cleanDataSource)
+
+  const fromCons = data.fromVersion.contracts.map(cleanContract)
+  const toCons = data.toVersion.contracts.map(cleanContract)
 </script>
 
 <svelte:head>
   <title>
-    {$_("Comparing deal #{dealID}", {
-      values: { dealID: data.dealID },
+    {$_("Comparing deal #{dealId}", {
+      values: { dealId: data.dealId },
     })}
     @{data.fromVersion.id} - @{data.toVersion.id}
   </title>
@@ -82,18 +75,18 @@
     <thead class="sticky top-0 bg-white dark:bg-gray-800">
       <tr class="text-base md:text-lg xl:text-xl">
         <th class="w-1/5 border-t">
-          <a href="/deal/{data.dealID}/">
-            {$_("Deal")} #{data.dealID}
+          <a href="/deal/{data.dealId}/">
+            {$_("Deal")} #{data.dealId}
           </a>
         </th>
         <th class="w-2/5 border-t">
-          <a href="/deal/{data.dealID}/{data.fromVersion.id}/">
+          <a href="/deal/{data.dealId}/{data.fromVersion.id}/">
             {$_("Version")}
             {data.fromVersion.id}
           </a>
         </th>
         <th class="w-2/5 border-t">
-          <a href="/deal/{data.dealID}/{data.toVersion.id}/">
+          <a href="/deal/{data.dealId}/{data.toVersion.id}/">
             {$_("Version")}
             {data.toVersion.id}
           </a>
