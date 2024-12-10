@@ -2,6 +2,7 @@
   import { _ } from "svelte-i18n"
 
   import { investorFields } from "$lib/fieldLookups"
+  import type { DataSource, Involvement } from "$lib/types/data"
 
   import CompareSubmodelDiffBlock from "$components/CompareSubmodelDiffBlock.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"
@@ -26,27 +27,22 @@
     ],
   }
 
-  $: fromDSs = data.fromVersion.datasources.map(l => ({
-    ...l,
+  const cleanDataSource = (dataSource: DataSource) => ({
+    ...dataSource,
     id: undefined,
     investorversion: undefined,
-  }))
-  $: toDSs = data.toVersion.datasources.map(l => ({
-    ...l,
+  })
+  const cleanInvolvement = (involvement: Involvement) => ({
+    ...involvement,
     id: undefined,
-    investorversion: undefined,
-  }))
+    child_investor_id: undefined,
+  })
 
-  $: fromInvos = data.fromVersion.involvements_snapshot.map(l => ({
-    ...l,
-    id: undefined,
-    child_investor_id: undefined,
-  }))
-  $: toInvos = data.toVersion.involvements_snapshot.map(l => ({
-    ...l,
-    id: undefined,
-    child_investor_id: undefined,
-  }))
+  $: fromDSs = data.fromVersion.datasources.map(cleanDataSource)
+  $: toDSs = data.toVersion.datasources.map(cleanDataSource)
+
+  $: fromInvos = data.fromVersion.involvements_snapshot.map(cleanInvolvement)
+  $: toInvos = data.toVersion.involvements_snapshot.map(cleanInvolvement)
 </script>
 
 <svelte:head>
