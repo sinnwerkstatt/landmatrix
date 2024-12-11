@@ -1,0 +1,15 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /language/
+Disallow: /cms/
+Disallow: /documents/
+Disallow: /api/
+Disallow: /media/
+Disallow: /static/
+
+Disallow: /*.json$
+Disallow: /*.xlsx$
+Disallow: /*.pdf$
+
+# Specify the location of the sitemap (if available)
+# Sitemap: https://landmatrix.org/sitemap.xml
