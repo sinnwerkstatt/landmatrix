@@ -1536,20 +1536,20 @@ export interface components {
       created_at: string
       created_by_id: number | null
       /** Format: date-time */
-      modified_at?: string | null
+      modified_at: string | null
       modified_by_id: number | null
       /** Format: date-time */
-      sent_to_review_at?: string | null
+      sent_to_review_at: string | null
       sent_to_review_by_id: number | null
       /** Format: date-time */
-      sent_to_activation_at?: string | null
+      sent_to_activation_at: string | null
       sent_to_activation_by_id: number | null
       /** Format: date-time */
-      activated_at?: string | null
+      activated_at: string | null
       activated_by_id: number | null
-      status?: components["schemas"]["VersionStatusEnum"]
-      fully_updated?: boolean
-      is_public?: boolean
+      status: components["schemas"]["VersionStatusEnum"]
+      fully_updated: boolean
+      is_public: boolean
     }
     DealWorkflowInfo: {
       id: number
@@ -1897,7 +1897,7 @@ export interface components {
       active_version_id: number | null
       draft_version_id: number | null
       first_created_by_id: number | null
-      versions: components["schemas"]["InvestorVersionVersionsList"][]
+      versions: readonly components["schemas"]["InvestorVersionVersionsList"][]
       selected_version: components["schemas"]["InvestorVersion"]
       deals: readonly components["schemas"]["InvestorDeal"][]
       parents: readonly components["schemas"]["Involvement"][]
@@ -2036,18 +2036,18 @@ export interface components {
       created_at: string
       created_by_id: number | null
       /** Format: date-time */
-      modified_at?: string | null
+      modified_at: string | null
       modified_by_id: number | null
       /** Format: date-time */
-      sent_to_review_at?: string | null
+      sent_to_review_at: string | null
       sent_to_review_by_id: number | null
       /** Format: date-time */
-      sent_to_activation_at?: string | null
+      sent_to_activation_at: string | null
       sent_to_activation_by_id: number | null
       /** Format: date-time */
-      activated_at?: string | null
+      activated_at: string | null
       activated_by_id: number | null
-      status?: components["schemas"]["VersionStatusEnum"]
+      status: components["schemas"]["VersionStatusEnum"]
     }
     InvestorWorkflowInfo: {
       id: number

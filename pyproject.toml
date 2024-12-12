@@ -98,7 +98,7 @@ sections = ["FUTURE", "STDLIB", "THIRDPARTY", "DJANGO", "FIRSTPARTY", "LOCALFOLD
 
 # https://mypy.readthedocs.io/en/latest/config_file.html#using-a-pyproject-toml-file
 [tool.mypy]
-plugins = ["mypy_django_plugin.main"]
+plugins = ["mypy_django_plugin.main", "mypy_drf_plugin.main"]
 exclude = ["migrations"]
 strict_equality = true
 check_untyped_defs = true
