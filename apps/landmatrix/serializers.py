@@ -1,6 +1,7 @@
+from drf_spectacular.utils import extend_schema_field
+
 from django.contrib.gis.geos import GEOSGeometry
 from django.db.models.query_utils import Q
-from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from apps.accounts.models import User
@@ -8,23 +9,23 @@ from apps.landmatrix.models.abstract import VersionStatus
 from apps.landmatrix.models.country import Country, Region
 from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.deal import (
-    DealVersion,
-    DealHull,
-    DealDataSource,
-    DealWorkflowInfo,
-    Contract,
-    Location,
     Area,
+    Contract,
+    DealDataSource,
+    DealHull,
+    DealVersion,
+    DealWorkflowInfo,
+    Location,
 )
 from apps.landmatrix.models.field_definition import FieldDefinition
 from apps.landmatrix.models.investor import (
-    InvestorVersion,
-    InvestorHull,
-    Involvement,
-    InvestorWorkflowInfo,
     InvestorDataSource,
+    InvestorHull,
+    InvestorVersion,
+    InvestorWorkflowInfo,
+    Involvement,
 )
-from apps.landmatrix.permissions import is_reporter_or_higher, is_editor_or_higher
+from apps.landmatrix.permissions import is_editor_or_higher, is_reporter_or_higher
 from apps.serializer import ReadOnlyModelSerializer
 from django_pydantic_jsonfield import PydanticJSONFieldMixin
 
@@ -117,9 +118,8 @@ class _BaseDataSourceSerializer(serializers.ModelSerializer):
     file = serializers.SerializerMethodField()
 
     @staticmethod
-    def get_file(obj: DealDataSource):
-        if obj.file:
-            return obj.file.name
+    def get_file(obj: DealDataSource) -> str | None:
+        return obj.file.name if obj.file else None
 
 
 class DealDataSourceSerializer(_BaseDataSourceSerializer):
@@ -344,7 +344,6 @@ class InvestorWorkflowInfoSerializer(ReadOnlyModelSerializer):
 class DealSerializer(serializers.ModelSerializer[DealHull]):
     active_version_id = serializers.PrimaryKeyRelatedField[DealVersion](read_only=True)
     draft_version_id = serializers.PrimaryKeyRelatedField[DealVersion](read_only=True)
-    created_by_id = serializers.PrimaryKeyRelatedField[User](read_only=True)
     first_created_by_id = serializers.PrimaryKeyRelatedField[User](read_only=True)
 
     country_id = serializers.PrimaryKeyRelatedField[Country](read_only=True)

@@ -21,7 +21,9 @@ if env.bool("FRONTENDDEV", default=False):
 
     MIDDLEWARE += ["livereload.middleware.LiveReloadScript"]
 
-SPECTACULAR_SETTINGS["PREPROCESSING_HOOKS"] = []
+SPECTACULAR_SETTINGS["PREPROCESSING_HOOKS"] = [
+    "apps.api.spectacular.development_filters"
+]
 
 # hCaptcha spam protection for comments
 HCAPTCHA_SITEKEY = "10000000-ffff-ffff-ffff-000000000001"

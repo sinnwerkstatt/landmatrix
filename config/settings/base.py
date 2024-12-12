@@ -191,7 +191,7 @@ SPECTACULAR_SETTINGS = {
     "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
     "REDOC_DIST": "SIDECAR",
     # "SERVE_URLCONF": "apps.api.urls",
-    "PREPROCESSING_HOOKS": ["apps.api.spectacular.preprocessing_filter_spec"],
+    "PREPROCESSING_HOOKS": ["apps.api.spectacular.production_filters"],
     # "SERVE_PUBLIC": False,
     "ENUM_NAME_OVERRIDES": {
         # Reuse enum instead of create a distinct one per choices field
@@ -203,6 +203,9 @@ SPECTACULAR_SETTINGS = {
         "DatasourceTypeEnum": "apps.landmatrix.models.choices.DatasourceTypeEnum",
         "VersionStatusEnum": "apps.landmatrix.models.abstract.VersionStatus",
         "UserRoleEnum": "apps.accounts.models.UserRole",
+        "IntentionOfInvestmentEnum": "apps.landmatrix.models.choices.IntentionOfInvestmentEnum",
+        "NegotiationStatusEnum": "apps.landmatrix.models.choices.NegotiationStatusEnum",
+        "ImplementationStatusEnum": "apps.landmatrix.models.choices.ImplementationStatusEnum",
     },
 }
 

@@ -5,68 +5,68 @@
 
 export interface paths {
   "/api/accountability/article/": {
-    get: operations["api_accountability_article_list"]
-    post: operations["api_accountability_article_create"]
+    get: operations["accountability_article_list"]
+    post: operations["accountability_article_create"]
   }
   "/api/accountability/article/{id}/": {
-    get: operations["api_accountability_article_retrieve"]
-    put: operations["api_accountability_article_update"]
-    delete: operations["api_accountability_article_destroy"]
-    patch: operations["api_accountability_article_partial_update"]
+    get: operations["accountability_article_retrieve"]
+    put: operations["accountability_article_update"]
+    delete: operations["accountability_article_destroy"]
+    patch: operations["accountability_article_partial_update"]
   }
   "/api/accountability/bookmark/": {
-    get: operations["api_accountability_bookmark_retrieve"]
-    put: operations["api_accountability_bookmark_update"]
-    post: operations["api_accountability_bookmark_create"]
+    get: operations["accountability_bookmark_retrieve"]
+    put: operations["accountability_bookmark_update"]
+    post: operations["accountability_bookmark_create"]
   }
   "/api/accountability/bookmark/{id}/": {
-    get: operations["api_accountability_bookmark_retrieve_2"]
-    put: operations["api_accountability_bookmark_update_2"]
-    delete: operations["api_accountability_bookmark_destroy"]
-    patch: operations["api_accountability_bookmark_partial_update"]
+    get: operations["accountability_bookmark_retrieve_2"]
+    put: operations["accountability_bookmark_update_2"]
+    delete: operations["accountability_bookmark_destroy"]
+    patch: operations["accountability_bookmark_partial_update"]
   }
   "/api/accountability/chapter/": {
-    get: operations["api_accountability_chapter_list"]
-    post: operations["api_accountability_chapter_create"]
+    get: operations["accountability_chapter_list"]
+    post: operations["accountability_chapter_create"]
   }
   "/api/accountability/chapter/{chapter}/": {
-    get: operations["api_accountability_chapter_retrieve"]
-    put: operations["api_accountability_chapter_update"]
-    delete: operations["api_accountability_chapter_destroy"]
-    patch: operations["api_accountability_chapter_partial_update"]
+    get: operations["accountability_chapter_retrieve"]
+    put: operations["accountability_chapter_update"]
+    delete: operations["accountability_chapter_destroy"]
+    patch: operations["accountability_chapter_partial_update"]
   }
   "/api/accountability/deal/": {
-    get: operations["api_accountability_deal_list"]
-    post: operations["api_accountability_deal_create"]
+    get: operations["accountability_deal_list"]
+    post: operations["accountability_deal_create"]
   }
   "/api/accountability/deal/{deal}/{variable}/": {
-    get: operations["api_accountability_deal_retrieve_2"]
-    patch: operations["api_accountability_deal_partial_update_2"]
+    get: operations["accountability_deal_retrieve_2"]
+    patch: operations["accountability_deal_partial_update_2"]
   }
   "/api/accountability/deal/{deal}/": {
-    get: operations["api_accountability_deal_retrieve"]
-    put: operations["api_accountability_deal_update"]
-    delete: operations["api_accountability_deal_destroy"]
-    patch: operations["api_accountability_deal_partial_update"]
+    get: operations["accountability_deal_retrieve"]
+    put: operations["accountability_deal_update"]
+    delete: operations["accountability_deal_destroy"]
+    patch: operations["accountability_deal_partial_update"]
   }
   "/api/accountability/deal/bulk/": {
-    patch: operations["api_accountability_deal_bulk_partial_update"]
+    patch: operations["accountability_deal_bulk_partial_update"]
   }
   "/api/accountability/project/": {
-    get: operations["api_accountability_project_list"]
-    post: operations["api_accountability_project_create"]
+    get: operations["accountability_project_list"]
+    post: operations["accountability_project_create"]
   }
   "/api/accountability/project/{id}/": {
-    get: operations["api_accountability_project_retrieve"]
-    put: operations["api_accountability_project_update"]
-    delete: operations["api_accountability_project_destroy"]
-    patch: operations["api_accountability_project_partial_update"]
+    get: operations["accountability_project_retrieve"]
+    put: operations["accountability_project_update"]
+    delete: operations["accountability_project_destroy"]
+    patch: operations["accountability_project_partial_update"]
   }
   "/api/accountability/project/bookmark/": {
-    get: operations["api_accountability_project_bookmark_list"]
+    get: operations["accountability_project_bookmark_list"]
   }
   "/api/accountability/project/related/": {
-    get: operations["api_accountability_project_related_list"]
+    get: operations["accountability_project_related_list"]
   }
   "/api/accountability/schema/": {
     /**
@@ -75,148 +75,148 @@ export interface paths {
      * - YAML: application/vnd.oai.openapi
      * - JSON: application/vnd.oai.openapi+json
      */
-    get: operations["api_accountability_schema_retrieve"]
+    get: operations["accountability_schema_retrieve"]
   }
   "/api/accountability/user/": {
-    get: operations["api_accountability_user_list"]
-    post: operations["api_accountability_user_create"]
+    get: operations["accountability_user_list"]
+    post: operations["accountability_user_create"]
   }
   "/api/accountability/user/me/": {
-    get: operations["api_accountability_user_me_retrieve"]
-    put: operations["api_accountability_user_me_update"]
-    delete: operations["api_accountability_user_me_destroy"]
-    patch: operations["api_accountability_user_me_partial_update"]
+    get: operations["accountability_user_me_retrieve"]
+    put: operations["accountability_user_me_update"]
+    delete: operations["accountability_user_me_destroy"]
+    patch: operations["accountability_user_me_partial_update"]
   }
   "/api/accountability/variable/": {
-    get: operations["api_accountability_variable_list"]
-    post: operations["api_accountability_variable_create"]
+    get: operations["accountability_variable_list"]
+    post: operations["accountability_variable_create"]
   }
   "/api/accountability/variable/{number}/": {
-    get: operations["api_accountability_variable_retrieve"]
-    put: operations["api_accountability_variable_update"]
-    delete: operations["api_accountability_variable_destroy"]
-    patch: operations["api_accountability_variable_partial_update"]
+    get: operations["accountability_variable_retrieve"]
+    put: operations["accountability_variable_update"]
+    delete: operations["accountability_variable_destroy"]
+    patch: operations["accountability_variable_partial_update"]
   }
   "/api/blog_categories/": {
-    get: operations["api_blog_categories_list"]
+    get: operations["blog_categories_list"]
   }
   "/api/blog_categories/{id}/": {
-    get: operations["api_blog_categories_retrieve"]
+    get: operations["blog_categories_retrieve"]
   }
   "/api/blog_pages/": {
-    get: operations["api_blog_pages_list"]
+    get: operations["blog_pages_list"]
   }
   "/api/blog_pages/{id}/": {
-    get: operations["api_blog_pages_retrieve"]
+    get: operations["blog_pages_retrieve"]
   }
   "/api/chart_descriptions/": {
-    get: operations["api_chart_descriptions_retrieve"]
+    get: operations["chart_descriptions_retrieve"]
   }
   "/api/charts/country_investments_and_rankings/": {
-    get: operations["api_charts_country_investments_and_rankings_retrieve"]
+    get: operations["charts_country_investments_and_rankings_retrieve"]
   }
   "/api/countries/": {
-    get: operations["api_countries_list"]
+    get: operations["countries_list"]
   }
   "/api/currencies/": {
-    get: operations["api_currencies_list"]
+    get: operations["currencies_list"]
   }
   "/api/deals/": {
-    get: operations["api_deals_list"]
-    post: operations["api_deals_create"]
+    get: operations["deals_list"]
+    post: operations["deals_create"]
   }
   "/api/deals/{id}/": {
-    get: operations["api_deals_retrieve"]
+    get: operations["deals_retrieve"]
     /** @description creating a new Version when calling "save" on an existing object */
-    put: operations["api_deals_update"]
+    put: operations["deals_update"]
   }
   "/api/deals/{id}/{version_id}/": {
-    get: operations["api_deals_retrieve_2"]
+    get: operations["deals_version_retrieve"]
   }
   "/api/deals/{id}/add_comment/": {
-    put: operations["api_deals_add_comment_update"]
+    put: operations["deals_add_comment_update"]
   }
   "/api/deals/{id}/make_copy/": {
-    put: operations["api_deals_make_copy_update"]
+    put: operations["deals_make_copy_update"]
   }
   "/api/deals/{id}/toggle_confidential/": {
-    put: operations["api_deals_toggle_confidential_update"]
+    put: operations["deals_toggle_confidential_update"]
   }
   "/api/deals/{id}/toggle_deleted/": {
-    put: operations["api_deals_toggle_deleted_update"]
+    put: operations["deals_toggle_deleted_update"]
   }
   "/api/dealversions/": {
-    get: operations["api_dealversions_list"]
+    get: operations["dealversions_list"]
   }
   "/api/dealversions/{id}/": {
-    get: operations["api_dealversions_retrieve"]
-    put: operations["api_dealversions_update"]
-    delete: operations["api_dealversions_destroy"]
+    get: operations["dealversions_retrieve"]
+    put: operations["dealversions_update"]
+    delete: operations["dealversions_destroy"]
   }
   "/api/dealversions/{id}/change_status/": {
-    put: operations["api_dealversions_change_status_update"]
+    put: operations["dealversions_change_status_update"]
   }
   "/api/field_choices/": {
-    get: operations["api_field_choices_retrieve"]
+    get: operations["field_choices_retrieve"]
   }
   "/api/field_definitions/": {
-    get: operations["api_field_definitions_list"]
+    get: operations["field_definitions_list"]
   }
   "/api/field_definitions/{id}/": {
-    get: operations["api_field_definitions_retrieve"]
+    get: operations["field_definitions_retrieve"]
   }
   "/api/gis_export/areas/": {
-    get: operations["api_gis_export_areas_retrieve"]
+    get: operations["gis_export_areas_retrieve"]
   }
   "/api/gis_export/locations/": {
-    get: operations["api_gis_export_locations_retrieve"]
+    get: operations["gis_export_locations_retrieve"]
   }
   "/api/investor_search/": {
-    get: operations["api_investor_search_list"]
+    get: operations["investor_search_list"]
   }
   "/api/investors/": {
-    get: operations["api_investors_list"]
-    post: operations["api_investors_create"]
+    get: operations["investors_list"]
+    post: operations["investors_create"]
   }
   "/api/investors/{id}/": {
-    get: operations["api_investors_retrieve"]
+    get: operations["investors_retrieve"]
     /** @description creating a new Version when calling "save" on an existing object */
-    put: operations["api_investors_update"]
+    put: operations["investors_update"]
   }
   "/api/investors/{id}/{version_id}/": {
-    get: operations["api_investors_retrieve_2"]
+    get: operations["investors_version_retrieve"]
   }
   "/api/investors/{id}/add_comment/": {
-    put: operations["api_investors_add_comment_update"]
+    put: operations["investors_add_comment_update"]
   }
   "/api/investors/{id}/involvements_graph/": {
-    get: operations["api_investors_involvements_graph_retrieve"]
+    get: operations["investors_involvements_graph_retrieve"]
   }
   "/api/investors/{id}/toggle_deleted/": {
-    put: operations["api_investors_toggle_deleted_update"]
+    put: operations["investors_toggle_deleted_update"]
   }
   "/api/investors/deal_filtered/": {
-    get: operations["api_investors_deal_filtered_retrieve"]
+    get: operations["investors_deal_filtered_retrieve"]
   }
   "/api/investors/simple/": {
-    get: operations["api_investors_simple_list"]
+    get: operations["investors_simple_list"]
   }
   "/api/investorversions/": {
-    get: operations["api_investorversions_list"]
+    get: operations["investorversions_list"]
   }
   "/api/investorversions/{id}/": {
-    get: operations["api_investorversions_retrieve"]
-    put: operations["api_investorversions_update"]
-    delete: operations["api_investorversions_destroy"]
+    get: operations["investorversions_retrieve"]
+    put: operations["investorversions_update"]
+    delete: operations["investorversions_destroy"]
   }
   "/api/investorversions/{id}/change_status/": {
-    put: operations["api_investorversions_change_status_update"]
+    put: operations["investorversions_change_status_update"]
   }
   "/api/messages/": {
-    get: operations["api_messages_list"]
+    get: operations["messages_list"]
   }
   "/api/messages/{id}/": {
-    get: operations["api_messages_retrieve"]
+    get: operations["messages_retrieve"]
   }
   "/api/quality-indicators/": {
     get: operations["qi_specs"]
@@ -237,7 +237,7 @@ export interface paths {
     get: operations["qi_stats"]
   }
   "/api/regions/": {
-    get: operations["api_regions_list"]
+    get: operations["regions_list"]
   }
   "/api/schema.json": {
     /**
@@ -246,7 +246,7 @@ export interface paths {
      * - YAML: application/vnd.oai.openapi
      * - JSON: application/vnd.oai.openapi+json
      */
-    get: operations["api_schema.json_retrieve"]
+    get: operations["schema.json_retrieve"]
   }
   "/api/schema.yaml": {
     /**
@@ -255,79 +255,13 @@ export interface paths {
      * - YAML: application/vnd.oai.openapi
      * - JSON: application/vnd.oai.openapi+json
      */
-    get: operations["api_schema.yaml_retrieve"]
+    get: operations["schema.yaml_retrieve"]
   }
   "/api/users/": {
-    get: operations["api_users_list"]
+    get: operations["users_list"]
   }
   "/api/users/{id}/": {
-    get: operations["api_users_retrieve"]
-  }
-  "/api/wagtail/v2/documents/": {
-    get: operations["api_wagtail_v2_documents_retrieve"]
-  }
-  "/api/wagtail/v2/documents/{id}/": {
-    get: operations["api_wagtail_v2_documents_retrieve_2"]
-  }
-  "/api/wagtail/v2/documents/find/": {
-    get: operations["api_wagtail_v2_documents_find_retrieve"]
-  }
-  "/api/wagtail/v2/images/": {
-    get: operations["api_wagtail_v2_images_retrieve"]
-  }
-  "/api/wagtail/v2/images/{id}/": {
-    get: operations["api_wagtail_v2_images_retrieve_2"]
-  }
-  "/api/wagtail/v2/images/find/": {
-    get: operations["api_wagtail_v2_images_find_retrieve"]
-  }
-  "/api/wagtail/v2/page_preview/": {
-    get: operations["api_wagtail_v2_page_preview_retrieve"]
-  }
-  "/api/wagtail/v2/page_preview/{id}/": {
-    get: operations["api_wagtail_v2_page_preview_retrieve_2"]
-  }
-  "/api/wagtail/v2/page_preview/find/": {
-    get: operations["api_wagtail_v2_page_preview_find_retrieve"]
-  }
-  "/api/wagtail/v2/pages/": {
-    get: operations["api_wagtail_v2_pages_retrieve"]
-  }
-  "/api/wagtail/v2/pages/{id}/": {
-    get: operations["api_wagtail_v2_pages_retrieve_2"]
-  }
-  "/api/wagtail/v2/pages/find/": {
-    get: operations["api_wagtail_v2_pages_find_retrieve"]
-  }
-  "/cms/api/main/documents/": {
-    get: operations["cms_api_main_documents_retrieve"]
-  }
-  "/cms/api/main/documents/{id}/": {
-    get: operations["cms_api_main_documents_retrieve_2"]
-  }
-  "/cms/api/main/documents/find/": {
-    get: operations["cms_api_main_documents_find_retrieve"]
-  }
-  "/cms/api/main/images/": {
-    get: operations["cms_api_main_images_retrieve"]
-  }
-  "/cms/api/main/images/{id}/": {
-    get: operations["cms_api_main_images_retrieve_2"]
-  }
-  "/cms/api/main/images/find/": {
-    get: operations["cms_api_main_images_find_retrieve"]
-  }
-  "/cms/api/main/pages/": {
-    get: operations["cms_api_main_pages_retrieve"]
-  }
-  "/cms/api/main/pages/{id}/": {
-    get: operations["cms_api_main_pages_retrieve_2"]
-  }
-  "/cms/api/main/pages/{id}/action/{action_name}/": {
-    post: operations["cms_api_main_pages_action_create"]
-  }
-  "/cms/api/main/pages/find/": {
-    get: operations["cms_api_main_pages_find_retrieve"]
+    get: operations["users_retrieve"]
   }
 }
 
@@ -420,7 +354,7 @@ export interface components {
       header_image: components["schemas"]["ImageRenditionField"]
       tags: readonly components["schemas"]["BlogTag"][]
       categories: readonly components["schemas"]["BlogCategory"][]
-      url: string
+      url: string | null
     }
     BlogTag: {
       id: string
@@ -864,88 +798,6 @@ export interface components {
       date?: string | null
       choice: components["schemas"]["NegotiationStatusEnum"]
     }
-    /**
-     * @description * `PROJECT_NOT_STARTED` - Project not started
-     * * `STARTUP_PHASE` - Startup phase (no production)
-     * * `IN_OPERATION` - In operation (production)
-     * * `PROJECT_ABANDONED` - Project abandoned
-     * @enum {string}
-     */
-    CurrentImplementationStatusEnum:
-      | "PROJECT_NOT_STARTED"
-      | "STARTUP_PHASE"
-      | "IN_OPERATION"
-      | "PROJECT_ABANDONED"
-    /**
-     * @description * `BIOFUELS` - Biomass for biofuels
-     * * `BIOMASS_ENERGY_GENERATION` - Biomass for energy generation (agriculture)
-     * * `FODDER` - Fodder
-     * * `FOOD_CROPS` - Food crops
-     * * `LIVESTOCK` - Livestock
-     * * `NON_FOOD_AGRICULTURE` - Non-food agricultural commodities
-     * * `AGRICULTURE_UNSPECIFIED` - Agriculture unspecified
-     * * `BIOMASS_ENERGY_PRODUCTION` - Biomass for energy generation (forestry)
-     * * `CARBON` - For carbon sequestration/REDD
-     * * `FOREST_LOGGING` - Forest logging / management for wood and fiber
-     * * `TIMBER_PLANTATION` - Timber plantation for wood and fiber
-     * * `FORESTRY_UNSPECIFIED` - Forestry unspecified
-     * * `SOLAR_PARK` - Solar park
-     * * `WIND_FARM` - Wind farm
-     * * `RENEWABLE_ENERGY` - Renewable energy unspecified
-     * * `CONVERSATION` - Conservation
-     * * `INDUSTRY` - Industry
-     * * `LAND_SPECULATION` - Land speculation
-     * * `MINING` - Mining
-     * * `OIL_GAS_EXTRACTION` - Oil / Gas extraction
-     * * `TOURISM` - Tourism
-     * * `OTHER` - Other
-     * @enum {string}
-     */
-    CurrentIntentionOfInvestmentEnum:
-      | "BIOFUELS"
-      | "BIOMASS_ENERGY_GENERATION"
-      | "FODDER"
-      | "FOOD_CROPS"
-      | "LIVESTOCK"
-      | "NON_FOOD_AGRICULTURE"
-      | "AGRICULTURE_UNSPECIFIED"
-      | "BIOMASS_ENERGY_PRODUCTION"
-      | "CARBON"
-      | "FOREST_LOGGING"
-      | "TIMBER_PLANTATION"
-      | "FORESTRY_UNSPECIFIED"
-      | "SOLAR_PARK"
-      | "WIND_FARM"
-      | "RENEWABLE_ENERGY"
-      | "CONVERSATION"
-      | "INDUSTRY"
-      | "LAND_SPECULATION"
-      | "MINING"
-      | "OIL_GAS_EXTRACTION"
-      | "TOURISM"
-      | "OTHER"
-    /**
-     * @description * `EXPRESSION_OF_INTEREST` - Intended (Expression of interest)
-     * * `UNDER_NEGOTIATION` - Intended (Under negotiation)
-     * * `MEMORANDUM_OF_UNDERSTANDING` - Intended (Memorandum of understanding)
-     * * `ORAL_AGREEMENT` - Concluded (Oral Agreement)
-     * * `CONTRACT_SIGNED` - Concluded (Contract signed)
-     * * `CHANGE_OF_OWNERSHIP` - Concluded (Change of ownership)
-     * * `NEGOTIATIONS_FAILED` - Failed (Negotiations failed)
-     * * `CONTRACT_CANCELED` - Failed (Contract cancelled)
-     * * `CONTRACT_EXPIRED` - Contract expired
-     * @enum {string}
-     */
-    CurrentNegotiationStatusEnum:
-      | "EXPRESSION_OF_INTEREST"
-      | "UNDER_NEGOTIATION"
-      | "MEMORANDUM_OF_UNDERSTANDING"
-      | "ORAL_AGREEMENT"
-      | "CONTRACT_SIGNED"
-      | "CHANGE_OF_OWNERSHIP"
-      | "NEGOTIATIONS_FAILED"
-      | "CONTRACT_CANCELED"
-      | "CONTRACT_EXPIRED"
     DataSourceFields: {
       type: components["schemas"]["ValueLabel"][]
     }
@@ -975,7 +827,6 @@ export interface components {
       id: number
       active_version_id: number | null
       draft_version_id: number | null
-      created_by_id: string
       first_created_by_id: number | null
       /** Target country */
       country_id: number | null
@@ -1003,7 +854,7 @@ export interface components {
     }
     DealDataSource: {
       id: number
-      file: string
+      file: string | null
       /** ID */
       nid: string
       type: components["schemas"]["DatasourceTypeEnum"]
@@ -1489,13 +1340,13 @@ export interface components {
       current_contract_size: number | null
       /** Format: double */
       current_production_size: number | null
-      current_intention_of_investment: readonly components["schemas"]["CurrentIntentionOfInvestmentEnum"][]
+      current_intention_of_investment: readonly components["schemas"]["IntentionOfInvestmentEnum"][]
       current_negotiation_status:
-        | components["schemas"]["CurrentNegotiationStatusEnum"]
+        | components["schemas"]["NegotiationStatusEnum"]
         | components["schemas"]["NullEnum"]
         | null
       current_implementation_status:
-        | components["schemas"]["CurrentImplementationStatusEnum"]
+        | components["schemas"]["ImplementationStatusEnum"]
         | components["schemas"]["NullEnum"]
         | null
       current_crops: readonly string[]
@@ -1914,7 +1765,7 @@ export interface components {
     }
     InvestorDataSource: {
       id: number
-      file: string
+      file: string | null
       /** ID */
       nid: string
       type: components["schemas"]["DatasourceTypeEnum"]
@@ -1944,14 +1795,14 @@ export interface components {
     }
     InvestorDealSelectedVersion: {
       id: number
-      current_intention_of_investment: readonly components["schemas"]["CurrentIntentionOfInvestmentEnum"][]
+      current_intention_of_investment: readonly components["schemas"]["IntentionOfInvestmentEnum"][]
       current_negotiation_status:
-        | components["schemas"]["CurrentNegotiationStatusEnum"]
+        | components["schemas"]["NegotiationStatusEnum"]
         | components["schemas"]["BlankEnum"]
         | components["schemas"]["NullEnum"]
         | null
       current_implementation_status:
-        | components["schemas"]["CurrentImplementationStatusEnum"]
+        | components["schemas"]["ImplementationStatusEnum"]
         | components["schemas"]["BlankEnum"]
         | components["schemas"]["NullEnum"]
         | null
@@ -2796,7 +2647,7 @@ export type $defs = Record<string, never>
 export type external = Record<string, never>
 
 export interface operations {
-  api_accountability_article_list: {
+  accountability_article_list: {
     responses: {
       200: {
         content: {
@@ -2805,7 +2656,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_article_create: {
+  accountability_article_create: {
     requestBody: {
       content: {
         "application/json": components["schemas"]["VggtArticle"]
@@ -2821,7 +2672,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_article_retrieve: {
+  accountability_article_retrieve: {
     parameters: {
       path: {
         id: number
@@ -2835,7 +2686,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_article_update: {
+  accountability_article_update: {
     parameters: {
       path: {
         id: number
@@ -2856,7 +2707,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_article_destroy: {
+  accountability_article_destroy: {
     parameters: {
       path: {
         id: number
@@ -2869,7 +2720,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_article_partial_update: {
+  accountability_article_partial_update: {
     parameters: {
       path: {
         id: number
@@ -2890,7 +2741,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_bookmark_retrieve: {
+  accountability_bookmark_retrieve: {
     responses: {
       200: {
         content: {
@@ -2899,7 +2750,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_bookmark_update: {
+  accountability_bookmark_update: {
     requestBody: {
       content: {
         "application/json": components["schemas"]["Bookmark"][]
@@ -2915,7 +2766,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_bookmark_create: {
+  accountability_bookmark_create: {
     requestBody: {
       content: {
         "application/json": components["schemas"]["Bookmark"]
@@ -2931,7 +2782,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_bookmark_retrieve_2: {
+  accountability_bookmark_retrieve_2: {
     parameters: {
       path: {
         id: number
@@ -2945,7 +2796,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_bookmark_update_2: {
+  accountability_bookmark_update_2: {
     parameters: {
       path: {
         id: number
@@ -2966,7 +2817,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_bookmark_destroy: {
+  accountability_bookmark_destroy: {
     parameters: {
       path: {
         id: number
@@ -2979,7 +2830,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_bookmark_partial_update: {
+  accountability_bookmark_partial_update: {
     parameters: {
       path: {
         id: number
@@ -3000,7 +2851,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_chapter_list: {
+  accountability_chapter_list: {
     responses: {
       200: {
         content: {
@@ -3009,7 +2860,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_chapter_create: {
+  accountability_chapter_create: {
     requestBody: {
       content: {
         "application/json": components["schemas"]["VggtChapter"]
@@ -3025,7 +2876,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_chapter_retrieve: {
+  accountability_chapter_retrieve: {
     parameters: {
       path: {
         /** @description A unique value identifying this vggt chapter. */
@@ -3040,7 +2891,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_chapter_update: {
+  accountability_chapter_update: {
     parameters: {
       path: {
         /** @description A unique value identifying this vggt chapter. */
@@ -3062,7 +2913,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_chapter_destroy: {
+  accountability_chapter_destroy: {
     parameters: {
       path: {
         /** @description A unique value identifying this vggt chapter. */
@@ -3076,7 +2927,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_chapter_partial_update: {
+  accountability_chapter_partial_update: {
     parameters: {
       path: {
         /** @description A unique value identifying this vggt chapter. */
@@ -3098,7 +2949,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_deal_list: {
+  accountability_deal_list: {
     parameters: {
       query?: {
         animals?: (
@@ -3341,7 +3192,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_deal_create: {
+  accountability_deal_create: {
     requestBody: {
       content: {
         "application/json": components["schemas"]["DealScore"]
@@ -3357,7 +3208,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_deal_retrieve_2: {
+  accountability_deal_retrieve_2: {
     parameters: {
       path: {
         deal: number
@@ -3372,7 +3223,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_deal_partial_update_2: {
+  accountability_deal_partial_update_2: {
     parameters: {
       path: {
         deal: number
@@ -3394,7 +3245,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_deal_retrieve: {
+  accountability_deal_retrieve: {
     parameters: {
       path: {
         /** @description A unique value identifying this deal score. */
@@ -3409,7 +3260,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_deal_update: {
+  accountability_deal_update: {
     parameters: {
       path: {
         /** @description A unique value identifying this deal score. */
@@ -3431,7 +3282,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_deal_destroy: {
+  accountability_deal_destroy: {
     parameters: {
       path: {
         /** @description A unique value identifying this deal score. */
@@ -3445,7 +3296,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_deal_partial_update: {
+  accountability_deal_partial_update: {
     parameters: {
       path: {
         /** @description A unique value identifying this deal score. */
@@ -3467,7 +3318,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_deal_bulk_partial_update: {
+  accountability_deal_bulk_partial_update: {
     requestBody?: {
       content: {
         "application/json": components["schemas"]["PatchedDealVariable"]
@@ -3483,7 +3334,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_project_list: {
+  accountability_project_list: {
     parameters: {
       query?: {
         id?: number[]
@@ -3497,7 +3348,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_project_create: {
+  accountability_project_create: {
     requestBody: {
       content: {
         "application/json": components["schemas"]["Project"]
@@ -3513,7 +3364,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_project_retrieve: {
+  accountability_project_retrieve: {
     parameters: {
       path: {
         id: number
@@ -3527,7 +3378,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_project_update: {
+  accountability_project_update: {
     parameters: {
       path: {
         id: number
@@ -3548,7 +3399,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_project_destroy: {
+  accountability_project_destroy: {
     parameters: {
       path: {
         id: number
@@ -3561,7 +3412,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_project_partial_update: {
+  accountability_project_partial_update: {
     parameters: {
       path: {
         id: number
@@ -3582,7 +3433,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_project_bookmark_list: {
+  accountability_project_bookmark_list: {
     responses: {
       200: {
         content: {
@@ -3591,7 +3442,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_project_related_list: {
+  accountability_project_related_list: {
     responses: {
       200: {
         content: {
@@ -3606,7 +3457,7 @@ export interface operations {
    * - YAML: application/vnd.oai.openapi
    * - JSON: application/vnd.oai.openapi+json
    */
-  api_accountability_schema_retrieve: {
+  accountability_schema_retrieve: {
     parameters: {
       query?: {
         format?: "json" | "yaml"
@@ -3632,7 +3483,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_user_list: {
+  accountability_user_list: {
     responses: {
       200: {
         content: {
@@ -3641,7 +3492,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_user_create: {
+  accountability_user_create: {
     requestBody?: {
       content: {
         "application/json": components["schemas"]["UserInfo"]
@@ -3657,7 +3508,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_user_me_retrieve: {
+  accountability_user_me_retrieve: {
     responses: {
       200: {
         content: {
@@ -3666,7 +3517,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_user_me_update: {
+  accountability_user_me_update: {
     requestBody?: {
       content: {
         "application/json": components["schemas"]["UserInfo"]
@@ -3682,7 +3533,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_user_me_destroy: {
+  accountability_user_me_destroy: {
     responses: {
       /** @description No response body */
       204: {
@@ -3690,7 +3541,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_user_me_partial_update: {
+  accountability_user_me_partial_update: {
     requestBody?: {
       content: {
         "application/json": components["schemas"]["PatchedUserInfo"]
@@ -3706,7 +3557,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_variable_list: {
+  accountability_variable_list: {
     responses: {
       200: {
         content: {
@@ -3715,7 +3566,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_variable_create: {
+  accountability_variable_create: {
     requestBody: {
       content: {
         "application/json": components["schemas"]["VggtVariable"]
@@ -3731,7 +3582,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_variable_retrieve: {
+  accountability_variable_retrieve: {
     parameters: {
       path: {
         /** @description A unique value identifying this vggt variable. */
@@ -3746,7 +3597,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_variable_update: {
+  accountability_variable_update: {
     parameters: {
       path: {
         /** @description A unique value identifying this vggt variable. */
@@ -3768,7 +3619,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_variable_destroy: {
+  accountability_variable_destroy: {
     parameters: {
       path: {
         /** @description A unique value identifying this vggt variable. */
@@ -3782,7 +3633,7 @@ export interface operations {
       }
     }
   }
-  api_accountability_variable_partial_update: {
+  accountability_variable_partial_update: {
     parameters: {
       path: {
         /** @description A unique value identifying this vggt variable. */
@@ -3804,7 +3655,7 @@ export interface operations {
       }
     }
   }
-  api_blog_categories_list: {
+  blog_categories_list: {
     responses: {
       200: {
         content: {
@@ -3813,7 +3664,7 @@ export interface operations {
       }
     }
   }
-  api_blog_categories_retrieve: {
+  blog_categories_retrieve: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this Blog Category. */
@@ -3828,7 +3679,7 @@ export interface operations {
       }
     }
   }
-  api_blog_pages_list: {
+  blog_pages_list: {
     responses: {
       200: {
         content: {
@@ -3837,7 +3688,7 @@ export interface operations {
       }
     }
   }
-  api_blog_pages_retrieve: {
+  blog_pages_retrieve: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this Blog page. */
@@ -3852,7 +3703,7 @@ export interface operations {
       }
     }
   }
-  api_chart_descriptions_retrieve: {
+  chart_descriptions_retrieve: {
     responses: {
       200: {
         content: {
@@ -3861,7 +3712,7 @@ export interface operations {
       }
     }
   }
-  api_charts_country_investments_and_rankings_retrieve: {
+  charts_country_investments_and_rankings_retrieve: {
     parameters: {
       query: {
         /** @description Country ID */
@@ -4102,7 +3953,7 @@ export interface operations {
       }
     }
   }
-  api_countries_list: {
+  countries_list: {
     responses: {
       200: {
         content: {
@@ -4111,7 +3962,7 @@ export interface operations {
       }
     }
   }
-  api_currencies_list: {
+  currencies_list: {
     responses: {
       200: {
         content: {
@@ -4120,7 +3971,7 @@ export interface operations {
       }
     }
   }
-  api_deals_list: {
+  deals_list: {
     parameters: {
       query?: {
         animals?: (
@@ -4359,7 +4210,7 @@ export interface operations {
       }
     }
   }
-  api_deals_create: {
+  deals_create: {
     requestBody: {
       content: {
         "application/json": components["schemas"]["Deal"]
@@ -4375,7 +4226,7 @@ export interface operations {
       }
     }
   }
-  api_deals_retrieve: {
+  deals_retrieve: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this deal hull. */
@@ -4391,7 +4242,7 @@ export interface operations {
     }
   }
   /** @description creating a new Version when calling "save" on an existing object */
-  api_deals_update: {
+  deals_update: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this deal hull. */
@@ -4413,7 +4264,7 @@ export interface operations {
       }
     }
   }
-  api_deals_retrieve_2: {
+  deals_version_retrieve: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this deal hull. */
@@ -4429,7 +4280,7 @@ export interface operations {
       }
     }
   }
-  api_deals_add_comment_update: {
+  deals_add_comment_update: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this deal hull. */
@@ -4451,7 +4302,7 @@ export interface operations {
       }
     }
   }
-  api_deals_make_copy_update: {
+  deals_make_copy_update: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this deal hull. */
@@ -4473,7 +4324,7 @@ export interface operations {
       }
     }
   }
-  api_deals_toggle_confidential_update: {
+  deals_toggle_confidential_update: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this deal hull. */
@@ -4495,7 +4346,7 @@ export interface operations {
       }
     }
   }
-  api_deals_toggle_deleted_update: {
+  deals_toggle_deleted_update: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this deal hull. */
@@ -4517,7 +4368,7 @@ export interface operations {
       }
     }
   }
-  api_dealversions_list: {
+  dealversions_list: {
     responses: {
       200: {
         content: {
@@ -4526,7 +4377,7 @@ export interface operations {
       }
     }
   }
-  api_dealversions_retrieve: {
+  dealversions_retrieve: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this deal version. */
@@ -4541,7 +4392,7 @@ export interface operations {
       }
     }
   }
-  api_dealversions_update: {
+  dealversions_update: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this deal version. */
@@ -4563,7 +4414,7 @@ export interface operations {
       }
     }
   }
-  api_dealversions_destroy: {
+  dealversions_destroy: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this deal version. */
@@ -4577,7 +4428,7 @@ export interface operations {
       }
     }
   }
-  api_dealversions_change_status_update: {
+  dealversions_change_status_update: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this deal version. */
@@ -4599,7 +4450,7 @@ export interface operations {
       }
     }
   }
-  api_field_choices_retrieve: {
+  field_choices_retrieve: {
     responses: {
       200: {
         content: {
@@ -4608,7 +4459,7 @@ export interface operations {
       }
     }
   }
-  api_field_definitions_list: {
+  field_definitions_list: {
     responses: {
       200: {
         content: {
@@ -4617,7 +4468,7 @@ export interface operations {
       }
     }
   }
-  api_field_definitions_retrieve: {
+  field_definitions_retrieve: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this field definition. */
@@ -4632,23 +4483,511 @@ export interface operations {
       }
     }
   }
-  api_gis_export_areas_retrieve: {
+  gis_export_areas_retrieve: {
+    parameters: {
+      query?: {
+        animals?: (
+          | "AQU"
+          | "BEE"
+          | "CTL"
+          | "DCT"
+          | "FSH"
+          | "GOT"
+          | "OTH"
+          | "PIG"
+          | "POU"
+          | "SHP"
+          | "SHR"
+        )[]
+        /** @description Maximum deal area */
+        area_max?: number
+        /** @description Minimum deal area */
+        area_min?: number
+        /** @description See /api/countries/ for IDs */
+        country_id?: number
+        crops?: (
+          | "ACC"
+          | "ALF"
+          | "ALG"
+          | "ALM"
+          | "ALV"
+          | "APL"
+          | "AQU"
+          | "BAM"
+          | "BAN"
+          | "BEA"
+          | "BOT"
+          | "BRL"
+          | "BWT"
+          | "CAC"
+          | "CAS"
+          | "CAW"
+          | "CHA"
+          | "CHE"
+          | "CNL"
+          | "COC"
+          | "COF"
+          | "COT"
+          | "CRL"
+          | "CRN"
+          | "CRO"
+          | "CST"
+          | "CTR"
+          | "DIL"
+          | "EUC"
+          | "FLW"
+          | "FNT"
+          | "FOD"
+          | "FOO"
+          | "FRT"
+          | "GRA"
+          | "GRN"
+          | "HRB"
+          | "JTR"
+          | "LNT"
+          | "MAN"
+          | "MUS"
+          | "OAT"
+          | "OIL"
+          | "OLE"
+          | "OLV"
+          | "ONI"
+          | "OPL"
+          | "OTH"
+          | "PAL"
+          | "PAP"
+          | "PAS"
+          | "PEA"
+          | "PEP"
+          | "PES"
+          | "PIE"
+          | "PIN"
+          | "PLS"
+          | "POM"
+          | "PON"
+          | "PTT"
+          | "RAP"
+          | "RCH"
+          | "RIC"
+          | "ROS"
+          | "RUB"
+          | "RYE"
+          | "SEE"
+          | "SES"
+          | "SOR"
+          | "SOY"
+          | "SPI"
+          | "SSL"
+          | "SUB"
+          | "SUC"
+          | "SUG"
+          | "SUN"
+          | "SWP"
+          | "TBC"
+          | "TEA"
+          | "TEF"
+          | "TEK"
+          | "TOM"
+          | "TRE"
+          | "VGT"
+          | "VIN"
+          | "WHT"
+          | "YAM"
+        )[]
+        /** @description not set: Included, true: Only false: Excluded */
+        forest_concession?: boolean
+        implementation_status?: (
+          | "IN_OPERATION"
+          | "PROJECT_ABANDONED"
+          | "PROJECT_NOT_STARTED"
+          | "STARTUP_PHASE"
+          | "UNKNOWN"
+        )[]
+        /** @description Maximum year of initiation */
+        initiation_year_max?: number
+        /** @description Minimum year of initiation */
+        initiation_year_min?: number
+        /** @description Include unknown years */
+        initiation_year_null?: boolean
+        intention_of_investment?: (
+          | "AGRICULTURE_UNSPECIFIED"
+          | "BIOFUELS"
+          | "BIOMASS_ENERGY_GENERATION"
+          | "BIOMASS_ENERGY_PRODUCTION"
+          | "CARBON"
+          | "CONVERSATION"
+          | "FODDER"
+          | "FOOD_CROPS"
+          | "FORESTRY_UNSPECIFIED"
+          | "FOREST_LOGGING"
+          | "INDUSTRY"
+          | "LAND_SPECULATION"
+          | "LIVESTOCK"
+          | "MINING"
+          | "NON_FOOD_AGRICULTURE"
+          | "OIL_GAS_EXTRACTION"
+          | "OTHER"
+          | "RENEWABLE_ENERGY"
+          | "SOLAR_PARK"
+          | "TIMBER_PLANTATION"
+          | "TOURISM"
+          | "WIND_FARM"
+        )[]
+        minerals?: (
+          | "ALU"
+          | "ASP"
+          | "ATC"
+          | "BAR"
+          | "BAS"
+          | "BAX"
+          | "BEN"
+          | "BUM"
+          | "CAR"
+          | "CHR"
+          | "CLA"
+          | "COA"
+          | "COB"
+          | "COP"
+          | "DIA"
+          | "EME"
+          | "FLD"
+          | "FLO"
+          | "GAS"
+          | "GLD"
+          | "GRT"
+          | "GRV"
+          | "HEA"
+          | "ILM"
+          | "IRO"
+          | "JAD"
+          | "LED"
+          | "LIM"
+          | "LIT"
+          | "MAG"
+          | "MBD"
+          | "MGN"
+          | "MRB"
+          | "NIK"
+          | "OTH"
+          | "PET"
+          | "PHP"
+          | "PLT"
+          | "PUM"
+          | "PYR"
+          | "RUT"
+          | "SAN"
+          | "SIC"
+          | "SIL"
+          | "SLT"
+          | "STO"
+          | "TIN"
+          | "TTM"
+          | "URM"
+          | "ZNC"
+        )[]
+        nature?: (
+          | "CONCESSION"
+          | "EXPLOITATION_PERMIT"
+          | "LEASE"
+          | "OTHER"
+          | "OUTRIGHT_PURCHASE"
+          | "PURE_CONTRACT_FARMING"
+        )[]
+        negotiation_status?: (
+          | "CHANGE_OF_OWNERSHIP"
+          | "CONTRACT_CANCELED"
+          | "CONTRACT_EXPIRED"
+          | "CONTRACT_SIGNED"
+          | "EXPRESSION_OF_INTEREST"
+          | "MEMORANDUM_OF_UNDERSTANDING"
+          | "NEGOTIATIONS_FAILED"
+          | "ORAL_AGREEMENT"
+          | "UNDER_NEGOTIATION"
+        )[]
+        /** @description ID of the parent company */
+        parent_company?: number
+        /** @description ID of the parent company's country */
+        parent_company_country_id?: number
+        /** @description See /api/regions/ for IDs */
+        region_id?: number
+        /** @description Scope. true: Transnational, false: Domestic, not set: both */
+        transnational?: boolean
+      }
+    }
     responses: {
-      /** @description No response body */
       200: {
-        content: never
+        content: {
+          "application/json": {
+            /** @enum {string} */
+            type: "FeatureCollection"
+            features: {
+              /** @enum {string} */
+              type: "Feature"
+              geometry: {
+                /** @enum {string} */
+                type: "Point" | "Polygon" | "MultiPolygon"
+                coordinates: unknown[]
+              }
+              properties: Record<string, never>
+            }[]
+          }
+        }
       }
     }
   }
-  api_gis_export_locations_retrieve: {
+  gis_export_locations_retrieve: {
+    parameters: {
+      query?: {
+        animals?: (
+          | "AQU"
+          | "BEE"
+          | "CTL"
+          | "DCT"
+          | "FSH"
+          | "GOT"
+          | "OTH"
+          | "PIG"
+          | "POU"
+          | "SHP"
+          | "SHR"
+        )[]
+        /** @description Maximum deal area */
+        area_max?: number
+        /** @description Minimum deal area */
+        area_min?: number
+        /** @description See /api/countries/ for IDs */
+        country_id?: number
+        crops?: (
+          | "ACC"
+          | "ALF"
+          | "ALG"
+          | "ALM"
+          | "ALV"
+          | "APL"
+          | "AQU"
+          | "BAM"
+          | "BAN"
+          | "BEA"
+          | "BOT"
+          | "BRL"
+          | "BWT"
+          | "CAC"
+          | "CAS"
+          | "CAW"
+          | "CHA"
+          | "CHE"
+          | "CNL"
+          | "COC"
+          | "COF"
+          | "COT"
+          | "CRL"
+          | "CRN"
+          | "CRO"
+          | "CST"
+          | "CTR"
+          | "DIL"
+          | "EUC"
+          | "FLW"
+          | "FNT"
+          | "FOD"
+          | "FOO"
+          | "FRT"
+          | "GRA"
+          | "GRN"
+          | "HRB"
+          | "JTR"
+          | "LNT"
+          | "MAN"
+          | "MUS"
+          | "OAT"
+          | "OIL"
+          | "OLE"
+          | "OLV"
+          | "ONI"
+          | "OPL"
+          | "OTH"
+          | "PAL"
+          | "PAP"
+          | "PAS"
+          | "PEA"
+          | "PEP"
+          | "PES"
+          | "PIE"
+          | "PIN"
+          | "PLS"
+          | "POM"
+          | "PON"
+          | "PTT"
+          | "RAP"
+          | "RCH"
+          | "RIC"
+          | "ROS"
+          | "RUB"
+          | "RYE"
+          | "SEE"
+          | "SES"
+          | "SOR"
+          | "SOY"
+          | "SPI"
+          | "SSL"
+          | "SUB"
+          | "SUC"
+          | "SUG"
+          | "SUN"
+          | "SWP"
+          | "TBC"
+          | "TEA"
+          | "TEF"
+          | "TEK"
+          | "TOM"
+          | "TRE"
+          | "VGT"
+          | "VIN"
+          | "WHT"
+          | "YAM"
+        )[]
+        /** @description not set: Included, true: Only false: Excluded */
+        forest_concession?: boolean
+        implementation_status?: (
+          | "IN_OPERATION"
+          | "PROJECT_ABANDONED"
+          | "PROJECT_NOT_STARTED"
+          | "STARTUP_PHASE"
+          | "UNKNOWN"
+        )[]
+        /** @description Maximum year of initiation */
+        initiation_year_max?: number
+        /** @description Minimum year of initiation */
+        initiation_year_min?: number
+        /** @description Include unknown years */
+        initiation_year_null?: boolean
+        intention_of_investment?: (
+          | "AGRICULTURE_UNSPECIFIED"
+          | "BIOFUELS"
+          | "BIOMASS_ENERGY_GENERATION"
+          | "BIOMASS_ENERGY_PRODUCTION"
+          | "CARBON"
+          | "CONVERSATION"
+          | "FODDER"
+          | "FOOD_CROPS"
+          | "FORESTRY_UNSPECIFIED"
+          | "FOREST_LOGGING"
+          | "INDUSTRY"
+          | "LAND_SPECULATION"
+          | "LIVESTOCK"
+          | "MINING"
+          | "NON_FOOD_AGRICULTURE"
+          | "OIL_GAS_EXTRACTION"
+          | "OTHER"
+          | "RENEWABLE_ENERGY"
+          | "SOLAR_PARK"
+          | "TIMBER_PLANTATION"
+          | "TOURISM"
+          | "WIND_FARM"
+        )[]
+        minerals?: (
+          | "ALU"
+          | "ASP"
+          | "ATC"
+          | "BAR"
+          | "BAS"
+          | "BAX"
+          | "BEN"
+          | "BUM"
+          | "CAR"
+          | "CHR"
+          | "CLA"
+          | "COA"
+          | "COB"
+          | "COP"
+          | "DIA"
+          | "EME"
+          | "FLD"
+          | "FLO"
+          | "GAS"
+          | "GLD"
+          | "GRT"
+          | "GRV"
+          | "HEA"
+          | "ILM"
+          | "IRO"
+          | "JAD"
+          | "LED"
+          | "LIM"
+          | "LIT"
+          | "MAG"
+          | "MBD"
+          | "MGN"
+          | "MRB"
+          | "NIK"
+          | "OTH"
+          | "PET"
+          | "PHP"
+          | "PLT"
+          | "PUM"
+          | "PYR"
+          | "RUT"
+          | "SAN"
+          | "SIC"
+          | "SIL"
+          | "SLT"
+          | "STO"
+          | "TIN"
+          | "TTM"
+          | "URM"
+          | "ZNC"
+        )[]
+        nature?: (
+          | "CONCESSION"
+          | "EXPLOITATION_PERMIT"
+          | "LEASE"
+          | "OTHER"
+          | "OUTRIGHT_PURCHASE"
+          | "PURE_CONTRACT_FARMING"
+        )[]
+        negotiation_status?: (
+          | "CHANGE_OF_OWNERSHIP"
+          | "CONTRACT_CANCELED"
+          | "CONTRACT_EXPIRED"
+          | "CONTRACT_SIGNED"
+          | "EXPRESSION_OF_INTEREST"
+          | "MEMORANDUM_OF_UNDERSTANDING"
+          | "NEGOTIATIONS_FAILED"
+          | "ORAL_AGREEMENT"
+          | "UNDER_NEGOTIATION"
+        )[]
+        /** @description ID of the parent company */
+        parent_company?: number
+        /** @description ID of the parent company's country */
+        parent_company_country_id?: number
+        /** @description See /api/regions/ for IDs */
+        region_id?: number
+        /** @description Scope. true: Transnational, false: Domestic, not set: both */
+        transnational?: boolean
+      }
+    }
     responses: {
-      /** @description No response body */
       200: {
-        content: never
+        content: {
+          "application/json": {
+            /** @enum {string} */
+            type: "FeatureCollection"
+            features: {
+              /** @enum {string} */
+              type: "Feature"
+              geometry: {
+                /** @enum {string} */
+                type: "Point" | "Polygon" | "MultiPolygon"
+                coordinates: unknown[]
+              }
+              properties: Record<string, never>
+            }[]
+          }
+        }
       }
     }
   }
-  api_investor_search_list: {
+  investor_search_list: {
     parameters: {
       query: {
         /** @description Query string */
@@ -4663,7 +5002,7 @@ export interface operations {
       }
     }
   }
-  api_investors_list: {
+  investors_list: {
     responses: {
       200: {
         content: {
@@ -4672,7 +5011,7 @@ export interface operations {
       }
     }
   }
-  api_investors_create: {
+  investors_create: {
     requestBody: {
       content: {
         "application/json": components["schemas"]["Investor"]
@@ -4688,7 +5027,7 @@ export interface operations {
       }
     }
   }
-  api_investors_retrieve: {
+  investors_retrieve: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this investor hull. */
@@ -4704,7 +5043,7 @@ export interface operations {
     }
   }
   /** @description creating a new Version when calling "save" on an existing object */
-  api_investors_update: {
+  investors_update: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this investor hull. */
@@ -4726,7 +5065,7 @@ export interface operations {
       }
     }
   }
-  api_investors_retrieve_2: {
+  investors_version_retrieve: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this investor hull. */
@@ -4742,7 +5081,7 @@ export interface operations {
       }
     }
   }
-  api_investors_add_comment_update: {
+  investors_add_comment_update: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this investor hull. */
@@ -4764,7 +5103,7 @@ export interface operations {
       }
     }
   }
-  api_investors_involvements_graph_retrieve: {
+  investors_involvements_graph_retrieve: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this investor hull. */
@@ -4779,7 +5118,7 @@ export interface operations {
       }
     }
   }
-  api_investors_toggle_deleted_update: {
+  investors_toggle_deleted_update: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this investor hull. */
@@ -4801,7 +5140,7 @@ export interface operations {
       }
     }
   }
-  api_investors_deal_filtered_retrieve: {
+  investors_deal_filtered_retrieve: {
     parameters: {
       query?: {
         animals?: (
@@ -5040,7 +5379,7 @@ export interface operations {
       }
     }
   }
-  api_investors_simple_list: {
+  investors_simple_list: {
     responses: {
       200: {
         content: {
@@ -5049,7 +5388,7 @@ export interface operations {
       }
     }
   }
-  api_investorversions_list: {
+  investorversions_list: {
     responses: {
       200: {
         content: {
@@ -5058,7 +5397,7 @@ export interface operations {
       }
     }
   }
-  api_investorversions_retrieve: {
+  investorversions_retrieve: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this investor version. */
@@ -5073,7 +5412,7 @@ export interface operations {
       }
     }
   }
-  api_investorversions_update: {
+  investorversions_update: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this investor version. */
@@ -5095,7 +5434,7 @@ export interface operations {
       }
     }
   }
-  api_investorversions_destroy: {
+  investorversions_destroy: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this investor version. */
@@ -5109,7 +5448,7 @@ export interface operations {
       }
     }
   }
-  api_investorversions_change_status_update: {
+  investorversions_change_status_update: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this investor version. */
@@ -5131,7 +5470,7 @@ export interface operations {
       }
     }
   }
-  api_messages_list: {
+  messages_list: {
     responses: {
       200: {
         content: {
@@ -5140,7 +5479,7 @@ export interface operations {
       }
     }
   }
-  api_messages_retrieve: {
+  messages_retrieve: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this Message. */
@@ -5248,7 +5587,7 @@ export interface operations {
       }
     }
   }
-  api_regions_list: {
+  regions_list: {
     responses: {
       200: {
         content: {
@@ -5263,7 +5602,7 @@ export interface operations {
    * - YAML: application/vnd.oai.openapi
    * - JSON: application/vnd.oai.openapi+json
    */
-  "api_schema.json_retrieve": {
+  "schema.json_retrieve": {
     parameters: {
       query?: {
         lang?: "en" | "es" | "fr" | "ru"
@@ -5288,7 +5627,7 @@ export interface operations {
    * - YAML: application/vnd.oai.openapi
    * - JSON: application/vnd.oai.openapi+json
    */
-  "api_schema.yaml_retrieve": {
+  "schema.yaml_retrieve": {
     parameters: {
       query?: {
         lang?: "en" | "es" | "fr" | "ru"
@@ -5307,7 +5646,7 @@ export interface operations {
       }
     }
   }
-  api_users_list: {
+  users_list: {
     responses: {
       200: {
         content: {
@@ -5316,7 +5655,7 @@ export interface operations {
       }
     }
   }
-  api_users_retrieve: {
+  users_retrieve: {
     parameters: {
       path: {
         /** @description A unique integer value identifying this user. */
@@ -5328,223 +5667,6 @@ export interface operations {
         content: {
           "application/json": components["schemas"]["User"]
         }
-      }
-    }
-  }
-  api_wagtail_v2_documents_retrieve: {
-    responses: {
-      /** @description No response body */
-      200: {
-        content: never
-      }
-    }
-  }
-  api_wagtail_v2_documents_retrieve_2: {
-    parameters: {
-      path: {
-        id: number
-      }
-    }
-    responses: {
-      /** @description No response body */
-      200: {
-        content: never
-      }
-    }
-  }
-  api_wagtail_v2_documents_find_retrieve: {
-    responses: {
-      /** @description No response body */
-      200: {
-        content: never
-      }
-    }
-  }
-  api_wagtail_v2_images_retrieve: {
-    responses: {
-      /** @description No response body */
-      200: {
-        content: never
-      }
-    }
-  }
-  api_wagtail_v2_images_retrieve_2: {
-    parameters: {
-      path: {
-        id: number
-      }
-    }
-    responses: {
-      /** @description No response body */
-      200: {
-        content: never
-      }
-    }
-  }
-  api_wagtail_v2_images_find_retrieve: {
-    responses: {
-      /** @description No response body */
-      200: {
-        content: never
-      }
-    }
-  }
-  api_wagtail_v2_page_preview_retrieve: {
-    responses: {
-      /** @description No response body */
-      200: {
-        content: never
-      }
-    }
-  }
-  api_wagtail_v2_page_preview_retrieve_2: {
-    parameters: {
-      path: {
-        id: number
-      }
-    }
-    responses: {
-      /** @description No response body */
-      200: {
-        content: never
-      }
-    }
-  }
-  api_wagtail_v2_page_preview_find_retrieve: {
-    responses: {
-      /** @description No response body */
-      200: {
-        content: never
-      }
-    }
-  }
-  api_wagtail_v2_pages_retrieve: {
-    responses: {
-      /** @description No response body */
-      200: {
-        content: never
-      }
-    }
-  }
-  api_wagtail_v2_pages_retrieve_2: {
-    parameters: {
-      path: {
-        id: number
-      }
-    }
-    responses: {
-      /** @description No response body */
-      200: {
-        content: never
-      }
-    }
-  }
-  api_wagtail_v2_pages_find_retrieve: {
-    responses: {
-      /** @description No response body */
-      200: {
-        content: never
-      }
-    }
-  }
-  cms_api_main_documents_retrieve: {
-    responses: {
-      /** @description No response body */
-      200: {
-        content: never
-      }
-    }
-  }
-  cms_api_main_documents_retrieve_2: {
-    parameters: {
-      path: {
-        id: number
-      }
-    }
-    responses: {
-      /** @description No response body */
-      200: {
-        content: never
-      }
-    }
-  }
-  cms_api_main_documents_find_retrieve: {
-    responses: {
-      /** @description No response body */
-      200: {
-        content: never
-      }
-    }
-  }
-  cms_api_main_images_retrieve: {
-    responses: {
-      /** @description No response body */
-      200: {
-        content: never
-      }
-    }
-  }
-  cms_api_main_images_retrieve_2: {
-    parameters: {
-      path: {
-        id: number
-      }
-    }
-    responses: {
-      /** @description No response body */
-      200: {
-        content: never
-      }
-    }
-  }
-  cms_api_main_images_find_retrieve: {
-    responses: {
-      /** @description No response body */
-      200: {
-        content: never
-      }
-    }
-  }
-  cms_api_main_pages_retrieve: {
-    responses: {
-      /** @description No response body */
-      200: {
-        content: never
-      }
-    }
-  }
-  cms_api_main_pages_retrieve_2: {
-    parameters: {
-      path: {
-        id: number
-      }
-    }
-    responses: {
-      /** @description No response body */
-      200: {
-        content: never
-      }
-    }
-  }
-  cms_api_main_pages_action_create: {
-    parameters: {
-      path: {
-        action_name: string
-        id: number
-      }
-    }
-    responses: {
-      /** @description No response body */
-      200: {
-        content: never
-      }
-    }
-  }
-  cms_api_main_pages_find_retrieve: {
-    responses: {
-      /** @description No response body */
-      200: {
-        content: never
       }
     }
   }
