@@ -4,7 +4,7 @@
   import { page } from "$app/stores"
 
   import { stateMap } from "$lib/newUtils"
-  import { Version2Status, type DealHull, type InvestorHull } from "$lib/types/data"
+  import { type DealHull, type InvestorHull } from "$lib/types/data"
   import { isReporterOrAbove } from "$lib/utils/permissions"
 
   import DisplayField from "$components/Fields/DisplayField.svelte"
@@ -18,18 +18,10 @@
   const isDeal = "fully_updated_at" in obj
   const objType = isDeal ? "deal" : "investor"
 
-  const reporterOrHigher = isReporterOrAbove($page.data.user)
+  $: reporterOrHigher = isReporterOrAbove($page.data.user)
 
-  // TODO: Only return filteredVersions from backend
-  const filteredVersions = reporterOrHigher
-    ? obj.versions
-    : obj.versions.filter(v => {
-        if (isDeal) return v.status === Version2Status.ACTIVATED && v.is_public
-        return v.status === Version2Status.ACTIVATED
-      })
-
-  let compareFrom = filteredVersions[1]?.id
-  let compareTo = filteredVersions[0]?.id
+  let compareFrom = obj.versions[1]?.id
+  let compareTo = obj.versions[0]?.id
 </script>
 
 <section>
@@ -62,7 +54,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each filteredVersions as version}
+      {#each obj.versions as version}
         <tr class="odd:bg-gray-50 dark:odd:bg-gray-700">
           <td class="p-1">{version.id}</td>
           <td class="p-1">
