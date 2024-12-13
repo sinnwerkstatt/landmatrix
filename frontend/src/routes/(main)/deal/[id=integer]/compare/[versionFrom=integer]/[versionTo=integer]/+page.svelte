@@ -111,7 +111,7 @@
             {#if data.dealdiff.has(field)}
               <tr class="🍌">
                 <th>
-                  {$dealFields[field].label}
+                  {$dealFields[field]?.label ?? field}
                 </th>
                 <td>
                   <DisplayField
