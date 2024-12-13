@@ -47,7 +47,6 @@
     top = event.clientY + 16
     left = event.clientX + 16 - 200
   }
-
 </script>
 
 <div>
@@ -73,7 +72,12 @@
   {/if}
 
   {#if open}
-    <DropdownMenu extraClass="absolute mt-1 z-20" bind:visible={open} bind:top bind:left>
+    <DropdownMenu
+      extraClass="absolute mt-1 z-20"
+      bind:visible={open}
+      bind:top
+      bind:left
+    >
       <div class="search m-2">
         <span><IconSearch /></span>
         <input

@@ -135,9 +135,15 @@ class DealScoreVersion(models.Model):
 
             # If variables already existed, copy content to the new variables, else create from scratch
             if current_score is not None:
-                current_variables = DealVariable.objects.filter(deal_score=current_score)
+                current_variables = DealVariable.objects.filter(
+                    deal_score=current_score
+                )
                 for current_variable in current_variables:
-                    status = "TO_SCORE" if current_variable.status == "TO_SCORE" else "WAITING"
+                    status = (
+                        "TO_SCORE"
+                        if current_variable.status == "TO_SCORE"
+                        else "WAITING"
+                    )
                     variable = DealVariable(
                         deal_score=self,
                         vggt_variable=current_variable.vggt_variable,
@@ -145,13 +151,15 @@ class DealScoreVersion(models.Model):
                         score=current_variable.score,
                         scored_at=current_variable.scored_at,
                         scored_by=current_variable.scored_by,
-                        assignee=current_variable.assignee
+                        assignee=current_variable.assignee,
                     )
                     variable.save()
             else:
                 vggt_variables = VggtVariable.objects.all()
                 for vggt_variable in vggt_variables:
-                    variable = DealVariable(deal_score=self, vggt_variable=vggt_variable)
+                    variable = DealVariable(
+                        deal_score=self, vggt_variable=vggt_variable
+                    )
                     variable.save()
         else:
             super(DealScoreVersion, self).save(*args, **kwargs)

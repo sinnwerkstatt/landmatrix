@@ -346,7 +346,7 @@ class DealVariableView(APIView):
     serializer_class = DealVariableSerializer
     permission_classes = [IsReporterOrHigherOrReadonly]
 
-    def get_queryset(self): 
+    def get_queryset(self):
         deal_id = self.kwargs["deal"]
         vggt_variable_number = self.kwargs["variable"]
         deal = DealHull.objects.get(pk=deal_id)
