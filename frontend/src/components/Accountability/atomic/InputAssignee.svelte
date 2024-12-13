@@ -19,6 +19,9 @@
   let open = false
   let filter = ""
 
+  let top = 200
+  let left = 200
+
   const dispatch = createEventDispatcher()
 
   $: assignee = $users.find(u => u.id == assigneeID) ?? undefined
@@ -38,6 +41,13 @@
       dispatch("unselectAssignee")
     }
   }
+
+  function showDropdown(event) {
+    open = true
+    top = event.clientY + 16
+    left = event.clientX + 16 - 200
+  }
+
 </script>
 
 <div>
@@ -45,7 +55,7 @@
     <button
       class:showOnHover
       class="{extraClass} rounded-lg hover:bg-a-gray-50"
-      on:click={() => (open = true)}
+      on:click={() => showDropdown(event)}
     >
       <Avatar {size} label="No assignee" type="assignment" />
     </button>
@@ -63,7 +73,7 @@
   {/if}
 
   {#if open}
-    <DropdownMenu extraClass="absolute mt-1 z-20" bind:visible={open}>
+    <DropdownMenu extraClass="absolute mt-1 z-20" bind:visible={open} bind:top bind:left>
       <div class="search m-2">
         <span><IconSearch /></span>
         <input
