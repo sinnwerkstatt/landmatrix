@@ -1,12 +1,12 @@
-# noinspection PyPackageRequirements
-import environ
+import environ  # type: ignore
 
 from django.utils.translation import gettext_lazy as _
 
-BASE_DIR = environ.Path(__file__) - 3  # type: environ.Path
+BASE_DIR = environ.Path(__file__) - 3
+ENV_PATH: str = BASE_DIR(".env")
 
 env = environ.Env()
-env.read_env(BASE_DIR(".env"))
+env.read_env(ENV_PATH)
 
 LANGUAGE_CODE = "en"
 WAGTAIL_CONTENT_LANGUAGES = LANGUAGES = [
@@ -71,7 +71,7 @@ INSTALLED_APPS = [
     "modelcluster",
     "taggit",
     "wagtail_headless_preview",
-    #   apps of the actual landmatrix project
+    # apps of the actual landmatrix project
     "apps.blog",
     "apps.message",
     "apps.landmatrix",
@@ -191,7 +191,10 @@ SPECTACULAR_SETTINGS = {
     "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
     "REDOC_DIST": "SIDECAR",
     # "SERVE_URLCONF": "apps.api.urls",
-    "PREPROCESSING_HOOKS": ["apps.api.spectacular.preprocessing_filter_spec"],
+    "PREPROCESSING_HOOKS": [
+        "apps.api.spectacular.preprocess_only_public",
+        "apps.api.spectacular.preprocess_only_get",
+    ],
     # "SERVE_PUBLIC": False,
     "ENUM_NAME_OVERRIDES": {
         # Reuse enum instead of create a distinct one per choices field
@@ -203,6 +206,9 @@ SPECTACULAR_SETTINGS = {
         "DatasourceTypeEnum": "apps.landmatrix.models.choices.DatasourceTypeEnum",
         "VersionStatusEnum": "apps.landmatrix.models.abstract.VersionStatus",
         "UserRoleEnum": "apps.accounts.models.UserRole",
+        "IntentionOfInvestmentEnum": "apps.landmatrix.models.choices.IntentionOfInvestmentEnum",
+        "NegotiationStatusEnum": "apps.landmatrix.models.choices.NegotiationStatusEnum",
+        "ImplementationStatusEnum": "apps.landmatrix.models.choices.ImplementationStatusEnum",
     },
 }
 

@@ -1,23 +1,45 @@
-public_paths = [
+from typing import Callable, Iterable, Literal
+
+Method = Literal["GET", "POST", "PUT", "PATCH", "DELETE"]
+
+# endpoint = [path, regex_path, method, callback]
+Endpoint = tuple[str, str, Method, Callable]
+
+PUBLIC_PATHS: list[str] = [
     "/api/countries/",
     "/api/regions/",
     "/api/currencies/",
     "/api/deals/",
-    "/api/deals/{pk}/",
-    "/api/deals/{pk}/{version_id}/",
     "/api/investors/",
-    "/api/investors/{pk}/",
-    "/api/investors/{pk}/{version_id}/",
     "/api/field_choices/",
     "/api/schema/",
 ]
 
+WAGTAIL_PATHS: list[str] = [
+    "/cms/",
+    "/api/wagtail/",
+]
 
-def preprocessing_filter_spec(endpoints):
-    filtered = []
 
-    for path, path_regex, method, callback in endpoints:
-        if path in public_paths and method.lower() == "get":
-            filtered.append((path, path_regex, method, callback))
+def is_wagtail(endpoint: Endpoint) -> bool:
+    return any(endpoint[0].startswith(x) for x in WAGTAIL_PATHS)
 
-    return filtered
+
+def is_public(endpoint: Endpoint) -> bool:
+    return any(endpoint[0].startswith(x) for x in PUBLIC_PATHS)
+
+
+def is_method(method: Method) -> Callable[[Endpoint], bool]:
+    return lambda endpoint: endpoint[2] == method
+
+
+def preprocess_exclude_wagtail(endpoints: Iterable[Endpoint]) -> Iterable[Endpoint]:
+    return filter(lambda x: not is_wagtail(x), endpoints)
+
+
+def preprocess_only_get(endpoints: Iterable[Endpoint]) -> Iterable[Endpoint]:
+    return filter(is_method("GET"), endpoints)
+
+
+def preprocess_only_public(endpoints: Iterable[Endpoint]) -> Iterable[Endpoint]:
+    return filter(is_wagtail, endpoints)

@@ -26,7 +26,7 @@ class IsAdministrator(BasePermission):
         return is_admin(request.user)
 
 
-def has_role_or_higher(role: UserRole, user: User) -> bool:
+def has_role_or_higher(role: UserRole, user: User | AnonymousUser) -> bool:
     return not user.is_anonymous and (
         user.is_superuser or cast(UserRole, user.role) >= role
     )

@@ -42,7 +42,7 @@ class MessageSerializer(serializers.ModelSerializer):
         read_only_fields = ["level", "logged_in_only", "allow_users_to_hide"]
 
     @staticmethod
-    def get_text(obj):
+    def get_text(obj) -> str:
         return expand_db_html(obj.text)
 
 

@@ -15,8 +15,9 @@ REPORTER = User(role=UserRole.REPORTER)
 EDITOR = User(role=UserRole.EDITOR)
 ADMINISTRATOR = User(role=UserRole.ADMINISTRATOR)
 
-STAFF = User(is_staff=True)
-SUPERUSER = User(is_superuser=True)
+# Default role is UserRole.REPORTER
+STAFF = User(role=UserRole.ANYBODY, is_staff=True)
+SUPERUSER = User(role=UserRole.ANYBODY, is_superuser=True)
 
 
 def test_is_anybody_or_higher():
