@@ -415,7 +415,7 @@ export interface components {
        * Area
        * @default null
        */
-      area?: number | string | null
+      area?: string | null
       /**
        * Choices
        * @default []
@@ -425,12 +425,12 @@ export interface components {
        * Projected Lifetime Sequestration
        * @default null
        */
-      projected_lifetime_sequestration?: number | string | null
+      projected_lifetime_sequestration?: string | null
       /**
        * Projected Annual Sequestration
        * @default null
        */
-      projected_annual_sequestration?: number | string | null
+      projected_annual_sequestration?: string | null
       /**
        * Project Proponents
        * @default
@@ -701,7 +701,7 @@ export interface components {
        * Area
        * @default null
        */
-      area?: number | string | null
+      area?: string | null
       /** Choices */
       choices: components["schemas"]["AnimalsEnum"][]
     }
@@ -723,7 +723,7 @@ export interface components {
        * Area
        * @default null
        */
-      area?: number | string | null
+      area?: string | null
       /** Choices */
       choices: components["schemas"]["CropsEnum"][]
     }
@@ -745,7 +745,7 @@ export interface components {
        * Area
        * @default null
        */
-      area?: number | string | null
+      area?: string | null
       /** Choices */
       choices: components["schemas"]["IntentionOfInvestmentEnum"][]
     }
@@ -762,7 +762,7 @@ export interface components {
        */
       date?: string | null
       /** Area */
-      area: number | string
+      area: string
     }
     /** CurrentDateAreaSchema */
     CurrentDateAreaSchema: components["schemas"]["CurrentDateAreaItem"][]
@@ -1445,7 +1445,7 @@ export interface components {
        * Area
        * @default null
        */
-      area?: number | string | null
+      area?: string | null
       /**
        * Choices
        * @default []
@@ -1455,22 +1455,22 @@ export interface components {
        * Export
        * @default null
        */
-      export?: number | string | null
+      export?: string | null
       /**
        * Windfarm Count
        * @default null
        */
-      windfarm_count?: number | string | null
+      windfarm_count?: string | null
       /**
        * Current Capacity
        * @default null
        */
-      current_capacity?: number | string | null
+      current_capacity?: string | null
       /**
        * Intended Capacity
        * @default null
        */
-      intended_capacity?: number | string | null
+      intended_capacity?: string | null
     }
     /** ElectricityGenerationSchema */
     ElectricityGenerationSchema: components["schemas"]["ElectricityGenerationItem"][]
@@ -1494,17 +1494,17 @@ export interface components {
        * Area
        * @default null
        */
-      area?: number | string | null
+      area?: string | null
       /**
        * Yield
        * @default null
        */
-      yield?: number | string | null
+      yield?: string | null
       /**
        * Export
        * @default null
        */
-      export?: number | string | null
+      export?: string | null
     }
     /** ExportsCrops */
     ExportsCrops: components["schemas"]["ExportsCropsItem"][]
@@ -1526,17 +1526,17 @@ export interface components {
        * Area
        * @default null
        */
-      area?: number | string | null
+      area?: string | null
       /**
        * Yield
        * @default null
        */
-      yield?: number | string | null
+      yield?: string | null
       /**
        * Export
        * @default null
        */
-      export?: number | string | null
+      export?: string | null
     }
     /** ExportsMineralResources */
     ExportsMineralResources: components["schemas"]["ExportsMineralResourcesItem"][]
@@ -1558,17 +1558,17 @@ export interface components {
        * Area
        * @default null
        */
-      area?: number | string | null
+      area?: string | null
       /**
        * Yield
        * @default null
        */
-      yield?: number | string | null
+      yield?: string | null
       /**
        * Export
        * @default null
        */
-      export?: number | string | null
+      export?: string | null
     }
     FieldChoices: {
       deal: components["schemas"]["DealFields"]
@@ -1979,17 +1979,17 @@ export interface components {
        * Jobs
        * @default null
        */
-      jobs?: number | string | null
+      jobs?: string | null
       /**
        * Employees
        * @default null
        */
-      employees?: number | string | null
+      employees?: string | null
       /**
        * Workers
        * @default null
        */
-      workers?: number | string | null
+      workers?: string | null
     }
     /** JobsSchema */
     JobsSchema: components["schemas"]["JobsItem"][]
@@ -2021,17 +2021,17 @@ export interface components {
        * Area
        * @default null
        */
-      area?: number | string | null
+      area?: string | null
       /**
        * Farmers
        * @default null
        */
-      farmers?: number | string | null
+      farmers?: string | null
       /**
        * Households
        * @default null
        */
-      households?: number | string | null
+      households?: string | null
     }
     /** LeaseSchema */
     LeaseSchema: components["schemas"]["LeaseItem"][]

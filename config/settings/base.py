@@ -1,5 +1,5 @@
 # noinspection PyPackageRequirements
-import environ
+import environ  # type: ignore
 
 from django.utils.translation import gettext_lazy as _
 
@@ -191,7 +191,10 @@ SPECTACULAR_SETTINGS = {
     "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
     "REDOC_DIST": "SIDECAR",
     # "SERVE_URLCONF": "apps.api.urls",
-    "PREPROCESSING_HOOKS": ["apps.api.spectacular.production_filters"],
+    "PREPROCESSING_HOOKS": [
+        "apps.api.spectacular.preprocess_only_public",
+        "apps.api.spectacular.preprocess_only_get",
+    ],
     # "SERVE_PUBLIC": False,
     "ENUM_NAME_OVERRIDES": {
         # Reuse enum instead of create a distinct one per choices field
