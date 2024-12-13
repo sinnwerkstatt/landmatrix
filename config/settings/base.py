@@ -1,12 +1,12 @@
-# noinspection PyPackageRequirements
 import environ  # type: ignore
 
 from django.utils.translation import gettext_lazy as _
 
-BASE_DIR = environ.Path(__file__) - 3  # type: environ.Path
+BASE_DIR = environ.Path(__file__) - 3
+ENV_PATH: str = BASE_DIR(".env")
 
 env = environ.Env()
-env.read_env(BASE_DIR(".env"))
+env.read_env(ENV_PATH)
 
 LANGUAGE_CODE = "en"
 WAGTAIL_CONTENT_LANGUAGES = LANGUAGES = [
@@ -71,7 +71,7 @@ INSTALLED_APPS = [
     "modelcluster",
     "taggit",
     "wagtail_headless_preview",
-    #   apps of the actual landmatrix project
+    # apps of the actual landmatrix project
     "apps.blog",
     "apps.message",
     "apps.landmatrix",

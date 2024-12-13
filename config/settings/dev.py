@@ -13,7 +13,6 @@ except ModuleNotFoundError:
     print("not using django_extensions...")
     pass
 
-
 # INSTALLED_APPS += ["wagtail.contrib.styleguide"]
 
 SPECTACULAR_SETTINGS["PREPROCESSING_HOOKS"] = [
