@@ -20,7 +20,7 @@
   $: allExtras =
     richField?.extras && extras
       ? { ...richField.extras, ...extras }
-      : richField?.extras ?? extras
+      : (richField?.extras ?? extras)
 </script>
 
 <div class={wrapperClass} data-fieldname={fieldname}>

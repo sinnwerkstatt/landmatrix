@@ -43,7 +43,7 @@ export const scrollToTop = async () => {
   await sleep(250)
 
   const el = document.getElementById("content")
-  el &&
+  if (el)
     el.scrollTo({
       top: 0,
       // behavior: "smooth", // Optional: Add smooth scrolling effect

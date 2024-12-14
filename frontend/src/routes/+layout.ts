@@ -31,6 +31,7 @@ export const load: LayoutLoad = async ({ fetch, data }) => {
     ])
     return { apiClient, user, countries, regions }
   } catch (e) {
+    console.error("Layout Load Error:", e)
     throw error(500, "Layout Load Error")
   }
 }

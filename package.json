@@ -1,4 +1,8 @@
 {
+  "name": "landmatrix",
+  "version": "0.0.1",
+  "packageManager": "pnpm@9.5.0",
+  "type": "module",
   "scripts": {
     "dev": "concurrently pnpm:backend pnpm:frontend pnpm:caddy",
     "dev:test": "DATABASE_URL=postgis://landmatrix:landmatrix@localhost/playwright_test pnpm run dev",

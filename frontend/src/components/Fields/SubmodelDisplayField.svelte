@@ -26,7 +26,7 @@
 
   $: selectedEntryId = $page.url.hash?.replace("#", "") || undefined
 
-  $: browser && scrollEntryIntoView(selectedEntryId)
+  $: if (browser) scrollEntryIntoView(selectedEntryId)
 
   onMount(() => scrollEntryIntoView(selectedEntryId))
 </script>

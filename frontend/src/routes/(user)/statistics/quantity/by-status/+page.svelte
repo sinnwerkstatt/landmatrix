@@ -111,7 +111,7 @@
 
     const filename = createFilename(`${model}s_${activeTabId}`, e.detail, context)
 
-    blob && aDownload(blob, filename)
+    if (blob) aDownload(blob, filename)
 
     showDownloadModal = false
   }

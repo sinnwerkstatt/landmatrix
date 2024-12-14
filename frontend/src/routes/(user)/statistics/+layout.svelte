@@ -20,7 +20,7 @@
   }
 
   afterNavigate(() => {
-    lastFocusedElement && lastFocusedElement.focus()
+    if (lastFocusedElement) lastFocusedElement.focus()
   })
 
   let sections: Section[]
