@@ -1,19 +1,23 @@
 {
   "name": "frontend",
   "version": "0.0.1",
+  "packageManager": "pnpm@9.5.0",
+  "type": "module",
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
     "preview": "vite preview",
-    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+    "precheck": "svelte-kit sync",
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "check:watch": "pnpm run check --watch",
+    "lint": "eslint . --fix",
     "lint:check": "eslint .",
-    "lint": "eslint --fix .",
-    "format:check": "prettier --check .",
-    "format": "prettier --write .",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
     "test": "vitest run src",
     "test:watch": "vitest src",
-    "openapi": "openapi-typescript http://localhost:9000/api/schema/ -o ./src/lib/openAPI.d.ts && prettier --write ./src/lib/openAPI.d.ts"
+    "openapi": "openapi-typescript http://localhost:9000/api/schema/ -o ./src/lib/openAPI.d.ts",
+    "postopenapi": "prettier --write ./src/lib/openAPI.d.ts"
   },
   "devDependencies": {
     "@eslint/js": "^8.57.0",
@@ -103,7 +107,6 @@
       "svelte": ">=4.x"
     }
   },
-  "type": "module",
   "dependencies": {
     "@sentry/sveltekit": "^8.17.0",
     "@splidejs/splide": "^4.1.4"
