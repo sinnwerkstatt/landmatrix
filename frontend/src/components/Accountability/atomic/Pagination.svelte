@@ -87,20 +87,20 @@
   <div class="pagination flex justify-{justify}" bind:this={paginationBox}>
     <button
       class="rounded-s-lg"
-      disabled={currentPage == 1}
+      disabled={currentPage === 1}
       on:click={() => {
-        currentPage > 1 ? currentPage-- : (currentPage = 1)
+        currentPage -= 1
       }}
     >
       <span class="-rotate-90"><IconChevron /></span>
     </button>
-    {#if ellipsis == "beginning" || ellipsis == "both"}
+    {#if ellipsis === "beginning" || ellipsis === "both"}
       <button disabled>…</button>
     {/if}
     {#each focusedPagesButtons as p}
       {@const page = p + 1}
       <button
-        class:selected={currentPage == page}
+        class:selected={currentPage === page}
         on:click={() => {
           currentPage = page
         }}
@@ -108,14 +108,14 @@
         {page}
       </button>
     {/each}
-    {#if ellipsis == "end" || ellipsis == "both"}
+    {#if ellipsis === "end" || ellipsis === "both"}
       <button disabled>…</button>
     {/if}
     <button
       class="rounded-e-lg"
-      disabled={currentPage == totalPages}
+      disabled={currentPage === totalPages}
       on:click={() => {
-        currentPage < totalPages ? currentPage++ : (currentPage = totalPages)
+        currentPage += 1
       }}
     >
       <span class="rotate-90"><IconChevron /></span>

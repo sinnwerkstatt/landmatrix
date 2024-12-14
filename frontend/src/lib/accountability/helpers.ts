@@ -23,9 +23,7 @@ export function groupBy(array: [], key: string, value: string) {
     if (!result[currentValue[key]]) {
       result[currentValue[key]] = []
     }
-    value
-      ? result[currentValue[key]].push(currentValue[value])
-      : result[currentValue[key]].push(currentValue)
+    result[currentValue[key]].push(value ? currentValue[value] : currentValue)
     return result
   }, {})
   const res = []

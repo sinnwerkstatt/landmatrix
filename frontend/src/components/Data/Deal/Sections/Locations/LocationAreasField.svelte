@@ -44,7 +44,8 @@
   $: hoverMap = areas.reduce((acc, value) => ({ ...acc, [value.nid]: false }), {})
 
   $: if (map) {
-    layer && map.removeLayer(layer)
+    if (layer) map.removeLayer(layer)
+
     layer = createAreaFeaturesLayer(
       areas.map(areaToFeature),
       LocationAreaTooltip,

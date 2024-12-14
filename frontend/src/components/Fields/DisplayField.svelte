@@ -21,7 +21,7 @@
   $: allExtras =
     richField?.extras && extras
       ? { ...richField.extras, ...extras }
-      : richField?.extras ?? extras
+      : (richField?.extras ?? extras)
 </script>
 
 {#if isNotEmpty(value)}
