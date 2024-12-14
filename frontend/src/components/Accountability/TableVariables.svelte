@@ -51,7 +51,7 @@
         dealChecked = true
       } else {
         dealChecked = false
-        nselect > 0 ? (dealPartiallyChecked = true) : (dealPartiallyChecked = false)
+        dealPartiallyChecked = nselect > 0
       }
     }
   }
