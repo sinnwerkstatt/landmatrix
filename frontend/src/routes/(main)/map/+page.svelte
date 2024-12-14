@@ -234,7 +234,7 @@
   }
 
   const displayDealsCountUnsubscribe = displayDealsCount.subscribe(() => refreshMap())
-  $: $dealsNG && refreshMarkers()
+  $: if ($dealsNG) refreshMarkers()
   $: flyToCountryOrRegion($filters.country_id, $filters.region_id)
 
   onMount(() => {
