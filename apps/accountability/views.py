@@ -349,8 +349,9 @@ class DealVariableView(APIView):
     def get_queryset(self):
         deal_id = self.kwargs["deal"]
         vggt_variable_number = self.kwargs["variable"]
+        deal = DealHull.objects.get(pk=deal_id)
         return DealVariable.objects.get(
-            deal_score__score__deal__pk=deal_id,
+            deal_score__deal_version=deal.active_version,
             vggt_variable__number=vggt_variable_number,
         )
 
@@ -379,8 +380,10 @@ class DealBulkAssigneeUpdate(APIView):
         assigneeID = request.data.get("assignee")
 
         for e in to_update:
+            # Not sure if I can optimize this current_score + variable query with the method current_score()
+            current_score = DealScore.objects.get(deal=e["deal"]).current_score()
             variable = DealVariable.objects.get(
-                deal_score__score__deal__pk=e["deal"],
+                deal_score=current_score,
                 vggt_variable__number=e["variable"],
             )
             serializer = DealVariableSerializer(
