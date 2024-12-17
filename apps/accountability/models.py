@@ -121,17 +121,46 @@ class DealScoreVersion(models.Model):
     )
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="TO_SCORE")
 
+    def __str__(self):
+        return f"Score of deal {self.score.deal} - Version {self.deal_version}"
+
     def is_current(self):
         return True if self.score.current_score() else False
 
     def save(self, *args, **kwargs):
         # On create, create related objects
         if self._state.adding:
+            current_score = self.score.current_score()
             super(DealScoreVersion, self).save(*args, **kwargs)
-            vggt_variables = VggtVariable.objects.all()
-            for vggt_variable in vggt_variables:
-                variable = DealVariable(deal_score=self, vggt_variable=vggt_variable)
-                variable.save()
+
+            # If variables already existed, copy content to the new variables, else create from scratch
+            if current_score is not None:
+                current_variables = DealVariable.objects.filter(
+                    deal_score=current_score
+                )
+                for current_variable in current_variables:
+                    status = (
+                        "TO_SCORE"
+                        if current_variable.status == "TO_SCORE"
+                        else "WAITING"
+                    )
+                    variable = DealVariable(
+                        deal_score=self,
+                        vggt_variable=current_variable.vggt_variable,
+                        status=status,
+                        score=current_variable.score,
+                        scored_at=current_variable.scored_at,
+                        scored_by=current_variable.scored_by,
+                        assignee=current_variable.assignee,
+                    )
+                    variable.save()
+            else:
+                vggt_variables = VggtVariable.objects.all()
+                for vggt_variable in vggt_variables:
+                    variable = DealVariable(
+                        deal_score=self, vggt_variable=vggt_variable
+                    )
+                    variable.save()
         else:
             super(DealScoreVersion, self).save(*args, **kwargs)
 
