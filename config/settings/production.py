@@ -2,12 +2,9 @@ import random
 import string
 
 import sentry_sdk
-
-# noinspection PyPackageRequirements
-from environ.environ import ImproperlyConfigured
 from sentry_sdk.integrations.django import DjangoIntegration
 
-from .base import *
+from .base import *  # noqa
 
 DEBUG = False
 
@@ -15,7 +12,7 @@ WAGTAIL_ENABLE_UPDATE_CHECK = False
 
 try:
     SECRET_KEY = env("DJANGO_SECRET_KEY")
-except ImproperlyConfigured:
+except environ.ImproperlyConfigured:
     SECRET_KEY = "".join(
         [
             random.SystemRandom().choice(
@@ -24,8 +21,8 @@ except ImproperlyConfigured:
             for i in range(63)
         ]
     )
-    with open(".env", "a", encoding="UTF-8") as envfile:
-        envfile.write(f"DJANGO_SECRET_KEY={SECRET_KEY}\n")
+    with open(ENV_PATH, "a", encoding="UTF-8") as envfile:
+        envfile.write(f"\nDJANGO_SECRET_KEY={SECRET_KEY}\n")
 
 sentry_sdk.init(
     dsn=env("DJANGO_SENTRY_DSN"),

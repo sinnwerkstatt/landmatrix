@@ -1,6 +1,6 @@
 import re
 
-import tweepy
+import tweepy  # type: ignore
 
 from django.conf import settings
 from django.core.cache import cache
@@ -121,10 +121,9 @@ class TwitterTimeline:
 
 
 if __name__ == "__main__":
-    # noinspection PyPackageRequirements
-    import environ
+    import environ  # type: ignore
 
-    BASE_DIR = environ.Path(__file__) - 4
+    BASE_DIR = environ.Path(__file__) - 3
     env = environ.Env()
     env.read_env(BASE_DIR(".env"))
     settings.configure(

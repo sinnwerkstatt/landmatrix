@@ -201,11 +201,11 @@ class InvestorHull(BaseHull):
             )
         return _seen_investors
 
-    def get_parents(self) -> QuerySet["Involvement"]:
+    def get_parents(self) -> "InvolvementQuerySet":
         # return self.parent_investors.all()
         return Involvement.objects.filter(child_investor=self)
 
-    def get_children(self) -> QuerySet["Involvement"]:
+    def get_children(self) -> "InvolvementQuerySet":
         # return self.child_investors.all()
         return Involvement.objects.filter(parent_investor=self)
 

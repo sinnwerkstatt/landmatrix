@@ -77,12 +77,14 @@
     try {
       retBody = await ret.clone().json()
     } catch (e) {
-      retBody = await ret.text()
+      console.error("PUT Error:", e)
+      console.error("Raw Response:", await ret.text())
+
       toast.push(
         "We received an unexpected error from the backend. For details, check the browser console",
         { classes: ["error"] },
       )
-      console.error(retBody)
+
       savingInProgress = false
       return false
     }

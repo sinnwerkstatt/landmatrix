@@ -207,11 +207,10 @@
   }
 
   $: treeData = createTreeData(deals)
-  $: {
-    // react on screen changes
-    $showContextBar || $showFilterBar
-    buildTreeChart(treeData)
-  }
+
+  // react on screen changes
+  showContextBar.subscribe(() => buildTreeChart(treeData))
+  showFilterBar.subscribe(() => buildTreeChart(treeData))
 
   onMount(() => buildTreeChart(treeData))
   afterUpdate(() => buildTreeChart(treeData))

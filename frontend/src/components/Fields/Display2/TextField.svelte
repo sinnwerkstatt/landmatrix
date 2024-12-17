@@ -13,8 +13,7 @@
   const safeGetHostname = (value: string): string => {
     try {
       return new URL(value).hostname
-    } catch (e) {
-      // console.error("error", e)
+    } catch {
       return value
     }
   }

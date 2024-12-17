@@ -1,11 +1,10 @@
-from django.http import Http404
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 
 from django.contrib.postgres.expressions import ArraySubquery
 from django.db import OperationalError, transaction
-from django.db.models import Case, F, OuterRef, Prefetch, When, Q
+from django.db.models import Case, F, OuterRef, Prefetch, Q, When
 from django.db.models.functions import JSONObject
-from django.utils import timezone
+from django.http import Http404
 from django.utils.translation import gettext_lazy as _
 from rest_framework import serializers, status, viewsets
 from rest_framework.decorators import action
@@ -25,18 +24,18 @@ from apps.accounts.models import User
 from apps.landmatrix.models import choices
 from apps.landmatrix.models.abstract import VersionStatus, VersionTransition
 from apps.landmatrix.models.country import Country
-from apps.landmatrix.models.top_investors import DealTopInvestors
 from apps.landmatrix.models.deal import (
-    DealVersion,
     DealHull,
+    DealVersion,
     DealWorkflowInfo,
     Location,
 )
 from apps.landmatrix.models.investor import (
-    InvestorVersion,
     InvestorHull,
+    InvestorVersion,
     InvestorWorkflowInfo,
 )
+from apps.landmatrix.models.top_investors import DealTopInvestors
 from apps.landmatrix.permissions import (
     IsAdministrator,
     IsReporterOrHigher,
@@ -517,9 +516,10 @@ class DealViewSet(HullViewSet):
         return Response({"dealID": d1.id, "versionID": dv1.id})
 
     @extend_schema(
+        operation_id="deals_version_retrieve",
         parameters=[
             OpenApiParameter("version_id", location=OpenApiParameter.PATH, type=int),
-        ]
+        ],
     )
     @action(methods=["get"], url_path=r"(?P<version_id>\d+)", detail=True)
     def retrieve_version(self, request, pk: int, version_id: int):
@@ -694,9 +694,10 @@ class InvestorViewSet(HullViewSet):
         return Response({"investorID": i1.id, "versionID": iv1.id})
 
     @extend_schema(
+        operation_id="investors_version_retrieve",
         parameters=[
             OpenApiParameter("version_id", location=OpenApiParameter.PATH, type=int),
-        ]
+        ],
     )
     @action(methods=["get"], url_path=r"(?P<version_id>\d+)", detail=True)
     def retrieve_version(self, request, pk: int, version_id: int):

@@ -1,28 +1,31 @@
-from django.contrib.gis.geos import GEOSGeometry
 from drf_spectacular.utils import extend_schema_field
+
+from django.contrib.gis.geos import GEOSGeometry
+from django.db.models.query_utils import Q
 from rest_framework import serializers
 
 from apps.accounts.models import User
+from apps.landmatrix.models.abstract import VersionStatus
 from apps.landmatrix.models.country import Country, Region
 from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.deal import (
-    DealVersion,
-    DealHull,
-    DealDataSource,
-    DealWorkflowInfo,
-    Contract,
-    Location,
     Area,
+    Contract,
+    DealDataSource,
+    DealHull,
+    DealVersion,
+    DealWorkflowInfo,
+    Location,
 )
 from apps.landmatrix.models.field_definition import FieldDefinition
 from apps.landmatrix.models.investor import (
-    InvestorVersion,
-    InvestorHull,
-    Involvement,
-    InvestorWorkflowInfo,
     InvestorDataSource,
+    InvestorHull,
+    InvestorVersion,
+    InvestorWorkflowInfo,
+    Involvement,
 )
-from apps.landmatrix.permissions import is_reporter_or_higher
+from apps.landmatrix.permissions import is_editor_or_higher, is_reporter_or_higher
 from apps.serializer import ReadOnlyModelSerializer
 from django_pydantic_jsonfield import PydanticJSONFieldMixin
 
@@ -75,7 +78,7 @@ class RegionSerializer(serializers.ModelSerializer):
         ]
 
 
-class DealVersionVersionsListSerializer(serializers.ModelSerializer):
+class DealVersionVersionsListSerializer(ReadOnlyModelSerializer):
     class Meta:
         model = DealVersion
         fields = [
@@ -115,9 +118,8 @@ class _BaseDataSourceSerializer(serializers.ModelSerializer):
     file = serializers.SerializerMethodField()
 
     @staticmethod
-    def get_file(obj: DealDataSource):
-        if obj.file:
-            return obj.file.name
+    def get_file(obj: DealDataSource) -> str | None:
+        return obj.file.name if obj.file else None
 
 
 class DealDataSourceSerializer(_BaseDataSourceSerializer):
@@ -141,14 +143,16 @@ class DealVersionSerializer(MyModelSerializer):
     locations = LocationSerializer(many=True, read_only=True)
     contracts = ContractSerializer(many=True, read_only=True)
     datasources = DealDataSourceSerializer(many=True, read_only=True)
-    operating_company_id = serializers.PrimaryKeyRelatedField(read_only=True)
+    operating_company_id = serializers.PrimaryKeyRelatedField[InvestorHull](
+        read_only=True
+    )
 
     # creating these because DRF shows these fields as "created_by", instead of "~_id"
-    created_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
-    modified_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
-    sent_to_review_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
-    sent_to_activation_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
-    activated_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
+    created_by_id = serializers.PrimaryKeyRelatedField[User](read_only=True)
+    modified_by_id = serializers.PrimaryKeyRelatedField[User](read_only=True)
+    sent_to_review_by_id = serializers.PrimaryKeyRelatedField[User](read_only=True)
+    sent_to_activation_by_id = serializers.PrimaryKeyRelatedField[User](read_only=True)
+    activated_by_id = serializers.PrimaryKeyRelatedField[User](read_only=True)
 
     class Meta:
         model = DealVersion
@@ -337,24 +341,47 @@ class InvestorWorkflowInfoSerializer(ReadOnlyModelSerializer):
         )
 
 
-class DealSerializer(serializers.ModelSerializer):
-    active_version_id = serializers.PrimaryKeyRelatedField(read_only=True)
-    draft_version_id = serializers.PrimaryKeyRelatedField(read_only=True)
-    created_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
-    first_created_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
+class DealSerializer(serializers.ModelSerializer[DealHull]):
+    active_version_id = serializers.PrimaryKeyRelatedField[DealVersion](read_only=True)
+    draft_version_id = serializers.PrimaryKeyRelatedField[DealVersion](read_only=True)
+    first_created_by_id = serializers.PrimaryKeyRelatedField[User](read_only=True)
 
-    country_id = serializers.PrimaryKeyRelatedField(read_only=True)
-    versions = DealVersionVersionsListSerializer(many=True, read_only=True)
+    country_id = serializers.PrimaryKeyRelatedField[Country](read_only=True)
+    versions = serializers.SerializerMethodField()
     selected_version = DealVersionSerializer(read_only=True)
 
-    workflowinfos = DealWorkflowInfoSerializer(many=True, read_only=True)
+    workflowinfos = serializers.SerializerMethodField()
 
     class Meta:
         model = DealHull
         fields = "__all__"
 
+    @extend_schema_field(DealVersionVersionsListSerializer(many=True, read_only=True))
+    def get_versions(self, obj):
+        user = self.context["request"].user
 
-class InvestorVersionVersionsListSerializer(serializers.ModelSerializer):
+        if not is_reporter_or_higher(user):  # is anonymous
+            q = Q(status=VersionStatus.ACTIVATED, is_public=True)
+        elif not is_editor_or_higher(user):  # is reporter
+            q = Q(status=VersionStatus.ACTIVATED, is_public=True) | Q(created_by=user)
+        else:
+            q = Q()
+
+        qs_versions = obj.versions.filter(q)
+        return DealVersionVersionsListSerializer(qs_versions, many=True).data
+
+    @extend_schema_field(DealWorkflowInfoSerializer(many=True, read_only=True))
+    def get_workflowinfos(self, obj):
+        user = self.context["request"].user
+
+        if not is_reporter_or_higher(user):  # is anonymous
+            return []
+
+        qs_wfis = obj.workflowinfos.all()
+        return DealWorkflowInfoSerializer(qs_wfis, many=True).data
+
+
+class InvestorVersionVersionsListSerializer(ReadOnlyModelSerializer):
     class Meta:
         model = InvestorVersion
         fields = [
@@ -387,14 +414,14 @@ class Investor2DealSerializer(serializers.ModelSerializer):
 
 class InvestorVersionSerializer(serializers.ModelSerializer):
     datasources = InvestorDataSourceSerializer(many=True, read_only=True)
-    country_id = serializers.PrimaryKeyRelatedField(read_only=True)
+    country_id = serializers.PrimaryKeyRelatedField[Country](read_only=True)
 
     # creating these because DRF shows these fields as "created_by", instead of "~_id"
-    created_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
-    modified_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
-    sent_to_review_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
-    sent_to_activation_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
-    activated_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
+    created_by_id = serializers.PrimaryKeyRelatedField[User](read_only=True)
+    modified_by_id = serializers.PrimaryKeyRelatedField[User](read_only=True)
+    sent_to_review_by_id = serializers.PrimaryKeyRelatedField[User](read_only=True)
+    sent_to_activation_by_id = serializers.PrimaryKeyRelatedField[User](read_only=True)
+    activated_by_id = serializers.PrimaryKeyRelatedField[User](read_only=True)
 
     class Meta:
         model = InvestorVersion
@@ -517,12 +544,16 @@ class InvolvementSerializer(ReadOnlyModelSerializer):
         ]
 
 
-class InvestorSerializer(serializers.ModelSerializer):
-    active_version_id = serializers.PrimaryKeyRelatedField(read_only=True)
-    draft_version_id = serializers.PrimaryKeyRelatedField(read_only=True)
-    first_created_by_id = serializers.PrimaryKeyRelatedField(read_only=True)
+class InvestorSerializer(serializers.ModelSerializer[InvestorHull]):
+    active_version_id = serializers.PrimaryKeyRelatedField[InvestorVersion](
+        read_only=True
+    )
+    draft_version_id = serializers.PrimaryKeyRelatedField[InvestorVersion](
+        read_only=True
+    )
+    first_created_by_id = serializers.PrimaryKeyRelatedField[User](read_only=True)
 
-    versions = InvestorVersionVersionsListSerializer(many=True)
+    versions = serializers.SerializerMethodField(read_only=True)
 
     selected_version = InvestorVersionSerializer()
     deals = serializers.SerializerMethodField(read_only=True)
@@ -530,11 +561,37 @@ class InvestorSerializer(serializers.ModelSerializer):
     parents = serializers.SerializerMethodField(read_only=True)
     children = serializers.SerializerMethodField(read_only=True)
 
-    workflowinfos = InvestorWorkflowInfoSerializer(many=True, read_only=True)
+    workflowinfos = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = InvestorHull
         fields = "__all__"
+
+    @extend_schema_field(
+        InvestorVersionVersionsListSerializer(many=True, read_only=True)
+    )
+    def get_versions(self, obj):
+        user: User = self.context["request"].user
+
+        if not is_reporter_or_higher(user):  # is anonymous
+            q = Q(status=VersionStatus.ACTIVATED)
+        elif not is_editor_or_higher(user):  # is reporter
+            q = Q(status=VersionStatus.ACTIVATED) | Q(created_by=user)
+        else:
+            q = Q()
+
+        qs_versions = obj.versions.filter(q)
+        return InvestorVersionVersionsListSerializer(qs_versions, many=True).data
+
+    @extend_schema_field(InvestorWorkflowInfoSerializer(many=True, read_only=True))
+    def get_workflowinfos(self, obj):
+        user = self.context["request"].user
+
+        if not is_reporter_or_higher(user):  # is anonymous
+            return []
+
+        qs_wfis = obj.workflowinfos.all()
+        return InvestorWorkflowInfoSerializer(qs_wfis, many=True).data
 
     @extend_schema_field(InvestorDealSerializer(many=True))
     def get_deals(self, obj: InvestorHull):

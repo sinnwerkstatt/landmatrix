@@ -2,19 +2,52 @@ from drf_spectacular.utils import extend_schema
 
 from django.db.models import QuerySet, Value
 from django.db.models.functions import JSONObject
-from rest_framework.exceptions import NotFound
 from rest_framework.decorators import api_view
+from rest_framework.exceptions import NotFound
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from apps.landmatrix.models.deal import DealVersion, DealHull
+from apps.landmatrix.models.deal import DealHull, DealVersion
 from apps.landmatrix.utils import openapi_filters_parameters, parse_filters
 
 from .utils.geojson import Feature, create_feature_collection
 
+GEOJSON_FEATURE_COLLECTION_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "type": {"type": "string", "enum": ["FeatureCollection"]},
+        "features": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "type": {"type": "string", "enum": ["Feature"]},
+                    "geometry": {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": ["Point", "Polygon", "MultiPolygon"],
+                            },
+                            "coordinates": {"type": "array"},
+                        },
+                        "required": ["type", "coordinates"],
+                    },
+                    "properties": {"type": "object"},
+                },
+                "required": ["type", "geometry", "properties"],
+            },
+        },
+    },
+    "required": ["type", "features"],
+}
 
+
+@extend_schema(
+    parameters=openapi_filters_parameters,
+    responses={200: GEOJSON_FEATURE_COLLECTION_SCHEMA},
+)
 @api_view()
-@extend_schema(parameters=openapi_filters_parameters)
 def gis_export_areas(request: Request) -> Response:
     qs_deal_versions = _get_deal_version_qs(request)
     # ensure that all deal versions have locations with areas
@@ -35,8 +68,11 @@ def gis_export_areas(request: Request) -> Response:
     return Response(create_feature_collection(area_features), headers=headers)
 
 
+@extend_schema(
+    parameters=openapi_filters_parameters,
+    responses={200: GEOJSON_FEATURE_COLLECTION_SCHEMA},
+)
 @api_view()
-@extend_schema(parameters=openapi_filters_parameters)
 def gis_export_locations(request: Request) -> Response:
     qs_deal_versions = _get_deal_version_qs(request)
     # ensure that all deal versions have locations with points

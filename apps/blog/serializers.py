@@ -40,6 +40,7 @@ class BlogPageSerializer(serializers.ModelSerializer):
     categories = BlogCategorySerializer(
         many=True, read_only=True, source="blog_categories"
     )
+    url = serializers.CharField(read_only=True, source="get_url", allow_null=True)
 
     class Meta:
         model = BlogPage

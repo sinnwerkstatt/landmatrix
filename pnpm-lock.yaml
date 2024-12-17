@@ -12,7 +12,7 @@ importers:
         specifier: ^1.44.1
         version: 1.44.1
       '@types/node':
-        specifier: ~20
+        specifier: ~20.14.2
         version: 20.14.2
       concurrently:
         specifier: ^8.2.2

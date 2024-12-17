@@ -13,7 +13,7 @@ export const openedFilterBar = writable(true)
 
 // Deals navigation history (remember the last opened project and deal for faster navigation between tabs and sessions)
 const currentDealsHistory = browser
-  ? window.localStorage.getItem("currentDealHistory") ?? "/accountability/deals/0/"
+  ? (window.localStorage.getItem("currentDealHistory") ?? "/accountability/deals/0/")
   : "/accountability/deals/0/"
 
 export const dealsHistory = writable<string>(currentDealsHistory)

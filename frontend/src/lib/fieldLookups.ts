@@ -8,6 +8,7 @@ import ArrayTextField from "$components/Fields/Display2/ArrayTextField.svelte"
 import BooleanField from "$components/Fields/Display2/BooleanField.svelte"
 import ChoicesField from "$components/Fields/Display2/ChoicesField.svelte"
 import CountryField from "$components/Fields/Display2/CountryField.svelte"
+import CurrencyField from "$components/Fields/Display2/CurrencyField.svelte"
 import DateTimeField from "$components/Fields/Display2/DateTimeField.svelte"
 import DealsLengthField from "$components/Fields/Display2/DealsLengthField.svelte"
 import DecimalField from "$components/Fields/Display2/DecimalField.svelte"
@@ -528,6 +529,15 @@ export const dealFields = derived(
       extras: { placeholder: "Amount" },
       // we use purchase_price_currency and purchase_price_type here too
     },
+    // still we need the individual display components for compare view
+    purchase_price_currency: {
+      displayField: CurrencyField,
+      label: $_("Purchase price currency"),
+    },
+    purchase_price_type: {
+      displayField: TextField,
+      label: $_("Purchase price type"),
+    },
     purchase_price_area: {
       displayField: DecimalField,
       editField: DecimalEditField,
@@ -546,6 +556,15 @@ export const dealFields = derived(
       label: $_("Annual leasing fee"),
       extras: { placeholder: "Amount" },
       // we use annual_leasing_fee_currency and ~_type here too
+    },
+    // still we need the individual display components for compare view
+    annual_leasing_fee_currency: {
+      displayField: CurrencyField,
+      label: $_("Annual leasing fee currency"),
+    },
+    annual_leasing_fee_type: {
+      displayField: TextField,
+      label: $_("Annual leasing fee type"),
     },
     annual_leasing_fee_area: {
       displayField: DecimalField,

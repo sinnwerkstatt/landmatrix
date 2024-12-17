@@ -35,7 +35,7 @@
     }
   }
 
-  $: $filters && redrawSpider(deals, $filters.country_id)
+  $: redrawSpider(deals, $filters.country_id)
 
   onMount(() => redrawSpider(deals, $filters.country_id))
 </script>

@@ -97,7 +97,7 @@
             {#if data.investordiff.has(field)}
               <tr class="🍌">
                 <th>
-                  {$investorFields[field].label}
+                  {$investorFields[field]?.label ?? field}
                 </th>
                 <td>
                   <DisplayField
