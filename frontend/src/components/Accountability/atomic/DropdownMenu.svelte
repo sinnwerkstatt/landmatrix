@@ -6,8 +6,8 @@
   export let visible = false
   export let extraClass = ""
 
-  export let top;
-  export let left;
+  export let top
+  export let left
 
   function handleClickOutside() {
     visible = false
