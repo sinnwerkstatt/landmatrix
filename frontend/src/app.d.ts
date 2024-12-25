@@ -1,6 +1,6 @@
 // See https://kit.svelte.dev/docs/types#app
 
-import type createClient from "openapi-fetch"
+import type { Client } from "openapi-fetch"
 
 import type { Lang } from "$lib/i18n/i18n"
 import type { paths } from "$lib/openAPI"
@@ -14,7 +14,7 @@ declare global {
     }
     interface PageData {
       user: User | null
-      apiClient: ReturnType<typeof createClient<paths>>
+      apiClient: Client<paths>
       countries: Country[]
       regions: Region[]
     }
