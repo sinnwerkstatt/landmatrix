@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { ComponentType } from "svelte"
+  import type { Component } from "svelte"
   import { _ } from "svelte-i18n"
 
   import FacebookIcon from "$components/icons/FacebookIcon.svelte"
@@ -11,22 +11,18 @@
   let menuEntries: {
     title: string
     href: string
-  }[]
-
-  $: menuEntries = [
+  }[] = $derived([
     { title: $_("Data policy"), href: "/data-policy/" },
     { title: $_("Privacy policy"), href: "/privacy-policy/" },
     { title: $_("Impressum / Legal notice"), href: "/impressum-legal-notice/" },
     { title: $_("Disclaimer"), href: "/disclaimer/" },
-  ]
+  ])
 
   let socialEntries: {
     title: string
     href: string
-    icon: ComponentType
-  }[]
-
-  $: socialEntries = [
+    icon: Component
+  }[] = $derived([
     {
       title: "Facebook",
       href: "https://www.facebook.com/LandMatrix",
@@ -47,7 +43,7 @@
       href: "https://www.linkedin.com/company/land-matrix-initiative/",
       icon: LinkedInIcon,
     },
-  ]
+  ])
 </script>
 
 <div class="bg-gray-700 pt-12 text-white">
@@ -83,7 +79,7 @@
             title={entry.title}
             href={entry.href}
           >
-            <svelte:component this={entry.icon} />
+            <entry.icon />
           </a>
         {/each}
       </div>

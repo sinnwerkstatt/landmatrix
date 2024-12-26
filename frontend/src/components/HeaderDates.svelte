@@ -3,7 +3,11 @@
 
   import DisplayField from "$components/Fields/DisplayField.svelte"
 
-  export let obj: DealHull | InvestorHull
+  interface Props {
+    obj: DealHull | InvestorHull
+  }
+
+  let { obj }: Props = $props()
   const wrapperClass = "flex-col flex items-center"
   const valueClass = "text-base md:text-lg"
   const labelClass = "text-xs md:text-sm"

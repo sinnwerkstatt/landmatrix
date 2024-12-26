@@ -1,10 +1,16 @@
-<div
-  class="relative flex h-full w-full items-center justify-center {$$props.class ?? ''}"
->
+<script lang="ts">
+  interface Props {
+    class?: string
+  }
+
+  let { class: className = "" }: Props = $props()
+</script>
+
+<div class="relative flex h-full w-full items-center justify-center {className}">
   <div class="lds-facebook relative -mt-10 block h-20 w-20">
-    <div class="n n1" />
-    <div class="n n2" />
-    <div class="n n3" />
+    <div class="n n1"></div>
+    <div class="n n2"></div>
+    <div class="n n3"></div>
   </div>
 </div>
 

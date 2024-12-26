@@ -10,11 +10,14 @@
 
   import "@splidejs/svelte-splide/css"
 
-  export let perPage: number
-  export let partners: Partner[]
+  interface Props {
+    perPage: number
+    partners: Partner[]
+  }
 
-  let options: Options
-  $: options = {
+  let { perPage, partners }: Props = $props()
+
+  let options: Options = $derived({
     type: "loop",
     interval: 3000,
     perMove: 1,
@@ -44,7 +47,7 @@
     classes: {
       arrow: "splide__arrow no-background",
     },
-  }
+  })
 </script>
 
 <div class="container mx-auto mb-12">
