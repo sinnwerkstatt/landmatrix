@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import type { DealHull, InvestorHull } from "$lib/types/data"
 
@@ -70,19 +70,24 @@
 
   const wrapperClass = ""
   const valueClass = ""
+
+  type fieldType = {
+    fieldName: string
+    obj: DealHull | InvestorHull
+  }
 </script>
 
-<Table {columns} items={createObjects({ page: $page }, objects)}>
-  <svelte:fragment let:fieldName let:obj slot="field">
+<Table {columns} items={createObjects({ page: page }, objects)}>
+  {#snippet field({ fieldName, obj }: fieldType)}
     {@const col = columns.find(c => c.key === fieldName)}
 
-    {#if col.key === "star"}
+    {#if col?.key === "star"}
       {#if obj.openReq}
         <div title={$_("Open request")}>
           <StarIcon />
         </div>
       {/if}
-    {:else if col.key === "timestamp"}
+    {:else if col?.key === "timestamp"}
       <DateTimeField
         value={obj.relevantWFI?.timestamp}
         extras={{ format: "YYYY-MM-DD HH:mm" }}
@@ -94,9 +99,9 @@
         {wrapperClass}
         {valueClass}
       />
-    {:else if col.key === "comment"}
+    {:else if col?.key === "comment"}
       {obj.relevantWFI?.comment}
-    {:else}
+    {:else if col}
       <DisplayField
         fieldname={col.key}
         value={col.submodel ? obj[col.submodel][col.key] : obj[col.key]}
@@ -108,5 +113,5 @@
           : undefined}
       />
     {/if}
-  </svelte:fragment>
+  {/snippet}
 </Table>
