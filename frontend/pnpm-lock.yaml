@@ -213,6 +213,9 @@ importers:
       svelte-eslint-parser:
         specifier: ^0.43.0
         version: 0.43.0(svelte@4.2.19)
+      svelte-floating-ui:
+        specifier: ^1.5.9
+        version: 1.5.9
       svelte-i18n:
         specifier: ^4.0.1
         version: 4.0.1(svelte@4.2.19)
@@ -3528,6 +3531,9 @@ packages:
 
   svelte-floating-ui@1.5.8:
     resolution: {integrity: sha512-dVvJhZ2bT+kQDHlE4Lep8t+sgEc0XD96fXLzAi2DDI2bsaegBbClxXVNMma0C2WsG+n9GJSYx292dTvA8CYRtw==}
+
+  svelte-floating-ui@1.5.9:
+    resolution: {integrity: sha512-X5690AOuPlox+C2C4RvL6JAl/hDHEvwXXrUqWXYLN4L9ClMEZfZIfXYl8IMw6Mf7Hv9z8VjUKGsfN4IwxjDqSA==}
 
   svelte-hmr@0.16.0:
     resolution: {integrity: sha512-Gyc7cOS3VJzLlfj7wKS0ZnzDVdv3Pn2IuVeJPk9m2skfhcu5bq3wtIZyQGggr7/Iim5rH5cncyQft/kRLupcnA==}
@@ -7971,6 +7977,11 @@ snapshots:
       svelte: 4.2.19
 
   svelte-floating-ui@1.5.8:
+    dependencies:
+      '@floating-ui/core': 1.6.8
+      '@floating-ui/dom': 1.6.12
+
+  svelte-floating-ui@1.5.9:
     dependencies:
       '@floating-ui/core': 1.6.8
       '@floating-ui/dom': 1.6.12

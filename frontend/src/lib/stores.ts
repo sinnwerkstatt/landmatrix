@@ -2,7 +2,7 @@ import { error } from "@sveltejs/kit"
 import { env } from "$env/dynamic/public"
 import createClient from "openapi-fetch"
 import { locale } from "svelte-i18n"
-import { derived, readable } from "svelte/store"
+import { derived, readable, writable } from "svelte/store"
 
 import { browser } from "$app/environment"
 
@@ -195,3 +195,22 @@ export const simpleInvestors = readable(
     })
   },
 )
+
+function createContextHelpStore() {
+  let showContextHelp = false
+  if (browser) showContextHelp = localStorage.showContextHelp === "true"
+
+  const { subscribe, set, update } = writable(showContextHelp)
+
+  return {
+    subscribe,
+    set,
+    toggle: () =>
+      update(n => {
+        if (browser) localStorage.showContextHelp = n ? "false" : "true"
+        return !n
+      }),
+  }
+}
+
+export const showContextHelp = createContextHelpStore()

@@ -15,6 +15,7 @@
   import { IntentionOfInvestmentGroup, ProduceGroup } from "$lib/types/data"
   import { isEditorOrAbove } from "$lib/utils/permissions"
 
+  import ContextHelper from "$components/ContextHelper.svelte"
   import { showFilterBar } from "$components/Data/stores"
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
   import CheckboxSwitch from "$components/LowLevel/CheckboxSwitch.svelte"
@@ -93,7 +94,10 @@
     dir="rtl"
   >
     <div class="w-full self-start" dir="ltr">
-      <h2 class="heading5 my-2 px-2">{$_("Filter")}</h2>
+      <h2 class="heading5 my-2 flex items-center gap-2 px-2">
+        {$_("Filter")}
+        <ContextHelper identifier="filterbar_filter" class="mb-2 size-4" />
+      </h2>
       <!--      <p>{$dealsNG.length}</p>-->
       <div class="my-2 px-2">
         <CheckboxSwitch
@@ -130,6 +134,9 @@
             {reg.name}
           </label>
         {/each}
+        <div class="text-right">
+          <ContextHelper identifier="filterbar_region" class="mt-2 size-5" />
+        </div>
       </FilterCollapse>
 
       <FilterCollapse
@@ -148,6 +155,10 @@
           on:clear={() => ($filters.country_id = undefined)}
           value={$page.data.countries.find(c => c.id === $filters.country_id)}
         />
+
+        <div class="text-right">
+          <ContextHelper identifier="filterbar_country" class="mt-2 size-5" />
+        </div>
       </FilterCollapse>
 
       <FilterCollapse
@@ -177,6 +188,10 @@
           />
           <span>ha</span>
         </div>
+
+        <div class="text-right">
+          <ContextHelper identifier="filterbar_dealsize" class="mt-2 size-5" />
+        </div>
       </FilterCollapse>
 
       <FilterBarNegotiationStatusToggle />
@@ -197,6 +212,10 @@
             {label}
           </label>
         {/each}
+
+        <div class="text-right">
+          <ContextHelper identifier="filterbar_nature_of_deal" class="mt-2 size-5" />
+        </div>
       </FilterCollapse>
 
       <FilterCollapse
@@ -227,6 +246,10 @@
           on:input={e => ($filters.investor_country_id = e.detail?.id)}
           value={$page.data.countries.find(c => c.id === $filters.investor_country_id)}
         />
+
+        <div class="text-right">
+          <ContextHelper identifier="filterbar_investor" class="mt-2 size-5" />
+        </div>
       </FilterCollapse>
 
       <FilterCollapse
@@ -266,6 +289,10 @@
 
           {$_("Include unknown years")}
         </label>
+
+        <div class="text-right">
+          <ContextHelper identifier="filterbar_initiation_year" class="mt-2 size-5" />
+        </div>
       </FilterCollapse>
 
       <FilterCollapse
@@ -293,6 +320,13 @@
             {label}
           </label>
         {/each}
+
+        <div class="text-right">
+          <ContextHelper
+            identifier="filterbar_implementation_status"
+            class="mt-2 size-5"
+          />
+        </div>
       </FilterCollapse>
 
       <FilterCollapse
@@ -332,6 +366,13 @@
             {/each}
           </div>
         {/each}
+
+        <div class="text-right">
+          <ContextHelper
+            identifier="filterbar_intention_of_investment"
+            class="mt-2 size-5"
+          />
+        </div>
       </FilterCollapse>
 
       <FilterCollapse
@@ -346,6 +387,10 @@
           multiple
           showChevron
         />
+
+        <div class="text-right">
+          <ContextHelper identifier="filterbar_produce" class="mt-2 size-5" />
+        </div>
       </FilterCollapse>
 
       <FilterCollapse
@@ -373,6 +418,10 @@
           />
           {$_("Domestic")}
         </label>
+
+        <div class="text-right">
+          <ContextHelper identifier="filterbar_scope" class="mt-2 size-5" />
+        </div>
       </FilterCollapse>
 
       <FilterCollapse
@@ -410,6 +459,10 @@
           />
           {$_("Only")}
         </label>
+
+        <div class="text-right">
+          <ContextHelper identifier="filterbar_forest_concession" class="mt-2 size-5" />
+        </div>
       </FilterCollapse>
     </div>
     <div class="mt-auto w-full self-end" dir="ltr">

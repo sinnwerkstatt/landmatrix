@@ -3,9 +3,11 @@
 
   import { page } from "$app/stores"
 
+  import { showContextHelp } from "$lib/stores"
   import { UserRole } from "$lib/types/data"
   import { getCsrfToken } from "$lib/utils"
 
+  import CheckboxSwitch from "$components/LowLevel/CheckboxSwitch.svelte"
   import NavDropDown from "$components/Navbar/NavDropDown.svelte"
 
   let user: typeof $page.data.user
@@ -67,6 +69,18 @@
               {$_("Data Statistics")}
             </a>
           </li>
+          {#if $page.data.user?.is_contexthelp_editor}
+            <li class="whitespace-nowrap">
+              <CheckboxSwitch
+                class="nav-link-secondary"
+                id="default"
+                checked={$showContextHelp}
+                on:change={() => showContextHelp.toggle()}
+              >
+                {$_("Context help")}
+              </CheckboxSwitch>
+            </li>
+          {/if}
         </ul>
         <ul>
           <li>

@@ -6,6 +6,7 @@ from rest_framework import serializers
 
 from apps.accounts.models import User
 from apps.landmatrix.models.abstract import VersionStatus
+from apps.landmatrix.models.context_help import ContextHelp
 from apps.landmatrix.models.country import Country, Region
 from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.deal import (
@@ -639,3 +640,11 @@ class InvestorSerializer(serializers.ModelSerializer[InvestorHull]):
             ]
 
         return snapshot
+
+
+class ContextHelpSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(required=False)
+
+    class Meta:
+        model = ContextHelp
+        fields = "__all__"

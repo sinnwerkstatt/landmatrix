@@ -5,6 +5,8 @@
   import { fieldChoices } from "$lib/stores"
   import type { NegotiationStatus, NegotiationStatusGroup } from "$lib/types/data"
 
+  import ContextHelper from "$components/ContextHelper.svelte"
+
   import FilterCollapse from "./FilterCollapse.svelte"
 
   $: negotiationStatus = $fieldChoices.deal.negotiation_status
@@ -82,4 +84,8 @@
       </label>
     {/each}
   {/each}
+
+  <div class="text-right">
+    <ContextHelper identifier="filterbar_negotiation_status" class="mt-2 size-5" />
+  </div>
 </FilterCollapse>

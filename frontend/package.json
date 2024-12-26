@@ -86,6 +86,7 @@
     "svelte-chartjs": "^3.1.5",
     "svelte-check": "^4.1.1",
     "svelte-eslint-parser": "^0.43.0",
+    "svelte-floating-ui": "^1.5.9",
     "svelte-i18n": "^4.0.1",
     "svelte-select": "^5.8.3",
     "svelte-tiny-virtual-list": "^2.1.2",
