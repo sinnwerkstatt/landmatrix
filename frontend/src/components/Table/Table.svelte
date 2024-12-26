@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<script module lang="ts">
   export interface Column {
     key: string
     label: string
@@ -8,7 +8,7 @@
 </script>
 
 <script lang="ts" generics="T extends object">
-  import { onMount } from "svelte"
+  import { onMount, type Snippet } from "svelte"
   import VirtualList from "svelte-tiny-virtual-list"
   import { twMerge } from "tailwind-merge"
 
@@ -16,48 +16,61 @@
 
   import ChevronDownIcon from "$components/icons/ChevronDownIcon.svelte"
 
-  /* eslint-disable no-undef */
-  export let items: T[] = []
-  /* eslint-enable no-undef */
-  export let columns: Column[]
-  export let sortBy: string | null = null
+  interface Props {
+    /* eslint-disable no-undef */
+    items?: T[]
+    /* eslint-enable no-undef */
+    columns: Column[]
+    sortBy?: string | null
+    rowHeightInPx?: number
+    headerHeightInPx?: number
+    colWidthInPx?: number
+    rowClasses?: string
+    field?: Snippet<{ fieldName: string; obj: T }[]>
+  }
 
-  export let rowHeightInPx = 90
-  export let headerHeightInPx = 90
-  export let colWidthInPx = 75
+  let {
+    items = [],
+    columns,
+    sortBy = $bindable(),
+    rowHeightInPx = 90,
+    headerHeightInPx = 90,
+    colWidthInPx = 75,
+    rowClasses = "",
+    field,
+  }: Props = $props()
 
-  export let rowClasses = ""
+  let labels: string[] = $derived(columns.map(c => c.label))
+  let spans: number[] = $derived(columns.map(c => c.colSpan))
 
-  let labels: string[] = []
-  let spans: number[] = []
-
-  $: labels = columns.map(c => c.label)
-  $: spans = columns.map(c => c.colSpan)
-
-  $: sortCol = columns.find(
-    c => c.key === (sortBy?.startsWith("-") ? sortBy.substring(1) : sortBy),
+  let sortCol = $derived(
+    columns.find(
+      c => c.key === (sortBy?.startsWith("-") ? sortBy.substring(1) : sortBy),
+    ),
   )
-  $: sortedItems = sortCol
-    ? [...items].sort(
-        sortFn(
-          (sortBy?.startsWith("-") ? "-" : "") +
-            (sortCol.submodel ? `${sortCol.submodel}.${sortCol.key}` : sortCol.key),
-        ),
-      )
-    : items
-  $: nItems = sortedItems?.length ?? 0
+  let sortedItems = $derived(
+    sortCol
+      ? [...items].sort(
+          sortFn(
+            (sortBy?.startsWith("-") ? "-" : "") +
+              (sortCol.submodel ? `${sortCol.submodel}.${sortCol.key}` : sortCol.key),
+          ),
+        )
+      : items,
+  )
+  let nItems = $derived(sortedItems?.length ?? 0)
 
-  $: nCols = spans.reduce((sum, value) => sum + value)
+  let nCols = $derived(spans.reduce((sum, value) => sum + value))
 
   const onTableHeadClick = (key: string) => {
     sortBy = sortBy === key ? `-${key}` : key
   }
 
-  let virtualList: VirtualList
-  let width
-  let height
+  let virtualList: VirtualList | undefined = $state()
+  let width: number | undefined = $state()
+  let height: number | undefined = $state()
 
-  onMount(() => virtualList.recomputeSizes(0))
+  onMount(() => virtualList?.recomputeSizes(0))
 </script>
 
 <div class="h-full w-full border border-gray-700">
@@ -92,7 +105,7 @@
             <button
               class="m-0 cursor-pointer p-1 text-left"
               style="grid-column: span {spans[colIndex]} / span {spans[colIndex]}"
-              on:click={() => onTableHeadClick(col.key)}
+              onclick={() => onTableHeadClick(col.key)}
               title={labels[colIndex]}
             >
               {labels[colIndex]}
@@ -122,13 +135,16 @@
               class="overflow-hidden p-1 hover:overflow-y-auto"
               style="grid-column: span {spans[colIndex]} / span {spans[colIndex]}"
             >
-              <slot name="field" fieldName={col.key} obj={sortedItems[index - 1]}>
-                {#if col.submodel}
-                  {sortedItems[index - 1][col.submodel][col.key]}
-                {:else}
-                  {sortedItems[index - 1][col.key]}
-                {/if}
-              </slot>
+              {#if field}
+                {@render field({
+                  fieldName: col.key,
+                  obj: sortedItems[index - 1],
+                })}
+              {:else if col.submodel}
+                {sortedItems[index - 1][col.submodel][col.key]}
+              {:else}
+                {sortedItems[index - 1][col.key]}
+              {/if}
             </div>
           {/each}
         {/if}

@@ -3,7 +3,11 @@
 
   import type { BlogPage } from "$lib/types/wagtail"
 
-  export let articles: BlogPage[] = []
+  interface Props {
+    articles?: BlogPage[]
+  }
+
+  let { articles = [] }: Props = $props()
 </script>
 
 {#each articles as article}

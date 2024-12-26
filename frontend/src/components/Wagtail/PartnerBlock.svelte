@@ -5,7 +5,11 @@
 
   import PartnerSlider from "$components/PartnerSlider.svelte"
 
-  export let value: Partner[]
+  interface Props {
+    value: Partner[]
+  }
+
+  let { value }: Props = $props()
 
   const partners = value.filter(p => p.role === "PARTNER")
   const donors = value.filter(p => p.role === "DONOR")

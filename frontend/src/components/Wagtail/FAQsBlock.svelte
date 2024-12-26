@@ -9,9 +9,13 @@
     answer: string
   }
 
-  export let value: { faqs: FAQ[] }
+  interface Props {
+    value: { faqs: FAQ[] }
+  }
 
-  let locationHash = browser ? location.hash : undefined
+  let { value }: Props = $props()
+
+  let locationHash = $state(browser ? location.hash : undefined)
 
   const updateHash = (slug: string) => {
     if (!browser) return
@@ -26,7 +30,7 @@
       <button
         class="btn-outline w-full whitespace-normal py-4 text-left tracking-wide"
         id="faq-{index}-question"
-        on:click={() => updateHash(`#${faq.slug}`)}
+        onclick={() => updateHash(`#${faq.slug}`)}
       >
         {faq.question}
       </button>

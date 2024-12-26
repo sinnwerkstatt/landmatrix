@@ -3,10 +3,14 @@
 
   import type { BlogPage } from "$lib/types/wagtail"
 
-  export let articles: BlogPage[] = []
-  let limit = 3
+  interface Props {
+    articles?: BlogPage[]
+  }
 
-  $: limitedArticles = limit ? articles.slice(0, limit) : articles
+  let { articles = [] }: Props = $props()
+  let limit = $state(3)
+
+  let limitedArticles = $derived(limit ? articles.slice(0, limit) : articles)
 </script>
 
 {#each limitedArticles as article}
@@ -32,7 +36,7 @@
 {/each}
 
 {#if limit && limit < articles.length}
-  <button type="button" class="btn btn-primary" on:click={() => (limit = 0)}>
+  <button type="button" class="btn btn-primary" onclick={() => (limit = 0)}>
     {$_("Show all")}
     {articles.length}
   </button>

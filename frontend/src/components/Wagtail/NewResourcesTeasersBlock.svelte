@@ -6,12 +6,16 @@
 
   import NewArticleList from "$components/Wagtail/NewArticleList.svelte"
 
-  export let value: {
-    title: string
-    subtitle: string
-    image: string
-    articles: BlogPage[]
+export type WagtailStreamfield = WagtailStreamfieldBlock[]  interface Props {
+    value: {
+      title: string
+      subtitle: string
+      image: string
+      articles: BlogPage[]
+    }
   }
+
+  let { value }: Props = $props()
 </script>
 
 <div data-block="new_resources_teasers" class="container mx-auto my-20 px-10 py-6 pb-0">
@@ -38,7 +42,7 @@
         <a
           class="btn-link btn-secondary px-0"
           href={value.articles[0].url}
-          on:click={scrollToTop}
+          onclick={scrollToTop}
         >
           {$_("Read more")} >>
         </a>

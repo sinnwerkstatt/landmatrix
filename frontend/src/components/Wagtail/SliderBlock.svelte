@@ -1,7 +1,7 @@
 <script lang="ts">
   import ImageBlock from "$components/Wagtail/ImageBlock.svelte"
 
-  export let value
+  let { value } = $props()
 </script>
 
 <div data-block="slider">

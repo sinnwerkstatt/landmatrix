@@ -3,18 +3,22 @@
   import MapTeaser from "$components/Data/MapTeaser.svelte"
   import TableTeaser from "$components/Data/TableTeaser.svelte"
 
-  export let value: {
-    title: string
-    subtitle: string
-    cards: {
+  interface Props {
+    value: {
       title: string
-      teaser: string
-      link: {
-        text: string
-        href: string
-      }
-    }[]
+      subtitle: string
+      cards: {
+        title: string
+        teaser: string
+        link: {
+          text: string
+          href: string
+        }
+      }[]
+    }
   }
+
+  let { value }: Props = $props()
 </script>
 
 <div class="container mx-auto my-20 px-10 py-6">

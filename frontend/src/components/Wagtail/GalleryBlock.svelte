@@ -3,13 +3,17 @@
 
   import ImageBlock from "$components/Wagtail/ImageBlock.svelte"
 
-  export let value: {
-    images: BlockImage[]
-    columns: number
+  interface Props {
+    value: {
+      images: BlockImage[]
+      columns: number
+    }
   }
 
+  let { value }: Props = $props()
+
   const cols_map = { 3: "grid-cols-3", 5: "grid-cols-5" }
-  $: galleryColumns = cols_map[value.columns] ?? "grid-cols-1"
+  let galleryColumns = $derived(cols_map[value.columns] ?? "grid-cols-1")
 </script>
 
 <div data-block="gallery" class="grid gap-4 {galleryColumns}">
