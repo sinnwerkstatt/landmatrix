@@ -6,7 +6,7 @@
 
   import NewArticleList from "$components/Wagtail/NewArticleList.svelte"
 
-export type WagtailStreamfield = WagtailStreamfieldBlock[]  interface Props {
+  interface Props {
     value: {
       title: string
       subtitle: string
