@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
   export interface Section {
     id: string
     name: string
@@ -11,7 +11,7 @@
 
   import { afterNavigate } from "$app/navigation"
 
-  export let data
+  let { data, children } = $props()
 
   let lastFocusedElement: HTMLAnchorElement | null = null
 
@@ -23,8 +23,7 @@
     if (lastFocusedElement) lastFocusedElement.focus()
   })
 
-  let sections: Section[]
-  $: sections = [
+  let sections: Section[] = $derived([
     {
       id: "quality",
       name: $_("Data quality"),
@@ -57,7 +56,7 @@
         },
       ],
     },
-  ]
+  ])
 </script>
 
 <svelte:head>
@@ -92,7 +91,7 @@
                     dark:text-white dark:hover:bg-gray-900
                   "
                   class:is-active={isActive}
-                  on:focus={handleFocus}
+                  onfocus={handleFocus}
                   href={url.pathname}
                 >
                   {tab.name}
@@ -108,7 +107,7 @@
 
 <div class="container mx-auto my-4 lg:my-8">
   <div class="my-4 lg:my-8">
-    <slot />
+    {@render children?.()}
   </div>
 </div>
 

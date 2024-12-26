@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
   export const FILTER_MODES = ["custom", "default"] as const
   export type FilterMode = (typeof FILTER_MODES)[number]
 </script>
@@ -6,9 +6,10 @@
 <script lang="ts">
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
+  import type { EventHandler } from "svelte/elements"
   import { slide } from "svelte/transition"
 
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import { filters } from "$lib/filters"
   import { createLabels, fieldChoices } from "$lib/stores"
@@ -28,16 +29,25 @@
     $filters = $filters.empty()
   })
 
-  export let open = false
-  export let disableSubmit = false
-  export let disableAdvanced = false
+  interface Props {
+    open?: boolean
+    disableSubmit?: boolean
+    disableAdvanced?: boolean
+    onsubmit?: EventHandler<SubmitEvent, HTMLFormElement>
+  }
 
-  let filterModeGroup: FilterMode = "custom"
-  let filterModeLabel: { [key in FilterMode]: string }
-  $: filterModeLabel = {
+  let {
+    open = $bindable(false),
+    disableSubmit = false,
+    disableAdvanced = false,
+    onsubmit,
+  }: Props = $props()
+
+  let filterModeGroup: FilterMode = $state("custom")
+  let filterModeLabel: { [key in FilterMode]: string } = $derived({
     default: $_("Default"),
     custom: $_("Custom"),
-  }
+  })
 </script>
 
 <Modal bind:open dismissible>
@@ -47,10 +57,10 @@
 
   <hr />
 
-  <form class="mt-6 w-full text-lg" on:submit|preventDefault>
+  <form class="mt-6 w-full text-lg" {onsubmit}>
     <div class="min-w-[33vw] self-start" dir="ltr">
       <RegionSelect
-        regions={$page.data.regions}
+        regions={page.data.regions}
         on:input={e => {
           if (e.detail) {
             $filters.region_id = e.detail.id
@@ -58,10 +68,10 @@
           }
         }}
         on:clear={() => ($filters.region_id = undefined)}
-        value={$page.data.regions.find(c => c.id === $filters.region_id)}
+        value={page.data.regions.find(c => c.id === $filters.region_id)}
       />
       <CountrySelect
-        countries={$page.data.countries}
+        countries={page.data.countries}
         on:input={e => {
           if (e.detail) {
             $filters.country_id = e.detail.id
@@ -69,7 +79,7 @@
           }
         }}
         on:clear={() => ($filters.country_id = undefined)}
-        value={$page.data.countries.find(c => c.id === $filters.country_id)}
+        value={page.data.countries.find(c => c.id === $filters.country_id)}
       />
 
       {#if !disableAdvanced}
@@ -90,7 +100,7 @@
                   name="filter-mode"
                   type="radio"
                   value={filterMode}
-                  on:click={() => handleFilterModeChange(filterMode)}
+                  onclick={() => handleFilterModeChange(filterMode)}
                 />
                 <label for={id} class="block">
                   {filterModeLabel[filterMode]}
@@ -201,12 +211,12 @@
           </div>
         {/if}
       {:else}
-        <div class="h-20" />
+        <div class="h-20"></div>
       {/if}
     </div>
 
     <div class="mt-14 flex justify-end gap-4">
-      <button class="btn-outline" on:click={() => (open = false)} type="button">
+      <button class="btn-outline" onclick={() => (open = false)} type="button">
         {$_("Cancel")}
       </button>
       <button class="btn btn-violet" type="submit" disabled={disableSubmit}>

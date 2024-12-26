@@ -3,7 +3,7 @@
   import { SvelteToast } from "@zerodevx/svelte-toast"
   import { env } from "$env/dynamic/public"
 
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import LightboxImage from "$components/LightboxImage.svelte"
   import Messages from "$components/Messages.svelte"
@@ -26,7 +26,7 @@
   }
 </script>
 
-{#if $page.url.pathname.split("/")[1] != "accountability"}
+{#if page.url.pathname.split("/")[1] !== "accountability"}
   <div id="main-content" class="grid h-screen">
     <div>
       <Messages />
