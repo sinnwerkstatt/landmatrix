@@ -1,4 +1,12 @@
-<div class="loadingspinner {$$props.class ?? ''}" />
+<script lang="ts">
+  interface Props {
+    class?: string
+  }
+
+  let { class: className = "" }: Props = $props()
+</script>
+
+<div class="loadingspinner {className}"></div>
 
 <style>
   .loadingspinner {
