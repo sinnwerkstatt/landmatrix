@@ -12,10 +12,10 @@
   <h1 class="heading2">Style guide</h1>
 
   <ColorStyles />
-  <div class="p-28" />
+  <div class="p-28"></div>
 
   <TypographyStyles />
-  <div class="p-28" />
+  <div class="p-28"></div>
 
   <ButtonStyles />
 </div>

@@ -1,1 +1,1 @@
-<div id="div-dummy" />
+<div id="div-dummy"></div>

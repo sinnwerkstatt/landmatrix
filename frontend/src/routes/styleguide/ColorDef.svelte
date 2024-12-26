@@ -1,13 +1,17 @@
 <script lang="ts">
   import { allColors } from "./colors"
 
-  export let tileColor = ""
-  export let title = ""
-  export let defs = ""
+  interface Props {
+    tileColor: string
+    title: string
+    defs: keyof typeof allColors
+  }
+
+  let { tileColor, title, defs }: Props = $props()
 </script>
 
 <div>
-  <div class="h-24 w-24 rounded-lg lg:h-40 lg:w-40 {tileColor}" />
+  <div class="h-24 w-24 rounded-lg lg:h-40 lg:w-40 {tileColor}"></div>
   <div class="mt-3 text-xs md:text-sm lg:text-base">
     <b>{title}</b>
     <ul class="">
