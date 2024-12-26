@@ -18,15 +18,18 @@
     createTodoImprovementView,
   } from "./workflowViews"
 
-  export let objects: Array<DealHull | InvestorHull>
-  export let model: "deal" | "investor" = "deal"
-
   type TabID =
     | "todo_feedback"
     | "todo_improvement"
     | "requested_feedback"
     | "requested_improvement"
-  export let tabId: TabID
+  interface Props {
+    objects: Array<DealHull | InvestorHull>
+    model?: "deal" | "investor"
+    tabId: TabID
+  }
+
+  let { objects, model = "deal", tabId }: Props = $props()
 
   const createObjectsMap: {
     [key in TabID]: CreateWorkflowInfoViewFn
@@ -37,10 +40,9 @@
     todo_improvement: createTodoImprovementView,
   }
 
-  $: createObjects = createObjectsMap[tabId]
+  let createObjects = $derived(createObjectsMap[tabId])
 
-  let columns: Column[]
-  $: columns = [
+  let columns: Column[] = $derived([
     { key: "star", label: "", colSpan: 1 },
     {
       key: "timestamp",
@@ -64,7 +66,7 @@
     },
     { key: "to_user_id", label: $_("To user"), colSpan: 2, submodel: "relevantWFI" },
     { key: "comment", label: $_("Feedback"), colSpan: 5, submodel: "relevantWFI" },
-  ]
+  ])
 
   const wrapperClass = ""
   const valueClass = ""

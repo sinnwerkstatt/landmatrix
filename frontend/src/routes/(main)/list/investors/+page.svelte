@@ -11,15 +11,16 @@
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import Table, { type Column } from "$components/Table/Table.svelte"
 
-  let columns: Column[]
-  $: columns = [
-    { key: "modified_at", colSpan: 2, submodel: "selected_version" },
-    { key: "id", colSpan: 1 },
-    { key: "name", colSpan: 5, submodel: "selected_version" },
-    { key: "country_id", colSpan: 5, submodel: "selected_version" },
-    { key: "classification", colSpan: 3, submodel: "selected_version" },
-    { key: "deals", colSpan: 1 },
-  ].map(c => ({ ...c, label: $investorFields[c.key].label }))
+  let columns: Column[] = $derived(
+    [
+      { key: "modified_at", colSpan: 2, submodel: "selected_version" },
+      { key: "id", colSpan: 1 },
+      { key: "name", colSpan: 5, submodel: "selected_version" },
+      { key: "country_id", colSpan: 5, submodel: "selected_version" },
+      { key: "classification", colSpan: 3, submodel: "selected_version" },
+      { key: "deals", colSpan: 1 },
+    ].map(c => ({ ...c, label: $investorFields[c.key].label })),
+  )
 
   onMount(() => {
     showContextBar.set(false)
@@ -39,7 +40,7 @@
       class="h-full min-h-[3px] w-0 flex-none {$showFilterBar
         ? 'md:w-[clamp(220px,20%,300px)]'
         : ''}"
-    />
+    ></div>
 
     <div class="flex h-full w-1 grow flex-col px-6 pb-6">
       <div class="flex h-20 items-center text-lg">
