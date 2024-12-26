@@ -3,13 +3,16 @@
 
   type Model = "deal" | "investor"
 
-  export let model: Model
+  interface Props {
+    model: Model
+  }
 
-  let models: { value: Model; label: string }[]
-  $: models = [
+  let { model = $bindable() }: Props = $props()
+
+  let models: { value: Model; label: string }[] = $derived([
     { value: "deal", label: $_("Deals") },
     { value: "investor", label: $_("Investors") },
-  ]
+  ])
 </script>
 
 <div class="flex h-fit gap-4">
@@ -22,7 +25,7 @@
       class:deal={value === "deal"}
       class:investor={value === "investor"}
       class:is-active={value === model}
-      on:click={() => (model = value)}
+      onclick={() => (model = value)}
       type="button"
     >
       {label}
