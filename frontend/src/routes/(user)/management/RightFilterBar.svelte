@@ -1,7 +1,7 @@
 <script lang="ts">
-  import cn from "classnames"
   import { _ } from "svelte-i18n"
   import Select from "svelte-select"
+  import { twMerge } from "tailwind-merge"
 
   import { page } from "$app/stores"
 
@@ -43,7 +43,7 @@
 </script>
 
 <div
-  class={cn(
+  class={twMerge(
     "h-full w-96 border-black bg-gray-50 p-3 drop-shadow-[-3px_-3px_3px_rgba(0,0,0,0.3)] transition-all dark:bg-gray-700",
     showFilters ? "visible " : "hidden",
   )}
