@@ -2,19 +2,21 @@
   import { createLabels, currencies, fieldChoices } from "$lib/stores"
   import type { Currency, HaArea } from "$lib/types/data"
 
-  export let value: number | null
-
   interface Extras {
     unit?: string
     currency?: number | null
     perType?: HaArea | null
   }
-  export let extras: Extras = {}
+  interface Props {
+    value: number | null
+    extras?: Extras
+  }
 
-  let xcur: Currency | undefined
-  $: xcur = extras.currency
-    ? $currencies.find(c => c.id === extras.currency)
-    : undefined
+  let { value, extras = {} }: Props = $props()
+
+  let xcur: Currency | undefined = $derived(
+    $currencies.find(c => c.id === extras.currency),
+  )
 </script>
 
 <div class="flex items-center gap-2">

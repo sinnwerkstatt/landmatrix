@@ -6,13 +6,16 @@
 
   import { dateCurrentFormat } from "$components/Fields/Display2/jsonHelpers"
 
-  export let value: JSONCurrentDateAreaChoicesFieldType[] = []
-
   interface Extras {
     choices: ValueLabelEntry[]
   }
 
-  export let extras: Extras = { choices: [] }
+  interface Props {
+    value?: JSONCurrentDateAreaChoicesFieldType[]
+    extras?: Extras
+  }
+
+  let { value = [], extras = { choices: [] } }: Props = $props()
 
   const getLabel = (value: string) =>
     extras.choices.find(c => value === c.value)?.label ?? value

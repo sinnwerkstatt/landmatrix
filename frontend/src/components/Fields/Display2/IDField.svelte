@@ -1,16 +1,21 @@
 <script lang="ts">
-  export let value: number
-
   interface Extras {
     targetBlank?: boolean
     objectVersion?: number
     model?: "deal" | "investor"
   }
 
-  export let extras: Extras = {}
+  interface Props {
+    value: number
+    extras?: Extras
+  }
 
-  $: model = extras.model ?? "deal"
-  $: href = `/${model}/${value}/${extras.objectVersion ? extras.objectVersion + "/" : ""}`
+  let { value, extras = {} }: Props = $props()
+
+  let model = $derived(extras.model ?? "deal")
+  let href = $derived(
+    `/${model}/${value}/${extras.objectVersion ? extras.objectVersion + "/" : ""}`,
+  )
 </script>
 
 <a

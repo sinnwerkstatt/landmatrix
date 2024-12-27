@@ -4,14 +4,17 @@
   import EyeSlashIcon from "$components/icons/EyeSlashIcon.svelte"
   import FilePdfIcon from "$components/icons/FilePdfIcon.svelte"
 
-  export let value: string
+  interface Props {
+    value: string
+    extras?: { notPublic: boolean }
+  }
 
-  export let extras = { notPublic: false }
+  let { value, extras = { notPublic: false } }: Props = $props()
 
   const CUTOFF = 30
 
-  $: fileName = value.substring(value.lastIndexOf("/") + 1)
-  $: fileExt = fileName.lastIndexOf(".")
+  let fileName = $derived(value.substring(value.lastIndexOf("/") + 1))
+  let fileExt = $derived(fileName.lastIndexOf("."))
 </script>
 
 <a

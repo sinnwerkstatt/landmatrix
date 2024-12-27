@@ -1,19 +1,22 @@
 <script lang="ts">
   import type { ValueLabelEntry } from "$lib/stores"
 
-  export let value: string | string[]
-
   interface Extras {
     multipleChoices?: boolean
     choices: ValueLabelEntry[]
   }
 
-  export let extras: Extras = { choices: [] }
+  interface Props {
+    value: string | string[]
+    extras?: Extras
+  }
 
-  $: multipleChoices = extras.multipleChoices ?? false
-  $: choices = extras.choices ?? []
+  let { value, extras = { choices: [] } }: Props = $props()
 
-  $: isMulti = (value: string | string[]): value is string[] => multipleChoices
+  let multipleChoices = $derived(extras.multipleChoices ?? false)
+  let choices = $derived(extras.choices ?? [])
+
+  let isMulti = (_v: string | string[]): _v is string[] => multipleChoices
 </script>
 
 {#if !value}

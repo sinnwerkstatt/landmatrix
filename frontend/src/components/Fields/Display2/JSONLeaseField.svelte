@@ -8,7 +8,11 @@
   import HouseholdIcon from "$components/icons/HouseholdIcon.svelte"
   import TractorIcon from "$components/icons/TractorIcon.svelte"
 
-  export let value: JSONLeaseFieldType[]
+  interface Props {
+    value: JSONLeaseFieldType[]
+  }
+
+  let { value }: Props = $props()
 </script>
 
 <ul>

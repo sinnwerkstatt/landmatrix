@@ -1,5 +1,9 @@
 <script lang="ts">
-  export let value: number[] = []
+  interface Props {
+    value?: number[]
+  }
+
+  let { value = [] }: Props = $props()
 </script>
 
 {#if value.length}

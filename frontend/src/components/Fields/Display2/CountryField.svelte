@@ -1,13 +1,17 @@
 <script lang="ts">
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import LoadingSpinner from "$components/icons/LoadingSpinner.svelte"
 
-  export let value: number | null
+  interface Props {
+    value: number | null
+  }
+
+  let { value }: Props = $props()
 </script>
 
-{#if $page.data.countries.length}
-  {$page.data.countries.find(c => c.id === value)?.name ?? ""}
+{#if page.data.countries.length}
+  {page.data.countries.find(c => c.id === value)?.name ?? ""}
 {:else}
   <LoadingSpinner />
 {/if}

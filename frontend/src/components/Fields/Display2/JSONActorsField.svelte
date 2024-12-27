@@ -2,7 +2,11 @@
   import { fieldChoices } from "$lib/stores"
   import type { InvolvedActor } from "$lib/types/data"
 
-  export let value: InvolvedActor[]
+  interface Props {
+    value: InvolvedActor[]
+  }
+
+  let { value }: Props = $props()
 </script>
 
 <ul class="my-3">

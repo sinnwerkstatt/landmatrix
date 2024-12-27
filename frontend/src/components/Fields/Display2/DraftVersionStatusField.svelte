@@ -2,7 +2,11 @@
   import { stateMap } from "$lib/newUtils"
   import type { Version2Status } from "$lib/types/data"
 
-  export let value: Version2Status
+  interface Props {
+    value: Version2Status
+  }
+
+  let { value }: Props = $props()
 </script>
 
 {$stateMap[value].title}

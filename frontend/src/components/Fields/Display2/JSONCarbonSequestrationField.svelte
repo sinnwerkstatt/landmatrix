@@ -7,7 +7,11 @@
   import { dateCurrentFormatStartEnd } from "$components/Fields/Display2/jsonHelpers"
   import CircleNotchIcon from "$components/icons/CircleNotchIcon.svelte"
 
-  export let value: components["schemas"]["CarbonSequestrationItem"][] = []
+  interface Props {
+    value?: components["schemas"]["CarbonSequestrationItem"][]
+  }
+
+  let { value = [] }: Props = $props()
 
   const getLabel = (value: string) =>
     $fieldChoices.deal.carbon_sequestration.find(c => value === c.value)?.label ?? value

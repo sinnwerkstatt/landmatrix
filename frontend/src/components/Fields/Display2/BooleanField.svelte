@@ -1,7 +1,11 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  export let value: boolean | null
+  interface Props {
+    value: boolean | null
+  }
+
+  let { value }: Props = $props()
 </script>
 
 {#if value === true}

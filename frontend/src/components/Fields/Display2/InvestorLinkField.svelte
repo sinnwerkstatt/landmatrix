@@ -2,19 +2,23 @@
   import { _ } from "svelte-i18n"
 
   import { browser } from "$app/environment"
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import type { InvestorHull } from "$lib/types/data"
 
   import CountryField from "$components/Fields/Display2/CountryField.svelte"
 
-  export let value: InvestorHull | number | null
+  interface Props {
+    value: InvestorHull | number | null
+  }
+
+  let { value }: Props = $props()
 
   export const extras = {}
 
   const fetchInvestor = async (value: InvestorHull | number): Promise<InvestorHull> => {
     if (typeof value === "number") {
-      const ret = await $page.data.apiClient.GET("/api/investors/{id}/", {
+      const ret = await page.data.apiClient.GET("/api/investors/{id}/", {
         params: { path: { id: value } },
       })
       if (ret.error) {

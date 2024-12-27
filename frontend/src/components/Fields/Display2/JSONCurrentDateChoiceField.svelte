@@ -4,14 +4,17 @@
 
   import { dateCurrentFormat } from "$components/Fields/Display2/jsonHelpers"
 
-  export let value: JSONCurrentDateChoiceFieldType[] = []
-
   interface Extras {
     choices?: ValueLabelEntry[]
   }
 
-  export let extras: Extras = {}
-  $: choices = extras.choices ?? []
+  interface Props {
+    value?: JSONCurrentDateChoiceFieldType[]
+    extras?: Extras
+  }
+
+  let { value = [], extras = {} }: Props = $props()
+  let choices = $derived(extras.choices ?? [])
 </script>
 
 <ul>

@@ -9,7 +9,11 @@
   import PlaneIcon from "$components/icons/PlaneIcon.svelte"
   import RenewableEnergyIcon from "$components/icons/RenewableEnergyIcon.svelte"
 
-  export let value: JSONElectricityGenerationFieldType[] = []
+  interface Props {
+    value?: JSONElectricityGenerationFieldType[]
+  }
+
+  let { value = [] }: Props = $props()
 
   const getLabel = (value: string) =>
     $fieldChoices.deal.electricity_generation.find(c => value === c.value)?.label ??
