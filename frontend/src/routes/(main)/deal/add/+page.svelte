@@ -1,15 +1,16 @@
 <script lang="ts">
   import { goto } from "$app/navigation"
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import type { components } from "$lib/openAPI"
   import { getCsrfToken } from "$lib/utils"
 
   import CountrySelect from "$components/LowLevel/CountrySelect.svelte"
 
-  let country: components["schemas"]["Country"]
+  let country: components["schemas"]["Country"] = $state()
 
-  async function createDraft() {
+  async function createDraft(e: SubmitEvent) {
+    e.preventDefault()
     const ret = await fetch("/api/deals/", {
       method: "POST",
       credentials: "include",
@@ -26,14 +27,14 @@
   }
 </script>
 
-<form class="container mx-auto py-8" on:submit|preventDefault={createDraft}>
+<form class="container mx-auto py-8" onsubmit={createDraft}>
   <h1 class="heading1 my-8">Adding a new deal</h1>
 
   <div class="mt-16 flex flex-wrap gap-4">
     <p class="heading5">First, choose the country where the deal is located.</p>
     <CountrySelect
       bind:value={country}
-      countries={$page.data.countries.filter(c => !c.high_income)}
+      countries={page.data.countries.filter(c => !c.high_income)}
     />
   </div>
   <div class="my-6">

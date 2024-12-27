@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 </script>
 
-{#if $page.url.searchParams.get("from_graphql")}
+{#if page.url.searchParams.get("from_graphql")}
   <div
     class="container mx-auto my-8 rounded border border-orange bg-orange-100 px-4 py-2 text-black"
   >
