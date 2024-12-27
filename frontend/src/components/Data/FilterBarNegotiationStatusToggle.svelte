@@ -9,8 +9,8 @@
 
   import FilterCollapse from "./FilterCollapse.svelte"
 
-  $: negotiationStatus = $fieldChoices.deal.negotiation_status
-  $: negotiationStatusGroups = $fieldChoices.deal.negotiation_status_group
+  let negotiationStatus = $derived($fieldChoices.deal.negotiation_status)
+  let negotiationStatusGroups = $derived($fieldChoices.deal.negotiation_status_group)
 
   const checkGroupCheckboxes = () =>
     negotiationStatusGroups.map(x => x.value).forEach(setGroupCheckboxState)
@@ -68,7 +68,7 @@
     {@const groupNegotiationStatus = negotiationStatus.filter(x => x.group === group)}
 
     <label class="block font-bold">
-      <input id={group} type="checkbox" on:change={e => toggleGroup(group, e)} />
+      <input id={group} type="checkbox" onchange={e => toggleGroup(group, e)} />
       {groupLabel}
     </label>
 
@@ -78,7 +78,7 @@
           bind:group={$filters.negotiation_status}
           type="checkbox"
           {value}
-          on:change={() => setGroupCheckboxState(group)}
+          onchange={() => setGroupCheckboxState(group)}
         />
         {label}
       </label>

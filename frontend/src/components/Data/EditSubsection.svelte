@@ -1,9 +1,16 @@
 <script lang="ts">
+  import type { Snippet } from "svelte"
+
   import { objectSections } from "$lib/sections"
 
-  export let id: string
+  interface Props {
+    id: string
+    children?: Snippet
+  }
 
-  $: sec = $objectSections[id]
+  let { id, children }: Props = $props()
+
+  let sec = $derived($objectSections[id])
 </script>
 
 <div class="mt-2 space-y-4 pt-6">
@@ -11,5 +18,5 @@
     <h3 class="heading3 my-0">{sec.title}</h3>
   {/if}
 
-  <slot />
+  {@render children?.()}
 </div>
