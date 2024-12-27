@@ -5,7 +5,7 @@
   import { slide } from "svelte/transition"
 
   import { invalidate } from "$app/navigation"
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import { stateMap } from "$lib/newUtils"
   import { loading } from "$lib/stores/basics"
@@ -17,30 +17,52 @@
   import ChatBubbleLeftIcon from "$components/icons/ChatBubbleLeftIcon.svelte"
   import CheckCircleIcon from "$components/icons/CheckCircleIcon.svelte"
 
-  export let info: WorkflowInfo
-  export let isDeal = true
+  interface Props {
+    info: WorkflowInfo
+    isDeal?: boolean
+  }
 
-  $: confidentialStatusChange = info.comment?.startsWith("[SET_CONFIDENTIAL]")
-    ? "bg-red-400"
-    : info.comment?.startsWith("[UNSET_CONFIDENTIAL]")
-      ? "bg-green-600 line-through"
-      : false
+  let { info, isDeal = true }: Props = $props()
 
-  $: cleanedComment = info.comment
-    ?.replace("[SET_CONFIDENTIAL]", "")
-    .replace("[UNSET_CONFIDENTIAL] ", "")
+  let confidentialStatusChange = $derived(
+    info.comment?.startsWith("[SET_CONFIDENTIAL]")
+      ? "bg-red-400"
+      : info.comment?.startsWith("[UNSET_CONFIDENTIAL]")
+        ? "bg-green-600 line-through"
+        : false,
+  )
 
-  $: openThread =
+  let cleanedComment = $derived(
+    info.comment
+      ?.replace("[SET_CONFIDENTIAL]", "")
+      .replace("[UNSET_CONFIDENTIAL] ", ""),
+  )
+
+  let openThread = $derived(
     info.status_after === info.status_before &&
-    info.to_user_id &&
-    [info.to_user_id, info.from_user_id].includes($page.data.user?.id as number) &&
-    !info.resolved
+      info.to_user_id &&
+      [info.to_user_id, info.from_user_id].includes(page.data.user?.id as number) &&
+      !info.resolved,
+  )
 
-  let reply = ""
+  let reply = $state("")
 
-  async function sendReply() {
+  async function onsubmit(e: SubmitEvent) {
+    e.preventDefault()
+
     loading.set(true)
 
+    if ((e.submitter as HTMLButtonElement).name === "submitandresolve") {
+      if (reply) await sendReply()
+      await resolveThread()
+    } else {
+      await sendReply()
+    }
+
+    loading.set(false)
+  }
+
+  async function sendReply() {
     const ret = await fetch(
       `/api/workflow_info/${isDeal ? "deal" : "investor"}/${info.id}/add_reply/`,
       {
@@ -56,7 +78,6 @@
     const retJson = await ret.json()
     if (!ret.ok || !retJson.ok) {
       toast.push(`Unknown Problem: ${JSON.stringify(retJson)}`, { classes: ["error"] })
-      loading.set(false)
       return
     }
 
@@ -64,13 +85,9 @@
     else await invalidate("investor:detail")
 
     reply = ""
-    loading.set(false)
   }
 
   async function resolveThread() {
-    if (reply) await sendReply()
-    loading.set(true)
-
     const ret = await fetch(
       `/api/workflow_info/${isDeal ? "deal" : "investor"}/${info.id}/resolve/`,
       {
@@ -85,14 +102,11 @@
     const retJson = await ret.json()
     if (!ret.ok || !retJson.ok) {
       toast.push(`Unknown Problem: ${JSON.stringify(retJson)}`, { classes: ["error"] })
-      loading.set(false)
       return
     }
 
     if (isDeal) await invalidate("deal:detail")
     else await invalidate("investor:detail")
-
-    loading.set(false)
   }
 </script>
 
@@ -161,11 +175,7 @@
       </ul>
 
       {#if openThread}
-        <form
-          transition:slide
-          class="flex items-center"
-          on:submit|preventDefault={sendReply}
-        >
+        <form transition:slide class="flex items-center" {onsubmit}>
           <input
             bind:value={reply}
             type="text"
@@ -182,11 +192,11 @@
           </button>
         </form>
       {/if}
-      {#if openThread && info.from_user_id === $page.data.user.id}
+      {#if openThread && info.from_user_id === page.data.user?.id}
         <button
           class="btn btn-primary btn-flat ml-auto mr-1 mt-1 flex items-center gap-1"
-          type="button"
-          on:click={resolveThread}
+          type="submit"
+          name="submitandresolve"
         >
           {#if reply}
             {$_("Send")} &amp;

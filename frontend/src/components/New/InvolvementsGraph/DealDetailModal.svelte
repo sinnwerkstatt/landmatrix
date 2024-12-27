@@ -10,18 +10,23 @@
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import Overlay from "$components/Overlay.svelte"
 
-  export let visible: boolean
-  export let deal: {
-    deal_id: number
-    id: number
-    name: string
-    country_id: number | null
-    intention_of_investment: JSONCurrentDateAreaChoicesFieldType[]
-    implementation_status: JSONCurrentDateChoiceFieldType[]
-    negotiation_status: JSONCurrentDateChoiceFieldType[]
-    intended_size: number | null
-    contract_size: JSONCurrentDateAreaFieldType[]
+  interface Props {
+    visible: boolean
+    deal: {
+      deal_id: number
+      id: number
+      name: string
+      country_id: number | null
+      intention_of_investment: JSONCurrentDateAreaChoicesFieldType[]
+      implementation_status: JSONCurrentDateChoiceFieldType[]
+      negotiation_status: JSONCurrentDateChoiceFieldType[]
+      intended_size: number | null
+      contract_size: JSONCurrentDateAreaFieldType[]
+    }
+    onclose?: () => void
   }
+
+  let { visible, deal, onclose }: Props = $props()
 
   const fields = [
     "country_id",
@@ -39,7 +44,7 @@
     href: `/deal/${deal.deal_id}/`,
     title: $_("More details about this deal"),
   }}
-  on:close
+  {onclose}
   title="{$_('Deal')} {deal.name}"
   {visible}
 >

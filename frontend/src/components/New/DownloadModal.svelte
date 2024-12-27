@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<script module lang="ts">
   export const FILE_TYPES = ["csv", "xlsx", "json"] as const
   export type FileType = (typeof FILE_TYPES)[number]
   export type DownloadEvent = CustomEvent<FileType>
@@ -12,12 +12,19 @@
 
   const dispatch = createEventDispatcher<{ download: FileType }>()
 
-  export let open = false
-  export let disableSubmit = false
+  interface Props {
+    open: boolean
+    disableSubmit?: boolean
+    fileTypes?: readonly FileType[]
+  }
 
-  export let fileTypes: readonly FileType[] = FILE_TYPES
+  let {
+    open = $bindable(),
+    disableSubmit = false,
+    fileTypes = FILE_TYPES,
+  }: Props = $props()
 
-  let fileTypeGroup: FileType = fileTypes[0]
+  let fileTypeGroup: FileType = $state(fileTypes[0])
 
   const download = () => {
     dispatch("download", fileTypeGroup)
@@ -29,7 +36,7 @@
     {$_("Download")}
   </h4>
   <hr />
-  <form class="mt-6 text-lg" on:submit={download}>
+  <form class="mt-6 text-lg" onsubmit={download}>
     <div class="flex flex-col">
       {#each fileTypes as format}
         <div>
@@ -46,7 +53,7 @@
     </div>
 
     <div class="mt-14 flex justify-end gap-4">
-      <button class="btn-outline" on:click={() => (open = false)} type="button">
+      <button class="btn-outline" onclick={() => (open = false)} type="button">
         {$_("Cancel")}
       </button>
       <button class="btn btn-violet" type="submit" disabled={disableSubmit}>

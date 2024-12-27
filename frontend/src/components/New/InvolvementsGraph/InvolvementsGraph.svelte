@@ -10,28 +10,31 @@
   import InvestorDetailModal from "./InvestorDetailModal.svelte"
   import { createGraph, LAYOUT_OPTIONS, registerTippy } from "./investorGraphNew"
 
-  export let investor_id: number | null
+  interface Props {
+    investorID: number | null
+    hideControls?: boolean
+    skipVentures?: boolean
+  }
 
-  export let hideControls = false
-  export let skipVentures = false
-  let showDeals = true
+  let { investorID, hideControls = false, skipVentures = false }: Props = $props()
+  let showDeals = $state(true)
 
   let cyGraph: Graph
-  let graphContainer: HTMLDivElement
-  let modalData: { dealNode: boolean } = {}
-  let showInvestorModal = false
-  let showDealModal = false
+  let graphContainer: HTMLDivElement | undefined = $state()
+  let modalData: { dealNode?: boolean } = $state({})
+  let showInvestorModal = $state(false)
+  let showDealModal = $state(false)
 
-  let depth = 3
-  let max_depth = 30
-  let reachedMaxDepth = false
+  let depth = $state(3)
+  let max_depth = $state(30)
+  let reachedMaxDepth = $state(false)
 
-  let elements: ElementDefinition[] = []
+  let elements: ElementDefinition[] = $state([])
 
   async function fetchInvolvments() {
     loading.set(true)
     const ret = await fetch(
-      `/api/investors/${investor_id}/involvements_graph/?depth=${depth}&include_deals=${showDeals}&show_ventures=${!skipVentures}`,
+      `/api/investors/${investorID}/involvements_graph/?depth=${depth}&include_deals=${showDeals}&show_ventures=${!skipVentures}`,
     )
     // using 418-Teapot, because fetch goes into auto-retry mode
     // on 408 (request timeout), which ought to be the correct response here 🙄
@@ -86,16 +89,18 @@
     registerModal(cyGraph)
   }
 
-  $: if (elements && graphContainer) {
-    drawGraph()
-  }
+  $effect(() => {
+    if (elements && graphContainer) {
+      drawGraph()
+    }
+  })
 </script>
 
 <div class={skipVentures ? "h-[400px]" : "h-[600px]"}>
   <div
     bind:this={graphContainer}
     class="min-h-full w-full cursor-all-scroll border-2 border-solid"
-  />
+  ></div>
 </div>
 
 <div class="flex bg-white py-3 dark:bg-gray-700">
@@ -115,7 +120,7 @@
             type="range"
             min="1"
             max={max_depth}
-            on:change={fetchInvolvments}
+            onchange={fetchInvolvments}
             disabled={$loading}
             class="w-full"
           />
@@ -131,7 +136,7 @@
             bind:checked={showDeals}
             disabled={$loading}
             type="checkbox"
-            on:change={fetchInvolvments}
+            onchange={fetchInvolvments}
           />
           <strong>{$_("Show deals")}</strong>
         </label>
@@ -142,15 +147,15 @@
     <strong>{$_("Legend")}</strong>
     <ul>
       <li>
-        <span class="colored-line" style:--color="rgba(252,148,30,1)" />
+        <span class="colored-line" style:--color="rgba(252,148,30,1)"></span>
         {$_("Is operating company of")}
       </li>
       <li>
-        <span class="colored-arrow" style:--color="rgba(234,128,121,1)" />
+        <span class="colored-arrow" style:--color="rgba(234,128,121,1)"></span>
         {$_("Is parent company of")}
       </li>
       <li>
-        <span class="colored-arrow" style:--color="rgba(133,146,238,1)" />
+        <span class="colored-arrow" style:--color="rgba(133,146,238,1)"></span>
         {$_("Is tertiary investor/lender of")}
       </li>
     </ul>
@@ -160,13 +165,13 @@
 <InvestorDetailModal
   visible={showInvestorModal}
   investor={modalData}
-  on:close={() => (showInvestorModal = false)}
+  onclose={() => (showInvestorModal = false)}
 />
 
 <DealDetailModal
   visible={showDealModal}
   deal={modalData}
-  on:close={() => (showDealModal = false)}
+  onclose={() => (showDealModal = false)}
 />
 
 <style lang="postcss">
