@@ -2,7 +2,7 @@ import { stringify as csvStringify } from "csv-stringify/browser/esm/sync"
 import { get } from "svelte/store"
 import * as xlsx from "xlsx"
 
-import { page } from "$app/stores"
+import { page } from "$app/state"
 
 import { allUsers } from "$lib/stores"
 import type { DealHull, InvestorHull } from "$lib/types/data"
@@ -46,7 +46,7 @@ const toCSVString = (objects: EnrichedObject[], model: "deal" | "investor"): str
 
 const _enrichObjects = (objects: SimpleObject[]): EnrichedObject[] =>
   objects.map(o => {
-    const country = get(page).data.countries.find(
+    const country = page.data.countries.find(
       c =>
         c.id ===
         ((o as DealHull).country_id ?? (o as InvestorHull).selected_version.country_id),

@@ -3,7 +3,7 @@
   import { _ } from "svelte-i18n"
   import { slide } from "svelte/transition"
 
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import { filters } from "$lib/filters"
   import type { components } from "$lib/openAPI"
@@ -23,15 +23,15 @@
 
   const model: Model = "investor"
 
-  let activeKey: InvestorQIKey | null = null
-  let inverse = false
+  let activeKey: InvestorQIKey | null = $state(null)
+  let inverse = $state(false)
 
-  let counts: components["schemas"]["InvestorQICounts"] | null = null
+  let counts: components["schemas"]["InvestorQICounts"] | null = $state(null)
 
   const fetchCounts = () => {
     counts = null
 
-    $page.data.apiClient
+    page.data.apiClient
       .GET("/api/quality-indicators/counts/investor/")
       .then(res => ("error" in res ? Promise.reject(res.error) : res.data!))
       .then(res => (counts = res))
@@ -39,14 +39,14 @@
 
   onMount(fetchCounts)
 
-  let downloadOpen: boolean = false
+  let downloadOpen: boolean = $state(false)
 
   const download = (e: DownloadEvent) => {
     const blob = createBlob(e.detail, counts)
     const context: DownloadContext = {
       filters: $filters,
-      regions: $page.data.regions,
-      countries: $page.data.countries,
+      regions: page.data.regions,
+      countries: page.data.countries,
     }
     const filename = createFilename("investor-quality-indicators", e.detail, context)
 
@@ -63,7 +63,7 @@
 <ul class="mb-4 ml-4 mr-8 flex flex-wrap items-baseline justify-end gap-x-8">
   <li>
     <ActionButton
-      on:click={() => (downloadOpen = true)}
+      onclick={() => (downloadOpen = true)}
       icon={DownloadIcon}
       label={$_("Download")}
     />
@@ -71,7 +71,7 @@
 </ul>
 
 <QINavigator {model} {counts} bind:activeKey>
-  <svelte:fragment slot="list">
+  {#snippet list()}
     <div class="p-2" transition:slide={{ duration: 300 }}>
       <QIInverseSwitcher bind:inverse {model} />
       <!--      <QITableDownload />-->
@@ -81,7 +81,7 @@
         {/if}
       </div>
     </div>
-  </svelte:fragment>
+  {/snippet}
 </QINavigator>
 
 <DownloadModal

@@ -1,19 +1,27 @@
 <script lang="ts">
+  import type { Snippet } from "svelte"
   import { _ } from "svelte-i18n"
   import { blur } from "svelte/transition"
 
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import ChevronDownIcon from "$components/icons/ChevronDownIcon.svelte"
   import LoadingSpinner from "$components/icons/LoadingSpinner.svelte"
 
-  export let model: "deal" | "investor"
-  export let counts: ({ [key: string]: number } & { total: number }) | null
-  export let activeKey: string | "total" | null
+  interface Props {
+    model: "deal" | "investor"
+    counts: ({ [key: string]: number } & { total: number }) | null
+    activeKey: string | "total" | null
+    list?: Snippet
+  }
 
-  $: qiPromise = $page.data.apiClient
-    .GET("/api/quality-indicators/")
-    .then(res => ("error" in res ? Promise.reject(res.error) : res.data!))
+  let { model, counts, activeKey = $bindable(), list }: Props = $props()
+
+  let qiPromise = $derived(
+    page.data.apiClient
+      .GET("/api/quality-indicators/")
+      .then(res => ("error" in res ? Promise.reject(res.error) : res.data!)),
+  )
 
   const formatRatio = (a: number, b: number): string => {
     const ratio = (a / b) * 100
@@ -66,7 +74,7 @@
             class="grid w-full grid-cols-12 flex-nowrap items-center gap-2 px-2 text-left text-lg text-gray-700 hover:bg-gray-50 dark:text-white dark:hover:bg-gray-700"
             class:font-bold={isActive}
             title={qi.name}
-            on:click={() => (activeKey = activeKey !== qi.key ? qi.key : null)}
+            onclick={() => (activeKey = activeKey !== qi.key ? qi.key : null)}
           >
             <!--            <span class="font-bold">-->
             <!--              {index + 1}-->
@@ -96,7 +104,7 @@
             <div class="w-2/3 p-4">
               {qi.description}
             </div>
-            <slot name="list" />
+            {@render list?.()}
           {/if}
         </li>
       {/each}

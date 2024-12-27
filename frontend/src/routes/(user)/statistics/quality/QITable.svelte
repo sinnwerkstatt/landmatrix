@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import { dealFields, investorFields } from "$lib/fieldLookups"
   import { filters } from "$lib/filters"
@@ -11,47 +11,57 @@
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import Table from "$components/Table/Table.svelte"
 
-  export let model: Model
-  export let key: DealQIKey | InvestorQIKey
-  export let inverse: boolean
+  interface Props {
+    model: Model
+    key: DealQIKey | InvestorQIKey
+    inverse: boolean
+  }
 
-  $: dataPromise = $page.data.apiClient
-    .GET(`/api/quality-indicators/${model}/`, {
-      params: {
-        query: {
-          qi: key,
-          inverse,
-          region_id: $filters.region_id,
-          country_id: $filters.country_id,
+  let { model, key, inverse }: Props = $props()
+
+  let dataPromise = $derived(
+    page.data.apiClient
+      .GET(`/api/quality-indicators/${model}/`, {
+        params: {
+          query: {
+            qi: key,
+            inverse,
+            region_id: $filters.region_id,
+            country_id: $filters.country_id,
+          },
         },
-      },
-    })
-    .then(res => ("error" in res ? Promise.reject(res.error) : res.data!))
+      })
+      .then(res => ("error" in res ? Promise.reject(res.error) : res.data!)),
+  )
 
-  $: dealColumns = [
-    { key: "id", colSpan: 1 },
-    { key: "country_id", colSpan: 2 },
-    { key: "deal_size", colSpan: 2 },
-    { key: "current_intention_of_investment", colSpan: 4 },
-    { key: "current_negotiation_status", colSpan: 4 },
-    { key: "current_implementation_status", colSpan: 4 },
-    { key: "created_at", colSpan: 2 },
-    { key: "modified_at", colSpan: 2 },
-    { key: "fully_updated_at", colSpan: 2 },
-  ].map(c => ({ ...c, label: $dealFields[c.key].label }))
+  let dealColumns = $derived(
+    [
+      { key: "id", colSpan: 1 },
+      { key: "country_id", colSpan: 2 },
+      { key: "deal_size", colSpan: 2 },
+      { key: "current_intention_of_investment", colSpan: 4 },
+      { key: "current_negotiation_status", colSpan: 4 },
+      { key: "current_implementation_status", colSpan: 4 },
+      { key: "created_at", colSpan: 2 },
+      { key: "modified_at", colSpan: 2 },
+      { key: "fully_updated_at", colSpan: 2 },
+    ].map(c => ({ ...c, label: $dealFields[c.key].label })),
+  )
 
-  $: investorColumns = [
-    { key: "id", colSpan: 1 },
-    { key: "country_id", colSpan: 5 },
-    { key: "name", colSpan: 5 },
-    { key: "created_at", colSpan: 2 },
-    { key: "modified_at", colSpan: 2 },
-  ].map(c => ({
-    ...c,
-    label: $investorFields[c.key].label,
-  }))
+  let investorColumns = $derived(
+    [
+      { key: "id", colSpan: 1 },
+      { key: "country_id", colSpan: 5 },
+      { key: "name", colSpan: 5 },
+      { key: "created_at", colSpan: 2 },
+      { key: "modified_at", colSpan: 2 },
+    ].map(c => ({
+      ...c,
+      label: $investorFields[c.key].label,
+    })),
+  )
 
-  $: columns = model === "deal" ? dealColumns : investorColumns
+  let columns = $derived(model === "deal" ? dealColumns : investorColumns)
 </script>
 
 {#await dataPromise}
@@ -64,7 +74,7 @@
     rowHeightInPx={70}
     headerHeightInPx={54}
   >
-    <svelte:fragment let:fieldName let:obj slot="field">
+    {#snippet field({ fieldName, obj })}
       {#if fieldName === "id"}
         <IDField
           value={obj.id}
@@ -83,7 +93,7 @@
           valueClass="text-gray-700 dark:text-white w-full"
         />
       {/if}
-    </svelte:fragment>
+    {/snippet}
   </Table>
 {:catch error}
   <div class="m-5">{$_("Error")} {error}</div>
