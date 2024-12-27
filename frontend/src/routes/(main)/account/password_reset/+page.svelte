@@ -7,10 +7,11 @@
   import HCaptcha from "$components/HCaptcha.svelte"
   import PageTitle from "$components/PageTitle.svelte"
 
-  let email = ""
-  let form_submitted = false
+  let email = $state("")
+  let form_submitted = $state(false)
 
-  const submit = async () => {
+  const onsubmit = async (e: SubmitEvent) => {
+    e.preventDefault()
     const ret = await fetch("/api/user/password_reset/", {
       method: "POST",
       credentials: "include",
@@ -31,10 +32,10 @@
     }
   }
   let token: string
-  let disabled = true
+  let disabled = $state(true)
 
-  function captchaVerified(e: CustomEvent<{ token: string }>) {
-    token = e.detail.token
+  function captchaVerified(_token: string) {
+    token = _token
     disabled = false
   }
 </script>
@@ -47,7 +48,7 @@
     )}
   </div>
 {:else}
-  <form class="text-gray-700 dark:text-white" on:submit|preventDefault={submit}>
+  <form class="text-gray-700 dark:text-white" {onsubmit}>
     <label class="mb-4 block">
       {$_("Email")}
       <input
@@ -60,7 +61,7 @@
       />
     </label>
     <div class="grid grid-cols-2 gap-4">
-      <HCaptcha class="flex w-full justify-center" on:success={captchaVerified} />
+      <HCaptcha class="flex w-full justify-center" onsuccess={captchaVerified} />
       <div class="flex items-center justify-center">
         <button class="btn btn-primary w-full" type="submit" {disabled}>
           {$_("Reset password")}

@@ -7,7 +7,7 @@
   import HCaptcha from "$components/HCaptcha.svelte"
   import PageTitle from "$components/PageTitle.svelte"
 
-  let user = {
+  let user = $state({
     username: "",
     first_name: "",
     last_name: "",
@@ -16,14 +16,14 @@
     information: "",
     password: "",
     password_confirm: "",
-  }
+  })
   let token = ""
-  let disabled = true
-  let register_failed_message = ""
-  let registration_successful = false
+  let disabled = $state(true)
+  let register_failed_message = $state("")
+  let registration_successful = $state(false)
 
-  function captchaVerified(e: CustomEvent<{ token: string }>) {
-    token = e.detail.token
+  function captchaVerified(_token: string) {
+    token = _token
     disabled = false
   }
 
@@ -31,7 +31,8 @@
     user = { ...user, username: slugify(user.username) }
   }
 
-  async function register() {
+  async function register(e: SubmitEvent) {
+    e.preventDefault()
     const ret = await fetch("/api/user/register/", {
       method: "POST",
       credentials: "include",
@@ -75,7 +76,7 @@
 
   <form
     class="my-6 grid gap-4 text-gray-700 md:grid-cols-2 dark:text-white"
-    on:submit|preventDefault={register}
+    onsubmit={register}
   >
     <label>
       {$_("Username")}
@@ -87,7 +88,7 @@
         type="text"
         required
         pattern="[@_+.a-zA-Z0-9 \-]+"
-        on:input={usernameChange}
+        oninput={usernameChange}
       />
       <span class="text-xs">{$_("Letters, digits and @/./+/-/_ only.")}</span>
     </label>
@@ -140,8 +141,7 @@
         placeholder={$_(
           "Write something about yourself and your company. This won't be published.",
         )}
-        type="text"
-      />
+      ></textarea>
     </label>
 
     <label>
@@ -164,7 +164,7 @@
         type="password"
       />
     </label>
-    <HCaptcha class="flex w-full justify-center" on:success={captchaVerified} />
+    <HCaptcha class="flex w-full justify-center" onsuccess={captchaVerified} />
     <div class="flex items-center justify-center">
       <button class="btn btn-primary w-full" type="submit" {disabled}>
         {$_("Register")}

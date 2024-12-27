@@ -3,20 +3,21 @@
   import { _ } from "svelte-i18n"
 
   import { goto } from "$app/navigation"
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import { getCsrfToken } from "$lib/utils"
 
   import PageTitle from "$components/PageTitle.svelte"
 
-  let username = ""
-  let password = ""
-  let login_failed_message = ""
+  let username = $state("")
+  let password = $state("")
+  let login_failed_message = $state("")
 
-  let logged_in = false
-  let next = $page.url.searchParams.get("next") || "/"
+  let logged_in = $state(false)
+  let next = page.url.searchParams.get("next") || "/"
 
-  async function login() {
+  async function login(e: SubmitEvent) {
+    e.preventDefault()
     const ret = await fetch("/api/user/login/", {
       method: "POST",
       credentials: "include",
@@ -55,7 +56,7 @@
   </p>
 {/if}
 
-<form class="text-gray-700 dark:text-white" on:submit|preventDefault={login}>
+<form class="text-gray-700 dark:text-white" onsubmit={login}>
   <label class="mb-6 block">
     {$_("Username")}
     <input

@@ -1,23 +1,24 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import { getCsrfToken } from "$lib/utils"
 
   import PageTitle from "$components/PageTitle.svelte"
 
-  let new_password1 = ""
-  let new_password2 = ""
-  let form_submitted = false
+  let new_password1 = $state("")
+  let new_password2 = $state("")
+  let form_submitted = $state(false)
 
-  async function submit() {
+  async function onsubmit(e: SubmitEvent) {
+    e.preventDefault()
     await fetch("/api/user/password_reset_confirm/", {
       method: "POST",
       credentials: "include",
       body: JSON.stringify({
-        uidb64: $page.params.uidb64,
-        token: $page.params.token,
+        uidb64: page.params.uidb64,
+        token: page.params.token,
         new_password1: new_password1,
         new_password2: new_password2,
       }),
@@ -41,7 +42,7 @@
     </div>
   </div>
 {:else}
-  <form class="text-gray-700 dark:text-white" on:submit|preventDefault={() => submit()}>
+  <form class="text-gray-700 dark:text-white" {onsubmit}>
     <label class="block">
       {$_("Password")}
       <input
