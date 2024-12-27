@@ -2,7 +2,7 @@
   import { _ } from "svelte-i18n"
 
   import { invalidate } from "$app/navigation"
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import { loading } from "$lib/stores/basics"
   import { isReporterOrAbove } from "$lib/utils/permissions"
@@ -15,7 +15,7 @@
   import HeaderDatesWDownload from "$components/HeaderDatesWDownload.svelte"
   import ManageHeaderOldVersionNote from "$components/New/ManageHeaderOldVersionNote.svelte"
 
-  export let data
+  let { data, children } = $props()
 
   const reloadDeal = async () => {
     loading.set(true)
@@ -32,7 +32,7 @@
   <div style="grid-area: header">
     <ManageHeaderOldVersionNote obj={data.deal} />
 
-    {#if isReporterOrAbove($page.data.user)}
+    {#if isReporterOrAbove(page.data.user)}
       <DealManageHeader deal={data.deal} on:reload={reloadDeal} />
     {:else}
       <div class="my-4 md:flex md:flex-row md:justify-between">
@@ -66,7 +66,7 @@
   </div>
 
   <div class="mt-2 px-4 lg:min-h-[92vh]" style="grid-area: main">
-    <slot />
+    {@render children?.()}
   </div>
 </div>
 

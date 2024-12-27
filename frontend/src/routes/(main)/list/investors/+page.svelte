@@ -5,6 +5,7 @@
   import { investorFields } from "$lib/fieldLookups"
   import { investorsNG } from "$lib/stores"
   import { isMobile } from "$lib/stores/basics"
+  import type { InvestorHull } from "$lib/types/data"
 
   import DataContainer from "$components/Data/DataContainer.svelte"
   import { showContextBar, showFilterBar } from "$components/Data/stores"
@@ -28,6 +29,11 @@
   })
   const wrapperClass = "p-1"
   const valueClass = ""
+
+  type fieldType = {
+    fieldName: string
+    obj: InvestorHull
+  }
 </script>
 
 <svelte:head>
@@ -49,7 +55,7 @@
       </div>
 
       <Table {columns} items={$investorsNG} sortBy="-modified_at">
-        <svelte:fragment let:fieldName let:obj slot="field">
+        {#snippet field({ fieldName, obj }: fieldType)}
           {@const col = columns.find(c => c.key === fieldName)}
           <DisplayField
             fieldname={col.key}
@@ -58,11 +64,13 @@
             {wrapperClass}
             {valueClass}
           />
-        </svelte:fragment>
+        {/snippet}
       </Table>
     </div>
   </div>
-  <div slot="FilterBar">
-    <h2 class="heading5 my-2 px-2">{$_("Data settings")}</h2>
-  </div>
+  {#snippet FilterBarSnippet()}
+    <div>
+      <h2 class="heading5 my-2 px-2">{$_("Data settings")}</h2>
+    </div>
+  {/snippet}
 </DataContainer>

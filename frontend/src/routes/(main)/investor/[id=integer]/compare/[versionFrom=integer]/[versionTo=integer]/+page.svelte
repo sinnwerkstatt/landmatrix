@@ -7,11 +7,11 @@
   import CompareSubmodelDiffBlock from "$components/CompareSubmodelDiffBlock.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"
 
-  export let data
+  let { data } = $props()
 
-  $: labels = { general_info: $_("General info") }
+  let labels = $derived({ general_info: $_("General info") })
 
-  $: investorSections = {
+  let investorSections = $derived({
     general_info: [
       {
         name: $_("General info"),
@@ -25,7 +25,7 @@
         ],
       },
     ],
-  }
+  })
 
   const cleanDataSource = (dataSource: DataSource) => ({
     ...dataSource,
@@ -38,11 +38,11 @@
     child_investor_id: undefined,
   })
 
-  $: fromDSs = data.fromVersion.datasources.map(cleanDataSource)
-  $: toDSs = data.toVersion.datasources.map(cleanDataSource)
+  let fromDSs = $derived(data.fromVersion.datasources.map(cleanDataSource))
+  let toDSs = $derived(data.toVersion.datasources.map(cleanDataSource))
 
-  $: fromInvos = data.fromVersion.involvements_snapshot.map(cleanInvolvement)
-  $: toInvos = data.toVersion.involvements_snapshot.map(cleanInvolvement)
+  let fromInvos = $derived(data.fromVersion.involvements_snapshot.map(cleanInvolvement))
+  let toInvos = $derived(data.toVersion.involvements_snapshot.map(cleanInvolvement))
 </script>
 
 <svelte:head>
