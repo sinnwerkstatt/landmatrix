@@ -3,11 +3,15 @@
 
   import type { DealHull, InvestorHull } from "$lib/types/data"
 
-  export let obj: DealHull | InvestorHull
+  interface Props {
+    obj: DealHull | InvestorHull
+  }
 
-  $: isDeal = "fully_updated_at" in obj
-  $: objType = isDeal ? "deal" : "investor"
-  $: i18nValues = { values: { object: objType } }
+  let { obj }: Props = $props()
+
+  let isDeal = $derived("fully_updated_at" in obj)
+  let objType = $derived(isDeal ? "deal" : "investor")
+  let i18nValues = $derived({ values: { object: objType } })
 </script>
 
 {#if ![obj.active_version_id, obj.draft_version_id].includes(obj.selected_version.id)}

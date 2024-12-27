@@ -9,12 +9,17 @@
 
   import Modal from "$components/Modal.svelte"
 
-  export let object: DealHull
-  export let open = false
+  interface Props {
+    object: DealHull
+    open: boolean
+  }
 
-  let comment = ""
+  let { object, open = $bindable() }: Props = $props()
 
-  async function submit() {
+  let comment = $state("")
+
+  async function onsubmit(e: SubmitEvent) {
+    e.preventDefault()
     const ret = await fetch(`/api/deals/${object.id}/toggle_confidential/`, {
       method: "PUT",
       credentials: "include",
@@ -41,14 +46,14 @@
     {object.confidential ? $_("Unset confidential") : $_("Set confidential")}
   </h2>
   <hr />
-  <form class="mt-6 text-lg" on:submit={submit}>
+  <form class="mt-6 text-lg" {onsubmit}>
     <div class="mb-6">
       <label>
         <span class="font-semibold">
           {$_("Please provide a comment explaining your request")}
         </span>
-        <!-- svelte-ignore a11y-autofocus -->
-        <textarea autofocus bind:value={comment} class="inpt mt-1" required />
+        <!-- svelte-ignore a11y_autofocus -->
+        <textarea autofocus bind:value={comment} class="inpt mt-1" required></textarea>
       </label>
     </div>
 
@@ -65,7 +70,7 @@
     </p>
 
     <div class="mt-14 flex justify-end gap-4">
-      <button class="btn" on:click={() => (open = false)} type="button">
+      <button class="btn" onclick={() => (open = false)} type="button">
         {$_("Cancel")}
       </button>
       <button class="btn btn-primary" type="submit">

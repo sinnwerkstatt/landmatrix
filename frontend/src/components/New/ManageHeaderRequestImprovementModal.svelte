@@ -11,11 +11,15 @@
   import UserSelect from "$components/LowLevel/UserSelect.svelte"
   import Modal from "$components/Modal.svelte"
 
-  export let object: DealHull | InvestorHull
-  export let open = false
+  interface Props {
+    object: DealHull | InvestorHull
+    open: boolean
+  }
 
-  let comment = ""
-  let toUser: number | null = null
+  let { object, open = $bindable() }: Props = $props()
+
+  let comment = $state("")
+  let toUser: number | null = $state(null)
 
   const isDeal = (obj: DealHull | InvestorHull): obj is DealHull =>
     "fully_updated_at" in obj
@@ -25,7 +29,8 @@
   })
   onDestroy(() => (comment = ""))
 
-  async function submit() {
+  async function onsubmit(e: SubmitEvent) {
+    e.preventDefault()
     const objType = isDeal(object) ? "dealversions" : "investorversions"
     const ret = await fetch(
       `/api/${objType}/${object.selected_version.id}/change_status/`,
@@ -65,13 +70,13 @@
 <Modal bind:open dismissible>
   <h2 class="heading4">{$_("Request improvement")}</h2>
   <hr />
-  <form class="mt-6 text-lg" on:submit={submit}>
+  <form class="mt-6 text-lg" {onsubmit}>
     <div class="mb-6">
       <label>
         <span class="font-semibold">
           {$_("Please provide a comment explaining your request")}
         </span>
-        <textarea bind:value={comment} class="inpt mt-1" required />
+        <textarea bind:value={comment} class="inpt mt-1" required></textarea>
       </label>
     </div>
     <div class="mb-6">
@@ -83,7 +88,7 @@
       </label>
     </div>
     <div class="mt-14 flex justify-end gap-4">
-      <button class="btn-outline" on:click={() => (open = false)} type="button">
+      <button class="btn-outline" onclick={() => (open = false)} type="button">
         {$_("Cancel")}
       </button>
       <button class="btn btn-primary" type="submit">

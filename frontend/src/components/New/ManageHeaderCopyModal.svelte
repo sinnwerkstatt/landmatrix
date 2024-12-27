@@ -9,10 +9,15 @@
 
   import Modal from "$components/Modal.svelte"
 
-  export let object: DealHull
-  export let open = false
+  interface Props {
+    object: DealHull
+    open: boolean
+  }
 
-  async function submit() {
+  let { object, open = $bindable() }: Props = $props()
+
+  async function onsubmit(e: SubmitEvent) {
+    e.preventDefault()
     const ret = await fetch(`/api/deals/${object.id}/make_copy/`, {
       method: "PUT",
       credentials: "include",
@@ -36,7 +41,7 @@
     {$_("Copy deal")}
   </h2>
   <hr />
-  <form class="mt-6 text-lg" on:submit={submit}>
+  <form class="mt-6 text-lg" {onsubmit}>
     <p>
       {$_(
         "This creates a completely identical copy of the deal. The copy must then be edited and adjusted to prevent identical duplicates.",
@@ -45,7 +50,7 @@
     <div class="font-medium">{$_("Do you really want to copy this deal?")}</div>
 
     <div class="mt-14 flex justify-end gap-4">
-      <button class="btn" on:click={() => (open = false)} type="button">
+      <button class="btn" onclick={() => (open = false)} type="button">
         {$_("Cancel")}
       </button>
       <button class="btn btn-primary" type="submit">

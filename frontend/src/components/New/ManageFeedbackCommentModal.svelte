@@ -10,17 +10,22 @@
   import UserSelect from "$components/LowLevel/UserSelect.svelte"
   import Modal from "$components/Modal.svelte"
 
-  export let object: DealHull | InvestorHull
-  export let open = false
-  export let feedbackForm = false
+  interface Props {
+    object: DealHull | InvestorHull
+    open: boolean
+    feedbackForm?: boolean
+  }
 
-  let comment = ""
-  let toUser: number | null = object.selected_version.created_by_id
+  let { object, open = $bindable(), feedbackForm = false }: Props = $props()
+
+  let comment = $state("")
+  let toUser: number | null = $state(object.selected_version.created_by_id)
 
   const isDeal = (obj: DealHull | InvestorHull): obj is DealHull =>
     "fully_updated_at" in obj
 
-  async function submit() {
+  async function onsubmit(e: SubmitEvent) {
+    e.preventDefault()
     const objType = isDeal(object) ? "deals" : "investors"
     const ret = await fetch(`/api/${objType}/${object.id}/add_comment/`, {
       method: "PUT",
@@ -45,7 +50,7 @@
     }
   }
 
-  $: title = feedbackForm ? $_("Send feedback") : $_("Add comment")
+  let title = $derived(feedbackForm ? $_("Send feedback") : $_("Add comment"))
 </script>
 
 <Modal bind:open dismissible>
@@ -53,13 +58,13 @@
     {title}
   </h2>
   <hr />
-  <form class="mt-6 text-lg" on:submit={submit}>
+  <form class="mt-6 text-lg" {onsubmit}>
     <div class="mb-6">
       <label>
         <span class="font-semibold">
           {$_("Please provide a comment explaining your request")}
         </span>
-        <textarea bind:value={comment} class="inpt mt-1" required />
+        <textarea bind:value={comment} class="inpt mt-1" required></textarea>
       </label>
     </div>
     {#if feedbackForm}
@@ -74,7 +79,7 @@
     {/if}
 
     <div class="mt-14 flex justify-end gap-4">
-      <button class="btn-outline" on:click={() => (open = false)} type="button">
+      <button class="btn-outline" onclick={() => (open = false)} type="button">
         {$_("Cancel")}
       </button>
       <button class="btn {feedbackForm ? 'btn-violet' : 'btn-purple'}" type="submit">

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import { navigating, page } from "$app/stores"
+  import { navigating, page } from "$app/state"
 
   import { loading } from "$lib/stores/basics"
   import {
@@ -20,25 +20,32 @@
   import ManageHeaderSendToReviewModal from "$components/New/ManageHeaderSendToReviewModal.svelte"
   import ManageHeaderVersionRemoveModal from "$components/New/ManageHeaderVersionRemoveModal.svelte"
 
-  export let object: DealHull | InvestorHull
+  interface Props {
+    object: DealHull | InvestorHull
+  }
 
-  let showRequestImprovementOverlay = false
-  let showSendToReviewOverlay = false
-  let showSendToActivationOverlay = false
-  let showActivateOverlay = false
+  let { object }: Props = $props()
 
-  let showDeleteOverlay = false
+  let showRequestImprovementOverlay = $state(false)
+  let showSendToReviewOverlay = $state(false)
+  let showSendToActivationOverlay = $state(false)
+  let showActivateOverlay = $state(false)
+  let showDeleteOverlay = $state(false)
 
   const isDeal = (obj: DealHull | InvestorHull): obj is DealHull =>
     "fully_updated_at" in obj
 
-  let showReallyEditModal = false
-  $: editLink = `/${isDeal(object) ? "deal" : "investor"}/edit/${object.id}/${
-    object.selected_version.id
-  }/`
+  let showReallyEditModal = $state(false)
+  let editLink = $derived(
+    `/${isDeal(object) ? "deal" : "investor"}/edit/${object.id}/${
+      object.selected_version.id
+    }/`,
+  )
 
-  $: isCurrentDraft = object.selected_version.id === object.draft_version_id
-  $: i18nValues = { values: { object: isDeal(object) ? "deal" : "investor" } }
+  let isCurrentDraft = $derived(object.selected_version.id === object.draft_version_id)
+  let i18nValues = $derived({
+    values: { object: isDeal(object) ? "deal" : "investor" },
+  })
 
   // TODO: Refactor to object (deal/investor) utils!
   const isActiveVersionCreator = (
@@ -61,12 +68,14 @@
     }
   }
 
-  $: userCanEditOrRemove = isAdmin($page.data.user)
-    ? true
-    : isEditorOrAbove($page.data.user)
-      ? ["DRAFT", "REVIEW"].includes(object.selected_version.status)
-      : isActiveVersionCreator($page.data.user, object) &&
-        object.selected_version.status === "DRAFT"
+  let userCanEditOrRemove = $derived(
+    isAdmin(page.data.user)
+      ? true
+      : isEditorOrAbove(page.data.user)
+        ? ["DRAFT", "REVIEW"].includes(object.selected_version.status)
+        : isActiveVersionCreator(page.data.user, object) &&
+          object.selected_version.status === "DRAFT",
+  )
 </script>
 
 <div class="flex w-full flex-wrap justify-between text-center">
@@ -91,55 +100,55 @@
 </div>
 <div class="workflow-buttons my-2 flex">
   <div class="flex-1 text-right">
-    {#if object.selected_version.status === Version2Status.DRAFT && isAuthorized($page.data.user, object)}
+    {#if object.selected_version.status === Version2Status.DRAFT && isAuthorized(page.data.user, object)}
       <button
         type="button"
-        class:disabled={!isCurrentDraft || $loading || $navigating}
+        class:disabled={!isCurrentDraft || $loading || navigating.to}
         title={$_("Submit the {object} for review", i18nValues)}
         class="btn btn-primary"
-        on:click={() => (showSendToReviewOverlay = true)}
+        onclick={() => (showSendToReviewOverlay = true)}
       >
         {$_("Submit for review")}
       </button>
     {/if}
-    {#if ["REVIEW", "ACTIVATION"].includes(object.selected_version.status) && isAuthorized($page.data.user, object)}
+    {#if ["REVIEW", "ACTIVATION"].includes(object.selected_version.status) && isAuthorized(page.data.user, object)}
       <button
         type="button"
-        class:disabled={!isCurrentDraft || $loading || $navigating}
+        class:disabled={!isCurrentDraft || $loading || navigating.to}
         title={$_(
           "Send a request of improvement and create a new draft version of the {object}.",
           i18nValues,
         )}
         class="btn btn-primary"
-        on:click={() => (showRequestImprovementOverlay = true)}
+        onclick={() => (showRequestImprovementOverlay = true)}
       >
         {$_("Request improvement")}
       </button>
     {/if}
   </div>
   <div class="flex-1 text-center">
-    {#if object.selected_version.status === Version2Status.REVIEW && isAuthorized($page.data.user, object)}
+    {#if object.selected_version.status === Version2Status.REVIEW && isAuthorized(page.data.user, object)}
       <button
         type="button"
-        class:disabled={!isCurrentDraft || $loading || $navigating}
+        class:disabled={!isCurrentDraft || $loading || navigating.to}
         title={$_("Submit the {object} for activation", i18nValues)}
         class="btn btn-pelorous"
-        on:click={() => (showSendToActivationOverlay = true)}
+        onclick={() => (showSendToActivationOverlay = true)}
       >
         {$_("Submit for activation")}
       </button>
     {/if}
   </div>
   <div class="flex-1 text-left">
-    {#if object.selected_version.status === Version2Status.ACTIVATION && isAuthorized($page.data.user, object)}
+    {#if object.selected_version.status === Version2Status.ACTIVATION && isAuthorized(page.data.user, object)}
       <button
         type="button"
-        class:disabled={!isCurrentDraft || $loading || $navigating}
+        class:disabled={!isCurrentDraft || $loading || navigating.to}
         title={object.active_version_id
           ? $_("Activate submitted version replacing currently active version")
           : $_("Set the {object} active", i18nValues)}
         class="btn btn-pelorous"
-        on:click={() => (showActivateOverlay = true)}
+        onclick={() => (showActivateOverlay = true)}
       >
         {$_("Activate")}
       </button>
@@ -149,12 +158,12 @@
 <div class="mt-10 flex flex-col gap-2">
   {#if userCanEditOrRemove}
     <div class=" flex items-center gap-4">
-      {#if isActiveVersionCreator($page.data.user, object) && object.selected_version.status === "DRAFT"}
+      {#if isActiveVersionCreator(page.data.user, object) && object.selected_version.status === "DRAFT"}
         <div>
           <a
             href={editLink}
             class="btn-outline btn-flat btn-primary min-w-[8rem]"
-            class:disabled={!isCurrentDraft || $loading || $navigating}
+            class:disabled={!isCurrentDraft || $loading || navigating.to}
           >
             {$_("Edit")}
           </a>
@@ -165,9 +174,9 @@
       {:else}
         <div>
           <button
-            on:click={() => (showReallyEditModal = true)}
+            onclick={() => (showReallyEditModal = true)}
             class="btn-outline btn-flat btn-primary min-w-[8rem]"
-            class:disabled={!isCurrentDraft || $loading || $navigating}
+            class:disabled={!isCurrentDraft || $loading || navigating.to}
           >
             {$_("Edit")}
           </button>
@@ -192,8 +201,9 @@
       <div>
         <button
           class="btn-outline btn-flat btn-red min-w-[8rem]"
-          class:disabled={$loading || $navigating}
-          on:click|preventDefault={() => (showDeleteOverlay = true)}
+          class:disabled={$loading || navigating.to}
+          type="button"
+          onclick={() => (showDeleteOverlay = true)}
         >
           {$_("Remove")}
         </button>
@@ -224,7 +234,7 @@
     <div class="mt-14 flex justify-end gap-4">
       <button
         class="btn-outline"
-        on:click={() => (showReallyEditModal = false)}
+        onclick={() => (showReallyEditModal = false)}
         type="button"
       >
         {$_("Cancel")}
@@ -236,17 +246,14 @@
   </form>
 </Modal>
 
-<ManageHeaderSendToReviewModal bind:object bind:open={showSendToReviewOverlay} />
-<ManageHeaderSendToActivationModal
-  bind:object
-  bind:open={showSendToActivationOverlay}
-/>
-<ManageHeaderActivateModal bind:object bind:open={showActivateOverlay} />
+<ManageHeaderSendToReviewModal {object} bind:open={showSendToReviewOverlay} />
+<ManageHeaderSendToActivationModal {object} bind:open={showSendToActivationOverlay} />
+<ManageHeaderActivateModal {object} bind:open={showActivateOverlay} />
 <ManageHeaderRequestImprovementModal
-  bind:object
+  {object}
   bind:open={showRequestImprovementOverlay}
 />
-<ManageHeaderVersionRemoveModal bind:object bind:open={showDeleteOverlay} />
+<ManageHeaderVersionRemoveModal {object} bind:open={showDeleteOverlay} />
 
 <style lang="postcss">
   .status-field {
