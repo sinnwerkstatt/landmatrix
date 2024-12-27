@@ -24,7 +24,7 @@
     return retJson.items
   }
 
-  let filterText = ""
+  let filterText = $state("")
 
   const onSelect = (e: CustomEvent<SearchResultEntry>) => {
     // console.log(e.detail)

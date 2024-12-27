@@ -17,16 +17,16 @@
   import ChevronDownIcon from "$components/icons/ChevronDownIcon.svelte"
 
   interface Props {
-    /* eslint-disable no-undef */
+    // eslint-disable-next-line no-undef
     items?: T[]
-    /* eslint-enable no-undef */
     columns: Column[]
     sortBy?: string | null
     rowHeightInPx?: number
     headerHeightInPx?: number
     colWidthInPx?: number
     rowClasses?: string
-    field?: Snippet<{ fieldName: string; obj: T }[]>
+    // eslint-disable-next-line no-undef
+    field?: Snippet<[{ fieldName: string; obj: T }]>
   }
 
   let {

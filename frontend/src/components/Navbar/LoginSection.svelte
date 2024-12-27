@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import { showContextHelp } from "$lib/stores"
   import { UserRole } from "$lib/types/data"
@@ -10,16 +10,14 @@
   import CheckboxSwitch from "$components/LowLevel/CheckboxSwitch.svelte"
   import NavDropDown from "$components/Navbar/NavDropDown.svelte"
 
-  let user: typeof $page.data.user
-  $: user = $page.data.user
+  const user = $derived(page.data.user)
 
-  let userRolesMap: { [role in UserRole]: string }
-  $: userRolesMap = {
+  const userRolesMap: { [role in UserRole]: string } = $derived({
     [UserRole.ANYBODY]: $_("Anybody"),
     [UserRole.REPORTER]: $_("Reporter"),
     [UserRole.EDITOR]: $_("Editor"),
     [UserRole.ADMINISTRATOR]: $_("Administrator"),
-  }
+  })
 
   const logout = async () => {
     const ret = await fetch("/api/user/logout/", {
@@ -38,7 +36,7 @@
 {#if user}
   <div>
     <NavDropDown placement="right-0">
-      <svelte:fragment slot="title">
+      {#snippet title()}
         <div
           class="heading5 m-2 flex h-10 w-10 items-center justify-center rounded-full bg-pelorous font-bold uppercase text-black md:h-12 md:w-12"
         >
@@ -49,7 +47,7 @@
                 .join("")
             : user.username.substring(0, 2)}
         </div>
-      </svelte:fragment>
+      {/snippet}
 
       <div class="divide-y divide-solid bg-white shadow-lg dark:bg-gray-900">
         <p class="m-0 whitespace-nowrap p-2 leading-5 text-gray-400">
@@ -69,13 +67,13 @@
               {$_("Data Statistics")}
             </a>
           </li>
-          {#if $page.data.user?.is_contexthelp_editor}
+          {#if page.data.user?.is_contexthelp_editor}
             <li class="whitespace-nowrap">
               <CheckboxSwitch
                 class="nav-link-secondary"
                 id="default"
                 checked={$showContextHelp}
-                on:change={() => showContextHelp.toggle()}
+                onchange={() => showContextHelp.toggle()}
               >
                 {$_("Context help")}
               </CheckboxSwitch>
@@ -101,11 +99,7 @@
             </a>
           </li>
           <li>
-            <button
-              type="button"
-              class="nav-link-secondary text-left"
-              on:click|preventDefault={logout}
-            >
+            <button type="button" class="nav-link-secondary text-left" onclick={logout}>
               {$_("Logout")}
             </button>
           </li>
@@ -117,7 +111,7 @@
   <div>
     <a
       class="btn btn-primary mx-1 w-fit px-3 py-1 sm:mx-3 sm:px-6 sm:py-2 lg:px-10"
-      href="/account/login/?next={$page.url.pathname}"
+      href="/account/login/?next={page.url.pathname}"
       title={$_("Login/Register")}
     >
       {$_("Login")}

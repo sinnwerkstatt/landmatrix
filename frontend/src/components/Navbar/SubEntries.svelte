@@ -1,9 +1,8 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte"
   import { slide } from "svelte/transition"
 
   import { afterNavigate } from "$app/navigation"
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import { clickOutside } from "$lib/helpers"
 
@@ -12,24 +11,24 @@
     href: string
   }
 
-  export let subEntries: NavLink[] = []
-  export let title: string
+  interface Props {
+    subEntries?: NavLink[]
+    title: string
+    class?: string
+    onCloseMenu?: () => void
+  }
 
-  $: isActive = (subEntry: NavLink): boolean => {
-    const pathname = $page.url.pathname
+  let { subEntries = [], title, class: className = "", onCloseMenu }: Props = $props()
+
+  let isActive = $derived((subEntry: NavLink): boolean => {
+    const pathname = page.url.pathname
     return pathname.startsWith("/resources/")
-      ? pathname + $page.url.search === subEntry.href
+      ? pathname + page.url.search === subEntry.href
       : pathname.startsWith(subEntry.href)
-  }
+  })
 
-  let isOpen = false
-  let isHover = false
-
-  const dispatch = createEventDispatcher()
-
-  const resetMenu = (): void => {
-    dispatch("close")
-  }
+  let isOpen = $state(false)
+  let isHover = $state(false)
 
   afterNavigate(() => (isOpen = false))
 </script>
@@ -38,11 +37,11 @@
   <div
     role="menu"
     tabindex="-1"
-    class="relative {$$props.class ?? ''}"
+    class="relative {className}"
     use:clickOutside
-    on:outClick={() => (isOpen = false)}
-    on:mouseenter={() => (isHover = true)}
-    on:mouseleave={() => {
+    onoutClick={() => (isOpen = false)}
+    onmouseenter={() => (isHover = true)}
+    onmouseleave={() => {
       isHover = false
       isOpen = false
     }}
@@ -50,7 +49,7 @@
     <button
       class="nav-link-main"
       {title}
-      on:click={() => (isOpen = !isOpen)}
+      onclick={() => (isOpen = !isOpen)}
       class:active={subEntries.find(subEntry => isActive(subEntry))}
     >
       {title}
@@ -69,7 +68,7 @@
               class="nav-link-secondary"
               class:active={isActive(subEntry)}
               href={subEntry.href}
-              on:click={resetMenu}
+              onclick={onCloseMenu}
             >
               {subEntry.title}
             </a>

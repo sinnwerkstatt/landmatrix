@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import { blogCategories } from "$lib/stores"
   import { aboutPages, observatoryPages } from "$lib/stores/wagtail"
@@ -17,8 +17,7 @@
     href?: never
   }
 
-  let menuEntries: SubMenu[] = []
-  $: menuEntries = [
+  let menuEntries: SubMenu[] = $derived([
     {
       title: $_("Data"),
       subEntries: [
@@ -51,27 +50,27 @@
         href: `/about/${page.meta.slug}/`,
       })),
     },
-  ]
+  ])
 
-  export let showMenu: boolean
+  interface Props {
+    onCloseMenu: () => void
+  }
+
+  let { onCloseMenu }: Props = $props()
 </script>
 
 <ul
   class="mb-2 w-full items-center justify-evenly gap-4 divide-y pl-3 lg:flex lg:h-16 lg:divide-y-0 xl:gap-5"
 >
   {#each menuEntries as entry}
-    <SubEntries
-      title={entry.title}
-      subEntries={entry.subEntries}
-      on:close={() => (showMenu = false)}
-    />
+    <SubEntries title={entry.title} subEntries={entry.subEntries} {onCloseMenu} />
   {/each}
   <li class="py-1">
     <a
       class="nav-link-main"
-      class:active={$page.url.pathname.startsWith("/faq/")}
+      class:active={page.url.pathname.startsWith("/faq/")}
       href="/faq/"
-      on:click={() => (showMenu = false)}
+      onclick={onCloseMenu}
     >
       {$_("FAQ")}
     </a>
@@ -79,9 +78,9 @@
   <li class="py-1">
     <a
       class="nav-link-main"
-      class:active={$page.url.pathname.startsWith("/contribute/")}
+      class:active={page.url.pathname.startsWith("/contribute/")}
       href="/contribute/"
-      on:click={() => (showMenu = false)}
+      onclick={onCloseMenu}
     >
       {$_("Contribute")}
     </a>

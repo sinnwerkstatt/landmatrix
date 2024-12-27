@@ -3,9 +3,13 @@
 
   import { filters } from "$lib/filters"
 
-  export let countryID: number
-  export let regionID: number
-  export let staticmap: string | undefined = undefined
+  interface Props {
+    countryID: number
+    regionID: number
+    staticmap?: string | undefined
+  }
+
+  let { countryID, regionID, staticmap = undefined }: Props = $props()
 
   const onClickMap = async () => {
     if (regionID) {
@@ -24,7 +28,7 @@
   <a
     class="group absolute z-20 flex h-full w-full bg-transparent transition duration-300 hover:bg-orange/20"
     href="/map/"
-    on:click={onClickMap}
+    onclick={onClickMap}
   >
     <span
       class="z-1 hover-text invisible w-full self-center text-center text-[4rem] font-bold text-white opacity-0 transition duration-500 group-hover:visible group-hover:opacity-100"
