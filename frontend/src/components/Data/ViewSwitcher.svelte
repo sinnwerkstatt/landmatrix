@@ -2,14 +2,13 @@
   import { env } from "$env/dynamic/public"
   import { _ } from "svelte-i18n"
 
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import NavDropDown from "$components/Navbar/NavDropDown.svelte"
 
   const showAllCharts = !!env.PUBLIC_FF_DISPLAY_ALL_CHARTS
 
-  let dataViews: { title: string; route: string }[]
-  $: dataViews = [
+  let dataViews: { title: string; route: string }[] = $derived([
     {
       title: $_("Deals"),
       route: "/list/deals/",
@@ -18,11 +17,10 @@
       title: $_("Investors"),
       route: "/list/investors/",
     },
-  ]
+  ])
 
-  let chartViews: { title: string; route: string }[] = []
-  $: {
-    chartViews = [
+  let chartViews: { title: string; route: string }[] = $derived.by(() => {
+    let _chartViews = [
       {
         title: $_("Web of transnational deals"),
         route: "/charts/web-of-transnational-deals/",
@@ -37,19 +35,19 @@
       },
     ]
     if (showAllCharts) {
-      chartViews = [
-        ...chartViews,
+      return [
+        ..._chartViews,
         {
           title: $_("Global map of Investments"),
           route: "/charts/global-map-of-investments/",
         },
       ]
     }
-  }
+    return _chartViews
+  })
 
-  let countryProfileViews: { title: string; route: string }[] = []
-  $: {
-    countryProfileViews = [
+  let countryProfileViews: { title: string; route: string }[] = $derived.by(() => {
+    let _countryProfileViews = [
       {
         title: $_("LSLA by negotiation status"),
         route: "/country-profile/lsla/",
@@ -68,16 +66,17 @@
       },
     ]
 
-    if (showAllCharts) {
-      countryProfileViews = [
+    if (showAllCharts)
+      return [
         {
           title: $_("Land acquisitions by category of production"),
           route: "/country-profile/land-acquisitions/",
         },
-        ...countryProfileViews,
+        ..._countryProfileViews,
       ]
-    }
-  }
+
+    return _countryProfileViews
+  })
 </script>
 
 <div
@@ -91,21 +90,21 @@
         <a
           href="/map/"
           class="nav-link-main"
-          class:active={$page.url.pathname.startsWith("/map/")}
+          class:active={page.url.pathname.startsWith("/map/")}
         >
           {$_("Map")}
         </a>
       </li>
       <li>
         <NavDropDown>
-          <svelte:fragment slot="title">
+          {#snippet title()}
             <span
               class="nav-link-main"
-              class:active={$page.url.pathname.startsWith("/list/")}
+              class:active={page.url.pathname.startsWith("/list/")}
             >
               {$_("Tables")}
             </span>
-          </svelte:fragment>
+          {/snippet}
 
           <ul class="border border-orange-500">
             {#each dataViews as view}
@@ -113,7 +112,7 @@
                 <a
                   href={view.route}
                   class="nav-link-secondary bg-white dark:bg-gray-900"
-                  class:active={$page.url.pathname.startsWith(view.route)}
+                  class:active={page.url.pathname.startsWith(view.route)}
                 >
                   {view.title}
                 </a>
@@ -124,23 +123,23 @@
       </li>
       <li>
         <NavDropDown>
-          <svelte:fragment slot="title">
+          {#snippet title()}
             <span
               class="nav-link-main"
               class:active={["/charts/", "/country-profile/"].some(path =>
-                $page.url.pathname.startsWith(path),
+                page.url.pathname.startsWith(path),
               )}
             >
               {$_("Charts")}
             </span>
-          </svelte:fragment>
+          {/snippet}
           <ul class="border border-orange bg-white dark:bg-gray-800">
             {#each chartViews as view}
               <li class="whitespace-nowrap">
                 <a
                   href={view.route}
                   class="nav-link-secondary bg-white dark:bg-gray-900"
-                  class:active={$page.url.pathname.startsWith(view.route)}
+                  class:active={page.url.pathname.startsWith(view.route)}
                 >
                   {view.title}
                 </a>
@@ -151,7 +150,7 @@
                 <a
                   href={view.route}
                   class="nav-link-secondary bg-white dark:bg-gray-900"
-                  class:active={$page.url.pathname.startsWith(view.route)}
+                  class:active={page.url.pathname.startsWith(view.route)}
                 >
                   {view.title}
                 </a>

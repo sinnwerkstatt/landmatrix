@@ -60,8 +60,8 @@
 
 <FilterCollapse
   clearable={$filters.negotiation_status.length > 0}
-  on:clear={() => ($filters.negotiation_status = [])}
-  on:expanded={checkGroupCheckboxes}
+  onclear={() => ($filters.negotiation_status = [])}
+  onExpanded={checkGroupCheckboxes}
   title={$_("Negotiation status")}
 >
   {#each negotiationStatusGroups as { value: group, label: groupLabel }}

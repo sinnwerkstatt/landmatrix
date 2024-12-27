@@ -1,18 +1,32 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte"
+  import { type Snippet } from "svelte"
   import { slide } from "svelte/transition"
 
   import ChevronDownIcon from "$components/icons/ChevronDownIcon.svelte"
   import ClearFilter from "$components/icons/ClearFilter.svelte"
 
-  const dispatch = createEventDispatcher()
+  interface Props {
+    title: string
+    clearable?: boolean
+    expanded?: boolean
+    children: Snippet
+    onclear?: () => void
+    onExpanded?: () => void
+  }
 
-  export let title: string
-  export let clearable = false
-  export let expanded = false
+  let {
+    title,
+    clearable = false,
+    expanded = false,
+    children,
+    onclear,
+    onExpanded,
+  }: Props = $props()
 
-  let expandedContent: HTMLDivElement | undefined
-  $: if (expandedContent) dispatch("expanded")
+  let expandedContent: HTMLDivElement | undefined = $state()
+  $effect(() => {
+    if (expandedContent) onExpanded?.()
+  })
 </script>
 
 <div
@@ -21,7 +35,7 @@
   <div class="flex w-full" class:text-orange={clearable}>
     <button
       class="m-0.5 flex-grow p-1 text-left"
-      on:click={() => (expanded = !expanded)}
+      onclick={() => (expanded = !expanded)}
       type="button"
     >
       <ChevronDownIcon
@@ -34,9 +48,9 @@
     {#if clearable}
       <button
         class="m-0.5 p-1"
-        on:click={() => {
+        onclick={() => {
           expanded = false
-          dispatch("clear")
+          onclear?.()
         }}
         type="reset"
       >
@@ -50,7 +64,7 @@
       class="p-2 shadow-inner"
       bind:this={expandedContent}
     >
-      <slot />
+      {@render children()}
     </div>
   {/if}
 </div>
