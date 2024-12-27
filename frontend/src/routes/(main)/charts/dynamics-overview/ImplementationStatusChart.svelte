@@ -12,24 +12,30 @@
 
   import DownloadablePieChart from "$components/Data/Charts/DownloadablePieChart.svelte"
 
-  export let deals: DealVersion2[] = []
-  export let displayDealsCount = false
+  interface Props {
+    deals?: DealVersion2[]
+    displayDealsCount?: boolean
+  }
 
-  let sortBy: SortBy
-  $: sortBy = displayDealsCount ? "count" : "size"
-  $: unit = displayDealsCount ? "deals" : "ha"
+  let { deals = [], displayDealsCount = false }: Props = $props()
 
-  $: impStatChoices = $fieldChoices.deal.implementation_status
-  $: impStatLabels = createLabels<ImplementationStatus>(impStatChoices)
+  let sortBy: SortBy = $derived(displayDealsCount ? "count" : "size")
 
-  $: createData = createChartData<ImplementationStatus>(
-    implementationStatusReducer,
-    impStatChoices.map(x => x.value) as ImplementationStatus[],
-    (key: ImplementationStatus) => impStatLabels[key],
-    (key: ImplementationStatus) => IMPLEMENTATION_STATUS_COLORS[key],
+  let unit = $derived(displayDealsCount ? "deals" : "ha")
+
+  let impStatChoices = $derived($fieldChoices.deal.implementation_status)
+  let impStatLabels = $derived(createLabels<ImplementationStatus>(impStatChoices))
+
+  let createData = $derived(
+    createChartData<ImplementationStatus>(
+      implementationStatusReducer,
+      impStatChoices.map(x => x.value) as ImplementationStatus[],
+      (key: ImplementationStatus) => impStatLabels[key],
+      (key: ImplementationStatus) => IMPLEMENTATION_STATUS_COLORS[key],
+    ),
   )
 
-  $: data = createData(deals, sortBy)
+  let data = $derived(createData(deals, sortBy))
 </script>
 
 <DownloadablePieChart title={$_("Implementation status")} {data} {unit} />

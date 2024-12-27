@@ -1,16 +1,22 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import type { Investments } from "./globalMapOfInvestments"
 
-  export let investments: Investments
-  export let selectedCountryId: number | undefined
-  export let hoverCountryId: number | undefined
+  interface Props {
+    investments: Investments
+    selectedCountryId: number | undefined
+    hoverCountryId: number | undefined
+  }
 
-  $: selectedCountry = $page.data.countries.find(c => c.id === selectedCountryId)
-  $: hoverCountry = $page.data.countries.find(c => c.id === hoverCountryId)
+  let { investments, selectedCountryId, hoverCountryId }: Props = $props()
+
+  let selectedCountry = $derived(
+    page.data.countries.find(c => c.id === selectedCountryId),
+  )
+  let hoverCountry = $derived(page.data.countries.find(c => c.id === hoverCountryId))
 </script>
 
 <div class="absolute z-10" id="country-tooltip">

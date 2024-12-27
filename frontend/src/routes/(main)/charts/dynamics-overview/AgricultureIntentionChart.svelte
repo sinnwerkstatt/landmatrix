@@ -13,28 +13,34 @@
 
   import DownloadablePieChart from "$components/Data/Charts/DownloadablePieChart.svelte"
 
-  export let deals: DealVersion2[] = []
-  export let displayDealsCount = false
+  interface Props {
+    deals?: DealVersion2[]
+    displayDealsCount?: boolean
+  }
 
-  let sortBy: SortBy
-  $: sortBy = displayDealsCount ? "count" : "size"
-  $: unit = displayDealsCount ? "deals" : "ha"
+  let { deals = [], displayDealsCount = false }: Props = $props()
 
-  $: ioiChoices = $fieldChoices.deal.intention_of_investment
-  $: ioiGroupMap = createGroupMap<IoIGroupMap>(ioiChoices)
-  $: ioiLabels = createLabels<IntentionOfInvestment>(ioiChoices)
+  let sortBy: SortBy = $derived(displayDealsCount ? "count" : "size")
 
-  $: createData = createChartData<IntentionOfInvestment>(
-    createAgricultureIntentionReducer(ioiGroupMap),
-    ioiChoices.map(x => x.value) as IntentionOfInvestment[],
-    (ioi: IntentionOfInvestment) => ioiLabels[ioi],
-    (_, index, array) => {
-      const alphaValue = 1 - index / array.length
-      return `rgba(252,148,31,${alphaValue})`
-    },
+  let unit = $derived(displayDealsCount ? "deals" : "ha")
+
+  let ioiChoices = $derived($fieldChoices.deal.intention_of_investment)
+  let ioiGroupMap = $derived(createGroupMap<IoIGroupMap>(ioiChoices))
+  let ioiLabels = $derived(createLabels<IntentionOfInvestment>(ioiChoices))
+
+  let createData = $derived(
+    createChartData<IntentionOfInvestment>(
+      createAgricultureIntentionReducer(ioiGroupMap),
+      ioiChoices.map(x => x.value) as IntentionOfInvestment[],
+      (ioi: IntentionOfInvestment) => ioiLabels[ioi],
+      (_, index, array) => {
+        const alphaValue = 1 - index / array.length
+        return `rgba(252,148,31,${alphaValue})`
+      },
+    ),
   )
 
-  $: data = createData(deals, sortBy)
+  let data = $derived(createData(deals, sortBy))
 </script>
 
 <DownloadablePieChart title={$_("Investment in agriculture")} {data} {unit} />

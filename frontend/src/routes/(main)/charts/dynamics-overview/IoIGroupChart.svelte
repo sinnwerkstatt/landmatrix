@@ -16,30 +16,38 @@
 
   import DownloadablePieChart from "$components/Data/Charts/DownloadablePieChart.svelte"
 
-  export let deals: DealVersion2[] = []
-  export let displayDealsCount = false
+  interface Props {
+    deals?: DealVersion2[]
+    displayDealsCount?: boolean
+  }
 
-  let sortBy: SortBy
-  $: sortBy = displayDealsCount ? "count" : "size"
-  $: unit = displayDealsCount ? "deals" : "ha"
+  let { deals = [], displayDealsCount = false }: Props = $props()
 
-  $: ioiGroupMap = createGroupMap<IoIGroupMap>(
-    $fieldChoices.deal.intention_of_investment,
+  let sortBy: SortBy = $derived(displayDealsCount ? "count" : "size")
+
+  let unit = $derived(displayDealsCount ? "deals" : "ha")
+
+  let ioiGroupMap = $derived(
+    createGroupMap<IoIGroupMap>($fieldChoices.deal.intention_of_investment),
   )
 
-  $: ioiGroupLabels = createLabels<IntentionOfInvestmentGroup>(
-    $fieldChoices.deal.intention_of_investment_group,
+  let ioiGroupLabels = $derived(
+    createLabels<IntentionOfInvestmentGroup>(
+      $fieldChoices.deal.intention_of_investment_group,
+    ),
   )
 
   // TODO: Refactor - Why recreate the data on group label change?
-  $: createData = createChartData<IntentionOfInvestmentGroup>(
-    createIoIGroupReducer(ioiGroupMap),
-    Object.keys(ioiGroupLabels) as IntentionOfInvestmentGroup[],
-    (group: IntentionOfInvestmentGroup) => ioiGroupLabels[group],
-    (key: IntentionOfInvestmentGroup) => INTENTION_OF_INVESTMENT_GROUP_COLORS[key],
+  let createData = $derived(
+    createChartData<IntentionOfInvestmentGroup>(
+      createIoIGroupReducer(ioiGroupMap),
+      Object.keys(ioiGroupLabels) as IntentionOfInvestmentGroup[],
+      (group: IntentionOfInvestmentGroup) => ioiGroupLabels[group],
+      (key: IntentionOfInvestmentGroup) => INTENTION_OF_INVESTMENT_GROUP_COLORS[key],
+    ),
   )
 
-  $: data = createData(deals, sortBy)
+  let data = $derived(createData(deals, sortBy))
 </script>
 
 <DownloadablePieChart title={$_("Intention of investment")} {data} {unit} />
