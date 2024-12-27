@@ -2,7 +2,7 @@
   import { _ } from "svelte-i18n"
 
   import { browser } from "$app/environment"
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import type { components } from "$lib/openAPI"
 
@@ -57,7 +57,7 @@
 {#await getMessages() then msgs}
   {#each msgs
     .filter(m => !m.allow_users_to_hide || !acknowledgedMessages.includes(m.id))
-    .filter(m => (m.logged_in_only ? !!$page.data.user : true)) as msg}
+    .filter(m => (m.logged_in_only ? !!page.data.user : true)) as msg}
     <Overlay
       visible
       title={msg.title}

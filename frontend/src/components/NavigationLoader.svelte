@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { navigating } from "$app/stores"
+  import { navigating } from "$app/state"
 
   import { loading } from "$lib/stores/basics"
 </script>
 
-{#if $navigating || $loading}
+{#if navigating.to || $loading}
   <div class="fixed left-0 right-0 top-0 z-[1000000] h-1 w-full">
     <div class="relative h-1 w-full overflow-hidden bg-orange-100">
       <div class="inc absolute h-1 bg-orange"></div>

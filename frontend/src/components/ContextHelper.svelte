@@ -5,7 +5,7 @@
   import { twMerge } from "tailwind-merge"
 
   import { invalidate } from "$app/navigation"
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import type { components } from "$lib/openAPI"
   import { loading } from "$lib/stores/basics"
@@ -14,27 +14,36 @@
   import IconXMark from "$components/Accountability/icons/IconXMark.svelte"
   import QuestionMarkCircleIcon from "$components/icons/QuestionMarkCircleIcon.svelte"
 
-  let className = ""
-  export { className as class }
-  export let identifier: string
+  interface Props {
+    class?: string
+    identifier: string
+  }
 
-  $: editMode = $page.data.user?.is_contexthelp_editor
+  let { class: className = "", identifier }: Props = $props()
 
-  $: helpContent = $page.data.contextHelp?.find(x => x.identifier === identifier)
+  let editMode = $derived(page.data.user?.is_contexthelp_editor)
 
-  $: classNames = twMerge(
-    "size-4",
-    editMode && !helpContent ? "text-red-500" : "text-orange-500",
-    className,
+  let helpContent = $derived(
+    page.data.contextHelp?.find(x => x.identifier === identifier),
   )
 
-  let cHelp: components["schemas"]["ContextHelp"]
-  $: cHelp = helpContent ?? {
-    identifier: identifier,
-    description: "",
-    link: "",
-  }
-  let showOverlay = false
+  let classNames = $derived(
+    twMerge(
+      "size-4",
+      editMode && !helpContent ? "text-red-500" : "text-orange-500",
+      className,
+    ),
+  )
+
+  let cHelp: components["schemas"]["ContextHelp"] = $derived(
+    helpContent ?? {
+      identifier: identifier,
+      description: "",
+      link: "",
+    },
+  )
+
+  let showOverlay = $state(false)
 
   const [floatingRef, floatingContent] = createFloatingActions({
     strategy: "absolute",
@@ -47,13 +56,13 @@
     loading.set(true)
 
     if (helpContent?.id)
-      await $page.data.apiClient.PUT("/api/context_help/{id}/", {
+      await page.data.apiClient.PUT("/api/context_help/{id}/", {
         params: { path: { id: helpContent.id } },
         body: cHelp,
         headers: { "X-CSRFToken": await getCsrfToken() },
       })
     else
-      await $page.data.apiClient.POST("/api/context_help/", {
+      await page.data.apiClient.POST("/api/context_help/", {
         body: cHelp,
         headers: { "X-CSRFToken": await getCsrfToken() },
       })
@@ -63,7 +72,7 @@
 </script>
 
 {#if editMode || helpContent}
-  <button on:click={() => (showOverlay = !showOverlay)} use:floatingRef>
+  <button type="button" onclick={() => (showOverlay = !showOverlay)} use:floatingRef>
     <QuestionMarkCircleIcon class={classNames} />
   </button>
 {/if}
@@ -74,15 +83,19 @@
     use:floatingContent
   >
     <div>
-      <div><button on:click={() => (showOverlay = false)}><IconXMark /></button></div>
+      <div>
+        <button type="button" onclick={() => (showOverlay = false)}>
+          <IconXMark />
+        </button>
+      </div>
       {#if editMode}
-        <form class="flex flex-col gap-4" on:submit={onsubmit}>
+        <form class="flex flex-col gap-4" {onsubmit}>
           <textarea
             class="inpt"
             bind:value={cHelp.description}
             placeholder="Description"
             rows="10"
-          />
+          ></textarea>
           <input class="inpt" bind:value={cHelp.link} type="url" placeholder="URL" />
           <button type="submit" class="btn" disabled={$loading}>{$_("Save")}</button>
         </form>
