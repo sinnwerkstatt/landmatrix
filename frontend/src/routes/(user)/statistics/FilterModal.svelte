@@ -30,14 +30,14 @@
   })
 
   interface Props {
-    open?: boolean
+    open: boolean
     disableSubmit?: boolean
     disableAdvanced?: boolean
     onsubmit?: EventHandler<SubmitEvent, HTMLFormElement>
   }
 
   let {
-    open = $bindable(false),
+    open = $bindable(),
     disableSubmit = false,
     disableAdvanced = false,
     onsubmit,

@@ -5,8 +5,12 @@
 
   import DisplayField from "$components/Fields/DisplayField.svelte"
 
-  export let deal: DealHull
-  export let location: Location2
+  interface Props {
+    deal: DealHull
+    location: Location2
+  }
+
+  let { deal, location }: Props = $props()
 
   const labelClass = "font-semibold"
   const valueClass = ""

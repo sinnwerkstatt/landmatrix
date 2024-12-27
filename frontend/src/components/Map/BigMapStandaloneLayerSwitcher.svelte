@@ -5,19 +5,19 @@
 
   import { getBaseLayers, visibleLayer } from "./layers"
 
-  let shown: boolean
+  let shown: boolean = $state(false)
 </script>
 
 <div
   role="presentation"
   class="absolute right-[10px] top-[10px] z-10 rounded border-2 border-black/30 bg-white px-2 pb-2 pt-1"
-  on:mouseleave={() => (shown = false)}
+  onmouseleave={() => (shown = false)}
 >
   {#if !shown}
     <LayerGroup
       class="inline h-5 w-5 text-orange"
-      on:focus={() => (shown = true)}
-      on:mouseover={() => (shown = true)}
+      onfocus={() => (shown = true)}
+      onmouseover={() => (shown = true)}
     />
   {:else}
     <ul>
@@ -27,8 +27,9 @@
             <div>{layer.name}</div>
           {:else}
             <button
-              on:click|preventDefault={() => visibleLayer.set(layer.id)}
+              onclick={() => visibleLayer.set(layer.id)}
               class="text-orange"
+              type="button"
             >
               {layer.name}
             </button>
