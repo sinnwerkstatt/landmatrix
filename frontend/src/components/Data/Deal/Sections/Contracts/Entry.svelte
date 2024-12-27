@@ -1,7 +1,11 @@
 <script lang="ts">
   import EditField from "$components/Fields/EditField.svelte"
 
-  export let entry: Record<string, never>
+  interface Props {
+    entry: Record<string, never>
+  }
+
+  let { entry = $bindable() }: Props = $props()
 </script>
 
 <EditField fieldname="contract.number" bind:value={entry.number} showLabel />

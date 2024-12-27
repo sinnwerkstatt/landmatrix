@@ -3,7 +3,11 @@
 
   import SectionHistory from "$components/Data/SectionHistory.svelte"
 
-  export let investor: InvestorHull
+  interface Props {
+    investor: InvestorHull
+  }
+
+  let { investor }: Props = $props()
 </script>
 
 <SectionHistory obj={investor} investorColors />

@@ -4,10 +4,13 @@
   import Subsection from "$components/Data/Subsection.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"
 
-  export let deal: DealHull
+  interface Props {
+    deal: DealHull
+  }
 
-  let version: DealVersion2 = deal.selected_version
-  $: version = deal.selected_version
+  let { deal }: Props = $props()
+
+  let version: DealVersion2 = $state(deal.selected_version)
 </script>
 
 <section>

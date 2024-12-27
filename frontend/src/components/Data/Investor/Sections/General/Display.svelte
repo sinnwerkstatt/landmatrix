@@ -4,10 +4,13 @@
   import Subsection from "$components/Data/Subsection.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"
 
-  export let investor: InvestorHull
+  interface Props {
+    investor: InvestorHull
+  }
 
-  let version: InvestorVersion2 = investor.selected_version
-  $: version = investor.selected_version
+  let { investor }: Props = $props()
+
+  let version: InvestorVersion2 = $derived(investor.selected_version)
 </script>
 
 <Subsection id="investor.general_info" obj={version}>
