@@ -1,4 +1,4 @@
-import type { ComponentType } from "svelte"
+import type { Component } from "svelte"
 import { _ } from "svelte-i18n"
 import { derived } from "svelte/store"
 
@@ -52,8 +52,8 @@ import PointEditField from "$components/Fields/Edit2/PointEditField.svelte"
 import TextEditField from "$components/Fields/Edit2/TextEditField.svelte"
 
 interface Field {
-  displayField: ComponentType
-  editField?: ComponentType
+  displayField: Component
+  editField?: Component
   label: string
   extras?: unknown
 }
