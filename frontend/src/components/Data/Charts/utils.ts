@@ -1,6 +1,6 @@
 import { get } from "svelte/store"
 
-import { page } from "$app/stores"
+import { page } from "$app/state"
 
 import { filters } from "$lib/filters"
 
@@ -11,10 +11,9 @@ export function fileName(title: string, suffix = ""): string {
   const $filters = get(filters)
   let prefix = "Global - "
   if ($filters.country_id)
-    prefix =
-      get(page).data.countries.find(c => c.id === $filters.country_id)?.name + " - "
+    prefix = page.data.countries.find(c => c.id === $filters.country_id)?.name + " - "
   if ($filters.region_id)
-    prefix = get(page).data.regions.find(r => r.id === $filters.region_id)?.name + " - "
+    prefix = page.data.regions.find(r => r.id === $filters.region_id)?.name + " - "
   return prefix + title + suffix
 }
 
