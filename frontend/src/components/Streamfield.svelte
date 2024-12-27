@@ -1,22 +1,18 @@
 <script lang="ts">
-  import type { WagtailStreamfield } from "$lib/types/wagtail"
+  import type { WagtailStreamfieldBlock } from "$lib/types/wagtail"
 
-  import { blockMap } from "$components/Wagtail/blocks"
+  import Block from "$components/Wagtail/Block.svelte"
 
-  export let content: WagtailStreamfield = []
+  interface Props {
+    content?: WagtailStreamfieldBlock[]
+    class?: string
+  }
+
+  let { content = [], class: className = "" }: Props = $props()
 </script>
 
-<div class="container mx-auto pb-0 pt-6 {$$props.class ?? ''}">
-  {#each content as { type, value }}
-    {#if blockMap[type]}
-      <svelte:component this={blockMap[type]} bind:value />
-    {:else}
-      <div class="bg-red-100">
-        Unknown block: <strong>"{type}"</strong>
-        <pre class="text-xs">
-          {JSON.stringify(value, null, 2)}
-        </pre>
-      </div>
-    {/if}
+<div class="container mx-auto pb-0 pt-6 {className}">
+  {#each content as block}
+    <Block {block} />
   {/each}
 </div>
