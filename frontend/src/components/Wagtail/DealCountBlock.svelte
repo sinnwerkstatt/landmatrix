@@ -1,17 +1,21 @@
 <script lang="ts">
   import { onDestroy, onMount } from "svelte"
   import { expoOut } from "svelte/easing"
-  import { tweened } from "svelte/motion"
+  import { Tween } from "svelte/motion"
 
-  export let value: {
-    deals: number
-    text: string
-    text_below: string
+  interface Props {
+    value: {
+      deals: number
+      text: string
+      text_below: string
+    }
   }
 
-  const progress = tweened(0, { duration: 3000, easing: expoOut })
+  let { value }: Props = $props()
 
-  let countElement: HTMLElement
+  const progress = new Tween(0, { duration: 3000, easing: expoOut })
+
+  let countElement: HTMLElement | undefined = $state()
   let intersectionObserver: IntersectionObserver
   onMount(async () => {
     intersectionObserver = new IntersectionObserver(
@@ -20,7 +24,7 @@
       },
       { threshold: 0.7 },
     )
-    intersectionObserver.observe(countElement)
+    if (countElement) intersectionObserver.observe(countElement)
   })
   onDestroy(() => {
     if (intersectionObserver) intersectionObserver.disconnect()
@@ -32,7 +36,7 @@
 >
   <h3 class="heading1 dark:text-white">{value.text}</h3>
   <p class="display1 text-pelorous" bind:this={countElement}>
-    {Math.round($progress).toLocaleString("fr").replace(",", ".")}
+    {Math.round(progress.current).toLocaleString("fr").replace(",", ".")}
   </p>
   <p class="heading2 text-pelorous-300">
     {value.text_below}

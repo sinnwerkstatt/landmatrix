@@ -2,21 +2,32 @@
   import { lightboxImage } from "$lib/stores/basics"
   import type { BlockImage } from "$lib/types/wagtail"
 
-  export let value: BlockImage
+  interface Props {
+    value: BlockImage
+  }
 
-  $: link = value.image ? value.url : null
-  $: src = value.image ? value.image.url : value.url
-  $: caption = value.image ? value.caption : null
-  $: externalLink = value.image ? value.external : false
+  let { value }: Props = $props()
+
+  let link = $derived(value.image ? value.url : null)
+  let src = $derived(value.image ? value.image.url : value.url)
+  let caption = $derived(value.image ? value.caption : null)
+  let externalLink = $derived(value.image ? value.external : false)
 </script>
 
 <div data-block="image" class="mb-5">
   {#if value.lightbox}
     <a
       href={src}
-      on:click|preventDefault|stopPropagation={() => lightboxImage.set(value)}
-      on:keydown|preventDefault|stopPropagation={e =>
-        e.code === "Enter" && lightboxImage.set(value)}
+      onclick={e => {
+        e.stopPropagation()
+        e.preventDefault()
+        lightboxImage.set(value)
+      }}
+      onkeydown={e => {
+        e.stopPropagation()
+        e.preventDefault()
+        if (e.code === "Enter") lightboxImage.set(value)
+      }}
     >
       <img class="w-full max-w-full cursor-pointer" {src} alt="" loading="lazy" />
     </a>
