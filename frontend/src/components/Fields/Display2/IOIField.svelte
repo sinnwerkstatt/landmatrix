@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { ComponentType } from "svelte"
+  import type { Component } from "svelte"
 
   import { createLabels, fieldChoices } from "$lib/stores"
   import type { IntentionOfInvestment } from "$lib/types/data"
@@ -18,9 +18,13 @@
   import RenewableEnergyIcon from "$components/icons/RenewableEnergyIcon.svelte"
   import SolarPanelIcon from "$components/icons/SolarPanelIcon.svelte"
 
-  export let value: IntentionOfInvestment[]
+  interface Props {
+    value: IntentionOfInvestment[]
+  }
 
-  const icons: { [key in IntentionOfInvestment]: ComponentType } = {
+  let { value }: Props = $props()
+
+  const icons: { [key in IntentionOfInvestment]: Component } = {
     // agriculture
     BIOFUELS: AgricultureIcon,
     BIOMASS_ENERGY_GENERATION: AgricultureIcon,
@@ -49,7 +53,7 @@
     OTHER: OtterIcon,
   }
 
-  $: ioiLabels = createLabels($fieldChoices.deal.intention_of_investment)
+  let ioiLabels = $derived(createLabels($fieldChoices.deal.intention_of_investment))
 </script>
 
 {#each value as ioi}
@@ -57,7 +61,8 @@
     class="mx-1 my-0.5 inline-flex items-center gap-1 whitespace-nowrap border border-gray-100 bg-gray-50 px-1 py-0.5 text-gray-800 dark:border-transparent dark:bg-gray-800 dark:text-white"
   >
     {#if icons[ioi]}
-      <svelte:component this={icons[ioi]} />
+      {@const SvelteComponent = icons[ioi]}
+      <SvelteComponent />
     {/if}
     {ioiLabels[ioi]}
   </span>
