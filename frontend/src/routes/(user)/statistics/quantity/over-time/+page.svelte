@@ -6,7 +6,7 @@
   import { _ } from "svelte-i18n"
   import { twMerge } from "tailwind-merge"
 
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import { filters, FilterValues } from "$lib/filters"
   import { loading } from "$lib/stores/basics"
@@ -35,10 +35,10 @@
   dayjs.extend(isSameOrBefore)
   dayjs.extend(isSameOrAfter)
 
-  let model: Model = "deal"
-  let activeTabId: string | undefined = "added"
+  let model: Model = $state("deal")
+  let activeTabId: string | undefined = $state("added")
 
-  $: navTabs =
+  let navTabs = $derived(
     model === "deal"
       ? [
           { id: "added", name: $_("Deals created") },
@@ -52,7 +52,8 @@
           { id: "added_and_activated", name: $_("Investors created and activated") },
           { id: "updated", name: $_("Investors updated") },
           { id: "activated", name: $_("Investors activated") },
-        ]
+        ],
+  )
 
   interface Daterange {
     start: Date
@@ -63,7 +64,7 @@
     end: new Date(),
   }
 
-  let selectedDateOption = dayjs(daterange.end).diff(daterange.start, "days")
+  let selectedDateOption = $state(dayjs(daterange.end).diff(daterange.start, "days"))
 
   const datePreOptions = [
     { name: "Last 30 days", value: 30 },
@@ -72,8 +73,8 @@
     { name: "Last 365 days", value: 365 },
   ]
 
-  let dealBuckets: { [key: string]: CaseStatisticsDeal[] } = {}
-  let investorBuckets: { [key: string]: CaseStatisticsInvestor[] } = {}
+  let dealBuckets: { [key: string]: CaseStatisticsDeal[] } = $state({})
+  let investorBuckets: { [key: string]: CaseStatisticsInvestor[] } = $state({})
 
   async function _fetchDeals(filters: FilterValues, daterange: Daterange) {
     const params = new URLSearchParams({
@@ -110,16 +111,18 @@
     loading.set(false)
   }
 
-  $: fetchObjs($filters, daterange)
+  $effect(() => {
+    fetchObjs($filters, daterange)
+  })
 
-  let showDownloadModal = false
-  let showFilterModal = false
+  let showDownloadModal = $state(false)
+  let showFilterModal = $state(false)
 
   const download = (e: DownloadEvent) => {
     const context: DownloadContext = {
       filters: $filters,
-      regions: $page.data.regions,
-      countries: $page.data.countries,
+      regions: page.data.regions,
+      countries: page.data.countries,
     }
     const objects = (model === "deal" ? dealBuckets : investorBuckets)[activeTabId!]
     const enrichedObjects = resolveCountryAndRegionNames(objects, context)
@@ -141,7 +144,7 @@
   <select
     bind:value={selectedDateOption}
     class="inpt w-40"
-    on:change={() => {
+    onchange={() => {
       daterange = {
         start: dayjs().subtract(selectedDateOption, "day").toDate(),
         end: new Date(),
@@ -156,12 +159,12 @@
   </select>
   <DateInput bind:value={daterange.start} format="yyyy-MM-dd" />
   <DateInput bind:value={daterange.end} format="yyyy-MM-dd" />
-  <span class="flex-grow" />
+  <span class="flex-grow"></span>
 
   <ul class="flex gap-6">
     <li>
       <ActionButton
-        on:click={() => (showFilterModal = true)}
+        onclick={() => (showFilterModal = true)}
         icon={AdjustmentsIcon}
         highlight={!$filters.isEmpty()}
         label={$_("Filter")}
@@ -169,7 +172,7 @@
     </li>
     <li>
       <ActionButton
-        on:click={() => (showDownloadModal = true)}
+        onclick={() => (showDownloadModal = true)}
         icon={DownloadIcon}
         label={$_("Download")}
       />
@@ -180,9 +183,7 @@
 <FilterModal
   bind:open={showFilterModal}
   disableAdvanced
-  on:submit={async () => {
-    showFilterModal = false
-  }}
+  onsubmit={() => (showFilterModal = false)}
 />
 <DownloadModal
   bind:open={showDownloadModal}
@@ -201,7 +202,7 @@
         class={model === "deal"
           ? "border-b border-orange text-orange"
           : "text-gray-600 hover:text-orange dark:text-white"}
-        on:click={() => {
+        onclick={() => {
           model = "deal"
           activeTabId = "added"
         }}
@@ -213,7 +214,7 @@
         class={model === "investor"
           ? "border-b border-pelorous text-pelorous"
           : "text-gray-600 hover:text-pelorous dark:text-white"}
-        on:click={() => {
+        onclick={() => {
           model = "investor"
           activeTabId = "added"
         }}
@@ -241,7 +242,8 @@
                     : "font-bold text-pelorous"
                   : "text-gray-700 dark:text-white",
               )}
-              on:click={() => (activeTabId = item.id)}
+              type="button"
+              onclick={() => (activeTabId = item.id)}
             >
               <span class="font-bold">
                 {#if model === "deal"}

@@ -3,7 +3,7 @@
   import { _ } from "svelte-i18n"
   import { twMerge } from "tailwind-merge"
 
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import { filters } from "$lib/filters"
   import type { Model } from "$lib/types/data"
@@ -28,10 +28,10 @@
     type CaseStatisticsInvestor,
   } from "../CaseStatisticsTable.svelte"
 
-  let model: Model = "deal"
-  let activeTabId: string | undefined = "pending"
+  let model: Model = $state("deal")
+  let activeTabId: string | undefined = $state("pending")
 
-  $: navTabs =
+  let navTabs = $derived(
     model === "deal"
       ? [
           { id: "pending", name: $_("Deals pending") },
@@ -42,10 +42,11 @@
       : [
           { id: "pending", name: $_("Investors pending") },
           { id: "active", name: $_("Investors active") },
-        ]
+        ],
+  )
 
-  let simpleDeals: CaseStatisticsDeal[] = []
-  let simpleInvestors: CaseStatisticsInvestor[] = []
+  let simpleDeals: CaseStatisticsDeal[] = $state([])
+  let simpleInvestors: CaseStatisticsInvestor[] = $state([])
 
   async function getDealsInvestors() {
     let dealsUrl = `/api/case_statistics/?action=deals`
@@ -59,17 +60,19 @@
 
   onMount(() => getDealsInvestors())
 
-  $: deals = $filters.country_id
-    ? simpleDeals.filter(d => d.country_id === $filters.country_id)
-    : $filters.region_id
-      ? simpleDeals.filter(d => d.region_id === $filters.region_id)
-      : simpleDeals
+  let deals = $derived(
+    $filters.country_id
+      ? simpleDeals.filter(d => d.country_id === $filters.country_id)
+      : $filters.region_id
+        ? simpleDeals.filter(d => d.region_id === $filters.region_id)
+        : simpleDeals,
+  )
 
-  let _active_deals: CaseStatisticsDeal[]
-  $: _active_deals = deals.filter(deal => deal.active_version_id !== null)
+  let _active_deals: CaseStatisticsDeal[] = $derived(
+    deals.filter(deal => deal.active_version_id !== null),
+  )
 
-  let dealsBuckets: { [key: string]: CaseStatisticsDeal[] }
-  $: dealsBuckets = {
+  let dealsBuckets: { [key: string]: CaseStatisticsDeal[] } = $derived({
     pending: deals.filter(deal =>
       ["DRAFT", "REVIEW", "ACTIVATION"].includes(deal.draft_version__status as string),
     ),
@@ -78,32 +81,33 @@
       deal => deal.active_version_id && !deal.active_version__is_public,
     ),
     active_confidential: _active_deals.filter(deal => deal.confidential),
-  }
+  })
 
-  $: investors = $filters.country_id
-    ? simpleInvestors.filter(inv => inv.country_id === $filters.country_id)
-    : $filters.region_id
-      ? simpleInvestors.filter(inv => inv.region_id === $filters.region_id)
-      : simpleInvestors
+  let investors = $derived(
+    $filters.country_id
+      ? simpleInvestors.filter(inv => inv.country_id === $filters.country_id)
+      : $filters.region_id
+        ? simpleInvestors.filter(inv => inv.region_id === $filters.region_id)
+        : simpleInvestors,
+  )
 
-  let investorsBuckets: { [key: string]: CaseStatisticsInvestor[] }
-  $: investorsBuckets = {
+  let investorsBuckets: { [key: string]: CaseStatisticsInvestor[] } = $derived({
     pending: investors.filter(investor =>
       ["DRAFT", "REVIEW", "ACTIVATION"].includes(
         investor.draft_version__status as string,
       ),
     ),
     active: investors.filter(investor => investor.active_version_id !== null),
-  }
+  })
 
-  let showDownloadModal = false
-  let showFilterModal = false
+  let showDownloadModal = $state(false)
+  let showFilterModal = $state(false)
 
   const download = (e: DownloadEvent) => {
     const context: DownloadContext = {
       filters: $filters,
-      regions: $page.data.regions,
-      countries: $page.data.countries,
+      regions: page.data.regions,
+      countries: page.data.countries,
     }
     const objects = (model === "deal" ? dealsBuckets : investorsBuckets)[activeTabId!]
     const enrichedObjects = resolveCountryAndRegionNames(objects, context)
@@ -124,7 +128,7 @@
 <ul class="my-2 flex justify-end gap-6">
   <li>
     <ActionButton
-      on:click={() => (showFilterModal = true)}
+      onclick={() => (showFilterModal = true)}
       icon={AdjustmentsIcon}
       highlight={!$filters.isEmpty()}
       label={$_("Filter")}
@@ -132,7 +136,7 @@
   </li>
   <li>
     <ActionButton
-      on:click={() => (showDownloadModal = true)}
+      onclick={() => (showDownloadModal = true)}
       icon={DownloadIcon}
       label={$_("Download")}
     />
@@ -142,9 +146,7 @@
 <FilterModal
   bind:open={showFilterModal}
   disableAdvanced
-  on:submit={async () => {
-    showFilterModal = false
-  }}
+  onsubmit={() => (showFilterModal = false)}
 />
 
 <DownloadModal
@@ -164,7 +166,7 @@
         class={model === "deal"
           ? "border-b border-orange text-orange"
           : "text-gray-600 hover:text-orange dark:text-white"}
-        on:click={() => {
+        onclick={() => {
           model = "deal"
           activeTabId = "pending"
         }}
@@ -176,7 +178,7 @@
         class={model === "investor"
           ? "border-b border-pelorous text-pelorous"
           : "text-gray-600 hover:text-pelorous dark:text-white"}
-        on:click={() => {
+        onclick={() => {
           model = "investor"
           activeTabId = "pending"
         }}
@@ -205,7 +207,7 @@
                     : "font-bold text-pelorous"
                   : "text-gray-700 dark:text-white",
               )}
-              on:click={() => (activeTabId = item.id)}
+              onclick={() => (activeTabId = item.id)}
             >
               <span class="font-bold">
                 {#if model === "deal"}
