@@ -63,7 +63,7 @@
       title={msg.title}
       class={levelClasses[msg.level]}
       closeButtonText={$_("OK")}
-      on:close={() => {
+      onclose={() => {
         const checkbox = document.getElementById(`do-not-show-again-${msg.id}`)
         // typescript support for templates comes with svelte5:
         // https://github.com/sveltejs/svelte/issues/4701
@@ -83,5 +83,4 @@
       {/if}
     </Overlay>
   {/each}
-  <Overlay />
 {/await}
