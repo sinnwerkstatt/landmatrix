@@ -4,7 +4,11 @@
   import NewFooter from "$components/NewFooter.svelte"
   import Streamfield from "$components/StreamfieldHomepage.svelte"
 
-  export let page: WagtailPage
+  interface Props {
+    page: WagtailPage
+  }
+
+  let { page }: Props = $props()
 </script>
 
 <div class="w-full">

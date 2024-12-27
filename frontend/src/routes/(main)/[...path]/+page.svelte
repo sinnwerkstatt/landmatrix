@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _, locale } from "svelte-i18n"
 
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import { pageQuery } from "$lib/queries"
   import { loading } from "$lib/stores/basics"
@@ -13,26 +13,28 @@
   import HomePage from "./HomePage.svelte"
   import ObservatoryPage from "./ObservatoryPage.svelte"
 
-  export let data
+  let { data = $bindable() } = $props()
 
-  $: wagtailPage = {
-    WagtailRootPage: HomePage,
-    WagtailPage: BasePage,
-    ObservatoryPage: ObservatoryPage,
-  }[data.page.meta?.type.split(".")[1]]
+  let wagtailPage = $derived(
+    {
+      WagtailRootPage: HomePage,
+      WagtailPage: BasePage,
+      ObservatoryPage: ObservatoryPage,
+    }[data.page.meta?.type.split(".")[1]],
+  )
 
   let loadedLocale = $locale
 
   const reloadOnLocale = async (newLocale?: string | null) => {
     if (newLocale !== loadedLocale) {
       loading.set(true)
-      data = { ...data, page: await pageQuery($page.url, fetch) }
+      data = { ...data, page: await pageQuery(page.url, fetch) }
       loadedLocale = newLocale
       loading.set(false)
     }
   }
 
-  $: reloadOnLocale($locale)
+  locale.subscribe(loc => reloadOnLocale(loc))
 </script>
 
 <svelte:head>
@@ -40,7 +42,8 @@
 </svelte:head>
 
 {#if wagtailPage}
-  <svelte:component this={wagtailPage} page={data.page} />
+  {@const SvelteComponent = wagtailPage}
+  <SvelteComponent page={data.page} />
 {:else}
   Dieser Seitentyp existiert nicht: {data.page?.meta?.type}
 {/if}

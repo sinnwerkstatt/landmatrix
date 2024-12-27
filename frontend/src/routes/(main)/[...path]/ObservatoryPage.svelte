@@ -15,23 +15,37 @@
   import MapDataCharts from "$components/MapDataCharts.svelte"
   import NewFooter from "$components/NewFooter.svelte"
   import PageTitle from "$components/PageTitle.svelte"
-  import StatusPieChart from "$components/StatusPieChart.svelte"
+  // import StatusPieChart from "$components/StatusPieChart.svelte"
   import Streamfield from "$components/Streamfield.svelte"
   import ArticleList from "$components/Wagtail/ArticleList.svelte"
   import Twitter from "$components/Wagtail/Twitter.svelte"
 
-  export let page: ObservatoryPage
+  interface Props {
+    page: ObservatoryPage
+  }
 
-  let readMore = false
-  let totalSize = ""
-  let totalCount = ""
-  let chartDatSize: ChartData<"pie">
-  let chartDatCount: ChartData<"pie">
-  let filteredCountryProfiles: BlogPage[]
-  let filteredNewsPubs: BlogPage[]
+  let { page }: Props = $props()
 
-  $: regionID = page.region?.id
-  $: countryID = page.country?.id
+  let readMore = $state(false)
+  let totalSize = $state("")
+  let totalCount = $state("")
+  let chartDatSize: ChartData<"pie"> = $state()
+  let chartDatCount: ChartData<"pie"> = $state()
+  let filteredCountryProfiles: BlogPage[] = $derived(
+    (page.related_blogpages ?? []).filter(p =>
+      p.categories.find(c => c.slug && c.slug === "country-profile"),
+    ),
+  )
+  let filteredNewsPubs: BlogPage[] = $derived(
+    (page.related_blogpages ?? []).filter(p =>
+      p.categories.find(
+        c => c.slug && (c.slug === "news" || c.slug === "publications"),
+      ),
+    ),
+  )
+
+  let regionID = $derived(page.region?.id)
+  let countryID = $derived(page.country?.id)
 
   async function getAggregations() {
     let filters = new FilterValues().default()
@@ -125,12 +139,6 @@
     readMore = false
     getAggregations()
   })
-  $: filteredCountryProfiles = (page.related_blogpages ?? []).filter(p =>
-    p.categories.find(c => c.slug && c.slug === "country-profile"),
-  )
-  $: filteredNewsPubs = (page.related_blogpages ?? []).filter(p =>
-    p.categories.find(c => c.slug && (c.slug === "news" || c.slug === "publications")),
-  )
 
   const setGlobalLocationFilter = () => {
     if (page.region) {
@@ -156,7 +164,7 @@
       </div>
       {#if !readMore}
         <div class="mt-6">
-          <button on:click|preventDefault={() => (readMore = true)} class="text-orange">
+          <button onclick={() => (readMore = true)} class="text-orange" type="button">
             {$_("Read more")}
           </button>
         </div>
@@ -180,14 +188,16 @@
           <div class="text-orange">{$_("Size")}</div>
           <div class="mb-2">{totalSize} ha</div>
           <div class="mx-auto max-w-[80%]">
-            <StatusPieChart data={chartDatSize} unit="ha" />
+            <!-- TODO -->
+            <!--            <StatusPieChart data={chartDatSize} unit="ha" />-->
           </div>
         </div>
         <div class="text-center">
           <div class="text-orange">{$_("Number of deals")}</div>
           <div class="mb-2">{totalCount}</div>
           <div class="mx-auto max-w-[80%]">
-            <StatusPieChart data={chartDatCount} />
+            <!-- TODO -->
+            <!--            <StatusPieChart data={chartDatCount} />-->
           </div>
         </div>
       </div>
@@ -196,7 +206,7 @@
 </div>
 
 <div class="mx-auto w-[clamp(20rem,75%,56rem)]">
-  <MapDataCharts on:click={setGlobalLocationFilter} />
+  <MapDataCharts onclick={setGlobalLocationFilter} />
 </div>
 
 <div class="container mx-auto my-8 w-[clamp(20rem,75%,56rem)]">
