@@ -5,11 +5,21 @@
 
   import VirtualListSelect from "./VirtualListSelect.svelte"
 
-  export let regions: Region[] = []
-  export let value: Region | null = null
-  export let name: string | undefined = undefined
-  export let disabled = false
-  export let required = false
+  interface Props {
+    regions?: Region[]
+    value?: Region | null
+    name?: string | undefined
+    disabled?: boolean
+    required?: boolean
+  }
+
+  let {
+    regions = [],
+    value = $bindable(null),
+    name = undefined,
+    disabled = false,
+    required = false,
+  }: Props = $props()
 </script>
 
 <VirtualListSelect

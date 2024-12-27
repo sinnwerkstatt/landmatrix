@@ -1,4 +1,4 @@
-import type { SvelteComponent } from "svelte"
+import type { Component } from "svelte"
 import { _ } from "svelte-i18n"
 import { derived } from "svelte/store"
 
@@ -17,8 +17,8 @@ import NetworkGraphDisplay from "./NetworkGraph/Display.svelte"
 
 export interface SectionSpecs {
   label: string
-  display?: typeof SvelteComponent<{ investor: InvestorHull }>
-  edit?: typeof SvelteComponent<{ investor: InvestorHull }>
+  display?: Component<{ investor: InvestorHull }>
+  edit?: Component<{ investor: InvestorHull }>
 }
 
 export const investorSectionLookup = derived(

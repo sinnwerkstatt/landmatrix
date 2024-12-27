@@ -4,10 +4,13 @@
   import CurrencySelect from "$components/Fields/Edit2/CurrencySelect.svelte"
   import EditField from "$components/Fields/EditField.svelte"
 
-  export let entry: Mutable<Involvement>
-  export let model: Model = "investor"
+  interface Props {
+    entry: Mutable<Involvement>
+    model?: Model
+    extras?: { excludeIds?: number[] }
+  }
 
-  export let extras: { excludeIds?: number[] } = {}
+  let { entry = $bindable(), model = "investor", extras = {} }: Props = $props()
 </script>
 
 <div class="grid lg:grid-cols-2 lg:gap-4">

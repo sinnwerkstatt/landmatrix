@@ -3,7 +3,11 @@
 
   import EditBase from "./Edit.svelte"
 
-  export let investor: InvestorHull
+  interface Props {
+    investor: InvestorHull
+  }
+
+  let { investor = $bindable() }: Props = $props()
 </script>
 
 <EditBase bind:investor />
