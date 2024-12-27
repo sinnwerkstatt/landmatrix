@@ -6,7 +6,11 @@
   import LowLevelNullBooleanField from "$components/Fields/Edit2/LowLevelNullBooleanField.svelte"
   import EditField from "$components/Fields/EditField.svelte"
 
-  export let entry: DataSource
+  interface Props {
+    entry: DataSource
+  }
+
+  let { entry = $bindable() }: Props = $props()
 
   const TYPES_REQUIRING_FILE_UPLOAD: DataSourceType[] = [
     "COMPANY_SOURCES",
@@ -17,7 +21,9 @@
     "RESEARCH_PAPER_OR_POLICY_REPORT",
   ]
 
-  $: fileUploadRequired = entry.type && TYPES_REQUIRING_FILE_UPLOAD.includes(entry.type)
+  let fileUploadRequired = $derived(
+    entry.type && TYPES_REQUIRING_FILE_UPLOAD.includes(entry.type),
+  )
 </script>
 
 <EditField fieldname="datasource.type" bind:value={entry.type} showLabel />
