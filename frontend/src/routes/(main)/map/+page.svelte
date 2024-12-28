@@ -209,6 +209,7 @@
     if (country_id && region_id) return
 
     if (!browser || !bigmap) return
+    const mapView = bigmap.getView()
     let coords: [number, number] = [0, 0]
     let zoom = ZOOM_LEVEL.REGION_CLUSTERS
     if (country_id) {
@@ -221,7 +222,11 @@
     if (zoom < current_zoom) {
       // zooming out, apply filter after flying to avoid loading of pins for entire region
       skipMapRefresh = true
-      bigmap.flyTo(coords, zoom)
+      mapView.animate({
+        center: fromLonLat([coords[1], coords[0]]),
+        zoom: zoom,
+        duration: 300,
+      })
       setTimeout(() => {
         skipMapRefresh = false
         refreshMap()
@@ -229,13 +234,25 @@
     } else {
       // zooming in, apply filter before flying
       refreshMap()
-      setTimeout(() => bigmap.flyTo(coords, zoom), 700)
+      setTimeout(
+        () =>
+          mapView.animate({
+            center: fromLonLat([coords[1], coords[0]]),
+            zoom: zoom,
+            duration: 300,
+          }),
+        700,
+      )
     }
   }
 
   const displayDealsCountUnsubscribe = displayDealsCount.subscribe(() => refreshMap())
-  $: if ($dealsNG) refreshMarkers()
-  $: flyToCountryOrRegion($filters.country_id, $filters.region_id)
+
+  dealsNG.subscribe(() => refreshMarkers())
+
+  $effect(() => {
+    flyToCountryOrRegion($filters.country_id, $filters.region_id)
+  })
 
   onMount(() => {
     showContextBar.set(!$isMobile)
@@ -249,79 +266,80 @@
 
 <DataContainer>
   <div class="h-full w-full">
-    <BigMap
+    <OLMap
       containerClass="min-h-full h-full"
-      on:ready={bigMapIsReady}
+      mapReady={bigMapIsReady}
       options={{
         minZoom: ZOOM_LEVEL.REGION_CLUSTERS,
         zoom: ZOOM_LEVEL.REGION_CLUSTERS,
+        center: [30, 12],
         zoomControl: false,
-        //gestureHandling: false,
-        center: [12, 30],
       }}
-      showLayerSwitcher={false}
     />
   </div>
 
-  <div slot="FilterBar">
-    <h2 class="heading5 my-2 px-2">{$_("Map settings")}</h2>
-    <!--    <FilterCollapse expanded title={$_("Displayed data")}>-->
-    <!--      <label class="block">-->
-    <!--        <input-->
-    <!--          bind:group={$displayDealsCount}-->
-    <!--          name="deals-count-display"-->
-    <!--          class="radio-btn"-->
-    <!--          type="radio"-->
-    <!--          value={true}-->
-    <!--        />-->
-    <!--        {$_("Number of deal locations")}-->
-    <!--      </label>-->
-    <!--      <label class="block">-->
-    <!--        <input-->
-    <!--          bind:group={$displayDealsCount}-->
-    <!--          name="deals-count-display"-->
-    <!--          class="radio-btn"-->
-    <!--          type="radio"-->
-    <!--          value={false}-->
-    <!--        />-->
-    <!--        {$_("Area (ha)")}-->
-    <!--      </label>-->
-    <!--    </FilterCollapse>-->
-    <FilterCollapse expanded title={$_("Base layer")}>
-      {#each getBaseLayers($_) as layer}
-        <label class="block">
-          <input
-            type="radio"
-            name="base-layer-switch"
-            bind:group={$visibleLayer}
-            value={layer.id}
-            class="radio-btn"
-          />
-          {layer.name}
-        </label>
-      {/each}
-    </FilterCollapse>
+  {#snippet FilterBarSnippet()}
+    <div>
+      <h2 class="heading5 my-2 px-2">{$_("Map settings")}</h2>
+      <!--      <FilterCollapse expanded title={$_("Displayed data")}>-->
+      <!--        <label class="block">-->
+      <!--          <input-->
+      <!--            bind:group={$displayDealsCount}-->
+      <!--            name="deals-count-display"-->
+      <!--            class="radio-btn"-->
+      <!--            type="radio"-->
+      <!--            value={true}-->
+      <!--          />-->
+      <!--          {$_("Number of deal locations")}-->
+      <!--        </label>-->
+      <!--        <label class="block">-->
+      <!--          <input-->
+      <!--            bind:group={$displayDealsCount}-->
+      <!--            name="deals-count-display"-->
+      <!--            class="radio-btn"-->
+      <!--            type="radio"-->
+      <!--            value={false}-->
+      <!--          />-->
+      <!--          {$_("Area (ha)")}-->
+      <!--        </label>-->
+      <!--      </FilterCollapse>-->
 
-    <FilterCollapse title={$_("Context layers")}>
-      {#each getContextLayers($_) as layer}
-        <label class="block">
-          <input
-            type="checkbox"
-            bind:group={$visibleContextLayers}
-            value={layer.id}
-            class="checkbox-btn"
-          />
-          {layer.name}
-          {#if $visibleContextLayers.includes(layer.id)}
-            <img
-              alt="Legend for {layer.name}"
-              src={layer.legendUrlFunction()}
-              class="mb-4 ml-4 mt-2 border"
-              loading="lazy"
+      <FilterCollapse expanded title={$_("Base layer")}>
+        {#each baseLayers as layer}
+          <label class="block">
+            <input
+              type="radio"
+              name="base-layer-switch"
+              bind:group={selectedLayers.baseLayer}
+              value={layer.id}
+              class="radio-btn"
             />
-          {/if}
-        </label>
-      {/each}
-    </FilterCollapse>
-  </div>
+            {layer.name}
+          </label>
+        {/each}
+      </FilterCollapse>
+
+      <FilterCollapse title={$_("Context layers")}>
+        {#each contextLayers as layer}
+          <label class="block">
+            <input
+              type="checkbox"
+              bind:group={selectedLayers.contextLayers}
+              value={layer.id}
+              class="checkbox-btn"
+            />
+            {layer.name}
+            {#if selectedLayers.contextLayers.includes(layer.id)}
+              <img
+                alt="Legend for {layer.name}"
+                src={layer.legend}
+                class="mb-4 ml-4 mt-2 border"
+                loading="lazy"
+              />
+            {/if}
+          </label>
+        {/each}
+      </FilterCollapse>
+    </div>
+  {/snippet}
 </DataContainer>

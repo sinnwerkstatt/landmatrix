@@ -1,88 +1,68 @@
 <script lang="ts">
-  import type { Map, MarkerOptions } from "leaflet?client"
-  import { DivIcon, FeatureGroup, Marker } from "leaflet?client"
+  import { Feature } from "ol"
+  import { Point } from "ol/geom"
+  import VectorLayer from "ol/layer/Vector"
+  import type Map from "ol/Map"
+  import { fromLonLat } from "ol/proj"
+  import { Vector as VectorSource } from "ol/source"
   import { _ } from "svelte-i18n"
 
   import { browser } from "$app/environment"
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import { filters } from "$lib/filters"
   import type { Marker as MarkerType } from "$lib/types/wagtail"
 
-  import BigMap from "$components/Map/BigMap.svelte"
+  import OLMap from "$components/Map/OLMap.svelte"
 
-  import { LMCircleClass, styleCircle } from "./mapHelper"
+  import { markerStyle, olStyle2 } from "./mapHelper"
 
-  export let countryID: number
-  export let regionID: number
-  export let markers: MarkerType[] = []
-
-  let map: Map
-  let featureGroup: FeatureGroup
-
-  $: {
-    if (map) {
-      if (regionID) {
-        const reg = $page.data.regions.find(r => r.id === regionID)!
-        map.fitBounds(
-          [
-            [reg.point_lat_min, reg.point_lon_min],
-            [reg.point_lat_max, reg.point_lon_max],
-          ],
-          { animate: false },
-        )
-      } else if (countryID) {
-        const country = $page.data.countries.find(c => c.id === countryID)!
-        map.fitBounds(
-          [
-            [country.point_lat_min, country.point_lon_min],
-            [country.point_lat_max, country.point_lon_max],
-          ],
-          { animate: false },
-        )
-      } else {
-        map.fitWorld({ animate: false })
-      }
-    }
+  interface Props {
+    countryID?: number
+    regionID?: number
+    markers?: MarkerType[]
   }
 
-  $: {
-    if (map && markers && browser) {
-      if (!featureGroup) featureGroup = new FeatureGroup()
-      else featureGroup.clearLayers()
-      featureGroup.addTo(map)
+  let { countryID, regionID, markers = [] }: Props = $props()
 
-      if (regionID) _drawRegionMarkers()
-      else if (countryID) _drawCountryMarkers()
-      else _drawGlobalMarkers()
-    }
-  }
+  let map: Map | undefined = $state()
+  const markersVectorSource = new VectorSource({})
 
   function _drawGlobalMarkers() {
     for (let mark of markers) {
-      let circle = new Marker(mark.coordinates, {
-        icon: new DivIcon({ className: LMCircleClass }),
+      console.log(mark)
+      const feature = new Feature({
+        geometry: new Point(fromLonLat([mark.coordinates[1], mark.coordinates[0]])),
         regionId: mark.region_id,
-      } as MarkerOptions)
-      featureGroup.addLayer(circle)
-      const country_name = $page.data.regions.find(r => r.id === mark.region_id)!.name
-      styleCircle(circle, mark.count! / 50, country_name, true, 30)
+      })
+      const country_name = page.data.regions.find(r => r.id === mark.region_id)!.name
+      // styleCircle(circle, mark.count! / 50, country_name, true, 30)
+      feature.setStyle(olStyle2(mark.count! / 50, country_name))
+      markersVectorSource.addFeature(feature)
     }
   }
 
   function _drawRegionMarkers() {
     for (let mark of markers) {
-      let circle = new Marker(mark.coordinates, {
-        icon: new DivIcon({ className: LMCircleClass }),
+      const feature = new Feature({
+        geometry: new Point(fromLonLat([mark.coordinates[1], mark.coordinates[0]])),
         countryId: mark.country_id,
-      } as MarkerOptions)
-      featureGroup.addLayer(circle)
-      styleCircle(circle, mark.count! / 20, mark.count!.toString(), true, 15)
+      })
+
+      const radius = mark.count! / 10
+      feature.setStyle(olStyle2(radius, mark.count?.toString()))
+
+      markersVectorSource.addFeature(feature)
     }
   }
 
   function _drawCountryMarkers() {
-    for (let mark of markers) featureGroup.addLayer(new Marker(mark.coordinates))
+    for (let mark of markers)
+      markersVectorSource.addFeature(
+        new Feature({
+          geometry: new Point(fromLonLat([mark.coordinates[1], mark.coordinates[0]])),
+        }),
+      )
   }
 
   const onClickMap = async () => {
@@ -94,6 +74,48 @@
       $filters.country_id = countryID
     }
   }
+
+  const drawMarkers = () => {
+    if (!map || !markers || !browser) return
+
+    if (regionID) _drawRegionMarkers()
+    else if (countryID) _drawCountryMarkers()
+    else _drawGlobalMarkers()
+  }
+
+  const onMapReady = (_map: Map) => {
+    map = _map
+
+    map.addLayer(
+      new VectorLayer({
+        source: markersVectorSource,
+        style: () => markerStyle,
+      }),
+    )
+
+    let extent: number[] | undefined
+    if (regionID) {
+      const reg = page.data.regions.find(r => r.id === regionID)!
+      extent = [
+        ...fromLonLat([reg.point_lon_min, reg.point_lat_min]),
+        ...fromLonLat([reg.point_lon_max, reg.point_lat_max]),
+      ]
+    } else if (countryID) {
+      const country = page.data.countries.find(c => c.id === countryID)!
+      extent = [
+        ...fromLonLat([country.point_lon_min, country.point_lat_min]),
+        ...fromLonLat([country.point_lon_max, country.point_lat_max]),
+      ]
+    } else {
+      const mapView = map.getView()
+      mapView.setCenter(fromLonLat([12, 30]))
+      mapView.setZoom(0)
+    }
+
+    if (extent) map.getView().fit(extent, { padding: [30, 30, 30, 30] })
+
+    drawMarkers()
+  }
 </script>
 
 <div
@@ -102,7 +124,7 @@
   <a
     class="group absolute z-20 flex h-full w-full bg-transparent transition duration-300 hover:bg-orange/20"
     href="/map/"
-    on:click={onClickMap}
+    onclick={onClickMap}
   >
     <span
       class="z-1 hover-text invisible w-full self-center text-center text-[4rem] font-bold text-white opacity-0 transition duration-500 group-hover:visible group-hover:opacity-100"
@@ -110,16 +132,9 @@
       {$_("Go to map")}
     </span>
   </a>
-  <BigMap
-    options={{
-      zoomControl: false,
-      dragging: false,
-      doubleClickZoom: false,
-      boxZoom: false,
-      center: [12, 30],
-    }}
+  <OLMap
     containerClass="min-h-full h-full"
-    showLayerSwitcher={false}
-    on:ready={m => (map = m.detail)}
+    mapReady={onMapReady}
+    options={{ zoomControl: false, center: [12, 30] }}
   />
 </div>

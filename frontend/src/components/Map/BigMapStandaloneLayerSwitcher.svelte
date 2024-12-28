@@ -1,9 +1,6 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n"
-
   import LayerGroup from "$components/icons/LayerGroup.svelte"
-
-  import { getBaseLayers, visibleLayer } from "./layers"
+  import { baseLayers, selectedLayers } from "$components/Map/mapstuff.svelte"
 
   let shown: boolean = $state(false)
 </script>
@@ -21,13 +18,13 @@
     />
   {:else}
     <ul>
-      {#each getBaseLayers($_) as layer}
+      {#each baseLayers as layer}
         <li class="p-1">
-          {#if layer.id === $visibleLayer}
+          {#if layer.id === selectedLayers.baseLayer}
             <div>{layer.name}</div>
           {:else}
             <button
-              onclick={() => visibleLayer.set(layer.id)}
+              onclick={() => (selectedLayers.baseLayer = layer.id)}
               class="text-orange"
               type="button"
             >
