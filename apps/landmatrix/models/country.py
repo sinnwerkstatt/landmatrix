@@ -103,7 +103,7 @@ class Region(models.Model):
     slug = models.SlugField(_("Slug"))
 
     point_lat_min = models.DecimalField(
-        _("Latitude of northernmost point"),
+        _("Latitude of southernmost point"),
         max_digits=18,
         decimal_places=12,
     )
@@ -113,7 +113,7 @@ class Region(models.Model):
         decimal_places=12,
     )
     point_lat_max = models.DecimalField(
-        _("Latitude of southernmost point"),
+        _("Latitude of northernmost point"),
         max_digits=18,
         decimal_places=12,
     )
