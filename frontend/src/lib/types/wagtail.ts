@@ -25,7 +25,7 @@ export interface CountryOrRegion {
   name: string
   // slug?: string
   observatory_page_id: number | null
-  // observatory_page?: ObservatoryPage
+  observatory_page?: ObservatoryPage
   point_lat_min: number
   point_lat_max: number
   point_lon_min: number

@@ -1,102 +1,59 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
-  import type { SortBy } from "$lib/data/buckets"
-  import {
-    getImplementationStatusColor,
-    implementationStatusReducer,
-  } from "$lib/data/charts/implementationStatus"
-  import {
-    createNegotiationStatusGroupReducer,
-    getNegotiationStatusGroupColor,
-  } from "$lib/data/charts/negotiationStatusGroup"
-  import {
-    getProduceGroupColor,
-    produceGroupReducer,
-  } from "$lib/data/charts/produceGroup"
-  import { createChartData } from "$lib/data/createChartData"
+  import { type SortBy } from "$lib/data/buckets"
   import { filters } from "$lib/filters"
-  import { createGroupMap, createLabels, dealsNG, fieldChoices } from "$lib/stores"
+  import { dealsNG } from "$lib/stores"
   import { observatoryPages } from "$lib/stores/wagtail"
-  import {
-    NegotiationStatusGroup,
-    ProduceGroup,
-    type ImplementationStatus,
-    type NegStatGroupMap,
-  } from "$lib/types/data"
   import type { CountryOrRegion } from "$lib/types/wagtail"
   import { sum } from "$lib/utils/dataProcessing"
 
+  import {
+    getImplementationBuckets,
+    getNegotiationBuckets,
+    getProduce,
+  } from "$components/Data/contextBar.svelte"
   import DealDisplayToggle from "$components/DealDisplayToggle.svelte"
   import { displayDealsCount } from "$components/Map/mapHelper"
-  import StatusPieChart from "$components/StatusPieChart.svelte"
+  import StatusBarChart from "$components/StatusBarChart.svelte"
 
   import ContextBarContainer from "./ContextBarContainer.svelte"
 
-  $: deals = $dealsNG.map(d => d.selected_version)
+  let deals = $derived($dealsNG.map(d => d.selected_version))
 
-  let currentItem: CountryOrRegion
-  $: if (!$filters.region_id && !$filters.country_id) {
-    currentItem = {
-      name: "Global",
-      observatory_page: $observatoryPages.find(o => !o.country && !o.region),
-    } as unknown as CountryOrRegion
-  } else {
-    currentItem = {
-      ...($filters.region_id
-        ? $page.data.regions.find(r => r.id === $filters.region_id)
-        : $page.data.countries.find(c => c.id === $filters.country_id)),
-    } as CountryOrRegion
-    currentItem.observatory_page = $observatoryPages.find(
-      o => o.id === currentItem.observatory_page_id,
-    )
-  }
+  let currentItem: CountryOrRegion | undefined = $derived.by(() => {
+    let _currentItem: CountryOrRegion | undefined
+    if (!$filters.region_id && !$filters.country_id) {
+      _currentItem = {
+        name: "Global",
+        observatory_page: $observatoryPages.find(o => !o.country && !o.region),
+      } as unknown as CountryOrRegion
+    } else {
+      _currentItem = {
+        ...($filters.region_id
+          ? page.data.regions.find(r => r.id === $filters.region_id)
+          : page.data.countries.find(c => c.id === $filters.country_id)),
+      } as CountryOrRegion
+      _currentItem.observatory_page = $observatoryPages.find(
+        o => o.id === _currentItem!.observatory_page_id,
+      )
+    }
+    return _currentItem
+  })
 
-  let unit: "deals" | "ha"
-  let sortBy: SortBy
-  $: unit = $displayDealsCount ? "deals" : "ha"
-  $: sortBy = $displayDealsCount ? "count" : "size"
+  let sortBy: SortBy = $derived($displayDealsCount ? "count" : "size")
 
-  $: negStatGroupMap = createGroupMap<NegStatGroupMap>(
-    $fieldChoices.deal.negotiation_status,
+  let chartNegStat = $derived(getNegotiationBuckets(deals, sortBy === "size"))
+  let chartImpStat = $derived(getImplementationBuckets(deals, sortBy === "size"))
+  let chartProd = $derived(getProduce(deals, sortBy === "size"))
+
+  let totalCount = $derived(
+    $displayDealsCount
+      ? `${Math.round(deals.length).toLocaleString("fr").replace(",", ".")}`
+      : `${Math.round(sum(deals, "deal_size")).toLocaleString("fr").replace(",", ".")} ha`,
   )
-
-  $: negStatGroupLabels = createLabels<NegotiationStatusGroup>(
-    $fieldChoices.deal.negotiation_status_group,
-  )
-
-  $: chartNegStat = createChartData(
-    createNegotiationStatusGroupReducer(negStatGroupMap),
-    Object.values(NegotiationStatusGroup),
-    (key: NegotiationStatusGroup) => negStatGroupLabels[key],
-    getNegotiationStatusGroupColor,
-  )(deals, sortBy)
-
-  $: impStatLabels = createLabels<ImplementationStatus>(
-    $fieldChoices.deal.implementation_status,
-  )
-
-  $: chartImpStat = createChartData<ImplementationStatus>(
-    implementationStatusReducer,
-    Object.keys(impStatLabels) as ImplementationStatus[],
-    (key: ImplementationStatus) => impStatLabels[key],
-    getImplementationStatusColor,
-  )(deals, sortBy)
-
-  $: produceGroupLabels = createLabels<ProduceGroup>($fieldChoices.deal.produce_group)
-
-  $: chartProd = createChartData<ProduceGroup>(
-    produceGroupReducer,
-    Object.values(ProduceGroup),
-    (produceGroup: ProduceGroup) => produceGroupLabels[produceGroup],
-    getProduceGroupColor,
-  )(deals, sortBy)
-
-  $: totalCount = $displayDealsCount
-    ? `${Math.round(deals.length).toLocaleString("fr").replace(",", ".")}`
-    : `${Math.round(sum(deals, "deal_size")).toLocaleString("fr").replace(",", ".")} ha`
 </script>
 
 <ContextBarContainer>
@@ -120,17 +77,23 @@
       </div>
       <div class="mb-6 w-full">
         <h5 class="mb-3 text-center text-lg font-bold">{$_("Negotiation status")}</h5>
-        <StatusPieChart data={chartNegStat} {unit} />
+        {#key chartNegStat}
+          <StatusBarChart data={chartNegStat} width={280} />
+        {/key}
       </div>
       <div class="mb-6 w-full">
         <h5 class="mb-3 text-center text-lg font-bold">
           {$_("Implementation status")}
         </h5>
-        <StatusPieChart data={chartImpStat} {unit} />
+        {#key chartImpStat}
+          <StatusBarChart data={chartImpStat} width={280} />
+        {/key}
       </div>
       <div class="mb-6 w-full">
         <h5 class="mb-3 text-center text-lg font-bold">{$_("Produce")}</h5>
-        <StatusPieChart data={chartProd} {unit} />
+        {#key chartProd}
+          <StatusBarChart data={chartProd} width={280} />
+        {/key}
       </div>
     </div>
   {/if}

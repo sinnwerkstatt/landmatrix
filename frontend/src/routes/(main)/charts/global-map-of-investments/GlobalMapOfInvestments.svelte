@@ -2,7 +2,7 @@
   import { tracker } from "@sinnwerkstatt/sveltekit-matomo"
 
   import { browser } from "$app/environment"
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import { filters, FilterValues } from "$lib/filters"
 
@@ -20,15 +20,17 @@
   } from "./globalMapOfInvestments"
   import { createGlobalMapOfInvestments } from "./globalMapOfInvestments"
 
-  export let title: string
+  interface Props {
+    title: string
+  }
+  let { title }: Props = $props()
 
-  let globalMap: GlobalMap | null = null
-  let investments: Investments | null = null
-  let svgElement: SVGElement
+  let globalMap: GlobalMap | null = $state(null)
+  let investments: Investments | null = $state(null)
+  let svgElement: SVGElement | undefined = $state()
 
-  let hoverCountryId: number | undefined
-  let selectedCountryId: number | undefined
-  $: selectedCountryId = $filters.country_id
+  let hoverCountryId: number | undefined = $state()
+  let selectedCountryId: number | undefined = $derived($filters.country_id)
 
   const setSelectedCountryId = (id: number | undefined) => {
     $filters.country_id = id
@@ -45,25 +47,30 @@
     )
     investments = await ret.json()
   }
-  $: grabInvestments($filters)
+  $effect(() => {
+    grabInvestments($filters)
+  })
 
-  $: if (investments) {
-    globalMap = createGlobalMapOfInvestments(
-      svgElement,
-      investments,
-      setSelectedCountryId,
-      setHoverCountryId,
-    )
-  }
+  $effect(() => {
+    if (investments) {
+      globalMap = createGlobalMapOfInvestments(
+        svgElement!,
+        investments,
+        setSelectedCountryId,
+        setHoverCountryId,
+      )
+    }
+  })
 
-  $: if (browser && globalMap && investments) {
-    globalMap.selectCountry($filters.country_id)
-  }
+  $effect(() => {
+    if (browser && globalMap && investments) {
+      globalMap.selectCountry($filters.country_id)
+    }
+  })
 
-  export const toJSON = (data: CountryInvestments): string =>
-    JSON.stringify(data, null, 2)
+  const toJSON = (data: CountryInvestments): string => JSON.stringify(data, null, 2)
 
-  export const toCSV = (data: CountryInvestments): string => {
+  const toCSV = (data: CountryInvestments): string => {
     let ret = "country,incoming,outgoing,size(ha),count\n"
     Object.entries(data.incoming).forEach(
       ([countryName, investment]) =>
@@ -80,7 +87,7 @@
     Object.fromEntries(
       Object.entries(countryInvestmentsMap)
         .map(([countryId, investment]) => {
-          const country = $page.data.countries.find(c => c.id === +countryId)
+          const country = page.data.countries.find(c => c.id === +countryId)
           return [country?.name, investment]
         })
         .filter(([name]) => !!name),

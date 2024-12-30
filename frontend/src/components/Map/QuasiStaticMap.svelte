@@ -30,7 +30,7 @@
 
   function _drawGlobalMarkers() {
     for (let mark of markers) {
-      console.log(mark)
+      // console.log(mark)
       const feature = new Feature({
         geometry: new Point(fromLonLat([mark.coordinates[1], mark.coordinates[0]])),
         regionId: mark.region_id,
