@@ -26,13 +26,11 @@
   import { createPointFeatures, fitBounds } from "./locations"
   import LocationTooltip from "./LocationTooltip.svelte"
 
-  export let deal: DealHull
+  interface Props {
+    deal: DealHull
+  }
 
-  let map: Map | undefined
-  let markerFeatureGroup: GeoJSON<PointFeatureProps, Point>
-
-  let selectedLocationId: string | undefined
-  let hoverLocationId: string | undefined
+  let { deal }: Props = $props()
 
   $: countryCoords = createCoordinatesMap($page.data.countries)
 
@@ -129,39 +127,40 @@
       bind:selectedEntryId={selectedLocationId}
       bind:hoverEntryId={hoverLocationId}
       label={$_("Location")}
-      let:entry={location}
     >
-      <DisplayField
-        value={location.level_of_accuracy}
-        fieldname="location.level_of_accuracy"
-        showLabel
-      />
-      <DisplayField value={location.name} fieldname="location.name" showLabel />
-      <DisplayField value={location.point} fieldname="location.point" showLabel />
-      <DisplayField
-        value={location.description}
-        fieldname="location.description"
-        showLabel
-      />
-      <DisplayField
-        value={location.facility_name}
-        fieldname="location.facility_name"
-        showLabel
-      />
-      <DisplayField value={location.comment} fieldname="location.comment" showLabel />
-      <LocationAreasField
-        {map}
-        label={$_("Areas")}
-        areas={location.areas}
-        fieldname="location.areas"
-        isSelectedEntry={!selectedLocationId || location.nid === selectedLocationId}
-      />
+      {#snippet children(location: components["schemas"]["Location"])}
+        <DisplayField
+          value={location.level_of_accuracy}
+          fieldname="location.level_of_accuracy"
+          showLabel
+        />
+        <DisplayField value={location.name} fieldname="location.name" showLabel />
+        <DisplayField value={location.point} fieldname="location.point" showLabel />
+        <DisplayField
+          value={location.description}
+          fieldname="location.description"
+          showLabel
+        />
+        <DisplayField
+          value={location.facility_name}
+          fieldname="location.facility_name"
+          showLabel
+        />
+        <DisplayField value={location.comment} fieldname="location.comment" showLabel />
+        <LocationAreasField
+          {map}
+          label={$_("Areas")}
+          areas={location.areas}
+          fieldname="location.areas"
+          isSelectedEntry={!selectedLocationId || location.nid === selectedLocationId}
+        />
+      {/snippet}
     </SubmodelDisplayField>
   </div>
   <div class="sticky top-0 h-[600px] w-full p-2 lg:w-3/5">
-    <BigMap
+    <OLMap
       containerClass="min-h-full h-full"
-      on:ready={onMapReady}
+      mapReady={onMapReady}
       options={{ center: [0, 0] }}
     />
   </div>
