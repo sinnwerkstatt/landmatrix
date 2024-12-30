@@ -13,29 +13,42 @@
 
   import { cardClass, labelClass } from "./JSONFieldComponents/consts"
 
-  export let value: JSONCurrentDateAreaChoicesFieldType[]
-  export let fieldname: string
-  export let extras: { choices: ValueLabelEntry[] } = { choices: [] }
+  interface Props {
+    value: JSONCurrentDateAreaChoicesFieldType[]
+    fieldname: string
+    extras?: { choices: ValueLabelEntry[] }
+  }
 
-  const createEmptyEntry = (): JSONCurrentDateAreaChoicesFieldType => ({
+  let { value = $bindable(), fieldname, extras = { choices: [] } }: Props = $props()
+
+  const emptyEntry: JSONCurrentDateAreaChoicesFieldType = {
     choices: [],
     date: null,
     area: null,
     current: false,
-  })
+  }
 
-  let valueCopy = structuredClone<JSONCurrentDateAreaChoicesFieldType[]>(
-    value.length ? value : [createEmptyEntry()],
+  let valueCopy: JSONCurrentDateAreaChoicesFieldType[] = $state(
+    value.length ? $state.snapshot(value) : [structuredClone(emptyEntry)],
   )
 
-  $: value = valueCopy.filter(val => val.choices.length || !!val.area)
+  let updateVal = () => {
+    value = valueCopy.filter(val => val.choices.length || !!val.area)
+  }
 
-  const addEntry = () => (valueCopy = [...valueCopy, createEmptyEntry()])
+  const addEntry = () => {
+    valueCopy = [...valueCopy, structuredClone(emptyEntry)]
+    updateVal()
+  }
 
-  const removeEntry = (index: number) =>
-    (valueCopy = valueCopy.filter((_val, i) => i !== index))
+  const removeEntry = (index: number) => {
+    valueCopy = valueCopy.filter((_val, i) => i !== index)
+    updateVal()
+  }
 
-  $: isCurrentRequired = value.length ? !value.some(val => val.current) : false
+  let isCurrentRequired = $derived(
+    value.length ? !value.some(val => val.current) : false,
+  )
 </script>
 
 <div class="grid gap-2 xl:grid-cols-2">
@@ -51,30 +64,34 @@
             required: !!(val.date || val.area),
           }}
           fieldname="{fieldname}_{i}_choices"
+          onchange={updateVal}
         />
       </label>
 
       <label class={labelClass} for={undefined}>
         {$_("Area")}
+        <!-- todo marcus: area is string? -->
         <LowLevelDecimalField
           bind:value={val.area}
           unit={$_("ha")}
           name="{fieldname}_{i}_area"
           class="w-36"
+          onchange={updateVal}
         />
       </label>
 
-      <Date bind:value={val.date} name="{fieldname}_{i}_date" />
+      <Date bind:value={val.date} name="{fieldname}_{i}_date" onchange={updateVal} />
 
       <CurrentCheckbox
         bind:checked={val.current}
         name="{fieldname}_{i}_current"
         required={isCurrentRequired}
+        onchange={updateVal}
       />
 
-      <RemoveButton disabled={valueCopy.length <= 1} on:click={() => removeEntry(i)} />
+      <RemoveButton disabled={valueCopy.length <= 1} onclick={() => removeEntry(i)} />
     </div>
   {/each}
 
-  <AddButton on:click={addEntry} />
+  <AddButton onclick={addEntry} />
 </div>

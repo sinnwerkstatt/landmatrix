@@ -70,3 +70,22 @@ export function slugify(str: string) {
 export async function getCsrfToken() {
   return (await (await fetch(`/api/csrf_token/`)).json()).token
 }
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function debounce<T extends (...args: any[]) => any>(
+  func: T,
+  wait: number = 300,
+): T {
+  let timeout: NodeJS.Timeout
+
+  console.log("running the bouncei")
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return function (this: any, ...args: Parameters<T>): ReturnType<T> {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const context = this
+    clearTimeout(timeout)
+    timeout = setTimeout(() => func.apply(context, args), wait)
+    return undefined as unknown as ReturnType<T>
+  } as T
+}

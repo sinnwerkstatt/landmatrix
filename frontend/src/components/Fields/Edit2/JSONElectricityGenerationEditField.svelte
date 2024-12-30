@@ -2,6 +2,7 @@
   import { _ } from "svelte-i18n"
   import { slide } from "svelte/transition"
 
+  // TODO NUTS they are not fully loaded
   import { fieldChoices } from "$lib/stores"
   import type { JSONElectricityGenerationFieldType } from "$lib/types/data"
 
@@ -14,10 +15,14 @@
 
   import { cardClass, labelClass } from "./JSONFieldComponents/consts"
 
-  export let value: JSONElectricityGenerationFieldType[]
-  export let fieldname: string
+  interface Props {
+    value: JSONElectricityGenerationFieldType[]
+    fieldname: string
+  }
 
-  const createEmptyEntry = (): JSONElectricityGenerationFieldType => ({
+  let { value = $bindable(), fieldname }: Props = $props()
+
+  const emptyEntry: JSONElectricityGenerationFieldType = {
     current: false,
     date: null,
     area: null,
@@ -26,20 +31,29 @@
     windfarm_count: null,
     current_capacity: null,
     intended_capacity: null,
-  })
+  }
 
-  let valueCopy: JSONElectricityGenerationFieldType[] = structuredClone(
-    value.length ? value : [createEmptyEntry()],
+  let valueCopy: JSONElectricityGenerationFieldType[] = $state(
+    value.length ? $state.snapshot(value) : [structuredClone(emptyEntry)],
   )
 
-  $: value = valueCopy.filter(val => val.choices.length > 0)
+  const updateVal = () => {
+    value = valueCopy.filter(val => val.choices.length > 0)
+  }
 
-  const addEntry = () => (valueCopy = [...valueCopy, createEmptyEntry()])
+  const addEntry = () => {
+    valueCopy = [...valueCopy, structuredClone(emptyEntry)]
+    updateVal()
+  }
 
-  const removeEntry = (index: number) =>
-    (valueCopy = valueCopy.filter((_val, i) => i !== index))
+  const removeEntry = (index: number) => {
+    valueCopy = valueCopy.filter((_val, i) => i !== index)
+    updateVal()
+  }
 
-  $: isCurrentRequired = value.length ? !value.some(val => val.current) : false
+  let isCurrentRequired = $derived(
+    value.length ? !value.some(val => val.current) : false,
+  )
 </script>
 
 <div class="grid gap-2 xl:grid-cols-2">
@@ -55,6 +69,7 @@
             required: !!(val.date || val.area),
           }}
           fieldname="{fieldname}_{i}_choices"
+          onchange={updateVal}
         />
       </label>
 
@@ -65,6 +80,7 @@
           unit="ha"
           name="{fieldname}_{i}_area"
           class="w-24 max-w-[9rem] grow"
+          onchange={updateVal}
         />
       </label>
 
@@ -76,6 +92,7 @@
           name="{fieldname}_{i}_area"
           class="w-24 max-w-[8rem] grow"
           max={100}
+          onchange={updateVal}
         />
       </label>
       {#if val.choices?.find(v => v === "WIND")}
@@ -86,6 +103,7 @@
             name="{fieldname}_{i}_windfarm_count"
             class="w-12 max-w-[6rem] grow"
             decimals={0}
+            onchange={updateVal}
           />
         </label>
       {/if}
@@ -97,6 +115,7 @@
           unit={$_("MW")}
           name="{fieldname}_{i}_current_capacity"
           class="w-24 max-w-[8rem] grow"
+          onchange={updateVal}
         />
       </label>
 
@@ -107,21 +126,23 @@
           unit={$_("MW")}
           name="{fieldname}_{i}_intended_capacity"
           class="w-24 max-w-[8rem] grow"
+          onchange={updateVal}
         />
       </label>
 
-      <Date bind:value={val.date} name="{fieldname}_{i}_date" />
+      <Date bind:value={val.date} name="{fieldname}_{i}_date" onchange={updateVal} />
 
       <CurrentCheckbox
         bind:checked={val.current}
         name="{fieldname}_{i}_current"
         required={isCurrentRequired}
         disabled={!val.choices || !val.choices.length}
+        onchange={updateVal}
       />
 
-      <RemoveButton disabled={valueCopy.length <= 1} on:click={() => removeEntry(i)} />
+      <RemoveButton disabled={valueCopy.length <= 1} onclick={() => removeEntry(i)} />
     </div>
   {/each}
 
-  <AddButton on:click={addEntry} />
+  <AddButton onclick={addEntry} />
 </div>

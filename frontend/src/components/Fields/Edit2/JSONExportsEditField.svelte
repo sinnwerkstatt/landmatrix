@@ -13,10 +13,13 @@
 
   import { cardClass, labelClass } from "./JSONFieldComponents/consts"
 
-  export let value: JSONExportsFieldType[] = []
-  export let fieldname: string
+  interface Props {
+    value?: JSONExportsFieldType[]
+    fieldname: string
+    extras?: { choices: ValueLabelEntry[] }
+  }
 
-  export let extras: { choices: ValueLabelEntry[] } = { choices: [] }
+  let { value = $bindable([]), fieldname, extras = { choices: [] } }: Props = $props()
 
   const createEmptyEntry = (): JSONExportsFieldType => ({
     current: false,
@@ -27,19 +30,27 @@
     export: null,
   })
 
-  let valueCopy = structuredClone<JSONExportsFieldType[]>(
-    value.length ? value : [createEmptyEntry()],
+  let valueCopy: JSONExportsFieldType[] = $state(
+    value.length ? $state.snapshot(value) : [createEmptyEntry()],
   )
 
-  $: value = valueCopy.filter(val => val.choices.length > 0)
+  const updateVal = async () => {
+    value = valueCopy.filter(val => val.choices.length > 0)
+  }
 
-  const addEntry = () => (valueCopy = [...valueCopy, createEmptyEntry()])
+  const addEntry = () => {
+    valueCopy = [...valueCopy, createEmptyEntry()]
+    updateVal()
+  }
 
   function removeEntry(index: number) {
     valueCopy = valueCopy.filter((val, i) => i !== index)
+    updateVal()
   }
 
-  $: isCurrentRequired = value.length ? !value.some(val => val.current) : false
+  let isCurrentRequired = $derived(
+    value.length ? !value.some(val => val.current) : false,
+  )
 </script>
 
 <div class="grid gap-2 xl:grid-cols-2">
@@ -51,6 +62,7 @@
           bind:value={val.choices}
           {extras}
           fieldname="{fieldname}_{i}_choices"
+          onchange={updateVal}
         />
       </label>
 
@@ -61,6 +73,7 @@
           name="{fieldname}_{i}_area"
           unit="ha"
           class="w-24 max-w-[8rem] grow"
+          onchange={updateVal}
         />
       </label>
 
@@ -71,6 +84,7 @@
           unit="tons"
           name="{fieldname}_{i}_yield"
           class="w-24 max-w-[8rem] grow"
+          onchange={updateVal}
         />
       </label>
 
@@ -82,21 +96,23 @@
           unit="%"
           max={100}
           class="w-24 max-w-[8rem] grow"
+          onchange={updateVal}
         />
       </label>
 
-      <Date bind:value={val.date} name="{fieldname}_{i}_date" />
+      <Date bind:value={val.date} name="{fieldname}_{i}_date" onchange={updateVal} />
 
       <CurrentCheckbox
         bind:checked={val.current}
         name="{fieldname}_{i}_current"
         required={isCurrentRequired}
         disabled={!val.choices || !val.choices.length}
+        onchange={updateVal}
       />
 
-      <RemoveButton disabled={valueCopy.length <= 1} on:click={() => removeEntry(i)} />
+      <RemoveButton disabled={valueCopy.length <= 1} onclick={() => removeEntry(i)} />
     </div>
   {/each}
 
-  <AddButton on:click={addEntry} />
+  <AddButton onclick={addEntry} />
 </div>

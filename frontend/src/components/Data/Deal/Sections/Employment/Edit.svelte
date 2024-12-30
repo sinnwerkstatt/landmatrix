@@ -6,9 +6,11 @@
   import EditSubsection from "$components/Data/EditSubsection.svelte"
   import EditField from "$components/Fields/EditField.svelte"
 
-  export let deal: DealHull
+  interface Props {
+    deal: DealHull
+  }
 
-  $: version = deal.selected_version
+  let { deal = $bindable() }: Props = $props()
 </script>
 
 <form id="employment" class="pb-52">
@@ -16,36 +18,36 @@
     <EditField
       fieldname="total_jobs_created"
       showLabel
-      bind:value={version.total_jobs_created}
+      bind:value={deal.selected_version.total_jobs_created}
     />
-    {#if version.total_jobs_created === true}
+    {#if deal.selected_version.total_jobs_created === true}
       <div class="pl-4" transition:slide={{ duration: 300 }}>
         <EditField
           fieldname="total_jobs_planned"
           showLabel
-          bind:value={version.total_jobs_planned}
+          bind:value={deal.selected_version.total_jobs_planned}
         />
         <EditField
           fieldname="total_jobs_planned_employees"
           showLabel
-          bind:value={version.total_jobs_planned_employees}
+          bind:value={deal.selected_version.total_jobs_planned_employees}
         />
         <EditField
           fieldname="total_jobs_planned_daily_workers"
           showLabel
-          bind:value={version.total_jobs_planned_daily_workers}
+          bind:value={deal.selected_version.total_jobs_planned_daily_workers}
         />
         <EditField
           fieldname="total_jobs_current"
           showLabel
-          bind:value={version.total_jobs_current}
+          bind:value={deal.selected_version.total_jobs_current}
         />
       </div>
     {/if}
     <EditField
       fieldname="total_jobs_created_comment"
       showLabel
-      bind:value={version.total_jobs_created_comment}
+      bind:value={deal.selected_version.total_jobs_created_comment}
     />
   </EditSubsection>
 
@@ -53,36 +55,36 @@
     <EditField
       fieldname="foreign_jobs_created"
       showLabel
-      bind:value={version.foreign_jobs_created}
+      bind:value={deal.selected_version.foreign_jobs_created}
     />
-    {#if version.foreign_jobs_created === true}
+    {#if deal.selected_version.foreign_jobs_created === true}
       <div class="pl-4" transition:slide={{ duration: 300 }}>
         <EditField
           fieldname="foreign_jobs_planned"
           showLabel
-          bind:value={version.foreign_jobs_planned}
+          bind:value={deal.selected_version.foreign_jobs_planned}
         />
         <EditField
           fieldname="foreign_jobs_planned_employees"
           showLabel
-          bind:value={version.foreign_jobs_planned_employees}
+          bind:value={deal.selected_version.foreign_jobs_planned_employees}
         />
         <EditField
           fieldname="foreign_jobs_planned_daily_workers"
           showLabel
-          bind:value={version.foreign_jobs_planned_daily_workers}
+          bind:value={deal.selected_version.foreign_jobs_planned_daily_workers}
         />
         <EditField
           fieldname="foreign_jobs_current"
           showLabel
-          bind:value={version.foreign_jobs_current}
+          bind:value={deal.selected_version.foreign_jobs_current}
         />
       </div>
     {/if}
     <EditField
       fieldname="foreign_jobs_created_comment"
       showLabel
-      bind:value={version.foreign_jobs_created_comment}
+      bind:value={deal.selected_version.foreign_jobs_created_comment}
     />
   </EditSubsection>
 
@@ -90,36 +92,36 @@
     <EditField
       fieldname="domestic_jobs_created"
       showLabel
-      bind:value={version.domestic_jobs_created}
+      bind:value={deal.selected_version.domestic_jobs_created}
     />
-    {#if version.domestic_jobs_created === true}
+    {#if deal.selected_version.domestic_jobs_created === true}
       <div class="pl-4" transition:slide={{ duration: 300 }}>
         <EditField
           fieldname="domestic_jobs_planned"
           showLabel
-          bind:value={version.domestic_jobs_planned}
+          bind:value={deal.selected_version.domestic_jobs_planned}
         />
         <EditField
           fieldname="domestic_jobs_planned_employees"
           showLabel
-          bind:value={version.domestic_jobs_planned_employees}
+          bind:value={deal.selected_version.domestic_jobs_planned_employees}
         />
         <EditField
           fieldname="domestic_jobs_planned_daily_workers"
           showLabel
-          bind:value={version.domestic_jobs_planned_daily_workers}
+          bind:value={deal.selected_version.domestic_jobs_planned_daily_workers}
         />
         <EditField
           fieldname="domestic_jobs_current"
           showLabel
-          bind:value={version.domestic_jobs_current}
+          bind:value={deal.selected_version.domestic_jobs_current}
         />
       </div>
     {/if}
     <EditField
       fieldname="domestic_jobs_created_comment"
       showLabel
-      bind:value={version.domestic_jobs_created_comment}
+      bind:value={deal.selected_version.domestic_jobs_created_comment}
     />
   </EditSubsection>
 </form>

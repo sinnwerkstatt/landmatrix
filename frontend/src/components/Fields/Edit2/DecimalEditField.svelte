@@ -1,8 +1,7 @@
 <script lang="ts">
-  import LowLevelDecimalField from "$components/Fields/Edit2/LowLevelDecimalField.svelte"
+  import type { Snippet } from "svelte"
 
-  export let value: number | null
-  export let fieldname: string
+  import LowLevelDecimalField from "$components/Fields/Edit2/LowLevelDecimalField.svelte"
 
   interface Extras {
     unit?: string
@@ -10,9 +9,16 @@
     range?: [number, number]
   }
 
-  export let extras: Extras = {}
-  $: min = extras?.range?.[0]
-  $: max = extras?.range?.[1]
+  interface Props {
+    value: number | null
+    fieldname: string
+    extras?: Extras
+    children?: Snippet
+  }
+
+  let { value = $bindable(), fieldname, extras = {}, children }: Props = $props()
+  let min = $derived(extras?.range?.[0])
+  let max = $derived(extras?.range?.[1])
 </script>
 
 <div class="flex items-center gap-4">
@@ -24,5 +30,5 @@
     {min}
     {max}
   />
-  <slot />
+  {@render children?.()}
 </div>

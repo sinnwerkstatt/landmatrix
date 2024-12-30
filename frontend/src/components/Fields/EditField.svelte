@@ -1,59 +1,65 @@
 <script lang="ts">
+  import type { Snippet } from "svelte"
+
   import { dealFields, investorFields } from "$lib/fieldLookups"
 
   import Label2 from "$components/Fields/Display2/Label2.svelte"
 
-  export let value: unknown | null
-  export let fieldname: string
-  export let wrapperClass = "mb-10 leading-5 flex flex-col"
-  export let labelClass = "font-semibold mb-4 w-full"
-  export let valueClass = "text-gray-700 dark:text-white w-full"
+  interface Props {
+    value: unknown | null
+    fieldname: string
+    wrapperClass?: string
+    labelClass?: string
+    valueClass?: string
+    showLabel?: boolean
+    model?: "deal" | "investor"
+    extras?: unknown | undefined
+    children?: Snippet
+  }
 
-  export let showLabel = false
-  export let model: "deal" | "investor" = "deal"
+  let {
+    value = $bindable(),
+    fieldname,
+    wrapperClass = "mb-10 leading-5 flex flex-col",
+    labelClass = "font-semibold mb-4 w-full",
+    valueClass = "text-gray-700 dark:text-white w-full",
+    showLabel = false,
+    model = "deal",
+    extras = undefined,
+    children,
+  }: Props = $props()
 
-  export let extras: unknown | undefined = undefined
+  let richField = $derived(
+    model === "deal" ? $dealFields[fieldname] : $investorFields[fieldname],
+  )
 
-  $: richField = model === "deal" ? $dealFields[fieldname] : $investorFields[fieldname]
-
-  let allExtras: unknown
-  $: allExtras =
+  let allExtras: unknown = $derived(
     richField?.extras && extras
       ? { ...richField.extras, ...extras }
-      : (richField?.extras ?? extras)
+      : (richField?.extras ?? extras),
+  )
 </script>
 
 <div class={wrapperClass} data-fieldname={fieldname}>
-  <!-- TODO Later Nuts wrap content into label -->
   {#if showLabel}
     <Label2 value={richField?.label} class={labelClass} />
   {/if}
   <div class={valueClass}>
     {#if richField && richField.editField}
       {#if allExtras}
-        {#if $$slots.default}
-          <svelte:component
-            this={richField.editField}
-            bind:value
-            extras={allExtras}
-            {fieldname}
-          >
-            <slot />
-          </svelte:component>
+        {#if children}
+          <richField.editField bind:value extras={allExtras} {fieldname}>
+            {@render children?.()}
+          </richField.editField>
         {:else}
-          <svelte:component
-            this={richField.editField}
-            bind:value
-            extras={allExtras}
-            {fieldname}
-          />
+          <richField.editField bind:value extras={allExtras} {fieldname} />
         {/if}
-      {:else if $$slots.default}
-        <svelte:component this={richField.editField} bind:value {fieldname}>
-          <slot />
-        </svelte:component>
+      {:else if children}
+        <richField.editField bind:value {fieldname}>
+          {@render children?.()}
+        </richField.editField>
       {:else}
-        <svelte:component this={richField.editField} bind:value {fieldname} />
+        <richField.editField bind:value {fieldname} />
       {/if}
     {:else}
       <div class="italic text-red-400">unknown field: {fieldname}</div>

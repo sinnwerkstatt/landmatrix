@@ -2,17 +2,23 @@
   import type { Point } from "geojson"
   import { _ } from "svelte-i18n"
 
-  export let value: Point | null = null
-
-  $: val = value !== null ? value : { type: "Point", coordinates: [null, null] }
-
-  const onChange = () => {
-    value =
-      val.coordinates[0] !== null && val.coordinates[1] !== null ? (val as Point) : null
+  interface Props {
+    value?: Point | null
+    fieldname: string
   }
 
-  export let fieldname: string
-  export const extras = {}
+  let { value = $bindable(), fieldname }: Props = $props()
+
+  let val = $derived(
+    value ? $state.snapshot(value) : { type: "Point", coordinates: [null, null] },
+  )
+
+  const onchange = () => {
+    value =
+      val.coordinates[0] !== null && val?.coordinates[1] !== null
+        ? (val as Point)
+        : null
+  }
 </script>
 
 <div class="flex gap-2">
@@ -24,7 +30,7 @@
       type="number"
       bind:value={val.coordinates[0]}
       required={!!val.coordinates[1]}
-      on:change={onChange}
+      {onchange}
       placeholder="-180 to 180"
       min={-180}
       max={180}
@@ -39,7 +45,7 @@
       type="number"
       bind:value={val.coordinates[1]}
       required={!!val.coordinates[0]}
-      on:change={onChange}
+      {onchange}
       placeholder="-90 to 90"
       min={-90}
       max={90}
@@ -58,6 +64,6 @@
 
   /* Firefox */
   input[type="number"] {
-    -moz-appearance: textfield;
+    appearance: textfield;
   }
 </style>

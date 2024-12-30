@@ -3,16 +3,15 @@ import TileLayer from "ol/layer/Tile"
 import { OSM, TileWMS, XYZ } from "ol/source"
 
 function getWMSTilesCDEUniBern(folder: string, LAYERS: string, attributions: string) {
-  const xx = new URLSearchParams({
+  const qParams = new URLSearchParams({
     request: "GetLegendGraphic",
     service: "WMS",
     format: "image/png",
     width: "25",
     height: "25",
-    legend_options: "x",
+    legend_options: "forceLabels:1;fontAntiAliasing:1;fontName:Nimbus Sans L Regular;",
     layer: LAYERS,
   })
-  console.log(xx.toString())
   return {
     layer: new TileLayer({
       source: new TileWMS({
@@ -23,14 +22,7 @@ function getWMSTilesCDEUniBern(folder: string, LAYERS: string, attributions: str
       opacity: 0.7,
       visible: false,
     }),
-    legend:
-      `https://sdi.cde.unibe.ch/geoserver/${folder}/wms?` +
-      "request=GetLegendGraphic&" +
-      "service=WMS&" +
-      "format=image%2Fpng&" +
-      "width=25&height=25&" +
-      "legend_options=forceLabels%3A1%3BfontAntiAliasing%3A1%3BfontName%3ANimbus+Sans+L+Regular%3B&" +
-      `layer=${LAYERS}`,
+    legend: `https://sdi.cde.unibe.ch/geoserver/${folder}/wms?${qParams.toString()}`,
   }
 }
 

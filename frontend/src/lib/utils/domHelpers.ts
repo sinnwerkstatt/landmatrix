@@ -1,6 +1,8 @@
 // https://stackoverflow.com/questions/123999
 import { mount, type Component } from "svelte"
 
+import { browser } from "$app/environment"
+
 export const isElementInViewport = (el: HTMLElement): boolean => {
   const rect = el.getBoundingClientRect()
 
@@ -28,7 +30,7 @@ export const createComponentAsDiv = (
 }
 
 export const scrollEntryIntoView = (elemId: string | undefined) => {
-  if (!elemId) return
+  if (!elemId || !browser) return
 
   const doScroll = () => {
     const el = document.getElementById(elemId ?? "")

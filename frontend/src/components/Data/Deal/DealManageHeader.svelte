@@ -12,20 +12,24 @@
   import XIcon from "$components/icons/XIcon.svelte"
   import ManageHeader from "$components/New/ManageHeader.svelte"
 
-  export let deal: DealHull
+  interface Props {
+    deal: DealHull
+  }
 
-  $: activeVersion = deal.selected_version.id === deal.active_version_id
+  let { deal }: Props = $props()
+
+  let activeVersion = $derived(deal.selected_version.id === deal.active_version_id)
 </script>
 
 <ManageHeader object={deal}>
-  <svelte:fragment slot="heading">
+  {#snippet heading()}
     <h1 class="heading3 my-0">Deal #{deal.id}</h1>
     <div class="heading4 my-0">
       <CountryField value={deal.country_id} />
     </div>
-  </svelte:fragment>
+  {/snippet}
 
-  <svelte:fragment slot="visibility">
+  {#snippet visibility()}
     <div class="mt-2 flex items-center gap-1 font-bold">
       {#if deal.selected_version.fully_updated}
         <CheckCircleIcon class="h-6 w-6 text-orange" />
@@ -68,5 +72,5 @@
         </li>
       </ul>
     </div>
-  </svelte:fragment>
+  {/snippet}
 </ManageHeader>

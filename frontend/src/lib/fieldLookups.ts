@@ -52,8 +52,10 @@ import PointEditField from "$components/Fields/Edit2/PointEditField.svelte"
 import TextEditField from "$components/Fields/Edit2/TextEditField.svelte"
 
 interface Field {
-  displayField: Component
-  editField?: Component
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  displayField: Component<{ value: any }>
+  editField?: Component<{ value: any; fieldname: string }>
+  /* eslint-enable @typescript-eslint/no-explicit-any */
   label: string
   extras?: unknown
 }

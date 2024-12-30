@@ -11,13 +11,16 @@
   } from "$components/LowLevel/VirtualListSelect.svelte"
   import Modal from "$components/Modal.svelte"
 
-  export let value: number | null
+  interface Props {
+    value: number | null
+    extras?: {
+      required?: boolean
+      creatable?: boolean
+      excludeIds?: number[]
+    }
+  }
 
-  export let extras: {
-    required?: boolean
-    creatable?: boolean
-    excludeIds?: number[]
-  } = {}
+  let { value = $bindable(), extras = {} }: Props = $props()
 
   interface InvestorItem extends SimpleInvestor {
     created?: boolean
@@ -32,16 +35,18 @@
     comment: string = ""
   }
 
-  let newInvestor: NewInvestor | undefined
-  let showNewInvestorForm = false
+  let newInvestor: NewInvestor | undefined = $state()
+  let showNewInvestorForm = $state(false)
 
-  let items: InvestorItem[]
-  $: items = $simpleInvestors
-    .filter(i => !i.deleted)
-    .filter(i => !(extras.excludeIds ?? []).includes(i.id))
+  let items: InvestorItem[] = $derived(
+    $simpleInvestors
+      .filter(i => !i.deleted)
+      .filter(i => !(extras.excludeIds ?? []).includes(i.id)),
+  )
 
-  let listValue: InvestorItem | undefined
-  $: listValue = $simpleInvestors.find(i => i.id === value)
+  let listValue: InvestorItem | undefined = $derived(
+    $simpleInvestors.find(i => i.id === value),
+  )
 
   const onInvestorInput = (e: CustomEvent<InvestorItem | null>) => {
     const investorItem = e.detail
@@ -59,7 +64,8 @@
     value = investorItem ? investorItem.id : null
   }
 
-  const addNewInvestor = async () => {
+  const addNewInvestor = async (e: SubmitEvent) => {
+    e.preventDefault()
     const ret = await fetch(`/api/investors/`, {
       method: "POST",
       credentials: "include",
@@ -145,7 +151,7 @@
 {/if}
 
 <Modal bind:open={showNewInvestorForm} class="min-w-[60%]">
-  <form class="my-6 block" on:submit|preventDefault={addNewInvestor}>
+  <form class="my-6 block" onsubmit={addNewInvestor}>
     <div class="heading4">{$_("Create new investor")}</div>
     {#if newInvestor}
       <div class="container">
@@ -191,7 +197,7 @@
     <button class="btn btn-flat btn-primary" type="submit">{$_("Save")}</button>
     <button
       class="btn btn-flat btn-cancel mx-2"
-      on:click={() => {
+      onclick={() => {
         showNewInvestorForm = false
         newInvestor = undefined
         value = null

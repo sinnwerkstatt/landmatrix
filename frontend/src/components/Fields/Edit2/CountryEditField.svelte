@@ -1,15 +1,23 @@
 <script lang="ts">
   import Select from "svelte-select"
 
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
-  export let value: number | null
+  interface Props {
+    value: number | null
+    extras?: { required?: boolean; excludeHighIncome?: boolean }
+  }
 
-  export let extras = { required: false, excludeHighIncome: false }
+  let {
+    value = $bindable(),
+    extras = { required: false, excludeHighIncome: false },
+  }: Props = $props()
 
-  $: targetCountries = extras.excludeHighIncome
-    ? $page.data.countries.filter(c => !c.high_income)
-    : $page.data.countries
+  let targetCountries = $derived(
+    extras.excludeHighIncome
+      ? page.data.countries.filter(c => !c.high_income)
+      : page.data.countries,
+  )
 </script>
 
 <Select

@@ -8,7 +8,11 @@
   import { createContract, isEmptyContract } from "./contracts"
   import Entry from "./Entry.svelte"
 
-  export let deal: DealHull
+  interface Props {
+    deal: DealHull
+  }
+
+  let { deal = $bindable() }: Props = $props()
 </script>
 
 <SubmodelEditField

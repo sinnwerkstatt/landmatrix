@@ -1,5 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
+  import { twMerge } from "tailwind-merge"
 
   import type { JSONJobsFieldType } from "$lib/types/data"
 
@@ -8,38 +9,48 @@
     cardClass,
     labelClass,
   } from "$components/Fields/Edit2/JSONFieldComponents/consts"
-  import CurrentRadio from "$components/Fields/Edit2/JSONFieldComponents/CurrentRadio.svelte"
   import Date from "$components/Fields/Edit2/JSONFieldComponents/Date.svelte"
   import RemoveButton from "$components/Fields/Edit2/JSONFieldComponents/RemoveButton.svelte"
   import LowLevelDecimalField from "$components/Fields/Edit2/LowLevelDecimalField.svelte"
 
-  export let value: JSONJobsFieldType[]
-  export let fieldname: string
+  interface Props {
+    value: JSONJobsFieldType[]
+    fieldname: string
+  }
 
-  const createEmptyEntry = (): JSONJobsFieldType => ({
+  let { value = $bindable(), fieldname }: Props = $props()
+
+  const emptyEntry: JSONJobsFieldType = {
     current: false,
     date: null,
     jobs: null,
     employees: null,
     workers: null,
-  })
+  }
 
-  let valueCopy = structuredClone<JSONJobsFieldType[]>(
-    value.length ? value : [createEmptyEntry()],
+  let valueCopy: JSONJobsFieldType[] = $state(
+    value.length ? $state.snapshot(value) : [structuredClone(emptyEntry)],
   )
-  let current = valueCopy.map(val => val.current).indexOf(true) ?? -1
+  let current = $state(value.length ? value.map(val => val.current).indexOf(true) : -1)
 
-  $: value = valueCopy.filter(val => !!(val.jobs || val.employees || val.workers))
+  const updateVal = () => {
+    value = valueCopy.filter(val => !!(val.jobs || val.employees || val.workers))
+  }
 
-  const addEntry = () => (valueCopy = [...valueCopy, createEmptyEntry()])
+  const addEntry = () => {
+    valueCopy = [...valueCopy, structuredClone(emptyEntry)]
+    updateVal()
+  }
 
   const removeEntry = (index: number) => {
     if (valueCopy[index].current) current = -1
     valueCopy = valueCopy.filter((_val, i) => i !== index)
+    updateVal()
   }
 
   const updateCurrent = (index: number) => {
     valueCopy = valueCopy.map((val, i) => ({ ...val, current: i === index }))
+    updateVal()
   }
 </script>
 
@@ -54,6 +65,7 @@
           name="{fieldname}_{i}_jobs"
           decimals={0}
           class="w-36"
+          onchange={updateVal}
         />
       </label>
 
@@ -65,6 +77,7 @@
           name="{fieldname}_{i}_employees"
           decimals={0}
           class="w-36"
+          onchange={updateVal}
         />
       </label>
 
@@ -76,23 +89,32 @@
           name="{fieldname}_{i}_workers"
           decimals={0}
           class="w-36"
+          onchange={updateVal}
         />
       </label>
 
-      <Date bind:value={val.date} name="{fieldname}_{i}_date" />
+      <Date bind:value={val.date} name="{fieldname}_{i}_date" onchange={updateVal} />
 
-      <CurrentRadio
-        bind:group={current}
-        name="{fieldname}_current"
-        required={value.length > 0 && current < 0}
-        disabled={!val.jobs && !val.employees && !val.workers}
-        value={i}
-        on:change={() => updateCurrent(i)}
-      />
+      <label class={labelClass}>
+        {$_("Current")}
+        <input
+          type="radio"
+          class={twMerge(
+            "size-5 accent-violet-400 ",
+            valueCopy.length > 0 && current < 0 ? "ring-2 ring-red-600" : "",
+          )}
+          bind:group={current}
+          name="{fieldname}_current"
+          required={valueCopy.length > 0 && current < 0}
+          disabled={!val.jobs && !val.employees && !val.workers}
+          value={i}
+          onchange={() => updateCurrent(i)}
+        />
+      </label>
 
-      <RemoveButton disabled={valueCopy.length <= 1} on:click={() => removeEntry(i)} />
+      <RemoveButton disabled={valueCopy.length <= 1} onclick={() => removeEntry(i)} />
     </div>
   {/each}
 
-  <AddButton on:click={addEntry} />
+  <AddButton onclick={addEntry} />
 </div>

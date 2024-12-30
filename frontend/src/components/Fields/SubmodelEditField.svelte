@@ -48,7 +48,13 @@
 
   $: selectedEntryId = $page.url.hash?.replace("#", "") || undefined
 
-  $: if (browser) scrollEntryIntoView(selectedEntryId)
+  $effect(() => {
+    selectedEntryId = page.url.hash?.replace("#", "") || undefined
+  })
+
+  $effect(() => {
+    scrollEntryIntoView(selectedEntryId)
+  })
 
   onMount(() => scrollEntryIntoView(selectedEntryId))
 
@@ -80,10 +86,11 @@
     goto("")
   }
 
-  let selectedEntryForm: HTMLFormElement | null
-  $: selectedEntryForm = selectedEntryId
-    ? (document.getElementById(`form-${selectedEntryId}`) as HTMLFormElement)
-    : null
+  let selectedEntryForm: HTMLFormElement | null = $derived(
+    selectedEntryId
+      ? (document.getElementById(`form-${selectedEntryId}`) as HTMLFormElement)
+      : null,
+  )
 
   const toggleEntry = (id: string): void => {
     if (selectedEntryForm && !selectedEntryForm.checkValidity()) {
@@ -112,7 +119,8 @@
               aria-expanded={isSelectedEntry}
               aria-controls="form-{idAsString}"
               class="inline-flex w-full flex-row gap-1 text-left"
-              on:click|preventDefault={() => toggleEntry(idAsString)}
+              type="button"
+              onclick={() => toggleEntry(idAsString)}
             >
               <span
                 class="transition-duration-300 self-center p-2 transition-transform"
@@ -130,7 +138,7 @@
                   </span>
                 </span>
                 <span>
-                  <slot name="extraHeader" {entry} />
+                  {@render extraHeader?.(entry)}
                 </span>
               </span>
             </button>
@@ -138,7 +146,8 @@
 
           <button
             class="self-stretch p-2"
-            on:click|preventDefault={() => removeEntry(idAsString)}
+            onclick={() => removeEntry(idAsString)}
+            type="button"
           >
             <TrashIcon class="h-8 w-6 text-red-600" />
           </button>
@@ -160,7 +169,7 @@
   <div class="mt-6">
     <button
       class="btn btn-flat btn-primary flex items-center"
-      on:click={addEntry}
+      onclick={addEntry}
       type="button"
     >
       <PlusIcon class="-ml-2 mr-2 h-6 w-5" />
