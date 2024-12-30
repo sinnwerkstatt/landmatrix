@@ -40,7 +40,7 @@
   })
 
   $effect(() => {
-    if (browser) scrollEntryIntoView(selectedEntryId)
+    scrollEntryIntoView(selectedEntryId)
   })
 
   onMount(() => scrollEntryIntoView(selectedEntryId))

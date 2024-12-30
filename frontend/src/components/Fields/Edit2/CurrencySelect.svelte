@@ -5,7 +5,11 @@
 
   import VirtualListSelect from "$components/LowLevel/VirtualListSelect.svelte"
 
-  export let value: number | null = null
+  interface Props {
+    value?: number | null
+  }
+
+  let { value = $bindable(null) }: Props = $props()
 </script>
 
 {#if $currencies}

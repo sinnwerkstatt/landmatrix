@@ -114,7 +114,7 @@
           <div transition:slide={{ duration: 200 }}>
             <FilterCollapse
               clearable={$filters.transnational !== null}
-              on:clear={() => ($filters.transnational = null)}
+              onclear={() => ($filters.transnational = null)}
               title={$_("Scope")}
             >
               <label class="block">
@@ -141,7 +141,7 @@
 
             <FilterCollapse
               clearable={$filters.intention_of_investment.length > 0}
-              on:clear={() => ($filters.intention_of_investment = [])}
+              onclear={() => ($filters.intention_of_investment = [])}
               title={$_("Intention of investment")}
             >
               <label class="mb-2 block">
@@ -184,7 +184,7 @@
 
             <FilterCollapse
               clearable={$filters.implementation_status.length > 0}
-              on:clear={() => ($filters.implementation_status = [])}
+              onclear={() => ($filters.implementation_status = [])}
               title={$_("Implementation status")}
             >
               <label class="block">

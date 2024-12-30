@@ -6,13 +6,16 @@
     InvolvementRole,
     type Involvement,
     type Model,
-    type SimpleInvestor,
   } from "$lib/types/data"
 
   import DisplayField from "$components/Fields/DisplayField.svelte"
 
-  export let involvement: Involvement
-  export let isParent: boolean = false
+  interface Props {
+    involvement: Involvement
+    isParent?: boolean
+  }
+
+  let { involvement, isParent = false }: Props = $props()
 
   const model: Model = "investor"
 
@@ -20,27 +23,27 @@
   const labelClass = "whitespace-nowrap font-light text-gray-400 pr-2 italic"
   const valueClass = "font-medium"
 
-  let otherInvestorId: number
-  $: otherInvestorId = isParent
+  let otherInvestorId: number = isParent
     ? involvement.parent_investor_id
     : involvement.child_investor_id
 
-  let otherInvestor: SimpleInvestor | undefined
-  $: otherInvestor = $simpleInvestors.find(i => i.id === otherInvestorId)
+  let otherInvestor = $derived($simpleInvestors.find(i => i.id === otherInvestorId))
 
-  let relationshipMap: { [key in InvolvementRole]: { parent: string; child: string } }
-  $: relationshipMap = {
-    [InvolvementRole.PARENT]: {
-      parent: $_("Parent company"),
-      child: $_("Subsidiary company"),
-    },
-    [InvolvementRole.LENDER]: {
-      parent: $_("Tertiary investor/lender"),
-      child: $_("Beneficiary company"),
-    },
-  }
+  let relationshipMap: { [key in InvolvementRole]: { parent: string; child: string } } =
+    $derived({
+      [InvolvementRole.PARENT]: {
+        parent: $_("Parent company"),
+        child: $_("Subsidiary company"),
+      },
+      [InvolvementRole.LENDER]: {
+        parent: $_("Tertiary investor/lender"),
+        child: $_("Beneficiary company"),
+      },
+    })
 
-  $: relationship = relationshipMap[involvement.role][isParent ? "parent" : "child"]
+  let relationship = $derived(
+    relationshipMap[involvement.role][isParent ? "parent" : "child"],
+  )
 </script>
 
 {#if otherInvestor}

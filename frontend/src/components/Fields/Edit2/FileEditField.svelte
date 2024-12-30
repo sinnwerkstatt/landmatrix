@@ -1,5 +1,6 @@
 <script lang="ts">
   import { env } from "$env/dynamic/public"
+  import type { Snippet } from "svelte"
   import { _ } from "svelte-i18n"
   import type { ChangeEventHandler } from "svelte/elements"
 
@@ -7,16 +8,25 @@
 
   import FilePdfIcon from "$components/icons/FilePdfIcon.svelte"
 
-  export let value: string | null
-  export let fieldname: string
-
   interface Extras {
     required?: boolean
   }
 
-  export let extras: Extras = {
-    required: false,
+  interface Props {
+    value: string | null
+    fieldname: string
+    extras?: Extras
+    children?: Snippet
   }
+
+  let {
+    value = $bindable(),
+    fieldname,
+    extras = {
+      required: false,
+    },
+    children,
+  }: Props = $props()
 
   const MAX_FILE_SIZE_IN_MB = 20
 
@@ -111,12 +121,12 @@
       <input
         type="file"
         name={fieldname}
-        on:change={uploadFile}
+        onchange={uploadFile}
         accept={ACCEPTED_EXTENSIONS.join(",")}
       />
     </div>
 
-    <button class="btn-outline btn-flat btn-red" on:click|preventDefault={removeFile}>
+    <button class="btn-outline btn-flat btn-red" type="button" onclick={removeFile}>
       {$_("Remove this file")}
     </button>
   </div>
@@ -125,7 +135,7 @@
     type="file"
     required={extras.required}
     name={fieldname}
-    on:change={uploadFile}
+    onchange={uploadFile}
     accept={ACCEPTED_EXTENSIONS.join(",")}
   />
 {/if}
@@ -138,4 +148,4 @@
   })}
 </small>
 
-<slot />
+{@render children?.()}

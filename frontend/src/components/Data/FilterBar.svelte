@@ -1,9 +1,10 @@
 <script lang="ts">
   import { tracker } from "@sinnwerkstatt/sveltekit-matomo"
+  import type { Snippet } from "svelte"
   import { _ } from "svelte-i18n"
   import Select from "svelte-select"
 
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import {
     filters,
@@ -26,45 +27,59 @@
   import FilterCollapse from "./FilterCollapse.svelte"
   import Wimpel from "./Wimpel.svelte"
 
-  $: produceGroupLabels = createLabels<ProduceGroup>($fieldChoices.deal.produce_group)
+  interface Props {
+    children?: Snippet
+  }
 
-  let produceChoices: ProduceFilter[]
-  $: produceChoices = $fieldChoices
-    ? [
-        ...($fieldChoices.deal.crops.map(({ value, label }) => ({
-          value,
-          label,
-          groupId: ProduceGroup.CROPS,
-          group: produceGroupLabels[ProduceGroup.CROPS],
-        })) ?? []),
-        ...($fieldChoices.deal.animals.map(({ value, label }) => ({
-          value,
-          label,
-          groupId: ProduceGroup.ANIMALS,
-          group: produceGroupLabels[ProduceGroup.ANIMALS],
-        })) ?? []),
-        ...($fieldChoices.deal.minerals.map(({ value, label }) => ({
-          value,
-          label,
-          groupId: ProduceGroup.MINERAL_RESOURCES,
-          group: produceGroupLabels[ProduceGroup.MINERAL_RESOURCES],
-        })) ?? []),
-      ]
-    : []
+  let { children }: Props = $props()
 
-  $: regionsWithGlobal = [{ id: undefined, name: $_("Global") }, ...$page.data.regions]
+  let produceGroupLabels = $derived(
+    createLabels<ProduceGroup>($fieldChoices.deal.produce_group),
+  )
 
-  $: dataDownloadURL = `/api/legacy_export/?subset=${
-    $publicOnly ? "PUBLIC" : "ACTIVE"
-  }&${$filters.toRESTFilterArray()}&format=`
+  let produceChoices: ProduceFilter[] = $derived(
+    $fieldChoices
+      ? [
+          ...($fieldChoices.deal.crops.map(({ value, label }) => ({
+            value,
+            label,
+            groupId: ProduceGroup.CROPS,
+            group: produceGroupLabels[ProduceGroup.CROPS],
+          })) ?? []),
+          ...($fieldChoices.deal.animals.map(({ value, label }) => ({
+            value,
+            label,
+            groupId: ProduceGroup.ANIMALS,
+            group: produceGroupLabels[ProduceGroup.ANIMALS],
+          })) ?? []),
+          ...($fieldChoices.deal.minerals.map(({ value, label }) => ({
+            value,
+            label,
+            groupId: ProduceGroup.MINERAL_RESOURCES,
+            group: produceGroupLabels[ProduceGroup.MINERAL_RESOURCES],
+          })) ?? []),
+        ]
+      : [],
+  )
+
+  let regionsWithGlobal = $derived([
+    { id: undefined, name: $_("Global") },
+    ...page.data.regions,
+  ])
+
+  let dataDownloadURL = $derived(
+    `/api/legacy_export/?subset=${
+      $publicOnly ? "PUBLIC" : "ACTIVE"
+    }&${$filters.toRESTFilterArray()}&format=`,
+  )
 
   function trackDownload(format: string) {
     let name = "Global"
     if ($filters.country_id) {
-      name = $page.data.countries.find(c => c.id === $filters.country_id)!.name
+      name = page.data.countries.find(c => c.id === $filters.country_id)!.name
     }
     if ($filters.region_id) {
-      name = $page.data.regions.find(r => r.id === $filters.region_id)!.name
+      name = page.data.regions.find(r => r.id === $filters.region_id)!.name
     }
 
     if ($tracker) $tracker.trackEvent("Downloads", format, name)
@@ -84,10 +99,7 @@
     ? 'w-[clamp(220px,20%,300px)]'
     : 'w-0'}"
 >
-  <Wimpel
-    on:click={() => showFilterBar.set(!$showFilterBar)}
-    showing={$showFilterBar}
-  />
+  <Wimpel onclick={() => showFilterBar.set(!$showFilterBar)} showing={$showFilterBar} />
   <div
     class="flex h-full w-full flex-col overflow-y-auto p-1"
     class:hidden={!$showFilterBar}
@@ -104,12 +116,12 @@
           class="text-base"
           id="default"
           checked={$isDefaultFilter}
-          on:change={toggleDefaultFilter}
+          onchange={toggleDefaultFilter}
         >
           {$_("Default filter")}
         </CheckboxSwitch>
 
-        {#if isEditorOrAbove($page.data.user)}
+        {#if isEditorOrAbove(page.data.user)}
           <CheckboxSwitch class="text-base" id="public" bind:checked={$publicOnly}>
             {$_("Public deals only")}
           </CheckboxSwitch>
@@ -118,7 +130,7 @@
 
       <FilterCollapse
         clearable={!!$filters.region_id}
-        on:clear={() => ($filters.region_id = undefined)}
+        onclear={() => ($filters.region_id = undefined)}
         title={$_("Land Matrix region")}
       >
         {#each regionsWithGlobal as reg}
@@ -129,7 +141,7 @@
               name="lm-region-filter"
               bind:group={$filters.region_id}
               value={reg.id}
-              on:change={() => ($filters.country_id = undefined)}
+              onchange={() => ($filters.country_id = undefined)}
             />
             {reg.name}
           </label>
@@ -141,11 +153,11 @@
 
       <FilterCollapse
         clearable={!!$filters.country_id}
-        on:clear={() => ($filters.country_id = undefined)}
+        onclear={() => ($filters.country_id = undefined)}
         title={$_("Country")}
       >
         <CountrySelect
-          countries={$page.data.countries.filter(c => c.deals && c.deals.length > 0)}
+          countries={page.data.countries.filter(c => c.deals && c.deals.length > 0)}
           on:input={e => {
             if (e.detail) {
               $filters.country_id = e.detail.id
@@ -153,7 +165,7 @@
             }
           }}
           on:clear={() => ($filters.country_id = undefined)}
-          value={$page.data.countries.find(c => c.id === $filters.country_id)}
+          value={page.data.countries.find(c => c.id === $filters.country_id)}
         />
 
         <div class="text-right">
@@ -163,7 +175,7 @@
 
       <FilterCollapse
         clearable={!!($filters.deal_size_min || $filters.deal_size_max)}
-        on:clear={() => ($filters.deal_size_min = $filters.deal_size_max = undefined)}
+        onclear={() => ($filters.deal_size_min = $filters.deal_size_max = undefined)}
         title={$_("Deal size")}
       >
         <div class="field-has-appendix">
@@ -198,7 +210,7 @@
 
       <FilterCollapse
         clearable={$filters.nature_of_deal.length > 0}
-        on:clear={() => ($filters.nature_of_deal = [])}
+        onclear={() => ($filters.nature_of_deal = [])}
         title={$_("Nature of the deal")}
       >
         {#each $fieldChoices.deal.nature_of_deal as { value, label }}
@@ -220,7 +232,7 @@
 
       <FilterCollapse
         clearable={!!($filters.investor_id || $filters.investor_country_id)}
-        on:clear={() => {
+        onclear={() => {
           $filters.investor_id = undefined
           $filters.investor_country_id = undefined
         }}
@@ -242,9 +254,9 @@
         </VirtualListSelect>
         {$_("Country of registration")}
         <CountrySelect
-          countries={$page.data.countries}
+          countries={page.data.countries}
           on:input={e => ($filters.investor_country_id = e.detail?.id)}
-          value={$page.data.countries.find(c => c.id === $filters.investor_country_id)}
+          value={page.data.countries.find(c => c.id === $filters.investor_country_id)}
         />
 
         <div class="text-right">
@@ -254,7 +266,7 @@
 
       <FilterCollapse
         clearable={!!($filters.initiation_year_min || $filters.initiation_year_max)}
-        on:clear={() =>
+        onclear={() =>
           ($filters.initiation_year_min = $filters.initiation_year_max = undefined)}
         title={$_("Year of initiation")}
       >
@@ -297,7 +309,7 @@
 
       <FilterCollapse
         clearable={$filters.implementation_status.length > 0}
-        on:clear={() => ($filters.implementation_status = [])}
+        onclear={() => ($filters.implementation_status = [])}
         title={$_("Implementation status")}
       >
         <label class="block">
@@ -331,7 +343,7 @@
 
       <FilterCollapse
         clearable={$filters.intention_of_investment.length > 0}
-        on:clear={() => ($filters.intention_of_investment = [])}
+        onclear={() => ($filters.intention_of_investment = [])}
         title={$_("Intention of investment")}
       >
         <label class="mb-2 block">
@@ -377,7 +389,7 @@
 
       <FilterCollapse
         clearable={$filters.produce ? $filters.produce.length > 0 : false}
-        on:clear={() => ($filters.produce = [])}
+        onclear={() => ($filters.produce = [])}
         title={$_("Produce")}
       >
         <Select
@@ -395,7 +407,7 @@
 
       <FilterCollapse
         clearable={$filters.transnational !== null}
-        on:clear={() => ($filters.transnational = null)}
+        onclear={() => ($filters.transnational = null)}
         title={$_("Scope")}
       >
         <label class="block">
@@ -426,7 +438,7 @@
 
       <FilterCollapse
         clearable={$filters.forest_concession !== null}
-        on:clear={() => ($filters.forest_concession = null)}
+        onclear={() => ($filters.forest_concession = null)}
         title={$_("Forest concession")}
       >
         <label class="block">
@@ -466,14 +478,14 @@
       </FilterCollapse>
     </div>
     <div class="mt-auto w-full self-end" dir="ltr">
-      <slot />
+      {@render children?.()}
       <FilterCollapse title={$_("Download")}>
         <ul>
           <li>
             <a
               data-sveltekit-reload
               href={dataDownloadURL + "xlsx"}
-              on:click={() => trackDownload("xlsx")}
+              onclick={() => trackDownload("xlsx")}
             >
               <DownloadIcon />
               {$_("All attributes")} (xlsx)
@@ -483,7 +495,7 @@
             <a
               data-sveltekit-reload
               href={dataDownloadURL + "csv"}
-              on:click={() => trackDownload("csv")}
+              onclick={() => trackDownload("csv")}
             >
               <DownloadIcon />
               {$_("All attributes")} (csv)
@@ -495,7 +507,7 @@
               href={`/api/gis_export/locations/?${$filters.toRESTFilterArray()}&subset=${
                 $publicOnly ? "PUBLIC" : "ACTIVE"
               }&format=json`}
-              on:click={() => trackDownload("locations")}
+              onclick={() => trackDownload("locations")}
             >
               <DownloadIcon />
               {$_("Locations (as geojson)")}
@@ -507,7 +519,7 @@
               href={`/api/gis_export/areas/?${$filters.toRESTFilterArray()}&subset=${
                 $publicOnly ? "PUBLIC" : "ACTIVE"
               }&format=json`}
-              on:click={() => trackDownload("areas")}
+              onclick={() => trackDownload("areas")}
             >
               <DownloadIcon />
               {$_("Areas (as geojson)")}

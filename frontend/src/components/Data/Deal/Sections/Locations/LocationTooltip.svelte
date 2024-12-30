@@ -3,7 +3,11 @@
 
   import type { PointFeature } from "$lib/types/data"
 
-  export let feature: PointFeature
+  interface Props {
+    feature: PointFeature
+  }
+
+  let { feature }: Props = $props()
 </script>
 
 <div class="mb-2">

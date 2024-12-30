@@ -8,7 +8,7 @@ import {
   type Layer,
   type Map,
 } from "leaflet?client"
-import type { ComponentType } from "svelte"
+import type { Component } from "svelte"
 
 import type {
   Area,
@@ -94,7 +94,7 @@ export const fitBounds = (map: Map) => {
 
 export const createAreaFeaturesLayer = (
   features: AreaFeature[],
-  tooltipComponent: ComponentType,
+  tooltipComponent: Component,
   isSelectedEntry = true,
 ): AreaFeatureLayer =>
   geoJson(features, {

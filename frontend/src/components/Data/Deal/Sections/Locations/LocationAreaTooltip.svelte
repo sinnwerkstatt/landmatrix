@@ -7,9 +7,13 @@
 
   import { formatArea } from "$components/Fields/Display2/jsonHelpers"
 
-  export let feature: AreaFeature
+  interface Props {
+    feature: AreaFeature
+  }
 
-  $: areaTypeLabels = createLabels<AreaType>($fieldChoices.area.type)
+  let { feature }: Props = $props()
+
+  let areaTypeLabels = $derived(createLabels<AreaType>($fieldChoices.area.type))
 </script>
 
 <div>

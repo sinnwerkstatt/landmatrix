@@ -6,10 +6,12 @@
 
   import { AREA_TYPE_COLOR_MAP, AREA_TYPES } from "./locations"
 
-  $: areaTypeLabels = createLabels<AreaType>($fieldChoices.area.type)
+  let areaTypeLabels = $derived(createLabels<AreaType>($fieldChoices.area.type))
 </script>
 
-<div class="border border-black bg-white p-3 font-sans text-gray-700">
+<div
+  class="absolute bottom-1 left-1 border border-black bg-white p-3 font-sans text-gray-700"
+>
   <div class="mb-1 text-center text-sm">
     <strong>{$_("Legend")}</strong>
   </div>
@@ -19,7 +21,7 @@
         <div
           class="colored h-full w-full opacity-60"
           style:--color={AREA_TYPE_COLOR_MAP[areaType]}
-        />
+        ></div>
       </div>
       <span class="pl-2 text-xs">
         {areaTypeLabels[areaType]}
