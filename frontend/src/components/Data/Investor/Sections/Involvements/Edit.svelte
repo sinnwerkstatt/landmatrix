@@ -9,14 +9,20 @@
   import Entry from "./Entry.svelte"
   import { createInvolvement, isEmptyInvolvement } from "./involvements"
 
-  export let investor: InvestorHull
-  export let tertiary = false
+  interface Props {
+    investor: InvestorHull
+    tertiary?: boolean
+  }
 
-  $: label = tertiary ? $_("Tertiary investor/lender") : $_("Parent company")
+  let { investor = $bindable(), tertiary = false }: Props = $props()
 
-  $: filterFn = (involvement: Involvement) =>
-    involvement.child_investor_id === investor.id &&
-    involvement.role === (tertiary ? InvolvementRole.LENDER : InvolvementRole.PARENT)
+  let label = $derived(tertiary ? $_("Tertiary investor/lender") : $_("Parent company"))
+
+  let filterFn = $derived(
+    (involvement: Involvement) =>
+      involvement.child_investor_id === investor.id &&
+      involvement.role === (tertiary ? InvolvementRole.LENDER : InvolvementRole.PARENT),
+  )
 </script>
 
 <SubmodelEditField
@@ -34,7 +40,7 @@
   isEmpty={isEmptyInvolvement}
   entryComponent={Entry}
 >
-  <svelte:fragment slot="extraHeader" let:entry>
+  {#snippet extraHeader(entry)}
     {@const investor = $simpleInvestors.find(
       inv => inv.id === entry.parent_investor_id,
     )}
@@ -52,5 +58,5 @@
         {investor.name} #{investor.id}
       </span>
     {/if}
-  </svelte:fragment>
+  {/snippet}
 </SubmodelEditField>
