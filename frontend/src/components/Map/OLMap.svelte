@@ -91,12 +91,12 @@
   </div>
 </div>
 
-<style>
+<style lang="postcss">
   :global(div.ol-zoom) {
-    top: 0.5em;
-    right: 0.5em;
-    left: auto;
+    --ol-foreground-color: hsl(32, 97%, 55%);
+    --ol-subtle-foreground-color: hsl(32, 97%, 75%);
   }
+
   :global(.ol-viewport a) {
     @apply text-orange;
   }

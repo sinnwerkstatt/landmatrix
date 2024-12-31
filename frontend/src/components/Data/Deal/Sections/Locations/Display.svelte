@@ -162,6 +162,7 @@
       containerClass="min-h-full h-full"
       mapReady={onMapReady}
       options={{ center: [0, 0] }}
+      showLayerSwitcher
     />
   </div>
 </section>
