@@ -20,7 +20,13 @@ class CountryAdmin(admin.ModelAdmin):
 
 @admin.register(Region)
 class RegionAdmin(admin.ModelAdmin):
-    pass
+    list_display = [
+        "name",
+        "point_lat_min",
+        "point_lon_min",
+        "point_lat_max",
+        "point_lon_max",
+    ]
 
 
 @admin.register(Currency)
