@@ -66,6 +66,15 @@ export const markerStyle = new Style({
     src: marker2x,
   }),
 })
+export const markerStyleSemi = new Style({
+  image: new Icon({
+    opacity: 0.4,
+    anchor: [0.5, 1],
+    scale: 0.4,
+    src: marker2x,
+    color: "gray",
+  }),
+})
 
 export const LMCircleClass =
   "group opacity-90 text-sm rounded-full text-center !flex justify-center items-center drop-shadow-marker"

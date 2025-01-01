@@ -1,25 +1,30 @@
 <script lang="ts">
+  import type { Feature } from "ol"
   import { _ } from "svelte-i18n"
 
-  import type { PointFeature } from "$lib/types/data"
-
   interface Props {
-    feature: PointFeature
+    feature: Feature
   }
 
   let { feature }: Props = $props()
+
+  const fprops = $derived(feature.getProperties())
 </script>
 
-<div class="mb-2">
-  <a class="font-mono text-lg" href="#{feature.properties.id}">
-    #{feature.properties.id}
-  </a>
-</div>
-<div>
-  <b>{$_("Name")}</b>
-  : {feature.properties.name}
-</div>
-<div>
-  <b>{$_("Point")}</b>
-  : {feature.geometry.coordinates}
+<div
+  class="min-w-80 rounded-xl border bg-white p-4 text-sm drop-shadow-[4px_4px_5px_rgba(0,0,0,0.4)]"
+>
+  <div class="mb-2">
+    <a class="font-mono text-lg" href="#{fprops.nid}">
+      #{fprops.nid}
+    </a>
+  </div>
+  <div>
+    <b>{$_("Name")}</b>
+    : {fprops.name}
+  </div>
+  <div>
+    <b>{$_("Point")}</b>
+    : {fprops.point}
+  </div>
 </div>

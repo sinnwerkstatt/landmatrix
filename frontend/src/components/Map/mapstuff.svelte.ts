@@ -1,5 +1,5 @@
 import { env } from "$env/dynamic/public"
-import TileLayer from "ol/layer/Tile"
+import { Tile as TileLayer } from "ol/layer"
 import { OSM, TileWMS, XYZ } from "ol/source"
 
 function getWMSTilesCDEUniBern(folder: string, LAYERS: string, attributions: string) {
@@ -47,6 +47,7 @@ export const baseLayers = [
           'Maps © <a href="https://www.thunderforest.com">Thunderforest</a>, Data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
       }),
       visible: false,
+      maxZoom: 22,
     }),
   },
   {

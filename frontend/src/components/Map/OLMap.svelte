@@ -1,8 +1,7 @@
 <script lang="ts">
+  import { Map, View } from "ol"
   import { defaults } from "ol/control"
-  import Map from "ol/Map"
   import { fromLonLat } from "ol/proj"
-  import View from "ol/View"
   import { onDestroy, onMount, type Snippet } from "svelte"
 
   import "ol/ol.css"
@@ -79,7 +78,11 @@
 </script>
 
 <div class="relative mx-auto {containerClass}">
-  <div bind:this={mapDiv} class="relative isolate h-full w-full {className}">
+  <div
+    tabindex="-2"
+    bind:this={mapDiv}
+    class="relative isolate h-full w-full {className}"
+  >
     {#if !map}
       <LoadingPulse class="h-[300px]" />
     {:else}
@@ -92,6 +95,7 @@
 </div>
 
 <style lang="postcss">
+  /*noinspection CssUnusedSymbol*/
   :global(div.ol-zoom) {
     --ol-foreground-color: hsl(32, 97%, 55%);
     --ol-subtle-foreground-color: hsl(32, 97%, 75%);

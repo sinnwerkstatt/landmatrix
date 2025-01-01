@@ -1,8 +1,7 @@
 <script lang="ts">
-  import { Feature } from "ol"
+  import { Feature, type Map } from "ol"
   import { Point } from "ol/geom"
-  import VectorLayer from "ol/layer/Vector"
-  import type Map from "ol/Map"
+  import { Vector as VectorLayer } from "ol/layer"
   import { fromLonLat } from "ol/proj"
   import { Vector as VectorSource } from "ol/source"
   import { _ } from "svelte-i18n"

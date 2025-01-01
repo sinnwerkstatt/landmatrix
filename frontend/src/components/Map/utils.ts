@@ -1,6 +1,6 @@
 import type { Country } from "$lib/types/data"
 
-export const createCoordinatesMap = (
+export const createCoordinatesMapLeaflet = (
   countries: Country[],
 ): {
   [key: number]: [lat: number, long: number]
@@ -9,6 +9,19 @@ export const createCoordinatesMap = (
     (acc, { id, point_lon, point_lat }) => ({
       ...acc,
       [id]: [point_lat, point_lon],
+    }),
+    {},
+  )
+
+export const createCoordinatesMap = (
+  countries: Country[],
+): {
+  [key: number]: [lat: number, long: number]
+} =>
+  countries.reduce(
+    (acc, { id, point_lon, point_lat }) => ({
+      ...acc,
+      [id]: [point_lon, point_lat],
     }),
     {},
   )
