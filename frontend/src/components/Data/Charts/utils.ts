@@ -46,7 +46,7 @@ export const downloadCanvas = (
   a_download(canvas.toDataURL(`image/${fileType}`), fileName(title, `.${fileType}`))
 
 export const downloadSVG = (
-  svg: SVGElement | null,
+  svg: SVGElement | null | undefined,
   fileType: "svg" | "png" | "webp",
   title: string,
 ): void => {

@@ -1,8 +1,7 @@
 <script lang="ts">
   import { tracker } from "@sinnwerkstatt/sveltekit-matomo"
-  import { format, hierarchy, select, treemap, treemapSquarify } from "d3"
   import type { BaseType, HierarchyNode } from "d3"
-  import { afterUpdate, onMount } from "svelte"
+  import { format, hierarchy, select, treemap, treemapSquarify } from "d3"
   import { _ } from "svelte-i18n"
 
   import type { BucketMap } from "$lib/data/buckets"
@@ -18,22 +17,13 @@
   } from "$lib/types/data"
 
   import ChartWrapper from "$components/Data/Charts/DownloadWrapper.svelte"
-  import { downloadCSV, downloadJSON, downloadSVG } from "$components/Data/Charts/utils"
-  import type { DownloadEvent } from "$components/Data/Charts/utils"
+  import {
+    downloadCSV,
+    downloadJSON,
+    downloadSVG,
+    type FileType,
+  } from "$components/Data/Charts/utils"
   import { showContextBar, showFilterBar } from "$components/Data/stores"
-
-  export let deals: DealVersion2[] = []
-  export let title: string
-
-  let svgComp: SVGElement
-
-  const SIZE_THRESHOLD = 0.005
-
-  $: labels = {
-    ...createLabels<Crops>($fieldChoices.deal.crops),
-    ...createLabels<Animals>($fieldChoices.deal.animals),
-    ...createLabels<Minerals>($fieldChoices.deal.minerals),
-  }
 
   interface ProduceAccumulator {
     crops: BucketMap<Crops>
@@ -55,6 +45,23 @@
     }[]
   }
 
+  interface Props {
+    deals?: DealVersion2[]
+    title: string
+  }
+
+  let { deals = [], title }: Props = $props()
+
+  let svgComp: SVGElement | undefined = $state()
+
+  const SIZE_THRESHOLD = 0.005
+
+  const labels = $derived({
+    ...createLabels<Crops>($fieldChoices.deal.crops),
+    ...createLabels<Animals>($fieldChoices.deal.animals),
+    ...createLabels<Minerals>($fieldChoices.deal.minerals),
+  })
+
   // TODO Later not correct to add full deal size for each produce
   const produceReducer = (
     acc: ProduceAccumulator,
@@ -71,7 +78,9 @@
     }
   }
 
-  $: produceGroupLabels = createLabels<ProduceGroup>($fieldChoices.deal.produce_group)
+  const produceGroupLabels = $derived(
+    createLabels<ProduceGroup>($fieldChoices.deal.produce_group),
+  )
 
   const createTreeData = (deals: DealVersion2[]): ProduceTreeData => {
     const acc = deals.reduce(produceReducer, {} as ProduceAccumulator)
@@ -121,6 +130,7 @@
       },
     ]
   }
+  const treeData = $derived(createTreeData(deals))
 
   const buildTreeChart = (treeData: ProduceTreeData): void => {
     if (!treeData) return
@@ -206,14 +216,13 @@
       .text((d: string) => d)
   }
 
-  $: treeData = createTreeData(deals)
-
   // react on screen changes
   showContextBar.subscribe(() => buildTreeChart(treeData))
   showFilterBar.subscribe(() => buildTreeChart(treeData))
 
-  onMount(() => buildTreeChart(treeData))
-  afterUpdate(() => buildTreeChart(treeData))
+  $effect(() => {
+    buildTreeChart(treeData)
+  })
 
   const asCsv = (treeData: ProduceTreeData): string => {
     const csvHeader = "Produce Name,Total Deal Size (ha)\n"
@@ -225,7 +234,7 @@
     return csvHeader + csvData
   }
 
-  const handleDownload = ({ detail: fileType }: DownloadEvent) => {
+  const handleDownload = (fileType: FileType) => {
     if ($tracker) $tracker.trackEvent("Chart", "Produce info map", fileType)
     switch (fileType) {
       case "json":
@@ -238,6 +247,6 @@
   }
 </script>
 
-<ChartWrapper {title} wrapperClasses="mx-auto w-full" on:download={handleDownload}>
-  <svg id="produce-info-map" bind:this={svgComp} />
+<ChartWrapper ondownload={handleDownload} {title} wrapperClasses="mx-auto w-full">
+  <svg bind:this={svgComp} id="produce-info-map" />
 </ChartWrapper>

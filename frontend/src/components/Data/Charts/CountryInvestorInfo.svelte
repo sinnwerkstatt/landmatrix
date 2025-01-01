@@ -13,11 +13,12 @@
     name?: string
   }
 
-  let country: components["schemas"]["Country"] | undefined
-  $: country = page.data.countries.find(c => c.id === $filters.country_id)
+  let country: components["schemas"]["Country"] | undefined = $derived(
+    page.data.countries.find(c => c.id === $filters.country_id),
+  )
 
-  let investingCountries: CountryStat[] = []
-  let investedCountries: CountryStat[] = []
+  let investingCountries: CountryStat[] = $state([])
+  let investedCountries: CountryStat[] = $state([])
 
   async function grabInvestmentsAndRankings(
     country: components["schemas"]["Country"] | undefined,
@@ -58,7 +59,9 @@
     else return 0
   }
 
-  $: grabInvestmentsAndRankings(country, $filters)
+  $effect(() => {
+    grabInvestmentsAndRankings(country, $filters)
+  })
 </script>
 
 <div class="text-gray-700 dark:text-white">

@@ -1,9 +1,6 @@
 <script lang="ts">
   import { tracker } from "@sinnwerkstatt/sveltekit-matomo"
-  import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
-
-  import { browser } from "$app/environment"
 
   import { LSLAByNegotiation, LSLAData } from "$lib/data/charts/LSLAByNegotiation"
   import { filters } from "$lib/filters"
@@ -16,32 +13,40 @@
   } from "$lib/types/data"
 
   import ChartWrapper from "$components/Data/Charts/DownloadWrapper.svelte"
-  import { downloadCSV, downloadJSON, downloadSVG } from "$components/Data/Charts/utils"
-  import type { DownloadEvent } from "$components/Data/Charts/utils"
+  import {
+    downloadCSV,
+    downloadJSON,
+    downloadSVG,
+    type FileType,
+  } from "$components/Data/Charts/utils"
 
-  export let deals: DealVersion2[] = []
+  interface Props {
+    deals?: DealVersion2[]
+  }
 
-  $: negStatChoices = $fieldChoices.deal.negotiation_status
-  $: negStatLabels = createLabels<NegotiationStatus>(negStatChoices)
+  let { deals = [] }: Props = $props()
 
-  $: negStatGroupChoices = $fieldChoices.deal.negotiation_status_group
-  $: negStatGroupLabels = createLabels<NegotiationStatusGroup>(negStatGroupChoices)
+  let negStatChoices = $derived($fieldChoices.deal.negotiation_status)
+  let negStatLabels = $derived(createLabels<NegotiationStatus>(negStatChoices))
 
-  $: negStatGroupMap = createGroupMap<NegStatGroupMap>(negStatChoices)
+  let negStatGroupChoices = $derived($fieldChoices.deal.negotiation_status_group)
+  let negStatGroupLabels = $derived(
+    createLabels<NegotiationStatusGroup>(negStatGroupChoices),
+  )
+
+  let negStatGroupMap = $derived(createGroupMap<NegStatGroupMap>(negStatChoices))
 
   // Large Scale Land Acquisitions
-  $: title = $_("LSLA by negotiation status")
+  let title = $derived($_("LSLA by negotiation status"))
 
-  let svgComp: SVGElement
+  let svgComp: SVGElement | undefined = $state()
   let svg = new LSLAByNegotiation()
 
   type Pots = {
     [key in NegotiationStatus | NegotiationStatusGroup]: LSLAData
   }
-  let pots: Pots
-
-  $: if (browser && deals?.length > 0) {
-    pots = {} as Pots
+  let pots: Pots = $derived.by(() => {
+    let _pots = {} as Pots
 
     const filterNegStats = $filters.negotiation_status
     const selectedNegStats =
@@ -59,11 +64,11 @@
         groupNegStats
           .filter(negStat => selectedNegStats.includes(negStat))
           .forEach(negStat => {
-            pots[negStat] = new LSLAData(negStatLabels[negStat])
+            _pots[negStat] = new LSLAData(negStatLabels[negStat])
           })
 
         if (groupNegStats.every(negStat => selectedNegStats.includes(negStat))) {
-          pots[negStatGroup] = new LSLAData(negStatGroupLabels[negStatGroup], true)
+          _pots[negStatGroup] = new LSLAData(negStatGroupLabels[negStatGroup], true)
         }
       })
 
@@ -76,15 +81,20 @@
       )
         return
 
-      pots[d.current_negotiation_status].add(d.current_contract_size, d.intended_size)
+      _pots[d.current_negotiation_status].add(d.current_contract_size, d.intended_size)
 
       const ngrp = negStatGroupMap[d.current_negotiation_status]
 
-      if (ngrp && pots[ngrp]) pots[ngrp].add(d.current_contract_size, d.intended_size)
+      if (ngrp && _pots[ngrp]) _pots[ngrp].add(d.current_contract_size, d.intended_size)
     })
+    return _pots
+  })
 
-    svg.do_the_graph(svgComp, Object.values(pots))
-  }
+  $effect(() => {
+    if (svgComp && deals?.length > 0) {
+      svg.do_the_graph(svgComp, Object.values(pots))
+    }
+  })
 
   const toCSV = (pots: Pots) => {
     const header = "Name (Status Group),Number of Deals,Contract Size,Intended Size\n"
@@ -96,7 +106,7 @@
       .join("\n")
     return header + records
   }
-  const handleDownload = ({ detail: fileType }: DownloadEvent) => {
+  const handleDownload = (fileType: FileType) => {
     if ($tracker) $tracker.trackEvent("Chart", "LSLA by negotiation", fileType)
     switch (fileType) {
       case "json":
@@ -107,15 +117,13 @@
         return downloadSVG(svgComp, fileType, title)
     }
   }
-
-  onMount(() => svg.do_the_graph(svgComp, Object.values(pots)))
 </script>
 
-<ChartWrapper {title} on:download={handleDownload}>
+<ChartWrapper ondownload={handleDownload} {title}>
   <svg
+    bind:this={svgComp}
     class="stroke-gray-700 stroke-[0.2]"
     id="lsla-by-negotiation-chart"
-    bind:this={svgComp}
   />
   <!-- TODO: @Kurt needs text -->
   <!--  <div slot="legend" />-->

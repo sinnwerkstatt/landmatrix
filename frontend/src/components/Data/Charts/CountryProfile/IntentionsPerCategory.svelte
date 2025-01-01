@@ -1,9 +1,6 @@
 <script lang="ts">
   import { tracker } from "@sinnwerkstatt/sveltekit-matomo"
-  import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
-
-  import { browser } from "$app/environment"
 
   import {
     LamaSankey,
@@ -17,39 +14,45 @@
   import type { DealVersion2 } from "$lib/types/data"
 
   import ChartWrapper from "$components/Data/Charts/DownloadWrapper.svelte"
-  import { downloadCSV, downloadJSON, downloadSVG } from "$components/Data/Charts/utils"
-  import type { DownloadEvent } from "$components/Data/Charts/utils"
+  import {
+    downloadCSV,
+    downloadJSON,
+    downloadSVG,
+    type FileType,
+  } from "$components/Data/Charts/utils"
 
-  $: title = $_(
-    "Number of intentions per category of production according to implementation status",
+  let title = $derived(
+    $_(
+      "Number of intentions per category of production according to implementation status",
+    ),
   )
 
-  export let deals: DealVersion2[] = []
-
-  let svgComp: SVGElement
-
-  let sankey_links: MySankeyLink[] = []
-  let sankey = new LamaSankey()
-  let sankey_legend_numbers: { x: number; y: number; z: number }
-
-  $: if (deals?.length > 0) {
-    sankey_legend_numbers = {
-      x: deals.filter(d => d.current_intention_of_investment?.length > 1).length,
-      y: deals
-        .map(d => d.current_intention_of_investment?.length || 0)
-        .reduce((a, b) => a + b, 0),
-      z: deals.length,
-    }
+  interface Props {
+    deals?: DealVersion2[]
   }
 
-  let nodes: MySankeyNode[] = []
-  let links: MySankeyLink[] = []
+  let { deals = [] }: Props = $props()
 
-  $: ioiLabels = createLabels($fieldChoices.deal.intention_of_investment)
+  let svgComp: SVGElement | undefined = $state()
+  let sankey_links: MySankeyLink[] = $state([])
+  let sankey = new LamaSankey()
+  let sankeyLegendNumbers: { x: number; y: number; z: number } | undefined = $derived(
+    deals?.length
+      ? {
+          x: deals.filter(d => d.current_intention_of_investment?.length > 1).length,
+          y: deals
+            .map(d => d.current_intention_of_investment?.length || 0)
+            .reduce((a, b) => a + b, 0),
+          z: deals.length,
+        }
+      : undefined,
+  )
 
-  $: impStatLabels = createLabels($fieldChoices.deal.implementation_status)
+  let ioiLabels = $derived(createLabels($fieldChoices.deal.intention_of_investment))
 
-  $: if (browser && deals?.length > 0) {
+  let impStatLabels = $derived(createLabels($fieldChoices.deal.implementation_status))
+
+  let nodesAndLinks = $derived.by(() => {
     let datanodes: Set<string> = new Set()
     let datalinks: { [key: string]: number } = {}
     let i_status_counter: { [key: string]: number } = {}
@@ -65,7 +68,7 @@
         datalinks[`${i_stat},${ivi}`] = datalinks[`${i_stat},${ivi}`] + 1 || 1
       })
     })
-    nodes = [...datanodes].map(n => {
+    let nodes: MySankeyNode[] = [...datanodes].map(n => {
       const istatus = impStatLabels[n] || n === "S_UNKNOWN"
       const deal_count = istatus ? i_status_counter[n] : 0
       const name =
@@ -75,15 +78,20 @@
         ioiLabels[n]
       return { id: n, istatus, deal_count, name }
     })
-    links = Object.entries(datalinks).map(([k, v]) => {
+    let links: MySankeyLink[] = Object.entries(datalinks).map(([k, v]) => {
       const [source, target] = k.split(",")
       return { source, target, value: v }
     })
+    return [nodes, links]
+  })
+
+  $effect(() => {
+    const [nodes, links] = nodesAndLinks
     sankey_links = JSON.parse(JSON.stringify(links))
     sankey.do_the_sank(svgComp, { nodes, links })
-  }
+  })
 
-  const handleDownload = ({ detail: fileType }: DownloadEvent) => {
+  const handleDownload = (fileType: FileType) => {
     if ($tracker) $tracker.trackEvent("Chart", "Intentions per category", fileType)
     switch (fileType) {
       case "json":
@@ -94,27 +102,27 @@
         return downloadSVG(svgComp, fileType, title)
     }
   }
-
-  onMount(() => sankey.do_the_sank(svgComp, { nodes, links }))
 </script>
 
-<ChartWrapper {title} on:download={handleDownload}>
-  <svg id="sankey-chart" bind:this={svgComp} />
+<ChartWrapper ondownload={handleDownload} {title}>
+  <svg bind:this={svgComp} id="sankey-chart" />
 
-  <div slot="legend">
-    {$_("This figure lists the intention of investments per negotiation status.")}
-    <br />
-    {$_("Please note: a deal may have more than one intention.")}
-    <br />
-    {#if sankey_legend_numbers}
-      <i>
-        {$_(
-          "{x} deals have multiple intentions, resulting in a total of {y} intentions for {z} deals.",
-          { values: sankey_legend_numbers },
-        )}
-      </i>
-    {/if}
-  </div>
+  {#snippet legend()}
+    <div>
+      {$_("This figure lists the intention of investments per negotiation status.")}
+      <br />
+      {$_("Please note: a deal may have more than one intention.")}
+      <br />
+      {#if sankeyLegendNumbers}
+        <i>
+          {$_(
+            "{x} deals have multiple intentions, resulting in a total of {y} intentions for {z} deals.",
+            { values: sankeyLegendNumbers },
+          )}
+        </i>
+      {/if}
+    </div>
+  {/snippet}
 </ChartWrapper>
 
 <style>
