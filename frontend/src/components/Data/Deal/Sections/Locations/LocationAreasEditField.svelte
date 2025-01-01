@@ -5,6 +5,7 @@
   import { _ } from "svelte-i18n"
   import { quintOut } from "svelte/easing"
   import { crossfade } from "svelte/transition"
+  import { twMerge } from "tailwind-merge"
 
   import { newNanoid } from "$lib/helpers"
   import { createLabels, fieldChoices } from "$lib/stores"
@@ -17,7 +18,6 @@
     cardClass,
     labelClass,
   } from "$components/Fields/Edit2/JSONFieldComponents/consts"
-  import CurrentRadio from "$components/Fields/Edit2/JSONFieldComponents/CurrentRadio.svelte"
   import Date from "$components/Fields/Edit2/JSONFieldComponents/Date.svelte"
   import EyeIcon from "$components/icons/EyeIcon.svelte"
   import EyeSlashIcon from "$components/icons/EyeSlashIcon.svelte"
@@ -180,14 +180,25 @@
             out:send={{ key: val.nid }}
           >
             <Date bind:value={val.date} name="area_{val.nid}_date" />
-            <CurrentRadio
-              bind:group={currentGroups[areaType]}
-              name="{areaType}_current"
-              required={areasOfType.length > 0 && currentGroups[areaType] < 0}
-              disabled={!val.area}
-              value={index}
-              on:change={() => updateCurrent(areaType, val.nid)}
-            />
+
+            <label class={labelClass}>
+              {$_("Current")}
+              <input
+                type="radio"
+                class={twMerge(
+                  "size-5 accent-violet-400 ",
+                  areasOfType.length > 0 && currentGroups[areaType] < 0
+                    ? "ring-2 ring-red-600"
+                    : "",
+                )}
+                bind:group={currentGroups[areaType]}
+                name="{areaType}_current"
+                required={areasOfType.length > 0 && currentGroups[areaType] < 0}
+                disabled={!val.area}
+                value={index}
+                on:change={() => updateCurrent(areaType, val.nid)}
+              />
+            </label>
 
             <label class={labelClass} for="area_{val.nid}_type">
               {$_("Type")}

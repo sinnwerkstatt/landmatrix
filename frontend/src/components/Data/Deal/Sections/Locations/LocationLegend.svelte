@@ -19,8 +19,8 @@
     <div class="flex items-center">
       <div class="h-[14px] w-[14px] border border-dashed border-black">
         <div
-          class="colored h-full w-full opacity-60"
-          style:--color={AREA_TYPE_COLOR_MAP[areaType]}
+          class="h-full w-full opacity-60"
+          style="background-color: {AREA_TYPE_COLOR_MAP[areaType]};"
         ></div>
       </div>
       <span class="pl-2 text-xs">
@@ -29,9 +29,3 @@
     </div>
   {/each}
 </div>
-
-<style lang="css">
-  .colored {
-    background-color: var(--color, transparent);
-  }
-</style>

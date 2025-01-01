@@ -48,9 +48,9 @@ export const AREA_TYPES = [
 ] as const satisfies AreaType[]
 
 export const AREA_TYPE_COLOR_MAP: { [key in AreaType]: string } = {
-  contract_area: "#ff00ff",
-  intended_area: "#66ff33",
-  production_area: "#ff0000",
+  contract_area: "#aa70dd",
+  intended_area: "#a0d875",
+  production_area: "#e86a6a",
 }
 
 export const createPointFeature = (location: Location2): PointFeature => ({

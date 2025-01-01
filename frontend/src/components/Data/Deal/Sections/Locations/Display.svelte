@@ -46,6 +46,7 @@
         if (prps.nid === hoverLocationId) {
           haveHit = true
           createMarkerPopup(ft as Feature<Point>).then(newOverlay => {
+            map!.addOverlay(newOverlay)
             map!.getOverlays().forEach(overlay => {
               if (overlay !== newOverlay) map!.removeOverlay(overlay)
             })
@@ -88,13 +89,17 @@
       const feature = map!.forEachFeatureAtPixel(evt.pixel, function (feature) {
         return feature as Feature<Point>
       })
-      hoverLocationId = feature?.getProperties()?.nid
+
+      hoverLocationId =
+        feature && markersVectorSource.hasFeature(feature)
+          ? feature.getProperties().nid
+          : undefined
     })
     map.on("click", evt => {
       const feature = map!.forEachFeatureAtPixel(evt.pixel, function (feature) {
         return feature as Feature<Point>
       })
-      if (feature) {
+      if (feature && markersVectorSource.hasFeature(feature)) {
         const nid = feature.getProperties().nid
         goto(nid === selectedLocationId ? "" : `#${nid}`)
       }
@@ -103,18 +108,14 @@
 
   async function createMarkerPopup(feature: Feature<Point>) {
     const markerContainerDiv = document.createElement("div")
-
     mount(LocationTooltip, { target: markerContainerDiv, props: { feature } })
-
-    const ovrlay = new Overlay({
+    return new Overlay({
       element: markerContainerDiv,
       position: feature.getGeometry()?.getCoordinates(),
       positioning: "bottom-center",
       offset: [-30, -30, -30, -30],
       autoPan: { animation: { duration: 300 } },
     })
-    map!.addOverlay(ovrlay)
-    return ovrlay
   }
 
   const createMarkerLayer = (locations: readonly Location2[]) => {
@@ -195,13 +196,15 @@
           showLabel
         />
         <DisplayField value={location.comment} fieldname="location.comment" showLabel />
-        <LocationAreasField
-          {map}
-          label={$_("Areas")}
-          areas={location.areas}
-          fieldname="location.areas"
-          isSelectedEntry={!selectedLocationId || location.nid === selectedLocationId}
-        />
+        {#if map}
+          <LocationAreasField
+            {map}
+            label={$_("Areas")}
+            areas={location.areas}
+            fieldname="location.areas"
+            isSelectedEntry={!selectedLocationId || location.nid === selectedLocationId}
+          />
+        {/if}
       {/snippet}
     </SubmodelDisplayField>
   </div>
