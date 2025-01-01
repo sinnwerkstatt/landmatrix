@@ -11,6 +11,8 @@
     name?: string | undefined
     disabled?: boolean
     required?: boolean
+    oninput?: (e: CustomEvent) => void
+    onclear?: (e: CustomEvent) => void
   }
 
   let {
@@ -19,6 +21,8 @@
     name = undefined,
     disabled = false,
     required = false,
+    oninput,
+    onclear,
   }: Props = $props()
 </script>
 
@@ -30,7 +34,7 @@
   {name}
   {disabled}
   {required}
-  on:input
-  on:clear
+  {oninput}
+  {onclear}
   placeholder={$_("Select a country")}
 />

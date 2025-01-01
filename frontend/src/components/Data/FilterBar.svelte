@@ -158,13 +158,13 @@
       >
         <CountrySelect
           countries={page.data.countries.filter(c => c.deals && c.deals.length > 0)}
-          on:input={e => {
+          oninput={e => {
             if (e.detail) {
               $filters.country_id = e.detail.id
               $filters.region_id = undefined
             }
           }}
-          on:clear={() => ($filters.country_id = undefined)}
+          onclear={() => ($filters.country_id = undefined)}
           value={page.data.countries.find(c => c.id === $filters.country_id)}
         />
 
@@ -242,15 +242,15 @@
         <VirtualListSelect
           items={$simpleInvestors.filter(i => !i.deleted && i.active)}
           label="name"
-          on:input={e => ($filters.investor_id = e?.detail?.id)}
+          oninput={e => ($filters.investor_id = e?.detail?.id)}
           value={$simpleInvestors.find(i => i.id === $filters.investor_id)}
         >
-          <svelte:fragment let:selection slot="selection">
+          {#snippet selectionSlot(selection)}
             {selection.name} (#{selection.id})
-          </svelte:fragment>
-          <svelte:fragment let:item slot="item">
+          {/snippet}
+          {#snippet itemSlot(item)}
             #{item.id}: {item.name}
-          </svelte:fragment>
+          {/snippet}
         </VirtualListSelect>
         {$_("Country of registration")}
         <CountrySelect

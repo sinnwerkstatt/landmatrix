@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
   export interface Item {
     id: number | string | null
     created?: boolean
@@ -11,37 +11,58 @@
 </script>
 
 <script lang="ts" generics="T extends Item">
-  import { tick } from "svelte"
+  import { tick, type Snippet } from "svelte"
   import { _ } from "svelte-i18n"
   import Select from "svelte-select"
   import VirtualList from "svelte-tiny-virtual-list"
 
   export const itemId = "id"
 
-  /* eslint-disable @typescript-eslint/no-unused-vars, no-undef */
-  interface $$Slots {
-    selection: { selection: T }
-    item: { item: T }
+  interface Props {
+    // eslint-disable-next-line no-undef
+    items?: T[]
+    // eslint-disable-next-line no-undef
+    itemFilter?: FilterFn<T> | undefined
+    value?: Item | null
+    label?: string
+    id?: string | null
+    required?: boolean
+    disabled?: boolean
+    creatable?: boolean
+    heightInPx?: number
+    placeholder?: string
+    name?: string | undefined
+    // eslint-disable-next-line no-undef
+    selectionSlot?: Snippet<[T]>
+    // eslint-disable-next-line no-undef
+    itemSlot?: Snippet<[T]>
+    oninput?: (e: CustomEvent) => void
+    onclear?: (e: CustomEvent) => void
   }
-  export let items: T[] = []
-  export let itemFilter: FilterFn<T> | undefined = undefined
-  /* eslint-enable */
 
-  export let value: Item | null = null
-  export let label = "label"
-  export let id: string | null = null
-  export let required = false
-  export let disabled = false
-  export let creatable = false
-  export let heightInPx = 228
-  export let placeholder: string = $_("Please select")
-  export let name: string | undefined = undefined
+  let {
+    items = [],
+    itemFilter = undefined,
+    value = $bindable(),
+    label = "label",
+    id = null,
+    required = false,
+    disabled = false,
+    creatable = false,
+    heightInPx = 228,
+    placeholder = $_("Please select"),
+    name = undefined,
+    selectionSlot,
+    itemSlot,
+    oninput,
+    onclear,
+  }: Props = $props()
 
-  let focused: boolean
+  let focused: boolean = $state(false)
 
   // bind value for keyboard navigation but also set on click virtual list item
-  let listOpen = false
-  let filterText = ""
+  let listOpen = $state(false)
+  let filterText = $state("")
   const setValue = (item: Item) => {
     value = { ...item }
     filterText = ""
@@ -65,7 +86,7 @@
   }
 
   // bind to svelte-select for visualizing a11y keyboard navigation
-  let hoverItemIndex = 0
+  let hoverItemIndex = $state(0)
   const setHoverIndex = (index: number) => {
     hoverItemIndex = index
   }
@@ -80,7 +101,9 @@
     setHoverIndex(activeIndex)
   }
 
-  $: if (listOpen) handleListOpen()
+  $effect(() => {
+    if (listOpen) handleListOpen()
+  })
 </script>
 
 <Select
@@ -100,19 +123,21 @@
   {id}
   showChevron
   hasError={required && !value && !focused}
-  on:input
-  on:clear
+  on:input={e => oninput?.(e)}
+  on:clear={e => onclear?.(e)}
   on:filter={e => onFilter(e.detail)}
 >
   <svelte:fragment slot="selection" let:selection>
-    <slot name="selection" {selection}>
+    {#if selectionSlot}
+      {@render selectionSlot(selection)}
+    {:else}
       {selection[label]}
-    </slot>
+    {/if}
   </svelte:fragment>
+
   <svelte:fragment slot="list" let:filteredItems>
     {#if filteredItems.length > 0}
-      <!--prevent any pointerdown propagation to not destroy focus of svelte-select-->
-      <div on:pointerdown|stopPropagation>
+      <div onpointerdown={e => e.stopPropagation()}>
         <VirtualList
           width="100%"
           height={heightInPx}
@@ -130,14 +155,19 @@
             let:index
             let:style
             {style}
-            on:click|stopPropagation={() => setValue(filteredItems[index])}
-            on:keydown|stopPropagation
-            on:mouseover={() => setHoverIndex(index)}
-            on:focus={() => setHoverIndex(index)}
+            onclick={e => {
+              e.stopPropagation()
+              setValue(filteredItems[index])
+            }}
+            onkeydown={e => e.stopPropagation()}
+            onmouseover={() => setHoverIndex(index)}
+            onfocus={() => setHoverIndex(index)}
           >
-            <slot name="item" item={filteredItems[index]}>
+            {#if itemSlot}
+              {@render itemSlot(filteredItems[index])}
+            {:else}
               {filteredItems[index][label]}
-            </slot>
+            {/if}
           </div>
         </VirtualList>
       </div>

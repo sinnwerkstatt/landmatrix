@@ -61,24 +61,24 @@
     <div class="min-w-[33vw] self-start" dir="ltr">
       <RegionSelect
         regions={page.data.regions}
-        on:input={e => {
+        oninput={e => {
           if (e.detail) {
             $filters.region_id = e.detail.id
             $filters.country_id = undefined
           }
         }}
-        on:clear={() => ($filters.region_id = undefined)}
+        onclear={() => ($filters.region_id = undefined)}
         value={page.data.regions.find(c => c.id === $filters.region_id)}
       />
       <CountrySelect
         countries={page.data.countries}
-        on:input={e => {
+        oninput={e => {
           if (e.detail) {
             $filters.country_id = e.detail.id
             $filters.region_id = undefined
           }
         }}
-        on:clear={() => ($filters.country_id = undefined)}
+        onclear={() => ($filters.country_id = undefined)}
         value={page.data.countries.find(c => c.id === $filters.country_id)}
       />
 

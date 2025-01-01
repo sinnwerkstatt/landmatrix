@@ -48,9 +48,9 @@
     label="username"
     {required}
     {itemFilter}
-    on:input={e => (value = e.detail?.id ?? null)}
+    oninput={e => (value = e.detail?.id ?? null)}
   >
-    <svelte:fragment slot="selection" let:selection>
+    {#snippet selectionSlot(selection)}
       {#if selection.full_name}
         {selection.full_name} (
         <b>{selection.username}</b>
@@ -58,8 +58,8 @@
       {:else}
         <b>{selection.username}</b>
       {/if}
-    </svelte:fragment>
-    <svelte:fragment slot="item" let:item>
+    {/snippet}
+    {#snippet itemSlot(item)}
       {#if item.full_name}
         {item.full_name} (
         <b>{item.username}</b>
@@ -67,6 +67,6 @@
       {:else}
         <b>{item.username}</b>
       {/if}
-    </svelte:fragment>
+    {/snippet}
   </VirtualListSelect>
 {/if}

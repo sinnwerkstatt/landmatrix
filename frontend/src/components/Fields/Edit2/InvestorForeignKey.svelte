@@ -107,12 +107,12 @@
   {itemFilter}
   {items}
   label="name"
-  on:input={onInvestorInput}
+  oninput={onInvestorInput}
   placeholder={$_("Select investor")}
   required={extras.required}
   value={listValue}
 >
-  <svelte:fragment let:selection slot="selection">
+  {#snippet selectionSlot(selection)}
     {#if selection.created}
       <div class="font-semibold italic">[new investor]</div>
     {:else}
@@ -127,8 +127,8 @@
       {/if}
       {selection.name} (#{selection.id})
     {/if}
-  </svelte:fragment>
-  <svelte:fragment let:item slot="item">
+  {/snippet}
+  {#snippet itemSlot(item)}
     {#if item.created}
       {$_("Create")}: {item.name}
     {:else}
@@ -139,7 +139,7 @@
       {/if}
       {item.name} (#{item.id})
     {/if}
-  </svelte:fragment>
+  {/snippet}
 </VirtualListSelect>
 
 {#if !showNewInvestorForm && value}

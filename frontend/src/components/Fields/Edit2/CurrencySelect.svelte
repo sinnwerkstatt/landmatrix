@@ -9,7 +9,7 @@
     value?: number | null
   }
 
-  let { value = $bindable(null) }: Props = $props()
+  let { value = $bindable() }: Props = $props()
 </script>
 
 {#if $currencies}
@@ -18,13 +18,13 @@
     items={$currencies}
     placeholder={$_("Currency")}
     label="name"
-    on:input={e => (value = e?.detail?.id ?? null)}
+    oninput={e => (value = e?.detail?.id ?? null)}
   >
-    <svelte:fragment slot="selection" let:selection>
+    {#snippet selectionSlot(selection)}
       {selection.name} ({selection.code})
-    </svelte:fragment>
-    <svelte:fragment slot="item" let:item>
+    {/snippet}
+    {#snippet itemSlot(item)}
       {item.name} ({item.code})
-    </svelte:fragment>
+    {/snippet}
   </VirtualListSelect>
 {/if}
