@@ -116,7 +116,7 @@
     negStatBuckets.map(n => ({
       name: n.name,
       value: ((n.size / totalSize) * 100).toFixed(),
-      label: `<strong>${n.name}</strong>: ${n.size.toLocaleString("fr").replace(",", ".")} ha`,
+      label: `<strong>${n.name}</strong>: ${n.size.toLocaleString("fr").replace(",", ".")} ${$_("ha")}`,
       className: n.className,
     })),
   )
@@ -124,7 +124,7 @@
     negStatBuckets.map(n => ({
       name: n.name,
       value: ((n.count / totalCount) * 100).toFixed(),
-      label: `<strong>${n.name}</strong>: ${n.count.toFixed()} deals`,
+      label: `<strong>${n.name}</strong>: ${n.count.toFixed()} ${$_("deals")}`,
       className: n.className,
     })),
   )

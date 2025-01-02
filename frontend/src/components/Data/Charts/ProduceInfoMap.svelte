@@ -206,7 +206,7 @@
         d.data.name
           .split(/(?=[A-Z][a-z]\(\) )\s+/g)
           .concat(
-            `${Math.round(d.data.value).toLocaleString("fr").replace(",", ".")} ha`,
+            `${Math.round(d.data.value).toLocaleString("fr").replace(",", ".")} ${$_("ha")}`,
           ),
       )
       .join("tspan")

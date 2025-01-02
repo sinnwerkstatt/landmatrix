@@ -4,6 +4,7 @@
   import { page } from "$app/state"
 
   import { type SortBy } from "$lib/data/buckets"
+  import { dealChoices } from "$lib/fieldChoices"
   import { filters } from "$lib/filters"
   import { dealsNG } from "$lib/stores"
   import { observatoryPages } from "$lib/stores/wagtail"
@@ -45,14 +46,28 @@
 
   let sortBy: SortBy = $derived($displayDealsCount ? "count" : "size")
 
-  let chartNegStat = $derived(getNegotiationBuckets(deals, sortBy === "size"))
-  let chartImpStat = $derived(getImplementationBuckets(deals, sortBy === "size"))
-  let chartProd = $derived(getProduce(deals, sortBy === "size"))
+  let chartNegStat = $derived(
+    getNegotiationBuckets(
+      deals,
+      $dealChoices.negotiation_status_group,
+      sortBy === "size",
+    ),
+  )
+  let chartImpStat = $derived(
+    getImplementationBuckets(
+      deals,
+      $dealChoices.implementation_status,
+      sortBy === "size",
+    ),
+  )
+  let chartProd = $derived(
+    getProduce(deals, $dealChoices.produce_group, sortBy === "size"),
+  )
 
   let totalCount = $derived(
     $displayDealsCount
       ? `${Math.round(deals.length).toLocaleString("fr").replace(",", ".")}`
-      : `${Math.round(sum(deals, "deal_size")).toLocaleString("fr").replace(",", ".")} ha`,
+      : `${Math.round(sum(deals, "deal_size")).toLocaleString("fr").replace(",", ".")} ${$_("ha")}`,
   )
 </script>
 

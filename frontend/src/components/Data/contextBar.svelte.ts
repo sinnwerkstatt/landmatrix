@@ -1,13 +1,15 @@
+import { _ } from "svelte-i18n"
 import { get } from "svelte/store"
 
-import { dealChoices } from "$lib/fieldChoices"
+import { type ValueLabelEntry } from "$lib/fieldChoices"
 import type { components } from "$lib/openAPI"
 
 export function getNegotiationBuckets(
   deals: components["schemas"]["DealVersion"][],
+  groups: ValueLabelEntry[],
   bySize = false,
 ) {
-  const vBuckets = get(dealChoices).negotiation_status_group.map(x => ({
+  const vBuckets = groups.map(x => ({
     name: x.label,
     count: 0,
     size: 0,
@@ -57,7 +59,7 @@ export function getNegotiationBuckets(
       .map(n => ({
         name: n.name,
         value: ((n.size / totalSize) * 100).toFixed(),
-        label: `<strong>${n.name}</strong>: ${n.size.toLocaleString("fr").replace(",", ".")} ha`,
+        label: `<strong>${n.name}</strong>: ${n.size.toLocaleString("fr").replace(",", ".")} ${get(_)("ha")}`,
         className: n.className,
       }))
   } else {
@@ -66,7 +68,7 @@ export function getNegotiationBuckets(
       .map(n => ({
         name: n.name,
         value: ((n.count / totalCount) * 100).toFixed(),
-        label: `<strong>${n.name}</strong>: ${n.count.toFixed()} deals`,
+        label: `<strong>${n.name}</strong>: ${n.count.toFixed()} ${get(_)("deals")}`,
         className: n.className,
       }))
   }
@@ -74,9 +76,10 @@ export function getNegotiationBuckets(
 
 export function getImplementationBuckets(
   deals: components["schemas"]["DealVersion"][],
+  groups: ValueLabelEntry[],
   bySize = false,
 ) {
-  const vBuckets = get(dealChoices).implementation_status.map(x => ({
+  const vBuckets = groups.map(x => ({
     name: x.label,
     count: 0,
     size: 0,
@@ -122,7 +125,7 @@ export function getImplementationBuckets(
       .map(n => ({
         name: n.name,
         value: ((n.size / totalSize) * 100).toFixed(),
-        label: `<strong>${n.name}</strong>: ${n.size.toLocaleString("fr").replace(",", ".")} ha`,
+        label: `<strong>${n.name}</strong>: ${n.size.toLocaleString("fr").replace(",", ".")} ${get(_)("ha")}`,
         className: n.className,
       }))
   } else {
@@ -131,7 +134,7 @@ export function getImplementationBuckets(
       .map(n => ({
         name: n.name,
         value: ((n.count / totalCount) * 100).toFixed(),
-        label: `<strong>${n.name}</strong>: ${n.count.toFixed()} deals`,
+        label: `<strong>${n.name}</strong>: ${n.count.toFixed()} ${get(_)("deals")}`,
         className: n.className,
       }))
   }
@@ -139,23 +142,24 @@ export function getImplementationBuckets(
 
 export function getProduce(
   deals: components["schemas"]["DealVersion"][],
+  groups: ValueLabelEntry[],
   bySize = false,
 ) {
   const vBuckets = [
     {
-      name: "Crops",
+      name: groups.find(g => g.value === "CROPS")!.label,
       count: 0,
       size: 0,
       className: "text-purple-400",
     },
     {
-      name: "Livestock",
+      name: groups.find(g => g.value === "ANIMALS")!.label,
       count: 0,
       size: 0,
       className: "text-red-400",
     },
     {
-      name: "Mineral Resources",
+      name: groups.find(g => g.value === "MINERAL_RESOURCES")!.label,
       count: 0,
       size: 0,
       className: "text-violet-400",
@@ -187,7 +191,7 @@ export function getProduce(
       .map(n => ({
         name: n.name,
         value: ((n.size / totalSize) * 100).toFixed(),
-        label: `<strong>${n.name}</strong>: ${n.size.toLocaleString("fr").replace(",", ".")} ha`,
+        label: `<strong>${n.name}</strong>: ${n.size.toLocaleString("fr").replace(",", ".")} ${get(_)("ha")}`,
         className: n.className,
       }))
   } else {
@@ -196,7 +200,7 @@ export function getProduce(
       .map(n => ({
         name: n.name,
         value: ((n.count / totalCount) * 100).toFixed(),
-        label: `<strong>${n.name}</strong>: ${n.count.toFixed()} deals`,
+        label: `<strong>${n.name}</strong>: ${n.count.toFixed()} ${get(_)("deals")}`,
         className: n.className,
       }))
   }
