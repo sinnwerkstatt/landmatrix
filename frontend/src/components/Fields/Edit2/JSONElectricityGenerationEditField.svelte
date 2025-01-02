@@ -2,8 +2,7 @@
   import { _ } from "svelte-i18n"
   import { slide } from "svelte/transition"
 
-  // TODO NUTS they are not fully loaded
-  import { fieldChoices } from "$lib/stores"
+  import { dealChoices } from "$lib/fieldChoices"
   import type { JSONElectricityGenerationFieldType } from "$lib/types/data"
 
   import ChoicesEditField from "$components/Fields/Edit2/ChoicesEditField.svelte"
@@ -64,7 +63,7 @@
         <ChoicesEditField
           bind:value={val.choices}
           extras={{
-            choices: $fieldChoices.deal.electricity_generation,
+            choices: $dealChoices.electricity_generation,
             multipleChoices: true,
             required: !!(val.date || val.area),
           }}

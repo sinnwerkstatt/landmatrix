@@ -11,8 +11,8 @@
 
   import { page } from "$app/state"
 
+  import { createLabels, dealChoices } from "$lib/fieldChoices"
   import { filters } from "$lib/filters"
-  import { createLabels, fieldChoices } from "$lib/stores"
   import { IntentionOfInvestmentGroup } from "$lib/types/data"
 
   import FilterBarNegotiationStatusToggle from "$components/Data/FilterBarNegotiationStatusToggle.svelte"
@@ -48,6 +48,10 @@
     default: $_("Default"),
     custom: $_("Custom"),
   })
+
+  const ioiGroupLabels = $derived(
+    createLabels($dealChoices.intention_of_investment_group),
+  )
 </script>
 
 <Modal bind:open dismissible>
@@ -60,25 +64,25 @@
   <form class="mt-6 w-full text-lg" {onsubmit}>
     <div class="min-w-[33vw] self-start" dir="ltr">
       <RegionSelect
-        regions={page.data.regions}
+        onclear={() => ($filters.region_id = undefined)}
         oninput={e => {
           if (e.detail) {
             $filters.region_id = e.detail.id
             $filters.country_id = undefined
           }
         }}
-        onclear={() => ($filters.region_id = undefined)}
+        regions={page.data.regions}
         value={page.data.regions.find(c => c.id === $filters.region_id)}
       />
       <CountrySelect
         countries={page.data.countries}
+        onclear={() => ($filters.country_id = undefined)}
         oninput={e => {
           if (e.detail) {
             $filters.country_id = e.detail.id
             $filters.region_id = undefined
           }
         }}
-        onclear={() => ($filters.country_id = undefined)}
         value={page.data.countries.find(c => c.id === $filters.country_id)}
       />
 
@@ -154,15 +158,13 @@
                 {$_("No information")}
               </label>
               {#each Object.keys(IntentionOfInvestmentGroup) as group}
-                {@const groupValues = $fieldChoices.deal.intention_of_investment.filter(
+                {@const groupValues = $dealChoices.intention_of_investment.filter(
                   entry => entry.group === group,
                 )}
 
                 <div class="mb-2">
                   <strong>
-                    {createLabels($fieldChoices.deal.intention_of_investment_group)[
-                      group
-                    ]}
+                    {ioiGroupLabels[group]}
                   </strong>
 
                   {#each groupValues as { value, label }}
@@ -196,7 +198,7 @@
                 />
                 {$_("No information")}
               </label>
-              {#each $fieldChoices.deal.implementation_status as { value, label }}
+              {#each $dealChoices.implementation_status as { value, label }}
                 <label class="block">
                   <input
                     bind:group={$filters.implementation_status}

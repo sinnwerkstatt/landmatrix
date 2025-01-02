@@ -4,7 +4,7 @@
   import type { SortBy } from "$lib/data/buckets"
   import { createAgricultureIntentionReducer } from "$lib/data/charts/agricultureIntention"
   import { createChartData } from "$lib/data/createChartData"
-  import { createGroupMap, createLabels, fieldChoices } from "$lib/stores"
+  import { createGroupMap, createLabels, dealChoices } from "$lib/fieldChoices"
   import {
     type DealVersion2,
     type IntentionOfInvestment,
@@ -24,7 +24,7 @@
 
   let unit = $derived(displayDealsCount ? "deals" : "ha")
 
-  let ioiChoices = $derived($fieldChoices.deal.intention_of_investment)
+  let ioiChoices = $derived($dealChoices.intention_of_investment)
   let ioiGroupMap = $derived(createGroupMap<IoIGroupMap>(ioiChoices))
   let ioiLabels = $derived(createLabels<IntentionOfInvestment>(ioiChoices))
 

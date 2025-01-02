@@ -2,7 +2,7 @@
   import { _ } from "svelte-i18n"
   import { twMerge } from "tailwind-merge"
 
-  import type { ValueLabelEntry } from "$lib/stores"
+  import type { ValueLabelEntry } from "$lib/fieldChoices"
   import type { JSONCurrentDateChoiceFieldType } from "$lib/types/data"
 
   import ChoicesEditField from "$components/Fields/Edit2/ChoicesEditField.svelte"

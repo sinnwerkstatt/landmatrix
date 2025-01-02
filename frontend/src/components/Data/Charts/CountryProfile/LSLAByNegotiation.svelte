@@ -3,8 +3,8 @@
   import { _ } from "svelte-i18n"
 
   import { LSLAByNegotiation, LSLAData } from "$lib/data/charts/LSLAByNegotiation"
+  import { createGroupMap, createLabels, dealChoices } from "$lib/fieldChoices"
   import { filters } from "$lib/filters"
-  import { createGroupMap, createLabels, fieldChoices } from "$lib/stores"
   import {
     NegotiationStatusGroup,
     type DealVersion2,
@@ -26,10 +26,10 @@
 
   let { deals = [] }: Props = $props()
 
-  let negStatChoices = $derived($fieldChoices.deal.negotiation_status)
+  let negStatChoices = $derived($dealChoices.negotiation_status)
   let negStatLabels = $derived(createLabels<NegotiationStatus>(negStatChoices))
 
-  let negStatGroupChoices = $derived($fieldChoices.deal.negotiation_status_group)
+  let negStatGroupChoices = $derived($dealChoices.negotiation_status_group)
   let negStatGroupLabels = $derived(
     createLabels<NegotiationStatusGroup>(negStatGroupChoices),
   )

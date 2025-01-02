@@ -1,12 +1,12 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import { createLabels, fieldChoices } from "$lib/stores"
+  import { areaChoices, createLabels } from "$lib/fieldChoices"
   import type { AreaType } from "$lib/types/data"
 
   import { AREA_TYPE_COLOR_MAP, AREA_TYPES } from "./locations"
 
-  let areaTypeLabels = $derived(createLabels<AreaType>($fieldChoices.area.type))
+  let areaTypeLabels = $derived(createLabels<AreaType>($areaChoices.type))
 </script>
 
 <div

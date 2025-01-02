@@ -11,7 +11,7 @@
   } from "$lib/data/buckets"
   import { clearGraph } from "$lib/data/charts/concludedDealsOverTime"
   import { isConcluded } from "$lib/data/dealUtils"
-  import { createGroupMap, createLabels, fieldChoices } from "$lib/stores"
+  import { createGroupMap, createLabels, dealChoices } from "$lib/fieldChoices"
   import {
     IntentionOfInvestmentGroup,
     type DealVersion2,
@@ -48,7 +48,7 @@
         ),
   )
   let filtered = $derived(deals.filter(isConcluded))
-  let ioiChoices = $derived($fieldChoices.deal.intention_of_investment)
+  let ioiChoices = $derived($dealChoices.intention_of_investment)
   let buckets = $derived(
     filtered.reduce(
       (buckets, deal) => {
@@ -65,7 +65,7 @@
     ),
   )
   let ioiLabels = $derived(createLabels<IntentionOfInvestment>(ioiChoices))
-  let ioiGroups = $derived($fieldChoices.deal.intention_of_investment_group)
+  let ioiGroups = $derived($dealChoices.intention_of_investment_group)
   let ioiGroupLabels = $derived(createLabels<IntentionOfInvestmentGroup>(ioiGroups))
   let ioiGroupMap = $derived(createGroupMap<IoIGroupMap>(ioiChoices))
   let data: Data = $derived(

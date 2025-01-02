@@ -7,7 +7,7 @@
     INTENTION_OF_INVESTMENT_GROUP_COLORS,
   } from "$lib/data/charts/intentionOfInvestmentGroup"
   import { createChartData } from "$lib/data/createChartData"
-  import { createGroupMap, createLabels, fieldChoices } from "$lib/stores"
+  import { createGroupMap, createLabels, dealChoices } from "$lib/fieldChoices"
   import {
     IntentionOfInvestmentGroup,
     type DealVersion2,
@@ -28,12 +28,12 @@
   let unit = $derived(displayDealsCount ? "deals" : "ha")
 
   let ioiGroupMap = $derived(
-    createGroupMap<IoIGroupMap>($fieldChoices.deal.intention_of_investment),
+    createGroupMap<IoIGroupMap>($dealChoices.intention_of_investment),
   )
 
   let ioiGroupLabels = $derived(
     createLabels<IntentionOfInvestmentGroup>(
-      $fieldChoices.deal.intention_of_investment_group,
+      $dealChoices.intention_of_investment_group,
     ),
   )
 

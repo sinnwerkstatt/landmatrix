@@ -6,7 +6,7 @@
 
   import type { BucketMap } from "$lib/data/buckets"
   import { createBucketMapReducer, sortBuckets } from "$lib/data/buckets"
-  import { createLabels, fieldChoices } from "$lib/stores"
+  import { createLabels, dealChoices } from "$lib/fieldChoices"
   import {
     ProduceGroup,
     type Animals,
@@ -57,9 +57,9 @@
   const SIZE_THRESHOLD = 0.005
 
   const labels = $derived({
-    ...createLabels<Crops>($fieldChoices.deal.crops),
-    ...createLabels<Animals>($fieldChoices.deal.animals),
-    ...createLabels<Minerals>($fieldChoices.deal.minerals),
+    ...createLabels<Crops>($dealChoices.crops),
+    ...createLabels<Animals>($dealChoices.animals),
+    ...createLabels<Minerals>($dealChoices.minerals),
   })
 
   // TODO Later not correct to add full deal size for each produce
@@ -79,7 +79,7 @@
   }
 
   const produceGroupLabels = $derived(
-    createLabels<ProduceGroup>($fieldChoices.deal.produce_group),
+    createLabels<ProduceGroup>($dealChoices.produce_group),
   )
 
   const createTreeData = (deals: DealVersion2[]): ProduceTreeData => {

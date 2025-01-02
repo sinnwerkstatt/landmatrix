@@ -6,7 +6,7 @@
 
   import type { DynamicsDataPoint } from "$lib/data/charts/dynamicsOfDeal"
   import { DynamicsOfDeal, toCSV, toJSON } from "$lib/data/charts/dynamicsOfDeal"
-  import { createLabels, fieldChoices } from "$lib/stores"
+  import { createLabels, investorChoices } from "$lib/fieldChoices"
   import type { DealVersion2 } from "$lib/types/data"
 
   import ChartWrapper from "$components/Data/Charts/DownloadWrapper.svelte"
@@ -30,9 +30,7 @@
 
   let multideals = $derived(deals.filter(d => d.top_investors.length > 1).length)
 
-  let classificationLabels = $derived(
-    createLabels($fieldChoices.investor.classification),
-  )
+  let classificationLabels = $derived(createLabels($investorChoices.classification))
   const payload: DynamicsDataPoint[] = $derived.by(() => {
     let pots: { [key: string]: number } = {}
     deals.forEach(d => {

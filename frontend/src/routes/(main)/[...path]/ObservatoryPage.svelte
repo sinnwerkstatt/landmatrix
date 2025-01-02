@@ -4,8 +4,8 @@
 
   import { afterNavigate } from "$app/navigation"
 
+  import { dealChoices } from "$lib/fieldChoices"
   import { filters, FilterValues } from "$lib/filters"
-  import { fieldChoices } from "$lib/stores"
   import { NegotiationStatusGroup, type NegotiationStatus } from "$lib/types/data"
   import type { BlogPage, ObservatoryPage } from "$lib/types/wagtail"
 
@@ -76,7 +76,7 @@
   )
 
   let negStatBuckets = $derived.by(() => {
-    let _negStatBuckets = $fieldChoices.deal.negotiation_status_group.map(x => ({
+    let _negStatBuckets = $dealChoices.negotiation_status_group.map(x => ({
       // TODO: Try to type fieldChoices (or create a generic interface) to avoid casting explicitly
       className: colorsMap[x.value as NegotiationStatusGroup],
       name: x.label,

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { ValueLabelEntry } from "$lib/stores"
+  import type { ValueLabelEntry } from "$lib/fieldChoices"
 
   interface Extras {
     multipleChoices?: boolean

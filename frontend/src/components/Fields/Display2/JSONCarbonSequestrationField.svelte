@@ -1,8 +1,8 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
+  import { dealChoices } from "$lib/fieldChoices"
   import type { components } from "$lib/openAPI"
-  import { fieldChoices } from "$lib/stores"
 
   import { dateCurrentFormatStartEnd } from "$components/Fields/Display2/jsonHelpers"
   import CircleNotchIcon from "$components/icons/CircleNotchIcon.svelte"
@@ -14,14 +14,14 @@
   let { value = [] }: Props = $props()
 
   const getLabel = (value: string) =>
-    $fieldChoices.deal.carbon_sequestration.find(c => value === c.value)?.label ?? value
+    $dealChoices.carbon_sequestration.find(c => value === c.value)?.label ?? value
 </script>
 
 <ul class="flex flex-col gap-2">
   {#each value ?? [] as val}
     <li class:font-bold={val.current}>
       <span>{dateCurrentFormatStartEnd(val)}</span>
-      {#if val.choices && $fieldChoices.deal.carbon_sequestration.length}
+      {#if val.choices && $dealChoices.carbon_sequestration.length}
         <span>
           {val.choices.map(getLabel).join(", ")}
         </span>
@@ -67,9 +67,8 @@
           <div class="mr-2">
             {$_("Name of certification standard/mechanism")}:
             {#each val.certification_standard_name as cert_name}
-              {$fieldChoices.deal.carbon_sequestration_certs.find(
-                i => i.value === cert_name,
-              )?.label ?? "--"}
+              {$dealChoices.carbon_sequestration_certs.find(i => i.value === cert_name)
+                ?.label ?? "--"}
             {/each}
           </div>
         {/if}

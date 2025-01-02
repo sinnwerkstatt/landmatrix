@@ -10,7 +10,7 @@
   import { _ } from "svelte-i18n"
   import { twMerge } from "tailwind-merge"
 
-  import { createLabels, fieldChoices } from "$lib/stores"
+  import { areaChoices, createLabels } from "$lib/fieldChoices"
   import type { Area, AreaType } from "$lib/types/data"
 
   import { LABEL_CLASS, VALUE_CLASS, WRAPPER_CLASS } from "$components/Fields/consts"
@@ -146,7 +146,7 @@
     })
   })
 
-  let areaTypeLabels = $derived(createLabels<AreaType>($fieldChoices.area.type))
+  let areaTypeLabels = $derived(createLabels<AreaType>($areaChoices.type))
 
   let createAreaDisplay = $derived((area: Area): string => {
     const typeDisplay = areaTypeLabels[area.type]

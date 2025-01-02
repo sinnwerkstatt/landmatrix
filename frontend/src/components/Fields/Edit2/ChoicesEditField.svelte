@@ -4,7 +4,7 @@
   import Select from "svelte-select"
   import { slide } from "svelte/transition"
 
-  import type { ValueLabelEntry } from "$lib/stores"
+  import type { ValueLabelEntry } from "$lib/fieldChoices"
 
   interface Extras {
     multipleChoices?: boolean

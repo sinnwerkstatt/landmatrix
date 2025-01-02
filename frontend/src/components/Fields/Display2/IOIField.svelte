@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Component } from "svelte"
 
-  import { createLabels, fieldChoices } from "$lib/stores"
+  import { createLabels, dealChoices } from "$lib/fieldChoices"
   import type { IntentionOfInvestment } from "$lib/types/data"
 
   import AgricultureIcon from "$components/icons/AgricultureIcon.svelte"
@@ -53,7 +53,7 @@
     OTHER: OtterIcon,
   }
 
-  let ioiLabels = $derived(createLabels($fieldChoices.deal.intention_of_investment))
+  let ioiLabels = $derived(createLabels($dealChoices.intention_of_investment))
 </script>
 
 {#each value as ioi}

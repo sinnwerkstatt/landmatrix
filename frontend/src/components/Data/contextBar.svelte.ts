@@ -1,13 +1,13 @@
 import { get } from "svelte/store"
 
+import { dealChoices } from "$lib/fieldChoices"
 import type { components } from "$lib/openAPI"
-import { fieldChoices } from "$lib/stores"
 
 export function getNegotiationBuckets(
   deals: components["schemas"]["DealVersion"][],
   bySize = false,
 ) {
-  const vBuckets = get(fieldChoices).deal.negotiation_status_group.map(x => ({
+  const vBuckets = get(dealChoices).negotiation_status_group.map(x => ({
     name: x.label,
     count: 0,
     size: 0,
@@ -76,7 +76,7 @@ export function getImplementationBuckets(
   deals: components["schemas"]["DealVersion"][],
   bySize = false,
 ) {
-  const vBuckets = get(fieldChoices).deal.implementation_status.map(x => ({
+  const vBuckets = get(dealChoices).implementation_status.map(x => ({
     name: x.label,
     count: 0,
     size: 0,

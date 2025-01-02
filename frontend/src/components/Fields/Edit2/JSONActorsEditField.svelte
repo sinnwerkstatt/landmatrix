@@ -2,7 +2,7 @@
   import { _ } from "svelte-i18n"
   import Select from "svelte-select"
 
-  import { fieldChoices } from "$lib/stores"
+  import { dealChoices } from "$lib/fieldChoices"
   import type { InvolvedActor } from "$lib/types/data"
 
   import AddButton from "$components/Fields/Edit2/JSONFieldComponents/AddButton.svelte"
@@ -60,7 +60,7 @@
       <label class={labelClass} for={undefined}>
         {$_("Role")}
         <Select
-          value={$fieldChoices.deal.actors.find(i => i.value === val.role)}
+          value={$dealChoices.actors.find(i => i.value === val.role)}
           on:change={e => {
             val.role = e.detail.value
             updateVal()
@@ -70,7 +70,7 @@
             updateVal()
           }}
           required={!!val.name}
-          items={$fieldChoices.deal.actors}
+          items={$dealChoices.actors}
           showChevron
           hasError={!!val.name && !value}
           class={!!val.name && !val.role ? "!border-red-600" : ""}

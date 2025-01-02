@@ -2,7 +2,8 @@
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
-  import { dealsNG, fieldChoices } from "$lib/stores"
+  import { dealChoices } from "$lib/fieldChoices"
+  import { dealsNG } from "$lib/stores"
   import { isMobile } from "$lib/stores/basics"
   import type { DealHull } from "$lib/types/data"
 
@@ -26,14 +27,14 @@
       key: "current_negotiation_status",
       label: $_("Current negotiation status"),
       colSpan: 4,
-      choices: $fieldChoices.deal.negotiation_status,
+      choices: $dealChoices.negotiation_status,
       submodel: "selected_version",
     },
     {
       key: "current_implementation_status",
       label: $_("Current implementation status"),
       colSpan: 4,
-      choices: $fieldChoices.deal.implementation_status,
+      choices: $dealChoices.implementation_status,
       submodel: "selected_version",
     },
     {
@@ -115,12 +116,14 @@
       >
         {#snippet field({ fieldName, obj }: fieldType)}
           {@const col = columns.find(c => c.key === fieldName)}
-          <DisplayField
-            fieldname={col.key}
-            value={col.submodel ? obj[col.submodel][col.key] : obj[col.key]}
-            {wrapperClass}
-            {valueClass}
-          />
+          {#if col}
+            <DisplayField
+              fieldname={col.key}
+              value={col.submodel ? obj[col.submodel][col.key] : obj[col.key]}
+              {wrapperClass}
+              {valueClass}
+            />
+          {/if}
         {/snippet}
       </Table>
     </div>

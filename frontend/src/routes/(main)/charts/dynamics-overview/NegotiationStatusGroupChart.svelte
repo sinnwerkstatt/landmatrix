@@ -7,7 +7,7 @@
     NEGOTIATION_STATUS_GROUP_COLORS,
   } from "$lib/data/charts/negotiationStatusGroup"
   import { createChartData } from "$lib/data/createChartData"
-  import { createGroupMap, createLabels, fieldChoices } from "$lib/stores"
+  import { createGroupMap, createLabels, dealChoices } from "$lib/fieldChoices"
   import {
     NegotiationStatusGroup,
     type DealVersion2,
@@ -28,10 +28,10 @@
   let unit = $derived(displayDealsCount ? "deals" : "ha")
 
   let negStatGroupMap = $derived(
-    createGroupMap<NegStatGroupMap>($fieldChoices.deal.negotiation_status),
+    createGroupMap<NegStatGroupMap>($dealChoices.negotiation_status),
   )
   let negStatGroupLabels = $derived(
-    createLabels<NegotiationStatusGroup>($fieldChoices.deal.negotiation_status_group),
+    createLabels<NegotiationStatusGroup>($dealChoices.negotiation_status_group),
   )
 
   let createData = $derived(

@@ -10,7 +10,7 @@
     MySankeyLink,
     MySankeyNode,
   } from "$lib/data/charts/intentionsPerCategory"
-  import { createLabels, fieldChoices } from "$lib/stores"
+  import { createLabels, dealChoices } from "$lib/fieldChoices"
   import type { DealVersion2 } from "$lib/types/data"
 
   import ChartWrapper from "$components/Data/Charts/DownloadWrapper.svelte"
@@ -48,9 +48,9 @@
       : undefined,
   )
 
-  let ioiLabels = $derived(createLabels($fieldChoices.deal.intention_of_investment))
+  let ioiLabels = $derived(createLabels($dealChoices.intention_of_investment))
 
-  let impStatLabels = $derived(createLabels($fieldChoices.deal.implementation_status))
+  let impStatLabels = $derived(createLabels($dealChoices.implementation_status))
 
   let nodesAndLinks = $derived.by(() => {
     let datanodes: Set<string> = new Set()

@@ -1,7 +1,8 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import { currencies, fieldChoices } from "$lib/stores"
+  import { dealChoices } from "$lib/fieldChoices"
+  import { currencies } from "$lib/stores"
   import type { DealVersion2 } from "$lib/types/data"
 
   import CurrencySelect from "$components/Fields/Edit2/CurrencySelect.svelte"
@@ -30,7 +31,7 @@
     class:italic={version[fields[2]] === null}
   >
     <option class="italic" value={null}>- per -</option>
-    {#each $fieldChoices.deal.ha_area as { value, label }}
+    {#each $dealChoices.ha_area as { value, label }}
       <option class="not-italic" {value}>{label}</option>
     {/each}
   </select>

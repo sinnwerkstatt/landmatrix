@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { fieldChoices } from "$lib/stores"
+  import { dealChoices } from "$lib/fieldChoices"
   import type { InvolvedActor } from "$lib/types/data"
 
   interface Props {
@@ -15,7 +15,7 @@
       <span>{actor.name}</span>
       {#if actor.role}
         <span class="text-sm font-light">
-          {$fieldChoices.deal.actors.find(a => a.value === actor.role)?.label ?? "-"}
+          {$dealChoices.actors.find(a => a.value === actor.role)?.label ?? "-"}
         </span>
       {/if}
     </li>

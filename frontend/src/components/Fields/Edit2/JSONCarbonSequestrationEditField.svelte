@@ -2,8 +2,8 @@
   import { _ } from "svelte-i18n"
   import { slide } from "svelte/transition"
 
+  import { dealChoices } from "$lib/fieldChoices"
   import type { components } from "$lib/openAPI"
-  import { fieldChoices } from "$lib/stores"
 
   import ChoicesEditField from "$components/Fields/Edit2/ChoicesEditField.svelte"
   import AddButton from "$components/Fields/Edit2/JSONFieldComponents/AddButton.svelte"
@@ -71,7 +71,7 @@
         <ChoicesEditField
           bind:value={val.choices}
           extras={{
-            choices: $fieldChoices.deal.carbon_sequestration,
+            choices: $dealChoices.carbon_sequestration,
             multipleChoices: true,
             required: !isEmpty(val),
           }}
@@ -144,7 +144,7 @@
             <ChoicesEditField
               bind:value={val.certification_standard_name}
               extras={{
-                choices: $fieldChoices.deal.carbon_sequestration_certs,
+                choices: $dealChoices.carbon_sequestration_certs,
                 placeholder: $_("Name of certification standard/mechanism"),
                 closeListOnChange: true,
                 otherHint: $_("Please specify in comment field"),

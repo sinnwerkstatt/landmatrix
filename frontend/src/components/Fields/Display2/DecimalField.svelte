@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { createLabels, currencies, fieldChoices } from "$lib/stores"
+  import { createLabels, dealChoices } from "$lib/fieldChoices"
+  import { currencies } from "$lib/stores"
   import type { Currency, HaArea } from "$lib/types/data"
 
   interface Extras {
@@ -34,6 +35,6 @@
     </div>
   {/if}
   {#if extras.perType}
-    {createLabels($fieldChoices.deal.ha_area)[extras.perType]}
+    {createLabels($dealChoices.ha_area)[extras.perType]}
   {/if}
 </div>

@@ -1,16 +1,16 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
+  import { dealChoices } from "$lib/fieldChoices"
   import { filters } from "$lib/filters"
-  import { fieldChoices } from "$lib/stores"
   import type { NegotiationStatus, NegotiationStatusGroup } from "$lib/types/data"
 
   import ContextHelper from "$components/ContextHelper.svelte"
 
   import FilterCollapse from "./FilterCollapse.svelte"
 
-  let negotiationStatus = $derived($fieldChoices.deal.negotiation_status)
-  let negotiationStatusGroups = $derived($fieldChoices.deal.negotiation_status_group)
+  let negotiationStatus = $derived($dealChoices.negotiation_status)
+  let negotiationStatusGroups = $derived($dealChoices.negotiation_status_group)
 
   const checkGroupCheckboxes = () =>
     negotiationStatusGroups.map(x => x.value).forEach(setGroupCheckboxState)

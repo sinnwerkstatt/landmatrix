@@ -6,13 +6,14 @@
 
   import { page } from "$app/state"
 
+  import { createLabels, dealChoices } from "$lib/fieldChoices"
   import {
     filters,
     isDefaultFilter,
     publicOnly,
     type ProduceFilter,
   } from "$lib/filters"
-  import { createLabels, fieldChoices, simpleInvestors } from "$lib/stores"
+  import { simpleInvestors } from "$lib/stores"
   import { IntentionOfInvestmentGroup, ProduceGroup } from "$lib/types/data"
   import { isEditorOrAbove } from "$lib/utils/permissions"
 
@@ -34,33 +35,29 @@
   let { children }: Props = $props()
 
   let produceGroupLabels = $derived(
-    createLabels<ProduceGroup>($fieldChoices.deal.produce_group),
+    createLabels<ProduceGroup>($dealChoices.produce_group),
   )
 
-  let produceChoices: ProduceFilter[] = $derived(
-    $fieldChoices
-      ? [
-          ...($fieldChoices.deal.crops.map(({ value, label }) => ({
-            value,
-            label,
-            groupId: ProduceGroup.CROPS,
-            group: produceGroupLabels[ProduceGroup.CROPS],
-          })) ?? []),
-          ...($fieldChoices.deal.animals.map(({ value, label }) => ({
-            value,
-            label,
-            groupId: ProduceGroup.ANIMALS,
-            group: produceGroupLabels[ProduceGroup.ANIMALS],
-          })) ?? []),
-          ...($fieldChoices.deal.minerals.map(({ value, label }) => ({
-            value,
-            label,
-            groupId: ProduceGroup.MINERAL_RESOURCES,
-            group: produceGroupLabels[ProduceGroup.MINERAL_RESOURCES],
-          })) ?? []),
-        ]
-      : [],
-  )
+  let produceChoices: ProduceFilter[] = $derived([
+    ...($dealChoices.crops.map(({ value, label }) => ({
+      value,
+      label,
+      groupId: ProduceGroup.CROPS,
+      group: produceGroupLabels[ProduceGroup.CROPS],
+    })) ?? []),
+    ...($dealChoices.animals.map(({ value, label }) => ({
+      value,
+      label,
+      groupId: ProduceGroup.ANIMALS,
+      group: produceGroupLabels[ProduceGroup.ANIMALS],
+    })) ?? []),
+    ...($dealChoices.minerals.map(({ value, label }) => ({
+      value,
+      label,
+      groupId: ProduceGroup.MINERAL_RESOURCES,
+      group: produceGroupLabels[ProduceGroup.MINERAL_RESOURCES],
+    })) ?? []),
+  ])
 
   let regionsWithGlobal = $derived([
     { id: undefined, name: $_("Global") },
@@ -213,7 +210,7 @@
         onclear={() => ($filters.nature_of_deal = [])}
         title={$_("Nature of the deal")}
       >
-        {#each $fieldChoices.deal.nature_of_deal as { value, label }}
+        {#each $dealChoices.nature_of_deal as { value, label }}
           <label class="block">
             <input
               type="checkbox"
@@ -321,7 +318,7 @@
           />
           {$_("No information")}
         </label>
-        {#each $fieldChoices.deal.implementation_status as { value, label }}
+        {#each $dealChoices.implementation_status as { value, label }}
           <label class="block">
             <input
               bind:group={$filters.implementation_status}
@@ -356,13 +353,13 @@
           {$_("No information")}
         </label>
         {#each Object.keys(IntentionOfInvestmentGroup) as group}
-          {@const groupValues = $fieldChoices.deal.intention_of_investment.filter(
+          {@const groupValues = $dealChoices.intention_of_investment.filter(
             entry => entry.group === group,
           )}
 
           <div class="mb-2">
             <strong>
-              {createLabels($fieldChoices.deal.intention_of_investment_group)[group]}
+              {createLabels($dealChoices.intention_of_investment_group)[group]}
             </strong>
 
             {#each groupValues as { value, label }}

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { ValueLabelEntry } from "$lib/stores"
+  import type { ValueLabelEntry } from "$lib/fieldChoices"
   import type { JSONCurrentDateChoiceFieldType } from "$lib/types/data"
 
   import { dateCurrentFormat } from "$components/Fields/Display2/jsonHelpers"

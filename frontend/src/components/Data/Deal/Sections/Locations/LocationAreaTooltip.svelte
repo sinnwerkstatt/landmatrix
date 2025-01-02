@@ -3,7 +3,7 @@
   import { getArea } from "ol/sphere"
   import { _ } from "svelte-i18n"
 
-  import { createLabels, fieldChoices } from "$lib/stores"
+  import { areaChoices, createLabels } from "$lib/fieldChoices"
 
   import { formatArea } from "$components/Fields/Display2/jsonHelpers"
 
@@ -16,7 +16,7 @@
   const fprops = $derived(feature.getProperties())
   const geom = $derived(feature.getGeometry())
 
-  const areaTypeLabels = $derived(createLabels($fieldChoices.area.type))
+  const areaTypeLabels = $derived(createLabels($areaChoices.type))
 </script>
 
 <div
