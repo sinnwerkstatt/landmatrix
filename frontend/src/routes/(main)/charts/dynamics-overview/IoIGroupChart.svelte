@@ -1,7 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import type { SortBy } from "$lib/data/buckets"
   import { createGroupMap, dealChoices, type ValueLabelEntry } from "$lib/fieldChoices"
   import {
     IntentionOfInvestmentGroup,

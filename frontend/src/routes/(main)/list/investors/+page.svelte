@@ -44,7 +44,7 @@
   <div class="flex h-full">
     <div
       class="h-full min-h-[3px] w-0 flex-none {$showFilterBar
-        ? 'md:w-[clamp(220px,20%,300px)]'
+        ? 'md:w-[clamp(220px,20%,400px)]'
         : ''}"
     ></div>
 

@@ -99,7 +99,7 @@
   <div class="flex h-full">
     <div
       class="h-full min-h-[3px] flex-none {$showFilterBar
-        ? 'w-[clamp(220px,20%,300px)]'
+        ? 'w-[clamp(220px,20%,400px)]'
         : 'w-0'}"
     ></div>
 
@@ -129,7 +129,7 @@
     </div>
     <div
       class="h-full min-h-[3px] flex-none {$showContextBar
-        ? 'w-[clamp(220px,20%,300px)]'
+        ? 'w-[clamp(220px,20%,400px)]'
         : 'w-0'}"
     ></div>
   </div>

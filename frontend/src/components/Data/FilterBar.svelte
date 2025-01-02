@@ -3,6 +3,7 @@
   import type { Snippet } from "svelte"
   import { _ } from "svelte-i18n"
   import Select from "svelte-select"
+  import { twMerge } from "tailwind-merge"
 
   import { page } from "$app/state"
 
@@ -92,9 +93,10 @@
 </script>
 
 <div
-  class="absolute bottom-0 left-0 top-0 z-10 flex bg-white/90 text-sm shadow-inner drop-shadow-[3px_-3px_1px_rgba(0,0,0,0.3)] dark:bg-gray-700 {$showFilterBar
-    ? 'w-[clamp(220px,20%,300px)]'
-    : 'w-0'}"
+  class={twMerge(
+    "absolute bottom-0 left-0 top-0 z-10 flex bg-white/90 text-sm shadow-inner drop-shadow-[3px_-3px_1px_rgba(0,0,0,0.3)] dark:bg-gray-700",
+    $showFilterBar ? "w-[clamp(220px,20%,400px)]" : "w-0",
+  )}
 >
   <Wimpel onclick={() => showFilterBar.set(!$showFilterBar)} showing={$showFilterBar} />
   <div
