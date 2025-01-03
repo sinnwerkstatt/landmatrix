@@ -8,9 +8,9 @@
 </script>
 
 <script lang="ts" generics="T extends object">
-  import cn from "classnames"
   import { onMount } from "svelte"
   import VirtualList from "svelte-tiny-virtual-list"
+  import { twMerge } from "tailwind-merge"
 
   import { sortFn } from "$lib/utils"
 
@@ -64,7 +64,7 @@
   <div
     bind:clientWidth={width}
     bind:clientHeight={height}
-    class={cn(
+    class={twMerge(
       "h-full w-full overflow-x-auto",
       nItems % 2 ? "bg-white dark:bg-gray-600" : "bg-gray-100 dark:bg-gray-700",
     )}
@@ -99,13 +99,13 @@
 
               <span class="relative pl-1">
                 <ChevronDownIcon
-                  class={cn(
+                  class={twMerge(
                     "absolute top-0 inline h-4 w-4 rotate-180 rounded",
                     sortBy === `-${col.key}` ? "text-orange" : "text-gray-400",
                   )}
                 />
                 <ChevronDownIcon
-                  class={cn(
+                  class={twMerge(
                     "absolute top-2 inline h-4 w-4 rounded",
                     sortBy === col.key ? "text-orange" : "text-gray-400",
                   )}

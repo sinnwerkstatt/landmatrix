@@ -1,10 +1,10 @@
 <script lang="ts">
-  import cn from "classnames"
   import dayjs from "dayjs"
   import isSameOrAfter from "dayjs/plugin/isSameOrAfter"
   import isSameOrBefore from "dayjs/plugin/isSameOrBefore"
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
+  import { twMerge } from "tailwind-merge"
 
   import { browser } from "$app/environment"
   import { goto } from "$app/navigation"
@@ -309,14 +309,14 @@
             <ul>
               {#each items.filter(i => userIsEditorOrAbove || !i.staff) as item}
                 <li
-                  class={cn(
+                  class={twMerge(
                     "py-2 pr-4",
                     model === "deal" ? "border-orange" : "border-pelorous",
                     activeTabId === item.id ? "border-r-4" : "border-r",
                   )}
                 >
                   <a
-                    class={cn(
+                    class={twMerge(
                       "block text-left",
                       model === "deal" ? "hover:text-orange" : "hover:text-pelorous",
                       activeTabId === item.id

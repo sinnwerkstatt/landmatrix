@@ -1,7 +1,7 @@
 <script lang="ts">
-  import cn from "classnames"
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
+  import { twMerge } from "tailwind-merge"
 
   import { page } from "$app/stores"
 
@@ -190,14 +190,14 @@
       <ul>
         {#each navTabs as item}
           <li
-            class={cn(
+            class={twMerge(
               "py-2 pr-4",
               model === "deal" ? "border-orange" : "border-pelorous",
               activeTabId === item.id ? "border-r-4" : "border-r",
             )}
           >
             <button
-              class={cn(
+              class={twMerge(
                 "block text-left",
                 activeTabId === item.id
                   ? model === "deal"
