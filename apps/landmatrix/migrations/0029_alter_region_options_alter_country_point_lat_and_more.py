@@ -47,12 +47,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='region',
             name='point_lat_max',
-            field=models.DecimalField(decimal_places=12, max_digits=18, verbose_name='Latitude of southernmost point'),
+            field=models.DecimalField(decimal_places=12, max_digits=18, verbose_name='Latitude of northernmost point'),
         ),
         migrations.AlterField(
             model_name='region',
             name='point_lat_min',
-            field=models.DecimalField(decimal_places=12, max_digits=18, verbose_name='Latitude of northernmost point'),
+            field=models.DecimalField(decimal_places=12, max_digits=18, verbose_name='Latitude of southernmost point'),
         ),
         migrations.AlterField(
             model_name='region',
