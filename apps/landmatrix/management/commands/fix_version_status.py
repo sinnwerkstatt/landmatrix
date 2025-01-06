@@ -1,12 +1,16 @@
 from django.core.management import BaseCommand
 from django.db.models import Q
 
+from apps.landmatrix.management.helpers import db_require_confirmation
 from apps.landmatrix.models.abstract import VersionStatus
 from apps.landmatrix.models.deal import DealHull
 from apps.landmatrix.models.investor import InvestorHull
 
 
 class Command(BaseCommand):
+    help = "Fix version status (inverse of check_status_integrity)."
+
+    @db_require_confirmation
     def handle(self, *args, **options):
         for model in [InvestorHull, DealHull]:
             print(f"Iterating {model.__name__}s.")

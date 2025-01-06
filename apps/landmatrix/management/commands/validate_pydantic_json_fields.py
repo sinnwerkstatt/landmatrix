@@ -1,6 +1,6 @@
-from django.core.exceptions import ValidationError
 from tqdm import tqdm
 
+from django.core.exceptions import ValidationError
 from django.core.management import BaseCommand
 
 from apps.landmatrix.models.deal import DealVersion
@@ -12,6 +12,8 @@ pydantic_json_fields = [
 
 
 class Command(BaseCommand):
+    help = "Run validators for all PydanticJSONFields of DealVersion model."
+
     def handle(self, *args, **options):
         total = DealVersion.objects.count()
         iterator = DealVersion.objects.iterator()

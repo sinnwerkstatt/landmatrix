@@ -1,10 +1,14 @@
 from django.core.management import BaseCommand
 
+from apps.landmatrix.management.helpers import db_require_confirmation
 from apps.landmatrix.models.deal import DealVersion
 from apps.landmatrix.models.investor import InvestorVersion
 
 
 class Command(BaseCommand):
+    help = "Fix version info (modification user and date)."
+
+    @db_require_confirmation
     def handle(self, *args, **options):
         for model in [InvestorVersion, DealVersion]:
             print(f"Iterating {model.__name__}s.")

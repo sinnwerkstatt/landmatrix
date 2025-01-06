@@ -1,29 +1,21 @@
-import re
-
 from django.core.management import BaseCommand
 
+from apps.landmatrix.management.helpers import db_require_confirmation
 from apps.landmatrix.models import schema
 from apps.landmatrix.models.deal import DealVersion
 
 
 class Command(BaseCommand):
-    def handle(self, *args, **options):
-        confirm = input(
-            "***** ATTENTION ***** \n"
-            "This command potentially manipulates DB. \n"
-            "Make sure DB connection is configured correctly in .env. \n"
-            "Confirm to continue (y/N): "
-        )
+    help = "Fix JSON array current flags."
 
-        if not confirm or not re.match("^y(es)?$", confirm, re.I):
-            print("Aborting")
-            return
+    @db_require_confirmation
+    def handle(self, *args, **options):
 
         # 547
         version = DealVersion.objects.get(id=85669)
         print(version)
         version.implementation_status = schema.CurrentDateChoiceImplementationStatus(
-            set_current(version.implementation_status.model_dump())
+            set_current(version.implementation_status)
         )
         version.save()
 

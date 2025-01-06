@@ -1,26 +1,16 @@
-import re
-
 from django.core.management import BaseCommand
 from django.db import transaction
-
-from apps.landmatrix.models.investor import Involvement
-
 from django.db.models import Count
+
+from apps.landmatrix.management.helpers import db_require_confirmation
+from apps.landmatrix.models.investor import Involvement
 
 
 class Command(BaseCommand):
+    help = "Find and fix involvement duplicates."
+
+    @db_require_confirmation
     def handle(self, *args, **options):
-        confirm = input(
-            "***** ATTENTION ***** \n"
-            "This command potentially manipulates DB. \n"
-            "Make sure DB connection is configured correctly in .env. \n"
-            "Confirm to continue (y/N): "
-        )
-
-        if not confirm or not re.match("^y(es)?$", confirm, re.I):
-            print("Aborting")
-            return
-
         qs_duplicates = (
             Involvement.objects.values("child_investor", "parent_investor")
             .order_by("parent_investor_id", "child_investor_id")

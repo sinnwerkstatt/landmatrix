@@ -1,26 +1,19 @@
-import re
 from typing import cast
 
 from tqdm import tqdm
 
 from django.core.management import BaseCommand
+
+from apps.landmatrix.management.helpers import db_require_confirmation
 from apps.landmatrix.models.investor import InvestorHull, Involvement
 from apps.landmatrix.nid import generate_nid
 
 
 class Command(BaseCommand):
+    help = "Fix involvement snapshots nano ids."
+
+    @db_require_confirmation
     def handle(self, *args, **options):
-        confirm = input(
-            "***** ATTENTION ***** \n"
-            "This command potentially manipulates DB. \n"
-            "Make sure DB connection is configured correctly in .env. \n"
-            "Confirm to continue (y/N): "
-        )
-
-        if not confirm or not re.match("^y(es)?$", confirm, re.I):
-            print("Aborting")
-            return
-
         qs = InvestorHull.objects.all()
         qs_iterator = map(lambda x: cast(InvestorHull, x), qs.iterator())
 

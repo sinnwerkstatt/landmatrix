@@ -1,12 +1,10 @@
-from typing import Type
-
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.core.management.base import BaseCommand
 
-from apps.accounts.models import User, UserRole
+from apps.accounts.models import UserRole
 
-UserModel: Type[User] = get_user_model()
+UserModel = get_user_model()
 
 
 class Command(BaseCommand):
