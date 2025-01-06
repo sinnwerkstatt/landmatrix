@@ -15,10 +15,6 @@ def django_db_setup(django_db_setup, django_db_blocker):
             "loaddata",
             FIXTURES_DIR / "countries_and_regions.json",
         )
-        call_command(
-            "loaddata",
-            FIXTURES_DIR / "users_and_groups.json",
-        )
 
 
 @pytest.fixture(autouse=True)
