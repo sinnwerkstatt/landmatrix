@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.utils import timezone
 
 from freezegun import freeze_time
@@ -5,9 +6,9 @@ from freezegun import freeze_time
 from apps.landmatrix.tests.helpers import AbstractModelTestCase
 from apps.landmatrix.models.abstract import VersionStatus, BaseVersion
 
-PETER = 1
-JOHANNA = 2
-KNUT = 3
+from apps.accounts.models import UserRole, User
+
+UserModel = get_user_model()
 
 
 class TestBaseVersionMixin(AbstractModelTestCase):
@@ -15,29 +16,46 @@ class TestBaseVersionMixin(AbstractModelTestCase):
 
     @freeze_time("2024-07-26")
     def test_copy_to_new_draft(self):
+        # cannot import them as fixtures for some reason
+        reporter: User = UserModel.objects.create_user(
+            username="reporter",
+            password="love2report",
+            role=UserRole.REPORTER,
+        )
+        editor: User = UserModel.objects.create_user(
+            username="editor",
+            password="love2edit",
+            role=UserRole.EDITOR,
+        )
+        admin: User = UserModel.objects.create_user(
+            username="admin",
+            password="love2administrate",
+            role=UserRole.ADMINISTRATOR,
+        )
+
         version: BaseVersion = self.derived_model.objects.create(
             status=VersionStatus.ACTIVATED,
             created_at="2024-01-01T00:00:00Z",
-            created_by_id=PETER,
+            created_by=reporter,
             modified_at="2024-01-02T00:00:00Z",
-            modified_by_id=JOHANNA,
+            modified_by=editor,
             sent_to_review_at="2024-01-03T00:00:00Z",
-            sent_to_review_by_id=JOHANNA,
+            sent_to_review_by=editor,
             sent_to_activation_at="2024-01-03T00:00:00Z",
-            sent_to_activation_by_id=JOHANNA,
+            sent_to_activation_by=editor,
             activated_at="2024-01-03T00:00:00Z",
-            activated_by_id=KNUT,
+            activated_by=admin,
         )
 
-        version.copy_to_new_draft(KNUT)
+        version.copy_to_new_draft(admin.id)
 
         assert version.id is None
         assert version.status == VersionStatus.DRAFT
 
         assert version.created_at == timezone.now()
-        assert version.created_by_id == KNUT
+        assert version.created_by == admin
         assert version.modified_at == timezone.now()
-        assert version.modified_by_id == KNUT
+        assert version.modified_by == admin
 
         assert version.sent_to_review_at is None
         assert version.sent_to_review_by is None
