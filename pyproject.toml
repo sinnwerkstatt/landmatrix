@@ -69,7 +69,6 @@ django-stubs = { extras = ["compatible-mypy"], version = "^1.14.0" }
 djangorestframework-stubs = { extras = ["compatible-mypy"], version = "^1.8.0" }
 
 # types
-types-pytz = "^2022.7.1.0"
 types-openpyxl = "^3.0.4.5"
 types-markdown = "^3.4.2.5"
 types-pygments = "^2.14.0.6"
