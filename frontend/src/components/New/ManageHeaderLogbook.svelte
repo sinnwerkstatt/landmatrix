@@ -4,7 +4,7 @@
   import { page } from "$app/stores"
 
   import { type DealHull, type InvestorHull } from "$lib/types/data"
-  import { isEditorOrAbove } from "$lib/utils/permissions"
+  import { isReporterOrAbove } from "$lib/utils/permissions"
 
   import ChatBubbleLeftIcon from "$components/icons/ChatBubbleLeftIcon.svelte"
   import ChatBubbleLeftRightIcon from "$components/icons/ChatBubbleLeftRightIcon.svelte"
@@ -34,7 +34,7 @@
   </div>
 
   <div class="my-2 text-right">
-    {#if isEditorOrAbove($page.data.user)}
+    {#if isReporterOrAbove($page.data.user)}
       <button
         class="btn btn-violet btn-flat inline-flex items-center gap-2 px-2"
         on:click={() => (showFeedbackOverlay = true)}
