@@ -44,10 +44,11 @@
   let countryID = $derived(page.country?.id)
 
   const colorsMap: { [key in NegotiationStatusGroup]: string } = {
-    INTENDED: "text-green-300",
-    CONCLUDED: "text-green-500",
-    FAILED: "text-red-500",
-    CONTRACT_EXPIRED: "text-gray-300",
+    // TODO use HSL
+    INTENDED: "hsl(93, 55%, 75%)", //"text-green-300",
+    CONCLUDED: "hsl(94, 56%, 65%)", //"text-green-500",
+    FAILED: "hsl(0, 73%, 66%)", //"text-red-500",
+    CONTRACT_EXPIRED: "hsl(0, 0%, 60%)", //"text-gray-300",
   }
 
   let currentNegStatus: { value: NegotiationStatus; count: number; size: number }[] =
@@ -78,7 +79,7 @@
   let negStatBuckets = $derived.by(() => {
     let _negStatBuckets = $dealChoices.negotiation_status_group.map(x => ({
       // TODO: Try to type fieldChoices (or create a generic interface) to avoid casting explicitly
-      className: colorsMap[x.value as NegotiationStatusGroup],
+      fillColor: colorsMap[x.value as NegotiationStatusGroup],
       name: x.label,
       count: 0,
       size: 0,
@@ -117,7 +118,7 @@
       name: n.name,
       value: ((n.size / totalSize) * 100).toFixed(),
       label: `<strong>${n.name}</strong>: ${n.size.toLocaleString("fr").replace(",", ".")} ${$_("ha")}`,
-      className: n.className,
+      fillColor: n.fillColor,
     })),
   )
   const chartDatCount: DataType[] = $derived(
@@ -125,10 +126,9 @@
       name: n.name,
       value: ((n.count / totalCount) * 100).toFixed(),
       label: `<strong>${n.name}</strong>: ${n.count.toFixed()} ${$_("deals")}`,
-      className: n.className,
+      fillColor: n.fillColor,
     })),
   )
-  $inspect(chartDatSize)
 
   // QUESTION: Wouldn't it make sense to keep navigation stuff in +page.svelte ?
   afterNavigate(() => {
