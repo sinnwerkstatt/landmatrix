@@ -13,11 +13,11 @@ export function getNegotiationBuckets(
     name: x.label,
     count: 0,
     size: 0,
-    className: {
-      INTENDED: "text-green-300",
-      CONCLUDED: "text-green-500",
-      FAILED: "text-red-500",
-      CONTRACT_EXPIRED: "text-gray-300",
+    fillColor: {
+      INTENDED: "hsl(93, 55%, 75%)", // "text-green-300",
+      CONCLUDED: "hsl(94, 56%, 65%)", // "text-green-500",
+      FAILED: "hsl(0, 73%, 66%)", // "text-red-500",
+      CONTRACT_EXPIRED: "hsl(0, 0%, 60%)", //"text-gray-300",
     }[x.value] as string,
   }))
 
@@ -60,7 +60,7 @@ export function getNegotiationBuckets(
         name: n.name,
         value: ((n.size / totalSize) * 100).toFixed(),
         label: `<strong>${n.name}</strong>: ${n.size.toLocaleString("fr").replace(",", ".")} ${get(_)("ha")}`,
-        className: n.className,
+        fillColor: n.fillColor,
       }))
   } else {
     return vBuckets
@@ -69,7 +69,7 @@ export function getNegotiationBuckets(
         name: n.name,
         value: ((n.count / totalCount) * 100).toFixed(),
         label: `<strong>${n.name}</strong>: ${n.count.toFixed()} ${get(_)("deals")}`,
-        className: n.className,
+        fillColor: n.fillColor,
       }))
   }
 }
@@ -83,11 +83,11 @@ export function getImplementationBuckets(
     name: x.label,
     count: 0,
     size: 0,
-    className: {
-      PROJECT_NOT_STARTED: "text-green-200",
-      STARTUP_PHASE: "text-green-300",
-      IN_OPERATION: "text-green-500",
-      PROJECT_ABANDONED: "text-gray-300",
+    fillColor: {
+      PROJECT_NOT_STARTED: "hsl(93, 55%, 83%)", // "text-green-200",
+      STARTUP_PHASE: "hsl(93, 55%, 75%)", // "text-green-300",
+      IN_OPERATION: "hsl(94, 56%, 65%)", // "text-green-500",
+      PROJECT_ABANDONED: "hsl(0, 0%, 60%)", // "text-gray-300",
     }[x.value] as string,
   }))
 
@@ -126,7 +126,7 @@ export function getImplementationBuckets(
         name: n.name,
         value: ((n.size / totalSize) * 100).toFixed(),
         label: `<strong>${n.name}</strong>: ${n.size.toLocaleString("fr").replace(",", ".")} ${get(_)("ha")}`,
-        className: n.className,
+        fillColor: n.fillColor,
       }))
   } else {
     return vBuckets
@@ -135,7 +135,7 @@ export function getImplementationBuckets(
         name: n.name,
         value: ((n.count / totalCount) * 100).toFixed(),
         label: `<strong>${n.name}</strong>: ${n.count.toFixed()} ${get(_)("deals")}`,
-        className: n.className,
+        fillColor: n.fillColor,
       }))
   }
 }
@@ -150,19 +150,19 @@ export function getProduce(
       name: groups.find(g => g.value === "CROPS")!.label,
       count: 0,
       size: 0,
-      className: "text-purple-400",
+      fillColor: "hsl(233, 76%, 73%)", // "text-purple-400",
     },
     {
       name: groups.find(g => g.value === "ANIMALS")!.label,
       count: 0,
       size: 0,
-      className: "text-red-400",
+      fillColor: "hsl(4, 73%, 70%)", // "text-red-400",
     },
     {
       name: groups.find(g => g.value === "MINERAL_RESOURCES")!.label,
       count: 0,
       size: 0,
-      className: "text-violet-400",
+      fillColor: "hsl(272, 61%, 69%)", // "text-violet-400",
     },
   ]
   let totalCount = 0
@@ -192,7 +192,7 @@ export function getProduce(
         name: n.name,
         value: ((n.size / totalSize) * 100).toFixed(),
         label: `<strong>${n.name}</strong>: ${n.size.toLocaleString("fr").replace(",", ".")} ${get(_)("ha")}`,
-        className: n.className,
+        fillColor: n.fillColor,
       }))
   } else {
     return vBuckets
@@ -201,7 +201,7 @@ export function getProduce(
         name: n.name,
         value: ((n.count / totalCount) * 100).toFixed(),
         label: `<strong>${n.name}</strong>: ${n.count.toFixed()} ${get(_)("deals")}`,
-        className: n.className,
+        fillColor: n.fillColor,
       }))
   }
 }

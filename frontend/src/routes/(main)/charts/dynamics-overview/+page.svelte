@@ -40,7 +40,7 @@
   {#if $dealsNG.length === 0}
     <LoadingPulse />
   {:else}
-    <div class="mx-8 grid grid-rows-1 gap-8">
+    <div class="mx-12 my-8 grid gap-16">
       <IoIGroupChart {deals} displayDealsCount={$displayDealsCount} />
       <AgricultureIntentionChart {deals} displayDealsCount={$displayDealsCount} />
       <NegotiationStatusGroupChart {deals} displayDealsCount={$displayDealsCount} />

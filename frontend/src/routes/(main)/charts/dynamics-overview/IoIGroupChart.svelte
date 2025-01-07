@@ -31,11 +31,11 @@
       name: group.label,
       count: 0,
       size: 0,
-      className: {
-        AGRICULTURE: "text-yellow-500",
-        FORESTRY: "text-green-500",
-        RENEWABLE_ENERGY: "text-purple-400",
-        OTHER: "text-gray-400",
+      fillColor: {
+        AGRICULTURE: "hsl(50, 78%, 58%)", // "text-yellow-500",
+        FORESTRY: "hsl(94, 56%, 65%)", // "text-green-500",
+        RENEWABLE_ENERGY: "hsl(233, 76%, 73%)", // "text-purple-400",
+        OTHER: "hsl(0, 0%, 52%)", // "text-gray-400",
       }[group.value as "AGRICULTURE" | "FORESTRY" | "RENEWABLE_ENERGY" | "OTHER"],
     }))
 
@@ -73,7 +73,7 @@
           name: n.name,
           value: ((n.size / totalSize) * 100).toFixed(),
           label: `<strong>${n.name}</strong>: ${n.size.toLocaleString("fr").replace(",", ".")} ${$_("ha")}`,
-          className: n.className,
+          fillColor: n.fillColor,
         }))
     } else {
       return vBuckets
@@ -82,7 +82,7 @@
           name: n.name,
           value: ((n.count / totalCount) * 100).toFixed(),
           label: `<strong>${n.name}</strong>: ${n.count.toFixed()} ${$_("deals")}`,
-          className: n.className,
+          fillColor: n.fillColor,
         }))
     }
   }

@@ -35,14 +35,14 @@
       name: group.label,
       count: 0,
       size: 0,
-      className: {
-        BIOFUELS: "text-yellow-700",
-        BIOMASS_ENERGY_GENERATION: "text-yellow-600",
-        FODDER: "text-yellow-500",
-        FOOD_CROPS: "text-yellow-400",
-        LIVESTOCK: "text-yellow-300",
-        NON_FOOD_AGRICULTURE: "text-yellow-200",
-        AGRICULTURE_UNSPECIFIED: "text-yellow-100",
+      fillColor: {
+        BIOFUELS: "hsl(50, 78%, 38%)", // "text-yellow-700",
+        BIOMASS_ENERGY_GENERATION: "hsl(50, 78%, 48%)", // "text-yellow-600",
+        FODDER: "hsl(50, 78%, 58%)", // "text-yellow-500",
+        FOOD_CROPS: "hsl(50, 77%, 62%)", // "text-yellow-400",
+        LIVESTOCK: "hsl(50, 77%, 71%)", // "text-yellow-300",
+        NON_FOOD_AGRICULTURE: "hsl(51, 78%, 79%)", // "text-yellow-200",
+        AGRICULTURE_UNSPECIFIED: "hsl(50, 78%, 87%)", // "text-yellow-100",
       }[group.value as AgricultureIntention],
     }))
 
@@ -68,7 +68,7 @@
           name: n.name,
           value: ((n.size / totalSize) * 100).toFixed(),
           label: `<strong>${n.name}</strong>: ${n.size.toLocaleString("fr").replace(",", ".")} ${$_("ha")}`,
-          className: n.className,
+          fillColor: n.fillColor,
         }))
     } else {
       return vBuckets
@@ -77,7 +77,7 @@
           name: n.name,
           value: ((n.count / totalCount) * 100).toFixed(),
           label: `<strong>${n.name}</strong>: ${n.count.toFixed()} ${$_("deals")}`,
-          className: n.className,
+          fillColor: n.fillColor,
         }))
     }
   }
