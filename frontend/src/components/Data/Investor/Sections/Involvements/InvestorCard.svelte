@@ -20,13 +20,13 @@
   const labelClass = "whitespace-nowrap font-light text-gray-400 pr-2 italic"
   const valueClass = "font-medium"
 
-  let otherInvestor: SimpleInvestor
-  $: otherInvestor =
-    $simpleInvestors.find(
-      simpleInvestor =>
-        simpleInvestor.id ===
-        (isParent ? involvement.parent_investor_id : involvement.child_investor_id),
-    ) || ({} as SimpleInvestor)
+  let otherInvestorId: number
+  $: otherInvestorId = isParent
+    ? involvement.parent_investor_id
+    : involvement.child_investor_id
+
+  let otherInvestor: SimpleInvestor | undefined
+  $: otherInvestor = $simpleInvestors.find(i => i.id === otherInvestorId)
 
   let relationshipMap: { [key in InvolvementRole]: { parent: string; child: string } }
   $: relationshipMap = {
@@ -43,26 +43,28 @@
   $: relationship = relationshipMap[involvement.role][isParent ? "parent" : "child"]
 </script>
 
-<div
-  class="relative flex flex-col gap-1 border border-pelorous p-2"
-  class:bg-red-200={otherInvestor.deleted}
-  class:bg-yellow-100={"active" in otherInvestor && !otherInvestor.active}
-  class:text-black={otherInvestor.deleted || !otherInvestor.active}
->
-  {#if otherInvestor}
-    {#if otherInvestor.deleted}
+{#if otherInvestor}
+  {@const isDraft = !otherInvestor.active}
+  {@const isDeleted = otherInvestor.deleted}
+  {@const isDraftOrDeleted = isDraft || isDeleted}
+
+  <div
+    class="relative flex flex-col gap-1 border border-pelorous p-2"
+    class:bg-yellow-100={isDraft}
+    class:bg-red-200={isDeleted}
+    class:bg-opacity-10={isDraftOrDeleted}
+    class:pb-12={isDraftOrDeleted}
+  >
+    {#if isDraftOrDeleted}
       <div
-        class="absolute bottom-2 left-0 right-0 flex items-center justify-center text-3xl italic opacity-30"
+        class="absolute bottom-2 left-0 right-0 text-center text-3xl italic"
+        class:text-yellow-100={isDraft}
+        class:text-red-200={isDeleted}
       >
-        {$_("Deleted")}
-      </div>
-    {:else if !otherInvestor.active}
-      <div
-        class="absolute bottom-2 left-0 right-0 flex items-center justify-center text-3xl italic opacity-30"
-      >
-        {$_("Draft")}
+        {isDeleted ? $_("Deleted") : $_("Draft")}
       </div>
     {/if}
+
     <DisplayField
       fieldname="id"
       value={otherInvestor.id}
@@ -102,72 +104,78 @@
       {wrapperClass}
       showLabel
     />
-  {/if}
 
-  <hr class="my-2 w-1/2" />
+    <hr class="m-2 w-2/3" />
 
-  <DisplayField
-    fieldname="involvement.relationship"
-    value={relationship}
-    {model}
-    {labelClass}
-    {valueClass}
-    {wrapperClass}
-    showLabel
-  />
-  <DisplayField
-    fieldname="involvement.parent_relation"
-    value={involvement.parent_relation}
-    {model}
-    {labelClass}
-    {valueClass}
-    {wrapperClass}
-    showLabel
-  />
-  <DisplayField
-    fieldname="involvement.investment_type"
-    value={involvement.investment_type}
-    {model}
-    {labelClass}
-    {valueClass}
-    {wrapperClass}
-    showLabel
-  />
-  <DisplayField
-    fieldname="involvement.percentage"
-    value={involvement.percentage}
-    {model}
-    {labelClass}
-    {valueClass}
-    {wrapperClass}
-    showLabel
-  />
-  <DisplayField
-    fieldname="involvement.loans_amount"
-    value={involvement.loans_amount}
-    {model}
-    {labelClass}
-    {valueClass}
-    {wrapperClass}
-    showLabel
-    extras={{ currency: involvement.loans_currency_id }}
-  />
-  <DisplayField
-    fieldname="involvement.loans_date"
-    value={involvement.loans_date}
-    {model}
-    {labelClass}
-    {valueClass}
-    {wrapperClass}
-    showLabel
-  />
-  <DisplayField
-    fieldname="involvement.comment"
-    value={involvement.comment}
-    {model}
-    {labelClass}
-    {valueClass}
-    {wrapperClass}
-    showLabel
-  />
-</div>
+    <DisplayField
+      fieldname="involvement.relationship"
+      value={relationship}
+      {model}
+      {labelClass}
+      {valueClass}
+      {wrapperClass}
+      showLabel
+    />
+    <DisplayField
+      fieldname="involvement.parent_relation"
+      value={involvement.parent_relation}
+      {model}
+      {labelClass}
+      {valueClass}
+      {wrapperClass}
+      showLabel
+    />
+    <DisplayField
+      fieldname="involvement.investment_type"
+      value={involvement.investment_type}
+      {model}
+      {labelClass}
+      {valueClass}
+      {wrapperClass}
+      showLabel
+    />
+    <DisplayField
+      fieldname="involvement.percentage"
+      value={involvement.percentage}
+      {model}
+      {labelClass}
+      {valueClass}
+      {wrapperClass}
+      showLabel
+    />
+    <DisplayField
+      fieldname="involvement.loans_amount"
+      value={involvement.loans_amount}
+      {model}
+      {labelClass}
+      {valueClass}
+      {wrapperClass}
+      showLabel
+      extras={{ currency: involvement.loans_currency_id }}
+    />
+    <DisplayField
+      fieldname="involvement.loans_date"
+      value={involvement.loans_date}
+      {model}
+      {labelClass}
+      {valueClass}
+      {wrapperClass}
+      showLabel
+    />
+    <DisplayField
+      fieldname="involvement.comment"
+      value={involvement.comment}
+      {model}
+      {labelClass}
+      {valueClass}
+      {wrapperClass}
+      showLabel
+    />
+  </div>
+{:else}
+  <div class="bg-red-200 bg-opacity-10 p-2 text-red-200">
+    {$_("Invalid investor: {investor_id}", {
+      values: { investor_id: otherInvestorId },
+    })}
+  </div>
+{/if}
