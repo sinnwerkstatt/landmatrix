@@ -7,9 +7,10 @@
 
   interface Props {
     value?: number | null
+    onchange?: () => void
   }
 
-  let { value = $bindable() }: Props = $props()
+  let { value = $bindable(), onchange }: Props = $props()
 </script>
 
 {#if $currencies}
@@ -18,7 +19,10 @@
     items={$currencies}
     placeholder={$_("Currency")}
     label="name"
-    oninput={e => (value = e?.detail?.id ?? null)}
+    oninput={e => {
+      value = e?.detail?.id ?? null
+      onchange?.()
+    }}
   >
     {#snippet selectionSlot(selection)}
       {selection.name} ({selection.code})

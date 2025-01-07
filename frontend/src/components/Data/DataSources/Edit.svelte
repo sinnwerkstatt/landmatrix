@@ -13,12 +13,19 @@
   }
 
   let { version = $bindable() }: Props = $props()
+
+  let datasources = $state(version.datasources)
+
+  const onchange = () => {
+    version.datasources = datasources
+  }
 </script>
 
 <SubmodelEditField
   label={$_("Data Source")}
-  bind:entries={version.datasources}
+  bind:entries={datasources}
   createEntry={createDataSource}
   isEmpty={isEmptyDataSource}
   entryComponent={Entry}
+  {onchange}
 />

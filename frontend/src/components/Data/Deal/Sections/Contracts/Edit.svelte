@@ -13,12 +13,19 @@
   }
 
   let { deal = $bindable() }: Props = $props()
+
+  let contracts = $state(deal.selected_version.contracts)
+
+  const onchange = () => {
+    deal.selected_version.contracts = contracts
+  }
 </script>
 
 <SubmodelEditField
   label={$_("Contract")}
-  bind:entries={deal.selected_version.contracts}
+  bind:entries={contracts}
   createEntry={createContract}
   isEmpty={isEmptyContract}
   entryComponent={Entry}
+  {onchange}
 />

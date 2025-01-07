@@ -18,16 +18,20 @@
 
   let label = $derived(tertiary ? $_("Tertiary investor/lender") : $_("Parent company"))
 
-  let filterFn = $derived(
-    (involvement: Involvement) =>
-      involvement.child_investor_id === investor.id &&
-      involvement.role === (tertiary ? InvolvementRole.LENDER : InvolvementRole.PARENT),
-  )
+  let filterFn = (involvement: Involvement) =>
+    involvement.child_investor_id === investor.id &&
+    involvement.role === (tertiary ? InvolvementRole.LENDER : InvolvementRole.PARENT)
+
+  let investors = $state(investor.parents)
+
+  const onchange = () => {
+    investor.parents = investors
+  }
 </script>
 
 <SubmodelEditField
   {label}
-  bind:entries={investor.parents}
+  bind:entries={investors}
   createEntry={createInvolvement(tertiary, investor.id)}
   extras={{
     excludeIds: [
@@ -39,6 +43,7 @@
   {filterFn}
   isEmpty={isEmptyInvolvement}
   entryComponent={Entry}
+  {onchange}
 >
   {#snippet extraHeader(entry)}
     {@const investor = $simpleInvestors.find(

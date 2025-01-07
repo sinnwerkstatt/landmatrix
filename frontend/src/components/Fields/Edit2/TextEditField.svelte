@@ -15,6 +15,7 @@
     fieldname: string
     label?: string
     extras?: Extras
+    onchange?: () => void
   }
 
   let {
@@ -28,6 +29,7 @@
       multiline: false,
       required: false,
     },
+    onchange,
   }: Props = $props()
 </script>
 
@@ -38,6 +40,7 @@
     name={fieldname}
     rows="5"
     placeholder={label}
+    oninput={e => onchange?.(e)}
   ></textarea>
 {:else if extras.url}
   <div class="flex">
@@ -48,6 +51,7 @@
       name={fieldname}
       required={extras.required}
       placeholder={label}
+      oninput={e => onchange?.(e)}
     />
     <div
       class="flex items-center justify-center border border-l-0 border-gray-300 bg-gray-200 px-3 py-1.5 text-gray-600"
@@ -64,6 +68,7 @@
       name={fieldname}
       required={extras.required}
       placeholder={label}
+      oninput={e => onchange?.(e)}
     />
     <div
       class="flex items-center justify-center border border-l-0 border-gray-300 bg-gray-200 px-3 py-1.5 text-gray-600"
@@ -79,5 +84,6 @@
     name={fieldname}
     required={extras.required}
     placeholder={label}
+    oninput={e => onchange?.(e)}
   />
 {/if}

@@ -5,9 +5,15 @@
     value: boolean | null
     fieldname: string
     extras?: { nullable: boolean }
+    onchange?: () => void
   }
 
-  let { value = $bindable(), fieldname, extras }: Props = $props()
+  let { value = $bindable(), fieldname, extras, onchange }: Props = $props()
 </script>
 
-<LowLevelNullBooleanField bind:value {fieldname} nullable={extras?.nullable ?? false} />
+<LowLevelNullBooleanField
+  bind:value
+  {fieldname}
+  nullable={extras?.nullable ?? false}
+  {onchange}
+/>

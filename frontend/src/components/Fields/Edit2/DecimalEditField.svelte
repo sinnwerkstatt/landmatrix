@@ -14,9 +14,16 @@
     fieldname: string
     extras?: Extras
     children?: Snippet
+    onchange?: () => void
   }
 
-  let { value = $bindable(), fieldname, extras = {}, children }: Props = $props()
+  let {
+    value = $bindable(),
+    fieldname,
+    extras = {},
+    children,
+    onchange,
+  }: Props = $props()
   let min = $derived(extras?.range?.[0])
   let max = $derived(extras?.range?.[1])
 </script>
@@ -29,6 +36,7 @@
     placeholder={extras.placeholder}
     {min}
     {max}
+    {onchange}
   />
   {@render children?.()}
 </div>

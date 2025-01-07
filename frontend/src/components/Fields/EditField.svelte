@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Snippet } from "svelte"
+  import type { ChangeEventHandler } from "svelte/elements"
 
   import { dealFields, investorFields } from "$lib/fieldLookups"
 
@@ -15,6 +16,7 @@
     model?: "deal" | "investor"
     extras?: unknown | undefined
     children?: Snippet
+    onchange?: ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>
   }
 
   let {
@@ -27,6 +29,7 @@
     model = "deal",
     extras = undefined,
     children,
+    onchange,
   }: Props = $props()
 
   let richField = $derived(
@@ -48,18 +51,18 @@
     {#if richField && richField.editField}
       {#if allExtras}
         {#if children}
-          <richField.editField bind:value extras={allExtras} {fieldname}>
+          <richField.editField bind:value extras={allExtras} {fieldname} {onchange}>
             {@render children?.()}
           </richField.editField>
         {:else}
-          <richField.editField bind:value extras={allExtras} {fieldname} />
+          <richField.editField bind:value extras={allExtras} {fieldname} {onchange} />
         {/if}
       {:else if children}
-        <richField.editField bind:value {fieldname}>
+        <richField.editField bind:value {fieldname} {onchange}>
           {@render children?.()}
         </richField.editField>
       {:else}
-        <richField.editField bind:value {fieldname} />
+        <richField.editField bind:value {fieldname} {onchange} />
       {/if}
     {:else}
       <div class="italic text-red-400">unknown field: {fieldname}</div>

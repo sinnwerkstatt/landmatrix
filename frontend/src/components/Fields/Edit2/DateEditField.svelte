@@ -4,9 +4,10 @@
   interface Props {
     value: string | null
     fieldname: string
+    onchange?: () => void
   }
 
-  let { value = $bindable(), fieldname }: Props = $props()
+  let { value = $bindable(), fieldname, onchange }: Props = $props()
 </script>
 
-<LowLevelDateYearField bind:value name={fieldname} />
+<LowLevelDateYearField bind:value name={fieldname} {onchange} />

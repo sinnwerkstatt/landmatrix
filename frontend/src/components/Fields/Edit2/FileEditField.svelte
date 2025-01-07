@@ -8,25 +8,17 @@
 
   import FilePdfIcon from "$components/icons/FilePdfIcon.svelte"
 
-  interface Extras {
-    required?: boolean
-  }
-
   interface Props {
     value: string | null
     fieldname: string
-    extras?: Extras
+    extras?: {
+      required?: boolean
+    }
     children?: Snippet
+    onchange?: () => void
   }
 
-  let {
-    value = $bindable(),
-    fieldname,
-    extras = {
-      required: false,
-    },
-    children,
-  }: Props = $props()
+  let { value = $bindable(), fieldname, extras, children, onchange }: Props = $props()
 
   const MAX_FILE_SIZE_IN_MB = 20
 
@@ -48,6 +40,7 @@
   const removeFile = () => {
     if (confirm($_("Do you really want to remove this file?"))) {
       value = ""
+      onchange?.()
     }
   }
 
@@ -90,6 +83,7 @@
       if (ret.ok) {
         const retJson = await ret.json()
         value = retJson.name
+        onchange?.()
         // alert(`File uploaded`)
       } else {
         alert(`Error uploading file: ${file.name}`)
@@ -133,7 +127,7 @@
 {:else}
   <input
     type="file"
-    required={extras.required}
+    required={extras?.required ?? false}
     name={fieldname}
     onchange={uploadFile}
     accept={ACCEPTED_EXTENSIONS.join(",")}
