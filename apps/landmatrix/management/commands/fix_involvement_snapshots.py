@@ -4,6 +4,8 @@ from typing import cast
 from tqdm import tqdm
 
 from django.core.management import BaseCommand
+
+from apps.landmatrix.models.choices import InvolvementRoleEnum
 from apps.landmatrix.models.investor import InvestorHull, Involvement
 from apps.landmatrix.nid import generate_nid
 
@@ -43,6 +45,9 @@ class Command(BaseCommand):
 
                 # Only keep involvements with non-empty parent investor
                 snapshot = [i for i in snapshot if i["parent_investor_id"] is not None]
+
+                # Only keep involvements with valid role
+                snapshot = [i for i in snapshot if i["role"] in InvolvementRoleEnum]
 
                 # Only keep unique parent investors
                 parent_ids = [s["parent_investor_id"] for s in snapshot]
