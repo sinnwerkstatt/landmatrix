@@ -217,6 +217,10 @@ export const involvementFields = derived(
       editField: DateEditField,
       label: $_("Loan date"),
     },
+    loans_currency_id: {
+      displayField: CurrencyField,
+      label: $_("Loan currency"),
+    },
     relationship: {
       displayField: TextField,
       label: $_("Relationship"),
