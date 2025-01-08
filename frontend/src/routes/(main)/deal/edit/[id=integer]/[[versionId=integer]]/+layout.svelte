@@ -28,6 +28,8 @@
     JSON.stringify(data.deal) !== JSON.stringify($mutableDeal),
   )
 
+  $inspect($mutableDeal.selected_version.ds_quotations)
+
   beforeNavigate(({ type, cancel, to }) => {
     // if hasNavigatedToOtherSection
     if (type === "link" && to?.url.pathname.includes(data.baseUrl)) {

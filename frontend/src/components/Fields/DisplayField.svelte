@@ -1,6 +1,9 @@
 <script lang="ts">
+  import { _ } from "svelte-i18n"
+
   import { dealFields, investorFields } from "$lib/fieldLookups"
   import { isNotEmpty } from "$lib/helpers"
+  import type { Model } from "$lib/types/data"
 
   import { LABEL_CLASS, VALUE_CLASS, WRAPPER_CLASS } from "$components/Fields/consts"
   import Label2 from "$components/Fields/Display2/Label2.svelte"
@@ -12,8 +15,8 @@
     labelClass?: string
     valueClass?: string
     showLabel?: boolean
-    model?: "deal" | "investor"
-    extras?: unknown | undefined
+    model?: Model
+    extras?: { [key: string]: unknown }
   }
 
   let {
@@ -43,16 +46,19 @@
     {#if showLabel}
       <Label2 value={richField?.label} class={labelClass} />
     {/if}
+
     <div class={valueClass}>
       {#if richField && richField.displayField}
-        {#if allExtras}
-          <richField.displayField {value} extras={allExtras} />
-        {:else}
-          <richField.displayField {value} />
-        {/if}
+        {@const RichDisplayField = richField.displayField}
+
+        <RichDisplayField {value} extras={allExtras} />
       {:else}
         <div class="italic text-red-400">unknown field: {fieldname}</div>
       {/if}
     </div>
+
+    {#if richField?.useQuotation}
+      {$_("Quotations")}
+    {/if}
   </div>
 {/if}

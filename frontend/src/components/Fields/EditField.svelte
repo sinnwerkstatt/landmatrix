@@ -1,8 +1,9 @@
 <script lang="ts">
   import type { Snippet } from "svelte"
-  import type { ChangeEventHandler } from "svelte/elements"
+  import { _ } from "svelte-i18n"
 
   import { dealFields, investorFields } from "$lib/fieldLookups"
+  import type { Model } from "$lib/types/data"
 
   import Label2 from "$components/Fields/Display2/Label2.svelte"
 
@@ -13,10 +14,11 @@
     labelClass?: string
     valueClass?: string
     showLabel?: boolean
-    model?: "deal" | "investor"
-    extras?: unknown | undefined
+    model?: Model
+    extras?: { [key: string]: unknown }
+    // edit specific
     children?: Snippet
-    onchange?: ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>
+    onchange?: () => void
   }
 
   let {
@@ -36,7 +38,7 @@
     model === "deal" ? $dealFields[fieldname] : $investorFields[fieldname],
   )
 
-  let allExtras: unknown = $derived(
+  let allExtras = $derived(
     richField?.extras && extras
       ? { ...richField.extras, ...extras }
       : (richField?.extras ?? extras),
@@ -47,25 +49,20 @@
   {#if showLabel}
     <Label2 value={richField?.label} class={labelClass} />
   {/if}
+
   <div class={valueClass}>
     {#if richField && richField.editField}
-      {#if allExtras}
-        {#if children}
-          <richField.editField bind:value extras={allExtras} {fieldname} {onchange}>
-            {@render children?.()}
-          </richField.editField>
-        {:else}
-          <richField.editField bind:value extras={allExtras} {fieldname} {onchange} />
-        {/if}
-      {:else if children}
-        <richField.editField bind:value {fieldname} {onchange}>
-          {@render children?.()}
-        </richField.editField>
-      {:else}
-        <richField.editField bind:value {fieldname} {onchange} />
-      {/if}
+      {@const RichEditField = richField.editField}
+
+      <RichEditField bind:value extras={allExtras} {fieldname} {onchange}>
+        {@render children?.()}
+      </RichEditField>
     {:else}
       <div class="italic text-red-400">unknown field: {fieldname}</div>
     {/if}
   </div>
+
+  {#if richField?.useQuotation}
+    {$_("Quotations")}
+  {/if}
 </div>
