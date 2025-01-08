@@ -18,6 +18,7 @@
   import SubmodelEditField from "$components/Fields/SubmodelEditField.svelte"
   import LocationDot from "$components/icons/LocationDot.svelte"
   import { markerStyle, markerStyleSemi } from "$components/Map/mapHelper"
+  import { fitMapToFeatures } from "$components/Map/mapstuff.svelte"
   import OLMap from "$components/Map/OLMap.svelte"
 
   import Entry from "./Entry.svelte"
@@ -87,9 +88,10 @@
     )
 
     map.on("pointermove", evt => {
-      const feature = map!.forEachFeatureAtPixel(evt.pixel, function (feature) {
-        return feature as Feature<Point>
-      })
+      const feature = map!.forEachFeatureAtPixel(
+        evt.pixel,
+        feature => feature as Feature<Point>,
+      )
 
       if (feature && markersVectorSource.hasFeature(feature)) {
         createLocationTooltipOverlay(feature).then(ovrl => {
@@ -103,9 +105,10 @@
       }
     })
     map.on("click", evt => {
-      const feature = map!.forEachFeatureAtPixel(evt.pixel, function (feature) {
-        return feature as Feature<Point>
-      })
+      const feature = map!.forEachFeatureAtPixel(
+        evt.pixel,
+        feature => feature as Feature<Point>,
+      )
 
       if (feature && markersVectorSource.hasFeature(feature)) {
         const locationId = feature.getProperties().nid
@@ -117,21 +120,19 @@
 
   $effect(() => {
     if (!map) return
-    const mapView = map.getView()
 
     if (markersVectorSource.getFeatures().length > 0) {
-      mapView.fit(markersVectorSource.getExtent(), {
-        padding: [150, 150, 150, 150],
-        maxZoom: 13,
-      })
+      fitMapToFeatures(map)
     } else if (country) {
-      mapView.fit(
-        [
-          ...fromLonLat([country.point_lon_min, country.point_lat_min]),
-          ...fromLonLat([country.point_lon_max, country.point_lat_max]),
-        ],
-        { padding: [30, 30, 30, 30] },
-      )
+      map
+        .getView()
+        .fit(
+          [
+            ...fromLonLat([country.point_lon_min, country.point_lat_min]),
+            ...fromLonLat([country.point_lon_max, country.point_lat_max]),
+          ],
+          { padding: [30, 30, 30, 30] },
+        )
     }
   })
 

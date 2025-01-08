@@ -28,7 +28,6 @@ export const createLocation = (nid: string): Location2 => ({
 export const isEmptyLocation = (location: Location2) =>
   isEmptySubmodel(location, LOCATION_IGNORE_KEYS)
 
-// TODO: use $fieldChoices.area.type
 export const AREA_TYPES = [
   "production_area",
   "contract_area",
@@ -42,16 +41,6 @@ export const AREA_TYPE_COLOR_MAP: {
   intended_area: "#a0d875",
   production_area: "#e86a6a",
 }
-
-// export const fitBounds = (map: Map) => {
-//   let bounds = latLngBounds([])
-//   map.eachLayer(
-//     l => (bounds = l instanceof GeoJSON ? l.getBounds().extend(bounds) : bounds),
-//   )
-//   if (bounds.isValid()) {
-//     map.fitBounds(padBounds(bounds))
-//   }
-// }
 
 export async function createLocationTooltipOverlay(feature: Feature<Point>) {
   const containerDiv = document.createElement("div")

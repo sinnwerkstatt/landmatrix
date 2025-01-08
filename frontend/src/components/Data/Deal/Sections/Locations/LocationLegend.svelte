@@ -3,7 +3,7 @@
   import { twMerge } from "tailwind-merge"
 
   import { areaChoices, createLabels } from "$lib/fieldChoices"
-  import type { AreaType } from "$lib/types/data"
+  import type { components } from "$lib/openAPI"
 
   import { AREA_TYPE_COLOR_MAP, AREA_TYPES } from "./locations"
 
@@ -12,7 +12,9 @@
   }
   let { rightCorner }: Props = $props()
 
-  let areaTypeLabels = $derived(createLabels<AreaType>($areaChoices.type))
+  let areaTypeLabels = $derived(
+    createLabels<components["schemas"]["LocationAreaTypeEnum"]>($areaChoices.type),
+  )
 </script>
 
 <div

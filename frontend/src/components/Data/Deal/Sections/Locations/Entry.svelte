@@ -61,5 +61,6 @@
   showLabel
   {onchange}
 />
-<EditField fieldname="location.comment" bind:value={entry.comment} showLabel />
-<LocationAreasEditField bind:areas={entry.areas} map={extras.map} isSelectedEntry />
+{#if extras.map}
+  <LocationAreasEditField bind:areas={entry.areas} map={extras.map} isSelectedEntry />
+{/if}

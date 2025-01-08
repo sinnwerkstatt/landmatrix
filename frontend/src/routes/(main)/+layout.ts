@@ -1,5 +1,3 @@
-import { error } from "@sveltejs/kit"
-
 import type { components } from "$lib/openAPI"
 
 import type { LayoutLoad } from "./$types"

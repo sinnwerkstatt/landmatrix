@@ -18,6 +18,7 @@
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import SubmodelDisplayField from "$components/Fields/SubmodelDisplayField.svelte"
   import { markerStyle, markerStyleSemi } from "$components/Map/mapHelper"
+  import { fitMapToFeatures } from "$components/Map/mapstuff.svelte"
   import OLMap from "$components/Map/OLMap.svelte"
 
   import LocationAreasField from "./LocationAreasField.svelte"
@@ -85,9 +86,10 @@
     )
 
     map.on("pointermove", evt => {
-      const feature = map!.forEachFeatureAtPixel(evt.pixel, function (feature) {
-        return feature as Feature<Point>
-      })
+      const feature = map!.forEachFeatureAtPixel(
+        evt.pixel,
+        feature => feature as Feature<Point>,
+      )
 
       hoverLocationId =
         feature && markersVectorSource.hasFeature(feature)
@@ -95,9 +97,10 @@
           : undefined
     })
     map.on("click", evt => {
-      const feature = map!.forEachFeatureAtPixel(evt.pixel, function (feature) {
-        return feature as Feature<Point>
-      })
+      const feature = map!.forEachFeatureAtPixel(
+        evt.pixel,
+        feature => feature as Feature<Point>,
+      )
       if (feature && markersVectorSource.hasFeature(feature)) {
         const nid = feature.getProperties().nid
         goto(nid === selectedLocationId ? "" : `#${nid}`)
@@ -131,26 +134,21 @@
 
   $effect(() => {
     if (!map) return
-    const mapView = map.getView()
-    // map.removeLayer(markerFeatureGroup)
-    // markerFeatureGroup = createMarkerLayer(deal.selected_version.locations)
-    // map.addLayer(markerFeatureGroup)
 
     if (deal.selected_version.locations.length) {
-      mapView.fit(markersVectorSource.getExtent(), {
-        padding: [150, 150, 150, 150],
-        maxZoom: 13,
-      })
+      fitMapToFeatures(map)
     } else {
       const cntry = page.data.countries.find(x => x.id === deal.country_id)
       if (!cntry) return
-      mapView.fit(
-        [
-          ...fromLonLat([cntry.point_lon_min, cntry.point_lat_min]),
-          ...fromLonLat([cntry.point_lon_max, cntry.point_lat_max]),
-        ],
-        { padding: [30, 30, 30, 30] },
-      )
+      map
+        .getView()
+        .fit(
+          [
+            ...fromLonLat([cntry.point_lon_min, cntry.point_lat_min]),
+            ...fromLonLat([cntry.point_lon_max, cntry.point_lat_max]),
+          ],
+          { padding: [30, 30, 30, 30] },
+        )
     }
   })
 

@@ -1,6 +1,3 @@
-import type { Feature, MultiPolygon, Point } from "geojson"
-import type { GeoJSON } from "leaflet?client"
-
 import type { components, operations } from "$lib/openAPI"
 
 export type Model = "deal" | "investor"
@@ -113,16 +110,9 @@ export type JSONExportsFieldType = components["schemas"][
 export type JSONElectricityGenerationFieldType =
   components["schemas"]["ElectricityGenerationItem"]
 
-export type AreaType = components["schemas"]["LocationAreaTypeEnum"]
-
-export type Area = components["schemas"]["LocationArea"]
-
 export type Location2 = components["schemas"]["Location"]
 
 export type InvestorVersion2 = components["schemas"]["InvestorVersion"]
-
-export type NegotiationStatusItem =
-  components["schemas"]["CurrentDateChoiceNegotiationStatusItem"]
 
 export type IntentionOfInvestment = components["schemas"]["IntentionOfInvestmentEnum"]
 export type NegotiationStatus = components["schemas"]["NegotiationStatusEnum"]
@@ -170,24 +160,3 @@ export enum UserRole {
 
 export type User = components["schemas"]["User"]
 export type LeanUser = components["schemas"]["LeanUser"]
-
-// FRONTEND
-// Types for locations + areas in geojson
-export interface PointFeatureProps {
-  id: string
-  level_of_accuracy: Location2["level_of_accuracy"]
-  name?: string
-}
-
-export type PointFeature = Feature<Point, PointFeatureProps>
-
-export interface AreaFeatureProps {
-  id: string // nanoId
-  type: AreaType
-  date: string
-  current: boolean
-  visible: boolean
-}
-
-export type AreaFeature = Feature<MultiPolygon, AreaFeatureProps>
-export type AreaFeatureLayer = GeoJSON<AreaFeatureProps, MultiPolygon>

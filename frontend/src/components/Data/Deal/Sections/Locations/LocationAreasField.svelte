@@ -1,17 +1,17 @@
 <script lang="ts">
-  import { Feature, Overlay, type Map } from "ol"
+  import { Feature, type Map } from "ol"
   import { GeoJSON } from "ol/format"
   import { MultiPolygon, Point } from "ol/geom"
   import { Vector as VectorLayer } from "ol/layer"
   import { Vector as VectorSource } from "ol/source"
   import { getArea } from "ol/sphere"
   import { Fill, Stroke, Style } from "ol/style"
-  import { mount, onMount } from "svelte"
+  import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
   import { twMerge } from "tailwind-merge"
 
   import { areaChoices, createLabels } from "$lib/fieldChoices"
-  import type { Area, AreaType } from "$lib/types/data"
+  import type { components } from "$lib/openAPI"
 
   import { createPolygonTooltipOverlay } from "$components/Data/Deal/Sections/Locations/locations.js"
   import { LABEL_CLASS, VALUE_CLASS, WRAPPER_CLASS } from "$components/Fields/consts"
@@ -23,12 +23,11 @@
   import EyeIcon from "$components/icons/EyeIcon.svelte"
   import EyeSlashIcon from "$components/icons/EyeSlashIcon.svelte"
 
-  import LocationAreaTooltip from "./LocationAreaTooltip.svelte"
   import { AREA_TYPE_COLOR_MAP } from "./locations"
 
   interface Props {
     map: Map
-    areas: Area[]
+    areas: components["schemas"]["LocationArea"][]
     fieldname: string
     label?: string
     wrapperClass?: string
@@ -124,9 +123,10 @@
     map.addLayer(new VectorLayer({ source: polygonVectorSource }))
 
     map.on("pointermove", evt => {
-      const feature = map!.forEachFeatureAtPixel(evt.pixel, function (feature) {
-        return feature as Feature<Point>
-      })
+      const feature = map!.forEachFeatureAtPixel(
+        evt.pixel,
+        feature => feature as Feature<Point>,
+      )
 
       hoverMapID =
         feature && polygonVectorSource.hasFeature(feature)
@@ -135,20 +135,26 @@
     })
   })
 
-  let areaTypeLabels = $derived(createLabels<AreaType>($areaChoices.type))
+  let areaTypeLabels = $derived(
+    createLabels<components["schemas"]["LocationAreaTypeEnum"]>($areaChoices.type),
+  )
 
-  let createAreaDisplay = $derived((area: Area): string => {
-    const typeDisplay = areaTypeLabels[area.type]
+  let createAreaDisplay = $derived(
+    (area: components["schemas"]["LocationArea"]): string => {
+      const typeDisplay = areaTypeLabels[area.type]
 
-    const areaFeat = (
-      new GeoJSON().readFeature(area.area, readOpts) as Feature
-    ).getGeometry()
+      const areaFeat = (
+        new GeoJSON().readFeature(area.area, readOpts) as Feature
+      ).getGeometry()
 
-    const areaDisplay = areaFeat ? `${formatArea(getArea(areaFeat))} ${$_("ha")}` : "--"
-    const dateCurrentDisplay = dateCurrentFormat(area)
+      const areaDisplay = areaFeat
+        ? `${formatArea(getArea(areaFeat))} ${$_("ha")}`
+        : "--"
+      const dateCurrentDisplay = dateCurrentFormat(area)
 
-    return `${typeDisplay} (${areaDisplay}) ${dateCurrentDisplay}`
-  })
+      return `${typeDisplay} (${areaDisplay}) ${dateCurrentDisplay}`
+    },
+  )
 </script>
 
 {#if areas.length > 0 && visibleMap}

@@ -1,5 +1,7 @@
 import { env } from "$env/dynamic/public"
-import { Tile as TileLayer } from "ol/layer"
+import { type Map } from "ol"
+import { extend, type Extent } from "ol/extent"
+import { Tile as TileLayer, Vector } from "ol/layer"
 import { OSM, TileWMS, XYZ } from "ol/source"
 
 function getWMSTilesCDEUniBern(folder: string, LAYERS: string, attributions: string) {
@@ -146,3 +148,24 @@ export const selectedLayers = $state({
   baseLayer: "map",
   contextLayers: [] as string[],
 })
+
+export function fitMapToFeatures(map: Map) {
+  let extent: Extent | null = null
+
+  map.getLayers().forEach(layer => {
+    if (!(layer instanceof Vector)) return
+
+    const sourceExtent = layer.getSource().getExtent()
+    if (!sourceExtent) return
+    if (!extent) extent = sourceExtent.slice()
+    else extent = extend(extent, sourceExtent)
+  })
+
+  if (extent) {
+    map.getView().fit(extent, {
+      padding: [150, 150, 150, 150],
+      maxZoom: 13,
+      // duration: 500, // Optional: Add animation with a duration of 500ms
+    })
+  }
+}

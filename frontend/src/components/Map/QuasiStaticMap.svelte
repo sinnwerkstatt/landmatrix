@@ -14,7 +14,7 @@
 
   import OLMap from "$components/Map/OLMap.svelte"
 
-  import { markerStyle, olStyle2 } from "./mapHelper"
+  import { createStyledPoint, markerStyle } from "./mapHelper"
 
   interface Props {
     countryID?: number
@@ -29,27 +29,23 @@
 
   function _drawGlobalMarkers() {
     for (let mark of markers) {
-      // console.log(mark)
-      const feature = new Feature({
-        geometry: new Point(fromLonLat([mark.coordinates[1], mark.coordinates[0]])),
-        regionId: mark.region_id,
-      })
       const country_name = page.data.regions.find(r => r.id === mark.region_id)!.name
-      // styleCircle(circle, mark.count! / 50, country_name, true, 30)
-      feature.setStyle(olStyle2(mark.count! / 50, country_name))
+      const feature = createStyledPoint(
+        fromLonLat(mark.coordinates),
+        mark.count! / 50,
+        country_name,
+      )
       markersVectorSource.addFeature(feature)
     }
   }
 
   function _drawRegionMarkers() {
     for (let mark of markers) {
-      const feature = new Feature({
-        geometry: new Point(fromLonLat([mark.coordinates[1], mark.coordinates[0]])),
-        countryId: mark.country_id,
-      })
-
-      const radius = mark.count! / 10
-      feature.setStyle(olStyle2(radius, mark.count?.toString()))
+      const feature = createStyledPoint(
+        fromLonLat(mark.coordinates),
+        Math.min(Math.max(mark.count! / 10, 8), 30),
+        `${mark.count}`,
+      )
 
       markersVectorSource.addFeature(feature)
     }
@@ -59,7 +55,7 @@
     for (let mark of markers)
       markersVectorSource.addFeature(
         new Feature({
-          geometry: new Point(fromLonLat([mark.coordinates[1], mark.coordinates[0]])),
+          geometry: new Point(fromLonLat(mark.coordinates)),
         }),
       )
   }
