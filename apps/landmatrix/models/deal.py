@@ -1045,6 +1045,12 @@ class DealVersion(DealVersionBaseFields, BaseVersion):
         _("Fully updated"),
         default=False,
     )
+    ds_quotations = PydanticJSONField(
+        _("Data Source Quotations"),
+        blank=True,
+        default=dict,
+        validators=[SchemaValidator(schema.DataSourceQuotationSchema)],
+    )
 
     def __str__(self):
         return f"v{self.id} for #{self.deal_id}"

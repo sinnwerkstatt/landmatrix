@@ -1662,6 +1662,10 @@ export interface components {
     DataSourceFields: {
       type: components["schemas"]["ValueLabel"][]
     }
+    /** DataSourceQuotationSchema */
+    DataSourceQuotationSchema: {
+      [key: string]: components["schemas"]["QuotationItem"][]
+    }
     /**
      * @description * `MEDIA_REPORT` - Media report
      *     * `RESEARCH_PAPER_OR_POLICY_REPORT` - Research Paper / Policy Report
@@ -2243,6 +2247,8 @@ export interface components {
       readonly forest_concession: boolean
       readonly transnational: boolean | null
       fully_updated?: boolean
+      /** Data Source Quotations */
+      ds_quotations?: components["schemas"]["DataSourceQuotationSchema"]
       readonly created_by: number | null
       readonly modified_by: number | null
       readonly sent_to_review_by: number | null
@@ -3353,6 +3359,21 @@ export interface components {
       key: string
       name: string
       description: string
+    }
+    /** QuotationItem */
+    QuotationItem: {
+      /** Nid */
+      nid: string
+      /**
+       * Page
+       * @default null
+       */
+      page: number | null
+      /**
+       * Comment
+       * @default null
+       */
+      comment: string | null
     }
     /**
      * @description * `INDIGENOUS_RIGHTS_RECOGNIZED` - Indigenous Peoples traditional or customary rights recognized by government
