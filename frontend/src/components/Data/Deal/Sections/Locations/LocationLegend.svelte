@@ -1,16 +1,25 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
+  import { twMerge } from "tailwind-merge"
 
   import { areaChoices, createLabels } from "$lib/fieldChoices"
   import type { AreaType } from "$lib/types/data"
 
   import { AREA_TYPE_COLOR_MAP, AREA_TYPES } from "./locations"
 
+  interface Props {
+    rightCorner?: boolean
+  }
+  let { rightCorner }: Props = $props()
+
   let areaTypeLabels = $derived(createLabels<AreaType>($areaChoices.type))
 </script>
 
 <div
-  class="absolute bottom-1 left-1 border border-black bg-white p-3 font-sans text-gray-700"
+  class={twMerge(
+    "absolute border border-black bg-white p-3 font-sans text-gray-700",
+    rightCorner ? "bottom-6 right-1" : "bottom-1 left-1",
+  )}
 >
   <div class="mb-1 text-center text-sm">
     <strong>{$_("Legend")}</strong>

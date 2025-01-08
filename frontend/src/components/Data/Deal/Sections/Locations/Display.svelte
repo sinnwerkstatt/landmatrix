@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { Feature, Overlay, type Map } from "ol"
+  import { Feature, type Map } from "ol"
   import { Control } from "ol/control"
   import { Point } from "ol/geom"
   import { Vector as VectorLayer } from "ol/layer"
   import { fromLonLat } from "ol/proj"
   import { Vector as VectorSource } from "ol/source"
-  import { mount, onDestroy, onMount } from "svelte"
+  import { onDestroy, onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
   import { goto } from "$app/navigation"
@@ -15,15 +15,14 @@
   import type { DealHull, Location2 } from "$lib/types/data"
   import { createComponentAsDiv } from "$lib/utils/domHelpers"
 
-  import LocationTooltip from "$components/Data/Deal/Sections/Locations/LocationTooltip.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import SubmodelDisplayField from "$components/Fields/SubmodelDisplayField.svelte"
   import { markerStyle, markerStyleSemi } from "$components/Map/mapHelper"
   import OLMap from "$components/Map/OLMap.svelte"
-  import { createCoordinatesMap } from "$components/Map/utils"
 
   import LocationAreasField from "./LocationAreasField.svelte"
   import LocationLegend from "./LocationLegend.svelte"
+  import { createLocationTooltipOverlay } from "./locations"
 
   interface Props {
     deal: DealHull
@@ -45,10 +44,10 @@
         const prps = ft.getProperties()
         if (prps.nid === hoverLocationId) {
           haveHit = true
-          createMarkerPopup(ft as Feature<Point>).then(newOverlay => {
-            map!.addOverlay(newOverlay)
+          createLocationTooltipOverlay(ft as Feature<Point>).then(ovrl => {
+            map!.addOverlay(ovrl)
             map!.getOverlays().forEach(overlay => {
-              if (overlay !== newOverlay) map!.removeOverlay(overlay)
+              if (overlay !== ovrl) map!.removeOverlay(overlay)
             })
           })
         }
@@ -106,18 +105,6 @@
     })
   }
 
-  async function createMarkerPopup(feature: Feature<Point>) {
-    const markerContainerDiv = document.createElement("div")
-    mount(LocationTooltip, { target: markerContainerDiv, props: { feature } })
-    return new Overlay({
-      element: markerContainerDiv,
-      position: feature.getGeometry()?.getCoordinates(),
-      positioning: "bottom-center",
-      offset: [-30, -30, -30, -30],
-      autoPan: { animation: { duration: 300 } },
-    })
-  }
-
   const createMarkerLayer = (locations: readonly Location2[]) => {
     const points = []
     for (const location of locations) {
@@ -142,7 +129,6 @@
   onMount(() => createMarkerLayer(deal.selected_version.locations))
   onDestroy(() => markersVectorSource.clear())
 
-  let countryCoords = $derived(createCoordinatesMap(page.data.countries))
   $effect(() => {
     if (!map) return
     const mapView = map.getView()
@@ -150,14 +136,21 @@
     // markerFeatureGroup = createMarkerLayer(deal.selected_version.locations)
     // map.addLayer(markerFeatureGroup)
 
-    if (!deal.selected_version.locations.length) {
-      const coords = countryCoords[deal.country_id!]
-      mapView.fit(fromLonLat(coords), { padding: [30, 30, 30, 30] })
-    } else {
+    if (deal.selected_version.locations.length) {
       mapView.fit(markersVectorSource.getExtent(), {
         padding: [150, 150, 150, 150],
         maxZoom: 13,
       })
+    } else {
+      const cntry = page.data.countries.find(x => x.id === deal.country_id)
+      if (!cntry) return
+      mapView.fit(
+        [
+          ...fromLonLat([cntry.point_lon_min, cntry.point_lat_min]),
+          ...fromLonLat([cntry.point_lon_max, cntry.point_lat_max]),
+        ],
+        { padding: [30, 30, 30, 30] },
+      )
     }
   })
 

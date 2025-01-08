@@ -13,6 +13,7 @@
   import { areaChoices, createLabels } from "$lib/fieldChoices"
   import type { Area, AreaType } from "$lib/types/data"
 
+  import { createPolygonTooltipOverlay } from "$components/Data/Deal/Sections/Locations/locations.js"
   import { LABEL_CLASS, VALUE_CLASS, WRAPPER_CLASS } from "$components/Fields/consts"
   import {
     dateCurrentFormat,
@@ -57,18 +58,6 @@
 
   let hoverMapID: string | undefined = $state()
 
-  async function createPolygonOverlay(feature: Feature<MultiPolygon>) {
-    const overlayContainerDiv = document.createElement("div")
-    mount(LocationAreaTooltip, { target: overlayContainerDiv, props: { feature } })
-    return new Overlay({
-      element: overlayContainerDiv,
-      position: feature.getGeometry()?.getFirstCoordinate(),
-      positioning: "bottom-center",
-      offset: [-30, -30, -30, -30],
-      autoPan: { animation: { duration: 300 } },
-    })
-  }
-
   const updateHoverMapState = async (_hMapID?: string) => {
     let haveHit = false
     if (_hMapID)
@@ -76,9 +65,9 @@
         const prps = ft.getProperties()
         if (prps.nid === _hMapID) {
           haveHit = true
-          createPolygonOverlay(ft as Feature<MultiPolygon>).then(newOverlay => {
+          createPolygonTooltipOverlay(ft as Feature<MultiPolygon>).then(newOverlay => {
             map.addOverlay(newOverlay)
-            map!.getOverlays().forEach(overlay => {
+            map.getOverlays().forEach(overlay => {
               if (overlay !== newOverlay) map!.removeOverlay(overlay)
             })
           })

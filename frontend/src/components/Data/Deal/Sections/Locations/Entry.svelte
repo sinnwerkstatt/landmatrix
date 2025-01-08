@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Point } from "geojson"
-  import { Map } from "leaflet?client"
+  import type { Map } from "ol"
 
   import type { components } from "$lib/openAPI"
   import type { Location2 } from "$lib/types/data"
@@ -8,14 +8,20 @@
   import LocationAreasEditField from "$components/Data/Deal/Sections/Locations/LocationAreasEditField.svelte"
   import EditField from "$components/Fields/EditField.svelte"
 
-  export let entry: Location2
-  export let extras: {
-    country?: components["schemas"]["Country"]
-    map?: Map
+  interface Props {
+    entry: Location2
+    extras: {
+      country?: components["schemas"]["Country"]
+      map?: Map
+    }
+    onchange?: () => void
   }
+
+  let { entry = $bindable(), extras, onchange }: Props = $props()
 
   const onGoogleAutocomplete = (point: Point) => {
     entry.point = point
+    onchange?.()
   }
 </script>
 
@@ -24,6 +30,7 @@
   bind:value={entry.level_of_accuracy}
   extras={{ required: true }}
   showLabel
+  {onchange}
 />
 <EditField
   fieldname="location.name"
@@ -33,13 +40,26 @@
     onGoogleAutocomplete,
   }}
   showLabel
+  {onchange}
 />
-<EditField fieldname="location.point" bind:value={entry.point} showLabel />
-<EditField fieldname="location.description" bind:value={entry.description} showLabel />
+<EditField fieldname="location.point" bind:value={entry.point} showLabel {onchange} />
+<EditField
+  fieldname="location.description"
+  bind:value={entry.description}
+  showLabel
+  {onchange}
+/>
 <EditField
   fieldname="location.facility_name"
   bind:value={entry.facility_name}
   showLabel
+  {onchange}
+/>
+<EditField
+  fieldname="location.comment"
+  bind:value={entry.comment}
+  showLabel
+  {onchange}
 />
 <EditField fieldname="location.comment" bind:value={entry.comment} showLabel />
 <LocationAreasEditField bind:areas={entry.areas} map={extras.map} isSelectedEntry />

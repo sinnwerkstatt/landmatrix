@@ -78,11 +78,7 @@
 </script>
 
 <div class="relative mx-auto {containerClass}">
-  <div
-    tabindex="-2"
-    bind:this={mapDiv}
-    class="relative isolate h-full w-full {className}"
-  >
+  <div bind:this={mapDiv} class="relative isolate h-full w-full {className}">
     {#if !map}
       <LoadingPulse class="h-[300px]" />
     {:else}
