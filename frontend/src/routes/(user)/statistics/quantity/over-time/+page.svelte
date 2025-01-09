@@ -59,12 +59,12 @@
     start: Date
     end: Date
   }
-  let daterange: Daterange = {
+  let daterange: Daterange = $state({
     start: dayjs().subtract(30, "day").toDate(),
     end: new Date(),
-  }
+  })
 
-  let selectedDateOption = $state(dayjs(daterange.end).diff(daterange.start, "days"))
+  let selectedDateOption = $state(30)
 
   const datePreOptions = [
     { name: "Last 30 days", value: 30 },
@@ -76,11 +76,11 @@
   let dealBuckets: { [key: string]: CaseStatisticsDeal[] } = $state({})
   let investorBuckets: { [key: string]: CaseStatisticsInvestor[] } = $state({})
 
-  async function _fetchDeals(filters: FilterValues, daterange: Daterange) {
+  async function _fetchDeals(filters: FilterValues, _daterange: Daterange) {
     const params = new URLSearchParams({
       action: "deal_buckets",
-      start: dayjs(daterange.start).format("YYYY-MM-DD"),
-      end: dayjs(daterange.end).format("YYYY-MM-DD"),
+      start: dayjs(_daterange.start).format("YYYY-MM-DD"),
+      end: dayjs(_daterange.end).format("YYYY-MM-DD"),
     })
     if (filters.region_id) params.append("region", `${filters.region_id}`)
     if (filters.country_id) params.append("country", `${filters.country_id}`)
@@ -89,11 +89,11 @@
     if (ret.ok) dealBuckets = (await ret.json()).buckets
   }
 
-  async function _fetchInvestors(filters: FilterValues, daterange: Daterange) {
+  async function _fetchInvestors(filters: FilterValues, _daterange: Daterange) {
     const params = new URLSearchParams({
       action: "investor_buckets",
-      start: dayjs(daterange.start).format("YYYY-MM-DD"),
-      end: dayjs(daterange.end).format("YYYY-MM-DD"),
+      start: dayjs(_daterange.start).format("YYYY-MM-DD"),
+      end: dayjs(_daterange.end).format("YYYY-MM-DD"),
     })
     if (filters.region_id) params.append("region", `${filters.region_id}`)
     if (filters.country_id) params.append("country", `${filters.country_id}`)
@@ -102,11 +102,11 @@
     if (ret.ok) investorBuckets = (await ret.json()).buckets
   }
 
-  async function fetchObjs(filters: FilterValues, daterange: Daterange) {
+  async function fetchObjs(filters: FilterValues, _daterange: Daterange) {
     loading.set(true)
     await Promise.all([
-      _fetchDeals(filters, daterange),
-      _fetchInvestors(filters, daterange),
+      _fetchDeals(filters, _daterange),
+      _fetchInvestors(filters, _daterange),
     ])
     loading.set(false)
   }
