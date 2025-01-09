@@ -62,6 +62,8 @@ class CurrentDateAreaSchema(ListRootModel):
         current: bool = False
         date: LooseDateStr | str | None = None
         area: Decimal
+        # TODO marcus: besser "Decimal | None = None"?
+        #  auch: Decimal kommt von diesen pydantic im schema als string raus.. besser hier float nehmen?
 
     root: list[CurrentDateAreaItem]
 
@@ -196,7 +198,7 @@ class ElectricityGenerationSchema(ListRootModel):
         area: Decimal | None = None
         choices: list[ElectricityGenerationEnum] = []
         export: Decimal | None = None
-        windfarm_count: Decimal | None = None
+        windfarm_count: Decimal | None = None  # TODO int should be fine, no?
         current_capacity: Decimal | None = None
         intended_capacity: Decimal | None = None
 

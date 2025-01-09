@@ -1,4 +1,4 @@
-// TODO @marcus keep / adapt anything to openlayers?
+// TODO marcus keep / adapt anything to openlayers?
 import { latLng, latLngBounds } from "leaflet?client"
 
 import { type Location2 } from "$lib/types/data"
