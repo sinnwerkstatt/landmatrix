@@ -183,7 +183,6 @@
   }
 </script>
 
-{JSON.stringify(deal.selected_version.locations)}
 <form class="grid h-full gap-2 lg:grid-cols-5" id="locations">
   <div class="lg:order-last lg:col-span-3">
     <OLMap

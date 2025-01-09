@@ -62,5 +62,10 @@
   {onchange}
 />
 {#if extras.map}
-  <LocationAreasEditField bind:areas={entry.areas} map={extras.map} isSelectedEntry />
+  <LocationAreasEditField
+    bind:areas={entry.areas}
+    map={extras.map}
+    isSelectedEntry
+    {onchange}
+  />
 {/if}

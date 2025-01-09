@@ -175,6 +175,7 @@
 
       showAddAreaOverlay = false
       toAddFiles = undefined
+      onchange?.()
     })
 
     if (toAddFiles) {
@@ -192,6 +193,7 @@
         .filter(a => a.type === areaType)
         .map(a => ({ ...a, current: a.nid === nid })),
     ]
+    onchange?.()
   }
 
   const deleteArea = (nid: string) => {
@@ -236,7 +238,7 @@
             in:receive={{ key: val.nid }}
             out:send={{ key: val.nid }}
           >
-            <Date bind:value={val.date} name="area_{val.nid}_date" />
+            <Date bind:value={val.date} name="area_{val.nid}_date" {onchange} />
 
             <label class={labelClass}>
               {$_("Current")}
