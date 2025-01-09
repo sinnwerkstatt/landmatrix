@@ -46,7 +46,7 @@
 
   .inpt {
     @apply w-full border border-gray-300 bg-white px-3 py-1.5 text-black;
-    @apply dark:border-gray-500 dark:bg-gray-600 dark:text-white;
+    @apply dark:border-gray-500 dark:bg-gray-900 dark:text-white;
   }
 
   textarea.inpt,

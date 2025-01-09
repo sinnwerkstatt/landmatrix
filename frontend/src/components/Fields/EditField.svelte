@@ -5,7 +5,9 @@
   import { dealFields, investorFields } from "$lib/fieldLookups"
   import type { Model } from "$lib/types/data"
 
+  import { mutableDeal, mutableInvestor } from "$components/Data/stores"
   import Label2 from "$components/Fields/Display2/Label2.svelte"
+  import ManageDSQuotationsModal from "$components/New/ManageDSQuotationsModal.svelte"
 
   interface Props {
     value: unknown | null
@@ -43,11 +45,31 @@
       ? { ...richField.extras, ...extras }
       : (richField?.extras ?? extras),
   )
+
+  const mutableObj = $derived(model === "deal" ? $mutableDeal : $mutableInvestor)
+  const quotes = $derived(mutableObj.selected_version.ds_quotations[fieldname] ?? [])
+
+  let showDSQuotationModal = $state(false)
 </script>
 
 <div class={wrapperClass} data-fieldname={fieldname}>
   {#if showLabel}
     <Label2 value={richField?.label} class={labelClass} />
+  {/if}
+
+  {#if richField?.useQuotation}
+    <div>
+      <button
+        class="italic text-purple-400"
+        type="button"
+        onclick={() => {
+          showDSQuotationModal = true
+        }}
+      >
+        {quotes.length}
+        {$_("Refs")}
+      </button>
+    </div>
   {/if}
 
   <div class={valueClass}>
@@ -61,8 +83,11 @@
       <div class="italic text-red-400">unknown field: {fieldname}</div>
     {/if}
   </div>
-
-  {#if richField?.useQuotation}
-    {$_("Quotations")}
-  {/if}
 </div>
+
+<ManageDSQuotationsModal
+  bind:open={showDSQuotationModal}
+  {fieldname}
+  {model}
+  label={richField.label}
+></ManageDSQuotationsModal>

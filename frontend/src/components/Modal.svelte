@@ -84,7 +84,7 @@
     }
   }
   dialog::backdrop {
-    @apply bg-black/20;
+    @apply bg-black/20 dark:bg-gray-100/20;
     backdrop-filter: blur(1px);
   }
   dialog[open]::backdrop {
