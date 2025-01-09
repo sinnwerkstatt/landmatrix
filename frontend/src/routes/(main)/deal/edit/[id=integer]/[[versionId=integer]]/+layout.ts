@@ -2,8 +2,9 @@ import { error, redirect } from "@sveltejs/kit"
 
 import type { DealHull, MutableDealHull } from "$lib/types/data"
 
+import { mutableDeal } from "$components/Data/stores"
+
 import type { LayoutLoad } from "./$types"
-import { mutableDeal } from "./store"
 
 export const load: LayoutLoad = async ({ params, parent, depends }) => {
   depends("deal:detail")

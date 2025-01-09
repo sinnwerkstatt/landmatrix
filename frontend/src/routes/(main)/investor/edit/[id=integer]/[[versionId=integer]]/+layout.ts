@@ -2,8 +2,9 @@ import { error, redirect } from "@sveltejs/kit"
 
 import type { InvestorHull, MutableInvestorHull } from "$lib/types/data"
 
+import { mutableInvestor } from "$components/Data/stores"
+
 import type { LayoutLoad } from "./$types"
-import { mutableInvestor } from "./store"
 
 // Duplicate lines between display and edit views as well as
 // between deal and investor load functions

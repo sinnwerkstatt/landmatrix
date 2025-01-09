@@ -13,11 +13,10 @@
   import { isEmptyLocation } from "$components/Data/Deal/Sections/Locations/locations"
   import { dealSectionLookup } from "$components/Data/Deal/Sections/store"
   import SectionNav from "$components/Data/SectionNav.svelte"
+  import { mutableDeal } from "$components/Data/stores"
   import CountryField from "$components/Fields/Display2/CountryField.svelte"
   import LoadingSpinner from "$components/icons/LoadingSpinner.svelte"
   import ModalReallyQuit from "$components/ModalReallyQuit.svelte"
-
-  import { mutableDeal } from "./store"
 
   let { data, children } = $props()
 

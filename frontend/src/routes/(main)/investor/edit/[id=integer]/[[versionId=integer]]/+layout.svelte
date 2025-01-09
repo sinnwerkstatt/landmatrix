@@ -12,10 +12,9 @@
   import { isEmptyInvolvement } from "$components/Data/Investor/Sections/Involvements/involvements"
   import { investorSectionLookup } from "$components/Data/Investor/Sections/store"
   import SectionNav from "$components/Data/SectionNav.svelte"
+  import { mutableInvestor } from "$components/Data/stores"
   import LoadingSpinner from "$components/icons/LoadingSpinner.svelte"
   import ModalReallyQuit from "$components/ModalReallyQuit.svelte"
-
-  import { mutableInvestor } from "./store"
 
   let { data, children } = $props()
 
