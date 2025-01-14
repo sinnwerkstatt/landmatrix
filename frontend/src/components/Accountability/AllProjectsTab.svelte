@@ -18,13 +18,16 @@
   // import IconFilter from "./icons/IconFilter.svelte"
 
   // Open modal to filter projects
-  let openModal = false
+  let openModal = $state(false)
 
   // Alphabetically sort projects
-  $: sortedProjects = $allProjects.sort((a, b) => a.name.localeCompare(b.name))
+  let sortedProjects = $state([])
+  $effect(() => {
+    sortedProjects = $allProjects.sort((a, b) => a.name.localeCompare(b.name))
+  })
 
   // Bind page content from Pagination
-  let pageContent = []
+  let pageContent = $state([])
 
   // Swap alphabetical sorting each time the button is clicked
   function sortProjects() {
@@ -68,7 +71,7 @@
     tailwind="self-center"
     on:click={() => (openModal = true)}
   >
-    <span slot="icon-after"><IconFilter /></span>
+    <span slot="iconAfter"><IconFilter /></span>
   </Button> -->
 
   <div class="h-full overflow-scroll">
@@ -77,7 +80,7 @@
       alwaysOpen={true}
       sortable="auto"
       stickyTitle={true}
-      on:sort={sortProjects}
+      onSort={sortProjects}
     >
       <Pagination bind:dataset={sortedProjects} bind:pageContent rowHeight="56">
         {#each pageContent as { id, name }}

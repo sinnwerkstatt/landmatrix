@@ -2,7 +2,12 @@
   import { quintOut } from "svelte/easing"
   import { fade, slide } from "svelte/transition"
 
-  export let open = false
+  interface Props {
+    open?: boolean
+    children?: import("svelte").Snippet
+  }
+
+  let { open = false, children }: Props = $props()
 
   const transitionParams = {
     delay: 100,
@@ -21,7 +26,7 @@
       class="h-full w-screen bg-white md:w-[45rem]"
       transition:slide={transitionParams}
     >
-      <slot />
+      {@render children?.()}
     </div>
   </div>
 {/if}

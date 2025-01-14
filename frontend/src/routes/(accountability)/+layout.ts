@@ -8,10 +8,6 @@ export async function load() {
   // Fetching extra elements from api, see +layout.ts at the root of the site
   const apiClient = createClient<paths>({ baseUrl: env.PUBLIC_BASE_URL, fetch })
 
-  const fieldChoicesReq = await apiClient.GET("/api/field_choices/")
-  if (fieldChoicesReq.error) error(500, fieldChoicesReq.error)
-  const fieldChoices: components["schemas"]["FieldChoices"][] = fieldChoicesReq.data
-
   const investorsReq = await apiClient.GET("/api/investors/simple/")
   if (investorsReq.error) error(500, investorsReq.error)
   const investors: components["schemas"]["SimpleInvestor"][] = investorsReq.data
@@ -24,5 +20,5 @@ export async function load() {
   if (vggtArticlesReq.error) error(500, vggtArticlesReq.error)
   const vggtArticles: components["schemas"]["VggtArticle"][] = vggtArticlesReq.data
 
-  return { fieldChoices, investors, vggtVariables, vggtArticles }
+  return { investors, vggtVariables, vggtArticles }
 }

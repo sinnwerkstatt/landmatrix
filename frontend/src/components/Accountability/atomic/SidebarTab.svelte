@@ -1,7 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte"
-
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import { allProjects, bookmarkIds } from "$lib/accountability/projects"
   import { me } from "$lib/accountability/stores"
@@ -11,21 +9,37 @@
   import DropdownMenu from "./DropdownMenu.svelte"
   import DropdownMenuItem from "./DropdownMenuItem.svelte"
 
-  let box: HTMLElement
-  let visibleMenu = false
-  let position = "bottom"
+  let box: HTMLElement = $state()
+  let visibleMenu = $state(false)
+  let position = $state("bottom")
 
-  export let id: number
-  export let label = "label"
-  export let state = "default"
-  export let menu = false
-  export let handle = false
-  export let menuPosition = "auto"
+  interface Props {
+    id: number;
+    label?: string;
+    status?: string;
+    menu?: boolean;
+    handle?: boolean;
+    menuPosition?: string;
+    onBookmark?: (id:number, action:string) => void;
+    onEdit?: (id:number) => void;
+    onDelete?: (id:number) => void;
+  }
 
-  const dispatch = createEventDispatcher()
+  let {
+    id,
+    label = "label",
+    status = "default",
+    menu = false,
+    handle = false,
+    menuPosition = "auto",
+    onBookmark,
+    onEdit,
+    onDelete,
+  }: Props = $props();
+
   const project = $allProjects.find(p => p.id == id)
 
-  $: action = $bookmarkIds.includes(id) ? "remove" : "add"
+  let action = $derived($bookmarkIds.includes(id) ? "remove" : "add")
 
   function showMenu() {
     if (menuPosition == "auto") {
@@ -40,17 +54,17 @@
   }
 
   function handleBookmark() {
-    dispatch("bookmark", { id, action })
+    onBookmark(id, action)
     visibleMenu = false
   }
 
   function handleEdit() {
-    dispatch("edit", { id })
+    onEdit(id)
     visibleMenu = false
   }
 
   function handleDelete() {
-    dispatch("delete", { id })
+    onDelete(id)
     visibleMenu = false
   }
 
@@ -62,13 +76,13 @@
     }
   }
 
-  $: path = writePath(id)
+  let path = $derived(writePath(id))
 </script>
 
 <div class="relative">
   <div
-    class="wrapper {state}"
-    class:active={$page.url.pathname.startsWith(path)}
+    class="wrapper {status}"
+    class:active={page.url.pathname.startsWith(path)}
     bind:this={box}
   >
     <div class="flex h-full w-full items-center gap-2">
@@ -83,7 +97,7 @@
       </a>
     </div>
     {#if menu}
-      <button class="text-a-gray-400" on:click={showMenu}><IconEllipsis /></button>
+      <button class="text-a-gray-400" onclick={showMenu}><IconEllipsis /></button>
     {/if}
   </div>
 

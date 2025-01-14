@@ -2,8 +2,6 @@
   import { onMount } from "svelte"
   import { slide } from "svelte/transition"
 
-  // import { page } from "$app/stores"
-
   import { initTableSelection, unique } from "$lib/accountability/helpers"
   import { bulkUpdateDealVariable } from "$lib/accountability/scores"
   import {
@@ -27,19 +25,23 @@
   import TableRow from "./TableRow.svelte"
   import VariableDots from "./VariableDots.svelte"
 
-  export let gridColsTemplate = ""
-  export let columns = []
-  export let deal
+  interface Props {
+    gridColsTemplate?: string
+    columns?: any
+    deal: any
+  }
 
-  let dealChecked = false
-  let dealPartiallyChecked = false
-  let open = false
-  let openBulkUpdateModal = false
+  let { gridColsTemplate = "", columns = [], deal }: Props = $props()
 
-  let bulkUpdateInfo = {
+  let dealChecked = $state(false)
+  let dealPartiallyChecked = $state(false)
+  let open = $state(false)
+  let openBulkUpdateModal = $state(false)
+
+  let bulkUpdateInfo = $state({
     toUpdate: [],
     assignee: null,
-  }
+  })
 
   function updateDealCheckbox() {
     if (!$tableSelection[deal.id]?.variables) {
@@ -83,7 +85,9 @@
     }
   }
 
-  $: updateDealCheckbox($tableSelection[deal.id])
+  $effect(() => {
+    updateDealCheckbox($tableSelection[deal.id])
+  })
 
   // ==================================================================================================
   // Assignment functions
@@ -97,7 +101,7 @@
     return assignees
   }
 
-  $: dealAssignees = getDealAssignees(deal) ?? []
+  let dealAssignees = $derived(getDealAssignees(deal) ?? [])
 
   async function selectAssignee(event, vggt_variable) {
     const assigneeID = event.detail.assignee
@@ -185,7 +189,7 @@
         />
         <button
           class="text-a-gray-400 {!open ? 'rotate-180' : ''} "
-          on:click={() => (open = !open)}
+          onclick={() => (open = !open)}
         >
           <IconChevron size="16" />
         </button>
@@ -201,7 +205,7 @@
           <!-- <a class="link" href="{$page.url.href}{deal.id}/">Deal #{deal.id}</a> -->
 
           <!-- TMP: Click on deal opens variables instead of deal page -->
-          <button class="text-left" on:click={() => (open = !open)}>
+          <button class="text-left" onclick={() => (open = !open)}>
             Deal #{deal.id}
           </button>
 
@@ -262,7 +266,7 @@
           <TableCell style="nested">
             <button
               class="w-fit text-left underline underline-offset-4"
-              on:click={() => openVariable(variable.vggt_variable)}
+              onclick={() => openVariable(variable.vggt_variable)}
             >
               Variable {variable.vggt_variable}
             </button>
@@ -280,8 +284,8 @@
               extraClass=""
               showOnHover={true}
               assigneeID={variable.assignee}
-              on:selectAssignee={event => selectAssignee(event, variable.vggt_variable)}
-              on:unselectAssignee={() => unselectAssignee(variable.vggt_variable)}
+              selectAssignee={event => selectAssignee(event, variable.vggt_variable)}
+              unselectAssignee={() => unselectAssignee(variable.vggt_variable)}
             />
           </TableCell>
 

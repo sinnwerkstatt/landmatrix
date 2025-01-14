@@ -1,12 +1,16 @@
 <script lang="ts">
   import { getStatusColor } from "$lib/accountability/helpers"
 
-  export let variables: {
-    vggt_variable: number
-    status: "no_score" | "pending" | "validated" | "no_data"
-    score: number | null
-    assignee: { id: number; name: string; initials: string } | null
-  } = []
+  interface Props {
+    variables?: {
+      vggt_variable: number
+      status: "no_score" | "pending" | "validated" | "no_data"
+      score: number | null
+      assignee: { id: number; name: string; initials: string } | null
+    }
+  }
+
+  let { variables = [] }: Props = $props()
 </script>
 
 <div class="flex max-w-48 justify-between">

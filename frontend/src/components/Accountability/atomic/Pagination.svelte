@@ -1,38 +1,60 @@
 <script lang="ts">
   import IconChevron from "../icons/IconChevron.svelte"
 
-  let paginationBox: HTMLElement
-  let ellipsis = "none"
-  let currentPage = 1
+  let paginationBox: HTMLElement|undefined = $state()
+  let ellipsis = $state("none")
+  let currentPage = $state(1)
 
-  export let box: HTMLElement // Needs to be binded to the data container (ex: table body) when detached
-  export let dataset // Send the dataset to pagination
-  export let pageContent = [] // Pagination stores here what must be displayed
-  export let detached = false
   export const containerHeight = "400"
-  export let rowHeight = "56"
-  export let rowsDelta: number = detached ? -2 : 0 // Positive = add rows, Negative = remove rows
-  export let rowsByPage // Number of rows by page, if needed outside (like in Table.svelte)
-  export let justify: "center" | "left" | "right" = "center"
 
-  export let pagination = {}
+  interface Props {
+    box: HTMLElement
+    dataset: any // Send the dataset to pagination
+    pageContent?: any // Pagination stores here what must be displayed
+    detached?: boolean
+    rowHeight?: string
+    rowsDelta?: number // Positive = add rows, Negative = remove rows
+    rowsByPage: any // Number of rows by page, if needed outside (like in Table.svelte)
+    justify?: "center" | "left" | "right"
+    pagination?: any
+    children?: import("svelte").Snippet
+  }
+
+  let {
+    box = $bindable(),
+    dataset = $bindable(),
+    pageContent = $bindable([]),
+    detached = false,
+    rowHeight = "56",
+    rowsDelta = detached ? -2 : 0,
+    rowsByPage = $bindable(),
+    justify = "center",
+    pagination = $bindable({}),
+    children,
+  }: Props = $props()
 
   function resetPageOnDataChange(dataset) {
     console.log(dataset)
     currentPage = 1
   }
 
-  $: resetPageOnDataChange(dataset)
+  $effect(() => {
+    resetPageOnDataChange(dataset)
+  })
 
-  $: boxHeight = box?.getBoundingClientRect().height
-  $: rowsByPage =
-    (boxHeight >= rowHeight ? Math.floor(boxHeight / rowHeight) : 4) + rowsDelta
-  $: totalPages = Math.ceil(dataset.length / rowsByPage)
+  let boxHeight = $derived(box?.getBoundingClientRect().height)
+  $effect(() => {
+    rowsByPage =
+      (boxHeight >= rowHeight ? Math.floor(boxHeight / rowHeight) : 4) + rowsDelta
+  })
+  let totalPages = $derived(Math.ceil(dataset.length / rowsByPage))
 
-  $: end = currentPage * rowsByPage
-  $: start = end - rowsByPage
+  let end = $derived(currentPage * rowsByPage)
+  let start = $derived(end - rowsByPage)
 
-  $: pageContent = dataset.slice(start, end)
+  $effect(() => {
+    pageContent = dataset.slice(start, end)
+  })
 
   function updatePagination(start, end, dataset) {
     const first = start + 1
@@ -41,7 +63,9 @@
     return { first, last, total }
   }
 
-  $: pagination = updatePagination(start, end, dataset)
+  $effect(() => {
+    pagination = updatePagination(start, end, dataset)
+  })
 
   function createArray(i) {
     let array = []
@@ -71,16 +95,17 @@
     }
   }
 
-  $: totalPagesArray = createArray(totalPages)
-  $: paginationButtons =
-    Math.floor(paginationBox?.getBoundingClientRect().width / 24) - 2
-  $: focusedPagesButtons = focusOnCurrentPage(currentPage, totalPagesArray)
+  let totalPagesArray = $derived(createArray(totalPages))
+  let paginationButtons = $derived(
+    Math.floor(paginationBox?.getBoundingClientRect().width / 24) - 2,
+  )
+  let focusedPagesButtons = $derived(focusOnCurrentPage(currentPage, totalPagesArray))
 </script>
 
 <div class="flex h-full flex-col overflow-hidden" class:detached>
   {#if !detached}
     <div class="h-full overflow-y-scroll" bind:this={box}>
-      <slot />
+      {@render children?.()}
     </div>
   {/if}
 
@@ -88,7 +113,7 @@
     <button
       class="rounded-s-lg"
       disabled={currentPage === 1}
-      on:click={() => {
+      onclick={() => {
         currentPage -= 1
       }}
     >
@@ -101,7 +126,7 @@
       {@const page = p + 1}
       <button
         class:selected={currentPage === page}
-        on:click={() => {
+        onclick={() => {
           currentPage = page
         }}
       >
@@ -114,7 +139,7 @@
     <button
       class="rounded-e-lg"
       disabled={currentPage === totalPages}
-      on:click={() => {
+      onclick={() => {
         currentPage += 1
       }}
     >

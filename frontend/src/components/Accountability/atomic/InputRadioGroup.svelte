@@ -1,8 +1,17 @@
 <script lang="ts">
-  export let value
-  export let choices: { value: string; label: string }[] = []
-  export let disabled = false
-  export let paddingX: string = "4"
+  interface Props {
+    value: any
+    choices?: { value: string; label: string }[]
+    disabled?: boolean
+    paddingX?: string
+  }
+
+  let {
+    value = $bindable(),
+    choices = [],
+    disabled = false,
+    paddingX = "4",
+  }: Props = $props()
 </script>
 
 <div class="flex flex-col">

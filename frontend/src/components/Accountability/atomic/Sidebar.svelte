@@ -2,24 +2,31 @@
   import { quintOut } from "svelte/easing"
   import { slide } from "svelte/transition"
 
-  export let transition = true
-
-  let transitionParams
-
-  $: if (transition) {
-    transitionParams = {
-      delay: 100,
-      duration: 500,
-      easing: quintOut,
-      axis: "x",
-    }
-  } else {
-    transitionParams = {
-      delay: 0,
-      duration: 0,
-      axis: "x",
-    }
+  interface Props {
+    transition?: boolean
+    children?: import("svelte").Snippet
   }
+
+  let { transition = true, children }: Props = $props()
+
+  let transitionParams = $state({ delay: 100, duration: 500, axis: "x" })
+
+  $effect(() => {
+    if (transition) {
+      transitionParams = {
+        delay: 100,
+        duration: 500,
+        easing: quintOut,
+        axis: "x",
+      }
+    } else {
+      transitionParams = {
+        delay: 0,
+        duration: 0,
+        axis: "x",
+      }
+    }
+  })
 </script>
 
 <div
@@ -27,5 +34,5 @@
      border-a-gray-200 bg-white px-2 py-6"
   transition:slide={transitionParams}
 >
-  <slot />
+  {@render children?.()}
 </div>

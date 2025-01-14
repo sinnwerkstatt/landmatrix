@@ -12,50 +12,72 @@
   import DropdownMenu from "./DropdownMenu.svelte"
   import InputCheckboxGroup from "./InputCheckboxGroup.svelte"
 
-  export let type: "text" | "textarea" | "number" | "radio" | "select" | "multiselect" =
-    "text"
-  export let choices: {
-    value: string
-    label: string
-    icon?: "check" | "eye"
-    color?: "green" | "orange"
-  }[] = []
-  export let categories: { label: string; values: string[] } = undefined
-  export let value
-  export let resetButton = true
-  export let badgeType: "tag" | "avatar" = "tag"
-  export let style: "neutral" | "white" = "neutral"
-
-  export let readonlyCategories = false
-  export let label = ""
-  export let placeholder = "Placeholder"
-  export let icon: "" | "search" | "user" = ""
-  export let status: "neutral" | "valid" | "invalid" = "neutral"
-  export let message: string | undefined = undefined
-  export let disabled = false
-  export let search = true
-
-  export let extraClass = ""
-
-  export let inputColor = ""
-
-  // Type textarea
-  export let maxlength = 280
   export const rows = 4
 
-  // Type number
-  export let unit: string = "ha"
-  export let min: string = ""
-  export let max: string = ""
-  export let step: string = "100"
+  interface Props {
+    type?: "text" | "textarea" | "number" | "radio" | "select" | "multiselect"
+    choices?: {
+      value: string
+      label: string
+      icon?: "check" | "eye"
+      color?: "green" | "orange"
+    }[]
+    categories?: { label: string; values: string[] }
+    value: any
+    resetButton?: boolean
+    badgeType?: "tag" | "avatar"
+    style?: "neutral" | "white"
+    readonlyCategories?: boolean
+    label?: string
+    placeholder?: string
+    icon?: "" | "search" | "user"
+    status?: "neutral" | "valid" | "invalid"
+    message?: string | undefined
+    disabled?: boolean
+    search?: boolean
+    extraClass?: string
+    inputColor?: string
+    // Type textarea
+    maxlength?: number
+    // Type number
+    unit?: string
+    min?: string
+    max?: string
+    step?: string
+  }
+
+  let {
+    type = "text",
+    choices = [],
+    categories = undefined,
+    value = $bindable(),
+    resetButton = true,
+    badgeType = "tag",
+    style = "neutral",
+    readonlyCategories = false,
+    label = "",
+    placeholder = "Placeholder",
+    icon = "",
+    status = $bindable("neutral"),
+    message = undefined,
+    disabled = false,
+    search = true,
+    extraClass = "",
+    inputColor = $bindable(""),
+    maxlength = 280,
+    unit = "ha",
+    min = "",
+    max = "",
+    step = "100",
+  }: Props = $props()
 
   // Type select
   const choicesLengthLimit = 1000
 
   // Locales
-  let open = false
-  let filter = ""
-  let dropdown
+  let open = $state(false)
+  let filter = $state("")
+  let dropdown = $state()
 
   const icons = [
     { icon: "", component: false },
@@ -91,7 +113,9 @@
     return res
   }
 
-  $: inputColor = getInputColor(value)
+  $effect(() => {
+    inputColor = getInputColor(value)
+  })
 </script>
 
 <div class={style == "white" ? "white" : ""}>
@@ -108,8 +132,9 @@
   >
     <!-- Icon -->
     {#if icon != ""}
+      {@const SvelteComponent = icons.find(e => e.icon == icon)?.component}
       <span>
-        <svelte:component this={icons.find(e => e.icon == icon)?.component} size="24" />
+        <SvelteComponent size="24" />
       </span>
     {/if}
 
@@ -133,11 +158,11 @@
         autocomplete="off"
         {maxlength}
         class="col-span-3 col-start-1 box-border h-full w-full resize-none bg-transparent"
-      />
+      ></textarea>
     {:else if type == "multiselect"}
       <button
         {disabled}
-        on:click={() => {
+        onclick={() => {
           open = !open
         }}
         class="pseudo-input w-full bg-transparent text-left"
@@ -148,10 +173,10 @@
     {:else if type == "select"}
       <button
         {disabled}
-        on:focus={() => {
+        onfocus={() => {
           open = !open
         }}
-        on:click={() => {
+        onclick={() => {
           open = !open
         }}
         class="pseudo-input w-full bg-transparent text-left"
@@ -178,19 +203,19 @@
         {max}
         {step}
         class="noIcon w-full bg-transparent"
-        on:keypress={preventNonNumericalInput}
+        onkeypress={preventNonNumericalInput}
       />
     {/if}
 
     <!-- Right item -->
     {#if type == "text"}
-      <button {disabled} on:click={reset}><IconXMark /></button>
+      <button {disabled} onclick={reset}><IconXMark /></button>
     {/if}
 
     {#if type == "multiselect" || type == "select"}
       <button
         {disabled}
-        on:click={() => {
+        onclick={() => {
           open = !open
         }}
         class="rotate-180"
@@ -200,7 +225,7 @@
     {/if}
 
     {#if type == "select" && resetButton && value}
-      <button {disabled} on:click={reset}><IconXMark /></button>
+      <button {disabled} onclick={reset}><IconXMark /></button>
     {/if}
 
     {#if type == "number"}
@@ -232,7 +257,7 @@
           <button
             {disabled}
             class="text-red"
-            on:click={() => {
+            onclick={() => {
               filter = ""
             }}
           >
@@ -287,11 +312,11 @@
                   class="appearance-none"
                 />
                 {#if choice.icon}
+                  {@const SvelteComponent_1 = selectIcons.find(
+                    e => e.icon == choice.icon,
+                  )?.component}
                   <span class="icon {choice.color ? choice.color : ''}">
-                    <svelte:component
-                      this={selectIcons.find(e => e.icon == choice.icon)?.component}
-                      size="18"
-                    />
+                    <SvelteComponent_1 size="18" />
                   </span>
                 {/if}
                 {choice.label}

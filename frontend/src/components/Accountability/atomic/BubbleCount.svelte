@@ -1,6 +1,10 @@
-<script>
-  export let size = "base" // base, sm, lg
-  export let count = 0 // Any number
+<script lang="ts">
+  interface Props {
+    size?: string // base, sm, lg
+    count?: number // Any number
+  }
+
+  let { size = "base", count = 0 }: Props = $props()
 </script>
 
 <span class="bubble {size}">

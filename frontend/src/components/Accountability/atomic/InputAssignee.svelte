@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte"
-
   import { searchMatch } from "$lib/accountability/helpers"
   import { users } from "$lib/accountability/stores"
 
@@ -9,40 +7,53 @@
   import Avatar from "./Avatar.svelte"
   import DropdownMenu from "./DropdownMenu.svelte"
 
-  export let assigneeID: number | undefined = undefined
-  export let size: "sm" | "md" = "md"
-  export let showOnHover = false
-  export let extraClass = "p-2"
-  export let disabled = false
-  export let auto = true
+  interface Props {
+    assigneeID?: number | undefined
+    size?: "sm" | "md"
+    showOnHover?: boolean
+    extraClass?: string
+    disabled?: boolean
+    auto?: boolean
+    selectAssignee?: (user:{id:number}) => void
+    unselectAssignee?: () => void
+  }
 
-  let open = false
-  let filter = ""
+  let {
+    assigneeID = $bindable(undefined),
+    size = "md",
+    showOnHover = false,
+    extraClass = "p-2",
+    disabled = false,
+    auto = true,
+    selectAssignee,
+    unselectAssignee,
+  }: Props = $props()
 
-  let top = 200
-  let left = 200
+  let open = $state(false)
+  let filter = $state("")
 
-  const dispatch = createEventDispatcher()
+  let top = $state(200)
+  let left = $state(200)
 
-  $: assignee = $users.find(u => u.id == assigneeID) ?? undefined
+  let assignee = $derived($users.find(u => u.id == assigneeID) ?? undefined)
 
-  function selectAssignee(user) {
+  function selectAssigneeFunc(user) {
     if (auto) {
       assigneeID = user.id
     } else {
-      dispatch("selectAssignee", { assignee: user.id })
+      selectAssignee(user.id)
     }
   }
 
-  function unselectAssignee() {
+  function unselectAssigneeFunc() {
     if (auto) {
       assigneeID = undefined
     } else {
-      dispatch("unselectAssignee")
+      unselectAssignee()
     }
   }
 
-  function showDropdown(event) {
+  function showDropdown(event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement }) {
     open = true
     top = event.clientY + 16
     left = event.clientX + 16 - 200
@@ -54,7 +65,7 @@
     <button
       class:showOnHover
       class="{extraClass} rounded-lg hover:bg-a-gray-50"
-      on:click={() => showDropdown(event)}
+      onclick={(event) => showDropdown(event)}
     >
       <Avatar {size} label="No assignee" type="assignment" />
     </button>
@@ -90,7 +101,7 @@
         />
         <button
           {disabled}
-          on:click={() => {
+          onclick={() => {
             filter = ""
           }}
         >
@@ -104,8 +115,8 @@
           {#if !hidden}
             <button
               class="w-full px-4 py-2 text-left font-normal hover:bg-a-gray-50"
-              on:click={() => {
-                selectAssignee(user)
+              onclick={() => {
+                selectAssigneeFunc(user)
                 open = false
               }}
             >

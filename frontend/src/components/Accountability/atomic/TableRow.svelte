@@ -1,10 +1,20 @@
 <script lang="ts">
   export const checkbox = false
-  export let ncol: number = 2 // To define if auto layout needed
-  export let gridColsTemplate: string = `repeat(${ncol}, 1fr)` // CSS grid-template-columns rules
-  export let divider = true
+  interface Props {
+    ncol?: number // To define if auto layout needed
+    gridColsTemplate?: string // CSS grid-template-columns rules
+    divider?: boolean
+    children?: import("svelte").Snippet
+  }
 
-  $: gridColsStyle = `grid-template-columns: ${gridColsTemplate};`
+  let {
+    ncol = 2,
+    gridColsTemplate = `repeat(${ncol}, 1fr)`,
+    divider = true,
+    children,
+  }: Props = $props()
+
+  let gridColsStyle = $derived(`grid-template-columns: ${gridColsTemplate};`)
 </script>
 
 <div
@@ -12,7 +22,7 @@
   class:divider
   style={gridColsStyle}
 >
-  <slot />
+  {@render children?.()}
 </div>
 
 <style>

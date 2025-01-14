@@ -1,12 +1,16 @@
 <script lang="ts">
   import Avatar from "./Avatar.svelte"
 
-  export let users: { id: number; name: string; initials: string }[] = []
-  export let size: "sm" | "md" = "md"
-  export let maxAvatars = 4
+  interface Props {
+    users?: { id: number; name: string; initials: string }[]
+    size?: "sm" | "md"
+    maxAvatars?: number
+  }
 
-  let box: HTMLElement
-  let boxWidth: HTMLElement
+  let { users = [], size = "md", maxAvatars = 4 }: Props = $props()
+
+  let box: HTMLElement = $state()
+  let boxWidth: HTMLElement = $state()
 
   const dimensions = [
     { label: "sm", size: 24 },
@@ -43,7 +47,7 @@
     return result
   }
 
-  $: avatars = avatarsToDisplay(boxWidth, users, maxAvatars)
+  let avatars = $derived(avatarsToDisplay(boxWidth, users, maxAvatars))
 </script>
 
 <div class="relative {size} w-full" bind:this={box} bind:offsetWidth={boxWidth}>

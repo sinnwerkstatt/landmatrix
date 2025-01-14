@@ -56,7 +56,7 @@
         bind:items={$bookmarkedProjects}
         on:edit={handleEdit}
         on:bookmark={handleBookmark}
-        on:reorder={handleReorder}
+        onReorder={handleReorder}
         on:delete={handleDelete}
       />
     </Section>
@@ -69,9 +69,9 @@
           label={name}
           menu={true}
           handle={false}
-          on:edit={handleEdit}
-          on:bookmark={handleBookmark}
-          on:delete={handleDelete}
+          onEdit={handleEdit}
+          onBookmark={handleBookmark}
+          onDelete={handleDelete}
           {menuPosition}
         />
       {/each}

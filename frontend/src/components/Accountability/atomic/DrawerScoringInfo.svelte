@@ -3,18 +3,21 @@
 
   import Badge from "./Badge.svelte"
 
-  // export let dealInfo:{label:string, value:string}[]
-  export let deal:
-    | {
-        id: number
-        country: { id: number; name: string }
-        deal_size: number
-        operating_company: { id: number; name: string }
-      }
-    | undefined = undefined
+  interface Props {
+    // export let dealInfo:{label:string, value:string}[]
+    deal?:
+      | {
+          id: number
+          country: { id: number; name: string }
+          deal_size: number
+          operating_company: { id: number; name: string }
+        }
+      | undefined
+    fields: string[]
+    main_info?: boolean
+  }
 
-  export let fields: string[]
-  export let main_info = false
+  let { deal = undefined, fields, main_info = false }: Props = $props()
 </script>
 
 {#if deal}

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   function getCurrentTab(path) {
     if (path.includes("scoring")) return "scoring"
@@ -13,10 +13,10 @@
     return href
   }
 
-  $: currentTab = getCurrentTab($page.url.pathname)
+  let currentTab = $derived(getCurrentTab(page.url.pathname))
 
-  $: hrefOverview = writeHref($page.params.project, "")
-  $: hrefScoring = writeHref($page.params.project, "scoring")
+  let hrefOverview = $derived(writeHref(page.params.project, ""))
+  let hrefScoring = $derived(writeHref(page.params.project, "scoring"))
   // $: hrefResults = writeHref($page.params.project, "results")
 </script>
 

@@ -6,11 +6,23 @@
   import IconPlus from "../icons/IconPlus.svelte"
   import BubbleCount from "./BubbleCount.svelte"
 
-  export let label = "Label"
-  export let open = false
-  export let locked = false
-  export let notification = false
-  export let count = 0
+  interface Props {
+    label?: string
+    open?: boolean
+    locked?: boolean
+    notification?: boolean
+    count?: number
+    children?: import("svelte").Snippet
+  }
+
+  let {
+    label = "Label",
+    open = $bindable(false),
+    locked = false,
+    notification = false,
+    count = 0,
+    children,
+  }: Props = $props()
 </script>
 
 <div class="border-b-2 border-a-gray-200 bg-white">
@@ -29,7 +41,7 @@
       {/if}
       <button
         class="text-a-gray-400"
-        on:click={() => {
+        onclick={() => {
           open = !open
         }}
       >
@@ -44,7 +56,7 @@
 
   {#if open}
     <div class="relative mb-4" transition:slide>
-      <slot />
+      {@render children?.()}
     </div>
   {/if}
 </div>

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import { fetchDeals } from "$lib/accountability/deals.js"
   import { filters } from "$lib/accountability/filters.js"
@@ -12,20 +12,24 @@
   import ProjectModal from "$components/Accountability/ProjectModal.svelte"
   import ProjectsSidebar from "$components/Accountability/ProjectsSidebar.svelte"
 
-  export let data
+  let { data, children } = $props()
 
   // If currentProject =/= page.params.project, update project and empty current page and current Deal
-  function updateLocalStorage(pathname) {
-    if ($page.params.project) {
+  function updateLocalStorage(pathname:string) {
+    if (page.params.project) {
       dealsHistory.set(pathname)
     }
   }
 
-  $: updateLocalStorage($page.url.pathname)
+  $effect(() => {
+    updateLocalStorage(page.url.pathname)
+  })
 
-  $: fetchDeals($filters) // TODO: Find workaround between derived store efficiency and possibility to SET one section of the store
+  $effect(() => {    
+    if ($filters) fetchDeals($filters)
+  }) // TODO: Find workaround between derived store efficiency and possibility to SET one section of the store
 
-  $: console.log($deals)
+  $inspect(deals)
 </script>
 
 <div class="flex h-screen w-full flex-row flex-nowrap bg-a-gray-50">
@@ -39,7 +43,7 @@
       <!-- <Avatar /> -->
     </div>
     <div class="h-full overflow-auto pb-10">
-      <slot />
+      {@render children?.()}
     </div>
   </div>
 </div>

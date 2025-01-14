@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte"
-
+  
   import { initTableSelection } from "$lib/accountability/helpers"
   import { tableSelection } from "$lib/accountability/stores"
 
@@ -11,22 +11,26 @@
   import TableCell from "./atomic/TableCell.svelte"
   import TableRow from "./atomic/TableRow.svelte"
 
-  export let deal: {
-    id: number
-    country: { id: number; name: string }
-    status: string
-    score: {
+  interface Props {
+    deal: {
+      id: number
+      country: { id: number; name: string }
       status: string
-      variables: {
-        id: number
+      score: {
         status: string
-        score: number | null
-        assignee: { id: number; name: string } | null
-      }[]
+        variables: {
+          id: number
+          status: string
+          score: number | null
+          assignee: { id: number; name: string } | null
+        }[]
+      }
     }
   }
 
-  $: data = deal.score.variables ? deal.score.variables : []
+  let { deal }: Props = $props()
+
+  let data = $derived(deal.score.variables ? deal.score.variables : [])
 
   const columns: { label: string; value: string }[] = [
     { label: "id", value: "id" },
@@ -36,9 +40,9 @@
 
   const gridColsTemplate = "32px repeat(3, 1fr)"
 
-  let pageContent = []
-  let dealChecked = false
-  let dealPartiallyChecked = false
+  let pageContent = $state([])
+  let dealChecked = $state(false)
+  let dealPartiallyChecked = $state(false)
 
   function updateDealCheckbox() {
     if ($tableSelection[deal.id]?.variables) {
@@ -81,13 +85,15 @@
     // console.log("Remove assignee")
   }
 
-  $: updateDealCheckbox($tableSelection[deal.id])
+  $effect(() => {
+    updateDealCheckbox($tableSelection[deal.id])
+  })
 
   // $: console.log($tableSelection[deal.id])
 </script>
 
 <Table {data} bind:pageContent filters={false} rowHeight="57">
-  <svelte:fragment slot="header">
+  {#snippet header()}
     <TableRow {gridColsTemplate}>
       <TableCell style="heading">
         <div class="w-fit">
@@ -105,9 +111,9 @@
         <TableCell style="heading">{column.label.toUpperCase()}</TableCell>
       {/each}
     </TableRow>
-  </svelte:fragment>
+  {/snippet}
 
-  <svelte:fragment slot="body">
+  {#snippet body()}
     {#each pageContent as variable (variable.vggt_variable)}
       <TableRow {gridColsTemplate}>
         <TableCell>
@@ -140,5 +146,5 @@
         </TableCell>
       </TableRow>
     {/each}
-  </svelte:fragment>
+  {/snippet}
 </Table>

@@ -1,24 +1,43 @@
 <script lang="ts">
+  import { createBubbler } from "svelte/legacy"
+
   import IconBookmark from "../icons/IconBookmark.svelte"
   import IconCheck from "../icons/IconCheck.svelte"
   import IconEye from "../icons/IconEye.svelte"
   import IconOpenExternal from "../icons/IconOpenExternal.svelte"
   import IconXMark from "../icons/IconXMark.svelte"
 
-  export let label = "Badge"
-  export let notification = false
-  export let href: string = ""
-  export let button = false
-  export let disabled = false
+  const bubble = createBubbler()
 
-  export let size: "base" | "small" = "small"
-  export let icon: "" | "check" | "eye" | "bookmark" = ""
-  export let iconRight = false
-  export let color: "primary" | "warning" | "error" | "success" | "neutral" | "blue" =
-    "primary"
-  export let variant: "filled" | "light" | "filled-light" = "light"
+  interface Props {
+    label?: string
+    notification?: boolean
+    href?: string
+    button?: boolean
+    disabled?: boolean
+    size?: "base" | "small"
+    icon?: "" | "check" | "eye" | "bookmark"
+    iconRight?: boolean
+    color?: "primary" | "warning" | "error" | "success" | "neutral" | "blue"
+    variant?: "filled" | "light" | "filled-light"
+    click?: () => void
+  }
 
-  $: iconSize = size == "base" ? "24" : "16"
+  let {
+    label = "Badge",
+    notification = false,
+    href = "",
+    button = false,
+    disabled = false,
+    size = "small",
+    icon = "",
+    iconRight = false,
+    color = "primary",
+    variant = "light",
+    click
+  }: Props = $props()
+
+  let iconSize = $derived(size === "base" ? "24" : "16")
 
   const icons = [
     { icon: "check", component: IconCheck },
@@ -43,10 +62,8 @@
 {:else}
   <div class:disabled class="wrapper {size} {icon} {color} {variant}">
     {#if icon && !iconRight}
-      <svelte:component
-        this={icons.find(e => e.icon == icon)?.component}
-        size={iconSize}
-      />
+      {@const IconComponent = icons.find(e => e.icon == icon)?.component}
+      <IconComponent size={iconSize} />
     {/if}
 
     {#if notification}
@@ -59,16 +76,14 @@
 
     <!-- {#if button && !link} -->
     {#if button}
-      <button {disabled} on:click>
+      <button {disabled} onclick={click}>
         <IconXMark size={iconSize} />
       </button>
     {/if}
 
     {#if icon && iconRight}
-      <svelte:component
-        this={icons.find(e => e.icon == icon)?.component}
-        size={iconSize}
-      />
+      {@const TrailingIconComponent = icons.find(e => e.icon == icon)?.component}
+      <TrailingIconComponent size={iconSize} />
     {/if}
   </div>
 {/if}

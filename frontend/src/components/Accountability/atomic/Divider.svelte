@@ -1,5 +1,9 @@
 <script lang="ts">
-  export let label = ""
+  interface Props {
+    label?: string
+  }
+
+  let { label = "" }: Props = $props()
 </script>
 
 {#if label}

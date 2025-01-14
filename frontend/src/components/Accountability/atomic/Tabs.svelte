@@ -1,9 +1,12 @@
 <script lang="ts">
   import type { SvelteComponent } from "svelte"
 
-  export let items: { label: string; value: number; component: SvelteComponent }[] = []
-  export let activeTabValue = 1
+  interface Props {
+    items?: { label: string; value: number; component: SvelteComponent }[]
+  }
 
+  let { items = [] }: Props = $props()
+  let activeTabValue = $state(1);
   const handleClick = tabValue => () => (activeTabValue = tabValue)
 </script>
 
@@ -11,7 +14,7 @@
   <ul class="flex justify-center gap-1">
     {#each items as item}
       <li class={activeTabValue === item.value ? "active" : ""}>
-        <button on:click={handleClick(item.value)}>{item.label}</button>
+        <button onclick={handleClick(item.value)}>{item.label}</button>
       </li>
     {/each}
   </ul>
@@ -19,7 +22,7 @@
   {#each items as item}
     {#if activeTabValue == item.value}
       <div class="flex h-full flex-col gap-2 overflow-x-auto overflow-y-hidden pt-2">
-        <svelte:component this={item.component} />
+        <item.component />
       </div>
     {/if}
   {/each}

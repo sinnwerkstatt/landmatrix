@@ -1,5 +1,9 @@
 <script lang="ts">
-  export let data: { label: string; value: string }[] = []
+  interface Props {
+    data?: { label: string; value: string }[]
+  }
+
+  let { data = [] }: Props = $props()
 </script>
 
 <table class="w-full table-fixed text-a-sm">
