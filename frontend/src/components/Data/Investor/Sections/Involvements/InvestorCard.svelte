@@ -2,11 +2,7 @@
   import { _ } from "svelte-i18n"
 
   import { simpleInvestors } from "$lib/stores"
-  import {
-    InvolvementRole,
-    type Involvement,
-    type Model,
-  } from "$lib/types/data"
+  import { InvolvementRole, type Involvement, type Model } from "$lib/types/data"
 
   import DisplayField from "$components/Fields/DisplayField.svelte"
 

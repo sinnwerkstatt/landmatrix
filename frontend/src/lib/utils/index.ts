@@ -1,10 +1,8 @@
-import type { DealHull, InvestorHull } from "$lib/types/data"
-
-type TableObj = DealHull | InvestorHull | { [key: string]: unknown }
+import type { TableItem } from "$components/Table/Table.svelte"
 
 export const sortFn =
   (sortKey: string) =>
-  (a: TableObj, b: TableObj): number => {
+  (a: TableItem, b: TableItem): number => {
     const descending = sortKey.startsWith("-")
     let x, y
     // debugger;
@@ -20,7 +18,10 @@ export const sortFn =
     if (sortKey.includes("workflowinfos")) {
       if (x.length === 0) return -1
       if (y.length === 0) return 1
-      return new Date(x[0].timestamp) - new Date(y[0].timestamp)
+      return (
+        new Date(x[0].timestamp as string).getTime() -
+        new Date(y[0].timestamp as string).getTime()
+      )
     }
 
     if (x === null || x === undefined) return -1
@@ -43,7 +44,7 @@ export const sortFn =
     return 0
   }
 
-function _dotResolve(path: string, obj: TableObj) {
+function _dotResolve(path: string, obj: TableItem) {
   if (!path.includes(".")) return obj[path]
   return path.split(".").reduce((prev, curr) => {
     return prev ? prev[curr] : null

@@ -4,10 +4,10 @@
   import DataSourcesDisplay from "$components/Data/DataSources/Display.svelte"
 
   interface Props {
-    investor: InvestorHull;
+    investor: InvestorHull
   }
 
-  let { investor }: Props = $props();
+  let { investor }: Props = $props()
 </script>
 
 <DataSourcesDisplay version={investor.selected_version} />

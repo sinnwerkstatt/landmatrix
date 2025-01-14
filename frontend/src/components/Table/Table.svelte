@@ -5,9 +5,12 @@
     colSpan: number
     submodel?: string
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  export type TableItem = { [key: string]: any }
 </script>
 
-<script lang="ts" generics="T extends object">
+<script lang="ts" generics="T extends TableItem">
   import { onMount, type Snippet } from "svelte"
   import VirtualList from "svelte-tiny-virtual-list"
   import { twMerge } from "tailwind-merge"
@@ -20,7 +23,7 @@
     // eslint-disable-next-line no-undef
     items?: T[]
     columns: Column[]
-    sortBy?: string | null
+    sortBy?: string
     rowHeightInPx?: number
     headerHeightInPx?: number
     colWidthInPx?: number
@@ -32,7 +35,7 @@
   let {
     items = [],
     columns,
-    sortBy = $bindable(),
+    sortBy = $bindable(""),
     rowHeightInPx = 90,
     headerHeightInPx = 90,
     colWidthInPx = 75,
@@ -40,29 +43,27 @@
     field,
   }: Props = $props()
 
-  let labels: string[] = $derived(columns.map(c => c.label))
-  let spans: number[] = $derived(columns.map(c => c.colSpan))
+  const labels = columns.map(c => c.label)
+  const spans = columns.map(c => c.colSpan)
+  const nCols = spans.reduce((sum, value) => sum + value)
 
-  let sortCol = $derived(
-    columns.find(
-      c => c.key === (sortBy?.startsWith("-") ? sortBy.substring(1) : sortBy),
-    ),
-  )
-  let sortedItems = $derived(
-    sortCol
-      ? [...items].sort(
-          sortFn(
-            (sortBy?.startsWith("-") ? "-" : "") +
-              (sortCol.submodel ? `${sortCol.submodel}.${sortCol.key}` : sortCol.key),
-          ),
-        )
-      : items,
-  )
-  let nItems = $derived(sortedItems?.length ?? 0)
+  const sortedItems = $derived.by(() => {
+    const sortCol = columns.find(
+      c => c.key === (sortBy.startsWith("-") ? sortBy.substring(1) : sortBy),
+    )
 
-  let nCols = $derived(spans.reduce((sum, value) => sum + value))
+    if (!sortCol) return items
 
-  const onTableHeadClick = (key: string) => {
+    const sortKey =
+      (sortBy.startsWith("-") ? "-" : "") +
+      (sortCol.submodel ? `${sortCol.submodel}.${sortCol.key}` : sortCol.key)
+
+    return [...items].sort(sortFn(sortKey))
+  })
+
+  const nItems = $derived(sortedItems.length ?? 0)
+
+  const onClickTableHead = (key: string) => {
     sortBy = sortBy === key ? `-${key}` : key
   }
 
@@ -105,7 +106,7 @@
             <button
               class="m-0 cursor-pointer p-1 text-left"
               style="grid-column: span {spans[colIndex]} / span {spans[colIndex]}"
-              onclick={() => onTableHeadClick(col.key)}
+              onclick={() => onClickTableHead(col.key)}
               title={labels[colIndex]}
             >
               {labels[colIndex]}
@@ -128,8 +129,6 @@
           {/each}
         {:else}
           {#each columns as col, colIndex}
-            <!-- Testing slots not possible atm -->
-            <!-- https://github.com/testing-library/svelte-testing-library/issues/48#issuecomment-522029988-->
             <div
               data-testid="{index - 1}-{colIndex}"
               class="overflow-hidden p-1 hover:overflow-y-auto"

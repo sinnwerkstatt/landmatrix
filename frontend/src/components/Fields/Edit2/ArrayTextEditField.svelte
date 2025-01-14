@@ -31,6 +31,7 @@
 </script>
 
 <div class="grid gap-2 lg:grid-cols-2 xl:grid-cols-3">
+  <!-- eslint-disable-next-line @typescript-eslint/no-unused-vars -->
   {#each valueCopy as _val, i}
     <div class={cardClass}>
       <input
