@@ -7,23 +7,33 @@
   import type { Model } from "$lib/types/data"
 
   import IconTrashcan from "$components/Accountability/icons/IconTrashcan.svelte"
-  import { mutableDeal, mutableInvestor } from "$components/Data/stores"
+  import { getMutableObject } from "$components/Data/stores"
   import Modal from "$components/Modal.svelte"
 
   interface Props {
-    open: boolean
-    model: Model
+    open?: boolean
+    model?: Model
+    editable?: boolean
     fieldname: string
     label: string
   }
 
-  let { open = $bindable(), model = "deal", fieldname, label }: Props = $props()
+  let {
+    open = $bindable(),
+    model = "deal",
+    editable = false,
+    fieldname,
+    label,
+  }: Required<Props> = $props()
 
-  let mutableObj = $derived(model === "deal" ? $mutableDeal : $mutableInvestor)
-  let dataSources = $derived(mutableObj.selected_version.datasources)
+  const mutableObj = getMutableObject(model)
+
+  let dataSources = $derived($mutableObj.selected_version.datasources)
+
   let quotes: QuotationItem[] = $derived(
-    mutableObj.selected_version.ds_quotations[fieldname] ?? [],
+    $mutableObj.selected_version.ds_quotations[fieldname] ?? [],
   )
+
   // let sortedQuotes: QuotationItem[] = $derived(
   //   quotes.toSorted((a, b) => {
   //     return (
@@ -36,10 +46,13 @@
   type QuotationItem = components["schemas"]["QuotationItem"]
   type PartialQuotationItem = Partial<QuotationItem>
 
-  const createQuotation = (): PartialQuotationItem => ({})
+  const createQuotation = (): PartialQuotationItem => ({
+    nid: dataSources[dataSources.length - 1].nid,
+  })
+
   const deleteQuotation = (i: number) => {
     if (i < quotes.length) {
-      mutableObj.selected_version.ds_quotations[fieldname] = quotes.filter(
+      $mutableObj.selected_version.ds_quotations[fieldname] = quotes.filter(
         (_, index) => index !== i,
       )
     }
@@ -49,13 +62,12 @@
 
   const onsubmit = (event: SubmitEvent) => {
     event.preventDefault()
-    console.log($state.snapshot(newQuotation))
 
     if (!newQuotation.nid) {
       return
     }
 
-    mutableObj.selected_version.ds_quotations[fieldname] = [
+    $mutableObj.selected_version.ds_quotations[fieldname] = [
       ...quotes,
       $state.snapshot(newQuotation),
     ]
@@ -68,10 +80,14 @@
   }
 </script>
 
-<Modal class="w-2/3 p-8 dark:bg-gray-900" bind:open dismissible>
+<Modal
+  class="h-full w-full px-4 py-8 lg:h-fit lg:w-2/3 lg:px-8 lg:py-12 dark:bg-gray-900"
+  bind:open
+  dismissible
+>
   <div>
     <h2 class="heading3">
-      {$_("Manage quotations")}
+      {$_("Quotations")}
     </h2>
 
     {$_("Field")}:
@@ -124,14 +140,16 @@
 
             <span class="flex-grow"></span>
 
-            <button
-              class="p-2 text-red-400 hover:text-red-500"
-              type="button"
-              title={$_("Delete Quotation")}
-              onclick={() => deleteQuotation(i)}
-            >
-              <IconTrashcan />
-            </button>
+            {#if editable}
+              <button
+                class="p-2 text-red-400 hover:text-red-500"
+                type="button"
+                title={$_("Delete Quotation")}
+                onclick={() => deleteQuotation(i)}
+              >
+                <IconTrashcan />
+              </button>
+            {/if}
           </li>
         {:else}
           <span class="color-red-400">
@@ -145,70 +163,72 @@
       {/each}
     </ul>
 
-    <h2 class="heading4 mt-8">
-      {$_("New quotation:")}
-    </h2>
-    <form class="mt-6 flex flex-col gap-4" {onsubmit}>
-      <fieldset class="flex flex-wrap gap-x-10 gap-y-2">
-        <legend class="mb-2 inline-block">
-          {$_("Select data source:")}
-        </legend>
+    {#if editable}
+      <h2 class="heading4 mt-8">
+        {$_("Create:")}
+      </h2>
+      <form class="mt-6 flex flex-col gap-4" {onsubmit}>
+        <fieldset class="flex flex-wrap gap-x-10 gap-y-2">
+          <legend class="mb-2 inline-block">
+            {$_("Select data source:")}
+          </legend>
 
-        {#each dataSources as dataSource, i}
-          <div class="font-bold">
-            <input
-              type="radio"
-              id="data-source-{dataSource.nid}"
-              name="data-source-nid"
-              bind:group={newQuotation.nid}
-              value={dataSource.nid}
-            />
-            <label for="data-source-{dataSource.nid}">
-              {padLeadingZeros(2, i + 1)}. {$_("Data Source")}
-              <a
-                class="mx-2 font-mono text-sm italic text-purple-400 hover:text-purple-500"
-                href={new URL("../data-sources/#" + dataSource.nid, page.url).href}
-                target="_blank"
-                rel="noreferrer"
-                title={$_("View Data Source")}
-              >
-                #{dataSource.nid}
-              </a>
-            </label>
-          </div>
-        {/each}
-      </fieldset>
+          {#each dataSources as dataSource, i}
+            <div class="font-bold">
+              <input
+                type="radio"
+                id="data-source-{dataSource.nid}"
+                name="data-source-nid"
+                bind:group={newQuotation.nid}
+                value={dataSource.nid}
+              />
+              <label for="data-source-{dataSource.nid}">
+                {padLeadingZeros(2, i + 1)}. {$_("Data Source")}
+                <a
+                  class="mx-2 font-mono text-sm italic text-purple-400 hover:text-purple-500"
+                  href={new URL("../data-sources/#" + dataSource.nid, page.url).href}
+                  target="_blank"
+                  rel="noreferrer"
+                  title={$_("View Data Source")}
+                >
+                  #{dataSource.nid}
+                </a>
+              </label>
+            </div>
+          {/each}
+        </fieldset>
 
-      <div>
-        <label class="mb-2 inline-block" for="page-number">
-          {$_("Choose page (optional):")}
-        </label>
-        <input
-          id="page-number"
-          class="inpt"
-          bind:value={newQuotation.page}
-          type="number"
-          placeholder="0"
-          min="0"
-          max="999"
-        />
-      </div>
+        <div>
+          <label class="mb-2 inline-block" for="page-number">
+            {$_("Choose page (optional):")}
+          </label>
+          <input
+            id="page-number"
+            class="inpt"
+            bind:value={newQuotation.page}
+            type="number"
+            placeholder="0"
+            min="0"
+            max="999"
+          />
+        </div>
 
-      <div>
-        <label class="mb-2 inline-block" for="comment">
-          {$_("Add comment (optional):")}
-        </label>
-        <textarea
-          class="inpt"
-          id="comment"
-          bind:value={newQuotation.comment}
-          placeholder="comment"
-        ></textarea>
-      </div>
+        <div>
+          <label class="mb-2 inline-block" for="comment">
+            {$_("Add comment (optional):")}
+          </label>
+          <textarea
+            class="inpt"
+            id="comment"
+            bind:value={newQuotation.comment}
+            placeholder="comment"
+          ></textarea>
+        </div>
 
-      <button class="btn btn-black" type="submit" disabled={!newQuotation.nid}>
-        {$_("Add Quotation")}
-      </button>
-    </form>
+        <button class="btn btn-black" type="submit" disabled={!newQuotation.nid}>
+          {$_("Add Quotation")}
+        </button>
+      </form>
+    {/if}
   </div>
 </Modal>

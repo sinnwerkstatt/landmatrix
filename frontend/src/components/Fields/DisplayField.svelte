@@ -5,8 +5,10 @@
   import { isNotEmpty } from "$lib/helpers"
   import type { Model } from "$lib/types/data"
 
+  import { getMutableObject } from "$components/Data/stores"
   import { LABEL_CLASS, VALUE_CLASS, WRAPPER_CLASS } from "$components/Fields/consts"
   import Label2 from "$components/Fields/Display2/Label2.svelte"
+  import DSQuotationsModal from "$components/New/DSQuotationsModal.svelte"
 
   interface Props {
     value: unknown | null
@@ -28,7 +30,7 @@
     showLabel = false,
     model = "deal",
     extras = undefined,
-  }: Props = $props()
+  }: Required<Props> = $props()
 
   let richField = $derived(
     model === "deal" ? $dealFields[fieldname] : $investorFields[fieldname],
@@ -39,6 +41,11 @@
       ? { ...richField.extras, ...extras }
       : (richField?.extras ?? extras),
   )
+
+  const mutableObj = getMutableObject(model)
+  const quotes = $derived($mutableObj.selected_version.ds_quotations[fieldname] ?? [])
+
+  let showDSQuotationModal = $state(false)
 </script>
 
 {#if isNotEmpty(value)}
@@ -55,10 +62,28 @@
       {:else}
         <div class="italic text-red-400">unknown field: {fieldname}</div>
       {/if}
-    </div>
 
-    {#if richField?.useQuotation}
-      {$_("Quotations")}
-    {/if}
+      {#if richField?.useQuotation}
+        <div>
+          <button
+            class="italic text-purple-400"
+            type="button"
+            onclick={() => {
+              showDSQuotationModal = true
+            }}
+          >
+            {quotes.length}
+            {$_("quotations")}
+          </button>
+        </div>
+      {/if}
+    </div>
   </div>
 {/if}
+
+<DSQuotationsModal
+  bind:open={showDSQuotationModal}
+  {fieldname}
+  {model}
+  label={richField.label}
+/>

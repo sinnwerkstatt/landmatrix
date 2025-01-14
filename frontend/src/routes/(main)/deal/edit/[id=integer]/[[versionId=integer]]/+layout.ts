@@ -2,7 +2,7 @@ import { error, redirect } from "@sveltejs/kit"
 
 import type { DealHull, MutableDealHull } from "$lib/types/data"
 
-import { mutableDeal } from "$components/Data/stores"
+import { getMutableObject } from "$components/Data/stores"
 
 import type { LayoutLoad } from "./$types"
 
@@ -58,7 +58,7 @@ export const load: LayoutLoad = async ({ params, parent, depends }) => {
     redirect(307, url)
   }
 
-  mutableDeal.set(structuredClone(deal) as MutableDealHull)
+  getMutableObject("deal").set(structuredClone(deal) as MutableDealHull)
 
   return {
     deal,

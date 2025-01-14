@@ -12,7 +12,7 @@
   import { isEmptyInvolvement } from "$components/Data/Investor/Sections/Involvements/involvements"
   import { investorSectionLookup } from "$components/Data/Investor/Sections/store"
   import SectionNav from "$components/Data/SectionNav.svelte"
-  import { mutableInvestor } from "$components/Data/stores"
+  import { getMutableObject } from "$components/Data/stores"
   import LoadingSpinner from "$components/icons/LoadingSpinner.svelte"
   import ModalReallyQuit from "$components/ModalReallyQuit.svelte"
 
@@ -21,7 +21,8 @@
   let savingInProgress = $state(false)
   let showReallyQuitOverlay = $state(false)
 
-  let hasBeenEdited = $derived(
+  const mutableInvestor = getMutableObject("investor")
+  const hasBeenEdited = $derived(
     JSON.stringify(data.investor) !== JSON.stringify($mutableInvestor),
   )
 

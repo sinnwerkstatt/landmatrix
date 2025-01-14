@@ -2,7 +2,7 @@ import { error, redirect } from "@sveltejs/kit"
 
 import type { InvestorHull, MutableInvestorHull } from "$lib/types/data"
 
-import { mutableInvestor } from "$components/Data/stores"
+import { getMutableObject } from "$components/Data/stores"
 
 import type { LayoutLoad } from "./$types"
 
@@ -64,7 +64,7 @@ export const load: LayoutLoad = async ({ params, parent, depends }) => {
     redirect(307, url)
   }
 
-  mutableInvestor.set(structuredClone(investor) as MutableInvestorHull)
+  getMutableObject("investor").set(structuredClone(investor) as MutableInvestorHull)
 
   return {
     investor,
