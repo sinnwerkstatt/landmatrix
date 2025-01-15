@@ -43,9 +43,9 @@
     field,
   }: Props = $props()
 
-  const labels = columns.map(c => c.label)
-  const spans = columns.map(c => c.colSpan)
-  const nCols = spans.reduce((sum, value) => sum + value)
+  const labels = $derived(columns.map(c => c.label))
+  const spans = $derived(columns.map(c => c.colSpan))
+  const nCols = $derived(spans.reduce((sum, value) => sum + value))
 
   const sortedItems = $derived.by(() => {
     const sortCol = columns.find(
