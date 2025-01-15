@@ -240,9 +240,6 @@ importers:
       vite:
         specifier: ^5.4.11
         version: 5.4.11(@types/node@22.10.5)
-      vite-plugin-iso-import:
-        specifier: ^1.1.0
-        version: 1.1.0(vite@5.4.11(@types/node@22.10.5))
       vitest:
         specifier: ^2.1.8
         version: 2.1.8(@types/node@22.10.5)(jsdom@25.0.1)
@@ -3334,11 +3331,6 @@ packages:
     resolution: {integrity: sha512-uPAwSr57kYjAUux+8E2j0q0Fxpn8M9VoyfGiRI8Kfktz9NcYMCenwY5RnZxnF1WTu3TGiYipirIzacLL3VVGFg==}
     engines: {node: ^18.0.0 || >=20.0.0}
     hasBin: true
-
-  vite-plugin-iso-import@1.1.0:
-    resolution: {integrity: sha512-nT03rd6hEKNa0FzLWPNJ3WgGCEabvJuWTbNNvtXRrgFEGs2bY0DMVFSdyGQResbu9tJsdnfgp2ZK6jVD+6FCCg==}
-    peerDependencies:
-      vite: ^2.0.0 || ^3.0.0 || ^4.0.0 || ^5.0.0
 
   vite@5.4.11:
     resolution: {integrity: sha512-c7jFQRklXua0mTzneGW9QVyxFjUgwcihC4bXEtujIo2ouWCe1Ajt/amn2PCxYnhYfd5k09JX3SB7OYWFKYqj8Q==}
@@ -6701,12 +6693,6 @@ snapshots:
       - sugarss
       - supports-color
       - terser
-
-  vite-plugin-iso-import@1.1.0(vite@5.4.11(@types/node@22.10.5)):
-    dependencies:
-      es-module-lexer: 1.6.0
-      magic-string: 0.30.17
-      vite: 5.4.11(@types/node@22.10.5)
 
   vite@5.4.11(@types/node@22.10.5):
     dependencies:

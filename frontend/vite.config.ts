@@ -2,7 +2,6 @@ import { sentrySvelteKit } from "@sentry/sveltekit"
 import { sveltekit } from "@sveltejs/kit/vite"
 import { svelteTesting } from "@testing-library/svelte/vite"
 import { defineConfig } from "vite"
-import { isoImport } from "vite-plugin-iso-import"
 
 export default defineConfig({
   plugins: [
@@ -10,7 +9,6 @@ export default defineConfig({
       autoUploadSourceMaps: false,
     }),
     sveltekit(),
-    isoImport(),
     svelteTesting(),
   ],
   envDir: "..",
