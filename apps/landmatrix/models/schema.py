@@ -1,5 +1,4 @@
 from datetime import datetime
-from decimal import Decimal
 from enum import Enum
 from typing import Any, Sequence
 
@@ -61,18 +60,17 @@ class CurrentDateAreaSchema(ListRootModel):
 
         current: bool = False
         date: LooseDateStr | str | None = None
-        area: Decimal
-        # TODO marcus: besser "Decimal | None = None"?
-        #  auch: Decimal kommt von diesen pydantic im schema als string raus.. besser hier float nehmen?
+        area: float | None = None
 
     root: list[CurrentDateAreaItem]
 
 
 class _CurrentDateAreaChoicesSchema(BaseModel):
     model_config = ConfigDict(extra="forbid")
+
     current: bool = False
     date: LooseDateStr | str | None = None
-    area: Decimal | None = None
+    area: float | None = None
 
     # Use covariant "Sequence" over invariant "List"
     # see https://mypy.readthedocs.io/en/stable/common_issues.html#variance
@@ -123,7 +121,8 @@ class CurrentDateChoiceImplementationStatus(ListRootModel):
 
 class _ExportsSchema(BaseModel):
     model_config = ConfigDict(
-        extra="forbid", populate_by_name=True
+        extra="forbid",
+        populate_by_name=True,
     )  # turning this off for now because of "yield"
 
     current: bool = False
@@ -131,9 +130,9 @@ class _ExportsSchema(BaseModel):
     date: LooseDateStr | str | None = None
     choices: Sequence[Enum]
 
-    area: Decimal | None = None
-    yield_: Decimal | None = Field(None, alias="yield")
-    export: Decimal | None = None
+    area: float | None = None
+    yield_: float | None = Field(None, alias="yield")
+    export: float | None = None
 
 
 class ExportsCrops(ListRootModel):
@@ -160,11 +159,12 @@ class ExportsMineralResources(ListRootModel):
 class LeaseSchema(ListRootModel):
     class LeaseItem(BaseModel):
         model_config = ConfigDict(extra="forbid")
+
         current: bool = False
         date: LooseDateStr | str | None = None
-        area: Decimal | None = None
-        farmers: Decimal | None = None
-        households: Decimal | None = None
+        area: float | None = None
+        farmers: int | None = None
+        households: int | None = None
 
     root: list[LeaseItem]
 
@@ -172,11 +172,12 @@ class LeaseSchema(ListRootModel):
 class JobsSchema(ListRootModel):
     class JobsItem(BaseModel):
         model_config = ConfigDict(extra="forbid")
+
         current: bool = False
         date: LooseDateStr | str | None = None
-        jobs: Decimal | None = None
-        employees: Decimal | None = None
-        workers: Decimal | None = None
+        jobs: int | None = None
+        employees: int | None = None
+        workers: int | None = None
 
     root: list[JobsItem]
 
@@ -193,14 +194,15 @@ class ActorsSchema(ListRootModel):
 class ElectricityGenerationSchema(ListRootModel):
     class ElectricityGenerationItem(BaseModel):
         model_config = ConfigDict(extra="forbid")
+
         current: bool = False
         date: LooseDateStr | str | None = None
-        area: Decimal | None = None
-        choices: list[ElectricityGenerationEnum] = []
-        export: Decimal | None = None
-        windfarm_count: Decimal | None = None  # TODO int should be fine, no?
-        current_capacity: Decimal | None = None
-        intended_capacity: Decimal | None = None
+        area: float | None = None
+        choices: list[ElectricityGenerationEnum]
+        export: float | None = None  # in percent
+        windfarm_count: int | None = None
+        current_capacity: float | None = None
+        intended_capacity: float | None = None
 
     root: list[ElectricityGenerationItem]
 
@@ -208,16 +210,17 @@ class ElectricityGenerationSchema(ListRootModel):
 class CarbonSequestrationSchema(ListRootModel):
     class CarbonSequestrationItem(BaseModel):
         model_config = ConfigDict(extra="forbid")
+
         current: bool = False
         start_date: LooseDateStr | str | None = None
         end_date: LooseDateStr | str | None = None
-        area: Decimal | None = None
-        choices: list[CarbonSequestrationEnum] = []
-        projected_lifetime_sequestration: Decimal | None = None
-        projected_annual_sequestration: Decimal | None = None
+        area: float | None = None
+        choices: list[CarbonSequestrationEnum]
+        projected_lifetime_sequestration: float | None = None  # in tCO2e
+        projected_annual_sequestration: float | None = None  # in tCO2e
         project_proponents: str = ""
         certification_standard: bool | None = None
-        certification_standard_name: list[CarbonSequestrationCertEnum] = []
+        certification_standard_name: list[CarbonSequestrationCertEnum]
         certification_standard_id: str = ""
         certification_standard_comment: str = ""
 

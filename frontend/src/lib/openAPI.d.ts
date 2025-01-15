@@ -1272,22 +1272,19 @@ export interface components {
        * Area
        * @default null
        */
-      area: string | null
-      /**
-       * Choices
-       * @default []
-       */
+      area: number | null
+      /** Choices */
       choices: components["schemas"]["CarbonSequestrationEnum"][]
       /**
        * Projected Lifetime Sequestration
        * @default null
        */
-      projected_lifetime_sequestration: string | null
+      projected_lifetime_sequestration: number | null
       /**
        * Projected Annual Sequestration
        * @default null
        */
-      projected_annual_sequestration: string | null
+      projected_annual_sequestration: number | null
       /**
        * Project Proponents
        * @default
@@ -1298,10 +1295,7 @@ export interface components {
        * @default null
        */
       certification_standard: boolean | null
-      /**
-       * Certification Standard Name
-       * @default []
-       */
+      /** Certification Standard Name */
       certification_standard_name: components["schemas"]["CarbonSequestrationCertEnum"][]
       /**
        * Certification Standard Id
@@ -1565,7 +1559,7 @@ export interface components {
        * Area
        * @default null
        */
-      area: string | null
+      area: number | null
       /** Choices */
       choices: components["schemas"]["AnimalsEnum"][]
     }
@@ -1587,7 +1581,7 @@ export interface components {
        * Area
        * @default null
        */
-      area: string | null
+      area: number | null
       /** Choices */
       choices: components["schemas"]["CropsEnum"][]
     }
@@ -1609,7 +1603,7 @@ export interface components {
        * Area
        * @default null
        */
-      area: string | null
+      area: number | null
       /** Choices */
       choices: components["schemas"]["IntentionOfInvestmentEnum"][]
     }
@@ -1625,8 +1619,11 @@ export interface components {
        * @default null
        */
       date: string | null
-      /** Area */
-      area: string
+      /**
+       * Area
+       * @default null
+       */
+      area: number | null
     }
     /** CurrentDateAreaSchema */
     CurrentDateAreaSchema: components["schemas"]["CurrentDateAreaItem"][]
@@ -2333,32 +2330,29 @@ export interface components {
        * Area
        * @default null
        */
-      area: string | null
-      /**
-       * Choices
-       * @default []
-       */
+      area: number | null
+      /** Choices */
       choices: components["schemas"]["ElectricityGenerationEnum"][]
       /**
        * Export
        * @default null
        */
-      export: string | null
+      export: number | null
       /**
        * Windfarm Count
        * @default null
        */
-      windfarm_count: string | null
+      windfarm_count: number | null
       /**
        * Current Capacity
        * @default null
        */
-      current_capacity: string | null
+      current_capacity: number | null
       /**
        * Intended Capacity
        * @default null
        */
-      intended_capacity: string | null
+      intended_capacity: number | null
     }
     /** ElectricityGenerationSchema */
     ElectricityGenerationSchema: components["schemas"]["ElectricityGenerationItem"][]
@@ -2382,17 +2376,17 @@ export interface components {
        * Area
        * @default null
        */
-      area: string | null
+      area: number | null
       /**
        * Yield
        * @default null
        */
-      yield: string | null
+      yield: number | null
       /**
        * Export
        * @default null
        */
-      export: string | null
+      export: number | null
     }
     /** ExportsCrops */
     ExportsCrops: components["schemas"]["ExportsCropsItem"][]
@@ -2414,17 +2408,17 @@ export interface components {
        * Area
        * @default null
        */
-      area: string | null
+      area: number | null
       /**
        * Yield
        * @default null
        */
-      yield: string | null
+      yield: number | null
       /**
        * Export
        * @default null
        */
-      export: string | null
+      export: number | null
     }
     /** ExportsMineralResources */
     ExportsMineralResources: components["schemas"]["ExportsMineralResourcesItem"][]
@@ -2446,17 +2440,17 @@ export interface components {
        * Area
        * @default null
        */
-      area: string | null
+      area: number | null
       /**
        * Yield
        * @default null
        */
-      yield: string | null
+      yield: number | null
       /**
        * Export
        * @default null
        */
-      export: string | null
+      export: number | null
     }
     FieldChoices: {
       deal: components["schemas"]["DealFields"]
@@ -2879,17 +2873,17 @@ export interface components {
        * Jobs
        * @default null
        */
-      jobs: string | null
+      jobs: number | null
       /**
        * Employees
        * @default null
        */
-      employees: string | null
+      employees: number | null
       /**
        * Workers
        * @default null
        */
-      workers: string | null
+      workers: number | null
     }
     /** JobsSchema */
     JobsSchema: components["schemas"]["JobsItem"][]
@@ -2921,17 +2915,17 @@ export interface components {
        * Area
        * @default null
        */
-      area: string | null
+      area: number | null
       /**
        * Farmers
        * @default null
        */
-      farmers: string | null
+      farmers: number | null
       /**
        * Households
        * @default null
        */
-      households: string | null
+      households: number | null
     }
     /** LeaseSchema */
     LeaseSchema: components["schemas"]["LeaseItem"][]
@@ -3377,7 +3371,7 @@ export interface components {
       name: string
       observatory_page_id: number
       /**
-       * Latitude of northernmost point
+       * Latitude of southernmost point
        * Format: double
        */
       point_lat_min: number
@@ -3387,7 +3381,7 @@ export interface components {
        */
       point_lon_min: number
       /**
-       * Latitude of southernmost point
+       * Latitude of northernmost point
        * Format: double
        */
       point_lat_max: number
