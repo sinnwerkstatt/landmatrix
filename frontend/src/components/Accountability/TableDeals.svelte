@@ -135,9 +135,7 @@
   }
 
   // Select deals
-  function selectAllDeals(event) {
-    const checked = event.detail.checked
-
+  function selectAllDeals(id, checked) {
     if (checked) {
       tableSelection.set(createDealSelectObject(true))
     } else {
@@ -194,7 +192,7 @@
     <TableRow {gridColsTemplate}>
       <TableCell style="heading">
         <div class="w-fit">
-          <Checkbox paddingX="0" paddingY="0" on:changed={selectAllDeals} />
+          <Checkbox paddingX="0" paddingY="0" onchanged={selectAllDeals} />
         </div>
       </TableCell>
 

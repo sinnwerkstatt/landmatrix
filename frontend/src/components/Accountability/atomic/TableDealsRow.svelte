@@ -27,8 +27,8 @@
 
   interface Props {
     gridColsTemplate?: string
-    columns?: any
-    deal: any
+    columns?: []
+    deal: object
   }
 
   let { gridColsTemplate = "", columns = [], deal }: Props = $props()
@@ -69,9 +69,7 @@
 
   // ==================================================================================================
   // More checkbox reactivity functions
-  function checkDeal(event) {
-    const checked = event.detail.checked
-
+  function checkDeal(id, checked) {
     dealPartiallyChecked = false
 
     if (checked) {
@@ -103,9 +101,7 @@
 
   let dealAssignees = $derived(getDealAssignees(deal) ?? [])
 
-  async function selectAssignee(event, vggt_variable) {
-    const assigneeID = event.detail.assignee
-
+  async function selectAssignee(assigneeID, vggt_variable) {
     if ($tableSelectionChecked.length == 0) {
       bulkUpdateInfo = {
         toUpdate: [{ deal: deal.id, variable: vggt_variable }],
@@ -185,7 +181,7 @@
           value={deal.id}
           bind:partiallyChecked={dealPartiallyChecked}
           bind:checked={dealChecked}
-          on:changed={checkDeal}
+          onchanged={checkDeal}
         />
         <button
           class="text-a-gray-400 {!open ? 'rotate-180' : ''} "
@@ -230,8 +226,8 @@
           {#if dealAssignees && dealAssignees.length == 1}
             <Avatar
               size="sm"
-              label={dealAssignees[0].name}
-              initials={dealAssignees[0].initials}
+              label={dealAssignees[0]?.name}
+              initials={dealAssignees[0]?.initials}
             />
           {:else if dealAssignees && dealAssignees.length > 1}
             <AvatarGroup size="sm" users={dealAssignees} maxAvatars="4" />
@@ -284,7 +280,7 @@
               extraClass=""
               showOnHover={true}
               assigneeID={variable.assignee}
-              selectAssignee={event => selectAssignee(event, variable.vggt_variable)}
+              selectAssignee={id => selectAssignee(id, variable.vggt_variable)}
               unselectAssignee={() => unselectAssignee(variable.vggt_variable)}
             />
           </TableCell>
@@ -299,7 +295,7 @@
 <Modal
   bind:open={openBulkUpdateModal}
   title="Confirm assignment"
-  on:click={updateAssignee}
+  onclick={updateAssignee}
 >
   <p>
     Are you sure you want to reassign all selected variables? This action cannot be

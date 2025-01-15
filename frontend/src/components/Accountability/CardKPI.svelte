@@ -28,7 +28,7 @@
     color = "neutral",
     icon = "",
     labelPosition = "bottom",
-    onclick
+    onclick,
   }: Props = $props()
 
   const icons = [

@@ -6,7 +6,7 @@
   }
 
   let { items = [] }: Props = $props()
-  let activeTabValue = $state(1);
+  let activeTabValue = $state(1)
   const handleClick = tabValue => () => (activeTabValue = tabValue)
 </script>
 

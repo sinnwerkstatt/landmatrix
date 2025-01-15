@@ -23,7 +23,7 @@
     open = $bindable(true),
     extraClass = "",
     children,
-    onSort
+    onSort,
   }: Props = $props()
 
   function handleClick() {
@@ -44,6 +44,7 @@
     </div>
 
     {#if sortable}
+      <!-- svelte-ignore node_invalid_placement_ssr -->
       <button class="flex items-center text-a-gray-500" onclick={onSort}>
         A-Z <IconChevronSort />
       </button>

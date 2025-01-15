@@ -15,7 +15,7 @@
   let { data, children } = $props()
 
   // If currentProject =/= page.params.project, update project and empty current page and current Deal
-  function updateLocalStorage(pathname:string) {
+  function updateLocalStorage(pathname: string) {
     if (page.params.project) {
       dealsHistory.set(pathname)
     }
@@ -25,11 +25,11 @@
     updateLocalStorage(page.url.pathname)
   })
 
-  $effect(() => {    
+  $effect(() => {
     if ($filters) fetchDeals($filters)
   }) // TODO: Find workaround between derived store efficiency and possibility to SET one section of the store
 
-  $inspect(deals)
+  $inspect($deals)
 </script>
 
 <div class="flex h-screen w-full flex-row flex-nowrap bg-a-gray-50">

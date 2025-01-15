@@ -14,7 +14,7 @@
     extraClass?: string
     disabled?: boolean
     auto?: boolean
-    selectAssignee?: (user:{id:number}) => void
+    selectAssignee?: (user: { id: number }) => void
     unselectAssignee?: () => void
   }
 
@@ -45,15 +45,17 @@
     }
   }
 
-  function unselectAssigneeFunc() {
-    if (auto) {
-      assigneeID = undefined
-    } else {
-      unselectAssignee()
-    }
-  }
+  // function unselectAssigneeFunc() {
+  //   if (auto) {
+  //     assigneeID = undefined
+  //   } else {
+  //     unselectAssignee()
+  //   }
+  // }
 
-  function showDropdown(event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement }) {
+  function showDropdown(
+    event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement },
+  ) {
     open = true
     top = event.clientY + 16
     left = event.clientX + 16 - 200
@@ -65,7 +67,7 @@
     <button
       class:showOnHover
       class="{extraClass} rounded-lg hover:bg-a-gray-50"
-      onclick={(event) => showDropdown(event)}
+      onclick={event => showDropdown(event)}
     >
       <Avatar {size} label="No assignee" type="assignment" />
     </button>
@@ -78,7 +80,7 @@
       button={true}
       tooltip={false}
       {extraClass}
-      on:click={unselectAssignee}
+      onclick={unselectAssignee}
     />
   {/if}
 

@@ -24,7 +24,7 @@
 
 <style>
   /* Global Accountability styles */
-  :global{
+  :global {
     body {
       @apply font-inter text-a-sm font-medium text-a-gray-900;
     }

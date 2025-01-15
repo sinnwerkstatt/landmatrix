@@ -23,7 +23,7 @@
       color?: "green" | "orange"
     }[]
     categories?: { label: string; values: string[] }
-    value: any
+    value: number|string
     resetButton?: boolean
     badgeType?: "tag" | "avatar"
     style?: "neutral" | "white"
@@ -341,7 +341,7 @@
             padding={true}
             initials={element?.initials}
             {disabled}
-            on:click={() => {
+            onclick={() => {
               value = value.filter(v => v != val)
             }}
           />
@@ -351,7 +351,7 @@
             button={true}
             {disabled}
             label={element?.label}
-            on:click={() => {
+            onclick={() => {
               value = value.filter(v => v != val)
             }}
           />

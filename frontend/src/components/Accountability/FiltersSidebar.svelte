@@ -41,7 +41,7 @@
         type="outline"
         onclick={() => ($filters = new FilterValues(page.data.project.filters))}
       />
-      <!-- {#if $page.data.project.owner == $me.id}
+      <!-- {#if $page.data.project.owner == $me?.id}
                 <Button label="Update" size="sm" style="neutral" on:click={() => openSaveModal("update")} />
             {/if} -->
       <!-- <Button label="Clear all" size="sm" style="neutral" type="outline" on:click={() => $filters = $filters.empty()} /> -->

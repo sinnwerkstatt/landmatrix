@@ -72,12 +72,12 @@
     return result
   }
 
-  let cleanCategories:string[]|[] = $state([])
+  let cleanCategories: string[] | [] = $state([])
   $effect(() => {
     cleanCategories = categories ? joinArrays(choices, categories) : []
   })
 
-  function checkChoice(value:string, checked:boolean) {
+  function checkChoice(value: string, checked: boolean) {
     // Add choice to groups
     if (checked) {
       group = [...group, value]
@@ -94,7 +94,7 @@
     cleanCategories = cleanCategories // TODO: force cleanCategories update somehow
   }
 
-  function checkCategory(value:string, checked:boolean) {
+  function checkCategory(value: string, checked: boolean) {
     // Check or uncheck subgroup
     const category = cleanCategories.find(e => e.label == value)
     if (checked) {
@@ -166,14 +166,7 @@
     {#each choices as { label, value }}
       {@const checked = group.includes(value)}
       {@const hidden = !searchMatch(label, filter)}
-      <Checkbox
-        {label}
-        {value}
-        {checked}
-        {hidden}
-        onchanged={checkChoice}
-        {disabled}
-      />
+      <Checkbox {label} {value} {checked} {hidden} onchanged={checkChoice} {disabled} />
     {/each}
   {/if}
 </div>

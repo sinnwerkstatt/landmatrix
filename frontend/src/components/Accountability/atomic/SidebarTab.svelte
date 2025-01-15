@@ -14,15 +14,15 @@
   let position = $state("bottom")
 
   interface Props {
-    id: number;
-    label?: string;
-    status?: string;
-    menu?: boolean;
-    handle?: boolean;
-    menuPosition?: string;
-    onBookmark?: (id:number, action:string) => void;
-    onEdit?: (id:number) => void;
-    onDelete?: (id:number) => void;
+    id: number
+    label?: string
+    status?: string
+    menu?: boolean
+    handle?: boolean
+    menuPosition?: string
+    onBookmark?: (id: number, action: string) => void
+    onEdit?: (id: number) => void
+    onDelete?: (id: number) => void
   }
 
   let {
@@ -35,7 +35,7 @@
     onBookmark,
     onEdit,
     onDelete,
-  }: Props = $props();
+  }: Props = $props()
 
   const project = $allProjects.find(p => p.id == id)
 
@@ -103,7 +103,7 @@
 
   <div class="menu absolute {position} right-0 z-20">
     <DropdownMenu bind:visible={visibleMenu}>
-      <DropdownMenuItem icon="bookmark" on:click={handleBookmark}>
+      <DropdownMenuItem icon="bookmark" onclick={handleBookmark}>
         <span class="text-left">
           {#if action == "add"}
             Bookmark
@@ -112,9 +112,9 @@
           {/if}
         </span>
       </DropdownMenuItem>
-      <DropdownMenuItem icon="check" on:click={handleEdit}>Edit</DropdownMenuItem>
-      {#if (project && project.owner == $me.id) || (project && project.editors.includes($me.id))}
-        <DropdownMenuItem icon="trashcan" on:click={handleDelete}>
+      <DropdownMenuItem icon="check" onclick={handleEdit}>Edit</DropdownMenuItem>
+      {#if (project && project.owner == $me?.id) || (project && project.editors.includes($me?.id))}
+        <DropdownMenuItem icon="trashcan" onclick={handleDelete}>
           Delete
         </DropdownMenuItem>
       {/if}

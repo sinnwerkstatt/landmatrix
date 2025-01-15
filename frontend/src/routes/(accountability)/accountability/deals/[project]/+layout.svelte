@@ -4,7 +4,7 @@
 
   interface Props {
     // import { deals } from "$lib/accountability/stores.js"
-    data: any
+    data: []
     children?: import("svelte").Snippet
   }
 

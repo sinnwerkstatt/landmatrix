@@ -12,26 +12,24 @@
   import SidebarTab from "./atomic/SidebarTab.svelte"
   import SortableList from "./atomic/SortableList.svelte"
 
-  function handleEdit(event) {
-    openProjectModal("update", event.detail.id)
+  function handleEdit(id) {
+    openProjectModal("update", id)
   }
 
-  function handleDelete(event) {
-    openProjectModal("delete", event.detail.id)
+  function handleDelete(id) {
+    openProjectModal("delete", id)
   }
 
-  async function handleBookmark(event) {
-    const action = event.detail.action
-    const projectId = event.detail.id
+  async function handleBookmark(id, action) {
     if (action == "add") {
       try {
-        await addUserBookmark(projectId)
+        await addUserBookmark(id)
       } catch (error) {
         console.error(error)
       }
     } else if (action == "remove") {
       try {
-        await removeUserBookmark(projectId)
+        await removeUserBookmark(id)
       } catch (error) {
         console.error(error)
       }
@@ -51,13 +49,13 @@
   <SidebarTab label="All deals" active={true} />
 
   <div class="overflow-auto">
-    <Section title="Bookmarked projects" on:edit on:bookmark>
+    <Section title="Bookmarked projects" onEdit onBookmark>
       <SortableList
         bind:items={$bookmarkedProjects}
-        on:edit={handleEdit}
-        on:bookmark={handleBookmark}
+        onEdit={handleEdit}
+        onBookmark={handleBookmark}
         onReorder={handleReorder}
-        on:delete={handleDelete}
+        onDelete={handleDelete}
       />
     </Section>
 

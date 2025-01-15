@@ -1,8 +1,6 @@
 <script lang="ts">
   // A component to create sortable lists of SidebarTab elements based
   // on an array of objects containing at least id, name and position information
-  import { preventDefault } from "svelte/legacy"
-
   import SidebarTab from "./SidebarTab.svelte"
 
   let container: HTMLElement = $state()
@@ -15,16 +13,18 @@
 
   interface Props {
     items?: { id: number; name: string }[]
-    onReorder?: () => void;
-    onEdit?: () => void;
-    onBookmark?: () => void;
-    onDelete?: () => void;
+    onReorder?: () => void
+    onEdit?: (id: number) => void
+    onBookmark?: (id: number, action: string) => void
+    onDelete?: (id: number) => void
   }
 
   let {
     items = $bindable(placeholder),
     onReorder,
-    onEdit, onBookmark, onDelete,
+    onEdit,
+    onBookmark,
+    onDelete,
   }: Props = $props()
 
   let refs: [HTMLElement] | [] = $state([])
@@ -41,6 +41,13 @@
     draggedItem = null
     updatePosition(container)
     onReorder?.()
+  }
+
+  function preventDefault(handler) {
+    return e => {
+      e.preventDefault()
+      handler(e)
+    }
   }
 
   function handleDragover(e, container: HTMLElement) {
@@ -88,9 +95,7 @@
 
 <ul
   class="flex flex-col gap-2"
-  ondragover={preventDefault(e => {
-    handleDragover(e, container)
-  })}
+  ondragover={e => preventDefault(handleDragover(e, container))}
   bind:this={container}
 >
   {#each items as { id, name }, index (id)}

@@ -12,13 +12,13 @@
     hidden?: boolean
     paddingX?: string
     paddingY?: string
-    onchanged?: (value:string, checked:boolean) => void
+    onchanged?: (value: string, checked: boolean) => void
   }
 
   let {
     value = "",
     checked = $bindable(false),
-    partiallyChecked = false,
+    partiallyChecked = $bindable(false),
     label = "",
     bold = false,
     disabled = false,
@@ -27,7 +27,6 @@
     paddingY = "2",
     onchanged,
   }: Props = $props()
-
 </script>
 
 <label

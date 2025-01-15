@@ -4,7 +4,7 @@
     description?: string
     value?: string
     score?: string
-    onClick?: (value:string) => void
+    onClick?: (value: string) => void
   }
 
   let {
@@ -32,7 +32,6 @@
   }
 
   let behavior = $derived(getBehavior(value, score))
-
 </script>
 
 <button

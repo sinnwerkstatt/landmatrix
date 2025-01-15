@@ -7,7 +7,7 @@
     children?: import("svelte").Snippet
   }
 
-  let { open = false, children }: Props = $props()
+  let { open = $bindable(false), children }: Props = $props()
 
   const transitionParams = {
     delay: 100,

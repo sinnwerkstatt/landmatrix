@@ -83,9 +83,7 @@
 
   let bubbleColor = $derived(getStatusColor(status) ?? "gray")
 
-  function selectScore(event) {
-    const value = event.detail.value
-
+  function selectScore(value) {
     // Select the new score
     if (score != "NO_SCORE" && score == value) {
       // If clicking on selected, unselect (= "NO_SCORE")
@@ -194,7 +192,7 @@
   }
 
   $inspect(data)
-  
+
   // $: console.log(variableInfo)
 
   // $: {
@@ -350,7 +348,7 @@
   bind:open={openNavigationConfirmationModal}
   title="Confirm navigation"
   confirmLabel="Leave"
-  onClick={confirmNavigation}
+  onclick={confirmNavigation}
 >
   You changed the score for this variable. Are you sure you want to leave? Any unsaved
   changes will be lost.

@@ -1,13 +1,9 @@
 <script lang="ts">
-  import { createBubbler } from "svelte/legacy"
-
   import IconBookmark from "../icons/IconBookmark.svelte"
   import IconCheck from "../icons/IconCheck.svelte"
   import IconEye from "../icons/IconEye.svelte"
   import IconOpenExternal from "../icons/IconOpenExternal.svelte"
   import IconXMark from "../icons/IconXMark.svelte"
-
-  const bubble = createBubbler()
 
   interface Props {
     label?: string
@@ -20,7 +16,7 @@
     iconRight?: boolean
     color?: "primary" | "warning" | "error" | "success" | "neutral" | "blue"
     variant?: "filled" | "light" | "filled-light"
-    click?: () => void
+    onclick?: () => void
   }
 
   let {
@@ -34,7 +30,7 @@
     iconRight = false,
     color = "primary",
     variant = "light",
-    click
+    onclick,
   }: Props = $props()
 
   let iconSize = $derived(size === "base" ? "24" : "16")
@@ -76,7 +72,7 @@
 
     <!-- {#if button && !link} -->
     {#if button}
-      <button {disabled} onclick={click}>
+      <button {disabled} {onclick}>
         <IconXMark size={iconSize} />
       </button>
     {/if}

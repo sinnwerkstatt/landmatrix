@@ -8,10 +8,10 @@
     icon?: string
     color?: string // Directly add Tailwind style
     children?: import("svelte").Snippet
-    click?: () => void
+    onclick?: () => void
   }
 
-  let { icon = "check", color = "", children, click }: Props = $props()
+  let { icon = "check", color = "", children, onclick }: Props = $props()
 
   const icons = [
     { icon: "check", component: IconCheck },
@@ -24,7 +24,7 @@
 </script>
 
 <button
-  onclick={click}
+  {onclick}
   class="flex items-center gap-3 bg-white px-4 py-2 hover:bg-a-gray-100"
 >
   <span class={color}>

@@ -1,16 +1,15 @@
 <script lang="ts">
   import BubbleCount from "$components/Accountability/atomic/BubbleCount.svelte"
 
-
   interface Props {
-    label?: string;
-    type?: "fill" | "outline" | "ghost";
-    style?: "primary" | "neutral" | "error";
-    size?: "base" | "sm" | "lg";
-    count?: number;
-    tailwind?: string; // additional tailwind classes
-    disabled?: boolean;
-    iconAfter?: import('svelte').Snippet;
+    label?: string
+    type?: "fill" | "outline" | "ghost"
+    style?: "primary" | "neutral" | "error"
+    size?: "base" | "sm" | "lg"
+    count?: number
+    tailwind?: string // additional tailwind classes
+    disabled?: boolean
+    iconAfter?: import("svelte").Snippet
     onclick?: () => void
   }
 
@@ -23,8 +22,8 @@
     tailwind = "",
     disabled = false,
     iconAfter,
-    onclick
-  }: Props = $props();
+    onclick,
+  }: Props = $props()
 </script>
 
 <button class="{style} {size} {type} {tailwind}" {disabled} {onclick}>

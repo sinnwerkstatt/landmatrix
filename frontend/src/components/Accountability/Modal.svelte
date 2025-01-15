@@ -12,7 +12,7 @@
     confirmLabel?: string
     disabled?: boolean
     children?: import("svelte").Snippet
-    onClick?: () => void
+    onclick?: () => void
   }
 
   let {
@@ -22,7 +22,7 @@
     confirmLabel = "Save",
     disabled = $bindable(false),
     children,
-    onClick,
+    onclick,
   }: Props = $props()
 </script>
 
@@ -55,7 +55,7 @@
           {disabled}
           onclick={() => (open = false)}
         />
-        <Button label={confirmLabel} style="neutral" {disabled} onclick={onClick} />
+        <Button label={confirmLabel} style="neutral" {disabled} {onclick} />
       </div>
     </div>
   </div>

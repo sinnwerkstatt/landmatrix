@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import { filters } from "$lib/accountability/filters"
   import { capitalizeFirst, groupBy } from "$lib/accountability/helpers"
-    import { dealChoices } from "$lib/fieldChoices"
+  import { dealChoices } from "$lib/fieldChoices"
 
   import Checkbox from "./Checkbox.svelte"
   import Input from "./Input.svelte"
@@ -17,11 +17,11 @@
 
   let { disabled = false }: Props = $props()
 
-  const regionChoices = $page.data.regions.map(({ name: label, id: value }) => ({
+  const regionChoices = page.data.regions.map(({ name: label, id: value }) => ({
     label,
     value,
   }))
-  const countryChoices = $page.data.countries.map(({ name: label, id: value }) => ({
+  const countryChoices = page.data.countries.map(({ name: label, id: value }) => ({
     label,
     value,
   }))
@@ -37,7 +37,7 @@
   }))
 
   const natureOfDealChoices = $dealChoices.nature_of_deal
-  const investorNamesChoices = $page.data.investors.map(
+  const investorNamesChoices = page.data.investors.map(
     ({ name: label, id: value }) => ({ label, value }),
   )
   const implementationStatusChoices = [
@@ -76,7 +76,8 @@
   let sizeNotification = $derived($filters.area_min || $filters.area_max ? true : false)
 
   let invalidMaxYear = $derived(
-    $filters.initiation_year_max && $filters.initiation_year_min &&
+    $filters.initiation_year_max &&
+      $filters.initiation_year_min &&
       $filters.initiation_year_min > $filters.initiation_year_max
       ? true
       : false,

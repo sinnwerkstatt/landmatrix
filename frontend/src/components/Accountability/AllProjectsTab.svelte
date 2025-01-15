@@ -34,7 +34,7 @@
     sortedProjects = sortedProjects.reverse()
   }
 
-  // Menu
+  // Menu - TMP, uncomment functions later when they are ready
   function handleEdit() {
     // const projectId = event.detail.id
     // console.log("Edit action: " + projectId)
@@ -44,9 +44,7 @@
     // openProjectModal('delete', event.detail.id)
   }
 
-  async function handleBookmark(event) {
-    const action = event.detail.action
-    const projectId = event.detail.id
+  async function handleBookmark(projectId: number, action: string) {
     if (action == "add") {
       try {
         await addUserBookmark(projectId)
@@ -89,9 +87,9 @@
             label={name}
             menu={true}
             handle={false}
-            on:edit={handleEdit}
-            on:bookmark={handleBookmark}
-            on:delete={handleDelete}
+            onEdit={handleEdit}
+            onBookmark={handleBookmark}
+            onDelete={handleDelete}
           />
         {/each}
       </Pagination>

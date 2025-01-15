@@ -115,14 +115,13 @@
     name: formErrors.name ? "invalid" : "neutral",
     description: formErrors.description ? "invalid" : "neutral",
   })
-  function resetFormErrors(form) {
-    formErrors = {}
-  }
   $effect(() => {
-    resetFormErrors(form)
+    if (form) formErrors = {}
   })
 
   async function save() {
+    console.log("=== SAVE CALLED ===")
+
     formErrors = {}
     disabledModal = true
     disabledContent = true
@@ -182,7 +181,7 @@
   bind:open={$showProjectModal}
   {title}
   large={true}
-  on:click={save}
+  onclick={save}
   bind:disabled={disabledModal}
 >
   {#if $projectModalData.action == "delete"}
@@ -224,8 +223,8 @@
         badgeType="avatar"
       />
       <Avatar
-        initials={$me.initials}
-        label="{$me.name} (owner)"
+        initials={$me?.initials}
+        label="{$me?.name} (owner)"
         extraClass="mt-1"
         padding={true}
         disabled={disabledContent}

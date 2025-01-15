@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte"
-  
+
   import { initTableSelection } from "$lib/accountability/helpers"
   import { tableSelection } from "$lib/accountability/stores"
 
@@ -65,9 +65,7 @@
     updateDealCheckbox()
   })
 
-  function checkDeal(event) {
-    const checked = event.detail.checked
-
+  function checkDeal(value, checked) {
     dealPartiallyChecked = false
 
     if (checked) {
@@ -100,7 +98,7 @@
           <Checkbox
             paddingX="0"
             paddingY="0"
-            on:changed={checkDeal}
+            onchanged={checkDeal}
             bind:checked={dealChecked}
             bind:partiallyChecked={dealPartiallyChecked}
           />

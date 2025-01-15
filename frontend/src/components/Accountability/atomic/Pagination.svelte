@@ -1,22 +1,24 @@
 <script lang="ts">
+  import { filters } from "$lib/accountability/filters"
+
   import IconChevron from "../icons/IconChevron.svelte"
 
-  let paginationBox: HTMLElement|undefined = $state()
-  let ellipsis = $state("none")
+  let paginationBox: HTMLElement | undefined = $state()
   let currentPage = $state(1)
+  let ellipsis = $state("none")
 
   export const containerHeight = "400"
 
   interface Props {
     box: HTMLElement
-    dataset: any // Send the dataset to pagination
-    pageContent?: any // Pagination stores here what must be displayed
+    dataset: [] // Send the dataset to pagination
+    pageContent?: [] // Pagination stores here what must be displayed
     detached?: boolean
     rowHeight?: string
     rowsDelta?: number // Positive = add rows, Negative = remove rows
-    rowsByPage: any // Number of rows by page, if needed outside (like in Table.svelte)
+    rowsByPage: number // Number of rows by page, if needed outside (like in Table.svelte)
     justify?: "center" | "left" | "right"
-    pagination?: any
+    pagination?: []
     children?: import("svelte").Snippet
   }
 
@@ -29,17 +31,12 @@
     rowsDelta = detached ? -2 : 0,
     rowsByPage = $bindable(),
     justify = "center",
-    pagination = $bindable({}),
+    pagination = $bindable(),
     children,
   }: Props = $props()
 
-  function resetPageOnDataChange(dataset) {
-    console.log(dataset)
-    currentPage = 1
-  }
-
   $effect(() => {
-    resetPageOnDataChange(dataset)
+    if ($filters) currentPage = 1
   })
 
   let boxHeight = $derived(box?.getBoundingClientRect().height)
@@ -75,7 +72,7 @@
     return array
   }
 
-  function focusOnCurrentPage(currentPage, totalPagesArray) {
+  function focusOnCurrentPage(currentPage: number, totalPagesArray: []) {
     if (totalPages <= paginationButtons) {
       ellipsis = "none"
       return totalPagesArray
@@ -99,7 +96,11 @@
   let paginationButtons = $derived(
     Math.floor(paginationBox?.getBoundingClientRect().width / 24) - 2,
   )
-  let focusedPagesButtons = $derived(focusOnCurrentPage(currentPage, totalPagesArray))
+
+  let focusedPagesButtons: number[] = $state([1])
+  $effect(() => {
+    focusedPagesButtons = focusOnCurrentPage(currentPage, totalPagesArray)
+  })
 </script>
 
 <div class="flex h-full flex-col overflow-hidden" class:detached>
