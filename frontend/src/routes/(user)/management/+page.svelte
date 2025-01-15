@@ -111,8 +111,8 @@
       { key: "status", colSpan: 2 },
       { key: "country_id", colSpan: 2 },
       { key: "deal_size", colSpan: 2, submodel: "selected_version" },
-      { key: "created", colSpan: 3, label: $_("Created") },
-      { key: "modified", colSpan: 3, label: $_("Modified") },
+      { key: "first_created_at", colSpan: 3, label: $_("Created") },
+      { key: "modified_at", colSpan: 3, label: $_("Modified") },
       { key: "fully_updated", colSpan: 2, submodel: "selected_version" },
       { key: "workflowinfos", colSpan: 5 },
     ].map(c => ({ ...c, label: c.label || $dealFields[c.key].label })),
@@ -124,8 +124,8 @@
       { key: "status", colSpan: 2 },
       { key: "name", colSpan: 3, submodel: "selected_version" },
       { key: "country_id", colSpan: 3, submodel: "selected_version" },
-      { key: "created", colSpan: 3, label: $_("Created") },
-      { key: "modified", colSpan: 3, label: $_("Modified") },
+      { key: "first_created_at", colSpan: 3, label: $_("Created") },
+      { key: "modified_at", colSpan: 3, label: $_("Modified") },
       { key: "workflowinfos", colSpan: 5 },
     ].map(c => ({ ...c, label: c.label || $investorFields[c.key].label })),
   )
@@ -384,7 +384,7 @@
         {#snippet field({ fieldName, obj })}
           {@const col = columns.find(c => c.key === fieldName)}
 
-          {#if col?.key === "created"}
+          {#if col?.key === "first_created_at"}
             <DisplayField
               fieldname="first_created_at"
               value={obj.first_created_at}
@@ -399,7 +399,7 @@
               {wrapperClass}
               {valueClass}
             />
-          {:else if col?.key === "modified"}
+          {:else if col?.key === "modified_at"}
             <DisplayField
               fieldname="modified_at"
               value={obj.selected_version.modified_at}
