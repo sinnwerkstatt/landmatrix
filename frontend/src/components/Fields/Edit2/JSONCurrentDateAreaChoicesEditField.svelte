@@ -70,7 +70,6 @@
 
       <label class={labelClass} for={undefined}>
         {$_("Area")}
-        <!-- todo marcus: area is string? -->
         <LowLevelDecimalField
           bind:value={val.area}
           unit={$_("ha")}

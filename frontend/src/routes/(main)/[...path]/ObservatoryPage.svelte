@@ -44,7 +44,6 @@
   let countryID = $derived(page.country?.id)
 
   const colorsMap: { [key in NegotiationStatusGroup]: string } = {
-    // TODO use HSL
     INTENDED: "hsl(93, 55%, 75%)", //"text-green-300",
     CONCLUDED: "hsl(94, 56%, 65%)", //"text-green-500",
     FAILED: "hsl(0, 73%, 66%)", //"text-red-500",
