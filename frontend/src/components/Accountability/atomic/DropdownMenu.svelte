@@ -6,10 +6,9 @@
   interface Props {
     visible?: boolean
     extraClass?: string
-    top: number|string
-    left: number|string
+    top: number | string
+    left: number | string
     children?: import("svelte").Snippet
-    onclickoutside?: () => void
   }
 
   let {
@@ -18,7 +17,6 @@
     top = $bindable(),
     left = $bindable(),
     children,
-    onclickoutside,
   }: Props = $props()
 
   function handleClickOutside() {
@@ -37,4 +35,3 @@
     {@render children?.()}
   </div>
 {/if}
-<!-- Not sur if the onclickoutside needs to be changed and how -->

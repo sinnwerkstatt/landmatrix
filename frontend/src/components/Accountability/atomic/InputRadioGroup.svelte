@@ -1,6 +1,6 @@
 <script lang="ts">
   interface Props {
-    value: number|string
+    value: number | string
     choices?: { value: string; label: string }[]
     disabled?: boolean
     paddingX?: string

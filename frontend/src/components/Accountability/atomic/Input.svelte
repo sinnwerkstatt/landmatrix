@@ -23,7 +23,7 @@
       color?: "green" | "orange"
     }[]
     categories?: { label: string; values: string[] }
-    value: number|string
+    value: number | string
     resetButton?: boolean
     badgeType?: "tag" | "avatar"
     style?: "neutral" | "white"
