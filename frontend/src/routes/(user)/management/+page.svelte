@@ -171,14 +171,7 @@
           modifiedByUserIDs.add(o.selected_version.modified_by_id)
       })
 
-      // TODO marcus
-      // navTabs = navTabs.map(navTab => ({
-      //   ...navTab,
-      //   items: navTab.items.map(item => {
-      //     if (item.id === acTab) return { ...item, count: objects.length }
-      //     return item
-      //   }),
-      // }))
+      counts[acTab] = objects.length
     }
 
     loading.set(false)
