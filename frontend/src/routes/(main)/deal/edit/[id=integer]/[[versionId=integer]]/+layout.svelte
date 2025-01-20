@@ -13,18 +13,18 @@
   import { isEmptyLocation } from "$components/Data/Deal/Sections/Locations/locations"
   import { dealSectionLookup } from "$components/Data/Deal/Sections/store"
   import SectionNav from "$components/Data/SectionNav.svelte"
+  import { getMutableObject } from "$components/Data/stores"
   import CountryField from "$components/Fields/Display2/CountryField.svelte"
   import LoadingSpinner from "$components/icons/LoadingSpinner.svelte"
   import ModalReallyQuit from "$components/ModalReallyQuit.svelte"
-
-  import { mutableDeal } from "./store"
 
   let { data, children } = $props()
 
   let savingInProgress = $state(false)
   let showReallyQuitOverlay = $state(false)
 
-  let hasBeenEdited = $derived(
+  const mutableDeal = getMutableObject("deal")
+  const hasBeenEdited = $derived(
     JSON.stringify(data.deal) !== JSON.stringify($mutableDeal),
   )
 

@@ -1,0 +1,255 @@
+<script lang="ts">
+  import { _ } from "svelte-i18n"
+
+  import { page } from "$app/state"
+
+  import { datasourceChoices } from "$lib/fieldChoices"
+  import type { components } from "$lib/openAPI"
+  import type { Model } from "$lib/types/data"
+
+  import IconTrashcan from "$components/Accountability/icons/IconTrashcan.svelte"
+  import { getMutableObject } from "$components/Data/stores"
+  import Modal from "$components/Modal.svelte"
+
+  interface Props {
+    open: boolean
+    model?: Model
+    editable?: boolean
+    fieldname: string
+    label: string
+  }
+
+  let {
+    open = $bindable(),
+    model = "deal",
+    editable = false,
+    fieldname,
+    label,
+  }: Props = $props()
+
+  const mutableObj = getMutableObject(model)
+
+  const dataSources = $derived($mutableObj?.selected_version.datasources ?? [])
+
+  const quotes: QuotationItem[] = $derived(
+    $mutableObj?.selected_version?.ds_quotations[fieldname] ?? [],
+  )
+
+  // let sortedQuotes: QuotationItem[] = $derived(
+  //   quotes.toSorted((a, b) => {
+  //     return (
+  //       dataSources.findIndex(ds => ds.nid === a.nid) -
+  //       dataSources.findIndex(ds => ds.nid === b.nid)
+  //     )
+  //   }),
+  // )
+
+  type QuotationItem = components["schemas"]["QuotationItem"]
+  type PartialQuotationItem = Partial<QuotationItem>
+
+  const createQuotation = (): PartialQuotationItem => ({
+    nid: dataSources.length > 0 ? dataSources[dataSources.length - 1].nid : undefined,
+  })
+
+  const deleteQuotation = (i: number) => {
+    if (i < quotes.length) {
+      $mutableObj.selected_version.ds_quotations[fieldname] = quotes.filter(
+        (_, index) => index !== i,
+      )
+    }
+  }
+
+  let newQuotation: PartialQuotationItem = $state(createQuotation())
+
+  const onsubmit = (event: SubmitEvent) => {
+    event.preventDefault()
+
+    if (!newQuotation.nid) {
+      return
+    }
+
+    $mutableObj.selected_version.ds_quotations[fieldname] = [
+      ...quotes,
+      $state.snapshot(newQuotation),
+    ]
+
+    newQuotation = createQuotation()
+  }
+
+  const padLeadingZeros = (nDigits: number, value: number) => {
+    return ("0".repeat(nDigits) + value.toString()).slice(-nDigits)
+  }
+</script>
+
+<Modal
+  class="h-full w-full px-4 py-8 lg:h-fit lg:w-2/3 lg:px-8 lg:py-12 dark:bg-gray-900"
+  bind:open
+  dismissible
+>
+  <div>
+    <h2 class="heading3">
+      {$_("Quotations")}
+    </h2>
+
+    {$_("Field")}:
+    <span class="font-bold italic">{label}</span>
+    <hr class="mb-4" />
+
+    <ul class="flex w-full flex-col gap-2">
+      {#each quotes as quote, i}
+        {@const dsIndex = dataSources.findIndex(ds => ds.nid === quote.nid)}
+
+        {#if dsIndex > -1}
+          {@const ds = dataSources[dsIndex]}
+          {@const dsTypeLabel = $datasourceChoices.type.find(
+            entry => entry.value === ds.type,
+          )?.label}
+
+          <li
+            class="flex border border-black p-2 hover:bg-gray-50 dark:border-white hover:dark:bg-a-gray-800"
+          >
+            <div class="w-max-[75%] flex flex-col">
+              <div class="font-bold">
+                <span>
+                  {padLeadingZeros(2, dsIndex + 1)}. {$_("Data Source")}
+                </span>
+                <span>
+                  ({dsTypeLabel})
+                  {ds.name}
+                </span>
+                <a
+                  class="mx-2 font-mono text-sm italic text-purple-400 hover:text-purple-500"
+                  href="/deal/{page.data.dealID}/{page.data.dealVersion
+                    ? page.data.dealVersion + '/'
+                    : ''}data-sources/#{ds.nid}"
+                  target="_blank"
+                  rel="noreferrer"
+                  title={$_("View Data Source")}
+                >
+                  #{ds.nid}
+                </a>
+              </div>
+
+              <div class="flex gap-5">
+                <span class="text-nowrap italic text-gray-700 dark:text-gray-100">
+                  {$_("Page: {pageNumber}", {
+                    values: { pageNumber: quote.page ?? "--" },
+                  })}
+                </span>
+
+                <span
+                  class="line-clamp-1 text-ellipsis italic text-gray-700 dark:text-gray-100"
+                  title={quote.comment}
+                >
+                  {$_("Comment:")}
+                  {@html quote.comment ?? "--"}
+                </span>
+              </div>
+            </div>
+
+            <span class="flex-grow"></span>
+
+            {#if editable}
+              <button
+                class="p-2 text-red-400 hover:text-red-500"
+                type="button"
+                title={$_("Delete Quotation")}
+                onclick={() => deleteQuotation(i)}
+              >
+                <IconTrashcan />
+              </button>
+            {/if}
+          </li>
+        {:else}
+          <span class="color-red-400">
+            {$_("Could not find data source") + `${quote.nid}`}
+          </span>
+        {/if}
+      {:else}
+        <li class="flex border border-black p-2 dark:border-white">
+          {$_("No quotations yet")}
+        </li>
+      {/each}
+    </ul>
+
+    {#if editable}
+      <h2 class="heading4 mt-8">
+        {$_("Create:")}
+      </h2>
+      <form class="mt-6 flex flex-col gap-4" {onsubmit}>
+        <fieldset class="flex flex-wrap gap-y-2">
+          <legend class="mb-2 inline-block">
+            {$_("Select data source:")}
+          </legend>
+
+          {#each dataSources as dataSource, i}
+            {@const dsTypeLabel = $datasourceChoices.type.find(
+              entry => entry.value === dataSource.type,
+            )?.label}
+            <div class="basis-1/2 font-bold xl:basis-1/3">
+              <input
+                type="radio"
+                id="data-source-{dataSource.nid}"
+                name="data-source-nid"
+                bind:group={newQuotation.nid}
+                value={dataSource.nid}
+              />
+              <label
+                class="inline-flex cursor-pointer flex-col"
+                for="data-source-{dataSource.nid}"
+              >
+                {padLeadingZeros(2, i + 1)}. {$_("Data Source")}
+
+                <span>
+                  ({dsTypeLabel})
+                  {dataSource.name}
+                </span>
+                <a
+                  class="mx-2 font-mono text-sm italic text-purple-400 hover:text-purple-500"
+                  href="/deal/{page.data.dealID}/{page.data
+                    .dealVersion}/data-sources/#{dataSource.nid}"
+                  target="_blank"
+                  rel="noreferrer"
+                  title={$_("View Data Source")}
+                >
+                  #{dataSource.nid}
+                </a>
+              </label>
+            </div>
+          {/each}
+        </fieldset>
+
+        <div>
+          <label class="mb-2 inline-block" for="page-number">
+            {$_("Choose page (optional):")}
+          </label>
+          <input
+            id="page-number"
+            class="inpt"
+            bind:value={newQuotation.page}
+            type="number"
+            placeholder="0"
+            min="0"
+            max="999"
+          />
+        </div>
+
+        <div>
+          <label class="mb-2 inline-block" for="comment">
+            {$_("Add comment (optional):")}
+          </label>
+          <textarea
+            class="inpt"
+            id="comment"
+            bind:value={newQuotation.comment}
+            placeholder="comment"
+          ></textarea>
+        </div>
+
+        <button class="btn btn-black" type="submit" disabled={!newQuotation.nid}>
+          {$_("Add Quotation")}
+        </button>
+      </form>
+    {/if}
+  </div>
+</Modal>

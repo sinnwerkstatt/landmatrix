@@ -54,6 +54,18 @@ class LooseDateStr(str):
         )
 
 
+class QuotationItem(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    nid: str
+    page: int | None = None
+    comment: str | None = None
+
+
+class DataSourceQuotationSchema(RootModel):
+    root: dict[str, list[QuotationItem]]
+
+
 class CurrentDateAreaSchema(ListRootModel):
     class CurrentDateAreaItem(BaseModel):
         model_config = ConfigDict(extra="forbid")

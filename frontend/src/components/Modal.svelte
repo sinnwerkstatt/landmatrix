@@ -84,7 +84,8 @@
     }
   }
   dialog::backdrop {
-    @apply bg-black/20;
+    /* FIXME: does not work for dark mode !!! */
+    @apply bg-black/20 dark:bg-white/20;
     backdrop-filter: blur(1px);
   }
   dialog[open]::backdrop {
