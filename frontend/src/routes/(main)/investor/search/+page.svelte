@@ -2,32 +2,30 @@
   import { error } from "@sveltejs/kit"
   import { _ } from "svelte-i18n"
 
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import type { SearchedInvestor } from "$lib/types/data"
 
   import CountryField from "$components/Fields/Display2/CountryField.svelte"
 
-  let value = ""
+  let value = $state("")
 
-  let actives: SearchedInvestor[] = []
-  let drafts: SearchedInvestor[] = []
+  let actives: SearchedInvestor[] = $state([])
+  let drafts: SearchedInvestor[] = $state([])
 
-  async function getSearchResults(v: string) {
-    if (v.length < 3) {
+  async function getSearchResults() {
+    if (value.length < 3) {
       actives = []
       drafts = []
       return
     }
-    const req = await $page.data.apiClient.GET("/api/investor_search/", {
-      params: { query: { q: v } },
+    const req = await page.data.apiClient.GET("/api/investor_search/", {
+      params: { query: { q: value } },
     })
-    // @ts-expect-error openapi-fetch types broken
-    if (req.error) error(500, req.error)
+    if ("error" in req) error(500, req.error)
     actives = req.data.filter(i => i.active_version_id)
     drafts = req.data.filter(i => i.draft_version_id)
   }
-  $: getSearchResults(value)
 </script>
 
 <div class="mt-12 flex w-full items-center justify-center">
@@ -36,7 +34,7 @@
 
 <div class="container mx-auto">
   <form class="flex justify-center">
-    <input bind:value class="inpt w-1/2" placeholder="" />
+    <input bind:value oninput={getSearchResults} class="inpt w-1/2" placeholder="" />
   </form>
 
   <div class="mt-10">

@@ -2,10 +2,13 @@
   import { currencies } from "$lib/stores"
   import type { Currency } from "$lib/types/data"
 
-  export let value: number | null
+  interface Props {
+    value: number | null
+  }
 
-  let currency: Currency | undefined
-  $: currency = $currencies.find(c => c.id === value)
+  let { value }: Props = $props()
+
+  let currency: Currency | undefined = $derived($currencies.find(c => c.id === value))
 </script>
 
 {#if currency}

@@ -5,21 +5,23 @@
   import { investorFields } from "$lib/fieldLookups"
   import { investorsNG } from "$lib/stores"
   import { isMobile } from "$lib/stores/basics"
+  import type { InvestorHull } from "$lib/types/data"
 
   import DataContainer from "$components/Data/DataContainer.svelte"
   import { showContextBar, showFilterBar } from "$components/Data/stores"
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import Table, { type Column } from "$components/Table/Table.svelte"
 
-  let columns: Column[]
-  $: columns = [
-    { key: "modified_at", colSpan: 2, submodel: "selected_version" },
-    { key: "id", colSpan: 1 },
-    { key: "name", colSpan: 5, submodel: "selected_version" },
-    { key: "country_id", colSpan: 5, submodel: "selected_version" },
-    { key: "classification", colSpan: 3, submodel: "selected_version" },
-    { key: "deals", colSpan: 1 },
-  ].map(c => ({ ...c, label: $investorFields[c.key].label }))
+  let columns: Column[] = $derived(
+    [
+      { key: "modified_at", colSpan: 2, submodel: "selected_version" },
+      { key: "id", colSpan: 1 },
+      { key: "name", colSpan: 5, submodel: "selected_version" },
+      { key: "country_id", colSpan: 5, submodel: "selected_version" },
+      { key: "classification", colSpan: 3, submodel: "selected_version" },
+      { key: "deals", colSpan: 1 },
+    ].map(c => ({ ...c, label: $investorFields[c.key].label })),
+  )
 
   onMount(() => {
     showContextBar.set(false)
@@ -27,6 +29,11 @@
   })
   const wrapperClass = "p-1"
   const valueClass = ""
+
+  type fieldType = {
+    fieldName: string
+    obj: InvestorHull
+  }
 </script>
 
 <svelte:head>
@@ -37,9 +44,9 @@
   <div class="flex h-full">
     <div
       class="h-full min-h-[3px] w-0 flex-none {$showFilterBar
-        ? 'md:w-[clamp(220px,20%,300px)]'
+        ? 'md:w-[clamp(220px,20%,400px)]'
         : ''}"
-    />
+    ></div>
 
     <div class="flex h-full w-1 grow flex-col px-6 pb-6">
       <div class="flex h-20 items-center text-lg">
@@ -48,7 +55,7 @@
       </div>
 
       <Table {columns} items={$investorsNG} sortBy="-modified_at">
-        <svelte:fragment let:fieldName let:obj slot="field">
+        {#snippet field({ fieldName, obj }: fieldType)}
           {@const col = columns.find(c => c.key === fieldName)}
           <DisplayField
             fieldname={col.key}
@@ -57,11 +64,13 @@
             {wrapperClass}
             {valueClass}
           />
-        </svelte:fragment>
+        {/snippet}
       </Table>
     </div>
   </div>
-  <div slot="FilterBar">
-    <h2 class="heading5 my-2 px-2">{$_("Data settings")}</h2>
-  </div>
+  {#snippet FilterBarSnippet()}
+    <div>
+      <h2 class="heading5 my-2 px-2">{$_("Data settings")}</h2>
+    </div>
+  {/snippet}
 </DataContainer>

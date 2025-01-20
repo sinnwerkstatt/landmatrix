@@ -5,16 +5,31 @@
   import IconCheckCircle from "./icons/IconCheckCircle.svelte"
   import IconEye from "./icons/IconEye.svelte"
 
-  export let label: string = "Label"
-  export let value: string = "Value"
-  export let button: string = ""
-  export let href: string = ""
-  export let hrefLabel = "A link leading to href"
-  export let loader = false
+  interface Props {
+    label?: string
+    value?: string
+    button?: string
+    href?: string
+    hrefLabel?: string
+    loader?: boolean
+    color?: "neutral" | "orange" | "green"
+    icon?: "" | "check" | "eye"
+    labelPosition?: "top" | "bottom"
+    onclick?: () => void
+  }
 
-  export let color: "neutral" | "orange" | "green" = "neutral"
-  export let icon: "" | "check" | "eye" = ""
-  export let labelPosition: "top" | "bottom" = "bottom"
+  let {
+    label = "Label",
+    value = "Value",
+    button = "",
+    href = "",
+    hrefLabel = "A link leading to href",
+    loader = false,
+    color = "neutral",
+    icon = "",
+    labelPosition = "bottom",
+    onclick,
+  }: Props = $props()
 
   const icons = [
     { icon: "", component: false },
@@ -22,13 +37,11 @@
     { icon: "eye", component: IconEye },
   ]
 
-  function getColorScheme() {
+  let colorScheme = $derived.by(() => {
     if (color == "orange") return "bg-a-primary-100 text-a-primary-500"
     if (color == "green") return "bg-a-success-50 text-a-success-500"
     return "bg-a-gray-100 text-a-gray-900"
-  }
-
-  $: colorScheme = getColorScheme()
+  })
 </script>
 
 <Card>
@@ -39,11 +52,9 @@
 
     <div class="flex items-center gap-2">
       {#if icon}
+        {@const SvelteComponent = icons.find(e => e.icon == icon)?.component}
         <div class="grid h-[3rem] w-[3rem] place-items-center rounded-lg {colorScheme}">
-          <svelte:component
-            this={icons.find(e => e.icon == icon)?.component}
-            size="24"
-          />
+          <SvelteComponent size="24" />
         </div>
       {/if}
       {#if loader}
@@ -59,7 +70,7 @@
       {/if}
 
       {#if button}
-        <Button type="outline" style="neutral" label={button} on:click />
+        <Button type="outline" style="neutral" label={button} {onclick} />
       {/if}
 
       {#if href}

@@ -3,7 +3,7 @@
   import Select from "svelte-select"
   import { twMerge } from "tailwind-merge"
 
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import { stateMap } from "$lib/newUtils"
   import { Version2Status, type DealHull, type InvestorHull } from "$lib/types/data"
@@ -13,19 +13,30 @@
 
   import { managementFilters } from "./state"
 
-  export let showFilters = false
-  export let objects: Array<DealHull | InvestorHull> = []
-  export let model: "deal" | "investor" = "deal"
+  const checkType = (_o: DealHull | InvestorHull): _o is DealHull => model === "deal"
 
-  const checkType = (o: DealHull | InvestorHull): o is DealHull => model === "deal"
+  interface Props {
+    showFilters?: boolean
+    objects?: Array<DealHull | InvestorHull>
+    model?: "deal" | "investor"
+    createdByUserIDs: Set<number>
+    modifiedByUserIDs: Set<number>
+  }
 
-  export let createdByUserIDs: Set<number>
-  export let modifiedByUserIDs: Set<number>
+  let {
+    showFilters = false,
+    objects = [],
+    model = "deal",
+    createdByUserIDs,
+    modifiedByUserIDs,
+  }: Props = $props()
 
-  $: objectsCountryIDs = objects?.map(d =>
-    checkType(d) ? d.country_id : d.selected_version.country_id,
+  let objectsCountryIDs = $derived(
+    objects?.map(d => (checkType(d) ? d.country_id : d.selected_version.country_id)),
   )
-  $: relCountries = $page.data.countries.filter(c => objectsCountryIDs.includes(c.id))
+  let relCountries = $derived(
+    page.data.countries.filter(c => objectsCountryIDs.includes(c.id)),
+  )
 
   // const STATI = Object.values(Version2Status)
   const RELEVANT_STATI = [
@@ -33,13 +44,14 @@
     Version2Status.REVIEW,
     Version2Status.ACTIVATION,
   ]
-  let statusItems: { value: Version2Status; label: string }[]
-  $: statusItems = Object.values(Version2Status)
-    .filter(v => RELEVANT_STATI.includes(v))
-    .map(v => ({
-      value: v,
-      label: $stateMap[v].title,
-    }))
+  let statusItems: { value: Version2Status; label: string }[] = $derived(
+    Object.values(Version2Status)
+      .filter(v => RELEVANT_STATI.includes(v))
+      .map(v => ({
+        value: v,
+        label: $stateMap[v].title,
+      })),
+  )
 </script>
 
 <div

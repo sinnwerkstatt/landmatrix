@@ -3,18 +3,18 @@
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import { getCsrfToken } from "$lib/utils"
 
   import PageTitle from "$components/PageTitle.svelte"
 
-  let retJson: { ok: boolean; code?: string } | undefined
+  let retJson: { ok: boolean; code?: string } | undefined = $state()
   async function register_confirm() {
     const ret = await fetch("/api/user/register_confirm/", {
       method: "POST",
       credentials: "include",
-      body: JSON.stringify({ activation_key: $page.params.activation_key }),
+      body: JSON.stringify({ activation_key: page.params.activation_key }),
       headers: {
         "X-CSRFToken": await getCsrfToken(),
         "Content-Type": "application/json",

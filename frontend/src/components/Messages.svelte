@@ -2,7 +2,7 @@
   import { _ } from "svelte-i18n"
 
   import { browser } from "$app/environment"
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import type { components } from "$lib/openAPI"
 
@@ -57,13 +57,13 @@
 {#await getMessages() then msgs}
   {#each msgs
     .filter(m => !m.allow_users_to_hide || !acknowledgedMessages.includes(m.id))
-    .filter(m => (m.logged_in_only ? !!$page.data.user : true)) as msg}
+    .filter(m => (m.logged_in_only ? !!page.data.user : true)) as msg}
     <Overlay
       visible
       title={msg.title}
       class={levelClasses[msg.level]}
       closeButtonText={$_("OK")}
-      on:close={() => {
+      onclose={() => {
         const checkbox = document.getElementById(`do-not-show-again-${msg.id}`)
         // typescript support for templates comes with svelte5:
         // https://github.com/sveltejs/svelte/issues/4701
@@ -83,5 +83,4 @@
       {/if}
     </Overlay>
   {/each}
-  <Overlay />
 {/await}

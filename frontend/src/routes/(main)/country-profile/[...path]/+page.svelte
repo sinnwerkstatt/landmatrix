@@ -10,7 +10,7 @@
   import DealDisplayToggle from "$components/DealDisplayToggle.svelte"
   import LoadingPulse from "$components/LoadingPulse.svelte"
 
-  export let data
+  let { data } = $props()
 
   onMount(() => {
     showContextBar.set(!$isMobile)
@@ -27,17 +27,16 @@
     {#if $dealsNG.length === 0}
       <LoadingPulse />
     {:else}
-      <svelte:component
-        this={data.profile.component}
-        deals={$dealsNG.map(d => d.selected_version)}
-      />
+      <data.profile.component deals={$dealsNG.map(d => d.selected_version)} />
     {/if}
   </div>
 
-  <div slot="ContextBar">
-    <h2 class="heading5">{$_("Country profile charts")}</h2>
-    <!-- TODO: Generalize chartDescriptions to include country profiles as well -->
-    <!-- <div>{@html $chartDescriptions[data.profile.key] ?? ""}</div>-->
-    <DealDisplayToggle />
-  </div>
+  {#snippet ContextBar()}
+    <div>
+      <h2 class="heading5">{$_("Country profile charts")}</h2>
+      <!-- TODO: Generalize chartDescriptions to include country profiles as well -->
+      <!-- <div>{@html $chartDescriptions[data.profile.key] ?? ""}</div>-->
+      <DealDisplayToggle />
+    </div>
+  {/snippet}
 </ChartsContainer>

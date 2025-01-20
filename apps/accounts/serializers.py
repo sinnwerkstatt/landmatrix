@@ -29,6 +29,8 @@ class LeanUserSerializer(ReadOnlyModelSerializer):
 
 
 class UserSerializer(ReadOnlyModelSerializer):
+    is_contexthelp_editor = serializers.SerializerMethodField()
+
     class Meta:
         model = User
         fields = [
@@ -46,4 +48,9 @@ class UserSerializer(ReadOnlyModelSerializer):
             "is_superuser",
             "is_staff",
             "is_active",
+            "is_contexthelp_editor",
         ]
+
+    @staticmethod
+    def get_is_contexthelp_editor(obj) -> bool:
+        return obj.groups.filter(name="Context Help Editor").exists()

@@ -9,6 +9,7 @@ from drf_spectacular.views import (
 from rest_framework import routers
 
 import apps.landmatrix.views.management as management_views
+import apps.landmatrix.views.context_help as contexthelp_views
 from apps.accounts import views as user_views
 from apps.api import views as api_views
 from apps.blog.views import BlogCategoryViewSet, BlogPageViewSet
@@ -38,6 +39,7 @@ router.register(r"investorversions", newviews.InvestorVersionViewSet)
 router.register(r"messages", MessageViewSet)
 router.register(r"blog_categories", BlogCategoryViewSet)
 router.register(r"blog_pages", BlogPageViewSet)
+router.register(r"context_help", contexthelp_views.ContextHelpViewSet)
 
 urlpatterns = [
     path("quality-indicators/", include(qi_urls)),

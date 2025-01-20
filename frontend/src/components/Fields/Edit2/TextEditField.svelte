@@ -2,10 +2,6 @@
   import AtIcon from "$components/icons/AtIcon.svelte"
   import LinkIcon from "$components/icons/LinkIcon.svelte"
 
-  export let value: string | string[]
-  export let fieldname: string
-  export let label = ""
-
   interface Extras {
     url?: boolean
     ocid?: boolean
@@ -14,17 +10,38 @@
     required?: boolean
   }
 
-  export let extras: Extras = {
-    url: false,
-    ocid: false,
-    email: false,
-    multiline: false,
-    required: false,
+  interface Props {
+    value: string | string[]
+    fieldname: string
+    label?: string
+    extras?: Extras
+    onchange?: () => void
   }
+
+  let {
+    value = $bindable(),
+    fieldname,
+    label = "",
+    extras = {
+      url: false,
+      ocid: false,
+      email: false,
+      multiline: false,
+      required: false,
+    },
+    onchange,
+  }: Props = $props()
 </script>
 
 {#if extras.multiline}
-  <textarea bind:value class="inpt" name={fieldname} rows="5" placeholder={label} />
+  <textarea
+    bind:value
+    class="inpt"
+    name={fieldname}
+    rows="5"
+    placeholder={label}
+    oninput={e => onchange?.(e)}
+  ></textarea>
 {:else if extras.url}
   <div class="flex">
     <input
@@ -34,6 +51,7 @@
       name={fieldname}
       required={extras.required}
       placeholder={label}
+      oninput={e => onchange?.(e)}
     />
     <div
       class="flex items-center justify-center border border-l-0 border-gray-300 bg-gray-200 px-3 py-1.5 text-gray-600"
@@ -50,6 +68,7 @@
       name={fieldname}
       required={extras.required}
       placeholder={label}
+      oninput={e => onchange?.(e)}
     />
     <div
       class="flex items-center justify-center border border-l-0 border-gray-300 bg-gray-200 px-3 py-1.5 text-gray-600"
@@ -65,5 +84,6 @@
     name={fieldname}
     required={extras.required}
     placeholder={label}
+    oninput={e => onchange?.(e)}
   />
 {/if}

@@ -4,7 +4,7 @@
   import { _ } from "svelte-i18n"
   import { fade, slide } from "svelte/transition"
 
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import { filters } from "$lib/filters"
   import { clickOutside } from "$lib/helpers"
@@ -27,33 +27,38 @@
   let model: Model = "deal"
   type Item = components["schemas"]["DealQISnapshot"]
 
-  $: qiPromise = $page.data.apiClient
-    .GET("/api/quality-indicators/")
-    .then(res => ("error" in res ? Promise.reject(res.error) : res.data!))
+  let qiPromise = $derived(
+    page.data.apiClient
+      .GET("/api/quality-indicators/")
+      .then(res => ("error" in res ? Promise.reject(res.error) : res.data)),
+  )
 
-  $: statsPromise = $page.data.apiClient
-    .GET("/api/quality-indicators/stats/")
-    .then(res => ("error" in res ? Promise.reject(res.error) : res.data!))
+  let statsPromise = $derived(
+    page.data.apiClient
+      .GET("/api/quality-indicators/stats/")
+      .then(res => ("error" in res ? Promise.reject(res.error) : res.data)),
+  )
 
   const formatRatio = (a: number, b: number): string =>
     `${((a / b) * 100).toFixed(1)} %`
 
-  let columns: Column[]
-  $: columns = [
+  let columns: Column[] = $derived([
     // { key: "id", colSpan: 1, label: $_("ID") },
     { key: "created_at", colSpan: 2, label: $_("Date") },
     { key: "region", colSpan: 5, label: $_("LM Region") },
     { key: "subset_key", colSpan: 5, label: $_("Subset") },
     { key: "TOTAL", colSpan: 3, label: $_("#Total deals"), submodel: "data" },
     { key: "actions", colSpan: 3, label: $_("Actions") },
-  ]
+  ])
 
-  let selectedItemId: number | null = null
+  let selectedItemId: number | null = $state(null)
 
-  const onClickEntry = (id: number) => {
+  const onClickEntry = (e: MouseEvent, id: number) => {
+    e.stopPropagation()
     selectedItemId = id === selectedItemId ? null : id
   }
-  const downloadSingle = (item: Item) => {
+  const downloadSingle = (e: MouseEvent, item: Item) => {
+    e.stopPropagation()
     const blob = createBlob("json", item)
     const filename =
       new Date(item.created_at).toISOString().slice(0, 10) +
@@ -69,24 +74,26 @@
     region: number | null | "none"
     subset: string | null | "none"
   }
-  let filter: Filter = {
+  let filter: Filter = $state({
     startDate: dayjs().subtract(90, "day").toDate(),
     endDate: new Date(),
     region: "none",
     subset: "none",
-  }
+  })
 
-  $: satisfiesFilter = (item: components["schemas"]["DealQISnapshot"]): boolean => {
-    const date = new Date(item.created_at)
-    return (
-      date >= filter.startDate &&
-      date <= filter.endDate &&
-      (filter.region === "none" || item.region === filter.region) &&
-      (filter.subset === "none" || item.subset_key === filter.subset)
-    )
-  }
+  let satisfiesFilter = $derived(
+    (item: components["schemas"]["DealQISnapshot"]): boolean => {
+      const date = new Date(item.created_at)
+      return (
+        date >= filter.startDate &&
+        date <= filter.endDate &&
+        (filter.region === "none" || item.region === filter.region) &&
+        (filter.subset === "none" || item.subset_key === filter.subset)
+      )
+    },
+  )
 
-  let showDownloadModal = false
+  let showDownloadModal = $state(false)
 
   const download = (
     e: DownloadEvent,
@@ -100,8 +107,8 @@
     const blob = createBlob(e.detail, flatData)
     const context: DownloadContext = {
       filters: $filters,
-      regions: $page.data.regions,
-      countries: $page.data.countries,
+      regions: page.data.regions,
+      countries: page.data.countries,
     }
     const filename = createFilename("quality-over-time", e.detail, context)
 
@@ -132,7 +139,7 @@
   <select id="qi-region-select" class="inpt w-40" bind:value={filter.region}>
     <option value={"none"} selected>{$_("All Regions")}</option>
     <option value={null}>{$_("Global")}</option>
-    {#each $page.data.regions as region}
+    {#each page.data.regions as region}
       <option value={region.id}>{region.name}</option>
     {/each}
   </select>
@@ -147,9 +154,9 @@
     {/await}
   </select>
 
-  <span class="flex-grow" />
+  <span class="flex-grow"></span>
   <ActionButton
-    on:click={() => (showDownloadModal = true)}
+    onclick={() => (showDownloadModal = true)}
     icon={DownloadIcon}
     label={$_("Download")}
   />
@@ -168,11 +175,11 @@
     />
 
     <Table {columns} items={filtered} rowHeightInPx={35} headerHeightInPx={45}>
-      <svelte:fragment slot="field" let:fieldName let:obj>
+      {#snippet field({ fieldName, obj })}
         {#if fieldName === "subset_key"}
           {data.deal_subset.find(x => x.key === obj.subset_key)?.description ?? "-----"}
         {:else if fieldName === "region"}
-          {$page.data.regions.find(r => r.id === obj["region"])?.name ?? "-----"}
+          {page.data.regions.find(r => r.id === obj["region"])?.name ?? "-----"}
         {:else if fieldName === "TOTAL"}
           {obj["data"]["TOTAL"]}
         {:else if fieldName === "created_at"}
@@ -181,19 +188,21 @@
           <span class="space-x-2">
             <button
               title={$_("Download")}
-              on:click|stopPropagation={() => downloadSingle(obj)}
+              type="button"
+              onclick={e => downloadSingle(e, obj)}
             >
               <DownloadIcon />
             </button>
             <button
               title={$_("View")}
-              on:click|stopPropagation={() => onClickEntry(obj.id)}
+              type="button"
+              onclick={e => onClickEntry(e, obj.id)}
             >
               <EyeIcon />
             </button>
           </span>
         {/if}
-      </svelte:fragment>
+      {/snippet}
     </Table>
 
     {#if item}
@@ -205,16 +214,14 @@
         <div
           transition:slide={{ duration: 150 }}
           class="max-h-[90vh] w-2/3 overflow-y-auto border bg-white p-2 text-black shadow-xl dark:bg-gray-700 dark:text-white"
-          on:outClick={() => {
-            selectedItemId = null
-          }}
+          onoutClick={() => (selectedItemId = null)}
           use:clickOutside
         >
           <h3 class="heading4">{$_("Deal Quality Indicators")}</h3>
           <div class="my-4 flex gap-4 font-bold">
             <span><DateTimeField value={item.created_at} /></span>
             <span>
-              {$page.data.regions.find(r => r.id === item.region)?.name ?? "-----"}
+              {page.data.regions.find(r => r.id === item.region)?.name ?? "-----"}
             </span>
             <span>
               {data.deal_subset.find(x => x.key === item.subset_key)?.description ??

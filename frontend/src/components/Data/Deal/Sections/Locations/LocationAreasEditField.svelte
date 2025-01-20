@@ -1,14 +1,24 @@
 <script lang="ts">
-  import type { FeatureCollection, GeoJsonObject, MultiPolygon } from "geojson"
-  import type { Map } from "leaflet?client"
-  import { onDestroy, onMount } from "svelte"
+  import type {
+    FeatureCollection,
+    GeoJsonObject,
+    MultiPolygon as MultiPolygonType,
+  } from "geojson"
+  import { Feature, Overlay as OLOverlay, type Map } from "ol"
+  import { GeoJSON } from "ol/format"
+  import { MultiPolygon } from "ol/geom"
+  import { Vector as VectorLayer } from "ol/layer"
+  import { Vector as VectorSource } from "ol/source"
+  import { Fill, Stroke, Style } from "ol/style"
+  import { mount, onDestroy, onMount } from "svelte"
   import { _ } from "svelte-i18n"
   import { quintOut } from "svelte/easing"
   import { crossfade } from "svelte/transition"
+  import { twMerge } from "tailwind-merge"
 
+  import { areaChoices, createLabels } from "$lib/fieldChoices"
   import { newNanoid } from "$lib/helpers"
-  import { createLabels, fieldChoices } from "$lib/stores"
-  import type { Area, AreaFeature, AreaFeatureLayer, AreaType } from "$lib/types/data"
+  import type { components } from "$lib/openAPI"
   import { validate } from "$lib/utils/geojsonValidation"
 
   import Label2 from "$components/Fields/Display2/Label2.svelte"
@@ -17,77 +27,125 @@
     cardClass,
     labelClass,
   } from "$components/Fields/Edit2/JSONFieldComponents/consts"
-  import CurrentRadio from "$components/Fields/Edit2/JSONFieldComponents/CurrentRadio.svelte"
   import Date from "$components/Fields/Edit2/JSONFieldComponents/Date.svelte"
   import EyeIcon from "$components/icons/EyeIcon.svelte"
   import EyeSlashIcon from "$components/icons/EyeSlashIcon.svelte"
   import TrashIcon from "$components/icons/TrashIcon.svelte"
+  import { fitMapToFeatures } from "$components/Map/mapstuff.svelte.js"
   import Overlay from "$components/Overlay.svelte"
 
   import LocationAreaTooltip from "./LocationAreaTooltip.svelte"
-  import {
-    AREA_TYPES,
-    areaToFeature,
-    createAreaFeaturesLayer,
-    fitBounds,
-  } from "./locations"
+  import { AREA_TYPE_COLOR_MAP, AREA_TYPES } from "./locations"
 
-  export let map: Map | undefined
-  export let areas: Area[]
-
-  export let isSelectedEntry: boolean
-
-  let showAddAreaOverlay = false
-  let toAddFiles: FileList | undefined
-
-  let selectedAreaType: AreaType | null = null
-
-  $: areaTypeLabels = createLabels<AreaType>($fieldChoices.area.type)
-
-  $: currentGroups = AREA_TYPES.reduce(
-    (acc, val) => ({
-      ...acc,
-      [val]: areas.filter(a => a.type === val).findIndex(a => a.current),
-    }),
-    {},
-  ) as { [key in AreaType]: number }
-
-  let features: AreaFeature[]
-  let layer: AreaFeatureLayer
-
-  let hiddenMap: { [id: string]: boolean } = {}
-
-  $: features = areas.map(areaToFeature).map(f => ({
-    ...f,
-    properties: { ...f.properties, visible: !hiddenMap[f.id!] },
-  }))
-
-  $: if (map && layer) {
-    map.removeLayer(layer)
-    layer = createAreaFeaturesLayer(features, LocationAreaTooltip, isSelectedEntry)
-    map.addLayer(layer)
-
-    // fitBounds(map)
+  interface Props {
+    map: Map
+    areas: components["schemas"]["LocationArea"][]
+    isSelectedEntry: boolean
+    onchange?: () => void
   }
 
-  onMount(() => {
-    layer = createAreaFeaturesLayer(features, LocationAreaTooltip, isSelectedEntry)
-    if (map) {
-      map.addLayer(layer)
+  let { map, areas = $bindable(), isSelectedEntry, onchange }: Props = $props()
 
-      fitBounds(map)
+  const readOpts = { dataProjection: "EPSG:4326", featureProjection: "EPSG:3857" }
+  const polygonVectorSource = new VectorSource()
+
+  let showAddAreaOverlay = $state(false)
+  let toAddFiles: FileList | undefined = $state()
+
+  let selectedAreaType: components["schemas"]["LocationAreaTypeEnum"] | null =
+    $state(null)
+
+  let areaTypeLabels = $derived(
+    createLabels<components["schemas"]["LocationAreaTypeEnum"]>($areaChoices.type),
+  )
+
+  let currentGroups = $derived(
+    AREA_TYPES.reduce(
+      (acc, val) => ({
+        ...acc,
+        [val]: areas.filter(a => a.type === val).findIndex(a => a.current),
+      }),
+      {},
+    ) as { [key in components["schemas"]["LocationAreaTypeEnum"]]: number },
+  )
+
+  async function createPolygonOverlay(feature: Feature<MultiPolygon>) {
+    const overlayContainerDiv = document.createElement("div")
+    mount(LocationAreaTooltip, { target: overlayContainerDiv, props: { feature } })
+    return new OLOverlay({
+      element: overlayContainerDiv,
+      position: feature.getGeometry()?.getFirstCoordinate(),
+      positioning: "bottom-center",
+      offset: [-30, -30, -30, -30],
+      autoPan: { animation: { duration: 300 } },
+    })
+  }
+
+  let hiddenMap: { [id: string]: boolean } = $state({})
+
+  const areaFeatures = $derived.by(() => {
+    const _areaFeatures = []
+    for (const area of areas) {
+      if (hiddenMap?.[area.nid] === true) continue
+      const areaFeat = new GeoJSON().readFeature(area.area, readOpts) as Feature
+      areaFeat.setProperties({
+        nid: area.nid,
+        type: area.type,
+        date: area.date ?? "",
+        current: !!area.current,
+      })
+
+      areaFeat.setStyle(
+        new Style({
+          stroke: new Stroke({ lineDash: [5, 5], color: "black", width: 1.5 }),
+          fill: new Fill({
+            color: isSelectedEntry
+              ? `${AREA_TYPE_COLOR_MAP[area.type]}99`
+              : "#7A7A7A99",
+          }),
+        }),
+      )
+      _areaFeatures.push(areaFeat)
     }
+    return _areaFeatures
+  })
+
+  onMount(() => {
+    map.addLayer(new VectorLayer({ source: polygonVectorSource }))
+
+    map.on("pointermove", evt => {
+      const feature = map!.forEachFeatureAtPixel(
+        evt.pixel,
+        feature => feature as Feature<MultiPolygon>,
+      )
+
+      if (feature && polygonVectorSource.hasFeature(feature)) {
+        createPolygonOverlay(feature as Feature<MultiPolygon>).then(newOverlay => {
+          map.addOverlay(newOverlay)
+          map.getOverlays().forEach(overlay => {
+            if (overlay !== newOverlay) map!.removeOverlay(overlay)
+          })
+        })
+      } else {
+        map.getOverlays().forEach(overlay => map!.removeOverlay(overlay))
+      }
+    })
   })
 
   onDestroy(() => {
-    if (map) {
-      map.removeLayer(layer)
+    polygonVectorSource.clear()
+  })
 
-      // fitBounds(map)
+  $effect(() => {
+    polygonVectorSource.clear()
+    if (areaFeatures.length) {
+      polygonVectorSource.addFeatures(areaFeatures)
+      fitMapToFeatures(map)
     }
   })
 
-  const uploadFiles = (): void => {
+  const uploadFiles = (e: SubmitEvent): void => {
+    e.preventDefault()
     const reader = new FileReader()
 
     reader.addEventListener("load", event => {
@@ -100,7 +158,7 @@
         return
       }
 
-      const feature = (geoJsonObject as FeatureCollection<MultiPolygon>).features[0]
+      const feature = (geoJsonObject as FeatureCollection<MultiPolygonType>).features[0]
 
       const existingIds = areas.map(entry => entry.nid)
       areas = [
@@ -117,6 +175,7 @@
 
       showAddAreaOverlay = false
       toAddFiles = undefined
+      onchange?.()
     })
 
     if (toAddFiles) {
@@ -124,13 +183,17 @@
     }
   }
 
-  const updateCurrent = (areaType: AreaType, nid: string) => {
+  const updateCurrent = (
+    areaType: components["schemas"]["LocationAreaTypeEnum"],
+    nid: string,
+  ) => {
     areas = [
       ...areas.filter(a => a.type !== areaType),
       ...areas
         .filter(a => a.type === areaType)
         .map(a => ({ ...a, current: a.nid === nid })),
     ]
+    onchange?.()
   }
 
   const deleteArea = (nid: string) => {
@@ -157,10 +220,6 @@
       }
     },
   })
-
-  $: toggleVisibility = (nid: string) => {
-    hiddenMap[nid] = !hiddenMap[nid]
-  }
 </script>
 
 <div class="flex flex-col gap-2">
@@ -179,21 +238,32 @@
             in:receive={{ key: val.nid }}
             out:send={{ key: val.nid }}
           >
-            <Date bind:value={val.date} name="area_{val.nid}_date" />
-            <CurrentRadio
-              bind:group={currentGroups[areaType]}
-              name="{areaType}_current"
-              required={areasOfType.length > 0 && currentGroups[areaType] < 0}
-              disabled={!val.area}
-              value={index}
-              on:change={() => updateCurrent(areaType, val.nid)}
-            />
+            <Date bind:value={val.date} name="area_{val.nid}_date" {onchange} />
+
+            <label class={labelClass}>
+              {$_("Current")}
+              <input
+                type="radio"
+                class={twMerge(
+                  "size-5 accent-violet-400 ",
+                  areasOfType.length > 0 && currentGroups[areaType] < 0
+                    ? "ring-2 ring-red-600"
+                    : "",
+                )}
+                bind:group={currentGroups[areaType]}
+                name="{areaType}_current"
+                required={areasOfType.length > 0 && currentGroups[areaType] < 0}
+                disabled={!val.area}
+                value={index}
+                onchange={() => updateCurrent(areaType, val.nid)}
+              />
+            </label>
 
             <label class={labelClass} for="area_{val.nid}_type">
               {$_("Type")}
               <select
                 bind:value={val.type}
-                on:change
+                {onchange}
                 name="area_{val.nid}_type"
                 class="inpt w-auto"
               >
@@ -207,7 +277,7 @@
               <button
                 type="button"
                 title={isVisible ? $_("Hide") : $_("Show")}
-                on:click={() => toggleVisibility(val.nid)}
+                onclick={() => (hiddenMap[val.nid] = !hiddenMap[val.nid])}
               >
                 {#if isVisible}
                   <EyeSlashIcon class="h-5 w-5" />
@@ -217,7 +287,7 @@
               </button>
               <button
                 type="button"
-                on:click={() => deleteArea(val.nid)}
+                onclick={() => deleteArea(val.nid)}
                 title={$_("Remove entry")}
               >
                 <TrashIcon class="h-5 w-5 text-red-600" />
@@ -227,7 +297,7 @@
         {/each}
 
         <AddButton
-          on:click={() => {
+          onclick={() => {
             showAddAreaOverlay = true
             selectedAreaType = areaType
           }}
@@ -240,9 +310,9 @@
 <Overlay
   bind:visible={showAddAreaOverlay}
   title={$_("Add GeoJSON")}
-  on:close={() => (toAddFiles = undefined)}
+  onclose={() => (toAddFiles = undefined)}
   showSubmit
-  on:submit={uploadFiles}
+  onsubmit={uploadFiles}
   submitDisabled={!toAddFiles || !toAddFiles.length}
 >
   <label class="flex w-full items-center gap-2">

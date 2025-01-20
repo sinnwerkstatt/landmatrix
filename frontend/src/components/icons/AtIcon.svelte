@@ -1,6 +1,14 @@
+<script lang="ts">
+  interface Props {
+    class?: string
+  }
+
+  let { class: className = "size-4" }: Props = $props()
+</script>
+
 <svg
   xmlns="http://www.w3.org/2000/svg"
-  class={$$props.class ?? "h-4 w-4"}
+  class={className}
   fill="none"
   viewBox="0 0 24 24"
   stroke="currentColor"

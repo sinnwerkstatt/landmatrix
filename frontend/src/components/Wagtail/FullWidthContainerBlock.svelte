@@ -1,12 +1,16 @@
 <script lang="ts">
   import type { WagtailStreamfieldBlock } from "$lib/types/wagtail"
 
-  import { blockMap } from "$components/Wagtail/blocks"
+  import Block from "$components/Wagtail/Block.svelte"
 
-  export let value: {
-    content: WagtailStreamfieldBlock[]
-    color?: "white" | "lightgrey" | "darkgrey"
+  interface Props {
+    value: {
+      content: WagtailStreamfieldBlock[]
+      color?: "white" | "lightgrey" | "darkgrey"
+    }
   }
+
+  let { value }: Props = $props()
 
   const colorMap = {
     white: "bg-white dark:bg-gray-800",
@@ -20,6 +24,6 @@
   class="p-4 {value.color ? colorMap[value.color] : ''}"
 >
   {#each value.content as block}
-    <svelte:component this={blockMap[block.type]} bind:value={block.value} />
+    <Block {block} />
   {/each}
 </div>

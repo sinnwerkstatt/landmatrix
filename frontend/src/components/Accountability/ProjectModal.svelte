@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto } from "$app/navigation"
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import { filters } from "$lib/accountability/filters"
   import { usersToUserChoices } from "$lib/accountability/helpers"
@@ -22,22 +22,24 @@
   import Input from "./atomic/Input.svelte"
   import Modal from "./Modal.svelte"
 
-  $: userChoices = usersToUserChoices($users).filter(e => e.value != $page.data.user.id)
+  let userChoices = $derived(
+    usersToUserChoices($users).filter(e => e.value != page.data.user.id),
+  )
 
-  let disabledModal = false
-  let disabledContent = false
-  let title = ""
-  let form = {
+  let disabledModal = $state(false)
+  let disabledContent = $state(false)
+  let title = $state("")
+  let form = $state({
     name: undefined,
     description: undefined,
     editors: [],
-  }
-  let infos = [
+  })
+  let infos = $state([
     { label: "Created at:", value: undefined },
     { label: "Created by:", value: undefined },
     { label: "Last modification:", value: undefined },
     { label: "Last modification by:", value: undefined },
-  ]
+  ])
 
   function initModal(data) {
     if (data.action) {
@@ -104,20 +106,22 @@
       }
     }
   }
-  $: initModal($projectModalData)
+  $effect(() => {
+    initModal($projectModalData)
+  })
 
-  let formErrors = {}
-  $: formStatus = {
+  let formErrors = $state({})
+  let formStatus = $derived({
     name: formErrors.name ? "invalid" : "neutral",
     description: formErrors.description ? "invalid" : "neutral",
-  }
-  function resetFormErrors(form) {
-    console.log(form)
-    formErrors = {}
-  }
-  $: resetFormErrors(form)
+  })
+  $effect(() => {
+    if (form) formErrors = {}
+  })
 
   async function save() {
+    console.log("=== SAVE CALLED ===")
+
     formErrors = {}
     disabledModal = true
     disabledContent = true
@@ -153,7 +157,7 @@
     } else if ($projectModalData.action == "delete") {
       const res = await deleteProject($projectModalData.project.id)
       if (res.ok) {
-        if ($page.params.project == $projectModalData.project.id)
+        if (page.params.project == $projectModalData.project.id)
           goto(`/accountability/deals/0/`)
         $showProjectModal = false
         try {
@@ -177,7 +181,7 @@
   bind:open={$showProjectModal}
   {title}
   large={true}
-  on:click={save}
+  onclick={save}
   bind:disabled={disabledModal}
 >
   {#if $projectModalData.action == "delete"}
@@ -219,8 +223,8 @@
         badgeType="avatar"
       />
       <Avatar
-        initials={$me.initials}
-        label="{$me.name} (owner)"
+        initials={$me?.initials}
+        label="{$me?.name} (owner)"
         extraClass="mt-1"
         padding={true}
         disabled={disabledContent}

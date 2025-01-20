@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
   export const FILTER_MODES = ["custom", "default"] as const
   export type FilterMode = (typeof FILTER_MODES)[number]
 </script>
@@ -6,12 +6,13 @@
 <script lang="ts">
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
+  import type { EventHandler } from "svelte/elements"
   import { slide } from "svelte/transition"
 
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
+  import { createLabels, dealChoices } from "$lib/fieldChoices"
   import { filters } from "$lib/filters"
-  import { createLabels, fieldChoices } from "$lib/stores"
   import { IntentionOfInvestmentGroup } from "$lib/types/data"
 
   import FilterBarNegotiationStatusToggle from "$components/Data/FilterBarNegotiationStatusToggle.svelte"
@@ -28,16 +29,29 @@
     $filters = $filters.empty()
   })
 
-  export let open = false
-  export let disableSubmit = false
-  export let disableAdvanced = false
+  interface Props {
+    open: boolean
+    disableSubmit?: boolean
+    disableAdvanced?: boolean
+    onsubmit?: EventHandler<SubmitEvent, HTMLFormElement>
+  }
 
-  let filterModeGroup: FilterMode = "custom"
-  let filterModeLabel: { [key in FilterMode]: string }
-  $: filterModeLabel = {
+  let {
+    open = $bindable(),
+    disableSubmit = false,
+    disableAdvanced = false,
+    onsubmit,
+  }: Props = $props()
+
+  let filterModeGroup: FilterMode = $state("custom")
+  let filterModeLabel: { [key in FilterMode]: string } = $derived({
     default: $_("Default"),
     custom: $_("Custom"),
-  }
+  })
+
+  const ioiGroupLabels = $derived(
+    createLabels($dealChoices.intention_of_investment_group),
+  )
 </script>
 
 <Modal bind:open dismissible>
@@ -47,29 +61,29 @@
 
   <hr />
 
-  <form class="mt-6 w-full text-lg" on:submit|preventDefault>
+  <form class="mt-6 w-full text-lg" {onsubmit}>
     <div class="min-w-[33vw] self-start" dir="ltr">
       <RegionSelect
-        regions={$page.data.regions}
-        on:input={e => {
+        onclear={() => ($filters.region_id = undefined)}
+        oninput={e => {
           if (e.detail) {
             $filters.region_id = e.detail.id
             $filters.country_id = undefined
           }
         }}
-        on:clear={() => ($filters.region_id = undefined)}
-        value={$page.data.regions.find(c => c.id === $filters.region_id)}
+        regions={page.data.regions}
+        value={page.data.regions.find(c => c.id === $filters.region_id)}
       />
       <CountrySelect
-        countries={$page.data.countries}
-        on:input={e => {
+        countries={page.data.countries}
+        onclear={() => ($filters.country_id = undefined)}
+        oninput={e => {
           if (e.detail) {
             $filters.country_id = e.detail.id
             $filters.region_id = undefined
           }
         }}
-        on:clear={() => ($filters.country_id = undefined)}
-        value={$page.data.countries.find(c => c.id === $filters.country_id)}
+        value={page.data.countries.find(c => c.id === $filters.country_id)}
       />
 
       {#if !disableAdvanced}
@@ -90,7 +104,7 @@
                   name="filter-mode"
                   type="radio"
                   value={filterMode}
-                  on:click={() => handleFilterModeChange(filterMode)}
+                  onclick={() => handleFilterModeChange(filterMode)}
                 />
                 <label for={id} class="block">
                   {filterModeLabel[filterMode]}
@@ -104,7 +118,7 @@
           <div transition:slide={{ duration: 200 }}>
             <FilterCollapse
               clearable={$filters.transnational !== null}
-              on:clear={() => ($filters.transnational = null)}
+              onclear={() => ($filters.transnational = null)}
               title={$_("Scope")}
             >
               <label class="block">
@@ -131,7 +145,7 @@
 
             <FilterCollapse
               clearable={$filters.intention_of_investment.length > 0}
-              on:clear={() => ($filters.intention_of_investment = [])}
+              onclear={() => ($filters.intention_of_investment = [])}
               title={$_("Intention of investment")}
             >
               <label class="mb-2 block">
@@ -144,15 +158,13 @@
                 {$_("No information")}
               </label>
               {#each Object.keys(IntentionOfInvestmentGroup) as group}
-                {@const groupValues = $fieldChoices.deal.intention_of_investment.filter(
+                {@const groupValues = $dealChoices.intention_of_investment.filter(
                   entry => entry.group === group,
                 )}
 
                 <div class="mb-2">
                   <strong>
-                    {createLabels($fieldChoices.deal.intention_of_investment_group)[
-                      group
-                    ]}
+                    {ioiGroupLabels[group]}
                   </strong>
 
                   {#each groupValues as { value, label }}
@@ -174,7 +186,7 @@
 
             <FilterCollapse
               clearable={$filters.implementation_status.length > 0}
-              on:clear={() => ($filters.implementation_status = [])}
+              onclear={() => ($filters.implementation_status = [])}
               title={$_("Implementation status")}
             >
               <label class="block">
@@ -186,7 +198,7 @@
                 />
                 {$_("No information")}
               </label>
-              {#each $fieldChoices.deal.implementation_status as { value, label }}
+              {#each $dealChoices.implementation_status as { value, label }}
                 <label class="block">
                   <input
                     bind:group={$filters.implementation_status}
@@ -201,12 +213,12 @@
           </div>
         {/if}
       {:else}
-        <div class="h-20" />
+        <div class="h-20"></div>
       {/if}
     </div>
 
     <div class="mt-14 flex justify-end gap-4">
-      <button class="btn-outline" on:click={() => (open = false)} type="button">
+      <button class="btn-outline" onclick={() => (open = false)} type="button">
         {$_("Cancel")}
       </button>
       <button class="btn btn-violet" type="submit" disabled={disableSubmit}>

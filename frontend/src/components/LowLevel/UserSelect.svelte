@@ -5,24 +5,32 @@
 
   import VirtualListSelect from "./VirtualListSelect.svelte"
 
-  export let value: number | null = null
-  export let required = false
+  interface Props {
+    value?: number | null
+    required?: boolean
+    minimumRole?: UserRole
+    userIDs?: Set<number> | undefined
+  }
 
-  export let minimumRole: UserRole = UserRole.ANYBODY
-  export let userIDs: Set<number> | undefined = undefined
+  let {
+    value = $bindable(),
+    required = false,
+    minimumRole = UserRole.ANYBODY,
+    userIDs = undefined,
+  }: Props = $props()
 
-  $: items = $allUsers.length
-    ? $allUsers.filter(u => {
-        if (!u.is_active) return false
+  let items = $derived(
+    $allUsers.filter(u => {
+      if (!u.is_active) return false
 
-        if (u.id === value) return true
+      if (u.id === value) return true
 
-        if (userIDs) return userIDs!.has(u.id)
-        if (minimumRole > UserRole.ANYBODY) return hasRoleOrAbove(minimumRole)(u)
+      if (userIDs) return userIDs!.has(u.id)
+      if (minimumRole > UserRole.ANYBODY) return hasRoleOrAbove(minimumRole)(u)
 
-        return true
-      })
-    : []
+      return true
+    }),
+  )
 
   const itemFilter = (_label: string, filterText: string, user: LeanUser) => {
     const filterTextLower = filterText.toLowerCase()
@@ -40,9 +48,9 @@
     label="username"
     {required}
     {itemFilter}
-    on:input={e => (value = e.detail?.id ?? null)}
+    oninput={e => (value = e.detail?.id ?? null)}
   >
-    <svelte:fragment slot="selection" let:selection>
+    {#snippet selectionSlot(selection)}
       {#if selection.full_name}
         {selection.full_name} (
         <b>{selection.username}</b>
@@ -50,8 +58,8 @@
       {:else}
         <b>{selection.username}</b>
       {/if}
-    </svelte:fragment>
-    <svelte:fragment slot="item" let:item>
+    {/snippet}
+    {#snippet itemSlot(item)}
       {#if item.full_name}
         {item.full_name} (
         <b>{item.username}</b>
@@ -59,6 +67,6 @@
       {:else}
         <b>{item.username}</b>
       {/if}
-    </svelte:fragment>
+    {/snippet}
   </VirtualListSelect>
 {/if}

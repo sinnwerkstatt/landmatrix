@@ -2,28 +2,38 @@
   import { tracker } from "@sinnwerkstatt/sveltekit-matomo"
   import { onMount } from "svelte"
 
-  import { LandMatrixRadialSpider } from "$lib/data/charts/webOfTransnationalDeals"
   import type { EdgeBundlingData } from "$lib/data/charts/webOfTransnationalDeals"
+  import { LandMatrixRadialSpider } from "$lib/data/charts/webOfTransnationalDeals"
   import { filters } from "$lib/filters"
 
   import ChartWrapper from "$components/Data/Charts/DownloadWrapper.svelte"
-  import type { DownloadEvent } from "$components/Data/Charts/utils"
+  import type { FileType } from "$components/Data/Charts/utils"
   import { downloadJSON, downloadSVG } from "$components/Data/Charts/utils"
 
-  export let title = ""
-  export let deals: EdgeBundlingData
+  interface Props {
+    title?: string
+    deals: EdgeBundlingData
+  }
 
-  let svgComp: SVGElement
+  let { title = "", deals }: Props = $props()
 
-  const redrawSpider = (deals: EdgeBundlingData, countryId: number | undefined): void =>
+  let svgComp: SVGElement | undefined = $state()
+
+  const redrawSpider = (
+    deals: EdgeBundlingData,
+    countryId: number | undefined,
+  ): void => {
+    if (!svgComp) return
+
     LandMatrixRadialSpider(
       svgComp,
       deals,
       countryId,
-      countryId => ($filters.country_id = +countryId),
+      countryId => ($filters.country_id = countryId ? +countryId : undefined),
     )
+  }
 
-  const handleDownload = ({ detail: fileType }: DownloadEvent) => {
+  const handleDownload = (fileType: FileType) => {
     if ($tracker) $tracker.trackEvent("Chart", "Web of transnational deals", fileType)
     switch (fileType) {
       case "json":
@@ -35,18 +45,20 @@
     }
   }
 
-  $: redrawSpider(deals, $filters.country_id)
+  $effect(() => {
+    redrawSpider(deals, $filters.country_id)
+  })
 
   onMount(() => redrawSpider(deals, $filters.country_id))
 </script>
 
 <ChartWrapper
-  {title}
   disableCSV
+  ondownload={handleDownload}
+  {title}
   wrapperClasses="mx-auto xl:w-4/5"
-  on:download={handleDownload}
 >
-  <svg id="web-of-transnational-deals" bind:this={svgComp} />
+  <svg bind:this={svgComp} id="web-of-transnational-deals" />
 </ChartWrapper>
 
 <style lang="postcss">

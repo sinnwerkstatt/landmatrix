@@ -2,8 +2,8 @@ import { _ } from "svelte-i18n"
 import { get } from "svelte/store"
 
 export function dateCurrentFormat(value: {
-  date: string | null
-  current: boolean
+  date?: string | null
+  current?: boolean
 }): string {
   const $_ = get(_)
 

@@ -1,21 +1,25 @@
 <script lang="ts">
-  export let value: {
-    title: string
-    subtitle: string
-    text: string
-    link: {
-      href: string
-      rel_external: boolean
-      text: string
-    }
-    image: {
-      id: number
-      url: string
+  interface Props {
+    value: {
       title: string
+      subtitle: string
+      text: string
+      link: {
+        href: string
+        rel_external: boolean
+        text: string
+      }
+      image: {
+        id: number
+        url: string
+        title: string
+      }
+      bg_color: "white" | "orange"
     }
-    bg_color: "white" | "orange"
   }
-  $: isBgOrange = value.bg_color === "orange"
+
+  let { value }: Props = $props()
+  let isBgOrange = $derived(value.bg_color === "orange")
 </script>
 
 <div class="h-full py-24" class:bg-orange={isBgOrange}>

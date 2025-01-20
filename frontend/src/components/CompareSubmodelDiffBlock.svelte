@@ -6,20 +6,29 @@
 
   import DisplayField from "$components/Fields/DisplayField.svelte"
 
-  export let fromObjs: { nid: string; [key: string]: unknown }[]
-  export let toObjs: { nid: string; [key: string]: unknown }[]
+  interface Props {
+    fromObjs: { nid: string; [key: string]: unknown }[]
+    toObjs: { nid: string; [key: string]: unknown }[]
+    heading: string
+    label: string
+    lookupString: string
+    model?: "deal" | "investor"
+  }
 
-  export let heading: string
-  export let label: string
-  export let lookupString: string
-
-  export let model: "deal" | "investor" = "deal"
+  let {
+    fromObjs,
+    toObjs,
+    heading,
+    label,
+    lookupString,
+    model = "deal",
+  }: Props = $props()
 
   const IGNORE_KEYS = ["nid"]
 
   const objNIDs = new Set([...fromObjs.map(l => l.nid), ...toObjs.map(l => l.nid)])
 
-  $: fieldLookup = model === "deal" ? $dealFields : $investorFields
+  let fieldLookup = $derived(model === "deal" ? $dealFields : $investorFields)
 </script>
 
 <tr class="hidden bg-gray-700 [&:has(+.🍏)]:table-row">

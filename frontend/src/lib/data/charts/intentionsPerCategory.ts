@@ -20,7 +20,10 @@ export class LamaSankey {
   private readonly width = 700
   private readonly height = 700
 
-  do_the_sank(svgElement: SVGElement, data: SankeyGraph<NodeExtra, LinkExtra>): void {
+  do_the_sank(
+    svgElement: SVGElement | undefined,
+    data: SankeyGraph<NodeExtra, LinkExtra>,
+  ): void {
     if (!svgElement) return
     select(svgElement).selectAll("*").remove() // clear
 

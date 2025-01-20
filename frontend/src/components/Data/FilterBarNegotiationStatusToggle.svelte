@@ -1,14 +1,16 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
+  import { dealChoices } from "$lib/fieldChoices"
   import { filters } from "$lib/filters"
-  import { fieldChoices } from "$lib/stores"
   import type { NegotiationStatus, NegotiationStatusGroup } from "$lib/types/data"
+
+  import ContextHelper from "$components/ContextHelper.svelte"
 
   import FilterCollapse from "./FilterCollapse.svelte"
 
-  $: negotiationStatus = $fieldChoices.deal.negotiation_status
-  $: negotiationStatusGroups = $fieldChoices.deal.negotiation_status_group
+  let negotiationStatus = $derived($dealChoices.negotiation_status)
+  let negotiationStatusGroups = $derived($dealChoices.negotiation_status_group)
 
   const checkGroupCheckboxes = () =>
     negotiationStatusGroups.map(x => x.value).forEach(setGroupCheckboxState)
@@ -58,15 +60,15 @@
 
 <FilterCollapse
   clearable={$filters.negotiation_status.length > 0}
-  on:clear={() => ($filters.negotiation_status = [])}
-  on:expanded={checkGroupCheckboxes}
+  onclear={() => ($filters.negotiation_status = [])}
+  onExpanded={checkGroupCheckboxes}
   title={$_("Negotiation status")}
 >
   {#each negotiationStatusGroups as { value: group, label: groupLabel }}
     {@const groupNegotiationStatus = negotiationStatus.filter(x => x.group === group)}
 
     <label class="block font-bold">
-      <input id={group} type="checkbox" on:change={e => toggleGroup(group, e)} />
+      <input id={group} type="checkbox" onchange={e => toggleGroup(group, e)} />
       {groupLabel}
     </label>
 
@@ -76,10 +78,14 @@
           bind:group={$filters.negotiation_status}
           type="checkbox"
           {value}
-          on:change={() => setGroupCheckboxState(group)}
+          onchange={() => setGroupCheckboxState(group)}
         />
         {label}
       </label>
     {/each}
   {/each}
+
+  <div class="text-right">
+    <ContextHelper identifier="filterbar_negotiation_status" class="mt-2 size-5" />
+  </div>
 </FilterCollapse>

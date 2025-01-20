@@ -8,7 +8,7 @@ export const createCoordinatesMap = (
   countries.reduce(
     (acc, { id, point_lon, point_lat }) => ({
       ...acc,
-      [id]: [point_lat, point_lon],
+      [id]: [point_lon, point_lat],
     }),
     {},
   )

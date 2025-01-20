@@ -1,12 +1,19 @@
 <script lang="ts">
-  import { area as turfArea } from "@turf/turf"
-  import type { GeoJSON, Map } from "leaflet?client"
-  import { onDestroy } from "svelte"
+  import { Feature, type Map } from "ol"
+  import { GeoJSON } from "ol/format"
+  import { MultiPolygon, Point } from "ol/geom"
+  import { Vector as VectorLayer } from "ol/layer"
+  import { Vector as VectorSource } from "ol/source"
+  import { getArea } from "ol/sphere"
+  import { Fill, Stroke, Style } from "ol/style"
+  import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
+  import { twMerge } from "tailwind-merge"
 
-  import { createLabels, fieldChoices } from "$lib/stores"
-  import type { Area, AreaFeature, AreaFeatureLayer, AreaType } from "$lib/types/data"
+  import { areaChoices, createLabels } from "$lib/fieldChoices"
+  import type { components } from "$lib/openAPI"
 
+  import { createPolygonTooltipOverlay } from "$components/Data/Deal/Sections/Locations/locations.js"
   import { LABEL_CLASS, VALUE_CLASS, WRAPPER_CLASS } from "$components/Fields/consts"
   import {
     dateCurrentFormat,
@@ -16,97 +23,141 @@
   import EyeIcon from "$components/icons/EyeIcon.svelte"
   import EyeSlashIcon from "$components/icons/EyeSlashIcon.svelte"
 
-  import LocationAreaTooltip from "./LocationAreaTooltip.svelte"
-  import {
-    AREA_TYPE_COLOR_MAP,
-    areaToFeature,
-    createAreaFeaturesLayer,
-    fitBounds,
-  } from "./locations"
+  import { AREA_TYPE_COLOR_MAP } from "./locations"
 
-  export let map: Map | undefined
-  export let areas: Area[]
-  export let fieldname: string
-  export let label = ""
-
-  export let wrapperClass = WRAPPER_CLASS
-  export let labelClass = LABEL_CLASS
-  export let valueClass = VALUE_CLASS
-
-  export let isSelectedEntry: boolean
-
-  // Reflexive so that features change on browser navigation
-  let layer: AreaFeatureLayer
-
-  let visibleMap: { [id: string]: boolean }
-  $: visibleMap = areas.reduce((acc, value) => ({ ...acc, [value.nid]: true }), {})
-  let hoverMap: { [id: string]: boolean }
-  $: hoverMap = areas.reduce((acc, value) => ({ ...acc, [value.nid]: false }), {})
-
-  $: if (map) {
-    if (layer) map.removeLayer(layer)
-
-    layer = createAreaFeaturesLayer(
-      areas.map(areaToFeature),
-      LocationAreaTooltip,
-      isSelectedEntry,
-    )
-    map.addLayer(layer)
-
-    layer.eachLayer(layer => {
-      const l = layer as GeoJSON
-      const feature: AreaFeature = l.feature as never
-
-      l.addEventListener("mouseover", () => (hoverMap[feature.id!] = true))
-      l.addEventListener("mouseout", () => (hoverMap[feature.id!] = false))
-    })
-
-    fitBounds(map)
+  interface Props {
+    map: Map
+    areas: components["schemas"]["LocationArea"][]
+    fieldname: string
+    label?: string
+    wrapperClass?: string
+    labelClass?: string
+    valueClass?: string
+    isSelectedEntry: boolean
   }
 
-  $: if (map) {
-    layer?.eachLayer(layer => {
-      const l = layer as GeoJSON
-      const feature: AreaFeature = l.feature as never
+  let {
+    map,
+    areas,
+    fieldname,
+    label = "",
+    wrapperClass = WRAPPER_CLASS,
+    labelClass = LABEL_CLASS,
+    valueClass = VALUE_CLASS,
+    isSelectedEntry,
+  }: Props = $props()
 
-      l.setStyle({
-        opacity: visibleMap[feature.id!] ? 1 : 0,
-        fillOpacity: visibleMap[feature.id!] ? 0.6 : 0,
+  const readOpts = { dataProjection: "EPSG:4326", featureProjection: "EPSG:3857" }
+  const polygonVectorSource = new VectorSource()
+
+  let visibleMap: { [id: string]: boolean } | undefined = $state()
+  $effect(() => {
+    visibleMap = areas.reduce((acc, value) => ({ ...acc, [value.nid]: true }), {})
+  })
+
+  let hoverMapID: string | undefined = $state()
+
+  const updateHoverMapState = async (_hMapID?: string) => {
+    let haveHit = false
+    if (_hMapID)
+      polygonVectorSource.forEachFeature(ft => {
+        const prps = ft.getProperties()
+        if (prps.nid === _hMapID) {
+          haveHit = true
+          createPolygonTooltipOverlay(ft as Feature<MultiPolygon>).then(newOverlay => {
+            map.addOverlay(newOverlay)
+            map.getOverlays().forEach(overlay => {
+              if (overlay !== newOverlay) map!.removeOverlay(overlay)
+            })
+          })
+        }
       })
-    })
+    if (!haveHit) {
+      map!.getOverlays().forEach(overlay => map!.removeOverlay(overlay))
+    }
   }
+  $effect(() => {
+    updateHoverMapState(hoverMapID)
+  })
 
-  $: if (map) {
-    layer?.eachLayer(layer => {
-      const l = layer as GeoJSON
-      const feature: AreaFeature = l.feature as never
+  const areaFeatures = $derived.by(() => {
+    const _areaFeatures = []
+    for (const area of areas) {
+      if (visibleMap?.[area.nid] === false) continue
+      const areaFeat = new GeoJSON().readFeature(area.area, readOpts) as Feature
+      areaFeat.setProperties({
+        nid: area.nid,
+        type: area.type,
+        date: area.date ?? "",
+        current: !!area.current,
+        visible: true,
+      })
+      areaFeat.setStyle(
+        new Style({
+          stroke: new Stroke({ lineDash: [5, 5], color: "black", width: 1.5 }),
+          fill: new Fill({
+            color: isSelectedEntry
+              ? `${AREA_TYPE_COLOR_MAP[area.type]}99`
+              : "#7A7A7A99",
+          }),
+        }),
+      )
+      _areaFeatures.push(areaFeat)
+    }
+    return _areaFeatures
+  })
 
-      if (visibleMap[feature.id!] && hoverMap[feature.id!]) {
-        l.openPopup()
-      } else {
-        l.closePopup()
-      }
-    })
-  }
+  $effect(() => {
+    polygonVectorSource.clear()
 
-  onDestroy(() => {
-    if (map && layer) {
-      map.removeLayer(layer)
+    if (areaFeatures.length) {
+      polygonVectorSource.addFeatures(areaFeatures)
+      // map.getView().fit(polygonVectorSource.getExtent(), {
+      //   padding: [150, 150, 150, 150],
+      //   maxZoom: 13,
+      // })
     }
   })
 
-  $: areaTypeLabels = createLabels<AreaType>($fieldChoices.area.type)
+  onMount(() => {
+    map.addLayer(new VectorLayer({ source: polygonVectorSource }))
 
-  $: createAreaDisplay = (area: Area): string => {
-    const feature = areaToFeature(area)
-    const typeDisplay = areaTypeLabels[area.type]
-    const areaDisplay = formatArea(turfArea(feature)) + " " + $_("ha")
-    const dateCurrentDisplay = dateCurrentFormat(feature.properties)
-    return `${typeDisplay} (${areaDisplay}) ${dateCurrentDisplay}`
-  }
+    map.on("pointermove", evt => {
+      const feature = map!.forEachFeatureAtPixel(
+        evt.pixel,
+        feature => feature as Feature<Point>,
+      )
+
+      hoverMapID =
+        feature && polygonVectorSource.hasFeature(feature)
+          ? feature.getProperties().nid
+          : undefined
+    })
+  })
+
+  let areaTypeLabels = $derived(
+    createLabels<components["schemas"]["LocationAreaTypeEnum"]>($areaChoices.type),
+  )
+
+  let createAreaDisplay = $derived(
+    (area: components["schemas"]["LocationArea"]): string => {
+      const typeDisplay = areaTypeLabels[area.type]
+
+      const areaFeat = (
+        new GeoJSON().readFeature(area.area, readOpts) as Feature
+      ).getGeometry()
+
+      const areaDisplay = areaFeat
+        ? `${formatArea(getArea(areaFeat))} ${$_("ha")}`
+        : "--"
+      const dateCurrentDisplay = dateCurrentFormat(area)
+
+      return `${typeDisplay} (${areaDisplay}) ${dateCurrentDisplay}`
+    },
+  )
 </script>
 
-{#if areas.length > 0}
+{#if areas.length > 0 && visibleMap}
   <div class={wrapperClass} data-fieldname={fieldname}>
     {#if label}
       <Label2 value={label} class={labelClass} />
@@ -119,11 +170,13 @@
           {@const inputId = `${inputName}-${area.nid}`}
 
           <li
-            class="inline-flex p-0.5"
-            class:font-bold={!!area.current}
-            on:mouseenter={() => (hoverMap[area.nid] = true)}
-            on:mouseleave={() => (hoverMap[area.nid] = false)}
-            class:colored={hoverMap[area.nid]}
+            class={twMerge(
+              "inline-flex p-0.5",
+              area.current ? "font-bold" : "",
+              hoverMapID === area.nid ? "text-gray-400" : "",
+            )}
+            onmouseenter={() => (hoverMapID = area.nid)}
+            onmouseleave={() => (hoverMapID = undefined)}
             style:--color={AREA_TYPE_COLOR_MAP[area.type]}
           >
             <input
@@ -131,7 +184,9 @@
               id={inputId}
               name={inputName}
               type="checkbox"
-              on:click|preventDefault={() => {
+              onclick={e => {
+                e.preventDefault()
+                if (!visibleMap) return
                 visibleMap[area.nid] = !visibleMap[area.nid]
               }}
             />
@@ -158,10 +213,10 @@
   </div>
 {/if}
 
-<style lang="postcss">
-  .colored {
-    /*color: var(--color, black);*/
-    /*background-color: var(--color);*/
-    @apply text-gray-400;
-  }
-</style>
+<!--<style lang="postcss">-->
+<!--  .colored {-->
+<!--    /*color: var(&#45;&#45;color, black);*/-->
+<!--    /*background-color: var(&#45;&#45;color);*/-->
+<!--    @apply text-gray-400;-->
+<!--  }-->
+<!--</style>-->

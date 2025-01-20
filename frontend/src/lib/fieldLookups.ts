@@ -1,8 +1,13 @@
-import type { ComponentType } from "svelte"
+import type { Component } from "svelte"
 import { _ } from "svelte-i18n"
 import { derived } from "svelte/store"
 
-import { fieldChoices } from "$lib/stores"
+import {
+  datasourceChoices,
+  dealChoices,
+  investorChoices,
+  involvementChoices,
+} from "$lib/fieldChoices"
 
 import ArrayTextField from "$components/Fields/Display2/ArrayTextField.svelte"
 import BooleanField from "$components/Fields/Display2/BooleanField.svelte"
@@ -52,8 +57,10 @@ import PointEditField from "$components/Fields/Edit2/PointEditField.svelte"
 import TextEditField from "$components/Fields/Edit2/TextEditField.svelte"
 
 interface Field {
-  displayField: ComponentType
-  editField?: ComponentType
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  displayField: Component<{ value: any }>
+  editField?: Component<{ value: any; fieldname: string }>
+  /* eslint-enable @typescript-eslint/no-explicit-any */
   label: string
   extras?: unknown
 }
@@ -113,14 +120,14 @@ export const commonVersionFields = derived(
 )
 
 export const datasourceFields = derived(
-  [_, fieldChoices],
-  ([$_, $fieldChoices]): FieldLookup => ({
+  [_, datasourceChoices],
+  ([$_, $datasourceChoices]): FieldLookup => ({
     type: {
       displayField: ChoicesField,
       editField: ChoicesEditField,
       label: $_("Type"),
       extras: {
-        choices: $fieldChoices.datasource.type,
+        choices: $datasourceChoices.type,
         required: true,
         otherHint: $_("Please specify in comment field"),
       },
@@ -194,8 +201,8 @@ export const datasourceFields = derived(
 )
 
 export const involvementFields = derived(
-  [_, fieldChoices],
-  ([$_, $fieldChoices]): FieldLookup => ({
+  [_, involvementChoices],
+  ([$_, $involvementChoices]): FieldLookup => ({
     parent_investor_id: {
       displayField: InvestorLinkField,
       editField: InvestorForeignKey,
@@ -205,7 +212,7 @@ export const involvementFields = derived(
     role: {
       displayField: ChoicesField,
       label: $_("Role"),
-      extras: { choices: $fieldChoices.involvement.role },
+      extras: { choices: $involvementChoices.role },
     },
     loans_amount: {
       displayField: DecimalField,
@@ -236,7 +243,7 @@ export const involvementFields = derived(
       editField: ChoicesEditField,
       label: $_("Investment type"),
       extras: {
-        choices: $fieldChoices.involvement.investment_type,
+        choices: $involvementChoices.investment_type,
         multipleChoices: true,
       },
     },
@@ -245,7 +252,7 @@ export const involvementFields = derived(
       editField: ChoicesEditField,
       label: $_("Parent relation"),
       extras: {
-        choices: $fieldChoices.involvement.parent_relation,
+        choices: $involvementChoices.parent_relation,
         clearable: true,
       },
     },
@@ -259,8 +266,8 @@ export const involvementFields = derived(
 )
 
 export const locationFields = derived(
-  [_, fieldChoices],
-  ([$_, $fieldChoices]): FieldLookup => ({
+  [_, dealChoices],
+  ([$_, $dealChoices]): FieldLookup => ({
     name: {
       displayField: TextField,
       editField: LocationGoogleEditField,
@@ -286,7 +293,7 @@ export const locationFields = derived(
       displayField: ChoicesField,
       editField: ChoicesEditField,
       label: $_("Spatial accuracy level"),
-      extras: { choices: $fieldChoices.deal.level_of_accuracy },
+      extras: { choices: $dealChoices.level_of_accuracy },
     },
     comment: {
       displayField: TextField,
@@ -339,7 +346,7 @@ export const contractFields = derived(
 export const investorFields = derived(
   [
     _,
-    fieldChoices,
+    investorChoices,
     commonHullFields,
     commonVersionFields,
     involvementFields,
@@ -347,7 +354,7 @@ export const investorFields = derived(
   ],
   ([
     $_,
-    $fieldChoices,
+    $investorChoices,
     $commonHullFields,
     $commonVersionFields,
     $involvementFields,
@@ -399,7 +406,7 @@ export const investorFields = derived(
       displayField: ChoicesField,
       editField: ChoicesEditField,
       label: $_("Classification"),
-      extras: { choices: $fieldChoices.investor.classification },
+      extras: { choices: $investorChoices.classification },
     },
 
     // submodels
@@ -414,7 +421,7 @@ export const investorFields = derived(
 export const dealFields = derived(
   [
     _,
-    fieldChoices,
+    dealChoices,
     commonHullFields,
     commonVersionFields,
     datasourceFields,
@@ -423,7 +430,7 @@ export const dealFields = derived(
   ],
   ([
     $_,
-    $fieldChoices,
+    $dealChoices,
     $commonHullFields,
     $commonVersionFields,
     $datasourceFields,
@@ -468,7 +475,7 @@ export const dealFields = derived(
       displayField: JSONCurrentDateAreaChoicesField,
       editField: JSONCurrentDateAreaChoicesEditField,
       label: $_("Intention of investment"),
-      extras: { choices: $fieldChoices.deal.intention_of_investment },
+      extras: { choices: $dealChoices.intention_of_investment },
     },
     intention_of_investment_comment: {
       displayField: TextField,
@@ -492,7 +499,7 @@ export const dealFields = derived(
       displayField: ChoicesField,
       editField: ChoicesEditField,
       label: $_("Nature of the deal"),
-      extras: { choices: $fieldChoices.deal.nature_of_deal, multipleChoices: true },
+      extras: { choices: $dealChoices.nature_of_deal, multipleChoices: true },
     },
     nature_of_deal_comment: {
       displayField: TextField,
@@ -504,7 +511,7 @@ export const dealFields = derived(
       displayField: JSONCurrentDateChoiceField,
       editField: JSONCurrentDateChoiceEditField,
       label: $_("Negotiation status"),
-      extras: { choices: $fieldChoices.deal.negotiation_status },
+      extras: { choices: $dealChoices.negotiation_status },
     },
     negotiation_status_comment: {
       displayField: TextField,
@@ -517,7 +524,7 @@ export const dealFields = derived(
       editField: JSONCurrentDateChoiceEditField,
       label: $_("Implementation status"),
       extras: {
-        choices: $fieldChoices.deal.implementation_status,
+        choices: $dealChoices.implementation_status,
       },
     },
     implementation_status_comment: {
@@ -767,7 +774,7 @@ export const dealFields = derived(
       displayField: ChoicesField,
       editField: ChoicesEditField,
       label: $_("Recognition status of community land tenure"),
-      extras: { choices: $fieldChoices.deal.recognition_status, multipleChoices: true },
+      extras: { choices: $dealChoices.recognition_status, multipleChoices: true },
     },
     recognition_status_comment: {
       displayField: TextField,
@@ -779,7 +786,7 @@ export const dealFields = derived(
       displayField: ChoicesField,
       editField: ChoicesEditField,
       label: $_("Community consultation"),
-      extras: { choices: $fieldChoices.deal.community_consultation, clearable: true },
+      extras: { choices: $dealChoices.community_consultation, clearable: true },
     },
     community_consultation_comment: {
       displayField: TextField,
@@ -791,7 +798,7 @@ export const dealFields = derived(
       displayField: ChoicesField,
       editField: ChoicesEditField,
       label: $_("Community reaction"),
-      extras: { choices: $fieldChoices.deal.community_reaction, clearable: true },
+      extras: { choices: $dealChoices.community_reaction, clearable: true },
     },
     community_reaction_comment: {
       displayField: TextField,
@@ -859,7 +866,7 @@ export const dealFields = derived(
       displayField: ChoicesField,
       editField: ChoicesEditField,
       label: $_("Negative impacts for local communities"),
-      extras: { choices: $fieldChoices.deal.negative_impacts, multipleChoices: true },
+      extras: { choices: $dealChoices.negative_impacts, multipleChoices: true },
     },
     negative_impacts_comment: {
       displayField: TextField,
@@ -883,7 +890,7 @@ export const dealFields = derived(
       displayField: ChoicesField,
       editField: ChoicesEditField,
       label: $_("Promised benefits for local communities"),
-      extras: { choices: $fieldChoices.deal.benefits, multipleChoices: true },
+      extras: { choices: $dealChoices.benefits, multipleChoices: true },
     },
     promised_benefits_comment: {
       displayField: TextField,
@@ -895,7 +902,7 @@ export const dealFields = derived(
       displayField: ChoicesField,
       editField: ChoicesEditField,
       label: $_("Materialized benefits for local communities"),
-      extras: { choices: $fieldChoices.deal.benefits, multipleChoices: true },
+      extras: { choices: $dealChoices.benefits, multipleChoices: true },
     },
     materialized_benefits_comment: {
       displayField: TextField,
@@ -916,7 +923,7 @@ export const dealFields = derived(
       displayField: ChoicesField,
       editField: ChoicesEditField,
       label: $_("Former land owner"),
-      extras: { choices: $fieldChoices.deal.former_land_owner, multipleChoices: true },
+      extras: { choices: $dealChoices.former_land_owner, multipleChoices: true },
     },
     former_land_owner_comment: {
       displayField: TextField,
@@ -928,7 +935,7 @@ export const dealFields = derived(
       displayField: ChoicesField,
       editField: ChoicesEditField,
       label: $_("Former land use"),
-      extras: { choices: $fieldChoices.deal.former_land_use, multipleChoices: true },
+      extras: { choices: $dealChoices.former_land_use, multipleChoices: true },
     },
     former_land_use_comment: {
       displayField: TextField,
@@ -941,7 +948,7 @@ export const dealFields = derived(
       editField: ChoicesEditField,
       label: $_("Former land cover"),
       extras: {
-        choices: $fieldChoices.deal.former_land_cover,
+        choices: $dealChoices.former_land_cover,
         multipleChoices: true,
         otherHint: $_("Other: please specify in comment field"),
       },
@@ -957,7 +964,7 @@ export const dealFields = derived(
       displayField: JSONExportsField,
       editField: JSONExportsEditField,
       label: $_("Crops area/yield/export"),
-      extras: { choices: $fieldChoices.deal.crops, multipleChoices: true },
+      extras: { choices: $dealChoices.crops, multipleChoices: true },
     },
     crops_comment: {
       displayField: TextField,
@@ -969,7 +976,7 @@ export const dealFields = derived(
       displayField: JSONExportsField,
       editField: JSONExportsEditField,
       label: $_("Livestock area/yield/export"),
-      extras: { choices: $fieldChoices.deal.animals, multipleChoices: true },
+      extras: { choices: $dealChoices.animals, multipleChoices: true },
     },
     animals_comment: {
       displayField: TextField,
@@ -981,7 +988,7 @@ export const dealFields = derived(
       displayField: JSONExportsField,
       editField: JSONExportsEditField,
       label: $_("Mineral resources area/yield/export"),
-      extras: { choices: $fieldChoices.deal.minerals, multipleChoices: true },
+      extras: { choices: $dealChoices.minerals, multipleChoices: true },
     },
     mineral_resources_comment: {
       displayField: TextField,
@@ -993,7 +1000,7 @@ export const dealFields = derived(
       displayField: JSONCurrentDateAreaChoicesField,
       editField: JSONCurrentDateAreaChoicesEditField,
       label: $_("Contract farming crops"),
-      extras: { choices: $fieldChoices.deal.crops },
+      extras: { choices: $dealChoices.crops },
     },
     contract_farming_crops_comment: {
       displayField: TextField,
@@ -1005,7 +1012,7 @@ export const dealFields = derived(
       displayField: JSONCurrentDateAreaChoicesField,
       editField: JSONCurrentDateAreaChoicesEditField,
       label: $_("Contract farming livestock"),
-      extras: { choices: $fieldChoices.deal.animals },
+      extras: { choices: $dealChoices.animals },
     },
     contract_farming_animals_comment: {
       displayField: TextField,
@@ -1142,7 +1149,7 @@ export const dealFields = derived(
       editField: ChoicesEditField,
       label: $_("Source of water extraction"),
       extras: {
-        choices: $fieldChoices.deal.water_source,
+        choices: $dealChoices.water_source,
         multipleChoices: true,
       },
     },
@@ -1211,7 +1218,7 @@ export const dealFields = derived(
     current_negotiation_status: {
       displayField: ChoicesField,
       label: $_("Current negotiation status"),
-      extras: { choices: $fieldChoices.deal.negotiation_status },
+      extras: { choices: $dealChoices.negotiation_status },
     },
     current_intention_of_investment: {
       displayField: IOIField,
@@ -1220,7 +1227,7 @@ export const dealFields = derived(
     current_implementation_status: {
       displayField: ChoicesField,
       label: $_("Current implementation status"),
-      extras: { choices: $fieldChoices.deal.implementation_status },
+      extras: { choices: $dealChoices.implementation_status },
     },
     current_contract_size: {
       displayField: DecimalField,

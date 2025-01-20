@@ -5,7 +5,12 @@
 
   import VirtualListSelect from "$components/LowLevel/VirtualListSelect.svelte"
 
-  export let value: number | null = null
+  interface Props {
+    value?: number | null
+    onchange?: () => void
+  }
+
+  let { value = $bindable(), onchange }: Props = $props()
 </script>
 
 {#if $currencies}
@@ -14,13 +19,16 @@
     items={$currencies}
     placeholder={$_("Currency")}
     label="name"
-    on:input={e => (value = e?.detail?.id ?? null)}
+    oninput={e => {
+      value = e?.detail?.id ?? null
+      onchange?.()
+    }}
   >
-    <svelte:fragment slot="selection" let:selection>
+    {#snippet selectionSlot(selection)}
       {selection.name} ({selection.code})
-    </svelte:fragment>
-    <svelte:fragment slot="item" let:item>
+    {/snippet}
+    {#snippet itemSlot(item)}
       {item.name} ({item.code})
-    </svelte:fragment>
+    {/snippet}
   </VirtualListSelect>
 {/if}

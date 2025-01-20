@@ -3,9 +3,13 @@
 
   import type { TwitterFeed } from "$lib/types/wagtail"
 
-  export let twitterFeed: TwitterFeed
+  interface Props {
+    twitterFeed: TwitterFeed
+  }
 
-  $: timeline = twitterFeed?.timeline || []
+  let { twitterFeed }: Props = $props()
+
+  let timeline = $derived(twitterFeed?.timeline || [])
 </script>
 
 <div class="twitter-timeline">

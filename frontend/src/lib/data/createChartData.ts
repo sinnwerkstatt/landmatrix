@@ -1,3 +1,4 @@
+//  TODO marcus die dazugehoerigen tests anpassen an nuts' logik? oder weg?
 import type { ChartData } from "chart.js"
 
 import type { AnyKey, BucketMap, SortBy } from "$lib/data/buckets"

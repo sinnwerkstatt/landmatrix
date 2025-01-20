@@ -5,11 +5,15 @@
 
   import InvolvementsGraph from "$components/New/InvolvementsGraph/InvolvementsGraph.svelte"
 
-  export let investor: InvestorHull
+  interface Props {
+    investor: InvestorHull
+  }
+
+  let { investor }: Props = $props()
 </script>
 
 {#if investor.selected_version.status === "ACTIVATED" && investor.selected_version.id === investor.active_version_id}
-  <InvolvementsGraph investor_id={investor.id} />
+  <InvolvementsGraph investorID={investor.id} />
 {:else}
   <div class="m-10 bg-neutral-200 px-12 py-24 text-center text-zinc-700">
     {@html $_(

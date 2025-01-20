@@ -3,10 +3,9 @@
 
   import { mutableDeal } from "../store"
 
-  export let data
+  let { data } = $props()
+
+  const SvelteComponent = $derived($dealSectionLookup[data.dealSection].edit)
 </script>
 
-<svelte:component
-  this={$dealSectionLookup[data.dealSection].edit}
-  bind:deal={$mutableDeal}
-/>
+<SvelteComponent bind:deal={$mutableDeal} />

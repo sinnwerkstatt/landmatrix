@@ -1,4 +1,4 @@
-<script context="module" lang="ts">
+<script module lang="ts">
   // TODO: add parameter types for case_statistics endpoint and rename to data-statistics
   interface BaseObject {
     id: number
@@ -33,33 +33,39 @@
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import Table, { type Column } from "$components/Table/Table.svelte"
 
-  export let objects: CaseStatisticsObject[] = []
-  export let model: "deal" | "investor" = "deal"
-  export let linkDraftVersion = false
+  interface Props {
+    objects?: CaseStatisticsObject[]
+    model?: "deal" | "investor"
+    linkDraftVersion?: boolean
+  }
 
-  let dealColumns: Column[]
-  $: dealColumns = [
-    { key: "id", colSpan: 1 },
-    { key: "status", colSpan: 2 },
-    { key: "country_id", colSpan: 2 },
-    { key: "deal_size", colSpan: 2 },
-    { key: "confidential", colSpan: 2 },
-    { key: "created_at", colSpan: 2 },
-    { key: "modified_at", colSpan: 2 },
-    { key: "fully_updated_at", colSpan: 3 },
-  ].map(c => ({ ...c, label: $dealFields[c.key].label }))
+  let { objects = [], model = "deal", linkDraftVersion = false }: Props = $props()
 
-  let investorColumns: Column[]
-  $: investorColumns = [
-    { key: "id", colSpan: 1 },
-    { key: "status", colSpan: 2 },
-    { key: "name", colSpan: 5 },
-    { key: "country_id", colSpan: 4 },
-    { key: "created_at", colSpan: 2 },
-    { key: "modified_at", colSpan: 2 },
-  ].map(c => ({ ...c, label: $investorFields[c.key].label }))
+  let dealColumns: Column[] = $derived(
+    [
+      { key: "id", colSpan: 1 },
+      { key: "status", colSpan: 2 },
+      { key: "country_id", colSpan: 2 },
+      { key: "deal_size", colSpan: 2 },
+      { key: "confidential", colSpan: 2 },
+      { key: "created_at", colSpan: 2 },
+      { key: "modified_at", colSpan: 2 },
+      { key: "fully_updated_at", colSpan: 3 },
+    ].map(c => ({ ...c, label: $dealFields[c.key].label })),
+  )
 
-  $: columns = model === "deal" ? dealColumns : investorColumns
+  let investorColumns: Column[] = $derived(
+    [
+      { key: "id", colSpan: 1 },
+      { key: "status", colSpan: 2 },
+      { key: "name", colSpan: 5 },
+      { key: "country_id", colSpan: 4 },
+      { key: "created_at", colSpan: 2 },
+      { key: "modified_at", colSpan: 2 },
+    ].map(c => ({ ...c, label: $investorFields[c.key].label })),
+  )
+
+  let columns = $derived(model === "deal" ? dealColumns : investorColumns)
 
   const wrapperClass = ""
   const valueClass = "text-gray-700 dark:text-white"
@@ -67,7 +73,7 @@
 
 <div class="h-full w-full">
   <Table {columns} items={objects} rowHeightInPx={36}>
-    <svelte:fragment let:fieldName let:obj slot="field">
+    {#snippet field({ fieldName, obj })}
       {@const col = columns.find(c => c.key === fieldName)}
       {#if col}
         <DisplayField
@@ -81,6 +87,6 @@
             : undefined}
         />
       {/if}
-    </svelte:fragment>
+    {/snippet}
   </Table>
 </div>

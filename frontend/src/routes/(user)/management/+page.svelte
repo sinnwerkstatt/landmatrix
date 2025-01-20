@@ -8,7 +8,7 @@
 
   import { browser } from "$app/environment"
   import { goto } from "$app/navigation"
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import { dealFields, investorFields } from "$lib/fieldLookups"
   import { loading } from "$lib/stores/basics"
@@ -30,11 +30,11 @@
   dayjs.extend(isSameOrAfter)
 
   // FIXME
-  $: userIsEditorOrAbove = isAdmin($page.data.user)
+  let userIsEditorOrAbove = $derived(isAdmin(page.data.user))
 
-  let model: "deal" | "investor" = "deal"
-  let activeTabId: string
-  let objects: Array<DealHull | InvestorHull> = []
+  let model: "deal" | "investor" = $state("deal")
+  let activeTabId: string = $state("")
+  let objects: Array<DealHull | InvestorHull> = $state([])
 
   interface Tab {
     id: string
@@ -44,12 +44,15 @@
     useWorkflowInfoView?: boolean
   }
 
-  let navTabs: { name: string; expanded?: boolean; items: Tab[] }[] = []
-  $: navTabs = [
+  let navTabs: { name: string; expanded?: boolean; items: Tab[] }[] = $derived([
     {
       name: $_("Todo"),
       items: [
-        { id: "todo_feedback", name: $_("Feedback for me"), useWorkflowInfoView: true },
+        {
+          id: "todo_feedback",
+          name: $_("Feedback for me"),
+          useWorkflowInfoView: true,
+        },
         {
           id: "todo_improvement",
           name: $_("Improvement requests for me"),
@@ -94,39 +97,42 @@
         { id: "all_deleted", name: $_("All deleted"), staff: true },
       ],
     },
-  ]
-  $: flatTabs = navTabs.map(x => x.items).reduce((acc, items) => [...acc, ...items], [])
+  ])
 
-  let activeTab: Tab
-  $: activeTab = flatTabs.find(item => item.id === activeTabId)!
+  let flatTabs = $derived(
+    navTabs.map(x => x.items).reduce((acc, items) => [...acc, ...items], []),
+  )
 
-  let dealColumns: Column[]
-  $: dealColumns = [
-    { key: "id", colSpan: 1 },
-    { key: "status", colSpan: 2 },
-    { key: "country_id", colSpan: 2 },
-    { key: "deal_size", colSpan: 2, submodel: "selected_version" },
-    { key: "created", colSpan: 3, label: $_("Created") },
-    { key: "modified", colSpan: 3, label: $_("Modified") },
-    { key: "fully_updated", colSpan: 2, submodel: "selected_version" },
-    { key: "workflowinfos", colSpan: 5 },
-  ].map(c => ({ ...c, label: c.label || $dealFields[c.key].label }))
+  let activeTab: Tab = $derived(flatTabs.find(item => item.id === activeTabId)!)
 
-  let investorColumns: Column[]
-  $: investorColumns = [
-    { key: "id", colSpan: 1 },
-    { key: "status", colSpan: 2 },
-    { key: "name", colSpan: 3, submodel: "selected_version" },
-    { key: "country_id", colSpan: 3, submodel: "selected_version" },
-    { key: "created", colSpan: 3, label: $_("Created") },
-    { key: "modified", colSpan: 3, label: $_("Modified") },
-    { key: "workflowinfos", colSpan: 5 },
-  ].map(c => ({ ...c, label: c.label || $investorFields[c.key].label }))
+  let dealColumns: Column[] = $derived(
+    [
+      { key: "id", colSpan: 1 },
+      { key: "status", colSpan: 2 },
+      { key: "country_id", colSpan: 2 },
+      { key: "deal_size", colSpan: 2, submodel: "selected_version" },
+      { key: "first_created_at", colSpan: 3, label: $_("Created") },
+      { key: "modified_at", colSpan: 3, label: $_("Modified") },
+      { key: "fully_updated", colSpan: 2, submodel: "selected_version" },
+      { key: "workflowinfos", colSpan: 5 },
+    ].map(c => ({ ...c, label: c.label || $dealFields[c.key].label })),
+  )
 
-  $: columns = model === "deal" ? dealColumns : investorColumns
+  let investorColumns: Column[] = $derived(
+    [
+      { key: "id", colSpan: 1 },
+      { key: "status", colSpan: 2 },
+      { key: "name", colSpan: 3, submodel: "selected_version" },
+      { key: "country_id", colSpan: 3, submodel: "selected_version" },
+      { key: "first_created_at", colSpan: 3, label: $_("Created") },
+      { key: "modified_at", colSpan: 3, label: $_("Modified") },
+      { key: "workflowinfos", colSpan: 5 },
+    ].map(c => ({ ...c, label: c.label || $investorFields[c.key].label })),
+  )
 
-  let counts: { [key: string]: number } = {}
+  let columns = $derived(model === "deal" ? dealColumns : investorColumns)
 
+  let counts: { [key: string]: number } = $state({})
   const getCounts = async (model: "deal" | "investor") => {
     if (!browser) return
 
@@ -136,12 +142,13 @@
       counts = await ret.json()
     }
   }
-
-  $: getCounts(model)
+  $effect(() => {
+    getCounts(model)
+  })
 
   let controller: AbortController
-  let createdByUserIDs = new Set<number>()
-  let modifiedByUserIDs = new Set<number>()
+  let createdByUserIDs = $state(new Set<number>())
+  let modifiedByUserIDs = $state(new Set<number>())
 
   async function fetchObjects(acTab: string, model: "deal" | "investor") {
     if (!acTab) return
@@ -164,21 +171,14 @@
           modifiedByUserIDs.add(o.selected_version.modified_by_id)
       })
 
-      navTabs = navTabs.map(navTab => ({
-        ...navTab,
-        items: navTab.items.map(item => {
-          if (item.id === acTab) return { ...item, count: objects.length }
-          return item
-        }),
-      }))
-      navTabs = [...navTabs]
+      counts[acTab] = objects.length
     }
 
     loading.set(false)
   }
 
   onMount(() => {
-    if (!$page.url.hash) goto("#todo_feedback")
+    if (!page.url.hash) goto("#todo_feedback")
   })
 
   const activateTab = (hash: string): void => {
@@ -188,85 +188,94 @@
     }
   }
 
-  $: activateTab($page.url.hash)
-
-  let showFilterOverlay = false
-
-  $: fetchObjects(activeTabId, model)
-  $: filteredObjects = objects.filter(obj => {
-    if ($managementFilters.status)
-      if (obj.status !== $managementFilters.status) return false
-    if ($managementFilters.country)
-      if (model === "deal") {
-        if ((obj as DealHull).country_id !== $managementFilters.country.id) return false
-      } else {
-        if (
-          (obj as InvestorHull).selected_version.country_id !==
-          $managementFilters.country.id
-        )
-          return false
-      }
-    if ($managementFilters.createdAtFrom)
-      if (dayjs(obj.first_created_at).isBefore($managementFilters.createdAtFrom, "day"))
-        return false
-    if ($managementFilters.createdAtTo)
-      if (dayjs(obj.first_created_at).isAfter($managementFilters.createdAtTo, "day"))
-        return false
-    if ($managementFilters.createdByID)
-      if (obj.first_created_by_id !== $managementFilters.createdByID) return false
-
-    if ($managementFilters.modifiedAtFrom)
-      if (
-        dayjs(obj.selected_version.modified_at).isBefore(
-          $managementFilters.modifiedAtFrom,
-          "day",
-        )
-      )
-        return false
-    if ($managementFilters.modifiedAtTo)
-      if (
-        dayjs(obj.selected_version.modified_at).isAfter(
-          $managementFilters.modifiedAtTo,
-          "day",
-        )
-      )
-        return false
-    if ($managementFilters.modifiedByID)
-      if (obj.selected_version.modified_by_id !== $managementFilters.modifiedByID)
-        return false
-
-    if (model === "deal") {
-      const deal = obj as DealHull
-
-      if ($managementFilters.dealSizeFrom)
-        if ((deal.selected_version.deal_size ?? 0) < $managementFilters.dealSizeFrom)
-          return false
-      if ($managementFilters.dealSizeTo)
-        if ((deal.selected_version.deal_size ?? 0) > $managementFilters.dealSizeTo)
-          return false
-
-      if ($managementFilters.fullyUpdatedAtFrom)
-        if (
-          !deal.fully_updated_at ||
-          dayjs(deal.fully_updated_at).isBefore(
-            $managementFilters.fullyUpdatedAtFrom,
-            "day",
-          )
-        )
-          return false
-      if ($managementFilters.fullyUpdatedAtTo)
-        if (
-          !deal.fully_updated_at ||
-          dayjs(deal.fully_updated_at).isAfter(
-            $managementFilters.fullyUpdatedAtTo,
-            "day",
-          )
-        )
-          return false
-    }
-
-    return true
+  $effect(() => {
+    activateTab(page.url.hash)
   })
+
+  let showFilterOverlay = $state(false)
+
+  $effect(() => {
+    fetchObjects(activeTabId, model)
+  })
+  let filteredObjects = $derived(
+    objects.filter(obj => {
+      if ($managementFilters.status)
+        if (obj.status !== $managementFilters.status) return false
+      if ($managementFilters.country)
+        if (model === "deal") {
+          if ((obj as DealHull).country_id !== $managementFilters.country.id)
+            return false
+        } else {
+          if (
+            (obj as InvestorHull).selected_version.country_id !==
+            $managementFilters.country.id
+          )
+            return false
+        }
+      if ($managementFilters.createdAtFrom)
+        if (
+          dayjs(obj.first_created_at).isBefore($managementFilters.createdAtFrom, "day")
+        )
+          return false
+      if ($managementFilters.createdAtTo)
+        if (dayjs(obj.first_created_at).isAfter($managementFilters.createdAtTo, "day"))
+          return false
+      if ($managementFilters.createdByID)
+        if (obj.first_created_by_id !== $managementFilters.createdByID) return false
+
+      if ($managementFilters.modifiedAtFrom)
+        if (
+          dayjs(obj.selected_version.modified_at).isBefore(
+            $managementFilters.modifiedAtFrom,
+            "day",
+          )
+        )
+          return false
+      if ($managementFilters.modifiedAtTo)
+        if (
+          dayjs(obj.selected_version.modified_at).isAfter(
+            $managementFilters.modifiedAtTo,
+            "day",
+          )
+        )
+          return false
+      if ($managementFilters.modifiedByID)
+        if (obj.selected_version.modified_by_id !== $managementFilters.modifiedByID)
+          return false
+
+      if (model === "deal") {
+        const deal = obj as DealHull
+
+        if ($managementFilters.dealSizeFrom)
+          if ((deal.selected_version.deal_size ?? 0) < $managementFilters.dealSizeFrom)
+            return false
+        if ($managementFilters.dealSizeTo)
+          if ((deal.selected_version.deal_size ?? 0) > $managementFilters.dealSizeTo)
+            return false
+
+        if ($managementFilters.fullyUpdatedAtFrom)
+          if (
+            !deal.fully_updated_at ||
+            dayjs(deal.fully_updated_at).isBefore(
+              $managementFilters.fullyUpdatedAtFrom,
+              "day",
+            )
+          )
+            return false
+        if ($managementFilters.fullyUpdatedAtTo)
+          if (
+            !deal.fully_updated_at ||
+            dayjs(deal.fully_updated_at).isAfter(
+              $managementFilters.fullyUpdatedAtTo,
+              "day",
+            )
+          )
+            return false
+      }
+
+      return true
+    }),
+  )
 
   const wrapperClass = "p-1"
   const valueClass = "text-gray-700 dark:text-white"
@@ -287,7 +296,7 @@
         class={model === "deal"
           ? "border-b border-orange text-orange"
           : "text-gray-600 hover:text-orange dark:text-white"}
-        on:click={() => (model = "deal")}
+        onclick={() => (model = "deal")}
         type="button"
       >
         {$_("Deals")}
@@ -296,7 +305,7 @@
         class={model === "investor"
           ? "border-b border-pelorous text-pelorous"
           : "text-gray-600 hover:text-pelorous dark:text-white"}
-        on:click={() => (model = "investor")}
+        onclick={() => (model = "investor")}
         type="button"
       >
         {$_("Investors")}
@@ -346,7 +355,7 @@
             <li>
               <button
                 class="text-orange hover:text-orange-200"
-                on:click={() => downloadAsXLSX(filteredObjects, model, activeTabId)}
+                onclick={() => downloadAsXLSX(filteredObjects, model, activeTabId)}
               >
                 <DownloadIcon />
                 {$_("All attributes")} (xlsx)
@@ -355,7 +364,7 @@
             <li>
               <button
                 class="text-orange hover:text-orange-200"
-                on:click={() => downloadAsCSV(filteredObjects, model, activeTabId)}
+                onclick={() => downloadAsCSV(filteredObjects, model, activeTabId)}
               >
                 <DownloadIcon />
                 {$_("All attributes")} (csv)
@@ -372,10 +381,10 @@
       <WorkflowInfoView objects={filteredObjects} {model} tabId={activeTab.id} />
     {:else}
       <Table items={filteredObjects} {columns}>
-        <svelte:fragment slot="field" let:fieldName let:obj>
+        {#snippet field({ fieldName, obj })}
           {@const col = columns.find(c => c.key === fieldName)}
 
-          {#if col.key === "created"}
+          {#if col?.key === "first_created_at"}
             <DisplayField
               fieldname="first_created_at"
               value={obj.first_created_at}
@@ -390,7 +399,7 @@
               {wrapperClass}
               {valueClass}
             />
-          {:else if col.key === "modified"}
+          {:else if col?.key === "modified_at"}
             <DisplayField
               fieldname="modified_at"
               value={obj.selected_version.modified_at}
@@ -405,7 +414,7 @@
               {wrapperClass}
               {valueClass}
             />
-          {:else}
+          {:else if col}
             <DisplayField
               fieldname={col.key}
               value={col.submodel ? obj[col.submodel][col.key] : obj[col.key]}
@@ -417,7 +426,7 @@
                 : undefined}
             />
           {/if}
-        </svelte:fragment>
+        {/snippet}
       </Table>
     {/if}
   </div>
@@ -432,7 +441,7 @@
 
   <button
     class="group absolute right-4 top-2 rounded-full bg-gray-700 p-1 drop-shadow-[3px_3px_1px_rgba(125,125,125,.7)] transition-colors hover:bg-gray-100 hover:drop-shadow-lg"
-    on:click={() => (showFilterOverlay = !showFilterOverlay)}
+    onclick={() => (showFilterOverlay = !showFilterOverlay)}
     type="button"
   >
     <AdjustmentsIcon

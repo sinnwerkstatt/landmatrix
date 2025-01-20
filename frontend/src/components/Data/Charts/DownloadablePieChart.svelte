@@ -1,25 +1,32 @@
 <script lang="ts">
-  import type { Chart, ChartData } from "chart.js"
-
   import ChartWrapper from "$components/Data/Charts/DownloadWrapper.svelte"
   import {
-    downloadCanvas,
     downloadCSV,
     downloadJSON,
+    downloadSVG,
+    type FileType,
   } from "$components/Data/Charts/utils"
-  import type { DownloadEvent } from "$components/Data/Charts/utils"
-  import StatusPieChart from "$components/StatusPieChart.svelte"
+  import StatusBarChart, { type DataType } from "$components/StatusBarChart.svelte"
 
-  export let title: string
-  export let data: ChartData<"pie">
-  export let unit = ""
+  interface Props {
+    title: string
+    data: DataType[]
+  }
 
-  let chart: Chart<"pie">
+  let { title, data }: Props = $props()
 
-  const toCSV = (data: ChartData<"pie">) =>
-    [data.labels?.join(","), ...data.datasets.map(set => set.data.join(","))].join("\n")
+  const toCSV = (_data: DataType[]) => {
+    console.log(_data)
+    return [_data.map(x => x.name).join(","), _data.map(x => x.value).join(",")].join(
+      "\n",
+    )
+  }
 
-  const handleDownload = ({ detail: fileType }: DownloadEvent) => {
+  let chartSVG: SVGElement | null = null
+  const elementRendered = (e: SVGElement) => {
+    chartSVG = e
+  }
+  const handleDownload = (fileType: FileType) => {
     // TODO Kurt
     // if ($tracker) $tracker.trackEvent("Chart", title, fileType)
 
@@ -28,14 +35,14 @@
         return downloadJSON(JSON.stringify(data, null, 2), title)
       case "csv":
         return downloadCSV(toCSV(data), title)
-      case "svg":
-        return // Not supported
       default:
-        if (chart) return downloadCanvas(chart.canvas, fileType, title)
+        return downloadSVG(chartSVG, fileType, title)
     }
   }
 </script>
 
-<ChartWrapper disableSVG {title} on:download={handleDownload}>
-  <StatusPieChart bind:chart {data} {unit} />
+<ChartWrapper {title} ondownload={handleDownload}>
+  <div class="w-full">
+    <StatusBarChart {data} onrendered={elementRendered} />
+  </div>
 </ChartWrapper>

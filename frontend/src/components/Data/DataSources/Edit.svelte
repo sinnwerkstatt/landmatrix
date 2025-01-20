@@ -8,13 +8,24 @@
   import { createDataSource, isEmptyDataSource } from "./dataSources"
   import Entry from "./Entry.svelte"
 
-  export let version: DealVersion2 | InvestorVersion2
+  interface Props {
+    version: DealVersion2 | InvestorVersion2
+  }
+
+  let { version = $bindable() }: Props = $props()
+
+  let datasources = $state(version.datasources)
+
+  const onchange = () => {
+    version.datasources = datasources
+  }
 </script>
 
 <SubmodelEditField
   label={$_("Data Source")}
-  bind:entries={version.datasources}
+  bind:entries={datasources}
   createEntry={createDataSource}
   isEmpty={isEmptyDataSource}
   entryComponent={Entry}
+  {onchange}
 />

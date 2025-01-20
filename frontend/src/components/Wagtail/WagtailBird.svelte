@@ -1,13 +1,18 @@
 <script lang="ts">
   import type { WagtailPage } from "$lib/types/wagtail"
 
-  export let page: WagtailPage
+  interface Props {
+    page: WagtailPage
+  }
+
+  let { page }: Props = $props()
 </script>
 
 <a
   class="fixed bottom-12 right-12 cursor-pointer rounded-full bg-white p-2 ring-1 ring-[#8169d9] transition hover:rotate-[15deg] hover:ring-2"
   href="/cms/pages/{page.id}/edit/"
   rel="external"
+  aria-label="wagtail bird"
 >
   <svg
     class="h-10 w-10"

@@ -6,7 +6,11 @@
   import DealCard from "./DealCard.svelte"
   import InvestorCard from "./InvestorCard.svelte"
 
-  export let investor: InvestorHull
+  interface Props {
+    investor: InvestorHull
+  }
+
+  let { investor }: Props = $props()
 </script>
 
 <section>

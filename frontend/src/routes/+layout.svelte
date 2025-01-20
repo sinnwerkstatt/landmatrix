@@ -3,7 +3,7 @@
   import { SvelteToast } from "@zerodevx/svelte-toast"
   import { env } from "$env/dynamic/public"
 
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import LightboxImage from "$components/LightboxImage.svelte"
   import Messages from "$components/Messages.svelte"
@@ -16,7 +16,7 @@
 
   import type { User } from "$lib/types/data"
 
-  export let data
+  let { data, children } = $props()
 
   if (env.PUBLIC_SENTRY_DSN) {
     if (data.user) {
@@ -26,7 +26,7 @@
   }
 </script>
 
-{#if $page.url.pathname.split("/")[1] != "accountability"}
+{#if page.url.pathname.split("/")[1] !== "accountability"}
   <div id="main-content" class="grid h-screen">
     <div>
       <Messages />
@@ -35,12 +35,12 @@
     </div>
 
     <div id="content" class="h-full overflow-y-auto transition-colors dark:bg-gray-900">
-      <slot />
+      {@render children?.()}
     </div>
   </div>
 {:else}
   <!-- Reset layout for /accountability -->
-  <slot />
+  {@render children?.()}
 {/if}
 
 {#if env.PUBLIC_MATOMO_URL && env.PUBLIC_MATOMO_SITE_ID}

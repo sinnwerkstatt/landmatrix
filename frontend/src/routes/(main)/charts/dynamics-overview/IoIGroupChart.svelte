@@ -1,13 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import type { SortBy } from "$lib/data/buckets"
-  import {
-    createIoIGroupReducer,
-    INTENTION_OF_INVESTMENT_GROUP_COLORS,
-  } from "$lib/data/charts/intentionOfInvestmentGroup"
-  import { createChartData } from "$lib/data/createChartData"
-  import { createGroupMap, createLabels, fieldChoices } from "$lib/stores"
+  import { createGroupMap, dealChoices, type ValueLabelEntry } from "$lib/fieldChoices"
   import {
     IntentionOfInvestmentGroup,
     type DealVersion2,
@@ -15,31 +9,89 @@
   } from "$lib/types/data"
 
   import DownloadablePieChart from "$components/Data/Charts/DownloadablePieChart.svelte"
+  import type { DataType } from "$components/StatusBarChart.svelte"
 
-  export let deals: DealVersion2[] = []
-  export let displayDealsCount = false
+  interface Props {
+    deals?: DealVersion2[]
+    displayDealsCount?: boolean
+  }
 
-  let sortBy: SortBy
-  $: sortBy = displayDealsCount ? "count" : "size"
-  $: unit = displayDealsCount ? "deals" : "ha"
+  let { deals = [], displayDealsCount = false }: Props = $props()
 
-  $: ioiGroupMap = createGroupMap<IoIGroupMap>(
-    $fieldChoices.deal.intention_of_investment,
+  let ioiGroupMap = $derived(
+    createGroupMap<IoIGroupMap>($dealChoices.intention_of_investment),
   )
 
-  $: ioiGroupLabels = createLabels<IntentionOfInvestmentGroup>(
-    $fieldChoices.deal.intention_of_investment_group,
-  )
+  function createData(
+    dls: DealVersion2[],
+    groups: ValueLabelEntry[],
+    bySize: boolean,
+  ): DataType[] {
+    const vBuckets = groups.map(group => ({
+      name: group.label,
+      count: 0,
+      size: 0,
+      fillColor: {
+        AGRICULTURE: "hsl(50, 78%, 58%)", // "text-yellow-500",
+        FORESTRY: "hsl(94, 56%, 65%)", // "text-green-500",
+        RENEWABLE_ENERGY: "hsl(233, 76%, 73%)", // "text-purple-400",
+        OTHER: "hsl(0, 0%, 52%)", // "text-gray-400",
+      }[group.value as "AGRICULTURE" | "FORESTRY" | "RENEWABLE_ENERGY" | "OTHER"],
+    }))
 
-  // TODO: Refactor - Why recreate the data on group label change?
-  $: createData = createChartData<IntentionOfInvestmentGroup>(
-    createIoIGroupReducer(ioiGroupMap),
-    Object.keys(ioiGroupLabels) as IntentionOfInvestmentGroup[],
-    (group: IntentionOfInvestmentGroup) => ioiGroupLabels[group],
-    (key: IntentionOfInvestmentGroup) => INTENTION_OF_INVESTMENT_GROUP_COLORS[key],
-  )
+    let totalCount = 0
+    let totalSize = 0
+    for (const deal of dls) {
+      const intentions = deal.current_intention_of_investment ?? []
+      const intentionGroups = intentions.map(intention => ioiGroupMap[intention])
 
-  $: data = createData(deals, sortBy)
+      totalCount += 1
+      totalSize += deal.deal_size ?? 0
+
+      if (intentionGroups.includes(IntentionOfInvestmentGroup.AGRICULTURE)) {
+        vBuckets[0].count += 1
+        vBuckets[0].size += deal.deal_size ?? 0
+      }
+      if (intentionGroups.includes(IntentionOfInvestmentGroup.FORESTRY)) {
+        vBuckets[1].count += 1
+        vBuckets[1].size += deal.deal_size ?? 0
+      }
+      if (intentionGroups.includes(IntentionOfInvestmentGroup.RENEWABLE_ENERGY)) {
+        vBuckets[2].count += 1
+        vBuckets[2].size += deal.deal_size ?? 0
+      }
+      if (intentionGroups.includes(IntentionOfInvestmentGroup.OTHER)) {
+        vBuckets[3].count += 1
+        vBuckets[3].size += deal.deal_size ?? 0
+      }
+    }
+
+    if (bySize) {
+      return vBuckets
+        .filter(n => n.size > 0)
+        .map(n => ({
+          name: n.name,
+          value: ((n.size / totalSize) * 100).toFixed(),
+          label: `<strong>${n.name}</strong>: ${n.size.toLocaleString("fr").replace(",", ".")} ${$_("ha")}`,
+          fillColor: n.fillColor,
+        }))
+    } else {
+      return vBuckets
+        .filter(n => n.count > 0)
+        .map(n => ({
+          name: n.name,
+          value: ((n.count / totalCount) * 100).toFixed(),
+          label: `<strong>${n.name}</strong>: ${n.count.toFixed()} ${$_("deals")}`,
+          fillColor: n.fillColor,
+        }))
+    }
+  }
+
+  let data = $derived(
+    createData(deals, $dealChoices.intention_of_investment_group, !displayDealsCount),
+  )
 </script>
 
-<DownloadablePieChart title={$_("Intention of investment")} {data} {unit} />
+{#key data}
+  <DownloadablePieChart title={$_("Intention of investment")} {data} />
+{/key}

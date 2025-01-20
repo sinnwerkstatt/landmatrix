@@ -1,45 +1,65 @@
 <script lang="ts">
-  import type { ComponentType } from "svelte"
+  import type { Component } from "svelte"
   import { _ } from "svelte-i18n"
+  import type { FormEventHandler } from "svelte/elements"
 
-  export let name: string
-  export let value: number | null
-  export let required = false
-  export let unit: string | ComponentType = ""
-  export let max: number | undefined = undefined
-  export let min: number | undefined = 0
-  export let decimals = 2
+  interface Props {
+    name: string
+    value: number | null
+    required?: boolean
+    unit?: string | Component
+    max?: number | undefined
+    min?: number | undefined
+    decimals?: number
+    placeholder?: string
+    class?: string
+    onchange?: () => void
+  }
 
-  let step: number
-  $: step = 1 / 10 ** decimals
-  export let placeholder = ""
+  let {
+    name,
+    value = $bindable(),
+    required = false,
+    unit = "",
+    max = undefined,
+    min = 0,
+    decimals = 2,
+    placeholder = "",
+    class: className = "",
+    onchange,
+  }: Props = $props()
+
+  let step: number = $derived(1 / 10 ** decimals)
   // $: placeholder = min && max ? `${min} – ${max}` : step === 1 ? "0" : "123.45"
 
-  const onInput = (event: InputEvent) => {
+  const oninput: FormEventHandler<HTMLInputElement> = event => {
+    event.preventDefault()
     const targetValue = (event.target as HTMLInputElement).value
     value = targetValue === "" ? null : parseFloat(targetValue)
+    onchange?.()
   }
 </script>
 
 <div class="flex grow justify-end">
   <input
-    value={value ?? ""}
-    type="number"
-    class="inpt {$$props.class ?? ''}"
-    {required}
-    {min}
+    class="inpt {className}"
     {max}
-    {step}
+    {min}
     {name}
-    on:input|preventDefault={onInput}
+    {oninput}
     {placeholder}
+    {required}
+    {step}
+    type="number"
+    value={value ?? ""}
   />
   {#if unit}
     <div class="flex items-center bg-gray-700 px-3 font-bold text-white">
       {#if typeof unit === "string"}
         {$_(unit)}
       {:else}
-        <svelte:component this={unit} class="h-4 w-4" />
+        {@const SvelteComponent = unit}
+        <SvelteComponent class="h-4 w-4" />
       {/if}
     </div>
   {/if}
@@ -55,6 +75,6 @@
 
   /* Firefox */
   input[type="number"] {
-    -moz-appearance: textfield;
+    appearance: textfield;
   }
 </style>

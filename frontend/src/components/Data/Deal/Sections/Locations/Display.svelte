@@ -1,168 +1,210 @@
 <script lang="ts">
-  import type { Point } from "geojson"
-  import type { GeoJSON, Layer, Map, Marker } from "leaflet?client"
-  import { Control, geoJson } from "leaflet?client"
+  import { Feature, type Map } from "ol"
+  import { Control } from "ol/control"
+  import { Point } from "ol/geom"
+  import { Vector as VectorLayer } from "ol/layer"
+  import { fromLonLat } from "ol/proj"
+  import { Vector as VectorSource } from "ol/source"
   import { onDestroy, onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
   import { goto } from "$app/navigation"
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
-  import type {
-    DealHull,
-    Location2,
-    PointFeature,
-    PointFeatureProps,
-  } from "$lib/types/data"
+  import type { components } from "$lib/openAPI"
+  import type { DealHull, Location2 } from "$lib/types/data"
   import { createComponentAsDiv } from "$lib/utils/domHelpers"
 
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import SubmodelDisplayField from "$components/Fields/SubmodelDisplayField.svelte"
-  import BigMap from "$components/Map/BigMap.svelte"
-  import { createCoordinatesMap } from "$components/Map/utils"
+  import { markerStyle, markerStyleSemi } from "$components/Map/mapHelper"
+  import { fitMapToFeatures } from "$components/Map/mapstuff.svelte"
+  import OLMap from "$components/Map/OLMap.svelte"
 
   import LocationAreasField from "./LocationAreasField.svelte"
   import LocationLegend from "./LocationLegend.svelte"
-  import { createPointFeatures, fitBounds } from "./locations"
-  import LocationTooltip from "./LocationTooltip.svelte"
+  import { createLocationTooltipOverlay } from "./locations"
 
-  export let deal: DealHull
+  interface Props {
+    deal: DealHull
+  }
 
-  let map: Map | undefined
-  let markerFeatureGroup: GeoJSON<PointFeatureProps, Point>
+  let { deal }: Props = $props()
 
-  let selectedLocationId: string | undefined
-  let hoverLocationId: string | undefined
+  let map: Map | undefined = $state()
+  let markersVectorSource = new VectorSource({})
 
-  $: countryCoords = createCoordinatesMap($page.data.countries)
+  let selectedLocationId: string | undefined = $state()
+  let hoverLocationId: string | undefined = $state()
 
-  $: if (map) {
-    map.removeLayer(markerFeatureGroup)
-    markerFeatureGroup = createMarkerLayer(deal.selected_version.locations)
-    map.addLayer(markerFeatureGroup)
-
-    if (!deal.selected_version.locations.length) {
-      const coords = countryCoords[deal.country_id!]
-      map.flyTo(coords, 5)
-    } else {
-      fitBounds(map)
+  const updateHoverState = async (hoverLocationId?: string) => {
+    if (!map) return
+    let haveHit = false
+    if (hoverLocationId)
+      markersVectorSource.forEachFeature(ft => {
+        const prps = ft.getProperties()
+        if (prps.nid === hoverLocationId) {
+          haveHit = true
+          createLocationTooltipOverlay(ft as Feature<Point>).then(ovrl => {
+            map!.addOverlay(ovrl)
+            map!.getOverlays().forEach(overlay => {
+              if (overlay !== ovrl) map!.removeOverlay(overlay)
+            })
+          })
+        }
+      })
+    if (!haveHit) {
+      map!.getOverlays().forEach(overlay => map!.removeOverlay(overlay))
     }
   }
 
-  $: if (map) {
-    markerFeatureGroup.eachLayer(updateHoverState(hoverLocationId))
-  }
-
-  $: if (map) {
-    markerFeatureGroup.eachLayer(updateSelectState(selectedLocationId))
-  }
-
-  const updateHoverState = (hoverLocationId?: string) => (layer: Layer) => {
-    const marker = layer as Marker
-    const feature: PointFeature = marker.feature!
-
-    if (feature.properties.id === hoverLocationId) {
-      marker.openPopup()
-    } else {
-      marker.closePopup()
+  const updateSelectState = (selectedLocationId?: string) => {
+    if (!map) return
+    let haveHit = false
+    if (selectedLocationId)
+      markersVectorSource.forEachFeature(ft => {
+        const prps = ft.getProperties()
+        if (prps.nid === selectedLocationId) {
+          haveHit = true
+          ft.setStyle(markerStyle)
+        } else {
+          ft.setStyle(markerStyleSemi)
+        }
+      })
+    if (!haveHit) {
+      markersVectorSource.forEachFeature(ft => ft.setStyle(markerStyle))
     }
   }
 
-  const updateSelectState = (selectedLocationId?: string) => (layer: Layer) => {
-    const marker = layer as Marker
-    const feature: PointFeature = marker.feature!
-    const isSelectedLocation = feature.properties.id === selectedLocationId
+  const onMapReady = (_map: Map) => {
+    map = _map
 
-    marker.removeEventListener("mousedown")
-    marker.on("mousedown", () =>
-      isSelectedLocation ? goto("") : goto(`#${feature.properties.id}`),
+    map.addControl(new Control({ element: createComponentAsDiv(LocationLegend) }))
+
+    map.addLayer(
+      new VectorLayer({ source: markersVectorSource, style: () => markerStyle }),
     )
 
-    // FIXME: use marker.setIcon(Icon) with newly styled Icon
-    if (!selectedLocationId || isSelectedLocation) {
-      marker._icon.classList.remove("leaflet-hidden")
-    } else {
-      marker._icon.classList.add("leaflet-hidden")
-    }
-  }
+    map.on("pointermove", evt => {
+      const feature = map!.forEachFeatureAtPixel(
+        evt.pixel,
+        feature => feature as Feature<Point>,
+      )
 
-  const onMapReady = (e: CustomEvent<Map>) => {
-    const _map = e.detail
-
-    const legend = new Control({ position: "bottomleft" })
-    legend.onAdd = () => createComponentAsDiv(LocationLegend)
-    _map.addControl(legend)
-
-    // set at the end to avoid svelte reactivity issues
-    map = _map
-  }
-
-  const createMarkerLayer = (locations: readonly Location2[]) =>
-    geoJson([...createPointFeatures(locations)], {
-      onEachFeature: (feature: PointFeature, layer: Layer) => {
-        const tooltipElement = createComponentAsDiv(LocationTooltip, { feature })
-        layer.bindPopup(tooltipElement, {
-          keepInView: true,
-          autoPanPaddingTopLeft: [20, 20],
-          autoPanPaddingBottomRight: [20, 100],
-        })
-        layer.on("mouseover", () => (hoverLocationId = feature.properties.id))
-        layer.on("mouseout", () => (hoverLocationId = undefined))
-      },
+      hoverLocationId =
+        feature && markersVectorSource.hasFeature(feature)
+          ? feature.getProperties().nid
+          : undefined
     })
+    map.on("click", evt => {
+      const feature = map!.forEachFeatureAtPixel(
+        evt.pixel,
+        feature => feature as Feature<Point>,
+      )
+      if (feature && markersVectorSource.hasFeature(feature)) {
+        const nid = feature.getProperties().nid
+        goto(nid === selectedLocationId ? "" : `#${nid}`)
+      }
+    })
+  }
 
-  onMount(() => {
-    markerFeatureGroup = createMarkerLayer(deal.selected_version.locations)
+  const createMarkerLayer = (locations: readonly Location2[]) => {
+    const points = []
+    for (const location of locations) {
+      if (location.point) {
+        const feature = new Feature<Point>({
+          geometry: new Point(fromLonLat(location.point.coordinates!)),
+        })
+
+        feature.setProperties({
+          nid: location.nid,
+          level_of_accuracy: location.level_of_accuracy,
+          name: location.name,
+          point: location.point.coordinates,
+        })
+
+        points.push(feature)
+      }
+    }
+    markersVectorSource.addFeatures(points)
+  }
+
+  onMount(() => createMarkerLayer(deal.selected_version.locations))
+  onDestroy(() => markersVectorSource.clear())
+
+  $effect(() => {
+    if (!map) return
+
+    if (deal.selected_version.locations.length) {
+      fitMapToFeatures(map)
+    } else {
+      const cntry = page.data.countries.find(x => x.id === deal.country_id)
+      if (!cntry) return
+      map
+        .getView()
+        .fit(
+          [
+            ...fromLonLat([cntry.point_lon_min, cntry.point_lat_min]),
+            ...fromLonLat([cntry.point_lon_max, cntry.point_lat_max]),
+          ],
+          { padding: [30, 30, 30, 30] },
+        )
+    }
   })
 
-  onDestroy(() => {
-    if (map) {
-      map.removeLayer(markerFeatureGroup)
-    }
+  $effect(() => {
+    updateHoverState(hoverLocationId)
+  })
+  $effect(() => {
+    updateSelectState(selectedLocationId)
   })
 </script>
 
 <section class="flex flex-wrap lg:h-full">
   <div class="w-full overflow-y-auto p-2 lg:h-full lg:w-2/5">
     <SubmodelDisplayField
-      entries={deal.selected_version.locations}
-      bind:selectedEntryId={selectedLocationId}
       bind:hoverEntryId={hoverLocationId}
+      bind:selectedEntryId={selectedLocationId}
+      entries={deal.selected_version.locations}
       label={$_("Location")}
-      let:entry={location}
     >
-      <DisplayField
-        value={location.level_of_accuracy}
-        fieldname="location.level_of_accuracy"
-        showLabel
-      />
-      <DisplayField value={location.name} fieldname="location.name" showLabel />
-      <DisplayField value={location.point} fieldname="location.point" showLabel />
-      <DisplayField
-        value={location.description}
-        fieldname="location.description"
-        showLabel
-      />
-      <DisplayField
-        value={location.facility_name}
-        fieldname="location.facility_name"
-        showLabel
-      />
-      <DisplayField value={location.comment} fieldname="location.comment" showLabel />
-      <LocationAreasField
-        {map}
-        label={$_("Areas")}
-        areas={location.areas}
-        fieldname="location.areas"
-        isSelectedEntry={!selectedLocationId || location.nid === selectedLocationId}
-      />
+      {#snippet children(location: components["schemas"]["Location"])}
+        <DisplayField
+          value={location.level_of_accuracy}
+          fieldname="location.level_of_accuracy"
+          showLabel
+        />
+        <DisplayField value={location.name} fieldname="location.name" showLabel />
+        <DisplayField value={location.point} fieldname="location.point" showLabel />
+        <DisplayField
+          value={location.description}
+          fieldname="location.description"
+          showLabel
+        />
+        <DisplayField
+          value={location.facility_name}
+          fieldname="location.facility_name"
+          showLabel
+        />
+        <DisplayField value={location.comment} fieldname="location.comment" showLabel />
+        {#if map}
+          <LocationAreasField
+            {map}
+            label={$_("Areas")}
+            areas={location.areas}
+            fieldname="location.areas"
+            isSelectedEntry={!selectedLocationId || location.nid === selectedLocationId}
+          />
+        {/if}
+      {/snippet}
     </SubmodelDisplayField>
   </div>
   <div class="sticky top-0 h-[600px] w-full p-2 lg:w-3/5">
-    <BigMap
+    <OLMap
       containerClass="min-h-full h-full"
-      on:ready={onMapReady}
+      mapReady={onMapReady}
       options={{ center: [0, 0] }}
+      showLayerSwitcher
     />
   </div>
 </section>

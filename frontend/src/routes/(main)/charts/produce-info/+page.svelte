@@ -10,7 +10,7 @@
   import { showContextBar, showFilterBar } from "$components/Data/stores"
   import LoadingPulse from "$components/LoadingPulse.svelte"
 
-  $: title = $_("Produce info map")
+  let title = $derived($_("Produce info map"))
 
   onMount(() => {
     showContextBar.set(!$isMobile)
@@ -29,8 +29,10 @@
     <ProduceInfoMap deals={$dealsNG.map(d => d.selected_version)} {title} />
   {/if}
 
-  <div slot="ContextBar">
-    <h2 class="heading5">{title}</h2>
-    <div>{@html $chartDescriptions.produce_info_map}</div>
-  </div>
+  {#snippet ContextBar()}
+    <div>
+      <h2 class="heading5">{title}</h2>
+      <div>{@html $chartDescriptions.produce_info_map}</div>
+    </div>
+  {/snippet}
 </ChartsContainer>

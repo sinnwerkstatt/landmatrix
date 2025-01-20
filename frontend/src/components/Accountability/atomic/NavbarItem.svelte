@@ -1,8 +1,13 @@
 <script lang="ts">
   import { page } from "$app/stores"
 
-  export let label = "Item"
-  export let href = "/accountability/"
+  interface Props {
+    label?: string
+    href?: string
+    icon?: import("svelte").Snippet
+  }
+
+  let { label = "Item", href = "/accountability/", icon }: Props = $props()
 </script>
 
 <a
@@ -11,7 +16,7 @@
   class="flex flex-col items-center gap-1 text-a-s font-semibold text-a-gray-900 hover:text-a-gray-900"
 >
   <span class="icon rounded-lg p-2">
-    <slot name="icon" />
+    {@render icon?.()}
   </span>
   <div>{label}</div>
 </a>

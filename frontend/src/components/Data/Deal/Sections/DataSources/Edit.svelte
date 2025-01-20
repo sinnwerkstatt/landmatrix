@@ -3,7 +3,11 @@
 
   import DataSourcesEdit from "$components/Data/DataSources/Edit.svelte"
 
-  export let deal: DealHull
+  interface Props {
+    deal: DealHull
+  }
+
+  let { deal = $bindable() }: Props = $props()
 </script>
 
 <DataSourcesEdit bind:version={deal.selected_version} />

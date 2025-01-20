@@ -3,13 +3,25 @@
 
   import Checkbox from "./Checkbox.svelte"
 
-  export let group: string[] = []
-  export let choices: { value: string; label: string }[] = []
-  export let categories: { values: string[]; label: string }[] = []
-  export let orphansLabel = "Orphans"
-  export let filter: string = ""
-  export let readonlyCategories = false
-  export let disabled = false
+  interface Props {
+    group?: string[]
+    choices?: { value: string; label: string }[]
+    categories?: { values: string[]; label: string }[]
+    orphansLabel?: string
+    filter?: string
+    readonlyCategories?: boolean
+    disabled?: boolean
+  }
+
+  let {
+    group = $bindable([]),
+    choices = [],
+    categories = [],
+    orphansLabel = "Orphans",
+    filter = "",
+    readonlyCategories = false,
+    disabled = false,
+  }: Props = $props()
 
   function getOrphans(choices, categories) {
     if (categories.length > 0) {
@@ -60,11 +72,13 @@
     return result
   }
 
-  $: cleanCategories = categories ? joinArrays(choices, categories) : []
+  let cleanCategories: string[] | [] = $state([])
+  $effect(() => {
+    cleanCategories = categories ? joinArrays(choices, categories) : []
+  })
 
-  function checkChoice({ detail }) {
+  function checkChoice(value: string, checked: boolean) {
     // Add choice to groups
-    const { value, checked } = detail
     if (checked) {
       group = [...group, value]
     } else {
@@ -77,12 +91,11 @@
     category.partiallyChecked = arrayIncludesAnyOf(group, category.values)
 
     // Force update with assignment
-    cleanCategories = cleanCategories
+    cleanCategories = cleanCategories // TODO: force cleanCategories update somehow
   }
 
-  function checkCategory({ detail }) {
+  function checkCategory(value: string, checked: boolean) {
     // Check or uncheck subgroup
-    const { value, checked } = detail
     const category = cleanCategories.find(e => e.label == value)
     if (checked) {
       group = [...group, category.values].flat()
@@ -129,7 +142,7 @@
           {checked}
           {partiallyChecked}
           {hidden}
-          on:changed={checkCategory}
+          onchanged={checkCategory}
           {disabled}
         />
       {/if}
@@ -143,7 +156,7 @@
             {value}
             {checked}
             {hidden}
-            on:changed={checkChoice}
+            onchanged={checkChoice}
             {disabled}
           />
         {/each}
@@ -153,14 +166,7 @@
     {#each choices as { label, value }}
       {@const checked = group.includes(value)}
       {@const hidden = !searchMatch(label, filter)}
-      <Checkbox
-        {label}
-        {value}
-        {checked}
-        {hidden}
-        on:changed={checkChoice}
-        {disabled}
-      />
+      <Checkbox {label} {value} {checked} {hidden} onchanged={checkChoice} {disabled} />
     {/each}
   {/if}
 </div>

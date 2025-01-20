@@ -18,20 +18,23 @@
   // import IconFilter from "./icons/IconFilter.svelte"
 
   // Open modal to filter projects
-  let openModal = false
+  let openModal = $state(false)
 
   // Alphabetically sort projects
-  $: sortedProjects = $allProjects.sort((a, b) => a.name.localeCompare(b.name))
+  let sortedProjects = $state([])
+  $effect(() => {
+    sortedProjects = $allProjects.sort((a, b) => a.name.localeCompare(b.name))
+  })
 
   // Bind page content from Pagination
-  let pageContent = []
+  let pageContent = $state([])
 
   // Swap alphabetical sorting each time the button is clicked
   function sortProjects() {
     sortedProjects = sortedProjects.reverse()
   }
 
-  // Menu
+  // Menu - TMP, uncomment functions later when they are ready
   function handleEdit() {
     // const projectId = event.detail.id
     // console.log("Edit action: " + projectId)
@@ -41,9 +44,7 @@
     // openProjectModal('delete', event.detail.id)
   }
 
-  async function handleBookmark(event) {
-    const action = event.detail.action
-    const projectId = event.detail.id
+  async function handleBookmark(projectId: number, action: string) {
     if (action == "add") {
       try {
         await addUserBookmark(projectId)
@@ -68,7 +69,7 @@
     tailwind="self-center"
     on:click={() => (openModal = true)}
   >
-    <span slot="icon-after"><IconFilter /></span>
+    <span slot="iconAfter"><IconFilter /></span>
   </Button> -->
 
   <div class="h-full overflow-scroll">
@@ -77,7 +78,7 @@
       alwaysOpen={true}
       sortable="auto"
       stickyTitle={true}
-      on:sort={sortProjects}
+      onSort={sortProjects}
     >
       <Pagination bind:dataset={sortedProjects} bind:pageContent rowHeight="56">
         {#each pageContent as { id, name }}
@@ -86,9 +87,9 @@
             label={name}
             menu={true}
             handle={false}
-            on:edit={handleEdit}
-            on:bookmark={handleBookmark}
-            on:delete={handleDelete}
+            onEdit={handleEdit}
+            onBookmark={handleBookmark}
+            onDelete={handleDelete}
           />
         {/each}
       </Pagination>

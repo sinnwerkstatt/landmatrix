@@ -1,11 +1,15 @@
 <script lang="ts">
-  export let val: {
-    title: string
-    tw: string
-    mobile: string
-    desktop: string
-    specs: { name: string; value: string | string[]; tw?: string }[]
+  interface Props {
+    val: {
+      title: string
+      tw: string
+      mobile: string
+      desktop: string
+      specs: { name: string; value: string | string[]; tw?: string }[]
+    }
   }
+
+  let { val }: Props = $props()
 </script>
 
 <div class="my-12 grid grid-cols-2">

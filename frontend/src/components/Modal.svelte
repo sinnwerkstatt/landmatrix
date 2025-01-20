@@ -1,31 +1,45 @@
 <script lang="ts">
   // inspiration: https://svelte.dev/examples/modal
-  import { createEventDispatcher, onMount } from "svelte"
+  import { onMount, type Snippet } from "svelte"
+  import { twMerge } from "tailwind-merge"
 
-  const dispatch = createEventDispatcher<{ close: undefined }>()
+  interface Props {
+    open: boolean
+    dismissible?: boolean
+    class?: string
+    style?: string
+    children?: Snippet
+    onclose?: () => void
+  }
 
-  export let open = true
-  export let dismissible = false
-
-  let dialog: HTMLDialogElement
+  let {
+    open = $bindable(),
+    dismissible = false,
+    class: className = "",
+    style = "",
+    children,
+    onclose,
+  }: Props = $props()
+  let dialog: HTMLDialogElement | undefined = $state()
 
   function close() {
     if (!dismissible) return
     open = false
-    dispatch("close")
+    onclose?.()
   }
 
   onMount(() => {
+    if (!dialog) return
     if (dismissible)
       dialog.addEventListener("click", e => {
-        const dims = dialog.getBoundingClientRect()
+        const dims = dialog!.getBoundingClientRect()
         if (
           e.clientX < dims.left ||
           e.clientX > dims.right ||
           e.clientY < dims.top ||
           e.clientY > dims.bottom
         ) {
-          dialog.close() // will call the above close() function implicitly
+          dialog!.close() // will call the above close() function implicitly
         }
       })
     if (open) dialog.showModal()
@@ -37,17 +51,21 @@
     else dialog.close()
   }
 
-  $: modalState(open)
+  $effect(() => {
+    modalState(open)
+  })
 </script>
 
 <dialog
   bind:this={dialog}
-  class="rounded border border-gray-300 bg-white p-4 drop-shadow-lg dark:border-gray-800 dark:bg-gray-500 dark:text-white {$$props.class}"
-  style={$$props.style ?? ""}
-  on:close={close}
-  on:cancel|preventDefault={close}
+  class={twMerge(
+    "rounded border border-gray-300 bg-white p-4 drop-shadow-lg dark:border-gray-800 dark:bg-gray-500 dark:text-white",
+    className,
+  )}
+  {style}
+  onclose={close}
 >
-  <slot />
+  {@render children?.()}
 </dialog>
 
 <style lang="postcss">

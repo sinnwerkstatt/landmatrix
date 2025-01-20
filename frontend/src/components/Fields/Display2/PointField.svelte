@@ -1,7 +1,11 @@
 <script lang="ts">
   import type { Point } from "geojson"
 
-  export let value: Point | null
+  interface Props {
+    value: Point | null
+  }
+
+  let { value }: Props = $props()
 </script>
 
 {#if value}

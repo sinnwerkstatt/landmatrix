@@ -4,10 +4,14 @@
   import CurrencySelect from "$components/Fields/Edit2/CurrencySelect.svelte"
   import EditField from "$components/Fields/EditField.svelte"
 
-  export let entry: Mutable<Involvement>
-  export let model: Model = "investor"
+  interface Props {
+    entry: Mutable<Involvement>
+    model?: Model
+    extras?: { excludeIds?: number[] }
+    onchange?: () => void
+  }
 
-  export let extras: { excludeIds?: number[] } = {}
+  let { entry = $bindable(), model = "investor", extras, onchange }: Props = $props()
 </script>
 
 <div class="grid lg:grid-cols-2 lg:gap-4">
@@ -17,12 +21,14 @@
     {model}
     {extras}
     showLabel
+    {onchange}
   />
   <EditField
     fieldname="involvement.parent_relation"
     bind:value={entry.parent_relation}
     {model}
     showLabel
+    {onchange}
   />
 </div>
 
@@ -33,6 +39,7 @@
       bind:value={entry.investment_type}
       {model}
       showLabel
+      {onchange}
     />
   </div>
   <EditField
@@ -40,6 +47,7 @@
     bind:value={entry.percentage}
     {model}
     showLabel
+    {onchange}
   />
 </div>
 
@@ -49,10 +57,11 @@
     bind:value={entry.loans_amount}
     {model}
     showLabel
+    {onchange}
   />
 
   <div class="flex items-center">
-    <CurrencySelect bind:value={entry.loans_currency_id} />
+    <CurrencySelect bind:value={entry.loans_currency_id} {onchange} />
   </div>
 
   <EditField
@@ -60,6 +69,7 @@
     bind:value={entry.loans_date}
     {model}
     showLabel
+    {onchange}
   />
 </div>
 
@@ -68,4 +78,5 @@
   bind:value={entry.comment}
   {model}
   showLabel
+  {onchange}
 />

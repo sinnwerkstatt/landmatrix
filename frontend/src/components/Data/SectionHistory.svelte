@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import { stateMap } from "$lib/newUtils"
   import { type DealHull, type InvestorHull } from "$lib/types/data"
@@ -11,17 +11,20 @@
   import CheckCircleIcon from "$components/icons/CheckCircleIcon.svelte"
   import CircleIcon from "$components/icons/CircleIcon.svelte"
 
-  export let obj: DealHull | InvestorHull
+  interface Props {
+    obj: DealHull | InvestorHull
+    investorColors?: boolean
+  }
 
-  export let investorColors = false
+  let { obj, investorColors = false }: Props = $props()
 
   const isDeal = "fully_updated_at" in obj
   const objType = isDeal ? "deal" : "investor"
 
-  $: reporterOrHigher = isReporterOrAbove($page.data.user)
+  let reporterOrHigher = $derived(isReporterOrAbove(page.data.user))
 
-  let compareFrom = obj.versions[1]?.id
-  let compareTo = obj.versions[0]?.id
+  let compareFrom = $state(obj.versions[1]?.id)
+  let compareTo = $state(obj.versions[0]?.id)
 </script>
 
 <section>
@@ -192,14 +195,14 @@
     </tbody>
     <tfoot>
       <tr>
-        <td />
-        <td />
-        <td />
-        <td />
-        <td />
-        <td />
-        {#if isDeal}<td />{/if}
-        {#if reporterOrHigher}<td />{/if}
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        {#if isDeal}<td></td>{/if}
+        {#if reporterOrHigher}<td></td>{/if}
         {#if compareFrom && compareTo}
           <td class="pt-3 text-right">
             <a

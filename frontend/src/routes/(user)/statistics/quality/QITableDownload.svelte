@@ -6,10 +6,16 @@
 
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
 
-  export let qi: DealQIKey
-  export let inverse: boolean
+  interface Props {
+    qi: DealQIKey
+    inverse: boolean
+  }
 
-  $: dataDownloadURL = `/api/legacy_export/?${$filters.toRESTFilterArray()}&qi=${qi}&inverse=${inverse}`
+  let { qi, inverse }: Props = $props()
+
+  let dataDownloadURL = $derived(
+    `/api/legacy_export/?${$filters.toRESTFilterArray()}&qi=${qi}&inverse=${inverse}`,
+  )
 </script>
 
 <ul>

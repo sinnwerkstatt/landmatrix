@@ -3,7 +3,7 @@
   import { _ } from "svelte-i18n"
   import { slide } from "svelte/transition"
 
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import { filters } from "$lib/filters"
   import type { components } from "$lib/openAPI"
@@ -26,15 +26,15 @@
 
   const model: Model = "deal"
 
-  let activeKey: DealQIKey | null = null
-  let inverse = false
+  let activeKey: DealQIKey | null = $state(null)
+  let inverse = $state(false)
 
-  let counts: components["schemas"]["DealQICounts"] | null = null
+  let counts: components["schemas"]["DealQICounts"] | null = $state(null)
 
   const fetchCounts = () => {
     counts = null
 
-    $page.data.apiClient
+    page.data.apiClient
       .GET(
         `/api/quality-indicators/counts/deal/?${$filters.toRESTFilterArray()}` as "/api/quality-indicators/counts/deal/",
       )
@@ -44,15 +44,15 @@
 
   onMount(fetchCounts)
 
-  let filterOpen: boolean = false
-  let downloadOpen: boolean = false
+  let filterOpen: boolean = $state(false)
+  let downloadOpen: boolean = $state(false)
 
   const download = (e: DownloadEvent) => {
     const blob = createBlob(e.detail, counts)
     const context: DownloadContext = {
       filters: $filters,
-      regions: $page.data.regions,
-      countries: $page.data.countries,
+      regions: page.data.regions,
+      countries: page.data.countries,
     }
     const filename = createFilename("deal-quality-indicators", e.detail, context)
 
@@ -69,7 +69,7 @@
 <ul class="mb-4 ml-4 mr-8 flex flex-wrap items-baseline justify-end gap-x-8">
   <li>
     <ActionButton
-      on:click={() => (filterOpen = true)}
+      onclick={() => (filterOpen = true)}
       icon={AdjustmentsIcon}
       highlight={!$filters.isEmpty()}
       label={$_("Filter")}
@@ -77,7 +77,7 @@
   </li>
   <li>
     <ActionButton
-      on:click={() => (downloadOpen = true)}
+      onclick={() => (downloadOpen = true)}
       icon={DownloadIcon}
       label={$_("Download")}
     />
@@ -85,7 +85,7 @@
 </ul>
 
 <QINavigator {model} {counts} bind:activeKey>
-  <svelte:fragment slot="list">
+  {#snippet list()}
     {#if activeKey}
       <div class="p-2" transition:slide={{ duration: 300 }}>
         <div class="flex justify-between">
@@ -97,7 +97,7 @@
         </div>
       </div>
     {/if}
-  </svelte:fragment>
+  {/snippet}
 </QINavigator>
 
 <DownloadModal
@@ -108,7 +108,7 @@
 
 <FilterModal
   bind:open={filterOpen}
-  on:submit={async () => {
+  onsubmit={async () => {
     fetchCounts()
     filterOpen = false
   }}

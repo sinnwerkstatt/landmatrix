@@ -17,12 +17,14 @@
 
   import { mutableInvestor } from "./store"
 
-  export let data
+  let { data, children } = $props()
 
-  let savingInProgress = false
-  let showReallyQuitOverlay = false
+  let savingInProgress = $state(false)
+  let showReallyQuitOverlay = $state(false)
 
-  $: hasBeenEdited = JSON.stringify(data.investor) !== JSON.stringify($mutableInvestor)
+  let hasBeenEdited = $derived(
+    JSON.stringify(data.investor) !== JSON.stringify($mutableInvestor),
+  )
 
   beforeNavigate(({ type, cancel, to }) => {
     // if hasNavigatedToOtherSection
@@ -169,7 +171,8 @@
       <button
         class="btn btn-primary flex items-center gap-2"
         class:disabled={!hasBeenEdited || savingInProgress}
-        on:click|preventDefault={onClickSave}
+        type="button"
+        onclick={onClickSave}
       >
         {#if savingInProgress}
           <LoadingSpinner /> {$_("Saving...")}
@@ -180,7 +183,8 @@
       <button
         class="btn btn-cancel"
         class:disabled={savingInProgress}
-        on:click|preventDefault={() => onClickClose()}
+        type="button"
+        onclick={() => onClickClose()}
       >
         {$_("Close")}
       </button>
@@ -198,14 +202,11 @@
   </div>
 
   <div class="mt-2 overflow-y-auto px-1 pb-20 sm:px-4" style="grid-area: main">
-    <slot />
+    {@render children?.()}
   </div>
 </div>
 
-<ModalReallyQuit
-  bind:open={showReallyQuitOverlay}
-  on:click={() => onClickClose(true)}
-/>
+<ModalReallyQuit bind:open={showReallyQuitOverlay} onclick={() => onClickClose(true)} />
 
 <style>
   .editgrid {

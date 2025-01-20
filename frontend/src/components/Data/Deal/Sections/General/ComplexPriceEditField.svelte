@@ -1,19 +1,24 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import { currencies, fieldChoices } from "$lib/stores"
+  import { dealChoices } from "$lib/fieldChoices"
+  import { currencies } from "$lib/stores"
   import type { DealVersion2 } from "$lib/types/data"
 
   import CurrencySelect from "$components/Fields/Edit2/CurrencySelect.svelte"
   import EditField from "$components/Fields/EditField.svelte"
 
-  export let fields: [
-    "purchase_price" | "annual_leasing_fee",
-    "purchase_price_currency" | "annual_leasing_fee_currency",
-    "purchase_price_type" | "annual_leasing_fee_type",
-    "purchase_price_area" | "annual_leasing_fee_area",
-  ]
-  export let version: DealVersion2
+  interface Props {
+    fields: [
+      "purchase_price" | "annual_leasing_fee",
+      "purchase_price_currency" | "annual_leasing_fee_currency",
+      "purchase_price_type" | "annual_leasing_fee_type",
+      "purchase_price_area" | "annual_leasing_fee_area",
+    ]
+    version: DealVersion2
+  }
+
+  let { fields, version = $bindable() }: Props = $props()
 </script>
 
 <EditField bind:value={version[fields[0]]} fieldname={fields[0]} showLabel>
@@ -26,7 +31,7 @@
     class:italic={version[fields[2]] === null}
   >
     <option class="italic" value={null}>- per -</option>
-    {#each $fieldChoices.deal.ha_area as { value, label }}
+    {#each $dealChoices.ha_area as { value, label }}
       <option class="not-italic" {value}>{label}</option>
     {/each}
   </select>

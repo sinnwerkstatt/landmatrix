@@ -3,8 +3,12 @@
 
   import Badge from "./Badge.svelte"
 
-  export let value: "to_score" | "pending" | "validated" = "to_score"
-  export let type: "badge" | "dot" = "badge"
+  interface Props {
+    value?: "to_score" | "pending" | "validated"
+    type?: "badge" | "dot"
+  }
+
+  let { value = "to_score", type = "badge" }: Props = $props()
 
   const statuses = [
     { value: "TO_SCORE", label: "To score", color: "neutral", variant: "light" },
@@ -18,8 +22,8 @@
     { value: "NO_DATA", label: "No data", color: "neutral", variant: "filled" },
   ]
 
-  $: status = statuses.find(e => e.value == value)
-  $: bg = getStatusColor(value)
+  let status = $derived(statuses.find(e => e.value == value))
+  let bg = $derived(getStatusColor(value))
 </script>
 
 {#if type == "dot"}

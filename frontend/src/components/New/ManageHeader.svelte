@@ -1,8 +1,9 @@
 <script lang="ts">
   import dayjs from "dayjs"
+  import type { Snippet } from "svelte"
   import { _ } from "svelte-i18n"
 
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import { Version2Status, type DealHull, type InvestorHull } from "$lib/types/data"
   import { isAdmin } from "$lib/utils/permissions"
@@ -16,19 +17,27 @@
   import ManageHeaderLogbook from "$components/New/ManageHeaderLogbook.svelte"
   import ManageHeaderVersionComponent from "$components/New/ManageHeaderVersionComponent.svelte"
 
-  export let object: DealHull | InvestorHull
+  interface Props {
+    object: DealHull | InvestorHull
+    heading?: Snippet
+    visibility?: Snippet
+  }
+
+  let { object = $bindable(), heading, visibility }: Props = $props()
 
   const isDeal = (obj: DealHull | InvestorHull): obj is DealHull =>
     "fully_updated_at" in obj
 
-  $: objType = isDeal(object) ? "deal" : "investor"
+  let objType = $derived(isDeal(object) ? "deal" : "investor")
 
-  let showCopyOverlay = false
-  let showDeletionOverlay = false
-  let showConfidentialOverlay = false
+  let showCopyOverlay = $state(false)
+  let showDeletionOverlay = $state(false)
+  let showConfidentialOverlay = $state(false)
 
-  $: oldVersion = ![object.active_version_id, object.draft_version_id].includes(
-    object.selected_version.id,
+  let oldVersion = $derived(
+    ![object.active_version_id, object.draft_version_id].includes(
+      object.selected_version.id,
+    ),
   )
 </script>
 
@@ -64,10 +73,10 @@
         <h1 class="heading4 my-0 text-[1.875rem]">
           {#if object.selected_version.id !== object.active_version_id}
             <a href="/{objType}/{object.id}/" class:investor={!isDeal(object)}>
-              <slot name="heading" />
+              {@render heading?.()}
             </a>
           {:else}
-            <slot name="heading" />
+            {@render heading?.()}
           {/if}
         </h1>
         <div
@@ -76,101 +85,104 @@
             : undefined}
         >
           <DetailsSummary>
-            <div class="btn flex items-center gap-1" slot="summary">
-              <Cog6ToothIcon />
-              {$_("actions")}
-            </div>
+            {#snippet summary()}
+              <div class="btn flex items-center gap-1">
+                <Cog6ToothIcon />
+                {$_("actions")}
+              </div>
+            {/snippet}
 
-            <ul
-              class="absolute z-50 mt-1 rounded border border-gray-400 bg-white px-4 py-2 shadow-2xl dark:bg-gray-700"
-              slot="details"
-            >
-              {#if object.selected_version.id === object.active_version_id && !object.draft_version_id}
-                <li class="my-3">
-                  <div class="flex items-center gap-2">
-                    <a
-                      class="btn btn-primary min-w-[9rem]"
-                      href="/{objType}/edit/{object.id}/"
-                    >
-                      {$_("Edit")}
-                    </a>
-                    {isDeal(object)
-                      ? $_("Create a new draft version of this deal")
-                      : $_("Create a new draft version of this investor")}
-                  </div>
-                </li>
-              {:else if object.selected_version.id !== object.draft_version_id}
-                <li class="my-3">
-                  <div class="flex items-center gap-2">
-                    <button class="btn btn-primary disabled min-w-[9rem]">
-                      {$_("Edit")}
-                    </button>
-                    {$_("There is already a draft version, that you can find here:")}
-                    <a href="/{objType}/{object.id}/{object.draft_version_id}/">
-                      {$_("Version")} #{object.draft_version_id}
-                    </a>
-                  </div>
-                </li>
-              {/if}
+            {#snippet details()}
+              <ul
+                class="absolute z-50 mt-1 rounded border border-gray-400 bg-white px-4 py-2 shadow-2xl dark:bg-gray-700"
+              >
+                {#if object.selected_version.id === object.active_version_id && !object.draft_version_id}
+                  <li class="my-3">
+                    <div class="flex items-center gap-2">
+                      <a
+                        class="btn btn-primary min-w-[9rem]"
+                        href="/{objType}/edit/{object.id}/"
+                      >
+                        {$_("Edit")}
+                      </a>
+                      {isDeal(object)
+                        ? $_("Create a new draft version of this deal")
+                        : $_("Create a new draft version of this investor")}
+                    </div>
+                  </li>
+                {:else if object.selected_version.id !== object.draft_version_id}
+                  <li class="my-3">
+                    <div class="flex items-center gap-2">
+                      <button class="btn btn-primary disabled min-w-[9rem]">
+                        {$_("Edit")}
+                      </button>
+                      {$_("There is already a draft version, that you can find here:")}
+                      <a href="/{objType}/{object.id}/{object.draft_version_id}/">
+                        {$_("Version")} #{object.draft_version_id}
+                      </a>
+                    </div>
+                  </li>
+                {/if}
 
-              {#if isDeal(object) && isAdmin($page.data.user)}
-                <li class="my-3">
-                  <div class="flex items-center gap-2">
-                    <button
-                      type="button"
-                      class="btn"
-                      on:click={() => (showCopyOverlay = true)}
-                    >
-                      {$_("Copy deal")}
-                    </button>
-                    {$_("Copy this deal")}
-                  </div>
-                </li>
-              {/if}
+                {#if isDeal(object) && isAdmin(page.data.user)}
+                  <li class="my-3">
+                    <div class="flex items-center gap-2">
+                      <button
+                        type="button"
+                        class="btn"
+                        onclick={() => (showCopyOverlay = true)}
+                      >
+                        {$_("Copy deal")}
+                      </button>
+                      {$_("Copy this deal")}
+                    </div>
+                  </li>
+                {/if}
 
-              {#if isAdmin($page.data.user)}
-                <li class="my-3">
-                  <div class="flex items-center gap-2">
-                    <button
-                      type="button"
-                      class="btn btn-red min-w-[9rem]"
-                      on:click={() => (showDeletionOverlay = true)}
-                    >
+                {#if isAdmin(page.data.user)}
+                  <li class="my-3">
+                    <div class="flex items-center gap-2">
+                      <button
+                        type="button"
+                        class="btn btn-red min-w-[9rem]"
+                        onclick={() => (showDeletionOverlay = true)}
+                      >
+                        {#if object.deleted}
+                          {$_("Undelete")}
+                        {:else}
+                          {$_("Delete")}
+                        {/if}
+                      </button>
                       {#if object.deleted}
-                        {$_("Undelete")}
+                        {isDeal(object)
+                          ? $_("Reactivate this deal")
+                          : $_("Reactivate this investor")}
                       {:else}
-                        {$_("Delete")}
+                        {isDeal(object)
+                          ? $_("Delete this deal")
+                          : $_("Delete this investor")}
                       {/if}
-                    </button>
-                    {#if object.deleted}
-                      {isDeal(object)
-                        ? $_("Reactivate this deal")
-                        : $_("Reactivate this investor")}
-                    {:else}
-                      {isDeal(object)
-                        ? $_("Delete this deal")
-                        : $_("Delete this investor")}
-                    {/if}
-                  </div>
-                </li>
-              {/if}
+                    </div>
+                  </li>
+                {/if}
 
-              {#if isDeal(object) && isAdmin($page.data.user)}
-                <li class="my-3">
-                  <div class="flex items-center gap-2">
-                    <button
-                      type="button"
-                      class="btn btn-red"
-                      on:click={() => (showConfidentialOverlay = true)}
-                    >
-                      {object.confidential
-                        ? $_("Unset confidential")
-                        : $_("Set confidential")}
-                    </button>
-                  </div>
-                </li>
-              {/if}
-            </ul>
+                {#if isDeal(object) && isAdmin(page.data.user)}
+                  <li class="my-3">
+                    <div class="flex items-center gap-2">
+                      <button
+                        type="button"
+                        class="btn btn-red"
+                        onclick={() => (showConfidentialOverlay = true)}
+                      >
+                        {object.confidential
+                          ? $_("Unset confidential")
+                          : $_("Set confidential")}
+                      </button>
+                    </div>
+                  </li>
+                {/if}
+              </ul>
+            {/snippet}
           </DetailsSummary>
         </div>
       </div>
@@ -196,7 +208,7 @@
       {:else}
         <div class="mb-4 flex items-center justify-between gap-4">
           <h2 class="heading4 mb-0">Version #{object.selected_version.id}</h2>
-          <slot name="visibility" />
+          {@render visibility?.()}
         </div>
         {#if object.selected_version.status === Version2Status.ACTIVATED}
           <div
@@ -218,9 +230,9 @@
   <ManageHeaderLogbook {object} />
 </div>
 
-<ManageHeaderDeletionModal bind:object bind:open={showDeletionOverlay} />
+<ManageHeaderDeletionModal {object} bind:open={showDeletionOverlay} />
 
 {#if isDeal(object)}
-  <ManageHeaderCopyModal bind:object bind:open={showCopyOverlay} />
-  <ManageHeaderConfidentialModal bind:object bind:open={showConfidentialOverlay} />
+  <ManageHeaderCopyModal {object} bind:open={showCopyOverlay} />
+  <ManageHeaderConfidentialModal {object} bind:open={showConfidentialOverlay} />
 {/if}

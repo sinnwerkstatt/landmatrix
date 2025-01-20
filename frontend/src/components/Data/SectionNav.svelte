@@ -1,8 +1,12 @@
 <script lang="ts">
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
-  export let sections: { slug: string; label: string }[]
-  export let baseUrl: string
+  interface Props {
+    sections: { slug: string; label: string }[]
+    baseUrl: string
+  }
+
+  let { sections, baseUrl }: Props = $props()
 </script>
 
 <nav
@@ -14,7 +18,7 @@
   >
     {#each sections as { slug, label }}
       {@const href = `${baseUrl}/${slug}/`}
-      {@const isActive = href === $page.url.pathname}
+      {@const isActive = href === page.url.pathname}
 
       <li
         class="border-orange lg:text-left {isActive

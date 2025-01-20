@@ -11,7 +11,7 @@
   import Streamfield from "$components/Streamfield.svelte"
   import WagtailBird from "$components/Wagtail/WagtailBird.svelte"
 
-  export let data
+  let { data } = $props()
 
   function trackDownload(fileTitle: string) {
     // Note: filtering the categories we're interested in happens in the backend
@@ -53,7 +53,7 @@
                 class="flex w-fit items-center gap-2 border border-orange-500 bg-orange-100 px-4 py-2 text-black hover:bg-orange-600 hover:text-white"
                 href="{env.PUBLIC_MEDIA_URL}{doc.value.file}"
                 target="_blank"
-                on:click={() => trackDownload(doc.value.title)}
+                onclick={() => trackDownload(doc.value.title)}
               >
                 <FilePdfIcon class="h-6 w-6" />
                 {doc.value.title}

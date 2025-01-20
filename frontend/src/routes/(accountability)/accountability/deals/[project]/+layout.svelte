@@ -2,12 +2,18 @@
   // import { filters } from "$lib/accountability/filters.js"
   import { updateFilters } from "$lib/accountability/projects.js"
 
-  // import { deals } from "$lib/accountability/stores.js"
+  interface Props {
+    // import { deals } from "$lib/accountability/stores.js"
+    data: []
+    children?: import("svelte").Snippet
+  }
 
-  export let data
+  let { data, children }: Props = $props()
 
   // Update filters if new project selected
-  $: updateFilters(data.project)
+  $effect(() => {
+    updateFilters(data.project)
+  })
 
   // ==========
   // $: {
@@ -23,4 +29,4 @@
   // $: console.log($deals)
 </script>
 
-<slot />
+{@render children?.()}

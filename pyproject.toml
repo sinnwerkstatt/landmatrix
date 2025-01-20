@@ -19,7 +19,7 @@ djangorestframework-dataclasses = "*"
 drf-spectacular = { version = "*", extras = ['sidecar'] }
 
 pydantic = "*"
-django-pydantic-field = "*"
+django-pydantic-field = "*" # only used in migrations -> Can be removed after squashing
 django-cors-headers = "*"
 django-environ = "*"
 django-modeltranslation = "*"

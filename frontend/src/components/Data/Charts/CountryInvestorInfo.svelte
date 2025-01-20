@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import { filters, FilterValues } from "$lib/filters"
   import type { components } from "$lib/openAPI"
@@ -13,11 +13,12 @@
     name?: string
   }
 
-  let country: components["schemas"]["Country"] | undefined
-  $: country = $page.data.countries.find(c => c.id === $filters.country_id)
+  let country: components["schemas"]["Country"] | undefined = $derived(
+    page.data.countries.find(c => c.id === $filters.country_id),
+  )
 
-  let investingCountries: CountryStat[] = []
-  let investedCountries: CountryStat[] = []
+  let investingCountries: CountryStat[] = $state([])
+  let investedCountries: CountryStat[] = $state([])
 
   async function grabInvestmentsAndRankings(
     country: components["schemas"]["Country"] | undefined,
@@ -35,14 +36,14 @@
     const rankings = await ret.json()
 
     investingCountries = rankings.investing.map(x => ({
-      name: $page.data.countries.find(c => c.id === x.country_id)?.name,
+      name: page.data.countries.find(c => c.id === x.country_id)?.name,
       ...x,
       size: +x.size,
     }))
     investingCountries.sort(sortByDealSizeAndCount)
 
     investedCountries = rankings.invested.map(x => ({
-      name: $page.data.countries.find(c => c.id === x.country_id)?.name,
+      name: page.data.countries.find(c => c.id === x.country_id)?.name,
       ...x,
       size: +x.size,
     }))
@@ -58,7 +59,9 @@
     else return 0
   }
 
-  $: grabInvestmentsAndRankings(country, $filters)
+  $effect(() => {
+    grabInvestmentsAndRankings(country, $filters)
+  })
 </script>
 
 <div class="text-gray-700 dark:text-white">

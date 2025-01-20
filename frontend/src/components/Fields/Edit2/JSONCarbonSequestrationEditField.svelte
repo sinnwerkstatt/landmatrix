@@ -2,8 +2,8 @@
   import { _ } from "svelte-i18n"
   import { slide } from "svelte/transition"
 
+  import { dealChoices } from "$lib/fieldChoices"
   import type { components } from "$lib/openAPI"
-  import { fieldChoices } from "$lib/stores"
 
   import ChoicesEditField from "$components/Fields/Edit2/ChoicesEditField.svelte"
   import AddButton from "$components/Fields/Edit2/JSONFieldComponents/AddButton.svelte"
@@ -15,10 +15,14 @@
 
   import { cardClass, labelClass } from "./JSONFieldComponents/consts"
 
-  export let value: components["schemas"]["CarbonSequestrationItem"][]
-  export let fieldname: string
+  interface Props {
+    value: components["schemas"]["CarbonSequestrationItem"][]
+    fieldname: string
+  }
 
-  const createEmptyEntry = (): components["schemas"]["CarbonSequestrationItem"] => ({
+  let { value = $bindable(), fieldname }: Props = $props()
+
+  const emptyEntry: components["schemas"]["CarbonSequestrationItem"] = {
     current: false,
     start_date: null,
     end_date: null,
@@ -31,23 +35,32 @@
     certification_standard_name: [],
     certification_standard_id: "",
     certification_standard_comment: "",
-  })
+  }
 
   const isEmpty = (val: components["schemas"]["CarbonSequestrationItem"]) =>
-    JSON.stringify(val) === JSON.stringify(createEmptyEntry())
+    JSON.stringify(val) === JSON.stringify(emptyEntry)
 
-  let valueCopy = structuredClone<components["schemas"]["CarbonSequestrationItem"][]>(
-    value.length ? value : [createEmptyEntry()],
+  let valueCopy: components["schemas"]["CarbonSequestrationItem"][] = $state(
+    value.length ? $state.snapshot(value) : [structuredClone(emptyEntry)],
   )
 
-  $: value = valueCopy.filter(val => val.choices && val.choices.length > 0)
+  const updateVal = () => {
+    value = valueCopy.filter(val => val.choices && val.choices.length > 0)
+  }
 
-  const addEntry = () => (valueCopy = [...valueCopy, createEmptyEntry()])
+  const addEntry = () => {
+    valueCopy = [...valueCopy, structuredClone(emptyEntry)]
+    updateVal()
+  }
 
-  const removeEntry = (index: number) =>
-    (valueCopy = valueCopy.filter((_val, i) => i !== index))
+  const removeEntry = (index: number) => {
+    valueCopy = valueCopy.filter((_val, i) => i !== index)
+    updateVal()
+  }
 
-  $: isCurrentRequired = value.length ? !value.some(val => val.current) : false
+  let isCurrentRequired = $derived(
+    value.length ? !value.some(val => val.current) : false,
+  )
 </script>
 
 <div class="grid gap-2 xl:grid-cols-2">
@@ -58,11 +71,12 @@
         <ChoicesEditField
           bind:value={val.choices}
           extras={{
-            choices: $fieldChoices.deal.carbon_sequestration,
+            choices: $dealChoices.carbon_sequestration,
             multipleChoices: true,
             required: !isEmpty(val),
           }}
           fieldname="{fieldname}_{i}_choices"
+          onchange={updateVal}
         />
       </label>
 
@@ -73,6 +87,7 @@
           unit="ha"
           name="{fieldname}_{i}_area"
           class="w-24 grow"
+          onchange={updateVal}
         />
       </label>
 
@@ -83,6 +98,7 @@
           unit={$_("tCO2e")}
           name="{fieldname}_{i}_area"
           class="w-24 max-w-[8rem] grow"
+          onchange={updateVal}
         />
       </label>
 
@@ -93,6 +109,7 @@
           unit={$_("tCO2e")}
           name="{fieldname}_{i}_area"
           class="w-24 max-w-[8rem] grow"
+          onchange={updateVal}
         />
       </label>
       <label class={labelClass}>
@@ -102,6 +119,7 @@
           type="text"
           class="inpt"
           placeholder={$_("Project proponents")}
+          oninput={updateVal}
         />
       </label>
 
@@ -112,7 +130,11 @@
           nullable
           fieldname="certification_standard"
           wrapperClass="flex justify-end gap-3"
-          on:change={() => (val.certification_standard_name = [])}
+          onchange={() => {
+            val.certification_standard_name = []
+            val.certification_standard_id = ""
+            updateVal()
+          }}
         />
       </label>
       {#if val.certification_standard === true}
@@ -122,7 +144,7 @@
             <ChoicesEditField
               bind:value={val.certification_standard_name}
               extras={{
-                choices: $fieldChoices.deal.carbon_sequestration_certs,
+                choices: $dealChoices.carbon_sequestration_certs,
                 placeholder: $_("Name of certification standard/mechanism"),
                 closeListOnChange: true,
                 otherHint: $_("Please specify in comment field"),
@@ -151,6 +173,7 @@
           type="text"
           class="inpt"
           placeholder={$_("Comment on certification standard / mechanism")}
+          oninput={updateVal}
         />
       </label>
 
@@ -158,22 +181,25 @@
         bind:value={val.start_date}
         name="{fieldname}_{i}_date"
         label={$_("Start date")}
+        onchange={updateVal}
       />
       <Date
         bind:value={val.end_date}
         name="{fieldname}_{i}_date"
         label={$_("End date")}
+        onchange={updateVal}
       />
 
       <CurrentCheckbox
         bind:checked={val.current}
         name="{fieldname}_{i}_current"
         required={isCurrentRequired}
+        onchange={updateVal}
       />
 
-      <RemoveButton disabled={valueCopy.length <= 1} on:click={() => removeEntry(i)} />
+      <RemoveButton disabled={valueCopy.length <= 1} onclick={() => removeEntry(i)} />
     </div>
   {/each}
 
-  <AddButton on:click={addEntry} />
+  <AddButton onclick={addEntry} />
 </div>

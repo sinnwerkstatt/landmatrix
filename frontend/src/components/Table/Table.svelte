@@ -1,14 +1,17 @@
-<script context="module" lang="ts">
+<script module lang="ts">
   export interface Column {
     key: string
     label: string
     colSpan: number
     submodel?: string
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  export type TableItem = { [key: string]: any }
 </script>
 
-<script lang="ts" generics="T extends object">
-  import { onMount } from "svelte"
+<script lang="ts" generics="T extends TableItem">
+  import { onMount, type Snippet } from "svelte"
   import VirtualList from "svelte-tiny-virtual-list"
   import { twMerge } from "tailwind-merge"
 
@@ -16,48 +19,59 @@
 
   import ChevronDownIcon from "$components/icons/ChevronDownIcon.svelte"
 
-  /* eslint-disable no-undef */
-  export let items: T[] = []
-  /* eslint-enable no-undef */
-  export let columns: Column[]
-  export let sortBy: string | null = null
+  interface Props {
+    // eslint-disable-next-line no-undef
+    items?: T[]
+    columns: Column[]
+    sortBy?: string
+    rowHeightInPx?: number
+    headerHeightInPx?: number
+    colWidthInPx?: number
+    rowClasses?: string
+    // eslint-disable-next-line no-undef
+    field?: Snippet<[{ fieldName: string; obj: T }]>
+  }
 
-  export let rowHeightInPx = 90
-  export let headerHeightInPx = 90
-  export let colWidthInPx = 75
+  let {
+    items = [],
+    columns,
+    sortBy = $bindable(""),
+    rowHeightInPx = 90,
+    headerHeightInPx = 90,
+    colWidthInPx = 75,
+    rowClasses = "",
+    field,
+  }: Props = $props()
 
-  export let rowClasses = ""
+  const labels = $derived(columns.map(c => c.label))
+  const spans = $derived(columns.map(c => c.colSpan))
+  const nCols = $derived(spans.reduce((sum, value) => sum + value))
 
-  let labels: string[] = []
-  let spans: number[] = []
+  const sortedItems = $derived.by(() => {
+    const sortCol = columns.find(
+      c => c.key === (sortBy.startsWith("-") ? sortBy.substring(1) : sortBy),
+    )
 
-  $: labels = columns.map(c => c.label)
-  $: spans = columns.map(c => c.colSpan)
+    if (!sortCol) return items
 
-  $: sortCol = columns.find(
-    c => c.key === (sortBy?.startsWith("-") ? sortBy.substring(1) : sortBy),
-  )
-  $: sortedItems = sortCol
-    ? [...items].sort(
-        sortFn(
-          (sortBy?.startsWith("-") ? "-" : "") +
-            (sortCol.submodel ? `${sortCol.submodel}.${sortCol.key}` : sortCol.key),
-        ),
-      )
-    : items
-  $: nItems = sortedItems?.length ?? 0
+    const sortKey =
+      (sortBy.startsWith("-") ? "-" : "") +
+      (sortCol.submodel ? `${sortCol.submodel}.${sortCol.key}` : sortCol.key)
 
-  $: nCols = spans.reduce((sum, value) => sum + value)
+    return [...items].sort(sortFn(sortKey))
+  })
 
-  const onTableHeadClick = (key: string) => {
+  const nItems = $derived(sortedItems.length ?? 0)
+
+  const onClickTableHead = (key: string) => {
     sortBy = sortBy === key ? `-${key}` : key
   }
 
-  let virtualList: VirtualList
-  let width
-  let height
+  let virtualList: VirtualList | undefined = $state()
+  let width: number | undefined = $state()
+  let height: number | undefined = $state()
 
-  onMount(() => virtualList.recomputeSizes(0))
+  onMount(() => virtualList?.recomputeSizes(0))
 </script>
 
 <div class="h-full w-full border border-gray-700">
@@ -92,7 +106,7 @@
             <button
               class="m-0 cursor-pointer p-1 text-left"
               style="grid-column: span {spans[colIndex]} / span {spans[colIndex]}"
-              on:click={() => onTableHeadClick(col.key)}
+              onclick={() => onClickTableHead(col.key)}
               title={labels[colIndex]}
             >
               {labels[colIndex]}
@@ -115,20 +129,21 @@
           {/each}
         {:else}
           {#each columns as col, colIndex}
-            <!-- Testing slots not possible atm -->
-            <!-- https://github.com/testing-library/svelte-testing-library/issues/48#issuecomment-522029988-->
             <div
               data-testid="{index - 1}-{colIndex}"
               class="overflow-hidden p-1 hover:overflow-y-auto"
               style="grid-column: span {spans[colIndex]} / span {spans[colIndex]}"
             >
-              <slot name="field" fieldName={col.key} obj={sortedItems[index - 1]}>
-                {#if col.submodel}
-                  {sortedItems[index - 1][col.submodel][col.key]}
-                {:else}
-                  {sortedItems[index - 1][col.key]}
-                {/if}
-              </slot>
+              {#if field}
+                {@render field({
+                  fieldName: col.key,
+                  obj: sortedItems[index - 1],
+                })}
+              {:else if col.submodel}
+                {sortedItems[index - 1][col.submodel][col.key]}
+              {:else}
+                {sortedItems[index - 1][col.key]}
+              {/if}
             </div>
           {/each}
         {/if}

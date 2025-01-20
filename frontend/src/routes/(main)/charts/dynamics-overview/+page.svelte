@@ -21,7 +21,7 @@
     showFilterBar.set(!$isMobile)
   })
 
-  $: deals = $dealsNG.map(d => d.selected_version)
+  let deals = $derived($dealsNG.map(d => d.selected_version))
 </script>
 
 <svelte:head>
@@ -29,16 +29,18 @@
 </svelte:head>
 
 <ChartsContainer>
-  <div slot="ContextBar">
-    <h2 class="heading5">{$_("Dynamics overview charts")}</h2>
-    <div>{@html $chartDescriptions.dynamics_overview}</div>
-    <DealDisplayToggle />
-  </div>
+  {#snippet ContextBar()}
+    <div>
+      <h2 class="heading5">{$_("Dynamics overview charts")}</h2>
+      <div>{@html $chartDescriptions.dynamics_overview}</div>
+      <DealDisplayToggle />
+    </div>
+  {/snippet}
 
   {#if $dealsNG.length === 0}
     <LoadingPulse />
   {:else}
-    <div class="mx-8 grid grid-rows-1 gap-8 md:mx-32 md:grid-cols-2 md:gap-x-32">
+    <div class="mx-12 my-8 grid gap-16">
       <IoIGroupChart {deals} displayDealsCount={$displayDealsCount} />
       <AgricultureIntentionChart {deals} displayDealsCount={$displayDealsCount} />
       <NegotiationStatusGroupChart {deals} displayDealsCount={$displayDealsCount} />

@@ -4,13 +4,17 @@
   import { labelClass } from "$components/Fields/Edit2/JSONFieldComponents/consts"
   import LowLevelDateYearField from "$components/Fields/Edit2/LowLevelDateYearField.svelte"
 
-  export let value: string | null = null
-  export let name: string
+  interface Props {
+    value: string | null
+    name: string
+    label?: string
+    onchange?: () => void
+  }
 
-  export let label = $_("Date")
+  let { value = $bindable(), name, label = $_("Date"), onchange }: Props = $props()
 </script>
 
 <label class={labelClass} for={undefined}>
   {label}
-  <LowLevelDateYearField bind:value {name} />
+  <LowLevelDateYearField bind:value {name} {onchange} />
 </label>

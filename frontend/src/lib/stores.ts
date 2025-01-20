@@ -2,7 +2,7 @@ import { error } from "@sveltejs/kit"
 import { env } from "$env/dynamic/public"
 import createClient from "openapi-fetch"
 import { locale } from "svelte-i18n"
-import { derived, readable } from "svelte/store"
+import { derived, readable, writable } from "svelte/store"
 
 import { browser } from "$app/environment"
 
@@ -11,79 +11,7 @@ import type { components, paths } from "$lib/openAPI"
 import { loading } from "$lib/stores/basics"
 import type { DealHull, InvestorHull } from "$lib/types/data"
 
-export type ValueLabelEntry = components["schemas"]["ValueLabel"]
-
 const serverApiClient = createClient<paths>({ baseUrl: env.PUBLIC_BASE_URL })
-
-export const fieldChoices = derived(
-  [locale],
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  ([$locale], set) => {
-    serverApiClient.GET("/api/field_choices/").then(ret => {
-      // @ts-expect-error openapi-fetch types broken
-      if (ret.error) error(500, ret.error)
-      set(ret.data)
-    })
-  },
-  {
-    deal: {
-      intention_of_investment: [],
-      intention_of_investment_group: [],
-      negotiation_status: [],
-      negotiation_status_group: [],
-      implementation_status: [],
-      level_of_accuracy: [],
-      nature_of_deal: [],
-      recognition_status: [],
-      negative_impacts: [],
-      benefits: [],
-      former_land_owner: [],
-      former_land_use: [],
-      ha_area: [],
-      community_consultation: [],
-      community_reaction: [],
-      former_land_cover: [],
-      crops: [],
-      animals: [],
-      electricity_generation: [],
-      carbon_sequestration: [],
-      carbon_sequestration_certs: [],
-      minerals: [],
-      water_source: [],
-      not_public_reason: [],
-      actors: [],
-      produce_group: [],
-    },
-    datasource: { type: [] },
-    investor: { classification: [] },
-    involvement: { role: [], investment_type: [], parent_relation: [] },
-    area: { type: [] },
-  } as components["schemas"]["FieldChoices"],
-)
-
-// fieldChoices.subscribe(value => console.log(value))
-
-export const createGroupMap = <T extends Record<string, string>>(
-  choices: ValueLabelEntry[],
-): T =>
-  choices.reduce(
-    (acc, { value, group }) => ({
-      ...acc,
-      [value]: group as string,
-    }),
-    {} as T,
-  )
-
-export const createLabels = <T extends string>(
-  choices: ValueLabelEntry[],
-): { [key in T]: string } =>
-  choices.reduce(
-    (acc, { value, label }) => ({
-      ...acc,
-      [value]: label,
-    }),
-    {} as { [key in T]: string },
-  )
 
 // export const findChoice = (
 //   choices: ValueLabelEntry[],
@@ -195,3 +123,22 @@ export const simpleInvestors = readable(
     })
   },
 )
+
+function createContextHelpStore() {
+  let showContextHelp = false
+  if (browser) showContextHelp = localStorage.showContextHelp === "true"
+
+  const { subscribe, set, update } = writable(showContextHelp)
+
+  return {
+    subscribe,
+    set,
+    toggle: () =>
+      update(n => {
+        if (browser) localStorage.showContextHelp = n ? "false" : "true"
+        return !n
+      }),
+  }
+}
+
+export const showContextHelp = createContextHelpStore()

@@ -1,12 +1,10 @@
 <script lang="ts">
+  import { tick } from "svelte"
   import { _ } from "svelte-i18n"
   import Select from "svelte-select"
   import { slide } from "svelte/transition"
 
-  import type { ValueLabelEntry } from "$lib/stores"
-
-  export let value: string | string[] | null
-  export let fieldname: string
+  import type { ValueLabelEntry } from "$lib/fieldChoices"
 
   interface Extras {
     multipleChoices?: boolean
@@ -18,13 +16,25 @@
     closeListOnChange?: boolean
   }
 
-  export let extras: Extras = { choices: [] }
+  interface Props {
+    value: string | string[] | null
+    fieldname: string
+    extras?: Extras
+    onchange?: () => void
+  }
 
-  $: multiple = !!extras.multipleChoices
-  $: required = !!extras.required
-  $: clearable = !!extras.clearable
+  let {
+    value = $bindable(),
+    fieldname,
+    extras = { choices: [] },
+    onchange,
+  }: Props = $props()
 
-  let focused: boolean
+  let multiple = $derived(!!extras.multipleChoices)
+  let required = $derived(!!extras.required)
+  let clearable = $derived(!!extras.clearable)
+
+  let focused: boolean = $state(false)
 
   const setMultiValue = (items: ValueLabelEntry[]) => {
     value = !items || items.length === 0 ? [] : items.map(i => i.value)
@@ -46,6 +56,8 @@
     groupBy={item => item.group}
     {multiple}
     on:input={e => (multiple ? setMultiValue : setValue)(e.detail)}
+    on:change={() => onchange?.()}
+    on:clear={() => tick().then(() => onchange?.())}
     placeholder={extras.placeholder ?? $_("Please select")}
     {required}
     showChevron

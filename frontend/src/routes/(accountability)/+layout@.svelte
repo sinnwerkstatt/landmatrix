@@ -1,5 +1,11 @@
 <script lang="ts">
   import Navbar from "$components/Accountability/Navbar.svelte"
+
+  interface Props {
+    children?: import("svelte").Snippet
+  }
+
+  let { children }: Props = $props()
 </script>
 
 <svelte:head>
@@ -13,34 +19,36 @@
 
 <div class="flex h-screen flex-row flex-nowrap bg-a-gray-100">
   <Navbar />
-  <slot />
+  {@render children?.()}
 </div>
 
 <style>
   /* Global Accountability styles */
-  :global(body) {
-    @apply font-inter text-a-sm font-medium text-a-gray-900;
-  }
+  :global {
+    body {
+      @apply font-inter text-a-sm font-medium text-a-gray-900;
+    }
 
-  :global(h1),
-  :global(h2),
-  :global(h3),
-  :global(div) {
-    @apply text-a-gray-900;
-  }
+    h1,
+    h2,
+    h3,
+    div {
+      @apply text-a-gray-900;
+    }
 
-  :global(a.link),
-  :global(a.link:hover) {
-    @apply text-a-sm font-medium text-a-gray-900 underline underline-offset-4;
-  }
-  :global(::-webkit-scrollbar) {
-    @apply w-1;
-    @apply rounded-full;
-  }
-  :global(::-webkit-scrollbar-track) {
-    @apply rounded-full bg-a-gray-200;
-  }
-  :global(::-webkit-scrollbar-thumb) {
-    @apply rounded-full bg-a-gray-800;
+    a.link,
+    a.link:hover {
+      @apply text-a-sm font-medium text-a-gray-900 underline underline-offset-4;
+    }
+    ::-webkit-scrollbar {
+      @apply w-1;
+      @apply rounded-full;
+    }
+    ::-webkit-scrollbar-track {
+      @apply rounded-full bg-a-gray-200;
+    }
+    ::-webkit-scrollbar-thumb {
+      @apply rounded-full bg-a-gray-800;
+    }
   }
 </style>

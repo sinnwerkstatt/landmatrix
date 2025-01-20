@@ -1,8 +1,9 @@
 <script lang="ts">
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import { filters } from "$lib/accountability/filters"
   import { capitalizeFirst, groupBy } from "$lib/accountability/helpers"
+  import { dealChoices } from "$lib/fieldChoices"
 
   import Checkbox from "./Checkbox.svelte"
   import Input from "./Input.svelte"
@@ -10,18 +11,22 @@
   import InputRadioGroup from "./InputRadioGroup.svelte"
   import SideBarFilterTabItem from "./SideBarFilterTabItem.svelte"
 
-  export let disabled = false
+  interface Props {
+    disabled?: boolean
+  }
 
-  const regionChoices = $page.data.regions.map(({ name: label, id: value }) => ({
+  let { disabled = false }: Props = $props()
+
+  const regionChoices = page.data.regions.map(({ name: label, id: value }) => ({
     label,
     value,
   }))
-  const countryChoices = $page.data.countries.map(({ name: label, id: value }) => ({
+  const countryChoices = page.data.countries.map(({ name: label, id: value }) => ({
     label,
     value,
   }))
 
-  const negotiationStatusChoices = $page.data.fieldChoices.deal.negotiation_status
+  const negotiationStatusChoices = $dealChoices.negotiation_status
   const negotiationStatusGroups = groupBy(
     negotiationStatusChoices,
     "group",
@@ -31,16 +36,15 @@
     values,
   }))
 
-  const natureOfDealChoices = $page.data.fieldChoices.deal.nature_of_deal
-  const investorNamesChoices = $page.data.investors.map(
+  const natureOfDealChoices = $dealChoices.nature_of_deal
+  const investorNamesChoices = page.data.investors.map(
     ({ name: label, id: value }) => ({ label, value }),
   )
   const implementationStatusChoices = [
     { label: "No information", value: "UNKNOWN" },
-  ].concat($page.data.fieldChoices.deal.implementation_status)
+  ].concat($dealChoices.implementation_status)
 
-  const intentionOfInvestmentChoices =
-    $page.data.fieldChoices.deal.intention_of_investment
+  const intentionOfInvestmentChoices = $dealChoices.intention_of_investment
   const intentionOfInvestmentGroups = groupBy(
     intentionOfInvestmentChoices,
     "group",
@@ -50,9 +54,9 @@
     values,
   }))
 
-  const produceCrops = $page.data.fieldChoices.deal.crops
-  const produceAnimals = $page.data.fieldChoices.deal.animals
-  const produceMinerals = $page.data.fieldChoices.deal.minerals
+  const produceCrops = $dealChoices.crops
+  const produceAnimals = $dealChoices.animals
+  const produceMinerals = $dealChoices.minerals
 
   const scopeChoices = [
     { label: "All", value: null },
@@ -66,17 +70,21 @@
     { label: "Only", value: true },
   ]
 
-  $: invalidMaxSize =
-    $filters.area_min && $filters.area_min > $filters.area_max ? true : false
-  $: sizeNotification = $filters.area_min || $filters.area_max ? true : false
+  let invalidMaxSize = $derived(
+    $filters.area_min && $filters.area_min > $filters.area_max ? true : false,
+  )
+  let sizeNotification = $derived($filters.area_min || $filters.area_max ? true : false)
 
-  $: invalidMaxYear =
+  let invalidMaxYear = $derived(
     $filters.initiation_year_max &&
-    $filters.initiation_year_min > $filters.initiation_year_max
+      $filters.initiation_year_min &&
+      $filters.initiation_year_min > $filters.initiation_year_max
       ? true
-      : false
-  $: yearNotification =
-    $filters.initiation_year_min || $filters.initiation_year_max ? true : false
+      : false,
+  )
+  let yearNotification = $derived(
+    $filters.initiation_year_min || $filters.initiation_year_max ? true : false,
+  )
 </script>
 
 <div class="mb-6 h-fit overflow-y-auto">

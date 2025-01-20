@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import { filters, FilterValues } from "$lib/accountability/filters"
   import { openProjectModal } from "$lib/accountability/projects"
@@ -17,7 +17,7 @@
     <div class="flex flex-nowrap items-center justify-between">
       <span class="text-a-sm font-semibold text-a-gray-500">Filters</span>
       <button
-        on:click={() => {
+        onclick={() => {
           $openedFilterBar = false
         }}
       >
@@ -32,16 +32,16 @@
         label="Save new project"
         size="sm"
         style="neutral"
-        on:click={() => openProjectModal("create")}
+        onclick={() => openProjectModal("create")}
       />
       <Button
         label="Clear all"
         size="sm"
         style="neutral"
         type="outline"
-        on:click={() => ($filters = new FilterValues($page.data.project.filters))}
+        onclick={() => ($filters = new FilterValues(page.data.project.filters))}
       />
-      <!-- {#if $page.data.project.owner == $me.id}
+      <!-- {#if $page.data.project.owner == $me?.id}
                 <Button label="Update" size="sm" style="neutral" on:click={() => openSaveModal("update")} />
             {/if} -->
       <!-- <Button label="Clear all" size="sm" style="neutral" type="outline" on:click={() => $filters = $filters.empty()} /> -->

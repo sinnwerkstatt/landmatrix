@@ -1,9 +1,13 @@
 <script lang="ts">
   import { allUsers } from "$lib/stores"
 
-  export let value: number | null
+  interface Props {
+    value: number | null
+  }
 
-  $: user = $allUsers.find(u => u.id === value)
+  let { value }: Props = $props()
+
+  let user = $derived($allUsers.find(u => u.id === value))
 </script>
 
 {#if user}

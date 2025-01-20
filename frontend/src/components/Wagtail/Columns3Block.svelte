@@ -1,32 +1,36 @@
 <script lang="ts">
   import type { WagtailStreamfieldBlock } from "$lib/types/wagtail"
 
-  import { blockMap } from "$components/Wagtail/blocks"
+  import Block from "$components/Wagtail/Block.svelte"
 
-  export let value: {
-    left_column: WagtailStreamfieldBlock[]
-    middle_column: WagtailStreamfieldBlock[]
-    right_column: WagtailStreamfieldBlock[]
+  interface Props {
+    value: {
+      left_column: WagtailStreamfieldBlock[]
+      middle_column: WagtailStreamfieldBlock[]
+      right_column: WagtailStreamfieldBlock[]
+    }
   }
+
+  let { value }: Props = $props()
 </script>
 
 <div
-  data-block="columns_3"
   class="mx-auto mb-8 grid max-w-[1200px] grid-cols-1 lg:grid-cols-3"
+  data-block="columns_3"
 >
   <div>
     {#each value.left_column as block}
-      <svelte:component this={blockMap[block.type]} bind:value={block.value} />
+      <Block {block} />
     {/each}
   </div>
   <div>
     {#each value.middle_column as block}
-      <svelte:component this={blockMap[block.type]} bind:value={block.value} />
+      <Block {block} />
     {/each}
   </div>
   <div>
     {#each value.right_column as block}
-      <svelte:component this={blockMap[block.type]} bind:value={block.value} />
+      <Block {block} />
     {/each}
   </div>
 </div>

@@ -5,268 +5,1125 @@
 
 export interface paths {
   "/api/accountability/article/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["accountability_article_list"]
+    put?: never
     post: operations["accountability_article_create"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/accountability/article/{id}/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["accountability_article_retrieve"]
     put: operations["accountability_article_update"]
+    post?: never
     delete: operations["accountability_article_destroy"]
+    options?: never
+    head?: never
     patch: operations["accountability_article_partial_update"]
+    trace?: never
   }
   "/api/accountability/bookmark/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["accountability_bookmark_retrieve"]
     put: operations["accountability_bookmark_update"]
     post: operations["accountability_bookmark_create"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/accountability/bookmark/{id}/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["accountability_bookmark_retrieve_2"]
     put: operations["accountability_bookmark_update_2"]
+    post?: never
     delete: operations["accountability_bookmark_destroy"]
+    options?: never
+    head?: never
     patch: operations["accountability_bookmark_partial_update"]
+    trace?: never
   }
   "/api/accountability/chapter/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["accountability_chapter_list"]
+    put?: never
     post: operations["accountability_chapter_create"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/accountability/chapter/{chapter}/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["accountability_chapter_retrieve"]
     put: operations["accountability_chapter_update"]
+    post?: never
     delete: operations["accountability_chapter_destroy"]
+    options?: never
+    head?: never
     patch: operations["accountability_chapter_partial_update"]
+    trace?: never
   }
   "/api/accountability/deal/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["accountability_deal_list"]
+    put?: never
     post: operations["accountability_deal_create"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/accountability/deal/{deal}/{variable}/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["accountability_deal_retrieve_2"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
     patch: operations["accountability_deal_partial_update_2"]
+    trace?: never
   }
   "/api/accountability/deal/{deal}/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["accountability_deal_retrieve"]
     put: operations["accountability_deal_update"]
+    post?: never
     delete: operations["accountability_deal_destroy"]
+    options?: never
+    head?: never
     patch: operations["accountability_deal_partial_update"]
+    trace?: never
   }
   "/api/accountability/deal/bulk/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
     patch: operations["accountability_deal_bulk_partial_update"]
+    trace?: never
   }
   "/api/accountability/project/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["accountability_project_list"]
+    put?: never
     post: operations["accountability_project_create"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/accountability/project/{id}/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["accountability_project_retrieve"]
     put: operations["accountability_project_update"]
+    post?: never
     delete: operations["accountability_project_destroy"]
+    options?: never
+    head?: never
     patch: operations["accountability_project_partial_update"]
+    trace?: never
   }
   "/api/accountability/project/bookmark/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["accountability_project_bookmark_list"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/accountability/project/related/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["accountability_project_related_list"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/accountability/schema/": {
-    /**
-     * @description OpenApi3 schema for this API. Format can be selected via content negotiation.
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** @description OpenApi3 schema for this API. Format can be selected via content negotiation.
      *
-     * - YAML: application/vnd.oai.openapi
-     * - JSON: application/vnd.oai.openapi+json
-     */
+     *     - YAML: application/vnd.oai.openapi
+     *     - JSON: application/vnd.oai.openapi+json */
     get: operations["accountability_schema_retrieve"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/accountability/user/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["accountability_user_list"]
+    put?: never
     post: operations["accountability_user_create"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/accountability/user/me/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["accountability_user_me_retrieve"]
     put: operations["accountability_user_me_update"]
+    post?: never
     delete: operations["accountability_user_me_destroy"]
+    options?: never
+    head?: never
     patch: operations["accountability_user_me_partial_update"]
+    trace?: never
   }
   "/api/accountability/variable/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["accountability_variable_list"]
+    put?: never
     post: operations["accountability_variable_create"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/accountability/variable/{number}/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["accountability_variable_retrieve"]
     put: operations["accountability_variable_update"]
+    post?: never
     delete: operations["accountability_variable_destroy"]
+    options?: never
+    head?: never
     patch: operations["accountability_variable_partial_update"]
+    trace?: never
   }
   "/api/blog_categories/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["blog_categories_list"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/blog_categories/{id}/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["blog_categories_retrieve"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/blog_pages/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["blog_pages_list"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/blog_pages/{id}/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["blog_pages_retrieve"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/chart_descriptions/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["chart_descriptions_retrieve"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/charts/country_investments_and_rankings/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["charts_country_investments_and_rankings_retrieve"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/context_help/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get: operations["context_help_list"]
+    put?: never
+    post: operations["context_help_create"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/context_help/{id}/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get: operations["context_help_retrieve"]
+    put: operations["context_help_update"]
+    post?: never
+    delete: operations["context_help_destroy"]
+    options?: never
+    head?: never
+    patch: operations["context_help_partial_update"]
+    trace?: never
   }
   "/api/countries/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["countries_list"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/currencies/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["currencies_list"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/deals/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["deals_list"]
+    put?: never
     post: operations["deals_create"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/deals/{id}/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["deals_retrieve"]
     /** @description creating a new Version when calling "save" on an existing object */
     put: operations["deals_update"]
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/deals/{id}/{version_id}/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["deals_version_retrieve"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/deals/{id}/add_comment/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
     put: operations["deals_add_comment_update"]
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/deals/{id}/make_copy/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
     put: operations["deals_make_copy_update"]
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/deals/{id}/toggle_confidential/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
     put: operations["deals_toggle_confidential_update"]
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/deals/{id}/toggle_deleted/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
     put: operations["deals_toggle_deleted_update"]
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/dealversions/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["dealversions_list"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/dealversions/{id}/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["dealversions_retrieve"]
     put: operations["dealversions_update"]
+    post?: never
     delete: operations["dealversions_destroy"]
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/dealversions/{id}/change_status/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
     put: operations["dealversions_change_status_update"]
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/field_choices/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["field_choices_retrieve"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/field_definitions/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["field_definitions_list"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/field_definitions/{id}/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["field_definitions_retrieve"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/gis_export/areas/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["gis_export_areas_retrieve"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/gis_export/locations/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["gis_export_locations_retrieve"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/investor_search/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["investor_search_list"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/investors/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["investors_list"]
+    put?: never
     post: operations["investors_create"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/investors/{id}/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["investors_retrieve"]
     /** @description creating a new Version when calling "save" on an existing object */
     put: operations["investors_update"]
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/investors/{id}/{version_id}/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["investors_version_retrieve"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/investors/{id}/add_comment/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
     put: operations["investors_add_comment_update"]
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/investors/{id}/involvements_graph/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["investors_involvements_graph_retrieve"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/investors/{id}/toggle_deleted/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
     put: operations["investors_toggle_deleted_update"]
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/investors/deal_filtered/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["investors_deal_filtered_retrieve"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/investors/simple/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["investors_simple_list"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/investorversions/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["investorversions_list"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/investorversions/{id}/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["investorversions_retrieve"]
     put: operations["investorversions_update"]
+    post?: never
     delete: operations["investorversions_destroy"]
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/investorversions/{id}/change_status/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
     put: operations["investorversions_change_status_update"]
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/messages/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["messages_list"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/messages/{id}/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["messages_retrieve"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/quality-indicators/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["qi_specs"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/quality-indicators/counts/deal/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["qi_deal_counts"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/quality-indicators/counts/investor/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["qi_investor_counts"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/quality-indicators/deal/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["qi_deal_list"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/quality-indicators/investor/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["qi_investor_list"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/quality-indicators/stats/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["qi_stats"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/regions/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["regions_list"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/schema.json": {
-    /**
-     * @description OpenApi3 schema for this API. Format can be selected via content negotiation.
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** @description OpenApi3 schema for this API. Format can be selected via content negotiation.
      *
-     * - YAML: application/vnd.oai.openapi
-     * - JSON: application/vnd.oai.openapi+json
-     */
+     *     - YAML: application/vnd.oai.openapi
+     *     - JSON: application/vnd.oai.openapi+json */
     get: operations["schema.json_retrieve"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/schema.yaml": {
-    /**
-     * @description OpenApi3 schema for this API. Format can be selected via content negotiation.
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** @description OpenApi3 schema for this API. Format can be selected via content negotiation.
      *
-     * - YAML: application/vnd.oai.openapi
-     * - JSON: application/vnd.oai.openapi+json
-     */
+     *     - YAML: application/vnd.oai.openapi
+     *     - JSON: application/vnd.oai.openapi+json */
     get: operations["schema.yaml_retrieve"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/users/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["users_list"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
   "/api/users/{id}/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     get: operations["users_retrieve"]
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
   }
 }
-
 export type webhooks = Record<string, never>
-
 export interface components {
   schemas: {
     /**
@@ -285,7 +1142,7 @@ export interface components {
       /** Name */
       name: string
       /** @default OTHER */
-      role?: components["schemas"]["ActorEnum"]
+      role: components["schemas"]["ActorEnum"]
     }
     /** ActorsSchema */
     ActorsSchema: components["schemas"]["ActorsItem"][]
@@ -310,13 +1167,13 @@ export interface components {
     }
     /**
      * @description * `HEALTH` - Health
-     * * `EDUCATION` - Education
-     * * `PRODUCTIVE_INFRASTRUCTURE` - Productive infrastructure (e.g. irrigation, tractors, machinery...)
-     * * `ROADS` - Roads
-     * * `CAPACITY_BUILDING` - Capacity building
-     * * `FINANCIAL_SUPPORT` - Financial support
-     * * `COMMUNITY_SHARES` - Community shares in the investment project
-     * * `OTHER` - Other
+     *     * `EDUCATION` - Education
+     *     * `PRODUCTIVE_INFRASTRUCTURE` - Productive infrastructure (e.g. irrigation, tractors, machinery...)
+     *     * `ROADS` - Roads
+     *     * `CAPACITY_BUILDING` - Capacity building
+     *     * `FINANCIAL_SUPPORT` - Financial support
+     *     * `COMMUNITY_SHARES` - Community shares in the investment project
+     *     * `OTHER` - Other
      * @enum {string}
      */
     BenefitsEnum:
@@ -331,20 +1188,20 @@ export interface components {
     /** @enum {unknown} */
     BlankEnum: ""
     BlogCategory: {
-      id: number
+      readonly id: number
       /** Category Name */
       name: string
       slug: string
       description?: string
     }
     BlogPage: {
-      id: number
+      readonly id: number
       /** @description The page title as you'd like it to be seen by the public */
       title: string
       /** @description The name of the page as it will appear in URLs e.g http://domain.com/blog/[my-slug]/ */
       slug: string
-      body: string
-      excerpt: string
+      readonly body: string
+      readonly excerpt: string
       /**
        * Post date
        * Format: date
@@ -352,9 +1209,9 @@ export interface components {
        */
       date?: string
       header_image: components["schemas"]["ImageRenditionField"]
-      tags: readonly components["schemas"]["BlogTag"][]
-      categories: readonly components["schemas"]["BlogCategory"][]
-      url: string | null
+      readonly tags: components["schemas"]["BlogTag"][]
+      readonly categories: components["schemas"]["BlogCategory"][]
+      readonly url: string | null
     }
     BlogTag: {
       id: string
@@ -362,7 +1219,7 @@ export interface components {
       slug: string
     }
     Bookmark: {
-      id: number
+      readonly id: number
       order?: number | null
       project: number
     }
@@ -400,62 +1257,56 @@ export interface components {
        * Current
        * @default false
        */
-      current?: boolean
+      current: boolean
       /**
        * Start Date
        * @default null
        */
-      start_date?: string | null
+      start_date: string | null
       /**
        * End Date
        * @default null
        */
-      end_date?: string | null
+      end_date: string | null
       /**
        * Area
        * @default null
        */
-      area?: string | null
-      /**
-       * Choices
-       * @default []
-       */
-      choices?: components["schemas"]["CarbonSequestrationEnum"][]
+      area: number | null
+      /** Choices */
+      choices: components["schemas"]["CarbonSequestrationEnum"][]
       /**
        * Projected Lifetime Sequestration
        * @default null
        */
-      projected_lifetime_sequestration?: string | null
+      projected_lifetime_sequestration: number | null
       /**
        * Projected Annual Sequestration
        * @default null
        */
-      projected_annual_sequestration?: string | null
+      projected_annual_sequestration: number | null
       /**
        * Project Proponents
        * @default
        */
-      project_proponents?: string
+      project_proponents: string
       /**
        * Certification Standard
        * @default null
        */
-      certification_standard?: boolean | null
-      /**
-       * Certification Standard Name
-       * @default []
-       */
-      certification_standard_name?: components["schemas"]["CarbonSequestrationCertEnum"][]
+      certification_standard: boolean | null
+      /** Certification Standard Name */
+      certification_standard_name: components["schemas"]["CarbonSequestrationCertEnum"][]
       /**
        * Certification Standard Id
        * @default
        */
-      certification_standard_id?: string
+      certification_standard_id: string
       /**
        * Certification Standard Comment
        * @default
        */
-      certification_standard_comment?: string
+      certification_standard_comment: string
     }
     /** CarbonSequestrationSchema */
     CarbonSequestrationSchema: components["schemas"]["CarbonSequestrationItem"][]
@@ -467,22 +1318,22 @@ export interface components {
     }
     /**
      * @description * `GOVERNMENT` - Government
-     * * `GOVERNMENT_INSTITUTION` - Government institution
-     * * `STATE_OWNED_COMPANY` - State-/government (owned) company
-     * * `SEMI_STATE_OWNED_COMPANY` - Semi state-owned company
-     * * `ASSET_MANAGEMENT_FIRM` - Asset management firm
-     * * `BILATERAL_DEVELOPMENT_BANK` - Bilateral Development Bank / Development Finance Institution
-     * * `STOCK_EXCHANGE_LISTED_COMPANY` - Stock-exchange listed company
-     * * `COMMERCIAL_BANK` - Commercial Bank
-     * * `INSURANCE_FIRM` - Insurance firm
-     * * `INVESTMENT_BANK` - Investment Bank
-     * * `INVESTMENT_FUND` - Investment fund
-     * * `MULTILATERAL_DEVELOPMENT_BANK` - Multilateral Development Bank (MDB)
-     * * `PRIVATE_COMPANY` - Private company
-     * * `PRIVATE_EQUITY_FIRM` - Private equity firm
-     * * `INDIVIDUAL_ENTREPRENEUR` - Individual entrepreneur
-     * * `NON_PROFIT` - Non - Profit organization (e.g. Church, University etc.)
-     * * `OTHER` - Other
+     *     * `GOVERNMENT_INSTITUTION` - Government institution
+     *     * `STATE_OWNED_COMPANY` - State-/government (owned) company
+     *     * `SEMI_STATE_OWNED_COMPANY` - Semi state-owned company
+     *     * `ASSET_MANAGEMENT_FIRM` - Asset management firm
+     *     * `BILATERAL_DEVELOPMENT_BANK` - Bilateral Development Bank / Development Finance Institution
+     *     * `STOCK_EXCHANGE_LISTED_COMPANY` - Stock-exchange listed company
+     *     * `COMMERCIAL_BANK` - Commercial Bank
+     *     * `INSURANCE_FIRM` - Insurance firm
+     *     * `INVESTMENT_BANK` - Investment Bank
+     *     * `INVESTMENT_FUND` - Investment fund
+     *     * `MULTILATERAL_DEVELOPMENT_BANK` - Multilateral Development Bank (MDB)
+     *     * `PRIVATE_COMPANY` - Private company
+     *     * `PRIVATE_EQUITY_FIRM` - Private equity firm
+     *     * `INDIVIDUAL_ENTREPRENEUR` - Individual entrepreneur
+     *     * `NON_PROFIT` - Non - Profit organization (e.g. Church, University etc.)
+     *     * `OTHER` - Other
      * @enum {string}
      */
     ClassificationEnum:
@@ -505,9 +1356,9 @@ export interface components {
       | "OTHER"
     /**
      * @description * `NOT_CONSULTED` - Not consulted
-     * * `LIMITED_CONSULTATION` - Limited consultation
-     * * `FPIC` - Free, Prior and Informed Consent (FPIC)
-     * * `OTHER` - Other
+     *     * `LIMITED_CONSULTATION` - Limited consultation
+     *     * `FPIC` - Free, Prior and Informed Consent (FPIC)
+     *     * `OTHER` - Other
      * @enum {string}
      */
     CommunityConsultationEnum:
@@ -517,13 +1368,20 @@ export interface components {
       | "OTHER"
     /**
      * @description * `CONSENT` - Consent
-     * * `MIXED_REACTION` - Mixed reaction
-     * * `REJECTION` - Rejection
+     *     * `MIXED_REACTION` - Mixed reaction
+     *     * `REJECTION` - Rejection
      * @enum {string}
      */
     CommunityReactionEnum: "CONSENT" | "MIXED_REACTION" | "REJECTION"
+    ContextHelp: {
+      id?: number
+      identifier: string
+      description?: string
+      /** Format: uri */
+      link?: string
+    }
     Contract: {
-      id: number
+      readonly id: number
       /** ID */
       nid: string
       /** Contract number */
@@ -536,7 +1394,7 @@ export interface components {
       dealversion: number
     }
     Country: {
-      id: number
+      readonly id: number
       name: string
       /** @description Target countries are countries that are NOT high income */
       high_income?: boolean
@@ -573,7 +1431,7 @@ export interface components {
        */
       point_lon_max: number
       observatory_page_id: number
-      region_id: number | null
+      readonly region_id: number | null
       deals: number[]
     }
     CountryInvestmentsAndRankings: {
@@ -678,7 +1536,7 @@ export interface components {
       | "WHT"
       | "YAM"
     Currency: {
-      id: number
+      readonly id: number
       code: string
       name: string
       symbol: string
@@ -691,17 +1549,17 @@ export interface components {
        * Current
        * @default false
        */
-      current?: boolean
+      current: boolean
       /**
        * Date
        * @default null
        */
-      date?: string | null
+      date: string | null
       /**
        * Area
        * @default null
        */
-      area?: string | null
+      area: number | null
       /** Choices */
       choices: components["schemas"]["AnimalsEnum"][]
     }
@@ -713,17 +1571,17 @@ export interface components {
        * Current
        * @default false
        */
-      current?: boolean
+      current: boolean
       /**
        * Date
        * @default null
        */
-      date?: string | null
+      date: string | null
       /**
        * Area
        * @default null
        */
-      area?: string | null
+      area: number | null
       /** Choices */
       choices: components["schemas"]["CropsEnum"][]
     }
@@ -735,17 +1593,17 @@ export interface components {
        * Current
        * @default false
        */
-      current?: boolean
+      current: boolean
       /**
        * Date
        * @default null
        */
-      date?: string | null
+      date: string | null
       /**
        * Area
        * @default null
        */
-      area?: string | null
+      area: number | null
       /** Choices */
       choices: components["schemas"]["IntentionOfInvestmentEnum"][]
     }
@@ -755,14 +1613,17 @@ export interface components {
        * Current
        * @default false
        */
-      current?: boolean
+      current: boolean
       /**
        * Date
        * @default null
        */
-      date?: string | null
-      /** Area */
-      area: string
+      date: string | null
+      /**
+       * Area
+       * @default null
+       */
+      area: number | null
     }
     /** CurrentDateAreaSchema */
     CurrentDateAreaSchema: components["schemas"]["CurrentDateAreaItem"][]
@@ -774,12 +1635,12 @@ export interface components {
        * Current
        * @default false
        */
-      current?: boolean
+      current: boolean
       /**
        * Date
        * @default null
        */
-      date?: string | null
+      date: string | null
       choice: components["schemas"]["ImplementationStatusEnum"]
     }
     /** CurrentDateChoiceNegotiationStatus */
@@ -790,12 +1651,12 @@ export interface components {
        * Current
        * @default false
        */
-      current?: boolean
+      current: boolean
       /**
        * Date
        * @default null
        */
-      date?: string | null
+      date: string | null
       choice: components["schemas"]["NegotiationStatusEnum"]
     }
     DataSourceFields: {
@@ -803,14 +1664,14 @@ export interface components {
     }
     /**
      * @description * `MEDIA_REPORT` - Media report
-     * * `RESEARCH_PAPER_OR_POLICY_REPORT` - Research Paper / Policy Report
-     * * `GOVERNMENT_SOURCES` - Government sources
-     * * `COMPANY_SOURCES` - Company sources
-     * * `CONTRACT` - Contract
-     * * `CONTRACT_FARMING_AGREEMENT` - Contract (contract farming agreement)
-     * * `PERSONAL_INFORMATION` - Personal information
-     * * `CROWDSOURCING` - Crowdsourcing
-     * * `OTHER` - Other
+     *     * `RESEARCH_PAPER_OR_POLICY_REPORT` - Research Paper / Policy Report
+     *     * `GOVERNMENT_SOURCES` - Government sources
+     *     * `COMPANY_SOURCES` - Company sources
+     *     * `CONTRACT` - Contract
+     *     * `CONTRACT_FARMING_AGREEMENT` - Contract (contract farming agreement)
+     *     * `PERSONAL_INFORMATION` - Personal information
+     *     * `CROWDSOURCING` - Crowdsourcing
+     *     * `OTHER` - Other
      * @enum {string}
      */
     DatasourceTypeEnum:
@@ -824,15 +1685,15 @@ export interface components {
       | "CROWDSOURCING"
       | "OTHER"
     Deal: {
-      id: number
-      active_version_id: number | null
-      draft_version_id: number | null
-      first_created_by_id: number | null
+      readonly id: number
+      readonly active_version_id: number | null
+      readonly draft_version_id: number | null
+      readonly first_created_by_id: number | null
       /** Target country */
-      country_id: number | null
-      versions: readonly components["schemas"]["DealVersionVersionsList"][]
-      selected_version: components["schemas"]["DealVersion"]
-      workflowinfos: readonly components["schemas"]["DealWorkflowInfo"][]
+      readonly country_id: number | null
+      readonly versions: components["schemas"]["DealVersionVersionsList"][]
+      readonly selected_version: components["schemas"]["DealVersion"]
+      readonly workflowinfos: components["schemas"]["DealWorkflowInfo"][]
       deleted?: boolean
       /** Comment on deletion */
       deleted_comment?: string
@@ -853,8 +1714,8 @@ export interface components {
       draft_version?: number | null
     }
     DealDataSource: {
-      id: number
-      file: string | null
+      readonly id: number
+      readonly file: string | null
       /** ID */
       nid: string
       type: components["schemas"]["DatasourceTypeEnum"]
@@ -941,119 +1802,127 @@ export interface components {
       TOTAL: number
     }
     DealQISnapshot: {
-      id: number
-      data: components["schemas"]["DealQIData"]
+      readonly id: number
+      readonly data: components["schemas"]["DealQIData"]
       /** Format: date-time */
-      created_at: string
-      subset_key: string | null
-      region: number | null
+      readonly created_at: string
+      readonly subset_key: string | null
+      readonly region: number | null
     }
     DealScore: {
-      id: number
+      readonly id: number
       score: components["schemas"]["DealScoreVersion"]
-      region_id: number | null
-      country: string
+      readonly region_id: number | null
+      readonly country: string
       /** Format: double */
-      deal_size: number | null
-      negotiation_status:
-        | components["schemas"]["NegotiationStatusEnum"]
-        | components["schemas"]["BlankEnum"]
-        | components["schemas"]["NullEnum"]
+      readonly deal_size: number | null
+      readonly negotiation_status:
+        | (
+            | components["schemas"]["NegotiationStatusEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
         | null
       /** Nature of the deal */
-      nature_of_deal: readonly components["schemas"]["NatureOfDealEnum"][]
-      operating_company: string
-      initiation_year: number | null
-      implementation_status:
-        | components["schemas"]["ImplementationStatusEnum"]
-        | components["schemas"]["BlankEnum"]
-        | components["schemas"]["NullEnum"]
+      readonly nature_of_deal: components["schemas"]["NatureOfDealEnum"][]
+      readonly operating_company: string
+      readonly initiation_year: number | null
+      readonly implementation_status:
+        | (
+            | components["schemas"]["ImplementationStatusEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
         | null
-      intention_of_investment: readonly components["schemas"]["IntentionOfInvestmentEnum"][]
-      crops: readonly string[]
+      readonly intention_of_investment: components["schemas"]["IntentionOfInvestmentEnum"][]
+      readonly crops: string[]
       /** Current livestock */
-      animals: readonly string[]
-      minerals: string
-      transnational: boolean | null
-      forest_concession: boolean
+      readonly animals: string[]
+      readonly minerals: string
+      readonly transnational: boolean | null
+      readonly forest_concession: boolean
       /** Recognition status of community land tenure */
-      recognition_status: readonly components["schemas"]["RecognitionStatusEnum"][]
+      readonly recognition_status: components["schemas"]["RecognitionStatusEnum"][]
       /** Comment on recognition status of community land tenure */
-      recognition_status_comment: string
-      displacement_of_people: boolean | null
+      readonly recognition_status_comment: string
+      readonly displacement_of_people: boolean | null
       /** Number of people actually displaced */
-      displaced_people: number | null
+      readonly displaced_people: number | null
       /** Number of households actually displaced */
-      displaced_households: number | null
+      readonly displaced_households: number | null
       /** Number of people displaced out of their community land */
-      displaced_people_from_community_land: number | null
+      readonly displaced_people_from_community_land: number | null
       /** Number of people displaced staying on community land */
-      displaced_people_within_community_land: number | null
+      readonly displaced_people_within_community_land: number | null
       /** Number of households displaced "only" from their agricultural fields */
-      displaced_households_from_fields: number | null
+      readonly displaced_households_from_fields: number | null
       /** Number of people facing displacement once project is fully implemented */
-      displaced_people_on_completion: number | null
+      readonly displaced_people_on_completion: number | null
       /** Comment on displacement of people */
-      displacement_of_people_comment: string
+      readonly displacement_of_people_comment: string
       /** Promised compensation (e.g. for damages or resettlements) */
-      promised_compensation: string
+      readonly promised_compensation: string
       /** Received compensation (e.g. for damages or resettlements) */
-      received_compensation: string
-      community_consultation:
-        | components["schemas"]["CommunityConsultationEnum"]
-        | components["schemas"]["BlankEnum"]
-        | components["schemas"]["NullEnum"]
+      readonly received_compensation: string
+      readonly community_consultation:
+        | (
+            | components["schemas"]["CommunityConsultationEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
         | null
       /** Comment on consultation of local community */
-      community_consultation_comment: string
+      readonly community_consultation_comment: string
       /** Presence of land conflicts */
-      land_conflicts: boolean | null
+      readonly land_conflicts: boolean | null
       /** Comment on presence of land conflicts */
-      land_conflicts_comment: string
+      readonly land_conflicts_comment: string
       /** Negative impacts for local communities */
-      negative_impacts: readonly components["schemas"]["NegativeImpactsEnum"][]
+      readonly negative_impacts: components["schemas"]["NegativeImpactsEnum"][]
       /** Comment on negative impacts for local communities */
-      negative_impacts_comment: string
+      readonly negative_impacts_comment: string
       /** Materialized benefits for local communities */
-      materialized_benefits: readonly components["schemas"]["BenefitsEnum"][]
+      readonly materialized_benefits: components["schemas"]["BenefitsEnum"][]
       /** Comment on materialized benefits for local communities */
-      materialized_benefits_comment: string
-      contract_farming: boolean | null
+      readonly materialized_benefits_comment: string
+      readonly contract_farming: boolean | null
       /** Comment on contract farming */
-      contract_farming_comment: string
+      readonly contract_farming_comment: string
       /** Promised benefits for local communities */
-      promised_benefits: readonly components["schemas"]["BenefitsEnum"][]
+      readonly promised_benefits: components["schemas"]["BenefitsEnum"][]
       /** Comment on promised benefits for local communities */
-      promised_benefits_comment: string
-      water_extraction_envisaged: boolean | null
+      readonly promised_benefits_comment: string
+      readonly water_extraction_envisaged: boolean | null
       /** Comment on water extraction envisaged */
-      water_extraction_envisaged_comment: string
-      source_of_water_extraction: readonly components["schemas"]["SourceOfWaterExtractionEnum"][]
+      readonly water_extraction_envisaged_comment: string
+      readonly source_of_water_extraction: components["schemas"]["SourceOfWaterExtractionEnum"][]
       /** Comment on source of water extraction */
-      source_of_water_extraction_comment: string
-      community_reaction:
-        | components["schemas"]["CommunityReactionEnum"]
-        | components["schemas"]["BlankEnum"]
-        | components["schemas"]["NullEnum"]
+      readonly source_of_water_extraction_comment: string
+      readonly community_reaction:
+        | (
+            | components["schemas"]["CommunityReactionEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
         | null
       /** Comment on community reaction */
-      community_reaction_comment: string
+      readonly community_reaction_comment: string
       /** Comment on gender-related info */
-      gender_related_information: string
+      readonly gender_related_information: string
       /** Format: double */
-      purchase_price: number | null
+      readonly purchase_price: number | null
       /** Format: double */
-      purchase_price_area: number | null
+      readonly purchase_price_area: number | null
       /** Comment on purchase price */
-      purchase_price_comment: string
+      readonly purchase_price_comment: string
       /** Format: double */
-      annual_leasing_fee: number | null
+      readonly annual_leasing_fee: number | null
       /** Format: double */
-      annual_leasing_fee_area: number | null
+      readonly annual_leasing_fee_area: number | null
       /** Comment on leasing fee */
-      annual_leasing_fee_comment: string
+      readonly annual_leasing_fee_comment: string
       /** Presence of organizations and actions taken (e.g. farmer organizations, NGOs, etc.) */
-      presence_of_organizations: string
+      readonly presence_of_organizations: string
     }
     DealScoreVersion: {
       deal_version: number
@@ -1070,27 +1939,27 @@ export interface components {
       assignee?: number | null
     }
     DealVersion: {
-      id: number
-      locations: readonly components["schemas"]["Location"][]
-      contracts: readonly components["schemas"]["Contract"][]
-      datasources: readonly components["schemas"]["DealDataSource"][]
-      operating_company_id: number | null
-      created_by_id: number | null
-      modified_by_id: number | null
-      sent_to_review_by_id: number | null
-      sent_to_activation_by_id: number | null
-      activated_by_id: number | null
+      readonly id: number
+      readonly locations: components["schemas"]["Location"][]
+      readonly contracts: components["schemas"]["Contract"][]
+      readonly datasources: components["schemas"]["DealDataSource"][]
+      readonly operating_company_id: number | null
+      readonly created_by_id: number | null
+      readonly modified_by_id: number | null
+      readonly sent_to_review_by_id: number | null
+      readonly sent_to_activation_by_id: number | null
+      readonly activated_by_id: number | null
       /** Format: date-time */
-      created_at: string
+      readonly created_at: string
       /** Format: date-time */
-      modified_at: string | null
+      readonly modified_at: string | null
       /** Format: date-time */
-      sent_to_review_at: string | null
+      readonly sent_to_review_at: string | null
       /** Format: date-time */
-      sent_to_activation_at: string | null
+      readonly sent_to_activation_at: string | null
       /** Format: date-time */
-      activated_at: string | null
-      status: components["schemas"]["VersionStatusEnum"]
+      readonly activated_at: string | null
+      readonly status: components["schemas"]["VersionStatusEnum"]
       /** Format: double */
       intended_size?: number | null
       contract_size?: components["schemas"]["CurrentDateAreaSchema"]
@@ -1117,9 +1986,11 @@ export interface components {
       purchase_price?: number | null
       /** Purchase price area type */
       purchase_price_type?:
-        | components["schemas"]["HaAreasEnum"]
-        | components["schemas"]["BlankEnum"]
-        | components["schemas"]["NullEnum"]
+        | (
+            | components["schemas"]["HaAreasEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
         | null
       /** Format: double */
       purchase_price_area?: number | null
@@ -1129,9 +2000,11 @@ export interface components {
       annual_leasing_fee?: number | null
       /** Annual leasing fee area type */
       annual_leasing_fee_type?:
-        | components["schemas"]["HaAreasEnum"]
-        | components["schemas"]["BlankEnum"]
-        | components["schemas"]["NullEnum"]
+        | (
+            | components["schemas"]["HaAreasEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
         | null
       /** Format: double */
       annual_leasing_fee_area?: number | null
@@ -1199,16 +2072,20 @@ export interface components {
       /** Comment on recognition status of community land tenure */
       recognition_status_comment?: string
       community_consultation?:
-        | components["schemas"]["CommunityConsultationEnum"]
-        | components["schemas"]["BlankEnum"]
-        | components["schemas"]["NullEnum"]
+        | (
+            | components["schemas"]["CommunityConsultationEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
         | null
       /** Comment on consultation of local community */
       community_consultation_comment?: string
       community_reaction?:
-        | components["schemas"]["CommunityReactionEnum"]
-        | components["schemas"]["BlankEnum"]
-        | components["schemas"]["NullEnum"]
+        | (
+            | components["schemas"]["CommunityReactionEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
         | null
       /** Comment on community reaction */
       community_reaction_comment?: string
@@ -1334,39 +2211,43 @@ export interface components {
       /** Comment on gender-related info */
       gender_related_information?: string
       overall_comment?: string
-      is_public: boolean
-      has_known_investor: boolean
+      readonly is_public: boolean
+      readonly has_known_investor: boolean
       /** Format: double */
-      current_contract_size: number | null
+      readonly current_contract_size: number | null
       /** Format: double */
-      current_production_size: number | null
-      current_intention_of_investment: readonly components["schemas"]["IntentionOfInvestmentEnum"][]
-      current_negotiation_status:
-        | components["schemas"]["NegotiationStatusEnum"]
-        | components["schemas"]["NullEnum"]
+      readonly current_production_size: number | null
+      readonly current_intention_of_investment: components["schemas"]["IntentionOfInvestmentEnum"][]
+      readonly current_negotiation_status:
+        | (
+            | components["schemas"]["NegotiationStatusEnum"]
+            | components["schemas"]["NullEnum"]
+          )
         | null
-      current_implementation_status:
-        | components["schemas"]["ImplementationStatusEnum"]
-        | components["schemas"]["NullEnum"]
+      readonly current_implementation_status:
+        | (
+            | components["schemas"]["ImplementationStatusEnum"]
+            | components["schemas"]["NullEnum"]
+          )
         | null
-      current_crops: readonly string[]
+      readonly current_crops: string[]
       /** Current livestock */
-      current_animals: readonly string[]
-      current_mineral_resources: readonly string[]
-      current_electricity_generation: readonly string[]
+      readonly current_animals: string[]
+      readonly current_mineral_resources: string[]
+      readonly current_electricity_generation: string[]
       /** Current carbon sequestration/offsetting */
-      current_carbon_sequestration: readonly string[]
+      readonly current_carbon_sequestration: string[]
       /** Format: double */
-      deal_size: number | null
-      initiation_year: number | null
-      forest_concession: boolean
-      transnational: boolean | null
+      readonly deal_size: number | null
+      readonly initiation_year: number | null
+      readonly forest_concession: boolean
+      readonly transnational: boolean | null
       fully_updated?: boolean
-      created_by: number | null
-      modified_by: number | null
-      sent_to_review_by: number | null
-      sent_to_activation_by: number | null
-      activated_by: number | null
+      readonly created_by: number | null
+      readonly modified_by: number | null
+      readonly sent_to_review_by: number | null
+      readonly sent_to_activation_by: number | null
+      readonly activated_by: number | null
       deal: number
       purchase_price_currency?: number | null
       annual_leasing_fee_currency?: number | null
@@ -1377,52 +2258,56 @@ export interface components {
       export_country2?: number | null
       /** Country 3 */
       export_country3?: number | null
-      parent_companies: readonly number[]
+      readonly parent_companies: number[]
       /** Top parent companies */
-      top_investors: readonly number[]
+      readonly top_investors: number[]
     }
     DealVersionVersionsList: {
-      id: number
+      readonly id: number
       /** Format: date-time */
-      created_at: string
-      created_by_id: number | null
+      readonly created_at: string
+      readonly created_by_id: number | null
       /** Format: date-time */
-      modified_at: string | null
-      modified_by_id: number | null
+      readonly modified_at: string | null
+      readonly modified_by_id: number | null
       /** Format: date-time */
-      sent_to_review_at: string | null
-      sent_to_review_by_id: number | null
+      readonly sent_to_review_at: string | null
+      readonly sent_to_review_by_id: number | null
       /** Format: date-time */
-      sent_to_activation_at: string | null
-      sent_to_activation_by_id: number | null
+      readonly sent_to_activation_at: string | null
+      readonly sent_to_activation_by_id: number | null
       /** Format: date-time */
-      activated_at: string | null
-      activated_by_id: number | null
-      status: components["schemas"]["VersionStatusEnum"]
-      fully_updated: boolean
-      is_public: boolean
+      readonly activated_at: string | null
+      readonly activated_by_id: number | null
+      readonly status: components["schemas"]["VersionStatusEnum"]
+      readonly fully_updated: boolean
+      readonly is_public: boolean
     }
     DealWorkflowInfo: {
-      id: number
-      from_user_id: number
-      to_user_id: number | null
-      status_before:
-        | components["schemas"]["VersionStatusEnum"]
-        | components["schemas"]["BlankEnum"]
-        | components["schemas"]["NullEnum"]
+      readonly id: number
+      readonly from_user_id: number
+      readonly to_user_id: number | null
+      readonly status_before:
+        | (
+            | components["schemas"]["VersionStatusEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
         | null
-      status_after:
-        | components["schemas"]["VersionStatusEnum"]
-        | components["schemas"]["BlankEnum"]
-        | components["schemas"]["NullEnum"]
+      readonly status_after:
+        | (
+            | components["schemas"]["VersionStatusEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
         | null
       /** Format: date-time */
-      timestamp: string
-      comment: string
-      resolved: boolean
-      replies: unknown
-      deal_id: number
-      deal_version_id: number | null
+      readonly timestamp: string
+      readonly comment: string
+      readonly resolved: boolean
+      readonly replies: unknown
+      readonly deal_id: number
+      readonly deal_version_id: number | null
     }
     /**
      * ElectricityGenerationEnum
@@ -1435,42 +2320,39 @@ export interface components {
        * Current
        * @default false
        */
-      current?: boolean
+      current: boolean
       /**
        * Date
        * @default null
        */
-      date?: string | null
+      date: string | null
       /**
        * Area
        * @default null
        */
-      area?: string | null
-      /**
-       * Choices
-       * @default []
-       */
-      choices?: components["schemas"]["ElectricityGenerationEnum"][]
+      area: number | null
+      /** Choices */
+      choices: components["schemas"]["ElectricityGenerationEnum"][]
       /**
        * Export
        * @default null
        */
-      export?: string | null
+      export: number | null
       /**
        * Windfarm Count
        * @default null
        */
-      windfarm_count?: string | null
+      windfarm_count: number | null
       /**
        * Current Capacity
        * @default null
        */
-      current_capacity?: string | null
+      current_capacity: number | null
       /**
        * Intended Capacity
        * @default null
        */
-      intended_capacity?: string | null
+      intended_capacity: number | null
     }
     /** ElectricityGenerationSchema */
     ElectricityGenerationSchema: components["schemas"]["ElectricityGenerationItem"][]
@@ -1482,29 +2364,29 @@ export interface components {
        * Current
        * @default false
        */
-      current?: boolean
+      current: boolean
       /**
        * Date
        * @default null
        */
-      date?: string | null
+      date: string | null
       /** Choices */
       choices: components["schemas"]["AnimalsEnum"][]
       /**
        * Area
        * @default null
        */
-      area?: string | null
+      area: number | null
       /**
        * Yield
        * @default null
        */
-      yield?: string | null
+      yield: number | null
       /**
        * Export
        * @default null
        */
-      export?: string | null
+      export: number | null
     }
     /** ExportsCrops */
     ExportsCrops: components["schemas"]["ExportsCropsItem"][]
@@ -1514,29 +2396,29 @@ export interface components {
        * Current
        * @default false
        */
-      current?: boolean
+      current: boolean
       /**
        * Date
        * @default null
        */
-      date?: string | null
+      date: string | null
       /** Choices */
       choices: components["schemas"]["CropsEnum"][]
       /**
        * Area
        * @default null
        */
-      area?: string | null
+      area: number | null
       /**
        * Yield
        * @default null
        */
-      yield?: string | null
+      yield: number | null
       /**
        * Export
        * @default null
        */
-      export?: string | null
+      export: number | null
     }
     /** ExportsMineralResources */
     ExportsMineralResources: components["schemas"]["ExportsMineralResourcesItem"][]
@@ -1546,29 +2428,29 @@ export interface components {
        * Current
        * @default false
        */
-      current?: boolean
+      current: boolean
       /**
        * Date
        * @default null
        */
-      date?: string | null
+      date: string | null
       /** Choices */
       choices: components["schemas"]["MineralsEnum"][]
       /**
        * Area
        * @default null
        */
-      area?: string | null
+      area: number | null
       /**
        * Yield
        * @default null
        */
-      yield?: string | null
+      yield: number | null
       /**
        * Export
        * @default null
        */
-      export?: string | null
+      export: number | null
     }
     FieldChoices: {
       deal: components["schemas"]["DealFields"]
@@ -1578,7 +2460,7 @@ export interface components {
       area: components["schemas"]["AreaFields"]
     }
     FieldDefinition: {
-      id: number
+      readonly id: number
       model: components["schemas"]["ModelEnum"]
       field: string
       short_description: string
@@ -1610,7 +2492,7 @@ export interface components {
       editor_description_ru?: string | null
     }
     Filters: {
-      id: number
+      readonly id: number
       region_id?: number[] | null
       country_id?: number[] | null
       area_min?: number | null
@@ -1632,16 +2514,16 @@ export interface components {
       minerals?: components["schemas"]["MineralsEnum"][] | null
       transnational?: boolean | null
       forest_concession?: boolean | null
-      project: number
+      readonly project: number
     }
     /**
      * @description * `CROPLAND` - Cropland
-     * * `FOREST_LAND` - Forest land
-     * * `PASTURE` - Pasture
-     * * `RANGELAND` - Shrub land/Grassland (Rangeland)
-     * * `MARGINAL_LAND` - Marginal land
-     * * `WETLAND` - Wetland
-     * * `OTHER_LAND` - Other land (e.g. developed land)
+     *     * `FOREST_LAND` - Forest land
+     *     * `PASTURE` - Pasture
+     *     * `RANGELAND` - Shrub land/Grassland (Rangeland)
+     *     * `MARGINAL_LAND` - Marginal land
+     *     * `WETLAND` - Wetland
+     *     * `OTHER_LAND` - Other land (e.g. developed land)
      * @enum {string}
      */
     FormerLandCoverEnum:
@@ -1654,11 +2536,11 @@ export interface components {
       | "OTHER_LAND"
     /**
      * @description * `STATE` - State
-     * * `PRIVATE_SMALLHOLDERS` - Private (smallholders)
-     * * `PRIVATE_LARGE_SCALE` - Private (large-scale farm)
-     * * `COMMUNITY` - Community
-     * * `INDIGENOUS_PEOPLE` - Indigenous people
-     * * `OTHER` - Other
+     *     * `PRIVATE_SMALLHOLDERS` - Private (smallholders)
+     *     * `PRIVATE_LARGE_SCALE` - Private (large-scale farm)
+     *     * `COMMUNITY` - Community
+     *     * `INDIGENOUS_PEOPLE` - Indigenous people
+     *     * `OTHER` - Other
      * @enum {string}
      */
     FormerLandOwnerEnum:
@@ -1670,13 +2552,13 @@ export interface components {
       | "OTHER"
     /**
      * @description * `COMMERCIAL_AGRICULTURE` - Commercial (large-scale) agriculture
-     * * `SMALLHOLDER_AGRICULTURE` - Smallholder agriculture
-     * * `SHIFTING_CULTIVATION` - Shifting cultivation
-     * * `PASTORALISM` - Pastoralism
-     * * `HUNTING_GATHERING` - Hunting/Gathering
-     * * `FORESTRY` - Forestry
-     * * `CONSERVATION` - Conservation
-     * * `OTHER` - Other
+     *     * `SMALLHOLDER_AGRICULTURE` - Smallholder agriculture
+     *     * `SHIFTING_CULTIVATION` - Shifting cultivation
+     *     * `PASTORALISM` - Pastoralism
+     *     * `HUNTING_GATHERING` - Hunting/Gathering
+     *     * `FORESTRY` - Forestry
+     *     * `CONSERVATION` - Conservation
+     *     * `OTHER` - Other
      * @enum {string}
      */
     FormerLandUseEnum:
@@ -1690,7 +2572,7 @@ export interface components {
       | "OTHER"
     /**
      * @description * `PER_HA` - per ha
-     * * `PER_AREA` - for specified area
+     *     * `PER_AREA` - for specified area
      * @enum {string}
      */
     HaAreasEnum: "PER_HA" | "PER_AREA"
@@ -1739,21 +2621,21 @@ export interface components {
       | "OTHER"
     /**
      * @description * `EQUITY` - Shares/Equity
-     * * `DEBT_FINANCING` - Debt financing
+     *     * `DEBT_FINANCING` - Debt financing
      * @enum {string}
      */
     InvestmentTypeEnum: "EQUITY" | "DEBT_FINANCING"
     Investor: {
-      id: number
-      active_version_id: number | null
-      draft_version_id: number | null
-      first_created_by_id: number | null
-      versions: readonly components["schemas"]["InvestorVersionVersionsList"][]
+      readonly id: number
+      readonly active_version_id: number | null
+      readonly draft_version_id: number | null
+      readonly first_created_by_id: number | null
+      readonly versions: components["schemas"]["InvestorVersionVersionsList"][]
       selected_version: components["schemas"]["InvestorVersion"]
-      deals: readonly components["schemas"]["InvestorDeal"][]
-      parents: readonly components["schemas"]["Involvement"][]
-      children: readonly components["schemas"]["Involvement"][]
-      workflowinfos: readonly components["schemas"]["InvestorWorkflowInfo"][]
+      readonly deals: components["schemas"]["InvestorDeal"][]
+      readonly parents: components["schemas"]["Involvement"][]
+      readonly children: components["schemas"]["Involvement"][]
+      readonly workflowinfos: components["schemas"]["InvestorWorkflowInfo"][]
       deleted?: boolean
       /** Comment on deletion */
       deleted_comment?: string
@@ -1764,8 +2646,8 @@ export interface components {
       draft_version?: number | null
     }
     InvestorDataSource: {
-      id: number
-      file: string | null
+      readonly id: number
+      readonly file: string | null
       /** ID */
       nid: string
       type: components["schemas"]["DatasourceTypeEnum"]
@@ -1788,26 +2670,30 @@ export interface components {
       investorversion: number
     }
     InvestorDeal: {
-      id: number
+      readonly id: number
       /** Target country */
-      country_id: number | null
-      selected_version: components["schemas"]["InvestorDealSelectedVersion"]
+      readonly country_id: number | null
+      readonly selected_version: components["schemas"]["InvestorDealSelectedVersion"]
     }
     InvestorDealSelectedVersion: {
-      id: number
-      current_intention_of_investment: readonly components["schemas"]["IntentionOfInvestmentEnum"][]
-      current_negotiation_status:
-        | components["schemas"]["NegotiationStatusEnum"]
-        | components["schemas"]["BlankEnum"]
-        | components["schemas"]["NullEnum"]
+      readonly id: number
+      readonly current_intention_of_investment: components["schemas"]["IntentionOfInvestmentEnum"][]
+      readonly current_negotiation_status:
+        | (
+            | components["schemas"]["NegotiationStatusEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
         | null
-      current_implementation_status:
-        | components["schemas"]["ImplementationStatusEnum"]
-        | components["schemas"]["BlankEnum"]
-        | components["schemas"]["NullEnum"]
+      readonly current_implementation_status:
+        | (
+            | components["schemas"]["ImplementationStatusEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
         | null
       /** Format: double */
-      deal_size: number | null
+      readonly deal_size: number | null
     }
     InvestorFields: {
       classification: components["schemas"]["ValueLabel"][]
@@ -1827,37 +2713,39 @@ export interface components {
       TOTAL: number
     }
     InvestorQISnapshot: {
-      id: number
-      data: components["schemas"]["InvestorQIData"]
+      readonly id: number
+      readonly data: components["schemas"]["InvestorQIData"]
       /** Format: date-time */
-      created_at: string
+      readonly created_at: string
     }
     InvestorVersion: {
-      id: number
-      datasources: readonly components["schemas"]["InvestorDataSource"][]
+      readonly id: number
+      readonly datasources: components["schemas"]["InvestorDataSource"][]
       /** Country of registration/origin */
-      country_id: number | null
-      created_by_id: number | null
-      modified_by_id: number | null
-      sent_to_review_by_id: number | null
-      sent_to_activation_by_id: number | null
-      activated_by_id: number | null
+      readonly country_id: number | null
+      readonly created_by_id: number | null
+      readonly modified_by_id: number | null
+      readonly sent_to_review_by_id: number | null
+      readonly sent_to_activation_by_id: number | null
+      readonly activated_by_id: number | null
       /** Format: date-time */
-      created_at: string
+      readonly created_at: string
       /** Format: date-time */
-      modified_at: string | null
+      readonly modified_at: string | null
       /** Format: date-time */
-      sent_to_review_at: string | null
+      readonly sent_to_review_at: string | null
       /** Format: date-time */
-      sent_to_activation_at: string | null
+      readonly sent_to_activation_at: string | null
       /** Format: date-time */
-      activated_at: string | null
-      status: components["schemas"]["VersionStatusEnum"]
+      readonly activated_at: string | null
+      readonly status: components["schemas"]["VersionStatusEnum"]
       name?: string
       classification?:
-        | components["schemas"]["ClassificationEnum"]
-        | components["schemas"]["BlankEnum"]
-        | components["schemas"]["NullEnum"]
+        | (
+            | components["schemas"]["ClassificationEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
         | null
       /**
        * Investor homepage
@@ -1872,85 +2760,91 @@ export interface components {
       comment?: string
       name_unknown?: boolean
       involvements_snapshot?: unknown
-      created_by: number | null
-      modified_by: number | null
-      sent_to_review_by: number | null
-      sent_to_activation_by: number | null
-      activated_by: number | null
+      readonly created_by: number | null
+      readonly modified_by: number | null
+      readonly sent_to_review_by: number | null
+      readonly sent_to_activation_by: number | null
+      readonly activated_by: number | null
       investor: number
       /** Country of registration/origin */
       country?: number | null
     }
     InvestorVersionVersionsList: {
-      id: number
+      readonly id: number
       /** Format: date-time */
-      created_at: string
-      created_by_id: number | null
+      readonly created_at: string
+      readonly created_by_id: number | null
       /** Format: date-time */
-      modified_at: string | null
-      modified_by_id: number | null
+      readonly modified_at: string | null
+      readonly modified_by_id: number | null
       /** Format: date-time */
-      sent_to_review_at: string | null
-      sent_to_review_by_id: number | null
+      readonly sent_to_review_at: string | null
+      readonly sent_to_review_by_id: number | null
       /** Format: date-time */
-      sent_to_activation_at: string | null
-      sent_to_activation_by_id: number | null
+      readonly sent_to_activation_at: string | null
+      readonly sent_to_activation_by_id: number | null
       /** Format: date-time */
-      activated_at: string | null
-      activated_by_id: number | null
-      status: components["schemas"]["VersionStatusEnum"]
+      readonly activated_at: string | null
+      readonly activated_by_id: number | null
+      readonly status: components["schemas"]["VersionStatusEnum"]
     }
     InvestorWorkflowInfo: {
-      id: number
-      from_user_id: number
-      to_user_id: number | null
-      status_before:
-        | components["schemas"]["VersionStatusEnum"]
-        | components["schemas"]["BlankEnum"]
-        | components["schemas"]["NullEnum"]
+      readonly id: number
+      readonly from_user_id: number
+      readonly to_user_id: number | null
+      readonly status_before:
+        | (
+            | components["schemas"]["VersionStatusEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
         | null
-      status_after:
-        | components["schemas"]["VersionStatusEnum"]
-        | components["schemas"]["BlankEnum"]
-        | components["schemas"]["NullEnum"]
+      readonly status_after:
+        | (
+            | components["schemas"]["VersionStatusEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
         | null
       /** Format: date-time */
-      timestamp: string
-      comment: string
-      resolved: boolean
-      replies: unknown
-      investor_id: number
-      investor_version_id: number | null
+      readonly timestamp: string
+      readonly comment: string
+      readonly resolved: boolean
+      readonly replies: unknown
+      readonly investor_id: number
+      readonly investor_version_id: number | null
     }
     Involvement: {
-      id: number
+      readonly id: number
       /** ID */
-      nid: string
+      readonly nid: string
       /** Investor */
-      parent_investor_id: number
+      readonly parent_investor_id: number
       /** Venture Company */
-      child_investor_id: number
+      readonly child_investor_id: number
       /** Relation type */
-      role: components["schemas"]["InvolvementRoleEnum"]
-      investment_type: readonly components["schemas"]["InvestmentTypeEnum"][]
+      readonly role: components["schemas"]["InvolvementRoleEnum"]
+      readonly investment_type: components["schemas"]["InvestmentTypeEnum"][]
       /** Format: decimal */
-      percentage: string | null
+      readonly percentage: string | null
       /**
        * Loan amount
        * Format: double
        */
-      loans_amount: number | null
+      readonly loans_amount: number | null
       /** Loan currency */
-      loans_currency_id: number | null
+      readonly loans_currency_id: number | null
       /** Loan date */
-      loans_date: string | null
-      parent_relation:
-        | components["schemas"]["ParentRelationEnum"]
-        | components["schemas"]["BlankEnum"]
-        | components["schemas"]["NullEnum"]
+      readonly loans_date: string | null
+      readonly parent_relation:
+        | (
+            | components["schemas"]["ParentRelationEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
         | null
       /** Comment on involvement */
-      comment: string
+      readonly comment: string
     }
     InvolvementFields: {
       role: components["schemas"]["ValueLabel"][]
@@ -1959,7 +2853,7 @@ export interface components {
     }
     /**
      * @description * `PARENT` - Parent company
-     * * `LENDER` - Tertiary investor/lender
+     *     * `LENDER` - Tertiary investor/lender
      * @enum {string}
      */
     InvolvementRoleEnum: "PARENT" | "LENDER"
@@ -1969,41 +2863,41 @@ export interface components {
        * Current
        * @default false
        */
-      current?: boolean
+      current: boolean
       /**
        * Date
        * @default null
        */
-      date?: string | null
+      date: string | null
       /**
        * Jobs
        * @default null
        */
-      jobs?: string | null
+      jobs: number | null
       /**
        * Employees
        * @default null
        */
-      employees?: string | null
+      employees: number | null
       /**
        * Workers
        * @default null
        */
-      workers?: string | null
+      workers: number | null
     }
     /** JobsSchema */
     JobsSchema: components["schemas"]["JobsItem"][]
     LeanUser: {
-      id: number
-      full_name: string | null
+      readonly id: number
+      readonly full_name: string | null
       /** @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
-      username: string
-      role: components["schemas"]["UserRoleEnum"]
+      readonly username: string
+      readonly role: components["schemas"]["UserRoleEnum"]
       /**
        * Active
        * @description Designates whether this user should be treated as active. Unselect this instead of deleting accounts.
        */
-      is_active: boolean
+      readonly is_active: boolean
     }
     /** LeaseItem */
     LeaseItem: {
@@ -2011,45 +2905,45 @@ export interface components {
        * Current
        * @default false
        */
-      current?: boolean
+      current: boolean
       /**
        * Date
        * @default null
        */
-      date?: string | null
+      date: string | null
       /**
        * Area
        * @default null
        */
-      area?: string | null
+      area: number | null
       /**
        * Farmers
        * @default null
        */
-      farmers?: string | null
+      farmers: number | null
       /**
        * Households
        * @default null
        */
-      households?: string | null
+      households: number | null
     }
     /** LeaseSchema */
     LeaseSchema: components["schemas"]["LeaseItem"][]
     /**
      * @description * `debug` - Debug
-     * * `info` - Info
-     * * `success` - Success
-     * * `warning` - Warning
-     * * `error` - Error
+     *     * `info` - Info
+     *     * `success` - Success
+     *     * `warning` - Warning
+     *     * `error` - Error
      * @enum {string}
      */
     LevelEnum: "debug" | "info" | "success" | "warning" | "error"
     /**
      * @description * `COUNTRY` - Country
-     * * `ADMINISTRATIVE_REGION` - Administrative region
-     * * `APPROXIMATE_LOCATION` - Approximate location
-     * * `EXACT_LOCATION` - Exact location
-     * * `COORDINATES` - Coordinates
+     *     * `ADMINISTRATIVE_REGION` - Administrative region
+     *     * `APPROXIMATE_LOCATION` - Approximate location
+     *     * `EXACT_LOCATION` - Exact location
+     *     * `COORDINATES` - Coordinates
      * @enum {string}
      */
     LevelOfAccuracyEnum:
@@ -2059,8 +2953,8 @@ export interface components {
       | "EXACT_LOCATION"
       | "COORDINATES"
     Location: {
-      id: number
-      areas: readonly components["schemas"]["LocationArea"][]
+      readonly id: number
+      readonly areas: components["schemas"]["LocationArea"][]
       /** ID */
       nid: string
       /** Spatial accuracy level */
@@ -2072,12 +2966,10 @@ export interface components {
       point?: {
         /** @enum {string} */
         type?: "Point"
-        /**
-         * @example [
-         *   12.9721,
-         *   77.5933
-         * ]
-         */
+        /** @example [
+         *       12.9721,
+         *       77.5933
+         *     ] */
         coordinates?: number[]
       } | null
       description?: string
@@ -2086,7 +2978,7 @@ export interface components {
       dealversion: number
     }
     LocationArea: {
-      id: number
+      readonly id: number
       /** ID */
       nid: string
       type: components["schemas"]["LocationAreaTypeEnum"]
@@ -2100,23 +2992,23 @@ export interface components {
     }
     /**
      * @description * `production_area` - Production area
-     * * `contract_area` - Contract area
-     * * `intended_area` - Intended area
+     *     * `contract_area` - Contract area
+     *     * `intended_area` - Intended area
      * @enum {string}
      */
     LocationAreaTypeEnum: "production_area" | "contract_area" | "intended_area"
     Message: {
-      id: number
-      text: string
+      readonly id: number
+      readonly text: string
       title: string
-      level: components["schemas"]["LevelEnum"]
+      readonly level: components["schemas"]["LevelEnum"]
       /**
        * Allow users to hide message
        * @description Store check off in cookie (expires in 365 days) so that users can choose to not display the message again.
        */
-      allow_users_to_hide: boolean
+      readonly allow_users_to_hide: boolean
       /** Only display message to logged-in users */
-      logged_in_only: boolean
+      readonly logged_in_only: boolean
       is_active: boolean
     }
     /**
@@ -2176,17 +3068,17 @@ export interface components {
       | "ZNC"
     /**
      * @description * `deal` - Deal
-     * * `investor` - Investor
+     *     * `investor` - Investor
      * @enum {string}
      */
     ModelEnum: "deal" | "investor"
     /**
      * @description * `OUTRIGHT_PURCHASE` - Outright purchase
-     * * `LEASE` - Lease
-     * * `CONCESSION` - Concession
-     * * `EXPLOITATION_PERMIT` - Exploitation permit / license / concession (for mineral resources)
-     * * `PURE_CONTRACT_FARMING` - Pure contract farming
-     * * `OTHER` - Other
+     *     * `LEASE` - Lease
+     *     * `CONCESSION` - Concession
+     *     * `EXPLOITATION_PERMIT` - Exploitation permit / license / concession (for mineral resources)
+     *     * `PURE_CONTRACT_FARMING` - Pure contract farming
+     *     * `OTHER` - Other
      * @enum {string}
      */
     NatureOfDealEnum:
@@ -2198,12 +3090,12 @@ export interface components {
       | "OTHER"
     /**
      * @description * `ENVIRONMENTAL_DEGRADATION` - Environmental degradation
-     * * `SOCIO_ECONOMIC` - Socio-economic
-     * * `CULTURAL_LOSS` - Cultural loss
-     * * `EVICTION` - Eviction
-     * * `DISPLACEMENT` - Displacement
-     * * `VIOLENCE` - Violence
-     * * `OTHER` - Other
+     *     * `SOCIO_ECONOMIC` - Socio-economic
+     *     * `CULTURAL_LOSS` - Cultural loss
+     *     * `EVICTION` - Eviction
+     *     * `DISPLACEMENT` - Displacement
+     *     * `VIOLENCE` - Violence
+     *     * `OTHER` - Other
      * @enum {string}
      */
     NegativeImpactsEnum:
@@ -2229,125 +3121,140 @@ export interface components {
       | "CONTRACT_CANCELED"
       | "CONTRACT_EXPIRED"
     /** @enum {unknown} */
-    NullEnum: ""
+    NullEnum: null
     /**
      * @description * `SUBSIDIARY` - Subsidiary of parent company
-     * * `LOCAL_BRANCH` - Local branch of parent company
-     * * `JOINT_VENTURE` - Joint venture of parent companies
+     *     * `LOCAL_BRANCH` - Local branch of parent company
+     *     * `JOINT_VENTURE` - Joint venture of parent companies
      * @enum {string}
      */
     ParentRelationEnum: "SUBSIDIARY" | "LOCAL_BRANCH" | "JOINT_VENTURE"
     PatchedBookmark: {
-      id?: number
+      readonly id?: number
       order?: number | null
       project?: number
     }
-    PatchedDealScore: {
+    PatchedContextHelp: {
       id?: number
+      identifier?: string
+      description?: string
+      /** Format: uri */
+      link?: string
+    }
+    PatchedDealScore: {
+      readonly id?: number
       score?: components["schemas"]["DealScoreVersion"]
-      region_id?: number | null
-      country?: string
+      readonly region_id?: number | null
+      readonly country?: string
       /** Format: double */
-      deal_size?: number | null
-      negotiation_status?:
-        | components["schemas"]["NegotiationStatusEnum"]
-        | components["schemas"]["BlankEnum"]
-        | components["schemas"]["NullEnum"]
+      readonly deal_size?: number | null
+      readonly negotiation_status?:
+        | (
+            | components["schemas"]["NegotiationStatusEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
         | null
       /** Nature of the deal */
-      nature_of_deal?: readonly components["schemas"]["NatureOfDealEnum"][]
-      operating_company?: string
-      initiation_year?: number | null
-      implementation_status?:
-        | components["schemas"]["ImplementationStatusEnum"]
-        | components["schemas"]["BlankEnum"]
-        | components["schemas"]["NullEnum"]
+      readonly nature_of_deal?: components["schemas"]["NatureOfDealEnum"][]
+      readonly operating_company?: string
+      readonly initiation_year?: number | null
+      readonly implementation_status?:
+        | (
+            | components["schemas"]["ImplementationStatusEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
         | null
-      intention_of_investment?: readonly components["schemas"]["IntentionOfInvestmentEnum"][]
-      crops?: readonly string[]
+      readonly intention_of_investment?: components["schemas"]["IntentionOfInvestmentEnum"][]
+      readonly crops?: string[]
       /** Current livestock */
-      animals?: readonly string[]
-      minerals?: string
-      transnational?: boolean | null
-      forest_concession?: boolean
+      readonly animals?: string[]
+      readonly minerals?: string
+      readonly transnational?: boolean | null
+      readonly forest_concession?: boolean
       /** Recognition status of community land tenure */
-      recognition_status?: readonly components["schemas"]["RecognitionStatusEnum"][]
+      readonly recognition_status?: components["schemas"]["RecognitionStatusEnum"][]
       /** Comment on recognition status of community land tenure */
-      recognition_status_comment?: string
-      displacement_of_people?: boolean | null
+      readonly recognition_status_comment?: string
+      readonly displacement_of_people?: boolean | null
       /** Number of people actually displaced */
-      displaced_people?: number | null
+      readonly displaced_people?: number | null
       /** Number of households actually displaced */
-      displaced_households?: number | null
+      readonly displaced_households?: number | null
       /** Number of people displaced out of their community land */
-      displaced_people_from_community_land?: number | null
+      readonly displaced_people_from_community_land?: number | null
       /** Number of people displaced staying on community land */
-      displaced_people_within_community_land?: number | null
+      readonly displaced_people_within_community_land?: number | null
       /** Number of households displaced "only" from their agricultural fields */
-      displaced_households_from_fields?: number | null
+      readonly displaced_households_from_fields?: number | null
       /** Number of people facing displacement once project is fully implemented */
-      displaced_people_on_completion?: number | null
+      readonly displaced_people_on_completion?: number | null
       /** Comment on displacement of people */
-      displacement_of_people_comment?: string
+      readonly displacement_of_people_comment?: string
       /** Promised compensation (e.g. for damages or resettlements) */
-      promised_compensation?: string
+      readonly promised_compensation?: string
       /** Received compensation (e.g. for damages or resettlements) */
-      received_compensation?: string
-      community_consultation?:
-        | components["schemas"]["CommunityConsultationEnum"]
-        | components["schemas"]["BlankEnum"]
-        | components["schemas"]["NullEnum"]
+      readonly received_compensation?: string
+      readonly community_consultation?:
+        | (
+            | components["schemas"]["CommunityConsultationEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
         | null
       /** Comment on consultation of local community */
-      community_consultation_comment?: string
+      readonly community_consultation_comment?: string
       /** Presence of land conflicts */
-      land_conflicts?: boolean | null
+      readonly land_conflicts?: boolean | null
       /** Comment on presence of land conflicts */
-      land_conflicts_comment?: string
+      readonly land_conflicts_comment?: string
       /** Negative impacts for local communities */
-      negative_impacts?: readonly components["schemas"]["NegativeImpactsEnum"][]
+      readonly negative_impacts?: components["schemas"]["NegativeImpactsEnum"][]
       /** Comment on negative impacts for local communities */
-      negative_impacts_comment?: string
+      readonly negative_impacts_comment?: string
       /** Materialized benefits for local communities */
-      materialized_benefits?: readonly components["schemas"]["BenefitsEnum"][]
+      readonly materialized_benefits?: components["schemas"]["BenefitsEnum"][]
       /** Comment on materialized benefits for local communities */
-      materialized_benefits_comment?: string
-      contract_farming?: boolean | null
+      readonly materialized_benefits_comment?: string
+      readonly contract_farming?: boolean | null
       /** Comment on contract farming */
-      contract_farming_comment?: string
+      readonly contract_farming_comment?: string
       /** Promised benefits for local communities */
-      promised_benefits?: readonly components["schemas"]["BenefitsEnum"][]
+      readonly promised_benefits?: components["schemas"]["BenefitsEnum"][]
       /** Comment on promised benefits for local communities */
-      promised_benefits_comment?: string
-      water_extraction_envisaged?: boolean | null
+      readonly promised_benefits_comment?: string
+      readonly water_extraction_envisaged?: boolean | null
       /** Comment on water extraction envisaged */
-      water_extraction_envisaged_comment?: string
-      source_of_water_extraction?: readonly components["schemas"]["SourceOfWaterExtractionEnum"][]
+      readonly water_extraction_envisaged_comment?: string
+      readonly source_of_water_extraction?: components["schemas"]["SourceOfWaterExtractionEnum"][]
       /** Comment on source of water extraction */
-      source_of_water_extraction_comment?: string
-      community_reaction?:
-        | components["schemas"]["CommunityReactionEnum"]
-        | components["schemas"]["BlankEnum"]
-        | components["schemas"]["NullEnum"]
+      readonly source_of_water_extraction_comment?: string
+      readonly community_reaction?:
+        | (
+            | components["schemas"]["CommunityReactionEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
         | null
       /** Comment on community reaction */
-      community_reaction_comment?: string
+      readonly community_reaction_comment?: string
       /** Comment on gender-related info */
-      gender_related_information?: string
+      readonly gender_related_information?: string
       /** Format: double */
-      purchase_price?: number | null
+      readonly purchase_price?: number | null
       /** Format: double */
-      purchase_price_area?: number | null
+      readonly purchase_price_area?: number | null
       /** Comment on purchase price */
-      purchase_price_comment?: string
+      readonly purchase_price_comment?: string
       /** Format: double */
-      annual_leasing_fee?: number | null
+      readonly annual_leasing_fee?: number | null
       /** Format: double */
-      annual_leasing_fee_area?: number | null
+      readonly annual_leasing_fee_area?: number | null
       /** Comment on leasing fee */
-      annual_leasing_fee_comment?: string
+      readonly annual_leasing_fee_comment?: string
       /** Presence of organizations and actions taken (e.g. farmer organizations, NGOs, etc.) */
-      presence_of_organizations?: string
+      readonly presence_of_organizations?: string
     }
     PatchedDealVariable: {
       vggt_variable?: number
@@ -2359,25 +3266,25 @@ export interface components {
       assignee?: number | null
     }
     PatchedProject: {
-      id?: number
+      readonly id?: number
       filters?: components["schemas"]["Filters"]
       name?: string
       description?: string
       /** Format: date-time */
-      created_at?: string
+      readonly created_at?: string
       /** Format: date-time */
-      modified_at?: string | null
-      owner?: number | null
-      modified_by?: number | null
+      readonly modified_at?: string | null
+      readonly owner?: number | null
+      readonly modified_by?: number | null
       editors?: number[]
     }
     PatchedUserInfo: {
-      id?: number
-      user?: number
+      readonly id?: number
+      readonly user?: number
     }
     PatchedVggtArticle: {
-      id?: number
-      title?: string
+      readonly id?: number
+      readonly title?: string
       article?: number
       description?: string
       chapter?: number
@@ -2395,16 +3302,16 @@ export interface components {
       articles?: number[]
     }
     Project: {
-      id: number
+      readonly id: number
       filters: components["schemas"]["Filters"]
       name: string
       description: string
       /** Format: date-time */
-      created_at: string
+      readonly created_at: string
       /** Format: date-time */
-      modified_at: string | null
-      owner: number | null
-      modified_by: number | null
+      readonly modified_at: string | null
+      readonly owner: number | null
+      readonly modified_by: number | null
       editors?: number[]
     }
     QIDealListResponse: {
@@ -2449,9 +3356,9 @@ export interface components {
     }
     /**
      * @description * `INDIGENOUS_RIGHTS_RECOGNIZED` - Indigenous Peoples traditional or customary rights recognized by government
-     * * `INDIGENOUS_RIGHTS_NOT_RECOGNIZED` - Indigenous Peoples traditional or customary rights not recognized by government
-     * * `COMMUNITY_RIGHTS_RECOGNIZED` - Community traditional or customary rights recognized by government
-     * * `COMMUNITY_RIGHTS_NOT_RECOGNIZED` - Community traditional or customary rights not recognized by government
+     *     * `INDIGENOUS_RIGHTS_NOT_RECOGNIZED` - Indigenous Peoples traditional or customary rights not recognized by government
+     *     * `COMMUNITY_RIGHTS_RECOGNIZED` - Community traditional or customary rights recognized by government
+     *     * `COMMUNITY_RIGHTS_NOT_RECOGNIZED` - Community traditional or customary rights not recognized by government
      * @enum {string}
      */
     RecognitionStatusEnum:
@@ -2460,11 +3367,11 @@ export interface components {
       | "COMMUNITY_RIGHTS_RECOGNIZED"
       | "COMMUNITY_RIGHTS_NOT_RECOGNIZED"
     Region: {
-      id: number
+      readonly id: number
       name: string
       observatory_page_id: number
       /**
-       * Latitude of northernmost point
+       * Latitude of southernmost point
        * Format: double
        */
       point_lat_min: number
@@ -2474,7 +3381,7 @@ export interface components {
        */
       point_lon_min: number
       /**
-       * Latitude of southernmost point
+       * Latitude of northernmost point
        * Format: double
        */
       point_lat_max: number
@@ -2486,10 +3393,10 @@ export interface components {
     }
     /**
      * @description * `NO_SCORE` - No score
-     * * `NO_DATA` - Insufficient data
-     * * `SEVERE_VIOLATIONS` - Severe violations
-     * * `PARTIAL_VIOLATIONS` - Violations
-     * * `NO_VIOLATIONS` - No violation
+     *     * `NO_DATA` - Insufficient data
+     *     * `SEVERE_VIOLATIONS` - Severe violations
+     *     * `PARTIAL_VIOLATIONS` - Violations
+     *     * `NO_VIOLATIONS` - No violation
      * @enum {string}
      */
     ScoreEnum:
@@ -2500,9 +3407,9 @@ export interface components {
       | "NO_VIOLATIONS"
     /**
      * @description * `NO_DATA` - Insufficient data
-     * * `SEVERE_VIOLATIONS` - Severe violations
-     * * `PARTIAL_VIOLATIONS` - Violations
-     * * `NO_VIOLATIONS` - No violation
+     *     * `SEVERE_VIOLATIONS` - Severe violations
+     *     * `PARTIAL_VIOLATIONS` - Violations
+     *     * `NO_VIOLATIONS` - No violation
      * @enum {string}
      */
     ScoreOptionsEnum:
@@ -2540,16 +3447,16 @@ export interface components {
     }
     /**
      * @description * `GROUNDWATER` - Groundwater
-     * * `SURFACE_WATER` - Surface water
-     * * `RIVER` - River
-     * * `LAKE` - Lake
+     *     * `SURFACE_WATER` - Surface water
+     *     * `RIVER` - River
+     *     * `LAKE` - Lake
      * @enum {string}
      */
     SourceOfWaterExtractionEnum: "GROUNDWATER" | "SURFACE_WATER" | "RIVER" | "LAKE"
     /**
      * @description * `TO_SCORE` - To score
-     * * `WAITING` - Waiting
-     * * `VALIDATED` - Validated
+     *     * `WAITING` - Waiting
+     *     * `VALIDATED` - Validated
      * @enum {string}
      */
     StatusFa7Enum: "TO_SCORE" | "WAITING" | "VALIDATED"
@@ -2558,47 +3465,48 @@ export interface components {
       description: string
     }
     User: {
-      id: number
+      readonly id: number
       /** @description Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only. */
-      username: string
+      readonly username: string
       /**
        * Email address
        * Format: email
        */
-      email: string
-      first_name: string
-      last_name: string
-      full_name: string
-      phone: string
-      information: string
-      country: number | null
-      region: number | null
-      role: components["schemas"]["UserRoleEnum"]
+      readonly email: string
+      readonly first_name: string
+      readonly last_name: string
+      readonly full_name: string
+      readonly phone: string
+      readonly information: string
+      readonly country: number | null
+      readonly region: number | null
+      readonly role: components["schemas"]["UserRoleEnum"]
       /**
        * Superuser status
        * @description Designates that this user has all permissions without explicitly assigning them.
        */
-      is_superuser: boolean
+      readonly is_superuser: boolean
       /**
        * Staff status
        * @description Designates whether the user can log into this admin site.
        */
-      is_staff: boolean
+      readonly is_staff: boolean
       /**
        * Active
        * @description Designates whether this user should be treated as active. Unselect this instead of deleting accounts.
        */
-      is_active: boolean
+      readonly is_active: boolean
+      readonly is_contexthelp_editor: boolean
     }
     UserInfo: {
-      id: number
-      user: number
+      readonly id: number
+      readonly user: number
     }
     /**
      * @description * `0` - ---------
-     * * `1` - Reporter
-     * * `2` - Editor
-     * * `3` - Administrator
+     *     * `1` - Reporter
+     *     * `2` - Editor
+     *     * `3` - Administrator
      * @enum {integer}
      */
     UserRoleEnum: 0 | 1 | 2 | 3
@@ -2609,15 +3517,15 @@ export interface components {
     }
     /**
      * @description * `DRAFT` - Draft
-     * * `REVIEW` - Review
-     * * `ACTIVATION` - Activation
-     * * `ACTIVATED` - Activated
+     *     * `REVIEW` - Review
+     *     * `ACTIVATION` - Activation
+     *     * `ACTIVATED` - Activated
      * @enum {string}
      */
     VersionStatusEnum: "DRAFT" | "REVIEW" | "ACTIVATION" | "ACTIVATED"
     VggtArticle: {
-      id: number
-      title: string
+      readonly id: number
+      readonly title: string
       article: number
       description: string
       chapter: number
@@ -2641,15 +3549,21 @@ export interface components {
   headers: never
   pathItems: never
 }
-
 export type $defs = Record<string, never>
-
-export type external = Record<string, never>
-
 export interface operations {
   accountability_article_list: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["VggtArticle"][]
         }
@@ -2657,6 +3571,12 @@ export interface operations {
     }
   }
   accountability_article_create: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
         "application/json": components["schemas"]["VggtArticle"]
@@ -2666,6 +3586,9 @@ export interface operations {
     }
     responses: {
       201: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["VggtArticle"]
         }
@@ -2674,12 +3597,19 @@ export interface operations {
   }
   accountability_article_retrieve: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         id: number
       }
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["VggtArticle"]
         }
@@ -2688,9 +3618,12 @@ export interface operations {
   }
   accountability_article_update: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         id: number
       }
+      cookie?: never
     }
     requestBody: {
       content: {
@@ -2701,6 +3634,9 @@ export interface operations {
     }
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["VggtArticle"]
         }
@@ -2709,22 +3645,32 @@ export interface operations {
   }
   accountability_article_destroy: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         id: number
       }
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       /** @description No response body */
       204: {
-        content: never
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
       }
     }
   }
   accountability_article_partial_update: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         id: number
       }
+      cookie?: never
     }
     requestBody?: {
       content: {
@@ -2735,6 +3681,9 @@ export interface operations {
     }
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["VggtArticle"]
         }
@@ -2742,8 +3691,18 @@ export interface operations {
     }
   }
   accountability_bookmark_retrieve: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["Bookmark"]
         }
@@ -2751,6 +3710,12 @@ export interface operations {
     }
   }
   accountability_bookmark_update: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
         "application/json": components["schemas"]["Bookmark"][]
@@ -2760,6 +3725,9 @@ export interface operations {
     }
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["Bookmark"]
         }
@@ -2767,6 +3735,12 @@ export interface operations {
     }
   }
   accountability_bookmark_create: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
         "application/json": components["schemas"]["Bookmark"]
@@ -2776,6 +3750,9 @@ export interface operations {
     }
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["Bookmark"]
         }
@@ -2784,12 +3761,19 @@ export interface operations {
   }
   accountability_bookmark_retrieve_2: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         id: number
       }
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["Bookmark"]
         }
@@ -2798,9 +3782,12 @@ export interface operations {
   }
   accountability_bookmark_update_2: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         id: number
       }
+      cookie?: never
     }
     requestBody: {
       content: {
@@ -2811,6 +3798,9 @@ export interface operations {
     }
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["Bookmark"]
         }
@@ -2819,22 +3809,32 @@ export interface operations {
   }
   accountability_bookmark_destroy: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         id: number
       }
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       /** @description No response body */
       204: {
-        content: never
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
       }
     }
   }
   accountability_bookmark_partial_update: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         id: number
       }
+      cookie?: never
     }
     requestBody?: {
       content: {
@@ -2845,6 +3845,9 @@ export interface operations {
     }
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["Bookmark"]
         }
@@ -2852,8 +3855,18 @@ export interface operations {
     }
   }
   accountability_chapter_list: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["VggtChapter"][]
         }
@@ -2861,6 +3874,12 @@ export interface operations {
     }
   }
   accountability_chapter_create: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
         "application/json": components["schemas"]["VggtChapter"]
@@ -2870,6 +3889,9 @@ export interface operations {
     }
     responses: {
       201: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["VggtChapter"]
         }
@@ -2878,13 +3900,20 @@ export interface operations {
   }
   accountability_chapter_retrieve: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         /** @description A unique value identifying this vggt chapter. */
         chapter: number
       }
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["VggtChapter"]
         }
@@ -2893,10 +3922,13 @@ export interface operations {
   }
   accountability_chapter_update: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         /** @description A unique value identifying this vggt chapter. */
         chapter: number
       }
+      cookie?: never
     }
     requestBody: {
       content: {
@@ -2907,6 +3939,9 @@ export interface operations {
     }
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["VggtChapter"]
         }
@@ -2915,24 +3950,34 @@ export interface operations {
   }
   accountability_chapter_destroy: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         /** @description A unique value identifying this vggt chapter. */
         chapter: number
       }
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       /** @description No response body */
       204: {
-        content: never
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
       }
     }
   }
   accountability_chapter_partial_update: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         /** @description A unique value identifying this vggt chapter. */
         chapter: number
       }
+      cookie?: never
     }
     requestBody?: {
       content: {
@@ -2943,6 +3988,9 @@ export interface operations {
     }
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["VggtChapter"]
         }
@@ -3183,9 +4231,16 @@ export interface operations {
         /** @description Scope. true: Transnational, false: Domestic, not set: both */
         transnational?: boolean
       }
+      header?: never
+      path?: never
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["DealScore"][]
         }
@@ -3193,6 +4248,12 @@ export interface operations {
     }
   }
   accountability_deal_create: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
         "application/json": components["schemas"]["DealScore"]
@@ -3202,6 +4263,9 @@ export interface operations {
     }
     responses: {
       201: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["DealScore"]
         }
@@ -3210,13 +4274,20 @@ export interface operations {
   }
   accountability_deal_retrieve_2: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         deal: number
         variable: number
       }
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["DealVariable"]
         }
@@ -3225,10 +4296,13 @@ export interface operations {
   }
   accountability_deal_partial_update_2: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         deal: number
         variable: number
       }
+      cookie?: never
     }
     requestBody?: {
       content: {
@@ -3239,6 +4313,9 @@ export interface operations {
     }
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["DealVariable"]
         }
@@ -3247,13 +4324,20 @@ export interface operations {
   }
   accountability_deal_retrieve: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         /** @description A unique value identifying this deal score. */
         deal: number
       }
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["DealScore"]
         }
@@ -3262,10 +4346,13 @@ export interface operations {
   }
   accountability_deal_update: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         /** @description A unique value identifying this deal score. */
         deal: number
       }
+      cookie?: never
     }
     requestBody: {
       content: {
@@ -3276,6 +4363,9 @@ export interface operations {
     }
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["DealScore"]
         }
@@ -3284,24 +4374,34 @@ export interface operations {
   }
   accountability_deal_destroy: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         /** @description A unique value identifying this deal score. */
         deal: number
       }
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       /** @description No response body */
       204: {
-        content: never
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
       }
     }
   }
   accountability_deal_partial_update: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         /** @description A unique value identifying this deal score. */
         deal: number
       }
+      cookie?: never
     }
     requestBody?: {
       content: {
@@ -3312,6 +4412,9 @@ export interface operations {
     }
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["DealScore"]
         }
@@ -3319,6 +4422,12 @@ export interface operations {
     }
   }
   accountability_deal_bulk_partial_update: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody?: {
       content: {
         "application/json": components["schemas"]["PatchedDealVariable"]
@@ -3328,6 +4437,9 @@ export interface operations {
     }
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["DealVariable"]
         }
@@ -3339,9 +4451,16 @@ export interface operations {
       query?: {
         id?: number[]
       }
+      header?: never
+      path?: never
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["Project"][]
         }
@@ -3349,6 +4468,12 @@ export interface operations {
     }
   }
   accountability_project_create: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
         "application/json": components["schemas"]["Project"]
@@ -3358,6 +4483,9 @@ export interface operations {
     }
     responses: {
       201: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["Project"]
         }
@@ -3366,12 +4494,19 @@ export interface operations {
   }
   accountability_project_retrieve: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         id: number
       }
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["Project"]
         }
@@ -3380,9 +4515,12 @@ export interface operations {
   }
   accountability_project_update: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         id: number
       }
+      cookie?: never
     }
     requestBody: {
       content: {
@@ -3393,6 +4531,9 @@ export interface operations {
     }
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["Project"]
         }
@@ -3401,22 +4542,32 @@ export interface operations {
   }
   accountability_project_destroy: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         id: number
       }
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       /** @description No response body */
       204: {
-        content: never
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
       }
     }
   }
   accountability_project_partial_update: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         id: number
       }
+      cookie?: never
     }
     requestBody?: {
       content: {
@@ -3427,6 +4578,9 @@ export interface operations {
     }
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["Project"]
         }
@@ -3434,8 +4588,18 @@ export interface operations {
     }
   }
   accountability_project_bookmark_list: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["Project"][]
         }
@@ -3443,29 +4607,40 @@ export interface operations {
     }
   }
   accountability_project_related_list: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["Project"][]
         }
       }
     }
   }
-  /**
-   * @description OpenApi3 schema for this API. Format can be selected via content negotiation.
-   *
-   * - YAML: application/vnd.oai.openapi
-   * - JSON: application/vnd.oai.openapi+json
-   */
   accountability_schema_retrieve: {
     parameters: {
       query?: {
         format?: "json" | "yaml"
         lang?: "en" | "es" | "fr" | "ru"
       }
+      header?: never
+      path?: never
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/vnd.oai.openapi": {
             [key: string]: unknown
@@ -3484,8 +4659,18 @@ export interface operations {
     }
   }
   accountability_user_list: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["UserInfo"][]
         }
@@ -3493,6 +4678,12 @@ export interface operations {
     }
   }
   accountability_user_create: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody?: {
       content: {
         "application/json": components["schemas"]["UserInfo"]
@@ -3502,6 +4693,9 @@ export interface operations {
     }
     responses: {
       201: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["UserInfo"]
         }
@@ -3509,8 +4703,18 @@ export interface operations {
     }
   }
   accountability_user_me_retrieve: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["UserInfo"]
         }
@@ -3518,6 +4722,12 @@ export interface operations {
     }
   }
   accountability_user_me_update: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody?: {
       content: {
         "application/json": components["schemas"]["UserInfo"]
@@ -3527,6 +4737,9 @@ export interface operations {
     }
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["UserInfo"]
         }
@@ -3534,14 +4747,30 @@ export interface operations {
     }
   }
   accountability_user_me_destroy: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       /** @description No response body */
       204: {
-        content: never
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
       }
     }
   }
   accountability_user_me_partial_update: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody?: {
       content: {
         "application/json": components["schemas"]["PatchedUserInfo"]
@@ -3551,6 +4780,9 @@ export interface operations {
     }
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["UserInfo"]
         }
@@ -3558,8 +4790,18 @@ export interface operations {
     }
   }
   accountability_variable_list: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["VggtVariable"][]
         }
@@ -3567,6 +4809,12 @@ export interface operations {
     }
   }
   accountability_variable_create: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
         "application/json": components["schemas"]["VggtVariable"]
@@ -3576,6 +4824,9 @@ export interface operations {
     }
     responses: {
       201: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["VggtVariable"]
         }
@@ -3584,13 +4835,20 @@ export interface operations {
   }
   accountability_variable_retrieve: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         /** @description A unique value identifying this vggt variable. */
         number: number
       }
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["VggtVariable"]
         }
@@ -3599,10 +4857,13 @@ export interface operations {
   }
   accountability_variable_update: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         /** @description A unique value identifying this vggt variable. */
         number: number
       }
+      cookie?: never
     }
     requestBody: {
       content: {
@@ -3613,6 +4874,9 @@ export interface operations {
     }
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["VggtVariable"]
         }
@@ -3621,24 +4885,34 @@ export interface operations {
   }
   accountability_variable_destroy: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         /** @description A unique value identifying this vggt variable. */
         number: number
       }
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       /** @description No response body */
       204: {
-        content: never
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
       }
     }
   }
   accountability_variable_partial_update: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         /** @description A unique value identifying this vggt variable. */
         number: number
       }
+      cookie?: never
     }
     requestBody?: {
       content: {
@@ -3649,6 +4923,9 @@ export interface operations {
     }
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["VggtVariable"]
         }
@@ -3656,8 +4933,18 @@ export interface operations {
     }
   }
   blog_categories_list: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["BlogCategory"][]
         }
@@ -3666,13 +4953,20 @@ export interface operations {
   }
   blog_categories_retrieve: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         /** @description A unique integer value identifying this Blog Category. */
         id: number
       }
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["BlogCategory"]
         }
@@ -3680,8 +4974,18 @@ export interface operations {
     }
   }
   blog_pages_list: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["BlogPage"][]
         }
@@ -3690,13 +4994,20 @@ export interface operations {
   }
   blog_pages_retrieve: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         /** @description A unique integer value identifying this Blog page. */
         id: number
       }
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["BlogPage"]
         }
@@ -3704,8 +5015,18 @@ export interface operations {
     }
   }
   chart_descriptions_retrieve: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["ChartDescriptions"]
         }
@@ -3944,18 +5265,178 @@ export interface operations {
         /** @description Scope. true: Transnational, false: Domestic, not set: both */
         transnational?: boolean
       }
+      header?: never
+      path?: never
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["CountryInvestmentsAndRankings"]
         }
       }
     }
   }
-  countries_list: {
+  context_help_list: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["ContextHelp"][]
+        }
+      }
+    }
+  }
+  context_help_create: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ContextHelp"]
+        "application/x-www-form-urlencoded": components["schemas"]["ContextHelp"]
+        "multipart/form-data": components["schemas"]["ContextHelp"]
+      }
+    }
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["ContextHelp"]
+        }
+      }
+    }
+  }
+  context_help_retrieve: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /** @description A unique integer value identifying this context help. */
+        id: number
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["ContextHelp"]
+        }
+      }
+    }
+  }
+  context_help_update: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /** @description A unique integer value identifying this context help. */
+        id: number
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ContextHelp"]
+        "application/x-www-form-urlencoded": components["schemas"]["ContextHelp"]
+        "multipart/form-data": components["schemas"]["ContextHelp"]
+      }
+    }
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["ContextHelp"]
+        }
+      }
+    }
+  }
+  context_help_destroy: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /** @description A unique integer value identifying this context help. */
+        id: number
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description No response body */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+    }
+  }
+  context_help_partial_update: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        /** @description A unique integer value identifying this context help. */
+        id: number
+      }
+      cookie?: never
+    }
+    requestBody?: {
+      content: {
+        "application/json": components["schemas"]["PatchedContextHelp"]
+        "application/x-www-form-urlencoded": components["schemas"]["PatchedContextHelp"]
+        "multipart/form-data": components["schemas"]["PatchedContextHelp"]
+      }
+    }
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          "application/json": components["schemas"]["ContextHelp"]
+        }
+      }
+    }
+  }
+  countries_list: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["Country"][]
         }
@@ -3963,8 +5444,18 @@ export interface operations {
     }
   }
   currencies_list: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["Currency"][]
         }
@@ -4201,9 +5692,16 @@ export interface operations {
         /** @description Scope. true: Transnational, false: Domestic, not set: both */
         transnational?: boolean
       }
+      header?: never
+      path?: never
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["Deal"][]
         }
@@ -4211,6 +5709,12 @@ export interface operations {
     }
   }
   deals_create: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
         "application/json": components["schemas"]["Deal"]
@@ -4220,6 +5724,9 @@ export interface operations {
     }
     responses: {
       201: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["Deal"]
         }
@@ -4228,26 +5735,35 @@ export interface operations {
   }
   deals_retrieve: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         /** @description A unique integer value identifying this deal hull. */
         id: number
       }
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["Deal"]
         }
       }
     }
   }
-  /** @description creating a new Version when calling "save" on an existing object */
   deals_update: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         /** @description A unique integer value identifying this deal hull. */
         id: number
       }
+      cookie?: never
     }
     requestBody: {
       content: {
@@ -4258,6 +5774,9 @@ export interface operations {
     }
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["Deal"]
         }
@@ -4266,14 +5785,21 @@ export interface operations {
   }
   deals_version_retrieve: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         /** @description A unique integer value identifying this deal hull. */
         id: number
         version_id: number
       }
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["Deal"]
         }
@@ -4282,10 +5808,13 @@ export interface operations {
   }
   deals_add_comment_update: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         /** @description A unique integer value identifying this deal hull. */
         id: number
       }
+      cookie?: never
     }
     requestBody: {
       content: {
@@ -4296,6 +5825,9 @@ export interface operations {
     }
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["Deal"]
         }
@@ -4304,10 +5836,13 @@ export interface operations {
   }
   deals_make_copy_update: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         /** @description A unique integer value identifying this deal hull. */
         id: number
       }
+      cookie?: never
     }
     requestBody: {
       content: {
@@ -4318,6 +5853,9 @@ export interface operations {
     }
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["Deal"]
         }
@@ -4326,10 +5864,13 @@ export interface operations {
   }
   deals_toggle_confidential_update: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         /** @description A unique integer value identifying this deal hull. */
         id: number
       }
+      cookie?: never
     }
     requestBody: {
       content: {
@@ -4340,6 +5881,9 @@ export interface operations {
     }
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["Deal"]
         }
@@ -4348,10 +5892,13 @@ export interface operations {
   }
   deals_toggle_deleted_update: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         /** @description A unique integer value identifying this deal hull. */
         id: number
       }
+      cookie?: never
     }
     requestBody: {
       content: {
@@ -4362,6 +5909,9 @@ export interface operations {
     }
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["Deal"]
         }
@@ -4369,8 +5919,18 @@ export interface operations {
     }
   }
   dealversions_list: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["DealVersion"][]
         }
@@ -4379,13 +5939,20 @@ export interface operations {
   }
   dealversions_retrieve: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         /** @description A unique integer value identifying this deal version. */
         id: number
       }
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["DealVersion"]
         }
@@ -4394,10 +5961,13 @@ export interface operations {
   }
   dealversions_update: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         /** @description A unique integer value identifying this deal version. */
         id: number
       }
+      cookie?: never
     }
     requestBody: {
       content: {
@@ -4408,6 +5978,9 @@ export interface operations {
     }
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["DealVersion"]
         }
@@ -4416,24 +5989,34 @@ export interface operations {
   }
   dealversions_destroy: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         /** @description A unique integer value identifying this deal version. */
         id: number
       }
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       /** @description No response body */
       204: {
-        content: never
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
       }
     }
   }
   dealversions_change_status_update: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         /** @description A unique integer value identifying this deal version. */
         id: number
       }
+      cookie?: never
     }
     requestBody: {
       content: {
@@ -4444,6 +6027,9 @@ export interface operations {
     }
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["DealVersion"]
         }
@@ -4451,8 +6037,18 @@ export interface operations {
     }
   }
   field_choices_retrieve: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["FieldChoices"]
         }
@@ -4460,8 +6056,18 @@ export interface operations {
     }
   }
   field_definitions_list: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["FieldDefinition"][]
         }
@@ -4470,13 +6076,20 @@ export interface operations {
   }
   field_definitions_retrieve: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         /** @description A unique integer value identifying this field definition. */
         id: number
       }
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["FieldDefinition"]
         }
@@ -4713,9 +6326,16 @@ export interface operations {
         /** @description Scope. true: Transnational, false: Domestic, not set: both */
         transnational?: boolean
       }
+      header?: never
+      path?: never
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": {
             /** @enum {string} */
@@ -4965,9 +6585,16 @@ export interface operations {
         /** @description Scope. true: Transnational, false: Domestic, not set: both */
         transnational?: boolean
       }
+      header?: never
+      path?: never
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": {
             /** @enum {string} */
@@ -4993,9 +6620,16 @@ export interface operations {
         /** @description Query string */
         q: string
       }
+      header?: never
+      path?: never
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["SearchedInvestor"][]
         }
@@ -5003,8 +6637,18 @@ export interface operations {
     }
   }
   investors_list: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["Investor"][]
         }
@@ -5012,6 +6656,12 @@ export interface operations {
     }
   }
   investors_create: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
         "application/json": components["schemas"]["Investor"]
@@ -5021,6 +6671,9 @@ export interface operations {
     }
     responses: {
       201: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["Investor"]
         }
@@ -5029,26 +6682,35 @@ export interface operations {
   }
   investors_retrieve: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         /** @description A unique integer value identifying this investor hull. */
         id: number
       }
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["Investor"]
         }
       }
     }
   }
-  /** @description creating a new Version when calling "save" on an existing object */
   investors_update: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         /** @description A unique integer value identifying this investor hull. */
         id: number
       }
+      cookie?: never
     }
     requestBody: {
       content: {
@@ -5059,6 +6721,9 @@ export interface operations {
     }
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["Investor"]
         }
@@ -5067,14 +6732,21 @@ export interface operations {
   }
   investors_version_retrieve: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         /** @description A unique integer value identifying this investor hull. */
         id: number
         version_id: number
       }
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["Investor"]
         }
@@ -5083,10 +6755,13 @@ export interface operations {
   }
   investors_add_comment_update: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         /** @description A unique integer value identifying this investor hull. */
         id: number
       }
+      cookie?: never
     }
     requestBody: {
       content: {
@@ -5097,6 +6772,9 @@ export interface operations {
     }
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["Investor"]
         }
@@ -5105,13 +6783,20 @@ export interface operations {
   }
   investors_involvements_graph_retrieve: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         /** @description A unique integer value identifying this investor hull. */
         id: number
       }
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["Investor"]
         }
@@ -5120,10 +6805,13 @@ export interface operations {
   }
   investors_toggle_deleted_update: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         /** @description A unique integer value identifying this investor hull. */
         id: number
       }
+      cookie?: never
     }
     requestBody: {
       content: {
@@ -5134,6 +6822,9 @@ export interface operations {
     }
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["Investor"]
         }
@@ -5370,9 +7061,16 @@ export interface operations {
         /** @description Scope. true: Transnational, false: Domestic, not set: both */
         transnational?: boolean
       }
+      header?: never
+      path?: never
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["Investor"]
         }
@@ -5380,8 +7078,18 @@ export interface operations {
     }
   }
   investors_simple_list: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["SimpleInvestor"][]
         }
@@ -5389,8 +7097,18 @@ export interface operations {
     }
   }
   investorversions_list: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["InvestorVersion"][]
         }
@@ -5399,13 +7117,20 @@ export interface operations {
   }
   investorversions_retrieve: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         /** @description A unique integer value identifying this investor version. */
         id: number
       }
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["InvestorVersion"]
         }
@@ -5414,10 +7139,13 @@ export interface operations {
   }
   investorversions_update: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         /** @description A unique integer value identifying this investor version. */
         id: number
       }
+      cookie?: never
     }
     requestBody: {
       content: {
@@ -5428,6 +7156,9 @@ export interface operations {
     }
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["InvestorVersion"]
         }
@@ -5436,24 +7167,34 @@ export interface operations {
   }
   investorversions_destroy: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         /** @description A unique integer value identifying this investor version. */
         id: number
       }
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       /** @description No response body */
       204: {
-        content: never
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
       }
     }
   }
   investorversions_change_status_update: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         /** @description A unique integer value identifying this investor version. */
         id: number
       }
+      cookie?: never
     }
     requestBody: {
       content: {
@@ -5464,6 +7205,9 @@ export interface operations {
     }
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["InvestorVersion"]
         }
@@ -5471,8 +7215,18 @@ export interface operations {
     }
   }
   messages_list: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["Message"][]
         }
@@ -5481,13 +7235,20 @@ export interface operations {
   }
   messages_retrieve: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         /** @description A unique integer value identifying this Message. */
         id: number
       }
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["Message"]
         }
@@ -5495,8 +7256,18 @@ export interface operations {
     }
   }
   qi_specs: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["QISpecsResponse"]
         }
@@ -5504,8 +7275,18 @@ export interface operations {
     }
   }
   qi_deal_counts: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["DealQICounts"]
         }
@@ -5513,8 +7294,18 @@ export interface operations {
     }
   }
   qi_investor_counts: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["InvestorQICounts"]
         }
@@ -5548,9 +7339,16 @@ export interface operations {
         /** @description Filter by Land Matrix region. */
         region_id?: number
       }
+      header?: never
+      path?: never
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["QIDealListResponse"][]
         }
@@ -5569,9 +7367,16 @@ export interface operations {
         /** @description Filter by Land Matrix region. */
         region_id?: number
       }
+      header?: never
+      path?: never
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["QIInvestorListResponse"][]
         }
@@ -5579,8 +7384,18 @@ export interface operations {
     }
   }
   qi_stats: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["QIStatsResponse"]
         }
@@ -5588,28 +7403,39 @@ export interface operations {
     }
   }
   regions_list: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["Region"][]
         }
       }
     }
   }
-  /**
-   * @description OpenApi3 schema for this API. Format can be selected via content negotiation.
-   *
-   * - YAML: application/vnd.oai.openapi
-   * - JSON: application/vnd.oai.openapi+json
-   */
   "schema.json_retrieve": {
     parameters: {
       query?: {
         lang?: "en" | "es" | "fr" | "ru"
       }
+      header?: never
+      path?: never
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/vnd.oai.openapi+json": {
             [key: string]: unknown
@@ -5621,20 +7447,21 @@ export interface operations {
       }
     }
   }
-  /**
-   * @description OpenApi3 schema for this API. Format can be selected via content negotiation.
-   *
-   * - YAML: application/vnd.oai.openapi
-   * - JSON: application/vnd.oai.openapi+json
-   */
   "schema.yaml_retrieve": {
     parameters: {
       query?: {
         lang?: "en" | "es" | "fr" | "ru"
       }
+      header?: never
+      path?: never
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/vnd.oai.openapi": {
             [key: string]: unknown
@@ -5647,8 +7474,18 @@ export interface operations {
     }
   }
   users_list: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["LeanUser"][]
         }
@@ -5657,13 +7494,20 @@ export interface operations {
   }
   users_retrieve: {
     parameters: {
+      query?: never
+      header?: never
       path: {
         /** @description A unique integer value identifying this user. */
         id: number
       }
+      cookie?: never
     }
+    requestBody?: never
     responses: {
       200: {
+        headers: {
+          [name: string]: unknown
+        }
         content: {
           "application/json": components["schemas"]["User"]
         }

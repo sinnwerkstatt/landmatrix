@@ -1,35 +1,39 @@
 <script lang="ts">
   import { tracker } from "@sinnwerkstatt/sveltekit-matomo"
-  import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
   import { browser } from "$app/environment"
 
-  import { DynamicsOfDeal, toCSV, toJSON } from "$lib/data/charts/dynamicsOfDeal"
   import type { DynamicsDataPoint } from "$lib/data/charts/dynamicsOfDeal"
-  import { createLabels, fieldChoices } from "$lib/stores"
+  import { DynamicsOfDeal, toCSV, toJSON } from "$lib/data/charts/dynamicsOfDeal"
+  import { createLabels, investorChoices } from "$lib/fieldChoices"
   import type { DealVersion2 } from "$lib/types/data"
 
   import ChartWrapper from "$components/Data/Charts/DownloadWrapper.svelte"
-  import { downloadCSV, downloadJSON, downloadSVG } from "$components/Data/Charts/utils"
-  import type { DownloadEvent } from "$components/Data/Charts/utils"
+  import {
+    downloadCSV,
+    downloadJSON,
+    downloadSVG,
+    type FileType,
+  } from "$components/Data/Charts/utils"
 
-  $: title = $_("Dynamics of deal by investor type")
+  let title = $derived($_("Dynamics of deal by investor type"))
   const dynamicOfDeal = new DynamicsOfDeal()
 
-  export let deals: DealVersion2[] = []
+  interface Props {
+    deals?: DealVersion2[]
+  }
 
-  let svgComp: SVGElement
+  let { deals = [] }: Props = $props()
 
-  let multideals = 0
-  let payload: DynamicsDataPoint[] = []
+  let svgComp: SVGElement | undefined = $state()
 
-  $: classificationLabels = createLabels($fieldChoices.investor.classification)
+  let multideals = $derived(deals.filter(d => d.top_investors.length > 1).length)
 
-  $: if (browser && deals?.length > 0) {
+  let classificationLabels = $derived(createLabels($investorChoices.classification))
+  const payload: DynamicsDataPoint[] = $derived.by(() => {
     let pots: { [key: string]: number } = {}
     deals.forEach(d => {
-      if (d.top_investors.length > 1) multideals += 1
       d.top_investors.forEach(i => {
         // FIXME: There are investors with invalid classifications null or ''
         let cl = i.classification
@@ -40,15 +44,19 @@
       })
     })
 
-    payload = Object.entries(pots).map(([k, v]) => ({
+    return Object.entries(pots).map(([k, v]) => ({
       name: classificationLabels[k] || $_("Unknown"),
       value: v,
     }))
+  })
 
-    dynamicOfDeal.do_the_graph(svgComp, payload)
-  }
+  $effect(() => {
+    if (browser && svgComp && deals?.length > 0) {
+      dynamicOfDeal.do_the_graph(svgComp, payload)
+    }
+  })
 
-  const handleDownload = ({ detail: fileType }: DownloadEvent) => {
+  const handleDownload = (fileType: FileType) => {
     if ($tracker) $tracker.trackEvent("Chart", "Dynamics of deal", fileType)
     switch (fileType) {
       case "json":
@@ -59,17 +67,17 @@
         return downloadSVG(svgComp, fileType, title)
     }
   }
-
-  onMount(() => dynamicOfDeal.do_the_graph(svgComp, payload))
 </script>
 
-<ChartWrapper {title} on:download={handleDownload}>
-  <svg id="dynamics-of-deal-chart" bind:this={svgComp} />
+<ChartWrapper ondownload={handleDownload} {title}>
+  <svg bind:this={svgComp} id="dynamics-of-deal-chart" />
 
-  <div slot="legend">
-    {$_(
-      "Please note: {number} deals have multiple investor types. The full size of the deal is assigned to each investor type.",
-      { values: { number: multideals } },
-    )}
-  </div>
+  {#snippet legend()}
+    <div>
+      {$_(
+        "Please note: {number} deals have multiple investor types. The full size of the deal is assigned to each investor type.",
+        { values: { number: multideals } },
+      )}
+    </div>
+  {/snippet}
 </ChartWrapper>

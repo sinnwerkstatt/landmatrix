@@ -4,12 +4,26 @@
   import Button from "./Button.svelte"
   import IconXMark from "./icons/IconXMark.svelte"
 
-  export let open: boolean = false
-  export let extraClass: string = ""
-  export let title: string
   export const large: boolean = false
-  export let confirmLabel = "Save"
-  export let disabled = false
+  interface Props {
+    open?: boolean
+    extraClass?: string
+    title: string
+    confirmLabel?: string
+    disabled?: boolean
+    children?: import("svelte").Snippet
+    onclick?: () => void
+  }
+
+  let {
+    open = $bindable(false),
+    extraClass = "",
+    title,
+    confirmLabel = "Save",
+    disabled = $bindable(false),
+    children,
+    onclick,
+  }: Props = $props()
 </script>
 
 {#if open}
@@ -25,13 +39,13 @@
         <button
           class="absolute right-4 top-4 text-a-gray-400"
           {disabled}
-          on:click={() => (open = false)}
+          onclick={() => (open = false)}
         >
           <IconXMark size="24" />
         </button>
       </div>
       <div class="overflow-auto px-14 py-4">
-        <slot />
+        {@render children?.()}
       </div>
       <div class="footer flex justify-center gap-4 border-t">
         <Button
@@ -39,9 +53,9 @@
           style="neutral"
           type="outline"
           {disabled}
-          on:click={() => (open = false)}
+          onclick={() => (open = false)}
         />
-        <Button label={confirmLabel} style="neutral" {disabled} on:click />
+        <Button label={confirmLabel} style="neutral" {disabled} {onclick} />
       </div>
     </div>
   </div>

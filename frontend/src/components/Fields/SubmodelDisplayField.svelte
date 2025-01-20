@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
   // https://github.com/dummdidumm/rfcs/blob/ts-typedefs-within-svelte-components/text/ts-typing-props-slots-events.md
 
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
@@ -6,27 +6,41 @@
 </script>
 
 <script lang="ts" generics="T extends Submodel">
-  import { onMount } from "svelte"
+  import { onMount, type Snippet } from "svelte"
 
-  import { browser } from "$app/environment"
   import { goto } from "$app/navigation"
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import type { SubmodelIdKeys } from "$lib/utils/dataProcessing"
   import { scrollEntryIntoView } from "$lib/utils/domHelpers"
 
-  /* eslint-disable no-undef */
-  export let entries: readonly T[]
-  /* eslint-enable no-undef */
+  interface Props {
+    // eslint-disable-next-line no-undef
+    entries: readonly T[]
+    label: string
+    selectedEntryId?: string | undefined // for external reference
+    hoverEntryId?: string | undefined // for external reference
+    entryIdKey?: SubmodelIdKeys
+    // eslint-disable-next-line no-undef
+    children?: Snippet<[T]>
+  }
 
-  export let label: string
-  export let selectedEntryId: string | undefined = undefined // for external reference
-  export let hoverEntryId: string | undefined = undefined // for external reference
-  export let entryIdKey: SubmodelIdKeys = "nid"
+  let {
+    entries,
+    label,
+    selectedEntryId = $bindable(undefined),
+    hoverEntryId = $bindable(undefined),
+    entryIdKey = "nid",
+    children,
+  }: Props = $props()
 
-  $: selectedEntryId = $page.url.hash?.replace("#", "") || undefined
+  $effect(() => {
+    selectedEntryId = page.url.hash?.replace("#", "") || undefined
+  })
 
-  $: if (browser) scrollEntryIntoView(selectedEntryId)
+  $effect(() => {
+    scrollEntryIntoView(selectedEntryId)
+  })
 
   onMount(() => scrollEntryIntoView(selectedEntryId))
 </script>
@@ -47,10 +61,10 @@
           <a
             class="inline-block w-full"
             {href}
-            on:click|preventDefault
-            on:mousedown={() => goto(href)}
-            on:mouseenter={() => (hoverEntryId = idAsString)}
-            on:mouseleave={() => (hoverEntryId = undefined)}
+            onclick={e => e.preventDefault()}
+            onmousedown={() => goto(href)}
+            onmouseenter={() => (hoverEntryId = idAsString)}
+            onmouseleave={() => (hoverEntryId = undefined)}
           >
             {index + 1}. {label}
             <small class="text-sm text-gray-500">
@@ -58,13 +72,14 @@
             </small>
           </a>
         </h3>
-        <slot {entry} />
+        {@render children?.(entry)}
       </article>
     {/each}
   </section>
 {/if}
 
 <style lang="postcss">
+  /* TODO: dark mode selectors not applied for animations? */
   .is-selected {
     @apply animate-fadeToWhite dark:animate-fadeToGray;
   }

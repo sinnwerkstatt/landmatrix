@@ -15,7 +15,9 @@
     <Logo />
     <div class="mt-10 flex flex-col flex-nowrap gap-4 px-6">
       <NavbarItem label="Deals" href="/accountability/deals/">
-        <span slot="icon"><IconList /></span>
+        {#snippet icon()}
+          <span><IconList /></span>
+        {/snippet}
       </NavbarItem>
       <!-- <NavbarItem label="To Do" href="/accountability/todo/">
         <span slot="icon"><IconToDo /></span>

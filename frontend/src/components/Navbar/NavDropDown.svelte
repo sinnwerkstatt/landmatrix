@@ -1,38 +1,47 @@
 <script lang="ts">
+  import type { Snippet } from "svelte"
   import { slide } from "svelte/transition"
 
   import { afterNavigate } from "$app/navigation"
 
   import { clickOutside } from "$lib/helpers"
 
-  export let placement = "left-0"
+  interface Props {
+    placement?: string
+    class?: string
+    title?: Snippet
+    children?: Snippet
+  }
 
-  let isOpen = false
-  let isHover = false
+  let { placement = "left-0", class: className = "", title, children }: Props = $props()
+
+  let isOpen = $state(false)
+  let isHover = $state(false)
 
   afterNavigate(() => (isOpen = false))
 </script>
 
 <div
   role="none"
-  class="relative {$$props.class ?? ''}"
+  class="relative {className}"
   use:clickOutside
-  on:outClick={() => (isOpen = false)}
-  on:mouseenter={() => (isHover = true)}
-  on:mouseleave={() => {
+  onoutClick={() => (isOpen = false)}
+  onmouseenter={() => (isHover = true)}
+  onmouseleave={() => {
     isHover = false
     isOpen = false
   }}
 >
   <button
     class="flex items-center hover:text-orange"
-    on:click={() => (isOpen = !isOpen)}
+    onclick={() => (isOpen = !isOpen)}
+    type="button"
   >
-    <slot name="title" />
+    {@render title?.()}
   </button>
   {#if isOpen || isHover}
     <div class="absolute z-50 {placement}" transition:slide={{ duration: 200 }}>
-      <slot />
+      {@render children?.()}
     </div>
   {/if}
 </div>

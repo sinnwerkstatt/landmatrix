@@ -2,23 +2,23 @@
   import { quintOut } from "svelte/easing"
   import { slide } from "svelte/transition"
 
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import { openedFilterBar } from "$lib/accountability/stores"
 
   import IconExpand from "$components/Accountability/icons/IconExpand.svelte"
 
-  export let data
+  let { data } = $props()
 
-  $: projectId = $page.params.project
+  let projectId = $derived(page.params.project)
 
-  $: currentProject = data.allProjects.find(p => p.id == projectId)
+  let currentProject = $derived(data.allProjects.find(p => p.id == projectId))
 </script>
 
 <div class="flex gap-4 py-4">
   {#if !$openedFilterBar}
     <button
-      on:click={() => {
+      onclick={() => {
         $openedFilterBar = true
       }}
       in:slide={{ duration: 800, easing: quintOut, axis: "x" }}

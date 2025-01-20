@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { MouseEventHandler } from "svelte/elements"
   import { fade } from "svelte/transition"
 
   import IconUser from "$components/Accountability/icons/IconUser.svelte"
@@ -6,22 +7,42 @@
   import IconXMark from "../icons/IconXMark.svelte"
   import Card from "./Card.svelte"
 
-  export let type: "base" | "assignment" = "base"
-  export let size: "sm" | "md" | "lg" | "xl" = "md"
-  export let initials = "JD"
-  export let label = ""
-  export let button = false
-  export let buttonOnHover = false
-  export let padding = false
-  export let extraClass = ""
-  export let ring = false
-  export let tooltip = true
-  export let disabled = false
+  interface Props {
+    type?: "base" | "assignment"
+    size?: "sm" | "md" | "lg" | "xl"
+    initials?: string
+    label?: string
+    button?: boolean
+    buttonOnHover?: boolean
+    padding?: boolean
+    extraClass?: string
+    ring?: boolean
+    tooltip?: boolean
+    disabled?: boolean
+    // export let surname = "Surname"
+    name?: string
+    mail?: string
+    description?: string
+    onclick?: MouseEventHandler<HTMLButtonElement>
+  }
 
-  // export let surname = "Surname"
-  export let name = "Name"
-  export let mail = "name@mail.com"
-  export let description = "Description"
+  let {
+    type = "base",
+    size = "md",
+    initials = "JD",
+    label = "",
+    button = $bindable(false),
+    buttonOnHover = false,
+    padding = false,
+    extraClass = "",
+    ring = false,
+    tooltip = true,
+    disabled = false,
+    name = "Name",
+    mail = "name@mail.com",
+    description = "Description",
+    onclick,
+  }: Props = $props()
 
   let iconSize = {
     sm: "8",
@@ -30,10 +51,10 @@
     xl: "32",
   }
 
-  let bubble: HTMLElement
-  let popupVisible = false
-  let popupTop: number = 0
-  let popupLeft: number = 0
+  let bubble: HTMLElement | undefined = $state()
+  let popupVisible = $state(false)
+  let popupTop: number = $state(0)
+  let popupLeft: number = $state(0)
 
   const popupMargin = 20
   const popupGap = 10
@@ -44,9 +65,9 @@
     const windowHeight = window.innerHeight
     const windowWidth = window.innerWidth
 
-    const bubbleLeft = bubble.getBoundingClientRect().x
-    const bubbleTop = bubble.getBoundingClientRect().y
-    const bubbleHeight = bubble.getBoundingClientRect().height
+    const bubbleLeft = bubble!.getBoundingClientRect().x
+    const bubbleTop = bubble!.getBoundingClientRect().y
+    const bubbleHeight = bubble!.getBoundingClientRect().height
 
     // Horizontal positioning
     const deltaLeft = bubbleLeft - popupWidth / 2 - popupMargin
@@ -96,8 +117,8 @@
   class:padding
   role="tooltip"
   class:disabled
-  on:mouseleave={mouseLeave}
-  on:mouseenter={mouseEnter}
+  onmouseleave={mouseLeave}
+  onmouseenter={mouseEnter}
 >
   <div
     class="icon flex shrink-0 items-center justify-center rounded-full {type} {size} select-none"
@@ -123,7 +144,7 @@
   {/if}
 
   {#if button}
-    <button class="pl-1 text-a-gray-400" on:click {disabled}>
+    <button class="pl-1 text-a-gray-400" {onclick} {disabled}>
       <IconXMark size="24" />
     </button>
   {/if}

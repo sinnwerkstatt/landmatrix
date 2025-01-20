@@ -6,19 +6,24 @@
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import Overlay from "$components/Overlay.svelte"
 
-  export let visible: boolean
-  export let investor: {
-    id: number
-    name: string
-    active_version__classification: components["schemas"]["ClassificationEnum"]
-    active_version__country_id: number | null
-    active_version__homepage: string
-    active_version__comment: string
+  interface Props {
+    visible: boolean
+    investor: {
+      id: number
+      name: string
+      active_version__classification: components["schemas"]["ClassificationEnum"]
+      active_version__country_id: number | null
+      active_version__homepage: string
+      active_version__comment: string
+    }
+    onclose?: () => void
   }
+
+  let { visible, investor, onclose }: Props = $props()
 </script>
 
 <Overlay
-  on:close
+  {onclose}
   title="{investor.name} ({investor.id})"
   {visible}
   closeButtonText={$_("Close")}

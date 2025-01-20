@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import { fieldChoices } from "$lib/stores"
+  import { dealChoices } from "$lib/fieldChoices"
   import type { JSONElectricityGenerationFieldType } from "$lib/types/data"
 
   import { dateCurrentFormat } from "$components/Fields/Display2/jsonHelpers"
@@ -9,11 +9,14 @@
   import PlaneIcon from "$components/icons/PlaneIcon.svelte"
   import RenewableEnergyIcon from "$components/icons/RenewableEnergyIcon.svelte"
 
-  export let value: JSONElectricityGenerationFieldType[] = []
+  interface Props {
+    value?: JSONElectricityGenerationFieldType[]
+  }
+
+  let { value = [] }: Props = $props()
 
   const getLabel = (value: string) =>
-    $fieldChoices.deal.electricity_generation.find(c => value === c.value)?.label ??
-    value
+    $dealChoices.electricity_generation.find(c => value === c.value)?.label ?? value
 </script>
 
 <ul>
@@ -21,7 +24,7 @@
     <li class:font-bold={val.current}>
       <span>{dateCurrentFormat(val)}</span>
 
-      {#if val.choices && $fieldChoices.deal.electricity_generation.length}
+      {#if val.choices && $dealChoices.electricity_generation.length}
         <span>
           {val.choices.map(getLabel).join(", ")}
         </span>

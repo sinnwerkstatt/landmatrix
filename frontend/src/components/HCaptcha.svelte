@@ -1,13 +1,17 @@
 <script lang="ts">
   import * as staticEnv from "$env/static/public"
-  import { createEventDispatcher, onDestroy, onMount } from "svelte"
+  import { onDestroy, onMount } from "svelte"
 
   import { browser } from "$app/environment"
 
-  const dispatch = createEventDispatcher()
+  interface Props {
+    hl?: string
+    size?: "normal" | "compact" | "invisible"
+    class?: string
+    onsuccess?: (token: string) => void
+  }
 
-  export let hl = ""
-  export let size: "normal" | "compact" | "invisible" = "normal"
+  let { hl = "", size = "normal", class: className = "", onsuccess }: Props = $props()
 
   // https://docs.hcaptcha.com/#integration-testing-test-keys
   export const sitekey =
@@ -19,18 +23,18 @@
     }
   }
 
-  let mounted = false
-  let loaded = false
-  let widgetID
+  let mounted = $state(false)
+  let loaded = $state(false)
+  let widgetID: string | undefined = $state()
 
   onMount(() => {
     if (browser)
       window.hcaptchaOnLoad = () => {
-        dispatch("load")
+        // dispatch("load")
         loaded = true
       }
 
-    dispatch("mount")
+    // dispatch("mount")
     mounted = true
   })
   onDestroy(() => {
@@ -46,19 +50,21 @@
     }
   })
 
-  $: if (browser && mounted && loaded) {
-    widgetID = window.hcaptcha.render(targetDiv, {
-      sitekey,
-      hl, // force a specific localisation
-      theme: "light",
-      callback: token => dispatch("success", { token }),
-      "error-callback": () => dispatch("error"),
-      "close-callback": () => dispatch("close"),
-      "expired-callback": () => dispatch("expired"),
-      size,
-    })
-  }
-  let targetDiv: HTMLDivElement
+  let targetDiv: HTMLDivElement | undefined = $state()
+  $effect(() => {
+    if (browser && mounted && loaded && targetDiv) {
+      widgetID = window.hcaptcha.render(targetDiv, {
+        sitekey,
+        hl, // force a specific localisation
+        theme: "light",
+        callback: token => onsuccess?.(token),
+        // "error-callback": () => dispatch("error"),
+        // "close-callback": () => dispatch("close"),
+        // "expired-callback": () => dispatch("expired"),
+        size,
+      })
+    }
+  })
 </script>
 
 <svelte:head>
@@ -71,4 +77,4 @@
   {/if}
 </svelte:head>
 
-<div class={$$props.class ?? ""} bind:this={targetDiv} />
+<div class={className} bind:this={targetDiv}></div>

@@ -3,7 +3,12 @@
 
   import Modal from "$components/Modal.svelte"
 
-  export let open: boolean
+  interface Props {
+    open: boolean
+    onclick?: () => void
+  }
+
+  let { open = $bindable(), onclick }: Props = $props()
 </script>
 
 <Modal bind:open dismissible>
@@ -15,10 +20,10 @@
     {$_("All unsaved changes will be lost.")}
   </div>
   <div class="flex justify-end gap-4">
-    <!-- svelte-ignore a11y-autofocus -->
-    <button type="button" class="btn-outline" on:click={() => (open = false)} autofocus>
+    <!-- svelte-ignore a11y_autofocus -->
+    <button type="button" class="btn-outline" onclick={() => (open = false)} autofocus>
       Continue editing
     </button>
-    <button type="button" class="btn btn-yellow" on:click>Quit without saving</button>
+    <button type="button" class="btn btn-yellow" {onclick}>Quit without saving</button>
   </div>
 </Modal>

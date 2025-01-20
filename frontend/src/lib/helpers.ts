@@ -17,7 +17,7 @@ export function newNanoid(existingIDs: string[] = []): string {
 }
 
 interface ClickOutsideAttributes {
-  "on:outClick": (e: CustomEvent) => void
+  onoutClick: (e: CustomEvent) => void
 }
 
 export const clickOutside = (

@@ -1,20 +1,24 @@
 <script lang="ts">
   import { tracker } from "@sinnwerkstatt/sveltekit-matomo"
+  import type { Snippet } from "svelte"
   import { _ } from "svelte-i18n"
   import Select from "svelte-select"
+  import { twMerge } from "tailwind-merge"
 
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
+  import { createLabels, dealChoices } from "$lib/fieldChoices"
   import {
     filters,
     isDefaultFilter,
     publicOnly,
     type ProduceFilter,
   } from "$lib/filters"
-  import { createLabels, fieldChoices, simpleInvestors } from "$lib/stores"
+  import { simpleInvestors } from "$lib/stores"
   import { IntentionOfInvestmentGroup, ProduceGroup } from "$lib/types/data"
   import { isEditorOrAbove } from "$lib/utils/permissions"
 
+  import ContextHelper from "$components/ContextHelper.svelte"
   import { showFilterBar } from "$components/Data/stores"
   import DownloadIcon from "$components/icons/DownloadIcon.svelte"
   import CheckboxSwitch from "$components/LowLevel/CheckboxSwitch.svelte"
@@ -25,45 +29,55 @@
   import FilterCollapse from "./FilterCollapse.svelte"
   import Wimpel from "./Wimpel.svelte"
 
-  $: produceGroupLabels = createLabels<ProduceGroup>($fieldChoices.deal.produce_group)
+  interface Props {
+    children?: Snippet
+  }
 
-  let produceChoices: ProduceFilter[]
-  $: produceChoices = $fieldChoices
-    ? [
-        ...($fieldChoices.deal.crops.map(({ value, label }) => ({
-          value,
-          label,
-          groupId: ProduceGroup.CROPS,
-          group: produceGroupLabels[ProduceGroup.CROPS],
-        })) ?? []),
-        ...($fieldChoices.deal.animals.map(({ value, label }) => ({
-          value,
-          label,
-          groupId: ProduceGroup.ANIMALS,
-          group: produceGroupLabels[ProduceGroup.ANIMALS],
-        })) ?? []),
-        ...($fieldChoices.deal.minerals.map(({ value, label }) => ({
-          value,
-          label,
-          groupId: ProduceGroup.MINERAL_RESOURCES,
-          group: produceGroupLabels[ProduceGroup.MINERAL_RESOURCES],
-        })) ?? []),
-      ]
-    : []
+  let { children }: Props = $props()
 
-  $: regionsWithGlobal = [{ id: undefined, name: $_("Global") }, ...$page.data.regions]
+  let produceGroupLabels = $derived(
+    createLabels<ProduceGroup>($dealChoices.produce_group),
+  )
 
-  $: dataDownloadURL = `/api/legacy_export/?subset=${
-    $publicOnly ? "PUBLIC" : "ACTIVE"
-  }&${$filters.toRESTFilterArray()}&format=`
+  let produceChoices: ProduceFilter[] = $derived([
+    ...($dealChoices.crops.map(({ value, label }) => ({
+      value,
+      label,
+      groupId: ProduceGroup.CROPS,
+      group: produceGroupLabels[ProduceGroup.CROPS],
+    })) ?? []),
+    ...($dealChoices.animals.map(({ value, label }) => ({
+      value,
+      label,
+      groupId: ProduceGroup.ANIMALS,
+      group: produceGroupLabels[ProduceGroup.ANIMALS],
+    })) ?? []),
+    ...($dealChoices.minerals.map(({ value, label }) => ({
+      value,
+      label,
+      groupId: ProduceGroup.MINERAL_RESOURCES,
+      group: produceGroupLabels[ProduceGroup.MINERAL_RESOURCES],
+    })) ?? []),
+  ])
+
+  let regionsWithGlobal = $derived([
+    { id: undefined, name: $_("Global") },
+    ...page.data.regions,
+  ])
+
+  let dataDownloadURL = $derived(
+    `/api/legacy_export/?subset=${
+      $publicOnly ? "PUBLIC" : "ACTIVE"
+    }&${$filters.toRESTFilterArray()}&format=`,
+  )
 
   function trackDownload(format: string) {
     let name = "Global"
     if ($filters.country_id) {
-      name = $page.data.countries.find(c => c.id === $filters.country_id)!.name
+      name = page.data.countries.find(c => c.id === $filters.country_id)!.name
     }
     if ($filters.region_id) {
-      name = $page.data.regions.find(r => r.id === $filters.region_id)!.name
+      name = page.data.regions.find(r => r.id === $filters.region_id)!.name
     }
 
     if ($tracker) $tracker.trackEvent("Downloads", format, name)
@@ -79,33 +93,34 @@
 </script>
 
 <div
-  class="absolute bottom-0 left-0 top-0 z-10 flex bg-white/90 text-sm shadow-inner drop-shadow-[3px_-3px_1px_rgba(0,0,0,0.3)] dark:bg-gray-700 {$showFilterBar
-    ? 'w-[clamp(220px,20%,300px)]'
-    : 'w-0'}"
+  class={twMerge(
+    "absolute bottom-0 left-0 top-0 z-10 flex bg-white/90 text-sm shadow-inner drop-shadow-[3px_-3px_1px_rgba(0,0,0,0.3)] dark:bg-gray-700",
+    $showFilterBar ? "w-[clamp(220px,20%,400px)]" : "w-0",
+  )}
 >
-  <Wimpel
-    on:click={() => showFilterBar.set(!$showFilterBar)}
-    showing={$showFilterBar}
-  />
+  <Wimpel onclick={() => showFilterBar.set(!$showFilterBar)} showing={$showFilterBar} />
   <div
     class="flex h-full w-full flex-col overflow-y-auto p-1"
     class:hidden={!$showFilterBar}
     dir="rtl"
   >
     <div class="w-full self-start" dir="ltr">
-      <h2 class="heading5 my-2 px-2">{$_("Filter")}</h2>
+      <h2 class="heading5 my-2 flex items-center gap-2 px-2">
+        {$_("Filter")}
+        <ContextHelper identifier="filterbar_filter" class="mb-2 size-4" />
+      </h2>
       <!--      <p>{$dealsNG.length}</p>-->
       <div class="my-2 px-2">
         <CheckboxSwitch
           class="text-base"
           id="default"
           checked={$isDefaultFilter}
-          on:change={toggleDefaultFilter}
+          onchange={toggleDefaultFilter}
         >
           {$_("Default filter")}
         </CheckboxSwitch>
 
-        {#if isEditorOrAbove($page.data.user)}
+        {#if isEditorOrAbove(page.data.user)}
           <CheckboxSwitch class="text-base" id="public" bind:checked={$publicOnly}>
             {$_("Public deals only")}
           </CheckboxSwitch>
@@ -114,7 +129,7 @@
 
       <FilterCollapse
         clearable={!!$filters.region_id}
-        on:clear={() => ($filters.region_id = undefined)}
+        onclear={() => ($filters.region_id = undefined)}
         title={$_("Land Matrix region")}
       >
         {#each regionsWithGlobal as reg}
@@ -125,34 +140,41 @@
               name="lm-region-filter"
               bind:group={$filters.region_id}
               value={reg.id}
-              on:change={() => ($filters.country_id = undefined)}
+              onchange={() => ($filters.country_id = undefined)}
             />
             {reg.name}
           </label>
         {/each}
+        <div class="text-right">
+          <ContextHelper identifier="filterbar_region" class="mt-2 size-5" />
+        </div>
       </FilterCollapse>
 
       <FilterCollapse
         clearable={!!$filters.country_id}
-        on:clear={() => ($filters.country_id = undefined)}
+        onclear={() => ($filters.country_id = undefined)}
         title={$_("Country")}
       >
         <CountrySelect
-          countries={$page.data.countries.filter(c => c.deals && c.deals.length > 0)}
-          on:input={e => {
+          countries={page.data.countries.filter(c => c.deals && c.deals.length > 0)}
+          oninput={e => {
             if (e.detail) {
               $filters.country_id = e.detail.id
               $filters.region_id = undefined
             }
           }}
-          on:clear={() => ($filters.country_id = undefined)}
-          value={$page.data.countries.find(c => c.id === $filters.country_id)}
+          onclear={() => ($filters.country_id = undefined)}
+          value={page.data.countries.find(c => c.id === $filters.country_id)}
         />
+
+        <div class="text-right">
+          <ContextHelper identifier="filterbar_country" class="mt-2 size-5" />
+        </div>
       </FilterCollapse>
 
       <FilterCollapse
         clearable={!!($filters.deal_size_min || $filters.deal_size_max)}
-        on:clear={() => ($filters.deal_size_min = $filters.deal_size_max = undefined)}
+        onclear={() => ($filters.deal_size_min = $filters.deal_size_max = undefined)}
         title={$_("Deal size")}
       >
         <div class="field-has-appendix">
@@ -177,16 +199,20 @@
           />
           <span>ha</span>
         </div>
+
+        <div class="text-right">
+          <ContextHelper identifier="filterbar_dealsize" class="mt-2 size-5" />
+        </div>
       </FilterCollapse>
 
       <FilterBarNegotiationStatusToggle />
 
       <FilterCollapse
         clearable={$filters.nature_of_deal.length > 0}
-        on:clear={() => ($filters.nature_of_deal = [])}
+        onclear={() => ($filters.nature_of_deal = [])}
         title={$_("Nature of the deal")}
       >
-        {#each $fieldChoices.deal.nature_of_deal as { value, label }}
+        {#each $dealChoices.nature_of_deal as { value, label }}
           <label class="block">
             <input
               type="checkbox"
@@ -197,11 +223,15 @@
             {label}
           </label>
         {/each}
+
+        <div class="text-right">
+          <ContextHelper identifier="filterbar_nature_of_deal" class="mt-2 size-5" />
+        </div>
       </FilterCollapse>
 
       <FilterCollapse
         clearable={!!($filters.investor_id || $filters.investor_country_id)}
-        on:clear={() => {
+        onclear={() => {
           $filters.investor_id = undefined
           $filters.investor_country_id = undefined
         }}
@@ -211,27 +241,31 @@
         <VirtualListSelect
           items={$simpleInvestors.filter(i => !i.deleted && i.active)}
           label="name"
-          on:input={e => ($filters.investor_id = e?.detail?.id)}
+          oninput={e => ($filters.investor_id = e?.detail?.id)}
           value={$simpleInvestors.find(i => i.id === $filters.investor_id)}
         >
-          <svelte:fragment let:selection slot="selection">
+          {#snippet selectionSlot(selection)}
             {selection.name} (#{selection.id})
-          </svelte:fragment>
-          <svelte:fragment let:item slot="item">
+          {/snippet}
+          {#snippet itemSlot(item)}
             #{item.id}: {item.name}
-          </svelte:fragment>
+          {/snippet}
         </VirtualListSelect>
         {$_("Country of registration")}
         <CountrySelect
-          countries={$page.data.countries}
+          countries={page.data.countries}
           on:input={e => ($filters.investor_country_id = e.detail?.id)}
-          value={$page.data.countries.find(c => c.id === $filters.investor_country_id)}
+          value={page.data.countries.find(c => c.id === $filters.investor_country_id)}
         />
+
+        <div class="text-right">
+          <ContextHelper identifier="filterbar_investor" class="mt-2 size-5" />
+        </div>
       </FilterCollapse>
 
       <FilterCollapse
         clearable={!!($filters.initiation_year_min || $filters.initiation_year_max)}
-        on:clear={() =>
+        onclear={() =>
           ($filters.initiation_year_min = $filters.initiation_year_max = undefined)}
         title={$_("Year of initiation")}
       >
@@ -266,11 +300,15 @@
 
           {$_("Include unknown years")}
         </label>
+
+        <div class="text-right">
+          <ContextHelper identifier="filterbar_initiation_year" class="mt-2 size-5" />
+        </div>
       </FilterCollapse>
 
       <FilterCollapse
         clearable={$filters.implementation_status.length > 0}
-        on:clear={() => ($filters.implementation_status = [])}
+        onclear={() => ($filters.implementation_status = [])}
         title={$_("Implementation status")}
       >
         <label class="block">
@@ -282,7 +320,7 @@
           />
           {$_("No information")}
         </label>
-        {#each $fieldChoices.deal.implementation_status as { value, label }}
+        {#each $dealChoices.implementation_status as { value, label }}
           <label class="block">
             <input
               bind:group={$filters.implementation_status}
@@ -293,11 +331,18 @@
             {label}
           </label>
         {/each}
+
+        <div class="text-right">
+          <ContextHelper
+            identifier="filterbar_implementation_status"
+            class="mt-2 size-5"
+          />
+        </div>
       </FilterCollapse>
 
       <FilterCollapse
         clearable={$filters.intention_of_investment.length > 0}
-        on:clear={() => ($filters.intention_of_investment = [])}
+        onclear={() => ($filters.intention_of_investment = [])}
         title={$_("Intention of investment")}
       >
         <label class="mb-2 block">
@@ -310,13 +355,13 @@
           {$_("No information")}
         </label>
         {#each Object.keys(IntentionOfInvestmentGroup) as group}
-          {@const groupValues = $fieldChoices.deal.intention_of_investment.filter(
+          {@const groupValues = $dealChoices.intention_of_investment.filter(
             entry => entry.group === group,
           )}
 
           <div class="mb-2">
             <strong>
-              {createLabels($fieldChoices.deal.intention_of_investment_group)[group]}
+              {createLabels($dealChoices.intention_of_investment_group)[group]}
             </strong>
 
             {#each groupValues as { value, label }}
@@ -332,11 +377,18 @@
             {/each}
           </div>
         {/each}
+
+        <div class="text-right">
+          <ContextHelper
+            identifier="filterbar_intention_of_investment"
+            class="mt-2 size-5"
+          />
+        </div>
       </FilterCollapse>
 
       <FilterCollapse
         clearable={$filters.produce ? $filters.produce.length > 0 : false}
-        on:clear={() => ($filters.produce = [])}
+        onclear={() => ($filters.produce = [])}
         title={$_("Produce")}
       >
         <Select
@@ -346,11 +398,15 @@
           multiple
           showChevron
         />
+
+        <div class="text-right">
+          <ContextHelper identifier="filterbar_produce" class="mt-2 size-5" />
+        </div>
       </FilterCollapse>
 
       <FilterCollapse
         clearable={$filters.transnational !== null}
-        on:clear={() => ($filters.transnational = null)}
+        onclear={() => ($filters.transnational = null)}
         title={$_("Scope")}
       >
         <label class="block">
@@ -373,11 +429,15 @@
           />
           {$_("Domestic")}
         </label>
+
+        <div class="text-right">
+          <ContextHelper identifier="filterbar_scope" class="mt-2 size-5" />
+        </div>
       </FilterCollapse>
 
       <FilterCollapse
         clearable={$filters.forest_concession !== null}
-        on:clear={() => ($filters.forest_concession = null)}
+        onclear={() => ($filters.forest_concession = null)}
         title={$_("Forest concession")}
       >
         <label class="block">
@@ -410,17 +470,21 @@
           />
           {$_("Only")}
         </label>
+
+        <div class="text-right">
+          <ContextHelper identifier="filterbar_forest_concession" class="mt-2 size-5" />
+        </div>
       </FilterCollapse>
     </div>
     <div class="mt-auto w-full self-end" dir="ltr">
-      <slot />
+      {@render children?.()}
       <FilterCollapse title={$_("Download")}>
         <ul>
           <li>
             <a
               data-sveltekit-reload
               href={dataDownloadURL + "xlsx"}
-              on:click={() => trackDownload("xlsx")}
+              onclick={() => trackDownload("xlsx")}
             >
               <DownloadIcon />
               {$_("All attributes")} (xlsx)
@@ -430,7 +494,7 @@
             <a
               data-sveltekit-reload
               href={dataDownloadURL + "csv"}
-              on:click={() => trackDownload("csv")}
+              onclick={() => trackDownload("csv")}
             >
               <DownloadIcon />
               {$_("All attributes")} (csv)
@@ -442,7 +506,7 @@
               href={`/api/gis_export/locations/?${$filters.toRESTFilterArray()}&subset=${
                 $publicOnly ? "PUBLIC" : "ACTIVE"
               }&format=json`}
-              on:click={() => trackDownload("locations")}
+              onclick={() => trackDownload("locations")}
             >
               <DownloadIcon />
               {$_("Locations (as geojson)")}
@@ -454,7 +518,7 @@
               href={`/api/gis_export/areas/?${$filters.toRESTFilterArray()}&subset=${
                 $publicOnly ? "PUBLIC" : "ACTIVE"
               }&format=json`}
-              on:click={() => trackDownload("areas")}
+              onclick={() => trackDownload("areas")}
             >
               <DownloadIcon />
               {$_("Areas (as geojson)")}

@@ -5,7 +5,11 @@
   import PageTitle from "$components/PageTitle.svelte"
   import Streamfield from "$components/Streamfield.svelte"
 
-  export let page: WagtailPage
+  interface Props {
+    page: WagtailPage
+  }
+
+  let { page }: Props = $props()
 </script>
 
 <div class="flex min-h-full flex-col">
@@ -13,6 +17,6 @@
     <PageTitle>{page.title}</PageTitle>
     <Streamfield content={page.body} />
   </div>
-  <div class="flex-grow" />
+  <div class="flex-grow"></div>
   <NewFooter />
 </div>

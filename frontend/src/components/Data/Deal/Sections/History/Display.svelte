@@ -3,7 +3,11 @@
 
   import SectionHistory from "$components/Data/SectionHistory.svelte"
 
-  export let deal: DealHull
+  interface Props {
+    deal: DealHull
+  }
+
+  let { deal }: Props = $props()
 </script>
 
 <SectionHistory obj={deal} />

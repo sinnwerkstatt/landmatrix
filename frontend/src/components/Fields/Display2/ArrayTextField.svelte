@@ -1,5 +1,9 @@
 <script lang="ts">
-  export let value: string[]
+  interface Props {
+    value: string[]
+  }
+
+  let { value }: Props = $props()
 </script>
 
 <div class="flex flex-wrap gap-2">

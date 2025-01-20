@@ -9,19 +9,24 @@
 
   import Modal from "$components/Modal.svelte"
 
-  export let object: DealHull | InvestorHull
-  export let open = false
+  interface Props {
+    object: DealHull | InvestorHull
+    open: boolean
+  }
 
-  let comment = ""
+  let { object, open = $bindable() }: Props = $props()
+
+  let comment = $state("")
 
   const isDeal = (obj: DealHull | InvestorHull): obj is DealHull =>
     "fully_updated_at" in obj
 
-  $: objectType = isDeal(object) ? "deal" : "investor"
+  let objectType = $derived(isDeal(object) ? "deal" : "investor")
 
-  $: i18nValues = { values: { object: objectType } }
+  let i18nValues = $derived({ values: { object: objectType } })
 
-  async function deleteObject() {
+  async function deleteObject(e: SubmitEvent) {
+    e.preventDefault()
     const objType = isDeal(object) ? "dealversions" : "investorversions"
     const ret = await fetch(`/api/${objType}/${object.selected_version.id}/`, {
       method: "DELETE",
@@ -46,7 +51,7 @@
 <Modal bind:open dismissible>
   <h2 class="heading4">{$_("Remove this {object} version?", i18nValues)}</h2>
   <hr />
-  <form on:submit={deleteObject}>
+  <form onsubmit={deleteObject}>
     <p class="mb-12 mt-6 text-lg">
       {$_(
         "Completely removes this version of the {object}. This action cannot be undone.",
@@ -59,16 +64,16 @@
           <span class="font-semibold">
             {$_("Please provide a comment explaining your request")}
           </span>
-          <textarea bind:value={comment} class="inpt mt-1" required />
+          <textarea bind:value={comment} class="inpt mt-1" required></textarea>
         </label>
       </div>
     {/if}
     <div class="flex justify-end gap-4">
-      <!-- svelte-ignore a11y-autofocus -->
+      <!-- svelte-ignore a11y_autofocus -->
       <button
         autofocus
         class="btn-outline"
-        on:click={() => (open = false)}
+        onclick={() => (open = false)}
         type="button"
       >
         {$_("Cancel")}

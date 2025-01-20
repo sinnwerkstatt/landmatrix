@@ -1,8 +1,13 @@
 <script lang="ts">
-  export let style: "base" | "heading" | "nested" = "base"
+  interface Props {
+    style?: "base" | "heading" | "nested"
+    children?: import("svelte").Snippet
+  }
+
+  let { style = "base", children }: Props = $props()
 </script>
 
-<div class={style}><slot /></div>
+<div class={style}>{@render children?.()}</div>
 
 <style>
   div {

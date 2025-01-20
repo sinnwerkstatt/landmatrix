@@ -3,16 +3,29 @@
   import customParseFormat from "dayjs/plugin/customParseFormat"
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
+  import type { FormEventHandler } from "svelte/elements"
 
   dayjs.extend(customParseFormat)
 
-  export let name: string
-  export let value: string | null
-  export let required = false
+  interface Props {
+    name: string
+    value: string | null
+    required?: boolean
+    class?: string
+    onchange?: () => void
+  }
 
-  let inputField: HTMLInputElement
+  let {
+    name,
+    value = $bindable(),
+    required = false,
+    class: className = "",
+    onchange,
+  }: Props = $props()
 
-  let isValid: boolean
+  let inputField: HTMLInputElement | undefined = $state()
+
+  let isValid: boolean = $state(true)
   const checkValidity = () => {
     isValid =
       !value ||
@@ -30,16 +43,13 @@
         true,
       ).isValid()
 
-    if (isValid) {
-      inputField.setCustomValidity("")
-    } else {
-      inputField.setCustomValidity(
-        $_("Invalid format. Use YYYY, YYYY-MM or YYYY-MM-DD"),
-      )
-    }
+    inputField?.setCustomValidity(
+      isValid ? "" : $_("Invalid format. Use YYYY, YYYY-MM or YYYY-MM-DD"),
+    )
   }
 
-  const onInput = (event: Event) => {
+  const oninput: FormEventHandler<HTMLInputElement> = event => {
+    event.preventDefault()
     const targetValue = (event.target as HTMLInputElement).value
 
     value =
@@ -52,6 +62,7 @@
             .trim()
 
     checkValidity()
+    onchange?.()
   }
 
   onMount(checkValidity)
@@ -60,10 +71,10 @@
 <div class="relative">
   <input
     bind:this={inputField}
-    class="inpt w-36 {$$props.class ?? ''}"
+    class="inpt w-36 {className}"
     maxlength="10"
     {name}
-    on:input|preventDefault={onInput}
+    {oninput}
     placeholder={$_("YYYY-MM-DD")}
     {required}
     type="text"

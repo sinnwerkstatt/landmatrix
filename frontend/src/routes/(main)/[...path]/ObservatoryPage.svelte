@@ -1,12 +1,11 @@
 <script lang="ts">
-  import type { ChartData } from "chart.js"
   import { _ } from "svelte-i18n"
   import { slide } from "svelte/transition"
 
   import { afterNavigate } from "$app/navigation"
 
+  import { dealChoices } from "$lib/fieldChoices"
   import { filters, FilterValues } from "$lib/filters"
-  import { fieldChoices } from "$lib/stores"
   import { NegotiationStatusGroup, type NegotiationStatus } from "$lib/types/data"
   import type { BlogPage, ObservatoryPage } from "$lib/types/wagtail"
 
@@ -15,122 +14,125 @@
   import MapDataCharts from "$components/MapDataCharts.svelte"
   import NewFooter from "$components/NewFooter.svelte"
   import PageTitle from "$components/PageTitle.svelte"
-  import StatusPieChart from "$components/StatusPieChart.svelte"
+  import StatusBarChart, { type DataType } from "$components/StatusBarChart.svelte"
   import Streamfield from "$components/Streamfield.svelte"
   import ArticleList from "$components/Wagtail/ArticleList.svelte"
   import Twitter from "$components/Wagtail/Twitter.svelte"
 
-  export let page: ObservatoryPage
+  interface Props {
+    page: ObservatoryPage
+  }
 
-  let readMore = false
-  let totalSize = ""
-  let totalCount = ""
-  let chartDatSize: ChartData<"pie">
-  let chartDatCount: ChartData<"pie">
-  let filteredCountryProfiles: BlogPage[]
-  let filteredNewsPubs: BlogPage[]
+  let { page }: Props = $props()
 
-  $: regionID = page.region?.id
-  $: countryID = page.country?.id
+  let readMore = $state(false)
 
-  async function getAggregations() {
+  let filteredCountryProfiles: BlogPage[] = $derived(
+    (page.related_blogpages ?? []).filter(p =>
+      p.categories.find(c => c.slug && c.slug === "country-profile"),
+    ),
+  )
+  let filteredNewsPubs: BlogPage[] = $derived(
+    (page.related_blogpages ?? []).filter(p =>
+      p.categories.find(
+        c => c.slug && (c.slug === "news" || c.slug === "publications"),
+      ),
+    ),
+  )
+
+  let regionID = $derived(page.region?.id)
+  let countryID = $derived(page.country?.id)
+
+  const colorsMap: { [key in NegotiationStatusGroup]: string } = {
+    INTENDED: "hsl(93, 55%, 75%)", //"text-green-300",
+    CONCLUDED: "hsl(94, 56%, 65%)", //"text-green-500",
+    FAILED: "hsl(0, 73%, 66%)", //"text-red-500",
+    CONTRACT_EXPIRED: "hsl(0, 0%, 60%)", //"text-gray-300",
+  }
+
+  let currentNegStatus: { value: NegotiationStatus; count: number; size: number }[] =
+    $state([])
+  const _fetchCurrentNegStatus = async (rgnID?: number, cntryID?: number) => {
     let filters = new FilterValues().default()
     filters.negotiation_status = []
-    filters.region_id = regionID
-    filters.country_id = countryID
+    filters.region_id = rgnID
+    filters.country_id = cntryID
 
     const ret = await fetch(
       `/api/charts/deal_aggregations/?${filters.toRESTFilterArray()}`,
     )
     const retJson = await ret.json()
-    const curNegStat: { value: NegotiationStatus; count: number; size: number }[] =
-      retJson.current_negotiation_status
+    currentNegStatus = retJson.current_negotiation_status
+  }
+  $effect(() => {
+    _fetchCurrentNegStatus(regionID, countryID)
+  })
 
-    totalCount = curNegStat
-      .map(ns => ns.count)
-      .reduce((a, b) => +a + +b, 0)
-      .toLocaleString("fr")
-      .replace(",", ".")
+  let totalSize = $derived(
+    currentNegStatus.map(ns => ns.size).reduce((a, b) => +a + +b, 0),
+  )
+  let totalCount = $derived(
+    currentNegStatus.map(ns => ns.count).reduce((a, b) => +a + +b, 0),
+  )
 
-    totalSize = curNegStat
-      .map(ns => ns.size)
-      .reduce((a, b) => +a + +b, 0)
-      .toLocaleString("fr")
-      .replace(",", ".")
-
-    const colorsMap: { [key in NegotiationStatusGroup]: string } = {
-      INTENDED: "rgba(252,148,31,0.4)",
-      CONCLUDED: "rgba(252,148,31,1)",
-      FAILED: "rgba(125,74,15,1)",
-      CONTRACT_EXPIRED: "rgb(44,28,5)",
-    }
-
-    let negStatBuckets = $fieldChoices.deal.negotiation_status_group.map(x => ({
+  let negStatBuckets = $derived.by(() => {
+    let _negStatBuckets = $dealChoices.negotiation_status_group.map(x => ({
       // TODO: Try to type fieldChoices (or create a generic interface) to avoid casting explicitly
-      color: colorsMap[x.value as NegotiationStatusGroup],
-      label: x.label,
+      fillColor: colorsMap[x.value as NegotiationStatusGroup],
+      name: x.label,
       count: 0,
       size: 0,
     }))
-
-    for (let agg of curNegStat) {
+    for (let agg of currentNegStatus) {
       switch (agg.value) {
         case "EXPRESSION_OF_INTEREST":
         case "UNDER_NEGOTIATION":
         case "MEMORANDUM_OF_UNDERSTANDING":
-          negStatBuckets[0].count += agg.count
-          negStatBuckets[0].size += +agg.size
+          _negStatBuckets[0].count += agg.count
+          _negStatBuckets[0].size += +agg.size
           break
         case "ORAL_AGREEMENT":
         case "CONTRACT_SIGNED":
         case "CHANGE_OF_OWNERSHIP":
-          negStatBuckets[1].count += agg.count
-          negStatBuckets[1].size += +agg.size
+          _negStatBuckets[1].count += agg.count
+          _negStatBuckets[1].size += +agg.size
           break
         case "NEGOTIATIONS_FAILED":
         case "CONTRACT_CANCELED":
-          negStatBuckets[2].count += agg.count
-          negStatBuckets[2].size += +agg.size
+          _negStatBuckets[2].count += agg.count
+          _negStatBuckets[2].size += +agg.size
           break
         case "CONTRACT_EXPIRED":
-          negStatBuckets[3].count += agg.count
-          negStatBuckets[3].size += +agg.size
+          _negStatBuckets[3].count += agg.count
+          _negStatBuckets[3].size += +agg.size
           break
         default:
           console.warn({ agg })
       }
     }
-    chartDatSize = {
-      labels: negStatBuckets.map(n => n.label),
-      datasets: [
-        {
-          data: negStatBuckets.map(n => n["size"]),
-          backgroundColor: negStatBuckets.map(n => n.color),
-        },
-      ],
-    }
-    chartDatCount = {
-      labels: negStatBuckets.map(n => n.label),
-      datasets: [
-        {
-          data: negStatBuckets.map(n => n["count"]),
-          backgroundColor: negStatBuckets.map(n => n.color),
-        },
-      ],
-    }
-  }
+    return _negStatBuckets
+  })
+  const chartDatSize: DataType[] = $derived(
+    negStatBuckets.map(n => ({
+      name: n.name,
+      value: ((n.size / totalSize) * 100).toFixed(),
+      label: `<strong>${n.name}</strong>: ${n.size.toLocaleString("fr").replace(",", ".")} ${$_("ha")}`,
+      fillColor: n.fillColor,
+    })),
+  )
+  const chartDatCount: DataType[] = $derived(
+    negStatBuckets.map(n => ({
+      name: n.name,
+      value: ((n.count / totalCount) * 100).toFixed(),
+      label: `<strong>${n.name}</strong>: ${n.count.toFixed()} ${$_("deals")}`,
+      fillColor: n.fillColor,
+    })),
+  )
 
   // QUESTION: Wouldn't it make sense to keep navigation stuff in +page.svelte ?
   afterNavigate(() => {
     readMore = false
-    getAggregations()
   })
-  $: filteredCountryProfiles = (page.related_blogpages ?? []).filter(p =>
-    p.categories.find(c => c.slug && c.slug === "country-profile"),
-  )
-  $: filteredNewsPubs = (page.related_blogpages ?? []).filter(p =>
-    p.categories.find(c => c.slug && (c.slug === "news" || c.slug === "publications")),
-  )
 
   const setGlobalLocationFilter = () => {
     if (page.region) {
@@ -146,8 +148,9 @@
 <PageTitle>{page.title}</PageTitle>
 
 <div class="mx-auto w-[clamp(20rem,75%,56rem)]">
-  <!--  <StaticMap staticmap={page.staticmap} {countryID} {regionID} />-->
-  <QuasiStaticMap {countryID} markers={page.markers} {regionID} />
+  {#key page.id}
+    <QuasiStaticMap {countryID} markers={page.markers} {regionID} />
+  {/key}
 
   {#if page.introduction_text}
     <div class="pb-3 pt-6">
@@ -156,7 +159,7 @@
       </div>
       {#if !readMore}
         <div class="mt-6">
-          <button on:click|preventDefault={() => (readMore = true)} class="text-orange">
+          <button onclick={() => (readMore = true)} class="text-orange" type="button">
             {$_("Read more")}
           </button>
         </div>
@@ -170,24 +173,32 @@
 </div>
 
 <div class="mb-8 mt-2 bg-gray-50 py-6 dark:bg-gray-700">
-  <div class="mx-auto min-h-[300px] w-[clamp(20rem,75%,56rem)]">
-    {#if totalSize === ""}
+  <div class="mx-auto min-h-[240px] w-[clamp(20rem,75%,56rem)]">
+    {#if totalSize === -1}
       <LoadingPulse class="h-[300px]" />
     {:else}
       <h3 class="pb-2">{$_("We currently have information about:")}</h3>
-      <div class="grid gap-8 font-bold last:mb-8 sm:grid-cols-2">
+      <div class="grid gap-8 font-bold last:mb-8 lg:grid-cols-2 lg:last:mb-4">
         <div class="text-center">
           <div class="text-orange">{$_("Size")}</div>
-          <div class="mb-2">{totalSize} ha</div>
+          <div class="mb-2">{totalSize.toLocaleString("fr").replace(",", ".")} ha</div>
           <div class="mx-auto max-w-[80%]">
-            <StatusPieChart data={chartDatSize} unit="ha" />
+            {#key chartDatSize}
+              <div class="p-4">
+                <StatusBarChart data={chartDatSize} width={400} />
+              </div>
+            {/key}
           </div>
         </div>
         <div class="text-center">
           <div class="text-orange">{$_("Number of deals")}</div>
-          <div class="mb-2">{totalCount}</div>
+          <div class="mb-2">{totalCount.toLocaleString("fr").replace(",", ".")}</div>
           <div class="mx-auto max-w-[80%]">
-            <StatusPieChart data={chartDatCount} />
+            {#key chartDatCount}
+              <div class="p-4">
+                <StatusBarChart data={chartDatCount} width={400} />
+              </div>
+            {/key}
           </div>
         </div>
       </div>
@@ -196,7 +207,7 @@
 </div>
 
 <div class="mx-auto w-[clamp(20rem,75%,56rem)]">
-  <MapDataCharts on:click={setGlobalLocationFilter} />
+  <MapDataCharts onclick={setGlobalLocationFilter} />
 </div>
 
 <div class="container mx-auto my-8 w-[clamp(20rem,75%,56rem)]">

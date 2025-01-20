@@ -3,7 +3,11 @@
 
   import ArticleList from "$components/Wagtail/ArticleList.svelte"
 
-  export let value: { articles: BlogPage[] }
+  interface Props {
+    value: { articles: BlogPage[] }
+  }
+
+  let { value }: Props = $props()
 </script>
 
 <div data-block="resources_teasers">

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import type { ValueLabelEntry } from "$lib/stores"
+  import type { ValueLabelEntry } from "$lib/fieldChoices"
   import type { JSONExportsFieldType } from "$lib/types/data"
 
   import { dateCurrentFormat } from "$components/Fields/Display2/jsonHelpers"
@@ -9,9 +9,12 @@
   import PlaneIcon from "$components/icons/PlaneIcon.svelte"
   import WeightIcon from "$components/icons/WeightIcon.svelte"
 
-  export let value: JSONExportsFieldType[] = []
+  interface Props {
+    value?: JSONExportsFieldType[]
+    extras?: { choices: ValueLabelEntry[] }
+  }
 
-  export let extras: { choices: ValueLabelEntry[] } = { choices: [] }
+  let { value = [], extras = { choices: [] } }: Props = $props()
 
   const getLabel = (value: string) =>
     extras.choices.find(c => value === c.value)?.label ?? value

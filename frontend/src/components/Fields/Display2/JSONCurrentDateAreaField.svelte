@@ -5,7 +5,11 @@
 
   import { dateCurrentFormat } from "$components/Fields/Display2/jsonHelpers"
 
-  export let value: JSONCurrentDateAreaFieldType[] = []
+  interface Props {
+    value?: JSONCurrentDateAreaFieldType[]
+  }
+
+  let { value = [] }: Props = $props()
 </script>
 
 <ul>

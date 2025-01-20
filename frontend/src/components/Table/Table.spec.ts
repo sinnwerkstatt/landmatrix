@@ -15,7 +15,7 @@ test("Column labels are shown", () => {
 
   render(Table, { columns })
 
-  columns.forEach((col, index) => {
+  columns.forEach((_, index) => {
     const el = screen.getByText(columns[index].label)
     expect(el).toBeInTheDocument()
   })

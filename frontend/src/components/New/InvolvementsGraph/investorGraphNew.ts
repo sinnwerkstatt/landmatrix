@@ -14,9 +14,9 @@ import type { Content } from "tippy.js"
 import tippy from "tippy.js"
 
 import { browser } from "$app/environment"
-import { page } from "$app/stores"
+import { page } from "$app/state"
 
-import { createLabels, fieldChoices } from "$lib/stores"
+import { createLabels, investorChoices } from "$lib/fieldChoices"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const tippyFactory = (ref: any, content: Content) => {
@@ -118,7 +118,7 @@ const makeContent = (ele: NodeSingular) => {
     })</div>`
 
     if ("active_version__country_id" in ele.data()) {
-      const cntr = get(page).data.countries.find(
+      const cntr = page.data.countries.find(
         c => c.id === ele.data().active_version__country_id,
       )
       if (cntr) content += `${cntr.name}`
@@ -126,9 +126,7 @@ const makeContent = (ele: NodeSingular) => {
 
     if ("active_version__classification" in ele.data()) {
       // Todo: make reflexive, e.g., make tooltip a svelte component
-      const classificationLabels = createLabels(
-        get(fieldChoices).investor.classification,
-      )
+      const classificationLabels = createLabels(get(investorChoices).classification)
       content +=
         ", " + classificationLabels[ele.data().active_version__classification] ||
         get(_)("Unknown")

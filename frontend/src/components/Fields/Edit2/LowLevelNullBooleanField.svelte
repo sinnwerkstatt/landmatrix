@@ -1,11 +1,23 @@
 <script lang="ts">
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
+  import type { ChangeEventHandler } from "svelte/elements"
 
-  export let value: boolean | null | undefined = undefined
-  export let nullable = false
-  export let fieldname: string | undefined = undefined
-  export let wrapperClass = "flex items-center gap-6"
+  interface Props {
+    value?: boolean | null | undefined
+    nullable?: boolean
+    fieldname?: string | undefined
+    wrapperClass?: string
+    onchange?: ChangeEventHandler<HTMLInputElement>
+  }
+
+  let {
+    value = $bindable(undefined),
+    nullable = false,
+    fieldname = undefined,
+    wrapperClass = "flex items-center gap-6",
+    onchange,
+  }: Props = $props()
 
   onMount(() => {
     if (value === undefined) value = nullable ? null : false
@@ -23,7 +35,7 @@
         bind:group={value}
         value={true}
         name={fieldname}
-        on:change
+        {onchange}
         class={inptClass}
       />
       {$_("Yes")}
@@ -34,7 +46,7 @@
         bind:group={value}
         value={false}
         name={fieldname}
-        on:change
+        {onchange}
         class={inptClass}
       />
       {$_("No")}
@@ -45,12 +57,18 @@
         bind:group={value}
         value={null}
         name={fieldname}
-        on:change
+        {onchange}
         class={inptClass}
       />
       {$_("Unknown")}
     </label>
   </div>
 {:else}
-  <input bind:checked={value} type="checkbox" name={fieldname} class={inptClass} />
+  <input
+    bind:checked={value}
+    type="checkbox"
+    name={fieldname}
+    class={inptClass}
+    {onchange}
+  />
 {/if}

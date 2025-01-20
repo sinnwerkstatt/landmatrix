@@ -1,5 +1,5 @@
 import { error } from "@sveltejs/kit"
-import type { ComponentType } from "svelte"
+import type { Component } from "svelte"
 
 import ConcludedDealsOverTime from "$components/Data/Charts/CountryProfile/ConcludedDealsOverTime.svelte"
 import DynamicsOfDeal from "$components/Data/Charts/CountryProfile/DynamicsOfDeal.svelte"
@@ -16,7 +16,7 @@ const stripTrailingSlash = (path: string): string =>
 
 interface CountryProfile {
   key: string
-  component: ComponentType
+  component: Component
 }
 
 const countryProfiles = [

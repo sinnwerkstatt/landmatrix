@@ -1,47 +1,47 @@
 <script lang="ts">
-  import { Loader } from "@googlemaps/js-api-loader?client"
+  import type { Loader as LoaderType } from "@googlemaps/js-api-loader"
   import { env } from "$env/dynamic/public"
   import type { Point } from "geojson"
   import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
-  export let value = ""
-  export let fieldname: string
-
-  export let extras: {
-    countryCode: string
-    onGoogleAutocomplete: (point: Point) => void
-  } = {
-    countryCode: "",
-    onGoogleAutocomplete: () => {},
+  interface Props {
+    value?: string
+    fieldname: string
+    extras?: {
+      countryCode: string
+      onGoogleAutocomplete: (point: Point) => void
+    }
   }
 
-  let autocomplete: google.maps.places.Autocomplete
-  let inputField: HTMLInputElement
+  let { value = $bindable(), fieldname, extras }: Props = $props()
+
+  let autocomplete: google.maps.places.Autocomplete | undefined = $state()
+  let inputField: HTMLInputElement | undefined = $state()
 
   let apiKey = env.PUBLIC_GAPI_KEY
-  let loader: Loader
+  let loader: LoaderType
 
-  const locationAutocomplete = () => {
+  const locationAutocomplete = async () => {
     if (!apiKey) return
-    if (!loader)
-      loader = new Loader({
-        apiKey,
-        libraries: ["places"],
-      })
-    loader.load().then(google => {
-      // noinspection TypeScriptUnresolvedVariable,TypeScriptUnresolvedFunction
-      autocomplete = new google.maps.places.Autocomplete(inputField, {
+
+    const { Loader } = await import("@googlemaps/js-api-loader")
+
+    if (!loader) loader = new Loader({ apiKey, libraries: ["places"] })
+
+    loader.importLibrary("places").then(({ Autocomplete }) => {
+      autocomplete = new Autocomplete(inputField!, {
         fields: ["geometry"],
         strictBounds: true,
-        componentRestrictions: extras.countryCode
+        componentRestrictions: extras?.countryCode
           ? { country: extras.countryCode }
           : undefined,
       })
-      autocomplete?.addListener("place_changed", () => {
-        value = inputField.value
 
-        const geometry = autocomplete.getPlace().geometry
+      autocomplete?.addListener("place_changed", () => {
+        value = inputField!.value
+
+        const geometry = autocomplete!.getPlace().geometry
         if (geometry && geometry.location) {
           const point: Point = {
             type: "Point",
@@ -51,7 +51,7 @@
             ],
           }
 
-          extras.onGoogleAutocomplete(point)
+          extras?.onGoogleAutocomplete?.(point)
         }
       })
     })
@@ -59,9 +59,10 @@
 
   onMount(locationAutocomplete)
 
-  $: autocomplete?.setComponentRestrictions(
-    extras.countryCode ? { country: extras.countryCode } : null,
-  )
+  $effect(() => {
+    const cCode = extras?.countryCode
+    autocomplete?.setComponentRestrictions(cCode ? { country: cCode } : null)
+  })
 </script>
 
 <input

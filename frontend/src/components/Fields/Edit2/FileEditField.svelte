@@ -1,5 +1,6 @@
 <script lang="ts">
   import { env } from "$env/dynamic/public"
+  import type { Snippet } from "svelte"
   import { _ } from "svelte-i18n"
   import type { ChangeEventHandler } from "svelte/elements"
 
@@ -7,16 +8,17 @@
 
   import FilePdfIcon from "$components/icons/FilePdfIcon.svelte"
 
-  export let value: string | null
-  export let fieldname: string
-
-  interface Extras {
-    required?: boolean
+  interface Props {
+    value: string | null
+    fieldname: string
+    extras?: {
+      required?: boolean
+    }
+    children?: Snippet
+    onchange?: () => void
   }
 
-  export let extras: Extras = {
-    required: false,
-  }
+  let { value = $bindable(), fieldname, extras, children, onchange }: Props = $props()
 
   const MAX_FILE_SIZE_IN_MB = 20
 
@@ -38,6 +40,7 @@
   const removeFile = () => {
     if (confirm($_("Do you really want to remove this file?"))) {
       value = ""
+      onchange?.()
     }
   }
 
@@ -80,6 +83,7 @@
       if (ret.ok) {
         const retJson = await ret.json()
         value = retJson.name
+        onchange?.()
         // alert(`File uploaded`)
       } else {
         alert(`Error uploading file: ${file.name}`)
@@ -111,21 +115,21 @@
       <input
         type="file"
         name={fieldname}
-        on:change={uploadFile}
+        onchange={uploadFile}
         accept={ACCEPTED_EXTENSIONS.join(",")}
       />
     </div>
 
-    <button class="btn-outline btn-flat btn-red" on:click|preventDefault={removeFile}>
+    <button class="btn-outline btn-flat btn-red" type="button" onclick={removeFile}>
       {$_("Remove this file")}
     </button>
   </div>
 {:else}
   <input
     type="file"
-    required={extras.required}
+    required={extras?.required ?? false}
     name={fieldname}
-    on:change={uploadFile}
+    onchange={uploadFile}
     accept={ACCEPTED_EXTENSIONS.join(",")}
   />
 {/if}
@@ -138,4 +142,4 @@
   })}
 </small>
 
-<slot />
+{@render children?.()}

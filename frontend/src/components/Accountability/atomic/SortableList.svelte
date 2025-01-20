@@ -1,13 +1,9 @@
 <script lang="ts">
   // A component to create sortable lists of SidebarTab elements based
   // on an array of objects containing at least id, name and position information
-  import { createEventDispatcher } from "svelte"
-
   import SidebarTab from "./SidebarTab.svelte"
 
-  let container: HTMLElement
-
-  const dispatch = createEventDispatcher()
+  let container: HTMLElement = $state()
 
   const placeholder = [
     { id: 2, name: "Element 2" },
@@ -15,9 +11,23 @@
     { id: 1, name: "Element 1" },
   ]
 
-  export let items: { id: number; name: string }[] = placeholder
+  interface Props {
+    items?: { id: number; name: string }[]
+    onReorder?: () => void
+    onEdit?: (id: number) => void
+    onBookmark?: (id: number, action: string) => void
+    onDelete?: (id: number) => void
+  }
 
-  let refs: [HTMLElement] | [] = []
+  let {
+    items = $bindable(placeholder),
+    onReorder,
+    onEdit,
+    onBookmark,
+    onDelete,
+  }: Props = $props()
+
+  let refs: [HTMLElement] | [] = $state([])
 
   let draggedItem: HTMLElement | null = null
 
@@ -30,7 +40,14 @@
     refs[i].style.opacity = "1"
     draggedItem = null
     updatePosition(container)
-    dispatch("reorder")
+    onReorder?.()
+  }
+
+  function preventDefault(handler) {
+    return e => {
+      e.preventDefault()
+      handler(e)
+    }
   }
 
   function handleDragover(e, container: HTMLElement) {
@@ -78,9 +95,7 @@
 
 <ul
   class="flex flex-col gap-2"
-  on:dragover|preventDefault={e => {
-    handleDragover(e, container)
-  }}
+  ondragover={e => preventDefault(handleDragover(e, container))}
   bind:this={container}
 >
   {#each items as { id, name }, index (id)}
@@ -92,10 +107,10 @@
       class="select-none"
       style="opacity: 1;"
       draggable="false"
-      on:dragstart={e => {
+      ondragstart={e => {
         handleDragstart(e, index)
       }}
-      on:dragend={e => {
+      ondragend={e => {
         handleDragend(e, index)
       }}
     >
@@ -105,9 +120,9 @@
         handle={true}
         menu={true}
         {menuPosition}
-        on:edit
-        on:bookmark
-        on:delete
+        {onEdit}
+        {onBookmark}
+        {onDelete}
       />
     </li>
   {/each}

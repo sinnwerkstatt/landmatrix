@@ -1,14 +1,25 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  export let value: string
-
-  export let extras = {
-    url: false,
-    ocid: false,
-    email: false,
-    investorNameUnknown: false,
+  interface Props {
+    value: string
+    extras?: {
+      url?: boolean
+      ocid?: boolean
+      email?: boolean
+      investorNameUnknown?: boolean
+    }
   }
+
+  let {
+    value,
+    extras = {
+      url: false,
+      ocid: false,
+      email: false,
+      investorNameUnknown: false,
+    },
+  }: Props = $props()
 
   const safeGetHostname = (value: string): string => {
     try {

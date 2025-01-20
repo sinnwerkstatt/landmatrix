@@ -3,11 +3,21 @@
 
   import { labelClass } from "$components/Fields/Edit2/JSONFieldComponents/consts"
 
-  export let checked: boolean
-  export let name: string
+  interface Props {
+    checked: boolean
+    name: string
+    required?: boolean
+    disabled?: boolean
+    onchange?: () => void
+  }
 
-  export let required = false
-  export let disabled = false
+  let {
+    checked = $bindable(),
+    name,
+    required = false,
+    disabled = false,
+    onchange,
+  }: Props = $props()
 </script>
 
 <label class={labelClass}>
@@ -19,6 +29,7 @@
     {name}
     {required}
     {disabled}
+    {onchange}
     type="checkbox"
   />
 </label>

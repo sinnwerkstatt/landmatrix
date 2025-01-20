@@ -12,31 +12,43 @@
 
   import { cardClass, labelClass } from "./JSONFieldComponents/consts"
 
-  export let value: JSONLeaseFieldType[]
-  export let fieldname: string
+  interface Props {
+    value: JSONLeaseFieldType[]
+    fieldname: string
+  }
 
-  let valueCopy = structuredClone<JSONLeaseFieldType[]>(
-    value.length
-      ? value
-      : [{ current: false, date: null, area: null, farmers: null, households: null }],
+  let { value = $bindable(), fieldname }: Props = $props()
+
+  const emptyEntry: JSONLeaseFieldType = {
+    current: false,
+    date: null,
+    area: null,
+    farmers: null,
+    households: null,
+  }
+  let valueCopy: JSONLeaseFieldType[] = $state(
+    value.length ? $state.snapshot(value) : [structuredClone(emptyEntry)],
   )
-  let current = valueCopy.map(val => val.current).indexOf(true) ?? -1
+  let current = $state(value.length ? value.map(val => val.current).indexOf(true) : -1)
 
-  $: value = valueCopy.filter(val => !!(val.area || val.farmers || val.households))
+  const updateVal = () => {
+    value = valueCopy.filter(val => !!(val.area || val.farmers || val.households))
+  }
 
-  const addEntry = () =>
-    (valueCopy = [
-      ...valueCopy,
-      { current: false, date: null, area: null, farmers: null, households: null },
-    ])
+  const addEntry = () => {
+    valueCopy = [...valueCopy, structuredClone(emptyEntry)]
+    updateVal()
+  }
 
   const removeEntry = (index: number) => {
     if (valueCopy[index].current) current = -1
     valueCopy = valueCopy.filter((_val, i) => i !== index)
+    updateVal()
   }
 
   const updateCurrent = (index: number) => {
     valueCopy = valueCopy.map((val, i) => ({ ...val, current: i === index }))
+    updateVal()
   }
 </script>
 
@@ -51,6 +63,7 @@
           name="{fieldname}_{i}_area"
           class="w-36"
           required={!!(val.date && !(val.farmers || val.households))}
+          onchange={updateVal}
         />
       </label>
 
@@ -63,6 +76,7 @@
           class="w-36"
           decimals={0}
           required={!!(val.date && !(val.households || val.area))}
+          onchange={updateVal}
         />
       </label>
       <label class={labelClass} for={undefined}>
@@ -74,12 +88,17 @@
           class="w-36"
           decimals={0}
           required={!!(val.date && !(val.area || val.farmers))}
+          onchange={updateVal}
         />
       </label>
 
       <label class={labelClass} for={undefined}>
         {$_("Date")}
-        <LowLevelDateYearField bind:value={val.date} name="{fieldname}_{i}_date" />
+        <LowLevelDateYearField
+          bind:value={val.date}
+          name="{fieldname}_{i}_date"
+          onchange={updateVal}
+        />
       </label>
 
       <label class={labelClass}>
@@ -91,13 +110,13 @@
           required={valueCopy.length > 0}
           class="h-5 w-5 accent-violet-400 ring-red-600"
           disabled={!val.area && !val.farmers && !val.households}
-          on:change={() => updateCurrent(i)}
+          onchange={() => updateCurrent(i)}
           class:ring-2={value.length > 0 && current < 0}
           value={i}
         />
       </label>
-      <RemoveButton disabled={valueCopy.length <= 1} on:click={() => removeEntry(i)} />
+      <RemoveButton disabled={valueCopy.length <= 1} onclick={() => removeEntry(i)} />
     </div>
   {/each}
-  <AddButton on:click={addEntry} />
+  <AddButton onclick={addEntry} />
 </div>

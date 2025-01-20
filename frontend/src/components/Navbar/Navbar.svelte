@@ -11,9 +11,9 @@
   import NavbarLinks from "$components/Navbar/NavbarLinks.svelte"
   import NavbarSearch from "$components/Navbar/NavbarSearch.svelte"
 
-  let showMenu = false
+  let showMenu = $state(false)
 
-  let showSearch = false
+  let showSearch = $state(false)
 </script>
 
 <!--https://blog.logrocket.com/building-responsive-navbar-tailwind-css/-->
@@ -21,7 +21,7 @@
   class="sticky top-0 z-50 min-h-16 bg-white shadow-lg dark:border-b dark:border-orange dark:bg-gray-900 dark:text-white"
 >
   <div class="float-left ml-3 flex h-16 items-center">
-    <a class="order-first self-center" href="/" on:click={() => (showMenu = false)}>
+    <a class="order-first self-center" href="/" onclick={() => (showMenu = false)}>
       <img
         alt="Land Matrix"
         class="hidden h-[36px] md:block dark:md:hidden"
@@ -48,7 +48,11 @@
   <ul class="float-right mr-3 flex h-16 items-center justify-end gap-1">
     <li>
       <div class="md:hidden">
-        <button class="flex items-center" on:click={() => (showSearch = true)}>
+        <button
+          class="flex items-center"
+          type="button"
+          onclick={() => (showSearch = true)}
+        >
           <SearchIcon class="h-6 w-6" />
         </button>
         <Modal
@@ -67,7 +71,7 @@
       <LanguageSwitch />
     </li>
     <li class="flex items-center">
-      <button on:click={toggleDarkMode} aria-label="Dark mode toggle">
+      <button type="button" onclick={toggleDarkMode} aria-label="Dark mode toggle">
         <SunSolidIcon class="h-6 w-6 dark:hidden" />
         <MoonSolidIcon class="hidden h-6 w-6 dark:block" />
       </button>
@@ -76,7 +80,14 @@
       <LoginSection />
     </li>
     <li class="lg:hidden">
-      <button class="h-full" on:click|stopPropagation={() => (showMenu = !showMenu)}>
+      <button
+        class="h-full"
+        type="button"
+        onclick={e => {
+          e.stopPropagation()
+          showMenu = !showMenu
+        }}
+      >
         <BurgerMenuIcon class="mx-1 inline h-7 w-7 text-black dark:text-gray-50" />
       </button>
     </li>
@@ -88,6 +99,6 @@
      dark:border-b-2 dark:border-orange dark:bg-gray-900 dark:lg:border-b-0
      {showMenu ? 'block lg:inline-block' : 'hidden lg:inline-block'}"
   >
-    <NavbarLinks bind:showMenu />
+    <NavbarLinks onCloseMenu={() => (showMenu = false)} />
   </span>
 </nav>

@@ -141,7 +141,7 @@ class DealHull(BaseHull):
                 {
                     "country_id": x["country_id"],
                     "count": x["count"],
-                    "coordinates": [x["country__point_lat"], x["country__point_lon"]],
+                    "coordinates": [x["country__point_lon"], x["country__point_lat"]],
                 }
                 for x in deals.filter(country__region_id=region_id)
                 .values("country_id", "country__point_lat", "country__point_lon")
@@ -165,17 +165,17 @@ class DealHull(BaseHull):
                         output_field=models.FloatField(),
                     ),
                 )
-                .values_list("point_lat", "point_lng")
+                .values_list("point_lng", "point_lat")
             ]
             return xx
 
         region_coordinates = {
-            2: [6.06433, 17.082249],
-            9: [-22.7359, 140.0188],
-            21: [54.526, -105.2551],
-            142: [34.0479, 100.6197],
-            150: [52.0055, 37.9587],
-            419: [-4.442, -61.3269],
+            2: [17.082249, 6.06433],
+            9: [140.0188, -22.7359],
+            21: [-105.2551, 54.526],
+            142: [100.6197, 34.0479],
+            150: [37.9587, 52.0055],
+            419: [-61.3269, -4.442],
         }
         return [
             {

@@ -2,16 +2,16 @@
   import { _ } from "svelte-i18n"
 
   import { dealFields } from "$lib/fieldLookups"
+  import type { components } from "$lib/openAPI"
   import { dealSectionsLG } from "$lib/sections"
-  import type { Area, Contract, DataSource, Location2 } from "$lib/types/data"
+  import type { Contract, DataSource, Location2 } from "$lib/types/data"
 
   import CompareSubmodelDiffBlock from "$components/CompareSubmodelDiffBlock.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"
 
-  export let data
+  let { data } = $props()
 
-  let labels: { [sectionKey: string]: string }
-  $: labels = {
+  let labels: { [sectionKey: string]: string } = $derived({
     general_info: $_("General info"),
     employment: $_("Employment"),
     investor_info: $_("Investor info"),
@@ -22,9 +22,9 @@
     gender_related_info: $_("Gender-related info"),
     overall_comment: $_("Overall comment"),
     meta: $_("Meta"),
-  }
+  })
 
-  const cleanArea = (area: Area) => ({
+  const cleanArea = (area: components["schemas"]["LocationArea"]) => ({
     ...area,
     id: undefined,
     location: undefined,

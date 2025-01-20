@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte"
+  import { type Snippet } from "svelte"
 
   import { browser } from "$app/environment"
 
@@ -7,27 +7,42 @@
   import FileCodeIcon from "$components/icons/FileCodeIcon.svelte"
   import FileImageIcon from "$components/icons/FileImageIcon.svelte"
 
-  export let title: string
-  export let wrapperClasses = ""
-  export let disableCSV = false
-  export let disableSVG = false
+  interface Props {
+    title: string
+    wrapperClasses?: string
+    disableCSV?: boolean
+    disableSVG?: boolean
+    heading?: Snippet
+    children?: Snippet
+    legend?: Snippet
+    ondownload?: (format: FileType) => void
+  }
 
-  const dispatch = createEventDispatcher<{ download: FileType }>()
+  let {
+    title,
+    wrapperClasses = "",
+    disableCSV = false,
+    disableSVG = false,
+    heading,
+    children,
+    legend,
+    ondownload,
+  }: Props = $props()
 
-  $: isChrome = browser && /Google Inc/.test(navigator.vendor)
+  let isChrome = $derived(browser && /Google Inc/.test(navigator.vendor))
 </script>
 
 <div id="{title}_wrapper" class="flex flex-col flex-nowrap {wrapperClasses}">
-  <slot name="heading">
-    {#if title}
-      <h2 class="heading3 mt-0 text-gray-700 dark:text-gray-50">{title}</h2>
-    {/if}
-  </slot>
+  {#if heading}
+    {@render heading()}
+  {:else if title}
+    <h2 class="heading3 mt-0 text-gray-700 dark:text-gray-50">{title}</h2>
+  {/if}
   <div class="svg-wrapper flex items-center justify-center">
-    <slot />
+    {@render children?.()}
   </div>
   <div class="flex-shrink-0">
-    <slot name="legend" />
+    {@render legend?.()}
   </div>
   <ul
     class="mx-auto my-2 flex w-fit bg-white p-1 text-sm text-gray-700 dark:bg-gray-800 dark:text-white"
@@ -36,7 +51,7 @@
       <button
         class="px-3 pb-1 hover:text-orange-200"
         class:grey-out={disableSVG}
-        on:click={() => dispatch("download", "svg")}
+        onclick={() => ondownload?.("svg")}
       >
         <FileImageIcon />
         SVG
@@ -50,7 +65,7 @@
       <button
         class="px-3 pb-1 hover:text-orange-200"
         class:grey-out={!isChrome}
-        on:click={() => dispatch("download", "png")}
+        onclick={() => ondownload?.("png")}
       >
         <FileImageIcon />
         PNG
@@ -66,7 +81,7 @@
       <button
         class="px-3 pb-1 hover:text-orange-200"
         class:grey-out={!isChrome}
-        on:click={() => dispatch("download", "webp")}
+        onclick={() => ondownload?.("webp")}
       >
         <FileImageIcon /> WebP
       </button>
@@ -77,7 +92,7 @@
     <li id="download-json">
       <button
         class="px-3 pb-1 hover:text-orange-200"
-        on:click={() => dispatch("download", "json")}
+        onclick={() => ondownload?.("json")}
       >
         <FileCodeIcon />
         JSON
@@ -88,7 +103,7 @@
       <button
         class="px-3 pb-1 hover:text-orange-200"
         class:grey-out={disableCSV}
-        on:click={() => dispatch("download", "csv")}
+        onclick={() => ondownload?.("csv")}
       >
         <FileCodeIcon />
         CSV

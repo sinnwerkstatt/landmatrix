@@ -1,19 +1,24 @@
 <script lang="ts">
-  import type { ComponentType } from "svelte"
+  import type { Component } from "svelte"
   import { _ } from "svelte-i18n"
 
   import ChartsIcon from "$components/Data/Charts/CakeTeaser.svelte"
   import MapIcon from "$components/Data/MapTeaser.svelte"
   import DataIcon from "$components/Data/TableTeaser.svelte"
 
+  interface Props {
+    onclick?: () => void
+  }
+  let { onclick }: Props = $props()
+
   interface Card {
     title: string
     href: string
     description: string
-    icon: ComponentType
+    icon: Component
   }
 
-  const cards: Card[] = [
+  const cards: Card[] = $derived([
     {
       title: $_("Map"),
       href: "/map/",
@@ -38,7 +43,7 @@
       ),
       icon: ChartsIcon,
     },
-  ]
+  ])
 </script>
 
 <div class="my-8 grid grid-cols-1 gap-8 sm:grid-cols-3">
@@ -46,10 +51,10 @@
     <a
       href={card.href}
       class="block rounded bg-gray-50 p-4 text-center text-black hover:text-inherit hover:shadow-[1px_1px_4px_4px] hover:shadow-black/30 dark:bg-gray-700 dark:text-white dark:hover:shadow-white/40"
-      on:click
+      {onclick}
     >
       <h3 class="heading4">{card.title}</h3>
-      <svelte:component this={card.icon} class="mx-auto mt-2 text-orange" />
+      <card.icon class="mx-auto mt-2 text-orange" />
       <div class="body1 mt-6">
         {card.description}
       </div>

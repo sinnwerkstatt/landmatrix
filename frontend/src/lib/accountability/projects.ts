@@ -116,7 +116,12 @@ export async function refreshProjects() {
 }
 
 export async function addUserBookmark(id) {
-  const project = get(myProjects).find(p => p.id == id)
+  console.log("--- AddUserBookmark ---")
+  const project = get(allProjects).find(p => p.id == id)
+
+  console.log("--- Project: ---")
+  console.log(project)
+
   if (project) {
     const order = get(bookmarkedProjects).length + 1
     bookmarkedProjects.set([...get(bookmarkedProjects), project])

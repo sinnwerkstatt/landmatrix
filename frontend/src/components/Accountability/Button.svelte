@@ -1,20 +1,35 @@
 <script lang="ts">
   import BubbleCount from "$components/Accountability/atomic/BubbleCount.svelte"
 
-  export let label = "Label"
-  export let type: "fill" | "outline" | "ghost" = "fill"
-  export let style: "primary" | "neutral" | "error" = "primary"
-  export let size: "base" | "sm" | "lg" = "base"
-  export let count: number = 0
-  export let tailwind: string = "" // additional tailwind classes
+  interface Props {
+    label?: string
+    type?: "fill" | "outline" | "ghost"
+    style?: "primary" | "neutral" | "error"
+    size?: "base" | "sm" | "lg"
+    count?: number
+    tailwind?: string // additional tailwind classes
+    disabled?: boolean
+    iconAfter?: import("svelte").Snippet
+    onclick?: () => void
+  }
 
-  export let disabled = false
+  let {
+    label = "Label",
+    type = "fill",
+    style = "primary",
+    size = "base",
+    count = 0,
+    tailwind = "",
+    disabled = false,
+    iconAfter,
+    onclick,
+  }: Props = $props()
 </script>
 
-<button class="{style} {size} {type} {tailwind}" {disabled} on:click>
+<button class="{style} {size} {type} {tailwind}" {disabled} {onclick}>
   <span class="flex items-center gap-3">
     {label}
-    <slot name="icon-after" />
+    {@render iconAfter?.()}
   </span>
   {#if count > 0}
     <span class="bubble">

@@ -1,13 +1,12 @@
 import type { components } from "$lib/openAPI"
 
-import type { BlockKey } from "$components/Wagtail/blocks"
+import type { BlockKey } from "$components/Wagtail/Block.svelte"
 
 export type WagtailStreamfieldBlock = {
   type: BlockKey
   value: never
   id: string
 }
-export type WagtailStreamfield = WagtailStreamfieldBlock[]
 
 export type WagtailPageMeta = {
   type: string
@@ -26,7 +25,7 @@ export interface CountryOrRegion {
   name: string
   // slug?: string
   observatory_page_id: number | null
-  // observatory_page?: ObservatoryPage
+  observatory_page?: ObservatoryPage
   point_lat_min: number
   point_lat_max: number
   point_lon_min: number
@@ -37,7 +36,7 @@ export interface WagtailPage {
   id: number
   title: string
   meta: WagtailPageMeta
-  body: WagtailStreamfield
+  body: WagtailStreamfieldBlock[]
 }
 
 export interface TwitterFeed {

@@ -11,22 +11,22 @@
   import PageTitle from "$components/PageTitle.svelte"
   import WagtailBird from "$components/Wagtail/WagtailBird.svelte"
 
-  export let data
+  let { data } = $props()
 
-  $: blogpages = data.blogpages
+  let blogpages = $derived(data.blogpages)
 
-  let filteredBlogPages: components["schemas"]["BlogPage"][]
-  $: filteredBlogPages = data.category
-    ? $blogpages.filter(bp => bp.categories.map(c => c.slug).includes(data.category))
-    : data.tag
-      ? $blogpages.filter(bp => bp.tags.map(t => t.slug).includes(data.tag))
-      : $blogpages
+  let filteredBlogPages: components["schemas"]["BlogPage"][] = $derived(
+    data.category
+      ? $blogpages.filter(bp => bp.categories.map(c => c.slug).includes(data.category))
+      : data.tag
+        ? $blogpages.filter(bp => bp.tags.map(t => t.slug).includes(data.tag))
+        : $blogpages,
+  )
 
-  let blogCategoriesWithAll: BlogCategory[]
-  $: blogCategoriesWithAll = [
+  let blogCategoriesWithAll: BlogCategory[] = $derived([
     { id: -1, slug: null, name: $_("All") },
     ...$blogCategories.sort((a, b) => a.id - b.id),
-  ]
+  ])
 </script>
 
 <div class="flex min-h-full flex-col">
@@ -88,7 +88,7 @@
     {/each}
   </div>
 
-  <div class="flex-grow" />
+  <div class="flex-grow"></div>
   <NewFooter />
 </div>
 

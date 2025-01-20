@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import { type DealHull, type InvestorHull } from "$lib/types/data"
   import { isReporterOrAbove } from "$lib/utils/permissions"
@@ -11,13 +11,17 @@
   import ManageFeedbackCommentModal from "$components/New/ManageFeedbackCommentModal.svelte"
   import WorkflowInfoNew from "$components/New/WorkflowInfoNew.svelte"
 
-  export let object: DealHull | InvestorHull
+  interface Props {
+    object: DealHull | InvestorHull
+  }
+
+  let { object }: Props = $props()
 
   const isDeal = (obj: DealHull | InvestorHull): obj is DealHull =>
     "fully_updated_at" in obj
 
-  let showCommentOverlay = false
-  let showFeedbackOverlay = false
+  let showCommentOverlay = $state(false)
+  let showFeedbackOverlay = $state(false)
 </script>
 
 <div
@@ -34,10 +38,10 @@
   </div>
 
   <div class="my-2 text-right">
-    {#if isReporterOrAbove($page.data.user)}
+    {#if isReporterOrAbove(page.data.user)}
       <button
         class="btn btn-violet btn-flat inline-flex items-center gap-2 px-2"
-        on:click={() => (showFeedbackOverlay = true)}
+        onclick={() => (showFeedbackOverlay = true)}
         type="button"
       >
         {$_("Send feedback")}
@@ -46,8 +50,8 @@
     {/if}
     <button
       class="btn btn-purple btn-flat inline-flex items-center gap-2 px-2"
-      on:click={() => (showCommentOverlay = true)}
-      type="submit"
+      onclick={() => (showCommentOverlay = true)}
+      type="button"
     >
       {$_("Add comment")}
       <ChatBubbleLeftIcon class="h-5 w-5" />

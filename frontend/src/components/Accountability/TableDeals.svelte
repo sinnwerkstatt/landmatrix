@@ -12,19 +12,23 @@
   import TableDealsRow from "./atomic/TableDealsRow.svelte"
   import TableRow from "./atomic/TableRow.svelte"
 
-  export let deals: {
-    id: number
-    country: { id: number; name: string }
-    score: {
-      status: string
-      variables: {
-        vggt_variable: number
+  interface Props {
+    deals?: {
+      id: number
+      country: { id: number; name: string }
+      score: {
         status: string
-        score: number | null
-        assignee: { id: number; name: string } | null
-      }[]
-    }
-  }[] = []
+        variables: {
+          vggt_variable: number
+          status: string
+          score: number | null
+          assignee: { id: number; name: string } | null
+        }[]
+      }
+    }[]
+  }
+
+  let { deals = [] }: Props = $props()
 
   const columns: { label: string; value: string }[] = [
     { label: "id", value: "id" },
@@ -36,12 +40,12 @@
 
   const gridColsTemplate = "52px repeat(5, 1fr)"
 
-  let pageContent = []
-  let searchWord: string = ""
-  let statusFilter = ""
+  let pageContent = $state([])
+  let searchWord: string = $state("")
+  let statusFilter = $state("")
   let assigneeFilter = ""
 
-  let searchResult = deals
+  let searchResult = $state(deals)
 
   const statuses = [
     { value: "TO_SCORE", label: "To score" },
@@ -112,7 +116,9 @@
     return result
   }
 
-  $: searchResult = filterDeals(deals, searchWord, statusFilter, assigneeFilter)
+  $effect(() => {
+    searchResult = filterDeals(deals, searchWord, statusFilter, assigneeFilter)
+  })
 
   function createDealSelectObject(bool: boolean) {
     let res = {}
@@ -129,9 +135,7 @@
   }
 
   // Select deals
-  function selectAllDeals(event) {
-    const checked = event.detail.checked
-
+  function selectAllDeals(id, checked) {
     if (checked) {
       tableSelection.set(createDealSelectObject(true))
     } else {
@@ -147,46 +151,48 @@
 </script>
 
 <Table bind:data={searchResult} bind:pageContent rowHeight="57">
-  <div slot="filters" class="flex flex-wrap gap-2">
-    <div>
-      <Input
-        type="text"
-        icon="search"
-        placeholder="Search for a deal (ID, Country)"
-        bind:value={searchWord}
-      />
-    </div>
-    <div class="w-52">
-      <Input
-        type="select"
-        placeholder="Deal status"
-        choices={statuses}
-        search={false}
-        bind:value={statusFilter}
-        extraClass="!w-52"
-        style="white"
-      />
-    </div>
+  {#snippet filters()}
+    <div class="flex flex-wrap gap-2">
+      <div>
+        <Input
+          type="text"
+          icon="search"
+          placeholder="Search for a deal (ID, Country)"
+          bind:value={searchWord}
+        />
+      </div>
+      <div class="w-52">
+        <Input
+          type="select"
+          placeholder="Deal status"
+          choices={statuses}
+          search={false}
+          bind:value={statusFilter}
+          extraClass="!w-52"
+          style="white"
+        />
+      </div>
 
-    <!-- TODO: Repair Assignee filter -->
-    <!-- <div class="w-40">
-      <Input
-        type="select"
-        placeholder="Assignee"
-        choices={userChoices}
-        search={false}
-        bind:value={assigneeFilter}
-        extraClass="!w-40"
-        style="white"
-      />
-    </div> -->
-  </div>
+      <!-- TODO: Repair Assignee filter -->
+      <!-- <div class="w-40">
+        <Input
+          type="select"
+          placeholder="Assignee"
+          choices={userChoices}
+          search={false}
+          bind:value={assigneeFilter}
+          extraClass="!w-40"
+          style="white"
+        />
+      </div> -->
+    </div>
+  {/snippet}
 
-  <svelte:fragment slot="header">
+  {#snippet header()}
     <TableRow {gridColsTemplate}>
       <TableCell style="heading">
         <div class="w-fit">
-          <Checkbox paddingX="0" paddingY="0" on:changed={selectAllDeals} />
+          <Checkbox paddingX="0" paddingY="0" onchanged={selectAllDeals} />
         </div>
       </TableCell>
 
@@ -194,9 +200,9 @@
         <TableCell style="heading">{column.label.toUpperCase()}</TableCell>
       {/each}
     </TableRow>
-  </svelte:fragment>
+  {/snippet}
 
-  <svelte:fragment slot="body">
+  {#snippet body()}
     {#if $loadingDeals}
       <div class="grid h-full w-full place-content-center">
         <Loader />
@@ -206,5 +212,5 @@
         <TableDealsRow {gridColsTemplate} {columns} {deal} />
       {/each}
     {/if}
-  </svelte:fragment>
+  {/snippet}
 </Table>

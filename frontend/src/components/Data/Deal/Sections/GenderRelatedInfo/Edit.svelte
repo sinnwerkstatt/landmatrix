@@ -4,15 +4,17 @@
   import EditSubsection from "$components/Data/EditSubsection.svelte"
   import EditField from "$components/Fields/EditField.svelte"
 
-  export let deal: DealHull
+  interface Props {
+    deal: DealHull
+  }
 
-  $: version = deal.selected_version
+  let { deal = $bindable() }: Props = $props()
 </script>
 
 <form id="gender_related_info" class="pb-52">
   <EditSubsection id="gender_related_information">
     <EditField
-      bind:value={version.gender_related_information}
+      bind:value={deal.selected_version.gender_related_information}
       fieldname="gender_related_information"
       showLabel
     />

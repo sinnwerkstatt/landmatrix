@@ -1,4 +1,4 @@
-export const allColors: { [key: string]: string[] } = {
+export const allColors = {
   white: ["rgb(255, 255, 255)", "hsl(0, 0%, 100%)"],
   "gray-900": ["rgb(18,18,18)", "hsl(0, 0%, 7%)"],
   "gray-700": ["rgb(74,74,74)", "hsl(0, 0%, 29%)"],
@@ -50,4 +50,4 @@ export const allColors: { [key: string]: string[] } = {
   "yellow-200": ["rgb(243, 230, 160)", "hsl(51, 78%, 79%)"],
   "yellow-100": ["rgb(248, 240, 198)", "hsl(50, 78%, 87%)"],
   "yellow-50": ["rgb(253, 250, 236)", "hsl(49, 81%, 96%)"],
-}
+} as const

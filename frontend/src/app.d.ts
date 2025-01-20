@@ -3,7 +3,7 @@
 import type { Client } from "openapi-fetch"
 
 import type { Lang } from "$lib/i18n/i18n"
-import type { paths } from "$lib/openAPI"
+import type { components, paths } from "$lib/openAPI"
 import type { Country, Region, User } from "$lib/types/data"
 
 declare global {
@@ -14,6 +14,7 @@ declare global {
     }
     interface PageData {
       user: User | null
+      contextHelp?: components["schemas"]["ContextHelp"][]
       apiClient: Client<paths>
       countries: Country[]
       regions: Region[]

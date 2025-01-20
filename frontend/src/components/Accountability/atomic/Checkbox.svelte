@@ -1,24 +1,32 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte"
-
   import IconCheck from "../icons/IconCheck.svelte"
   import IconMinus from "../icons/IconMinus.svelte"
 
-  export let value = ""
-  export let checked = false
-  export let partiallyChecked = false
-  export let label = ""
-  export let bold = false
-  export let disabled = false
-  export let hidden = false
-  export let paddingX: string = "4"
-  export let paddingY: string = "2"
-
-  const dispatch = createEventDispatcher()
-
-  function onChange() {
-    dispatch("changed", { value, checked })
+  interface Props {
+    value?: string
+    checked?: boolean
+    partiallyChecked?: boolean
+    label?: string
+    bold?: boolean
+    disabled?: boolean
+    hidden?: boolean
+    paddingX?: string
+    paddingY?: string
+    onchanged?: (value: string, checked: boolean) => void
   }
+
+  let {
+    value = "",
+    checked = $bindable(false),
+    partiallyChecked = $bindable(false),
+    label = "",
+    bold = false,
+    disabled = false,
+    hidden = false,
+    paddingX = "4",
+    paddingY = "2",
+    onchanged,
+  }: Props = $props()
 </script>
 
 <label
@@ -33,7 +41,7 @@
     name="input"
     {value}
     bind:checked
-    on:change={onChange}
+    onchange={() => onchanged?.(value, checked)}
     {disabled}
     class="col-start-1 row-start-1 h-4 w-4 appearance-none rounded border border-a-gray-300 bg-a-gray-50"
     class:partiallyChecked

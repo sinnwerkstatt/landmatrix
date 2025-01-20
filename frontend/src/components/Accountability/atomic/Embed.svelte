@@ -1,9 +1,18 @@
 <script lang="ts">
-  export let label = "Embed"
-  export let disabled = false
+  interface Props {
+    label?: string
+    disabled?: boolean
+    click?: () => void
+  }
+
+  let { label = "Embed", disabled = false, click }: Props = $props()
 </script>
 
-<button {disabled} class="rounded border border-a-gray-200 px-1.5 py-0.5" on:click>
+<button
+  {disabled}
+  class="rounded border border-a-gray-200 px-1.5 py-0.5"
+  onclick={click}
+>
   <span class="line-clamp-1 text-a-sm font-medium text-a-gray-900">{label}</span>
 </button>
 

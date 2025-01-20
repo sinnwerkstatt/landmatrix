@@ -1,9 +1,12 @@
 <script lang="ts">
   import dayjs from "dayjs"
 
-  export let value: string
+  interface Props {
+    value: string
+    extras?: { format: string }
+  }
 
-  export let extras = { format: "YYYY-MM-DD" }
+  let { value, extras = { format: "YYYY-MM-DD" } }: Props = $props()
 
   // non-breaking hyphens would fix the stupid line break ("‑" vs "-")
   // return dayjs(this.value).format("YYYY‑MM‑DD"); 🤩️

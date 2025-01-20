@@ -5,23 +5,37 @@
   import { LABEL_CLASS, VALUE_CLASS, WRAPPER_CLASS } from "$components/Fields/consts"
   import Label2 from "$components/Fields/Display2/Label2.svelte"
 
-  export let value: unknown | null
-  export let fieldname: string
-  export let wrapperClass = WRAPPER_CLASS
-  export let labelClass = LABEL_CLASS
-  export let valueClass = VALUE_CLASS
+  interface Props {
+    value: unknown | null
+    fieldname: string
+    wrapperClass?: string
+    labelClass?: string
+    valueClass?: string
+    showLabel?: boolean
+    model?: "deal" | "investor"
+    extras?: unknown | undefined
+  }
 
-  export let showLabel = false
-  export let model: "deal" | "investor" = "deal"
+  let {
+    value,
+    fieldname,
+    wrapperClass = WRAPPER_CLASS,
+    labelClass = LABEL_CLASS,
+    valueClass = VALUE_CLASS,
+    showLabel = false,
+    model = "deal",
+    extras = undefined,
+  }: Props = $props()
 
-  export let extras: unknown | undefined = undefined
+  let richField = $derived(
+    model === "deal" ? $dealFields[fieldname] : $investorFields[fieldname],
+  )
 
-  $: richField = model === "deal" ? $dealFields[fieldname] : $investorFields[fieldname]
-
-  $: allExtras =
+  let allExtras = $derived(
     richField?.extras && extras
       ? { ...richField.extras, ...extras }
-      : (richField?.extras ?? extras)
+      : (richField?.extras ?? extras),
+  )
 </script>
 
 {#if isNotEmpty(value)}
@@ -32,9 +46,9 @@
     <div class={valueClass}>
       {#if richField && richField.displayField}
         {#if allExtras}
-          <svelte:component this={richField.displayField} {value} extras={allExtras} />
+          <richField.displayField {value} extras={allExtras} />
         {:else}
-          <svelte:component this={richField.displayField} {value} />
+          <richField.displayField {value} />
         {/if}
       {:else}
         <div class="italic text-red-400">unknown field: {fieldname}</div>

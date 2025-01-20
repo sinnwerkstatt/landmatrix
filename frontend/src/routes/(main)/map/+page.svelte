@@ -1,214 +1,211 @@
 <script lang="ts">
-  import type { Point } from "geojson"
-  import type { FeatureGroup, LeafletEvent, Map, Marker } from "leaflet?client"
-  import { divIcon, featureGroup, marker, popup } from "leaflet?client"
+  import { Feature, MapBrowserEvent, type Map } from "ol"
+  import { Point } from "ol/geom"
+  import { Vector as VectorLayer } from "ol/layer"
+  import { fromLonLat } from "ol/proj"
+  import { Vector as VectorSource } from "ol/source"
   import * as R from "ramda"
-  import { onDestroy, onMount } from "svelte"
+  import { onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
   import { browser } from "$app/environment"
-  import { page } from "$app/stores"
+  import { page } from "$app/state"
 
   import { filters } from "$lib/filters"
   import { dealsNG } from "$lib/stores"
-  import { isMobile, loading } from "$lib/stores/basics"
-  import { type DealHull, type Location2 } from "$lib/types/data"
+  import { isMobile } from "$lib/stores/basics"
+  import { type DealHull } from "$lib/types/data"
+  import { debounce } from "$lib/utils"
 
   import DataContainer from "$components/Data/DataContainer.svelte"
   import FilterCollapse from "$components/Data/FilterCollapse.svelte"
   import { showContextBar, showFilterBar } from "$components/Data/stores"
-  import BigMap from "$components/Map/BigMap.svelte"
   import {
-    getBaseLayers,
-    getContextLayers,
-    visibleContextLayers,
-    visibleLayer,
-  } from "$components/Map/layers"
-  import {
+    createMarkerTooltipOverlay,
+    createStyledPoint,
     displayDealsCount,
-    LMCircleClass,
-    styleCircle,
+    markerStyle,
+    regionHoverInteraction,
   } from "$components/Map/mapHelper"
-  import MapMarkerPopup from "$components/Map/MapMarkerPopup.svelte"
+  import {
+    baseLayers,
+    contextLayers,
+    selectedLayers,
+  } from "$components/Map/mapstuff.svelte"
+  import OLMap from "$components/Map/OLMap.svelte"
   import { createCoordinatesMap } from "$components/Map/utils"
-
-  interface MyMarker extends Marker {
-    deal: DealHull
-    country_id: number
-    region_id: number | null
-    deal_size: number | null
-    loc: Location2
-    deal_id: number
-  }
 
   const ZOOM_LEVEL = {
     REGION_CLUSTERS: 2,
-    COUNTRY_CLUSTERS: 3,
-    DEAL_CLUSTERS: 5,
-    DEAL_PINS: 8,
+    COUNTRY_CLUSTERS: 4,
+    DEAL_CLUSTERS: 6,
   }
   const REGION_COORDINATES: { [key: number]: [number, number] } = {
-    2: [6.06433, 17.082249],
-    9: [-22.7359, 140.0188],
-    21: [54.526, -105.2551],
-    142: [34.0479, 100.6197],
-    150: [52.0055, 37.9587],
-    419: [-4.442, -61.3269],
+    2: [17.082249, 6.06433],
+    9: [140.0188, -22.7359],
+    21: [-105.2551, 54.526],
+    142: [100.6197, 34.0479],
+    150: [37.9587, 52.0055],
+    419: [-61.3269, -4.442],
   }
 
-  let bigmap: Map
-  let markers: MyMarker[] = []
-
-  let current_zoom: number
-
-  let markersFeatureGroup: FeatureGroup
+  let bigmap: Map | undefined
+  let currentZoom: number | undefined
+  const markersVectorSource = new VectorSource({})
   let skipMapRefresh = false
 
-  $: countryCoords = createCoordinatesMap($page.data.countries)
+  let countryCoords = $derived(createCoordinatesMap(page.data.countries))
 
-  function bigMapIsReady(evt: CustomEvent<Map>) {
+  const regionCircleClick = (evt: MapBrowserEvent<UIEvent>) => {
+    const feature = bigmap?.forEachFeatureAtPixel(
+      evt.pixel,
+      feature => feature as Feature<Point>,
+    )
+    if (feature) $filters.region_id = feature.getProperties().regionID
+  }
+
+  const countryCircleClick = (evt: MapBrowserEvent<UIEvent>) => {
+    const feature = bigmap?.forEachFeatureAtPixel(
+      evt.pixel,
+      feature => feature as Feature<Point>,
+    )
+    if (feature) $filters.country_id = feature.getProperties().countryID
+  }
+  const singleMarkerClick = (evt: MapBrowserEvent<UIEvent>) => {
+    if (!bigmap) return
+
+    const feature = bigmap.forEachFeatureAtPixel(
+      evt.pixel,
+      feature => feature as Feature<Point>,
+    )
+
+    if (feature) {
+      createMarkerTooltipOverlay(feature).then(ovrl => {
+        bigmap!.addOverlay(ovrl)
+        bigmap!.getOverlays().forEach(overlay => {
+          if (overlay !== ovrl) bigmap!.removeOverlay(overlay)
+        })
+      })
+    } else bigmap.getOverlays().forEach(overlay => bigmap!.removeOverlay(overlay))
+  }
+
+  function bigMapIsReady(_map: Map) {
+    bigmap = _map
+
     if (!browser) return
-    bigmap = evt.detail
-    bigmap.on("zoomend", () => refreshMap())
     bigmap.on("moveend", () => refreshMap())
-    markersFeatureGroup = featureGroup()
-    bigmap.addLayer(markersFeatureGroup)
-    refreshMap()
+    bigmap.on("change:size", () => refreshMap())
+
+    bigmap.addLayer(
+      new VectorLayer({ source: markersVectorSource, style: () => markerStyle }),
+    )
+
     flyToCountryOrRegion($filters.country_id, $filters.region_id)
   }
 
-  const refreshMap = (): void => {
-    if (!bigmap || skipMapRefresh) return
-    markersFeatureGroup?.clearLayers()
-    current_zoom = bigmap.getZoom()
+  const _refreshMap = (): void => {
+    if (!bigmap || $dealsNG.length === 0 || skipMapRefresh) return
 
-    if ($dealsNG.length === 0 || markers.length === 0) return
+    currentZoom = bigmap.getView().getZoom()
+    if (!currentZoom) return
 
-    const totalDealSize = R.reduce<DealHull, number>(
+    markersVectorSource.clear(true)
+    bigmap.removeInteraction(regionHoverInteraction)
+    bigmap.un("click", regionCircleClick)
+    bigmap.un("click", countryCircleClick)
+    bigmap.un("click", singleMarkerClick)
+
+    const totalDealSizeCalculator = R.reduce<DealHull, number>(
       (acc, deal) => acc + (deal.selected_version.deal_size ?? 0),
       0,
     )
 
-    if (current_zoom < ZOOM_LEVEL.COUNTRY_CLUSTERS && !$filters.country_id) {
+    if (currentZoom < ZOOM_LEVEL.COUNTRY_CLUSTERS && !$filters.country_id) {
       // cluster by LM region
       R.pipe(
         R.groupBy(R.pipe(R.prop("region_id"), R.toString)),
         R.forEachObjIndexed((deals, regionId) => {
           if (regionId === "undefined" || !deals) return
 
-          const circle = marker(REGION_COORDINATES[+regionId], {
-            icon: divIcon({ className: LMCircleClass }),
-          })
-          circle.on("click", () => ($filters.region_id = +regionId))
-          markersFeatureGroup.addLayer(circle)
-
-          styleCircle(
-            circle,
-            $displayDealsCount ? deals.length : totalDealSize(deals),
-            $page.data.regions.find(r => r.id === +regionId)?.name ?? "",
-            $displayDealsCount,
+          const hectares = totalDealSizeCalculator(deals)
+          const feature = createStyledPoint(
+            fromLonLat(REGION_COORDINATES[+regionId]),
+            $displayDealsCount
+              ? Math.max(Math.log(deals.length) * 9, 40)
+              : Math.max(Math.log(hectares) * 4, 40),
+            page.data.regions.find(r => r.id === +regionId)?.name ?? "",
+            $displayDealsCount
+              ? `${deals.length} ${$_("locations")}`
+              : `${hectares.toLocaleString("fr").replace(",", ".")} ${$_("hectares")}`,
           )
+          feature.setProperties({ regionID: +regionId })
+
+          markersVectorSource.addFeature(feature)
         }),
       )($dealsNG)
-    } else if (current_zoom < ZOOM_LEVEL.DEAL_CLUSTERS) {
+
+      bigmap.addInteraction(regionHoverInteraction)
+      bigmap.on("click", regionCircleClick)
+    } else if (currentZoom < ZOOM_LEVEL.DEAL_CLUSTERS) {
       // cluster by country
       R.pipe(
         R.groupBy(R.pipe(R.prop("country_id"), R.toString)),
         R.forEachObjIndexed((deals, countryId) => {
           if (countryId === "undefined" || !deals) return
 
-          const circle = marker(countryCoords[+countryId], {
-            icon: divIcon({ className: LMCircleClass }),
-          })
-          circle.on("click", () => ($filters.country_id = +countryId))
-          markersFeatureGroup.addLayer(circle)
-
-          styleCircle(
-            circle,
-            $displayDealsCount ? deals.length : totalDealSize(deals),
-            $page.data.countries.find(c => c.id === +countryId)?.name ?? "",
-            $displayDealsCount,
+          const hectares = totalDealSizeCalculator(deals)
+          const feature = createStyledPoint(
+            fromLonLat(countryCoords[+countryId]),
+            $displayDealsCount
+              ? Math.max(Math.log(deals.length) * 9, 40)
+              : Math.max(Math.log(hectares) * 4, 40),
+            page.data.countries.find(c => c.id === +countryId)?.name ?? "",
+            $displayDealsCount
+              ? `${deals.length} ${$_("locations")}`
+              : `${hectares.toLocaleString("fr").replace(",", ".")} ${$_("hectares")}`,
           )
+          feature.setProperties({ countryID: +countryId })
+
+          markersVectorSource.addFeature(feature)
         }),
       )($dealsNG)
+
+      bigmap.addInteraction(regionHoverInteraction)
+      bigmap.on("click", countryCircleClick)
     } else {
       // show all deals / markers
-      const mapBounds = bigmap.getBounds()
-      R.pipe(
-        R.groupBy(R.pipe(R.prop("country_id"), R.toString)),
-        R.forEachObjIndexed((cMarkers, countryId) => {
-          if (countryId === "undefined" || !cMarkers) return
-          cMarkers.forEach(mark => {
-            if (mapBounds.contains(mark.getLatLng())) {
-              markersFeatureGroup.addLayer(mark)
-            } else {
-              markersFeatureGroup.removeLayer(mark)
-            }
-          })
-        }),
-      )(markers)
-    }
-  }
+      for (const deal of $dealsNG) {
+        if (!deal.selected_version.locations) continue
 
-  let _dealLocationMarkersCache: { [key: number]: MyMarker[] } = {}
+        for (const loc of deal.selected_version.locations) {
+          if (!loc.point) continue
 
-  interface LocWithPoint extends Location2 {
-    point: Point
-  }
-
-  async function refreshMarkers() {
-    if (!browser) return
-    loading.set(true)
-    markers = []
-    for (let deal of $dealsNG) {
-      if (!(deal.id in _dealLocationMarkersCache))
-        _dealLocationMarkersCache[deal.id] = deal.selected_version.locations
-          .filter((loc: Location2): loc is LocWithPoint => !!loc.point)
-          .map((loc: LocWithPoint) => {
-            let myMarker = marker([
-              loc.point.coordinates[1],
-              loc.point.coordinates[0],
-            ]) as MyMarker
-            myMarker.deal = deal
-            myMarker.loc = loc
-            myMarker.deal_id = deal.id
-            myMarker.deal_size = deal.selected_version.deal_size
-            if (deal.country_id) {
-              myMarker.region_id = deal.region_id
-              myMarker.country_id = deal.country_id
-            }
-            myMarker.on("click", createMarkerPopup)
-            return myMarker
+          const feature = new Feature({
+            geometry: new Point(fromLonLat(loc.point.coordinates!)),
           })
 
-      markers.push(..._dealLocationMarkersCache[deal.id])
+          feature.setProperties({
+            deal: deal,
+            // deal_id: deal.id,
+            location: loc,
+            // deal_size: deal.selected_version.deal_size,
+            // region_id: deal.region_id,
+            // country_id: deal.country_id,
+          })
+          markersVectorSource.addFeature(feature)
+        }
+      }
+
+      bigmap.on("click", singleMarkerClick)
     }
-
-    refreshMap()
-    loading.set(false)
   }
-
-  async function createMarkerPopup(event: LeafletEvent) {
-    const myMarker = event.target as MyMarker
-
-    const markerContainerDiv = document.createElement("div")
-    markerContainerDiv.style.minWidth = "320px"
-
-    new MapMarkerPopup({
-      target: markerContainerDiv,
-      props: { deal: myMarker.deal, location: myMarker.loc },
-    })
-    popup()
-      .setContent(markerContainerDiv)
-      .setLatLng(myMarker.getLatLng())
-      .openOn(bigmap)
-  }
+  const refreshMap = debounce(_refreshMap)
 
   async function flyToCountryOrRegion(country_id?: number, region_id?: number) {
-    // skip ambiguous destinations
-    if (country_id && region_id) return
-
+    if (country_id && region_id) return // skip ambiguous destinations
     if (!browser || !bigmap) return
+
+    const mapView = bigmap.getView()
     let coords: [number, number] = [0, 0]
     let zoom = ZOOM_LEVEL.REGION_CLUSTERS
     if (country_id) {
@@ -218,10 +215,10 @@
       coords = REGION_COORDINATES[region_id]
       zoom = ZOOM_LEVEL.COUNTRY_CLUSTERS
     }
-    if (zoom < current_zoom) {
+    if (currentZoom && zoom < currentZoom) {
       // zooming out, apply filter after flying to avoid loading of pins for entire region
       skipMapRefresh = true
-      bigmap.flyTo(coords, zoom)
+      mapView.animate({ center: fromLonLat(coords), zoom: zoom, duration: 300 })
       setTimeout(() => {
         skipMapRefresh = false
         refreshMap()
@@ -229,71 +226,72 @@
     } else {
       // zooming in, apply filter before flying
       refreshMap()
-      setTimeout(() => bigmap.flyTo(coords, zoom), 700)
+      setTimeout(
+        () =>
+          mapView.animate({ center: fromLonLat(coords), zoom: zoom, duration: 300 }),
+        700,
+      )
     }
   }
 
-  const displayDealsCountUnsubscribe = displayDealsCount.subscribe(() => refreshMap())
-  $: if ($dealsNG) refreshMarkers()
-  $: flyToCountryOrRegion($filters.country_id, $filters.region_id)
+  displayDealsCount.subscribe(() => refreshMap())
+
+  $effect(() => {
+    flyToCountryOrRegion($filters.country_id, $filters.region_id)
+  })
 
   onMount(() => {
     showContextBar.set(!$isMobile)
     showFilterBar.set(!$isMobile)
   })
-
-  onDestroy(() => {
-    displayDealsCountUnsubscribe()
-  })
 </script>
 
 <DataContainer>
   <div class="h-full w-full">
-    <BigMap
+    <OLMap
       containerClass="min-h-full h-full"
-      on:ready={bigMapIsReady}
+      mapReady={bigMapIsReady}
       options={{
-        minZoom: ZOOM_LEVEL.REGION_CLUSTERS,
+        minZoom: 0,
         zoom: ZOOM_LEVEL.REGION_CLUSTERS,
+        center: [30, 12],
         zoomControl: false,
-        //gestureHandling: false,
-        center: [12, 30],
       }}
-      showLayerSwitcher={false}
     />
   </div>
 
-  <div slot="FilterBar">
+  {#snippet FilterBarSnippet()}
     <h2 class="heading5 my-2 px-2">{$_("Map settings")}</h2>
-    <!--    <FilterCollapse expanded title={$_("Displayed data")}>-->
-    <!--      <label class="block">-->
-    <!--        <input-->
-    <!--          bind:group={$displayDealsCount}-->
-    <!--          name="deals-count-display"-->
-    <!--          class="radio-btn"-->
-    <!--          type="radio"-->
-    <!--          value={true}-->
-    <!--        />-->
-    <!--        {$_("Number of deal locations")}-->
-    <!--      </label>-->
-    <!--      <label class="block">-->
-    <!--        <input-->
-    <!--          bind:group={$displayDealsCount}-->
-    <!--          name="deals-count-display"-->
-    <!--          class="radio-btn"-->
-    <!--          type="radio"-->
-    <!--          value={false}-->
-    <!--        />-->
-    <!--        {$_("Area (ha)")}-->
-    <!--      </label>-->
-    <!--    </FilterCollapse>-->
+    <!--      <FilterCollapse expanded title={$_("Displayed data")}>-->
+    <!--        <label class="block">-->
+    <!--          <input-->
+    <!--            bind:group={$displayDealsCount}-->
+    <!--            name="deals-count-display"-->
+    <!--            class="radio-btn"-->
+    <!--            type="radio"-->
+    <!--            value={true}-->
+    <!--          />-->
+    <!--          {$_("Number of deal locations")}-->
+    <!--        </label>-->
+    <!--        <label class="block">-->
+    <!--          <input-->
+    <!--            bind:group={$displayDealsCount}-->
+    <!--            name="deals-count-display"-->
+    <!--            class="radio-btn"-->
+    <!--            type="radio"-->
+    <!--            value={false}-->
+    <!--          />-->
+    <!--          {$_("Area (ha)")}-->
+    <!--        </label>-->
+    <!--      </FilterCollapse>-->
+
     <FilterCollapse expanded title={$_("Base layer")}>
-      {#each getBaseLayers($_) as layer}
+      {#each baseLayers as layer}
         <label class="block">
           <input
             type="radio"
             name="base-layer-switch"
-            bind:group={$visibleLayer}
+            bind:group={selectedLayers.baseLayer}
             value={layer.id}
             class="radio-btn"
           />
@@ -303,19 +301,19 @@
     </FilterCollapse>
 
     <FilterCollapse title={$_("Context layers")}>
-      {#each getContextLayers($_) as layer}
+      {#each contextLayers as layer}
         <label class="block">
           <input
             type="checkbox"
-            bind:group={$visibleContextLayers}
+            bind:group={selectedLayers.contextLayers}
             value={layer.id}
             class="checkbox-btn"
           />
           {layer.name}
-          {#if $visibleContextLayers.includes(layer.id)}
+          {#if selectedLayers.contextLayers.includes(layer.id)}
             <img
               alt="Legend for {layer.name}"
-              src={layer.legendUrlFunction()}
+              src={layer.legend}
               class="mb-4 ml-4 mt-2 border"
               loading="lazy"
             />
@@ -323,5 +321,5 @@
         </label>
       {/each}
     </FilterCollapse>
-  </div>
+  {/snippet}
 </DataContainer>

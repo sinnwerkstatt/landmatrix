@@ -1,34 +1,32 @@
 <script lang="ts">
-  import { _ } from "svelte-i18n"
-
   import LayerGroup from "$components/icons/LayerGroup.svelte"
+  import { baseLayers, selectedLayers } from "$components/Map/mapstuff.svelte"
 
-  import { getBaseLayers, visibleLayer } from "./layers"
-
-  let shown: boolean
+  let shown: boolean = $state(false)
 </script>
 
 <div
   role="presentation"
   class="absolute right-[10px] top-[10px] z-10 rounded border-2 border-black/30 bg-white px-2 pb-2 pt-1"
-  on:mouseleave={() => (shown = false)}
+  onmouseleave={() => (shown = false)}
 >
   {#if !shown}
     <LayerGroup
       class="inline h-5 w-5 text-orange"
-      on:focus={() => (shown = true)}
-      on:mouseover={() => (shown = true)}
+      onfocus={() => (shown = true)}
+      onmouseover={() => (shown = true)}
     />
   {:else}
     <ul>
-      {#each getBaseLayers($_) as layer}
+      {#each baseLayers as layer}
         <li class="p-1">
-          {#if layer.id === $visibleLayer}
+          {#if layer.id === selectedLayers.baseLayer}
             <div>{layer.name}</div>
           {:else}
             <button
-              on:click|preventDefault={() => visibleLayer.set(layer.id)}
+              onclick={() => (selectedLayers.baseLayer = layer.id)}
               class="text-orange"
+              type="button"
             >
               {layer.name}
             </button>

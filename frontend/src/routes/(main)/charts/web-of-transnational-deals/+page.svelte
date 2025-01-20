@@ -13,9 +13,9 @@
   import { showContextBar, showFilterBar } from "$components/Data/stores"
   import LoadingPulse from "$components/LoadingPulse.svelte"
 
-  $: title = $_("Web of transnational deals")
+  let title = $derived($_("Web of transnational deals"))
 
-  let transnationalDeals: EdgeBundlingData | undefined
+  let transnationalDeals: EdgeBundlingData | undefined = $state()
 
   const fetchTransnationalDeals = async (fltrs: FilterValues) => {
     const f1 = new FilterValues().copyNoCountry(fltrs)
@@ -27,7 +27,9 @@
     transnationalDeals = await ret.json()
   }
 
-  $: fetchTransnationalDeals($filters)
+  $effect(() => {
+    fetchTransnationalDeals($filters)
+  })
 
   onMount(() => {
     showContextBar.set(!$isMobile)
@@ -45,9 +47,11 @@
   {:else}
     <WebOfTransnationalDeals {title} deals={transnationalDeals} />
   {/if}
-  <div slot="ContextBar">
-    <h2 class="heading5">{title}</h2>
-    <div>{@html $chartDescriptions.web_of_transnational_deals}</div>
-    <CountryInvestorInfo />
-  </div>
+  {#snippet ContextBar()}
+    <div>
+      <h2 class="heading5">{title}</h2>
+      <div>{@html $chartDescriptions.web_of_transnational_deals}</div>
+      <CountryInvestorInfo />
+    </div>
+  {/snippet}
 </ChartsContainer>

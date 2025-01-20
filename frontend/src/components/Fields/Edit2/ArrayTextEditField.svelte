@@ -6,34 +6,46 @@
 
   import { cardClass } from "./JSONFieldComponents/consts"
 
-  export let value: string[]
-  export let fieldname: string
+  interface Props {
+    value: string[]
+    fieldname: string
+  }
 
-  let valueCopy = structuredClone<string[]>(value.length ? value : [""])
+  let { value = $bindable(), fieldname }: Props = $props()
 
-  $: value = valueCopy.filter(val => val != "")
+  let valueCopy: string[] = $state(value.length ? $state.snapshot(value) : [""])
 
-  const addEntry = () => (valueCopy = [...valueCopy, ""])
+  const updateVal = () => {
+    value = valueCopy.filter(val => val != "")
+  }
+
+  const addEntry = () => {
+    valueCopy = [...valueCopy, ""]
+    updateVal()
+  }
 
   const removeEntry = (index: number) => {
     valueCopy = valueCopy.filter((_val, i) => i !== index)
+    updateVal()
   }
 </script>
 
 <div class="grid gap-2 lg:grid-cols-2 xl:grid-cols-3">
-  {#each valueCopy as val, i}
+  <!-- eslint-disable-next-line @typescript-eslint/no-unused-vars -->
+  {#each valueCopy as _val, i}
     <div class={cardClass}>
       <input
         class="inpt"
         type="text"
-        bind:value={val}
+        bind:value={valueCopy[i]}
         name="{fieldname}_{i}"
         placeholder={$_("Name")}
+        oninput={updateVal}
       />
 
-      <RemoveButton disabled={valueCopy.length <= 1} on:click={() => removeEntry(i)} />
+      <RemoveButton disabled={valueCopy.length <= 1} onclick={() => removeEntry(i)} />
     </div>
   {/each}
 
-  <AddButton on:click={addEntry} />
+  <AddButton onclick={addEntry} />
 </div>

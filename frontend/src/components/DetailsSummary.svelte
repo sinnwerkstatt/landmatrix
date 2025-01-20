@@ -1,7 +1,16 @@
 <script lang="ts">
+  import type { Snippet } from "svelte"
+
   import { clickOutside } from "$lib/helpers"
 
-  let detailsElement: HTMLDetailsElement
+  interface Props {
+    summary?: Snippet
+    details?: Snippet
+  }
+
+  let { summary, details }: Props = $props()
+
+  let detailsElement: HTMLDetailsElement | undefined = $state()
 
   const closeSummary = () => {
     if (detailsElement) detailsElement.removeAttribute("open")
@@ -9,10 +18,10 @@
 </script>
 
 <details bind:this={detailsElement} class="whitespace-nowrap">
-  <summary on:outClick={closeSummary} use:clickOutside>
-    <slot name="summary" />
+  <summary onoutClick={closeSummary} use:clickOutside>
+    {@render summary?.()}
   </summary>
-  <slot name="details" />
+  {@render details?.()}
 </details>
 
 <style>
