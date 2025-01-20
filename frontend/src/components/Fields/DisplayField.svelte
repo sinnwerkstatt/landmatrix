@@ -1,11 +1,12 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
+  import { page } from "$app/state"
+
   import { dealFields, investorFields } from "$lib/fieldLookups"
   import { isNotEmpty } from "$lib/helpers"
   import type { Model } from "$lib/types/data"
 
-  import { getMutableObject } from "$components/Data/stores"
   import { LABEL_CLASS, VALUE_CLASS, WRAPPER_CLASS } from "$components/Fields/consts"
   import Label2 from "$components/Fields/Display2/Label2.svelte"
   import DSQuotationsModal from "$components/New/DSQuotationsModal.svelte"
@@ -30,7 +31,7 @@
     showLabel = false,
     model = "deal",
     extras = undefined,
-  }: Required<Props> = $props()
+  }: Props = $props()
 
   let richField = $derived(
     model === "deal" ? $dealFields[fieldname] : $investorFields[fieldname],
@@ -42,8 +43,10 @@
       : (richField?.extras ?? extras),
   )
 
-  const mutableObj = getMutableObject(model)
-  const quotes = $derived($mutableObj.selected_version.ds_quotations[fieldname] ?? [])
+  const allQuotations = $derived(
+    page.data[model]?.selected_version?.ds_quotations ?? {},
+  )
+  const quotes = $derived(allQuotations[fieldname] ?? [])
 
   let showDSQuotationModal = $state(false)
 </script>
@@ -63,7 +66,7 @@
         <div class="italic text-red-400">unknown field: {fieldname}</div>
       {/if}
 
-      {#if richField?.useQuotation}
+      {#if richField?.useQuotation && quotes.length > 0}
         <div>
           <button
             class="italic text-purple-400"
@@ -75,15 +78,15 @@
             {quotes.length}
             {$_("quotations")}
           </button>
+
+          <DSQuotationsModal
+            bind:open={showDSQuotationModal}
+            {fieldname}
+            {model}
+            label={richField.label}
+          />
         </div>
       {/if}
     </div>
   </div>
 {/if}
-
-<DSQuotationsModal
-  bind:open={showDSQuotationModal}
-  {fieldname}
-  {model}
-  label={richField.label}
-/>

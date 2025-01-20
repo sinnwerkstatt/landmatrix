@@ -3,6 +3,7 @@
 
   import { page } from "$app/state"
 
+  import { datasourceChoices } from "$lib/fieldChoices"
   import type { components } from "$lib/openAPI"
   import type { Model } from "$lib/types/data"
 
@@ -11,7 +12,7 @@
   import Modal from "$components/Modal.svelte"
 
   interface Props {
-    open?: boolean
+    open: boolean
     model?: Model
     editable?: boolean
     fieldname: string
@@ -24,14 +25,14 @@
     editable = false,
     fieldname,
     label,
-  }: Required<Props> = $props()
+  }: Props = $props()
 
   const mutableObj = getMutableObject(model)
 
-  let dataSources = $derived($mutableObj.selected_version.datasources)
+  const dataSources = $derived($mutableObj?.selected_version.datasources ?? [])
 
-  let quotes: QuotationItem[] = $derived(
-    $mutableObj.selected_version.ds_quotations[fieldname] ?? [],
+  const quotes: QuotationItem[] = $derived(
+    $mutableObj?.selected_version?.ds_quotations[fieldname] ?? [],
   )
 
   // let sortedQuotes: QuotationItem[] = $derived(
@@ -47,7 +48,7 @@
   type PartialQuotationItem = Partial<QuotationItem>
 
   const createQuotation = (): PartialQuotationItem => ({
-    nid: dataSources[dataSources.length - 1].nid,
+    nid: dataSources.length > 0 ? dataSources[dataSources.length - 1].nid : undefined,
   })
 
   const deleteQuotation = (i: number) => {
@@ -100,6 +101,9 @@
 
         {#if dsIndex > -1}
           {@const ds = dataSources[dsIndex]}
+          {@const dsTypeLabel = $datasourceChoices.type.find(
+            entry => entry.value === ds.type,
+          )?.label}
 
           <li
             class="flex border border-black p-2 hover:bg-gray-50 dark:border-white hover:dark:bg-a-gray-800"
@@ -109,10 +113,15 @@
                 <span>
                   {padLeadingZeros(2, dsIndex + 1)}. {$_("Data Source")}
                 </span>
-
+                <span>
+                  ({dsTypeLabel})
+                  {ds.name}
+                </span>
                 <a
                   class="mx-2 font-mono text-sm italic text-purple-400 hover:text-purple-500"
-                  href={new URL("../data-sources/#" + ds.nid, page.url).href}
+                  href="/deal/{page.data.dealID}/{page.data.dealVersion
+                    ? page.data.dealVersion + '/'
+                    : ''}data-sources/#{ds.nid}"
                   target="_blank"
                   rel="noreferrer"
                   title={$_("View Data Source")}
@@ -168,13 +177,16 @@
         {$_("Create:")}
       </h2>
       <form class="mt-6 flex flex-col gap-4" {onsubmit}>
-        <fieldset class="flex flex-wrap gap-x-10 gap-y-2">
+        <fieldset class="flex flex-wrap gap-y-2">
           <legend class="mb-2 inline-block">
             {$_("Select data source:")}
           </legend>
 
           {#each dataSources as dataSource, i}
-            <div class="font-bold">
+            {@const dsTypeLabel = $datasourceChoices.type.find(
+              entry => entry.value === dataSource.type,
+            )?.label}
+            <div class="basis-1/2 font-bold xl:basis-1/3">
               <input
                 type="radio"
                 id="data-source-{dataSource.nid}"
@@ -182,11 +194,20 @@
                 bind:group={newQuotation.nid}
                 value={dataSource.nid}
               />
-              <label for="data-source-{dataSource.nid}">
+              <label
+                class="inline-flex cursor-pointer flex-col"
+                for="data-source-{dataSource.nid}"
+              >
                 {padLeadingZeros(2, i + 1)}. {$_("Data Source")}
+
+                <span>
+                  ({dsTypeLabel})
+                  {dataSource.name}
+                </span>
                 <a
                   class="mx-2 font-mono text-sm italic text-purple-400 hover:text-purple-500"
-                  href={new URL("../data-sources/#" + dataSource.nid, page.url).href}
+                  href="/deal/{page.data.dealID}/{page.data
+                    .dealVersion}/data-sources/#{dataSource.nid}"
                   target="_blank"
                   rel="noreferrer"
                   title={$_("View Data Source")}

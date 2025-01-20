@@ -69,6 +69,14 @@
         {quotes.length}
         {$_("quotations")}
       </button>
+
+      <DSQuotationsModal
+        bind:open={showDSQuotationModal}
+        {fieldname}
+        {model}
+        label={richField.label}
+        editable
+      />
     </div>
   {/if}
 
@@ -84,11 +92,3 @@
     {/if}
   </div>
 </div>
-
-<DSQuotationsModal
-  bind:open={showDSQuotationModal}
-  {fieldname}
-  {model}
-  label={richField.label}
-  editable
-/>
