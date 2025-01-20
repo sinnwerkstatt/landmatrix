@@ -55,7 +55,7 @@
     block: WagtailStreamfieldBlock
   }
 
-  let { block = $bindable() }: Props = $props()
+  let { block }: Props = $props()
 </script>
 
 {#if blockMap[block.type]}

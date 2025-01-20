@@ -79,6 +79,7 @@
 {/if}
 
 <style lang="postcss">
+  /* TODO: dark mode selectors not applied for animations? */
   .is-selected {
     @apply animate-fadeToWhite dark:animate-fadeToGray;
   }

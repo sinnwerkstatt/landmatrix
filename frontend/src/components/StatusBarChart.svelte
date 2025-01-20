@@ -52,7 +52,7 @@
       .style("font-size", "18px")
       .style("font-weight", "400")
       .style("fill", "black")
-      .attr("class", "dark:fill-white  transition-colors")
+      .attr("class", "dark:fill-white transition-colors")
     labelGroup
       .selectAll(".status")
       .data(data)
@@ -60,6 +60,7 @@
       .attr("x", 0)
       .attr("y", d => yScale(d.name)! + 4)
       // .attr("dy", "0.35em")
+      .attr("class", "dark:fill-white transition-colors")
       .text(d => d.name)
 
     // const labelGroupWidth = labelGroup.node()!.getBoundingClientRect().width

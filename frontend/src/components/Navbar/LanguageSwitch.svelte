@@ -15,7 +15,7 @@
   }
 
   const switchLanguage = async (lang: string) => {
-    Cookies.set("django_language", lang)
+    Cookies.set("django_language", lang, { sameSite: "lax" })
     await locale.set(lang)
 
     await fetchObservatoryPages(fetch, lang)
