@@ -14,17 +14,9 @@
   <div class="flex flex-col items-center">
     <Logo />
     <div class="mt-10 flex flex-col flex-nowrap gap-4 px-6">
-      <NavbarItem label="Deals" href="/accountability/deals/">
-        {#snippet icon()}
-          <span><IconList /></span>
-        {/snippet}
-      </NavbarItem>
-      <!-- <NavbarItem label="To Do" href="/accountability/todo/">
-        <span slot="icon"><IconToDo /></span>
-      </NavbarItem>
-      <NavbarItem label="Doc" href="/accountability/doc/">
-        <span slot="icon"><IconDocs /></span>
-      </NavbarItem> -->
+      <NavbarItem href="/accountability/deals/" icon={IconList} label="Deals" />
+      <!--      <NavbarItem label="To Do" href="/accountability/todo/" icon={IconToDo} />-->
+      <!--      <NavbarItem label="Doc" href="/accountability/doc/" icon={IconDocs} />-->
     </div>
   </div>
 
