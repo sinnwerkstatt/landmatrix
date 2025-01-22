@@ -9,14 +9,14 @@
     value?: number | null
     required?: boolean
     minimumRole?: UserRole
-    userIDs?: Set<number> | undefined
+    userIDs?: Set<number>
   }
 
   let {
     value = $bindable(),
     required = false,
     minimumRole = UserRole.ANYBODY,
-    userIDs = undefined,
+    userIDs,
   }: Props = $props()
 
   let items = $derived(

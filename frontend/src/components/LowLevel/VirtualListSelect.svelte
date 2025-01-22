@@ -43,7 +43,7 @@
   let {
     items = [],
     itemFilter = undefined,
-    value = $bindable(),
+    value,
     label = "label",
     id = null,
     required = false,
