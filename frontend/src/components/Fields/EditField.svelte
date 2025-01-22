@@ -3,7 +3,7 @@
   import { _ } from "svelte-i18n"
 
   import { dealFields, investorFields } from "$lib/fieldLookups"
-  import type { Model } from "$lib/types/data"
+  import type { DataSource, Model } from "$lib/types/data"
 
   import { getMutableObject } from "$components/Data/stores"
   import Label2 from "$components/Fields/Display2/Label2.svelte"
@@ -48,6 +48,9 @@
 
   const mutableObj = getMutableObject(model)
   const quotes = $derived($mutableObj.selected_version.ds_quotations[fieldname] ?? [])
+  const dataSources = $derived(
+    $mutableObj.selected_version.datasources ?? [],
+  ) as DataSource[]
 
   let showDSQuotationModal = $state(false)
 </script>
@@ -66,14 +69,13 @@
           showDSQuotationModal = true
         }}
       >
-        {quotes.length}
-        {$_("quotations")}
+        {$_("Sources")}: {quotes.length}
       </button>
 
       <DSQuotationsModal
         bind:open={showDSQuotationModal}
-        {fieldname}
-        {model}
+        bind:quotes={$mutableObj.selected_version.ds_quotations[fieldname]}
+        {dataSources}
         label={richField.label}
         editable
       />
