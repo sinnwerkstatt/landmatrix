@@ -5,7 +5,7 @@
   import { fromLonLat } from "ol/proj"
   import { Vector as VectorSource } from "ol/source"
   import * as R from "ramda"
-  import { onMount } from "svelte"
+  import { onDestroy, onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
   import { browser } from "$app/environment"
@@ -234,8 +234,6 @@
     }
   }
 
-  displayDealsCount.subscribe(() => refreshMap())
-
   $effect(() => {
     flyToCountryOrRegion($filters.country_id, $filters.region_id)
   })
@@ -243,6 +241,11 @@
   onMount(() => {
     showContextBar.set(!$isMobile)
     showFilterBar.set(!$isMobile)
+  })
+
+  const unsubsribeMapRefresher = displayDealsCount.subscribe(() => refreshMap())
+  onDestroy(() => {
+    unsubsribeMapRefresher()
   })
 </script>
 

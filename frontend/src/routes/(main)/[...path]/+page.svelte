@@ -34,7 +34,9 @@
     }
   }
 
-  locale.subscribe(loc => reloadOnLocale(loc))
+  $effect(() => {
+    reloadOnLocale($locale)
+  })
 </script>
 
 <svelte:head>
