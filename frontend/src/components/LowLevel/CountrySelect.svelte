@@ -8,7 +8,7 @@
   interface Props {
     countries?: Country[]
     value?: Country | null
-    name?: string | undefined
+    name?: string
     disabled?: boolean
     required?: boolean
     oninput?: (e: CustomEvent) => void
@@ -17,8 +17,8 @@
 
   let {
     countries = [],
-    value = $bindable(),
-    name = undefined,
+    value,
+    name,
     disabled = false,
     required = false,
     oninput,
@@ -27,7 +27,7 @@
 </script>
 
 <VirtualListSelect
-  bind:value
+  {value}
   items={countries}
   label="name"
   heightInPx={152}

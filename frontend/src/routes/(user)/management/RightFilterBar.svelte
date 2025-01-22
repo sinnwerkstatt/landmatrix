@@ -86,7 +86,11 @@
     </div>
     <div>
       <div class="mb-1 font-bold">{$_("Target country")}</div>
-      <CountrySelect bind:value={$managementFilters.country} countries={relCountries} />
+      <CountrySelect
+        value={$managementFilters.country}
+        oninput={e => ($managementFilters.country = e.detail)}
+        countries={relCountries}
+      />
     </div>
     <hr />
     {#if isDeal}

@@ -4,36 +4,26 @@
   import { page } from "$app/state"
 
   import { datasourceChoices } from "$lib/fieldChoices"
-  import type { components } from "$lib/openAPI"
-  import type { Model } from "$lib/types/data"
+  import type { DataSource, QuotationItem } from "$lib/types/data"
 
   import IconTrashcan from "$components/Accountability/icons/IconTrashcan.svelte"
-  import { getMutableObject } from "$components/Data/stores"
   import Modal from "$components/Modal.svelte"
 
   interface Props {
     open: boolean
-    model?: Model
+    quotes?: QuotationItem[]
+    dataSources?: DataSource[]
     editable?: boolean
-    fieldname: string
     label: string
   }
 
   let {
     open = $bindable(),
-    model = "deal",
+    quotes = $bindable(),
+    dataSources = [],
     editable = false,
-    fieldname,
     label,
   }: Props = $props()
-
-  const mutableObj = getMutableObject(model)
-
-  const dataSources = $derived($mutableObj?.selected_version.datasources ?? [])
-
-  const quotes: QuotationItem[] = $derived(
-    $mutableObj?.selected_version?.ds_quotations[fieldname] ?? [],
-  )
 
   // let sortedQuotes: QuotationItem[] = $derived(
   //   quotes.toSorted((a, b) => {
@@ -44,7 +34,6 @@
   //   }),
   // )
 
-  type QuotationItem = components["schemas"]["QuotationItem"]
   type PartialQuotationItem = Partial<QuotationItem>
 
   const createQuotation = (): PartialQuotationItem => ({
@@ -52,10 +41,8 @@
   })
 
   const deleteQuotation = (i: number) => {
-    if (i < quotes.length) {
-      $mutableObj.selected_version.ds_quotations[fieldname] = quotes.filter(
-        (_, index) => index !== i,
-      )
+    if (quotes && i < quotes.length) {
+      quotes = quotes.filter((_, index) => index !== i)
     }
   }
 
@@ -68,10 +55,7 @@
       return
     }
 
-    $mutableObj.selected_version.ds_quotations[fieldname] = [
-      ...quotes,
-      $state.snapshot(newQuotation),
-    ]
+    quotes = [...(quotes ?? []), $state.snapshot(newQuotation) as QuotationItem]
 
     newQuotation = createQuotation()
   }
@@ -88,7 +72,7 @@
 >
   <div>
     <h2 class="heading3">
-      {$_("Quotations")}
+      {$_("Linked data sources")}
     </h2>
 
     {$_("Field")}:
@@ -96,7 +80,7 @@
     <hr class="mb-4" />
 
     <ul class="flex w-full flex-col gap-2">
-      {#each quotes as quote, i}
+      {#each quotes ?? [] as quote, i}
         {@const dsIndex = dataSources.findIndex(ds => ds.nid === quote.nid)}
 
         {#if dsIndex > -1}
@@ -162,12 +146,12 @@
           </li>
         {:else}
           <span class="color-red-400">
-            {$_("Could not find data source") + `${quote.nid}`}
+            {$_("Could not find data source.") + `${quote.nid}`}
           </span>
         {/if}
       {:else}
         <li class="flex border border-black p-2 dark:border-white">
-          {$_("No quotations yet")}
+          {$_("No linked data sources yet.")}
         </li>
       {/each}
     </ul>
@@ -221,7 +205,7 @@
 
         <div>
           <label class="mb-2 inline-block" for="page-number">
-            {$_("Choose page (optional):")}
+            {$_("Specify page in uploaded file (optional):")}
           </label>
           <input
             id="page-number"
