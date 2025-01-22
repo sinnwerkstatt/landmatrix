@@ -175,35 +175,37 @@
       </ul>
 
       {#if openThread}
-        <form transition:slide class="flex items-center" {onsubmit}>
-          <input
-            bind:value={reply}
-            type="text"
-            class="inpt"
-            placeholder={$_("Reply")}
-          />
-          <button
-            class="btn btn-pelorous -ml-0.5 inline-flex h-[34px] items-center gap-2 px-2 text-sm"
-            type="submit"
-            disabled={!reply}
-          >
-            {$_("Send")}
-            <ChatBubbleLeftIcon class="h-4 w-4" />
-          </button>
-        </form>
-      {/if}
-      {#if openThread && info.from_user_id === page.data.user?.id}
-        <button
-          class="btn btn-primary btn-flat ml-auto mr-1 mt-1 flex items-center gap-1"
-          type="submit"
-          name="submitandresolve"
-        >
-          {#if reply}
-            {$_("Send")} &amp;
+        <form transition:slide {onsubmit}>
+          <div class="flex items-center">
+            <input
+              bind:value={reply}
+              type="text"
+              class="inpt"
+              placeholder={$_("Reply")}
+            />
+            <button
+              class="btn btn-pelorous -ml-0.5 inline-flex h-[34px] items-center gap-2 px-2 text-sm"
+              type="submit"
+              disabled={!reply}
+            >
+              {$_("Send")}
+              <ChatBubbleLeftIcon class="h-4 w-4" />
+            </button>
+          </div>
+          {#if info.from_user_id === page.data.user?.id}
+            <button
+              class="btn btn-primary btn-flat ml-auto mr-1 mt-1 flex items-center gap-1"
+              type="submit"
+              name="submitandresolve"
+            >
+              {#if reply}
+                {$_("Send")} &amp;
+              {/if}
+              {$_("Resolve thread")}
+              <CheckCircleIcon class="h-4 w-4" />
+            </button>
           {/if}
-          {$_("Resolve thread")}
-          <CheckCircleIcon class="h-4 w-4" />
-        </button>
+        </form>
       {/if}
     </div>
   {/if}
