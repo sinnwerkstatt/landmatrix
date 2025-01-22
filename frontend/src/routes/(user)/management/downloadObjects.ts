@@ -26,6 +26,10 @@ const DEAL_COLUMNS = [
   "id",
   { key: "country_name", header: "target country" },
   { key: "selected_version.deal_size", header: "deal size" },
+  {
+    key: "selected_version.current_intention_of_investment",
+    header: "current intention of investment",
+  },
   "fully_updated_at",
   ...COMMON_OBJ_COLUMNS,
 ]

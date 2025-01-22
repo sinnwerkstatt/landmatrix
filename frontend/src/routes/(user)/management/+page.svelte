@@ -36,6 +36,8 @@
   let activeTabId: string = $state("")
   let objects: Array<DealHull | InvestorHull> = $state([])
 
+  let isDeal = $derived(model === "deal")
+
   interface Tab {
     id: string
     name: string
@@ -111,6 +113,11 @@
       { key: "status", colSpan: 2 },
       { key: "country_id", colSpan: 2 },
       { key: "deal_size", colSpan: 2, submodel: "selected_version" },
+      {
+        key: "current_intention_of_investment",
+        colSpan: 2,
+        submodel: "selected_version",
+      },
       { key: "first_created_at", colSpan: 3, label: $_("Created") },
       { key: "modified_at", colSpan: 3, label: $_("Modified") },
       { key: "fully_updated", colSpan: 2, submodel: "selected_version" },
@@ -130,7 +137,7 @@
     ].map(c => ({ ...c, label: c.label || $investorFields[c.key].label })),
   )
 
-  let columns = $derived(model === "deal" ? dealColumns : investorColumns)
+  let columns = $derived(isDeal ? dealColumns : investorColumns)
 
   let counts: { [key: string]: number } = $state({})
   const getCounts = async (model: "deal" | "investor") => {
@@ -197,12 +204,13 @@
   $effect(() => {
     fetchObjects(activeTabId, model)
   })
+  // TODO?: Move filters to backend
   let filteredObjects = $derived(
     objects.filter(obj => {
       if ($managementFilters.status)
         if (obj.status !== $managementFilters.status) return false
       if ($managementFilters.country)
-        if (model === "deal") {
+        if (isDeal) {
           if ((obj as DealHull).country_id !== $managementFilters.country.id)
             return false
         } else {
@@ -243,7 +251,7 @@
         if (obj.selected_version.modified_by_id !== $managementFilters.modifiedByID)
           return false
 
-      if (model === "deal") {
+      if (isDeal) {
         const deal = obj as DealHull
 
         if ($managementFilters.dealSizeFrom)
@@ -252,7 +260,13 @@
         if ($managementFilters.dealSizeTo)
           if ((deal.selected_version.deal_size ?? 0) > $managementFilters.dealSizeTo)
             return false
-
+        if ($managementFilters.intentionOfInvestment)
+          if (
+            !deal.selected_version.current_intention_of_investment.includes(
+              $managementFilters.intentionOfInvestment,
+            )
+          )
+            return false
         if ($managementFilters.fullyUpdatedAtFrom)
           if (
             !deal.fully_updated_at ||
@@ -293,7 +307,7 @@
       class="flex justify-center gap-4 border-b border-gray-200 pb-6 pt-1 text-lg font-bold"
     >
       <button
-        class={model === "deal"
+        class={isDeal
           ? "border-b border-orange text-orange"
           : "text-gray-600 hover:text-orange dark:text-white"}
         onclick={() => (model = "deal")}
@@ -320,16 +334,16 @@
                 <li
                   class={twMerge(
                     "py-2 pr-4",
-                    model === "deal" ? "border-orange" : "border-pelorous",
+                    isDeal ? "border-orange" : "border-pelorous",
                     activeTabId === item.id ? "border-r-4" : "border-r",
                   )}
                 >
                   <a
                     class={twMerge(
                       "block text-left",
-                      model === "deal" ? "hover:text-orange" : "hover:text-pelorous",
+                      isDeal ? "hover:text-orange" : "hover:text-pelorous",
                       activeTabId === item.id
-                        ? model === "deal"
+                        ? isDeal
                           ? "font-bold text-orange"
                           : "font-bold text-pelorous"
                         : "text-gray-700 dark:text-white",
