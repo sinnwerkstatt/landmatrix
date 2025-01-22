@@ -215,6 +215,7 @@ class Management(View):
                                     modified_by_id="draft_version__modified_by_id",
                                     deal_size="draft_version__deal_size",
                                     fully_updated="draft_version__fully_updated",
+                                    current_intention_of_investment="draft_version__current_intention_of_investment",
                                 ),
                             ),
                             default=JSONObject(
@@ -223,6 +224,7 @@ class Management(View):
                                 modified_by_id="active_version__modified_by_id",
                                 deal_size="active_version__deal_size",
                                 fully_updated="active_version__fully_updated",
+                                current_intention_of_investment="active_version__current_intention_of_investment",
                             ),
                         ),
                     )

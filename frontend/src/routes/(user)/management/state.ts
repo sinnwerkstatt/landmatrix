@@ -1,7 +1,7 @@
 import { writable } from "svelte/store"
 
 import type { components } from "$lib/openAPI"
-import type { Version2Status } from "$lib/types/data"
+import type { IntentionOfInvestment, Version2Status } from "$lib/types/data"
 
 export interface ManagementFilters {
   status?: Version2Status
@@ -16,6 +16,7 @@ export interface ManagementFilters {
   modifiedByID?: number
   fullyUpdatedAtFrom?: Date
   fullyUpdatedAtTo?: Date
+  intentionOfInvestment?: IntentionOfInvestment
 }
 
 export const managementFilters = writable<ManagementFilters>({})
