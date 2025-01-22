@@ -115,7 +115,7 @@
       { key: "deal_size", colSpan: 2, submodel: "selected_version" },
       {
         key: "current_intention_of_investment",
-        colSpan: 2,
+        colSpan: 4,
         submodel: "selected_version",
       },
       { key: "first_created_at", colSpan: 3, label: $_("Created") },
