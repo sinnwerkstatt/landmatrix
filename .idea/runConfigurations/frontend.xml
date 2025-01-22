@@ -6,7 +6,6 @@
       <script value="dev" />
     </scripts>
     <node-interpreter value="project" />
-    <package-manager value="$USER_HOME$/.local/share/pnpm/pnpm" />
     <envs />
     <method v="2" />
   </configuration>
