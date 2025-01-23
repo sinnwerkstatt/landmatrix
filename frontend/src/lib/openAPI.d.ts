@@ -649,38 +649,6 @@ export interface paths {
     patch?: never
     trace?: never
   }
-  "/api/field_definitions/": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get: operations["field_definitions_list"]
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/field_definitions/{id}/": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get: operations["field_definitions_retrieve"]
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
   "/api/gis_export/areas/": {
     parameters: {
       query?: never
@@ -2465,38 +2433,6 @@ export interface components {
       involvement: components["schemas"]["InvolvementFields"]
       area: components["schemas"]["AreaFields"]
     }
-    FieldDefinition: {
-      readonly id: number
-      model: components["schemas"]["ModelEnum"]
-      field: string
-      short_description: string
-      /** Short description [en] */
-      short_description_en?: string | null
-      /** Short description [es] */
-      short_description_es?: string | null
-      /** Short description [fr] */
-      short_description_fr?: string | null
-      /** Short description [ru] */
-      short_description_ru?: string | null
-      long_description?: string
-      /** Long description [en] */
-      long_description_en?: string | null
-      /** Long description [es] */
-      long_description_es?: string | null
-      /** Long description [fr] */
-      long_description_fr?: string | null
-      /** Long description [ru] */
-      long_description_ru?: string | null
-      editor_description?: string
-      /** Editor description [en] */
-      editor_description_en?: string | null
-      /** Editor description [es] */
-      editor_description_es?: string | null
-      /** Editor description [fr] */
-      editor_description_fr?: string | null
-      /** Editor description [ru] */
-      editor_description_ru?: string | null
-    }
     Filters: {
       readonly id: number
       region_id?: number[] | null
@@ -3072,12 +3008,6 @@ export interface components {
       | "TTM"
       | "URM"
       | "ZNC"
-    /**
-     * @description * `deal` - Deal
-     *     * `investor` - Investor
-     * @enum {string}
-     */
-    ModelEnum: "deal" | "investor"
     /**
      * @description * `OUTRIGHT_PURCHASE` - Outright purchase
      *     * `LEASE` - Lease
@@ -6072,47 +6002,6 @@ export interface operations {
         }
         content: {
           "application/json": components["schemas"]["FieldChoices"]
-        }
-      }
-    }
-  }
-  field_definitions_list: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["FieldDefinition"][]
-        }
-      }
-    }
-  }
-  field_definitions_retrieve: {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description A unique integer value identifying this field definition. */
-        id: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["FieldDefinition"]
         }
       }
     }

@@ -18,7 +18,6 @@ from apps.landmatrix.models.deal import (
     DealWorkflowInfo,
     Location,
 )
-from apps.landmatrix.models.field_definition import FieldDefinition
 from apps.landmatrix.models.investor import (
     InvestorDataSource,
     InvestorHull,
@@ -29,12 +28,6 @@ from apps.landmatrix.models.investor import (
 from apps.landmatrix.permissions import is_editor_or_higher, is_reporter_or_higher
 from apps.serializer import ReadOnlyModelSerializer
 from django_pydantic_jsonfield import PydanticJSONFieldMixin
-
-
-class FieldDefinitionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = FieldDefinition
-        fields = "__all__"
 
 
 class CurrencySerializer(serializers.ModelSerializer):
