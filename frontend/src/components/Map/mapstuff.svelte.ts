@@ -2,7 +2,7 @@ import { env } from "$env/dynamic/public"
 import { type Map } from "ol"
 import { extend, type Extent } from "ol/extent"
 import { Tile as TileLayer, Vector } from "ol/layer"
-import { OSM, TileWMS, XYZ } from "ol/source"
+import { TileWMS, XYZ } from "ol/source"
 
 function getWMSTilesCDEUniBern(folder: string, LAYERS: string, attributions: string) {
   const qParams = new URLSearchParams({
