@@ -52,11 +52,11 @@ export const baseLayers = [
       maxZoom: 22,
     }),
   },
-  {
-    id: "osm",
-    name: "OSM",
-    layer: new TileLayer({ source: new OSM(), visible: false }),
-  },
+  // {
+  //   id: "osm",
+  //   name: "OSM",
+  //   layer: new TileLayer({ source: new OSM(), visible: false }),
+  // },
 ]
 
 export const contextLayers = [
