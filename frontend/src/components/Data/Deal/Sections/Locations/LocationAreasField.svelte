@@ -22,6 +22,7 @@
   import Label2 from "$components/Fields/Display2/Label2.svelte"
   import EyeIcon from "$components/icons/EyeIcon.svelte"
   import EyeSlashIcon from "$components/icons/EyeSlashIcon.svelte"
+  import { fitMapToFeatures } from "$components/Map/mapstuff.svelte"
 
   import { AREA_TYPE_COLOR_MAP } from "./locations"
 
@@ -121,6 +122,7 @@
 
   onMount(() => {
     map.addLayer(new VectorLayer({ source: polygonVectorSource }))
+    fitMapToFeatures(map)
 
     map.on("pointermove", evt => {
       const feature = map!.forEachFeatureAtPixel(
@@ -212,11 +214,3 @@
     </div>
   </div>
 {/if}
-
-<!--<style lang="postcss">-->
-<!--  .colored {-->
-<!--    /*color: var(&#45;&#45;color, black);*/-->
-<!--    /*background-color: var(&#45;&#45;color);*/-->
-<!--    @apply text-gray-400;-->
-<!--  }-->
-<!--</style>-->
