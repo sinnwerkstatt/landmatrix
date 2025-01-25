@@ -44,7 +44,7 @@ export const baseLayers = [
     name: "Map",
     layer: new TileLayer({
       source: new XYZ({
-        url: "https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=a00f8fb036334c4b8a3618263738846a",
+        url: `https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=${env.PUBLIC_THUNDERFOREST_API_KEY}`,
         attributions:
           'Maps © <a href="https://www.thunderforest.com">Thunderforest</a>, Data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
       }),

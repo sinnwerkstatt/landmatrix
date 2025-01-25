@@ -173,6 +173,7 @@ class ObservatoryPage(HeadlessPreviewMixin, Page):
             qs = qs.filter(tags__slug=slug)
         return [article.get_dict("fill-500x500|jpegquality-60") for article in qs]
 
+    # TODO @nuts Can this be deleted?
     # @staticmethod
     # def current_negotiation_status_metrics():
     #     deals = Deal.objects.visible(subset="PUBLIC").default_filtered(
@@ -184,11 +185,13 @@ class ObservatoryPage(HeadlessPreviewMixin, Page):
     #         .annotate(size=Sum("deal_size"))
     #     )
 
+    # PUBLIC_THUNDERFOREST_API_KEY = "a00f8fb036334c4b8a3618263738846a"
+
     # def staticmap(self):
     #     m = StaticMap(
     #         900,
     #         520,
-    #         url_template="https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=a00f8fb036334c4b8a3618263738846a",
+    #         url_template=f"https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey={PUBLIC_THUNDERFOREST_API_KEY}",
     #         # url_template="https://a.tile.opentopomap.org/{z}/{x}/{y}.png",
     #         # url_template="http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",
     #     )
