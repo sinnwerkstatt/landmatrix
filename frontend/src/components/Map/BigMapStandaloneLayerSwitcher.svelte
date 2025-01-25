@@ -7,7 +7,7 @@
 
 <div
   role="presentation"
-  class="absolute right-[10px] top-[10px] z-10 rounded border-2 border-black/30 bg-white px-2 pb-2 pt-1"
+  class="absolute right-[10px] top-[10px] z-10 rounded border-2 border-black/30 bg-white px-2 pb-2 pt-1 dark:text-gray-900"
   onmouseleave={() => (shown = false)}
 >
   {#if !shown}

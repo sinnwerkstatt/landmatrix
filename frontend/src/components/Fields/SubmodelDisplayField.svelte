@@ -49,13 +49,17 @@
   <section class="flex w-full flex-col gap-2">
     {#each entries as entry, index (entry[entryIdKey])}
       {@const idAsString = `${entry[entryIdKey]}`}
-      {@const href = selectedEntryId === idAsString ? "" : `#${idAsString}`}
+      {@const isSelected = selectedEntryId === idAsString}
+      {@const isHovered = hoverEntryId === idAsString}
+      {@const href = isSelected ? "" : `#${idAsString}`}
 
       <article
         id={idAsString}
         class="p-2"
-        class:is-selected={selectedEntryId === idAsString}
-        class:is-hovered={hoverEntryId === idAsString}
+        class:animate-fadeToWhite={isSelected}
+        class:dark:animate-fadeToGray={isSelected}
+        class:bg-orange-50={isHovered}
+        class:dark:bg-gray-700={isHovered}
       >
         <h3 class="heading4">
           <a
@@ -77,13 +81,3 @@
     {/each}
   </section>
 {/if}
-
-<style lang="postcss">
-  /* TODO: dark mode selectors not applied for animations? */
-  .is-selected {
-    @apply animate-fadeToWhite dark:animate-fadeToGray;
-  }
-  .is-hovered {
-    @apply bg-orange-50 dark:bg-gray-700;
-  }
-</style>
