@@ -2,8 +2,9 @@ import { error } from "@sveltejs/kit"
 import { derived, get, writable } from "svelte/store"
 
 import { goto } from "$app/navigation"
-import { page } from "$app/stores"
+import { page } from "$app/state"
 
+import type { components } from "$lib/openAPI"
 import { getCsrfToken } from "$lib/utils"
 
 import { filters, FilterValues } from "./filters"
@@ -24,9 +25,9 @@ export class Project {
 
 // ==============================================================================
 // Stores
-export const allProjects = writable([])
-export const myProjects = writable([])
-export const bookmarkedProjects = writable([])
+export const allProjects = writable<components["schemas"]["Project"][]>([])
+export const myProjects = writable<components["schemas"]["Project"][]>([])
+export const bookmarkedProjects = writable<components["schemas"]["Project"][]>([])
 export const formerProjectID = writable<number | undefined>(-1)
 
 export const bookmarkIds = derived(
@@ -60,7 +61,7 @@ export function updateFilters(project: Project) {
 
 // ==============================================================================
 // Functions to communicate with the API
-export async function getProject(projectID) {
+export async function getProject(projectID: number) {
   // try {
   //   const res = await fetch(`/api/accountability/project/${projectID}/`)
   //   if (!res.ok) throw error(res.status, { message: res.statusText })
@@ -115,7 +116,7 @@ export async function refreshProjects() {
   }
 }
 
-export async function addUserBookmark(id) {
+export async function addUserBookmark(id: number) {
   console.log("--- AddUserBookmark ---")
   const project = get(allProjects).find(p => p.id == id)
 
@@ -146,7 +147,7 @@ export async function addUserBookmark(id) {
   }
 }
 
-export async function removeUserBookmark(id) {
+export async function removeUserBookmark(id: number) {
   bookmarkedProjects.set(get(bookmarkedProjects).filter(b => b.id != id))
 
   try {
@@ -162,8 +163,7 @@ export async function removeUserBookmark(id) {
         "Content-Type": "application/json",
       },
     })
-    const resJSON = await res.json()
-    return resJSON
+    return await res.json()
   } catch (error) {
     return error
   }
@@ -273,7 +273,7 @@ export function openProjectModal(action: "create" | "update" | "delete", id?: nu
       projectModalData.set({ action })
       showProjectModal.set(true)
     } else if (action == "update") {
-      const currentProject = get(page).params.project
+      const currentProject = page.params.project
       if (currentProject != id?.toString()) goto(`/accountability/deals/${id}/`) // Load project to edit
       projectModalData.set({
         action,
