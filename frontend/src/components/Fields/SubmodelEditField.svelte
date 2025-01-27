@@ -116,9 +116,9 @@
 
       <article id={idAsString}>
         <header
-          class="flex items-center bg-gray-50 p-1 dark:bg-gray-700 {isSelectedEntry
-            ? 'animate-fadeToWhite dark:animate-fadeToGray'
-            : ''}"
+          class="flex items-center bg-gray-50 p-1 dark:bg-gray-700"
+          class:animate-fadeToWhite={isSelectedEntry}
+          class:dark:animate-fadeToGray={isSelectedEntry}
         >
           <h3 class="mb-0 flex-grow">
             <button
