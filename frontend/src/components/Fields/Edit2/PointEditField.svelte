@@ -5,47 +5,62 @@
   interface Props {
     value?: Point | null
     fieldname: string
+    onchange?: () => void
   }
 
-  let { value = $bindable(), fieldname }: Props = $props()
+  let { value = $bindable(), fieldname, onchange }: Props = $props()
 
-  let val = $derived(
-    value ? $state.snapshot(value) : { type: "Point", coordinates: [null, null] },
-  )
+  let longitude: number | null = $state(null)
+  let latitude: number | null = $state(null)
 
-  const onchange = () => {
-    value =
-      val.coordinates[0] !== null && val?.coordinates[1] !== null
-        ? (val as Point)
-        : null
+  $effect(() => {
+    if (value) {
+      longitude = value.coordinates[0]
+      latitude = value.coordinates[1]
+    }
+  })
+
+  const onInputChange = () => {
+    if (longitude === null && latitude === null) {
+      value = null
+    }
+    if (longitude !== null && latitude !== null) {
+      value = $state.snapshot({ type: "Point", coordinates: [longitude, latitude] })
+    }
+    onchange?.()
   }
 </script>
 
 <div class="flex gap-2">
   <div class="w-1/2">
-    <small class="-mb-0.5">{$_("Longitude")}</small>
+    <label for="{fieldname}_longitude">
+      <small class="-mb-0.5">{$_("Longitude")}</small>
+    </label>
     <input
       class="inpt"
-      name="{fieldname}_longitude"
+      id="{fieldname}_longitude"
       type="number"
-      bind:value={val.coordinates[0]}
-      required={!!val.coordinates[1]}
-      {onchange}
+      bind:value={longitude}
+      required={latitude !== null}
+      onchange={onInputChange}
       placeholder="-180 to 180"
       min={-180}
       max={180}
       step={0.1 ** 6}
     />
   </div>
+
   <div class="w-1/2">
-    <small class="-mb-0.5">{$_("Latitude")}</small>
+    <label for="{fieldname}_latitude">
+      <small class="-mb-0.5">{$_("Latitude")}</small>
+    </label>
     <input
       class="inpt"
-      name="{fieldname}_latitude"
+      id="{fieldname}_latitude"
       type="number"
-      bind:value={val.coordinates[1]}
-      required={!!val.coordinates[0]}
-      {onchange}
+      bind:value={latitude}
+      required={longitude !== null}
+      onchange={onInputChange}
       placeholder="-90 to 90"
       min={-90}
       max={90}
