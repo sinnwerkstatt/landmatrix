@@ -44,7 +44,7 @@
   )
 
   const quotes: QuotationItem[] = $derived(
-    page.data[model]?.selected_version?.ds_quotations?.[fieldname] ?? {},
+    page.data[model]?.selected_version?.ds_quotations?.[fieldname] ?? [],
   )
   const dataSources: DataSource[] = $derived(
     page.data[model]?.selected_version?.datasources ?? [],
@@ -69,7 +69,7 @@
           <div class="italic text-red-400">unknown field: {fieldname}</div>
         {/if}
 
-        {#if richField?.useQuotation && quotes.length > 0}
+        {#if quotes.length > 0}
           <div>
             <button
               class="italic text-purple-400"

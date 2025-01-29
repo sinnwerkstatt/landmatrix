@@ -37,7 +37,7 @@
 </script>
 
 <div>
-  <p>
+  <p class="hidden">
     <span class="after:content-[':']">
       {subModel.label}
     </span>
@@ -71,6 +71,7 @@
         {@const updatedIdx = updated.findIndex(obj => obj.nid === nid)}
 
         <SubModelEntryDiff
+          {subModel}
           {type}
           {nid}
           original={original[originalIdx]}
