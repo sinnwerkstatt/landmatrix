@@ -59,7 +59,7 @@
 <dialog
   bind:this={dialog}
   class={twMerge(
-    "rounded border border-gray-300 bg-white p-4 drop-shadow-lg dark:border-gray-800 dark:bg-gray-500 dark:text-white",
+    "rounded border border-gray-300 bg-white p-4 drop-shadow-lg dark:border-gray-600 dark:bg-gray-900 dark:text-white",
     className,
   )}
   {style}
@@ -84,12 +84,15 @@
     }
   }
   dialog::backdrop {
-    /* FIXME: does not work for dark mode !!! */
-    @apply bg-black/20 dark:bg-white/20;
+    @apply bg-black/20;
     backdrop-filter: blur(1px);
   }
+  :global(.dark dialog::backdrop) {
+    /*@apply bg-white/20;*/
+    @apply bg-black/80;
+  }
   dialog[open]::backdrop {
-    animation: fade 0.2s ease-out;
+    animation: fade var(--open-speed) ease-out;
   }
   @keyframes fade {
     from {
