@@ -49,7 +49,7 @@
   }
 </script>
 
-<Modal bind:open dismissible>
+<Modal bind:open class="lg:w-1/2" dismissible>
   <h2 class="heading4">{$_("Submit for review")}</h2>
   <hr />
   <form class="mt-6 text-lg" {onsubmit}>

@@ -35,7 +35,7 @@
         <CheckCircleIcon class="h-6 w-6 text-orange" />
         <span>{$_("Fully updated")}</span>
       {:else}
-        <MinusCircleIcon class="h-6 w-6 text-gray-600" />
+        <MinusCircleIcon class="h-6 w-6 text-gray-600 dark:text-white" />
         <span class="text-gray-600 dark:text-white">{$_("Not fully updated")}</span>
       {/if}
     </div>
