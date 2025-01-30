@@ -121,7 +121,7 @@
     --color3: theme("colors.yellow.700");
   }
 
-  .btn-red{
+  .btn-red {
     --color1: theme("colors.red.500");
     --color2: white;
     --color3: theme("colors.red.700");
