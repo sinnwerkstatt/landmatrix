@@ -58,7 +58,7 @@
   })
 
   let fieldKeys: string[] = $derived.by(() => {
-    const subModelKeys = subModels.map(m => m.key)
+    // const subModelKeys = subModels.map(m => m.key)
     return getTypedKeys(objDiff).filter(
       k =>
         // !subModelKeys.includes(k) &&
