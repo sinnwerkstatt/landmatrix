@@ -58,6 +58,7 @@
     @apply border-2 border-red-600 text-red-700;
   }
 
+  /* TODO: Maybe better to only highlight errors after first submission attempt? */
   .inpt:placeholder-shown:required {
     @apply border-2 border-red-600 text-red-700;
   }
