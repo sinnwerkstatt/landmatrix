@@ -3021,18 +3021,6 @@ files = [
 ]
 
 [[package]]
-name = "types-psycopg2"
-version = "2.9.21.20250121"
-description = "Typing stubs for psycopg2"
-optional = false
-python-versions = ">=3.9"
-groups = ["dev"]
-files = [
-    {file = "types_psycopg2-2.9.21.20250121-py3-none-any.whl", hash = "sha256:b890dc6f5a08b6433f0ff73a4ec9a834deedad3e914f2a4a6fd43df021f745f1"},
-    {file = "types_psycopg2-2.9.21.20250121.tar.gz", hash = "sha256:2b0e2cd0f3747af1ae25a7027898716d80209604770ef3cbf350fe055b9c349b"},
-]
-
-[[package]]
 name = "types-pygments"
 version = "2.19.0.20250107"
 description = "Typing stubs for Pygments"
@@ -3414,4 +3402,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10"
-content-hash = "504ee879e2941e93de27a96ea5f200a887d627400a60e7c3b2883f27340c2402"
+content-hash = "4c68eb5be6e4eea4ecb5bde817c43ea2b6dfa3f2ffa6e77761dc8dd6b591d0f9"

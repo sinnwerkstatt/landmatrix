@@ -72,7 +72,6 @@ djangorestframework-stubs = { extras = ["compatible-mypy"], version = "^1.8.0" }
 types-openpyxl = "^3.0.4.5"
 types-markdown = "^3.4.2.5"
 types-pygments = "^2.14.0.6"
-types-psycopg2 = "^2.9.21.8"
 types-colorama = "^0.4.15.8"
 types-polib = "^1.2.0.0"
 types-simplejson = "^3.18.0.1"
