@@ -34,7 +34,7 @@
       <Navbar />
     </div>
 
-    <div id="content" class="h-full overflow-y-auto transition-colors dark:bg-gray-900">
+    <div id="content" class="h-full overflow-y-auto">
       {@render children?.()}
     </div>
   </div>
