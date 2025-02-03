@@ -1058,6 +1058,22 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  "/api/user/register/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post: operations["user_register_create"]
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   "/api/users/": {
     parameters: {
       query?: never
@@ -7380,6 +7396,24 @@ export interface operations {
             [key: string]: unknown
           }
         }
+      }
+    }
+  }
+  user_register_create: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description No response body */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
       }
     }
   }
