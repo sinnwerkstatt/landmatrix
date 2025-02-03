@@ -11,7 +11,7 @@ description = "Land Matrix"
 python = "^3.10"
 Django = "<5.1"
 wagtail = "<6.4"
-psycopg2-binary = "*"
+psycopg = { version = "*", extras = ['binary'] }
 
 djangorestframework = "*"
 djangorestframework-gis = "*"
