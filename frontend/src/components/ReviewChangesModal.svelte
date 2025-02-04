@@ -81,10 +81,10 @@
     fieldKeys.every(key => {
       const oldQuotes = oldQuotations[key] ?? []
       const newQuotes = newQuotations[key] ?? []
-      return !(
+      const dsEqual =
         oldQuotes.length === newQuotes.length &&
         oldQuotes.every(q => newQuotes.map(q => q.nid).includes(q.nid))
-      )
+      return newQuotes.length > 0 && !dsEqual
     }),
   )
 </script>
@@ -144,6 +144,7 @@
           {@const dsEqual =
             oldQuotes.length === newQuotes.length &&
             oldQuotes.every(q => newQuotes.map(q => q.nid).includes(q.nid))}
+          {@const isValidAssignment = newQuotes.length > 0 && !dsEqual}
 
           <button
             type="button"
@@ -184,10 +185,10 @@
             </span>
 
             <span class="flex basis-1/4 flex-col text-right">
-              {#if dsEqual}
-                <del><XIcon /></del>
-              {:else}
+              {#if isValidAssignment}
                 <ins><CheckIcon /></ins>
+              {:else}
+                <del><XIcon /></del>
               {/if}
               <div class="flex items-center justify-end gap-2">
                 <div>
