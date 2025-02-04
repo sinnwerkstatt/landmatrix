@@ -60,27 +60,26 @@
     <Label2 value={richField?.label} class={labelClass} />
   {/if}
 
-  {#if richField?.useQuotation}
-    <div>
-      <button
-        class="italic text-purple-400"
-        type="button"
-        onclick={() => {
-          showDSQuotationModal = true
-        }}
-      >
-        {$_("Sources")}: {quotes.length}
-      </button>
+  <div>
+    <button
+      class="italic text-purple-400"
+      type="button"
+      onclick={() => {
+        showDSQuotationModal = true
+      }}
+    >
+      {$_("Sources")}: {quotes.length}
+    </button>
 
-      <DSQuotationsModal
-        bind:open={showDSQuotationModal}
-        bind:quotes={$mutableObj.selected_version.ds_quotations[fieldname]}
-        {dataSources}
-        label={richField.label}
-        editable
-      />
-    </div>
-  {/if}
+    <DSQuotationsModal
+      bind:open={showDSQuotationModal}
+      bind:quotes={$mutableObj.selected_version.ds_quotations[fieldname]}
+      {dataSources}
+      label={richField.label}
+      {fieldname}
+      editable
+    />
+  </div>
 
   <div class={valueClass}>
     {#if richField && richField.editField}
