@@ -115,7 +115,7 @@ class DealScoreList(generics.ListCreateAPIView):
             Prefetch(
                 "deals",
                 queryset=DealHull.objects.filter(
-                    confidential=False, active_version__isnull=False
+                    confidential=False, active_version__isnull=False, active_version__is_public=True
                 ).prefetch_related(
                     Prefetch("versions", queryset=DealVersion.objects.order_by("-id"))
                 ),
@@ -127,12 +127,15 @@ class DealScoreList(generics.ListCreateAPIView):
     def get(self, request: Request, *args, **kwargs):
         return Response(
             self.get_queryset()
+            .exclude(deal__deleted=True)
             .order_by("deal_id")
             .filter(parse_filters(request))
             .distinct()
             .values("deal")
             .annotate(
                 id=F("deal"),
+                ## TMP
+                a_deleted=F("deal__deleted"),
                 ## Filters
                 region_id=F("deal__country__region_id"),
                 country=JSONObject(id="deal__country__id", name="deal__country__name"),
