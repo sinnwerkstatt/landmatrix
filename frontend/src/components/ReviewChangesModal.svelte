@@ -58,15 +58,13 @@
   })
 
   let fieldKeys: string[] = $derived.by(() => {
-    // const subModelKeys = subModels.map(m => m.key)
+    const subModelKeys = subModels.map(m => m.key)
     return getTypedKeys(objDiff).filter(
-      k =>
-        // !subModelKeys.includes(k) &&
-        k !== "ds_quotations",
+      k => !subModelKeys.includes(k) && k !== "ds_quotations",
     )
   })
 
-  let selectedDiffKey: string | null = $state(null)
+  let selectedDiffKeys: string[] = $state([])
 
   let doOverwriteOldQuotations = $state(true)
 </script>
@@ -129,9 +127,13 @@
 
           <button
             type="button"
-            class="flex gap-2 border-2 p-2"
-            class:border-yellow={key === selectedDiffKey}
-            onclick={() => (selectedDiffKey = selectedDiffKey === key ? null : key)}
+            class="flex gap-2 border-2 p-2 {selectedDiffKeys.includes(key)
+              ? 'border-yellow bg-yellow/20'
+              : ''}"
+            onclick={() =>
+              (selectedDiffKeys = selectedDiffKeys.includes(key)
+                ? selectedDiffKeys.filter(k => k !== key)
+                : [...selectedDiffKeys, key])}
           >
             <span class="flex basis-3/4 flex-col text-left">
               {#if richField}
@@ -203,26 +205,37 @@
       <ol class="flex flex-col gap-2">
         {#each newDataSources as dataSource, i}
           <li>
-            {#if selectedDiffKey}
-              {@const newQuotes = newQuotations[selectedDiffKey] ?? []}
-              {@const hasDataSource = newQuotes
-                .map(q => q.nid)
-                .includes(dataSource.nid)}
+            {#if selectedDiffKeys}
+              {@const keysWithQuotation = selectedDiffKeys.filter(k =>
+                (newQuotations[k] ?? []).map(q => q.nid).includes(dataSource.nid),
+              )}
+              {@const isAll =
+                keysWithQuotation.length > 0 &&
+                keysWithQuotation.length === selectedDiffKeys.length}
+              {@const isAny =
+                keysWithQuotation.length > 0 &&
+                keysWithQuotation.length !== selectedDiffKeys.length}
               <button
-                class="w-full p-2 text-left {hasDataSource
+                class="w-full p-2 text-left {isAll
                   ? 'bg-yellow'
-                  : 'bg-white dark:bg-gray-500'}"
+                  : isAny
+                    ? 'bg-yellow/20'
+                    : 'bg-white dark:bg-gray-500'}"
                 type="button"
                 onclick={() => {
-                  if (hasDataSource) {
-                    newQuotations[selectedDiffKey] = newQuotes.filter(
+                  const _isAll = isAll
+                  selectedDiffKeys.forEach(k => {
+                    newQuotations[k] = (newQuotations[k] ?? []).filter(
                       q => q.nid !== dataSource.nid,
                     )
-                  } else {
-                    newQuotations[selectedDiffKey] = [
-                      ...newQuotes,
-                      { nid: dataSource.nid },
-                    ]
+                  })
+                  if (!_isAll) {
+                    selectedDiffKeys.forEach(k => {
+                      newQuotations[k] = [
+                        ...(newQuotations[k] ?? []),
+                        { nid: dataSource.nid },
+                      ]
+                    })
                   }
                 }}
               >
