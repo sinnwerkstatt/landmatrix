@@ -27,15 +27,6 @@
     label,
   }: Props = $props()
 
-  // let sortedQuotes: QuotationItem[] = $derived(
-  //   quotes.toSorted((a, b) => {
-  //     return (
-  //       dataSources.findIndex(ds => ds.nid === a.nid) -
-  //       dataSources.findIndex(ds => ds.nid === b.nid)
-  //     )
-  //   }),
-  // )
-
   type PartialQuotationItem = Partial<QuotationItem>
 
   const createQuotation = (): PartialQuotationItem => ({
@@ -121,14 +112,6 @@
                   {$_("Page: {pageNumber}", {
                     values: { pageNumber: quote.page ?? "--" },
                   })}
-                </span>
-
-                <span
-                  class="line-clamp-1 text-ellipsis italic text-gray-700 dark:text-gray-100"
-                  title={quote.comment}
-                >
-                  {$_("Comment:")}
-                  {@html quote.comment ?? "--"}
                 </span>
               </div>
             </div>
@@ -220,18 +203,6 @@
             max="999"
           />
         </div>
-
-        <!--        <div>-->
-        <!--          <label class="mb-2 inline-block" for="comment">-->
-        <!--            {$_("Add comment (optional):")}-->
-        <!--          </label>-->
-        <!--          <textarea-->
-        <!--            class="inpt"-->
-        <!--            id="comment"-->
-        <!--            bind:value={newQuotation.comment}-->
-        <!--            placeholder="comment"-->
-        <!--          ></textarea>-->
-        <!--        </div>-->
 
         <button class="btn btn-black" type="submit" disabled={!newQuotation.nid}>
           {$_("Add Quotation")}
