@@ -172,7 +172,9 @@
             {@const dsTypeLabel = $datasourceChoices.type.find(
               entry => entry.value === dataSource.type,
             )?.label}
-            <div class="flex justify-start gap-1 bg-gray-50 p-1 text-left font-bold">
+            <div
+              class="flex justify-start gap-1 bg-gray-50 p-1 text-left font-bold dark:bg-gray-800"
+            >
               <input
                 type="radio"
                 id="{fieldname}-data-source-{dataSource.nid}"
