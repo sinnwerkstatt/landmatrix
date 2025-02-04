@@ -53,9 +53,11 @@
   let oldQuotations = $derived(oldObject.selected_version.ds_quotations)
 
   let newDataSources = $derived($newObject.selected_version.datasources)
-  let newQuotations: { [key: string]: { nid: string }[] | undefined } = $state(
-    $mutableObj.selected_version.ds_quotations,
-  )
+  let newQuotations: { [key: string]: { nid: string }[] | undefined } = $state({})
+
+  $effect(() => {
+    newQuotations = $mutableObj.selected_version.ds_quotations
+  })
 
   let quotationsDiff = $derived(diff(oldQuotations, newQuotations))
 
@@ -199,7 +201,7 @@
                 <div>
                   {newQuotes.length > 0
                     ? newQuotes
-                        .map(q => oldDataSources.findIndex(ds => ds.nid === q.nid) + 1)
+                        .map(q => newDataSources.findIndex(ds => ds.nid === q.nid) + 1)
                         .join(", ")
                     : ""}
                 </div>
@@ -302,10 +304,10 @@
       <span class="flex-grow">
         {#if areAllChangesAttributed}
           <ins><CheckIcon /></ins>
-          {$_("No all changes attributed")}
+          {$_("All changes attributed")}
         {:else}
           <del><XIcon /></del>
-          {$_("All changes attributed")}
+          {$_("Not all changes attributed")}
         {/if}
       </span>
       <!-- svelte-ignore a11y_autofocus -->
