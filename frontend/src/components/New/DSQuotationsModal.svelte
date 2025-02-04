@@ -11,6 +11,7 @@
 
   interface Props {
     open: boolean
+    fieldname: string
     quotes?: QuotationItem[]
     dataSources?: DataSource[]
     editable?: boolean
@@ -22,6 +23,7 @@
     quotes = $bindable(),
     dataSources = [],
     editable = false,
+    fieldname,
     label,
   }: Props = $props()
 
@@ -161,7 +163,7 @@
         {$_("Create:")}
       </h2>
       <form class="mt-6 flex flex-col gap-4" {onsubmit}>
-        <fieldset class="flex flex-wrap gap-y-2">
+        <fieldset class="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4">
           <legend class="mb-2 inline-block">
             {$_("Select data source:")}
           </legend>
@@ -170,17 +172,17 @@
             {@const dsTypeLabel = $datasourceChoices.type.find(
               entry => entry.value === dataSource.type,
             )?.label}
-            <div class="basis-1/2 font-bold xl:basis-1/3">
+            <div class="flex justify-start gap-1 bg-gray-50 p-1 text-left font-bold">
               <input
                 type="radio"
-                id="data-source-{dataSource.nid}"
+                id="{fieldname}-data-source-{dataSource.nid}"
                 name="data-source-nid"
                 bind:group={newQuotation.nid}
                 value={dataSource.nid}
               />
               <label
-                class="inline-flex cursor-pointer flex-col"
-                for="data-source-{dataSource.nid}"
+                class="inline-flex flex-grow cursor-pointer flex-col"
+                for="{fieldname}-data-source-{dataSource.nid}"
               >
                 {padLeadingZeros(2, i + 1)}. {$_("Data Source")}
 
@@ -202,7 +204,6 @@
             </div>
           {/each}
         </fieldset>
-
         <div>
           <label class="mb-2 inline-block" for="page-number">
             {$_("Specify page in uploaded file (optional):")}
@@ -218,17 +219,17 @@
           />
         </div>
 
-        <div>
-          <label class="mb-2 inline-block" for="comment">
-            {$_("Add comment (optional):")}
-          </label>
-          <textarea
-            class="inpt"
-            id="comment"
-            bind:value={newQuotation.comment}
-            placeholder="comment"
-          ></textarea>
-        </div>
+        <!--        <div>-->
+        <!--          <label class="mb-2 inline-block" for="comment">-->
+        <!--            {$_("Add comment (optional):")}-->
+        <!--          </label>-->
+        <!--          <textarea-->
+        <!--            class="inpt"-->
+        <!--            id="comment"-->
+        <!--            bind:value={newQuotation.comment}-->
+        <!--            placeholder="comment"-->
+        <!--          ></textarea>-->
+        <!--        </div>-->
 
         <button class="btn btn-black" type="submit" disabled={!newQuotation.nid}>
           {$_("Add Quotation")}

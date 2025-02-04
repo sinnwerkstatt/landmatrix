@@ -76,6 +76,7 @@
       bind:quotes={$mutableObj.selected_version.ds_quotations[fieldname]}
       {dataSources}
       label={richField.label}
+      {fieldname}
       editable
     />
   </div>
