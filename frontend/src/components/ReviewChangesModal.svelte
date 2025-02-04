@@ -14,6 +14,7 @@
   import { getTypedKeys } from "$lib/helpers"
   import type { Model } from "$lib/types/data"
 
+  import { getMutableObject } from "$components/Data/stores"
   import SubModelDiff from "$components/DSQuotations/SubModelDiff.svelte"
   import CheckIcon from "$components/icons/CheckIcon.svelte"
   import XIcon from "$components/icons/XIcon.svelte"
@@ -38,6 +39,8 @@
   const getRichField = (fieldname: string) =>
     (model === "deal" ? $dealFields : $investorFields)[fieldname]
 
+  const mutableObj = getMutableObject(model)
+
   export const subModels: SubModel[] = [
     { key: "locations", label: $_("Locations") },
     { key: "contracts", label: $_("Contracts") },
@@ -46,27 +49,42 @@
   ]
 
   let objDiff = $derived(diff(oldObject.selected_version, $newObject.selected_version))
-
   let oldDataSources = $derived(oldObject.selected_version.datasources)
   let oldQuotations = $derived(oldObject.selected_version.ds_quotations)
 
   let newDataSources = $derived($newObject.selected_version.datasources)
-  let newQuotations: { [key: string]: { nid: string }[] | undefined } = $state({})
+  let newQuotations: { [key: string]: { nid: string }[] | undefined } = $state(
+    $mutableObj.selected_version.ds_quotations,
+  )
 
-  $effect(() => {
-    newQuotations = oldQuotations
-  })
+  let quotationsDiff = $derived(diff(oldQuotations, newQuotations))
 
   let fieldKeys: string[] = $derived.by(() => {
     const subModelKeys = subModels.map(m => m.key)
-    return getTypedKeys(objDiff).filter(
-      k => !subModelKeys.includes(k) && k !== "ds_quotations",
-    )
+    return [
+      ...new Set([
+        ...getTypedKeys(objDiff).filter(
+          k => !subModelKeys.includes(k) && k !== "ds_quotations",
+        ),
+        ...getTypedKeys(quotationsDiff),
+      ]),
+    ]
   })
 
   let selectedDiffKeys: string[] = $state([])
 
   let doOverwriteOldQuotations = $state(true)
+
+  let areAllChangesAttributed = $derived.by(() =>
+    fieldKeys.every(key => {
+      const oldQuotes = oldQuotations[key] ?? []
+      const newQuotes = newQuotations[key] ?? []
+      return !(
+        oldQuotes.length === newQuotes.length &&
+        oldQuotes.every(q => newQuotes.map(q => q.nid).includes(q.nid))
+      )
+    }),
+  )
 </script>
 
 <Modal bind:open class="h-3/4 w-3/4" dismissible>
@@ -142,17 +160,21 @@
                 {richField.label}
 
                 <div class="flex items-center gap-2">
-                  <del>
-                    {#if oldValue && !(Array.isArray(oldValue) && oldValue.length === 0)}
-                      <DisplayField value={oldValue} extras={richField.extras} />
-                    {/if}
-                  </del>
-                  <span>&RightArrow;</span>
-                  <ins>
-                    {#if newValue && !(Array.isArray(newValue) && newValue.length === 0)}
-                      <DisplayField value={newValue} extras={richField.extras} />
-                    {/if}
-                  </ins>
+                  {#if key in objDiff}
+                    <del>
+                      {#if oldValue && !(Array.isArray(oldValue) && oldValue.length === 0)}
+                        <DisplayField value={oldValue} extras={richField.extras} />
+                      {/if}
+                    </del>
+                    <span>&RightArrow;</span>
+                    <ins>
+                      {#if newValue && !(Array.isArray(newValue) && newValue.length === 0)}
+                        <DisplayField value={newValue} extras={richField.extras} />
+                      {/if}
+                    </ins>
+                  {:else}
+                    <span class="italic">{$_("No value change")}</span>
+                  {/if}
                 </div>
               {:else}
                 <span class="text-red">Unknown field {key}</span>
@@ -190,17 +212,6 @@
 
     <aside class="overflow-y-scroll bg-gray-50 p-2 dark:bg-gray-800">
       <h4 class="heading5">{$_("Data Sources")}</h4>
-
-      <!--{#if !selectedDiffKey}-->
-      <!--  <CheckboxSwitch-->
-      <!--    class="m-0 px-0 pb-2"-->
-      <!--    id="replace-sources-switch"-->
-      <!--    bind:checked={doOverwriteOldQuotations}-->
-      <!--    onchange={() => showContextHelp.toggle()}-->
-      <!--  >-->
-      <!--    Replace sources-->
-      <!--  </CheckboxSwitch>-->
-      <!--{/if}-->
 
       <ol class="flex flex-col gap-2">
         {#each newDataSources as dataSource, i}
@@ -287,7 +298,16 @@
       </ol>
     </aside>
 
-    <div class="col-span-full flex justify-end gap-4">
+    <div class="col-span-full flex gap-4">
+      <span class="flex-grow">
+        {#if areAllChangesAttributed}
+          <ins><CheckIcon /></ins>
+          {$_("No all changes attributed")}
+        {:else}
+          <del><XIcon /></del>
+          {$_("All changes attributed")}
+        {/if}
+      </span>
       <!-- svelte-ignore a11y_autofocus -->
       <button
         type="button"
