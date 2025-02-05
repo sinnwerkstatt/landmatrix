@@ -6,7 +6,7 @@
   import { datasourceChoices } from "$lib/fieldChoices"
   import type { DataSource, QuotationItem } from "$lib/types/data"
 
-  import IconTrashcan from "$components/Accountability/icons/IconTrashcan.svelte"
+  import TrashIcon from "$components/icons/TrashIcon.svelte"
   import Modal from "$components/Modal.svelte"
 
   interface Props {
@@ -125,7 +125,7 @@
                 title={$_("Delete Quotation")}
                 onclick={() => deleteQuotation(i)}
               >
-                <IconTrashcan />
+                <TrashIcon />
               </button>
             {/if}
           </li>
