@@ -867,3 +867,5 @@ NEW_BLOCKS = [
 ]
 
 CONTENT_BLOCKS += [("full_width_container", FullWidthContainerBlock(form_classname=""))]
+
+DOCUMENT_BLOCKS = [("document", MyDocumentChooserBlock()), ("text", CharBlock())]
