@@ -61,7 +61,12 @@
       evt.pixel,
       feature => feature as Feature<Point>,
     )
-    if (feature) $filters.region_id = feature.getProperties().regionID
+    if (feature) {
+      $filters.region_id = feature.getProperties().regionID
+      $filters.country_id = undefined
+    }
+
+    refreshMap()
   }
 
   const countryCircleClick = (evt: MapBrowserEvent<UIEvent>) => {
@@ -69,8 +74,14 @@
       evt.pixel,
       feature => feature as Feature<Point>,
     )
-    if (feature) $filters.country_id = feature.getProperties().countryID
+    if (feature) {
+      $filters.region_id = undefined
+      $filters.country_id = feature.getProperties().countryID
+    }
+
+    refreshMap()
   }
+
   const singleMarkerClick = (evt: MapBrowserEvent<UIEvent>) => {
     if (!bigmap) return
 

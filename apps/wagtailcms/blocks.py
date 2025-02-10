@@ -17,6 +17,7 @@ from apps.landmatrix.models.deal import DealHull
 from .twitter import TwitterTimeline
 
 
+# TODO: Rename to MyRichTextBlock
 class RichTextBlock(blocks.RichTextBlock):
     def get_api_representation(self, value, context=None):
         prep_val = self.get_prep_value(value)
@@ -608,90 +609,6 @@ class MapDataChartsBlock(StructBlock):
         return context
 
 
-# def get_legend():
-#     return {
-#         "implementation": {
-#             "label": _("Implementation status"),
-#             "attributes": [
-#                 {
-#                     "label": _("Project not started"),
-#                     "id": "Project not started",
-#                     "color": "#1D6914",
-#                 },
-#                 {
-#                     "label": _("Startup phase (no production)"),
-#                     "id": "Startup phase (no production)",
-#                     "color": "#2A4BD7",
-#                 },
-#                 {
-#                     "label": _("In operation (production)"),
-#                     "id": "In operation (production)",
-#                     "color": "#575757",
-#                 },
-#                 {
-#                     "label": _("Project abandoned"),
-#                     "id": "Project abandoned",
-#                     "color": "#AD2323",
-#                 },
-#                 {"label": _("Unknown"), "id": "Unknown", "color": "#bab8b8"},
-#             ],
-#         },
-#         "intention": {
-#             "label": _("Intention of investment"),
-#             "attributes": [
-#                 {
-#                     "label": _("Agriculture"),
-#                     "id": "Agriculture",
-#                     "color": "#1D6914",
-#                 },
-#                 {"label": _("Forestry"), "id": "Forestry", "color": "#2A4BD7"},
-#                 {"label": _("Mining"), "id": "Mining", "color": "#814A19"},
-#                 {"label": _("Tourism"), "id": "Tourism", "color": "#9DAFFF"},
-#                 {"label": _("Industry"), "id": "Industry", "color": "#AD2323"},
-#                 {
-#                     "label": _("Conservation"),
-#                     "id": "Conservation",
-#                     "color": "#575757",
-#                 },
-#                 {
-#                     "label": _("Renewable Energy"),
-#                     "id": "Renewable Energy",
-#                     "color": "#81C57A",
-#                 },
-#                 {"label": _("Other"), "id": "Other", "color": "#8126C0"},
-#                 {"label": _("Unknown"), "id": "Unknown", "color": "#bab8b8"},
-#             ],
-#         },
-#         "level_of_accuracy": {
-#             "label": _("Spatial accuracy"),
-#             "attributes": [
-#                 {"label": _("Country"), "id": "Country", "color": "#1D6914"},
-#                 {
-#                     "label": _("Administrative region"),
-#                     "id": "Administrative region",
-#                     "color": "#8126C0",
-#                 },
-#                 {
-#                     "label": _("Approximate location"),
-#                     "id": "Approximate location",
-#                     "color": "#575757",
-#                 },
-#                 {
-#                     "label": _("Exact location"),
-#                     "id": "Exact location",
-#                     "color": "#AD2323",
-#                 },
-#                 {
-#                     "label": _("Coordinates"),
-#                     "id": "Coordinates",
-#                     "color": "#814A19",
-#                 },
-#                 {"label": _("Unknown"), "id": "Unknown", "color": "#bab8b8"},
-#             ],
-#         },
-#     }
-
-
 class LatestDatabaseModificationsBlock(StructBlock):
     limit = blocks.CharBlock()
 
@@ -867,3 +784,14 @@ NEW_BLOCKS = [
 ]
 
 CONTENT_BLOCKS += [("full_width_container", FullWidthContainerBlock(form_classname=""))]
+
+DOCUMENT_BLOCKS = [("document", MyDocumentChooserBlock()), ("text", CharBlock())]
+
+BLOCKS = [
+    *CONTENT_BLOCKS,
+    *NEW_BLOCKS,
+    *DOCUMENT_BLOCKS,
+    *SIMPLE_CONTENT_BLOCKS,
+    *DATA_BLOCKS,
+    *COLUMN_BLOCKS,
+]

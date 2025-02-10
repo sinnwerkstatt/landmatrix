@@ -62,11 +62,12 @@
 
   <div>
     <button
-      class="italic text-purple-400"
+      class="italic text-purple-400 disabled:text-gray-500 dark:disabled:text-gray-100"
       type="button"
       onclick={() => {
         showDSQuotationModal = true
       }}
+      disabled={!value || (Array.isArray(value) && value.length === 0)}
     >
       {$_("Sources")}: {quotes.length}
     </button>

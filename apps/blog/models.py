@@ -16,7 +16,6 @@ from modelcluster.fields import ParentalKey, ParentalManyToManyField
 from rest_framework.fields import ListField
 from wagtail.admin.panels import FieldPanel, FieldRowPanel, MultiFieldPanel
 from wagtail.api import APIField
-from wagtail.blocks import CharBlock
 from wagtail.fields import StreamField
 from wagtail.images import get_image_model_string
 from wagtail.images.models import SourceImageIOError
@@ -26,7 +25,7 @@ from wagtail.snippets.models import register_snippet
 from wagtail_headless_preview.models import HeadlessPreviewMixin
 
 from apps.accounts.models import User
-from apps.wagtailcms.blocks import SIMPLE_CONTENT_BLOCKS, MyDocumentChooserBlock
+from apps.wagtailcms.blocks import DOCUMENT_BLOCKS, SIMPLE_CONTENT_BLOCKS
 
 from .utils import unique_slugify
 
@@ -215,7 +214,7 @@ def limit_author_choices():
 class BlogPage(HeadlessPreviewMixin, Page):
     body = StreamField(SIMPLE_CONTENT_BLOCKS)
     documents = StreamField(
-        [("document", MyDocumentChooserBlock()), ("text", CharBlock())],
+        DOCUMENT_BLOCKS,
         null=True,
         blank=True,
     )

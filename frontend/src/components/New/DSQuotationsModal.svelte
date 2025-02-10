@@ -6,7 +6,7 @@
   import { datasourceChoices } from "$lib/fieldChoices"
   import type { DataSource, QuotationItem } from "$lib/types/data"
 
-  import IconTrashcan from "$components/Accountability/icons/IconTrashcan.svelte"
+  import TrashIcon from "$components/icons/TrashIcon.svelte"
   import Modal from "$components/Modal.svelte"
 
   interface Props {
@@ -26,15 +26,6 @@
     fieldname,
     label,
   }: Props = $props()
-
-  // let sortedQuotes: QuotationItem[] = $derived(
-  //   quotes.toSorted((a, b) => {
-  //     return (
-  //       dataSources.findIndex(ds => ds.nid === a.nid) -
-  //       dataSources.findIndex(ds => ds.nid === b.nid)
-  //     )
-  //   }),
-  // )
 
   type PartialQuotationItem = Partial<QuotationItem>
 
@@ -122,14 +113,6 @@
                     values: { pageNumber: quote.page ?? "--" },
                   })}
                 </span>
-
-                <span
-                  class="line-clamp-1 text-ellipsis italic text-gray-700 dark:text-gray-100"
-                  title={quote.comment}
-                >
-                  {$_("Comment:")}
-                  {@html quote.comment ?? "--"}
-                </span>
               </div>
             </div>
 
@@ -142,7 +125,7 @@
                 title={$_("Delete Quotation")}
                 onclick={() => deleteQuotation(i)}
               >
-                <IconTrashcan />
+                <TrashIcon />
               </button>
             {/if}
           </li>
@@ -220,18 +203,6 @@
             max="999"
           />
         </div>
-
-        <!--        <div>-->
-        <!--          <label class="mb-2 inline-block" for="comment">-->
-        <!--            {$_("Add comment (optional):")}-->
-        <!--          </label>-->
-        <!--          <textarea-->
-        <!--            class="inpt"-->
-        <!--            id="comment"-->
-        <!--            bind:value={newQuotation.comment}-->
-        <!--            placeholder="comment"-->
-        <!--          ></textarea>-->
-        <!--        </div>-->
 
         <button class="btn btn-black" type="submit" disabled={!newQuotation.nid}>
           {$_("Add Quotation")}

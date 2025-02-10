@@ -1,7 +1,13 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import type { DealVersion2, InvestorVersion2 } from "$lib/types/data"
+  import type {
+    DataSource,
+    DealVersion2,
+    InvestorVersion2,
+    Model,
+    Mutable,
+  } from "$lib/types/data"
 
   import SubmodelEditField from "$components/Fields/SubmodelEditField.svelte"
 
@@ -9,23 +15,27 @@
   import Entry from "./Entry.svelte"
 
   interface Props {
-    version: DealVersion2 | InvestorVersion2
+    model: Model
+    version: Mutable<DealVersion2> | Mutable<InvestorVersion2>
   }
 
-  let { version = $bindable() }: Props = $props()
+  let { version = $bindable(), model }: Props = $props()
 
-  let datasources = $state(version.datasources)
+  // FIXME: Types
+  let datasources = $state(version.datasources) as DataSource[]
 
   const onchange = () => {
-    version.datasources = datasources
+    version = { ...version, datasources: datasources as never }
   }
 </script>
 
 <SubmodelEditField
+  {model}
   label={$_("Data Source")}
   bind:entries={datasources}
   createEntry={createDataSource}
   isEmpty={isEmptyDataSource}
   entryComponent={Entry}
   {onchange}
+  deleteQuotations
 />

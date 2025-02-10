@@ -8,7 +8,7 @@
     T extends Component<infer Y extends Record<string, unknown>> ? Y["extras"] : never
 </script>
 
-<script lang="ts" generics="T extends Submodel,  X extends Component">
+<script lang="ts" generics="T extends Submodel, X extends Component<any, any, any>">
   import { onMount, type Snippet } from "svelte"
   import { _ } from "svelte-i18n"
   import { slide } from "svelte/transition"
@@ -17,20 +17,24 @@
   import { page } from "$app/state"
 
   import { newNanoid } from "$lib/helpers"
+  import type { Model } from "$lib/types/data"
   import { isEmptySubmodel, type SubmodelIdKeys } from "$lib/utils/dataProcessing"
   import { scrollEntryIntoView } from "$lib/utils/domHelpers"
 
+  import ConfirmSubmodelDeletionModal from "$components/ConfirmSubmodelDeletionModal.svelte"
+  import { getMutableObject } from "$components/Data/stores"
   import ChevronDownIcon from "$components/icons/ChevronDownIcon.svelte"
   import PlusIcon from "$components/icons/PlusIcon.svelte"
   import TrashIcon from "$components/icons/TrashIcon.svelte"
 
   interface Props {
     /* eslint-disable no-undef */
+    model?: Model
     entries: T[]
     createEntry: (nid: string) => T
     entryComponent: X
-    extras: ExtraProps<X>
-    filterFn: (entry: T) => boolean
+    extras?: ExtraProps<X>
+    filterFn?: (entry: T) => boolean
     isEmpty?: (entry: T) => boolean
     label: string
     selectedEntryId?: string | undefined // for external reference
@@ -38,9 +42,11 @@
     extraHeader?: Snippet<[T]>
     /* eslint-enable no-undef */
     onchange?: () => void
+    deleteQuotations?: boolean
   }
 
   let {
+    model = "deal",
     entries = $bindable(),
     createEntry,
     entryComponent,
@@ -52,6 +58,7 @@
     entryIdKey = "nid",
     extraHeader,
     onchange,
+    deleteQuotations = false,
   }: Props = $props()
 
   $effect(() => {
@@ -63,6 +70,8 @@
   })
 
   onMount(() => scrollEntryIntoView(selectedEntryId))
+
+  const mutableObj = getMutableObject(model)
 
   const addEntry = () => {
     if (selectedEntryForm && !selectedEntryForm.checkValidity()) {
@@ -82,12 +91,20 @@
 
     if (!entry) return
 
-    if (!isEmpty(entry)) {
-      const areYouSure = confirm(`${$_("Remove")} ${label} #${id}?`)
-      if (!areYouSure) return
+    entries = entries.filter(x => `${x[entryIdKey]}` !== id)
+
+    if (deleteQuotations) {
+      $mutableObj.selected_version.ds_quotations = Object.fromEntries(
+        Object.entries($mutableObj.selected_version.ds_quotations)
+          .map(([k, v]) => [k, v.filter(q => q.nid !== id)])
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          .filter(([_, v]) => !!v && v.length > 0),
+      )
     }
 
-    entries = entries.filter(x => `${x[entryIdKey]}` !== id)
+    showConfirmDeletionModal = false
+    toBeDeletedId = null
+
     onchange?.()
     goto("")
   }
@@ -106,7 +123,18 @@
 
     goto(selectedEntryId === id ? "" : `#${id}`)
   }
+
+  let showConfirmDeletionModal = $state(false)
+  let toBeDeletedId: null | string = $state(null)
 </script>
+
+<ConfirmSubmodelDeletionModal
+  bind:open={showConfirmDeletionModal}
+  onconfirm={() => removeEntry(toBeDeletedId)}
+  submodelLabel={label}
+  id={toBeDeletedId}
+  {deleteQuotations}
+/>
 
 <section class="w-full">
   <div class="flex w-full flex-col gap-2">
@@ -152,7 +180,14 @@
 
           <button
             class="self-stretch p-2"
-            onclick={() => removeEntry(idAsString)}
+            onclick={() => {
+              if (!isEmpty(entry)) {
+                showConfirmDeletionModal = true
+                toBeDeletedId = idAsString
+              } else {
+                removeEntry(idAsString)
+              }
+            }}
             type="button"
           >
             <TrashIcon class="h-8 w-6 text-red-600" />
