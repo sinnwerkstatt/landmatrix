@@ -47,7 +47,6 @@ django-email-bandit = "*"
 
 [tool.poetry.group.dev.dependencies]
 ipdb = "*"
-pre-commit = "*"
 mypy = "*"
 django-extensions = "*"
 pytest-django = "*"
