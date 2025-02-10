@@ -11,8 +11,6 @@ import wagtail.images.blocks
 
 class Migration(migrations.Migration):
 
-    replaces = [('wagtailcms', '0001_squashed_0017_auto_20201225_2158'), ('wagtailcms', '0002_auto_20201230_1038'), ('wagtailcms', '0003_auto_20210510_1706'), ('wagtailcms', '0004_auto_20210906_1349'), ('wagtailcms', '0005_auto_20220509_2053')]
-
     initial = True
 
     dependencies = [

@@ -6,8 +6,6 @@ import wagtail.fields
 
 class Migration(migrations.Migration):
 
-    replaces = [('message', '0001_initial'), ('message', '0002_auto_20201208_0931'), ('message', '0003_auto_20201208_1423'), ('message', '0004_message_sort_order'), ('message', '0005_auto_20201208_1522'), ('message', '0006_auto_20201209_1312')]
-
     initial = True
 
     dependencies = [
