@@ -92,7 +92,6 @@ class InvestorHull(BaseHull):
     # This method is used by DRF.
     def selected_version(self):
         if hasattr(self, "_selected_version_id") and self._selected_version_id:
-
             try:
                 return self.versions.get(id=self._selected_version_id)
             except InvestorVersion.DoesNotExist:
@@ -100,7 +99,6 @@ class InvestorHull(BaseHull):
         return self.active_version or self.draft_version
 
     def add_draft(self, created_by: User = None) -> "InvestorVersion":
-
         dv = InvestorVersion.objects.create(
             investor=self,
             created_by=created_by,
@@ -404,7 +402,6 @@ class InvestorVersion(BaseVersion):
         to_user_id: int = None,
         comment="",
     ):
-
         old_draft_status = self.status
 
         super().change_status(transition=transition, user=user, to_user_id=to_user_id)

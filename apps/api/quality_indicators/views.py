@@ -66,7 +66,6 @@ def specs(request: Request) -> Response:
 @api_view()
 @permission_classes([IsReporterOrHigher])
 def deal_counts(request: Request) -> Response:
-
     qs = DealHull.objects.public()
     qs = qs.filter(parse_filters(request))
 
@@ -130,7 +129,6 @@ def investor_counts(request: Request) -> Response:
 @api_view()
 @permission_classes([IsReporterOrHigher])
 def stats(request: Request) -> Response:
-
     return Response(
         data={
             "deal": DealQISnapshotSerializer(

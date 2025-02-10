@@ -17,15 +17,15 @@ class TestHullBase(AbstractModelTestCase):
         assert hull.deleted_comment == ""
 
         assert hull.first_created_by is None
-        assert (
-            hull.first_created_at == timezone.now()
-        ), "Initialized to UTC now on creation."
+        assert hull.first_created_at == timezone.now(), (
+            "Initialized to UTC now on creation."
+        )
 
     def test_creation_with_date(self):
         hull: BaseHull = self.derived_model.objects.create(
             first_created_at="2012-07-26T00:00:00Z",
         )
 
-        assert (
-            hull.first_created_at == "2012-07-26T00:00:00Z"
-        ), "Initialized to given datetime, i.e. 2012-07-26."
+        assert hull.first_created_at == "2012-07-26T00:00:00Z", (
+            "Initialized to given datetime, i.e. 2012-07-26."
+        )

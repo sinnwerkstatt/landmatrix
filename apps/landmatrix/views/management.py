@@ -37,16 +37,12 @@ class Management(View):
         region_or_country = Q()
         if country_id := request.user.country_id:
             region_or_country |= (
-                Q(country_id=country_id)
-                if is_deal
-                else Q()  # See: Issue #833
+                Q(country_id=country_id) if is_deal else Q()  # See: Issue #833
                 # else Q(active_version__country_id=country_id)
             )
         if region_id := request.user.region_id:
             region_or_country |= (
-                Q(country__region_id=region_id)
-                if is_deal
-                else Q()  # See: Issue #833
+                Q(country__region_id=region_id) if is_deal else Q()  # See: Issue #833
                 # else Q(active_version__country__region_id=region_id)
             )
 

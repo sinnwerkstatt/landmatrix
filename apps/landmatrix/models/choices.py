@@ -163,8 +163,9 @@ class NatureOfDealEnum(TextChoices):
     OUTRIGHT_PURCHASE = "OUTRIGHT_PURCHASE", _("Outright purchase")
     LEASE = "LEASE", _("Lease")
     CONCESSION = "CONCESSION", _("Concession")
-    EXPLOITATION_PERMIT = "EXPLOITATION_PERMIT", _(
-        "Exploitation permit / license / concession (for mineral resources)"
+    EXPLOITATION_PERMIT = (
+        "EXPLOITATION_PERMIT",
+        _("Exploitation permit / license / concession (for mineral resources)"),
     )
     PURE_CONTRACT_FARMING = "PURE_CONTRACT_FARMING", _("Pure contract farming")
     OTHER = "OTHER", _("Other")
@@ -261,17 +262,25 @@ HA_AREA_CHOICES = HaAreasEnum.choices
 
 
 class RecognitionStatusEnum(TextChoices):
-    INDIGENOUS_RIGHTS_RECOGNIZED = "INDIGENOUS_RIGHTS_RECOGNIZED", _(
-        "Indigenous Peoples traditional or customary rights recognized by government"
+    INDIGENOUS_RIGHTS_RECOGNIZED = (
+        "INDIGENOUS_RIGHTS_RECOGNIZED",
+        _(
+            "Indigenous Peoples traditional or customary rights recognized by government"
+        ),
     )
-    INDIGENOUS_RIGHTS_NOT_RECOGNIZED = "INDIGENOUS_RIGHTS_NOT_RECOGNIZED", _(
-        "Indigenous Peoples traditional or customary rights not recognized by government"
+    INDIGENOUS_RIGHTS_NOT_RECOGNIZED = (
+        "INDIGENOUS_RIGHTS_NOT_RECOGNIZED",
+        _(
+            "Indigenous Peoples traditional or customary rights not recognized by government"
+        ),
     )
-    COMMUNITY_RIGHTS_RECOGNIZED = "COMMUNITY_RIGHTS_RECOGNIZED", _(
-        "Community traditional or customary rights recognized by government"
+    COMMUNITY_RIGHTS_RECOGNIZED = (
+        "COMMUNITY_RIGHTS_RECOGNIZED",
+        _("Community traditional or customary rights recognized by government"),
     )
-    COMMUNITY_RIGHTS_NOT_RECOGNIZED = "COMMUNITY_RIGHTS_NOT_RECOGNIZED", _(
-        "Community traditional or customary rights not recognized by government"
+    COMMUNITY_RIGHTS_NOT_RECOGNIZED = (
+        "COMMUNITY_RIGHTS_NOT_RECOGNIZED",
+        _("Community traditional or customary rights not recognized by government"),
     )
 
 
@@ -301,8 +310,9 @@ COMMUNITY_REACTION_CHOICES = CommunityReactionEnum.choices
 
 
 class NegativeImpactEnum(TextChoices):
-    ENVIRONMENTAL_DEGRADATION = "ENVIRONMENTAL_DEGRADATION", _(
-        "Environmental degradation"
+    ENVIRONMENTAL_DEGRADATION = (
+        "ENVIRONMENTAL_DEGRADATION",
+        _("Environmental degradation"),
     )
     SOCIO_ECONOMIC = "SOCIO_ECONOMIC", _("Socio-economic")
     CULTURAL_LOSS = "CULTURAL_LOSS", _("Cultural loss")
@@ -319,14 +329,16 @@ NEGATIVE_IMPACTS_CHOICES = NegativeImpactEnum.choices
 class BenefitsEnum(TextChoices):
     HEALTH = "HEALTH", _("Health")
     EDUCATION = "EDUCATION", _("Education")
-    PRODUCTIVE_INFRASTRUCTURE = "PRODUCTIVE_INFRASTRUCTURE", _(
-        "Productive infrastructure (e.g. irrigation, tractors, machinery...)"
+    PRODUCTIVE_INFRASTRUCTURE = (
+        "PRODUCTIVE_INFRASTRUCTURE",
+        _("Productive infrastructure (e.g. irrigation, tractors, machinery...)"),
     )
     ROADS = "ROADS", _("Roads")
     CAPACITY_BUILDING = "CAPACITY_BUILDING", _("Capacity building")
     FINANCIAL_SUPPORT = "FINANCIAL_SUPPORT", _("Financial support")
-    COMMUNITY_SHARES = "COMMUNITY_SHARES", _(
-        "Community shares in the investment project"
+    COMMUNITY_SHARES = (
+        "COMMUNITY_SHARES",
+        _("Community shares in the investment project"),
     )
     OTHER = "OTHER", _("Other")
 
@@ -349,8 +361,9 @@ FORMER_LAND_OWNER_CHOICES = FormerLandOwnerEnum.choices
 
 
 class FormerLandUseEnum(TextChoices):
-    COMMERCIAL_AGRICULTURE = "COMMERCIAL_AGRICULTURE", _(
-        "Commercial (large-scale) agriculture"
+    COMMERCIAL_AGRICULTURE = (
+        "COMMERCIAL_AGRICULTURE",
+        _("Commercial (large-scale) agriculture"),
     )
     SMALLHOLDER_AGRICULTURE = "SMALLHOLDER_AGRICULTURE", _("Smallholder agriculture")
     SHIFTING_CULTIVATION = "SHIFTING_CULTIVATION", _("Shifting cultivation")
@@ -573,15 +586,19 @@ MINERALS_CHOICES = MineralsEnum.choices
 
 
 class ActorEnum(TextChoices):
-    GOVERNMENT_OR_STATE_INSTITUTIONS = "GOVERNMENT_OR_STATE_INSTITUTIONS", _(
-        "Government / state institutions (government, ministries, departments, agencies etc.)"
+    GOVERNMENT_OR_STATE_INSTITUTIONS = (
+        "GOVERNMENT_OR_STATE_INSTITUTIONS",
+        _(
+            "Government / state institutions (government, ministries, departments, agencies etc.)"
+        ),
     )
     TRADITIONAL_LAND_OWNERS_OR_COMMUNITIES = (
         "TRADITIONAL_LAND_OWNERS_OR_COMMUNITIES",
         _("Traditional land-owners / communities"),
     )
-    TRADITIONAL_LOCAL_AUTHORITY = "TRADITIONAL_LOCAL_AUTHORITY", _(
-        "Traditional local authority (e.g. Chiefdom council / Chiefs)"
+    TRADITIONAL_LOCAL_AUTHORITY = (
+        "TRADITIONAL_LOCAL_AUTHORITY",
+        _("Traditional local authority (e.g. Chiefdom council / Chiefs)"),
     )
     BROKER = "BROKER", _("Broker")
     INTERMEDIARY = "INTERMEDIARY", _("Intermediary")
@@ -604,19 +621,23 @@ ELECTRICITY_GENERATION_ITEMS = serialize_enum(ElectricityGenerationEnum)
 
 class CarbonSequestrationEnum(TextChoices):
     REFORESTATION = "REFORESTATION", _("Reforestation & afforestation")
-    AVOIDED_FOREST_CONVERSION = "AVOIDED_FOREST_CONVERSION", _(
-        "Avoided forest conversion"
+    AVOIDED_FOREST_CONVERSION = (
+        "AVOIDED_FOREST_CONVERSION",
+        _("Avoided forest conversion"),
     )
-    AVOIDED_GRASSLAND_CONVERSION = "AVOIDED_GRASSLAND_CONVERSION", _(
-        "Avoided grassland conversion"
+    AVOIDED_GRASSLAND_CONVERSION = (
+        "AVOIDED_GRASSLAND_CONVERSION",
+        _("Avoided grassland conversion"),
     )
     PEATLAND_RESTORATION = "PEATLAND_RESTORATION", _("Peatland restoration")
-    IMPROVED_FOREST_MANAGEMENT = "IMPROVED_FOREST_MANAGEMENT", _(
-        "Improved forest management"
+    IMPROVED_FOREST_MANAGEMENT = (
+        "IMPROVED_FOREST_MANAGEMENT",
+        _("Improved forest management"),
     )
     SUSTAINABLE_AGRICULTURE = "SUSTAINABLE_AGRICULTURE", _("Sustainable agriculture")
-    SUSTAINABLE_GRASSLAND_MANAGEMENT = "SUSTAINABLE_GRASSLAND_MANAGEMENT", _(
-        "Sustainable grassland management"
+    SUSTAINABLE_GRASSLAND_MANAGEMENT = (
+        "SUSTAINABLE_GRASSLAND_MANAGEMENT",
+        _("Sustainable grassland management"),
     )
     RICE_EMISSION_REDUCTIONS = "RICE_EMISSION_REDUCTIONS", _("Rice emission reductions")
     SOLAR_PARK = "SOLAR_PARK", _("Solar park")
@@ -669,14 +690,16 @@ NOT_PUBLIC_REASON_CHOICES = NotPublicReasonEnum.choices
 
 class DatasourceTypeEnum(TextChoices):
     MEDIA_REPORT = "MEDIA_REPORT", _("Media report")
-    RESEARCH_PAPER_OR_POLICY_REPORT = "RESEARCH_PAPER_OR_POLICY_REPORT", _(
-        "Research Paper / Policy Report"
+    RESEARCH_PAPER_OR_POLICY_REPORT = (
+        "RESEARCH_PAPER_OR_POLICY_REPORT",
+        _("Research Paper / Policy Report"),
     )
     GOVERNMENT_SOURCES = "GOVERNMENT_SOURCES", _("Government sources")
     COMPANY_SOURCES = "COMPANY_SOURCES", _("Company sources")
     CONTRACT = "CONTRACT", _("Contract")
-    CONTRACT_FARMING_AGREEMENT = "CONTRACT_FARMING_AGREEMENT", _(
-        "Contract (contract farming agreement)"
+    CONTRACT_FARMING_AGREEMENT = (
+        "CONTRACT_FARMING_AGREEMENT",
+        _("Contract (contract farming agreement)"),
     )
     PERSONAL_INFORMATION = "PERSONAL_INFORMATION", _("Personal information")
     CROWDSOURCING = "CROWDSOURCING", _("Crowdsourcing")
@@ -705,24 +728,28 @@ class InvestorClassificationEnum(TextChoices):
     STATE_OWNED_COMPANY = "STATE_OWNED_COMPANY", _("State-/government (owned) company")
     SEMI_STATE_OWNED_COMPANY = "SEMI_STATE_OWNED_COMPANY", _("Semi state-owned company")
     ASSET_MANAGEMENT_FIRM = "ASSET_MANAGEMENT_FIRM", _("Asset management firm")
-    BILATERAL_DEVELOPMENT_BANK = "BILATERAL_DEVELOPMENT_BANK", _(
-        "Bilateral Development Bank / Development Finance Institution"
+    BILATERAL_DEVELOPMENT_BANK = (
+        "BILATERAL_DEVELOPMENT_BANK",
+        _("Bilateral Development Bank / Development Finance Institution"),
     )
-    STOCK_EXCHANGE_LISTED_COMPANY = "STOCK_EXCHANGE_LISTED_COMPANY", _(
-        "Stock-exchange listed company"
+    STOCK_EXCHANGE_LISTED_COMPANY = (
+        "STOCK_EXCHANGE_LISTED_COMPANY",
+        _("Stock-exchange listed company"),
     )
     COMMERCIAL_BANK = "COMMERCIAL_BANK", _("Commercial Bank")
     INSURANCE_FIRM = "INSURANCE_FIRM", _("Insurance firm")
     INVESTMENT_BANK = "INVESTMENT_BANK", _("Investment Bank")
     INVESTMENT_FUND = "INVESTMENT_FUND", _("Investment fund")
-    MULTILATERAL_DEVELOPMENT_BANK = "MULTILATERAL_DEVELOPMENT_BANK", _(
-        "Multilateral Development Bank (MDB)"
+    MULTILATERAL_DEVELOPMENT_BANK = (
+        "MULTILATERAL_DEVELOPMENT_BANK",
+        _("Multilateral Development Bank (MDB)"),
     )
     PRIVATE_COMPANY = "PRIVATE_COMPANY", _("Private company")
     PRIVATE_EQUITY_FIRM = "PRIVATE_EQUITY_FIRM", _("Private equity firm")
     INDIVIDUAL_ENTREPRENEUR = "INDIVIDUAL_ENTREPRENEUR", _("Individual entrepreneur")
-    NON_PROFIT = "NON_PROFIT", _(
-        "Non - Profit organization (e.g. Church, University etc.)"
+    NON_PROFIT = (
+        "NON_PROFIT",
+        _("Non - Profit organization (e.g. Church, University etc.)"),
     )
     OTHER = "OTHER", _("Other")
 

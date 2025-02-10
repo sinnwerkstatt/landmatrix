@@ -20,9 +20,7 @@ class Command(BaseCommand):
 
         print("Iterating InvestorHulls.")
         for obj in tqdm(qs_iterator, total=qs.count()):
-
             for version in obj.versions.all():
-
                 # active_version.involvements_snapshot can be reset, because new
                 # derived version initiate with database involvements.
                 if version.id == obj.active_version_id:

@@ -727,7 +727,6 @@ class InvestorViewSet(HullViewSet):
     @extend_schema(responses={200: SimpleInvestorSerializer(many=True)})
     @action(methods=["get"], detail=False)
     def simple(self, request):
-
         def version_find(field_name: str) -> Case:
             return Case(
                 When(
@@ -805,7 +804,6 @@ class ValueLabelSerializer(serializers.Serializer):
 
 
 class FieldChoicesView(APIView):
-
     class FieldChoicesSerializer(serializers.Serializer):
         class DealFields(serializers.Serializer):
             intention_of_investment = ValueLabelSerializer(many=True)

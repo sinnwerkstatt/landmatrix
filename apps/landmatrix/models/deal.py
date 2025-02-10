@@ -116,7 +116,6 @@ class DealHull(BaseHull):
 
     def selected_version(self):
         if hasattr(self, "_selected_version_id") and self._selected_version_id:
-
             try:
                 return self.versions.get(id=self._selected_version_id)
             except DealVersion.DoesNotExist:

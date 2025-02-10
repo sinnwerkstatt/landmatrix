@@ -89,7 +89,6 @@ class TwitterBlockTestCase(TestCase):
 
 
 class ImageBlockTestCase(TestCase):
-
     def setUp(self):
         self.collection = Collection.objects.create(name="Test Collection", depth=0)
 
@@ -156,7 +155,6 @@ class SliderBlockTestCase(TestCase):
 
 
 class GalleryBlockTestCase(TestCase):
-
     def setUp(self):
         self.collection = Collection.objects.create(name="Test Collection", depth=0)
 

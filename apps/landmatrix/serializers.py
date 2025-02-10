@@ -316,7 +316,6 @@ BASE_WORKFLOW_INFO_FIELDS = (
 
 
 class DealWorkflowInfoSerializer(ReadOnlyModelSerializer):
-
     class Meta:
         model = DealWorkflowInfo
         fields = BASE_WORKFLOW_INFO_FIELDS + (
@@ -326,7 +325,6 @@ class DealWorkflowInfoSerializer(ReadOnlyModelSerializer):
 
 
 class InvestorWorkflowInfoSerializer(ReadOnlyModelSerializer):
-
     class Meta:
         model = InvestorWorkflowInfo
         fields = BASE_WORKFLOW_INFO_FIELDS + (

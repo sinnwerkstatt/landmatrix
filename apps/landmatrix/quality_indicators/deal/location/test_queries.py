@@ -52,18 +52,18 @@ def test_q_is_georeferenced(deal_with_active_version):
         level_of_accuracy=LocationAccuracyEnum.COUNTRY,
     )
 
-    assert (
-        Location.objects.filter(q_is_georeferenced()).count() == 0
-    ), "Location without areas does not meet quality goal."
+    assert Location.objects.filter(q_is_georeferenced()).count() == 0, (
+        "Location without areas does not meet quality goal."
+    )
 
     Area.objects.create(
         location=location,
         area=MultiPolygon(Polygon(POLYGON_1)),
     )
 
-    assert (
-        Location.objects.filter(q_is_georeferenced()).count() == 1
-    ), "Locations with single area meets quality goal."
+    assert Location.objects.filter(q_is_georeferenced()).count() == 1, (
+        "Locations with single area meets quality goal."
+    )
 
     Area.objects.create(
         location=location,
@@ -74,9 +74,9 @@ def test_q_is_georeferenced(deal_with_active_version):
         area=MultiPolygon(Polygon(POLYGON_2), Polygon(POLYGON_1)),
     )
 
-    assert (
-        Location.objects.filter(q_is_georeferenced()).count() == 1
-    ), "Locations with three (any number of) area meets quality goal."
+    assert Location.objects.filter(q_is_georeferenced()).count() == 1, (
+        "Locations with three (any number of) area meets quality goal."
+    )
 
 
 def test_q_is_georeferenced_as(deal_with_active_version):

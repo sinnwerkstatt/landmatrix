@@ -20,7 +20,7 @@ class Command(BaseCommand):
 
         print()
         print(f"Found {len(qs_duplicates)} duplicate involvements:")
-        print(f'{"child":>8}', f'{"parent":>8}', f'{"n":>2}')
+        print(f"{'child':>8}", f"{'parent':>8}", f"{'n':>2}")
 
         with transaction.atomic():
             for duplicate in qs_duplicates:
