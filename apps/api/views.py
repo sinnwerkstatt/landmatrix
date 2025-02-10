@@ -1,6 +1,5 @@
 import json
 
-from django.core.exceptions import PermissionDenied
 from django.db.models import Case, CharField, Count, F, Q, Sum, Value, When
 from django.db.models.functions import Concat, JSONObject
 from django.http import HttpRequest, JsonResponse

@@ -1,7 +1,3 @@
-import pytest
-
-from django.db import IntegrityError
-
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.deal import DealHull, DealVersion
 

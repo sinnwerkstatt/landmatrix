@@ -24,6 +24,9 @@ class Person(models.Model):
     class Meta:
         app_label = "test_app"
 
+    def __str__(self):
+        return self.name
+
 
 ALI = Person(name="Ali", age=25)
 JANNIS = Person(name="Jannis", age=22)

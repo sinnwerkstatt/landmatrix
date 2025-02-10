@@ -1,4 +1,3 @@
-from django.db.models import QuerySet
 from django.db.models.expressions import F, Func, OuterRef, RawSQL
 from django.db.models.fields import BooleanField, IntegerField
 from django.db.models.functions import JSONObject
@@ -36,7 +35,7 @@ __all__ = (
 
 
 ### Location subqueries
-def qs_location_subquery() -> QuerySet["Location"]:
+def qs_location_subquery():
     from apps.landmatrix.models.deal import Location
 
     return Location.objects.filter(

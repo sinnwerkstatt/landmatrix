@@ -1,13 +1,10 @@
 from django.contrib.postgres.expressions import ArraySubquery
 from django.db.models import Case, F, OuterRef, Prefetch, Q, When
 from django.db.models.functions import JSONObject
-from django.http import Http404, HttpResponse
-from django.shortcuts import render
+from django.http import HttpResponse
 from django.utils import timezone
 from drf_spectacular.utils import OpenApiParameter, extend_schema
-from rest_framework import generics, status, viewsets
-from rest_framework.permissions import AllowAny
-from rest_framework.renderers import JSONRenderer
+from rest_framework import generics, status
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -24,14 +21,12 @@ from apps.accountability.models import (
     VggtVariable,
 )
 from apps.accountability.permissions import (
-    IsAdministrator,
     IsOwnerOrEditorOrReadonly,
     IsReporterOrHigher,
     IsReporterOrHigherOrReadonly,
     IsUser,
 )
 from apps.accountability.serializers import (
-    BookmarkBulkSerializer,
     BookmarkSerializer,
     DealScoreSerializer,
     DealScoreVersionSerializer,

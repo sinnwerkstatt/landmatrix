@@ -4,7 +4,7 @@ from typing import TypedDict
 from django.contrib.postgres.expressions import ArraySubquery
 from django.core.exceptions import PermissionDenied
 from django.core.handlers.wsgi import WSGIRequest
-from django.db.models import BooleanField, Case, Count, F, OuterRef, Q, QuerySet, When
+from django.db.models import Case, F, OuterRef, Q, QuerySet, When
 from django.db.models.functions import JSONObject
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.utils.timezone import make_aware

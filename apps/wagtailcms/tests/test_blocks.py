@@ -3,7 +3,27 @@ from wagtail.images.tests.utils import Image, get_test_image_file
 from wagtail.models import Collection, Locale
 
 from apps.blog.models import BlogPage
-from apps.wagtailcms.blocks import *
+from apps.wagtailcms.blocks import (
+    AnchorBlock,
+    Columns1To1Block,
+    CountriesBlock,
+    FAQsBlock,
+    FullWidthContainerBlock,
+    GalleryBlock,
+    ImageBlock,
+    LatestDatabaseModificationsBlock,
+    LatestNewsBlock,
+    LinkBlock,
+    LinkedImageBlock,
+    MapDataChartsBlock,
+    RegionBlock,
+    SliderBlock,
+    StatisticsBlock,
+    TabsBlock,
+    ThreeColumnsBlock,
+    TitleWithIconBlock,
+    TwitterBlock,
+)
 
 
 class AttrDict(dict):

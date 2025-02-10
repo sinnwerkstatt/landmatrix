@@ -1055,9 +1055,6 @@ class DealVersion(DealVersionBaseFields, BaseVersion):
     def __str__(self):
         return f"v{self.id} for #{self.deal_id}"
 
-    def is_current_draft(self):
-        return self.deal.draft_version_id == self.id
-
     @transaction.atomic
     def save(
         self,
@@ -1069,6 +1066,9 @@ class DealVersion(DealVersionBaseFields, BaseVersion):
         super().save(*args, **kwargs)  # give the object an id so then calculate fields
         self._recalculate_fields(recalculate_independent, recalculate_dependent)
         super().save()
+
+    def is_current_draft(self):
+        return self.deal.draft_version_id == self.id
 
     def _recalculate_fields(self, independent=True, dependent=True):
         if independent:
@@ -1395,11 +1395,6 @@ class Location(models.Model):
     facility_name = models.CharField(_("Facility name"), blank=True)
     comment = models.TextField(_("Comment"), blank=True)
 
-    def save(self, *args, **kwargs):
-        if self._state.adding and not self.nid:
-            self.nid = generate(size=8)
-        super().save(*args, **kwargs)
-
     class Meta:
         unique_together = ["dealversion", "nid"]
         indexes = [models.Index(fields=["dealversion", "nid"])]
@@ -1407,6 +1402,11 @@ class Location(models.Model):
 
     def __str__(self):
         return f"{self.nid} @ {self.dealversion}"
+
+    def save(self, *args, **kwargs):
+        if self._state.adding and not self.nid:
+            self.nid = generate(size=8)
+        super().save(*args, **kwargs)
 
 
 class Area(models.Model):
@@ -1419,8 +1419,17 @@ class Area(models.Model):
     date = LooseDateField(_("Date"), blank=True, null=True)
     area = gis_models.MultiPolygonField()
 
+    class Meta:
+        # unique_together = ["location", "type", "current"]
+        ordering = ["id"]
+
     def __str__(self):
         return f"{self.location} >> {self.type}"
+
+    def save(self, *args, **kwargs):
+        if self._state.adding and not self.nid:
+            self.nid = generate_nid(Area)
+        super().save(*args, **kwargs)
 
     # NOTE: Not in use, but would be nice to query features from backend directly
     def to_feature(self):
@@ -1450,15 +1459,6 @@ class Area(models.Model):
             return MultiPolygon([geom])
 
         raise ValidationError
-
-    def save(self, *args, **kwargs):
-        if self._state.adding and not self.nid:
-            self.nid = generate_nid(Area)
-        super().save(*args, **kwargs)
-
-    class Meta:
-        # unique_together = ["location", "type", "current"]
-        ordering = ["id"]
 
 
 class DealDataSource(BaseDataSource):
@@ -1508,12 +1508,15 @@ class Contract(models.Model):
     )
     comment = models.TextField(_("Comment"), blank=True)
 
-    def save(self, *args, **kwargs):
-        if self._state.adding and not self.nid:
-            self.nid = generate(size=8)
-        super().save(*args, **kwargs)
-
     class Meta:
         unique_together = ["dealversion", "nid"]
         indexes = [models.Index(fields=["dealversion", "nid"])]
         ordering = ["id"]
+
+    def __str__(self):
+        return f"{self.nid} @ {self.dealversion}"
+
+    def save(self, *args, **kwargs):
+        if self._state.adding and not self.nid:
+            self.nid = generate(size=8)
+        super().save(*args, **kwargs)

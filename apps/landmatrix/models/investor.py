@@ -2,7 +2,7 @@ import re
 
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models import F, Q, QuerySet
+from django.db.models import Q, QuerySet
 from django.db.models.functions import JSONObject
 from django.http import Http404
 from django.utils.translation import gettext as _
@@ -210,7 +210,7 @@ class InvestorHull(BaseHull):
     def get_involved_deal_versions(
         self,
         seen_investors: set["InvestorHull"] | None = None,
-    ) -> set["DealVersion"]:
+    ):
         """
         Get list of affected deals - this is like Top Investors, only downwards
         (all left-hand side deals of the network visualisation)
@@ -335,17 +335,17 @@ class Involvement(models.Model):
         ordering = ["id"]
         unique_together = [["parent_investor", "child_investor"]]
 
-    def save(self, *args, **kwargs):
-        if self._state.adding and not self.nid:
-            self.nid = generate_nid(Involvement)
-        super().save(*args, **kwargs)
-
     def __str__(self):
         if self.role == "PARENT":
             role = _("<is PARENT of>")
         else:
             role = _("<is INVESTOR of>")
         return f"{self.parent_investor} {role} {self.child_investor}"
+
+    def save(self, *args, **kwargs):
+        if self._state.adding and not self.nid:
+            self.nid = generate_nid(Involvement)
+        super().save(*args, **kwargs)
 
 
 class InvestorVersion(BaseVersion):

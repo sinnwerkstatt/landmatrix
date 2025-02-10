@@ -226,15 +226,15 @@ class BaseWorkflowInfo(models.Model):
     )
     resolved = models.BooleanField(default=False)
 
+    class Meta:
+        abstract = True
+        ordering = ("-timestamp",)
+
     def get_object_url(self):
         _site = Site.objects.get(is_default_site=True)
         _port = f":{_site.port}" if _site.port not in [80, 443] else ""
         base_url = f"http{'s' if _site.port == 443 else ''}://{_site.hostname}{_port}"
         return base_url
-
-    class Meta:
-        abstract = True
-        ordering = ("-timestamp",)
 
 
 class BaseDataSource(models.Model):
@@ -256,13 +256,13 @@ class BaseDataSource(models.Model):
     open_land_contracts_id = models.CharField(_("Open Contracting ID"), blank=True)
     comment = models.TextField(_("Comment"), blank=True)
 
-    def save(self, *args, **kwargs):
-        if self._state.adding and not self.nid:
-            self.nid = generate(size=8)
-        super().save(*args, **kwargs)
-
     class Meta:
         abstract = True
         unique_together = ["dealversion", "nid"]
         indexes = [models.Index(fields=["dealversion", "nid"])]
         ordering = ["id"]
+
+    def save(self, *args, **kwargs):
+        if self._state.adding and not self.nid:
+            self.nid = generate(size=8)
+        super().save(*args, **kwargs)

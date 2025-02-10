@@ -4,7 +4,8 @@ import string
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
-from .base import *  # noqa
+from .base import *  # noqa: F403
+from .base import ENV_PATH, env, environ
 
 DEBUG = False
 

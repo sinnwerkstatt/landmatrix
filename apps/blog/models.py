@@ -140,6 +140,11 @@ class BlogCategory(models.Model):
     def __str__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            unique_slugify(self, self.name)
+        return super().save(*args, **kwargs)
+
     def clean(self):
         if self.parent:
             parent = self.parent
@@ -147,11 +152,6 @@ class BlogCategory(models.Model):
                 raise ValidationError("Parent category cannot be self.")
             if parent.parent and parent.parent == self:
                 raise ValidationError("Cannot have circular Parents.")
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            unique_slugify(self, self.name)
-        return super().save(*args, **kwargs)
 
 
 class BlogCategoryBlogPage(models.Model):
@@ -164,6 +164,9 @@ class BlogCategoryBlogPage(models.Model):
 
     page = ParentalKey("BlogPage", related_name="categories")
     panels = [FieldPanel("category")]
+
+    def __str__(self):
+        return f"BlogCategoryBlogPage {self.category.name}"
 
 
 class BlogPageTag(TaggedItemBase):

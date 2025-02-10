@@ -104,7 +104,7 @@ line-ending = "auto"
 # - isort (`I`)
 # - flake8-django (`DJ`)
 select = ["E4", "E7", "E9", "F", "I", "DJ"]
-ignore = []
+ignore = ["DJ001"]
 
 # Allow fix for all enabled rules (when `--fix`) is provided.
 fixable = ["ALL"]

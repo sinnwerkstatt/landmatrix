@@ -12,6 +12,8 @@ from django.db.models.functions import JSONObject
 from django.db.models.query import QuerySet
 from django.http import HttpResponse
 from django.http.response import HttpResponseBadRequest
+from django.utils.translation import gettext_lazy as _
+from rest_framework import serializers
 
 from apps.api.export import converter
 from apps.api.quality_indicators.serializers import QueryParamsSerializer
@@ -290,10 +292,6 @@ def _deal_qs_to_values(qs: QuerySet[DealVersion]):
             )
         )
     )
-
-
-from django.utils.translation import gettext_lazy as _
-from rest_framework import serializers
 
 
 class DataSubset(TextChoices):

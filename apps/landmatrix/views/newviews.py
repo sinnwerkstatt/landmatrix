@@ -393,7 +393,7 @@ class DealViewSet(HullViewSet):
     def get_object(self):
         try:
             return super().get_object()
-        except:
+        except:  # noqa: E722
             raise Http404(f"Deal {self.kwargs[self.lookup_field]} does not exist.")
 
     def get_queryset(self):
@@ -656,7 +656,7 @@ class InvestorViewSet(HullViewSet):
     def get_object(self):
         try:
             return super().get_object()
-        except:
+        except:  # noqa: E722
             raise Http404(f"Investor {self.kwargs[self.lookup_field]} does not exist.")
 
     def get_queryset(self):
