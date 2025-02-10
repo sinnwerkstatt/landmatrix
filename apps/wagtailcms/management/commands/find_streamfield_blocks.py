@@ -2,7 +2,7 @@ from typing import Any, TypedDict
 
 from django.core.management.base import BaseCommand
 from wagtail.blocks import StreamValue, StructValue
-from wagtail.blocks.list_block import ListValue  # noqa
+from wagtail.blocks.list_block import ListValue
 from wagtail.fields import StreamField
 from wagtail.models import Page
 
@@ -20,12 +20,10 @@ class Command(BaseCommand):
 
         print(f"{'id':>5}", f"{'type':20}", f"{'url':30}", "path")
 
+        page: Page
         for page in Page.objects.all().specific().order_by("id"):
-
             stream_fields = [
-                field
-                for field in page._meta.fields  # noqa
-                if isinstance(field, StreamField)
+                field for field in page._meta.fields if isinstance(field, StreamField)
             ]
 
             for field in stream_fields:
@@ -43,7 +41,7 @@ def print_info(context: Context):
         f"{page.id:05}",
         f"{type(page).__name__:20}",
         f"{page.get_url():30}",
-        f"{" -> ".join(path):30}",
+        f"{' -> '.join(path):30}",
     )
 
 

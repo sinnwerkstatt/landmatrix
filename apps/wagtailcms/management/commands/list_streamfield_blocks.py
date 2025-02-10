@@ -3,42 +3,42 @@ from typing import Any
 
 from django.core.management.base import BaseCommand
 from wagtail.blocks import StreamValue, StructValue
-from wagtail.blocks.list_block import ListValue  # noqa
+from wagtail.blocks.list_block import ListValue
 from wagtail.fields import StreamField
 from wagtail.models import Page
+
+from apps.wagtailcms.blocks import BLOCKS
 
 
 class Command(BaseCommand):
     help = "List streamfield blocks in use."
 
     def handle(self, *args, **options):
+        block_counter: Counter[str] = Counter()
 
-        block_counter = Counter()
-
+        page: Page
         for page in Page.objects.all().specific().order_by("id"):
-            # print(f"{page.id:04d}", type(page).__name__, page.get_url())
-
             stream_fields = [
-                field
-                for field in page._meta.fields  # noqa
-                if isinstance(field, StreamField)
+                field for field in page._meta.fields if isinstance(field, StreamField)
             ]
 
             for field in stream_fields:
-                # print(field.name, type(field).__name__)
                 block_counter += get_used_blocks_recursively(getattr(page, field.name))
-                # print()
-
-            # print()
 
         for key, val in block_counter.most_common():
             print(key, val)
+
+        print()
+
+        for block in set(type(block_class).__name__ for _, block_class in BLOCKS):
+            if block not in block_counter:
+                print(block, 0)
 
 
 def get_used_blocks_recursively(value: Any, level=0):
     # print(4 * level * " " + " -> ", type(value))
 
-    block_counter = Counter()
+    block_counter: Counter[str] = Counter()
 
     if type(value) is StreamValue:
         # child: StreamValue.StreamChild / Any

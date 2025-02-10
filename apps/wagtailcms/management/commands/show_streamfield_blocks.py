@@ -8,24 +8,22 @@ from wagtail.blocks import (
     StructBlock,
 )
 from wagtail.fields import StreamField
-from wagtail.models import get_page_models
+from wagtail.models import Page, get_page_models
 
 
 class Command(BaseCommand):
     help = "Print streamfield names and structures for all page models."
 
     def handle(self, *args, **options):
-
+        page_model: Page
         for page_model in get_page_models():
             print(page_model.__name__)
 
             stream_fields = [
-                field
-                for field in page_model._meta.fields  # noqa
-                if type(field) is StreamField
-                # if isinstance(field, StreamField)
+                field for field in page_model._meta.fields if type(field) is StreamField
             ]
 
+            field: StreamField
             for field in stream_fields:
                 print(" -> ", field.name)
 
