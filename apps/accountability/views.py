@@ -1,52 +1,49 @@
-from django.utils import timezone
-from django.http import HttpResponse, Http404
-from django.shortcuts import render
-from django.db.models import Q, F, Prefetch, Case, When, OuterRef
-from django.db.models.functions import JSONObject
 from django.contrib.postgres.expressions import ArraySubquery
-
-from rest_framework import viewsets, generics, status
-from rest_framework.views import APIView
-from rest_framework.request import Request
-from rest_framework.response import Response
+from django.db.models import Case, F, OuterRef, Prefetch, Q, When
+from django.db.models.functions import JSONObject
+from django.http import Http404, HttpResponse
+from django.shortcuts import render
+from django.utils import timezone
+from drf_spectacular.utils import OpenApiParameter, extend_schema
+from rest_framework import generics, status, viewsets
 from rest_framework.permissions import AllowAny
 from rest_framework.renderers import JSONRenderer
+from rest_framework.request import Request
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from drf_spectacular.utils import extend_schema, OpenApiParameter
-
-from apps.landmatrix.models.deal import DealHull, DealVersion
-
-from apps.accountability.models import VggtChapter, VggtArticle, VggtVariable
-from apps.accountability.models import DealScore, DealScoreVersion, DealVariable
-from apps.accountability.models import Project
-from apps.accountability.models import UserInfo, Bookmark
-
-from apps.accountability.serializers import (
-    VggtChapterSerializer,
-    VggtArticleSerializer,
-    VggtVariableSerializer,
+from apps.accountability.models import (
+    Bookmark,
+    DealScore,
+    DealScoreVersion,
+    DealVariable,
+    Project,
+    UserInfo,
+    VggtArticle,
+    VggtChapter,
+    VggtVariable,
+)
+from apps.accountability.permissions import (
+    IsAdministrator,
+    IsOwnerOrEditorOrReadonly,
+    IsReporterOrHigher,
+    IsReporterOrHigherOrReadonly,
+    IsUser,
 )
 from apps.accountability.serializers import (
+    BookmarkBulkSerializer,
+    BookmarkSerializer,
     DealScoreSerializer,
     DealScoreVersionSerializer,
     DealVariableSerializer,
-)
-from apps.accountability.serializers import ProjectSerializer
-from apps.accountability.serializers import (
+    ProjectSerializer,
     UserInfoSerializer,
-    BookmarkSerializer,
-    BookmarkBulkSerializer,
+    VggtArticleSerializer,
+    VggtChapterSerializer,
+    VggtVariableSerializer,
 )
-
 from apps.accountability.utils import openapi_filters_parameters_scoring, parse_filters
-
-from apps.accountability.permissions import (
-    IsAdministrator,
-    IsReporterOrHigher,
-    IsReporterOrHigherOrReadonly,
-    IsOwnerOrEditorOrReadonly,
-    IsUser,
-)
+from apps.landmatrix.models.deal import DealHull, DealVersion
 
 
 # Tmp root view

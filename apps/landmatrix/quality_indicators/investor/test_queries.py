@@ -8,9 +8,9 @@ from apps.landmatrix.models.investor import (
 )
 
 from .queries import (
+    q_all_data_source_have_file,
     q_has_country,
     q_has_involvement,
-    q_all_data_source_have_file,
     q_has_valid_name,
 )
 

@@ -1,11 +1,12 @@
 from django.contrib.auth.models import AnonymousUser
 
 from apps.accounts.models import User, UserRole
+
 from .permissions import (
-    is_anybody_or_higher,
-    is_reporter_or_higher,
-    is_editor_or_higher,
     is_admin,
+    is_anybody_or_higher,
+    is_editor_or_higher,
+    is_reporter_or_higher,
 )
 
 ANONYMOUS = AnonymousUser()

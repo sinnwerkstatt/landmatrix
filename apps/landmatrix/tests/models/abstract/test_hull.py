@@ -2,8 +2,8 @@ from freezegun import freeze_time
 
 from django.utils import timezone
 
-from apps.landmatrix.tests.helpers import AbstractModelTestCase
 from apps.landmatrix.models.abstract import BaseHull
+from apps.landmatrix.tests.helpers import AbstractModelTestCase
 
 
 class TestHullBase(AbstractModelTestCase):

@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.test import APIClient
 
 from apps.landmatrix.models.country import Country
-from apps.landmatrix.models.deal import DealVersion, DealHull, Location, Area
+from apps.landmatrix.models.deal import Area, DealHull, DealVersion, Location
 
 from .gis_export import _build_area_features, _build_location_features
 from .utils.geojson import is_feature_collection

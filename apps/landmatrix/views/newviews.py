@@ -1,11 +1,10 @@
-from drf_spectacular.utils import OpenApiParameter, extend_schema
-
 from django.contrib.postgres.expressions import ArraySubquery
 from django.db import OperationalError, transaction
 from django.db.models import Case, F, OuterRef, Prefetch, Q, When
 from django.db.models.functions import JSONObject
 from django.http import Http404
 from django.utils.translation import gettext_lazy as _
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import serializers, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import (

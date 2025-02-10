@@ -1,7 +1,6 @@
-from drf_spectacular.utils import extend_schema
-
 from django.db.models import QuerySet, Value
 from django.db.models.functions import JSONObject
+from drf_spectacular.utils import extend_schema
 from rest_framework.decorators import api_view
 from rest_framework.exceptions import NotFound
 from rest_framework.request import Request
@@ -63,7 +62,7 @@ def gis_export_areas(request: Request) -> Response:
         if deal_id := request.query_params.get("deal_id"):
             filename = f"areas_{deal_id}.geojson"
         else:
-            filename = f"areas.geojson"
+            filename = "areas.geojson"
         headers = {"Content-Disposition": f"attachment; filename={filename}"}
     return Response(create_feature_collection(area_features), headers=headers)
 
@@ -88,7 +87,7 @@ def gis_export_locations(request: Request) -> Response:
         if deal_id := request.query_params.get("deal_id"):
             filename = f"locations_{deal_id}.geojson"
         else:
-            filename = f"locations.geojson"
+            filename = "locations.geojson"
         headers = {"Content-Disposition": f"attachment; filename={filename}"}
     return Response(create_feature_collection(location_features), headers=headers)
 

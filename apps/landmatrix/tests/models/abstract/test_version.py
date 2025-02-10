@@ -1,12 +1,11 @@
+from freezegun import freeze_time
+
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 
-from freezegun import freeze_time
-
+from apps.accounts.models import User, UserRole
+from apps.landmatrix.models.abstract import BaseVersion, VersionStatus
 from apps.landmatrix.tests.helpers import AbstractModelTestCase
-from apps.landmatrix.models.abstract import VersionStatus, BaseVersion
-
-from apps.accounts.models import UserRole, User
 
 UserModel = get_user_model()
 

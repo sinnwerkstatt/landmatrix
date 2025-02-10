@@ -1,7 +1,8 @@
 from typing import Type
 
-from django.db.models import Model
 from nanoid import generate
+
+from django.db.models import Model
 
 
 def generate_nid(model: Type[Model]) -> str:

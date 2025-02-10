@@ -2,40 +2,41 @@ import json
 from enum import Enum
 from typing import Any
 
+from nanoid import generate
+
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.geos import GEOSGeometry, MultiPolygon, Polygon
 from django.contrib.gis.geos.prototypes.io import wkt_w
 from django.core.exceptions import ValidationError
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
-from django.db.models import Count, Func, F, Q
+from django.db.models import Count, F, Func, Q
 from django.http import Http404
 from django.utils.translation import gettext as _
-from nanoid import generate
 
 from apps.accounts.models import User
-from apps.landmatrix.models import schema, choices
+from apps.landmatrix.models import choices, schema
 from apps.landmatrix.models.abstract import (
+    BaseDataSource,
     BaseHull,
     BaseVersion,
-    VersionTransition,
-    VersionStatus,
-    BaseDataSource,
     BaseWorkflowInfo,
+    VersionStatus,
+    VersionTransition,
 )
 from apps.landmatrix.models.choices import (
-    NegotiationStatusEnum,
     ImplementationStatusEnum,
-    NatureOfDealEnum,
     IntentionOfInvestmentEnum,
+    NatureOfDealEnum,
+    NegotiationStatusEnum,
 )
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.fields import (
-    ChoiceArrayField,
     ArrayField,
-    NanoIDField,
+    ChoiceArrayField,
     LooseDateField,
+    NanoIDField,
 )
 from apps.landmatrix.models.investor import InvestorHull
 from apps.landmatrix.nid import generate_nid

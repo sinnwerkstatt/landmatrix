@@ -3,8 +3,8 @@ import pytest
 from apps.landmatrix.models.abstract import VersionStatus
 from apps.landmatrix.models.choices import InvolvementRoleEnum
 from apps.landmatrix.models.country import Country
-from apps.landmatrix.models.deal import DealHull, DealVersion, DealDataSource
-from apps.landmatrix.models.investor import InvestorHull, Involvement, InvestorVersion
+from apps.landmatrix.models.deal import DealDataSource, DealHull, DealVersion
+from apps.landmatrix.models.investor import InvestorHull, InvestorVersion, Involvement
 
 
 @pytest.fixture

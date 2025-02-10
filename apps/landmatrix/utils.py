@@ -1,6 +1,5 @@
-from drf_spectacular.utils import OpenApiParameter
-
 from django.db.models import Q
+from drf_spectacular.utils import OpenApiParameter
 from rest_framework.request import Request
 
 from apps.landmatrix.models import choices

@@ -15,8 +15,8 @@ from apps.landmatrix.models.abstract import VersionStatus
 from apps.landmatrix.models.deal import DealHull, DealWorkflowInfo
 from apps.landmatrix.models.investor import InvestorHull, InvestorWorkflowInfo
 from apps.landmatrix.permissions import (
-    is_editor_or_higher,
     is_admin,
+    is_editor_or_higher,
     is_reporter_or_higher,
 )
 

@@ -3,12 +3,12 @@ from django.contrib import admin
 from apps.landmatrix.models.country import Country, Region
 from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.deal import (
-    DealVersion,
-    DealHull,
-    DealDataSource,
-    Contract,
-    Location,
     Area,
+    Contract,
+    DealDataSource,
+    DealHull,
+    DealVersion,
+    Location,
 )
 
 

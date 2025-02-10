@@ -1,4 +1,5 @@
 import pytest
+
 from django.db.models import ProtectedError
 
 

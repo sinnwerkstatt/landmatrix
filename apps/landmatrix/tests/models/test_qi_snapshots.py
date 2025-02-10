@@ -1,15 +1,15 @@
 import freezegun
+
 from django.db.models import Q
 from django.utils import timezone
 
 from apps.landmatrix.models.country import Region
 from apps.landmatrix.models.quality_indicators import (
     DealQISnapshot,
+    create_counts,
     create_deal_qi_counts,
     create_investor_qi_counts,
-    create_counts,
 )
-
 from apps.landmatrix.quality_indicators import DEAL_QIS, INVESTOR_QIS
 from apps.landmatrix.quality_indicators.dataclass import QualityIndicator
 

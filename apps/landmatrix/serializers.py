@@ -1,7 +1,6 @@
-from drf_spectacular.utils import extend_schema_field
-
 from django.contrib.gis.geos import GEOSGeometry
 from django.db.models.query_utils import Q
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from apps.accounts.models import User

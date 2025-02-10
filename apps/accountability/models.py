@@ -1,15 +1,14 @@
-from django.db import models
-from django.contrib.postgres.fields import ArrayField
-
-from django.conf import settings
-from django.utils import timezone
 from datetime import datetime
 
+from django.conf import settings
+from django.contrib.postgres.fields import ArrayField
+from django.db import models
+from django.utils import timezone
 from django.utils.translation import gettext as _
 
 from apps.landmatrix.models import choices
-from apps.landmatrix.models.fields import ChoiceArrayField
 from apps.landmatrix.models.deal import DealHull, DealVersion
+from apps.landmatrix.models.fields import ChoiceArrayField
 
 STATUS_CHOICES = [
     ("TO_SCORE", _("To score")),

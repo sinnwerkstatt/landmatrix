@@ -1,18 +1,17 @@
+from nanoid import generate
+
 from django.conf import settings
 from django.db import models
 from django.db.models import TextChoices
 from django.utils import timezone
 from django.utils.translation import gettext as _
-from nanoid import generate
-from rest_framework.exceptions import PermissionDenied, ParseError
+from rest_framework.exceptions import ParseError, PermissionDenied
 from wagtail.models import Site
 
 from apps.accounts.models import User
-from apps.landmatrix.models import choices
-
-from apps.landmatrix.models.fields import NanoIDField, LooseDateField
-from apps.landmatrix.models import schema
-from apps.landmatrix.permissions import is_editor_or_higher, is_admin
+from apps.landmatrix.models import choices, schema
+from apps.landmatrix.models.fields import LooseDateField, NanoIDField
+from apps.landmatrix.permissions import is_admin, is_editor_or_higher
 from django_pydantic_jsonfield import PydanticJSONField, SchemaValidator
 
 

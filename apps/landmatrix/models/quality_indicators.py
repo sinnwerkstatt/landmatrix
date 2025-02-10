@@ -31,12 +31,13 @@ class InvestorQISnapshot(QISnapshot):
 
 
 def create_deal_qi_counts(region: Region | None, subset_key: str | None):
-    from .deal import DealVersion, DealHull
     from apps.landmatrix.quality_indicators.deal import (
-        annotate_counts,
         DEAL_QIS,
         DEAL_SUBSETS,
+        annotate_counts,
     )
+
+    from .deal import DealHull, DealVersion
 
     ids = DealHull.objects.public().values_list("active_version__id", flat=True)
     qs = DealVersion.objects.filter(id__in=ids)
@@ -52,8 +53,9 @@ def create_deal_qi_counts(region: Region | None, subset_key: str | None):
 
 
 def create_investor_qi_counts():
-    from .investor import InvestorVersion, InvestorHull
     from apps.landmatrix.quality_indicators import INVESTOR_QIS
+
+    from .investor import InvestorHull, InvestorVersion
 
     ids = InvestorHull.objects.normal().values_list("active_version__id", flat=True)
     qs = InvestorVersion.objects.filter(id__in=ids)

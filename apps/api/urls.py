@@ -8,18 +8,19 @@ from drf_spectacular.views import (
 )
 from rest_framework import routers
 
-import apps.landmatrix.views.management as management_views
 import apps.landmatrix.views.context_help as contexthelp_views
+import apps.landmatrix.views.management as management_views
 from apps.accounts import views as user_views
 from apps.api import views as api_views
 from apps.blog.views import BlogCategoryViewSet, BlogPageViewSet
 from apps.landmatrix import views as oldviews
 from apps.landmatrix.views import newviews
 from apps.message.views import MessageViewSet
+
 from .export import DataDownload
 from .gis_export import gis_export_areas, gis_export_locations
-from .upload_view import upload_datasource_file
 from .quality_indicators import urls as qi_urls
+from .upload_view import upload_datasource_file
 
 
 def data_download(request):

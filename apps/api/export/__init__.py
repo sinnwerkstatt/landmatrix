@@ -2,23 +2,23 @@ import zipfile
 from io import BytesIO
 
 import unicodecsv as csv
-from django.http.response import HttpResponseBadRequest
 from openpyxl import Workbook
 from openpyxl.utils.exceptions import IllegalCharacterError
 
 from django.contrib.postgres.expressions import ArraySubquery
-from django.db.models.expressions import Case, OuterRef, When
-from django.db.models.query import QuerySet
-from django.db.models.functions import JSONObject
 from django.db.models.enums import TextChoices
+from django.db.models.expressions import Case, OuterRef, When
+from django.db.models.functions import JSONObject
+from django.db.models.query import QuerySet
 from django.http import HttpResponse
+from django.http.response import HttpResponseBadRequest
 
 from apps.api.export import converter
 from apps.api.quality_indicators.serializers import QueryParamsSerializer
 from apps.landmatrix.involvement_network import InvolvementNetwork
-from apps.landmatrix.models.top_investors import DealTopInvestors
-from apps.landmatrix.models.deal import DealVersion, DealHull
+from apps.landmatrix.models.deal import DealHull, DealVersion
 from apps.landmatrix.models.investor import InvestorHull, Involvement
+from apps.landmatrix.models.top_investors import DealTopInvestors
 from apps.landmatrix.quality_indicators import DEAL_QIS
 from apps.landmatrix.quality_indicators.deal import annotate_counts
 from apps.landmatrix.utils import parse_filters
@@ -292,8 +292,8 @@ def _deal_qs_to_values(qs: QuerySet[DealVersion]):
     )
 
 
-from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
+from rest_framework import serializers
 
 
 class DataSubset(TextChoices):

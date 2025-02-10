@@ -14,7 +14,6 @@ from .location.queries import (
     q_is_high_accuracy,
 )
 
-
 __all__ = (
     "annotate_counts",
     "produce_counts",

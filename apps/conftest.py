@@ -1,14 +1,15 @@
 from typing import Type
 
 import pytest
+
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from rest_framework.test import APIClient
 
 from apps.accounts.models import User, UserRole
 from apps.landmatrix.models.country import Country
-from apps.landmatrix.models.deal import DealVersion, DealHull, DealDataSource
-from apps.landmatrix.models.investor import InvestorVersion, InvestorHull
+from apps.landmatrix.models.deal import DealDataSource, DealHull, DealVersion
+from apps.landmatrix.models.investor import InvestorHull, InvestorVersion
 
 UserModel: Type[User] = get_user_model()
 

@@ -1,9 +1,10 @@
 import pytest
+
 from django.db import connection, models
 from django.db.models.expressions import OuterRef
 from django.db.models.query_utils import Q
 
-from .submodel_queries import _q_any, _q_all, _q_multiple
+from .submodel_queries import _q_all, _q_any, _q_multiple
 
 
 class Person(models.Model):

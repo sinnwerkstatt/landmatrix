@@ -1,12 +1,18 @@
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
-from drf_spectacular.utils import extend_schema_field
-
-from apps.accountability.models import VggtChapter, VggtArticle, VggtVariable
-from apps.accountability.models import DealScore, DealScoreVersion, DealVariable
-from apps.accountability.models import Project, Filters
-from apps.accountability.models import UserInfo, Bookmark
-
+from apps.accountability.models import (
+    Bookmark,
+    DealScore,
+    DealScoreVersion,
+    DealVariable,
+    Filters,
+    Project,
+    UserInfo,
+    VggtArticle,
+    VggtChapter,
+    VggtVariable,
+)
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.serializers import CountrySerializer
 
