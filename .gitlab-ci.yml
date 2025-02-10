@@ -24,11 +24,10 @@ django formatting and linting:
       alias: postgres
   script:
     - poetry install
-    - poetry run black . --check
+    - poetry run ruff format --check
+    - poetry run ruff check
     - poetry run ./manage.py makemigrations --check --no-input
     # - poetry run mypy apps
-    # - poetry run pylint config  -d unused-wildcard-import,unused-import,wildcard-import
-    # - poetry run pylint apps --exit-zero # pylint is quite broken at the moment
 
 django tests and coverage:
   stage: test

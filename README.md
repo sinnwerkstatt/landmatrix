@@ -1,9 +1,9 @@
-[comment]: <> ([![pipeline-status]&#40;https://git.sinntern.de/landmatrix/landmatrix/badges/main/pipeline.svg&#41;]&#40;https://git.sinntern.de/landmatrix/landmatrix/commits/main&#41;)
-[comment]: <> ([![coverage-report]&#40;https://git.sinntern.de/landmatrix/landmatrix/badges/main/coverage.svg&#41;]&#40;https://git.sinntern.de/landmatrix/landmatrix/commits/main&#41;)
+[//]: # ([![pipeline-status]&#40;https://git.sinntern.de/landmatrix/landmatrix/badges/main/pipeline.svg&#41;]&#40;https://git.sinntern.de/landmatrix/landmatrix/commits/main&#41;)
+[//]: # ([![coverage-report]&#40;https://git.sinntern.de/landmatrix/landmatrix/badges/main/coverage.svg&#41;]&#40;https://git.sinntern.de/landmatrix/landmatrix/commits/main&#41;)
+[//]: # ([![Read the Docs]&#40;https://img.shields.io/readthedocs/landmatrix&#41;]&#40;http://landmatrix.rtfd.io/&#41;)
 
-[![python version](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/release/python-380/)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
-[![Read the Docs](https://img.shields.io/readthedocs/landmatrix)](http://landmatrix.rtfd.io/)
+[![python version](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/release/python-380/)
+[![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/psf/ruff)
 
 # Land Matrix
 
