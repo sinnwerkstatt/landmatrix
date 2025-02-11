@@ -104,8 +104,8 @@ ignore = ["E501"]
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
 [tool.ruff.lint.per-file-ignores]
-"config/settings/**.py" = ["F405"]
-"**/tests/**/test_*.py" = [
+"config/settings/**.py" = ["F403", "F405"]
+"/**/test_*.py" = [
     # at least this three should be fine in tests:
     "S101", # asserts allowed in tests...
     "ARG", # Unused function args -> fixtures nevertheless are functionally relevant...
@@ -147,6 +147,7 @@ check_untyped_defs = true
 [[tool.mypy.overrides]]
 module = [
     "wagtail.*",
+    "environ",
     "wagtail_headless_preview.*",
     "modelcluster.*",
     "modeltranslation.*"]
