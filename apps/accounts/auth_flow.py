@@ -91,6 +91,7 @@ def register(
             "secret": settings.HCAPTCHA_SECRETKEY,
             "sitekey": settings.HCAPTCHA_SITEKEY,
         },
+        timeout=5,
     ).json()
 
     if not hcaptcha_verify["success"]:
@@ -172,6 +173,7 @@ def password_reset(email, token) -> dict:
             "secret": settings.HCAPTCHA_SECRETKEY,
             "sitekey": settings.HCAPTCHA_SITEKEY,
         },
+        timeout=5,
     ).json()
 
     if not hcaptcha_verify["success"]:

@@ -19,7 +19,7 @@ class DealQISnapshot(QISnapshot):
         null=True,
         on_delete=models.PROTECT,
     )
-    subset_key = models.CharField(null=True)
+    subset_key = models.CharField(null=True)  # noqa: DJ001 -- null represents unset subset_key
 
     def __str__(self):
         return f"{self.created_at} - {self.region or 'Global'} - {self.subset_key or 'All'}"

@@ -192,7 +192,7 @@ def json_field_counts(field_name: str) -> JSONObject:
 
 # TODO: test me
 def count_dated(json_field_name: str) -> RawSQL:
-    return RawSQL(
+    return RawSQL(  # noqa: S611
         f"""
         jsonb_array_length(
             jsonb_path_query_array({json_field_name}, '$? (@.date != null)')

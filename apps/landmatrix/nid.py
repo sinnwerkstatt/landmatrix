@@ -1,4 +1,3 @@
-
 from nanoid import generate
 
 from django.db.models import Model

@@ -23,7 +23,7 @@ def po2dict(po):
             plural = [entry.msgid_plural]
             result[key] = plural
             ordered_plural = sorted(entry.msgstr_plural.items())
-            for order, msgstr in ordered_plural:
+            for _order, msgstr in ordered_plural:
                 plural.append(msgstr)
     return result
 

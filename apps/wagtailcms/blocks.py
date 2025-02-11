@@ -453,9 +453,9 @@ def get_country_or_region(request, page=None):
 def get_country_or_region_link(link, request=None, page=None):
     data = get_country_or_region(request, page=page)
     if data.get("region", None):
-        link = "%s?region=%s" % (link, data["region"].id)
+        link = f"{link}?region={data['region'].id}"
     elif data.get("country", None):
-        link = "%s?country=%s" % (link, data["country"].id)
+        link = f"{link}?country={data['country'].id}"
     return link
 
 
@@ -466,12 +466,10 @@ class LatestNewsBlock(StructBlock):
         icon = "list"
         label = "Latest news"
 
-    def get_context(self, value, parent_context={}):
-        context = super().get_context(value, parent_context=parent_context)
+    def get_context(self, value, parent_context=None):
+        context = super().get_context(value, parent_context)
         context.update(
-            get_country_or_region(
-                parent_context.get("request"), parent_context.get("page")
-            )
+            get_country_or_region(context.get("request"), context.get("page"))
         )
         from apps.blog.models import BlogPage
 
@@ -584,12 +582,10 @@ class StatisticsBlock(StructBlock):
         icon = "list"
         label = "Statistics"
 
-    def get_context(self, value, parent_context={}):
-        context = super().get_context(value, parent_context=parent_context)
+    def get_context(self, value, parent_context=None):
+        context = super().get_context(value, parent_context)
         context.update(
-            get_country_or_region(
-                parent_context.get("request"), parent_context.get("page")
-            )
+            get_country_or_region(context.get("request"), context.get("page"))
         )
         return context
 
@@ -599,12 +595,10 @@ class MapDataChartsBlock(StructBlock):
         icon = "link"
         label = "Map / Grid / Charts"
 
-    def get_context(self, value, parent_context={}):
-        context = super().get_context(value, parent_context=parent_context)
+    def get_context(self, value, parent_context=None):
+        context = super().get_context(value, parent_context)
         context.update(
-            get_country_or_region(
-                parent_context.get("request"), parent_context.get("page")
-            )
+            get_country_or_region(context.get("request"), context.get("page"))
         )
         return context
 

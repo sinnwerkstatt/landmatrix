@@ -1,5 +1,4 @@
-from .production import *  # noqa: F403
-from .production import INSTALLED_APPS, env
+from .production import *
 
 INSTALLED_APPS += ["bandit"]
 EMAIL_BACKEND = "bandit.backends.smtp.HijackSMTPBackend"

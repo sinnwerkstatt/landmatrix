@@ -39,13 +39,13 @@ class Command(BaseCommand):
 
 
 def print_blocks_recursively(block: Block, level=1):
-    assert isinstance(block, Block)
+    # assert isinstance(block, Block)
 
     print(4 * level * " " + " -> ", block.name, type(block).__name__)
 
     # Could be implemented using python 3.10 structural pattern matching, see:
     # https://docs.python.org/3/whatsnew/3.10.html#guard
-    if isinstance(block, (FieldBlock, StaticBlock)):
+    if isinstance(block, FieldBlock | StaticBlock):
         ...
 
     if isinstance(block, ListBlock):

@@ -119,8 +119,10 @@ class DealHull(BaseHull):
         if hasattr(self, "_selected_version_id") and self._selected_version_id:
             try:
                 return self.versions.get(id=self._selected_version_id)
-            except DealVersion.DoesNotExist:
-                raise Http404
+            except DealVersion.DoesNotExist as e:
+                raise Http404(
+                    f"DealVersion {self._selected_version_id} does not exist."
+                ) from e
         return self.active_version or self.draft_version
 
     def add_draft(self, created_by: User = None) -> "DealVersion":

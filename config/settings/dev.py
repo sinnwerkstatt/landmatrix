@@ -1,5 +1,4 @@
-from .base import *  # noqa: F403
-from .base import INSTALLED_APPS, SPECTACULAR_SETTINGS, env
+from .base import *
 
 DEBUG = env.bool("DJANGO_DEBUG", default=True)
 SECRET_KEY = env("DJANGO_SECRET_KEY", default="CHANGEME")

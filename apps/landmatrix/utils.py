@@ -118,7 +118,7 @@ def parse_filters(request: Request):
         )
 
     if nature := request.GET.getlist("nature"):
-        all_nature = set([x["value"] for x in choices.NATURE_OF_DEAL_ITEMS])
+        all_nature = {x["value"] for x in choices.NATURE_OF_DEAL_ITEMS}
         ret &= ~Q(
             active_version__nature_of_deal__contained_by=list(all_nature - set(nature))
         )

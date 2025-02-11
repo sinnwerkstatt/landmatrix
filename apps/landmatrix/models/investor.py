@@ -94,8 +94,10 @@ class InvestorHull(BaseHull):
         if hasattr(self, "_selected_version_id") and self._selected_version_id:
             try:
                 return self.versions.get(id=self._selected_version_id)
-            except InvestorVersion.DoesNotExist:
-                raise Http404
+            except InvestorVersion.DoesNotExist as e:
+                raise Http404(
+                    f"InvestorVersion {self._selected_version_id} does not exist."
+                ) from e
         return self.active_version or self.draft_version
 
     def add_draft(self, created_by: User = None) -> "InvestorVersion":

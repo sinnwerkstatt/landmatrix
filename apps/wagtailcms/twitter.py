@@ -76,7 +76,7 @@ class TwitterTimeline:
                         "media_url_https"
                     ]
                     update["quoted_status"]["media_url_https"] = media
-                except:  # noqa: E722
+                except KeyError:
                     pass
             if getattr(status, "extended_entities", None):
                 try:

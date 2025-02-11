@@ -18,17 +18,17 @@ class TestBaseVersionMixin(AbstractModelTestCase):
         # cannot import them as fixtures for some reason
         reporter: User = UserModel.objects.create_user(
             username="reporter",
-            password="love2report",
+            password="love2report",  # noqa: S106
             role=UserRole.REPORTER,
         )
         editor: User = UserModel.objects.create_user(
             username="editor",
-            password="love2edit",
+            password="love2edit",  # noqa: S106
             role=UserRole.EDITOR,
         )
         admin: User = UserModel.objects.create_user(
             username="admin",
-            password="love2administrate",
+            password="love2administrate",  # noqa: S106
             role=UserRole.ADMINISTRATOR,
         )
 

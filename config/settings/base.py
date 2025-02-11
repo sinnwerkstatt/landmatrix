@@ -1,4 +1,4 @@
-import environ  # type: ignore
+import environ
 
 from django.utils.translation import gettext_lazy as _
 

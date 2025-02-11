@@ -55,7 +55,7 @@ class BlogIndexPage(HeadlessPreviewMixin, Page):
     def get_context(
         self, request, tag=None, category=None, author=None, *args, **kwargs
     ):
-        context = super(BlogIndexPage, self).get_context(request, *args, **kwargs)
+        context = super().get_context(request, *args, **kwargs)
         blogs = self.blogs
 
         if tag is None:

@@ -462,8 +462,8 @@ class BookmarkList(APIView):
     def get_object(self, user, project):
         try:
             return Bookmark.objects.get(Q(user=user) & Q(project=project))
-        except Bookmark.DoesNotExist():
-            raise status.HTTP_400_BAD_REQUEST
+        except Bookmark.DoesNotExist as e:
+            raise status.HTTP_400_BAD_REQUEST from e
 
     def get(self, request, format=None):
         queryset = self.get_queryset()

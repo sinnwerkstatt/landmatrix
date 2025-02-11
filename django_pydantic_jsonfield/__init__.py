@@ -23,7 +23,7 @@ class SchemaValidator:
         try:
             self.schema.model_validate(value)
         except PydanticValidationError as e:
-            raise DjangoValidationError(message=e)
+            raise DjangoValidationError(message=e) from e
 
 
 class PydanticJSONField(JSONField):
