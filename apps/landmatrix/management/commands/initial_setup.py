@@ -95,7 +95,7 @@ def create_user():
     }
 
     if os.path.exists(my_django_superuser_file):
-        with open(my_django_superuser_file, "r") as f:
+        with open(my_django_superuser_file) as f:
             user = json.load(f)
         print(
             f"  Found ~/.my-django-superuser. username: {user['username']}, email: {user['email']}"

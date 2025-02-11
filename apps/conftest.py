@@ -1,4 +1,3 @@
-from typing import Type
 
 import pytest
 
@@ -11,7 +10,7 @@ from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.deal import DealDataSource, DealHull, DealVersion
 from apps.landmatrix.models.investor import InvestorHull, InvestorVersion
 
-UserModel: Type[User] = get_user_model()
+UserModel: type[User] = get_user_model()
 
 
 @pytest.fixture

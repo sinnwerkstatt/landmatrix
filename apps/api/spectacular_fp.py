@@ -1,4 +1,5 @@
-from typing import Iterable, Protocol
+from collections.abc import Iterable
+from typing import Protocol
 
 from apps.api.fp import _filter, _not, _pipe2
 from apps.api.spectacular import Endpoint, is_method, is_public, is_wagtail

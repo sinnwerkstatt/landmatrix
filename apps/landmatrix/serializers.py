@@ -609,7 +609,7 @@ class InvestorSerializer(serializers.ModelSerializer[InvestorHull]):
         user: User = self.context["request"].user
 
         if hasattr(obj, "_selected_version_id"):
-            version = obj.versions.get(id=getattr(obj, "_selected_version_id"))
+            version = obj.versions.get(id=obj._selected_version_id)
         else:
             version = obj.active_version or obj.draft_version
 

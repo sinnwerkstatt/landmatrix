@@ -101,12 +101,12 @@ class InvolvementNetwork:
         rich_edges = []
         for edge in edges:
             involvement = next(
-                (
+                
                     invo
                     for invo in all_involvements_values
                     if invo["parent_investor_id"] == edge[0]
                     and invo["child_investor_id"] == edge[1]
-                )
+                
             )
             if edge[0] not in all_investor_ids or edge[1] not in all_investor_ids:
                 continue

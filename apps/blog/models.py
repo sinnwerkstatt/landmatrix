@@ -1,5 +1,4 @@
 import datetime
-from typing import Type
 
 from taggit.models import Tag, TaggedItemBase
 
@@ -29,7 +28,7 @@ from apps.wagtailcms.blocks import DOCUMENT_BLOCKS, SIMPLE_CONTENT_BLOCKS
 
 from .utils import unique_slugify
 
-UserModel: Type[User] = get_user_model()
+UserModel: type[User] = get_user_model()
 
 
 class BlogIndexPage(HeadlessPreviewMixin, Page):

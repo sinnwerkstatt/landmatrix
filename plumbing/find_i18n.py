@@ -18,7 +18,7 @@ re_i18n_strings = re.compile(r"\$_\(\s*?\"(.*?)\"(?:,\s*?.*?)?,?\s*?\)")
 def process():
     results = set()
     for file in find_files():
-        with open(root_dir + file, "r") as f:
+        with open(root_dir + file) as f:
             cntnt = f.read().replace("\n", "")
         if "$_(" in cntnt:
             # print(file)

@@ -13,7 +13,7 @@ def po2dict(po):
             continue
 
         if entry.msgctxt:
-            key = "{0}\x04{1}".format(entry.msgctxt, entry.msgid)
+            key = f"{entry.msgctxt}\x04{entry.msgid}"
         else:
             key = entry.msgid
 

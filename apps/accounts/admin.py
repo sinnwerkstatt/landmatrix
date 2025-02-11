@@ -1,4 +1,3 @@
-from typing import Type
 
 from django.contrib import admin
 from django.contrib.auth import get_user_model
@@ -7,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 
 from apps.accounts.models import User
 
-UserModel: Type[User] = get_user_model()
+UserModel: type[User] = get_user_model()
 
 
 class MyUserAdmin(UserAdmin):

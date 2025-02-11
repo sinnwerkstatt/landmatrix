@@ -1,14 +1,8 @@
-import sys
+from typing import NotRequired, TypedDict
 
 from django.db.models import TextChoices
 from django.utils.functional import Promise
 from django.utils.translation import gettext_lazy as _
-
-# https://stackoverflow.com/questions/68814891
-if sys.version_info < (3, 11):
-    from typing_extensions import NotRequired, Type, TypedDict
-else:
-    from typing import NotRequired, Type, TypedDict
 
 
 # TypeDict Functional API works, but use class syntax for consistency
@@ -20,7 +14,7 @@ class ValueLabelItem(TypedDict):
 
 
 # TODO: Write test
-def serialize_enum(enum: Type[TextChoices]) -> list[ValueLabelItem]:
+def serialize_enum(enum: type[TextChoices]) -> list[ValueLabelItem]:
     # return [{"value": x.value, "label": x.label} for x in enum]
     return [{"value": x[0], "label": x[1]} for x in enum.choices]
 
