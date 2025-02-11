@@ -128,7 +128,7 @@ class DealScoreVersion(models.Model):
         # On create, create related objects
         if self._state.adding:
             current_score = self.score.current_score()
-            super(DealScoreVersion, self).save(*args, **kwargs)  # noqa: UP008
+            super().save(*args, **kwargs)
 
             # If variables already existed, copy content to the new variables, else create from scratch
             if current_score is not None:
