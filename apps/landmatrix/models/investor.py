@@ -20,7 +20,12 @@ from apps.landmatrix.models.abstract import (
 from apps.landmatrix.models.choices import InvolvementRoleEnum
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.currency import Currency
-from apps.landmatrix.models.fields import ChoiceArrayField, LooseDateField, NanoIDField
+from apps.landmatrix.models.fields import (
+    ChoiceArrayField,
+    ChoiceField,
+    LooseDateField,
+    NanoIDField,
+)
 from apps.landmatrix.nid import generate_nid
 
 
@@ -288,7 +293,7 @@ class Involvement(models.Model):
         choices=choices.INVOLVEMENT_ROLE_CHOICES,
     )
     investment_type = ChoiceArrayField(
-        models.CharField(choices=choices.INVESTMENT_TYPE_CHOICES),
+        ChoiceField(choices.INVESTMENT_TYPE_CHOICES),
         verbose_name=_("Investment type"),
         blank=True,
         default=list,
@@ -318,11 +323,9 @@ class Involvement(models.Model):
         blank=True,
         null=True,
     )
-    parent_relation = models.CharField(
-        _("Parent relation"),
-        choices=choices.PARENT_RELATION_CHOICES,
-        blank=True,
-        null=True,
+    parent_relation = ChoiceField(
+        choices.PARENT_RELATION_CHOICES,
+        verbose_name=_("Parent relation"),
     )
     comment = models.TextField(
         _("Comment on involvement"),
@@ -366,11 +369,9 @@ class InvestorVersion(BaseVersion):
         null=True,
         on_delete=models.PROTECT,
     )
-    classification = models.CharField(
-        _("Classification"),
-        choices=choices.INVESTOR_CLASSIFICATION_CHOICES,
-        blank=True,
-        null=True,
+    classification = ChoiceField(
+        choices.INVESTOR_CLASSIFICATION_CHOICES,
+        verbose_name=_("Classification"),
     )
     homepage = models.URLField(_("Investor homepage"), blank=True)
     opencorporates = models.URLField(_("Opencorporates link"), blank=True)

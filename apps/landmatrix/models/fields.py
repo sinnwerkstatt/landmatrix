@@ -63,6 +63,16 @@ class ChoiceArrayField(ArrayField):
             "coerce": self.base_field.to_python,
         }
         defaults.update(kwargs)
-        # Skip our parent's formfield implementation completely as we don't care for it.
-        # pylint:disable=bad-super-call
         return super().formfield(**defaults)
+
+
+class ChoiceField(CharField):
+    def __init__(self, choices, *args, **kwargs):
+        if not choices:
+            raise ValueError("The 'choices' argument is required and cannot be empty.")
+
+        kwargs["choices"] = choices
+        kwargs.setdefault("blank", True)
+        kwargs.setdefault("null", True)
+
+        super().__init__(*args, **kwargs)

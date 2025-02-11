@@ -35,6 +35,7 @@ from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.fields import (
     ArrayField,
     ChoiceArrayField,
+    ChoiceField,
     LooseDateField,
     NanoIDField,
 )
@@ -253,7 +254,7 @@ class DealVersionBaseFields(models.Model):
 
     # Nature of the deal
     nature_of_deal = ChoiceArrayField(
-        models.CharField(choices=choices.NATURE_OF_DEAL_CHOICES),
+        ChoiceField(choices.NATURE_OF_DEAL_CHOICES),
         verbose_name=_("Nature of the deal"),
         blank=True,
         default=list,
@@ -303,11 +304,9 @@ class DealVersionBaseFields(models.Model):
         null=True,
         related_name="+",
     )
-    purchase_price_type = models.CharField(
-        _("Purchase price area type"),
-        choices=choices.HA_AREA_CHOICES,
-        blank=True,
-        null=True,
+    purchase_price_type = ChoiceField(
+        choices.HA_AREA_CHOICES,
+        verbose_name=_("Purchase price area type"),
     )
     purchase_price_area = models.DecimalField(
         _("Purchase price area"),
@@ -337,11 +336,9 @@ class DealVersionBaseFields(models.Model):
         null=True,
         related_name="+",
     )
-    annual_leasing_fee_type = models.CharField(
-        _("Annual leasing fee area type"),
-        choices=choices.HA_AREA_CHOICES,
-        blank=True,
-        null=True,
+    annual_leasing_fee_type = ChoiceField(
+        choices.HA_AREA_CHOICES,
+        verbose_name=_("Annual leasing fee area type"),
     )
     annual_leasing_fee_area = models.DecimalField(
         _("Annual leasing fee area"),
@@ -530,7 +527,7 @@ class DealVersionBaseFields(models.Model):
     )
 
     recognition_status = ChoiceArrayField(
-        models.CharField(choices=choices.RECOGNITION_STATUS_CHOICES),
+        ChoiceField(choices.RECOGNITION_STATUS_CHOICES),
         verbose_name=_("Recognition status of community land tenure"),
         blank=True,
         default=list,
@@ -539,22 +536,18 @@ class DealVersionBaseFields(models.Model):
         _("Comment on recognition status of community land tenure"),
         blank=True,
     )
-    community_consultation = models.CharField(
-        _("Community consultation"),
-        choices=choices.COMMUNITY_CONSULTATION_CHOICES,
-        blank=True,
-        null=True,
+    community_consultation = ChoiceField(
+        choices.COMMUNITY_CONSULTATION_CHOICES,
+        verbose_name=_("Community consultation"),
     )
     community_consultation_comment = models.TextField(
         _("Comment on consultation of local community"),
         blank=True,
     )
 
-    community_reaction = models.CharField(
-        _("Community reaction"),
-        choices=choices.COMMUNITY_REACTION_CHOICES,
-        blank=True,
-        null=True,
+    community_reaction = ChoiceField(
+        choices.COMMUNITY_REACTION_CHOICES,
+        verbose_name=_("Community reaction"),
     )
     community_reaction_comment = models.TextField(
         _("Comment on community reaction"),
@@ -612,7 +605,7 @@ class DealVersionBaseFields(models.Model):
     )
 
     negative_impacts = ChoiceArrayField(
-        models.CharField(choices=choices.NEGATIVE_IMPACTS_CHOICES),
+        ChoiceField(choices.NEGATIVE_IMPACTS_CHOICES),
         verbose_name=_("Negative impacts for local communities"),
         blank=True,
         default=list,
@@ -632,7 +625,7 @@ class DealVersionBaseFields(models.Model):
     )
 
     promised_benefits = ChoiceArrayField(
-        models.CharField(choices=choices.BENEFITS_CHOICES),
+        ChoiceField(choices.BENEFITS_CHOICES),
         verbose_name=_("Promised benefits for local communities"),
         blank=True,
         default=list,
@@ -643,7 +636,7 @@ class DealVersionBaseFields(models.Model):
     )
 
     materialized_benefits = ChoiceArrayField(
-        models.CharField(choices=choices.BENEFITS_CHOICES),
+        ChoiceField(choices.BENEFITS_CHOICES),
         verbose_name=_("Materialized benefits for local communities"),
         blank=True,
         default=list,
@@ -663,7 +656,7 @@ class DealVersionBaseFields(models.Model):
 
     """ Former use """
     former_land_owner = ChoiceArrayField(
-        models.CharField(choices=choices.FORMER_LAND_OWNER_CHOICES),
+        ChoiceField(choices.FORMER_LAND_OWNER_CHOICES),
         verbose_name=_("Former land owner"),
         blank=True,
         default=list,
@@ -673,7 +666,7 @@ class DealVersionBaseFields(models.Model):
         blank=True,
     )
     former_land_use = ChoiceArrayField(
-        models.CharField(choices=choices.FORMER_LAND_USE_CHOICES),
+        ChoiceField(choices.FORMER_LAND_USE_CHOICES),
         verbose_name=_("Former land use"),
         blank=True,
         default=list,
@@ -683,7 +676,7 @@ class DealVersionBaseFields(models.Model):
         blank=True,
     )
     former_land_cover = ChoiceArrayField(
-        models.CharField(choices=choices.FORMER_LAND_COVER_CHOICES),
+        ChoiceField(choices.FORMER_LAND_COVER_CHOICES),
         verbose_name=_("Former land cover"),
         blank=True,
         default=list,
@@ -875,7 +868,7 @@ class DealVersionBaseFields(models.Model):
     )
 
     source_of_water_extraction = ChoiceArrayField(
-        models.CharField(choices=choices.WATER_SOURCE_CHOICES),
+        ChoiceField(choices.WATER_SOURCE_CHOICES),
         verbose_name=_("Source of water extraction"),
         blank=True,
         default=list,
@@ -971,22 +964,18 @@ class DealVersion(DealVersionBaseFields, BaseVersion):
         null=True,
     )
     current_intention_of_investment = ChoiceArrayField(
-        models.CharField(choices=choices.INTENTION_OF_INVESTMENT_CHOICES),
+        ChoiceField(choices.INTENTION_OF_INVESTMENT_CHOICES),
         verbose_name=_("Current intention of investment"),
         blank=True,
         default=list,
     )
-    current_negotiation_status = models.CharField(
-        _("Current negotiation status"),
-        choices=choices.NEGOTIATION_STATUS_CHOICES,
-        blank=True,
-        null=True,
+    current_negotiation_status = ChoiceField(
+        choices.NEGOTIATION_STATUS_CHOICES,
+        verbose_name=_("Current negotiation status"),
     )
-    current_implementation_status = models.CharField(
-        _("Current implementation status"),
-        choices=choices.IMPLEMENTATION_STATUS_CHOICES,
-        blank=True,
-        null=True,
+    current_implementation_status = ChoiceField(
+        choices.IMPLEMENTATION_STATUS_CHOICES,
+        verbose_name=_("Current implementation status"),
     )
     current_crops = ArrayField(
         models.CharField(),
