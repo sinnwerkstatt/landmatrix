@@ -74,6 +74,7 @@ types-polib = "^1.2.0.0"
 types-simplejson = "^3.18.0.1"
 types-tqdm = "^4.65.0.0"
 
+
 [tool.ruff]
 exclude = [
     ".eggs",
@@ -84,7 +85,6 @@ exclude = [
 ]
 respect-gitignore = false # https://github.com/astral-sh/ruff/issues/9381
 target-version = "py312"
-
 
 [tool.ruff.lint]
 # https://docs.astral.sh/ruff/rules/
@@ -99,9 +99,6 @@ select = [
     "S" # flake8-bandit
 ]
 ignore = ["E501"]
-
-# Allow unused variables when underscore-prefixed.
-dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
 [tool.ruff.lint.per-file-ignores]
 "config/settings/**.py" = ["F403", "F405"]
