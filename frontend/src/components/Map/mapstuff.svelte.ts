@@ -154,6 +154,7 @@ export function fitMapToFeatures(map: Map) {
 
   map.getLayers().forEach(layer => {
     if (!(layer instanceof Vector)) return
+    if (layer.getSource().getFeatures().length === 0) return
 
     const sourceExtent = layer.getSource().getExtent()
     if (!sourceExtent) return
