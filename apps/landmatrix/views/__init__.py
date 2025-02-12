@@ -7,7 +7,6 @@ from django.views.generic.base import RedirectView
 from rest_framework import permissions, viewsets
 from rest_framework.mixins import ListModelMixin
 
-
 from apps.landmatrix.models.country import Country, Region
 from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.deal import DealHull
@@ -27,9 +26,14 @@ class SwitchLanguageView(RedirectView):
             request.session["django_language"] = language
             request.LANGUAGE_CODE = language
         else:
-            messages.error(request, _('The language "%s" is not supported' % language))
+            messages.error(
+                request,
+                _("Unsupported language: {language_code}").format(
+                    language_code=language
+                ),
+            )
 
-        return super(SwitchLanguageView, self).get(request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
 
     def get_redirect_url(self, **kwargs):
         return self.request.GET.get("next", self.request.META.get("HTTP_REFERER", "/"))

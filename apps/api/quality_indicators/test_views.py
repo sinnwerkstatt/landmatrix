@@ -48,7 +48,7 @@ def test_deals_response(api_client, admin2):
 
     response = api_client.get(f"{url}?qi={DEAL_QIS[0].key}")
     assert response.status_code == status.HTTP_200_OK
-    assert type(response.data) == list
+    assert type(response.data) is list
 
 
 def test_investors_response(api_client, admin2):
@@ -65,4 +65,4 @@ def test_investors_response(api_client, admin2):
 
     response = api_client.get(f"{url}?qi={INVESTOR_QIS[0].key}")
     assert response.status_code == status.HTTP_200_OK
-    assert type(response.data) == list
+    assert type(response.data) is list

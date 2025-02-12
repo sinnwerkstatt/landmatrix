@@ -1,6 +1,6 @@
 # Development
 
-Code is formatted with **black**, we use **pylint** to some extent, as well as **isort**.
+Code is formatted and linted with **ruff**.
 The project includes integration and unit tests.
 
 For [up-to-date information](https://en.wikipedia.org/wiki/Self-documenting_code) see:
@@ -8,7 +8,6 @@ For [up-to-date information](https://en.wikipedia.org/wiki/Self-documenting_code
 * `.gitlab-ci.yml`
 * `pyproject.toml`
 * `.coveragerc`
-* `.pylintrc`
 
 
 ### Ubuntu requirements

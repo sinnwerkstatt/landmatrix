@@ -1,4 +1,5 @@
-from typing import Callable, Iterable, Literal
+from collections.abc import Callable, Iterable
+from typing import Literal
 
 Method = Literal["GET", "POST", "PUT", "PATCH", "DELETE"]
 

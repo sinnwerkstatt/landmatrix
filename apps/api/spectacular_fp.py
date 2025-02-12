@@ -1,4 +1,5 @@
-from typing import Iterable, Protocol
+from collections.abc import Iterable
+from typing import Protocol
 
 from apps.api.fp import _filter, _not, _pipe2
 from apps.api.spectacular import Endpoint, is_method, is_public, is_wagtail
@@ -9,7 +10,7 @@ class PreprocessHook(Protocol):
     def __call__(self, *, endpoints: Iterable[Endpoint]) -> Iterable[Endpoint]: ...
 
 
-as_positional_arg = lambda endpoints: endpoints
+as_positional_arg = lambda endpoints: endpoints  # noqa: E731
 
 
 preprocess_exclude_wagtail: PreprocessHook = _pipe2(

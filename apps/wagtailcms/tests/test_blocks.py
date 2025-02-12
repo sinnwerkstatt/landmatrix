@@ -1,14 +1,34 @@
 from django.test import RequestFactory, TestCase
 from wagtail.images.tests.utils import Image, get_test_image_file
-from wagtail.models import Locale, Collection
+from wagtail.models import Collection, Locale
 
 from apps.blog.models import BlogPage
-from apps.wagtailcms.blocks import *
+from apps.wagtailcms.blocks import (
+    AnchorBlock,
+    Columns1To1Block,
+    CountriesBlock,
+    FAQsBlock,
+    FullWidthContainerBlock,
+    GalleryBlock,
+    ImageBlock,
+    LatestDatabaseModificationsBlock,
+    LatestNewsBlock,
+    LinkBlock,
+    LinkedImageBlock,
+    MapDataChartsBlock,
+    RegionBlock,
+    SliderBlock,
+    StatisticsBlock,
+    TabsBlock,
+    ThreeColumnsBlock,
+    TitleWithIconBlock,
+    TwitterBlock,
+)
 
 
 class AttrDict(dict):
     def __init__(self, *args, **kwargs):
-        super(AttrDict, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.__dict__ = self
 
 
@@ -89,7 +109,6 @@ class TwitterBlockTestCase(TestCase):
 
 
 class ImageBlockTestCase(TestCase):
-
     def setUp(self):
         self.collection = Collection.objects.create(name="Test Collection", depth=0)
 
@@ -156,7 +175,6 @@ class SliderBlockTestCase(TestCase):
 
 
 class GalleryBlockTestCase(TestCase):
-
     def setUp(self):
         self.collection = Collection.objects.create(name="Test Collection", depth=0)
 

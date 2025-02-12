@@ -1,4 +1,3 @@
-from django.db.models import QuerySet
 from django.db.models.expressions import F, Func, OuterRef, RawSQL
 from django.db.models.fields import BooleanField, IntegerField
 from django.db.models.functions import JSONObject
@@ -13,7 +12,6 @@ from .location.queries import (
     q_is_georeferenced_as,
     q_is_high_accuracy,
 )
-
 
 __all__ = (
     "annotate_counts",
@@ -37,7 +35,7 @@ __all__ = (
 
 
 ### Location subqueries
-def qs_location_subquery() -> QuerySet["Location"]:
+def qs_location_subquery():
     from apps.landmatrix.models.deal import Location
 
     return Location.objects.filter(
@@ -194,7 +192,7 @@ def json_field_counts(field_name: str) -> JSONObject:
 
 # TODO: test me
 def count_dated(json_field_name: str) -> RawSQL:
-    return RawSQL(
+    return RawSQL(  # noqa: S611
         f"""
         jsonb_array_length(
             jsonb_path_query_array({json_field_name}, '$? (@.date != null)')

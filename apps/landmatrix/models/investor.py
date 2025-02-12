@@ -1,8 +1,8 @@
 import re
 
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models import Q, QuerySet, F
+from django.db.models import Q, QuerySet
 from django.db.models.functions import JSONObject
 from django.http import Http404
 from django.utils.translation import gettext as _
@@ -20,7 +20,12 @@ from apps.landmatrix.models.abstract import (
 from apps.landmatrix.models.choices import InvolvementRoleEnum
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.currency import Currency
-from apps.landmatrix.models.fields import ChoiceArrayField, LooseDateField, NanoIDField
+from apps.landmatrix.models.fields import (
+    ChoiceArrayField,
+    ChoiceField,
+    LooseDateField,
+    NanoIDField,
+)
 from apps.landmatrix.nid import generate_nid
 
 
@@ -92,15 +97,15 @@ class InvestorHull(BaseHull):
     # This method is used by DRF.
     def selected_version(self):
         if hasattr(self, "_selected_version_id") and self._selected_version_id:
-
             try:
                 return self.versions.get(id=self._selected_version_id)
-            except InvestorVersion.DoesNotExist:
-                raise Http404
+            except InvestorVersion.DoesNotExist as e:
+                raise Http404(
+                    f"InvestorVersion {self._selected_version_id} does not exist."
+                ) from e
         return self.active_version or self.draft_version
 
     def add_draft(self, created_by: User = None) -> "InvestorVersion":
-
         dv = InvestorVersion.objects.create(
             investor=self,
             created_by=created_by,
@@ -212,7 +217,7 @@ class InvestorHull(BaseHull):
     def get_involved_deal_versions(
         self,
         seen_investors: set["InvestorHull"] | None = None,
-    ) -> set["DealVersion"]:
+    ):
         """
         Get list of affected deals - this is like Top Investors, only downwards
         (all left-hand side deals of the network visualisation)
@@ -288,7 +293,7 @@ class Involvement(models.Model):
         choices=choices.INVOLVEMENT_ROLE_CHOICES,
     )
     investment_type = ChoiceArrayField(
-        models.CharField(choices=choices.INVESTMENT_TYPE_CHOICES),
+        ChoiceField(choices.INVESTMENT_TYPE_CHOICES),
         verbose_name=_("Investment type"),
         blank=True,
         default=list,
@@ -318,11 +323,9 @@ class Involvement(models.Model):
         blank=True,
         null=True,
     )
-    parent_relation = models.CharField(
-        _("Parent relation"),
-        choices=choices.PARENT_RELATION_CHOICES,
-        blank=True,
-        null=True,
+    parent_relation = ChoiceField(
+        choices.PARENT_RELATION_CHOICES,
+        verbose_name=_("Parent relation"),
     )
     comment = models.TextField(
         _("Comment on involvement"),
@@ -337,17 +340,17 @@ class Involvement(models.Model):
         ordering = ["id"]
         unique_together = [["parent_investor", "child_investor"]]
 
-    def save(self, *args, **kwargs):
-        if self._state.adding and not self.nid:
-            self.nid = generate_nid(Involvement)
-        super().save(*args, **kwargs)
-
     def __str__(self):
         if self.role == "PARENT":
             role = _("<is PARENT of>")
         else:
             role = _("<is INVESTOR of>")
         return f"{self.parent_investor} {role} {self.child_investor}"
+
+    def save(self, *args, **kwargs):
+        if self._state.adding and not self.nid:
+            self.nid = generate_nid(Involvement)
+        super().save(*args, **kwargs)
 
 
 class InvestorVersion(BaseVersion):
@@ -366,11 +369,9 @@ class InvestorVersion(BaseVersion):
         null=True,
         on_delete=models.PROTECT,
     )
-    classification = models.CharField(
-        _("Classification"),
-        choices=choices.INVESTOR_CLASSIFICATION_CHOICES,
-        blank=True,
-        null=True,
+    classification = ChoiceField(
+        choices.INVESTOR_CLASSIFICATION_CHOICES,
+        verbose_name=_("Classification"),
     )
     homepage = models.URLField(_("Investor homepage"), blank=True)
     opencorporates = models.URLField(_("Opencorporates link"), blank=True)
@@ -404,7 +405,6 @@ class InvestorVersion(BaseVersion):
         to_user_id: int = None,
         comment="",
     ):
-
         old_draft_status = self.status
 
         super().change_status(transition=transition, user=user, to_user_id=to_user_id)

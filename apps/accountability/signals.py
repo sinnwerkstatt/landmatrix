@@ -1,8 +1,8 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from apps.landmatrix.models.deal import DealHull, DealVersion
 from apps.accountability.models import DealScore, DealScoreVersion
+from apps.landmatrix.models.deal import DealVersion
 
 
 @receiver(post_save, sender=DealVersion)  # Actions when a new deal version is saved

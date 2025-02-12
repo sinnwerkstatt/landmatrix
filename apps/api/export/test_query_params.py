@@ -1,4 +1,4 @@
-from . import DownloadQueryParameterSerializer, DataSubset, DataFormat
+from . import DataFormat, DataSubset, DownloadQueryParameterSerializer
 
 Serializer = DownloadQueryParameterSerializer
 

@@ -1,8 +1,9 @@
-from apps.landmatrix.models.deal import DealHull
-from apps.accountability.models import DealScore, DealScoreVersion
+from tqdm import tqdm
+
 from django.core.management import BaseCommand
 
-from tqdm import tqdm
+from apps.accountability.models import DealScore, DealScoreVersion
+from apps.landmatrix.models.deal import DealHull
 
 
 class Command(BaseCommand):

@@ -1,4 +1,5 @@
-from typing import Any, Callable, Iterable, Optional, ParamSpec, TypeVar
+from collections.abc import Callable, Iterable
+from typing import Any, ParamSpec, TypeVar
 
 # sry @all I had to play around :)
 P = ParamSpec("P")
@@ -103,8 +104,8 @@ def _is(obj1: T) -> Callable[[T], bool]:
 ### unsafe / maybe
 # TODO: Fix typing
 # NOTE: Python types currently not able to introspect T's attributes in a `keyof T`-like manner
-def _getattr(name: str) -> Callable[[T], Optional[Any]]:
-    def wrapper(obj: T) -> Optional[Any]:
+def _getattr(name: str) -> Callable[[T], Any | None]:
+    def wrapper(obj: T) -> Any | None:
         return getattr(obj, name, None)
 
     return wrapper

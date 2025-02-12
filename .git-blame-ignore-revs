@@ -1,2 +1,5 @@
 # do this: `git config --global blame.ignoreRevsFile .git-blame-ignore-revs`
 # then you won't see `black` or `prettier` as the author of all kinds of changes
+062ae104d7510163ee4c6f6fb1c3911abdbbf0a0
+c29f2b1bc10efba134239e98ef4ec3a33b4e362e
+727a37a6de746213288e09df37ea799195d9458b

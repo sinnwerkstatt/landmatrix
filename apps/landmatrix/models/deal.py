@@ -2,40 +2,42 @@ import json
 from enum import Enum
 from typing import Any
 
+from nanoid import generate
+
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis.geos import GEOSGeometry, MultiPolygon, Polygon
 from django.contrib.gis.geos.prototypes.io import wkt_w
 from django.core.exceptions import ValidationError
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
-from django.db.models import Count, Func, F, Q
+from django.db.models import Count, F, Func, Q
 from django.http import Http404
 from django.utils.translation import gettext as _
-from nanoid import generate
 
 from apps.accounts.models import User
-from apps.landmatrix.models import schema, choices
+from apps.landmatrix.models import choices, schema
 from apps.landmatrix.models.abstract import (
+    BaseDataSource,
     BaseHull,
     BaseVersion,
-    VersionTransition,
-    VersionStatus,
-    BaseDataSource,
     BaseWorkflowInfo,
+    VersionStatus,
+    VersionTransition,
 )
 from apps.landmatrix.models.choices import (
-    NegotiationStatusEnum,
     ImplementationStatusEnum,
-    NatureOfDealEnum,
     IntentionOfInvestmentEnum,
+    NatureOfDealEnum,
+    NegotiationStatusEnum,
 )
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.fields import (
-    ChoiceArrayField,
     ArrayField,
-    NanoIDField,
+    ChoiceArrayField,
+    ChoiceField,
     LooseDateField,
+    NanoIDField,
 )
 from apps.landmatrix.models.investor import InvestorHull
 from apps.landmatrix.nid import generate_nid
@@ -116,11 +118,12 @@ class DealHull(BaseHull):
 
     def selected_version(self):
         if hasattr(self, "_selected_version_id") and self._selected_version_id:
-
             try:
                 return self.versions.get(id=self._selected_version_id)
-            except DealVersion.DoesNotExist:
-                raise Http404
+            except DealVersion.DoesNotExist as e:
+                raise Http404(
+                    f"DealVersion {self._selected_version_id} does not exist."
+                ) from e
         return self.active_version or self.draft_version
 
     def add_draft(self, created_by: User = None) -> "DealVersion":
@@ -251,7 +254,7 @@ class DealVersionBaseFields(models.Model):
 
     # Nature of the deal
     nature_of_deal = ChoiceArrayField(
-        models.CharField(choices=choices.NATURE_OF_DEAL_CHOICES),
+        ChoiceField(choices.NATURE_OF_DEAL_CHOICES),
         verbose_name=_("Nature of the deal"),
         blank=True,
         default=list,
@@ -301,11 +304,9 @@ class DealVersionBaseFields(models.Model):
         null=True,
         related_name="+",
     )
-    purchase_price_type = models.CharField(
-        _("Purchase price area type"),
-        choices=choices.HA_AREA_CHOICES,
-        blank=True,
-        null=True,
+    purchase_price_type = ChoiceField(
+        choices.HA_AREA_CHOICES,
+        verbose_name=_("Purchase price area type"),
     )
     purchase_price_area = models.DecimalField(
         _("Purchase price area"),
@@ -335,11 +336,9 @@ class DealVersionBaseFields(models.Model):
         null=True,
         related_name="+",
     )
-    annual_leasing_fee_type = models.CharField(
-        _("Annual leasing fee area type"),
-        choices=choices.HA_AREA_CHOICES,
-        blank=True,
-        null=True,
+    annual_leasing_fee_type = ChoiceField(
+        choices.HA_AREA_CHOICES,
+        verbose_name=_("Annual leasing fee area type"),
     )
     annual_leasing_fee_area = models.DecimalField(
         _("Annual leasing fee area"),
@@ -528,7 +527,7 @@ class DealVersionBaseFields(models.Model):
     )
 
     recognition_status = ChoiceArrayField(
-        models.CharField(choices=choices.RECOGNITION_STATUS_CHOICES),
+        ChoiceField(choices.RECOGNITION_STATUS_CHOICES),
         verbose_name=_("Recognition status of community land tenure"),
         blank=True,
         default=list,
@@ -537,22 +536,18 @@ class DealVersionBaseFields(models.Model):
         _("Comment on recognition status of community land tenure"),
         blank=True,
     )
-    community_consultation = models.CharField(
-        _("Community consultation"),
-        choices=choices.COMMUNITY_CONSULTATION_CHOICES,
-        blank=True,
-        null=True,
+    community_consultation = ChoiceField(
+        choices.COMMUNITY_CONSULTATION_CHOICES,
+        verbose_name=_("Community consultation"),
     )
     community_consultation_comment = models.TextField(
         _("Comment on consultation of local community"),
         blank=True,
     )
 
-    community_reaction = models.CharField(
-        _("Community reaction"),
-        choices=choices.COMMUNITY_REACTION_CHOICES,
-        blank=True,
-        null=True,
+    community_reaction = ChoiceField(
+        choices.COMMUNITY_REACTION_CHOICES,
+        verbose_name=_("Community reaction"),
     )
     community_reaction_comment = models.TextField(
         _("Comment on community reaction"),
@@ -610,7 +605,7 @@ class DealVersionBaseFields(models.Model):
     )
 
     negative_impacts = ChoiceArrayField(
-        models.CharField(choices=choices.NEGATIVE_IMPACTS_CHOICES),
+        ChoiceField(choices.NEGATIVE_IMPACTS_CHOICES),
         verbose_name=_("Negative impacts for local communities"),
         blank=True,
         default=list,
@@ -630,7 +625,7 @@ class DealVersionBaseFields(models.Model):
     )
 
     promised_benefits = ChoiceArrayField(
-        models.CharField(choices=choices.BENEFITS_CHOICES),
+        ChoiceField(choices.BENEFITS_CHOICES),
         verbose_name=_("Promised benefits for local communities"),
         blank=True,
         default=list,
@@ -641,7 +636,7 @@ class DealVersionBaseFields(models.Model):
     )
 
     materialized_benefits = ChoiceArrayField(
-        models.CharField(choices=choices.BENEFITS_CHOICES),
+        ChoiceField(choices.BENEFITS_CHOICES),
         verbose_name=_("Materialized benefits for local communities"),
         blank=True,
         default=list,
@@ -661,7 +656,7 @@ class DealVersionBaseFields(models.Model):
 
     """ Former use """
     former_land_owner = ChoiceArrayField(
-        models.CharField(choices=choices.FORMER_LAND_OWNER_CHOICES),
+        ChoiceField(choices.FORMER_LAND_OWNER_CHOICES),
         verbose_name=_("Former land owner"),
         blank=True,
         default=list,
@@ -671,7 +666,7 @@ class DealVersionBaseFields(models.Model):
         blank=True,
     )
     former_land_use = ChoiceArrayField(
-        models.CharField(choices=choices.FORMER_LAND_USE_CHOICES),
+        ChoiceField(choices.FORMER_LAND_USE_CHOICES),
         verbose_name=_("Former land use"),
         blank=True,
         default=list,
@@ -681,7 +676,7 @@ class DealVersionBaseFields(models.Model):
         blank=True,
     )
     former_land_cover = ChoiceArrayField(
-        models.CharField(choices=choices.FORMER_LAND_COVER_CHOICES),
+        ChoiceField(choices.FORMER_LAND_COVER_CHOICES),
         verbose_name=_("Former land cover"),
         blank=True,
         default=list,
@@ -873,7 +868,7 @@ class DealVersionBaseFields(models.Model):
     )
 
     source_of_water_extraction = ChoiceArrayField(
-        models.CharField(choices=choices.WATER_SOURCE_CHOICES),
+        ChoiceField(choices.WATER_SOURCE_CHOICES),
         verbose_name=_("Source of water extraction"),
         blank=True,
         default=list,
@@ -969,22 +964,18 @@ class DealVersion(DealVersionBaseFields, BaseVersion):
         null=True,
     )
     current_intention_of_investment = ChoiceArrayField(
-        models.CharField(choices=choices.INTENTION_OF_INVESTMENT_CHOICES),
+        ChoiceField(choices.INTENTION_OF_INVESTMENT_CHOICES),
         verbose_name=_("Current intention of investment"),
         blank=True,
         default=list,
     )
-    current_negotiation_status = models.CharField(
-        _("Current negotiation status"),
-        choices=choices.NEGOTIATION_STATUS_CHOICES,
-        blank=True,
-        null=True,
+    current_negotiation_status = ChoiceField(
+        choices.NEGOTIATION_STATUS_CHOICES,
+        verbose_name=_("Current negotiation status"),
     )
-    current_implementation_status = models.CharField(
-        _("Current implementation status"),
-        choices=choices.IMPLEMENTATION_STATUS_CHOICES,
-        blank=True,
-        null=True,
+    current_implementation_status = ChoiceField(
+        choices.IMPLEMENTATION_STATUS_CHOICES,
+        verbose_name=_("Current implementation status"),
     )
     current_crops = ArrayField(
         models.CharField(),
@@ -1055,9 +1046,6 @@ class DealVersion(DealVersionBaseFields, BaseVersion):
     def __str__(self):
         return f"v{self.id} for #{self.deal_id}"
 
-    def is_current_draft(self):
-        return self.deal.draft_version_id == self.id
-
     @transaction.atomic
     def save(
         self,
@@ -1069,6 +1057,9 @@ class DealVersion(DealVersionBaseFields, BaseVersion):
         super().save(*args, **kwargs)  # give the object an id so then calculate fields
         self._recalculate_fields(recalculate_independent, recalculate_dependent)
         super().save()
+
+    def is_current_draft(self):
+        return self.deal.draft_version_id == self.id
 
     def _recalculate_fields(self, independent=True, dependent=True):
         if independent:
@@ -1395,11 +1386,6 @@ class Location(models.Model):
     facility_name = models.CharField(_("Facility name"), blank=True)
     comment = models.TextField(_("Comment"), blank=True)
 
-    def save(self, *args, **kwargs):
-        if self._state.adding and not self.nid:
-            self.nid = generate(size=8)
-        super().save(*args, **kwargs)
-
     class Meta:
         unique_together = ["dealversion", "nid"]
         indexes = [models.Index(fields=["dealversion", "nid"])]
@@ -1407,6 +1393,11 @@ class Location(models.Model):
 
     def __str__(self):
         return f"{self.nid} @ {self.dealversion}"
+
+    def save(self, *args, **kwargs):
+        if self._state.adding and not self.nid:
+            self.nid = generate(size=8)
+        super().save(*args, **kwargs)
 
 
 class Area(models.Model):
@@ -1419,8 +1410,17 @@ class Area(models.Model):
     date = LooseDateField(_("Date"), blank=True, null=True)
     area = gis_models.MultiPolygonField()
 
+    class Meta:
+        # unique_together = ["location", "type", "current"]
+        ordering = ["id"]
+
     def __str__(self):
         return f"{self.location} >> {self.type}"
+
+    def save(self, *args, **kwargs):
+        if self._state.adding and not self.nid:
+            self.nid = generate_nid(Area)
+        super().save(*args, **kwargs)
 
     # NOTE: Not in use, but would be nice to query features from backend directly
     def to_feature(self):
@@ -1450,15 +1450,6 @@ class Area(models.Model):
             return MultiPolygon([geom])
 
         raise ValidationError
-
-    def save(self, *args, **kwargs):
-        if self._state.adding and not self.nid:
-            self.nid = generate_nid(Area)
-        super().save(*args, **kwargs)
-
-    class Meta:
-        # unique_together = ["location", "type", "current"]
-        ordering = ["id"]
 
 
 class DealDataSource(BaseDataSource):
@@ -1508,12 +1499,15 @@ class Contract(models.Model):
     )
     comment = models.TextField(_("Comment"), blank=True)
 
-    def save(self, *args, **kwargs):
-        if self._state.adding and not self.nid:
-            self.nid = generate(size=8)
-        super().save(*args, **kwargs)
-
     class Meta:
         unique_together = ["dealversion", "nid"]
         indexes = [models.Index(fields=["dealversion", "nid"])]
         ordering = ["id"]
+
+    def __str__(self):
+        return f"{self.nid} @ {self.dealversion}"
+
+    def save(self, *args, **kwargs):
+        if self._state.adding and not self.nid:
+            self.nid = generate(size=8)
+        super().save(*args, **kwargs)

@@ -1,9 +1,8 @@
 import json
 
-from drf_spectacular.utils import extend_schema
-
 from django.db.models.functions import Lower
 from django.http import JsonResponse
+from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
 from rest_framework.decorators import api_view
 from rest_framework.generics import get_object_or_404

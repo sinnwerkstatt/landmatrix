@@ -6,7 +6,10 @@ from wagtail.blocks.list_block import ListValue
 from wagtail.fields import StreamField
 from wagtail.models import Page
 
-Context = TypedDict("Context", {"page": Page, "path": list[str]})
+
+class Context(TypedDict):
+    page: Page
+    path: list[str]
 
 
 class Command(BaseCommand):

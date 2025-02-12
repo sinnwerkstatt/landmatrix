@@ -1,7 +1,12 @@
 from django.utils.translation import gettext_lazy as _
 
 from ..dataclass import QualityIndicator
-from .queries import *
+from .queries import (
+    q_all_data_source_have_file,
+    q_has_country,
+    q_has_involvement,
+    q_has_valid_name,
+)
 
 INVESTOR_QIS: list[QualityIndicator] = [
     QualityIndicator(

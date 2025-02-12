@@ -30,7 +30,7 @@ class Command(BaseCommand):
 
         print()
 
-        for block in set(type(block_class).__name__ for _, block_class in BLOCKS):
+        for block in {type(block_class).__name__ for _, block_class in BLOCKS}:
             if block not in block_counter:
                 print(block, 0)
 

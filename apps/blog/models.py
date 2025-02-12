@@ -1,5 +1,4 @@
 import datetime
-from typing import Type
 
 from taggit.models import Tag, TaggedItemBase
 
@@ -29,7 +28,7 @@ from apps.wagtailcms.blocks import DOCUMENT_BLOCKS, SIMPLE_CONTENT_BLOCKS
 
 from .utils import unique_slugify
 
-UserModel: Type[User] = get_user_model()
+UserModel: type[User] = get_user_model()
 
 
 class BlogIndexPage(HeadlessPreviewMixin, Page):
@@ -56,7 +55,7 @@ class BlogIndexPage(HeadlessPreviewMixin, Page):
     def get_context(
         self, request, tag=None, category=None, author=None, *args, **kwargs
     ):
-        context = super(BlogIndexPage, self).get_context(request, *args, **kwargs)
+        context = super().get_context(request, *args, **kwargs)
         blogs = self.blogs
 
         if tag is None:
@@ -140,6 +139,11 @@ class BlogCategory(models.Model):
     def __str__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            unique_slugify(self, self.name)
+        return super().save(*args, **kwargs)
+
     def clean(self):
         if self.parent:
             parent = self.parent
@@ -147,11 +151,6 @@ class BlogCategory(models.Model):
                 raise ValidationError("Parent category cannot be self.")
             if parent.parent and parent.parent == self:
                 raise ValidationError("Cannot have circular Parents.")
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            unique_slugify(self, self.name)
-        return super().save(*args, **kwargs)
 
 
 class BlogCategoryBlogPage(models.Model):
@@ -164,6 +163,9 @@ class BlogCategoryBlogPage(models.Model):
 
     page = ParentalKey("BlogPage", related_name="categories")
     panels = [FieldPanel("category")]
+
+    def __str__(self):
+        return f"BlogCategoryBlogPage {self.category.name}"
 
 
 class BlogPageTag(TaggedItemBase):

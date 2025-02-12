@@ -1,8 +1,7 @@
-from typing import cast
-
 from tqdm import tqdm
 
 from django.core.management import BaseCommand
+from django.db.models import QuerySet
 
 from apps.landmatrix.management.helpers import db_require_confirmation
 from apps.landmatrix.models.choices import InvolvementRoleEnum
@@ -15,14 +14,11 @@ class Command(BaseCommand):
 
     @db_require_confirmation
     def handle(self, *args, **options):
-        qs = InvestorHull.objects.all()
-        qs_iterator = map(lambda x: cast(InvestorHull, x), qs.iterator())
+        qs: QuerySet[InvestorHull] = InvestorHull.objects.all()
 
         print("Iterating InvestorHulls.")
-        for obj in tqdm(qs_iterator, total=qs.count()):
-
+        for obj in tqdm(qs.iterator(), total=qs.count()):
             for version in obj.versions.all():
-
                 # active_version.involvements_snapshot can be reset, because new
                 # derived version initiate with database involvements.
                 if version.id == obj.active_version_id:
@@ -62,7 +58,7 @@ class Command(BaseCommand):
                         inv["id"] = None
                         inv["nid"] = generate_nid(Involvement)
 
-                assert all(snap["nid"] for snap in snapshot)
+                assert all(snap["nid"] for snap in snapshot)  # noqa: S101
 
                 # Set and save snapshot
                 version.involvements_snapshot = snapshot

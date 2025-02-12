@@ -10,7 +10,6 @@ class Command(BaseCommand):
 
     @db_require_confirmation
     def handle(self, *args, **options):
-
         # 547
         version = DealVersion.objects.get(id=85669)
         print(version)

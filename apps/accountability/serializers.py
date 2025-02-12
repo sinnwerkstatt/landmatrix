@@ -1,14 +1,17 @@
 from rest_framework import serializers
 
-from drf_spectacular.utils import extend_schema_field
-
-from apps.accountability.models import VggtChapter, VggtArticle, VggtVariable
-from apps.accountability.models import DealScore, DealScoreVersion, DealVariable
-from apps.accountability.models import Project, Filters
-from apps.accountability.models import UserInfo, Bookmark
-
-from apps.landmatrix.models.country import Country
-from apps.landmatrix.serializers import CountrySerializer
+from apps.accountability.models import (
+    Bookmark,
+    DealScore,
+    DealScoreVersion,
+    DealVariable,
+    Filters,
+    Project,
+    UserInfo,
+    VggtArticle,
+    VggtChapter,
+    VggtVariable,
+)
 
 
 class UserInfoSerializer(serializers.ModelSerializer):
@@ -238,7 +241,7 @@ class DealScoreSerializer(serializers.ModelSerializer):
     def get_country(self, obj):  # Get .annotate() field "country" from views.py
         try:
             return obj.country
-        except:
+        except:  # noqa: E722
             return None
 
     def get_operating_company(
@@ -246,7 +249,7 @@ class DealScoreSerializer(serializers.ModelSerializer):
     ):  # Get .annotate() field "operating_company" from views.py
         try:
             return obj.operating_company
-        except:
+        except:  # noqa: E722
             return None
 
 

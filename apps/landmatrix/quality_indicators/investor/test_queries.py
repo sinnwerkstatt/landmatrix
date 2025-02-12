@@ -8,9 +8,9 @@ from apps.landmatrix.models.investor import (
 )
 
 from .queries import (
+    q_all_data_source_have_file,
     q_has_country,
     q_has_involvement,
-    q_all_data_source_have_file,
     q_has_valid_name,
 )
 
@@ -24,14 +24,14 @@ def test_q_has_valid_name() -> None:
     assert not qs.filter(q_has_valid_name()).exists(), "Invalid: No name specified."
 
     InvestorVersion.objects.create(investor=investor, name="UnKnOwN")
-    assert not qs.filter(
-        q_has_valid_name()
-    ).exists(), "Invalid: Name contains 'unknown' (case insensitive)."
+    assert not qs.filter(q_has_valid_name()).exists(), (
+        "Invalid: Name contains 'unknown' (case insensitive)."
+    )
 
     InvestorVersion.objects.create(investor=investor, name="UnNaMeD")
-    assert not qs.filter(
-        q_has_valid_name()
-    ).exists(), "Invalid: Name contains 'unnamed' (case insensitive)."
+    assert not qs.filter(q_has_valid_name()).exists(), (
+        "Invalid: Name contains 'unnamed' (case insensitive)."
+    )
 
     InvestorVersion.objects.create(investor=investor, name="Known Investor")
     InvestorVersion.objects.create(investor=investor, name="Named Investor")
@@ -53,18 +53,18 @@ def test_q_has_involvement() -> None:
     )
     child_investor.save()
 
-    assert not InvestorVersion.objects.filter(
-        q_has_involvement()
-    ).exists(), "Invalid: No involvement as operating company or investor."
+    assert not InvestorVersion.objects.filter(q_has_involvement()).exists(), (
+        "Invalid: No involvement as operating company or investor."
+    )
 
     Involvement.objects.create(
         child_investor=child_investor,
         parent_investor=parent_investor,
     )
 
-    assert (
-        InvestorVersion.objects.filter(q_has_involvement()).count() == 1
-    ), "Valid: Involvement as investor."
+    assert InvestorVersion.objects.filter(q_has_involvement()).count() == 1, (
+        "Valid: Involvement as investor."
+    )
 
     deal = DealHull.objects.create()
     deal.active_version = DealVersion.objects.create(
@@ -73,9 +73,9 @@ def test_q_has_involvement() -> None:
     )
     deal.save()
 
-    assert (
-        InvestorVersion.objects.filter(q_has_involvement()).count() == 2
-    ), "Valid: Involvement as operating company."
+    assert InvestorVersion.objects.filter(q_has_involvement()).count() == 2, (
+        "Valid: Involvement as operating company."
+    )
 
 
 def test_q_has_country() -> None:
@@ -83,18 +83,18 @@ def test_q_has_country() -> None:
 
     InvestorVersion.objects.create(investor=investor)
 
-    assert not InvestorVersion.objects.filter(
-        q_has_country()
-    ).exists(), "Invalid: No country specified."
+    assert not InvestorVersion.objects.filter(q_has_country()).exists(), (
+        "Invalid: No country specified."
+    )
 
     InvestorVersion.objects.create(
         investor=investor,
         country=Country.objects.get(name="Spain"),
     )
 
-    assert InvestorVersion.objects.filter(
-        q_has_country()
-    ).exists(), "Valid: Country specified."
+    assert InvestorVersion.objects.filter(q_has_country()).exists(), (
+        "Valid: Country specified."
+    )
 
 
 def test_q_has_valid_data_sources() -> None:
@@ -102,9 +102,9 @@ def test_q_has_valid_data_sources() -> None:
 
     version = InvestorVersion.objects.create(investor=investor)
 
-    assert not InvestorVersion.objects.filter(
-        q_all_data_source_have_file()
-    ).exists(), "Invalid: No data sources given."
+    assert not InvestorVersion.objects.filter(q_all_data_source_have_file()).exists(), (
+        "Invalid: No data sources given."
+    )
 
     InvestorDataSource.objects.create(
         investorversion=version,
@@ -115,15 +115,15 @@ def test_q_has_valid_data_sources() -> None:
         file="document2.pdf",
     )
 
-    assert (
-        InvestorVersion.objects.filter(q_all_data_source_have_file()).count() == 1
-    ), "Valid: All data sources have files."
+    assert InvestorVersion.objects.filter(q_all_data_source_have_file()).count() == 1, (
+        "Valid: All data sources have files."
+    )
 
     InvestorDataSource.objects.create(
         investorversion=version,
         file="",
     )
 
-    assert not InvestorVersion.objects.filter(
-        q_all_data_source_have_file()
-    ).exists(), "Invalid: Any data source has no file."
+    assert not InvestorVersion.objects.filter(q_all_data_source_have_file()).exists(), (
+        "Invalid: Any data source has no file."
+    )

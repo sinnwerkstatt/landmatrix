@@ -1,11 +1,12 @@
 from typing import Any
 
 import pydantic
+from pydantic import ValidationError as PydanticValidationError
+
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import JSONField
 from django.utils.deconstruct import deconstructible
-from pydantic import ValidationError as PydanticValidationError
 from rest_framework import serializers
 
 Schema = type[pydantic.BaseModel] | type[pydantic.RootModel]
@@ -22,7 +23,7 @@ class SchemaValidator:
         try:
             self.schema.model_validate(value)
         except PydanticValidationError as e:
-            raise DjangoValidationError(message=e)
+            raise DjangoValidationError(message=e) from e
 
 
 class PydanticJSONField(JSONField):

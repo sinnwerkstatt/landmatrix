@@ -18,7 +18,7 @@ re_i18n_strings = re.compile(r"\$_\(\s*?\"(.*?)\"(?:,\s*?.*?)?,?\s*?\)")
 def process():
     results = set()
     for file in find_files():
-        with open(root_dir + file, "r") as f:
+        with open(root_dir + file) as f:
             cntnt = f.read().replace("\n", "")
         if "$_(" in cntnt:
             # print(file)
@@ -32,7 +32,7 @@ def process():
         for string in sorted(results, key=lambda a: (a.lower(), a.swapcase())):
             f.write(f'_("{string}")\n')
 
-    subprocess.run(["black", "../config/frontend_i18n_strings.py"])
+    subprocess.run(["ruff", "format", "../config/frontend_i18n_strings.py"])  # noqa: S603, S607
     print("success. now check `frontend_i18n_strings.py` to see if it's fine")
 
 

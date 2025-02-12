@@ -2,8 +2,8 @@ from rest_framework import serializers
 
 from apps.serializer import ReadOnlyModelSerializer
 
-from .models import User
 from ..landmatrix.permissions import is_editor_or_higher
+from .models import User
 
 
 class LeanUserSerializer(ReadOnlyModelSerializer):

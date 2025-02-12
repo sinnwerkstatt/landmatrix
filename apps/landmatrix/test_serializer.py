@@ -1,15 +1,15 @@
 from rest_framework.test import APIRequestFactory
 
 from apps.landmatrix.models.choices import (
-    InvolvementRoleEnum,
     InvestmentTypeEnum,
+    InvolvementRoleEnum,
     ParentRelationEnum,
 )
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.deal import DealHull, DealVersion
 from apps.landmatrix.models.investor import InvestorHull, Involvement
-from apps.landmatrix.serializers import InvolvementSerializer, InvestorSerializer
+from apps.landmatrix.serializers import InvestorSerializer, InvolvementSerializer
 
 
 def test_involvement_serializer_empty():

@@ -1,9 +1,10 @@
 import pytest
+
 from django.db import connection, models
 from django.db.models.expressions import OuterRef
 from django.db.models.query_utils import Q
 
-from .submodel_queries import _q_any, _q_all, _q_multiple
+from .submodel_queries import _q_all, _q_any, _q_multiple
 
 
 class Person(models.Model):
@@ -22,6 +23,9 @@ class Person(models.Model):
 
     class Meta:
         app_label = "test_app"
+
+    def __str__(self):
+        return self.name
 
 
 ALI = Person(name="Ali", age=25)
@@ -53,7 +57,6 @@ def person_model(transactional_db):  # need transactional here for some reason
 
 @pytest.mark.skip
 def test_q_any(person_model):
-
     def q_any_pupils_younger_than(age: int) -> Q:
         return _q_any(PUPILS_SUBQUERY, Q(age__lt=age))
 
@@ -71,7 +74,6 @@ def test_q_any(person_model):
 
 @pytest.mark.skip
 def test_q_all(person_model):
-
     def q_all_pupils_older_than(age: int) -> Q:
         return _q_all(PUPILS_SUBQUERY, Q(age__gt=age))
 
@@ -89,7 +91,6 @@ def test_q_all(person_model):
 
 @pytest.mark.skip
 def test_q_multiple(person_model):
-
     def q_multiple_pupils_named(name: str) -> Q:
         return _q_multiple(PUPILS_SUBQUERY, Q(name=name))
 

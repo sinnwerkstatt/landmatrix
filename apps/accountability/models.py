@@ -1,15 +1,12 @@
-from django.db import models
-from django.contrib.postgres.fields import ArrayField
-
 from django.conf import settings
+from django.contrib.postgres.fields import ArrayField
+from django.db import models
 from django.utils import timezone
-from datetime import datetime
-
 from django.utils.translation import gettext as _
 
 from apps.landmatrix.models import choices
-from apps.landmatrix.models.fields import ChoiceArrayField
 from apps.landmatrix.models.deal import DealHull, DealVersion
+from apps.landmatrix.models.fields import ChoiceArrayField
 
 STATUS_CHOICES = [
     ("TO_SCORE", _("To score")),
@@ -46,6 +43,9 @@ class UserInfo(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="info"
     )
+
+    def __str__(self):
+        return f"UserInfo {self.user.username}"
 
 
 class VggtChapter(models.Model):
@@ -105,7 +105,7 @@ class DealScore(models.Model):
     def current_score(self):
         try:
             return self.deal.active_version.accountability_score
-        except:
+        except:  # noqa: E722
             return None
 
 
@@ -124,14 +124,11 @@ class DealScoreVersion(models.Model):
     def __str__(self):
         return f"Score of deal {self.score.deal} - Version {self.deal_version}"
 
-    def is_current(self):
-        return True if self.score.current_score() else False
-
     def save(self, *args, **kwargs):
         # On create, create related objects
         if self._state.adding:
             current_score = self.score.current_score()
-            super(DealScoreVersion, self).save(*args, **kwargs)
+            super().save(*args, **kwargs)
 
             # If variables already existed, copy content to the new variables, else create from scratch
             if current_score is not None:
@@ -162,7 +159,10 @@ class DealScoreVersion(models.Model):
                     )
                     variable.save()
         else:
-            super(DealScoreVersion, self).save(*args, **kwargs)
+            super().save(*args, **kwargs)
+
+    def is_current(self):
+        return True if self.score.current_score() else False
 
 
 class DealVariable(models.Model):
@@ -290,3 +290,6 @@ class Bookmark(models.Model):
 
     class Meta:
         unique_together = [["user", "project"]]
+
+    def __str__(self):
+        return f"Bookmark: {self.project.name}"

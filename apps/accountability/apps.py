@@ -6,4 +6,4 @@ class AccountabilityConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
 
     def ready(self):
-        import apps.accountability.signals
+        import apps.accountability.signals  # noqa: F401

@@ -1,7 +1,6 @@
-from drf_spectacular.utils import OpenApiParameter, extend_schema, inline_serializer
-
 from django.db.models.expressions import F
 from django.http import HttpResponse, HttpResponseBadRequest
+from drf_spectacular.utils import OpenApiParameter, extend_schema, inline_serializer
 from rest_framework import serializers
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.request import Request
@@ -9,19 +8,19 @@ from rest_framework.response import Response
 
 from apps.landmatrix.models.deal import DealHull, DealVersion
 from apps.landmatrix.models.investor import InvestorHull, InvestorVersion
+from apps.landmatrix.models.quality_indicators import DealQISnapshot, InvestorQISnapshot
 from apps.landmatrix.permissions import IsReporterOrHigher
 from apps.landmatrix.quality_indicators import DEAL_QIS, INVESTOR_QIS
-from apps.landmatrix.quality_indicators.deal import annotate_counts, DEAL_SUBSETS
+from apps.landmatrix.quality_indicators.deal import DEAL_SUBSETS, annotate_counts
 
+from ...landmatrix.utils import parse_filters
 from .serializers import (
-    QualityIndicatorSerializer,
-    QueryParamsSerializer,
     DealQISnapshotSerializer,
     InvestorQISnapshotSerializer,
+    QualityIndicatorSerializer,
     QualityIndicatorSubsetSerializer,
+    QueryParamsSerializer,
 )
-from apps.landmatrix.models.quality_indicators import DealQISnapshot, InvestorQISnapshot
-from ...landmatrix.utils import parse_filters
 
 
 @extend_schema(
@@ -66,7 +65,6 @@ def specs(request: Request) -> Response:
 @api_view()
 @permission_classes([IsReporterOrHigher])
 def deal_counts(request: Request) -> Response:
-
     qs = DealHull.objects.public()
     qs = qs.filter(parse_filters(request))
 
@@ -130,7 +128,6 @@ def investor_counts(request: Request) -> Response:
 @api_view()
 @permission_classes([IsReporterOrHigher])
 def stats(request: Request) -> Response:
-
     return Response(
         data={
             "deal": DealQISnapshotSerializer(

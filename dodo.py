@@ -63,7 +63,7 @@ def task_reset_db():
         ]
         if "postgis" in db["ENGINE"]:
             actions += [
-                pg_run(f"CREATE EXTENSION IF NOT EXISTS postgis"),
+                pg_run("CREATE EXTENSION IF NOT EXISTS postgis"),
             ]
 
     elif db["ENGINE"] == "django.db.backends.sqlite3":

@@ -13,7 +13,7 @@ class Command(BaseCommand):
             will = UserModel.objects.create_user(
                 username="shakespeare",
                 email="william@shakespeare.dev",
-                password="hamlet4eva",
+                password="hamlet4eva",  # noqa: S106
                 first_name="William",
             )
             will.role = UserRole.ADMINISTRATOR
@@ -26,7 +26,7 @@ class Command(BaseCommand):
             user = UserModel.objects.create_user(
                 username="test_editor",
                 email="editor@test.dev",
-                password="love2edit",
+                password="love2edit",  # noqa: S106
                 first_name="Edith",
             )
             user.role = UserRole.EDITOR
@@ -37,7 +37,7 @@ class Command(BaseCommand):
             user = UserModel.objects.create_user(
                 username="test_reporter",
                 email="reporter@test.dev",
-                password="love2report",
+                password="love2report",  # noqa: S106
                 first_name="Remi",
             )
             user.role = UserRole.REPORTER
