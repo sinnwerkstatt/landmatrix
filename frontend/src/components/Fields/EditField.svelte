@@ -18,6 +18,7 @@
     showLabel?: boolean
     model?: Model
     extras?: { [key: string]: unknown }
+    disableQuotations?: boolean
     // edit specific
     children?: Snippet
     onchange?: () => void
@@ -32,6 +33,7 @@
     showLabel = false,
     model = "deal",
     extras = undefined,
+    disableQuotations = false,
     children,
     onchange,
   }: Props = $props()
@@ -47,9 +49,9 @@
   )
 
   const mutableObj = getMutableObject(model)
-  const quotes = $derived($mutableObj.selected_version.ds_quotations[fieldname] ?? [])
-  const dataSources = $derived(
-    $mutableObj.selected_version.datasources ?? [],
+  let quotes = $state($mutableObj?.selected_version.ds_quotations[fieldname] ?? [])
+  let dataSources = $derived(
+    $mutableObj?.selected_version.datasources ?? [],
   ) as DataSource[]
 
   let showDSQuotationModal = $state(false)
@@ -60,27 +62,29 @@
     <Label2 value={richField?.label} class={labelClass} />
   {/if}
 
-  <div>
-    <button
-      class="italic text-purple-400 disabled:text-gray-500 dark:disabled:text-gray-100"
-      type="button"
-      onclick={() => {
-        showDSQuotationModal = true
-      }}
-      disabled={!value || (Array.isArray(value) && value.length === 0)}
-    >
-      {$_("Sources")}: {quotes.length}
-    </button>
+  {#if !disableQuotations}
+    <div>
+      <button
+        class="italic text-purple-400 disabled:text-gray-500 dark:disabled:text-gray-100"
+        type="button"
+        onclick={() => {
+          showDSQuotationModal = true
+        }}
+        disabled={!value || (Array.isArray(value) && value.length === 0)}
+      >
+        {$_("Sources")}: {quotes.length}
+      </button>
 
-    <DSQuotationsModal
-      bind:open={showDSQuotationModal}
-      bind:quotes={$mutableObj.selected_version.ds_quotations[fieldname]}
-      {dataSources}
-      label={richField.label}
-      {fieldname}
-      editable
-    />
-  </div>
+      <DSQuotationsModal
+        bind:open={showDSQuotationModal}
+        bind:quotes
+        {dataSources}
+        label={richField.label}
+        {fieldname}
+        editable
+      />
+    </div>
+  {/if}
 
   <div class={valueClass}>
     {#if richField && richField.editField}
