@@ -69,10 +69,15 @@
     await invalidate("/api/context_help/")
     loading.set(false)
   }
+
+  const onclick = (e: MouseEvent) => {
+    e.stopPropagation()
+    showOverlay = !showOverlay
+  }
 </script>
 
 {#if editMode || helpContent}
-  <button type="button" onclick={() => (showOverlay = !showOverlay)} use:floatingRef>
+  <button type="button" {onclick} use:floatingRef>
     <QuestionMarkCircleIcon class={classNames} />
   </button>
 {/if}
