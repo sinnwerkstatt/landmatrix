@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 1. Install django
-poetry install
+uv sync
 
 # 2. Install frontend
 (cd frontend && pnpm install && pnpm run build)

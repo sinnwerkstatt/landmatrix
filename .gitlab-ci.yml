@@ -23,11 +23,11 @@ django formatting and linting:
     - name: postgis/postgis:16-3.4
       alias: postgres
   script:
-    - poetry install
-    - poetry run ruff format --check
-    - poetry run ruff check
-    - poetry run ./manage.py makemigrations --check --no-input
-    # - poetry run mypy apps
+    - uv sync
+    - uv run ruff format --check
+    - uv run ruff check
+    - uv run ./manage.py makemigrations --check --no-input
+    # - uv run mypy apps
 
 django tests and coverage:
   stage: test
@@ -36,9 +36,9 @@ django tests and coverage:
     - name: postgis/postgis:16-3.4
       alias: postgres
   script:
-    - poetry install
-#    - poetry run ./manage.py migrate --noinput
-    - poetry run pytest -x -p warnings --cov=apps --cov-report=term-missing
+    - uv sync
+#    - uv run ./manage.py migrate --noinput
+    - uv run pytest -x -p warnings --cov=apps --cov-report=term-missing
   coverage: /^TOTAL.*\s+(\d+\%)$/
 
 frontend test:
@@ -58,10 +58,10 @@ frontend test:
 #  before_script:
 #    - pnpm install && npx playwright install --with-deps
 #    - cd frontend && pnpm install && pnpm run build && cd ..
-#    - poetry install
+#    - uv sync
 #  script:
-#    - poetry run doit initial_setup production=True
-#    - poetry run ./manage.py create_playwright_test_users
+#    - uv run doit initial_setup production=True
+#    - uv run ./manage.py create_playwright_test_users
 #    - PATH=$(pnpm bin):$PATH ./test.sh
 #  artifacts:
 #    when: always
@@ -93,7 +93,7 @@ deploy to staging:
       set -e
       mv maintenance.html_ maintenance.html || echo "could not move maintenance"
       cd ~/htdocs
-      poetry run doit full_update dev=True production=True
+      uv run doit full_update dev=True production=True
       sudo /bin/systemctl restart webapp-dev.landmatrix.org.service
       cd ~
       mv maintenance.html maintenance.html_
@@ -113,8 +113,8 @@ deploy to staging2:
       cd ~/htdocs
       git pull
       git switch newModel2
-      poetry install
-      poetry run doit update production=True
+      uv sync
+      uv run doit update production=True
       sudo /bin/systemctl restart webapp-dev2.landmatrix.org.service
       cd ~
       mv maintenance.html maintenance.html_ || echo "could not move maintenance"
@@ -132,7 +132,7 @@ deploy to production:
       set -e
       mv maintenance.html_ maintenance.html || echo "could not move maintenance"
       cd ~/htdocs
-      poetry run doit full_update production=True branch=production
+      uv run doit full_update production=True branch=production
       sudo /bin/systemctl restart webapp-landmatrix.org.service
       cd ~
       mv maintenance.html maintenance.html_

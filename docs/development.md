@@ -26,11 +26,11 @@ sudo apt install gdal-bin postgresql-13-postgis-3
 1. Make sure the string is encapsulated by `$_('string')`
 2. ```shell
    cd plumbing
-   poetry run python ./find_i18n.py
+   uv run python ./find_i18n.py
    ```
-3. `poetry run ./manage.py make_messages -a`
+3. `uv run ./manage.py make_messages -a`
    **Watch out!**  Don't use Django's `makemessages`.
-4. `poetry run doit compilemessages`
+4. `uv run doit compilemessages`
 
 ### Register existing model for i18n
 
@@ -56,8 +56,8 @@ zcat landmatrix.sql.gz | psql -h localhost -U landmatrix landmatrix
 
 #### Backend / Django
 
-* Run tests via: `poetry run pytest apps`
-* Show what is done under the hood (being very verbose and capturing no output): `poetry run pytest apps -s -vv`
-* With coverage: `poetry run pytest apps --cov=apps`
-* To force new db creation after migrating: `poetry run pytest apps --create-db`
-* Start pytest in watch mode: `poetry run ptw apps`
+* Run tests via: `uv run pytest apps`
+* Show what is done under the hood (being very verbose and capturing no output): `uv run pytest apps -s -vv`
+* With coverage: `uv run pytest apps --cov=apps`
+* To force new db creation after migrating: `uv run pytest apps --create-db`
+* Start pytest in watch mode: `uv run ptw apps`

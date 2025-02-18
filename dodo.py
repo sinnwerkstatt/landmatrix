@@ -38,7 +38,7 @@ def task_update():
 
 
 def task_full_update():
-    return {"task_dep": ["git_pull", "poetry_install", "update"], "actions": []}
+    return {"task_dep": ["git_pull", "uv_install", "update"], "actions": []}
 
 
 def task_initial_setup():
@@ -175,6 +175,6 @@ def task_git_pull():
     return {"actions": [f"git checkout {branch}", "git pull"]}
 
 
-def task_poetry_install():
+def task_uv_install():
     dev = "--only main" if not get_var("dev", False) else ""
-    return {"actions": [f"poetry install {dev}"]}
+    return {"actions": [f"uv sync {dev}"]}
