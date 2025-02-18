@@ -107,14 +107,14 @@
     <div class="w-full self-start" dir="ltr">
       <h2 class="heading5 my-2 flex items-center gap-2 px-2">
         {$_("Filter")}
-        <ContextHelper identifier="filterbar_filter" class="mb-2 size-4" />
+        <ContextHelper class="mb-2 size-4" identifier="filterbar_filter" />
       </h2>
       <!--      <p>{$dealsNG.length}</p>-->
       <div class="my-2 px-2">
         <CheckboxSwitch
+          checked={$isDefaultFilter}
           class="text-base"
           id="default"
-          checked={$isDefaultFilter}
           onchange={toggleDefaultFilter}
         >
           {$_("Default filter")}
@@ -129,9 +129,9 @@
 
       <FilterCollapse
         clearable={!!$filters.region_id}
+        contextHelp="filterbar_region"
         onclear={() => ($filters.region_id = undefined)}
         title={$_("Land Matrix region")}
-        contextHelp="filterbar_region"
       >
         {#each regionsWithGlobal as reg}
           <label class="block">
@@ -150,28 +150,28 @@
 
       <FilterCollapse
         clearable={!!$filters.country_id}
+        contextHelp="filterbar_country"
         onclear={() => ($filters.country_id = undefined)}
         title={$_("Country")}
-        contextHelp="filterbar_country"
       >
         <CountrySelect
           countries={page.data.countries.filter(c => c.deals && c.deals.length > 0)}
+          onclear={() => ($filters.country_id = undefined)}
           oninput={e => {
             if (e.detail) {
               $filters.country_id = e.detail.id
               $filters.region_id = undefined
             }
           }}
-          onclear={() => ($filters.country_id = undefined)}
           value={page.data.countries.find(c => c.id === $filters.country_id)}
         />
       </FilterCollapse>
 
       <FilterCollapse
         clearable={!!($filters.deal_size_min || $filters.deal_size_max)}
+        contextHelp="filterbar_dealsize"
         onclear={() => ($filters.deal_size_min = $filters.deal_size_max = undefined)}
         title={$_("Deal size")}
-        contextHelp="filterbar_dealsize"
       >
         <div class="field-has-appendix">
           <input
@@ -201,9 +201,9 @@
 
       <FilterCollapse
         clearable={$filters.nature_of_deal.length > 0}
+        contextHelp="filterbar_nature_of_deal"
         onclear={() => ($filters.nature_of_deal = [])}
         title={$_("Nature of the deal")}
-        contextHelp="filterbar_nature_of_deal"
       >
         {#each $dealChoices.nature_of_deal as { value, label }}
           <label class="block">
@@ -220,12 +220,12 @@
 
       <FilterCollapse
         clearable={!!($filters.investor_id || $filters.investor_country_id)}
+        contextHelp="filterbar_investor"
         onclear={() => {
           $filters.investor_id = undefined
           $filters.investor_country_id = undefined
         }}
         title={$_("Investor")}
-        contextHelp="filterbar_investor"
       >
         {$_("Investor name")}
         <VirtualListSelect
@@ -251,10 +251,10 @@
 
       <FilterCollapse
         clearable={!!($filters.initiation_year_min || $filters.initiation_year_max)}
+        contextHelp="filterbar_initiation_year"
         onclear={() =>
           ($filters.initiation_year_min = $filters.initiation_year_max = undefined)}
         title={$_("Year of initiation")}
-        contextHelp="filterbar_initiation_year"
       >
         <div class="flex gap-1">
           <input
@@ -291,9 +291,9 @@
 
       <FilterCollapse
         clearable={$filters.implementation_status.length > 0}
+        contextHelp="filterbar_implementation_status"
         onclear={() => ($filters.implementation_status = [])}
         title={$_("Implementation status")}
-        contextHelp="filterbar_implementation_status"
       >
         <label class="block">
           <input
@@ -319,9 +319,9 @@
 
       <FilterCollapse
         clearable={$filters.intention_of_investment.length > 0}
+        contextHelp="filterbar_intention_of_investment"
         onclear={() => ($filters.intention_of_investment = [])}
         title={$_("Intention of investment")}
-        contextHelp="filterbar_intention_of_investment"
       >
         <label class="mb-2 block">
           <input
@@ -359,9 +359,9 @@
 
       <FilterCollapse
         clearable={$filters.produce ? $filters.produce.length > 0 : false}
+        contextHelp="filterbar_produce"
         onclear={() => ($filters.produce = [])}
         title={$_("Produce")}
-        contextHelp="filterbar_produce"
       >
         <Select
           bind:value={$filters.produce}
@@ -374,9 +374,9 @@
 
       <FilterCollapse
         clearable={$filters.transnational !== null}
+        contextHelp="filterbar_scope"
         onclear={() => ($filters.transnational = null)}
         title={$_("Scope")}
-        contextHelp="filterbar_scope"
       >
         <label class="block">
           <input
@@ -402,9 +402,9 @@
 
       <FilterCollapse
         clearable={$filters.forest_concession !== null}
+        contextHelp="filterbar_forest_concession"
         onclear={() => ($filters.forest_concession = null)}
         title={$_("Forest concession")}
-        contextHelp="filterbar_forest_concession"
       >
         <label class="block">
           <input

@@ -125,8 +125,8 @@ export const simpleInvestors = readable(
 )
 
 function createContextHelpStore() {
-  let showContextHelp = false
-  if (browser) showContextHelp = localStorage.showContextHelp === "true"
+  let showContextHelp = true
+  if (browser) showContextHelp = localStorage.showContextHelp !== "false"
 
   const { subscribe, set, update } = writable(showContextHelp)
 
