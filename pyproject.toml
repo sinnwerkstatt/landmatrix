@@ -66,6 +66,7 @@ dev = [
 
 [tool.ruff]
 exclude = [
+    ".venv",
     ".eggs",
     ".git",
     "migrations",
