@@ -252,9 +252,9 @@
                 paddingX="0"
                 paddingY="0"
                 value={variable.vggt_variable}
-                bind:checked={$tableSelection[deal.id].variables[
-                  variable.vggt_variable
-                ]}
+                bind:checked={
+                  $tableSelection[deal.id].variables[variable.vggt_variable]
+                }
               />
             </span>
           </TableCell>

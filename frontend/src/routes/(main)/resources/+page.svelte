@@ -98,6 +98,10 @@
 
 <style lang="postcss">
   .selected {
-    @apply bg-orange-500 text-white hover:bg-orange-700 dark:text-black;
+    @apply bg-orange-500 text-white hover:bg-orange-700;
+
+    :global {
+      @apply dark:text-black;
+    }
   }
 </style>

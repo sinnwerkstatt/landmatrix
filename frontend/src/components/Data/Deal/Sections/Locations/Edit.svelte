@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Feature, MapBrowserEvent, type Map } from "ol"
+  import { Feature, type Map, type MapBrowserEvent } from "ol"
   import { Control } from "ol/control"
   import { GeoJSON } from "ol/format"
   import { Point } from "ol/geom"
