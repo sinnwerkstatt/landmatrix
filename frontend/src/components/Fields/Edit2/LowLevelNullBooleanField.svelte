@@ -64,11 +64,5 @@
     </label>
   </div>
 {:else}
-  <input
-    bind:checked={value}
-    type="checkbox"
-    {name}
-    class={inptClass}
-    {onchange}
-  />
+  <input bind:checked={value} type="checkbox" {name} class={inptClass} {onchange} />
 {/if}
