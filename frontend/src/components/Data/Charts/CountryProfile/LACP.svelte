@@ -143,7 +143,7 @@
 </ChartWrapper>
 
 <style lang="postcss">
-  :global(.lacp-chart-legend-background) {
+  :global .lacp-chart-legend-background {
     @apply fill-white dark:fill-gray-900;
   }
 </style>
