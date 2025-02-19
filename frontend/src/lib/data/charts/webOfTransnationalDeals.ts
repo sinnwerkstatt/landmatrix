@@ -177,9 +177,13 @@ export function LandMatrixRadialSpider(
     .on("mouseover", event => selectCountry(event.currentTarget))
     .on("mouseout", event => mouseout_event(event.currentTarget))
     .on("mousedown", d => {
-      selectedCountry =
-        selectedCountry !== d.target.dataset.id ? d.target.dataset.id : null
-      updateCountryFn(selectedCountry)
+      const newCountryId = +d.target.dataset.id
+
+      if (selectedCountry === newCountryId) {
+        updateCountryFn(undefined)
+      } else {
+        updateCountryFn(newCountryId)
+      }
     })
     .call(text =>
       text.append("title").text(

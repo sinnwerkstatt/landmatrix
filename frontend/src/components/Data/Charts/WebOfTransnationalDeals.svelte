@@ -25,12 +25,10 @@
   ): void => {
     if (!svgComp) return
 
-    LandMatrixRadialSpider(
-      svgComp,
-      deals,
-      countryId,
-      countryId => ($filters.country_id = countryId ? +countryId : undefined),
-    )
+    LandMatrixRadialSpider(svgComp, deals, countryId, countryId => {
+      $filters.country_id = countryId
+      $filters.region_id = undefined
+    })
   }
 
   const handleDownload = (fileType: FileType) => {
@@ -58,55 +56,55 @@
   {title}
   wrapperClasses="mx-auto xl:w-4/5"
 >
-  <svg bind:this={svgComp} id="web-of-transnational-deals" />
+  <svg bind:this={svgComp} id="web-of-transnational-deals">
+    <style lang="postcss">
+      #incoming-marker {
+        @apply fill-purple;
+      }
+
+      #outgoing-marker {
+        @apply fill-red;
+      }
+
+      path.incoming-highlighted {
+        @apply stroke-purple stroke-2;
+        marker-start: url(#incoming-marker);
+      }
+
+      path.outgoing-highlighted {
+        @apply stroke-red stroke-2;
+        marker-start: url(#outgoing-marker);
+      }
+
+      path.incoming-permahighlight {
+        @apply stroke-purple stroke-[3];
+        marker-start: url(#incoming-marker);
+      }
+
+      path.outgoing-permahighlight {
+        @apply stroke-red stroke-2;
+        marker-start: url(#outgoing-marker);
+      }
+
+      text.incoming-highlighted {
+        @apply cursor-pointer fill-purple font-bold;
+      }
+
+      text.outgoing-highlighted {
+        @apply cursor-pointer fill-red font-bold;
+      }
+
+      text.incoming-permahighlight {
+        @apply cursor-pointer fill-purple font-bold;
+      }
+
+      text.outgoing-permahighlight {
+        @apply cursor-pointer fill-red font-bold;
+      }
+
+      text.incoming-permahighlight.outgoing-permahighlight {
+        @apply cursor-pointer fill-gray-700 font-bold;
+      }
+    </style>
+  </svg>
 </ChartWrapper>
-
-<style lang="postcss">
-  :global(svg #incoming-marker) {
-    @apply fill-purple;
-  }
-
-  :global(svg #outgoing-marker) {
-    @apply fill-red;
-  }
-
-  :global(svg path.incoming-highlighted) {
-    @apply stroke-purple stroke-2;
-    marker-start: url(#incoming-marker);
-  }
-
-  :global(svg path.outgoing-highlighted) {
-    @apply stroke-red stroke-2;
-    marker-start: url(#outgoing-marker);
-  }
-
-  :global(svg path.incoming-permahighlight) {
-    @apply stroke-purple stroke-[3];
-    marker-start: url(#incoming-marker);
-  }
-
-  :global(svg path.outgoing-permahighlight) {
-    @apply stroke-red stroke-2;
-    marker-start: url(#outgoing-marker);
-  }
-
-  :global(svg text.incoming-highlighted) {
-    @apply cursor-pointer fill-purple font-bold;
-  }
-
-  :global(svg text.outgoing-highlighted) {
-    @apply cursor-pointer fill-red font-bold;
-  }
-
-  :global(svg text.incoming-permahighlight) {
-    @apply cursor-pointer fill-purple font-bold;
-  }
-
-  :global(svg text.outgoing-permahighlight) {
-    @apply cursor-pointer fill-red font-bold;
-  }
-
-  :global(svg text.incoming-permahighlight.outgoing-permahighlight) {
-    @apply cursor-pointer fill-gray-700 font-bold;
-  }
-</style>
