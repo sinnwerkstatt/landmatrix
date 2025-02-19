@@ -113,29 +113,30 @@ class DealScoreList(generics.ListCreateAPIView):
     def get_queryset(self):
         qs = self.queryset.prefetch_related(
             Prefetch(
-                "deals",
-                queryset=DealHull.objects.filter(
-                    confidential=False, active_version__isnull=False, active_version__is_public=True
-                ).prefetch_related(
+                "deal",
+                queryset=DealHull.objects.all().prefetch_related(
                     Prefetch("versions", queryset=DealVersion.objects.order_by("-id"))
                 ),
             )
         )
+        qs = qs.filter(
+            deal__deleted=False,
+            deal__active_version__isnull=False,
+            deal__active_version__is_public=True,
+            deal__confidential=False
+            )
         return qs
 
     @extend_schema(parameters=openapi_filters_parameters_scoring)
     def get(self, request: Request, *args, **kwargs):
         return Response(
             self.get_queryset()
-            .exclude(deal__deleted=True)
             .order_by("deal_id")
             .filter(parse_filters(request))
             .distinct()
             .values("deal")
             .annotate(
                 id=F("deal"),
-                ## TMP
-                a_deleted=F("deal__deleted"),
                 ## Filters
                 region_id=F("deal__country__region_id"),
                 country=JSONObject(id="deal__country__id", name="deal__country__name"),
