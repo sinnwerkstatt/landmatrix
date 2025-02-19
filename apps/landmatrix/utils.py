@@ -171,7 +171,7 @@ def parse_filters(request: Request):
         ret &= Q(active_version__carbon_offset_project=value == "true")
 
     if value := request.GET.get("produce_info_carbon_offsetting"):
-        q = Q(active_version__carbon_sequestration=list())
+        q = Q(active_version__carbon_sequestration=[])
         ret &= ~q if value == "true" else q
 
     return ret
