@@ -35,6 +35,8 @@ export class FilterValues {
   produce?: ProduceFilter[] = []
   transnational: boolean | null = null
   forest_concession: boolean | null = null
+  carbon_offset_project: boolean | null = null
+  produce_info_carbon_offsetting: boolean | null = null
 
   constructor(data: Partial<FilterValues> = {}) {
     Object.assign(this, data)
@@ -55,6 +57,8 @@ export class FilterValues {
     this.produce = []
     this.transnational = null
     this.forest_concession = null
+    this.carbon_offset_project = null
+    this.produce_info_carbon_offsetting = null
     return this
   }
 
@@ -114,6 +118,8 @@ export class FilterValues {
     this.transnational = true
     // Forest concession False
     this.forest_concession = false
+    this.carbon_offset_project = null
+    this.produce_info_carbon_offsetting = null
     return this
   }
 
@@ -191,6 +197,8 @@ export class FilterValues {
       !this.produce || this.produce.length === 0,
       this.transnational === true,
       this.forest_concession === false,
+      this.carbon_offset_project === null,
+      this.produce_info_carbon_offsetting === null,
     ].every(Boolean)
   }
   public toRESTFilterArray() {
@@ -255,6 +263,18 @@ export class FilterValues {
 
     if (this.forest_concession !== null)
       searchParams.append("forest_concession", this.forest_concession.toString())
+
+    if (this.carbon_offset_project !== null)
+      searchParams.append(
+        "carbon_offset_project",
+        this.carbon_offset_project.toString(),
+      )
+
+    if (this.produce_info_carbon_offsetting !== null)
+      searchParams.append(
+        "produce_info_carbon_offsetting",
+        this.produce_info_carbon_offsetting.toString(),
+      )
 
     return searchParams.toString()
   }

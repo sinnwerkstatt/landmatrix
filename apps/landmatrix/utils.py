@@ -83,6 +83,16 @@ openapi_filters_parameters = [
         description="not set: Included, true: Only false: Excluded",
         type=bool,
     ),
+    OpenApiParameter(
+        "carbon_offset_project",
+        description="not set: Included, true: Only false: Excluded",
+        type=bool,
+    ),
+    OpenApiParameter(
+        "produce_info_carbon_offsetting",
+        description="not set: Included, true: Only false: Excluded",
+        type=bool,
+    ),
 ]
 
 
@@ -156,5 +166,12 @@ def parse_filters(request: Request):
 
     if for_con := request.GET.get("forest_concession"):
         ret &= Q(active_version__forest_concession=for_con == "true")
+
+    if value := request.GET.get("carbon_offset_project"):
+        ret &= Q(active_version__carbon_offset_project=value == "true")
+
+    if value := request.GET.get("produce_info_carbon_offsetting"):
+        q = Q(active_version__carbon_sequestration=list())
+        ret &= ~q if value == "true" else q
 
     return ret

@@ -210,6 +210,80 @@
                 </label>
               {/each}
             </FilterCollapse>
+
+            <FilterCollapse
+              clearable={$filters.carbon_offset_project !== null}
+              on:clear={() => ($filters.carbon_offset_project = null)}
+              title={$_("Carbon offset project")}
+            >
+              <label class="block">
+                <input
+                  bind:group={$filters.carbon_offset_project}
+                  class="radio-btn"
+                  name="carbon-offset-project-filter"
+                  type="radio"
+                  value={null}
+                />
+                {$_("No information")}
+              </label>
+              <label class="block">
+                <input
+                  bind:group={$filters.carbon_offset_project}
+                  class="radio-btn"
+                  name="carbon-offset-project-filter"
+                  type="radio"
+                  value={true}
+                />
+                {$_("Yes")}
+              </label>
+              <label class="block">
+                <input
+                  bind:group={$filters.carbon_offset_project}
+                  class="radio-btn"
+                  name="carbon-offset-project-filter"
+                  type="radio"
+                  value={false}
+                />
+                {$_("No")}
+              </label>
+            </FilterCollapse>
+
+            <FilterCollapse
+              clearable={$filters.produce_info_carbon_offsetting !== null}
+              on:clear={() => ($filters.produce_info_carbon_offsetting = null)}
+              title={$_("Produce info: Carbon sequestration/offsetting")}
+            >
+              <label class="block">
+                <input
+                  bind:group={$filters.produce_info_carbon_offsetting}
+                  class="radio-btn"
+                  name="produce-info-carbon-offsetting-filter"
+                  type="radio"
+                  value={null}
+                />
+                {$_("No information")}
+              </label>
+              <label class="block">
+                <input
+                  bind:group={$filters.produce_info_carbon_offsetting}
+                  class="radio-btn"
+                  name="produce-info-carbon-offsetting-filter"
+                  type="radio"
+                  value={true}
+                />
+                {$_("Yes")}
+              </label>
+              <label class="block">
+                <input
+                  bind:group={$filters.produce_info_carbon_offsetting}
+                  class="radio-btn"
+                  name="produce-info-carbon-offsetting-filter"
+                  type="radio"
+                  value={false}
+                />
+                {$_("No")}
+              </label>
+            </FilterCollapse>
           </div>
         {/if}
       {:else}
