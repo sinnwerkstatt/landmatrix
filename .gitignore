@@ -8,6 +8,7 @@ apps/landmatrix/static/css/*.css
 # project
 /.env
 /.doit.db
+/.doit.db.*
 /temporary.db
 /static/**/*.css
 /static-collected/

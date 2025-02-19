@@ -113,6 +113,10 @@
 
 <style lang="postcss">
   .is-active {
-    @apply bg-white text-orange dark:bg-gray-900;
+    @apply bg-white text-orange;
+
+    :global {
+      @apply dark:bg-gray-900;
+    }
   }
 </style>

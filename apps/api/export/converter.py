@@ -1,3 +1,4 @@
+from decimal import Decimal
 from typing import Literal
 
 from django.db import models
@@ -234,8 +235,19 @@ def __flatten_array_choices(data, field, choics) -> None:
 def __bool_cast(data: dict, field_name: str) -> str | None:
     value: bool | None = data.get(field_name)
 
-    if value is not None:
-        return "Yes" if value else "No"
+    if value is None:
+        return "Unknown"
+
+    return "Yes" if value else "No"
+
+
+def __decimal_cast(data: dict, field_name: str) -> str | None:
+    value: Decimal | None = data.get(field_name)
+
+    if value is None:
+        return ""
+
+    return str(value)
 
 
 def deal_download_format(data: dict):
@@ -504,15 +516,20 @@ def deal_download_format(data: dict):
             [
                 "#".join(
                     [
-                        dat.get("date") or "",
+                        dat.get("start_date") or "",
+                        dat.get("end_date") or "",
                         "current" if dat.get("current") else "",
-                        str(dat.get("area", "")),
-                        ", ".join([str(x) for x in dat.get("choices", [])]),
-                        str(dat.get("projected_lifetime_sequestration", "")),
-                        str(dat.get("projected_annual_sequestration", "")),
-                        str(dat.get("certification_standard", "")),
-                        str(dat.get("certification_standard_name", "")),
-                        str(dat.get("certification_standard_comment", "")),
+                        ", ".join([str(x) for x in dat.get("choices")]),
+                        __decimal_cast(dat, "area"),
+                        __decimal_cast(dat, "projected_lifetime_sequestration"),
+                        __decimal_cast(dat, "projected_annual_sequestration"),
+                        dat.get("project_proponents") or "",
+                        __bool_cast(dat, "certification_standard"),
+                        ", ".join(
+                            [str(x) for x in dat.get("certification_standard_name")]
+                        ),
+                        dat.get("certification_standard_id") or "",
+                        dat.get("certification_standard_comment") or "",
                     ]
                 )
                 for dat in cs

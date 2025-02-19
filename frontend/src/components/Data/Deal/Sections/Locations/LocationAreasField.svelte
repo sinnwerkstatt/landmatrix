@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { Feature, type Map } from "ol"
+  import type { Feature, Map } from "ol"
   import { GeoJSON } from "ol/format"
-  import { MultiPolygon, Point } from "ol/geom"
+  import type { MultiPolygon, Point } from "ol/geom"
   import { Vector as VectorLayer } from "ol/layer"
   import { Vector as VectorSource } from "ol/source"
   import { getArea } from "ol/sphere"

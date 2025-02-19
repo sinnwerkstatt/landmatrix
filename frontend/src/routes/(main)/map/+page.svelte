@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Feature, MapBrowserEvent, type Map } from "ol"
+  import { Feature, type Map, type MapBrowserEvent } from "ol"
   import { Point } from "ol/geom"
   import { Vector as VectorLayer } from "ol/layer"
   import { fromLonLat } from "ol/proj"
