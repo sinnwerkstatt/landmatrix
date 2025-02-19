@@ -8,7 +8,7 @@ from django.http import Http404
 from django.utils.translation import gettext as _
 
 from apps.accounts.models import User
-from apps.landmatrix.models import choices
+from apps.landmatrix.models import choices, schema
 from apps.landmatrix.models.abstract import (
     BaseDataSource,
     BaseHull,
@@ -27,6 +27,7 @@ from apps.landmatrix.models.fields import (
     NanoIDField,
 )
 from apps.landmatrix.nid import generate_nid
+from django_pydantic_jsonfield import PydanticJSONField, SchemaValidator
 
 
 class InvestorHullQuerySet(models.QuerySet):
@@ -378,6 +379,14 @@ class InvestorVersion(BaseVersion):
     comment = models.TextField(_("Comment"), blank=True)
 
     # """ Data sources """  via Foreignkey
+
+    # META
+    ds_quotations = PydanticJSONField(
+        _("Data Source Quotations"),
+        blank=True,
+        default=dict,
+        validators=[SchemaValidator(schema.DataSourceQuotationSchema)],
+    )
 
     """ calculated properties """
     name_unknown = models.BooleanField(default=False)

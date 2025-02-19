@@ -49,7 +49,7 @@
   )
 
   const mutableObj = getMutableObject(model)
-  let quotes = $state($mutableObj?.selected_version.ds_quotations[fieldname] ?? [])
+  let quotes = $state($mutableObj?.selected_version.ds_quotations![fieldname] ?? [])
   let dataSources = $derived(
     $mutableObj?.selected_version.datasources ?? [],
   ) as DataSource[]
@@ -77,7 +77,7 @@
 
       <DSQuotationsModal
         bind:open={showDSQuotationModal}
-        bind:quotes
+        bind:quotes={$mutableObj.selected_version.ds_quotations[fieldname]}
         {dataSources}
         label={richField.label}
         {fieldname}

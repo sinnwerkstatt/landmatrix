@@ -403,7 +403,7 @@ class Investor2DealSerializer(serializers.ModelSerializer):
         fields = ["id", "deal_id"]
 
 
-class InvestorVersionSerializer(serializers.ModelSerializer):
+class InvestorVersionSerializer(MyModelSerializer):
     datasources = InvestorDataSourceSerializer(many=True, read_only=True)
     country_id = serializers.PrimaryKeyRelatedField[Country](read_only=True)
 

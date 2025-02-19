@@ -1812,7 +1812,14 @@ export interface components {
           )
         | null
       /** Nature of the deal */
-      readonly nature_of_deal: components["schemas"]["NatureOfDealEnum"][]
+      readonly nature_of_deal: (
+        | (
+            | components["schemas"]["NatureOfDealEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
+        | null
+      )[]
       readonly operating_company: string
       readonly initiation_year: number | null
       readonly implementation_status:
@@ -1822,7 +1829,14 @@ export interface components {
             | components["schemas"]["NullEnum"]
           )
         | null
-      readonly intention_of_investment: components["schemas"]["IntentionOfInvestmentEnum"][]
+      readonly intention_of_investment: (
+        | (
+            | components["schemas"]["IntentionOfInvestmentEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
+        | null
+      )[]
       readonly crops: string[]
       /** Current livestock */
       readonly animals: string[]
@@ -1830,7 +1844,14 @@ export interface components {
       readonly transnational: boolean | null
       readonly forest_concession: boolean
       /** Recognition status of community land tenure */
-      readonly recognition_status: components["schemas"]["RecognitionStatusEnum"][]
+      readonly recognition_status: (
+        | (
+            | components["schemas"]["RecognitionStatusEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
+        | null
+      )[]
       /** Comment on recognition status of community land tenure */
       readonly recognition_status_comment: string
       readonly displacement_of_people: boolean | null
@@ -1866,24 +1887,52 @@ export interface components {
       /** Comment on presence of land conflicts */
       readonly land_conflicts_comment: string
       /** Negative impacts for local communities */
-      readonly negative_impacts: components["schemas"]["NegativeImpactsEnum"][]
+      readonly negative_impacts: (
+        | (
+            | components["schemas"]["NegativeImpactsEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
+        | null
+      )[]
       /** Comment on negative impacts for local communities */
       readonly negative_impacts_comment: string
       /** Materialized benefits for local communities */
-      readonly materialized_benefits: components["schemas"]["BenefitsEnum"][]
+      readonly materialized_benefits: (
+        | (
+            | components["schemas"]["BenefitsEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
+        | null
+      )[]
       /** Comment on materialized benefits for local communities */
       readonly materialized_benefits_comment: string
       readonly contract_farming: boolean | null
       /** Comment on contract farming */
       readonly contract_farming_comment: string
       /** Promised benefits for local communities */
-      readonly promised_benefits: components["schemas"]["BenefitsEnum"][]
+      readonly promised_benefits: (
+        | (
+            | components["schemas"]["BenefitsEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
+        | null
+      )[]
       /** Comment on promised benefits for local communities */
       readonly promised_benefits_comment: string
       readonly water_extraction_envisaged: boolean | null
       /** Comment on water extraction envisaged */
       readonly water_extraction_envisaged_comment: string
-      readonly source_of_water_extraction: components["schemas"]["SourceOfWaterExtractionEnum"][]
+      readonly source_of_water_extraction: (
+        | (
+            | components["schemas"]["SourceOfWaterExtractionEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
+        | null
+      )[]
       /** Comment on source of water extraction */
       readonly source_of_water_extraction_comment: string
       readonly community_reaction:
@@ -1961,7 +2010,14 @@ export interface components {
       /** Comment on carbon offset project */
       carbon_offset_project_comment?: string
       /** Nature of the deal */
-      nature_of_deal?: components["schemas"]["NatureOfDealEnum"][]
+      nature_of_deal?: (
+        | (
+            | components["schemas"]["NatureOfDealEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
+        | null
+      )[]
       /** Comment on nature of the deal */
       nature_of_deal_comment?: string
       negotiation_status?: components["schemas"]["CurrentDateChoiceNegotiationStatus"]
@@ -2056,7 +2112,14 @@ export interface components {
       /** Comment on communities / indigenous peoples affected */
       people_affected_comment?: string
       /** Recognition status of community land tenure */
-      recognition_status?: components["schemas"]["RecognitionStatusEnum"][]
+      recognition_status?: (
+        | (
+            | components["schemas"]["RecognitionStatusEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
+        | null
+      )[]
       /** Comment on recognition status of community land tenure */
       recognition_status_comment?: string
       community_consultation?:
@@ -2097,7 +2160,14 @@ export interface components {
       /** Comment on displacement of people */
       displacement_of_people_comment?: string
       /** Negative impacts for local communities */
-      negative_impacts?: components["schemas"]["NegativeImpactsEnum"][]
+      negative_impacts?: (
+        | (
+            | components["schemas"]["NegativeImpactsEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
+        | null
+      )[]
       /** Comment on negative impacts for local communities */
       negative_impacts_comment?: string
       /** Promised compensation (e.g. for damages or resettlements) */
@@ -2105,22 +2175,57 @@ export interface components {
       /** Received compensation (e.g. for damages or resettlements) */
       received_compensation?: string
       /** Promised benefits for local communities */
-      promised_benefits?: components["schemas"]["BenefitsEnum"][]
+      promised_benefits?: (
+        | (
+            | components["schemas"]["BenefitsEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
+        | null
+      )[]
       /** Comment on promised benefits for local communities */
       promised_benefits_comment?: string
       /** Materialized benefits for local communities */
-      materialized_benefits?: components["schemas"]["BenefitsEnum"][]
+      materialized_benefits?: (
+        | (
+            | components["schemas"]["BenefitsEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
+        | null
+      )[]
       /** Comment on materialized benefits for local communities */
       materialized_benefits_comment?: string
       /** Presence of organizations and actions taken (e.g. farmer organizations, NGOs, etc.) */
       presence_of_organizations?: string
-      former_land_owner?: components["schemas"]["FormerLandOwnerEnum"][]
+      former_land_owner?: (
+        | (
+            | components["schemas"]["FormerLandOwnerEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
+        | null
+      )[]
       /** Comment on former land owner */
       former_land_owner_comment?: string
-      former_land_use?: components["schemas"]["FormerLandUseEnum"][]
+      former_land_use?: (
+        | (
+            | components["schemas"]["FormerLandUseEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
+        | null
+      )[]
       /** Comment on former land use */
       former_land_use_comment?: string
-      former_land_cover?: components["schemas"]["FormerLandCoverEnum"][]
+      former_land_cover?: (
+        | (
+            | components["schemas"]["FormerLandCoverEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
+        | null
+      )[]
       /** Comment on former land cover */
       former_land_cover_comment?: string
       /** Crops area/yield/export */
@@ -2183,7 +2288,14 @@ export interface components {
       water_extraction_envisaged?: boolean | null
       /** Comment on water extraction envisaged */
       water_extraction_envisaged_comment?: string
-      source_of_water_extraction?: components["schemas"]["SourceOfWaterExtractionEnum"][]
+      source_of_water_extraction?: (
+        | (
+            | components["schemas"]["SourceOfWaterExtractionEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
+        | null
+      )[]
       /** Comment on source of water extraction */
       source_of_water_extraction_comment?: string
       /** Comment on how much do investors pay for water */
@@ -2205,7 +2317,14 @@ export interface components {
       readonly current_contract_size: number | null
       /** Format: double */
       readonly current_production_size: number | null
-      readonly current_intention_of_investment: components["schemas"]["IntentionOfInvestmentEnum"][]
+      readonly current_intention_of_investment: (
+        | (
+            | components["schemas"]["IntentionOfInvestmentEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
+        | null
+      )[]
       readonly current_negotiation_status:
         | (
             | components["schemas"]["NegotiationStatusEnum"]
@@ -2635,7 +2754,14 @@ export interface components {
     }
     InvestorDealSelectedVersion: {
       readonly id: number
-      readonly current_intention_of_investment: components["schemas"]["IntentionOfInvestmentEnum"][]
+      readonly current_intention_of_investment: (
+        | (
+            | components["schemas"]["IntentionOfInvestmentEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
+        | null
+      )[]
       readonly current_negotiation_status:
         | (
             | components["schemas"]["NegotiationStatusEnum"]
@@ -2716,6 +2842,8 @@ export interface components {
        */
       opencorporates?: string
       comment?: string
+      /** Data Source Quotations */
+      ds_quotations?: components["schemas"]["DataSourceQuotationSchema"]
       name_unknown?: boolean
       involvements_snapshot?: unknown
       readonly created_by: number | null
@@ -2782,7 +2910,14 @@ export interface components {
       readonly child_investor_id: number
       /** Relation type */
       readonly role: components["schemas"]["InvolvementRoleEnum"]
-      readonly investment_type: components["schemas"]["InvestmentTypeEnum"][]
+      readonly investment_type: (
+        | (
+            | components["schemas"]["InvestmentTypeEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
+        | null
+      )[]
       /** Format: decimal */
       readonly percentage: string | null
       /**
@@ -3108,7 +3243,14 @@ export interface components {
           )
         | null
       /** Nature of the deal */
-      readonly nature_of_deal?: components["schemas"]["NatureOfDealEnum"][]
+      readonly nature_of_deal?: (
+        | (
+            | components["schemas"]["NatureOfDealEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
+        | null
+      )[]
       readonly operating_company?: string
       readonly initiation_year?: number | null
       readonly implementation_status?:
@@ -3118,7 +3260,14 @@ export interface components {
             | components["schemas"]["NullEnum"]
           )
         | null
-      readonly intention_of_investment?: components["schemas"]["IntentionOfInvestmentEnum"][]
+      readonly intention_of_investment?: (
+        | (
+            | components["schemas"]["IntentionOfInvestmentEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
+        | null
+      )[]
       readonly crops?: string[]
       /** Current livestock */
       readonly animals?: string[]
@@ -3126,7 +3275,14 @@ export interface components {
       readonly transnational?: boolean | null
       readonly forest_concession?: boolean
       /** Recognition status of community land tenure */
-      readonly recognition_status?: components["schemas"]["RecognitionStatusEnum"][]
+      readonly recognition_status?: (
+        | (
+            | components["schemas"]["RecognitionStatusEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
+        | null
+      )[]
       /** Comment on recognition status of community land tenure */
       readonly recognition_status_comment?: string
       readonly displacement_of_people?: boolean | null
@@ -3162,24 +3318,52 @@ export interface components {
       /** Comment on presence of land conflicts */
       readonly land_conflicts_comment?: string
       /** Negative impacts for local communities */
-      readonly negative_impacts?: components["schemas"]["NegativeImpactsEnum"][]
+      readonly negative_impacts?: (
+        | (
+            | components["schemas"]["NegativeImpactsEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
+        | null
+      )[]
       /** Comment on negative impacts for local communities */
       readonly negative_impacts_comment?: string
       /** Materialized benefits for local communities */
-      readonly materialized_benefits?: components["schemas"]["BenefitsEnum"][]
+      readonly materialized_benefits?: (
+        | (
+            | components["schemas"]["BenefitsEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
+        | null
+      )[]
       /** Comment on materialized benefits for local communities */
       readonly materialized_benefits_comment?: string
       readonly contract_farming?: boolean | null
       /** Comment on contract farming */
       readonly contract_farming_comment?: string
       /** Promised benefits for local communities */
-      readonly promised_benefits?: components["schemas"]["BenefitsEnum"][]
+      readonly promised_benefits?: (
+        | (
+            | components["schemas"]["BenefitsEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
+        | null
+      )[]
       /** Comment on promised benefits for local communities */
       readonly promised_benefits_comment?: string
       readonly water_extraction_envisaged?: boolean | null
       /** Comment on water extraction envisaged */
       readonly water_extraction_envisaged_comment?: string
-      readonly source_of_water_extraction?: components["schemas"]["SourceOfWaterExtractionEnum"][]
+      readonly source_of_water_extraction?: (
+        | (
+            | components["schemas"]["SourceOfWaterExtractionEnum"]
+            | components["schemas"]["BlankEnum"]
+            | components["schemas"]["NullEnum"]
+          )
+        | null
+      )[]
       /** Comment on source of water extraction */
       readonly source_of_water_extraction_comment?: string
       readonly community_reaction?:
@@ -5022,6 +5206,8 @@ export interface operations {
         area_max?: number
         /** @description Minimum deal area */
         area_min?: number
+        /** @description not set: Included, true: Only false: Excluded */
+        carbon_offset_project?: boolean
         /** @description See /api/countries/ for IDs */
         country_id?: number
         crops?: (
@@ -5227,6 +5413,8 @@ export interface operations {
         parent_company?: number
         /** @description ID of the parent company's country */
         parent_company_country_id?: number
+        /** @description not set: Included, true: Only false: Excluded */
+        produce_info_carbon_offsetting?: boolean
         /** @description See /api/regions/ for IDs */
         region_id?: number
         /** @description Scope. true: Transnational, false: Domestic, not set: both */
@@ -5449,6 +5637,8 @@ export interface operations {
         area_max?: number
         /** @description Minimum deal area */
         area_min?: number
+        /** @description not set: Included, true: Only false: Excluded */
+        carbon_offset_project?: boolean
         /** @description See /api/countries/ for IDs */
         country_id?: number
         crops?: (
@@ -5654,6 +5844,8 @@ export interface operations {
         parent_company?: number
         /** @description ID of the parent company's country */
         parent_company_country_id?: number
+        /** @description not set: Included, true: Only false: Excluded */
+        produce_info_carbon_offsetting?: boolean
         /** @description See /api/regions/ for IDs */
         region_id?: number
         /** @description Scope. true: Transnational, false: Domestic, not set: both */
@@ -6042,6 +6234,8 @@ export interface operations {
         area_max?: number
         /** @description Minimum deal area */
         area_min?: number
+        /** @description not set: Included, true: Only false: Excluded */
+        carbon_offset_project?: boolean
         /** @description See /api/countries/ for IDs */
         country_id?: number
         crops?: (
@@ -6247,6 +6441,8 @@ export interface operations {
         parent_company?: number
         /** @description ID of the parent company's country */
         parent_company_country_id?: number
+        /** @description not set: Included, true: Only false: Excluded */
+        produce_info_carbon_offsetting?: boolean
         /** @description See /api/regions/ for IDs */
         region_id?: number
         /** @description Scope. true: Transnational, false: Domestic, not set: both */
@@ -6301,6 +6497,8 @@ export interface operations {
         area_max?: number
         /** @description Minimum deal area */
         area_min?: number
+        /** @description not set: Included, true: Only false: Excluded */
+        carbon_offset_project?: boolean
         /** @description See /api/countries/ for IDs */
         country_id?: number
         crops?: (
@@ -6506,6 +6704,8 @@ export interface operations {
         parent_company?: number
         /** @description ID of the parent company's country */
         parent_company_country_id?: number
+        /** @description not set: Included, true: Only false: Excluded */
+        produce_info_carbon_offsetting?: boolean
         /** @description See /api/regions/ for IDs */
         region_id?: number
         /** @description Scope. true: Transnational, false: Domestic, not set: both */
@@ -6777,6 +6977,8 @@ export interface operations {
         area_max?: number
         /** @description Minimum deal area */
         area_min?: number
+        /** @description not set: Included, true: Only false: Excluded */
+        carbon_offset_project?: boolean
         /** @description See /api/countries/ for IDs */
         country_id?: number
         crops?: (
@@ -6982,6 +7184,8 @@ export interface operations {
         parent_company?: number
         /** @description ID of the parent company's country */
         parent_company_country_id?: number
+        /** @description not set: Included, true: Only false: Excluded */
+        produce_info_carbon_offsetting?: boolean
         /** @description See /api/regions/ for IDs */
         region_id?: number
         /** @description Scope. true: Transnational, false: Domestic, not set: both */
