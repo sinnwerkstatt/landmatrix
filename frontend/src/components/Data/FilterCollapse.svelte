@@ -36,21 +36,29 @@
   class="border-b border-gray-300 bg-gray-50 text-gray-700 dark:bg-gray-800 dark:text-white"
 >
   <div class="flex w-full" class:text-orange={clearable}>
-    <button
-      class="m-0.5 flex flex-grow items-center gap-1 p-1 text-left"
-      onclick={() => (expanded = !expanded)}
-      type="button"
-    >
-      <ChevronDownIcon
-        class="transition-duration-300 inline h-4 w-4 rounded transition-transform {expanded
-          ? 'rotate-180'
-          : ''}"
-      />
-      {title}
+    <div class="flex flex-grow items-center gap-1">
+      <button
+        class="m-0.5 flex items-center gap-1 p-1 text-left"
+        onclick={() => (expanded = !expanded)}
+        type="button"
+      >
+        <ChevronDownIcon
+          class="transition-duration-300 inline h-4 w-4 rounded transition-transform {expanded
+            ? 'rotate-180'
+            : ''}"
+        />
+        {title}
+      </button>
       {#if contextHelp}
         <ContextHelper identifier={contextHelp} class="size-4" />
       {/if}
-    </button>
+      <button
+        class="h-full flex-grow"
+        onclick={() => (expanded = !expanded)}
+        type="button"
+        aria-label="toggle menu"
+      ></button>
+    </div>
     {#if clearable}
       <button
         class="m-0.5 p-1"

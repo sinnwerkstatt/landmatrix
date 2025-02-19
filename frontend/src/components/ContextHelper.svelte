@@ -122,24 +122,11 @@
             bind:value={cHelp.description}
             placeholder="Description"
             rows="10"
-            onclick={e => e.stopPropagation()}
           ></textarea>
-          <input
-            class="inpt"
-            bind:value={cHelp.link}
-            type="url"
-            placeholder="URL"
-            onclick={e => e.stopPropagation()}
-          />
+          <input class="inpt" bind:value={cHelp.link} type="url" placeholder="URL" />
           <div class="flex gap-2">
             {#if helpContent?.id}
-              <button
-                type="submit"
-                class="btn"
-                name="update"
-                disabled={$loading}
-                onclick={e => e.stopPropagation()}
-              >
+              <button type="submit" class="btn" name="update" disabled={$loading}>
                 {$_("Update")}
               </button>
               <button
@@ -147,18 +134,11 @@
                 class="btn btn-red"
                 name="delete"
                 disabled={$loading}
-                onclick={e => e.stopPropagation()}
               >
                 {$_("Delete")}
               </button>
             {:else}
-              <button
-                type="submit"
-                class="btn"
-                name="save"
-                disabled={$loading}
-                onclick={e => e.stopPropagation()}
-              >
+              <button type="submit" class="btn" name="save" disabled={$loading}>
                 {$_("Create")}
               </button>
             {/if}
