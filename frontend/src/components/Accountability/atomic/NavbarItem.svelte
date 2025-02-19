@@ -1,29 +1,30 @@
 <script lang="ts">
-  import { page } from "$app/stores"
+  import type { Component } from "svelte"
+
+  import { page } from "$app/state"
 
   interface Props {
     label?: string
     href?: string
-    icon?: import("svelte").Snippet
+    icon: Component
   }
 
   let { label = "Item", href = "/accountability/", icon }: Props = $props()
+
+  const IconComp = $derived(icon)
+  const active = $derived(page.url.pathname.startsWith(href))
 </script>
 
 <a
   {href}
-  class:active={$page.url.pathname.startsWith(href)}
-  class="flex flex-col items-center gap-1 text-a-s font-semibold text-a-gray-900 hover:text-a-gray-900"
+  class:active
+  class="group flex flex-col items-center gap-1 text-a-s font-semibold text-a-gray-900 hover:text-a-gray-900"
 >
-  <span class="icon rounded-lg p-2">
-    {@render icon?.()}
+  <span
+    class="icon rounded-lg p-2 group-hover:bg-a-gray-100"
+    class:bg-a-gray-100={active}
+  >
+    <IconComp />
   </span>
-  <div>{label}</div>
+  <span>{label}</span>
 </a>
-
-<style>
-  a:hover > .icon,
-  .active > .icon {
-    @apply bg-a-gray-100;
-  }
-</style>

@@ -2,6 +2,7 @@
   import { tracker } from "@sinnwerkstatt/sveltekit-matomo"
   import type { BaseType, HierarchyNode } from "d3"
   import { format, hierarchy, select, treemap, treemapSquarify } from "d3"
+  import { onDestroy } from "svelte"
   import { _ } from "svelte-i18n"
 
   import type { BucketMap } from "$lib/data/buckets"
@@ -216,10 +217,6 @@
       .text((d: string) => d)
   }
 
-  // react on screen changes
-  showContextBar.subscribe(() => buildTreeChart(treeData))
-  showFilterBar.subscribe(() => buildTreeChart(treeData))
-
   $effect(() => {
     buildTreeChart(treeData)
   })
@@ -245,6 +242,15 @@
         return downloadSVG(svgComp, fileType, title)
     }
   }
+
+  // react on screen changes
+  const unsubCtxBarTrigger = showContextBar.subscribe(() => buildTreeChart(treeData))
+  const unsubFltrBarTrigger = showFilterBar.subscribe(() => buildTreeChart(treeData))
+
+  onDestroy(() => {
+    unsubCtxBarTrigger()
+    unsubFltrBarTrigger()
+  })
 </script>
 
 <ChartWrapper ondownload={handleDownload} {title} wrapperClasses="mx-auto w-full">

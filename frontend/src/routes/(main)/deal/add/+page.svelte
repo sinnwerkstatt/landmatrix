@@ -33,7 +33,8 @@
   <div class="mt-16 flex flex-wrap gap-4">
     <p class="heading5">First, choose the country where the deal is located.</p>
     <CountrySelect
-      bind:value={country}
+      value={country}
+      oninput={e => (country = e.detail)}
       countries={page.data.countries.filter(c => !c.high_income)}
     />
   </div>

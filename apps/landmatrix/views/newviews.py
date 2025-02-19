@@ -1,11 +1,10 @@
-from drf_spectacular.utils import OpenApiParameter, extend_schema
-
 from django.contrib.postgres.expressions import ArraySubquery
 from django.db import OperationalError, transaction
 from django.db.models import Case, F, OuterRef, Prefetch, Q, When
 from django.db.models.functions import JSONObject
 from django.http import Http404
 from django.utils.translation import gettext_lazy as _
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework import serializers, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import (
@@ -394,8 +393,10 @@ class DealViewSet(HullViewSet):
     def get_object(self):
         try:
             return super().get_object()
-        except:
-            raise Http404(f"Deal {self.kwargs[self.lookup_field]} does not exist.")
+        except Http404 as e:
+            raise Http404(
+                f"Deal {self.kwargs[self.lookup_field]} does not exist."
+            ) from e
 
     def get_queryset(self):
         qs = self.queryset.prefetch_related(
@@ -499,8 +500,8 @@ class DealViewSet(HullViewSet):
         country_id = request.data["country_id"]
         try:
             Country.objects.get(id=country_id, high_income=False)
-        except Country.DoesNotExist:
-            raise ValidationError()
+        except Country.DoesNotExist as e:
+            raise ValidationError(f"Country does not exist: {country_id}") from e
 
         d1: DealHull = DealHull.objects.create(
             country_id=country_id, first_created_by=request.user
@@ -530,8 +531,8 @@ class DealViewSet(HullViewSet):
 
         try:
             dv1: DealVersion = d1.versions.get(id=version_id)
-        except DealVersion.DoesNotExist:
-            raise Http404(f"DealVersion {version_id} does not exist.")
+        except DealVersion.DoesNotExist as e:
+            raise Http404(f"DealVersion {version_id} does not exist.") from e
 
         if (
             is_editor_or_higher(user)
@@ -657,8 +658,10 @@ class InvestorViewSet(HullViewSet):
     def get_object(self):
         try:
             return super().get_object()
-        except:
-            raise Http404(f"Investor {self.kwargs[self.lookup_field]} does not exist.")
+        except Http404 as e:
+            raise Http404(
+                f"Investor {self.kwargs[self.lookup_field]} does not exist."
+            ) from e
 
     def get_queryset(self):
         qs = self.queryset.prefetch_related(
@@ -708,8 +711,8 @@ class InvestorViewSet(HullViewSet):
 
         try:
             iv1: InvestorVersion = i1.versions.get(id=version_id)
-        except InvestorVersion.DoesNotExist:
-            raise Http404(f"InvestorVersion {version_id} does not exist.")
+        except InvestorVersion.DoesNotExist as e:
+            raise Http404(f"InvestorVersion {version_id} does not exist.") from e
 
         if (
             is_editor_or_higher(user)
@@ -727,7 +730,6 @@ class InvestorViewSet(HullViewSet):
     @extend_schema(responses={200: SimpleInvestorSerializer(many=True)})
     @action(methods=["get"], detail=False)
     def simple(self, request):
-
         def version_find(field_name: str) -> Case:
             return Case(
                 When(
@@ -805,7 +807,6 @@ class ValueLabelSerializer(serializers.Serializer):
 
 
 class FieldChoicesView(APIView):
-
     class FieldChoicesSerializer(serializers.Serializer):
         class DealFields(serializers.Serializer):
             intention_of_investment = ValueLabelSerializer(many=True)

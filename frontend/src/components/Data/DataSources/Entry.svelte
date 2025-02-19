@@ -41,7 +41,7 @@
   <label for={undefined} class="my-2 flex items-center gap-2">
     <LowLevelNullBooleanField
       bind:value={entry.file_not_public}
-      fieldname="datasource.file_not_public"
+      name="datasource.file_not_public"
       {onchange}
     />
     {$_("Keep PDF not public")}

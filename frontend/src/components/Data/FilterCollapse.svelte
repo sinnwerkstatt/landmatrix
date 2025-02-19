@@ -2,6 +2,7 @@
   import { type Snippet } from "svelte"
   import { slide } from "svelte/transition"
 
+  import ContextHelper from "$components/ContextHelper.svelte"
   import ChevronDownIcon from "$components/icons/ChevronDownIcon.svelte"
   import ClearFilter from "$components/icons/ClearFilter.svelte"
 
@@ -9,6 +10,7 @@
     title: string
     clearable?: boolean
     expanded?: boolean
+    contextHelp?: string
     children: Snippet
     onclear?: () => void
     onExpanded?: () => void
@@ -18,6 +20,7 @@
     title,
     clearable = false,
     expanded = false,
+    contextHelp,
     children,
     onclear,
     onExpanded,
@@ -34,7 +37,7 @@
 >
   <div class="flex w-full" class:text-orange={clearable}>
     <button
-      class="m-0.5 flex-grow p-1 text-left"
+      class="m-0.5 flex flex-grow items-center gap-1 p-1 text-left"
       onclick={() => (expanded = !expanded)}
       type="button"
     >
@@ -44,6 +47,9 @@
           : ''}"
       />
       {title}
+      {#if contextHelp}
+        <ContextHelper identifier={contextHelp} class="size-4" />
+      {/if}
     </button>
     {#if clearable}
       <button

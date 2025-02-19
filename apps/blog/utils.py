@@ -40,11 +40,11 @@ def unique_slugify(
     next = 2
     while not slug or queryset.filter(**{slug_field_name: slug}):
         slug = original_slug
-        end = "%s%s" % (slug_separator, next)
+        end = f"{slug_separator}{next}"
         if slug_len and len(slug) + len(end) > slug_len:
             slug = slug[: slug_len - len(end)]
             slug = _slug_strip(slug, slug_separator)
-        slug = "%s%s" % (slug, end)
+        slug = f"{slug}{end}"
         next += 1
 
     setattr(instance, slug_field.attname, slug)
@@ -62,14 +62,14 @@ def _slug_strip(value, separator="-"):
     if separator == "-" or not separator:
         re_sep = "-"
     else:
-        re_sep = "(?:-|%s)" % re.escape(separator)
+        re_sep = rf"(?:-|{re.escape(separator)})"
     # Remove multiple instances and if an alternate separator is provided,
     # replace the default '-' separator.
     if separator != re_sep:
-        value = re.sub("%s+" % re_sep, separator, value)
+        value = re.sub(rf"{re_sep}+", separator, value)
     # Remove separator from the beginning and end of the slug.
     if separator:
         if separator != "-":
             re_sep = re.escape(separator)
-        value = re.sub(r"^%s+|%s+$" % (re_sep, re_sep), "", value)
+        value = re.sub(rf"^{re_sep}+|{re_sep}+$", "", value)
     return value

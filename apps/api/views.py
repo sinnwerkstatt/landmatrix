@@ -1,8 +1,5 @@
 import json
 
-from drf_spectacular.utils import OpenApiParameter, extend_schema
-
-from django.core.exceptions import PermissionDenied
 from django.db.models import Case, CharField, Count, F, Q, Sum, Value, When
 from django.db.models.functions import Concat, JSONObject
 from django.http import HttpRequest, JsonResponse
@@ -10,6 +7,7 @@ from django.middleware.csrf import get_token
 from django.utils import timezone, translation
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_GET
+from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework.decorators import api_view
 from rest_framework.exceptions import NotAuthenticated, PermissionDenied
 from rest_framework.response import Response

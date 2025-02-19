@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { Feature, MapBrowserEvent, type Map } from "ol"
+  import { Feature, type Map, type MapBrowserEvent } from "ol"
   import { Point } from "ol/geom"
   import { Vector as VectorLayer } from "ol/layer"
   import { fromLonLat } from "ol/proj"
   import { Vector as VectorSource } from "ol/source"
   import * as R from "ramda"
-  import { onMount } from "svelte"
+  import { onDestroy, onMount } from "svelte"
   import { _ } from "svelte-i18n"
 
   import { browser } from "$app/environment"
@@ -61,7 +61,12 @@
       evt.pixel,
       feature => feature as Feature<Point>,
     )
-    if (feature) $filters.region_id = feature.getProperties().regionID
+    if (feature) {
+      $filters.region_id = feature.getProperties().regionID
+      $filters.country_id = undefined
+    }
+
+    refreshMap()
   }
 
   const countryCircleClick = (evt: MapBrowserEvent<UIEvent>) => {
@@ -69,8 +74,14 @@
       evt.pixel,
       feature => feature as Feature<Point>,
     )
-    if (feature) $filters.country_id = feature.getProperties().countryID
+    if (feature) {
+      $filters.region_id = undefined
+      $filters.country_id = feature.getProperties().countryID
+    }
+
+    refreshMap()
   }
+
   const singleMarkerClick = (evt: MapBrowserEvent<UIEvent>) => {
     if (!bigmap) return
 
@@ -234,8 +245,6 @@
     }
   }
 
-  displayDealsCount.subscribe(() => refreshMap())
-
   $effect(() => {
     flyToCountryOrRegion($filters.country_id, $filters.region_id)
   })
@@ -243,6 +252,11 @@
   onMount(() => {
     showContextBar.set(!$isMobile)
     showFilterBar.set(!$isMobile)
+  })
+
+  const unsubsribeMapRefresher = displayDealsCount.subscribe(() => refreshMap())
+  onDestroy(() => {
+    unsubsribeMapRefresher()
   })
 </script>
 

@@ -1,97 +1,127 @@
-[tool.poetry]
+[project]
 name = "landmatrix"
 version = "0.1.0"
 license = "AGPL-3.0+"
 authors = ["sinnwerkstatt Medienagentur GmbH <support@sinnwerkstatt.com>"]
-package-mode = false
-readme = "README.md"
 description = "Land Matrix"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "django<5.1",
+    "django-cors-headers>=4.7.0",
+    "django-email-bandit>=2.0",
+    "django-environ>=0.12.0",
+    "django-modeltranslation>=0.19.12",
+    "django-pydantic-field>=0.3.12",
+    "djangorestframework>=3.15.2",
+    "djangorestframework-dataclasses>=1.3.1",
+    "djangorestframework-gis>=1.1",
+    "doit>=0.36.0",
+    "drf-spectacular[sidecar]>=0.28.0",
+    "gunicorn>=23.0.0",
+    "icecream>=2.1.4",
+    "nanoid>=2.0.0",
+    "openpyxl>=3.1.5",
+    "polib>=1.2.0",
+    "psycopg[binary]>=3.2.4",
+    "pydantic>=2.10.6",
+    "python-dateutil>=2.9.0.post0",
+    "sentry-sdk>=2.22.0",
+    "simplejson>=3.20.1",
+    "tweepy>=4.15.0",
+    "tzdata>=2025.1",
+    "unicodecsv>=0.14.1",
+    "wagtail<6.4",
+    "wagtail-font-awesome-svg>=1.0.1",
+    "wagtail-headless-preview>=0.8.0",
+    "wagtail-modeltranslation>=0.15.2",
+    "wagtail-orderable>=1.2.0",
+]
 
-[tool.poetry.dependencies]
-python = "^3.10"
-Django = "<5.1"
-wagtail = "<6.4"
-psycopg2-binary = "*"
+[dependency-groups]
+dev = [
+    "django-extensions>=3.2.3",
+    "django-stubs[compatible-mypy]>=5.1.3",
+    "djangorestframework-stubs>=1.4.0",
+    "freezegun>=1.5.1",
+    "ipdb>=0.13.13",
+    "mkdocs>=1.6.1",
+    "mypy>=1.15.0",
+    "pydot>=3.0.4",
+    "pygments>=2.19.1",
+    "pytest-cov>=6.0.0",
+    "pytest-django>=4.10.0",
+    "pytest-watch>=4.2.0",
+    "ruff>=0.9.6",
+    "termtables>=0.2.4",
+    "tqdm>=4.67.1",
+    "types-colorama>=0.4.15.20240311",
+    "types-markdown>=3.7.0.20241204",
+    "types-openpyxl>=3.1.5.20241225",
+    "types-polib>=1.2.0.20250114",
+    "types-pygments>=2.19.0.20250107",
+    "types-simplejson>=3.20.0.20250218",
+    "types-tqdm>=4.67.0.20241221",
+]
 
-djangorestframework = "*"
-djangorestframework-gis = "*"
-djangorestframework-dataclasses = "*"
-drf-spectacular = { version = "*", extras = ['sidecar'] }
+[tool.ruff]
+exclude = [
+    ".venv",
+    ".eggs",
+    ".git",
+    "migrations",
+    "static-collected",
+    "node_modules"
+]
+respect-gitignore = false # https://github.com/astral-sh/ruff/issues/9381
+target-version = "py312"
 
-pydantic = "*"
-django-pydantic-field = "*" # only used in migrations -> Can be removed after squashing
-django-cors-headers = "*"
-django-environ = "*"
-django-modeltranslation = "*"
+[tool.ruff.lint]
+# https://docs.astral.sh/ruff/rules/
+select = [
+    "E", # pycodestyle
+    "C4", # flake8-comprehensions
+    "F", # pyflakes
+    "B", # flake8-bugbear
+    "I", # isort
+    "DJ", # flake8-django
+    "UP", # pyupgrade
+    "S" # flake8-bandit
+]
+ignore = ["E501"]
 
-wagtail-font-awesome-svg = "*"
-wagtail-modeltranslation = "*"
-wagtail-orderable = "*"
-wagtail-headless-preview = "*"
+[tool.ruff.lint.per-file-ignores]
+"config/settings/**.py" = ["F403", "F405"]
+"/**/test_*.py" = [
+    # at least this three should be fine in tests:
+    "S101", # asserts allowed in tests...
+    "ARG", # Unused function args -> fixtures nevertheless are functionally relevant...
+    "FBT", # Don't care about booleans as positional arguments in tests, e.g. via @pytest.mark.parametrize()
+    # The below are debateable
+    "PLR2004", # Magic value used in comparison, ...
+    "S311", # Standard pseudo-random generators are not suitable for cryptographic purposes
+]
 
-nanoid = "*"
-openpyxl = "*"
-polib = "*"  # for PO to JSON
-python-dateutil = "*"
-simplejson = "*"
-tweepy = "*"
-unicodecsv = "*"
+[tool.ruff.lint.isort]
+known-first-party = ["apps"]
+section-order = [
+    "future",
+    "standard-library",
+    "third-party",
+    "django",
+    "first-party",
+    "local-folder"
+]
 
-#plumbing
-doit = "*"
-sentry_sdk = "*"
-gunicorn = "*"
-tzdata = "*"
-icecream = "*"
-django-email-bandit = "*"
-
-[tool.poetry.group.dev.dependencies]
-ipdb = "*"
-pre-commit = "*"
-black = "*"
-mypy = "*"
-django-extensions = "*"
-pytest-django = "*"
-pytest-cov = "*"
-pytest-watch = "*"
-pylint = "*"
-pylint-django = "*"
-pygments = "*"
-mkdocs = "*"
-pydot = "*"
-tqdm = "*"
-isort = "*"
-termtables = "*"
-freezegun = "*"
-
-# stubs
-django-stubs = { extras = ["compatible-mypy"], version = "^1.14.0" }
-djangorestframework-stubs = { extras = ["compatible-mypy"], version = "^1.8.0" }
-
-# types
-types-openpyxl = "^3.0.4.5"
-types-markdown = "^3.4.2.5"
-types-pygments = "^2.14.0.6"
-types-psycopg2 = "^2.9.21.8"
-types-colorama = "^0.4.15.8"
-types-polib = "^1.2.0.0"
-types-simplejson = "^3.18.0.1"
-types-tqdm = "^4.65.0.0"
-
-
-[tool.black]
-line-length = 88
-target-version = ["py38", "py39", "py310", "py311", "py312"]
-include = '\.pyi?$'
-exclude = '/(\.eggs|\.git|migrations|static-collected|node_modules|frontend)/'
-force-exclude = '/(\.eggs|\.git|migrations|static-collected|node_modules|frontend)/'
-
-[tool.isort]
-profile = "black"
-extend_skip_glob = ["*/migrations/*.py"]
-known_django = ["django", "wagtail", "rest_framework", "wagtail_headless_preview", "modelcluster"]
-known_first_party = ["apps"]
-sections = ["FUTURE", "STDLIB", "THIRDPARTY", "DJANGO", "FIRSTPARTY", "LOCALFOLDER"]
+[tool.ruff.lint.isort.sections]
+"django" = [
+    "django",
+    "wagtail",
+    "rest_framework",
+    "drf_spectacular",
+    "wagtail_headless_preview",
+    "modelcluster"
+]
 
 
 # https://mypy.readthedocs.io/en/latest/config_file.html#using-a-pyproject-toml-file
@@ -104,6 +134,7 @@ check_untyped_defs = true
 [[tool.mypy.overrides]]
 module = [
     "wagtail.*",
+    "environ",
     "wagtail_headless_preview.*",
     "modelcluster.*",
     "modeltranslation.*"]

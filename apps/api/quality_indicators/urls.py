@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import deal_counts, investor_counts, deals, investors, specs, stats
+from .views import deal_counts, deals, investor_counts, investors, specs, stats
 
 urlpatterns = [
     path("", specs, name="qi-specs"),

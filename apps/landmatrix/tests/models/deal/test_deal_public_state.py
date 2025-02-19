@@ -3,14 +3,14 @@ import pytest
 from apps.landmatrix.models.abstract import VersionStatus
 from apps.landmatrix.models.choices import InvolvementRoleEnum
 from apps.landmatrix.models.country import Country
-from apps.landmatrix.models.deal import DealHull, DealVersion, DealDataSource
-from apps.landmatrix.models.investor import InvestorHull, Involvement, InvestorVersion
+from apps.landmatrix.models.deal import DealDataSource, DealHull, DealVersion
+from apps.landmatrix.models.investor import InvestorHull, InvestorVersion, Involvement
 
 
 @pytest.fixture
-def public_deal_with_investors() -> (
-    tuple[DealHull, InvestorHull, InvestorHull, InvestorHull]
-):
+def public_deal_with_investors() -> tuple[
+    DealHull, InvestorHull, InvestorHull, InvestorHull
+]:
     c1 = Country.objects.filter(high_income=False).first()
 
     i1 = InvestorHull.objects.create()
@@ -184,7 +184,7 @@ def test_public_deal_unknown_investors_3(public_deal_with_investors):
     assert i3.active_version.name_unknown
 
     d1.active_version.save()
-    assert (
-        not d1.active_version.is_public
-    ), "Unknown investor, no known direct parents: error"
+    assert not d1.active_version.is_public, (
+        "Unknown investor, no known direct parents: error"
+    )
     # assert d1.not_public_reason == "NO_KNOWN_INVESTOR"

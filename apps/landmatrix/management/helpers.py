@@ -3,7 +3,6 @@ from functools import wraps
 
 
 def db_require_confirmation(fn):
-
     @wraps(fn)
     def wrapped(*args, **kwargs):
         confirm = input(

@@ -1,9 +1,9 @@
 from collections import defaultdict
 
 from apps.landmatrix.models.country import Country
-from apps.landmatrix.models.top_investors import DealTopInvestors
 from apps.landmatrix.models.deal import DealHull
 from apps.landmatrix.models.investor import InvestorHull
+from apps.landmatrix.models.top_investors import DealTopInvestors
 from apps.landmatrix.utils import parse_filters
 
 LONG_COUNTRIES = {
@@ -44,7 +44,7 @@ def investmentsdict():
 
     return defaultdict(
         lambda: defaultdict(
-            lambda: dict(size=0, count=0),
+            lambda: {"size": 0, "count": 0},
         )
     )
 
@@ -100,7 +100,7 @@ def web_of_transnational_deals(request):
     regions = defaultdict(list)
     for country_id, country in country_dict.items():
         imports = []
-        for k, v in investments["incoming"][country_id].items():
+        for k in investments["incoming"][country_id]:
             imp_c = country_dict[k]
             short_name = LONG_COUNTRIES.get(imp_c.name, imp_c.name)
             imports += [f"lama.{imp_c.region_id}.{short_name}"]

@@ -43,7 +43,7 @@
   let {
     items = [],
     itemFilter = undefined,
-    value = $bindable(),
+    value,
     label = "label",
     id = null,
     required = false,
@@ -63,26 +63,11 @@
   // bind value for keyboard navigation but also set on click virtual list item
   let listOpen = $state(false)
   let filterText = $state("")
+
   const setValue = (item: Item) => {
     value = { ...item }
     filterText = ""
     listOpen = false
-  }
-
-  const onFilter = <T extends Item & { [key in typeof label]: string }>(
-    filteredItems: T[],
-  ) => {
-    const filterActive = filterText.length > 0
-    const noItemsLefts = filteredItems.filter(i => !i.created).length === 0
-    const notCreatedAlready = !filteredItems.find(i => i[label] === filterText)
-
-    if (creatable && filterActive && noItemsLefts && notCreatedAlready) {
-      // aware MuTaTiOn
-      items = [
-        ...items.filter(i => !i.created),
-        { id: null, [label]: filterText, created: true },
-      ]
-    }
   }
 
   // bind to svelte-select for visualizing a11y keyboard navigation
@@ -125,7 +110,6 @@
   hasError={required && !value && !focused}
   on:input={e => oninput?.(e)}
   on:clear={e => onclear?.(e)}
-  on:filter={e => onFilter(e.detail)}
 >
   <svelte:fragment slot="selection" let:selection>
     {#if selectionSlot}
@@ -136,42 +120,47 @@
   </svelte:fragment>
 
   <svelte:fragment slot="list" let:filteredItems>
-    {#if filteredItems.length > 0}
-      <div onpointerdown={e => e.stopPropagation()}>
-        <VirtualList
-          width="100%"
-          height={heightInPx}
-          itemCount={filteredItems.length}
-          itemSize={38}
-          scrollToIndex={hoverItemIndex}
+    {@const patchedItems =
+      filteredItems.length === 0
+        ? creatable
+          ? [{ id: null, [label]: filterText, created: true }]
+          : []
+        : filteredItems}
+
+    <div onpointerdown={e => e.stopPropagation()}>
+      <VirtualList
+        width="100%"
+        height={heightInPx}
+        itemCount={patchedItems.length}
+        itemSize={38}
+        scrollToIndex={patchedItems.length > 0 ? hoverItemIndex : undefined}
+      >
+        <div
+          role="presentation"
+          slot="item"
+          class="block h-[38px] cursor-default overflow-clip text-ellipsis whitespace-nowrap px-3 align-middle leading-[38px] dark:text-white"
+          title={patchedItems[index][label]}
+          class:item-active={patchedItems[index].id === value?.id}
+          class:item-hover={index === hoverItemIndex}
+          let:index
+          let:style
+          {style}
+          onclick={e => {
+            e.stopPropagation()
+            setValue(patchedItems[index])
+          }}
+          onkeydown={e => e.stopPropagation()}
+          onmouseover={() => setHoverIndex(index)}
+          onfocus={() => setHoverIndex(index)}
         >
-          <div
-            role="presentation"
-            slot="item"
-            class="block h-[38px] cursor-default overflow-clip text-ellipsis whitespace-nowrap px-3 align-middle leading-[38px] dark:text-white"
-            title={filteredItems[index][label]}
-            class:item-active={filteredItems[index].id === value?.id}
-            class:item-hover={index === hoverItemIndex}
-            let:index
-            let:style
-            {style}
-            onclick={e => {
-              e.stopPropagation()
-              setValue(filteredItems[index])
-            }}
-            onkeydown={e => e.stopPropagation()}
-            onmouseover={() => setHoverIndex(index)}
-            onfocus={() => setHoverIndex(index)}
-          >
-            {#if itemSlot}
-              {@render itemSlot(filteredItems[index])}
-            {:else}
-              {filteredItems[index][label]}
-            {/if}
-          </div>
-        </VirtualList>
-      </div>
-    {/if}
+          {#if itemSlot}
+            {@render itemSlot(patchedItems[index])}
+          {:else}
+            {patchedItems[index][label]}
+          {/if}
+        </div>
+      </VirtualList>
+    </div>
   </svelte:fragment>
 </Select>
 

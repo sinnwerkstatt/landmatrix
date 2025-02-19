@@ -4,7 +4,7 @@ from typing import TypedDict
 from django.contrib.postgres.expressions import ArraySubquery
 from django.core.exceptions import PermissionDenied
 from django.core.handlers.wsgi import WSGIRequest
-from django.db.models import BooleanField, Case, Count, F, OuterRef, Q, QuerySet, When
+from django.db.models import Case, F, OuterRef, Q, QuerySet, When
 from django.db.models.functions import JSONObject
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.utils.timezone import make_aware
@@ -15,8 +15,8 @@ from apps.landmatrix.models.abstract import VersionStatus
 from apps.landmatrix.models.deal import DealHull, DealWorkflowInfo
 from apps.landmatrix.models.investor import InvestorHull, InvestorWorkflowInfo
 from apps.landmatrix.permissions import (
-    is_editor_or_higher,
     is_admin,
+    is_editor_or_higher,
     is_reporter_or_higher,
 )
 
@@ -37,16 +37,12 @@ class Management(View):
         region_or_country = Q()
         if country_id := request.user.country_id:
             region_or_country |= (
-                Q(country_id=country_id)
-                if is_deal
-                else Q()  # See: Issue #833
+                Q(country_id=country_id) if is_deal else Q()  # See: Issue #833
                 # else Q(active_version__country_id=country_id)
             )
         if region_id := request.user.region_id:
             region_or_country |= (
-                Q(country__region_id=region_id)
-                if is_deal
-                else Q()  # See: Issue #833
+                Q(country__region_id=region_id) if is_deal else Q()  # See: Issue #833
                 # else Q(active_version__country__region_id=region_id)
             )
 
@@ -215,6 +211,7 @@ class Management(View):
                                     modified_by_id="draft_version__modified_by_id",
                                     deal_size="draft_version__deal_size",
                                     fully_updated="draft_version__fully_updated",
+                                    current_intention_of_investment="draft_version__current_intention_of_investment",
                                 ),
                             ),
                             default=JSONObject(
@@ -223,6 +220,7 @@ class Management(View):
                                 modified_by_id="active_version__modified_by_id",
                                 deal_size="active_version__deal_size",
                                 fully_updated="active_version__fully_updated",
+                                current_intention_of_investment="active_version__current_intention_of_investment",
                             ),
                         ),
                     )

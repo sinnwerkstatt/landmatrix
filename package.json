@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "concurrently pnpm:backend pnpm:frontend pnpm:caddy",
     "dev:test": "DATABASE_URL=postgis://landmatrix:landmatrix@localhost/playwright_test pnpm run dev",
-    "backend": "poetry run ./manage.py runserver",
+    "backend": "uv run ./manage.py runserver",
     "frontend": "cd frontend && node build/index.js",
     "caddy": "caddy run",
     "playwright": "npx playwright test tests/ --workers 1",

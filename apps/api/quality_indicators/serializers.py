@@ -3,6 +3,7 @@ from rest_framework_dataclasses.serializers import DataclassSerializer
 from rest_framework import serializers
 
 from apps.landmatrix.models import DealQISnapshot, InvestorQISnapshot
+from apps.landmatrix.quality_indicators import DEAL_QIS, INVESTOR_QIS
 from apps.landmatrix.quality_indicators.dataclass import QualityIndicator, Subset
 from apps.serializer import ReadOnlyModelSerializer
 
@@ -21,9 +22,6 @@ class QualityIndicatorSubsetSerializer(DataclassSerializer):
 
 class QueryParamsSerializer(serializers.Serializer):
     inverse = serializers.BooleanField(required=False, default=False)
-
-
-from apps.landmatrix.quality_indicators import DEAL_QIS, INVESTOR_QIS
 
 
 class DealQIDataSerializer(serializers.Serializer):

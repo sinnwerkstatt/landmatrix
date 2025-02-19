@@ -107,14 +107,14 @@
     <div class="w-full self-start" dir="ltr">
       <h2 class="heading5 my-2 flex items-center gap-2 px-2">
         {$_("Filter")}
-        <ContextHelper identifier="filterbar_filter" class="mb-2 size-4" />
+        <ContextHelper class="mb-2 size-4" identifier="filterbar_filter" />
       </h2>
       <!--      <p>{$dealsNG.length}</p>-->
       <div class="my-2 px-2">
         <CheckboxSwitch
+          checked={$isDefaultFilter}
           class="text-base"
           id="default"
-          checked={$isDefaultFilter}
           onchange={toggleDefaultFilter}
         >
           {$_("Default filter")}
@@ -129,6 +129,7 @@
 
       <FilterCollapse
         clearable={!!$filters.region_id}
+        contextHelp="filterbar_region"
         onclear={() => ($filters.region_id = undefined)}
         title={$_("Land Matrix region")}
       >
@@ -145,35 +146,30 @@
             {reg.name}
           </label>
         {/each}
-        <div class="text-right">
-          <ContextHelper identifier="filterbar_region" class="mt-2 size-5" />
-        </div>
       </FilterCollapse>
 
       <FilterCollapse
         clearable={!!$filters.country_id}
+        contextHelp="filterbar_country"
         onclear={() => ($filters.country_id = undefined)}
         title={$_("Country")}
       >
         <CountrySelect
           countries={page.data.countries.filter(c => c.deals && c.deals.length > 0)}
+          onclear={() => ($filters.country_id = undefined)}
           oninput={e => {
             if (e.detail) {
               $filters.country_id = e.detail.id
               $filters.region_id = undefined
             }
           }}
-          onclear={() => ($filters.country_id = undefined)}
           value={page.data.countries.find(c => c.id === $filters.country_id)}
         />
-
-        <div class="text-right">
-          <ContextHelper identifier="filterbar_country" class="mt-2 size-5" />
-        </div>
       </FilterCollapse>
 
       <FilterCollapse
         clearable={!!($filters.deal_size_min || $filters.deal_size_max)}
+        contextHelp="filterbar_dealsize"
         onclear={() => ($filters.deal_size_min = $filters.deal_size_max = undefined)}
         title={$_("Deal size")}
       >
@@ -199,16 +195,13 @@
           />
           <span>ha</span>
         </div>
-
-        <div class="text-right">
-          <ContextHelper identifier="filterbar_dealsize" class="mt-2 size-5" />
-        </div>
       </FilterCollapse>
 
       <FilterBarNegotiationStatusToggle />
 
       <FilterCollapse
         clearable={$filters.nature_of_deal.length > 0}
+        contextHelp="filterbar_nature_of_deal"
         onclear={() => ($filters.nature_of_deal = [])}
         title={$_("Nature of the deal")}
       >
@@ -223,14 +216,11 @@
             {label}
           </label>
         {/each}
-
-        <div class="text-right">
-          <ContextHelper identifier="filterbar_nature_of_deal" class="mt-2 size-5" />
-        </div>
       </FilterCollapse>
 
       <FilterCollapse
         clearable={!!($filters.investor_id || $filters.investor_country_id)}
+        contextHelp="filterbar_investor"
         onclear={() => {
           $filters.investor_id = undefined
           $filters.investor_country_id = undefined
@@ -257,14 +247,11 @@
           on:input={e => ($filters.investor_country_id = e.detail?.id)}
           value={page.data.countries.find(c => c.id === $filters.investor_country_id)}
         />
-
-        <div class="text-right">
-          <ContextHelper identifier="filterbar_investor" class="mt-2 size-5" />
-        </div>
       </FilterCollapse>
 
       <FilterCollapse
         clearable={!!($filters.initiation_year_min || $filters.initiation_year_max)}
+        contextHelp="filterbar_initiation_year"
         onclear={() =>
           ($filters.initiation_year_min = $filters.initiation_year_max = undefined)}
         title={$_("Year of initiation")}
@@ -300,14 +287,11 @@
 
           {$_("Include unknown years")}
         </label>
-
-        <div class="text-right">
-          <ContextHelper identifier="filterbar_initiation_year" class="mt-2 size-5" />
-        </div>
       </FilterCollapse>
 
       <FilterCollapse
         clearable={$filters.implementation_status.length > 0}
+        contextHelp="filterbar_implementation_status"
         onclear={() => ($filters.implementation_status = [])}
         title={$_("Implementation status")}
       >
@@ -331,17 +315,11 @@
             {label}
           </label>
         {/each}
-
-        <div class="text-right">
-          <ContextHelper
-            identifier="filterbar_implementation_status"
-            class="mt-2 size-5"
-          />
-        </div>
       </FilterCollapse>
 
       <FilterCollapse
         clearable={$filters.intention_of_investment.length > 0}
+        contextHelp="filterbar_intention_of_investment"
         onclear={() => ($filters.intention_of_investment = [])}
         title={$_("Intention of investment")}
       >
@@ -377,17 +355,11 @@
             {/each}
           </div>
         {/each}
-
-        <div class="text-right">
-          <ContextHelper
-            identifier="filterbar_intention_of_investment"
-            class="mt-2 size-5"
-          />
-        </div>
       </FilterCollapse>
 
       <FilterCollapse
         clearable={$filters.produce ? $filters.produce.length > 0 : false}
+        contextHelp="filterbar_produce"
         onclear={() => ($filters.produce = [])}
         title={$_("Produce")}
       >
@@ -398,14 +370,11 @@
           multiple
           showChevron
         />
-
-        <div class="text-right">
-          <ContextHelper identifier="filterbar_produce" class="mt-2 size-5" />
-        </div>
       </FilterCollapse>
 
       <FilterCollapse
         clearable={$filters.transnational !== null}
+        contextHelp="filterbar_scope"
         onclear={() => ($filters.transnational = null)}
         title={$_("Scope")}
       >
@@ -429,14 +398,11 @@
           />
           {$_("Domestic")}
         </label>
-
-        <div class="text-right">
-          <ContextHelper identifier="filterbar_scope" class="mt-2 size-5" />
-        </div>
       </FilterCollapse>
 
       <FilterCollapse
         clearable={$filters.forest_concession !== null}
+        contextHelp="filterbar_forest_concession"
         onclear={() => ($filters.forest_concession = null)}
         title={$_("Forest concession")}
       >
@@ -470,10 +436,6 @@
           />
           {$_("Only")}
         </label>
-
-        <div class="text-right">
-          <ContextHelper identifier="filterbar_forest_concession" class="mt-2 size-5" />
-        </div>
       </FilterCollapse>
     </div>
     <div class="mt-auto w-full self-end" dir="ltr">

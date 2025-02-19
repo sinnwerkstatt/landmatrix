@@ -1,7 +1,7 @@
-import { derived, get, writable } from "svelte/store"
+import { derived, writable } from "svelte/store"
 
 import { browser } from "$app/environment"
-import { page } from "$app/stores"
+import { page } from "$app/state"
 
 import { allUsers } from "$lib/stores"
 
@@ -24,14 +24,21 @@ dealsHistory.subscribe(value => {
   }
 })
 
+interface SimpleUser {
+  id: number
+  name: string
+  initials: string
+}
+
 // allUsers derived store with more convenient info + filter only editor and above
 export const users = derived(allUsers, $allUsers => {
-  const res = []
+  const res: SimpleUser[] = []
   $allUsers.forEach(user => {
     if (user.role >= 2) {
-      const obj = {
+      const obj: SimpleUser = {
         id: user.id,
         name: user.full_name ? user.full_name : user.username,
+        initials: "",
       }
 
       // Initials from usernames
@@ -47,7 +54,7 @@ export const users = derived(allUsers, $allUsers => {
         obj.initials = first + last
       }
 
-      res.push(obj)
+      res.push(obj as SimpleUser)
     }
   })
   return res
@@ -56,9 +63,8 @@ export const users = derived(allUsers, $allUsers => {
 export const me = derived(
   users,
   ($users, set) => {
-    const pageData = get(page)
-    const userData: { id: number; name: string; intials: string }[] = $users
-    set(userData.filter(u => u.id == pageData.data.user.id)[0])
+    const userData = $users
+    set(userData.filter(u => u.id == page.data.user?.id)[0])
   },
   {},
 )

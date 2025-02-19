@@ -180,9 +180,9 @@ def test_q_any_location_georeferenced(deal_with_active_version):
 
     qs_deal_versions = DealVersion.objects.all().annotate(counts=annotate_counts())
 
-    assert not qs_deal_versions.filter(
-        q_any_location_georeferenced()
-    ).count(), "Deal has no locations."
+    assert not qs_deal_versions.filter(q_any_location_georeferenced()).count(), (
+        "Deal has no locations."
+    )
 
     Location.objects.create(
         dealversion=version,
@@ -194,9 +194,9 @@ def test_q_any_location_georeferenced(deal_with_active_version):
         level_of_accuracy=LocationAccuracyEnum.COUNTRY,
     )
 
-    assert not qs_deal_versions.filter(
-        q_any_location_georeferenced()
-    ).count(), "Deal has no location with areas."
+    assert not qs_deal_versions.filter(q_any_location_georeferenced()).count(), (
+        "Deal has no location with areas."
+    )
 
     Area.objects.create(
         location=location,
@@ -207,9 +207,9 @@ def test_q_any_location_georeferenced(deal_with_active_version):
         area=MultiPolygon(Polygon(POLYGON_2), Polygon(POLYGON_1)),
     )
 
-    assert qs_deal_versions.filter(
-        q_any_location_georeferenced()
-    ).count(), "Deal has location with areas."
+    assert qs_deal_versions.filter(q_any_location_georeferenced()).count(), (
+        "Deal has location with areas."
+    )
 
 
 def test_q_all_location_georeferenced(deal_with_active_version):
@@ -217,9 +217,9 @@ def test_q_all_location_georeferenced(deal_with_active_version):
 
     qs_deal_versions = DealVersion.objects.all().annotate(counts=annotate_counts())
 
-    assert (
-        qs_deal_versions.filter(q_all_location_georeferenced()).count() == 0
-    ), "No deal has no locations."
+    assert qs_deal_versions.filter(q_all_location_georeferenced()).count() == 0, (
+        "No deal has no locations."
+    )
 
     location_1 = Location.objects.create(
         dealversion=version,
@@ -231,27 +231,27 @@ def test_q_all_location_georeferenced(deal_with_active_version):
         level_of_accuracy=LocationAccuracyEnum.COUNTRY,
     )
 
-    assert not qs_deal_versions.filter(
-        q_all_location_georeferenced()
-    ).count(), "No locations has areas."
+    assert not qs_deal_versions.filter(q_all_location_georeferenced()).count(), (
+        "No locations has areas."
+    )
 
     Area.objects.create(
         location=location_1,
         area=MultiPolygon(Polygon(POLYGON_1), Polygon(POLYGON_2)),
     )
 
-    assert not qs_deal_versions.filter(
-        q_all_location_georeferenced()
-    ).count(), "Not all locations have areas."
+    assert not qs_deal_versions.filter(q_all_location_georeferenced()).count(), (
+        "Not all locations have areas."
+    )
 
     Area.objects.create(
         location=location_2,
         area=MultiPolygon(Polygon(POLYGON_2), Polygon(POLYGON_1)),
     )
 
-    assert qs_deal_versions.filter(
-        q_all_location_georeferenced()
-    ).count(), "All locations have areas."
+    assert qs_deal_versions.filter(q_all_location_georeferenced()).count(), (
+        "All locations have areas."
+    )
 
 
 def test_q_any_location_georeferenced_as(deal_with_active_version):
@@ -345,18 +345,18 @@ def test_q_all_datasource_valid(deal_with_active_version):
 
     qs_deal_versions = DealVersion.objects.all().annotate(counts=annotate_counts())
 
-    assert not (
-        qs_deal_versions.filter(q_all_datasource_valid()).exists()
-    ), "Deal does not have data sources."
+    assert not (qs_deal_versions.filter(q_all_datasource_valid()).exists()), (
+        "Deal does not have data sources."
+    )
 
     DealDataSource.objects.create(
         dealversion=version,
         type=DatasourceTypeEnum.OTHER,
     )
 
-    assert not (
-        qs_deal_versions.filter(q_all_datasource_valid()).exists()
-    ), "Deal does not have data sources that require file."
+    assert not (qs_deal_versions.filter(q_all_datasource_valid()).exists()), (
+        "Deal does not have data sources that require file."
+    )
 
     DealDataSource.objects.create(
         dealversion=version,
@@ -364,18 +364,18 @@ def test_q_all_datasource_valid(deal_with_active_version):
         file="document.pdf",
     )
 
-    assert (
-        qs_deal_versions.filter(q_all_datasource_valid()).count() == 1
-    ), "Deal has one data source that does require file and has it."
+    assert qs_deal_versions.filter(q_all_datasource_valid()).count() == 1, (
+        "Deal has one data source that does require file and has it."
+    )
 
     DealDataSource.objects.create(
         dealversion=version,
         type=DatasourceTypeEnum.GOVERNMENT_SOURCES,
     )
 
-    assert not (
-        qs_deal_versions.filter(q_all_datasource_valid()).exists()
-    ), "Deal has one data source that does require file but does not have it."
+    assert not (qs_deal_versions.filter(q_all_datasource_valid()).exists()), (
+        "Deal has one data source that does require file but does not have it."
+    )
 
 
 def test_q_all_status(deal_with_active_version):
@@ -383,17 +383,17 @@ def test_q_all_status(deal_with_active_version):
 
     qs_deal_versions = DealVersion.objects.all().annotate(counts=annotate_counts())
 
-    assert (
-        qs_deal_versions.filter(q_all_status()).count() == 0
-    ), "Deal does not have negotiation status and implementation status."
+    assert qs_deal_versions.filter(q_all_status()).count() == 0, (
+        "Deal does not have negotiation status and implementation status."
+    )
 
     version.negotiation_status = []
     version.implementation_status = []
     version.save()
 
-    assert (
-        qs_deal_versions.filter(q_all_status()).count() == 0
-    ), "Deal still does not have negotiation status and implementation status."
+    assert qs_deal_versions.filter(q_all_status()).count() == 0, (
+        "Deal still does not have negotiation status and implementation status."
+    )
 
     version.negotiation_status = [
         {
@@ -404,9 +404,9 @@ def test_q_all_status(deal_with_active_version):
     ]
     version.save()
 
-    assert (
-        qs_deal_versions.filter(q_all_status()).count() == 0
-    ), "Deal still does have negotiation status but no implementation status."
+    assert qs_deal_versions.filter(q_all_status()).count() == 0, (
+        "Deal still does have negotiation status but no implementation status."
+    )
 
     version.implementation_status = [
         {
@@ -422,9 +422,9 @@ def test_q_all_status(deal_with_active_version):
     ]
     version.save()
 
-    assert (
-        qs_deal_versions.filter(q_all_status()).count() == 1
-    ), "Deal still has negotiation status and implementation status."
+    assert qs_deal_versions.filter(q_all_status()).count() == 1, (
+        "Deal still has negotiation status and implementation status."
+    )
 
 
 def test_q_all_status_dated(deal_with_active_version):
@@ -432,17 +432,17 @@ def test_q_all_status_dated(deal_with_active_version):
 
     qs_deal_versions = DealVersion.objects.all().annotate(counts=annotate_counts())
 
-    assert (
-        qs_deal_versions.filter(q_all_status_dated()).count() == 0
-    ), "Deal does not have negotiation status and implementation status."
+    assert qs_deal_versions.filter(q_all_status_dated()).count() == 0, (
+        "Deal does not have negotiation status and implementation status."
+    )
 
     version.negotiation_status = []
     version.implementation_status = []
     version.save()
 
-    assert (
-        qs_deal_versions.filter(q_all_status_dated()).count() == 0
-    ), "Deal still does not have negotiation status and implementation status."
+    assert qs_deal_versions.filter(q_all_status_dated()).count() == 0, (
+        "Deal still does not have negotiation status and implementation status."
+    )
 
     version.negotiation_status = [
         {
@@ -462,9 +462,9 @@ def test_q_all_status_dated(deal_with_active_version):
     ]
     version.save()
 
-    assert (
-        qs_deal_versions.filter(q_all_status_dated()).count() == 0
-    ), "Deal is missing date for negotiation status."
+    assert qs_deal_versions.filter(q_all_status_dated()).count() == 0, (
+        "Deal is missing date for negotiation status."
+    )
 
     version.negotiation_status = [
         {
@@ -478,9 +478,9 @@ def test_q_all_status_dated(deal_with_active_version):
     ]
     version.save()
 
-    assert (
-        qs_deal_versions.filter(q_all_status_dated()).count() == 1
-    ), "Deal is has date for negotiation status and implementation status."
+    assert qs_deal_versions.filter(q_all_status_dated()).count() == 1, (
+        "Deal is has date for negotiation status and implementation status."
+    )
 
 
 def test_q_any_area_dated(deal_with_active_version):
@@ -494,9 +494,9 @@ def test_q_any_area_dated(deal_with_active_version):
     version.production_size = []
     version.save()
 
-    assert (
-        qs_deal_versions.filter(q_any_area_dated()).count() == 0
-    ), "Contract size not dated."
+    assert qs_deal_versions.filter(q_any_area_dated()).count() == 0, (
+        "Contract size not dated."
+    )
 
     version.contract_size = [{"area": 123.45, "current": True}]
     version.production_size = [
@@ -505,9 +505,9 @@ def test_q_any_area_dated(deal_with_active_version):
     ]
     version.save()
 
-    assert (
-        qs_deal_versions.filter(q_any_area_dated()).count() == 1
-    ), "Production size dated."
+    assert qs_deal_versions.filter(q_any_area_dated()).count() == 1, (
+        "Production size dated."
+    )
 
 
 def test_q_any_produce_info(deal_with_active_version):

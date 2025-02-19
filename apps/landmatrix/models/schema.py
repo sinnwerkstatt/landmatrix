@@ -1,6 +1,7 @@
+from collections.abc import Sequence
 from datetime import datetime
 from enum import Enum
-from typing import Any, Sequence
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, RootModel
 
@@ -52,6 +53,18 @@ class LooseDateStr(str):
         raise ValueError(
             "Invalid date format. Please use 'yyyy-mm-dd', 'yyyy-mm', or 'yyyy'."
         )
+
+
+class QuotationItem(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    nid: str
+    page: int | None = None
+    comment: str | None = None
+
+
+class DataSourceQuotationSchema(RootModel):
+    root: dict[str, list[QuotationItem]]
 
 
 class CurrentDateAreaSchema(ListRootModel):

@@ -2,8 +2,9 @@ import { error, redirect } from "@sveltejs/kit"
 
 import type { InvestorHull, MutableInvestorHull } from "$lib/types/data"
 
+import { getMutableObject } from "$components/Data/stores"
+
 import type { LayoutLoad } from "./$types"
-import { mutableInvestor } from "./store"
 
 // Duplicate lines between display and edit views as well as
 // between deal and investor load functions
@@ -63,7 +64,7 @@ export const load: LayoutLoad = async ({ params, parent, depends }) => {
     redirect(307, url)
   }
 
-  mutableInvestor.set(structuredClone(investor) as MutableInvestorHull)
+  getMutableObject("investor").set(structuredClone(investor) as MutableInvestorHull)
 
   return {
     investor,

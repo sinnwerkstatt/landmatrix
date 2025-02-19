@@ -4,17 +4,17 @@
   import type { ChangeEventHandler } from "svelte/elements"
 
   interface Props {
-    value?: boolean | null | undefined
+    name: string
+    value?: boolean | null
     nullable?: boolean
-    fieldname?: string | undefined
     wrapperClass?: string
     onchange?: ChangeEventHandler<HTMLInputElement>
   }
 
   let {
+    name,
     value = $bindable(undefined),
     nullable = false,
-    fieldname = undefined,
     wrapperClass = "flex items-center gap-6",
     onchange,
   }: Props = $props()
@@ -34,7 +34,7 @@
         type="radio"
         bind:group={value}
         value={true}
-        name={fieldname}
+        {name}
         {onchange}
         class={inptClass}
       />
@@ -45,7 +45,7 @@
         type="radio"
         bind:group={value}
         value={false}
-        name={fieldname}
+        {name}
         {onchange}
         class={inptClass}
       />
@@ -56,7 +56,7 @@
         type="radio"
         bind:group={value}
         value={null}
-        name={fieldname}
+        {name}
         {onchange}
         class={inptClass}
       />
@@ -64,11 +64,5 @@
     </label>
   </div>
 {:else}
-  <input
-    bind:checked={value}
-    type="checkbox"
-    name={fieldname}
-    class={inptClass}
-    {onchange}
-  />
+  <input bind:checked={value} type="checkbox" {name} class={inptClass} {onchange} />
 {/if}

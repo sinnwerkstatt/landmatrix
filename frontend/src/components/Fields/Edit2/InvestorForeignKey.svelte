@@ -159,6 +159,7 @@
           bind:value={newInvestor.name}
           fieldname="name"
           model="investor"
+          disableQuotations
           showLabel
         />
         <EditField
@@ -166,30 +167,35 @@
           extras={{ required: true }}
           fieldname="country"
           model="investor"
+          disableQuotations
           showLabel
         />
         <EditField
           bind:value={newInvestor.classification}
           fieldname="classification"
           model="investor"
+          disableQuotations
           showLabel
         />
         <EditField
           bind:value={newInvestor.homepage}
           fieldname="homepage"
           model="investor"
+          disableQuotations
           showLabel
         />
         <EditField
           bind:value={newInvestor.opencorporates}
           fieldname="opencorporates"
           model="investor"
+          disableQuotations
           showLabel
         />
         <EditField
           bind:value={newInvestor.comment}
           fieldname="comment"
           model="investor"
+          disableQuotations
           showLabel
         />
       </div>

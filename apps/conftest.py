@@ -1,16 +1,15 @@
-from typing import Type
-
 import pytest
+
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from rest_framework.test import APIClient
 
 from apps.accounts.models import User, UserRole
 from apps.landmatrix.models.country import Country
-from apps.landmatrix.models.deal import DealVersion, DealHull, DealDataSource
-from apps.landmatrix.models.investor import InvestorVersion, InvestorHull
+from apps.landmatrix.models.deal import DealDataSource, DealHull, DealVersion
+from apps.landmatrix.models.investor import InvestorHull, InvestorVersion
 
-UserModel: Type[User] = get_user_model()
+UserModel: type[User] = get_user_model()
 
 
 @pytest.fixture
@@ -22,7 +21,7 @@ def api_client():
 def anybody2(db):
     return UserModel.objects.create_user(
         username="anybody2",
-        password="love2be",
+        password="love2be",  # noqa: S106
         role=UserRole.ANYBODY,
     )
 
@@ -31,7 +30,7 @@ def anybody2(db):
 def reporter2(db):
     return UserModel.objects.create_user(
         username="reporter2",
-        password="love2report",
+        password="love2report",  # noqa: S106
         role=UserRole.REPORTER,
     )
 
@@ -40,7 +39,7 @@ def reporter2(db):
 def editor2(db):
     return UserModel.objects.create_user(
         username="editor2",
-        password="love2edit",
+        password="love2edit",  # noqa: S106
         role=UserRole.EDITOR,
     )
 
@@ -49,7 +48,7 @@ def editor2(db):
 def admin2(db):
     return UserModel.objects.create_user(
         username="admin2",
-        password="love2administrate",
+        password="love2administrate",  # noqa: S106
         role=UserRole.ADMINISTRATOR,
     )
 
@@ -58,7 +57,7 @@ def admin2(db):
 def superuser2(db):
     return UserModel.objects.create_superuser(
         username="superuser2",
-        password="superduper",
+        password="superduper",  # noqa: S106
     )
 
 

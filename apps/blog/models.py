@@ -1,5 +1,4 @@
 import datetime
-from typing import Type
 
 from taggit.models import Tag, TaggedItemBase
 
@@ -16,7 +15,6 @@ from modelcluster.fields import ParentalKey, ParentalManyToManyField
 from rest_framework.fields import ListField
 from wagtail.admin.panels import FieldPanel, FieldRowPanel, MultiFieldPanel
 from wagtail.api import APIField
-from wagtail.blocks import CharBlock
 from wagtail.fields import StreamField
 from wagtail.images import get_image_model_string
 from wagtail.images.models import SourceImageIOError
@@ -26,11 +24,11 @@ from wagtail.snippets.models import register_snippet
 from wagtail_headless_preview.models import HeadlessPreviewMixin
 
 from apps.accounts.models import User
-from apps.wagtailcms.blocks import SIMPLE_CONTENT_BLOCKS, MyDocumentChooserBlock
+from apps.wagtailcms.blocks import DOCUMENT_BLOCKS, SIMPLE_CONTENT_BLOCKS
 
 from .utils import unique_slugify
 
-UserModel: Type[User] = get_user_model()
+UserModel: type[User] = get_user_model()
 
 
 class BlogIndexPage(HeadlessPreviewMixin, Page):
@@ -57,7 +55,7 @@ class BlogIndexPage(HeadlessPreviewMixin, Page):
     def get_context(
         self, request, tag=None, category=None, author=None, *args, **kwargs
     ):
-        context = super(BlogIndexPage, self).get_context(request, *args, **kwargs)
+        context = super().get_context(request, *args, **kwargs)
         blogs = self.blogs
 
         if tag is None:
@@ -141,6 +139,11 @@ class BlogCategory(models.Model):
     def __str__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            unique_slugify(self, self.name)
+        return super().save(*args, **kwargs)
+
     def clean(self):
         if self.parent:
             parent = self.parent
@@ -148,11 +151,6 @@ class BlogCategory(models.Model):
                 raise ValidationError("Parent category cannot be self.")
             if parent.parent and parent.parent == self:
                 raise ValidationError("Cannot have circular Parents.")
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            unique_slugify(self, self.name)
-        return super().save(*args, **kwargs)
 
 
 class BlogCategoryBlogPage(models.Model):
@@ -165,6 +163,9 @@ class BlogCategoryBlogPage(models.Model):
 
     page = ParentalKey("BlogPage", related_name="categories")
     panels = [FieldPanel("category")]
+
+    def __str__(self):
+        return f"BlogCategoryBlogPage {self.category.name}"
 
 
 class BlogPageTag(TaggedItemBase):
@@ -215,7 +216,7 @@ def limit_author_choices():
 class BlogPage(HeadlessPreviewMixin, Page):
     body = StreamField(SIMPLE_CONTENT_BLOCKS)
     documents = StreamField(
-        [("document", MyDocumentChooserBlock()), ("text", CharBlock())],
+        DOCUMENT_BLOCKS,
         null=True,
         blank=True,
     )

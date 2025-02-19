@@ -5,13 +5,13 @@ export const DEAL_SECTIONS = [
   "contracts",
   "employment",
   "investor-info",
-  "data-sources",
   "local-communities",
   "former-use",
   "produce-info",
   "water",
   "gender-related-info",
   "overall-comment",
+  "data-sources",
   "history",
 ] as const
 

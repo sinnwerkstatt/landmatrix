@@ -30,6 +30,7 @@
 </script>
 
 <SubmodelEditField
+  model="investor"
   {label}
   bind:entries={investors}
   createEntry={createInvolvement(tertiary, investor.id)}

@@ -10,4 +10,4 @@
   let { deal = $bindable() }: Props = $props()
 </script>
 
-<DataSourcesEdit bind:version={deal.selected_version} />
+<DataSourcesEdit model="deal" bind:version={deal.selected_version} />

@@ -2,12 +2,16 @@
   import { createFloatingActions } from "svelte-floating-ui"
   import { autoPlacement, offset, shift } from "svelte-floating-ui/dom"
   import { _ } from "svelte-i18n"
+  import type { EventHandler } from "svelte/elements"
+  import { fade } from "svelte/transition"
   import { twMerge } from "tailwind-merge"
 
   import { invalidate } from "$app/navigation"
   import { page } from "$app/state"
 
+  import { clickOutside } from "$lib/helpers"
   import type { components } from "$lib/openAPI"
+  import { showContextHelp } from "$lib/stores"
   import { loading } from "$lib/stores/basics"
   import { getCsrfToken } from "$lib/utils"
 
@@ -51,28 +55,49 @@
     middleware: [offset(10), shift(), autoPlacement()],
   })
 
-  const onsubmit = async (e: SubmitEvent) => {
+  const onsubmit: EventHandler<SubmitEvent, HTMLFormElement> = async e => {
     e.preventDefault()
     loading.set(true)
+    switch ((e.submitter as HTMLButtonElement).name) {
+      case "save":
+        await page.data.apiClient.POST("/api/context_help/", {
+          body: cHelp,
+          headers: { "X-CSRFToken": await getCsrfToken() },
+        })
+        break
+      case "update":
+        await page.data.apiClient.PUT("/api/context_help/{id}/", {
+          params: { path: { id: helpContent!.id! } },
+          body: cHelp,
+          headers: { "X-CSRFToken": await getCsrfToken() },
+        })
+        break
+      case "delete":
+        await page.data.apiClient.DELETE("/api/context_help/{id}/", {
+          params: { path: { id: helpContent!.id! } },
+          headers: { "X-CSRFToken": await getCsrfToken() },
+        })
+        break
+    }
 
-    if (helpContent?.id)
-      await page.data.apiClient.PUT("/api/context_help/{id}/", {
-        params: { path: { id: helpContent.id } },
-        body: cHelp,
-        headers: { "X-CSRFToken": await getCsrfToken() },
-      })
-    else
-      await page.data.apiClient.POST("/api/context_help/", {
-        body: cHelp,
-        headers: { "X-CSRFToken": await getCsrfToken() },
-      })
     await invalidate("/api/context_help/")
     loading.set(false)
+    // showOverlay = false
+  }
+
+  const toggleOverlay = (e: MouseEvent) => {
+    e.stopPropagation()
+    showOverlay = !showOverlay
   }
 </script>
 
-{#if editMode || helpContent}
-  <button type="button" onclick={() => (showOverlay = !showOverlay)} use:floatingRef>
+{#if $showContextHelp && (editMode || helpContent)}
+  <button
+    type="button"
+    onclick={toggleOverlay}
+    use:floatingRef
+    transition:fade={{ duration: 80 }}
+  >
     <QuestionMarkCircleIcon class={classNames} />
   </button>
 {/if}
@@ -81,10 +106,12 @@
   <div
     class="absolute z-50 mx-2 my-1 min-w-96 rounded border bg-stone-300 px-3 py-2 font-sans text-base font-normal shadow dark:bg-gray-700"
     use:floatingContent
+    use:clickOutside
+    onoutClick={() => (showOverlay = false)}
   >
     <div>
       <div>
-        <button type="button" onclick={() => (showOverlay = false)}>
+        <button type="button" onclick={toggleOverlay}>
           <IconXMark />
         </button>
       </div>
@@ -95,9 +122,47 @@
             bind:value={cHelp.description}
             placeholder="Description"
             rows="10"
+            onclick={e => e.stopPropagation()}
           ></textarea>
-          <input class="inpt" bind:value={cHelp.link} type="url" placeholder="URL" />
-          <button type="submit" class="btn" disabled={$loading}>{$_("Save")}</button>
+          <input
+            class="inpt"
+            bind:value={cHelp.link}
+            type="url"
+            placeholder="URL"
+            onclick={e => e.stopPropagation()}
+          />
+          <div class="flex gap-2">
+            {#if helpContent?.id}
+              <button
+                type="submit"
+                class="btn"
+                name="update"
+                disabled={$loading}
+                onclick={e => e.stopPropagation()}
+              >
+                {$_("Update")}
+              </button>
+              <button
+                type="submit"
+                class="btn btn-red"
+                name="delete"
+                disabled={$loading}
+                onclick={e => e.stopPropagation()}
+              >
+                {$_("Delete")}
+              </button>
+            {:else}
+              <button
+                type="submit"
+                class="btn"
+                name="save"
+                disabled={$loading}
+                onclick={e => e.stopPropagation()}
+              >
+                {$_("Create")}
+              </button>
+            {/if}
+          </div>
         </form>
       {:else}
         <div class="whitespace-pre text-wrap text-left" style="text-wrap: pretty;">

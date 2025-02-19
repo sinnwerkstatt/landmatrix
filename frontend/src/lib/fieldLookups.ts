@@ -1,4 +1,4 @@
-import type { Component } from "svelte"
+import type { Component, Snippet } from "svelte"
 import { _ } from "svelte-i18n"
 import { derived } from "svelte/store"
 
@@ -56,13 +56,29 @@ import LocationGoogleEditField from "$components/Fields/Edit2/LocationGoogleEdit
 import PointEditField from "$components/Fields/Edit2/PointEditField.svelte"
 import TextEditField from "$components/Fields/Edit2/TextEditField.svelte"
 
+//eslint-disable-next-line @typescript-eslint/no-explicit-any
+type Any = any
+
+// Todo: Infer extras type on component basis using generic types
+type Extras = { [key: string]: unknown } | Any
+
+interface DisplayFieldProps {
+  value: Any
+  extras?: Extras
+}
+
+interface EditFieldProps extends DisplayFieldProps {
+  fieldname: string
+  children?: Snippet
+  onchange?: () => void
+}
+
 interface Field {
-  /* eslint-disable @typescript-eslint/no-explicit-any */
-  displayField: Component<{ value: any }>
-  editField?: Component<{ value: any; fieldname: string }>
-  /* eslint-enable @typescript-eslint/no-explicit-any */
+  displayField: Component<DisplayFieldProps>
+  editField?: Component<EditFieldProps>
   label: string
-  extras?: unknown
+  useQuotation?: boolean
+  extras?: Extras
 }
 
 type FieldLookup = { [key: string]: Field }
@@ -454,6 +470,7 @@ export const dealFields = derived(
       editField: DecimalEditField,
       label: $_("Intended size"),
       extras: { unit: $_("ha") },
+      useQuotation: true,
     },
     contract_size: {
       displayField: JSONCurrentDateAreaField,

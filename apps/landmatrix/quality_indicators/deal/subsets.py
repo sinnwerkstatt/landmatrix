@@ -1,10 +1,10 @@
 from django.db.models.query_utils import Q
 
 from apps.landmatrix.models.choices import (
-    NEGOTIATION_STATUS_ITEMS,
-    NegotiationStatusGroupEnum,
     INTENTION_OF_INVESTMENT_ITEMS,
+    NEGOTIATION_STATUS_ITEMS,
     IntentionOfInvestmentGroupEnum,
+    NegotiationStatusGroupEnum,
 )
 
 __all__ = (

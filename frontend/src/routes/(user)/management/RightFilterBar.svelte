@@ -5,8 +5,14 @@
 
   import { page } from "$app/state"
 
+  import { dealChoices } from "$lib/fieldChoices"
   import { stateMap } from "$lib/newUtils"
-  import { Version2Status, type DealHull, type InvestorHull } from "$lib/types/data"
+  import {
+    Version2Status,
+    type DealHull,
+    type InvestorHull,
+    type Model,
+  } from "$lib/types/data"
 
   import CountrySelect from "$components/LowLevel/CountrySelect.svelte"
   import UserSelect from "$components/LowLevel/UserSelect.svelte"
@@ -18,7 +24,7 @@
   interface Props {
     showFilters?: boolean
     objects?: Array<DealHull | InvestorHull>
-    model?: "deal" | "investor"
+    model?: Model
     createdByUserIDs: Set<number>
     modifiedByUserIDs: Set<number>
   }
@@ -31,9 +37,17 @@
     modifiedByUserIDs,
   }: Props = $props()
 
+  let isDeal = $derived(model === "deal")
   let objectsCountryIDs = $derived(
     objects?.map(d => (checkType(d) ? d.country_id : d.selected_version.country_id)),
   )
+  let objectsIntentionOfInvestments = $derived.by(() => {
+    if (!isDeal || !objects) return []
+
+    return (objects as DealHull[]).reduce((acc, obj) => {
+      return [...acc, ...(obj.selected_version.current_intention_of_investment ?? [])]
+    }, [] as string[])
+  })
   let relCountries = $derived(
     page.data.countries.filter(c => objectsCountryIDs.includes(c.id)),
   )
@@ -72,10 +86,14 @@
     </div>
     <div>
       <div class="mb-1 font-bold">{$_("Target country")}</div>
-      <CountrySelect bind:value={$managementFilters.country} countries={relCountries} />
+      <CountrySelect
+        value={$managementFilters.country}
+        oninput={e => ($managementFilters.country = e.detail)}
+        countries={relCountries}
+      />
     </div>
     <hr />
-    {#if model === "deal"}
+    {#if isDeal}
       <div>
         <div class="mb-1 font-bold">{$_("Deal size")}</div>
         <div class="flex gap-1">
@@ -92,6 +110,18 @@
             type="number"
           />
         </div>
+      </div>
+      <div>
+        <div class="mb-1 font-bold">
+          {$_("Intention of investment")}
+        </div>
+        <Select
+          bind:justValue={$managementFilters.intentionOfInvestment}
+          items={$dealChoices.intention_of_investment.filter(x =>
+            objectsIntentionOfInvestments.includes(x.value),
+          )}
+          showChevron
+        />
       </div>
       <hr />
     {/if}
@@ -144,7 +174,7 @@
         userIDs={modifiedByUserIDs}
       />
     </div>
-    {#if model === "deal"}
+    {#if isDeal}
       <hr />
       <div>
         <div class="font-bold">{$_("Fully updated at")}</div>

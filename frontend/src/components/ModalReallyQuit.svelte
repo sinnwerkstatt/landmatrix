@@ -22,8 +22,10 @@
   <div class="flex justify-end gap-4">
     <!-- svelte-ignore a11y_autofocus -->
     <button type="button" class="btn-outline" onclick={() => (open = false)} autofocus>
-      Continue editing
+      {$_("Continue editing")}
     </button>
-    <button type="button" class="btn btn-yellow" {onclick}>Quit without saving</button>
+    <button type="button" class="btn btn-yellow" {onclick}>
+      {$_("Quit without saving")}
+    </button>
   </div>
 </Modal>

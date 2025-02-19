@@ -1,5 +1,5 @@
-import { Feature, Overlay } from "ol"
-import { MultiPolygon, Point } from "ol/geom"
+import { Overlay, type Feature } from "ol"
+import type { MultiPolygon, Point } from "ol/geom"
 import { mount } from "svelte"
 
 import type { components } from "$lib/openAPI"

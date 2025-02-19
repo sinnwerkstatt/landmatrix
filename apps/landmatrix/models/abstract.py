@@ -1,18 +1,17 @@
+from nanoid import generate
+
 from django.conf import settings
 from django.db import models
 from django.db.models import TextChoices
 from django.utils import timezone
 from django.utils.translation import gettext as _
-from nanoid import generate
-from rest_framework.exceptions import PermissionDenied, ParseError
+from rest_framework.exceptions import ParseError, PermissionDenied
 from wagtail.models import Site
 
 from apps.accounts.models import User
-from apps.landmatrix.models import choices
-
-from apps.landmatrix.models.fields import NanoIDField, LooseDateField
-from apps.landmatrix.models import schema
-from apps.landmatrix.permissions import is_editor_or_higher, is_admin
+from apps.landmatrix.models import choices, schema
+from apps.landmatrix.models.fields import LooseDateField, NanoIDField
+from apps.landmatrix.permissions import is_admin, is_editor_or_higher
 from django_pydantic_jsonfield import PydanticJSONField, SchemaValidator
 
 
@@ -227,15 +226,15 @@ class BaseWorkflowInfo(models.Model):
     )
     resolved = models.BooleanField(default=False)
 
+    class Meta:
+        abstract = True
+        ordering = ("-timestamp",)
+
     def get_object_url(self):
         _site = Site.objects.get(is_default_site=True)
         _port = f":{_site.port}" if _site.port not in [80, 443] else ""
         base_url = f"http{'s' if _site.port == 443 else ''}://{_site.hostname}{_port}"
         return base_url
-
-    class Meta:
-        abstract = True
-        ordering = ("-timestamp",)
 
 
 class BaseDataSource(models.Model):
@@ -257,13 +256,13 @@ class BaseDataSource(models.Model):
     open_land_contracts_id = models.CharField(_("Open Contracting ID"), blank=True)
     comment = models.TextField(_("Comment"), blank=True)
 
-    def save(self, *args, **kwargs):
-        if self._state.adding and not self.nid:
-            self.nid = generate(size=8)
-        super().save(*args, **kwargs)
-
     class Meta:
         abstract = True
         unique_together = ["dealversion", "nid"]
         indexes = [models.Index(fields=["dealversion", "nid"])]
         ordering = ["id"]
+
+    def save(self, *args, **kwargs):
+        if self._state.adding and not self.nid:
+            self.nid = generate(size=8)
+        super().save(*args, **kwargs)

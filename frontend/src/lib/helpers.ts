@@ -50,6 +50,8 @@ export const scrollToTop = async () => {
     })
 }
 
-export const getTypedEntries = <T extends Record<string, unknown>>(
-  obj: T,
-): [keyof T, T[keyof T]][] => Object.entries(obj) as never
+export const getTypedEntries = <T extends object>(obj: T): [keyof T, T[keyof T]][] =>
+  Object.entries(obj) as never
+
+export const getTypedKeys = <T extends object>(obj: T): (keyof T)[] =>
+  Object.keys(obj) as never

@@ -4,9 +4,9 @@
     GeoJsonObject,
     MultiPolygon as MultiPolygonType,
   } from "geojson"
-  import { Feature, Overlay as OLOverlay, type Map } from "ol"
+  import { Overlay as OLOverlay, type Feature, type Map } from "ol"
   import { GeoJSON } from "ol/format"
-  import { MultiPolygon } from "ol/geom"
+  import { type MultiPolygon } from "ol/geom"
   import { Vector as VectorLayer } from "ol/layer"
   import { Vector as VectorSource } from "ol/source"
   import { Fill, Stroke, Style } from "ol/style"

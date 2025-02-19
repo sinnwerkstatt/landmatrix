@@ -51,6 +51,7 @@ export enum InvolvementRole {
   LENDER = "LENDER",
 }
 
+export type QuotationItem = components["schemas"]["QuotationItem"]
 export type Involvement = components["schemas"]["Involvement"]
 
 export type InvestorDeal = components["schemas"]["InvestorDeal"]

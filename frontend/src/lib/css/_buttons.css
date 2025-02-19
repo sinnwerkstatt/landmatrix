@@ -100,18 +100,22 @@
     --color3: hsl(0, 0%, 40%);
   }
 
-  .btn-purple {
+  .btn-purple,
+  .dark .btn-purple {
     --color1: theme("colors.purple.500");
     --color2: white;
     --color3: theme("colors.purple.700");
   }
-  .btn-violet {
+
+  .btn-violet,
+  .dark .btn-violet {
     --color1: theme("colors.violet.500");
     --color2: white;
     --color3: theme("colors.violet.700");
   }
 
-  .btn-yellow {
+  .btn-yellow,
+  .dark .btn-yellow {
     --color1: theme("colors.yellow.500");
     --color2: theme("colors.gray.800");
     --color3: theme("colors.yellow.700");
@@ -120,6 +124,11 @@
   .btn-red {
     --color1: theme("colors.red.500");
     --color2: white;
+    --color3: theme("colors.red.700");
+  }
+  .dark .btn-red {
+    --color1: theme("colors.red.500");
+    --color2: theme("colors.gray.900");
     --color3: theme("colors.red.700");
   }
 

@@ -2,7 +2,9 @@ import json
 
 from django.db.models.functions import Lower
 from django.http import JsonResponse
+from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
+from rest_framework.decorators import api_view
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -10,11 +12,7 @@ from rest_framework.response import Response
 from apps.accounts import auth_flow
 from apps.accounts.models import User
 from apps.accounts.serializers import LeanUserSerializer, UserSerializer
-from apps.landmatrix.permissions import (
-    IsReporterOrHigher,
-    is_admin,
-)
-
+from apps.landmatrix.permissions import IsReporterOrHigher, is_admin
 
 # unused, but maybe helpful
 # def has_authorization_for_country(user: User, country: Country | int) -> bool:
@@ -59,6 +57,8 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(serializer.data)
 
 
+@extend_schema()
+@api_view(["POST"])
 def register(request):
     data = json.loads(request.body)
     return JsonResponse(

@@ -173,66 +173,6 @@ class ObservatoryPage(HeadlessPreviewMixin, Page):
             qs = qs.filter(tags__slug=slug)
         return [article.get_dict("fill-500x500|jpegquality-60") for article in qs]
 
-    # @staticmethod
-    # def current_negotiation_status_metrics():
-    #     deals = Deal.objects.visible(subset="PUBLIC").default_filtered(
-    #         unset_filters=["current_negotiation_status"]
-    #     )
-    #     return (
-    #         deals.values(value=F("current_negotiation_status"))
-    #         .annotate(count=Count("pk"))
-    #         .annotate(size=Sum("deal_size"))
-    #     )
-
-    # def staticmap(self):
-    #     m = StaticMap(
-    #         900,
-    #         520,
-    #         url_template="https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=a00f8fb036334c4b8a3618263738846a",
-    #         # url_template="https://a.tile.opentopomap.org/{z}/{x}/{y}.png",
-    #         # url_template="http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",
-    #     )
-    #
-    #     for marker in DealHull.get_geo_markers(self.region_id, self.country_id):
-    #         ic(marker)
-    #         coords = [float(x) for x in marker["coordinates"]]
-    #         m.add_marker(
-    #             CircleMarker(coords, "hsl(32, 97%, 55%)", int(marker["count"] / 10))
-    #         )
-    #
-    #     bbox = None
-    #     if self.country_id:
-    #         coords = [
-    #             [float(self.country.point_lon_min), float(self.country.point_lat_max)],
-    #             [float(self.country.point_lon_min), float(self.country.point_lat_min)],
-    #             [float(self.country.point_lon_max), float(self.country.point_lat_min)],
-    #             [float(self.country.point_lon_max), float(self.country.point_lat_max)],
-    #             [float(self.country.point_lon_min), float(self.country.point_lat_max)],
-    #         ]
-    #         bbox = Polygon(coords, None, None)
-    #     elif self.region_id:
-    #         coords = [
-    #             [float(self.region.point_lon_min), float(self.region.point_lat_max)],
-    #             [float(self.region.point_lon_min), float(self.region.point_lat_min)],
-    #             [float(self.region.point_lon_max), float(self.region.point_lat_min)],
-    #             [float(self.region.point_lon_max), float(self.region.point_lat_max)],
-    #             [float(self.region.point_lon_min), float(self.region.point_lat_max)],
-    #         ]
-    #         bbox = Polygon(coords, None, None)
-    #
-    #     if bbox:
-    #         m.add_polygon(bbox)
-    #         image = m.render()
-    #     else:
-    #         # No bbox found, guess zoom level
-    #         image = m.render(zoom=6)
-    #
-    #     buffered = BytesIO()
-    #     image.save(buffered, format="JPEG")
-    #     img_str = b64encode(buffered.getvalue())
-    #     return "data:image/jpeg;base64," + img_str.decode()
-    #     # return {"huhu": "a"}
-
     def markers(self):
         return DealHull.get_geo_markers(self.region_id, self.country_id)
 
@@ -245,6 +185,4 @@ class ObservatoryPage(HeadlessPreviewMixin, Page):
         APIField("twitter_feed"),
         APIField("related_blogpages"),
         APIField("markers"),
-        # APIField("staticmap"),
-        # APIField("current_negotiation_status_metrics"),
     ]

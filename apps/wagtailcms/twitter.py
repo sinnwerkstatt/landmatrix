@@ -6,6 +6,7 @@ from django.conf import settings
 from django.core.cache import cache
 
 
+# TODO: Delete me
 class TwitterTimeline:
     KEY = "twitter/twitter/timeline"
     KEY_LT = "twitter/twitter/timeline_longterm"
@@ -75,7 +76,7 @@ class TwitterTimeline:
                         "media_url_https"
                     ]
                     update["quoted_status"]["media_url_https"] = media
-                except:
+                except KeyError:
                     pass
             if getattr(status, "extended_entities", None):
                 try:
@@ -113,7 +114,7 @@ class TwitterTimeline:
                 cache.set(self.KEY, result, self.cache_timeout)
                 cache.set(self.KEY_LT, result, self.cache_long_term_timeout)
                 cache.set(self.KEY_US, username)
-            except:
+            except:  # noqa: E722
                 result = cache.get(self.KEY_LT)
                 if not result:
                     result = ""

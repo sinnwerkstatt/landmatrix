@@ -7,6 +7,7 @@
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
       <jdbc-url>jdbc:postgresql://localhost:5432/landmatrix</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
+      <auto-close enable="true" timeout="60" />
     </data-source>
   </component>
 </project>

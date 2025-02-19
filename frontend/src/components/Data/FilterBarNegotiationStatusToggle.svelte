@@ -5,8 +5,6 @@
   import { filters } from "$lib/filters"
   import type { NegotiationStatus, NegotiationStatusGroup } from "$lib/types/data"
 
-  import ContextHelper from "$components/ContextHelper.svelte"
-
   import FilterCollapse from "./FilterCollapse.svelte"
 
   let negotiationStatus = $derived($dealChoices.negotiation_status)
@@ -60,8 +58,9 @@
 
 <FilterCollapse
   clearable={$filters.negotiation_status.length > 0}
-  onclear={() => ($filters.negotiation_status = [])}
+  contextHelp="filterbar_negotiation_status"
   onExpanded={checkGroupCheckboxes}
+  onclear={() => ($filters.negotiation_status = [])}
   title={$_("Negotiation status")}
 >
   {#each negotiationStatusGroups as { value: group, label: groupLabel }}
@@ -84,8 +83,4 @@
       </label>
     {/each}
   {/each}
-
-  <div class="text-right">
-    <ContextHelper identifier="filterbar_negotiation_status" class="mt-2 size-5" />
-  </div>
 </FilterCollapse>

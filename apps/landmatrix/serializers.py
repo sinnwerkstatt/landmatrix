@@ -1,7 +1,6 @@
-from drf_spectacular.utils import extend_schema_field
-
 from django.contrib.gis.geos import GEOSGeometry
 from django.db.models.query_utils import Q
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from apps.accounts.models import User
@@ -18,7 +17,6 @@ from apps.landmatrix.models.deal import (
     DealWorkflowInfo,
     Location,
 )
-from apps.landmatrix.models.field_definition import FieldDefinition
 from apps.landmatrix.models.investor import (
     InvestorDataSource,
     InvestorHull,
@@ -29,12 +27,6 @@ from apps.landmatrix.models.investor import (
 from apps.landmatrix.permissions import is_editor_or_higher, is_reporter_or_higher
 from apps.serializer import ReadOnlyModelSerializer
 from django_pydantic_jsonfield import PydanticJSONFieldMixin
-
-
-class FieldDefinitionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = FieldDefinition
-        fields = "__all__"
 
 
 class CurrencySerializer(serializers.ModelSerializer):
@@ -323,7 +315,6 @@ BASE_WORKFLOW_INFO_FIELDS = (
 
 
 class DealWorkflowInfoSerializer(ReadOnlyModelSerializer):
-
     class Meta:
         model = DealWorkflowInfo
         fields = BASE_WORKFLOW_INFO_FIELDS + (
@@ -333,7 +324,6 @@ class DealWorkflowInfoSerializer(ReadOnlyModelSerializer):
 
 
 class InvestorWorkflowInfoSerializer(ReadOnlyModelSerializer):
-
     class Meta:
         model = InvestorWorkflowInfo
         fields = BASE_WORKFLOW_INFO_FIELDS + (
@@ -619,7 +609,7 @@ class InvestorSerializer(serializers.ModelSerializer[InvestorHull]):
         user: User = self.context["request"].user
 
         if hasattr(obj, "_selected_version_id"):
-            version = obj.versions.get(id=getattr(obj, "_selected_version_id"))
+            version = obj.versions.get(id=obj._selected_version_id)
         else:
             version = obj.active_version or obj.draft_version
 

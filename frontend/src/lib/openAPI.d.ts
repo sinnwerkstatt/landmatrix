@@ -649,38 +649,6 @@ export interface paths {
     patch?: never
     trace?: never
   }
-  "/api/field_definitions/": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get: operations["field_definitions_list"]
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
-  "/api/field_definitions/{id}/": {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    get: operations["field_definitions_retrieve"]
-    put?: never
-    post?: never
-    delete?: never
-    options?: never
-    head?: never
-    patch?: never
-    trace?: never
-  }
   "/api/gis_export/areas/": {
     parameters: {
       query?: never
@@ -1084,6 +1052,22 @@ export interface paths {
     get: operations["schema.yaml_retrieve"]
     put?: never
     post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  "/api/user/register/": {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post: operations["user_register_create"]
     delete?: never
     options?: never
     head?: never
@@ -1661,6 +1645,10 @@ export interface components {
     }
     DataSourceFields: {
       type: components["schemas"]["ValueLabel"][]
+    }
+    /** DataSourceQuotationSchema */
+    DataSourceQuotationSchema: {
+      [key: string]: components["schemas"]["QuotationItem"][]
     }
     /**
      * @description * `MEDIA_REPORT` - Media report
@@ -2243,6 +2231,8 @@ export interface components {
       readonly forest_concession: boolean
       readonly transnational: boolean | null
       fully_updated?: boolean
+      /** Data Source Quotations */
+      ds_quotations?: components["schemas"]["DataSourceQuotationSchema"]
       readonly created_by: number | null
       readonly modified_by: number | null
       readonly sent_to_review_by: number | null
@@ -2458,38 +2448,6 @@ export interface components {
       investor: components["schemas"]["InvestorFields"]
       involvement: components["schemas"]["InvolvementFields"]
       area: components["schemas"]["AreaFields"]
-    }
-    FieldDefinition: {
-      readonly id: number
-      model: components["schemas"]["ModelEnum"]
-      field: string
-      short_description: string
-      /** Short description [en] */
-      short_description_en?: string | null
-      /** Short description [es] */
-      short_description_es?: string | null
-      /** Short description [fr] */
-      short_description_fr?: string | null
-      /** Short description [ru] */
-      short_description_ru?: string | null
-      long_description?: string
-      /** Long description [en] */
-      long_description_en?: string | null
-      /** Long description [es] */
-      long_description_es?: string | null
-      /** Long description [fr] */
-      long_description_fr?: string | null
-      /** Long description [ru] */
-      long_description_ru?: string | null
-      editor_description?: string
-      /** Editor description [en] */
-      editor_description_en?: string | null
-      /** Editor description [es] */
-      editor_description_es?: string | null
-      /** Editor description [fr] */
-      editor_description_fr?: string | null
-      /** Editor description [ru] */
-      editor_description_ru?: string | null
     }
     Filters: {
       readonly id: number
@@ -3067,12 +3025,6 @@ export interface components {
       | "URM"
       | "ZNC"
     /**
-     * @description * `deal` - Deal
-     *     * `investor` - Investor
-     * @enum {string}
-     */
-    ModelEnum: "deal" | "investor"
-    /**
      * @description * `OUTRIGHT_PURCHASE` - Outright purchase
      *     * `LEASE` - Lease
      *     * `CONCESSION` - Concession
@@ -3353,6 +3305,21 @@ export interface components {
       key: string
       name: string
       description: string
+    }
+    /** QuotationItem */
+    QuotationItem: {
+      /** Nid */
+      nid: string
+      /**
+       * Page
+       * @default null
+       */
+      page: number | null
+      /**
+       * Comment
+       * @default null
+       */
+      comment: string | null
     }
     /**
      * @description * `INDIGENOUS_RIGHTS_RECOGNIZED` - Indigenous Peoples traditional or customary rights recognized by government
@@ -6055,47 +6022,6 @@ export interface operations {
       }
     }
   }
-  field_definitions_list: {
-    parameters: {
-      query?: never
-      header?: never
-      path?: never
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["FieldDefinition"][]
-        }
-      }
-    }
-  }
-  field_definitions_retrieve: {
-    parameters: {
-      query?: never
-      header?: never
-      path: {
-        /** @description A unique integer value identifying this field definition. */
-        id: number
-      }
-      cookie?: never
-    }
-    requestBody?: never
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown
-        }
-        content: {
-          "application/json": components["schemas"]["FieldDefinition"]
-        }
-      }
-    }
-  }
   gis_export_areas_retrieve: {
     parameters: {
       query?: {
@@ -7470,6 +7396,24 @@ export interface operations {
             [key: string]: unknown
           }
         }
+      }
+    }
+  }
+  user_register_create: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description No response body */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
       }
     }
   }

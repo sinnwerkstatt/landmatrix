@@ -2,7 +2,7 @@ import { env } from "$env/dynamic/public"
 import { type Map } from "ol"
 import { extend, type Extent } from "ol/extent"
 import { Tile as TileLayer, Vector } from "ol/layer"
-import { OSM, TileWMS, XYZ } from "ol/source"
+import { TileWMS, XYZ } from "ol/source"
 
 function getWMSTilesCDEUniBern(folder: string, LAYERS: string, attributions: string) {
   const qParams = new URLSearchParams({
@@ -44,7 +44,7 @@ export const baseLayers = [
     name: "Map",
     layer: new TileLayer({
       source: new XYZ({
-        url: "https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=a00f8fb036334c4b8a3618263738846a",
+        url: `https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=${env.PUBLIC_THUNDERFOREST_API_KEY}`,
         attributions:
           'Maps © <a href="https://www.thunderforest.com">Thunderforest</a>, Data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
       }),
@@ -52,11 +52,11 @@ export const baseLayers = [
       maxZoom: 22,
     }),
   },
-  {
-    id: "osm",
-    name: "OSM",
-    layer: new TileLayer({ source: new OSM(), visible: false }),
-  },
+  // {
+  //   id: "osm",
+  //   name: "OSM",
+  //   layer: new TileLayer({ source: new OSM(), visible: false }),
+  // },
 ]
 
 export const contextLayers = [
@@ -154,6 +154,7 @@ export function fitMapToFeatures(map: Map) {
 
   map.getLayers().forEach(layer => {
     if (!(layer instanceof Vector)) return
+    if (layer.getSource().getFeatures().length === 0) return
 
     const sourceExtent = layer.getSource().getExtent()
     if (!sourceExtent) return

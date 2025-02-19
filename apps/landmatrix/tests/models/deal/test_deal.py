@@ -1,9 +1,5 @@
-import pytest
-from django.db import IntegrityError
-
 from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.deal import DealHull, DealVersion
-
 
 # TODO: Make country mandatory
 # def test_country_is_mandatory():
@@ -49,9 +45,9 @@ def test_calculate_initiation_year():
         deal_id=deal.id,
     )
 
-    assert (
-        version.initiation_year is None
-    ), "No negotiation or implementation status items."
+    assert version.initiation_year is None, (
+        "No negotiation or implementation status items."
+    )
 
     version = DealVersion.objects.create(
         deal_id=deal.id,
@@ -71,9 +67,9 @@ def test_calculate_initiation_year():
         ],
     )
 
-    assert (
-        version.initiation_year is None
-    ), "Valid choices UNDER_NEGOTIATION / ORAL_AGREEMENT, but no dates."
+    assert version.initiation_year is None, (
+        "Valid choices UNDER_NEGOTIATION / ORAL_AGREEMENT, but no dates."
+    )
 
     version = DealVersion.objects.create(
         deal_id=deal.id,
@@ -85,9 +81,9 @@ def test_calculate_initiation_year():
         ],
     )
 
-    assert (
-        version.initiation_year == 2018
-    ), "Initiation year is 2018 - date of CONTRACT_SIGNED choice."
+    assert version.initiation_year == 2018, (
+        "Initiation year is 2018 - date of CONTRACT_SIGNED choice."
+    )
 
     version = DealVersion.objects.create(
         deal_id=deal.id,
@@ -101,9 +97,9 @@ def test_calculate_initiation_year():
         ],
     )
 
-    assert (
-        version.initiation_year == 2018
-    ), "Initiation year is 2018 - earliest date of all dated items with valid choice."
+    assert version.initiation_year == 2018, (
+        "Initiation year is 2018 - earliest date of all dated items with valid choice."
+    )
 
     version = DealVersion.objects.create(
         deal_id=deal.id,

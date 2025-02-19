@@ -13,18 +13,19 @@
   import { isEmptyLocation } from "$components/Data/Deal/Sections/Locations/locations"
   import { dealSectionLookup } from "$components/Data/Deal/Sections/store"
   import SectionNav from "$components/Data/SectionNav.svelte"
+  import { getMutableObject } from "$components/Data/stores"
   import CountryField from "$components/Fields/Display2/CountryField.svelte"
   import LoadingSpinner from "$components/icons/LoadingSpinner.svelte"
   import ModalReallyQuit from "$components/ModalReallyQuit.svelte"
-
-  import { mutableDeal } from "./store"
+  import ReviewChangesModal from "$components/ReviewChangesModal.svelte"
 
   let { data, children } = $props()
 
   let savingInProgress = $state(false)
   let showReallyQuitOverlay = $state(false)
 
-  let hasBeenEdited = $derived(
+  const mutableDeal = getMutableObject("deal")
+  const hasBeenEdited = $derived(
     JSON.stringify(data.deal) !== JSON.stringify($mutableDeal),
   )
 
@@ -47,9 +48,7 @@
       }
   })
 
-  const saveDeal = async (deal: MutableDealHull): Promise<boolean> => {
-    savingInProgress = true
-
+  const cleanDeal = (deal: MutableDealHull): void => {
     deal.selected_version.locations = (deal.selected_version.locations ?? []).filter(
       x => !isEmptyLocation(x),
     )
@@ -59,6 +58,12 @@
     deal.selected_version.datasources = (
       deal.selected_version.datasources ?? []
     ).filter(x => !isEmptyDataSource(x as DealDataSource))
+  }
+
+  const saveDeal = async (deal: MutableDealHull): Promise<boolean> => {
+    cleanDeal(deal)
+
+    savingInProgress = true
 
     const ret = await fetch(
       data.dealVersion
@@ -146,9 +151,18 @@
     )
   }
 
+  let showReviewChangesModal = $state(false)
+
   const onClickSave = async () => {
     if (savingInProgress || !isFormValid()) return
-    if (hasBeenEdited) await saveDeal($mutableDeal)
+
+    if (!showReviewChangesModal) {
+      cleanDeal($mutableDeal)
+      showReviewChangesModal = true
+    } else {
+      await saveDeal($mutableDeal)
+      showReviewChangesModal = false
+    }
   }
 </script>
 
@@ -207,6 +221,13 @@
 </div>
 
 <ModalReallyQuit bind:open={showReallyQuitOverlay} onclick={() => onClickClose(true)} />
+
+<ReviewChangesModal
+  bind:open={showReviewChangesModal}
+  onclick={onClickSave}
+  oldObject={data.deal}
+  newObject={mutableDeal}
+/>
 
 <style>
   .editgrid {

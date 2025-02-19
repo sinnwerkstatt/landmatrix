@@ -1,6 +1,6 @@
 from django.db.models import Q
-from rest_framework.request import Request
 from drf_spectacular.utils import OpenApiParameter
+from rest_framework.request import Request
 
 from apps.landmatrix.models import choices
 
@@ -111,7 +111,7 @@ def parse_filters(request: Request):
         res &= Q(deal__active_version__current_negotiation_status__in=neg_status)
 
     if nature := request.GET.getlist("nature_of_deal"):
-        all_nature = set([x["value"] for x in choices.NATURE_OF_DEAL_ITEMS])
+        all_nature = {x["value"] for x in choices.NATURE_OF_DEAL_ITEMS}
         res &= ~Q(
             deal__active_version__nature_of_deal__contained_by=list(
                 all_nature - set(nature)

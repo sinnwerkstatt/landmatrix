@@ -17,7 +17,7 @@
 
   let {
     regions = [],
-    value = $bindable(null),
+    value = null,
     name = undefined,
     disabled = false,
     required = false,
@@ -27,7 +27,7 @@
 </script>
 
 <VirtualListSelect
-  bind:value
+  {value}
   id="region-select"
   items={regions}
   label="name"

@@ -9,6 +9,6 @@
 </script>
 
 {#if value}
-  <div>Lat: {parseFloat(value.coordinates[1].toFixed(8))}</div>
-  <div>Lng: {parseFloat(value.coordinates[0].toFixed(8))}</div>
+  <div>Long: {parseFloat(value.coordinates[0].toFixed(6))}</div>
+  <div>Lat: {parseFloat(value.coordinates[1].toFixed(6))}</div>
 {/if}

@@ -10,8 +10,8 @@ def q_has_valid_name() -> Q:
 
 
 def q_has_involvement() -> Q:
-    from apps.landmatrix.models.investor import Involvement
     from apps.landmatrix.models.deal import DealVersion
+    from apps.landmatrix.models.investor import Involvement
 
     return _q_any(
         Involvement.objects.filter(

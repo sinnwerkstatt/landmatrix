@@ -147,11 +147,19 @@
 <style lang="postcss">
   table td,
   table th {
-    @apply border-b border-r p-2 dark:border-gray-100;
+    @apply border-b border-r p-2;
+
+    :global {
+      @apply dark:border-gray-100;
+    }
   }
 
   table th:first-child {
-    @apply border-l dark:border-gray-100;
+    @apply border-l;
+
+    :global {
+      @apply dark:border-gray-100;
+    }
   }
 
   h2 {

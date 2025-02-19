@@ -8,6 +8,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
 from django.core import signing
 from django.core.exceptions import ValidationError
+from django.db import IntegrityError
 from django.template import Context, Template
 from django.utils.http import urlsafe_base64_decode
 from django.utils.translation import gettext_lazy as _
@@ -90,19 +91,27 @@ def register(
             "secret": settings.HCAPTCHA_SECRETKEY,
             "sitekey": settings.HCAPTCHA_SITEKEY,
         },
+        timeout=5,
     ).json()
+
     if not hcaptcha_verify["success"]:
         return {"ok": False, "code": "captcha_problems"}
 
-    new_user = User.objects.create(
-        username=username,
-        first_name=first_name,
-        last_name=last_name,
-        email=email,
-        phone=phone,
-        information=information,
-        is_active=False,
-    )
+    try:
+        new_user = User.objects.create(
+            username=username,
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            phone=phone,
+            information=information,
+            is_active=False,
+        )
+    except IntegrityError:
+        return {"ok": False, "code": "username_already_exists"}
+    except Exception:
+        return {"ok": False, "code": "unknown_error"}
+
     new_user.set_password(password)
     new_user.save()
 
@@ -164,6 +173,7 @@ def password_reset(email, token) -> dict:
             "secret": settings.HCAPTCHA_SECRETKEY,
             "sitekey": settings.HCAPTCHA_SITEKEY,
         },
+        timeout=5,
     ).json()
 
     if not hcaptcha_verify["success"]:
