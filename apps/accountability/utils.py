@@ -94,7 +94,6 @@ openapi_filters_parameters_scoring = [
 
 
 def parse_filters(request: Request):
-
     res = Q()
 
     if region_id := request.GET.getlist("region_id"):

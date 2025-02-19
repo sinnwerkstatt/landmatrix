@@ -115,8 +115,8 @@ class DealScoreList(generics.ListCreateAPIView):
             deal__deleted=False,
             deal__active_version__isnull=False,
             deal__active_version__is_public=True,
-            deal__confidential=False
-            )
+            deal__confidential=False,
+        )
         return qs
 
     @extend_schema(parameters=openapi_filters_parameters_scoring)
