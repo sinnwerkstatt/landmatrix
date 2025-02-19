@@ -13,7 +13,7 @@
 
 <LowLevelNullBooleanField
   bind:value
-  {fieldname}
+  name={fieldname}
   nullable={extras?.nullable ?? false}
   {onchange}
 />

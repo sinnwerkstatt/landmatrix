@@ -128,7 +128,7 @@
         <LowLevelNullBooleanField
           bind:value={val.certification_standard}
           nullable
-          fieldname="certification_standard"
+          name="{fieldname}_{i}_certification_standard"
           wrapperClass="flex justify-end gap-3"
           onchange={() => {
             val.certification_standard_name = []
