@@ -81,13 +81,13 @@ export const createStyledPoint = (
   const defaultStyle = new Style({
     image: new Circle({
       radius: radius,
-      fill: new Fill({ color: "hsl(32, 97%, 70%)" }),
-      stroke: new Stroke({ color: "hsl(32, 97%, 55%)", width: 2 }),
+      fill: new Fill({ color: "hsl(32, 97%, 55%)" }),
+      // stroke: new Stroke({ color: "hsl(32, 97%, 55%)", width: 2 }),
     }),
     text: new Text({
       text: wrapText(defaultText, radius * 1.5),
       fill: new Fill({ color: "#000000" }),
-      stroke: new Stroke({ color: "#ffffff", width: 3 }),
+      // stroke: new Stroke({ color: "#ffffff", width: 3 }),
       scale: 1.4,
       textAlign: "center",
       textBaseline: "middle",
@@ -107,13 +107,13 @@ export const regionHoverInteraction = new Select({
     return new Style({
       image: new Circle({
         radius: props.radius,
-        fill: new Fill({ color: "hsl(32, 97%, 60%)" }),
-        stroke: new Stroke({ color: "hsl(32, 97%, 55%)", width: 2 }),
+        fill: new Fill({ color: "hsl(32, 97%, 55%)" }),
+        // stroke: new Stroke({ color: "hsl(32, 97%, 55%)", width: 2 }),
       }),
       text: new Text({
         text: wrapText(props.hoverText, props.radius * 1.5),
         fill: new Fill({ color: "#000000" }),
-        stroke: new Stroke({ color: "#ffffff", width: 3 }),
+        // stroke: new Stroke({ color: "#ffffff", width: 3 }),
         scale: 1.4,
         textAlign: "center",
         textBaseline: "middle",
