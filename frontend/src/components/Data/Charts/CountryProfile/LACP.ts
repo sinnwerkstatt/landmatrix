@@ -151,8 +151,8 @@ export const drawGraph = async (
     .append("rect")
     .attr("width", width / 4 - 10)
     .attr("height", groups.length * (dotSize + 5) + 5)
-    .attr("class", "lacp-chart-legend-background")
-    .attr("stroke-width", 0.1)
+    .attr("stroke-width", 2)
+    .attr("fill", "none")
 
   legend
     .selectAll("myDots")

@@ -49,6 +49,10 @@ export const downloadSVG = (
   svg: SVGElement | null | undefined,
   fileType: "svg" | "png" | "webp",
   title: string,
+  size?: {
+    width: number
+    height: number
+  },
 ): void => {
   if (!svg) return
   const name = fileName(title, `.${fileType}`)
@@ -64,8 +68,9 @@ export const downloadSVG = (
     const context = canvas.getContext("2d")
     if (!context) return
 
-    canvas.width = 800
-    canvas.height = 400
+    canvas.width = size?.width ?? 800
+    canvas.height = size?.height ?? 400
+
     context.clearRect(0, 0, canvas.width, canvas.height)
 
     const image = new Image()

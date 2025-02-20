@@ -39,7 +39,7 @@
       case "csv":
         return // NOT SUPPORTED
       default:
-        return downloadSVG(svgComp, fileType, title)
+        return downloadSVG(svgComp, fileType, title, { width: 1200, height: 1200 })
     }
   }
 
