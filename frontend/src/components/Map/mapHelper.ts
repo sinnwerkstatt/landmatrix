@@ -3,7 +3,7 @@ import type { Coordinate } from "ol/coordinate"
 import { pointerMove } from "ol/events/condition"
 import { Point } from "ol/geom"
 import { Select } from "ol/interaction"
-import { Circle, Fill, Icon, Stroke, Style, Text } from "ol/style"
+import { Circle, Fill, Icon, Style, Text } from "ol/style"
 import { mount } from "svelte"
 import { writable } from "svelte/store"
 
