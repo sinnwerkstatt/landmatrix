@@ -124,12 +124,15 @@ def parse_filters(request: Request):
             deal__active_version__parent_companies__active_version__country_id__in=parents_c_id
         )
 
-    if request.GET.get("initiation_year_unknown") == "false":
-        res &= Q(deal__active_version__initiation_year__isnull=False)
-    if init_year_min := request.GET.get("initiation_year_min"):
-        res &= Q(deal__active_version__initiation_year__gte=init_year_min)
-    if init_year_max := request.GET.get("initiation_year_max"):
-        res &= Q(deal__active_version__initiation_year_max__lte=init_year_max)
+    iy_null = (
+        Q()
+        if request.GET.get("initiation_year_unknown")
+        else Q(deal__active_version__initiation_year=None)
+    )
+    if iy_min := request.GET.get("initiation_year_min"):
+        res &= Q(deal__active_version__initiation_year__gte=iy_min) | iy_null
+    if iy_max := request.GET.get("initiation_year_max"):
+        res &= Q(deal__active_version__initiation_year__lte=iy_max) | iy_null
 
     if imp_status := request.GET.getlist("implementation_status"):
         unknown = (

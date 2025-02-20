@@ -105,13 +105,17 @@ class DealScoreList(generics.ListCreateAPIView):
     def get_queryset(self):
         qs = self.queryset.prefetch_related(
             Prefetch(
-                "deals",
-                queryset=DealHull.objects.filter(
-                    confidential=False, active_version__isnull=False
-                ).prefetch_related(
+                "deal",
+                queryset=DealHull.objects.all().prefetch_related(
                     Prefetch("versions", queryset=DealVersion.objects.order_by("-id"))
                 ),
             )
+        )
+        qs = qs.filter(
+            deal__deleted=False,
+            deal__active_version__isnull=False,
+            deal__active_version__is_public=True,
+            deal__confidential=False,
         )
         return qs
 

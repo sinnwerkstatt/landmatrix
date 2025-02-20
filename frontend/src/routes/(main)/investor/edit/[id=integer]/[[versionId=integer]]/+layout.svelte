@@ -15,6 +15,7 @@
   import { getMutableObject } from "$components/Data/stores"
   import LoadingSpinner from "$components/icons/LoadingSpinner.svelte"
   import ModalReallyQuit from "$components/ModalReallyQuit.svelte"
+  import ReviewChangesModal from "$components/ReviewChangesModal.svelte"
 
   let { data, children } = $props()
 
@@ -44,14 +45,19 @@
         return
       }
   })
-  const saveInvestor = async (investor: MutableInvestorHull): Promise<boolean> => {
-    savingInProgress = true
 
+  const cleanInvestor = (investor: MutableInvestorHull): void => {
     investor.selected_version.datasources = (
       investor.selected_version.datasources ?? []
     ).filter(x => !isEmptyDataSource(x as InvestorDataSource))
 
     investor.parents = (investor.parents ?? []).filter(x => !isEmptyInvolvement(x))
+  }
+
+  const saveInvestor = async (investor: MutableInvestorHull): Promise<boolean> => {
+    cleanInvestor(investor)
+
+    savingInProgress = true
 
     const ret = await fetch(
       data.investorVersion
@@ -143,9 +149,18 @@
     )
   }
 
-  const onClickSave = async (): Promise<void> => {
+  let showReviewChangesModal = $state(false)
+
+  const onClickSave = async () => {
     if (savingInProgress || !isFormValid()) return
-    if (hasBeenEdited) await saveInvestor($mutableInvestor)
+
+    if (!showReviewChangesModal) {
+      cleanInvestor($mutableInvestor)
+      showReviewChangesModal = true
+    } else {
+      await saveInvestor($mutableInvestor)
+      showReviewChangesModal = false
+    }
   }
 </script>
 
@@ -207,6 +222,14 @@
 </div>
 
 <ModalReallyQuit bind:open={showReallyQuitOverlay} onclick={() => onClickClose(true)} />
+
+<ReviewChangesModal
+  bind:open={showReviewChangesModal}
+  onclick={onClickSave}
+  oldObject={data.investor}
+  newObject={mutableInvestor}
+  model="investor"
+/>
 
 <style>
   .editgrid {
