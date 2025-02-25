@@ -59,7 +59,11 @@
 
 <div class={wrapperClass} data-fieldname={fieldname}>
   {#if showLabel}
-    <Label2 value={richField?.label} class={labelClass} />
+    <Label2
+      value={richField?.label}
+      class={labelClass}
+      contextHelp={richField.editContextHelp}
+    />
   {/if}
 
   {#if !disableQuotations}

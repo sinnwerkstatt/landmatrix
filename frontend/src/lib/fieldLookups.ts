@@ -79,6 +79,8 @@ interface Field {
   label: string
   useQuotation?: boolean
   extras?: Extras
+  displayContextHelp?: string
+  editContextHelp?: string
 }
 
 type FieldLookup = { [key: string]: Field }
@@ -471,6 +473,8 @@ export const dealFields = derived(
       label: $_("Intended size"),
       extras: { unit: $_("ha") },
       useQuotation: true,
+      displayContextHelp: "display_intended_size",
+      editContextHelp: "edit_intended_size",
     },
     contract_size: {
       displayField: JSONCurrentDateAreaField,
