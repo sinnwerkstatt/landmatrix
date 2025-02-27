@@ -191,10 +191,21 @@
           />
         </div>
 
-        <button class="btn btn-black" type="submit" disabled={!newQuotation.nid}>
-          {$_("Add Quotation")}
-        </button>
+        <div class="flex justify-between">
+          <button class="btn btn-black" type="submit" disabled={!newQuotation.nid}>
+            {$_("Add Quotation")}
+          </button>
+          <button class="btn btn-black" type="button" onclick={() => (open = false)}>
+            {$_("Close")}
+          </button>
+        </div>
       </form>
+    {:else}
+      <div class="mt-2 flex justify-end">
+        <button class="btn btn-black" type="button" onclick={() => (open = false)}>
+          {$_("Close")}
+        </button>
+      </div>
     {/if}
   </div>
 </Modal>
