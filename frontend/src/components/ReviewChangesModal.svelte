@@ -19,6 +19,7 @@
   import CheckIcon from "$components/icons/CheckIcon.svelte"
   import XIcon from "$components/icons/XIcon.svelte"
   import Modal from "$components/Modal.svelte"
+  import DSQuotationsPopup from "$components/New/DSQuotationsPopup.svelte"
 
   interface Props {
     open: boolean
@@ -190,23 +191,23 @@
               {:else}
                 <del><XIcon /></del>
               {/if}
-              <div class="flex items-center justify-end gap-2">
-                <div>
+              <span class="flex items-center justify-end gap-2">
+                <span>
                   {oldQuotes.length > 0
                     ? oldQuotes
                         .map(q => oldDataSources.findIndex(ds => ds.nid === q.nid) + 1)
                         .join(", ")
                     : ""}
-                </div>
+                </span>
                 <span>&RightArrow;</span>
-                <div>
+                <span>
                   {newQuotes.length > 0
                     ? newQuotes
                         .map(q => newDataSources.findIndex(ds => ds.nid === q.nid) + 1)
                         .join(", ")
                     : ""}
-                </div>
-              </div>
+                </span>
+              </span>
             </span>
           </button>
         {/each}
@@ -218,6 +219,7 @@
 
       <ol class="flex flex-col gap-2">
         {#each newDataSources as dataSource, i}
+          {@const label = `${i + 1}. ${$_("Data Source")}`}
           <li>
             {#if selectedDiffKeys}
               {@const keysWithQuotation = selectedDiffKeys.filter(k =>
@@ -229,32 +231,34 @@
               {@const isAny =
                 keysWithQuotation.length > 0 &&
                 keysWithQuotation.length !== selectedDiffKeys.length}
-              <button
-                class="w-full p-2 text-left {isAll
-                  ? 'bg-yellow'
-                  : isAny
-                    ? 'bg-yellow/20'
-                    : 'bg-white dark:bg-gray-500'}"
-                type="button"
-                onclick={() => {
-                  const _isAll = isAll
-                  selectedDiffKeys.forEach(k => {
-                    newQuotations[k] = (newQuotations[k] ?? []).filter(
-                      q => q.nid !== dataSource.nid,
-                    )
-                  })
-                  if (!_isAll) {
+              <DSQuotationsPopup {dataSource} {label}>
+                <button
+                  class="w-full p-2 text-left {isAll
+                    ? 'bg-yellow'
+                    : isAny
+                      ? 'bg-yellow/20'
+                      : 'bg-white dark:bg-gray-500'}"
+                  type="button"
+                  onclick={() => {
+                    const _isAll = isAll
                     selectedDiffKeys.forEach(k => {
-                      newQuotations[k] = [
-                        ...(newQuotations[k] ?? []),
-                        { nid: dataSource.nid },
-                      ]
+                      newQuotations[k] = (newQuotations[k] ?? []).filter(
+                        q => q.nid !== dataSource.nid,
+                      )
                     })
-                  }
-                }}
-              >
-                {i + 1}. {dataSource.nid}
-              </button>
+                    if (!_isAll) {
+                      selectedDiffKeys.forEach(k => {
+                        newQuotations[k] = [
+                          ...(newQuotations[k] ?? []),
+                          { nid: dataSource.nid },
+                        ]
+                      })
+                    }
+                  }}
+                >
+                  {i + 1}. {dataSource.nid}
+                </button>
+              </DSQuotationsPopup>
             {:else}
               {@const allHaveDataSource = fieldKeys.every(key => {
                 const quotes = newQuotations[key] ?? []
@@ -263,38 +267,40 @@
                 )
               })}
 
-              <button
-                class="w-full p-2 text-left {allHaveDataSource
-                  ? 'bg-yellow'
-                  : 'bg-white dark:bg-gray-500'}"
-                type="button"
-                onclick={() => {
-                  {
-                    if (allHaveDataSource) {
-                      newQuotations = Object.fromEntries(
-                        Object.entries(newQuotations).map(([key, quotes]) => [
-                          key,
-                          quotes.filter(q => q.nid !== dataSource.nid),
-                        ]),
-                      )
-                    } else {
-                      const newQuote = { nid: dataSource.nid }
-                      newQuotations = Object.fromEntries(
-                        fieldKeys.map(key => {
-                          return [
+              <DSQuotationsPopup {dataSource} {label}>
+                <button
+                  class="w-full p-2 text-left {allHaveDataSource
+                    ? 'bg-yellow'
+                    : 'bg-white dark:bg-gray-500'}"
+                  type="button"
+                  onclick={() => {
+                    {
+                      if (allHaveDataSource) {
+                        newQuotations = Object.fromEntries(
+                          Object.entries(newQuotations).map(([key, quotes]) => [
                             key,
-                            doOverwriteOldQuotations
-                              ? [newQuote]
-                              : [...(newQuotations[key] ?? []), newQuote],
-                          ]
-                        }),
-                      )
+                            quotes.filter(q => q.nid !== dataSource.nid),
+                          ]),
+                        )
+                      } else {
+                        const newQuote = { nid: dataSource.nid }
+                        newQuotations = Object.fromEntries(
+                          fieldKeys.map(key => {
+                            return [
+                              key,
+                              doOverwriteOldQuotations
+                                ? [newQuote]
+                                : [...(newQuotations[key] ?? []), newQuote],
+                            ]
+                          }),
+                        )
+                      }
                     }
-                  }
-                }}
-              >
-                {i + 1}. {dataSource.nid}
-              </button>
+                  }}
+                >
+                  {i + 1}. {dataSource.nid}
+                </button>
+              </DSQuotationsPopup>
             {/if}
           </li>
         {/each}

@@ -8,6 +8,7 @@
 
   import TrashIcon from "$components/icons/TrashIcon.svelte"
   import Modal from "$components/Modal.svelte"
+  import DSQuotationPopup from "$components/New/DSQuotationsPopup.svelte"
 
   interface Props {
     open: boolean
@@ -152,41 +153,27 @@
           </legend>
 
           {#each dataSources as dataSource, i}
-            {@const dsTypeLabel = $datasourceChoices.type.find(
-              entry => entry.value === dataSource.type,
-            )?.label}
-            <div
-              class="flex justify-start gap-1 bg-gray-50 p-1 text-left font-bold dark:bg-gray-800"
-            >
-              <input
-                type="radio"
-                id="{fieldname}-data-source-{dataSource.nid}"
-                name="data-source-nid"
-                bind:group={newQuotation.nid}
-                value={dataSource.nid}
-              />
-              <label
-                class="inline-flex flex-grow cursor-pointer flex-col"
-                for="{fieldname}-data-source-{dataSource.nid}"
-              >
-                {padLeadingZeros(2, i + 1)}. {$_("Data Source")}
+            {@const label = `${padLeadingZeros(2, i + 1)}. ${$_("Data Source")}`}
 
-                <span>
-                  ({dsTypeLabel})
-                  {dataSource.name}
-                </span>
-                <a
-                  class="mx-2 font-mono text-sm italic text-purple-400 hover:text-purple-500"
-                  href="/deal/{page.data.dealID}/{page.data
-                    .dealVersion}/data-sources/#{dataSource.nid}"
-                  target="_blank"
-                  rel="noreferrer"
-                  title={$_("View Data Source")}
+            <DSQuotationPopup {dataSource} {label}>
+              <div
+                class="flex justify-start gap-1 bg-gray-50 p-1 text-left font-bold dark:bg-gray-800"
+              >
+                <input
+                  type="radio"
+                  id="{fieldname}-data-source-{dataSource.nid}"
+                  name="data-source-nid"
+                  bind:group={newQuotation.nid}
+                  value={dataSource.nid}
+                />
+                <label
+                  class="inline-flex flex-grow cursor-pointer flex-col"
+                  for="{fieldname}-data-source-{dataSource.nid}"
                 >
-                  #{dataSource.nid}
-                </a>
-              </label>
-            </div>
+                  {label}
+                </label>
+              </div>
+            </DSQuotationPopup>
           {/each}
         </fieldset>
         <div>
