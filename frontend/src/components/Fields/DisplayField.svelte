@@ -89,6 +89,7 @@
               bind:open={showDSQuotationModal}
               {quotes}
               {dataSources}
+              {fieldname}
               label={richField.label}
             />
           </div>

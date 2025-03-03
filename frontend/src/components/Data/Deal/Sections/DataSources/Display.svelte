@@ -10,4 +10,4 @@
   let { deal }: Props = $props()
 </script>
 
-<DataSourcesDisplay version={deal.selected_version} />
+<DataSourcesDisplay version={deal.selected_version} model="deal" />

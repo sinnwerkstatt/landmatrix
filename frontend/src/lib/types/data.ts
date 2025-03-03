@@ -2,6 +2,14 @@ import type { components, operations } from "$lib/openAPI"
 
 export type Model = "deal" | "investor"
 
+export const SUBMODEL_FIELDNAMES = [
+  "locations",
+  "contracts",
+  "datasources",
+  "parents",
+] as const
+export type SubModelFieldName = (typeof SUBMODEL_FIELDNAMES)[number]
+
 // helper to mark a readonly model as mutable
 export type Mutable<Type> = {
   -readonly [Key in keyof Type]: Mutable<Type[Key]>

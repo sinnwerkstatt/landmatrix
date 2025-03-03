@@ -15,7 +15,12 @@
   let label = $derived($_("Contract"))
 </script>
 
-<SubmodelDisplayField entries={deal.selected_version.contracts} {label}>
+<SubmodelDisplayField
+  model="deal"
+  fieldname="contracts"
+  {label}
+  entries={deal.selected_version.contracts}
+>
   {#snippet children(contract: Contract)}
     <DisplayField fieldname="contract.number" showLabel value={contract.number} />
     <DisplayField fieldname="contract.date" showLabel value={contract.date} />

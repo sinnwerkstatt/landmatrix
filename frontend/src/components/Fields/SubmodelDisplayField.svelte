@@ -7,17 +7,23 @@
 
 <script lang="ts" generics="T extends Submodel">
   import { onMount, type Snippet } from "svelte"
+  import { _ } from "svelte-i18n"
 
   import { goto } from "$app/navigation"
   import { page } from "$app/state"
 
+  import type { Model, SubModelFieldName } from "$lib/types/data"
   import type { SubmodelIdKeys } from "$lib/utils/dataProcessing"
   import { scrollEntryIntoView } from "$lib/utils/domHelpers"
 
+  import DSQuotationsModal from "$components/New/DSQuotationsModal.svelte"
+
   interface Props {
+    model: Model
+    label: string
+    fieldname: SubModelFieldName
     // eslint-disable-next-line no-undef
     entries: readonly T[]
-    label: string
     selectedEntryId?: string | undefined // for external reference
     hoverEntryId?: string | undefined // for external reference
     entryIdKey?: SubmodelIdKeys
@@ -26,8 +32,10 @@
   }
 
   let {
-    entries,
+    model,
     label,
+    fieldname,
+    entries,
     selectedEntryId = $bindable(undefined),
     hoverEntryId = $bindable(undefined),
     entryIdKey = "nid",
@@ -43,6 +51,9 @@
   })
 
   onMount(() => scrollEntryIntoView(selectedEntryId))
+
+  let showDSQuotationModal = $state(false)
+  let isDataSource = $derived(fieldname === "datasources")
 </script>
 
 {#if entries.length > 0}
@@ -76,6 +87,36 @@
             </small>
           </a>
         </h3>
+        {#if !isDataSource}
+          {@const entryFieldname = `${fieldname}-${idAsString}`}
+          {@const quotes =
+            page.data[model]?.selected_version.ds_quotations[entryFieldname] ?? []}
+          {@const dataSources = page.data[model]?.selected_version.datasources ?? []}
+
+          <div class="mb-2">
+            <button
+              class="text-lg italic text-purple-400"
+              type="button"
+              onclick={() => {
+                selectedEntryId = idAsString
+                showDSQuotationModal = true
+              }}
+            >
+              {$_("Sources")}: {quotes.length}
+            </button>
+
+            {#if isSelected && showDSQuotationModal}
+              <DSQuotationsModal
+                bind:open={showDSQuotationModal}
+                {quotes}
+                {dataSources}
+                {fieldname}
+                {label}
+              />
+            {/if}
+          </div>
+        {/if}
+
         {@render children?.(entry)}
       </article>
     {/each}

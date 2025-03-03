@@ -165,8 +165,10 @@
     <SubmodelDisplayField
       bind:hoverEntryId={hoverLocationId}
       bind:selectedEntryId={selectedLocationId}
-      entries={deal.selected_version.locations}
+      model="deal"
+      fieldname="locations"
       label={$_("Location")}
+      entries={deal.selected_version.locations}
     >
       {#snippet children(location: components["schemas"]["Location"])}
         <DisplayField

@@ -17,7 +17,7 @@
   import { page } from "$app/state"
 
   import { newNanoid } from "$lib/helpers"
-  import type { Model } from "$lib/types/data"
+  import type { Model, SubModelFieldName } from "$lib/types/data"
   import { isEmptySubmodel, type SubmodelIdKeys } from "$lib/utils/dataProcessing"
   import { scrollEntryIntoView } from "$lib/utils/domHelpers"
 
@@ -31,35 +31,35 @@
   interface Props {
     /* eslint-disable no-undef */
     model?: Model
+    label: string
+    fieldname: SubModelFieldName
     entries: T[]
     createEntry: (nid: string) => T
     entryComponent: X
     extras?: ExtraProps<X>
     filterFn?: (entry: T) => boolean
     isEmpty?: (entry: T) => boolean
-    label: string
     selectedEntryId?: string | undefined // for external reference
     entryIdKey?: SubmodelIdKeys
     extraHeader?: Snippet<[T]>
     /* eslint-enable no-undef */
     onchange?: () => void
-    fieldname: "locations" | "contracts" | "datasources" | "parents"
   }
 
   let {
     model = "deal",
+    label,
+    fieldname,
     entries = $bindable(),
     createEntry,
     entryComponent,
     extras,
     filterFn = () => true,
     isEmpty = isEmptySubmodel,
-    label,
     selectedEntryId = $bindable(),
     entryIdKey = "nid",
     extraHeader,
     onchange,
-    fieldname,
   }: Props = $props()
 
   $effect(() => {
