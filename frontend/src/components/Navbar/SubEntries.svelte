@@ -47,6 +47,7 @@
     }}
   >
     <button
+      type="button"
       class="nav-link-main"
       {title}
       onclick={() => (isOpen = !isOpen)}

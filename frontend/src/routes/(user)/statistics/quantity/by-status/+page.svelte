@@ -163,6 +163,7 @@
       class="flex justify-center gap-4 border-b border-gray-200 pb-6 pt-1 text-lg font-bold"
     >
       <button
+        type="button"
         class={model === "deal"
           ? "border-b border-orange text-orange"
           : "text-gray-600 hover:text-orange dark:text-white"}
@@ -170,11 +171,11 @@
           model = "deal"
           activeTabId = "pending"
         }}
-        type="button"
       >
         {$_("Deals")}
       </button>
       <button
+        type="button"
         class={model === "investor"
           ? "border-b border-pelorous text-pelorous"
           : "text-gray-600 hover:text-pelorous dark:text-white"}
@@ -182,7 +183,6 @@
           model = "investor"
           activeTabId = "pending"
         }}
-        type="button"
       >
         {$_("Investors")}
       </button>
@@ -199,6 +199,7 @@
             )}
           >
             <button
+              type="button"
               class={twMerge(
                 "block text-left",
                 activeTabId === item.id

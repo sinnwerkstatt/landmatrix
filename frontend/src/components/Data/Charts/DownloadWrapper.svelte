@@ -49,6 +49,7 @@
   >
     <li id="download-svg">
       <button
+        type="button"
         class="px-3 pb-1 hover:text-orange-200"
         class:grey-out={disableSVG}
         onclick={() => ondownload?.("svg")}
@@ -63,6 +64,7 @@
       title={isChrome ? "" : "At the moment, downloading PNG does not work in Firefox."}
     >
       <button
+        type="button"
         class="px-3 pb-1 hover:text-orange-200"
         class:grey-out={!isChrome}
         onclick={() => ondownload?.("png")}
@@ -79,6 +81,7 @@
         : "At the moment, downloading WebP does not work in Firefox."}
     >
       <button
+        type="button"
         class="px-3 pb-1 hover:text-orange-200"
         class:grey-out={!isChrome}
         onclick={() => ondownload?.("webp")}
@@ -91,6 +94,7 @@
 
     <li id="download-json">
       <button
+        type="button"
         class="px-3 pb-1 hover:text-orange-200"
         onclick={() => ondownload?.("json")}
       >
@@ -101,6 +105,7 @@
 
     <li id="download-csv">
       <button
+        type="button"
         class="px-3 pb-1 hover:text-orange-200"
         class:grey-out={disableCSV}
         onclick={() => ondownload?.("csv")}

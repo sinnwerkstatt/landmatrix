@@ -29,6 +29,7 @@ export default tslint.config(
       },
     },
     rules: {
+      // "svelte/button-has-type": "error",
       "svelte/no-at-html-tags": "off",
       // "svelte/valid-compile": "off",
     },

@@ -113,7 +113,10 @@
                 {:else if object.selected_version.id !== object.draft_version_id}
                   <li class="my-3">
                     <div class="flex items-center gap-2">
-                      <button class="btn btn-primary disabled min-w-[9rem]">
+                      <button
+                        type="button"
+                        class="btn btn-primary disabled min-w-[9rem]"
+                      >
                         {$_("Edit")}
                       </button>
                       {$_("There is already a draft version, that you can find here:")}

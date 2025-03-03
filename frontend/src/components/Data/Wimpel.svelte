@@ -9,6 +9,7 @@
 </script>
 
 <button
+  type="button"
   class="absolute -right-5 top-[calc(50%-100px)] cursor-pointer"
   class:flipped
   {onclick}

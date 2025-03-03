@@ -71,6 +71,7 @@
           out:blur={{ duration: 300 }}
         >
           <button
+            type="button"
             class="grid w-full grid-cols-12 flex-nowrap items-center gap-2 px-2 text-left text-lg text-gray-700 hover:bg-gray-50 dark:text-white dark:hover:bg-gray-700"
             class:font-bold={isActive}
             title={qi.name}
