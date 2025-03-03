@@ -4,6 +4,7 @@
 
   import { dealFields, investorFields } from "$lib/fieldLookups"
   import type { DataSource, Model } from "$lib/types/data"
+  import { customIsNull } from "$lib/utils/dataProcessing"
 
   import { getMutableObject } from "$components/Data/stores"
   import Label2 from "$components/Fields/Display2/Label2.svelte"
@@ -74,7 +75,7 @@
         onclick={() => {
           showDSQuotationModal = true
         }}
-        disabled={!value || (Array.isArray(value) && value.length === 0)}
+        disabled={customIsNull(value)}
       >
         {$_("Sources")}: {quotes.length}
       </button>
