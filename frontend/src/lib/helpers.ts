@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid"
-import type { ActionReturn } from "svelte/action"
+import type { Action } from "svelte/action"
 
 // What about objects?
 export const isNotEmpty = (field: unknown): boolean =>
@@ -20,18 +20,26 @@ interface ClickOutsideAttributes {
   onoutClick: (e: CustomEvent) => void
 }
 
-export const clickOutside = (
-  node: HTMLElement,
-): ActionReturn<undefined, ClickOutsideAttributes> => {
+export const clickOutside: Action<
+  HTMLElement,
+  undefined,
+  ClickOutsideAttributes
+> = node => {
   const onClick = (event: Event): void => {
-    if (event.target && !node.contains(event.target as HTMLElement)) {
+    if (
+      event.target &&
+      !node.contains(event.target as HTMLElement) &&
+      !event.defaultPrevented
+    ) {
       node.dispatchEvent(new CustomEvent("outClick"))
     }
   }
-  document.addEventListener("click", onClick)
+
+  document.addEventListener("click", onClick, true)
+
   return {
     destroy(): void {
-      document.removeEventListener("click", onClick)
+      document.removeEventListener("click", onClick, true)
     },
   }
 }
