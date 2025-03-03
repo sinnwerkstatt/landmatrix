@@ -174,6 +174,7 @@
       {:else}
         <div>
           <button
+            type="button"
             onclick={() => (showReallyEditModal = true)}
             class="btn-outline btn-flat btn-primary min-w-[8rem]"
             class:disabled={!isCurrentDraft || $loading || navigating.to}

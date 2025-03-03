@@ -31,6 +31,7 @@
   extras={{ required: true }}
   showLabel
   {onchange}
+  disableQuotations
 />
 <EditField
   fieldname="location.name"
@@ -41,25 +42,35 @@
   }}
   showLabel
   {onchange}
+  disableQuotations
 />
-<EditField fieldname="location.point" bind:value={entry.point} showLabel {onchange} />
+<EditField
+  fieldname="location.point"
+  bind:value={entry.point}
+  showLabel
+  {onchange}
+  disableQuotations
+/>
 <EditField
   fieldname="location.description"
   bind:value={entry.description}
   showLabel
   {onchange}
+  disableQuotations
 />
 <EditField
   fieldname="location.facility_name"
   bind:value={entry.facility_name}
   showLabel
   {onchange}
+  disableQuotations
 />
 <EditField
   fieldname="location.comment"
   bind:value={entry.comment}
   showLabel
   {onchange}
+  disableQuotations
 />
 {#if extras.map}
   <LocationAreasEditField

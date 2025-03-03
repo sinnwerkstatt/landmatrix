@@ -134,7 +134,7 @@
 
   .btn-black,
   .dark .btn-black {
-    --color1: theme("colors.gray.900");
+    --color1: theme("colors.gray.800");
     --color2: white;
     --color3: theme("colors.gray.700");
   }

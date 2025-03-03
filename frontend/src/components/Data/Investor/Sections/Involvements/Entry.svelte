@@ -22,6 +22,7 @@
     {extras}
     showLabel
     {onchange}
+    disableQuotations
   />
   <EditField
     fieldname="involvement.parent_relation"
@@ -29,6 +30,7 @@
     {model}
     showLabel
     {onchange}
+    disableQuotations
   />
 </div>
 
@@ -40,6 +42,7 @@
       {model}
       showLabel
       {onchange}
+      disableQuotations
     />
   </div>
   <EditField
@@ -48,6 +51,7 @@
     {model}
     showLabel
     {onchange}
+    disableQuotations
   />
 </div>
 
@@ -58,6 +62,7 @@
     {model}
     showLabel
     {onchange}
+    disableQuotations
   />
 
   <div class="flex items-center">
@@ -70,6 +75,7 @@
     {model}
     showLabel
     {onchange}
+    disableQuotations
   />
 </div>
 
@@ -79,4 +85,5 @@
   {model}
   showLabel
   {onchange}
+  disableQuotations
 />

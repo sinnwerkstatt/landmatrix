@@ -368,6 +368,7 @@
           <ul>
             <li>
               <button
+                type="button"
                 class="text-orange hover:text-orange-200"
                 onclick={() => downloadAsXLSX(filteredObjects, model, activeTabId)}
               >
@@ -377,6 +378,7 @@
             </li>
             <li>
               <button
+                type="button"
                 class="text-orange hover:text-orange-200"
                 onclick={() => downloadAsCSV(filteredObjects, model, activeTabId)}
               >

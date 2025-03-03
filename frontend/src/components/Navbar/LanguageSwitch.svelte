@@ -35,6 +35,7 @@
     {#each Object.entries(languages) as [lcode, lingo]}
       <li>
         <button
+          type="button"
           class="nav-link-secondary"
           class:active={lcode === $locale}
           onclick={() => switchLanguage(lcode)}

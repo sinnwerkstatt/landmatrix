@@ -34,7 +34,11 @@
 </script>
 
 <div class={classLookup[type]}>
-  <button class="flex w-full items-center gap-2 p-2" onclick={() => (open = !open)}>
+  <button
+    type="button"
+    class="flex w-full items-center gap-2 p-2"
+    onclick={() => (open = !open)}
+  >
     <ChevronDownIcon />
     {subModel.label}
     {type}

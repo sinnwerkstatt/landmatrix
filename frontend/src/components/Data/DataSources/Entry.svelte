@@ -27,9 +27,21 @@
   )
 </script>
 
-<EditField fieldname="datasource.type" bind:value={entry.type} showLabel {onchange} />
+<EditField
+  fieldname="datasource.type"
+  bind:value={entry.type}
+  showLabel
+  {onchange}
+  disableQuotations
+/>
 
-<EditField fieldname="datasource.url" bind:value={entry.url} showLabel {onchange} />
+<EditField
+  fieldname="datasource.url"
+  bind:value={entry.url}
+  showLabel
+  {onchange}
+  disableQuotations
+/>
 
 <EditField
   fieldname="datasource.file"
@@ -37,6 +49,7 @@
   {onchange}
   bind:value={entry.file}
   extras={{ required: fileUploadRequired }}
+  disableQuotations
 >
   <label for={undefined} class="my-2 flex items-center gap-2">
     <LowLevelNullBooleanField
@@ -53,28 +66,55 @@
   bind:value={entry.publication_title}
   showLabel
   {onchange}
+  disableQuotations
 />
 
-<EditField fieldname="datasource.date" bind:value={entry.date} showLabel {onchange} />
+<EditField
+  fieldname="datasource.date"
+  bind:value={entry.date}
+  showLabel
+  {onchange}
+  disableQuotations
+/>
 
-<EditField fieldname="datasource.name" bind:value={entry.name} showLabel {onchange} />
+<EditField
+  fieldname="datasource.name"
+  bind:value={entry.name}
+  showLabel
+  {onchange}
+  disableQuotations
+/>
 
 <EditField
   fieldname="datasource.company"
   bind:value={entry.company}
   showLabel
   {onchange}
+  disableQuotations
 />
 
-<EditField fieldname="datasource.email" bind:value={entry.email} showLabel {onchange} />
+<EditField
+  fieldname="datasource.email"
+  bind:value={entry.email}
+  showLabel
+  {onchange}
+  disableQuotations
+/>
 
-<EditField fieldname="datasource.phone" bind:value={entry.phone} showLabel {onchange} />
+<EditField
+  fieldname="datasource.phone"
+  bind:value={entry.phone}
+  showLabel
+  {onchange}
+  disableQuotations
+/>
 
 <EditField
   fieldname="datasource.includes_in_country_verified_information"
   bind:value={entry.includes_in_country_verified_information}
   showLabel
   {onchange}
+  disableQuotations
 />
 
 <EditField
@@ -82,6 +122,7 @@
   bind:value={entry.open_land_contracts_id}
   showLabel
   {onchange}
+  disableQuotations
 />
 
 <EditField
@@ -89,4 +130,5 @@
   bind:value={entry.comment}
   showLabel
   {onchange}
+  disableQuotations
 />

@@ -104,6 +104,7 @@
         {#if index === 0}
           {#each columns as col, colIndex}
             <button
+              type="button"
               class="m-0 cursor-pointer p-1 text-left"
               style="grid-column: span {spans[colIndex]} / span {spans[colIndex]}"
               onclick={() => onClickTableHead(col.key)}
