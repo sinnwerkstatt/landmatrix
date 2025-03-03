@@ -110,8 +110,8 @@
                 bind:open={showDSQuotationModal}
                 {quotes}
                 {dataSources}
-                {fieldname}
-                {label}
+                label="{label} {idAsString}"
+                fieldname={entryFieldname}
               />
             {/if}
           </div>

@@ -231,7 +231,7 @@
                       $mutableObj.selected_version.ds_quotations[entryFieldname]
                     }
                     {dataSources}
-                    {label}
+                    label="{label} {idAsString}"
                     fieldname={entryFieldname}
                     editable
                   />
