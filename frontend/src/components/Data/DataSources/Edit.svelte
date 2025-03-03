@@ -37,5 +37,5 @@
   isEmpty={isEmptyDataSource}
   entryComponent={Entry}
   {onchange}
-  deleteQuotations
+  isDataSource
 />

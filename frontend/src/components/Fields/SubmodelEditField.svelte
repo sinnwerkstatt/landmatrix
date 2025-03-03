@@ -42,7 +42,7 @@
     extraHeader?: Snippet<[T]>
     /* eslint-enable no-undef */
     onchange?: () => void
-    deleteQuotations?: boolean
+    isDataSource?: boolean
   }
 
   let {
@@ -58,7 +58,7 @@
     entryIdKey = "nid",
     extraHeader,
     onchange,
-    deleteQuotations = false,
+    isDataSource = false,
   }: Props = $props()
 
   $effect(() => {
@@ -93,7 +93,7 @@
 
     entries = entries.filter(x => `${x[entryIdKey]}` !== id)
 
-    if (deleteQuotations) {
+    if (isDataSource) {
       $mutableObj.selected_version.ds_quotations = Object.fromEntries(
         Object.entries($mutableObj.selected_version.ds_quotations)
           .map(([k, v]) => [k, v.filter(q => q.nid !== id)])
@@ -133,7 +133,7 @@
   onconfirm={() => removeEntry(toBeDeletedId)}
   submodelLabel={label}
   id={toBeDeletedId}
-  {deleteQuotations}
+  {isDataSource}
 />
 
 <section class="w-full">
