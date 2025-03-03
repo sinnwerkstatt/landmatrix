@@ -1,9 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import { page } from "$app/state"
-
-  import { datasourceChoices } from "$lib/fieldChoices"
   import type { DataSource, QuotationItem } from "$lib/types/data"
 
   import TrashIcon from "$components/icons/TrashIcon.svelte"
@@ -36,7 +33,7 @@
 
   const deleteQuotation = (i: number) => {
     if (quotes && i < quotes.length) {
-      quotes = quotes.filter((_, index) => index !== i)
+      quotes = sortQuotes(quotes.filter((_, index) => index !== i))
     }
   }
 
@@ -49,9 +46,19 @@
       return
     }
 
-    quotes = [...(quotes ?? []), $state.snapshot(newQuotation) as QuotationItem]
+    quotes = sortQuotes([
+      ...(quotes ?? []),
+      $state.snapshot(newQuotation) as QuotationItem,
+    ])
 
     newQuotation = createQuotation()
+  }
+
+  const sortQuotes = (quotes: QuotationItem[]): QuotationItem[] => {
+    const sortedNids = dataSources.map(ds => ds.nid)
+    return quotes.toSorted(
+      (a, b) => sortedNids.indexOf(a.nid) - sortedNids.indexOf(b.nid),
+    )
   }
 
   const padLeadingZeros = (nDigits: number, value: number) => {
@@ -73,68 +80,52 @@
     <span class="font-bold italic">{label}</span>
     <hr class="mb-4" />
 
-    <ul class="flex w-full flex-col gap-2">
-      {#each quotes ?? [] as quote, i}
+    <ul class="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4">
+      {#each sortQuotes(quotes ?? []) as quote, i}
         {@const dsIndex = dataSources.findIndex(ds => ds.nid === quote.nid)}
 
-        {#if dsIndex > -1}
-          {@const ds = dataSources[dsIndex]}
-          {@const dsTypeLabel = $datasourceChoices.type.find(
-            entry => entry.value === ds.type,
-          )?.label}
+        <li
+          class="flex gap-2 border border-black p-2 hover:bg-gray-50 dark:border-white hover:dark:bg-a-gray-800"
+        >
+          {#if dsIndex > -1}
+            {@const ds = dataSources[dsIndex]}
 
-          <li
-            class="flex border border-black p-2 hover:bg-gray-50 dark:border-white hover:dark:bg-a-gray-800"
-          >
-            <div class="w-max-[75%] flex flex-col">
-              <div class="font-bold">
-                <span>
-                  {padLeadingZeros(2, dsIndex + 1)}. {$_("Data Source")}
-                </span>
-                <span>
-                  ({dsTypeLabel})
-                  {ds.name}
-                </span>
-                <a
-                  class="mx-2 font-mono text-sm italic text-purple-400 hover:text-purple-500"
-                  href="/deal/{page.data.dealID}/{page.data.dealVersion
-                    ? page.data.dealVersion + '/'
-                    : ''}data-sources/#{ds.nid}"
-                  target="_blank"
-                  rel="noreferrer"
-                  title={$_("View Data Source")}
-                >
-                  #{ds.nid}
-                </a>
-              </div>
+            {@const label = `${padLeadingZeros(2, dsIndex + 1)}. ${$_("Data Source")}`}
 
-              <div class="flex gap-5">
-                <span class="text-nowrap italic text-gray-700 dark:text-gray-100">
-                  {$_("Page: {pageNumber}", {
-                    values: { pageNumber: quote.page ?? "--" },
-                  })}
-                </span>
-              </div>
+            <div class="flex flex-grow flex-col">
+              <DSQuotationPopup dataSource={ds} {label}>
+                <div class="font-bold">
+                  <span>
+                    {padLeadingZeros(2, dsIndex + 1)}. {$_("Data Source")}
+                  </span>
+                </div>
+
+                <div class="flex gap-5">
+                  <span class="text-nowrap italic text-gray-700 dark:text-gray-100">
+                    {$_("Page: {pageNumber}", {
+                      values: { pageNumber: quote.page ?? "--" },
+                    })}
+                  </span>
+                </div>
+              </DSQuotationPopup>
             </div>
+          {:else}
+            <div class="font-bold text-red-400">
+              {$_("Could not find data source: ") + `${quote.nid}`}
+            </div>
+          {/if}
 
-            <span class="flex-grow"></span>
-
-            {#if editable}
-              <button
-                class="p-2 text-red-400 hover:text-red-500"
-                type="button"
-                title={$_("Delete Quotation")}
-                onclick={() => deleteQuotation(i)}
-              >
-                <TrashIcon />
-              </button>
-            {/if}
-          </li>
-        {:else}
-          <span class="color-red-400">
-            {$_("Could not find data source.") + `${quote.nid}`}
-          </span>
-        {/if}
+          {#if editable}
+            <button
+              class="p-2 text-red-400"
+              type="button"
+              title={$_("Delete Quotation")}
+              onclick={() => deleteQuotation(i)}
+            >
+              <TrashIcon />
+            </button>
+          {/if}
+        </li>
       {:else}
         <li class="flex border border-black p-2 dark:border-white">
           {$_("No linked data sources yet.")}
@@ -146,6 +137,7 @@
       <h2 class="heading4 mt-8">
         {$_("Create:")}
       </h2>
+
       <form class="mt-6 flex flex-col gap-4" {onsubmit}>
         <fieldset class="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4">
           <legend class="mb-2 inline-block">
@@ -156,10 +148,9 @@
             {@const label = `${padLeadingZeros(2, i + 1)}. ${$_("Data Source")}`}
 
             <DSQuotationPopup {dataSource} {label}>
-              <div
-                class="flex justify-start gap-1 bg-gray-50 p-1 text-left font-bold dark:bg-gray-800"
-              >
+              <div class="text-left font-bold hover:bg-gray-50 hover:dark:bg-gray-800">
                 <input
+                  class="peer pointer-events-none fixed w-0 opacity-0"
                   type="radio"
                   id="{fieldname}-data-source-{dataSource.nid}"
                   name="data-source-nid"
@@ -167,7 +158,8 @@
                   value={dataSource.nid}
                 />
                 <label
-                  class="inline-flex flex-grow cursor-pointer flex-col"
+                  class="inline-block w-full cursor-pointer border border-black p-2
+                   peer-checked:border-purple peer-checked:text-purple dark:border-white"
                   for="{fieldname}-data-source-{dataSource.nid}"
                 >
                   {label}
@@ -176,13 +168,14 @@
             </DSQuotationPopup>
           {/each}
         </fieldset>
-        <div>
-          <label class="mb-2 inline-block" for="page-number">
+
+        <div class="flex items-center gap-2">
+          <label for="page-number">
             {$_("Specify page in uploaded file (optional):")}
           </label>
           <input
             id="page-number"
-            class="inpt"
+            class="inpt w-fit outline-none"
             bind:value={newQuotation.page}
             type="number"
             placeholder="0"

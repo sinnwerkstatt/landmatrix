@@ -49,7 +49,7 @@
   )
 
   const mutableObj = getMutableObject(model)
-  let quotes = $state($mutableObj?.selected_version.ds_quotations![fieldname] ?? [])
+  let quotes = $derived($mutableObj?.selected_version.ds_quotations![fieldname] ?? [])
   let dataSources = $derived(
     $mutableObj?.selected_version.datasources ?? [],
   ) as DataSource[]
