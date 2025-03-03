@@ -2,13 +2,13 @@
   import { _ } from "svelte-i18n"
 
   import { dealChoices, type ValueLabelEntry } from "$lib/fieldChoices"
-  import { type DealVersion2 } from "$lib/types/data"
+  import { type DealVersion } from "$lib/types/data"
 
   import DownloadablePieChart from "$components/Data/Charts/DownloadablePieChart.svelte"
   import type { DataType } from "$components/StatusBarChart.svelte"
 
   interface Props {
-    deals?: DealVersion2[]
+    deals?: DealVersion[]
     displayDealsCount?: boolean
   }
 
@@ -26,7 +26,7 @@
   type AgricultureIntention = (typeof agricultureIntentions)[number]
 
   function createData(
-    dls: DealVersion2[],
+    dls: DealVersion[],
     groups: ValueLabelEntry[],
     bySize: boolean,
   ): DataType[] {

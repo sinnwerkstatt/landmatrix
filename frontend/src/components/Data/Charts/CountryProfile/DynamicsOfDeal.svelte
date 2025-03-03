@@ -7,7 +7,7 @@
   import type { DynamicsDataPoint } from "$lib/data/charts/dynamicsOfDeal"
   import { DynamicsOfDeal, toCSV, toJSON } from "$lib/data/charts/dynamicsOfDeal"
   import { createLabels, investorChoices } from "$lib/fieldChoices"
-  import type { DealVersion2 } from "$lib/types/data"
+  import type { DealVersion } from "$lib/types/data"
 
   import ChartWrapper from "$components/Data/Charts/DownloadWrapper.svelte"
   import {
@@ -21,7 +21,7 @@
   const dynamicOfDeal = new DynamicsOfDeal()
 
   interface Props {
-    deals?: DealVersion2[]
+    deals?: DealVersion[]
   }
 
   let { deals = [] }: Props = $props()

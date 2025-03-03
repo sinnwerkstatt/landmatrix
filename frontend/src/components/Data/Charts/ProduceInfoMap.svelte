@@ -12,7 +12,7 @@
     ProduceGroup,
     type Animals,
     type Crops,
-    type DealVersion2,
+    type DealVersion,
     type Minerals,
     type Produce,
   } from "$lib/types/data"
@@ -47,7 +47,7 @@
   }
 
   interface Props {
-    deals?: DealVersion2[]
+    deals?: DealVersion[]
     title: string
   }
 
@@ -66,7 +66,7 @@
   // TODO Later not correct to add full deal size for each produce
   const produceReducer = (
     acc: ProduceAccumulator,
-    deal: DealVersion2,
+    deal: DealVersion,
   ): ProduceAccumulator => {
     const bucketMapReducer = createBucketMapReducer(deal.deal_size ?? 0)
     return {
@@ -83,7 +83,7 @@
     createLabels<ProduceGroup>($dealChoices.produce_group),
   )
 
-  const createTreeData = (deals: DealVersion2[]): ProduceTreeData => {
+  const createTreeData = (deals: DealVersion[]): ProduceTreeData => {
     const acc = deals.reduce(produceReducer, {} as ProduceAccumulator)
 
     const root: ProduceTreeData = { name: $_("Produce"), children: [] }

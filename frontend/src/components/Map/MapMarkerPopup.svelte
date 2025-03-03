@@ -1,13 +1,13 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import type { DealHull, Location2 } from "$lib/types/data"
+  import type { DealHull, Location } from "$lib/types/data"
 
   import DisplayField from "$components/Fields/DisplayField.svelte"
 
   interface Props {
     deal: DealHull
-    location: Location2
+    location: Location
   }
 
   let { deal, location }: Props = $props()

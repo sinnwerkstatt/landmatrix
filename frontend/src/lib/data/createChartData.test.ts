@@ -1,6 +1,6 @@
 import { createBucketMapReducer } from "$lib/data/buckets"
 import { createChartData } from "$lib/data/createChartData"
-import type { DealVersion2 } from "$lib/types/data"
+import type { DealVersion } from "$lib/types/data"
 
 test("createChartData", () => {
   const deals = [
@@ -11,7 +11,7 @@ test("createChartData", () => {
     { deal_size: null },
     { deal_size: -100 },
     { deal_size: 0 },
-  ] satisfies Partial<DealVersion2>[] as DealVersion2[]
+  ] satisfies Partial<DealVersion>[] as DealVersion[]
 
   type BucketKeys = "negative" | "positive" | "zero"
   const bucketKeys: BucketKeys[] = ["negative", "positive", "zero"]

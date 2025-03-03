@@ -9,7 +9,7 @@
     createChartData,
     drawGraph,
   } from "$lib/data/charts/concludedDealsOverTime"
-  import type { DealVersion2 } from "$lib/types/data"
+  import type { DealVersion } from "$lib/types/data"
 
   import ChartWrapper from "$components/Data/Charts/DownloadWrapper.svelte"
   import {
@@ -21,7 +21,7 @@
   import { displayDealsCount } from "$components/Map/mapHelper"
 
   interface Props {
-    deals?: DealVersion2[]
+    deals?: DealVersion[]
   }
 
   let { deals = [] }: Props = $props()

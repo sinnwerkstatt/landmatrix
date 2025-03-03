@@ -3,8 +3,8 @@
 
   import type {
     DataSource,
-    DealVersion2,
-    InvestorVersion2,
+    DealVersion,
+    InvestorVersion,
     Model,
     Mutable,
   } from "$lib/types/data"
@@ -16,7 +16,7 @@
 
   interface Props {
     model: Model
-    version: Mutable<DealVersion2> | Mutable<InvestorVersion2>
+    version: Mutable<DealVersion> | Mutable<InvestorVersion>
   }
 
   let { version = $bindable(), model }: Props = $props()
@@ -31,11 +31,11 @@
 
 <SubmodelEditField
   {model}
+  fieldname="datasources"
   label={$_("Data Source")}
   bind:entries={datasources}
   createEntry={createDataSource}
   isEmpty={isEmptyDataSource}
   entryComponent={Entry}
   {onchange}
-  deleteQuotations
 />

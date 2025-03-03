@@ -2,23 +2,29 @@
   import { _ } from "svelte-i18n"
 
   import type { components } from "$lib/openAPI"
-  import type { DealVersion2, InvestorVersion2 } from "$lib/types/data"
+  import type { DealVersion, InvestorVersion, Model } from "$lib/types/data"
 
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import SubmodelDisplayField from "$components/Fields/SubmodelDisplayField.svelte"
 
   interface Props {
-    version: DealVersion2 | InvestorVersion2
+    version: DealVersion | InvestorVersion
+    model: Model
   }
 
-  let { version }: Props = $props()
+  let { version, model }: Props = $props()
 
   type DataSource =
     | components["schemas"]["InvestorDataSource"]
     | components["schemas"]["DealDataSource"]
 </script>
 
-<SubmodelDisplayField entries={version.datasources} label={$_("Data source")}>
+<SubmodelDisplayField
+  {model}
+  fieldname="datasources"
+  label={$_("Data source")}
+  entries={version.datasources}
+>
   {#snippet children(datasource: DataSource)}
     <DisplayField fieldname="datasource.type" showLabel value={datasource.type} />
     <DisplayField fieldname="datasource.url" showLabel value={datasource.url} />

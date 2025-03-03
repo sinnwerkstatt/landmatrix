@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { InvestorHull, InvestorVersion2 } from "$lib/types/data"
+  import type { InvestorHull, InvestorVersion } from "$lib/types/data"
 
   import Subsection from "$components/Data/Subsection.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"
@@ -10,7 +10,7 @@
 
   let { investor }: Props = $props()
 
-  let version: InvestorVersion2 = $derived(investor.selected_version)
+  let version: InvestorVersion = $derived(investor.selected_version)
 </script>
 
 <Subsection id="investor.general_info" obj={version}>

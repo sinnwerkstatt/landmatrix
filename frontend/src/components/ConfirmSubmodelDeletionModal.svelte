@@ -9,7 +9,7 @@
     onreject?: () => void
     submodelLabel: string
     id: string
-    deleteQuotations?: boolean
+    isDataSource?: boolean
   }
 
   let {
@@ -18,7 +18,7 @@
     onreject = () => (open = false),
     submodelLabel,
     id,
-    deleteQuotations,
+    isDataSource,
   }: Props = $props()
 </script>
 
@@ -32,7 +32,7 @@
       values: { submodel: `${submodelLabel} #${id}` },
     })}
     <br />
-    {#if deleteQuotations}
+    {#if isDataSource}
       <span class="text-red-500">{$_("WARNING")}</span>
       {$_("All all field references to this data source will be deleted as well.")}
     {/if}

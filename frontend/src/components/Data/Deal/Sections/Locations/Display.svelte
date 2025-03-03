@@ -12,7 +12,7 @@
   import { page } from "$app/state"
 
   import type { components } from "$lib/openAPI"
-  import type { DealHull, Location2 } from "$lib/types/data"
+  import type { DealHull, Location } from "$lib/types/data"
   import { createComponentAsDiv } from "$lib/utils/domHelpers"
 
   import DisplayField from "$components/Fields/DisplayField.svelte"
@@ -108,7 +108,7 @@
     })
   }
 
-  const createMarkerLayer = (locations: readonly Location2[]) => {
+  const createMarkerLayer = (locations: readonly Location[]) => {
     const points = []
     for (const location of locations) {
       if (location.point) {
@@ -165,8 +165,10 @@
     <SubmodelDisplayField
       bind:hoverEntryId={hoverLocationId}
       bind:selectedEntryId={selectedLocationId}
-      entries={deal.selected_version.locations}
+      model="deal"
+      fieldname="locations"
       label={$_("Location")}
+      entries={deal.selected_version.locations}
     >
       {#snippet children(location: components["schemas"]["Location"])}
         <DisplayField
