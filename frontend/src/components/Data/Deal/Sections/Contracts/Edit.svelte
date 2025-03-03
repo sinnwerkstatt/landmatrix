@@ -1,7 +1,7 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
 
-  import type { DealHull } from "$lib/types/data"
+  import type { MutableDealHull } from "$lib/types/data"
 
   import SubmodelEditField from "$components/Fields/SubmodelEditField.svelte"
 
@@ -9,7 +9,7 @@
   import Entry from "./Entry.svelte"
 
   interface Props {
-    deal: DealHull
+    deal: MutableDealHull
   }
 
   let { deal = $bindable() }: Props = $props()
@@ -22,6 +22,8 @@
 </script>
 
 <SubmodelEditField
+  model="deal"
+  fieldname="contracts"
   label={$_("Contract")}
   bind:entries={contracts}
   createEntry={createContract}

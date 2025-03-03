@@ -31,11 +31,11 @@
 
 <SubmodelEditField
   {model}
+  fieldname="datasources"
   label={$_("Data Source")}
   bind:entries={datasources}
   createEntry={createDataSource}
   isEmpty={isEmptyDataSource}
   entryComponent={Entry}
   {onchange}
-  isDataSource
 />

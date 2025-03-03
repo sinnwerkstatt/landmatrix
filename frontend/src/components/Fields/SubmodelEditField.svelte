@@ -4,8 +4,8 @@
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
   import type { Submodel } from "$lib/utils/dataProcessing"
 
-  type ExtraProps<T> =
-    T extends Component<infer Y extends Record<string, unknown>> ? Y["extras"] : never
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  type ExtraProps<T> = T extends Component<infer Y, any, any> ? Y["extras"] : never
 </script>
 
 <script lang="ts" generics="T extends Submodel, X extends Component<any, any, any>">
@@ -26,6 +26,7 @@
   import ChevronDownIcon from "$components/icons/ChevronDownIcon.svelte"
   import PlusIcon from "$components/icons/PlusIcon.svelte"
   import TrashIcon from "$components/icons/TrashIcon.svelte"
+  import DSQuotationsModal from "$components/New/DSQuotationsModal.svelte"
 
   interface Props {
     /* eslint-disable no-undef */
@@ -42,7 +43,7 @@
     extraHeader?: Snippet<[T]>
     /* eslint-enable no-undef */
     onchange?: () => void
-    isDataSource?: boolean
+    fieldname: "locations" | "contracts" | "datasources" | "parents"
   }
 
   let {
@@ -58,7 +59,7 @@
     entryIdKey = "nid",
     extraHeader,
     onchange,
-    isDataSource = false,
+    fieldname,
   }: Props = $props()
 
   $effect(() => {
@@ -100,7 +101,12 @@
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
           .filter(([_, v]) => !!v && v.length > 0),
       )
+    } else {
+      const entryFieldname = `${fieldname}-${id}`
+      delete $mutableObj.selected_version.ds_quotations[entryFieldname]
     }
+
+    entries = entries.filter(x => `${x[entryIdKey]}` !== id)
 
     showConfirmDeletionModal = false
     toBeDeletedId = null
@@ -126,6 +132,9 @@
 
   let showConfirmDeletionModal = $state(false)
   let toBeDeletedId: null | string = $state(null)
+
+  let showDSQuotationModal = $state(false)
+  let isDataSource = $derived(fieldname === "datasources")
 </script>
 
 <ConfirmSubmodelDeletionModal
@@ -197,7 +206,38 @@
         <form id="form-{idAsString}">
           {#if isSelectedEntry}
             {@const SvelteComp = entryComponent}
+
             <div class="p-2" transition:slide={{ duration: 200 }}>
+              {#if !isDataSource}
+                {@const entryFieldname = `${fieldname}-${idAsString}`}
+                {@const quotes =
+                  $mutableObj.selected_version.ds_quotations[entryFieldname] ?? []}
+                {@const dataSources = $mutableObj.selected_version.datasources ?? []}
+
+                <div class="mb-2">
+                  <button
+                    class="text-lg italic text-purple-400"
+                    type="button"
+                    onclick={() => {
+                      showDSQuotationModal = true
+                    }}
+                  >
+                    {$_("Sources")}: {quotes.length}
+                  </button>
+
+                  <DSQuotationsModal
+                    bind:open={showDSQuotationModal}
+                    bind:quotes={
+                      $mutableObj.selected_version.ds_quotations[entryFieldname]
+                    }
+                    {dataSources}
+                    {label}
+                    fieldname={entryFieldname}
+                    editable
+                  />
+                </div>
+              {/if}
+
               <SvelteComp bind:entry={entries[index]} {extras} {onchange} />
             </div>
           {/if}

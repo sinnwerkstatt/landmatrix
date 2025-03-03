@@ -12,7 +12,7 @@
   import { goto } from "$app/navigation"
   import { page } from "$app/state"
 
-  import { type DealHull, type Location2, type Mutable } from "$lib/types/data"
+  import { type Location2, type MutableDealHull } from "$lib/types/data"
   import { createComponentAsDiv } from "$lib/utils/domHelpers"
 
   import SubmodelEditField from "$components/Fields/SubmodelEditField.svelte"
@@ -30,7 +30,7 @@
   } from "./locations"
 
   interface Props {
-    deal: Mutable<DealHull>
+    deal: MutableDealHull
   }
 
   let { deal = $bindable() }: Props = $props()
@@ -212,13 +212,15 @@
 
   <div class="h-full lg:col-span-2 lg:overflow-y-auto">
     <SubmodelEditField
+      model="deal"
+      fieldname="locations"
+      label={$_("Location")}
       bind:entries={locations}
       bind:selectedEntryId
       createEntry={createLocation}
       entryComponent={Entry}
       extras={{ map, country }}
       isEmpty={isEmptyLocation}
-      label={$_("Location")}
       onchange={syncChangesUpstream}
     />
   </div>

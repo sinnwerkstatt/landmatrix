@@ -2,7 +2,11 @@
   import { _ } from "svelte-i18n"
 
   import { simpleInvestors } from "$lib/stores"
-  import { InvolvementRole, type InvestorHull, type Involvement } from "$lib/types/data"
+  import {
+    InvolvementRole,
+    type Involvement,
+    type MutableInvestorHull,
+  } from "$lib/types/data"
 
   import SubmodelEditField from "$components/Fields/SubmodelEditField.svelte"
 
@@ -10,7 +14,7 @@
   import { createInvolvement, isEmptyInvolvement } from "./involvements"
 
   interface Props {
-    investor: InvestorHull
+    investor: MutableInvestorHull
     tertiary?: boolean
   }
 
@@ -31,6 +35,7 @@
 
 <SubmodelEditField
   model="investor"
+  fieldname="parents"
   {label}
   bind:entries={investors}
   createEntry={createInvolvement(tertiary, investor.id)}

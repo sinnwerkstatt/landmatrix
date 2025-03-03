@@ -2,7 +2,7 @@ import type { Component } from "svelte"
 import { _ } from "svelte-i18n"
 import { derived } from "svelte/store"
 
-import type { DealHull, Mutable } from "$lib/types/data"
+import type { DealHull, MutableDealHull } from "$lib/types/data"
 
 import type { DealSection } from "./constants"
 import ContractsDisplay from "./Contracts/Display.svelte"
@@ -34,7 +34,7 @@ import WaterEdit from "./Water/Edit.svelte"
 export interface SectionSpecs {
   label: string
   display: Component<{ deal: DealHull }>
-  edit?: Component<{ deal: Mutable<DealHull> }>
+  edit?: Component<{ deal: MutableDealHull }>
 }
 
 export const dealSectionLookup = derived(
