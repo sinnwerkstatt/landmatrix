@@ -12,7 +12,7 @@
   import { goto } from "$app/navigation"
   import { page } from "$app/state"
 
-  import { type Location2, type MutableDealHull } from "$lib/types/data"
+  import { type Location, type MutableDealHull } from "$lib/types/data"
   import { createComponentAsDiv } from "$lib/utils/domHelpers"
 
   import SubmodelEditField from "$components/Fields/SubmodelEditField.svelte"
@@ -45,7 +45,7 @@
   let markersVectorSource = new VectorSource({})
   let addingMarkerVectorSource = new VectorSource({})
 
-  const createMarkerLayer = (locations: readonly Location2[]) => {
+  const createMarkerLayer = (locations: readonly Location[]) => {
     markersVectorSource.clear()
     const points = []
     for (const location of locations) {

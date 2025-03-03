@@ -11,7 +11,7 @@
     MySankeyNode,
   } from "$lib/data/charts/intentionsPerCategory"
   import { createLabels, dealChoices } from "$lib/fieldChoices"
-  import type { DealVersion2 } from "$lib/types/data"
+  import type { DealVersion } from "$lib/types/data"
 
   import ChartWrapper from "$components/Data/Charts/DownloadWrapper.svelte"
   import {
@@ -28,7 +28,7 @@
   )
 
   interface Props {
-    deals?: DealVersion2[]
+    deals?: DealVersion[]
   }
 
   let { deals = [] }: Props = $props()

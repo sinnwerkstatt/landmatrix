@@ -3,7 +3,7 @@
 
   import { dealChoices } from "$lib/fieldChoices"
   import { currencies } from "$lib/stores"
-  import type { DealVersion2 } from "$lib/types/data"
+  import type { DealVersion } from "$lib/types/data"
 
   import CurrencySelect from "$components/Fields/Edit2/CurrencySelect.svelte"
   import EditField from "$components/Fields/EditField.svelte"
@@ -15,7 +15,7 @@
       "purchase_price_type" | "annual_leasing_fee_type",
       "purchase_price_area" | "annual_leasing_fee_area",
     ]
-    version: DealVersion2
+    version: DealVersion
   }
 
   let { fields, version = $bindable() }: Props = $props()

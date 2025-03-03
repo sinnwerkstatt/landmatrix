@@ -53,14 +53,14 @@ export enum Version2Status {
   ACTIVATION = "ACTIVATION",
   ACTIVATED = "ACTIVATED",
 }
-export type DealVersion2 = components["schemas"]["DealVersion"]
-export type InvestorVersion2 = components["schemas"]["InvestorVersion"]
+export type DealVersion = components["schemas"]["DealVersion"]
+export type InvestorVersion = components["schemas"]["InvestorVersion"]
 
 export type Country = components["schemas"]["Country"]
 export type Region = components["schemas"]["Region"]
 
 // Submodels
-export type Location2 = components["schemas"]["Location"]
+export type Location = components["schemas"]["Location"]
 
 export type DealDataSource = components["schemas"]["DealDataSource"]
 export type InvestorDataSource = components["schemas"]["InvestorDataSource"]

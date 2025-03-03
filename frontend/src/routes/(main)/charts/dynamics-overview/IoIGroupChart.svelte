@@ -4,7 +4,7 @@
   import { createGroupMap, dealChoices, type ValueLabelEntry } from "$lib/fieldChoices"
   import {
     IntentionOfInvestmentGroup,
-    type DealVersion2,
+    type DealVersion,
     type IoIGroupMap,
   } from "$lib/types/data"
 
@@ -12,7 +12,7 @@
   import type { DataType } from "$components/StatusBarChart.svelte"
 
   interface Props {
-    deals?: DealVersion2[]
+    deals?: DealVersion[]
     displayDealsCount?: boolean
   }
 
@@ -23,7 +23,7 @@
   )
 
   function createData(
-    dls: DealVersion2[],
+    dls: DealVersion[],
     groups: ValueLabelEntry[],
     bySize: boolean,
   ): DataType[] {

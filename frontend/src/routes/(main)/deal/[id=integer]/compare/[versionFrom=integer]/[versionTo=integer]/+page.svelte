@@ -4,7 +4,7 @@
   import { dealFields } from "$lib/fieldLookups"
   import type { components } from "$lib/openAPI"
   import { dealSectionsLG } from "$lib/sections"
-  import type { Contract, DataSource, Location2 } from "$lib/types/data"
+  import type { Contract, DataSource, Location } from "$lib/types/data"
 
   import CompareSubmodelDiffBlock from "$components/CompareSubmodelDiffBlock.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"
@@ -30,7 +30,7 @@
     location: undefined,
   })
 
-  const cleanLocation = (location: Location2) => ({
+  const cleanLocation = (location: Location) => ({
     ...location,
     id: undefined,
     dealversion: undefined,

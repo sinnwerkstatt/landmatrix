@@ -3,16 +3,16 @@ import type { MultiPolygon, Point } from "ol/geom"
 import { mount } from "svelte"
 
 import type { components } from "$lib/openAPI"
-import type { Location2 } from "$lib/types/data"
+import type { Location } from "$lib/types/data"
 import { isEmptySubmodel } from "$lib/utils/dataProcessing"
 
 import LocationAreaTooltip from "$components/Data/Deal/Sections/Locations/LocationAreaTooltip.svelte"
 import LocationTooltip from "$components/Data/Deal/Sections/Locations/LocationTooltip.svelte"
 
-const LOCATION_IGNORE_KEYS = ["dealversion"] satisfies (keyof Location2)[]
+const LOCATION_IGNORE_KEYS = ["dealversion"] satisfies (keyof Location)[]
 
 // explicitly set fields to null!
-export const createLocation = (nid: string): Location2 => ({
+export const createLocation = (nid: string): Location => ({
   nid,
   id: null!,
   name: "",
@@ -25,7 +25,7 @@ export const createLocation = (nid: string): Location2 => ({
   dealversion: null!,
 })
 
-export const isEmptyLocation = (location: Location2) =>
+export const isEmptyLocation = (location: Location) =>
   isEmptySubmodel(location, LOCATION_IGNORE_KEYS)
 
 export const AREA_TYPES = [

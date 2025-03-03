@@ -9,7 +9,7 @@ import {
 } from "$lib/data/itemUtils"
 import type { IsCurrent } from "$lib/data/itemUtils"
 import type { components } from "$lib/openAPI"
-import type { DealVersion2, NegotiationStatus } from "$lib/types/data"
+import type { DealVersion, NegotiationStatus } from "$lib/types/data"
 
 export type NegotiationStatusItem =
   components["schemas"]["CurrentDateChoiceNegotiationStatusItem"]
@@ -28,12 +28,12 @@ export const isCanceledItem: (item: NegotiationStatusItem) => boolean = R.propSa
   "choice",
 )
 
-export const hasBeenConcluded: (deal: DealVersion2) => boolean = R.pipe(
+export const hasBeenConcluded: (deal: DealVersion) => boolean = R.pipe(
   R.propOr<NegotiationStatusItem[]>([], "negotiation_status"),
   R.any(isConcludedItem),
 )
 
-export const isConcluded: (deal: DealVersion2) => boolean = R.propSatisfies(
+export const isConcluded: (deal: DealVersion) => boolean = R.propSatisfies(
   R.includes(R.__, [
     "ORAL_AGREEMENT",
     "CONTRACT_SIGNED",
@@ -42,8 +42,8 @@ export const isConcluded: (deal: DealVersion2) => boolean = R.propSatisfies(
   "current_negotiation_status",
 )
 
-export const getCanceledDate: (deal: DealVersion2) => number | undefined = R.pipe<
-  [DealVersion2],
+export const getCanceledDate: (deal: DealVersion) => number | undefined = R.pipe<
+  [DealVersion],
   NegotiationStatusItem[],
   NegotiationStatusItem[],
   NegotiationStatusItem | undefined,
@@ -55,7 +55,7 @@ export const getCanceledDate: (deal: DealVersion2) => number | undefined = R.pip
   R.unless(R.isNil, R.pipe(R.prop("date"), parseDate)),
 )
 
-export const hasConcludedDate = (deal: DealVersion2): boolean => {
+export const hasConcludedDate = (deal: DealVersion): boolean => {
   const negStats: NegotiationStatusItem[] = R.propOr([], "negotiation_status", deal)
   const cSizes: ContractSizeItem[] = R.propOr([], "contract_size", deal)
   return R.or(
@@ -64,7 +64,7 @@ export const hasConcludedDate = (deal: DealVersion2): boolean => {
   )
 }
 
-export const getConcludedDate = (deal: DealVersion2): number => {
+export const getConcludedDate = (deal: DealVersion): number => {
   const negStats: NegotiationStatusItem[] = R.propOr([], "negotiation_status", deal)
   const cSizes: ContractSizeItem[] = R.propOr([], "contract_size", deal)
   const firstConcluded: NegotiationStatusItem | undefined = R.pipe(
@@ -82,11 +82,11 @@ export const getConcludedDate = (deal: DealVersion2): number => {
   }
 }
 
-export const getConcludedRange = (deal: DealVersion2): [number, number | undefined] => {
+export const getConcludedRange = (deal: DealVersion): [number, number | undefined] => {
   return [getConcludedDate(deal), getCanceledDate(deal)]
 }
 
-export const getInitialSize = (deal: DealVersion2): number => {
+export const getInitialSize = (deal: DealVersion): number => {
   const cSizes: ContractSizeItem[] = R.propOr([], "contract_size", deal)
   const firstSizeItem = getFirstByDate(cSizes)
   if (firstSizeItem) {
@@ -96,8 +96,8 @@ export const getInitialSize = (deal: DealVersion2): number => {
   return R.propOr(0, "area", currentContractSizeItem)
 }
 
-export const getCurrentSize: (deal: DealVersion2) => number = R.pipe<
-  [DealVersion2],
+export const getCurrentSize: (deal: DealVersion) => number = R.pipe<
+  [DealVersion],
   ContractSizeItem[],
   IsCurrent<ContractSizeItem> | undefined,
   number

@@ -7,7 +7,7 @@
   import { filters } from "$lib/filters"
   import {
     NegotiationStatusGroup,
-    type DealVersion2,
+    type DealVersion,
     type NegotiationStatus,
     type NegStatGroupMap,
   } from "$lib/types/data"
@@ -21,7 +21,7 @@
   } from "$components/Data/Charts/utils"
 
   interface Props {
-    deals?: DealVersion2[]
+    deals?: DealVersion[]
   }
 
   let { deals = [] }: Props = $props()

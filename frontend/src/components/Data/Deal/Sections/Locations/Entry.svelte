@@ -3,13 +3,13 @@
   import type { Map } from "ol"
 
   import type { components } from "$lib/openAPI"
-  import type { Location2 } from "$lib/types/data"
+  import type { Location } from "$lib/types/data"
 
   import LocationAreasEditField from "$components/Data/Deal/Sections/Locations/LocationAreasEditField.svelte"
   import EditField from "$components/Fields/EditField.svelte"
 
   interface Props {
-    entry: Location2
+    entry: Location
     extras: {
       country?: components["schemas"]["Country"]
       map?: Map

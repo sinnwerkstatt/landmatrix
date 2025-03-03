@@ -1,7 +1,7 @@
 import type { BucketMap } from "$lib/data/buckets"
 import { createBucketMapReducer } from "$lib/data/buckets"
 import { COLORS } from "$lib/data/createChartData"
-import type { DealVersion2, ImplementationStatus } from "$lib/types/data"
+import type { DealVersion, ImplementationStatus } from "$lib/types/data"
 
 export const IMPLEMENTATION_STATUS_COLORS: { [key in ImplementationStatus]: string } = {
   PROJECT_NOT_STARTED: COLORS.ORANGE_LIGHTER,
@@ -15,7 +15,7 @@ export const getImplementationStatusColor = (status: ImplementationStatus) =>
 
 export const implementationStatusReducer = (
   bucketMap: BucketMap<ImplementationStatus>,
-  deal: DealVersion2,
+  deal: DealVersion,
 ): BucketMap<ImplementationStatus> => {
   const implementationStatus = deal.current_implementation_status
   const bucketMapReducer = createBucketMapReducer<ImplementationStatus>(

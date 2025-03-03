@@ -8,7 +8,7 @@ import {
   IntentionOfInvestmentGroup,
   NegotiationStatusGroup,
   ProduceGroup,
-  type DealVersion2,
+  type DealVersion,
   type ImplementationStatus,
   type IntentionOfInvestment,
   type IoIGroupMap,
@@ -27,7 +27,7 @@ describe("Intention of Investment Group", () => {
           "BIOFUELS",
         ],
         deal_size: 500,
-      } satisfies Partial<DealVersion2>,
+      } satisfies Partial<DealVersion>,
       {
         current_intention_of_investment: [
           "MINING",
@@ -36,9 +36,9 @@ describe("Intention of Investment Group", () => {
           "WIND_FARM",
         ],
         deal_size: 100,
-      } satisfies Partial<DealVersion2>,
+      } satisfies Partial<DealVersion>,
       // I don't understand this type error but need to convert to unknown
-    ] as unknown as DealVersion2[]
+    ] as unknown as DealVersion[]
 
     const groupMap = {
       CARBON: IntentionOfInvestmentGroup.FORESTRY,
@@ -71,12 +71,12 @@ describe("Agriculture Intention of Investment", () => {
       {
         current_intention_of_investment: ["CARBON", "FOREST_LOGGING", "BIOFUELS"],
         deal_size: 500,
-      } satisfies Partial<DealVersion2>,
+      } satisfies Partial<DealVersion>,
       {
         current_intention_of_investment: ["MINING", "BIOFUELS", "FOOD_CROPS"],
         deal_size: 100,
-      } satisfies Partial<DealVersion2>,
-    ] as unknown as DealVersion2[]
+      } satisfies Partial<DealVersion>,
+    ] as unknown as DealVersion[]
 
     const groupMap = {
       CARBON: IntentionOfInvestmentGroup.FORESTRY,
@@ -113,17 +113,17 @@ describe("Agriculture Intention of Investment", () => {
 
 describe("Produce Group", () => {
   test("Count non empty existing fields", () => {
-    const deals: DealVersion2[] = [
+    const deals: DealVersion[] = [
       {
         current_animals: ["cows", "bees"] as readonly string[],
         current_crops: ["corn"] as readonly string[],
         deal_size: 500,
-      } satisfies Partial<DealVersion2> as DealVersion2,
+      } satisfies Partial<DealVersion> as DealVersion,
       {
         current_animals: ["sloths"] as readonly string[],
         current_mineral_resources: [] as readonly string[],
         deal_size: 100,
-      } satisfies Partial<DealVersion2> as DealVersion2,
+      } satisfies Partial<DealVersion> as DealVersion,
     ]
 
     const bucketMap = deals.reduce(
@@ -154,7 +154,7 @@ describe("Negotiation Status Group", () => {
         // current_implementation_status: undefined,
         deal_size: 1_000_000_000_000_000_000,
       },
-    ] satisfies Partial<DealVersion2>[] as DealVersion2[]
+    ] satisfies Partial<DealVersion>[] as DealVersion[]
 
     const groupMap = {
       CONTRACT_SIGNED: NegotiationStatusGroup.CONCLUDED,
@@ -190,7 +190,7 @@ describe("Implementation Status", () => {
         current_implementation_status: undefined,
         deal_size: 1_000_000_000_000_000_000,
       },
-    ] satisfies Partial<DealVersion2>[] as DealVersion2[]
+    ] satisfies Partial<DealVersion>[] as DealVersion[]
 
     const bucketMap = deals.reduce(
       implementationStatusReducer,

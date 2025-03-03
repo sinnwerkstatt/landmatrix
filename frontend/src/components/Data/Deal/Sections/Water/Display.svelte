@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { DealHull, DealVersion2 } from "$lib/types/data"
+  import type { DealHull, DealVersion } from "$lib/types/data"
 
   import Subsection from "$components/Data/Subsection.svelte"
   import DisplayField from "$components/Fields/DisplayField.svelte"
@@ -10,7 +10,7 @@
 
   let { deal }: Props = $props()
 
-  let version: DealVersion2 = $state(deal.selected_version)
+  let version: DealVersion = $state(deal.selected_version)
 </script>
 
 <section>

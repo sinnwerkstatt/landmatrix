@@ -2,13 +2,13 @@
   import { _ } from "svelte-i18n"
 
   import type { components } from "$lib/openAPI"
-  import type { DealVersion2, InvestorVersion2 } from "$lib/types/data"
+  import type { DealVersion, InvestorVersion } from "$lib/types/data"
 
   import DisplayField from "$components/Fields/DisplayField.svelte"
   import SubmodelDisplayField from "$components/Fields/SubmodelDisplayField.svelte"
 
   interface Props {
-    version: DealVersion2 | InvestorVersion2
+    version: DealVersion | InvestorVersion
   }
 
   let { version }: Props = $props()

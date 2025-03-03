@@ -3,13 +3,13 @@
 
   import { isNotEmpty } from "$lib/helpers"
   import { objectSections } from "$lib/sections"
-  import type { DealVersion2, InvestorVersion2 } from "$lib/types/data"
+  import type { DealVersion, InvestorVersion } from "$lib/types/data"
 
   interface Props {
     // todo marcus maybe?
     // export let id: keyof typeof $dealSections
     id: string
-    obj: DealVersion2 | InvestorVersion2
+    obj: DealVersion | InvestorVersion
     children?: Snippet
   }
 

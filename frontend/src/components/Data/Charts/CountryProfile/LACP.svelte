@@ -14,7 +14,7 @@
   import { createGroupMap, createLabels, dealChoices } from "$lib/fieldChoices"
   import {
     IntentionOfInvestmentGroup,
-    type DealVersion2,
+    type DealVersion,
     type IntentionOfInvestment,
     type IoIGroupMap,
   } from "$lib/types/data"
@@ -30,7 +30,7 @@
   import { displayDealsCount } from "$components/Map/mapHelper"
 
   interface Props {
-    deals?: DealVersion2[]
+    deals?: DealVersion[]
   }
 
   let { deals = [] }: Props = $props()
