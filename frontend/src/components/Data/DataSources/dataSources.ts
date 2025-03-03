@@ -5,7 +5,7 @@ const DATA_SOURCE_IGNORE_KEYS = [
   "dealversion",
   "investorversion",
   "file_not_public",
-] satisfies (keyof DealDataSource | keyof InvestorDataSource)[]
+] satisfies (keyof (DealDataSource & InvestorDataSource))[]
 
 // explicitly set fields to null!
 export const createDataSource = (nid: string): DataSource => ({

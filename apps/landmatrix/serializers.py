@@ -182,6 +182,7 @@ class DealVersionSerializer(MyModelSerializer):
             "activated_at",
             "activated_by",
             "status",
+            "ds_quotations",
         )
         fields = "__all__"
 
@@ -430,6 +431,7 @@ class InvestorVersionSerializer(MyModelSerializer):
             "activated_at",
             "activated_by",
             "status",
+            "ds_quotations",
         )
         fields = "__all__"
 

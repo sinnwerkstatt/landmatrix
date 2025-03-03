@@ -66,13 +66,9 @@ export type Region = components["schemas"]["Region"]
 
 export type MutableInvestorHull = Mutable<InvestorHull>
 
-export interface DealDataSource extends Named<components["schemas"]["DealDataSource"]> {
-  date: LooseDateString | null
-}
-export interface InvestorDataSource
-  extends Named<components["schemas"]["InvestorDataSource"]> {
-  date: LooseDateString | null
-}
+export type DealDataSource = components["schemas"]["DealDataSource"]
+export type InvestorDataSource = components["schemas"]["InvestorDataSource"]
+
 export type DataSource = DealDataSource | InvestorDataSource
 
 export interface Contract extends Named<components["schemas"]["Contract"]> {
