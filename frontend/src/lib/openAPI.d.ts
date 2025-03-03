@@ -2351,7 +2351,7 @@ export interface components {
       readonly transnational: boolean | null
       fully_updated?: boolean
       /** Data Source Quotations */
-      readonly ds_quotations: components["schemas"]["DataSourceQuotationSchema"]
+      ds_quotations?: components["schemas"]["DataSourceQuotationSchema"]
       readonly created_by: number | null
       readonly modified_by: number | null
       readonly sent_to_review_by: number | null
@@ -2843,7 +2843,7 @@ export interface components {
       opencorporates?: string
       comment?: string
       /** Data Source Quotations */
-      readonly ds_quotations: components["schemas"]["DataSourceQuotationSchema"]
+      ds_quotations?: components["schemas"]["DataSourceQuotationSchema"]
       name_unknown?: boolean
       involvements_snapshot?: unknown
       readonly created_by: number | null
