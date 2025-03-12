@@ -8,20 +8,22 @@
   import CircleNotchIcon from "$components/icons/CircleNotchIcon.svelte"
   import PlaneIcon from "$components/icons/PlaneIcon.svelte"
   import WeightIcon from "$components/icons/WeightIcon.svelte"
+  import SourcesDisplayButton from "$components/Quotations/SourcesDisplayButton.svelte"
 
   interface Props {
     value?: JSONExportsFieldType[]
     extras?: { choices: ValueLabelEntry[] }
+    fieldname?: string
   }
 
-  let { value = [], extras = { choices: [] } }: Props = $props()
+  let { value = [], extras = { choices: [] }, fieldname = "" }: Props = $props()
 
   const getLabel = (value: string) =>
     extras.choices.find(c => value === c.value)?.label ?? value
 </script>
 
 <ul>
-  {#each value ?? [] as val}
+  {#each value ?? [] as val, i}
     <li class:font-bold={val.current}>
       {#if val.choices && extras.choices.length}
         <span>
@@ -49,6 +51,8 @@
           {val.export.toLocaleString("fr").replace(",", ".")} %
         </span>
       {/if}
+
+      <SourcesDisplayButton path={[fieldname, i]} />
     </li>
   {/each}
 </ul>

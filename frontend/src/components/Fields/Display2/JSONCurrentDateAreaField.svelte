@@ -4,16 +4,18 @@
   import type { JSONCurrentDateAreaFieldType } from "$lib/types/data"
 
   import { dateCurrentFormat } from "$components/Fields/Display2/jsonHelpers"
+  import SourcesDisplayButton from "$components/Quotations/SourcesDisplayButton.svelte"
 
   interface Props {
     value?: JSONCurrentDateAreaFieldType[]
+    fieldname?: string
   }
 
-  let { value = [] }: Props = $props()
+  let { value = [], fieldname = "" }: Props = $props()
 </script>
 
 <ul>
-  {#each value ?? [] as val}
+  {#each value ?? [] as val, i}
     <li class:font-semibold={val.current}>
       <span>{dateCurrentFormat(val)}</span>
 
@@ -25,6 +27,8 @@
           {$_("ha")}
         </span>
       {/if}
+
+      <SourcesDisplayButton path={[fieldname, i]} />
     </li>
   {/each}
 </ul>

@@ -1,14 +1,15 @@
 <script lang="ts" module>
   import type { Component } from "svelte"
 
-  /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-  import type { Submodel } from "$lib/utils/dataProcessing"
+  import type { SubmodelEntry } from "$lib/utils/dataProcessing"
+
+  type ExtraProps<T> = T extends Component<infer Y> ? Y["extras"] : never
 
   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-  type ExtraProps<T> = T extends Component<infer Y, any, any> ? Y["extras"] : never
+  type AnyComponent = Component<any, any, any>
 </script>
 
-<script lang="ts" generics="T extends Submodel, X extends Component<any, any, any>">
+<script lang="ts" generics="T extends SubmodelEntry, X extends AnyComponent">
   import { onMount, type Snippet } from "svelte"
   import { _ } from "svelte-i18n"
   import { slide } from "svelte/transition"
@@ -16,23 +17,29 @@
   import { goto } from "$app/navigation"
   import { page } from "$app/state"
 
+  import { type SubmodelFieldName } from "$lib/fieldLookups"
   import { newNanoid } from "$lib/helpers"
-  import type { Model, SubModelFieldName } from "$lib/types/data"
+  import type {
+    Model,
+    QuotationItem,
+    Quotations,
+    SubmodelQuotations,
+  } from "$lib/types/data"
   import { isEmptySubmodel, type SubmodelIdKeys } from "$lib/utils/dataProcessing"
   import { scrollEntryIntoView } from "$lib/utils/domHelpers"
+  import { removeAndCleanQuotations } from "$lib/utils/quotations"
 
   import ConfirmSubmodelDeletionModal from "$components/ConfirmSubmodelDeletionModal.svelte"
   import { getMutableObject } from "$components/Data/stores"
   import ChevronDownIcon from "$components/icons/ChevronDownIcon.svelte"
   import PlusIcon from "$components/icons/PlusIcon.svelte"
   import TrashIcon from "$components/icons/TrashIcon.svelte"
-  import DSQuotationsModal from "$components/New/DSQuotationsModal.svelte"
+  import SourcesEditButton from "$components/Quotations/SourcesEditButton.svelte"
 
   interface Props {
-    /* eslint-disable no-undef */
     model?: Model
     label: string
-    fieldname: SubModelFieldName
+    fieldname: SubmodelFieldName
     entries: T[]
     createEntry: (nid: string) => T
     entryComponent: X
@@ -42,7 +49,6 @@
     selectedEntryId?: string | undefined // for external reference
     entryIdKey?: SubmodelIdKeys
     extraHeader?: Snippet<[T]>
-    /* eslint-enable no-undef */
     onchange?: () => void
   }
 
@@ -87,23 +93,19 @@
     goto(`#${newEntryId}`)
   }
 
-  const removeEntry = (id: string) => {
+  const removeEntry = (id: string | null) => {
     const entry = entries.find(entry => `${entry[entryIdKey]}` === id)
 
-    if (!entry) return
-
-    entries = entries.filter(x => `${x[entryIdKey]}` !== id)
+    if (!id || !entry) return
 
     if (isDataSource) {
-      $mutableObj.selected_version.ds_quotations = Object.fromEntries(
-        Object.entries($mutableObj.selected_version.ds_quotations)
-          .map(([k, v]) => [k, v.filter(q => q.nid !== id)])
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          .filter(([_, v]) => !!v && v.length > 0),
-      )
+      // TODO: fix me
+      $mutableObj.selected_version.ds_quotations = removeAndCleanQuotations(
+        $mutableObj.selected_version.ds_quotations,
+        id,
+      ) as Quotations
     } else {
-      const entryFieldname = `${fieldname}-${id}`
-      delete $mutableObj.selected_version.ds_quotations[entryFieldname]
+      setQuotes(id, [])
     }
 
     entries = entries.filter(x => `${x[entryIdKey]}` !== id)
@@ -133,17 +135,37 @@
   let showConfirmDeletionModal = $state(false)
   let toBeDeletedId: null | string = $state(null)
 
-  let showDSQuotationModal = $state(false)
   let isDataSource = $derived(fieldname === "datasources")
+
+  const getSubmodelQuotations = () =>
+    ($mutableObj.selected_version.ds_quotations[fieldname] ?? {}) as SubmodelQuotations
+
+  const getQuotes = (submodelNid: string): QuotationItem[] =>
+    getSubmodelQuotations()[submodelNid] ?? []
+
+  const setQuotes = (submodelNid: string, quotes: QuotationItem[]): void => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { [submodelNid]: _, ...rest } = getSubmodelQuotations()
+
+    $mutableObj.selected_version.ds_quotations[fieldname] = quotes.length
+      ? { ...rest, [submodelNid]: quotes }
+      : rest
+
+    if (!Object.keys(getSubmodelQuotations()).length) {
+      delete $mutableObj.selected_version.ds_quotations[fieldname]
+    }
+  }
 </script>
 
-<ConfirmSubmodelDeletionModal
-  bind:open={showConfirmDeletionModal}
-  onconfirm={() => removeEntry(toBeDeletedId)}
-  submodelLabel={label}
-  id={toBeDeletedId}
-  {isDataSource}
-/>
+{#if toBeDeletedId}
+  <ConfirmSubmodelDeletionModal
+    bind:open={showConfirmDeletionModal}
+    onconfirm={() => removeEntry(toBeDeletedId)}
+    submodelLabel={label}
+    id={toBeDeletedId}
+    {isDataSource}
+  />
+{/if}
 
 <section class="w-full">
   <div class="flex w-full flex-col gap-2">
@@ -209,31 +231,14 @@
 
             <div class="p-2" transition:slide={{ duration: 200 }}>
               {#if !isDataSource}
-                {@const entryFieldname = `${fieldname}-${idAsString}`}
-                {@const quotes =
-                  $mutableObj.selected_version.ds_quotations[entryFieldname] ?? []}
-                {@const dataSources = $mutableObj.selected_version.datasources ?? []}
-
-                <div class="mb-2">
-                  <button
-                    class="text-lg italic text-purple-400"
-                    type="button"
-                    onclick={() => {
-                      showDSQuotationModal = true
-                    }}
-                  >
-                    {$_("Sources")}: {quotes.length}
-                  </button>
-
-                  <DSQuotationsModal
-                    bind:open={showDSQuotationModal}
+                <div class="my-2 ml-4">
+                  <SourcesEditButton
+                    fieldname="{fieldname}-{idAsString}"
                     bind:quotes={
-                      $mutableObj.selected_version.ds_quotations[entryFieldname]
+                      () => getQuotes(idAsString), // force line break
+                      quotes => setQuotes(idAsString, quotes)
                     }
-                    {dataSources}
-                    label="{label} {idAsString}"
-                    fieldname={entryFieldname}
-                    editable
+                    dataSources={$mutableObj.selected_version.datasources}
                   />
                 </div>
               {/if}

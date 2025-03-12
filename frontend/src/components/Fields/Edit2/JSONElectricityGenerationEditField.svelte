@@ -3,14 +3,19 @@
   import { slide } from "svelte/transition"
 
   import { dealChoices } from "$lib/fieldChoices"
-  import type { JSONElectricityGenerationFieldType } from "$lib/types/data"
+  import type {
+    JSONElectricityGenerationFieldType,
+    JSONFieldQuotations,
+  } from "$lib/types/data"
 
+  import { getMutableObject } from "$components/Data/stores"
   import ChoicesEditField from "$components/Fields/Edit2/ChoicesEditField.svelte"
   import AddButton from "$components/Fields/Edit2/JSONFieldComponents/AddButton.svelte"
   import CurrentCheckbox from "$components/Fields/Edit2/JSONFieldComponents/CurrentCheckbox.svelte"
   import Date from "$components/Fields/Edit2/JSONFieldComponents/Date.svelte"
   import RemoveButton from "$components/Fields/Edit2/JSONFieldComponents/RemoveButton.svelte"
   import LowLevelDecimalField from "$components/Fields/Edit2/LowLevelDecimalField.svelte"
+  import SourcesEditButton from "$components/Quotations/SourcesEditButton.svelte"
 
   import { cardClass, labelClass } from "./JSONFieldComponents/consts"
 
@@ -20,6 +25,8 @@
   }
 
   let { value = $bindable(), fieldname }: Props = $props()
+
+  const mutableObj = getMutableObject("deal")
 
   const emptyEntry: JSONElectricityGenerationFieldType = {
     current: false,
@@ -36,17 +43,34 @@
     value.length ? $state.snapshot(value) : [structuredClone(emptyEntry)],
   )
 
+  const isEmpty = (val: JSONElectricityGenerationFieldType) => !val.choices.length
+  const getJsonQuotes = () =>
+    ($mutableObj.selected_version.ds_quotations[fieldname] ??
+      new Array(value.length || 1).fill([])) as JSONFieldQuotations
+
+  let jsonQuotes = $state(getJsonQuotes())
+
   const updateVal = () => {
-    value = valueCopy.filter(val => val.choices.length > 0)
+    const keep = valueCopy.map(val => !isEmpty(val))
+
+    value = valueCopy.filter((_, i) => keep[i])
+    const filtered = jsonQuotes.filter((_, i) => keep[i])
+    if (filtered.some(q => q.length)) {
+      $mutableObj.selected_version.ds_quotations[fieldname] = filtered
+    } else {
+      delete $mutableObj.selected_version.ds_quotations[fieldname]
+    }
   }
 
   const addEntry = () => {
+    jsonQuotes = [...jsonQuotes, []]
     valueCopy = [...valueCopy, structuredClone(emptyEntry)]
     updateVal()
   }
 
   const removeEntry = (index: number) => {
     valueCopy = valueCopy.filter((_val, i) => i !== index)
+    jsonQuotes = jsonQuotes.filter((_val, i) => i !== index)
     updateVal()
   }
 
@@ -139,7 +163,15 @@
         onchange={updateVal}
       />
 
-      <RemoveButton disabled={valueCopy.length <= 1} onclick={() => removeEntry(i)} />
+      <div class="mt-2 flex justify-between">
+        <SourcesEditButton
+          fieldname="{fieldname}-{i}"
+          bind:quotes={jsonQuotes[i]}
+          dataSources={$mutableObj.selected_version.datasources}
+          disabled={isEmpty(val)}
+        />
+        <RemoveButton disabled={valueCopy.length <= 1} onclick={() => removeEntry(i)} />
+      </div>
     </div>
   {/each}
 

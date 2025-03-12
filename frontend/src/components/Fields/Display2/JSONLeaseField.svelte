@@ -7,16 +7,18 @@
   import CircleNotchIcon from "$components/icons/CircleNotchIcon.svelte"
   import HouseholdIcon from "$components/icons/HouseholdIcon.svelte"
   import TractorIcon from "$components/icons/TractorIcon.svelte"
+  import SourcesDisplayButton from "$components/Quotations/SourcesDisplayButton.svelte"
 
   interface Props {
     value: JSONLeaseFieldType[]
+    fieldname?: string
   }
 
-  let { value }: Props = $props()
+  let { value, fieldname = "" }: Props = $props()
 </script>
 
 <ul>
-  {#each value ?? [] as val}
+  {#each value ?? [] as val, i}
     <li class:font-bold={val.current}>
       <span>{dateCurrentFormat(val)}</span>
       {#if val.area}
@@ -38,6 +40,8 @@
           {val.households.toLocaleString("fr").replace(",", ".")}
         </span>
       {/if}
+
+      <SourcesDisplayButton path={[fieldname, i]} />
     </li>
   {/each}
 </ul>

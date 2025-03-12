@@ -12,8 +12,6 @@
   let { disabled = false, onclick }: Props = $props()
 </script>
 
-<div class="mt-3 text-right">
-  <button {disabled} {onclick} title={$_("Remove entry")} type="button">
-    <TrashIcon class="h-5 w-5 {!disabled ? 'text-red-600' : 'text-gray-200'}" />
-  </button>
-</div>
+<button {disabled} {onclick} title={$_("Remove entry")} type="button">
+  <TrashIcon class="h-5 w-5 {!disabled ? 'text-red-600' : 'text-gray-200'}" />
+</button>

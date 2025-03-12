@@ -2,15 +2,18 @@
   import { dealChoices } from "$lib/fieldChoices"
   import type { InvolvedActor } from "$lib/types/data"
 
+  import SourcesDisplayButton from "$components/Quotations/SourcesDisplayButton.svelte"
+
   interface Props {
     value: InvolvedActor[]
+    fieldname?: string
   }
 
-  let { value }: Props = $props()
+  let { value, fieldname = "" }: Props = $props()
 </script>
 
 <ul class="my-3">
-  {#each value as actor}
+  {#each value ?? [] as actor, i}
     <li class="my-2">
       <span>{actor.name}</span>
       {#if actor.role}
@@ -19,5 +22,7 @@
         </span>
       {/if}
     </li>
+
+    <SourcesDisplayButton path={[fieldname, i]} />
   {/each}
 </ul>

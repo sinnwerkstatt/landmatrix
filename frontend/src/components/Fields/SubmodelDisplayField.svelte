@@ -1,33 +1,30 @@
 <script lang="ts" module>
   // https://github.com/dummdidumm/rfcs/blob/ts-typedefs-within-svelte-components/text/ts-typing-props-slots-events.md
 
-  /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-  import type { Submodel } from "$lib/utils/dataProcessing"
+  import type { SubmodelEntry } from "$lib/utils/dataProcessing"
 </script>
 
-<script lang="ts" generics="T extends Submodel">
+<script lang="ts" generics="T extends SubmodelEntry">
   import { onMount, type Snippet } from "svelte"
-  import { _ } from "svelte-i18n"
 
   import { goto } from "$app/navigation"
   import { page } from "$app/state"
 
-  import type { Model, SubModelFieldName } from "$lib/types/data"
+  import type { SubmodelFieldName } from "$lib/fieldLookups"
+  import type { Model } from "$lib/types/data"
   import type { SubmodelIdKeys } from "$lib/utils/dataProcessing"
   import { scrollEntryIntoView } from "$lib/utils/domHelpers"
 
-  import DSQuotationsModal from "$components/New/DSQuotationsModal.svelte"
+  import SourcesDisplayButton from "$components/Quotations/SourcesDisplayButton.svelte"
 
   interface Props {
     model: Model
     label: string
-    fieldname: SubModelFieldName
-    // eslint-disable-next-line no-undef
+    fieldname: SubmodelFieldName
     entries: readonly T[]
     selectedEntryId?: string | undefined // for external reference
     hoverEntryId?: string | undefined // for external reference
     entryIdKey?: SubmodelIdKeys
-    // eslint-disable-next-line no-undef
     children?: Snippet<[T]>
   }
 
@@ -52,7 +49,6 @@
 
   onMount(() => scrollEntryIntoView(selectedEntryId))
 
-  let showDSQuotationModal = $state(false)
   let isDataSource = $derived(fieldname === "datasources")
 </script>
 
@@ -88,32 +84,8 @@
           </a>
         </h3>
         {#if !isDataSource}
-          {@const entryFieldname = `${fieldname}-${idAsString}`}
-          {@const quotes =
-            page.data[model]?.selected_version.ds_quotations[entryFieldname] ?? []}
-          {@const dataSources = page.data[model]?.selected_version.datasources ?? []}
-
-          <div class="mb-2">
-            <button
-              class="text-lg italic text-purple-400"
-              type="button"
-              onclick={() => {
-                selectedEntryId = idAsString
-                showDSQuotationModal = true
-              }}
-            >
-              {$_("Sources")}: {quotes.length}
-            </button>
-
-            {#if isSelected && showDSQuotationModal}
-              <DSQuotationsModal
-                bind:open={showDSQuotationModal}
-                {quotes}
-                {dataSources}
-                label="{label} {idAsString}"
-                fieldname={entryFieldname}
-              />
-            {/if}
+          <div class="my-2">
+            <SourcesDisplayButton {model} path={[fieldname, idAsString]} />
           </div>
         {/if}
 
