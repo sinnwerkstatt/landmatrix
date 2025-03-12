@@ -44,7 +44,6 @@
     createEntry: (nid: string) => T
     entryComponent: X
     extras?: ExtraProps<X>
-    filterFn?: (entry: T) => boolean
     isEmpty?: (entry: T) => boolean
     selectedEntryId?: string | undefined // for external reference
     entryIdKey?: SubmodelIdKeys
@@ -60,7 +59,6 @@
     createEntry,
     entryComponent,
     extras,
-    filterFn = () => true,
     isEmpty = isEmptySubmodel,
     selectedEntryId = $bindable(),
     entryIdKey = "nid",
@@ -169,7 +167,7 @@
 
 <section class="w-full">
   <div class="flex w-full flex-col gap-2">
-    {#each entries.filter(filterFn) as entry, index (entry[entryIdKey])}
+    {#each entries as entry, index (entry[entryIdKey])}
       {@const idAsString = `${entry[entryIdKey]}`}
       {@const isSelectedEntry = selectedEntryId === idAsString}
 
