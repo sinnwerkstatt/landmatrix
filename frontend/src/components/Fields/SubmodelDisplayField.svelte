@@ -12,7 +12,6 @@
 
   import type { SubmodelFieldName } from "$lib/fieldLookups"
   import type { Model } from "$lib/types/data"
-  import type { SubmodelIdKeys } from "$lib/utils/dataProcessing"
   import { scrollEntryIntoView } from "$lib/utils/domHelpers"
 
   import SourcesDisplayButton from "$components/Quotations/SourcesDisplayButton.svelte"
@@ -24,7 +23,6 @@
     entries: readonly T[]
     selectedEntryId?: string | undefined // for external reference
     hoverEntryId?: string | undefined // for external reference
-    entryIdKey?: SubmodelIdKeys
     children?: Snippet<[T]>
   }
 
@@ -35,7 +33,6 @@
     entries,
     selectedEntryId = $bindable(undefined),
     hoverEntryId = $bindable(undefined),
-    entryIdKey = "nid",
     children,
   }: Props = $props()
 
@@ -54,14 +51,13 @@
 
 {#if entries.length > 0}
   <section class="flex w-full flex-col gap-2">
-    {#each entries as entry, index (entry[entryIdKey])}
-      {@const idAsString = `${entry[entryIdKey]}`}
-      {@const isSelected = selectedEntryId === idAsString}
-      {@const isHovered = hoverEntryId === idAsString}
-      {@const href = isSelected ? "" : `#${idAsString}`}
+    {#each entries as entry, index}
+      {@const isSelected = selectedEntryId === entry.nid}
+      {@const isHovered = hoverEntryId === entry.nid}
+      {@const href = isSelected ? "" : `#${entry.nid}`}
 
       <article
-        id={idAsString}
+        id={entry.nid}
         class="p-2"
         class:animate-fadeToWhite={isSelected}
         class:dark:animate-fadeToGray={isSelected}
@@ -74,18 +70,18 @@
             {href}
             onclick={e => e.preventDefault()}
             onmousedown={() => goto(href)}
-            onmouseenter={() => (hoverEntryId = idAsString)}
+            onmouseenter={() => (hoverEntryId = entry.nid)}
             onmouseleave={() => (hoverEntryId = undefined)}
           >
             {index + 1}. {label}
             <small class="text-sm text-gray-500">
-              #{idAsString}
+              #{entry.nid}
             </small>
           </a>
         </h3>
         {#if !isDataSource}
           <div class="my-2">
-            <SourcesDisplayButton {model} path={[fieldname, idAsString]} />
+            <SourcesDisplayButton {model} path={[fieldname, entry.nid]} />
           </div>
         {/if}
 
