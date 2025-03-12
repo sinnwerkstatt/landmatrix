@@ -184,6 +184,9 @@ class DealVersionSerializer(MyModelSerializer):
             "status",
         )
         fields = "__all__"
+        extra_kwargs = {
+            "ds_quotations": {"required": True},
+        }
 
     # @staticmethod
     # def get_operating_company(obj: DealVersion):
@@ -314,6 +317,32 @@ BASE_WORKFLOW_INFO_FIELDS = (
 )
 
 
+class InvolvementSerializer(ReadOnlyModelSerializer):
+    percentage = serializers.DecimalField(
+        decimal_places=2,
+        max_digits=5,
+        coerce_to_string=True,
+        allow_null=True,
+    )
+
+    class Meta:
+        model = Involvement
+        fields = [
+            "id",
+            "nid",
+            "parent_investor_id",
+            "child_investor_id",
+            "role",
+            "investment_type",
+            "percentage",
+            "loans_amount",
+            "loans_currency_id",
+            "loans_date",
+            "parent_relation",
+            "comment",
+        ]
+
+
 class DealWorkflowInfoSerializer(ReadOnlyModelSerializer):
     class Meta:
         model = DealWorkflowInfo
@@ -404,7 +433,6 @@ class Investor2DealSerializer(serializers.ModelSerializer):
 
 
 class InvestorVersionSerializer(MyModelSerializer):
-    datasources = InvestorDataSourceSerializer(many=True, read_only=True)
     country_id = serializers.PrimaryKeyRelatedField[Country](read_only=True)
 
     # creating these because DRF shows these fields as "created_by", instead of "~_id"
@@ -413,6 +441,10 @@ class InvestorVersionSerializer(MyModelSerializer):
     sent_to_review_by_id = serializers.PrimaryKeyRelatedField[User](read_only=True)
     sent_to_activation_by_id = serializers.PrimaryKeyRelatedField[User](read_only=True)
     activated_by_id = serializers.PrimaryKeyRelatedField[User](read_only=True)
+
+    # not truly read-only since they get written manually
+    involvements = serializers.SerializerMethodField(read_only=True)
+    datasources = InvestorDataSourceSerializer(many=True, read_only=True)
 
     class Meta:
         model = InvestorVersion
@@ -430,8 +462,18 @@ class InvestorVersionSerializer(MyModelSerializer):
             "activated_at",
             "activated_by",
             "status",
+            # calculated fields
+            "name_unknown",
         )
-        fields = "__all__"
+        exclude = ("involvements_snapshot",)
+        extra_kwargs = {
+            "ds_quotations": {"required": True},
+        }
+
+    @staticmethod
+    @extend_schema_field(InvolvementSerializer(many=True, read_only=True))
+    def get_involvements(obj) -> list[Involvement]:
+        return obj.involvements_snapshot
 
     @staticmethod
     def save_submodels(data, iv1: InvestorVersion):
@@ -507,32 +549,6 @@ class InvestorDealSerializer(ReadOnlyModelSerializer):
     class Meta:
         model = DealHull
         fields = ("id", "country_id", "selected_version")
-
-
-class InvolvementSerializer(ReadOnlyModelSerializer):
-    percentage = serializers.DecimalField(
-        decimal_places=2,
-        max_digits=5,
-        coerce_to_string=True,
-        allow_null=True,
-    )
-
-    class Meta:
-        model = Involvement
-        fields = [
-            "id",
-            "nid",
-            "parent_investor_id",
-            "child_investor_id",
-            "role",
-            "investment_type",
-            "percentage",
-            "loans_amount",
-            "loans_currency_id",
-            "loans_date",
-            "parent_relation",
-            "comment",
-        ]
 
 
 class InvestorSerializer(serializers.ModelSerializer[InvestorHull]):

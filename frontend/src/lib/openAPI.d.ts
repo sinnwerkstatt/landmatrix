@@ -1646,10 +1646,6 @@ export interface components {
     DataSourceFields: {
       type: components["schemas"]["ValueLabel"][]
     }
-    /** DataSourceQuotationSchema */
-    DataSourceQuotationSchema: {
-      [key: string]: components["schemas"]["QuotationItem"][]
-    }
     /**
      * @description * `MEDIA_REPORT` - Media report
      *     * `RESEARCH_PAPER_OR_POLICY_REPORT` - Research Paper / Policy Report
@@ -2351,7 +2347,7 @@ export interface components {
       readonly transnational: boolean | null
       fully_updated?: boolean
       /** Data Source Quotations */
-      ds_quotations?: components["schemas"]["DataSourceQuotationSchema"]
+      ds_quotations: components["schemas"]["QuotationsSchema"]
       readonly created_by: number | null
       readonly modified_by: number | null
       readonly sent_to_review_by: number | null
@@ -2804,7 +2800,6 @@ export interface components {
     }
     InvestorVersion: {
       readonly id: number
-      readonly datasources: components["schemas"]["InvestorDataSource"][]
       /** Country of registration/origin */
       readonly country_id: number | null
       readonly created_by_id: number | null
@@ -2812,6 +2807,8 @@ export interface components {
       readonly sent_to_review_by_id: number | null
       readonly sent_to_activation_by_id: number | null
       readonly activated_by_id: number | null
+      readonly involvements: components["schemas"]["Involvement"][]
+      readonly datasources: components["schemas"]["InvestorDataSource"][]
       /** Format: date-time */
       readonly created_at: string
       /** Format: date-time */
@@ -2843,9 +2840,8 @@ export interface components {
       opencorporates?: string
       comment?: string
       /** Data Source Quotations */
-      ds_quotations?: components["schemas"]["DataSourceQuotationSchema"]
-      name_unknown?: boolean
-      involvements_snapshot?: unknown
+      ds_quotations: components["schemas"]["QuotationsSchema"]
+      readonly name_unknown: boolean
       readonly created_by: number | null
       readonly modified_by: number | null
       readonly sent_to_review_by: number | null
@@ -3494,16 +3490,22 @@ export interface components {
     QuotationItem: {
       /** Nid */
       nid: string
+      /** Pages */
+      pages?: string
       /**
-       * Page
-       * @default null
+       * Timestamp
+       * Format: date-time
        */
-      page: number | null
-      /**
-       * Comment
-       * @default null
-       */
-      comment: string | null
+      timestamp?: string
+    }
+    /** QuotationsSchema */
+    QuotationsSchema: {
+      [key: string]:
+        | components["schemas"]["QuotationItem"][]
+        | {
+            [key: string]: components["schemas"]["QuotationItem"][]
+          }
+        | components["schemas"]["QuotationItem"][][]
     }
     /**
      * @description * `INDIGENOUS_RIGHTS_RECOGNIZED` - Indigenous Peoples traditional or customary rights recognized by government
