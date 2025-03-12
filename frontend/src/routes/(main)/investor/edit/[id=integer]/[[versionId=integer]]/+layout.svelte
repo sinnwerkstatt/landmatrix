@@ -15,7 +15,7 @@
   import { getMutableObject } from "$components/Data/stores"
   import LoadingSpinner from "$components/icons/LoadingSpinner.svelte"
   import ModalReallyQuit from "$components/ModalReallyQuit.svelte"
-  import ReviewChangesModal from "$components/ReviewChangesModal.svelte"
+  import ReviewChangesModal from "$components/Quotations/ReviewChangesModal.svelte"
 
   let { data, children } = $props()
 
@@ -51,7 +51,9 @@
       investor.selected_version.datasources ?? []
     ).filter(x => !isEmptyDataSource(x as InvestorDataSource))
 
-    investor.parents = (investor.parents ?? []).filter(x => !isEmptyInvolvement(x))
+    investor.selected_version.involvements = (
+      investor.selected_version.involvements ?? []
+    ).filter(x => !isEmptyInvolvement(x))
   }
 
   const saveInvestor = async (investor: MutableInvestorHull): Promise<boolean> => {
@@ -67,10 +69,7 @@
         method: "PUT",
         credentials: "include",
         body: JSON.stringify({
-          version: {
-            ...investor.selected_version,
-            involvements: investor.parents,
-          },
+          version: investor.selected_version,
         }),
         headers: {
           "X-CSRFToken": await getCsrfToken(),
@@ -223,13 +222,15 @@
 
 <ModalReallyQuit bind:open={showReallyQuitOverlay} onclick={() => onClickClose(true)} />
 
-<ReviewChangesModal
-  bind:open={showReviewChangesModal}
-  onclick={onClickSave}
-  oldObject={data.investor}
-  newObject={mutableInvestor}
-  model="investor"
-/>
+{#if showReviewChangesModal}
+  <ReviewChangesModal
+    bind:open={showReviewChangesModal}
+    onclick={onClickSave}
+    oldObject={data.investor}
+    newObject={mutableInvestor}
+    model="investor"
+  />
+{/if}
 
 <style>
   .editgrid {

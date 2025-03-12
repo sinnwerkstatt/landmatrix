@@ -5,60 +5,55 @@
 
   import TrashIcon from "$components/icons/TrashIcon.svelte"
   import Modal from "$components/Modal.svelte"
-  import DSQuotationPopup from "$components/New/DSQuotationsPopup.svelte"
+  import DSQuotationPopup from "$components/Quotations/DataSourcePopup.svelte"
 
   interface Props {
     open: boolean
     fieldname: string
-    quotes?: QuotationItem[]
-    dataSources?: DataSource[]
-    editable?: boolean
-    label: string
+    dataSources: DataSource[]
+    quotes: QuotationItem[]
+    setQuotes?: (quotations: QuotationItem[]) => void
   }
 
   let {
     open = $bindable(),
-    quotes = $bindable(),
-    dataSources = [],
-    editable = false,
     fieldname,
-    label,
+    dataSources,
+    quotes,
+    setQuotes,
   }: Props = $props()
 
-  type PartialQuotationItem = Partial<QuotationItem>
-
-  const createQuotation = (): PartialQuotationItem => ({
-    nid: dataSources.length > 0 ? dataSources[dataSources.length - 1].nid : undefined,
-  })
-
-  const deleteQuotation = (i: number) => {
-    if (quotes && i < quotes.length) {
-      quotes = sortQuotes(quotes.filter((_, index) => index !== i))
-    }
-  }
-
-  let newQuotation: PartialQuotationItem = $state(createQuotation())
-
-  const onsubmit = (event: SubmitEvent) => {
-    event.preventDefault()
-
-    if (!newQuotation.nid) {
-      return
-    }
-
-    quotes = sortQuotes([
-      ...(quotes ?? []),
-      $state.snapshot(newQuotation) as QuotationItem,
-    ])
-
-    newQuotation = createQuotation()
-  }
+  let editable = $derived(!!setQuotes)
 
   const sortQuotes = (quotes: QuotationItem[]): QuotationItem[] => {
     const sortedNids = dataSources.map(ds => ds.nid)
     return quotes.toSorted(
       (a, b) => sortedNids.indexOf(a.nid) - sortedNids.indexOf(b.nid),
     )
+  }
+
+  const deleteQuotation = (i: number) => {
+    const newQuotes = sortQuotes(quotes.filter((_, index) => index !== i))
+    setQuotes?.(newQuotes)
+  }
+
+  let newQuotationId = $state<string | null>(
+    dataSources.length > 0 ? dataSources[dataSources.length - 1].nid : null,
+  )
+  let newQuotationPages = $state("")
+
+  const onsubmit = (event: SubmitEvent) => {
+    event.preventDefault()
+
+    if (newQuotationId) {
+      const newQuotes = sortQuotes([
+        ...quotes,
+        { nid: newQuotationId, pages: newQuotationPages },
+      ])
+      setQuotes?.(newQuotes)
+
+      newQuotationPages = ""
+    }
   }
 
   const padLeadingZeros = (nDigits: number, value: number) => {
@@ -77,11 +72,11 @@
     </h2>
 
     {$_("Field")}:
-    <span class="font-bold italic">{label}</span>
+    <span class="font-bold italic">{fieldname}</span>
     <hr class="mb-4" />
 
     <ul class="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4">
-      {#each sortQuotes(quotes ?? []) as quote, i}
+      {#each sortQuotes(quotes) as quote, i}
         {@const dsIndex = dataSources.findIndex(ds => ds.nid === quote.nid)}
 
         <li
@@ -102,8 +97,8 @@
 
                 <div class="flex gap-5">
                   <span class="text-nowrap italic text-gray-700 dark:text-gray-100">
-                    {$_("Page: {pageNumber}", {
-                      values: { pageNumber: quote.page ?? "--" },
+                    {$_("Page: {pages}", {
+                      values: { pages: quote.pages ?? "--" },
                     })}
                   </span>
                 </div>
@@ -154,12 +149,13 @@
                   type="radio"
                   id="{fieldname}-data-source-{dataSource.nid}"
                   name="data-source-nid"
-                  bind:group={newQuotation.nid}
+                  bind:group={newQuotationId}
                   value={dataSource.nid}
+                  required
                 />
                 <label
                   class="inline-block w-full cursor-pointer border border-black p-2
-                   peer-checked:border-purple peer-checked:text-purple dark:border-white"
+                   peer-checked:bg-yellow dark:bg-gray-500"
                   for="{fieldname}-data-source-{dataSource.nid}"
                 >
                   {label}
@@ -176,16 +172,13 @@
           <input
             id="page-number"
             class="inpt w-fit outline-none"
-            bind:value={newQuotation.page}
-            type="number"
+            bind:value={newQuotationPages}
             placeholder="0"
-            min="0"
-            max="999"
           />
         </div>
 
         <div class="flex justify-between">
-          <button class="btn btn-black" type="submit" disabled={!newQuotation.nid}>
+          <button class="btn btn-black" type="submit" disabled={!newQuotationId}>
             {$_("Add Quotation")}
           </button>
           <button class="btn btn-black" type="button" onclick={() => (open = false)}>

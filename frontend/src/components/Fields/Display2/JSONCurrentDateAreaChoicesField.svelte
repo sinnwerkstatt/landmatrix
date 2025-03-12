@@ -5,6 +5,7 @@
   import type { JSONCurrentDateAreaChoicesFieldType } from "$lib/types/data"
 
   import { dateCurrentFormat } from "$components/Fields/Display2/jsonHelpers"
+  import SourcesDisplayButton from "$components/Quotations/SourcesDisplayButton.svelte"
 
   interface Extras {
     choices: ValueLabelEntry[]
@@ -12,17 +13,18 @@
 
   interface Props {
     value?: JSONCurrentDateAreaChoicesFieldType[]
+    fieldname?: string
     extras?: Extras
   }
 
-  let { value = [], extras = { choices: [] } }: Props = $props()
+  let { value = [], extras = { choices: [] }, fieldname = "" }: Props = $props()
 
   const getLabel = (value: string) =>
     extras.choices.find(c => value === c.value)?.label ?? value
 </script>
 
 <ul>
-  {#each value ?? [] as val}
+  {#each value ?? [] as val, i}
     <li class:font-bold={val.current}>
       <span>{dateCurrentFormat(val)}</span>
 
@@ -36,5 +38,7 @@
         {$_("ha")})
       {/if}
     </li>
+
+    <SourcesDisplayButton path={[fieldname, i]} />
   {/each}
 </ul>

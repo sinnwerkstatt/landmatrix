@@ -1038,9 +1038,8 @@ class DealVersion(DealVersionBaseFields, BaseVersion):
     )
     ds_quotations = PydanticJSONField(
         _("Data Source Quotations"),
-        blank=True,
         default=dict,
-        validators=[SchemaValidator(schema.DataSourceQuotationSchema)],
+        validators=[SchemaValidator(schema.QuotationsSchema)],
     )
 
     def __str__(self):

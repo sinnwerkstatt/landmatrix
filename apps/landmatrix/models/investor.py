@@ -383,9 +383,8 @@ class InvestorVersion(BaseVersion):
     # META
     ds_quotations = PydanticJSONField(
         _("Data Source Quotations"),
-        blank=True,
         default=dict,
-        validators=[SchemaValidator(schema.DataSourceQuotationSchema)],
+        validators=[SchemaValidator(schema.QuotationsSchema)],
     )
 
     """ calculated properties """

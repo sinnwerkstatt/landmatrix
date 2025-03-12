@@ -26,6 +26,10 @@ export default tslint.config(
       parserOptions: {
         parser: tslint.parser,
         extraFileExtensions: [".svelte"],
+        svelteFeatures: {
+          // https://github.com/sveltejs/eslint-plugin-svelte/issues/848
+          experimentalGenerics: true,
+        },
       },
     },
     rules: {

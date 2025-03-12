@@ -1,10 +1,10 @@
 <script lang="ts">
-  import type { InvestorHull } from "$lib/types/data"
+  import type { MutableInvestorHull } from "$lib/types/data"
 
   import EditBase from "./Edit.svelte"
 
   interface Props {
-    investor: InvestorHull
+    investor: MutableInvestorHull
   }
 
   let { investor = $bindable() }: Props = $props()

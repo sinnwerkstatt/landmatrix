@@ -1,5 +1,5 @@
 from collections.abc import Sequence
-from datetime import datetime
+from datetime import UTC, datetime
 from enum import Enum
 from typing import Any
 
@@ -55,16 +55,24 @@ class LooseDateStr(str):
         )
 
 
-class QuotationItem(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    nid: str
-    page: int | None = None
-    comment: str | None = None
+def datetime_now() -> datetime:
+    return datetime.now(UTC)
 
 
-class DataSourceQuotationSchema(RootModel):
-    root: dict[str, list[QuotationItem]]
+# Should be called Citation, Attribution or Reference but whatever
+class QuotationItem(BaseModel, extra="forbid"):
+    nid: str  # data source NanoID
+    pages: str = Field(default_factory=str)
+    timestamp: datetime = Field(default_factory=datetime_now)
+
+
+class QuotationsSchema(RootModel):
+    root: dict[
+        str,
+        list[QuotationItem]
+        | dict[str, list[QuotationItem]]
+        | list[list[QuotationItem]],
+    ]
 
 
 class CurrentDateAreaSchema(ListRootModel):

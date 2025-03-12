@@ -6,19 +6,21 @@
 
   import { dateCurrentFormatStartEnd } from "$components/Fields/Display2/jsonHelpers"
   import CircleNotchIcon from "$components/icons/CircleNotchIcon.svelte"
+  import SourcesDisplayButton from "$components/Quotations/SourcesDisplayButton.svelte"
 
   interface Props {
     value?: components["schemas"]["CarbonSequestrationItem"][]
+    fieldname?: string
   }
 
-  let { value = [] }: Props = $props()
+  let { value = [], fieldname = "" }: Props = $props()
 
   const getLabel = (value: string) =>
     $dealChoices.carbon_sequestration.find(c => value === c.value)?.label ?? value
 </script>
 
 <ul class="flex flex-col gap-2">
-  {#each value ?? [] as val}
+  {#each value ?? [] as val, i}
     <li class:font-bold={val.current}>
       <span>{dateCurrentFormatStartEnd(val)}</span>
       {#if val.choices && $dealChoices.carbon_sequestration.length}
@@ -85,6 +87,8 @@
           {val.certification_standard_comment}
         </div>
       {/if}
+
+      <SourcesDisplayButton path={[fieldname, i]} />
     </li>
   {/each}
 </ul>

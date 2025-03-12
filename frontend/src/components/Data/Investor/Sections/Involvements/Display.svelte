@@ -11,16 +11,18 @@
   }
 
   let { investor }: Props = $props()
+
+  let parents = $derived(investor.selected_version.involvements)
 </script>
 
 <section>
   <div class="mb-16 mt-2 space-y-4">
     <h3 class="heading4 my-0">
-      {investor.parents.length}
+      {parents.length}
       {$_("Parents (Involvements as child)")}
     </h3>
     <div class="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
-      {#each investor.parents as involvement}
+      {#each parents as involvement}
         <InvestorCard isParent {involvement} />
       {/each}
     </div>

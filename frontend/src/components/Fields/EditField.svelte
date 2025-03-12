@@ -1,14 +1,13 @@
 <script lang="ts">
   import type { Snippet } from "svelte"
-  import { _ } from "svelte-i18n"
 
-  import { dealFields, investorFields } from "$lib/fieldLookups"
-  import type { DataSource, Model } from "$lib/types/data"
+  import { dealFields, investorFields, isPrefixed } from "$lib/fieldLookups"
+  import type { Model, QuotationItem } from "$lib/types/data"
   import { customIsNull } from "$lib/utils/dataProcessing"
 
   import { getMutableObject } from "$components/Data/stores"
   import Label2 from "$components/Fields/Display2/Label2.svelte"
-  import DSQuotationsModal from "$components/New/DSQuotationsModal.svelte"
+  import SourcesEditButton from "$components/Quotations/SourcesEditButton.svelte"
 
   interface Props {
     value: unknown | null
@@ -50,12 +49,20 @@
   )
 
   const mutableObj = getMutableObject(model)
-  let quotes = $derived($mutableObj?.selected_version.ds_quotations[fieldname] ?? [])
-  let dataSources = $derived(
-    $mutableObj?.selected_version.datasources ?? [],
-  ) as DataSource[]
 
-  let showDSQuotationModal = $state(false)
+  // sanity check if mutableObj is defined -> deal/investor edit view
+  let isEditView = $derived(!!$mutableObj)
+  let isSubmodelField = $derived(isPrefixed(fieldname))
+
+  const getQuotes = (): QuotationItem[] =>
+    ($mutableObj.selected_version.ds_quotations[fieldname] ?? []) as QuotationItem[]
+  const setQuotes = (quotes: QuotationItem[]): void => {
+    if (quotes.length) {
+      $mutableObj.selected_version.ds_quotations[fieldname] = quotes
+    } else {
+      delete $mutableObj.selected_version.ds_quotations[fieldname]
+    }
+  }
 </script>
 
 <div class={wrapperClass} data-fieldname={fieldname}>
@@ -67,26 +74,13 @@
     />
   {/if}
 
-  {#if !disableQuotations}
+  {#if isEditView && !richField.isJson && !isSubmodelField && !disableQuotations}
     <div>
-      <button
-        class="italic text-purple-400 disabled:text-gray-500 dark:disabled:text-gray-100"
-        type="button"
-        onclick={() => {
-          showDSQuotationModal = true
-        }}
-        disabled={customIsNull(value)}
-      >
-        {$_("Sources")}: {quotes.length}
-      </button>
-
-      <DSQuotationsModal
-        bind:open={showDSQuotationModal}
-        bind:quotes={$mutableObj.selected_version.ds_quotations[fieldname]}
-        {dataSources}
-        label={richField.label}
+      <SourcesEditButton
         {fieldname}
-        editable
+        bind:quotes={getQuotes, setQuotes}
+        dataSources={$mutableObj.selected_version.datasources}
+        disabled={customIsNull(value)}
       />
     </div>
   {/if}
