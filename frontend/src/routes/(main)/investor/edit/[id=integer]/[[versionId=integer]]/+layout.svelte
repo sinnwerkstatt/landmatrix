@@ -15,7 +15,7 @@
   import { getMutableObject } from "$components/Data/stores"
   import LoadingSpinner from "$components/icons/LoadingSpinner.svelte"
   import ModalReallyQuit from "$components/ModalReallyQuit.svelte"
-  import ReviewChangesModal from "$components/ReviewChangesModal.svelte"
+  import ReviewChangesModal from "$components/Quotations/ReviewChangesModal.svelte"
 
   let { data, children } = $props()
 
@@ -222,13 +222,15 @@
 
 <ModalReallyQuit bind:open={showReallyQuitOverlay} onclick={() => onClickClose(true)} />
 
-<ReviewChangesModal
-  bind:open={showReviewChangesModal}
-  onclick={onClickSave}
-  oldObject={data.investor}
-  newObject={mutableInvestor}
-  model="investor"
-/>
+{#if showReviewChangesModal}
+  <ReviewChangesModal
+    bind:open={showReviewChangesModal}
+    onclick={onClickSave}
+    oldObject={data.investor}
+    newObject={mutableInvestor}
+    model="investor"
+  />
+{/if}
 
 <style>
   .editgrid {

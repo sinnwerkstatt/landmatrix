@@ -17,7 +17,7 @@
   import CountryField from "$components/Fields/Display2/CountryField.svelte"
   import LoadingSpinner from "$components/icons/LoadingSpinner.svelte"
   import ModalReallyQuit from "$components/ModalReallyQuit.svelte"
-  import ReviewChangesModal from "$components/ReviewChangesModal.svelte"
+  import ReviewChangesModal from "$components/Quotations/ReviewChangesModal.svelte"
 
   let { data, children } = $props()
 
@@ -222,12 +222,14 @@
 
 <ModalReallyQuit bind:open={showReallyQuitOverlay} onclick={() => onClickClose(true)} />
 
-<ReviewChangesModal
-  bind:open={showReviewChangesModal}
-  onclick={onClickSave}
-  oldObject={data.deal}
-  newObject={mutableDeal}
-/>
+{#if showReviewChangesModal}
+  <ReviewChangesModal
+    bind:open={showReviewChangesModal}
+    onclick={onClickSave}
+    oldObject={data.deal}
+    newObject={mutableDeal}
+  />
+{/if}
 
 <style>
   .editgrid {
