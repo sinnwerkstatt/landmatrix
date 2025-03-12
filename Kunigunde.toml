@@ -1,0 +1,15 @@
+[local]
+#skip-migrate-on-resetdb = false
+
+[production]
+host = "landmatrix.org"
+user = "landmatrix"
+dbname = "landmatrix"
+dbuser = "landmatrix"
+
+
+[staging]
+host = "dev.landmatrix.org"
+user = "landmatrix"
+dbname = "landmatrix"
+dbuser = "landmatrix"
