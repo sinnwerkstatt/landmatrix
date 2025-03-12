@@ -19,9 +19,7 @@
   export const itemId = "id"
 
   interface Props {
-    // eslint-disable-next-line no-undef
     items?: T[]
-    // eslint-disable-next-line no-undef
     itemFilter?: FilterFn<T> | undefined
     value?: Item | null
     label?: string
@@ -32,9 +30,7 @@
     heightInPx?: number
     placeholder?: string
     name?: string | undefined
-    // eslint-disable-next-line no-undef
     selectionSlot?: Snippet<[T]>
-    // eslint-disable-next-line no-undef
     itemSlot?: Snippet<[T]>
     oninput?: (e: CustomEvent) => void
     onclear?: (e: CustomEvent) => void

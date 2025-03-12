@@ -20,7 +20,6 @@
   import ChevronDownIcon from "$components/icons/ChevronDownIcon.svelte"
 
   interface Props {
-    // eslint-disable-next-line no-undef
     items?: T[]
     columns: Column[]
     sortBy?: string
@@ -28,7 +27,6 @@
     headerHeightInPx?: number
     colWidthInPx?: number
     rowClasses?: string
-    // eslint-disable-next-line no-undef
     field?: Snippet<[{ fieldName: string; obj: T }]>
   }
 
