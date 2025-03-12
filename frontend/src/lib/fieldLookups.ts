@@ -65,6 +65,7 @@ type Extras = { [key: string]: unknown } | Any
 interface DisplayFieldProps {
   value: Any
   extras?: Extras
+  fieldname?: string
 }
 
 interface EditFieldProps extends DisplayFieldProps {
@@ -77,21 +78,34 @@ interface Field {
   displayField: Component<DisplayFieldProps>
   editField?: Component<EditFieldProps>
   label: string
-  useQuotation?: boolean
   extras?: Extras
   displayContextHelp?: string
   editContextHelp?: string
+  isJson?: boolean
 }
 
 type FieldLookup = { [key: string]: Field }
 
+export const SUBMODELS_FIELDS = [
+  "location",
+  "contract",
+  "datasource",
+  "involvement",
+] as const
+
+export type SubmodelField = (typeof SUBMODELS_FIELDS)[number]
+export type SubmodelFieldName = `${SubmodelField}s`
+
 export const prefixObjectKeys = <T extends Record<string, unknown>>(
   obj: T,
-  prefix: string,
+  prefix: SubmodelField,
 ): Record<string, unknown> =>
   Object.fromEntries(
     Object.entries(obj).map(([key, value]) => [`${prefix}.${key}`, value]),
   )
+
+export const isPrefixed = (fieldName: string) =>
+  SUBMODELS_FIELDS.some(f => fieldName.startsWith(f + "."))
 
 export const commonHullFields = derived(
   [_],
@@ -543,7 +557,6 @@ export const dealFields = derived(
       editField: DecimalEditField,
       label: $_("Intended size"),
       extras: { unit: $_("ha") },
-      useQuotation: true,
       displayContextHelp: "display:intended_size",
       editContextHelp: "edit:intended_size",
     },
@@ -553,6 +566,7 @@ export const dealFields = derived(
       label: $_("Size under contract (leased or purchased area)"),
       displayContextHelp: "display:contract_size",
       editContextHelp: "edit:contract_size",
+      isJson: true,
     },
     production_size: {
       displayField: JSONCurrentDateAreaField,
@@ -560,6 +574,7 @@ export const dealFields = derived(
       label: $_("Size in operation (production)"),
       displayContextHelp: "display:production_size",
       editContextHelp: "edit:production_size",
+      isJson: true,
     },
     land_area_comment: {
       displayField: TextField,
@@ -574,6 +589,7 @@ export const dealFields = derived(
       extras: { choices: $dealChoices.intention_of_investment },
       displayContextHelp: "display:intention_of_investment",
       editContextHelp: "edit:intention_of_investment",
+      isJson: true,
     },
     intention_of_investment_comment: {
       displayField: TextField,
@@ -616,6 +632,7 @@ export const dealFields = derived(
       extras: { choices: $dealChoices.negotiation_status },
       displayContextHelp: "display:negotiation_status",
       editContextHelp: "edit:negotiation_status",
+      isJson: true,
     },
     negotiation_status_comment: {
       displayField: TextField,
@@ -632,6 +649,7 @@ export const dealFields = derived(
       },
       displayContextHelp: "display:implementation_status",
       editContextHelp: "edit:implementation_status",
+      isJson: true,
     },
     implementation_status_comment: {
       displayField: TextField,
@@ -733,6 +751,7 @@ export const dealFields = derived(
       label: $_("On leased area/farmers/households"),
       displayContextHelp: "display:on_the_lease",
       editContextHelp: "edit:on_the_lease",
+      isJson: true,
     },
     off_the_lease_state: {
       displayField: BooleanField,
@@ -748,6 +767,7 @@ export const dealFields = derived(
       label: $_("Not on leased area/farmers/households (out-grower)"),
       displayContextHelp: "display:off_the_lease",
       editContextHelp: "edit:off_the_lease",
+      isJson: true,
     },
     contract_farming_comment: {
       displayField: TextField,
@@ -794,6 +814,7 @@ export const dealFields = derived(
       label: $_("Current total number of jobs/employees/ daily/seasonal workers"),
       displayContextHelp: "display:total_jobs_current",
       editContextHelp: "edit:total_jobs_current",
+      isJson: true,
     },
     total_jobs_created_comment: {
       displayField: TextField,
@@ -839,6 +860,7 @@ export const dealFields = derived(
       label: $_("Current foreign number of jobs/employees/ daily/seasonal workers"),
       displayContextHelp: "display:foreign_jobs_current",
       editContextHelp: "edit:foreign_jobs_current",
+      isJson: true,
     },
     foreign_jobs_created_comment: {
       displayField: TextField,
@@ -884,6 +906,7 @@ export const dealFields = derived(
       label: $_("Current domestic number of jobs/employees/ daily/seasonal workers"),
       displayContextHelp: "display:domestic_jobs_current",
       editContextHelp: "edit:domestic_jobs_current",
+      isJson: true,
     },
     domestic_jobs_created_comment: {
       displayField: TextField,
@@ -906,6 +929,7 @@ export const dealFields = derived(
       label: $_("Actors involved in the negotiation / admission process"),
       displayContextHelp: "display:involved_actors",
       editContextHelp: "edit:involved_actors",
+      isJson: true,
     },
     project_name: {
       displayField: TextField,
@@ -1179,6 +1203,7 @@ export const dealFields = derived(
       extras: { choices: $dealChoices.crops, multipleChoices: true },
       displayContextHelp: "display:crops",
       editContextHelp: "edit:crops",
+      isJson: true,
     },
     crops_comment: {
       displayField: TextField,
@@ -1193,6 +1218,7 @@ export const dealFields = derived(
       extras: { choices: $dealChoices.animals, multipleChoices: true },
       displayContextHelp: "display:animals",
       editContextHelp: "edit:animals",
+      isJson: true,
     },
     animals_comment: {
       displayField: TextField,
@@ -1207,6 +1233,7 @@ export const dealFields = derived(
       extras: { choices: $dealChoices.minerals, multipleChoices: true },
       displayContextHelp: "display:mineral_resources",
       editContextHelp: "edit:mineral_resources",
+      isJson: true,
     },
     mineral_resources_comment: {
       displayField: TextField,
@@ -1221,6 +1248,7 @@ export const dealFields = derived(
       extras: { choices: $dealChoices.crops },
       displayContextHelp: "display:contract_farming_crops",
       editContextHelp: "edit:contract_farming_crops",
+      isJson: true,
     },
     contract_farming_crops_comment: {
       displayField: TextField,
@@ -1235,6 +1263,7 @@ export const dealFields = derived(
       extras: { choices: $dealChoices.animals },
       displayContextHelp: "display:contract_farming_animals",
       editContextHelp: "edit:contract_farming_animals",
+      isJson: true,
     },
     contract_farming_animals_comment: {
       displayField: TextField,
@@ -1248,6 +1277,7 @@ export const dealFields = derived(
       label: $_("Electricity generation"),
       displayContextHelp: "display:electricity_generation",
       editContextHelp: "edit:electricity_generation",
+      isJson: true,
     },
     electricity_generation_comment: {
       displayField: TextField,
@@ -1261,6 +1291,7 @@ export const dealFields = derived(
       label: $_("Carbon sequestration/offsetting"),
       displayContextHelp: "display:carbon_sequestration",
       editContextHelp: "edit:carbon_sequestration",
+      isJson: true,
     },
     carbon_sequestration_comment: {
       displayField: TextField,
