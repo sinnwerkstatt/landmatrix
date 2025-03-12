@@ -2,11 +2,7 @@
   import { _ } from "svelte-i18n"
 
   import { simpleInvestors } from "$lib/stores"
-  import {
-    InvolvementRole,
-    type Involvement,
-    type MutableInvestorHull,
-  } from "$lib/types/data"
+  import { InvolvementRole, type MutableInvestorHull } from "$lib/types/data"
 
   import SubmodelEditField from "$components/Fields/SubmodelEditField.svelte"
 
@@ -20,17 +16,23 @@
 
   let { investor = $bindable(), tertiary = false }: Props = $props()
 
-  let label = $derived(tertiary ? $_("Tertiary investor/lender") : $_("Parent company"))
+  const label = $derived(
+    tertiary ? $_("Tertiary investor/lender") : $_("Parent company"),
+  )
+  const involvements = $derived(investor.selected_version.involvements)
+  const parents = $derived(involvements.filter(i => i.role === InvolvementRole.PARENT))
+  const lender = $derived(involvements.filter(i => i.role === InvolvementRole.LENDER))
 
-  let filterFn = (involvement: Involvement) =>
-    involvement.child_investor_id === investor.id &&
-    involvement.role === (tertiary ? InvolvementRole.LENDER : InvolvementRole.PARENT)
-
-  // Note: Involvements are parents by definition!
-  let involvements = $state(investor.selected_version.involvements)
+  let entries = $state(
+    investor.selected_version.involvements.filter(
+      i => i.role === (tertiary ? InvolvementRole.LENDER : InvolvementRole.PARENT),
+    ),
+  )
 
   const onchange = () => {
-    investor.selected_version.involvements = involvements
+    investor.selected_version.involvements = tertiary
+      ? [...parents, ...entries]
+      : [...lender, ...entries]
   }
 </script>
 
@@ -38,7 +40,7 @@
   model="investor"
   fieldname="involvements"
   {label}
-  bind:entries={involvements}
+  bind:entries
   createEntry={createInvolvement(tertiary, investor.id)}
   extras={{
     excludeIds: [
@@ -47,7 +49,6 @@
       investor.id,
     ],
   }}
-  {filterFn}
   isEmpty={isEmptyInvolvement}
   entryComponent={Entry}
   {onchange}

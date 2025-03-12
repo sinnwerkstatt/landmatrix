@@ -1,8 +1,7 @@
 const SUBMODEL_ID_KEYS = ["id", "nid"] as const
 
-export type SubmodelIdKeys = (typeof SUBMODEL_ID_KEYS)[number]
-export type SubmodelEntry = object & {
-  [key in SubmodelIdKeys]?: number | string | null
+export interface SubmodelEntry {
+  nid: string
 }
 
 export const sum = <T extends SubmodelEntry>(items: T[], prop: keyof T): number =>

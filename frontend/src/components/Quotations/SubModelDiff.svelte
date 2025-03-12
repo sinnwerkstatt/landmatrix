@@ -1,8 +1,7 @@
 <script lang="ts">
-  import { detailedDiff } from "deep-object-diff"
+  import { diff } from "deep-object-diff"
   import { _ } from "svelte-i18n"
 
-  import { getTypedKeys } from "$lib/helpers"
   import type { DataSource, SubmodelQuotations } from "$lib/types/data"
 
   import ChangedFieldItem from "$components/Quotations/ChangedFieldItem.svelte"
@@ -25,14 +24,6 @@
     newDataSources?: DataSource[]
   }
 
-  type DiffType = keyof ReturnType<typeof detailedDiff>
-
-  const TYPE_LABELS = $derived({
-    added: $_("added"),
-    deleted: $_("deleted"),
-    updated: $_("updated"),
-  })
-
   let {
     key,
     label,
@@ -47,55 +38,50 @@
   const createNidLookup = (entries: SubModelEntry[]) =>
     entries.reduce((acc, current) => ({ ...acc, [current.nid]: current }), {})
 
-  const entriesDiff = $derived(
-    detailedDiff(createNidLookup(oldEntries), createNidLookup(newEntries)),
-  )
-  const quotationsDiff = $derived(detailedDiff(oldQuotations, newQuotations))
+  const oldEntriesLookup = $derived(createNidLookup(oldEntries))
+  const newEntriesLookup = $derived(createNidLookup(newEntries))
+  const entriesDiff = $derived(diff(oldEntriesLookup, newEntriesLookup))
 
-  const createLabel = (type: DiffType, nid: string) => {
-    const originalIdx = oldEntries.findIndex(obj => obj.nid === nid)
-    const updatedIdx = newEntries.findIndex(obj => obj.nid === nid)
+  const quotationsDiff = $derived(diff(oldQuotations, newQuotations))
 
-    const lookup: { [key in DiffType]: number } = {
-      added: updatedIdx,
-      updated: updatedIdx,
-      deleted: originalIdx,
-    }
-    return `${lookup[type] + 1}. ${label}`
-  }
+  const mergedKeys = $derived(mergeKeys(entriesDiff, quotationsDiff))
 </script>
 
-<div class="flex flex-col gap-2">
-  {#each getTypedKeys(TYPE_LABELS) as type}
-    <!--TODO: Fix can update value but add quotation for same nid-->
-    {@const hasValueChange = Object.keys(entriesDiff[type]).length > 0}
-    {@const mergedKeys = mergeKeys(entriesDiff[type], quotationsDiff[type])}
+<div class="flex flex-col gap-2 pl-5">
+  {#each mergedKeys as nid}
+    {@const isInOld = !!(nid in oldEntriesLookup)}
+    {@const isInNew = !!(nid in newEntriesLookup)}
+    {@const isAdded = !isInOld && isInNew}
+    {@const isDeleted = isInOld && !isInNew}
+    {@const hasValueChange = !!(nid in entriesDiff)}
 
-    {#each mergedKeys as nid}
-      {@const label = createLabel(type, nid)}
-
-      <ChangedFieldItem
-        selectable={type !== "deleted" && key !== "datasources"}
-        onClick={() => toggleSelected([key, nid])}
-        oldQuotes={oldQuotations[nid]}
-        newQuotes={newQuotations[nid]}
-        {oldDataSources}
-        {newDataSources}
-      >
-        <span class="flex flex-col text-left">
-          <span>
-            {label}
-            <small class="font-oswald text-sm text-gray-500">
-              #{nid}
-            </small>
-          </span>
-          {#if hasValueChange}
-            {TYPE_LABELS[type]}
+    <ChangedFieldItem
+      selectable={!isDeleted && key !== "datasources"}
+      onClick={() => toggleSelected([key, nid])}
+      oldQuotes={oldQuotations[nid]}
+      newQuotes={newQuotations[nid]}
+      {oldDataSources}
+      {newDataSources}
+    >
+      <span class="flex flex-col text-left">
+        <span>
+          {label}
+          <small class="font-oswald text-sm text-gray-500">
+            #{nid}
+          </small>
+        </span>
+        <span class="italic">
+          {#if isDeleted}
+            {$_("Deleted")}
+          {:else if isAdded}
+            {$_("Added")}
+          {:else if hasValueChange}
+            {$_("Updated")}
           {:else}
-            <span class="italic">{$_("No value change")}</span>
+            {$_("No value change")}
           {/if}
         </span>
-      </ChangedFieldItem>
-    {/each}
+      </span>
+    </ChangedFieldItem>
   {/each}
 </div>

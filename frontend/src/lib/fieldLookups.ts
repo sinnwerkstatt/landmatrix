@@ -499,6 +499,7 @@ export const investorFields = derived(
     opencorporates: {
       displayField: TextField,
       editField: TextEditField,
+      extras: { url: true },
       label: $_("Opencorporates link"),
       displayContextHelp: "display:investor:opencorporates",
       editContextHelp: "edit:investor:opencorporates",

@@ -25,7 +25,7 @@
     Quotations,
     SubmodelQuotations,
   } from "$lib/types/data"
-  import { isEmptySubmodel, type SubmodelIdKeys } from "$lib/utils/dataProcessing"
+  import { isEmptySubmodel } from "$lib/utils/dataProcessing"
   import { scrollEntryIntoView } from "$lib/utils/domHelpers"
   import { removeAndCleanQuotations } from "$lib/utils/quotations"
 
@@ -44,10 +44,8 @@
     createEntry: (nid: string) => T
     entryComponent: X
     extras?: ExtraProps<X>
-    filterFn?: (entry: T) => boolean
     isEmpty?: (entry: T) => boolean
     selectedEntryId?: string | undefined // for external reference
-    entryIdKey?: SubmodelIdKeys
     extraHeader?: Snippet<[T]>
     onchange?: () => void
   }
@@ -60,10 +58,8 @@
     createEntry,
     entryComponent,
     extras,
-    filterFn = () => true,
     isEmpty = isEmptySubmodel,
     selectedEntryId = $bindable(),
-    entryIdKey = "nid",
     extraHeader,
     onchange,
   }: Props = $props()
@@ -86,7 +82,7 @@
       return
     }
 
-    const currentIDs = entries.map(entry => `${entry[entryIdKey]}`)
+    const currentIDs = entries.map(entry => entry.nid)
     const newEntryId = newNanoid(currentIDs)
     entries = [...entries, createEntry(newEntryId)]
     onchange?.()
@@ -94,9 +90,7 @@
   }
 
   const removeEntry = (id: string | null) => {
-    const entry = entries.find(entry => `${entry[entryIdKey]}` === id)
-
-    if (!id || !entry) return
+    if (!id) return
 
     if (isDataSource) {
       // TODO: fix me
@@ -108,7 +102,7 @@
       setQuotes(id, [])
     }
 
-    entries = entries.filter(x => `${x[entryIdKey]}` !== id)
+    entries = entries.filter(x => x.nid !== id)
 
     showConfirmDeletionModal = false
     toBeDeletedId = null
@@ -169,11 +163,10 @@
 
 <section class="w-full">
   <div class="flex w-full flex-col gap-2">
-    {#each entries.filter(filterFn) as entry, index (entry[entryIdKey])}
-      {@const idAsString = `${entry[entryIdKey]}`}
-      {@const isSelectedEntry = selectedEntryId === idAsString}
+    {#each entries as entry, index}
+      {@const isSelectedEntry = selectedEntryId === entry.nid}
 
-      <article id={idAsString}>
+      <article id={entry.nid}>
         <header
           class="flex items-center bg-gray-50 p-1 dark:bg-gray-700"
           class:animate-fadeToWhite={isSelectedEntry}
@@ -182,10 +175,10 @@
           <h3 class="mb-0 flex-grow">
             <button
               aria-expanded={isSelectedEntry}
-              aria-controls="form-{idAsString}"
+              aria-controls="form-{entry.nid}"
               class="inline-flex w-full flex-row gap-1 text-left"
               type="button"
-              onclick={() => toggleEntry(idAsString)}
+              onclick={() => toggleEntry(entry.nid)}
             >
               <span
                 class="transition-duration-300 self-center p-2 transition-transform"
@@ -199,7 +192,7 @@
                     {index + 1}. {label}
                   </span>
                   <span class="font-mono text-sm text-gray-500">
-                    #{idAsString}
+                    #{entry.nid}
                   </span>
                 </span>
                 <span>
@@ -214,9 +207,9 @@
             onclick={() => {
               if (!isEmpty(entry)) {
                 showConfirmDeletionModal = true
-                toBeDeletedId = idAsString
+                toBeDeletedId = entry.nid
               } else {
-                removeEntry(idAsString)
+                removeEntry(entry.nid)
               }
             }}
             type="button"
@@ -225,7 +218,7 @@
           </button>
         </header>
 
-        <form id="form-{idAsString}">
+        <form id="form-{entry.nid}">
           {#if isSelectedEntry}
             {@const SvelteComp = entryComponent}
 
@@ -233,10 +226,10 @@
               {#if !isDataSource}
                 <div class="my-2 ml-4">
                   <SourcesEditButton
-                    fieldname="{fieldname}-{idAsString}"
+                    fieldname="{fieldname}-{entry.nid}"
                     bind:quotes={
-                      () => getQuotes(idAsString), // force line break
-                      quotes => setQuotes(idAsString, quotes)
+                      () => getQuotes(entry.nid), // force line break
+                      quotes => setQuotes(entry.nid, quotes)
                     }
                     dataSources={$mutableObj.selected_version.datasources}
                   />

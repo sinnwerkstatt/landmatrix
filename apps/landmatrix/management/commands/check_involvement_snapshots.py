@@ -12,6 +12,7 @@ class Command(BaseCommand):
         for v in InvestorVersion.objects.all():
             for inv in v.involvements_snapshot:
                 try:
+                    assert inv["nid"] is not None  # noqa: S101
                     assert inv["child_investor_id"] == v.investor_id  # noqa: S101
                 except AssertionError:
                     print(
@@ -24,13 +25,18 @@ class Command(BaseCommand):
 
         print("Checking involvement models...")
         for i in InvestorHull.objects.all():
-            parents = [p.id for p in i.get_parents()]
+            parent_ids = [p.id for p in i.get_parents()]
+            parent_nids = [p.nid for p in i.get_parents()]
+            try:
+                assert all(parent_nids)  # noqa: S101
+            except AssertionError:
+                print(i.id)
 
             if v := i.active_version:
                 invos = v.involvements_snapshot
                 try:
-                    assert len(parents) == len(invos)  # noqa: S101
-                    assert set(parents) == {p["id"] for p in invos}  # noqa: S101
+                    assert len(parent_ids) == len(invos)  # noqa: S101
+                    assert set(parent_ids) == {p["id"] for p in invos}  # noqa: S101
                 except AssertionError:
                     print(i.id, v.id)
 
