@@ -51,7 +51,9 @@
       investor.selected_version.datasources ?? []
     ).filter(x => !isEmptyDataSource(x as InvestorDataSource))
 
-    investor.parents = (investor.parents ?? []).filter(x => !isEmptyInvolvement(x))
+    investor.selected_version.involvements = (
+      investor.selected_version.involvements ?? []
+    ).filter(x => !isEmptyInvolvement(x))
   }
 
   const saveInvestor = async (investor: MutableInvestorHull): Promise<boolean> => {
@@ -67,10 +69,7 @@
         method: "PUT",
         credentials: "include",
         body: JSON.stringify({
-          version: {
-            ...investor.selected_version,
-            involvements: investor.parents,
-          },
+          version: investor.selected_version,
         }),
         headers: {
           "X-CSRFToken": await getCsrfToken(),

@@ -41,8 +41,8 @@
   let fromDSs = $derived(data.fromVersion.datasources.map(cleanDataSource))
   let toDSs = $derived(data.toVersion.datasources.map(cleanDataSource))
 
-  let fromInvos = $derived(data.fromVersion.involvements_snapshot.map(cleanInvolvement))
-  let toInvos = $derived(data.toVersion.involvements_snapshot.map(cleanInvolvement))
+  let fromInvos = $derived(data.fromVersion.involvements.map(cleanInvolvement))
+  let toInvos = $derived(data.toVersion.involvements.map(cleanInvolvement))
 </script>
 
 <svelte:head>

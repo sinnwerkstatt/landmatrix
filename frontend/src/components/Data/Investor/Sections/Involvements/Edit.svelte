@@ -26,22 +26,23 @@
     involvement.child_investor_id === investor.id &&
     involvement.role === (tertiary ? InvolvementRole.LENDER : InvolvementRole.PARENT)
 
-  let investors = $state(investor.parents)
+  // Note: Involvements are parents by definition!
+  let involvements = $state(investor.selected_version.involvements)
 
   const onchange = () => {
-    investor.parents = investors
+    investor.selected_version.involvements = involvements
   }
 </script>
 
 <SubmodelEditField
   model="investor"
-  fieldname="parents"
+  fieldname="involvements"
   {label}
-  bind:entries={investors}
+  bind:entries={involvements}
   createEntry={createInvolvement(tertiary, investor.id)}
   extras={{
     excludeIds: [
-      ...investor.parents.map(i => i.parent_investor_id),
+      ...involvements.map(i => i.parent_investor_id),
       ...investor.children.map(i => i.child_investor_id),
       investor.id,
     ],
