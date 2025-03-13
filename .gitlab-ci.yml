@@ -37,8 +37,11 @@ django tests and coverage:
       alias: postgres
   script:
     - uv sync
-#    - uv run ./manage.py migrate --noinput
-    - uv run pytest -x -p warnings --cov=apps --cov-report=term-missing
+    - uv run ./manage.py migrate --noinput
+    - >
+      uv run pytest -x -p warnings
+      --cov=apps --cov-report=term-missing
+      --ds="$DJANGO_SETTINGS_MODULE"
   coverage: /^TOTAL.*\s+(\d+\%)$/
 
 frontend test:
