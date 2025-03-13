@@ -146,7 +146,7 @@ django_settings_module = "config.settings.dev"
 
 
 [tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "config.settings.ci"
+DJANGO_SETTINGS_MODULE = "config.settings.dev"
 python_files = ["test_*.py"]
 addopts = ["--reuse-db", "-p no:warnings"]
 #filterwarnings = [

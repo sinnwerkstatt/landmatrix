@@ -180,7 +180,7 @@ class BaseVersion(models.Model):
     def copy_to_new_draft(self, created_by_id: int) -> None:
         now = timezone.now()
 
-        self.id = None
+        self.id = None  # marks self as new
         self.status = VersionStatus.DRAFT
         self.created_at = now
         self.created_by_id = created_by_id

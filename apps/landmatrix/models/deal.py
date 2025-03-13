@@ -1170,6 +1170,8 @@ class DealVersion(DealVersionBaseFields, BaseVersion):
     def copy_to_new_draft(self, created_by_id: int):
         old_self = DealVersion.objects.get(pk=self.pk)
         super().copy_to_new_draft(created_by_id)
+
+        self.fully_updated = False
         self.save()
 
         # copy foreignkey-relations
