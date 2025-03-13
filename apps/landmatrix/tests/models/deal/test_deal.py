@@ -121,3 +121,17 @@ def test_calculate_initiation_year():
         "Initiation year is 2016 - earliest date of all dated items "
         "with valid negotiation or implementation choice."
     )
+
+
+def test_reset_fully_updated_on_deal_copy(admin2):
+    spain = Country.objects.get(id=724, name="Spain")
+    deal = DealHull.objects.create(country=spain)
+    version: DealVersion = DealVersion.objects.create(
+        deal=deal,
+        created_by=admin2,
+        fully_updated=True,
+    )
+
+    version.copy_to_new_draft(admin2.id)
+
+    assert not version.fully_updated, "The new version is not fully updated."
