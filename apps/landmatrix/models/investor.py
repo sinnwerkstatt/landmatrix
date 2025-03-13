@@ -107,7 +107,7 @@ class InvestorHull(BaseHull):
         return self.active_version or self.draft_version
 
     def add_draft(self, created_by: User = None) -> "InvestorVersion":
-        dv = InvestorVersion.objects.create(
+        dv: InvestorVersion = InvestorVersion.objects.create(
             investor=self,
             created_by=created_by,
             modified_by=created_by,
@@ -422,29 +422,7 @@ class InvestorVersion(BaseVersion):
             investor.draft_version = None
             investor.active_version = self
 
-            seen_involvements = set()
-            for invo in self.involvements_snapshot:
-                try:
-                    i1 = Involvement.objects.get(id=invo["id"])
-                except Involvement.DoesNotExist:
-                    i1 = Involvement(child_investor=investor)
-
-                i1.parent_investor_id = invo["parent_investor_id"]
-                i1.role = invo["role"]
-                i1.investment_type = invo["investment_type"]
-                i1.percentage = invo["percentage"]
-                i1.loans_amount = invo["loans_amount"]
-                i1.loans_currency_id = invo["loans_currency_id"]
-                i1.loans_date = invo["loans_date"]
-                i1.parent_relation = invo["parent_relation"]
-                i1.comment = invo["comment"]
-                i1.save()
-
-                seen_involvements.add(i1.id)
-
-            Involvement.objects.filter(child_investor=investor).exclude(
-                id__in=seen_involvements
-            ).delete()
+            self._apply_snapshot()
 
             # recreate snapshot
             self.involvements_snapshot = self._create_snapshot()
@@ -484,6 +462,32 @@ class InvestorVersion(BaseVersion):
             status_after=self.status,
             comment=comment,
         )
+
+    def _apply_snapshot(self):
+        seen_involvements = set()
+
+        for invo in self.involvements_snapshot:
+            try:
+                i1 = Involvement.objects.get(id=invo["id"])
+            except Involvement.DoesNotExist:
+                i1 = Involvement(child_investor=self.investor)
+
+            i1.parent_investor_id = invo["parent_investor_id"]
+            i1.role = invo["role"]
+            i1.investment_type = invo["investment_type"]
+            i1.percentage = invo["percentage"]
+            i1.loans_amount = invo["loans_amount"]
+            i1.loans_currency_id = invo["loans_currency_id"]
+            i1.loans_date = invo["loans_date"]
+            i1.parent_relation = invo["parent_relation"]
+            i1.comment = invo["comment"]
+            i1.save()
+
+            seen_involvements.add(i1.id)
+
+        Involvement.objects.filter(child_investor=self.investor).exclude(
+            id__in=seen_involvements
+        ).delete()
 
     def _create_snapshot(self) -> list[dict]:
         from apps.landmatrix.serializers import InvolvementSerializer
