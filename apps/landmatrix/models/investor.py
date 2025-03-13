@@ -464,7 +464,13 @@ class InvestorVersion(BaseVersion):
         )
 
     def _apply_snapshot(self):
-        seen_involvements = set()
+        existing_ids = Involvement.objects.filter(
+            id__in=[invo["id"] for invo in self.involvements_snapshot if invo["id"]]
+        ).values_list("id", flat=True)
+
+        Involvement.objects.filter(child_investor=self.investor).exclude(
+            id__in=existing_ids
+        ).delete()
 
         for invo in self.involvements_snapshot:
             try:
@@ -472,6 +478,7 @@ class InvestorVersion(BaseVersion):
             except Involvement.DoesNotExist:
                 i1 = Involvement(child_investor=self.investor)
 
+            i1.nid = invo["nid"]
             i1.parent_investor_id = invo["parent_investor_id"]
             i1.role = invo["role"]
             i1.investment_type = invo["investment_type"]
@@ -482,12 +489,6 @@ class InvestorVersion(BaseVersion):
             i1.parent_relation = invo["parent_relation"]
             i1.comment = invo["comment"]
             i1.save()
-
-            seen_involvements.add(i1.id)
-
-        Involvement.objects.filter(child_investor=self.investor).exclude(
-            id__in=seen_involvements
-        ).delete()
 
     def _create_snapshot(self) -> list[dict]:
         from apps.landmatrix.serializers import InvolvementSerializer
