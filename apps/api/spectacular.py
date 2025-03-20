@@ -43,4 +43,4 @@ def preprocess_only_get(endpoints: Iterable[Endpoint]) -> Iterable[Endpoint]:
 
 
 def preprocess_only_public(endpoints: Iterable[Endpoint]) -> Iterable[Endpoint]:
-    return filter(is_wagtail, endpoints)
+    return filter(is_public, endpoints)
