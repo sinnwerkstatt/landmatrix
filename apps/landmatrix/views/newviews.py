@@ -239,8 +239,6 @@ class DealVersionViewSet(VersionViewSet):
         if not dv1.is_current_draft():
             raise PermissionDenied("EDITING_OLD_VERSION")
 
-        # TODO Marcus: are permission checks missing here too?
-
         to_user_id = request.data.get("toUser")
 
         dv1.change_status(
