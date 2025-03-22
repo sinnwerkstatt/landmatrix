@@ -6,11 +6,11 @@
   // TODO: Refactor and use more specific helpers
   import { getQuotations, setAndCleanQuotations } from "$lib/utils/quotations"
 
-  import DSQuotationsPopup from "$components/Quotations/DataSourcePopup.svelte"
   import {
     anySelected,
     getSelectedPaths,
   } from "$components/Quotations/selectedPaths.svelte"
+  import SubmodelPopup from "$components/Quotations/SubmodelPopup.svelte"
 
   interface Props {
     dataSources: DataSource[]
@@ -81,10 +81,13 @@
         title={!anySelected() ? $_("Select a change to attribute data source") : ""}
         onclick={() => onSelect(dataSource.nid)}
       >
-        <span class="flex-grow">
-          {index}. {dataSource.nid}
+        <span class="my-1 inline-flex flex-grow flex-col">
+          {index}. {$_("Data Source")}
+          <small class="text-white-500 text-sm">
+            #{dataSource.nid}
+          </small>
         </span>
-        <DSQuotationsPopup {dataSource} {label} />
+        <SubmodelPopup key="datasources" entry={dataSource} {label} />
       </button>
     </li>
   {/each}

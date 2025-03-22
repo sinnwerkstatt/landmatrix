@@ -1,10 +1,20 @@
+<script lang="ts" module>
+  export const SUBMODEL_KEYS = [
+    "locations",
+    "contracts",
+    "datasources",
+    "involvements",
+  ] as const
+
+  export type SubmodelKey = (typeof SUBMODEL_KEYS)[number]
+</script>
+
 <script lang="ts">
   import { diff } from "deep-object-diff"
   import { _ } from "svelte-i18n"
   import type { Writable } from "svelte/store"
 
   import { dealFields, investorFields } from "$lib/fieldLookups"
-  import { getTypedKeys } from "$lib/helpers.js"
   import type {
     DealHull,
     FieldQuotations,
@@ -50,14 +60,12 @@
 
   const mutableObj = getMutableObject(model)
 
-  const SUBMODEL_LABELS = $derived({
+  const submodelLabels: { [key in SubmodelKey]: string } = $derived({
     locations: $_("Location"),
     contracts: $_("Contract"),
     datasources: $_("Data Source"),
     involvements: $_("Involvement"),
   })
-  type SubmodelKey = keyof typeof SUBMODEL_LABELS
-  const submodelKeys = $derived(getTypedKeys(SUBMODEL_LABELS))
 
   const jsonKeys = $derived(
     Object.entries(model === "deal" ? $dealFields : $investorFields)
@@ -66,7 +74,7 @@
   )
 
   const isSubmodelKey = (key: string): key is SubmodelKey =>
-    submodelKeys.includes(key as SubmodelKey)
+    SUBMODEL_KEYS.includes(key as SubmodelKey)
   const isJsonKey = (key: string) => jsonKeys.includes(key)
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -157,7 +165,7 @@
           {#if isSubmodelKey(key)}
             <SubModelDiff
               {key}
-              label={SUBMODEL_LABELS[key]}
+              label={submodelLabels[key]}
               oldEntries={getValues(key, oldObject)}
               newEntries={getValues(key, $newObject)}
               oldQuotations={getQuotations<SubmodelQuotations>(key, oldQuotations)}
