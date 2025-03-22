@@ -170,6 +170,7 @@ class DealVersionSerializer(MyModelSerializer):
             "initiation_year",
             "forest_concession",
             "transnational",
+            "fully_updated",
             # base version mixin
             "created_at",
             "created_by",

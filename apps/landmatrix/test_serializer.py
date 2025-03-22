@@ -9,7 +9,11 @@ from apps.landmatrix.models.country import Country
 from apps.landmatrix.models.currency import Currency
 from apps.landmatrix.models.deal import DealHull, DealVersion
 from apps.landmatrix.models.investor import InvestorHull, Involvement
-from apps.landmatrix.serializers import InvestorSerializer, InvolvementSerializer
+from apps.landmatrix.serializers import (
+    DealVersionSerializer,
+    InvestorSerializer,
+    InvolvementSerializer,
+)
 
 
 def test_involvement_serializer_empty():
@@ -142,3 +146,13 @@ def test_investor_serializer_get_deals_admin(admin_user):
     deal.save()
 
     assert serializer.get_deals(investor) == [], "Ignores old versions."
+
+
+def test_deal_serializer_fully_updated():
+    spain = Country.objects.get(id=724, name="Spain")
+    deal = DealHull.objects.create(country=spain)
+
+    s = DealVersionSerializer(data={"deal": deal.pk, "fully_updated": True})
+
+    assert s.is_valid()
+    assert "fully_updated" not in s.validated_data
