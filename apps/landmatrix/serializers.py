@@ -151,6 +151,7 @@ class DealVersionSerializer(MyModelSerializer):
         model = DealVersion
         read_only_fields = (
             "id",
+            "deal",
             # calculated
             "is_public",
             "has_known_investor",
@@ -451,6 +452,11 @@ class InvestorVersionSerializer(MyModelSerializer):
         model = InvestorVersion
         read_only_fields = (
             "id",
+            "investor",
+            # calculated fields
+            "name_unknown",
+            # meta submodels
+            "involvements_snapshot",
             # base version mixin
             "created_at",
             "created_by",
