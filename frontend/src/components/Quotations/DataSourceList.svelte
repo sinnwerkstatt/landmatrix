@@ -1,5 +1,6 @@
 <script lang="ts">
   import { _ } from "svelte-i18n"
+  import { twMerge } from "tailwind-merge"
 
   import type { DataSource, QuotationItem, Quotations } from "$lib/types/data"
   // TODO: Refactor and use more specific helpers
@@ -58,28 +59,33 @@
   }
 </script>
 
-<ol class="flex flex-col gap-2">
-  {#each dataSources as dataSource, i}
-    {@const label = `${i + 1}. ${$_("Data Source")}`}
 <ul class="flex h-fit flex-col gap-2 overflow-y-scroll py-2">
+  {#each dataSources.toReversed() as dataSource, i}
+    {@const index = dataSources.length - i}
+    {@const label = `${index}. ${$_("Data Source")}`}
     {@const isAny = isQuotedByAny(dataSource.nid)}
     {@const isAll = isQuotedByAll(dataSource.nid)}
 
     <li>
-      <DSQuotationsPopup {dataSource} {label}>
-        <button
-          class="w-full p-2 text-left {anySelected() && isAll
-            ? 'bg-yellow'
+      <button
+        class={twMerge(
+          "group flex w-full items-center justify-between px-2 text-left",
+          anySelected() && isAll
+            ? "bg-yellow dark:text-black"
             : isAny
-              ? 'bg-yellow/20'
-              : 'bg-white dark:bg-gray-500'}"
-          type="button"
-          disabled={!anySelected()}
-          onclick={() => onSelect(dataSource.nid)}
-        >
-          {i + 1}. {dataSource.nid}
-        </button>
-      </DSQuotationsPopup>
+              ? "bg-yellow/20"
+              : "bg-white dark:bg-gray-500",
+        )}
+        type="button"
+        disabled={!anySelected()}
+        title={!anySelected() ? $_("Select a change to attribute data source") : ""}
+        onclick={() => onSelect(dataSource.nid)}
+      >
+        <span class="flex-grow">
+          {index}. {dataSource.nid}
+        </span>
+        <DSQuotationsPopup {dataSource} {label} />
+      </button>
     </li>
   {/each}
-</ol>
+</ul>
