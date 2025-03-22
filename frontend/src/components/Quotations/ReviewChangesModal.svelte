@@ -220,7 +220,7 @@
       </div>
     </div>
 
-    <aside class="overflow-y-scroll bg-gray-50 p-2 dark:bg-gray-800">
+    <aside class="flex flex-col overflow-y-hidden bg-gray-50 p-2 dark:bg-gray-800">
       <h4 class="heading5">{$_("Data Sources")}</h4>
       <DataSourceList dataSources={newDataSources} bind:quotations={newQuotations} />
     </aside>

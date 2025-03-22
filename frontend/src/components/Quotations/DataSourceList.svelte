@@ -61,6 +61,7 @@
 <ol class="flex flex-col gap-2">
   {#each dataSources as dataSource, i}
     {@const label = `${i + 1}. ${$_("Data Source")}`}
+<ul class="flex h-fit flex-col gap-2 overflow-y-scroll py-2">
     {@const isAny = isQuotedByAny(dataSource.nid)}
     {@const isAll = isQuotedByAll(dataSource.nid)}
 
