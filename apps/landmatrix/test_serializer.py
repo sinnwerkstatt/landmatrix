@@ -152,7 +152,12 @@ def test_deal_serializer_fully_updated():
     spain = Country.objects.get(id=724, name="Spain")
     deal = DealHull.objects.create(country=spain)
 
-    s = DealVersionSerializer(data={"deal": deal.pk, "fully_updated": True})
-
+    s = DealVersionSerializer(
+        data={
+            "deal": deal.pk,
+            "fully_updated": True,
+            "ds_quotations": {},
+        }
+    )
     assert s.is_valid()
     assert "fully_updated" not in s.validated_data
