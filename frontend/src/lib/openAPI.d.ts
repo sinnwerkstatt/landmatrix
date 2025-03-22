@@ -2345,7 +2345,7 @@ export interface components {
       readonly initiation_year: number | null
       readonly forest_concession: boolean
       readonly transnational: boolean | null
-      fully_updated?: boolean
+      readonly fully_updated: boolean
       /** Data Source Quotations */
       ds_quotations: components["schemas"]["QuotationsSchema"]
       readonly created_by: number | null
@@ -2353,7 +2353,7 @@ export interface components {
       readonly sent_to_review_by: number | null
       readonly sent_to_activation_by: number | null
       readonly activated_by: number | null
-      deal: number
+      readonly deal: number
       purchase_price_currency?: number | null
       annual_leasing_fee_currency?: number | null
       operating_company?: number | null
@@ -2847,7 +2847,7 @@ export interface components {
       readonly sent_to_review_by: number | null
       readonly sent_to_activation_by: number | null
       readonly activated_by: number | null
-      investor: number
+      readonly investor: number
       /** Country of registration/origin */
       country?: number | null
     }

@@ -455,8 +455,6 @@ class InvestorVersionSerializer(MyModelSerializer):
             "investor",
             # calculated fields
             "name_unknown",
-            # meta submodels
-            "involvements_snapshot",
             # base version mixin
             "created_at",
             "created_by",
@@ -469,8 +467,6 @@ class InvestorVersionSerializer(MyModelSerializer):
             "activated_at",
             "activated_by",
             "status",
-            # calculated fields
-            "name_unknown",
         )
         exclude = ("involvements_snapshot",)
         extra_kwargs = {
