@@ -239,19 +239,16 @@ class DealVersionViewSet(VersionViewSet):
         if not dv1.is_current_draft():
             raise PermissionDenied("EDITING_OLD_VERSION")
 
-        to_user_id = request.data.get("toUser")
-
         dv1.change_status(
             transition=request.data["transition"],
             user=request.user,
             fully_updated=request.data.get("fullyUpdated"),
-            to_user_id=to_user_id,
+            to_user_id=request.data.get("toUser"),
             comment=request.data.get("comment", ""),
         )
 
-        # FIXME: Frontend does not send toUser in TO_REVIEW request -> Delete?
-        if request.data["transition"] == VersionTransition.TO_REVIEW and to_user_id:
-            # if there was a request for improvement workflowinfo, email the requester
+        # If there was a request for improvement, email the requester.
+        if request.data["transition"] == VersionTransition.TO_REVIEW:
             old_wfi: DealWorkflowInfo | None = dv1.workflowinfos.last()
             if (
                 old_wfi
@@ -260,18 +257,19 @@ class DealVersionViewSet(VersionViewSet):
                     in [VersionStatus.REVIEW, VersionStatus.ACTIVATION]
                 )
                 and old_wfi.status_after == VersionStatus.DRAFT
-                and old_wfi.to_user == to_user_id
+                and old_wfi.to_user == request.user
             ):
                 old_wfi.resolved = True
                 old_wfi.save()
                 _send_comment_to_user(
                     obj=dv1.deal,
-                    comment="",
+                    comment="Feedback addressed",
                     from_user=request.user,
                     to_user_id=old_wfi.from_user_id,
                     version_id=dv1.id,
                 )
 
+        # toUser defined in RequestImprovement and RequestFeedbackModals
         if to_user := request.data.get("toUser"):
             _send_comment_to_user(
                 obj=dv1.deal,
@@ -605,17 +603,15 @@ class InvestorVersionViewSet(VersionViewSet):
         if not iv1.is_current_draft():
             raise PermissionDenied("EDITING_OLD_VERSION")
 
-        to_user_id = request.data.get("toUser")
         iv1.change_status(
             transition=request.data["transition"],
             user=request.user,
-            to_user_id=to_user_id,
+            to_user_id=request.data.get("toUser"),
             comment=request.data.get("comment", ""),
         )
 
-        # FIXME: Frontend does not send toUser in TO_REVIEW request -> Delete?
-        if request.data["transition"] == VersionTransition.TO_REVIEW and to_user_id:
-            # if there was a request for improvement workflowinfo, email the requester
+        # If there was a request for improvement, email the requester.
+        if request.data["transition"] == VersionTransition.TO_REVIEW:
             old_wfi: InvestorWorkflowInfo | None = iv1.investor.workflowinfos.last()
             if (
                 old_wfi
@@ -624,18 +620,19 @@ class InvestorVersionViewSet(VersionViewSet):
                     in [VersionStatus.REVIEW, VersionStatus.ACTIVATION]
                 )
                 and old_wfi.status_after == VersionStatus.DRAFT
-                and old_wfi.to_user_id == to_user_id
+                and old_wfi.to_user_id == request.user
             ):
                 old_wfi.resolved = True
                 old_wfi.save()
                 _send_comment_to_user(
                     obj=iv1.investor,
-                    comment="",
+                    comment="Feedback addressed",
                     from_user=request.user,
                     to_user_id=old_wfi.from_user_id,
                     version_id=iv1.id,
                 )
 
+        # toUser defined in RequestImprovement and RequestFeedbackModals
         if to_user := request.data.get("toUser"):
             _send_comment_to_user(
                 obj=iv1.investor,
