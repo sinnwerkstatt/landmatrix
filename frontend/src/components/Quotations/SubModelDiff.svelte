@@ -5,7 +5,9 @@
   import type { DataSource, SubmodelQuotations } from "$lib/types/data"
 
   import ChangedFieldItem from "$components/Quotations/ChangedFieldItem.svelte"
+  import type { SubmodelKey } from "$components/Quotations/ReviewChangesModal.svelte"
   import { toggleSelected } from "$components/Quotations/selectedPaths.svelte"
+  import SubmodelPopup from "$components/Quotations/SubmodelPopup.svelte"
   import { mergeKeys } from "$components/Quotations/utils"
 
   interface SubModelEntry {
@@ -14,7 +16,7 @@
   }
 
   interface Props {
-    key: string
+    key: SubmodelKey
     label: string
     oldEntries?: SubModelEntry[]
     newEntries?: SubModelEntry[]
@@ -35,7 +37,9 @@
     newDataSources = [],
   }: Props = $props()
 
-  const createNidLookup = (entries: SubModelEntry[]) =>
+  const createNidLookup = (
+    entries: SubModelEntry[],
+  ): { [key: string]: SubModelEntry } =>
     entries.reduce((acc, current) => ({ ...acc, [current.nid]: current }), {})
 
   const oldEntriesLookup = $derived(createNidLookup(oldEntries))
@@ -69,6 +73,7 @@
           <small class="font-oswald text-sm text-gray-500">
             #{nid}
           </small>
+          <SubmodelPopup {key} entry={oldEntriesLookup[nid]} {label} />
         </span>
         <span class="italic">
           {#if isDeleted}

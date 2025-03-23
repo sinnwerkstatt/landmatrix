@@ -5,7 +5,7 @@
 
   import TrashIcon from "$components/icons/TrashIcon.svelte"
   import Modal from "$components/Modal.svelte"
-  import DSQuotationPopup from "$components/Quotations/DataSourcePopup.svelte"
+  import SubmodelPopup from "$components/Quotations/SubmodelPopup.svelte"
 
   interface Props {
     open: boolean
@@ -83,26 +83,20 @@
           class="flex gap-2 border border-black p-2 hover:bg-gray-50 dark:border-white hover:dark:bg-a-gray-800"
         >
           {#if dsIndex > -1}
-            {@const ds = dataSources[dsIndex]}
-
-            {@const label = `${padLeadingZeros(2, dsIndex + 1)}. ${$_("Data Source")}`}
-
             <div class="flex flex-grow flex-col">
-              <DSQuotationPopup dataSource={ds} {label}>
-                <div class="font-bold">
-                  <span>
-                    {padLeadingZeros(2, dsIndex + 1)}. {$_("Data Source")}
-                  </span>
-                </div>
+              <div class="font-bold">
+                <span>
+                  {padLeadingZeros(2, dsIndex + 1)}. {$_("Data Source")}
+                </span>
+              </div>
 
-                <div class="flex gap-5">
-                  <span class="text-nowrap italic text-gray-700 dark:text-gray-100">
-                    {$_("Page: {pages}", {
-                      values: { pages: quote.pages ?? "--" },
-                    })}
-                  </span>
-                </div>
-              </DSQuotationPopup>
+              <div class="flex gap-5">
+                <span class="text-nowrap italic text-gray-700 dark:text-gray-100">
+                  {$_("Page: {pages}", {
+                    values: { pages: quote.pages ?? "--" },
+                  })}
+                </span>
+              </div>
             </div>
           {:else}
             <div class="font-bold text-red-400">
@@ -142,26 +136,27 @@
           {#each dataSources as dataSource, i}
             {@const label = `${padLeadingZeros(2, i + 1)}. ${$_("Data Source")}`}
 
-            <DSQuotationPopup {dataSource} {label}>
-              <div class="text-left font-bold hover:bg-gray-50 hover:dark:bg-gray-800">
-                <input
-                  class="peer pointer-events-none fixed w-0 opacity-0"
-                  type="radio"
-                  id="{fieldname}-data-source-{dataSource.nid}"
-                  name="data-source-nid"
-                  bind:group={newQuotationId}
-                  value={dataSource.nid}
-                  required
-                />
-                <label
-                  class="inline-block w-full cursor-pointer border border-black p-2
-                   peer-checked:bg-yellow dark:bg-gray-500"
-                  for="{fieldname}-data-source-{dataSource.nid}"
-                >
-                  {label}
-                </label>
-              </div>
-            </DSQuotationPopup>
+            <div
+              class="flex text-left font-bold hover:bg-gray-50 hover:dark:bg-gray-800"
+            >
+              <input
+                class="peer pointer-events-none fixed w-0 opacity-0"
+                type="radio"
+                id="{fieldname}-data-source-{dataSource.nid}"
+                name="data-source-nid"
+                bind:group={newQuotationId}
+                value={dataSource.nid}
+                required
+              />
+              <label
+                class="inline-block w-full cursor-pointer border border-black p-2
+                               peer-checked:bg-yellow dark:bg-gray-500 peer-checked:dark:text-black"
+                for="{fieldname}-data-source-{dataSource.nid}"
+              >
+                {label}
+              </label>
+              <SubmodelPopup key="datasources" entry={dataSource} {label} />
+            </div>
           {/each}
         </fieldset>
 
