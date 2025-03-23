@@ -9,7 +9,7 @@
   import LocationPopup from "$components/Quotations/LocationPopup.svelte"
   import type { SubmodelKey } from "$components/Quotations/ReviewChangesModal.svelte"
 
-  const POPUP_MAP: { [key in SubmodelKey]: Component<any, any, any> } = {
+  const POPUP_MAP: { [key in SubmodelKey]: Component<{ entry: SubmodelEntry }> } = {
     locations: LocationPopup,
     datasources: DataSourcePopup,
     contracts: ContractPopup,
@@ -52,6 +52,7 @@
 
 {#if showTooltip}
   {@const PopupComp = POPUP_MAP[key]}
+
   <div
     class="absolute w-96 border-2 bg-white p-4 drop-shadow-2xl dark:bg-gray-900 dark:text-white"
     use:floatingContent
