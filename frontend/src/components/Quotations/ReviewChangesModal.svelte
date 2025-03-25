@@ -75,25 +75,27 @@
   const isJsonKey = (key: string) => jsonKeys.includes(key)
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let objDiff = $derived<Record<string, any>>(
+  const objDiff = $derived<Record<string, any>>(
     diff(oldObject.selected_version, $newObject.selected_version),
   )
 
-  let oldDataSources = $derived(oldObject.selected_version.datasources)
-  let newDataSources = $derived($newObject.selected_version.datasources)
+  const oldDataSources = $derived(oldObject.selected_version.datasources)
+  const newDataSources = $derived($newObject.selected_version.datasources)
 
-  let oldQuotations: Quotations = $derived(
+  const oldQuotations: Quotations = $derived(
     oldObject.selected_version.ds_quotations ?? {},
   )
   let newQuotations: Quotations = $state($newObject.selected_version.ds_quotations)
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let quotationsDiff = $derived<Record<string, any>>(
+  const quotationsDiff = $derived<Record<string, any>>(
     diff(oldQuotations ?? {}, newQuotations),
   )
 
-  let diffKeys: string[] = $derived(
-    mergeKeys(objDiff, quotationsDiff).filter(k => k !== "ds_quotations"),
+  const diffKeys: string[] = $derived(
+    mergeKeys($state.snapshot(objDiff), $state.snapshot(quotationsDiff)).filter(
+      k => k !== "ds_quotations",
+    ),
   )
 
   // let areAllChangesAttributed = $derived.by(() =>
