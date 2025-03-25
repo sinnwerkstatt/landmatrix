@@ -22,7 +22,7 @@
       {$_("Parents (Involvements as child)")}
     </h3>
     <div class="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
-      {#each parents as involvement}
+      {#each parents as involvement (involvement.nid)}
         <InvestorCard isParent {involvement} />
       {/each}
     </div>
@@ -34,7 +34,7 @@
       {$_("Children (Involvements as parent)")}
     </h3>
     <div class="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
-      {#each investor.children as involvement}
+      {#each investor.children as involvement (involvement.nid)}
         <InvestorCard {involvement} />
       {/each}
     </div>
@@ -47,7 +47,7 @@
         {$_("Deals (Involvements as Operating company)")}
       </h3>
       <div class="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
-        {#each investor.deals as deal}
+        {#each investor.deals as deal (deal.id)}
           <DealCard {deal} />
         {/each}
       </div>

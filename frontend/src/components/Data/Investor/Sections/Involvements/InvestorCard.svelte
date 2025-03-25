@@ -5,6 +5,7 @@
   import { InvolvementRole, type Involvement, type Model } from "$lib/types/data"
 
   import DisplayField from "$components/Fields/DisplayField.svelte"
+  import SourcesDisplayButton from "$components/Quotations/SourcesDisplayButton.svelte"
 
   interface Props {
     involvement: Involvement
@@ -170,6 +171,10 @@
       {wrapperClass}
       showLabel
     />
+
+    <span class="text-left">
+      <SourcesDisplayButton model="investor" path={["involvements", involvement.nid]} />
+    </span>
   </div>
 {:else}
   <div class="bg-red-200 bg-opacity-10 p-2 text-red-200">
