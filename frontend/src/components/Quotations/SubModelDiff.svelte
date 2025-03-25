@@ -44,14 +44,16 @@
 
   const oldEntriesLookup = $derived(createNidLookup(oldEntries))
   const newEntriesLookup = $derived(createNidLookup(newEntries))
-  const entriesDiff = $derived(diff(oldEntriesLookup, newEntriesLookup))
+  const entriesDiff = $derived(
+    diff(oldEntriesLookup, newEntriesLookup) as { [key: string]: SubModelEntry },
+  )
 
   const quotationsDiff = $derived(diff(oldQuotations, newQuotations))
 
   const mergedKeys = $derived(mergeKeys(entriesDiff, quotationsDiff))
 </script>
 
-<div class="flex flex-col gap-2 pl-5">
+<div class="flex flex-col gap-2">
   {#each mergedKeys as nid}
     {@const isInOld = !!(nid in oldEntriesLookup)}
     {@const isInNew = !!(nid in newEntriesLookup)}
@@ -73,15 +75,19 @@
           <small class="font-oswald text-sm text-gray-500">
             #{nid}
           </small>
-          <SubmodelPopup {key} entry={oldEntriesLookup[nid]} {label} />
         </span>
         <span class="italic">
           {#if isDeleted}
             {$_("Deleted")}
+            <SubmodelPopup {key} entry={oldEntriesLookup[nid]} {label} />
           {:else if isAdded}
             {$_("Added")}
+            <SubmodelPopup {key} entry={newEntriesLookup[nid]} {label} />
           {:else if hasValueChange}
             {$_("Updated")}
+            <SubmodelPopup {key} entry={oldEntriesLookup[nid]} {label} />
+            <span>&RightArrow;</span>
+            <SubmodelPopup {key} entry={newEntriesLookup[nid]} {label} />
           {:else}
             {$_("No value change")}
           {/if}
