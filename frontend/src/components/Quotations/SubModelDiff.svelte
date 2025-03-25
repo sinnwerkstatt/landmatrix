@@ -76,20 +76,28 @@
             #{nid}
           </small>
         </span>
-        <span class="italic">
+        <span>
           {#if isDeleted}
-            {$_("Deleted")}
+            <span class="italic">
+              {$_("Deleted")}
+            </span>
             <SubmodelPopup {key} entry={oldEntriesLookup[nid]} {label} />
           {:else if isAdded}
-            {$_("Added")}
+            <span class="italic">
+              {$_("Added")}
+            </span>
             <SubmodelPopup {key} entry={newEntriesLookup[nid]} {label} />
           {:else if hasValueChange}
-            {$_("Updated")}
+            <span class="italic">
+              {$_("Updated")}
+            </span>
             <SubmodelPopup {key} entry={oldEntriesLookup[nid]} {label} />
             <span>&RightArrow;</span>
             <SubmodelPopup {key} entry={newEntriesLookup[nid]} {label} />
           {:else}
-            {$_("No value change")}
+            <span class="italic">
+              {$_("No value change")}
+            </span>
           {/if}
         </span>
       </span>

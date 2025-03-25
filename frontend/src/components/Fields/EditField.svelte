@@ -56,11 +56,14 @@
 
   const getQuotes = (): QuotationItem[] =>
     ($mutableObj.selected_version.ds_quotations[fieldname] ?? []) as QuotationItem[]
+
   const setQuotes = (quotes: QuotationItem[]): void => {
     if (quotes.length) {
       $mutableObj.selected_version.ds_quotations[fieldname] = quotes
     } else {
-      delete $mutableObj.selected_version.ds_quotations[fieldname]
+      const { [fieldname]: _ignore, ...rest } =
+        $mutableObj.selected_version.ds_quotations ?? {}
+      $mutableObj.selected_version.ds_quotations = { ...rest }
     }
   }
 </script>

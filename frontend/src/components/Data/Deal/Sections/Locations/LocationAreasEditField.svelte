@@ -59,15 +59,20 @@
     createLabels<components["schemas"]["LocationAreaTypeEnum"]>($areaChoices.type),
   )
 
-  let currentGroups = $derived(
+  const createCurrentGroups = () =>
     AREA_TYPES.reduce(
       (acc, val) => ({
         ...acc,
         [val]: areas.filter(a => a.type === val).findIndex(a => a.current),
       }),
       {},
-    ) as { [key in components["schemas"]["LocationAreaTypeEnum"]]: number },
-  )
+    ) as { [key in components["schemas"]["LocationAreaTypeEnum"]]: number }
+
+  let currentGroups = $state(createCurrentGroups())
+
+  $effect(() => {
+    currentGroups = createCurrentGroups()
+  })
 
   async function createPolygonOverlay(feature: Feature<MultiPolygon>) {
     const overlayContainerDiv = document.createElement("div")

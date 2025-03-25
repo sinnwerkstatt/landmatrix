@@ -138,15 +138,16 @@
     getSubmodelQuotations()[submodelNid] ?? []
 
   const setQuotes = (submodelNid: string, quotes: QuotationItem[]): void => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { [submodelNid]: _, ...rest } = getSubmodelQuotations()
+    const { [submodelNid]: _ignore, ...rest } = getSubmodelQuotations()
 
     $mutableObj.selected_version.ds_quotations[fieldname] = quotes.length
       ? { ...rest, [submodelNid]: quotes }
       : rest
 
     if (!Object.keys(getSubmodelQuotations()).length) {
-      delete $mutableObj.selected_version.ds_quotations[fieldname]
+      const { [fieldname]: _ignore, ...rest } =
+        $mutableObj.selected_version.ds_quotations ?? {}
+      $mutableObj.selected_version.ds_quotations = { ...rest }
     }
   }
 </script>
