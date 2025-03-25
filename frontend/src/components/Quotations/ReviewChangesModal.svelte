@@ -26,7 +26,6 @@
     SubmodelQuotations,
   } from "$lib/types/data"
 
-  import { getMutableObject } from "$components/Data/stores"
   import CheckIcon from "$components/icons/CheckIcon.svelte"
   import XIcon from "$components/icons/XIcon.svelte"
   import Modal from "$components/Modal.svelte"
@@ -58,8 +57,6 @@
   const getRichField = (fieldname: string) =>
     (model === "deal" ? $dealFields : $investorFields)[fieldname]
 
-  const mutableObj = getMutableObject(model)
-
   const submodelLabels: { [key in SubmodelKey]: string } = $derived({
     locations: $_("Location"),
     contracts: $_("Contract"),
@@ -85,13 +82,10 @@
   let oldDataSources = $derived(oldObject.selected_version.datasources)
   let newDataSources = $derived($newObject.selected_version.datasources)
 
-  let oldQuotations = $derived(oldObject.selected_version.ds_quotations)
-  let newQuotations: Quotations = $state({})
-
-  $effect(() => {
-    // create copy on mount
-    newQuotations = $mutableObj.selected_version.ds_quotations
-  })
+  let oldQuotations: Quotations = $derived(
+    oldObject.selected_version.ds_quotations ?? {},
+  )
+  let newQuotations: Quotations = $state($newObject.selected_version.ds_quotations)
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let quotationsDiff = $derived<Record<string, any>>(
@@ -118,6 +112,10 @@
 
   const getQuotations = <T,>(key: string, quotations: Quotations) =>
     (quotations[key] ?? {}) as T
+
+  const writeQuotations = () => {
+    $newObject.selected_version.ds_quotations = { ...newQuotations }
+  }
 
   $effect(() => {
     open = open
@@ -258,10 +256,7 @@
         type="button"
         class="btn btn-yellow"
         onclick={() => {
-          $newObject.selected_version.ds_quotations = {
-            ...oldQuotations,
-            ...newQuotations,
-          }
+          writeQuotations()
           onclick?.()
         }}
       >
