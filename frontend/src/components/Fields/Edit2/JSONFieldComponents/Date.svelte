@@ -5,7 +5,7 @@
   import LowLevelDateYearField from "$components/Fields/Edit2/LowLevelDateYearField.svelte"
 
   interface Props {
-    value: string | null
+    value?: string | null
     name: string
     label?: string
     onchange?: () => void

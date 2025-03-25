@@ -9,7 +9,7 @@
 
   interface Props {
     name: string
-    value: string | null
+    value: string | null | undefined
     required?: boolean
     class?: string
     onchange?: () => void
