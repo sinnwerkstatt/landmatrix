@@ -2,7 +2,11 @@
   import { _ } from "svelte-i18n"
 
   import type { ValueLabelEntry } from "$lib/fieldChoices"
-  import type { JSONExportsFieldType, JSONFieldQuotations } from "$lib/types/data"
+  import type {
+    JSONExportsFieldType,
+    JSONFieldQuotations,
+    QuotationItem,
+  } from "$lib/types/data"
 
   import { getMutableObject } from "$components/Data/stores"
   import ChoicesEditField from "$components/Fields/Edit2/ChoicesEditField.svelte"
@@ -49,11 +53,14 @@
     const keep = valueCopy.map(val => !isEmpty(val))
 
     value = valueCopy.filter((_, i) => keep[i])
-    const filtered = jsonQuotes.filter((_, i) => keep[i])
-    if (filtered.some(q => q.length)) {
-      $mutableObj.selected_version.ds_quotations[fieldname] = filtered
+    const filteredQuotes = jsonQuotes.filter((_, i) => keep[i])
+
+    if (filteredQuotes.some(q => q.length)) {
+      $mutableObj.selected_version.ds_quotations[fieldname] = filteredQuotes
     } else {
-      delete $mutableObj.selected_version.ds_quotations[fieldname]
+      const { [fieldname]: _ignore, ...rest } =
+        $mutableObj.selected_version.ds_quotations ?? {}
+      $mutableObj.selected_version.ds_quotations = { ...rest }
     }
   }
 
@@ -72,6 +79,12 @@
   let isCurrentRequired = $derived(
     value.length ? !value.some(val => val.current) : false,
   )
+
+  const getQuotes = (i: number) => () => jsonQuotes[i] ?? []
+  const setQuotes = (i: number) => (quotes: QuotationItem[]) => {
+    jsonQuotes[i] = quotes
+    updateVal()
+  }
 </script>
 
 <div class="grid gap-2 xl:grid-cols-2">
@@ -134,7 +147,7 @@
       <div class="mt-2 flex justify-between">
         <SourcesEditButton
           fieldname="{fieldname}-{i}"
-          bind:quotes={jsonQuotes[i]}
+          bind:quotes={getQuotes(i), setQuotes(i)}
           dataSources={$mutableObj.selected_version.datasources}
           disabled={isEmpty(val)}
         />
