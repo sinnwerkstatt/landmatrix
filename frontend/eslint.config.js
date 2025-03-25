@@ -35,6 +35,7 @@ export default tslint.config(
     rules: {
       // "svelte/button-has-type": "error",
       "svelte/no-at-html-tags": "off",
+      "@typescript-eslint/no-unused-vars": ["error", { ignoreRestSiblings: true }],
       // "svelte/valid-compile": "off",
     },
   },
