@@ -51,7 +51,7 @@
     {/if}
 
     <div class={valueClass}>
-      <div class="flex">
+      <div class="flex flex-wrap">
         {#if richField && richField.displayField}
           {@const RichDisplayField = richField.displayField}
 
