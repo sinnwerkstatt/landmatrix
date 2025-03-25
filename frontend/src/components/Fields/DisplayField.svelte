@@ -60,7 +60,9 @@
           <div class="italic text-red-400">unknown field: {fieldname}</div>
         {/if}
 
-        <SourcesDisplayButton {model} path={[fieldname]} />
+        {#if !richField.isJson}
+          <SourcesDisplayButton {model} path={[fieldname]} />
+        {/if}
       </div>
     </div>
   </div>
