@@ -5,6 +5,7 @@
   import type {
     JSONCurrentDateAreaFieldType,
     JSONFieldQuotations,
+    QuotationItem,
   } from "$lib/types/data"
 
   import { getMutableObject } from "$components/Data/stores"
@@ -73,6 +74,12 @@
     valueCopy = valueCopy.map((val, i) => ({ ...val, current: i === index }))
     updateVal()
   }
+
+  const getQuotes = (i: number) => () => jsonQuotes[i]
+  const setQuotes = (i: number) => (quotes: QuotationItem[]) => {
+    jsonQuotes[i] = quotes
+    updateVal()
+  }
 </script>
 
 <div class="grid gap-2 lg:grid-cols-2 xl:grid-cols-3">
@@ -113,7 +120,7 @@
       <div class="mt-2 flex justify-between">
         <SourcesEditButton
           fieldname="{fieldname}-{i}"
-          bind:quotes={jsonQuotes[i]}
+          bind:quotes={getQuotes(i), setQuotes(i)}
           dataSources={$mutableObj.selected_version.datasources}
           disabled={isEmpty(val)}
         />
