@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { tracker } from "@sinnwerkstatt/sveltekit-matomo"
   import { Feature, type Map, type MapBrowserEvent } from "ol"
   import { Point } from "ol/geom"
   import { Vector as VectorLayer } from "ol/layer"
@@ -322,6 +323,11 @@
             bind:group={selectedLayers.contextLayers}
             value={layer.id}
             class="checkbox-btn"
+            onchange={e => {
+              if (e.currentTarget.checked && $tracker) {
+                $tracker.trackEvent("ContextLayer", "Selected", layer.id)
+              }
+            }}
           />
           {layer.name}
           {#if selectedLayers.contextLayers.includes(layer.id)}
