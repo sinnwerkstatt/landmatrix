@@ -22,7 +22,9 @@
       <excludeFolder url="file://$MODULE_DIR$/static-collected" />
       <excludeFolder url="file://$MODULE_DIR$/frontend/build" />
       <excludeFolder url="file://$MODULE_DIR$/frontend/.svelte-kit/generated" />
-      <excludeFolder url="file://$MODULE_DIR$/frontend/.svelte-kit" />
+      <excludeFolder url="file://$MODULE_DIR$/frontend/.svelte-kit/adapter-node" />
+      <excludeFolder url="file://$MODULE_DIR$/frontend/.svelte-kit/output" />
+      <excludeFolder url="file://$MODULE_DIR$/frontend/.svelte-kit/types" />
       <excludeFolder url="file://$MODULE_DIR$/.venv" />
     </content>
     <orderEntry type="jdk" jdkName="uv (landmatrix)" jdkType="Python SDK" />
