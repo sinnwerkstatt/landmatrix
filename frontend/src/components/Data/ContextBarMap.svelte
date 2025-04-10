@@ -93,7 +93,7 @@
       <div class="mb-6 w-full">
         <h5 class="mb-3 text-center text-lg font-bold">{$_("Negotiation status")}</h5>
         {#key chartNegStat}
-          <StatusBarChart data={chartNegStat} width={280} />
+          <StatusBarChart data={chartNegStat} width={400} />
         {/key}
       </div>
       <div class="mb-6 w-full">
@@ -101,13 +101,13 @@
           {$_("Implementation status")}
         </h5>
         {#key chartImpStat}
-          <StatusBarChart data={chartImpStat} width={280} />
+          <StatusBarChart data={chartImpStat} width={400} />
         {/key}
       </div>
       <div class="mb-6 w-full">
         <h5 class="mb-3 text-center text-lg font-bold">{$_("Produce")}</h5>
         {#key chartProd}
-          <StatusBarChart data={chartProd} width={280} />
+          <StatusBarChart data={chartProd} width={400} />
         {/key}
       </div>
     </div>

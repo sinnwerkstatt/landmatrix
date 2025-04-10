@@ -76,10 +76,10 @@
       .data(data)
       .join("text")
       .attr("x", 0)
-      .attr("y", d => yScale(d.name)! + 24)
-
+      .attr("y", d => yScale(d.name)! + 26)
       .text(d => d.value + "%")
-    const percentageGroupWidth = percentageGroup.node()!.getBoundingClientRect().width
+
+    const percentageGroupWidth = width / 10
     percentageGroup.attr("transform", `translate(${width - percentageGroupWidth},0)`)
 
     const xScale = d3
