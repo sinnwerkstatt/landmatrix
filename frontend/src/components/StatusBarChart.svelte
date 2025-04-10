@@ -30,7 +30,7 @@
       .append("div")
       .attr(
         "class",
-        "absolute rounded border bg-white p-3 text-black opacity-0 dark:bg-gray-800 dark:text-white",
+        "absolute top-0 rounded border bg-white p-3 text-black opacity-0 dark:bg-gray-800 dark:text-white",
       )
       .style("pointer-events", "none")
 
