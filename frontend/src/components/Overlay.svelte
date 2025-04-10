@@ -61,7 +61,7 @@
   <div
     role="none"
     transition:fade={{ duration: 100 }}
-    class="fixed inset-0 z-[100] flex h-screen max-h-screen w-screen items-center justify-center bg-[rgba(0,0,0,0.3)] backdrop-blur-sm"
+    class="fixed inset-0 z-[100] flex h-dvh max-h-dvh w-dvw items-center justify-center bg-[rgba(0,0,0,0.3)] backdrop-blur-sm"
     onclick={function (e) {
       // TODO check if this is correct
       console.log(e.target)
@@ -71,7 +71,7 @@
   >
     <div
       transition:slide={{ duration: 150 }}
-      class="max-h-[99vh] w-[clamp(300px,70vw,800px)] overflow-y-auto border bg-white text-black shadow-xl dark:bg-gray-700 dark:text-white {className}"
+      class="max-h-[99dvh] w-[clamp(300px,70dvw,800px)] overflow-y-auto border bg-white text-black shadow-xl dark:bg-gray-700 dark:text-white {className}"
     >
       <form {onsubmit}>
         {#if header || title}

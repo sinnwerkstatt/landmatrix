@@ -24,7 +24,7 @@
 </div>
 
 <Modal bind:open dismissible style="--open-speed: 100ms;">
-  <div class="max-h-[80vh] min-w-[400px] max-w-[60vw]">
+  <div class="max-h-[80dvh] min-w-[400px] max-w-[60dvw]">
     {#each value as info}
       <WorkflowInfoNew {info} isDeal />
     {/each}

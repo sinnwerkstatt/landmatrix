@@ -57,7 +57,7 @@
         </button>
         <Modal
           bind:open={showSearch}
-          class="h-[80vh] w-[clamp(300px,90%,800px)] dark:border-gray-300 dark:bg-gray-700"
+          class="h-[80dvh] w-[clamp(300px,90%,800px)] dark:border-gray-300 dark:bg-gray-700"
           dismissible
         >
           <NavbarSearch on:enter={() => (showSearch = false)} />

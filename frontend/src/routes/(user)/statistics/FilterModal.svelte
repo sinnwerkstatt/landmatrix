@@ -62,7 +62,7 @@
   <hr />
 
   <form class="mt-6 w-full text-lg" {onsubmit}>
-    <div class="min-w-[33vw] self-start" dir="ltr">
+    <div class="min-w-[33dvw] self-start" dir="ltr">
       <RegionSelect
         onclear={() => ($filters.region_id = undefined)}
         oninput={e => {

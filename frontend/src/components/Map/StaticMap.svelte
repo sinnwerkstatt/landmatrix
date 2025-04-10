@@ -23,7 +23,7 @@
 </script>
 
 <div
-  class="relative mt-6 h-[30vh] min-h-[300px] w-full cursor-pointer border border-orange shadow-md hover:border-orange-300"
+  class="relative mt-6 h-[30dvh] min-h-[300px] w-full cursor-pointer border border-orange shadow-md hover:border-orange-300"
 >
   <a
     class="group absolute z-20 flex h-full w-full bg-transparent transition duration-300 hover:bg-orange/20"

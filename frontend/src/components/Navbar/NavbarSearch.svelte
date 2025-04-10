@@ -88,7 +88,7 @@
 
 <style lang="postcss">
   :global(.navbar-search .svelte-select-list) {
-    @apply max-w-[80vw];
+    @apply max-w-[80dvw];
   }
 
   :global(.navbar-search .svelte-select-list .item.hover .deal) {

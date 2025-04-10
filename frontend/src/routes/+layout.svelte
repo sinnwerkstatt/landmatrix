@@ -27,7 +27,7 @@
 </script>
 
 {#if page.url.pathname.split("/")[1] !== "accountability"}
-  <div id="main-content" class="grid h-screen">
+  <div id="main-content" class="grid h-dvh w-dvw">
     <div>
       <Messages />
       <NavigationLoader />

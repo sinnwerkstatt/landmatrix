@@ -58,7 +58,7 @@
     />
   </div>
 
-  <div class="mt-2 px-4 lg:min-h-[92vh]" style="grid-area: main">
+  <div class="mt-2 px-4 lg:min-h-[92dvh]" style="grid-area: main">
     {@render children?.()}
   </div>
 </div>
@@ -74,7 +74,7 @@
       "sidenav main main main main main";
 
     @media (width <= 1024px) {
-      grid-template-rows: auto auto 100vh;
+      grid-template-rows: auto auto 100dvh;
       grid-template-columns: 100%;
       grid-template-areas:
         "header"

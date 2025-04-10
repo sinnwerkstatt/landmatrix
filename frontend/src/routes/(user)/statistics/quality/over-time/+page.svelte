@@ -209,11 +209,11 @@
       <div
         transition:fade={{ duration: 100 }}
         role="none"
-        class="fixed inset-0 z-[100] flex h-screen max-h-screen w-screen items-center justify-center bg-[rgba(0,0,0,0.3)] backdrop-blur-sm"
+        class="fixed inset-0 z-[100] flex h-dvh max-h-dvh w-dvw items-center justify-center bg-[rgba(0,0,0,0.3)] backdrop-blur-sm"
       >
         <div
           transition:slide={{ duration: 150 }}
-          class="max-h-[90vh] w-2/3 overflow-y-auto border bg-white p-2 text-black shadow-xl dark:bg-gray-700 dark:text-white"
+          class="max-h-[90dvh] overflow-y-auto border bg-white p-2 text-black shadow-xl xl:w-2/3 xl:p-8 dark:bg-gray-700 dark:text-white"
           onoutClick={() => (selectedItemId = null)}
           use:clickOutside
         >
