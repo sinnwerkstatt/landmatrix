@@ -93,10 +93,9 @@
           {#if dsIndex > -1}
             <div class="flex flex-grow flex-col">
               <span class="font-bold">{label}</span>
-
-              <small class="text-sm text-gray-500">
-                #{dataSource.nid}
-              </small>
+              <!--              <small class="text-sm text-gray-500">-->
+              <!--                #{dataSource.nid}-->
+              <!--              </small>-->
 
               <span class="text-nowrap italic text-gray-700 dark:text-gray-100">
                 {$_("Page: {pages}", {
@@ -136,11 +135,11 @@
     </ul>
 
     {#if editable}
-      <h2 class="heading4 mt-8">
+      <h2 class="heading4 mt-6">
         {$_("Create:")}
       </h2>
 
-      <form class="mt-6 flex h-1/2 flex-col gap-4" {onsubmit}>
+      <form class="mt-4 flex h-1/2 flex-col gap-4" {onsubmit}>
         <fieldset
           class="grid grid-cols-1 gap-4 overflow-y-auto md:grid-cols-3 lg:grid-cols-4"
         >
@@ -189,6 +188,7 @@
           />
         </div>
 
+        <div class="grow"></div>
         <div class="flex justify-between">
           <button class="btn btn-black" type="submit" disabled={!newQuotationId}>
             {$_("Add Quotation")}
