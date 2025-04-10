@@ -40,7 +40,7 @@
 </script>
 
 <span
-  class="p-2"
+  class="inline-flex items-center p-2"
   role="presentation"
   aria-hidden="true"
   onmouseenter={() => (showTooltip = true)}
@@ -54,7 +54,7 @@
   {@const PopupComp = POPUP_MAP[key]}
 
   <div
-    class="absolute w-96 border-2 bg-white p-4 drop-shadow-2xl dark:bg-gray-900 dark:text-white"
+    class="absolute w-96 border-2 bg-white p-4 text-gray-900 drop-shadow-2xl dark:bg-gray-900 dark:text-white"
     use:floatingContent
   >
     <h5 class="heading5">

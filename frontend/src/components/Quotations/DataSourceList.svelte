@@ -61,8 +61,8 @@
 
 <ul class="flex h-fit flex-col gap-2 overflow-y-scroll py-2">
   {#each dataSources.toReversed() as dataSource, i}
-    {@const index = dataSources.length - i}
-    {@const label = `${index}. ${$_("Data Source")}`}
+    {@const index = dataSources.length - i - 1}
+    {@const label = `${index + 1}. ${$_("Data Source")}`}
     {@const isAny = isQuotedByAny(dataSource.nid)}
     {@const isAll = isQuotedByAll(dataSource.nid)}
 
@@ -82,8 +82,8 @@
         onclick={() => onSelect(dataSource.nid)}
       >
         <span class="my-1 inline-flex flex-grow flex-col">
-          {index}. {$_("Data Source")}
-          <small class="text-white-500 text-sm">
+          {label}
+          <small class="text-sm text-gray-500">
             #{dataSource.nid}
           </small>
         </span>
