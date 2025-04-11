@@ -34,7 +34,8 @@ export const baseLayers = [
     name: "Satellite",
     layer: new TileLayer({
       source: new XYZ({
-        url: `https://2.aerial.maps.ls.hereapi.com/maptile/2.1/maptile/newest/satellite.day/{z}/{x}/{y}/512/png8?apiKey=${env.PUBLIC_HERE_API_KEY}`,
+        // url: `https://2.aerial.maps.ls.hereapi.com/maptile/2.1/maptile/newest/satellite.day/{z}/{x}/{y}/512/png8?apiKey=${env.PUBLIC_HERE_API_KEY}`,
+        url: `https://maps.hereapi.com/v3/base/mc/{z}/{x}/{y}/png?style=satellite.day&ppi=400&size=512&apiKey=${env.PUBLIC_HERE_API_KEY}`,
         attributions: `Map Tiles © ${new Date().getFullYear()} <a href="https://developer.here.com">HERE</a>`,
       }),
     }),
