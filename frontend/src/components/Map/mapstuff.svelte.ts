@@ -34,7 +34,7 @@ export const baseLayers = [
     name: "Satellite",
     layer: new TileLayer({
       source: new XYZ({
-        url: `https://maps.hereapi.com/v3/base/mc/{z}/{x}/{y}/png?style=satellite.day&ppi=400&size=512&apiKey=${env.PUBLIC_HERE_API_KEY}`,
+        url: `https://maps.hereapi.com/v3/base/mc/{z}/{x}/{y}/png?style=satellite.day&ppi=100&size=512&apiKey=${env.PUBLIC_HERE_API_KEY}`,
         tileSize: [512, 512],
         attributions: `Map Tiles © ${new Date().getFullYear()} <a href="https://developer.here.com">HERE</a>`,
         maxZoom: 20,
@@ -44,15 +44,25 @@ export const baseLayers = [
   {
     id: "map",
     name: "Map",
-    layer: new TileLayer({
-      source: new XYZ({
-        url: `https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=${env.PUBLIC_THUNDERFOREST_API_KEY}`,
-        attributions:
-          'Maps © <a href="https://www.thunderforest.com">Thunderforest</a>, Data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
-      }),
-      visible: false,
-      maxZoom: 22,
-    }),
+    layer:
+      env.PUBLIC_HERE_NEW_TOPO === "True"
+        ? new TileLayer({
+            source: new XYZ({
+              url: `https://maps.hereapi.com/v3/base/mc/{z}/{x}/{y}/png?style=topo.day&ppi=100&size=512&apiKey=${env.PUBLIC_HERE_API_KEY}`,
+              tileSize: [512, 512],
+              attributions: `Map Tiles © ${new Date().getFullYear()} <a href="https://developer.here.com">HERE</a>`,
+              maxZoom: 20,
+            }),
+          })
+        : new TileLayer({
+            source: new XYZ({
+              url: `https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=${env.PUBLIC_THUNDERFOREST_API_KEY}`,
+              attributions:
+                'Maps © <a href="https://www.thunderforest.com">Thunderforest</a>, Data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
+            }),
+            visible: false,
+            maxZoom: 22,
+          }),
   },
   // {
   //   id: "osm",
