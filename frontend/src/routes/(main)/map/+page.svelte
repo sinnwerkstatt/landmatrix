@@ -147,7 +147,7 @@
               : Math.max(Math.log(hectares) * 4, 40),
             page.data.regions.find(r => r.id === +regionId)?.name ?? "",
             $displayDealsCount
-              ? `${deals.length} ${$_("locations")}`
+              ? `${deals.length} ${$_("deals")}`
               : `${hectares.toLocaleString("fr").replace(",", ".")} ${$_("hectares")}`,
           )
           feature.setProperties({ regionID: +regionId })
@@ -173,7 +173,7 @@
               : Math.max(Math.log(hectares) * 4, 40),
             page.data.countries.find(c => c.id === +countryId)?.name ?? "",
             $displayDealsCount
-              ? `${deals.length} ${$_("locations")}`
+              ? `${deals.length} ${$_("deals")}`
               : `${hectares.toLocaleString("fr").replace(",", ".")} ${$_("hectares")}`,
           )
           feature.setProperties({ countryID: +countryId })
