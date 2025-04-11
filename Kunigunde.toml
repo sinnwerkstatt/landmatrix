@@ -1,5 +1,5 @@
 [local]
-#skip-migrate-on-resetdb = false
+#skip_migrate_on_resetdb = false
 
 [production]
 host = "landmatrix.org"
