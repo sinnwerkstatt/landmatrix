@@ -1,0 +1,57 @@
+exclude = [
+    ".venv",
+    ".eggs",
+    ".git",
+    "migrations",
+    "static-collected",
+    "node_modules"
+]
+respect-gitignore = false # https://github.com/astral-sh/ruff/issues/9381
+target-version = "py312"
+
+[lint]
+# https://docs.astral.sh/ruff/rules/
+select = [
+    "E", # pycodestyle
+    "C4", # flake8-comprehensions
+    "F", # pyflakes
+    "B", # flake8-bugbear
+    "I", # isort
+    "DJ", # flake8-django
+    "UP", # pyupgrade
+    "S" # flake8-bandit
+]
+ignore = ["E501"]
+
+[lint.per-file-ignores]
+"backend/config/settings/**.py" = ["F403", "F405"]
+"/**/test_*.py" = [
+    # at least this three should be fine in tests:
+    "S101", # asserts allowed in tests...
+    "ARG", # Unused function args -> fixtures nevertheless are functionally relevant...
+    "FBT", # Don't care about booleans as positional arguments in tests, e.g. via @pytest.mark.parametrize()
+    # The below are debateable
+    "PLR2004", # Magic value used in comparison, ...
+    "S311", # Standard pseudo-random generators are not suitable for cryptographic purposes
+]
+
+[lint.isort]
+known-first-party = ["apps"]
+section-order = [
+    "future",
+    "standard-library",
+    "third-party",
+    "django",
+    "first-party",
+    "local-folder"
+]
+
+[lint.isort.sections]
+"django" = [
+    "django",
+    "wagtail",
+    "rest_framework",
+    "drf_spectacular",
+    "wagtail_headless_preview",
+    "modelcluster"
+]
