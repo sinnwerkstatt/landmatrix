@@ -69,8 +69,8 @@
           {$_("MW")}
         </span>
       {/if}
-    </li>
 
-    <SourcesDisplayButton path={[fieldname, i]} />
+      <SourcesDisplayButton path={[fieldname, i]} />
+    </li>
   {/each}
 </ul>

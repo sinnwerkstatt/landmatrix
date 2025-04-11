@@ -24,8 +24,8 @@
     <li class:font-bold={val.current}>
       <span>{dateCurrentFormat(val)}</span>
       {choices.find(c => c.value === val.choice)?.label ?? val.choice ?? ""}
-    </li>
 
-    <SourcesDisplayButton path={[fieldname, i]} />
+      <SourcesDisplayButton path={[fieldname, i]} />
+    </li>
   {/each}
 </ul>

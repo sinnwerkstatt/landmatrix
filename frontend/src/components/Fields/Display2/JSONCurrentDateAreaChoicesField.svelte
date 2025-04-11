@@ -37,8 +37,8 @@
         ({val.area.toLocaleString("fr").replace(",", ".")}
         {$_("ha")})
       {/if}
-    </li>
 
-    <SourcesDisplayButton path={[fieldname, i]} />
+      <SourcesDisplayButton path={[fieldname, i]} />
+    </li>
   {/each}
 </ul>

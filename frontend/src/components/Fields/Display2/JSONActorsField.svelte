@@ -21,8 +21,8 @@
           {$dealChoices.actors.find(a => a.value === actor.role)?.label ?? "-"}
         </span>
       {/if}
-    </li>
 
-    <SourcesDisplayButton path={[fieldname, i]} />
+      <SourcesDisplayButton path={[fieldname, i]} />
+    </li>
   {/each}
 </ul>
