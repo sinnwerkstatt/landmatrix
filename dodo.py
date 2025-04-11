@@ -176,5 +176,5 @@ def task_git_pull():
 
 
 def task_uv_install():
-    dev = "--only main" if not get_var("dev", False) else ""
+    dev = "--no-dev" if not get_var("dev", False) else ""
     return {"actions": [f"uv sync {dev}"]}
