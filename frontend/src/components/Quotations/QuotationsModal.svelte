@@ -83,14 +83,15 @@
     <ul class="grid grid-cols-1 gap-4 overflow-y-auto md:grid-cols-3 lg:grid-cols-4">
       {#each sortQuotes(quotes) as quote, i}
         {@const dsIndex = dataSources.findIndex(ds => ds.nid === quote.nid)}
-        {@const dataSource = dataSources[dsIndex]}
-        {@const label = `${padLeadingZeros(2, dsIndex + 1)}. ${$_("Data Source")}`}
-        {@const href = new URL(`../data-sources/#${dataSource.nid}`, page.url.href)}
 
         <li
           class="flex gap-2 border border-black p-2 hover:bg-gray-50 dark:border-white hover:dark:bg-a-gray-800"
         >
           {#if dsIndex > -1}
+            {@const dataSource = dataSources[dsIndex]}
+            {@const label = `${padLeadingZeros(2, dsIndex + 1)}. ${$_("Data Source")}`}
+            {@const href = new URL(`../data-sources/#${dataSource.nid}`, page.url.href)}
+
             <div class="flex flex-grow flex-col">
               <span class="font-bold">{label}</span>
               <!--              <small class="text-sm text-gray-500">-->
