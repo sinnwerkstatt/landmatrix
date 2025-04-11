@@ -24,7 +24,7 @@ select = [
 ignore = ["E501"]
 
 [lint.per-file-ignores]
-"backend/config/settings/**.py" = ["F403", "F405"]
+"config/settings/**.py" = ["F403", "F405"]
 "/**/test_*.py" = [
     # at least this three should be fine in tests:
     "S101", # asserts allowed in tests...
