@@ -28,32 +28,32 @@ function getWMSTilesCDEUniBern(folder: string, LAYERS: string, attributions: str
   }
 }
 
-export const baseLayers = [
-  {
-    id: "satellite",
-    name: "Satellite",
-    layer: new TileLayer({
-      source: new XYZ({
-        url: `https://maps.hereapi.com/v3/base/mc/{z}/{x}/{y}/png?style=satellite.day&ppi=100&size=512&apiKey=${env.PUBLIC_HERE_API_KEY}`,
-        tileSize: [512, 512],
-        attributions: `Map Tiles © ${new Date().getFullYear()} <a href="https://developer.here.com">HERE</a>`,
-        maxZoom: 20,
-      }),
+const hereMap = (style: string, lang = "en") => {
+  const qParams = new URLSearchParams({
+    style: style,
+    ppi: "100",
+    size: "512",
+    lang: lang,
+    apiKey: env.PUBLIC_HERE_API_KEY,
+  })
+  return new TileLayer({
+    source: new XYZ({
+      url: `https://maps.hereapi.com/v3/base/mc/{z}/{x}/{y}/png?${qParams}`,
+      tileSize: [512, 512],
+      attributions: `Map Tiles © ${new Date().getFullYear()} <a href="https://developer.here.com">HERE</a>`,
+      maxZoom: 20,
     }),
-  },
+  })
+}
+
+export const baseLayers = [
+  { id: "satellite", name: "Satellite", layer: hereMap("satellite.day", "en") },
   {
     id: "map",
     name: "Map",
     layer:
       env.PUBLIC_HERE_NEW_TOPO === "True"
-        ? new TileLayer({
-            source: new XYZ({
-              url: `https://maps.hereapi.com/v3/base/mc/{z}/{x}/{y}/png?style=topo.day&ppi=100&size=512&apiKey=${env.PUBLIC_HERE_API_KEY}`,
-              tileSize: [512, 512],
-              attributions: `Map Tiles © ${new Date().getFullYear()} <a href="https://developer.here.com">HERE</a>`,
-              maxZoom: 20,
-            }),
-          })
+        ? hereMap("topo.day")
         : new TileLayer({
             source: new XYZ({
               url: `https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=${env.PUBLIC_THUNDERFOREST_API_KEY}`,
